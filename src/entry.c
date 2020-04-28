@@ -4,8 +4,10 @@
 #include "utils.h"
 #include "constants.h"
 
-#include "active_directory.h"
+// NOTE: need to define this once in one .c file
+#define STB_DS_IMPLEMENTATION
 #include "stb_ds.h"
+#include "active_directory.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -83,6 +85,13 @@ void entry_load(const char* dn) {
     shput(entries, e->dn, e);
 }
 
+void entry_init() {
+    // Init map to use strdup for string allocation
+    sh_new_strdup(entries);
+
+    // Load entries recursively
+    entry_load(HEAD_DN);
+}
 
 STR_ARRAY entry_get_attribute(entry* e, const char* key) {
     return shget(e->attributes, key);
