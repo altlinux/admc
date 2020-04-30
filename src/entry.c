@@ -164,13 +164,25 @@ bool entry_is_container(entry* e) {
     return false;
 }
 
-void first_element_in_dn(char* buffer, const char* dn, int buffer_size) {
-    const char* equals = strchr(dn, '=');
-    const char* comma = strchr(equals, ',');
-    // Cut off part before equals
-    strncpy(buffer, equals + 1, buffer_size);
-    // Cut off part after comma
-    buffer[comma - equals - 1] = '\0';
+// "OU=Something,CN=Blah,CN=Bleh" => "Something"
+void first_element_in_dn(char* buffer, const char* dn, size_t buffer_size) {
+    if (buffer == NULL || dn == NULL) {
+        return;
+    }
+
+    // Remove part before first "="
+    const char* equals_ptr = strchr(dn, '=');
+    if (equals_ptr == NULL || strlen(equals_ptr) <= 1) {
+        return;
+    }
+    strncpy(buffer, equals_ptr + 1, buffer_size);
+
+    // Remove part after first ","
+    char* comma_ptr = strchr(buffer, ',');
+    if (comma_ptr == NULL) {
+        return;
+    }
+    *comma_ptr = '\0';
 }
 
 // NOTE: doesn't handle multi-valued for now
