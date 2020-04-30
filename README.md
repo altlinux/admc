@@ -5,3 +5,4 @@ Requirements:
 * `libldap-devel`
 * `libsasl2-devel`
 * `libkrb5-devel`
+* `libgsasl-devel`
