@@ -202,3 +202,75 @@ bool entry_edit_value(entry* e, char* key, char* new_value) {
         return false;
     }
 }
+
+void add_fake_attribute(entry* e, const char* key, const char* value) {
+    STR_ARRAY values = NULL;
+    arrput(values, strdup(value));
+    shput(e->attributes, key, values);
+}
+
+entry* make_fake_entry(const char* name, entry* parent, bool container, const char* category) {
+    entry* e = (entry*)malloc(sizeof(entry));
+
+    char dn[1000];
+    if (parent == NULL) {
+        strcpy(dn, HEAD_DN);
+    } else {
+        strcpy(dn, "CN=");
+        strcat(dn, name);
+        strcat(dn, ",");
+        strcat(dn, parent->dn);
+    }
+
+    e->dn = strdup(dn);
+    e->attributes = NULL;
+    sh_new_strdup(e->attributes);
+    e->attribute_keys = NULL;
+    e->children = NULL;
+    shput(entries, dn, e);
+
+    if (parent != NULL) {
+        arrput(parent->children, strdup(e->dn));
+    }
+
+    add_fake_attribute(e, "name", name);
+
+    if (container) {
+        add_fake_attribute(e, "objectClass", "container");
+    } else {
+        add_fake_attribute(e, "objectClass", "class");
+    }
+
+    add_fake_attribute(e, "ObjectCategory", category);
+
+    for (int i = 0; i < shlen(e->attributes); i++) {
+        attributes_map a = e->attributes[i];
+        arrput(e->attribute_keys, strdup(a.key));   
+    }
+
+    return e;
+}
+
+void entry_init_fake() {
+    // Init map to use strdup for string allocation
+    sh_new_strdup(entries);
+
+    // Load entries recursively
+    entry_load(HEAD_DN);
+
+    // HEAD_DN= "DC=domain,DC=alt"
+    entry* head = make_fake_entry(HEAD_DN, NULL, true, "Person");
+    
+    entry* dave = make_fake_entry("dave", head, true, "Person");
+    entry* daves_dog = make_fake_entry("daves_dog", dave, false, "Robot");
+    entry* daves_car = make_fake_entry("daves_car", dave, false, "Robot");
+
+    entry* alice = make_fake_entry("alice", head, true, "Person");
+    entry* alices_child = make_fake_entry("alices_child", alice, false, "Robot");
+    entry* alices_son = make_fake_entry("alices_son", alice, false, "Person");
+    entry* alices_second_son = make_fake_entry("alices_second_son", alice, false, "Person");
+
+    entry* mark = make_fake_entry("mark", head, true, "Person");
+    entry* marks_son = make_fake_entry("marks_son", mark, false, "Robot");
+    entry* marks_daughter = make_fake_entry("marks_daughter", mark, false, "Robot");
+}

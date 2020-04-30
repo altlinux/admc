@@ -35,6 +35,7 @@ void containers_populate_model(GtkTreeStore* model, char* node_dn, GtkTreeIter* 
         return;
     }
 
+    // TODO: handle no name?
     STR_ARRAY name = entry_get_attribute(e, "name");
 
     GtkTreeIter this_node;

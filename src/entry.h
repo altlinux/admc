@@ -28,6 +28,7 @@ typedef struct entries_map {
 extern entries_map* entries;
 
 void entry_init();
+void entry_init_fake();
 void entry_load(const char* dn);
 STR_ARRAY entry_get_attribute(entry* e, const char* key);
 void entry_delete(entry* e);

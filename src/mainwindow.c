@@ -16,7 +16,6 @@ GtkWidget* mainwindow_init() {
     GtkWidget* contents_view = contents_init();
     GtkWidget* attributes_view = attributes_init();
     
-    // TODO: change this to panes
     // Horizontal box containing panes
     // Expand and fill each pane
     GtkWidget* panes = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
@@ -28,28 +27,33 @@ GtkWidget* mainwindow_init() {
 
         gtk_widget_set_size_request(panes, 200, -1);
 
-        gtk_paned_pack1(GTK_PANED(panes), frame1, true, false);
-        gtk_widget_set_size_request(frame1, 50, -1);
+        // gtk_paned_pack1(GTK_PANED(panes), frame1, true, false);
+        // gtk_widget_set_size_request(frame1, 50, -1);
         gtk_container_add(GTK_CONTAINER(frame1), containers_view);
 
-        gtk_paned_pack2(GTK_PANED(panes), frame2, true, FALSE);
-        gtk_widget_set_size_request(frame2, 50, -1);
+        // gtk_paned_pack2(GTK_PANED(panes), frame2, true, FALSE);
+        // gtk_widget_set_size_request(frame2, 50, -1);
         gtk_container_add(GTK_CONTAINER(frame2), contents_view);
+
+        gtk_paned_add1(panes, frame1);
+        gtk_paned_add2(panes, frame2);
+        gtk_paned_set_wide_handle(panes, true);
     }
 
-    int box_spacing = 0;
-    GtkWidget* box_for_panes = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, box_spacing);
-    gtk_box_pack_start(GTK_BOX(box_for_panes), panes, false, false, 0);
-    gtk_box_pack_start(GTK_BOX(box_for_panes), attributes_view, true, true, 0);
+    // int box_spacing = 0;
+    // GtkWidget* box_for_panes = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, box_spacing);
+    // gtk_box_pack_start(GTK_BOX(box_for_panes), panes, false, false, 0);
+    // gtk_box_pack_start(GTK_BOX(box_for_panes), attributes_view, true, true, 0);
 
-    // Scrolled window
-    GtkWidget* scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-    gtk_container_add(GTK_CONTAINER(scrolled_window), box_for_panes);
+    // // Scrolled window
+    // GtkWidget* scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+    // gtk_container_add(GTK_CONTAINER(scrolled_window), box_for_panes);
 
     // Window
     GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_container_add(GTK_CONTAINER(window), panes);
+
     gtk_window_set_title(GTK_WINDOW(window), "Adtool");
-    gtk_container_add(GTK_CONTAINER(window), scrolled_window);
 
     // Set starting window size
     gtk_window_set_default_size(GTK_WINDOW(window), 1700, 900);
