@@ -9,6 +9,7 @@ OBJS := $(addprefix $(OBJDIR)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))
 CFLAGS += -Isrc/libs/
 CFLAGS += -g -Wall -Wformat
 CFLAGS += `pkg-config --cflags gtk+-3.0`
+CFLAGS += -rdynamic
 LIBS += `pkg-config --libs gtk+-3.0`
 LIBS += -lldap -llber -lresolv -lgsasl
 

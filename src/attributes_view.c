@@ -1,5 +1,5 @@
 
-#include "attributes_pane.h"
+#include "attributes_view.h"
 
 #include "constants.h"
 #include "utils.h"
@@ -14,7 +14,7 @@ enum {
     ATTRIBUTES_COLUMN_COUNT
 };
 
-GtkWidget* attributes_view = NULL;
+GtkTreeView* attributes_view = NULL;
 char selected_dn[DN_LENGTH_MAX];
 
 // Lists attributes of last selected entry in contents pane
@@ -27,8 +27,7 @@ void attributes_value_edited_func(
     gchar* new_text,
     gpointer user_data)
 {
-    GtkTreeView* view = GTK_TREE_VIEW(attributes_view);
-    GtkTreeModel* model = gtk_tree_view_get_model(view);
+    GtkTreeModel* model = gtk_tree_view_get_model(attributes_view);
 
     GtkTreeIter iter;
     gtk_tree_model_get_iter_from_string(model, &iter, path_string);
@@ -54,31 +53,10 @@ void attributes_value_edited_func(
     free(old_value);
 }
 
-GtkWidget* attributes_init() {
-    // NOTE: model is set when an entry is selected in contents pane
-    GtkTreeStore* model = gtk_tree_store_new(ATTRIBUTES_COLUMN_COUNT, G_TYPE_STRING, G_TYPE_STRING);
-    attributes_view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(model));
-
-    // Name column
-    GtkTreeViewColumn* name_column = gtk_tree_view_column_new_with_attributes("Name", gtk_cell_renderer_text_new(), "text", ATTRIBUTES_COLUMN_NAME, NULL);
-    gtk_tree_view_append_column(GTK_TREE_VIEW(attributes_view), name_column);
-
-    // Value column, editable
-
-    // Create special editable renderer for value column
-    GtkCellRenderer* value_renderer = gtk_cell_renderer_text_new();
-    g_object_set(value_renderer, "editable", TRUE, NULL);
-    g_signal_connect(value_renderer, "edited", (GCallback) attributes_value_edited_func, NULL);
-
-    GtkTreeViewColumn* value_column = gtk_tree_view_column_new_with_attributes("Value", value_renderer, "text", ATTRIBUTES_COLUMN_VALUE, NULL);
-    gtk_tree_view_append_column(GTK_TREE_VIEW(attributes_view), value_column);
-
-    return attributes_view;
-}
-
-void attributes_update_model(const char* new_root_dn) {
-    GtkTreeStore* model = gtk_tree_store_new(ATTRIBUTES_COLUMN_COUNT, G_TYPE_STRING, G_TYPE_STRING);
-    // entry* e = shget(entries, new_root_dn);
+// NOTE: model is set when an entry is selected in contents pane
+void attributes_populate_model(const char* new_root_dn) {
+    GtkTreeStore* model = GTK_TREE_STORE(gtk_tree_view_get_model(attributes_view));
+    gtk_tree_store_clear(model);
 
     // Populate model
     // List all key->value pairs in order
@@ -101,8 +79,9 @@ void attributes_update_model(const char* new_root_dn) {
         }
     }
 
-    gtk_tree_view_set_model(GTK_TREE_VIEW(attributes_view), GTK_TREE_MODEL(model));
-    g_object_unref(model);
-
     strncpy(selected_dn, new_root_dn, DN_LENGTH_MAX);
+}
+
+void attributes_init(GtkBuilder* builder) {
+    attributes_view = GTK_TREE_VIEW(gtk_builder_get_object(builder, "attributes_view"));
 }

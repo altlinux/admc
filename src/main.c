@@ -1,5 +1,8 @@
 
-#include "mainwindow.h"
+// #include "mainwindow.h"
+#include "containers_view.h"
+#include "contents_view.h"
+#include "attributes_view.h"
 #include "entry.h"
 
 #include "active_directory.h"
@@ -32,8 +35,32 @@ int main(int argc, char** argv) {
 
     // Setup UI
     gtk_init(&argc, &argv);
-    GtkWidget* window = mainwindow_init();
-    gtk_widget_show_all(window);
+
+    // Load builder
+    GtkBuilder *builder = gtk_builder_new_from_file("data/adtool.glade");
+    if (builder == NULL) {
+        printf("Failed to load glade file\n");
+
+        return 0;
+    }
+
+    containers_init(builder);
+    contents_init(builder);
+    attributes_init(builder);
+
+    gtk_builder_connect_signals(builder, NULL);
+
+    // Get window object from builder
+    GtkWidget* window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
+    if (window == NULL) {
+        printf("Failed to get window widget\n");
+
+        return 0;
+    }
+    gtk_widget_show(window);
+
+    g_object_unref(G_OBJECT(builder));
+
     gtk_main();
 
     return 0;

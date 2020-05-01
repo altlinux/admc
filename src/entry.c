@@ -257,20 +257,31 @@ void entry_init_fake() {
 
     // Load entries recursively
     entry_load(HEAD_DN);
-
+ 
     // HEAD_DN= "DC=domain,DC=alt"
     entry* head = make_fake_entry(HEAD_DN, NULL, true, "Person");
     
     entry* dave = make_fake_entry("dave", head, true, "Person");
-    entry* daves_dog = make_fake_entry("daves_dog", dave, false, "Robot");
-    entry* daves_car = make_fake_entry("daves_car", dave, false, "Robot");
-
-    entry* alice = make_fake_entry("alice", head, true, "Person");
-    entry* alices_child = make_fake_entry("alices_child", alice, false, "Robot");
-    entry* alices_son = make_fake_entry("alices_son", alice, false, "Person");
-    entry* alices_second_son = make_fake_entry("alices_second_son", alice, false, "Person");
+    make_fake_entry("daves_dog", dave, false, "Robot");
+    make_fake_entry("daves_car", dave, false, "Robot");
 
     entry* mark = make_fake_entry("mark", head, true, "Person");
-    entry* marks_son = make_fake_entry("marks_son", mark, false, "Robot");
-    entry* marks_daughter = make_fake_entry("marks_daughter", mark, false, "Robot");
+    make_fake_entry("marks_son", mark, false, "Robot");
+    make_fake_entry("marks_daughter", mark, false, "Robot");
+
+    entry* alice = make_fake_entry("alice", head, true, "Person");
+    make_fake_entry("alices_child", alice, false, "Robot");
+    make_fake_entry("alices_son", alice, false, "Person");
+    make_fake_entry("alices_second_son", alice, false, "Person");
+
+    entry* advanced_bob = make_fake_entry("advanced_bob", head, true, "Person");
+    make_fake_entry("advanced_bobs_son", advanced_bob, false, "Robot");
+    make_fake_entry("advanced_bobs_daughter", advanced_bob, false, "Robot");
+    add_fake_attribute(advanced_bob, "showInAdvancedViewOnly", "TRUE");
+
+    entry* advanced_klaren = make_fake_entry("advanced_klaren", head, true, "Person");
+    make_fake_entry("advanced_klarens_son", advanced_klaren, false, "Robot");
+    make_fake_entry("advanced_klarens_daughter", advanced_klaren, false, "Robot");
+    add_fake_attribute(advanced_klaren, "showInAdvancedViewOnly", "TRUE");
+
 }
