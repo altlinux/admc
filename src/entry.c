@@ -97,6 +97,16 @@ STR_ARRAY entry_get_attribute(entry* e, const char* key) {
     return shget(e->attributes, key);
 }
 
+char* entry_get_attribute_or_none(entry* e, const char* key) {
+    static char* none_str = "none";
+    STR_ARRAY attribute_array = entry_get_attribute(e, key);
+    if (attribute_array != NULL) {
+        return attribute_array[0];        
+    } else {
+        return none_str;
+    }
+}
+
 bool entry_attribute_exists(entry* e, const char* key, const char* value) {
     STR_ARRAY values = shget(e->attributes, key);
 
@@ -166,7 +176,13 @@ bool entry_is_container(entry* e) {
 
 // "OU=Something,CN=Blah,CN=Bleh" => "Something"
 void first_element_in_dn(char* buffer, const char* dn, size_t buffer_size) {
-    if (buffer == NULL || dn == NULL) {
+    if (buffer == NULL) {
+        return;
+    }
+
+    *buffer = '\0';
+
+    if (dn == NULL) {
         return;
     }
 
@@ -264,6 +280,7 @@ void entry_init_fake() {
     entry* dave = make_fake_entry("dave", head, true, "Person");
     make_fake_entry("daves_dog", dave, false, "Robot");
     make_fake_entry("daves_car", dave, false, "Robot");
+    add_fake_attribute(dave, "description", "dave is a cool dude");
 
     entry* mark = make_fake_entry("mark", head, true, "Person");
     make_fake_entry("marks_son", mark, false, "Robot");

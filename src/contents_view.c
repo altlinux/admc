@@ -85,30 +85,20 @@ void contents_populate_model(const char* new_root_dn) {
         GtkTreeIter this_node;
         gtk_tree_store_append(model, &this_node, NULL);
 
-        // DN
-        gtk_tree_store_set(model, &this_node, CONTENTS_COLUMN_DN, child->dn, -1);
+        char* dn = child->dn;
+        gtk_tree_store_set(model, &this_node, CONTENTS_COLUMN_DN, dn, -1);
 
-        // Name
-        STR_ARRAY name = entry_get_attribute(child, "name");
-        gtk_tree_store_set(model, &this_node, CONTENTS_COLUMN_NAME, name[0], -1);
+        char name[DN_LENGTH_MAX];
+        first_element_in_dn(name, dn, DN_LENGTH_MAX);
+        gtk_tree_store_set(model, &this_node, CONTENTS_COLUMN_NAME, name, -1);
 
-        // Category
-        STR_ARRAY category_dn = entry_get_attribute(child, "objectCategory");
-        if (category_dn == NULL) {
-            gtk_tree_store_set(model, &this_node, CONTENTS_COLUMN_DESCRIPTION, "none", -1);
-        } else {
-            char short_category[DN_LENGTH_MAX];
-            first_element_in_dn(short_category, category_dn[0], DN_LENGTH_MAX);
-            gtk_tree_store_set(model, &this_node, CONTENTS_COLUMN_CATEGORY, short_category, -1);
-        }
+        char* category_dn = entry_get_attribute_or_none(child, "objectCategory");
+        char category[DN_LENGTH_MAX];
+        first_element_in_dn(category, category_dn, DN_LENGTH_MAX);
+        gtk_tree_store_set(model, &this_node, CONTENTS_COLUMN_CATEGORY, category, -1);
 
-        // Description
-        STR_ARRAY description = entry_get_attribute(child, "description");
-        if (description == NULL) {
-            gtk_tree_store_set(model, &this_node, CONTENTS_COLUMN_DESCRIPTION, "none", -1);
-        } else {
-            gtk_tree_store_set(model, &this_node, CONTENTS_COLUMN_DESCRIPTION, description[0], -1);
-        }
+        char* description = entry_get_attribute_or_none(child, "description");
+        gtk_tree_store_set(model, &this_node, CONTENTS_COLUMN_DESCRIPTION, description, -1);
     }
 }
 

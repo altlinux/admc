@@ -68,7 +68,7 @@ gboolean containers_filter_func(
 
 void containers_populate_model_recursive(GtkTreeStore* model, char* node_dn, GtkTreeIter* parent) {
     // Populate model with name's of entries
-    
+
     entry* e = shget(entries, node_dn);
 
     // Skip if entry is not a container
@@ -79,13 +79,14 @@ void containers_populate_model_recursive(GtkTreeStore* model, char* node_dn, Gtk
         return;
     }
 
-    // TODO: handle no name?
-    STR_ARRAY name = entry_get_attribute(e, "name");
-
     GtkTreeIter this_node;
     gtk_tree_store_append(model, &this_node, parent);
+
     gtk_tree_store_set(model, &this_node, CONTAINERS_COLUMN_DN, node_dn, -1);
-    gtk_tree_store_set(model, &this_node, CONTAINERS_COLUMN_NAME, name[0], -1);
+
+    char name[DN_LENGTH_MAX];
+    first_element_in_dn(name, node_dn, DN_LENGTH_MAX);
+    gtk_tree_store_set(model, &this_node, CONTAINERS_COLUMN_NAME, name, -1);
 
     // Recurse into entry's children
     for (int i = 0; i < arrlen(e->children); i++) {
