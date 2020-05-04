@@ -83,5 +83,5 @@ void attributes_populate_model(const char* new_root_dn) {
 }
 
 void attributes_init(GtkBuilder* builder) {
-    attributes_view = GTK_TREE_VIEW(gtk_builder_get_object(builder, "attributes_view"));
+    attributes_view = GTK_TREE_VIEW(gtk_builder_get_object_CHECKED(builder, "attributes_view"));
 }

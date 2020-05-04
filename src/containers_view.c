@@ -97,10 +97,10 @@ void containers_populate_model_recursive(GtkTreeStore* model, char* node_dn, Gtk
 }
 
 void containers_init(GtkBuilder* builder) {
-    containers_view = GTK_TREE_VIEW(gtk_builder_get_object(builder, "containers_view"));
+    containers_view = GTK_TREE_VIEW(gtk_builder_get_object_CHECKED(builder, "containers_view"));
 
     // Populate model
-    GtkTreeStore* model = GTK_TREE_STORE(gtk_builder_get_object(builder, "containers_model"));
+    GtkTreeStore* model = GTK_TREE_STORE(gtk_builder_get_object_CHECKED(builder, "containers_model"));
     containers_populate_model_recursive(model, HEAD_DN, NULL);
 
     // Set filter func

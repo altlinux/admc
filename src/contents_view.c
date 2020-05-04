@@ -103,7 +103,7 @@ void contents_populate_model(const char* new_root_dn) {
 }
 
 void contents_init(GtkBuilder* builder) {
-    contents_view = GTK_TREE_VIEW(gtk_builder_get_object(builder, "contents_view"));
+    contents_view = GTK_TREE_VIEW(gtk_builder_get_object_CHECKED(builder, "contents_view"));
 
     // Set filter func
     GtkTreeModelFilter* model_filter = GTK_TREE_MODEL_FILTER((gtk_tree_view_get_model(contents_view)));
