@@ -72,8 +72,8 @@ void contents_selection_changed_func(GtkTreeSelection* selection, gpointer user_
 // NOTE: contents model is repopulated everytime a new container is selected
 void contents_populate_model(const char* new_root_dn) {
     GtkTreeModelFilter* model_filter = GTK_TREE_MODEL_FILTER(gtk_tree_view_get_model(contents_view));
-    GtkTreeStore* model = GTK_TREE_STORE(gtk_tree_model_filter_get_model(model_filter));
-    gtk_tree_store_clear(model);
+    GtkListStore* model = GTK_LIST_STORE(gtk_tree_model_filter_get_model(model_filter));
+    gtk_list_store_clear(model);
 
     entry* e = shget(entries, new_root_dn);
 
@@ -83,22 +83,22 @@ void contents_populate_model(const char* new_root_dn) {
         entry* child = shget(entries, child_dn);
 
         GtkTreeIter this_node;
-        gtk_tree_store_append(model, &this_node, NULL);
+        gtk_list_store_append(model, &this_node);
 
         char* dn = child->dn;
-        gtk_tree_store_set(model, &this_node, CONTENTS_COLUMN_DN, dn, -1);
+        gtk_list_store_set(model, &this_node, CONTENTS_COLUMN_DN, dn, -1);
 
         char name[DN_LENGTH_MAX];
         first_element_in_dn(name, dn, DN_LENGTH_MAX);
-        gtk_tree_store_set(model, &this_node, CONTENTS_COLUMN_NAME, name, -1);
+        gtk_list_store_set(model, &this_node, CONTENTS_COLUMN_NAME, name, -1);
 
         char* category_dn = entry_get_attribute_or_none(child, "objectCategory");
         char category[DN_LENGTH_MAX];
         first_element_in_dn(category, category_dn, DN_LENGTH_MAX);
-        gtk_tree_store_set(model, &this_node, CONTENTS_COLUMN_CATEGORY, category, -1);
+        gtk_list_store_set(model, &this_node, CONTENTS_COLUMN_CATEGORY, category, -1);
 
         char* description = entry_get_attribute_or_none(child, "description");
-        gtk_tree_store_set(model, &this_node, CONTENTS_COLUMN_DESCRIPTION, description, -1);
+        gtk_list_store_set(model, &this_node, CONTENTS_COLUMN_DESCRIPTION, description, -1);
     }
 }
 

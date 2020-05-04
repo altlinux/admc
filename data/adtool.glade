@@ -21,7 +21,7 @@
   <object class="GtkTreeModelFilter" id="containers_model_filter">
     <property name="child_model">containers_model</property>
   </object>
-  <object class="GtkTreeStore" id="contents_model">
+  <object class="GtkListStore" id="contents_model">
     <columns>
       <!-- column-name DN -->
       <column type="gchararray"/>
