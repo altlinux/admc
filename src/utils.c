@@ -16,7 +16,7 @@ GObject* gtk_builder_get_object_CHECKED(GtkBuilder* builder, const char *name) {
     if (object != NULL) {
         return object;
     } else {
-        printf("gtk_builder_get_object() failed to get \"%s\"", name);
+        printf("ERROR: gtk_builder_get_object() failed to get \"%s\"\n", name);
         return NULL;
     }
 }

@@ -3,6 +3,7 @@
 #include "containers_view.h"
 #include "contents_view.h"
 #include "attributes_view.h"
+#include "menu_bar.h"
 #include "entry.h"
 #include "utils.h"
 
@@ -45,9 +46,11 @@ int main(int argc, char** argv) {
         return 0;
     }
 
-    containers_init(builder);
-    contents_init(builder);
+    // NOTE: inits have to be in this order
     attributes_init(builder);
+    contents_init(builder);
+    containers_init(builder);
+    menu_bar_init(builder);
 
     gtk_builder_connect_signals(builder, NULL);
 

@@ -1,6 +1,8 @@
 
 #include "entry.h"
 
+#include "containers_view.h"
+#include "contents_view.h"
 #include "utils.h"
 #include "constants.h"
 
@@ -129,6 +131,7 @@ void entry_delete(entry* e) {
     if (result == AD_SUCCESS) {
         // Delete entry from parent's child list
         // Get parent dn by cutting part before first comma
+        // TODO: get this dn in a better way
         char* dn = e->dn;
         const char* comma = strchr(dn, ',');
         char parent_dn[DN_LENGTH_MAX];
@@ -152,9 +155,42 @@ void entry_delete(entry* e) {
             }
         }
 
-        // Delete entry from entries map
-        // TODO: uhh, do i need to call arrfree on e's members?
+        //
+        // Free entry and all it's members
+        //
         shdel(entries, e->dn);
+
+        free(e->dn);
+
+        // Free attributes
+        for (int i = 0; i < shlen(e->attributes); i++) {
+            STR_ARRAY values = e->attributes[i].value;
+            
+            for (int j = 0; j < arrlen(values); j++) {
+                char* attribute = values[j];
+                free(attribute);
+            }
+
+            arrfree(values);
+        }
+        shfree(e->attributes);
+
+        // Free attribute_keys
+        for (int i = 0; i < arrlen(e->attribute_keys); i++) {
+            char* key = e->attribute_keys[i];
+            free(key);
+        }
+        arrfree(e->attribute_keys);
+
+        // Free children
+        for (int i = 0; i < arrlen(e->children); i++) {
+            free(e->children[i]);
+        }
+        arrfree(e->children);
+
+        // Replicate changes in view models
+        containers_populate_model();
+        contents_populate_model();
     } else {
         printf("ad_object_delete error: %s\n", ad_get_error());
     }
@@ -300,5 +336,70 @@ void entry_init_fake() {
     make_fake_entry("advanced_klarens_son", advanced_klaren, false, "Robot");
     make_fake_entry("advanced_klarens_daughter", advanced_klaren, false, "Robot");
     add_fake_attribute(advanced_klaren, "showInAdvancedViewOnly", "TRUE");
+}
 
+bool entry_new(const char* name, NewEntryType type) {
+    return;
+
+    // TODO: compose parent DN
+    // Users will be "HEAD_DN" + Users
+    // Computers will be "HEAD_DN" + Computers
+    char parent_dn[DN_LENGTH_MAX];
+    switch (type) {
+        case NewEntryType_User: {
+            break;
+        }
+        case NewEntryType_Computer: {
+            break;
+        }
+        case NewEntryType_OU: {
+            break;
+        }
+        case NewEntryType_Group: {
+            break;
+        }
+    }
+
+    entry* parent = shget(entries, parent_dn);
+
+    char entry_dn[1000];
+    strcpy(entry_dn, "CN=");
+    strcat(entry_dn, name);
+    strcat(entry_dn, ",");
+    strcat(entry_dn, parent->dn);
+
+    int result;
+    switch (type) {
+        case NewEntryType_User: {
+            result = ad_create_user(name, entry_dn);
+            break;
+        }
+        case NewEntryType_Computer: {
+            result = ad_create_computer(name, entry_dn);
+            break;
+        }
+        case NewEntryType_OU: {
+            result = ad_ou_create(name, entry_dn);
+            break;
+        }
+        case NewEntryType_Group: {
+            result = ad_group_create(name, entry_dn);
+            break;
+        }
+    }
+
+    if (result == AD_SUCCESS) {
+        entry_load(entry_dn);
+
+        // Add new netry to parent's children
+        STR_ARRAY parent_children = parent->children;
+        arrput(parent_children, strdup(entry_dn));
+
+        // Replicate changes in view models
+        containers_populate_model();
+        contents_populate_model();
+    } else {
+        // TODO: display error in GUI
+        printf("new entry error: %s\n", ad_get_error());
+    }
 }

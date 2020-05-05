@@ -8,6 +8,9 @@
 #include "stb_ds.h"
 #include <gtk/gtk.h>
 
+// Lists attributes of target entry
+// Attributes target entry is selected in contents view
+
 enum {
     ATTRIBUTES_COLUMN_NAME,
     ATTRIBUTES_COLUMN_VALUE,
@@ -15,10 +18,7 @@ enum {
 };
 
 GtkTreeView* attributes_view = NULL;
-char selected_dn[DN_LENGTH_MAX];
-
-// Lists attributes of last selected entry in contents pane
-// TODO: is it needed to also show attributes of a container in containers pane?
+char* attributes_target = NULL;
 
 // NOTE: currently doesn't work for multi-valued attributes, add that capability when/if it's needed
 void attributes_value_edited_func(
@@ -38,7 +38,7 @@ void attributes_value_edited_func(
     char* old_value;
     gtk_tree_model_get(model, &iter, ATTRIBUTES_COLUMN_VALUE, &old_value, -1);
 
-    entry* e = shget(entries, selected_dn);
+    entry* e = shget(entries, attributes_target);
     bool edit_success = entry_edit_value(e, attribute_name, new_text);
 
     if (edit_success) {
@@ -53,14 +53,28 @@ void attributes_value_edited_func(
     free(old_value);
 }
 
+void attributes_change_target(const char* new_target_dn) {
+    if (attributes_target != NULL) {
+        free(attributes_target);
+    }
+    attributes_target = strdup(new_target_dn);
+}
+
 // NOTE: model is set when an entry is selected in contents pane
-void attributes_populate_model(const char* new_root_dn) {
+void attributes_populate_model() {
+    // Populate model
+    // List all key->value pairs in order
     GtkTreeStore* model = GTK_TREE_STORE(gtk_tree_view_get_model(attributes_view));
     gtk_tree_store_clear(model);
 
-    // Populate model
-    // List all key->value pairs in order
-    entry* e = shget(entries, new_root_dn);
+    entry* e = shget(entries, attributes_target);
+
+    // Target is invalid
+    // NOTE: this is valid behavior and can occur when target entry is deleted for example
+    if (e == NULL) {
+        return;
+    }
+
     STR_ARRAY attribute_keys = e->attribute_keys;
     for (int i = 0; i < arrlen(attribute_keys); i++) {
         char* key = attribute_keys[i];
@@ -78,8 +92,6 @@ void attributes_populate_model(const char* new_root_dn) {
             }
         }
     }
-
-    strncpy(selected_dn, new_root_dn, DN_LENGTH_MAX);
 }
 
 void attributes_init(GtkBuilder* builder) {
