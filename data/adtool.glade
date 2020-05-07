@@ -255,6 +255,8 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="model">containers_model_filter</property>
+                <signal name="row-collapsed" handler="containers_row_collapsed_func" swapped="no"/>
+                <signal name="row-expanded" handler="containers_row_expanded_func" swapped="no"/>
                 <child internal-child="selection">
                   <object class="GtkTreeSelection">
                     <signal name="changed" handler="containers_selection_changed_func" swapped="no"/>
@@ -305,7 +307,7 @@
                     </child>
                     <child>
                       <object class="GtkTreeViewColumn">
-                        <property name="title" translatable="yes">Type</property>
+                        <property name="title" translatable="yes">Category</property>
                         <child>
                           <object class="GtkCellRendererText"/>
                           <attributes>

@@ -32,14 +32,13 @@ typedef enum {
     NewEntryType_Group
 } NewEntryType;
 
-extern entries_map* entries;
-
 void entry_init();
 void entry_init_fake();
 void entry_load(const char* dn);
 STR_ARRAY entry_get_attribute(entry* e, const char* key);
 char* entry_get_attribute_or_none(entry* e, const char* key);
 bool entry_new(const char* name, NewEntryType type);
+entry* get_entry(const char* dn);
 void entry_delete(entry* e);
 bool entry_attribute_exists(entry* e, const char* key, const char* value);
 bool entry_is_container(entry* e);

@@ -15,6 +15,10 @@
 
 entries_map* entries;
 
+entry* get_entry(const char* dn) {
+    return shget(entries, dn);
+}
+
 void entry_load(const char* dn) {
     entry* e = (entry*)malloc(sizeof(entry));
 
@@ -293,7 +297,7 @@ entry* make_fake_entry(const char* name, entry* parent, bool container, const ch
         add_fake_attribute(e, "objectClass", "class");
     }
 
-    add_fake_attribute(e, "ObjectCategory", category);
+    add_fake_attribute(e, "objectCategory", category);
 
     for (int i = 0; i < shlen(e->attributes); i++) {
         attributes_map a = e->attributes[i];
@@ -309,7 +313,7 @@ void entry_init_fake() {
 
     // Load entries recursively
     entry_load(HEAD_DN);
- 
+
     // HEAD_DN= "DC=domain,DC=alt"
     entry* head = make_fake_entry(HEAD_DN, NULL, true, "Person");
     
@@ -347,12 +351,15 @@ bool entry_new(const char* name, NewEntryType type) {
     char parent_dn[DN_LENGTH_MAX];
     switch (type) {
         case NewEntryType_User: {
+            snrpintf("CN=Users,%s", DN_LENGTH_MAX, HEAD_DN);
             break;
         }
         case NewEntryType_Computer: {
+            snrpintf("CN=Computers,%s", DN_LENGTH_MAX, HEAD_DN);
             break;
         }
         case NewEntryType_OU: {
+            snrpintf("CN=Computers,%s", DN_LENGTH_MAX, HEAD_DN);
             break;
         }
         case NewEntryType_Group: {
@@ -362,11 +369,8 @@ bool entry_new(const char* name, NewEntryType type) {
 
     entry* parent = shget(entries, parent_dn);
 
-    char entry_dn[1000];
-    strcpy(entry_dn, "CN=");
-    strcat(entry_dn, name);
-    strcat(entry_dn, ",");
-    strcat(entry_dn, parent->dn);
+    char entry_dn[DN_LENGTH_MAX];
+    snrpintf("CN=%s,%s", DN_LENGTH_MAX, name, parent->dn);
 
     int result;
     switch (type) {

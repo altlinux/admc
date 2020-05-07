@@ -38,7 +38,7 @@ void attributes_value_edited_func(
     char* old_value;
     gtk_tree_model_get(model, &iter, ATTRIBUTES_COLUMN_VALUE, &old_value, -1);
 
-    entry* e = shget(entries, attributes_target);
+    entry* e = get_entry(attributes_target);
     bool edit_success = entry_edit_value(e, attribute_name, new_text);
 
     if (edit_success) {
@@ -67,7 +67,7 @@ void attributes_populate_model() {
     GtkTreeStore* model = GTK_TREE_STORE(gtk_tree_view_get_model(attributes_view));
     gtk_tree_store_clear(model);
 
-    entry* e = shget(entries, attributes_target);
+    entry* e = get_entry(attributes_target);
 
     // Target is invalid
     // NOTE: this is valid behavior and can occur when target entry is deleted for example

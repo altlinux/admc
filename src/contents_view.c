@@ -40,7 +40,7 @@ gboolean contents_filter_func(
     char* dn;
     gtk_tree_model_get(model, iter, CONTENTS_COLUMN_DN, &dn, -1);
     if (dn != NULL) {
-        entry* e = shget(entries, dn);
+        entry* e = get_entry(dn);
         STR_ARRAY showInAdvancedViewOnly = entry_get_attribute(e, "showInAdvancedViewOnly");
         if (!advanced_view_is_on() && showInAdvancedViewOnly != NULL && streql(showInAdvancedViewOnly[0], "TRUE")) {
             visible = FALSE;
@@ -92,7 +92,7 @@ void contents_populate_model() {
         return;
     }
 
-    entry* e = shget(entries, contents_target);
+    entry* e = get_entry(contents_target);
 
     // Target is invalid
     // NOTE: this is valid behavior and can occur when target entry is deleted for example
@@ -103,7 +103,7 @@ void contents_populate_model() {
     // Populate model
     for (int i = 0; i < arrlen(e->children); i++) {
         char* child_dn = e->children[i];
-        entry* child = shget(entries, child_dn);
+        entry* child = get_entry(child_dn);
 
         GtkTreeIter this_node;
         gtk_list_store_append(model, &this_node);
@@ -116,9 +116,7 @@ void contents_populate_model() {
         gtk_list_store_set(model, &this_node, CONTENTS_COLUMN_NAME, name, -1);
 
         char* category_dn = entry_get_attribute_or_none(child, "objectCategory");
-        char category[DN_LENGTH_MAX];
-        first_element_in_dn(category, category_dn, DN_LENGTH_MAX);
-        gtk_list_store_set(model, &this_node, CONTENTS_COLUMN_CATEGORY, category, -1);
+        gtk_list_store_set(model, &this_node, CONTENTS_COLUMN_CATEGORY, category_dn, -1);
 
         char* description = entry_get_attribute_or_none(child, "description");
         gtk_list_store_set(model, &this_node, CONTENTS_COLUMN_DESCRIPTION, description, -1);

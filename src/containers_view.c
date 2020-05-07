@@ -26,6 +26,31 @@ void containers_refilter() {
     gtk_tree_model_filter_refilter(model_filter);
 }
 
+void containers_row_expanded_func(
+    GtkTreeView *tree_view,
+    GtkTreeIter *iter,
+    GtkTreePath *path,
+    gpointer     user_data)
+{
+    GtkTreeModel* model = gtk_tree_view_get_model(tree_view);
+    
+    char* dn;
+    gtk_tree_model_get(model, iter, CONTAINERS_COLUMN_DN, &dn, -1);
+
+    printf("containers_row_expanded %s\n", dn);
+
+    free(dn);
+}
+
+void containers_row_collapsed_func(
+    GtkTreeView *tree_view,
+    GtkTreeIter *iter,
+    GtkTreePath *path,
+    gpointer     user_data)
+{
+    // printf("containers_row_expanded %s\n", dn);
+}
+
 void containers_selection_changed_func(GtkTreeSelection* selection, gpointer user_data) {
     // Get selected iter
     GtkTreeView* view = gtk_tree_selection_get_tree_view(selection);
@@ -59,7 +84,7 @@ gboolean containers_filter_func(
     gtk_tree_model_get(model, iter, CONTAINERS_COLUMN_DN, &dn, -1);
 
     if (dn != NULL) {
-        entry* e = shget(entries, dn);
+        entry* e = get_entry(dn);
         char* showInAdvancedViewOnly = entry_get_attribute_or_none(e, "showInAdvancedViewOnly");
         if (!advanced_view_is_on() && streql(showInAdvancedViewOnly, "TRUE")) {
             visible = FALSE;
@@ -73,7 +98,7 @@ gboolean containers_filter_func(
 
 void containers_populate_model_recursive(GtkTreeStore* model, char* node_dn, GtkTreeIter* parent) {
     // Populate model with name's of entries
-    entry* e = shget(entries, node_dn);
+    entry* e = get_entry(node_dn);
 
     // Skip if entry is not a container
     if (!entry_is_container(e)) {
