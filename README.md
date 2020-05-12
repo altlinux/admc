@@ -7,5 +7,5 @@ Requirements:
 * `libkrb5-devel`
 * `libgsasl-devel`
 
-
 Run as `./adtool fake` to load fake entries and test without LDAP connection.
+

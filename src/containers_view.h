@@ -1,7 +1,19 @@
+
 #pragma once
 
-#include <gtk/gtk.h>
+#include <QTreeView>
 
-void containers_init(GtkBuilder* builder);
-void containers_refilter();
-void containers_populate_model();
+// Shows names of AdModel as a tree
+class ContainersView : public QTreeView {
+Q_OBJECT
+
+public:
+    explicit ContainersView(QWidget *parent = nullptr);
+
+public slots:
+
+signals:
+
+private:
+
+};

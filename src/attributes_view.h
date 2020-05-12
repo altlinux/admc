@@ -1,7 +1,25 @@
+
 #pragma once
 
-#include <gtk/gtk.h>
+#include <QTreeView>
 
-void attributes_init(GtkBuilder* builder);
-void attributes_change_target(const char* new_target_dn);
-void attributes_populate_model();
+// Shows names and values of attributes of the entry selected in contents view
+class AttributesView : public QTreeView {
+Q_OBJECT
+
+public:
+    using QTreeView::QTreeView;
+
+public slots:
+    void set_target_from_selection(const QItemSelection &selected, const QItemSelection &deselected);
+
+private:
+    enum Column {
+        Name,
+        Value,
+        COUNT,
+    };
+    
+    QString root_dn;
+
+};

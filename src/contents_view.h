@@ -1,9 +1,18 @@
+
 #pragma once
 
-#include <gtk/gtk.h>
+#include <QTreeView>
 
-void contents_init(GtkBuilder* builder);
-void contents_change_target(const char* new_target_dn);
-void contents_populate_model();
-void contents_refilter();
-void contents_selection_changed_func(GtkTreeSelection* selection, gpointer user_data);
+// Shows name, category and description of children of entry selected in containers view
+class ContentsView : public QTreeView {
+Q_OBJECT
+
+public:
+    using QTreeView::QTreeView;
+
+public slots:
+    void set_root_index_from_selection(const QItemSelection &selected, const QItemSelection &);
+
+private:
+
+};
