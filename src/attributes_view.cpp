@@ -1,5 +1,6 @@
 
 #include "attributes_view.h"
+#include "attributes_model.h"
 #include "ad_model.h"
 #include "ad_interface.h"
 
@@ -7,15 +8,6 @@
 // since attributes affect model's contents
 
 void AttributesView::set_target_from_selection(const QItemSelection &selected, const QItemSelection &) {
-    // Clear model of previous root
-    // TODO: get rid of cast
-    auto model = qobject_cast<QStandardItemModel *>(this->model());
-    if (model != nullptr) { 
-        model->clear();
-        model->setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
-        model->setHorizontalHeaderItem(Column::Value, new QStandardItem("Value"));
-    }
-
     // Convert selection to dn
     auto indexes = selected.indexes();
     if (indexes.size() == 0) {
@@ -23,10 +15,17 @@ void AttributesView::set_target_from_selection(const QItemSelection &selected, c
     }
 
     auto index = indexes[0];
-    this->root_dn = index.data(AdModel::Roles::DN).toString();
+    this->target_dn = index.data(AdModel::Roles::DN).toString();
+
+    // Clear model of previous root
+    // TODO: get rid of cast
+    auto model = qobject_cast<AttributesModel *>(this->model());
+    if (model != nullptr) {
+        model->change_target(this->target_dn);
+    }
 
     // Populate model with attributes of new root
-    auto attributes = load_attributes(this->root_dn);
+    auto attributes = load_attributes(this->target_dn);
     for (auto attribute : attributes.keys()) {
         auto values = attributes[attribute];
 

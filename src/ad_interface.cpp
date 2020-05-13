@@ -190,6 +190,13 @@ QMap<QString, QList<QString>> load_attributes(QString &dn) {
 }
 
 bool set_attribute(QString &dn, QString &attribute, QString &value) {
+    if (FAKE_AD) {
+        auto attributes = fake_attributes[dn];
+        attributes[attribute] = {value};
+
+        return true;
+    }
+
     char *dn_cstr = qstring_to_cstr(dn);
     char *attribute_cstr = qstring_to_cstr(attribute);
     char *value_cstr = qstring_to_cstr(value);

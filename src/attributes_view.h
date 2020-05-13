@@ -21,7 +21,7 @@ private:
         COUNT,
     };
     
-    QString root_dn;
+    QString target_dn;
 
 };
 

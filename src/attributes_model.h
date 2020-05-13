@@ -17,8 +17,10 @@ public:
     explicit AttributesModel();
 
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    void change_target(QString &new_target_dn);
 
 private:
+    QString target_dn;
 
 };
 
