@@ -14,7 +14,7 @@
 int main(int argc, char **argv) {
     // Load fake AD data if given "fake" argument
     // This also swaps all ad interface functions to their fake versions (including login)
-    if (argc >= 1 && QString(argv[0]) == "fake") {
+    if (argc >= 1 && QString(argv[1]) == "fake") {
         FAKE_AD = true;
     }
 

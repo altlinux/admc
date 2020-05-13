@@ -111,12 +111,18 @@ bool ad_interface_login() {
     }
 }
 
+// TODO: confirm that this encoding is ok
+char *qstring_to_cstr(QString &qstr) {
+    return qstr.toLatin1().data();
+}
+
 QList<QString> load_children(QString &dn) {
     if (FAKE_AD) {
         return fake_load_children(dn);
     }
 
-    char **children_raw = ad_list(dn.toLatin1().data());
+    char *dn_cstr = qstring_to_cstr(dn);
+    char **children_raw = ad_list(dn_cstr);
 
     // TODO: error check
 
@@ -146,9 +152,10 @@ QMap<QString, QList<QString>> load_attributes(QString &dn) {
 
     // TODO: save original attributes ordering and load it like that into model
 
-    char** attributes_raw = ad_get_attribute(dn.toLatin1().data(), NULL);
+    char *dn_cstr = qstring_to_cstr(dn);
+    char** attributes_raw = ad_get_attribute(dn_cstr, NULL);
 
-    // TODO: error check
+    // TODO: handle errors
 
     if (attributes_raw != NULL) {
         auto attributes = QMap<QString, QList<QString>>();
@@ -179,5 +186,21 @@ QMap<QString, QList<QString>> load_attributes(QString &dn) {
         return attributes;
     } else {
         return QMap<QString, QList<QString>>();
+    }
+}
+
+bool set_attribute(QString &dn, QString &attribute, QString &value) {
+    char *dn_cstr = qstring_to_cstr(dn);
+    char *attribute_cstr = qstring_to_cstr(attribute);
+    char *value_cstr = qstring_to_cstr(value);
+
+    // TODO: handle errors
+
+    int result = ad_mod_replace(dn_cstr, attribute_cstr, value_cstr);
+
+    if (result == AD_SUCCESS) {
+        return true;
+    } else {
+        return false;
     }
 }
