@@ -191,8 +191,7 @@ QMap<QString, QList<QString>> load_attributes(QString &dn) {
 
 bool set_attribute(QString &dn, QString &attribute, QString &value) {
     if (FAKE_AD) {
-        auto attributes = fake_attributes[dn];
-        attributes[attribute] = {value};
+        fake_attributes[dn][attribute] = {value};
 
         return true;
     }

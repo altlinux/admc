@@ -15,7 +15,7 @@ void AttributesView::set_target_from_selection(const QItemSelection &selected, c
     }
 
     auto index = indexes[0];
-    this->target_dn = index.data(AdModel::Roles::DN).toString();
+    this->target_dn = index.siblingAtColumn(AdModel::Column::DN).data().toString();
 
     // Clear model of previous root
     // TODO: get rid of cast

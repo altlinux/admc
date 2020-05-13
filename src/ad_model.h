@@ -12,21 +12,24 @@ public:
         Name,
         Category,
         Description,
+        DN,
         COUNT,
     };
 
     explicit AdModel();
 
     enum Roles {
-        DN = Qt::UserRole + 1,
-        AdvancedViewOnly = Qt::UserRole + 2,
-        CanFetch = Qt::UserRole + 3,
-        IsContainer = Qt::UserRole + 4,
+        AdvancedViewOnly = Qt::UserRole + 1,
+        CanFetch = Qt::UserRole + 2,
+        IsContainer = Qt::UserRole + 3,
     };
 
     bool canFetchMore(const QModelIndex &parent) const;
     void fetchMore(const QModelIndex &parent);
     bool hasChildren(const QModelIndex &parent) const override;
+
+public slots:
+    void on_attribute_changed(QString &dn, QString &attribute, QString &value); 
 
 private:
 

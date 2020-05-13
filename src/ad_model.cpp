@@ -5,7 +5,7 @@
 
 #include <QMap>
 
-QList<QStandardItem*> make_row(QString dn) {
+void populate_row(QList<QStandardItem*> row, QString &dn) {
     auto attributes = load_attributes(dn);
 
     // TODO: get rid of "if (x.contains(y))"
@@ -39,9 +39,11 @@ QList<QStandardItem*> make_row(QString dn) {
     bool advanced_view = false;
     if (attributes.contains("showInAdvancedViewOnly")) {
         auto advanced_view_str = attributes["showInAdvancedViewOnly"][0];
+            printf("=%s\n", qPrintable(advanced_view_str));
 
         if (advanced_view_str == "TRUE") {
             advanced_view = true;
+
         }
     }
 
@@ -59,18 +61,31 @@ QList<QStandardItem*> make_row(QString dn) {
         }
     }
 
-    QList<QStandardItem*> row = {
-        new QStandardItem(name),
-        new QStandardItem(category),
-        new QStandardItem(description),
-    };
+    auto name_item = row[AdModel::Column::Name];
+    auto category_item = row[AdModel::Column::Category];
+    auto description_item = row[AdModel::Column::Description];
+    auto dn_item = row[AdModel::Column::DN];
+
+    name_item->setText(name);
+    category_item->setText(category);
+    description_item->setText(description);
+    dn_item->setText(dn);
 
     // NOTE: store special invisible attributes in Roles of first item
     // TODO: shouldn't store these in roles
-    row[0]->setData(dn, AdModel::Roles::DN);
     row[0]->setData(advanced_view, AdModel::Roles::AdvancedViewOnly);
     row[0]->setData(true, AdModel::Roles::CanFetch);
     row[0]->setData(is_container, AdModel::Roles::IsContainer);
+}
+
+QList<QStandardItem *> make_row(QString dn) {
+    auto row = QList<QStandardItem *>();
+
+    for (int i = 0; i < AdModel::Column::COUNT; i++) {
+        row.push_back(new QStandardItem());
+    }
+
+    populate_row(row, dn);
 
     return row;
 }
@@ -91,9 +106,6 @@ bool AdModel::canFetchMore(const QModelIndex &parent) const {
         return false;
     }
 
-    auto dn = parent.data(Roles::DN).toString();
-    // printf("canFetchMore: %s\n", qPrintable(dn));
-
     auto can_fetch = parent.data(AdModel::Roles::CanFetch).toBool();
 
     return can_fetch;
@@ -104,7 +116,8 @@ void AdModel::fetchMore(const QModelIndex &parent) {
         return;
     }
 
-    auto dn = parent.data(Roles::DN).toString();
+    auto dn_index = parent.siblingAtColumn(Column::DN);
+    auto dn = dn_index.data().toString();
 
     auto parent_item = this->itemFromIndex(parent);
 
@@ -130,5 +143,34 @@ bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
         return true;
     } else {
         return QStandardItemModel::hasChildren(parent);
+    }
+}
+
+void AdModel::on_attribute_changed(QString &dn, QString &attribute, QString &value) {
+    // TODO: confirm what kind of search is this, linear?
+    auto items = this->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+
+    // TODO: not sure if any bad matches can happen, maybe?
+    if (items.size() > 0) {
+        auto dn_item = items[0];
+        auto dn_index = dn_item->index();
+
+        // Compose indexes for all columns
+        auto indexes = QList<QModelIndex>(); 
+        for (int i = 0; i < AdModel::Column::COUNT; i++) {
+            auto index = dn_index.siblingAtColumn(i);
+            indexes.push_back(index);
+        }
+
+        // Compose the row of items from indexes
+        auto row = QList<QStandardItem *>();
+        for (int i = 0; i < AdModel::Column::COUNT; i++) {
+            auto index = indexes[i];
+            auto item = this->itemFromIndex(index);
+            row.push_back(item);
+        }
+
+        // Repopulate row
+        populate_row(row, dn);
     }
 }

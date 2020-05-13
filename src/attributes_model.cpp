@@ -19,11 +19,13 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     printf("setData: %s, %s, %s\n", qPrintable(dn), qPrintable(attribute), qPrintable(value_str));
 
     // TODO: attribute edit can fail for many reasons, handle it
-    // TODO: reload attributes in ad model for this dn
     bool success = set_attribute(dn, attribute, value_str);
 
     if (success) {
         QStandardItemModel::setData(index, value, role);
+
+        emit attribute_changed(dn, attribute, value_str);
+
         return true;
     } else {
         return false;

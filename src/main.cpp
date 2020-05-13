@@ -34,10 +34,8 @@ int main(int argc, char **argv) {
     AdModel ad_model;
 
     // Attributes
-    {
-        auto attributes_model = new AttributesModel();
-        ui.attributes_view->setModel(attributes_model);
-    }
+    AttributesModel attributes_model;
+    ui.attributes_view->setModel(&attributes_model);
 
     // Contents
     {
@@ -46,6 +44,8 @@ int main(int argc, char **argv) {
         auto proxy = new AdFilter(ui.menubar_view_advancedView);
         proxy->setSourceModel(&ad_model);
         view->setModel(proxy);
+
+        view->hideColumn(AdModel::Column::DN);
     }
 
     // Containers
@@ -59,6 +59,7 @@ int main(int argc, char **argv) {
         // NOTE: have to hide columns after setting model
         view->hideColumn(AdModel::Column::Category);
         view->hideColumn(AdModel::Column::Description);
+        view->hideColumn(AdModel::Column::DN);
     }
 
     //
@@ -74,6 +75,11 @@ int main(int argc, char **argv) {
     QObject::connect(
         ui.contents_view->selectionModel(), &QItemSelectionModel::selectionChanged,
         ui.attributes_view, &AttributesView::set_target_from_selection);
+
+    // Update entry values in AD model when that entry's attributes are changed in attributes view
+    QObject::connect(
+        &attributes_model, &AttributesModel::attribute_changed,
+        &ad_model, &AdModel::on_attribute_changed);
 
     main_window.show();
 

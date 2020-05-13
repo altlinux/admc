@@ -19,6 +19,9 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
     void change_target(QString &new_target_dn);
 
+signals:
+    void attribute_changed(QString &dn, QString &attribute, QString &value); 
+
 private:
     QString target_dn;
 

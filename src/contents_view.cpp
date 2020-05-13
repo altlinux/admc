@@ -1,5 +1,6 @@
 
 #include "contents_view.h"
+#include "ad_model.h"
 
 #include <QItemSelection>
 #include <QSortFilterProxyModel>
@@ -40,4 +41,7 @@ void ContentsView::set_root_index_from_selection(const QItemSelection &selected,
     }
 
     this->setRootIndex(contents_index);
+
+    // NOTE: have to hide columns after model update
+    this->hideColumn(AdModel::Column::DN);
 }
