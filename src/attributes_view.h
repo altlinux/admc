@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef ATTRIBUTES_VIEW_H
+#define ATTRIBUTES_VIEW_H
 
 #include <QTreeView>
 
@@ -23,3 +24,5 @@ private:
     QString root_dn;
 
 };
+
+#endif /* ATTRIBUTES_VIEW_H */

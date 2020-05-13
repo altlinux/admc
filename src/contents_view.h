@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef CONTENTS_VIEW_H
+#define CONTENTS_VIEW_H
 
 #include <QTreeView>
 
@@ -16,3 +17,5 @@ public slots:
 private:
 
 };
+
+#endif /* CONTENTS_VIEW_H */

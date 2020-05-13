@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef ATTRIBUTES_MODEL_H
+#define ATTRIBUTES_MODEL_H
 
 #include <QStandardItemModel>
 
@@ -19,3 +21,5 @@ public:
 private:
 
 };
+
+#endif /* ATTRIBUTES_MODEL_H */

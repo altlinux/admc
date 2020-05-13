@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef AD_FILTER_H
+#define AD_FILTER_H
 
 #include <QSortFilterProxyModel>
 
@@ -20,3 +21,5 @@ private:
 
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
+
+#endif /* AD_FILTER_H */

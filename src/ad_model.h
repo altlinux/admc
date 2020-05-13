@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef AD_MODEL_H
+#define AD_MODEL_H
 
 #include <QStandardItemModel>
 
@@ -29,3 +31,5 @@ public:
 private:
 
 };
+
+#endif /* AD_MODEL_H */

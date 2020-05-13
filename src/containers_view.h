@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef CONTAINERS_VIEW_H
+#define CONTAINERS_VIEW_H
 
 #include <QTreeView>
 
@@ -17,3 +18,5 @@ signals:
 private:
 
 };
+
+#endif /* CONTAINERS_VIEW_H */

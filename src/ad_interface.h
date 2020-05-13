@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef AD_INTERFACE_H
+#define AD_INTERFACE_H
 
 #include <QList>
 #include <QString>
@@ -13,3 +14,5 @@ extern bool FAKE_AD;
 bool ad_interface_login();
 QList<QString> load_children(QString &dn);
 QMap<QString, QList<QString>> load_attributes(QString &dn);
+
+#endif /* AD_INTERFACE_H */

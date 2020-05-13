@@ -4,6 +4,9 @@
 #include <QItemSelection>
 #include <QSortFilterProxyModel>
 
+// TODO: bake this assumptions into view classes
+// Both contents and containers share the same source model, but have different proxy's to it
+// So need to map from containers proxy to source then back to proxy of contents
 void ContentsView::set_root_index_from_selection(const QItemSelection &selected, const QItemSelection &) {
     auto indexes = selected.indexes();
 
