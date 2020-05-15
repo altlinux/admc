@@ -11,6 +11,9 @@
 
 enum NewEntryType {
     User,
+    Computer,
+    OU,
+    Group
 };
 
 extern bool FAKE_AD; 
@@ -19,8 +22,6 @@ bool ad_interface_login();
 QList<QString> load_children(QString &dn);
 QMap<QString, QList<QString>> load_attributes(QString &dn);
 bool set_attribute(QString &dn, QString &attribute, QString &value);
-QString get_users_container_dn();
-QString get_new_user_dn(QString &username);
-bool create_entry(QString &name, NewEntryType type);
+bool create_entry(QString &name, QString &dn, QString &parent_dn, NewEntryType type);
 
 #endif /* AD_INTERFACE_H */

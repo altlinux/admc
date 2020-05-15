@@ -34,6 +34,7 @@ public:
     QAction *actionHere;
     QAction *menubar_view_advancedView;
     QAction *menubar_new_ou;
+    QAction *menubar_new_group;
     QWidget *centralwidget;
     QSplitter *splitter;
     ContainersView *containers_view;
@@ -63,6 +64,8 @@ public:
         menubar_view_advancedView->setCheckable(true);
         menubar_new_ou = new QAction(MainWindow);
         menubar_new_ou->setObjectName(QString::fromUtf8("menubar_new_ou"));
+        menubar_new_group = new QAction(MainWindow);
+        menubar_new_group->setObjectName(QString::fromUtf8("menubar_new_group"));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         splitter = new QSplitter(centralwidget);
@@ -113,6 +116,7 @@ public:
         menubar_new->addAction(menubar_new_user);
         menubar_new->addAction(menubar_new_computer);
         menubar_new->addAction(menubar_new_ou);
+        menubar_new->addAction(menubar_new_group);
         menuEdit->addAction(actionSomething);
         menuEdit->addAction(actionHere);
         menuView->addAction(menubar_view_advancedView);
@@ -131,6 +135,7 @@ public:
         actionHere->setText(QApplication::translate("MainWindow", "Here", nullptr));
         menubar_view_advancedView->setText(QApplication::translate("MainWindow", "Advanced view", nullptr));
         menubar_new_ou->setText(QApplication::translate("MainWindow", "Organizational Unit", nullptr));
+        menubar_new_group->setText(QApplication::translate("MainWindow", "Group", nullptr));
         menubar_new->setTitle(QApplication::translate("MainWindow", "New", nullptr));
         menuEdit->setTitle(QApplication::translate("MainWindow", "Edit", nullptr));
         menuView->setTitle(QApplication::translate("MainWindow", "View", nullptr));

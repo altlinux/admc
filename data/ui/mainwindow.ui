@@ -92,6 +92,7 @@
     <addaction name="menubar_new_user"/>
     <addaction name="menubar_new_computer"/>
     <addaction name="menubar_new_ou"/>
+    <addaction name="menubar_new_group"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -142,6 +143,11 @@
   <action name="menubar_new_ou">
    <property name="text">
     <string>Organizational Unit</string>
+   </property>
+  </action>
+  <action name="menubar_new_group">
+   <property name="text">
+    <string>Group</string>
    </property>
   </action>
  </widget>

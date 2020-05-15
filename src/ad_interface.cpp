@@ -20,6 +20,7 @@ QMap<QString, QMap<QString, QList<QString>>> fake_attributes;
 void fake_ad_init() {
     fake_children[HEAD_DN] = {
         QString("CN=Users,") + HEAD_DN,
+        QString("CN=Computers,") + HEAD_DN,
         QString("CN=A,") + HEAD_DN,
         QString("CN=B,") + HEAD_DN,
         QString("CN=C,") + HEAD_DN,
@@ -39,6 +40,14 @@ void fake_ad_init() {
         {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
         {"showInAdvancedViewOnly", {"FALSE"}},
         {"description", {"Users's description"}},
+    };
+
+    fake_attributes[QString("CN=Computers,") + HEAD_DN] = {
+        {"name", {"Computers"}},
+        {"objectClass", {"container"}},
+        {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
+        {"showInAdvancedViewOnly", {"FALSE"}},
+        {"description", {"Computers's description"}},
     };
 
     fake_attributes[QString("CN=A,") + HEAD_DN] = {
@@ -100,18 +109,57 @@ QMap<QString, QList<QString>> fake_load_attributes(QString &dn) {
     return fake_attributes[dn];
 }
 
-void fake_create_user(QString &dn, QString &parent, QString &username) {
+// NOTE: this is just for fake_create() functions
+void fake_create_add_child(QString &dn, QString &parent) {
     if (!fake_children.contains(parent)) {
-        // NOTE: ok to have empty children for leaves
         fake_children[parent] = QList<QString>();
     }
     
     fake_children[parent].push_back(dn);
+}
+
+void fake_create_user(QString &dn, QString &parent, QString &name) {
+    fake_create_add_child(dn, parent);
 
     fake_attributes[dn] = {
-        {"name", {username}},
+        {"name", {name}},
         {"objectClass", {"user"}},
         {"objectCategory", {"CN=User,CN=Schema,CN=Configuration"}},
+        {"showInAdvancedViewOnly", {"FALSE"}},
+    };
+}
+
+void fake_create_computer(QString &dn, QString &parent, QString &name) {
+    fake_create_add_child(dn, parent);
+
+    fake_attributes[dn] = {
+        {"name", {name}},
+        {"objectClass", {"computer"}},
+        {"objectCategory", {"CN=Computer,CN=Schema,CN=Configuration"}},
+        {"showInAdvancedViewOnly", {"FALSE"}},
+    };
+}
+
+void fake_create_ou(QString &dn, QString &parent, QString &name) {
+    fake_create_add_child(dn, parent);
+
+    fake_attributes[dn] = {
+        {"name", {name}},
+        {"objectClass", {"Organizational Unit"}},
+        {"objectClass", {"container"}},
+        {"objectCategory", {"CN=Organizational-Unit,CN=Schema,CN=Configuration"}},
+        {"showInAdvancedViewOnly", {"FALSE"}},
+    };
+}
+
+void fake_create_group(QString &dn, QString &parent, QString &name) {
+    fake_create_add_child(dn, parent);
+
+    fake_attributes[dn] = {
+        {"name", {name}},
+        {"objectClass", {"group"}},
+        {"objectClass", {"container"}},
+        {"objectCategory", {"CN=Group,CN=Schema,CN=Configuration"}},
         {"showInAdvancedViewOnly", {"FALSE"}},
     };
 }
@@ -236,33 +284,26 @@ bool set_attribute(QString &dn, QString &attribute, QString &value) {
     }
 }
 
-QString get_users_container_dn() {
-    return QString("CN=Users,") + HEAD_DN;
-}
-
-QString get_new_user_dn(QString &username) {
-    return QString("CN=") + username + "," + get_users_container_dn();
-}
-
 // TODO: can probably make a create_anything() function with enum parameter
-bool create_entry(QString &name, NewEntryType type) {
-    QString parent;
-
-    switch (type) {
-        case User: {
-            parent = get_users_container_dn();
-            break;
-        }
-    }
-
+bool create_entry(QString &name, QString &dn, QString &parent_dn, NewEntryType type) {
     // TODO: handle errors
 
     if (FAKE_AD) {
         switch (type) {
             case User: {
-                auto user_dn = get_new_user_dn(name);
-                fake_create_user(user_dn, parent, name);
-
+                fake_create_user(dn, parent_dn, name);
+                break;
+            }
+            case Computer: {
+                fake_create_computer(dn, parent_dn, name);
+                break;
+            }
+            case OU: {
+                fake_create_ou(dn, parent_dn, name);
+                break;
+            }
+            case Group: {
+                fake_create_group(dn, parent_dn, name);
                 break;
             }
         }
@@ -271,13 +312,25 @@ bool create_entry(QString &name, NewEntryType type) {
     }
 
     char *name_cstr = qstring_to_cstr(name);
-    char *parent_cstr = qstring_to_cstr(parent);
+    char *parent_cstr = qstring_to_cstr(parent_dn);
 
     int result;
 
     switch (type) {
         case User: {
             result = ad_create_user(name_cstr, parent_cstr);
+            break;
+        }
+        case Computer: {
+            result = ad_create_computer(name_cstr, parent_cstr);
+            break;
+        }
+        case OU: {
+            result = ad_ou_create(name_cstr, parent_cstr);
+            break;
+        }
+        case Group: {
+            result = ad_group_create(name_cstr, parent_cstr);
             break;
         }
     }

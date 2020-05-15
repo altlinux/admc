@@ -85,10 +85,19 @@ int main(int argc, char **argv) {
         &ad_model, &AdModel::on_entry_changed);
 
 
-    // Update entry values in AD model when that entry's attributes are changed in attributes view
+    // Connect menubar "New" submenu's to entry creation dialogs
     QObject::connect(
         ui.menubar_new_user, &QAction::triggered,
         create_user_dialog);
+    QObject::connect(
+        ui.menubar_new_computer, &QAction::triggered,
+        create_computer_dialog);
+    QObject::connect(
+        ui.menubar_new_ou, &QAction::triggered,
+        create_ou_dialog);
+    QObject::connect(
+        ui.menubar_new_group, &QAction::triggered,
+        create_group_dialog);
 
     main_window.show();
 
