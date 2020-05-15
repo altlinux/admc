@@ -16,7 +16,7 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     auto dn = this->target_dn;
     auto attribute = name_index.data().toString();
     auto value_str = value.toString();
-    printf("setData: %s, %s, %s\n", qPrintable(dn), qPrintable(attribute), qPrintable(value_str));
+    // printf("setData: %s, %s, %s\n", qPrintable(dn), qPrintable(attribute), qPrintable(value_str));
 
     // TODO: attribute edit can fail for many reasons, handle it
     bool success = set_attribute(dn, attribute, value_str);
@@ -24,7 +24,7 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     if (success) {
         QStandardItemModel::setData(index, value, role);
 
-        emit attribute_changed(dn, attribute, value_str);
+        emit entry_changed(dn);
 
         return true;
     } else {

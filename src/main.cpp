@@ -11,6 +11,10 @@
 #include <QApplication>
 #include <QString>
 
+void test_menubar(bool checked) {
+    printf("xd\n");
+}
+
 int main(int argc, char **argv) {
     // Load fake AD data if given "fake" argument
     // This also swaps all ad interface functions to their fake versions (including login)
@@ -78,8 +82,15 @@ int main(int argc, char **argv) {
 
     // Update entry values in AD model when that entry's attributes are changed in attributes view
     QObject::connect(
-        &attributes_model, &AttributesModel::attribute_changed,
-        &ad_model, &AdModel::on_attribute_changed);
+        &attributes_model, &AttributesModel::entry_changed,
+        &ad_model, &AdModel::on_entry_changed);
+
+
+    // Update entry values in AD model when that entry's attributes are changed in attributes view
+    QObject::connect(
+        ui.menubar_new_user, &QAction::triggered,
+        test_menubar);
+        // &ad_model, &AdModel::on_entry_changed);
 
     main_window.show();
 

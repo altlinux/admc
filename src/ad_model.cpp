@@ -39,7 +39,6 @@ void populate_row(QList<QStandardItem*> row, QString &dn) {
     bool advanced_view = false;
     if (attributes.contains("showInAdvancedViewOnly")) {
         auto advanced_view_str = attributes["showInAdvancedViewOnly"][0];
-            printf("=%s\n", qPrintable(advanced_view_str));
 
         if (advanced_view_str == "TRUE") {
             advanced_view = true;
@@ -132,8 +131,6 @@ void AdModel::fetchMore(const QModelIndex &parent) {
 
     // Unset CanFetch flag
     parent_item->setData(false, AdModel::Roles::CanFetch);
-    
-    // printf("fetchMore: %s\n", qPrintable(dn));
 }
 
 // Override this so that unexpanded and unfetched items show the expander even though they technically don't have any children loaded
@@ -146,7 +143,7 @@ bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
     }
 }
 
-void AdModel::on_attribute_changed(QString &dn, QString &attribute, QString &value) {
+void AdModel::on_entry_changed(QString &dn) {
     // TODO: confirm what kind of search is this, linear?
     auto items = this->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
 

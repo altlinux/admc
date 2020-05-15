@@ -28,18 +28,19 @@ QT_BEGIN_NAMESPACE
 class Ui_MainWindow
 {
 public:
-    QAction *actionWhat;
-    QAction *actionSecond;
+    QAction *menubar_new_user;
+    QAction *menubar_new_computer;
     QAction *actionSomething;
     QAction *actionHere;
     QAction *menubar_view_advancedView;
+    QAction *menubar_new_ou;
     QWidget *centralwidget;
     QSplitter *splitter;
     ContainersView *containers_view;
     ContentsView *contents_view;
     AttributesView *attributes_view;
     QMenuBar *menubar;
-    QMenu *menuhello;
+    QMenu *menubar_new;
     QMenu *menuEdit;
     QMenu *menuView;
     QStatusBar *statusbar;
@@ -48,11 +49,11 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(1307, 637);
-        actionWhat = new QAction(MainWindow);
-        actionWhat->setObjectName(QString::fromUtf8("actionWhat"));
-        actionSecond = new QAction(MainWindow);
-        actionSecond->setObjectName(QString::fromUtf8("actionSecond"));
+        MainWindow->resize(1307, 795);
+        menubar_new_user = new QAction(MainWindow);
+        menubar_new_user->setObjectName(QString::fromUtf8("menubar_new_user"));
+        menubar_new_computer = new QAction(MainWindow);
+        menubar_new_computer->setObjectName(QString::fromUtf8("menubar_new_computer"));
         actionSomething = new QAction(MainWindow);
         actionSomething->setObjectName(QString::fromUtf8("actionSomething"));
         actionHere = new QAction(MainWindow);
@@ -60,6 +61,8 @@ public:
         menubar_view_advancedView = new QAction(MainWindow);
         menubar_view_advancedView->setObjectName(QString::fromUtf8("menubar_view_advancedView"));
         menubar_view_advancedView->setCheckable(true);
+        menubar_new_ou = new QAction(MainWindow);
+        menubar_new_ou->setObjectName(QString::fromUtf8("menubar_new_ou"));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         splitter = new QSplitter(centralwidget);
@@ -93,8 +96,8 @@ public:
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
         menubar->setGeometry(QRect(0, 0, 1307, 27));
-        menuhello = new QMenu(menubar);
-        menuhello->setObjectName(QString::fromUtf8("menuhello"));
+        menubar_new = new QMenu(menubar);
+        menubar_new->setObjectName(QString::fromUtf8("menubar_new"));
         menuEdit = new QMenu(menubar);
         menuEdit->setObjectName(QString::fromUtf8("menuEdit"));
         menuView = new QMenu(menubar);
@@ -104,11 +107,12 @@ public:
         statusbar->setObjectName(QString::fromUtf8("statusbar"));
         MainWindow->setStatusBar(statusbar);
 
-        menubar->addAction(menuhello->menuAction());
+        menubar->addAction(menubar_new->menuAction());
         menubar->addAction(menuEdit->menuAction());
         menubar->addAction(menuView->menuAction());
-        menuhello->addAction(actionWhat);
-        menuhello->addAction(actionSecond);
+        menubar_new->addAction(menubar_new_user);
+        menubar_new->addAction(menubar_new_computer);
+        menubar_new->addAction(menubar_new_ou);
         menuEdit->addAction(actionSomething);
         menuEdit->addAction(actionHere);
         menuView->addAction(menubar_view_advancedView);
@@ -121,12 +125,13 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
-        actionWhat->setText(QApplication::translate("MainWindow", "What", nullptr));
-        actionSecond->setText(QApplication::translate("MainWindow", "Second", nullptr));
+        menubar_new_user->setText(QApplication::translate("MainWindow", "User", nullptr));
+        menubar_new_computer->setText(QApplication::translate("MainWindow", "Computer", nullptr));
         actionSomething->setText(QApplication::translate("MainWindow", "Something", nullptr));
         actionHere->setText(QApplication::translate("MainWindow", "Here", nullptr));
         menubar_view_advancedView->setText(QApplication::translate("MainWindow", "Advanced view", nullptr));
-        menuhello->setTitle(QApplication::translate("MainWindow", "New", nullptr));
+        menubar_new_ou->setText(QApplication::translate("MainWindow", "Organizational Unit", nullptr));
+        menubar_new->setTitle(QApplication::translate("MainWindow", "New", nullptr));
         menuEdit->setTitle(QApplication::translate("MainWindow", "Edit", nullptr));
         menuView->setTitle(QApplication::translate("MainWindow", "View", nullptr));
     } // retranslateUi

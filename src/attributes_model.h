@@ -20,7 +20,7 @@ public:
     void change_target(QString &new_target_dn);
 
 signals:
-    void attribute_changed(QString &dn, QString &attribute, QString &value); 
+    void entry_changed(QString &dn); 
 
 private:
     QString target_dn;

@@ -29,7 +29,7 @@ public:
     bool hasChildren(const QModelIndex &parent) const override;
 
 public slots:
-    void on_attribute_changed(QString &dn, QString &attribute, QString &value); 
+    void on_entry_changed(QString &dn); 
 
 private:
 

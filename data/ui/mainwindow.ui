@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1307</width>
-    <height>637</height>
+    <height>795</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -85,12 +85,13 @@
      <height>27</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuhello">
+   <widget class="QMenu" name="menubar_new">
     <property name="title">
      <string>New</string>
     </property>
-    <addaction name="actionWhat"/>
-    <addaction name="actionSecond"/>
+    <addaction name="menubar_new_user"/>
+    <addaction name="menubar_new_computer"/>
+    <addaction name="menubar_new_ou"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -105,19 +106,19 @@
     </property>
     <addaction name="menubar_view_advancedView"/>
    </widget>
-   <addaction name="menuhello"/>
+   <addaction name="menubar_new"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionWhat">
+  <action name="menubar_new_user">
    <property name="text">
-    <string>What</string>
+    <string>User</string>
    </property>
   </action>
-  <action name="actionSecond">
+  <action name="menubar_new_computer">
    <property name="text">
-    <string>Second</string>
+    <string>Computer</string>
    </property>
   </action>
   <action name="actionSomething">
@@ -136,6 +137,11 @@
    </property>
    <property name="text">
     <string>Advanced view</string>
+   </property>
+  </action>
+  <action name="menubar_new_ou">
+   <property name="text">
+    <string>Organizational Unit</string>
    </property>
   </action>
  </widget>
