@@ -245,24 +245,42 @@ QString get_new_user_dn(QString &username) {
 }
 
 // TODO: can probably make a create_anything() function with enum parameter
-bool create_user(QString &username) {
-    // TODO: find Users container and put the user in there
-    auto users_container_dn = get_users_container_dn();
+bool create_entry(QString &name, NewEntryType type) {
+    QString parent;
+
+    switch (type) {
+        case User: {
+            parent = get_users_container_dn();
+            break;
+        }
+    }
 
     // TODO: handle errors
 
     if (FAKE_AD) {
-        auto user_dn = get_new_user_dn(username);
+        switch (type) {
+            case User: {
+                auto user_dn = get_new_user_dn(name);
+                fake_create_user(user_dn, parent, name);
 
-        fake_create_user(user_dn, users_container_dn, username);
+                break;
+            }
+        }
 
         return true;
     }
 
-    char *username_cstr = qstring_to_cstr(username);
-    char *users_container_dn_cstr = qstring_to_cstr(users_container_dn);
+    char *name_cstr = qstring_to_cstr(name);
+    char *parent_cstr = qstring_to_cstr(parent);
 
-    int result = ad_create_user(username_cstr, users_container_dn_cstr);
+    int result;
+
+    switch (type) {
+        case User: {
+            result = ad_create_user(name_cstr, parent_cstr);
+            break;
+        }
+    }
 
     if (result == AD_SUCCESS) {
         return true;

@@ -8,7 +8,7 @@
 
 AdModel *admodel = NULL;
 
-void create_user() {
+void create_user_dialog() {
     // Open new user dialog and get username from it
     bool ok;
     auto username = QInputDialog::getText(nullptr, "New user", "User name:", QLineEdit::Normal, "", &ok);
@@ -18,7 +18,7 @@ void create_user() {
     // Create user once dialog is complete
     if (ok && !username.isEmpty()) {
         // Attempt to create user in AD
-        bool success = create_user(username);
+        bool success = create_entry(username, NewEntryType::User);
 
         if (success) {
             // Add user to model
