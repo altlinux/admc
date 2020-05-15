@@ -4,6 +4,8 @@
 
 #include <QStandardItemModel>
 
+void load_and_add_row(QStandardItem *parent, QString &dn);
+
 class AdModel: public QStandardItemModel {
 Q_OBJECT
 

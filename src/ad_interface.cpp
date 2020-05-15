@@ -19,6 +19,7 @@ QMap<QString, QMap<QString, QList<QString>>> fake_attributes;
 
 void fake_ad_init() {
     fake_children[HEAD_DN] = {
+        QString("CN=Users,") + HEAD_DN,
         QString("CN=A,") + HEAD_DN,
         QString("CN=B,") + HEAD_DN,
         QString("CN=C,") + HEAD_DN,
@@ -30,6 +31,14 @@ void fake_ad_init() {
         {"objectClass", {"container"}},
         {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
         {"showInAdvancedViewOnly", {"FALSE"}},
+    };
+
+    fake_attributes[QString("CN=Users,") + HEAD_DN] = {
+        {"name", {"Users"}},
+        {"objectClass", {"container"}},
+        {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
+        {"showInAdvancedViewOnly", {"FALSE"}},
+        {"description", {"Users's description"}},
     };
 
     fake_attributes[QString("CN=A,") + HEAD_DN] = {
@@ -89,6 +98,22 @@ QMap<QString, QList<QString>> fake_load_attributes(QString &dn) {
     }
 
     return fake_attributes[dn];
+}
+
+void fake_create_user(QString &dn, QString &parent, QString &username) {
+    if (!fake_children.contains(parent)) {
+        // NOTE: ok to have empty children for leaves
+        fake_children[parent] = QList<QString>();
+    }
+    
+    fake_children[parent].push_back(dn);
+
+    fake_attributes[dn] = {
+        {"name", {username}},
+        {"objectClass", {"user"}},
+        {"objectCategory", {"CN=User,CN=Schema,CN=Configuration"}},
+        {"showInAdvancedViewOnly", {"FALSE"}},
+    };
 }
 
 // -----------------------------------------------------------------
@@ -203,6 +228,41 @@ bool set_attribute(QString &dn, QString &attribute, QString &value) {
     // TODO: handle errors
 
     int result = ad_mod_replace(dn_cstr, attribute_cstr, value_cstr);
+
+    if (result == AD_SUCCESS) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+QString get_users_container_dn() {
+    return QString("CN=Users,") + HEAD_DN;
+}
+
+QString get_new_user_dn(QString &username) {
+    return QString("CN=") + username + "," + get_users_container_dn();
+}
+
+// TODO: can probably make a create_anything() function with enum parameter
+bool create_user(QString &username) {
+    // TODO: find Users container and put the user in there
+    auto users_container_dn = get_users_container_dn();
+
+    // TODO: handle errors
+
+    if (FAKE_AD) {
+        auto user_dn = get_new_user_dn(username);
+
+        fake_create_user(user_dn, users_container_dn, username);
+
+        return true;
+    }
+
+    char *username_cstr = qstring_to_cstr(username);
+    char *users_container_dn_cstr = qstring_to_cstr(users_container_dn);
+
+    int result = ad_create_user(username_cstr, users_container_dn_cstr);
 
     if (result == AD_SUCCESS) {
         return true;

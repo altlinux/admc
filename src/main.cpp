@@ -5,15 +5,12 @@
 #include "ad_filter.h"
 #include "ad_model.h"
 #include "attributes_model.h"
-#include "ui_mainwindow.h"
+#include "create_entry.h"
 #include "ad_interface.h"
+#include "ui_mainwindow.h"
 
 #include <QApplication>
 #include <QString>
-
-void test_menubar(bool checked) {
-    printf("xd\n");
-}
 
 int main(int argc, char **argv) {
     // Load fake AD data if given "fake" argument
@@ -36,6 +33,8 @@ int main(int argc, char **argv) {
     ui.setupUi(&main_window);
 
     AdModel ad_model;
+
+    create_entry_init(&ad_model);
 
     // Attributes
     AttributesModel attributes_model;
@@ -89,8 +88,7 @@ int main(int argc, char **argv) {
     // Update entry values in AD model when that entry's attributes are changed in attributes view
     QObject::connect(
         ui.menubar_new_user, &QAction::triggered,
-        test_menubar);
-        // &ad_model, &AdModel::on_entry_changed);
+        create_user_dialog);
 
     main_window.show();
 

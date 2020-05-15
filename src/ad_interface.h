@@ -15,5 +15,8 @@ bool ad_interface_login();
 QList<QString> load_children(QString &dn);
 QMap<QString, QList<QString>> load_attributes(QString &dn);
 bool set_attribute(QString &dn, QString &attribute, QString &value);
+QString get_users_container_dn();
+QString get_new_user_dn(QString &username);
+bool create_user(QString &username);
 
 #endif /* AD_INTERFACE_H */

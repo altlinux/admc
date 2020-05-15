@@ -5,7 +5,7 @@
 
 #include <QMap>
 
-void populate_row(QList<QStandardItem*> row, QString &dn) {
+void load_row(QList<QStandardItem*> row, QString &dn) {
     auto attributes = load_attributes(dn);
 
     // TODO: get rid of "if (x.contains(y))"
@@ -22,11 +22,11 @@ void populate_row(QList<QStandardItem*> row, QString &dn) {
         // NOTE: raw category is given as DN
         // TODO: convert it completely (turn '-' into ' ')
         auto category_as_dn = attributes["objectCategory"][0];
-        auto equals_index = category_as_dn.indexOf('=');
+        auto equals_index = category_as_dn.indexOf('=') + 1;
         auto comma_index = category_as_dn.indexOf(',');
         auto segment_length = comma_index - equals_index;
         // TODO: check what happens if equals is negative
-        category = category_as_dn.mid(equals_index + 1, segment_length);
+        category = category_as_dn.mid(equals_index, segment_length);
     }
 
     // Description
@@ -77,16 +77,15 @@ void populate_row(QList<QStandardItem*> row, QString &dn) {
     row[0]->setData(is_container, AdModel::Roles::IsContainer);
 }
 
-QList<QStandardItem *> make_row(QString dn) {
+void load_and_add_row(QStandardItem *parent, QString &dn) {
     auto row = QList<QStandardItem *>();
 
     for (int i = 0; i < AdModel::Column::COUNT; i++) {
         row.push_back(new QStandardItem());
     }
 
-    populate_row(row, dn);
-
-    return row;
+    load_row(row, dn);
+    parent->appendRow(row);
 }
 
 AdModel::AdModel(): QStandardItemModel(0, Column::COUNT) {
@@ -96,8 +95,9 @@ AdModel::AdModel(): QStandardItemModel(0, Column::COUNT) {
 
     // Load head
     auto invis_root = this->invisibleRootItem();
-    auto head_row = make_row(HEAD_DN);
-    invis_root->appendRow(head_row);
+    auto head_dn = QString(HEAD_DN);
+    load_and_add_row(invis_root, head_dn);
+
 }
 
 bool AdModel::canFetchMore(const QModelIndex &parent) const {
@@ -124,9 +124,7 @@ void AdModel::fetchMore(const QModelIndex &parent) {
     auto children = load_children(dn);
 
     for (auto child : children) {
-        auto child_row = make_row(child);
-
-        parent_item->appendRow(child_row);
+        load_and_add_row(parent_item, child);
     }
 
     // Unset CanFetch flag
@@ -167,7 +165,7 @@ void AdModel::on_entry_changed(QString &dn) {
             row.push_back(item);
         }
 
-        // Repopulate row
-        populate_row(row, dn);
+        // Reload row
+        load_row(row, dn);
     }
 }
