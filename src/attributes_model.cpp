@@ -23,8 +23,6 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     if (success) {
         QStandardItemModel::setData(index, value, role);
 
-        emit entry_changed(dn);
-
         return true;
     } else {
         return false;

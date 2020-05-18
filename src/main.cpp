@@ -82,14 +82,22 @@ int main(int argc, char **argv) {
             entry_context_menu, &EntryContextMenu::attributes_clicked,
             ui.attributes_view, &AttributesView::set_target_dn);
 
-        // Delete action signals
+        // Delete entry when delete button is pressed
         QObject::connect(
             entry_context_menu, &EntryContextMenu::delete_clicked,
-            &ad_model, &AdModel::on_entry_deleted);
-        QObject::connect(
-            entry_context_menu, &EntryContextMenu::delete_clicked,
-            &attributes_model, &AttributesModel::on_entry_deleted);
+            delete_entry);
     }
+
+    // Update models on entry changes
+    QObject::connect(
+        &ad_interface, &AdInterface::entry_deleted,
+        &ad_model, &AdModel::on_entry_deleted);
+    QObject::connect(
+        &ad_interface, &AdInterface::entry_deleted,
+        &attributes_model, &AttributesModel::on_entry_deleted);
+    QObject::connect(
+        &ad_interface, &AdInterface::entry_changed,
+        &ad_model, &AdModel::on_entry_changed);
 
     // Set root index of contents view to selection of containers view
     QObject::connect(

@@ -1,5 +1,5 @@
 QT += core gui widgets
-CONFIG += c++11
+CONFIG += c++14
 DEFINES += QT_DEPRECATED_WARNINGS
 
 LIBS += -lldap -llber -lresolv -lgsasl

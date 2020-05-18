@@ -12,6 +12,8 @@ extern "C" {
 // FAKE STUFF
 // -----------------------------------------------------------------
 
+AdInterface ad_interface;
+
 bool FAKE_AD = false; 
 
 QMap<QString, QList<QString>> fake_children;
@@ -307,6 +309,8 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
     int result = ad_mod_replace(dn_cstr, attribute_cstr, value_cstr);
 
     if (result == AD_SUCCESS) {
+        emit ad_interface.entry_changed(dn);
+
         return true;
     } else {
         return false;
@@ -371,25 +375,25 @@ bool create_entry(const QString &name, const QString &dn, const QString &parent_
     }
 }
 
-bool delete_entry(const QString &dn) {
+void delete_entry(const QString &dn) {
+    int result = AD_INVALID_DN;
+
     if (FAKE_AD) {
         fake_object_delete(dn);
 
-        return true;
+        result = AD_SUCCESS;
+    } else {
+        const char *dn_cstr = qstring_to_cstr(dn);
+
+        // TODO: handle all possible side-effects?
+        // probably a lot of stuff, like group membership and stuff
+
+        // TODO: handle errors
+
+        result = ad_object_delete(dn_cstr);
     }
 
-    const char *dn_cstr = qstring_to_cstr(dn);
-
-    // TODO: handle all possible side-effects?
-    // probably a lot of stuff, like group membership and stuff
-
-    // TODO: handle errors
-
-    int result = ad_object_delete(dn_cstr);
-
     if (result == AD_SUCCESS) {
-        return true;
-    } else {
-        return false;
+        emit ad_interface.entry_deleted(dn);
     }
 }
