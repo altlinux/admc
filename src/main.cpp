@@ -66,31 +66,28 @@ int main(int argc, char **argv) {
         view->hideColumn(AdModel::Column::DN);
     }
 
+    //
     // Entry context menu
-    auto entry_context_menu = new EntryContextMenu(&main_window);
-
-    // Popup entry context menu from both containers and contents views
-    entry_context_menu->connect_view(*(ui.containers_view));
-    entry_context_menu->connect_view(*(ui.contents_view));
-
-    // QObject::connect(
-    //     ui.entry_context_menu, &EntryContextMenu::attributes_clicked,
-    //     ui.attributes_view, &AttributesView::set_target_dn);
-
     //
-    // Connect signals
-    //
+    {
+        auto entry_context_menu = new EntryContextMenu(&main_window);
+
+        // Popup entry context menu from both containers and contents views
+        entry_context_menu->connect_view(*(ui.containers_view));
+        entry_context_menu->connect_view(*(ui.contents_view));
+
+        // Set target dn of attributes view when attributes menu of
+        // entry context menu is clicked
+        QObject::connect(
+            entry_context_menu, &EntryContextMenu::attributes_clicked,
+            ui.attributes_view, &AttributesView::set_target_dn);
+    }
 
     // Set root index of contents view to selection of containers view
     QObject::connect(
         ui.containers_view->selectionModel(), &QItemSelectionModel::selectionChanged,
         ui.contents_view, &ContentsView::set_root_index_from_selection);
     
-    // Set target of attributes view to selection of contents view
-    QObject::connect(
-        ui.contents_view->selectionModel(), &QItemSelectionModel::selectionChanged,
-        ui.attributes_view, &AttributesView::set_target_from_selection);
-
     // Update entry values in AD model when that entry's attributes are changed in attributes view
     QObject::connect(
         &attributes_model, &AttributesModel::entry_changed,

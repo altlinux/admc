@@ -12,7 +12,7 @@ public:
     using QTreeView::QTreeView;
 
 public slots:
-    void set_target_from_selection(const QItemSelection &selected, const QItemSelection &deselected);
+    void set_target_dn(const QString &new_target_dn);
 
 private:
     enum Column {

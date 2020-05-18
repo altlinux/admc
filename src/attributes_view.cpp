@@ -7,15 +7,8 @@
 // TODO: on attribute edit, update entry in ad model
 // since attributes affect model's contents
 
-void AttributesView::set_target_from_selection(const QItemSelection &selected, const QItemSelection &) {
-    // Convert selection to dn
-    QList<QModelIndex> indexes = selected.indexes();
-    if (indexes.size() == 0) {
-        return;
-    }
-
-    QModelIndex index = indexes[0];
-    this->target_dn = index.siblingAtColumn(AdModel::Column::DN).data().toString();
+void AttributesView::set_target_dn(const QString &new_target_dn) {
+    this->target_dn = new_target_dn;
 
     // Clear model of previous root
     // TODO: get rid of cast
