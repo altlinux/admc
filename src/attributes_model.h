@@ -17,10 +17,10 @@ public:
     explicit AttributesModel();
 
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-    void change_target(QString &new_target_dn);
+    void change_target(const QString &new_target_dn);
 
 signals:
-    void entry_changed(QString &dn); 
+    void entry_changed(const QString &dn); 
 
 private:
     QString target_dn;

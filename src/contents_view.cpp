@@ -9,7 +9,7 @@
 // Both contents and containers share the same source model, but have different proxy's to it
 // So need to map from containers proxy to source then back to proxy of contents
 void ContentsView::set_root_index_from_selection(const QItemSelection &selected, const QItemSelection &) {
-    QList<QModelIndex> indexes = selected.indexes();
+    const QList<QModelIndex> indexes = selected.indexes();
 
     if (indexes.size() == 0) {
         return;

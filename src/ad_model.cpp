@@ -5,7 +5,7 @@
 
 #include <QMap>
 
-void load_row(QList<QStandardItem*> row, QString &dn) {
+void load_row(QList<QStandardItem*> row, QString dn) {
     QMap<QString, QList<QString>> attributes = load_attributes(dn);
 
     // TODO: get rid of "if (x.contains(y))"
@@ -141,7 +141,7 @@ bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
     }
 }
 
-void AdModel::on_entry_changed(QString &dn) {
+void AdModel::on_entry_changed(const QString &dn) {
     // TODO: confirm what kind of search is this, linear?
     QList<QStandardItem *> items = this->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
 

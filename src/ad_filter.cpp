@@ -17,17 +17,17 @@ AdFilter::AdFilter(const QAction * const advanced_view_action, bool only_show_co
 }
 
 bool AdFilter::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
-    QModelIndex index = sourceModel()->index(source_row, 0, source_parent);
+    const QModelIndex index = sourceModel()->index(source_row, 0, source_parent);
 
     // Hide advanced view only entries if advanced view is OFF
-    bool advanced_view_only = index.data(AdModel::Roles::AdvancedViewOnly).toBool();
+    const bool advanced_view_only = index.data(AdModel::Roles::AdvancedViewOnly).toBool();
     if (advanced_view_only && !this->advanced_view) {
         return false;
     }
 
     if (only_show_containers) {
         // Hide non-containers
-        bool is_container = index.data(AdModel::Roles::IsContainer).toBool();
+        const bool is_container = index.data(AdModel::Roles::IsContainer).toBool();
         if (!is_container) {
             return false;
         }

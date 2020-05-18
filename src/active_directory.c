@@ -226,7 +226,7 @@ dns domain, eg: "ou=users,dc=example,dc=com" returns
 "example.com".
 memory allocated should be returned with free()
 */
-char *dn2domain(char *dn) {
+char *dn2domain(const char *dn) {
 	char **exp_dn;
 	int i;
 	char *dc;
@@ -269,7 +269,7 @@ int ad_get_error_num() {
 	userprincipalname
 	returns AD_SUCCESS on success 
 */
-int ad_create_user(char *username, char *dn) {
+int ad_create_user(const char *username, const char *dn) {
 	LDAP *ds;
 	LDAPMod *attrs[5];
 	LDAPMod attr1, attr2, attr3, attr4;
@@ -333,7 +333,7 @@ int ad_create_user(char *username, char *dn) {
 	userAccountControl=4128
 	returns AD_SUCCESS on success 
 */
-int ad_create_computer(char *name, char *dn) {
+int ad_create_computer(const char *name, const char *dn) {
     LDAP *ds;
     LDAPMod *attrs[4];
     LDAPMod attr1, attr2, attr3;
@@ -381,7 +381,7 @@ int ad_create_computer(char *name, char *dn) {
 
 /* ad_object_delete deletes the given dn
 	returns non-zero on success */
-int ad_object_delete(char *dn) {
+int ad_object_delete(const char *dn) {
 	LDAP *ds;
 	int result;
 
@@ -400,7 +400,7 @@ int ad_object_delete(char *dn) {
 
 /* ad_setpass sets the password for the given user
 	returns AD_SUCCESS on success */
-int ad_setpass(char *dn, char *password) {
+int ad_setpass(const char *dn, const char *password) {
 	LDAP *ds;
 	char quoted_password[MAX_PASSWORD_LENGTH+2];
 	char unicode_password[(MAX_PASSWORD_LENGTH+2)*2];
@@ -445,7 +445,7 @@ int ad_setpass(char *dn, char *password) {
 }
 
 /* general search function */
-char **ad_search(char *attribute, char *value) {
+char **ad_search(const char *attribute, const char *value) {
 	LDAP *ds;
 	char *filter;
 	int filter_length;
@@ -509,7 +509,7 @@ char **ad_search(char *attribute, char *value) {
     return dnlist;
 }
 
-int ad_mod_add(char *dn, char *attribute, char *value) {
+int ad_mod_add(const char *dn, const char *attribute, const char *value) {
 	LDAP *ds;
 	LDAPMod *attrs[2];
 	LDAPMod attr;
@@ -539,7 +539,7 @@ int ad_mod_add(char *dn, char *attribute, char *value) {
 	return ad_error_code;
 }
 
-int ad_mod_add_binary(char *dn, char *attribute, char *data, int data_length) {
+int ad_mod_add_binary(const char *dn, const char *attribute, const char *data, int data_length) {
 	LDAP *ds;
 	LDAPMod *attrs[2];
 	LDAPMod attr;
@@ -573,7 +573,7 @@ int ad_mod_add_binary(char *dn, char *attribute, char *data, int data_length) {
 	return ad_error_code;
 }
 
-int ad_mod_replace(char *dn, char *attribute, char *value) {
+int ad_mod_replace(const char *dn, const char *attribute, const char *value) {
 	LDAP *ds;
 	LDAPMod *attrs[2];
 	LDAPMod attr;
@@ -603,7 +603,7 @@ int ad_mod_replace(char *dn, char *attribute, char *value) {
 	return ad_error_code;
 }
 
-int ad_mod_replace_binary(char *dn, char *attribute, char *data, int data_length) {
+int ad_mod_replace_binary(const char *dn, const char *attribute, const char *data, int data_length) {
 	LDAP *ds;
 	LDAPMod *attrs[2];
 	LDAPMod attr;
@@ -637,7 +637,7 @@ int ad_mod_replace_binary(char *dn, char *attribute, char *data, int data_length
 	return ad_error_code;
 }
 
-int ad_mod_delete(char *dn, char *attribute, char *value) {
+int ad_mod_delete(const char *dn, const char *attribute, const char *value) {
 	LDAP *ds;
 	LDAPMod *attrs[2];
 	LDAPMod attr;
@@ -673,7 +673,7 @@ typedef struct ber_list {
     struct ber_list *next;
 } ber_list;
 
-char **ad_get_attribute(char *dn, char *attribute) {
+char **ad_get_attribute(const char *dn, const char *attribute) {
     LDAP *ds=ad_login();
     if(!ds) return NULL;
 
@@ -848,7 +848,7 @@ char **ad_get_attribute(char *dn, char *attribute) {
   changes samaccountname, userprincipalname and rdn/cn
 	return AD_SUCCESS on success 
 */
-int ad_rename_user(char *dn, char *new_username) {
+int ad_rename_user(const char *dn, const char *new_username) {
 	LDAP *ds;
 	int result;
 	char *new_rdn;
@@ -891,7 +891,7 @@ int ad_rename_user(char *dn, char *new_username) {
   sets userprincipalname based on the destination container
 	return AD_SUCCESS on success 
 */
-int ad_move_user(char *current_dn, char *new_container) {
+int ad_move_user(const char *current_dn, const char *new_container) {
 	LDAP *ds;
 	int result;
 	char **exdn;
@@ -940,7 +940,7 @@ int ad_move_user(char *current_dn, char *new_container) {
 }
 
 /* returns AD_SUCCESS on success */
-int ad_lock_user(char *dn) {
+int ad_lock_user(const char *dn) {
 	LDAP *ds;
 	int result;
 	char **flags;
@@ -964,7 +964,7 @@ int ad_lock_user(char *dn) {
 }
 
 /* Returns AD_SUCCESS on success */
-int ad_unlock_user(char *dn) {
+int ad_unlock_user(const char *dn) {
 	LDAP *ds;
 	int result;
 	char **flags;
@@ -993,7 +993,7 @@ int ad_unlock_user(char *dn) {
  sets objectclass=group and samaccountname=groupname
   Returns AD_SUCCESS on success 
 */
-int ad_group_create(char *group_name, char *dn) {
+int ad_group_create(const char *group_name, const char *dn) {
 	LDAP *ds;
 	LDAPMod *attrs[4];
 	LDAPMod attr1, attr2, attr3;
@@ -1037,16 +1037,16 @@ int ad_group_create(char *group_name, char *dn) {
 	return ad_error_code;
 }
 
-int ad_group_add_user(char *group_dn, char *user_dn) {
+int ad_group_add_user(const char *group_dn, const char *user_dn) {
 	return ad_mod_add(group_dn, "member", user_dn);
 }
 
-int ad_group_remove_user(char *group_dn, char *user_dn) {
+int ad_group_remove_user(const char *group_dn, const char *user_dn) {
 	return ad_mod_delete(group_dn, "member", user_dn);
 }
 
 /* Remove the user from all groups below the given container */
-int ad_group_subtree_remove_user(char *container_dn, char *user_dn) {
+int ad_group_subtree_remove_user(const char *container_dn, const char *user_dn) {
 	LDAP *ds;
 	char *filter;
 	int filter_length;
@@ -1106,7 +1106,7 @@ int ad_group_subtree_remove_user(char *container_dn, char *user_dn) {
  sets objectclass=organizationalUnit and name=ou name
   Returns AD_SUCCESS on success 
 */
-int ad_ou_create(char *ou_name, char *dn) {
+int ad_ou_create(const char *ou_name, const char *dn) {
 	LDAP *ds;
 	LDAPMod *attrs[3];
 	LDAPMod attr1, attr2;
@@ -1145,7 +1145,7 @@ int ad_ou_create(char *ou_name, char *dn) {
 /* ad_list returns a NULL terminated array of character strings
 	with one entry for object below the given dn
 	returns NULL if no values are found */
-char **ad_list(char *dn) {
+char **ad_list(const char *dn) {
 	LDAP *ds;
 	char *attrs[2];
 	int result;

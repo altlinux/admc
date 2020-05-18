@@ -4,8 +4,7 @@
 #include "ad_interface.h"
 
 AttributesModel::AttributesModel(): QStandardItemModel(0, Column::COUNT) {
-    auto f = QString("");
-    change_target(f);
+    change_target(QString(""));
 }
 
 // This will be called when an attribute value is edited
@@ -13,9 +12,9 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     QModelIndex value_index = index;
     QModelIndex name_index = value_index.siblingAtColumn(AttributesModel::Column::Name);
 
-    QString dn = this->target_dn;
-    QString attribute = name_index.data().toString();
-    QString value_str = value.toString();
+    const QString dn = this->target_dn;
+    const QString attribute = name_index.data().toString();
+    const QString value_str = value.toString();
     // printf("setData: %s, %s, %s\n", qPrintable(dn), qPrintable(attribute), qPrintable(value_str));
 
     // TODO: attribute edit can fail for many reasons, handle it
@@ -32,7 +31,7 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     }
 }
 
-void AttributesModel::change_target(QString &new_target_dn) {
+void AttributesModel::change_target(const QString &new_target_dn) {
     this->target_dn = new_target_dn;
 
     // Clear old data

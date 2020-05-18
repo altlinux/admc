@@ -91,7 +91,7 @@ void fake_ad_init() {
     };
 }
 
-QList<QString> fake_load_children(QString &dn) {
+QList<QString> fake_load_children(const QString &dn) {
     if (!fake_children.contains(dn)) {
         // NOTE: ok to have empty children for leaves
         fake_children[dn] = QList<QString>();
@@ -100,7 +100,7 @@ QList<QString> fake_load_children(QString &dn) {
     return fake_children[dn];
 }
 
-QMap<QString, QList<QString>> fake_load_attributes(QString &dn) {
+QMap<QString, QList<QString>> fake_load_attributes(const QString &dn) {
     if (!fake_attributes.contains(dn)) {
         printf("load_attributes failed for %s, loading empty attributes\n", qPrintable(dn));
         fake_attributes[dn] = QMap<QString, QList<QString>>();
@@ -110,7 +110,7 @@ QMap<QString, QList<QString>> fake_load_attributes(QString &dn) {
 }
 
 // NOTE: this is just for fake_create() functions
-void fake_create_add_child(QString &dn, QString &parent) {
+void fake_create_add_child(const QString &dn, const QString &parent) {
     if (!fake_children.contains(parent)) {
         fake_children[parent] = QList<QString>();
     }
@@ -118,7 +118,7 @@ void fake_create_add_child(QString &dn, QString &parent) {
     fake_children[parent].push_back(dn);
 }
 
-void fake_create_user(QString &dn, QString &parent, QString &name) {
+void fake_create_user(const QString &dn, const QString &parent, const QString &name) {
     fake_create_add_child(dn, parent);
 
     fake_attributes[dn] = {
@@ -129,7 +129,7 @@ void fake_create_user(QString &dn, QString &parent, QString &name) {
     };
 }
 
-void fake_create_computer(QString &dn, QString &parent, QString &name) {
+void fake_create_computer(const QString &dn, const QString &parent, const QString &name) {
     fake_create_add_child(dn, parent);
 
     fake_attributes[dn] = {
@@ -140,7 +140,7 @@ void fake_create_computer(QString &dn, QString &parent, QString &name) {
     };
 }
 
-void fake_create_ou(QString &dn, QString &parent, QString &name) {
+void fake_create_ou(const QString &dn, const QString &parent, const QString &name) {
     fake_create_add_child(dn, parent);
 
     fake_attributes[dn] = {
@@ -152,7 +152,7 @@ void fake_create_ou(QString &dn, QString &parent, QString &name) {
     };
 }
 
-void fake_create_group(QString &dn, QString &parent, QString &name) {
+void fake_create_group(const QString &dn, const QString &parent, const QString &name) {
     fake_create_add_child(dn, parent);
 
     fake_attributes[dn] = {
@@ -185,16 +185,16 @@ bool ad_interface_login() {
 }
 
 // TODO: confirm that this encoding is ok
-char *qstring_to_cstr(QString &qstr) {
-    return qstr.toLatin1().data();
+const char *qstring_to_cstr(const QString &qstr) {
+    return qstr.toLatin1().constData();
 }
 
-QList<QString> load_children(QString &dn) {
+QList<QString> load_children(const QString &dn) {
     if (FAKE_AD) {
         return fake_load_children(dn);
     }
 
-    char *dn_cstr = qstring_to_cstr(dn);
+    const char *dn_cstr = qstring_to_cstr(dn);
     char **children_raw = ad_list(dn_cstr);
 
     // TODO: error check
@@ -218,14 +218,14 @@ QList<QString> load_children(QString &dn) {
     }
 }
 
-QMap<QString, QList<QString>> load_attributes(QString &dn) {
+QMap<QString, QList<QString>> load_attributes(const QString &dn) {
     if (FAKE_AD) {
         return fake_load_attributes(dn);
     }
 
     // TODO: save original attributes ordering and load it like that into model
 
-    char *dn_cstr = qstring_to_cstr(dn);
+    const char *dn_cstr = qstring_to_cstr(dn);
     char** attributes_raw = ad_get_attribute(dn_cstr, NULL);
 
     // TODO: handle errors
@@ -262,16 +262,16 @@ QMap<QString, QList<QString>> load_attributes(QString &dn) {
     }
 }
 
-bool set_attribute(QString &dn, QString &attribute, QString &value) {
+bool set_attribute(const QString &dn, const QString &attribute, const QString &value) {
     if (FAKE_AD) {
         fake_attributes[dn][attribute] = {value};
 
         return true;
     }
 
-    char *dn_cstr = qstring_to_cstr(dn);
-    char *attribute_cstr = qstring_to_cstr(attribute);
-    char *value_cstr = qstring_to_cstr(value);
+    const char *dn_cstr = qstring_to_cstr(dn);
+    const char *attribute_cstr = qstring_to_cstr(attribute);
+    const char *value_cstr = qstring_to_cstr(value);
 
     // TODO: handle errors
 
@@ -285,7 +285,7 @@ bool set_attribute(QString &dn, QString &attribute, QString &value) {
 }
 
 // TODO: can probably make a create_anything() function with enum parameter
-bool create_entry(QString &name, QString &dn, QString &parent_dn, NewEntryType type) {
+bool create_entry(const QString &name, const QString &dn, const QString &parent_dn, NewEntryType type) {
     // TODO: handle errors
 
     if (FAKE_AD) {
@@ -311,10 +311,10 @@ bool create_entry(QString &name, QString &dn, QString &parent_dn, NewEntryType t
         return true;
     }
 
-    char *name_cstr = qstring_to_cstr(name);
-    char *parent_cstr = qstring_to_cstr(parent_dn);
+    const char *name_cstr = qstring_to_cstr(name);
+    const char *parent_cstr = qstring_to_cstr(parent_dn);
 
-    int result;
+    int result = AD_INVALID_DN;
 
     switch (type) {
         case User: {
