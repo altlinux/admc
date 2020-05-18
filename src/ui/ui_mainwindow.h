@@ -74,6 +74,7 @@ public:
         splitter->setOrientation(Qt::Horizontal);
         containers_view = new ContainersView(splitter);
         containers_view->setObjectName(QString::fromUtf8("containers_view"));
+        containers_view->setContextMenuPolicy(Qt::CustomContextMenu);
         containers_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
         containers_view->setRootIsDecorated(true);
         containers_view->setItemsExpandable(true);
@@ -82,6 +83,7 @@ public:
         containers_view->header()->setVisible(true);
         contents_view = new ContentsView(splitter);
         contents_view->setObjectName(QString::fromUtf8("contents_view"));
+        contents_view->setContextMenuPolicy(Qt::CustomContextMenu);
         contents_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
         contents_view->setSelectionMode(QAbstractItemView::SingleSelection);
         contents_view->setRootIsDecorated(false);

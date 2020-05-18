@@ -27,6 +27,9 @@
      <enum>Qt::Horizontal</enum>
     </property>
     <widget class="ContainersView" name="containers_view">
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
      </property>
@@ -44,6 +47,9 @@
      </attribute>
     </widget>
     <widget class="ContentsView" name="contents_view">
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
      </property>

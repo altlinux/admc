@@ -7,6 +7,7 @@
 #include "attributes_model.h"
 #include "create_entry.h"
 #include "ad_interface.h"
+#include "entry_context_menu.h"
 #include "ui_mainwindow.h"
 
 #include <QApplication>
@@ -65,6 +66,17 @@ int main(int argc, char **argv) {
         view->hideColumn(AdModel::Column::DN);
     }
 
+    // Entry context menu
+    auto entry_context_menu = new EntryContextMenu(&main_window);
+
+    // Popup entry context menu from both containers and contents views
+    entry_context_menu->connect_view(*(ui.containers_view));
+    entry_context_menu->connect_view(*(ui.contents_view));
+
+    // QObject::connect(
+    //     ui.entry_context_menu, &EntryContextMenu::attributes_clicked,
+    //     ui.attributes_view, &AttributesView::set_target_dn);
+
     //
     // Connect signals
     //
@@ -83,7 +95,6 @@ int main(int argc, char **argv) {
     QObject::connect(
         &attributes_model, &AttributesModel::entry_changed,
         &ad_model, &AdModel::on_entry_changed);
-
 
     // Connect menubar "New" submenu's to entry creation dialogs
     QObject::connect(
