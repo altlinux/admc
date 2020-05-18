@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
 
     // Contents
     {
-        auto view = ui.contents_view;
+        ContentsView *view = ui.contents_view;
 
         auto proxy = new AdFilter(ui.menubar_view_advancedView);
         proxy->setSourceModel(&ad_model);
@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
 
     // Containers
     {
-        auto view = ui.containers_view;
+        ContainersView *view = ui.containers_view;
 
         auto proxy = new AdFilter(ui.menubar_view_advancedView, true);
         proxy->setSourceModel(&ad_model);

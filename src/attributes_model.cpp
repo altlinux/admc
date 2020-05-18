@@ -10,12 +10,12 @@ AttributesModel::AttributesModel(): QStandardItemModel(0, Column::COUNT) {
 
 // This will be called when an attribute value is edited
 bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, int role) {
-    auto value_index = index;
-    auto name_index = value_index.siblingAtColumn(AttributesModel::Column::Name);
+    QModelIndex value_index = index;
+    QModelIndex name_index = value_index.siblingAtColumn(AttributesModel::Column::Name);
 
-    auto dn = this->target_dn;
-    auto attribute = name_index.data().toString();
-    auto value_str = value.toString();
+    QString dn = this->target_dn;
+    QString attribute = name_index.data().toString();
+    QString value_str = value.toString();
     // printf("setData: %s, %s, %s\n", qPrintable(dn), qPrintable(attribute), qPrintable(value_str));
 
     // TODO: attribute edit can fail for many reasons, handle it

@@ -6,25 +6,25 @@
 #include <QMap>
 
 void load_row(QList<QStandardItem*> row, QString &dn) {
-    auto attributes = load_attributes(dn);
+    QMap<QString, QList<QString>> attributes = load_attributes(dn);
 
     // TODO: get rid of "if (x.contains(y))"
     
     // Name
-    auto name = dn;
+    QString name = dn;
     if (attributes.contains("name")) {
         name = attributes["name"][0];
     }
 
     // Category
-    auto category = dn;
+    QString category = dn;
     if (attributes.contains("objectCategory")) {
         // NOTE: raw category is given as DN
         // TODO: convert it completely (turn '-' into ' ')
-        auto category_as_dn = attributes["objectCategory"][0];
-        auto equals_index = category_as_dn.indexOf('=') + 1;
-        auto comma_index = category_as_dn.indexOf(',');
-        auto segment_length = comma_index - equals_index;
+        QString category_as_dn = attributes["objectCategory"][0];
+        int equals_index = category_as_dn.indexOf('=') + 1;
+        int comma_index = category_as_dn.indexOf(',');
+        int segment_length = comma_index - equals_index;
         // TODO: check what happens if equals is negative
         category = category_as_dn.mid(equals_index, segment_length);
     }
@@ -38,7 +38,7 @@ void load_row(QList<QStandardItem*> row, QString &dn) {
     // showInAdvancedViewOnly
     bool advanced_view = false;
     if (attributes.contains("showInAdvancedViewOnly")) {
-        auto advanced_view_str = attributes["showInAdvancedViewOnly"][0];
+        QString advanced_view_str = attributes["showInAdvancedViewOnly"][0];
 
         if (advanced_view_str == "TRUE") {
             advanced_view = true;
@@ -49,7 +49,7 @@ void load_row(QList<QStandardItem*> row, QString &dn) {
     // is container
     bool is_container = false;
     if (attributes.contains("objectClass")) {
-        auto objectClasses = attributes["objectClass"];
+        QList<QString> objectClasses = attributes["objectClass"];
         
         QList<QString> container_objectClasses = {"container", "organizationalUnit", "builtinDomain", "domain"};
         for (auto e : container_objectClasses) {
@@ -60,10 +60,10 @@ void load_row(QList<QStandardItem*> row, QString &dn) {
         }
     }
 
-    auto name_item = row[AdModel::Column::Name];
-    auto category_item = row[AdModel::Column::Category];
-    auto description_item = row[AdModel::Column::Description];
-    auto dn_item = row[AdModel::Column::DN];
+    QStandardItem *name_item = row[AdModel::Column::Name];
+    QStandardItem *category_item = row[AdModel::Column::Category];
+    QStandardItem *description_item = row[AdModel::Column::Description];
+    QStandardItem *dn_item = row[AdModel::Column::DN];
 
     name_item->setText(name);
     category_item->setText(category);
@@ -94,7 +94,7 @@ AdModel::AdModel(): QStandardItemModel(0, Column::COUNT) {
     this->setHorizontalHeaderItem(Column::Description, new QStandardItem("Description"));
 
     // Load head
-    auto invis_root = this->invisibleRootItem();
+    QStandardItem *invis_root = this->invisibleRootItem();
     auto head_dn = QString(HEAD_DN);
     load_and_add_row(invis_root, head_dn);
 
@@ -105,7 +105,7 @@ bool AdModel::canFetchMore(const QModelIndex &parent) const {
         return false;
     }
 
-    auto can_fetch = parent.data(AdModel::Roles::CanFetch).toBool();
+    bool can_fetch = parent.data(AdModel::Roles::CanFetch).toBool();
 
     return can_fetch;
 }
@@ -115,13 +115,13 @@ void AdModel::fetchMore(const QModelIndex &parent) {
         return;
     }
 
-    auto dn_index = parent.siblingAtColumn(Column::DN);
-    auto dn = dn_index.data().toString();
+    QModelIndex dn_index = parent.siblingAtColumn(Column::DN);
+    QString dn = dn_index.data().toString();
 
-    auto parent_item = this->itemFromIndex(parent);
+    QStandardItem *parent_item = this->itemFromIndex(parent);
 
     // Add children
-    auto children = load_children(dn);
+    QList<QString> children = load_children(dn);
 
     for (auto child : children) {
         load_and_add_row(parent_item, child);
@@ -143,25 +143,25 @@ bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
 
 void AdModel::on_entry_changed(QString &dn) {
     // TODO: confirm what kind of search is this, linear?
-    auto items = this->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    QList<QStandardItem *> items = this->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
 
     // TODO: not sure if any bad matches can happen, maybe?
     if (items.size() > 0) {
-        auto dn_item = items[0];
-        auto dn_index = dn_item->index();
+        QStandardItem *dn_item = items[0];
+        QModelIndex dn_index = dn_item->index();
 
         // Compose indexes for all columns
         auto indexes = QList<QModelIndex>(); 
         for (int i = 0; i < AdModel::Column::COUNT; i++) {
-            auto index = dn_index.siblingAtColumn(i);
+            QModelIndex index = dn_index.siblingAtColumn(i);
             indexes.push_back(index);
         }
 
         // Compose the row of items from indexes
         auto row = QList<QStandardItem *>();
         for (int i = 0; i < AdModel::Column::COUNT; i++) {
-            auto index = indexes[i];
-            auto item = this->itemFromIndex(index);
+            QModelIndex index = indexes[i];
+            QStandardItem *item = this->itemFromIndex(index);
             row.push_back(item);
         }
 

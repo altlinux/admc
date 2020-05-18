@@ -9,25 +9,25 @@
 
 void AttributesView::set_target_from_selection(const QItemSelection &selected, const QItemSelection &) {
     // Convert selection to dn
-    auto indexes = selected.indexes();
+    QList<QModelIndex> indexes = selected.indexes();
     if (indexes.size() == 0) {
         return;
     }
 
-    auto index = indexes[0];
+    QModelIndex index = indexes[0];
     this->target_dn = index.siblingAtColumn(AdModel::Column::DN).data().toString();
 
     // Clear model of previous root
     // TODO: get rid of cast
-    auto model = qobject_cast<AttributesModel *>(this->model());
+    AttributesModel *model = qobject_cast<AttributesModel *>(this->model());
     if (model != nullptr) {
         model->change_target(this->target_dn);
     }
 
     // Populate model with attributes of new root
-    auto attributes = load_attributes(this->target_dn);
+    QMap<QString, QList<QString>> attributes = load_attributes(this->target_dn);
     for (auto attribute : attributes.keys()) {
-        auto values = attributes[attribute];
+        QList<QString> values = attributes[attribute];
 
         for (auto value : values) {
             auto name_item = new QStandardItem(attribute);

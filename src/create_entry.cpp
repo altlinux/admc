@@ -53,7 +53,7 @@ void create_entry_dialog(NewEntryType type) {
     }
 
     bool ok;
-    auto name = QInputDialog::getText(nullptr, dialog_title, input_label, QLineEdit::Normal, "", &ok);
+    QString name = QInputDialog::getText(nullptr, dialog_title, input_label, QLineEdit::Normal, "", &ok);
 
     // TODO: maybe expand tree to newly created entry?
 
@@ -103,7 +103,7 @@ void create_entry_dialog(NewEntryType type) {
             }
         }
 
-        auto dn = suffix + "=" + name + "," + parent_dn;
+        QString dn = suffix + "=" + name + "," + parent_dn;
 
         bool success = create_entry(name, dn, parent_dn, type);
 
@@ -114,15 +114,15 @@ void create_entry_dialog(NewEntryType type) {
 
             // TODO: for some reason doesnt work with expanded parent
 
-            auto items = admodel->findItems(parent_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+            QList<QStandardItem *> items = admodel->findItems(parent_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
 
             if (items.size() > 0) {
-                auto dn_item = items[0];
-                auto dn_index = dn_item->index();
-                auto parent_index = dn_index.siblingAtColumn(0);
-                auto parent = admodel->itemFromIndex(parent_index);
+                QStandardItem *dn_item = items[0];
+                QModelIndex dn_index = dn_item->index();
+                QModelIndex parent_index = dn_index.siblingAtColumn(0);
+                QStandardItem *parent = admodel->itemFromIndex(parent_index);
 
-                auto fetched_already = !admodel->canFetchMore(parent_index);
+                bool fetched_already = !admodel->canFetchMore(parent_index);
                 if (fetched_already) {
                     load_and_add_row(parent, dn);
                 }
