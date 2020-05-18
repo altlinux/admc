@@ -164,6 +164,35 @@ void fake_create_group(const QString &dn, const QString &parent, const QString &
     };
 }
 
+void fake_object_delete_recurse(const QString &dn) {
+    if (fake_children.contains(dn)) {
+        QList<QString> children = fake_children[dn];
+
+        for (auto child : children) {
+            fake_object_delete_recurse(child);
+        }
+
+        fake_children.remove(dn);
+    }
+
+    fake_attributes.remove(dn);
+}
+
+void fake_object_delete(const QString &dn) {
+    fake_object_delete_recurse(dn);
+
+    // Remove original deleted entry from parent's children list
+    for (auto key : fake_children.keys()) {
+        QList<QString> *children = &fake_children[key];
+        
+        if (children->contains(dn)) {
+            int i = children->indexOf(dn);
+
+            children->removeAt(i);
+        }
+    }
+}
+
 // -----------------------------------------------------------------
 // REAL STUFF
 // -----------------------------------------------------------------
@@ -334,6 +363,29 @@ bool create_entry(const QString &name, const QString &dn, const QString &parent_
             break;
         }
     }
+
+    if (result == AD_SUCCESS) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool delete_entry(const QString &dn) {
+    if (FAKE_AD) {
+        fake_object_delete(dn);
+
+        return true;
+    }
+
+    const char *dn_cstr = qstring_to_cstr(dn);
+
+    // TODO: handle all possible side-effects?
+    // probably a lot of stuff, like group membership and stuff
+
+    // TODO: handle errors
+
+    int result = ad_object_delete(dn_cstr);
 
     if (result == AD_SUCCESS) {
         return true;

@@ -81,6 +81,14 @@ int main(int argc, char **argv) {
         QObject::connect(
             entry_context_menu, &EntryContextMenu::attributes_clicked,
             ui.attributes_view, &AttributesView::set_target_dn);
+
+        // Delete action signals
+        QObject::connect(
+            entry_context_menu, &EntryContextMenu::delete_clicked,
+            &ad_model, &AdModel::on_entry_deleted);
+        QObject::connect(
+            entry_context_menu, &EntryContextMenu::delete_clicked,
+            &attributes_model, &AttributesModel::on_entry_deleted);
     }
 
     // Set root index of contents view to selection of containers view

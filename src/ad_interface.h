@@ -23,5 +23,6 @@ QList<QString> load_children(const QString &dn);
 QMap<QString, QList<QString>> load_attributes(const QString &dn);
 bool set_attribute(const QString &dn, const QString &attribute, const QString &value);
 bool create_entry(const QString &name, const QString &dn, const QString &parent_dn, NewEntryType type);
+bool delete_entry(const QString &dn);
 
 #endif /* AD_INTERFACE_H */

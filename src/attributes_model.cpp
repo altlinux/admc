@@ -40,3 +40,10 @@ void AttributesModel::change_target(const QString &new_target_dn) {
     this->setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
     this->setHorizontalHeaderItem(Column::Value, new QStandardItem("Value"));
 }
+
+void AttributesModel::on_entry_deleted(const QString &dn) {
+    // Clear data if current target was deleted
+    if (this->target_dn == dn) {
+        this->change_target(QString(""));
+    }
+}

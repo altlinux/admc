@@ -32,6 +32,7 @@ public:
 
 public slots:
     void on_entry_changed(const QString &dn); 
+    void on_entry_deleted(const QString &dn); 
 
 private:
 

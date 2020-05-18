@@ -172,3 +172,14 @@ void AdModel::on_entry_changed(const QString &dn) {
         load_row(row, dn);
     }
 }
+
+void AdModel::on_entry_deleted(const QString &dn) {
+    QList<QStandardItem *> items = this->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+
+    if (items.size() > 0) {
+        QStandardItem *dn_item = items[0];
+        QModelIndex dn_index = dn_item->index();
+        
+        this->removeRow(dn_index.row(), dn_index.parent());
+    }
+}
