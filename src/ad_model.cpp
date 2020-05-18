@@ -73,7 +73,6 @@ void load_row(QList<QStandardItem*> row, QString dn) {
     // NOTE: store special invisible attributes in Roles of first item
     // TODO: shouldn't store these in roles
     row[0]->setData(advanced_view, AdModel::Roles::AdvancedViewOnly);
-    row[0]->setData(true, AdModel::Roles::CanFetch);
     row[0]->setData(is_container, AdModel::Roles::IsContainer);
 }
 
@@ -85,6 +84,10 @@ void load_and_add_row(QStandardItem *parent, QString &dn) {
     }
 
     load_row(row, dn);
+
+    // Set fetch flag because row is new and can be fetched
+    row[0]->setData(true, AdModel::Roles::CanFetch);
+
     parent->appendRow(row);
 }
 

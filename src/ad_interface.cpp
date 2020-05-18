@@ -80,7 +80,7 @@ void fake_ad_init() {
         {"showInAdvancedViewOnly", {"TRUE"}},
     };
 
-    fake_children[QString("CN=A,") + HEAD_DN] = {
+    fake_children[QString("CN=B,") + HEAD_DN] = {
         QString("CN=B's child,CN=B,") + HEAD_DN
     };
     fake_attributes[QString("CN=B's child,CN=B,") + HEAD_DN] = {

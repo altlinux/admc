@@ -18,8 +18,7 @@ void ContentsView::set_root_index_from_selection(const QItemSelection &selected,
     // Map from proxy model of given index to source model of this view (if needed)
     QModelIndex source_index = indexes[0];
     {
-        const QAbstractItemModel *model = source_index.model();
-        const QSortFilterProxyModel *proxy_model = qobject_cast<const QSortFilterProxyModel *>(model);
+        auto proxy_model = qobject_cast<const QSortFilterProxyModel *>(source_index.model());
         if (proxy_model != nullptr) {
             source_index = proxy_model->mapToSource(source_index);
         }
@@ -28,8 +27,7 @@ void ContentsView::set_root_index_from_selection(const QItemSelection &selected,
     // Map from source model of this view to proxy model of this view (if needed)
     QModelIndex contents_index = source_index;
     {
-        const QAbstractItemModel *model = this->model();
-        const QSortFilterProxyModel *proxy_model = qobject_cast<const QSortFilterProxyModel *>(model);
+        auto proxy_model = qobject_cast<const QSortFilterProxyModel *>(this->model());
         if (proxy_model != nullptr) {
             contents_index = proxy_model->mapFromSource(contents_index);
         }
