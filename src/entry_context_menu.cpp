@@ -16,6 +16,7 @@ EntryContextMenu::EntryContextMenu(QWidget *parent) : QMenu(parent) {
     QAction *delete_action = new QAction("Delete", this);
     connect(delete_action, &QAction::triggered, [this]() {
         delete_entry(this->target_dn);
+
         emit delete_clicked(this->target_dn);
     });
 
@@ -33,10 +34,13 @@ void EntryContextMenu::connect_view(const QTreeView &view) {
 
             // Get DN of clicked entry
             QModelIndex index = view.indexAt(pos);
-            QModelIndex dn_index = index.siblingAtColumn(AdModel::Column::DN);
-            QString dn = dn_index.data().toString();
 
-            this->target_dn = dn;
-            this->popup(global_pos);
+            if (index.isValid()) {
+                QModelIndex dn_index = index.siblingAtColumn(AdModel::Column::DN);
+                QString dn = dn_index.data().toString();
+
+                this->target_dn = dn;
+                this->popup(global_pos);
+            }
     });
 }
