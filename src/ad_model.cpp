@@ -4,6 +4,7 @@
 #include "constants.h"
 
 #include <QMap>
+#include <QIcon>
 
 void load_row(QList<QStandardItem*> row, QString dn) {
     QMap<QString, QList<QString>> attributes = load_attributes(dn);
@@ -74,6 +75,28 @@ void load_row(QList<QStandardItem*> row, QString dn) {
     // TODO: shouldn't store these in roles
     row[0]->setData(advanced_view, AdModel::Roles::AdvancedViewOnly);
     row[0]->setData(is_container, AdModel::Roles::IsContainer);
+
+    // Set icon
+    // NOTE: default to question mark for unhandled cases (to let you know to handle them)
+    // TODO: change to custom, good icons, add those icons to installation?
+    QString icon_name = "dialog-question";
+    QList<QString> objectClass = attributes["objectClass"];
+    if (objectClass.contains("groupPolicyContainer")) {
+        icon_name = "x-office-address-book";
+    } else if (objectClass.contains("container")) {
+        icon_name = "folder";
+    } else if (objectClass.contains("organizationalUnit")) {
+        icon_name = "network-workgroup";
+    } else if (objectClass.contains("person")) {
+        icon_name = "avatar-default";
+    } else if (objectClass.contains("group")) {
+        icon_name = "application-x-smb-workgroup";
+    } else if (objectClass.contains("builtinDomain")) {
+        icon_name = "emblem-system";
+    }
+
+    QIcon icon = QIcon::fromTheme(icon_name);
+    row[0]->setIcon(icon);
 }
 
 void load_and_add_row(QStandardItem *parent, QString &dn) {
