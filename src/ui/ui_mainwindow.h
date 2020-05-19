@@ -84,7 +84,9 @@ public:
         contents_view = new ContentsView(splitter);
         contents_view->setObjectName(QString::fromUtf8("contents_view"));
         contents_view->setContextMenuPolicy(Qt::CustomContextMenu);
+        contents_view->setAcceptDrops(true);
         contents_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        contents_view->setDragDropMode(QAbstractItemView::DragDrop);
         contents_view->setSelectionMode(QAbstractItemView::SingleSelection);
         contents_view->setRootIsDecorated(false);
         contents_view->setItemsExpandable(false);

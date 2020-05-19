@@ -6,7 +6,7 @@
 #include <QMap>
 #include <QIcon>
 
-void load_row(QList<QStandardItem*> row, QString dn) {
+void load_row(QList<QStandardItem*> row, const QString &dn) {
     QMap<QString, QList<QString>> attributes = load_attributes(dn);
 
     // TODO: get rid of "if (x.contains(y))"
@@ -18,16 +18,12 @@ void load_row(QList<QStandardItem*> row, QString dn) {
     }
 
     // Category
-    QString category = dn;
+    QString category = "none";
     if (attributes.contains("objectCategory")) {
-        // NOTE: raw category is given as DN
         // TODO: convert it completely (turn '-' into ' ')
+        // NOTE: raw category is given as DN
         QString category_as_dn = attributes["objectCategory"][0];
-        int equals_index = category_as_dn.indexOf('=') + 1;
-        int comma_index = category_as_dn.indexOf(',');
-        int segment_length = comma_index - equals_index;
-        // TODO: check what happens if equals is negative
-        category = category_as_dn.mid(equals_index, segment_length);
+        category = extract_name_from_dn(category_as_dn);
     }
 
     // Description
@@ -81,6 +77,10 @@ void load_row(QList<QStandardItem*> row, QString dn) {
     // TODO: change to custom, good icons, add those icons to installation?
     QString icon_name = "dialog-question";
     QList<QString> objectClass = attributes["objectClass"];
+    for (auto o : objectClass) {
+        printf("class=%s\n", qPrintable(o));
+    }
+
     if (objectClass.contains("groupPolicyContainer")) {
         icon_name = "x-office-address-book";
     } else if (objectClass.contains("container")) {
@@ -94,12 +94,13 @@ void load_row(QList<QStandardItem*> row, QString dn) {
     } else if (objectClass.contains("builtinDomain")) {
         icon_name = "emblem-system";
     }
+        printf("icon_name=%s\n", qPrintable(icon_name));
 
     QIcon icon = QIcon::fromTheme(icon_name);
     row[0]->setIcon(icon);
 }
 
-void load_and_add_row(QStandardItem *parent, QString &dn) {
+void load_and_add_row(QStandardItem *parent, const QString &dn) {
     auto row = QList<QStandardItem *>();
 
     for (int i = 0; i < AdModel::Column::COUNT; i++) {
@@ -123,7 +124,6 @@ AdModel::AdModel(): QStandardItemModel(0, Column::COUNT) {
     QStandardItem *invis_root = this->invisibleRootItem();
     auto head_dn = QString(HEAD_DN);
     load_and_add_row(invis_root, head_dn);
-
 }
 
 bool AdModel::canFetchMore(const QModelIndex &parent) const {
@@ -204,5 +204,29 @@ void AdModel::on_entry_deleted(const QString &dn) {
         QModelIndex dn_index = dn_item->index();
         
         this->removeRow(dn_index.row(), dn_index.parent());
+    }
+}
+
+void AdModel::on_user_moved(const QString &old_dn, const QString &new_dn, const QString &new_parent_dn) {
+    // Remove old entry from model
+    QList<QStandardItem *> old_items = this->findItems(old_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    if (old_items.size() > 0) {
+        QStandardItem *dn_item = old_items[0];
+        QModelIndex dn_index = dn_item->index();
+        
+        this->removeRow(dn_index.row(), dn_index.parent());
+    }
+
+    printf("on_user_moved: %s %s\n", qPrintable(new_dn), qPrintable(new_parent_dn));
+
+
+    // Load entry at new parent
+    QList<QStandardItem *> parent_items = this->findItems(new_parent_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    if (parent_items.size() > 0) {
+        QStandardItem *parent = parent_items[0];
+
+        printf("xd\n");
+
+        load_and_add_row(parent, new_dn);
     }
 }

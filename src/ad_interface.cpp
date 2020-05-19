@@ -70,15 +70,15 @@ void fake_ad_init() {
 
     fake_attributes[QString("CN=C,") + HEAD_DN] = {
         {"name", {"C"}},
-        {"objectClass", {"container"}},
-        {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
+        {"objectClass", {"person"}},
+        {"objectCategory", {"CN=Person,CN=Schema,CN=Configuration"}},
         {"showInAdvancedViewOnly", {"FALSE"}},
     };
 
     fake_attributes[QString("CN=D,") + HEAD_DN] = {
         {"name", {"D"}},
-        {"objectClass", {"container"}},
-        {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
+        {"objectClass", {"person"}},
+        {"objectCategory", {"CN=Person,CN=Schema,CN=Configuration"}},
         {"showInAdvancedViewOnly", {"TRUE"}},
     };
 
@@ -193,6 +193,18 @@ void fake_object_delete(const QString &dn) {
             children->removeAt(i);
         }
     }
+}
+
+void fake_move_user(const QString &user_dn, const QString &container_dn) {
+    QString user_name = extract_name_from_dn(user_dn);
+    QString new_dn = "CN=" + user_name + "," + container_dn;
+
+    // TODO: does this work ok?
+    fake_attributes[new_dn] = fake_attributes[user_dn];
+
+    fake_object_delete(user_dn);
+
+    fake_children[container_dn].push_back(user_dn);
 }
 
 // -----------------------------------------------------------------
@@ -396,4 +408,57 @@ void delete_entry(const QString &dn) {
     if (result == AD_SUCCESS) {
         emit ad_interface.entry_deleted(dn);
     }
+}
+
+void move_user(const QString &user_dn, const QString &container_dn) {
+    int result = AD_INVALID_DN;
+
+    // TODO: duplicated
+    QString user_name = extract_name_from_dn(user_dn);
+    QString new_dn = "CN=" + user_name + "," + container_dn;
+
+    printf("fake move %s %s\n", qPrintable(user_dn), qPrintable(container_dn));
+
+    if (FAKE_AD) {
+        fake_move_user(user_dn, container_dn);
+
+        result = AD_SUCCESS;
+    } else {
+        const char *user_dn_cstr = qstring_to_cstr(user_dn);
+        const char *container_dn_cstr = qstring_to_cstr(container_dn);
+
+        result = ad_move_user(user_dn_cstr, container_dn_cstr);
+    }
+
+    if (result == AD_SUCCESS) {
+        emit ad_interface.user_moved(user_dn, new_dn, container_dn);
+    }
+}
+
+// "CN=foo,CN=bar,DC=domain,DC=com"
+// =>
+// "foo"
+QString extract_name_from_dn(const QString &dn) {
+    int equals_i = dn.indexOf('=') + 1;
+    int comma_i = dn.indexOf(',');
+    int segment_length = comma_i - equals_i;
+
+    QString name = dn.mid(equals_i, segment_length);
+
+    printf("extract_name_from_dn: %s %s\n", qPrintable(dn), qPrintable(name));
+
+    return name;
+}
+
+// "CN=foo,CN=bar,DC=domain,DC=com"
+// =>
+// "CN=bar,DC=domain,DC=com"
+QString extract_parent_dn_from_dn(const QString &dn) {
+    int comma_i = dn.indexOf(',');
+
+    QString parent_dn = dn.mid(comma_i + 1);
+
+    printf("extract_parent_dn_from_dn: %s %s\n", qPrintable(dn), qPrintable(parent_dn));
+
+    return parent_dn;
 }

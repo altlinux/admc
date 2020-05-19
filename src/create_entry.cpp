@@ -103,7 +103,7 @@ void create_entry_dialog(NewEntryType type) {
             }
         }
 
-        QString dn = suffix + "=" + name + "," + parent_dn;
+        const QString dn = suffix + "=" + name + "," + parent_dn;
 
         bool success = create_entry(name, dn, parent_dn, type);
 

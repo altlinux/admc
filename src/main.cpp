@@ -98,6 +98,9 @@ int main(int argc, char **argv) {
     QObject::connect(
         &ad_interface, &AdInterface::entry_changed,
         &ad_model, &AdModel::on_entry_changed);
+    QObject::connect(
+        &ad_interface, &AdInterface::user_moved,
+        &ad_model, &AdModel::on_user_moved);
 
     // Set root index of contents view to selection of containers view
     QObject::connect(

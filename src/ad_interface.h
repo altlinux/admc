@@ -27,6 +27,7 @@ public slots:
 signals:
     void entry_deleted(const QString &dn);
     void entry_changed(const QString &dn);
+    void user_moved(const QString &old_dn, const QString &new_dn , const QString &new_parent_dn);
 
 private:
 
@@ -42,5 +43,8 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
 bool create_entry(const QString &name, const QString &dn, const QString &parent_dn, NewEntryType type);
 void delete_entry(const QString &dn);
 bool set_attribute(const QString &dn, const QString &attribute, const QString &value);
+void move_user(const QString &user_dn, const QString &container_dn);
+QString extract_name_from_dn(const QString &dn);
+QString extract_parent_dn_from_dn(const QString &dn);
 
 #endif /* AD_INTERFACE_H */
