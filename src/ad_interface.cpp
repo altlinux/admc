@@ -409,6 +409,8 @@ bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
     }
 
     if (result == AD_SUCCESS) {
+        emit ad_interface.entry_created(dn);
+
         return true;
     } else {
         return false;

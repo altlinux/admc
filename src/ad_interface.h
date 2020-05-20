@@ -27,6 +27,7 @@ public slots:
 signals:
     void entry_deleted(const QString &dn);
     void entry_changed(const QString &dn);
+    void entry_created(const QString &dn);
     void user_moved(const QString &old_dn, const QString &new_dn , const QString &new_parent_dn);
 
 private:

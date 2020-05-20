@@ -4,8 +4,6 @@
 
 #include <QStandardItemModel>
 
-void load_and_add_row(QStandardItem *parent, const QString &dn);
-
 class AdModel: public QStandardItemModel {
 Q_OBJECT
 
@@ -34,6 +32,7 @@ public slots:
     void on_entry_changed(const QString &dn); 
     void on_entry_deleted(const QString &dn); 
     void on_user_moved(const QString &old_dn, const QString &new_dn, const QString &new_parent_dn);
+    void on_entry_created(const QString &dn); 
 
 private:
 

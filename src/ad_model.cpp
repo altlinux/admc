@@ -232,3 +232,22 @@ void AdModel::on_user_moved(const QString &old_dn, const QString &new_dn, const 
         }
     }
 }
+
+void AdModel::on_entry_created(const QString &dn) {
+    // Load entry to model if it's parent has already been fetched
+    // If it hasn't been fetched, then this new entry will be loaded with all other children when the parent is fetched
+    QString parent_dn = extract_parent_dn_from_dn(parent_dn);
+    QList<QStandardItem *> items = this->findItems(parent_dn, Qt::MatchExactly | Qt::MatchRecursive, Column::DN);
+
+    if (items.size() > 0) {
+        QStandardItem *dn_item = items[0];
+        QModelIndex dn_index = dn_item->index();
+        QModelIndex parent_index = dn_index.siblingAtColumn(0);
+        QStandardItem *parent = this->itemFromIndex(parent_index);
+
+        bool fetched_already = !this->canFetchMore(parent_index);
+        if (fetched_already) {
+            load_and_add_row(parent, dn);
+        }
+    }
+}

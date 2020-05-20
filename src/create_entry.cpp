@@ -1,13 +1,10 @@
 
 #include "create_entry.h"
 #include "ad_interface.h"
-#include "ad_model.h"
 #include "constants.h"
 
 #include <QInputDialog>
 #include <QString>
-
-AdModel *admodel = NULL;
 
 void create_entry_dialog(NewEntryType type) {
     // Open new user dialog and name of entry from it
@@ -105,31 +102,7 @@ void create_entry_dialog(NewEntryType type) {
 
         const QString dn = suffix + "=" + name + "," + parent_dn;
 
-        bool success = create_entry(name, dn, type);
-
-        if (success) {
-            // Load entry to model if it's parent has already been fetched
-            // If it hasn't been fetched, then this new entry will be loaded with all other children when the parent is fetched
-
-
-            // TODO: for some reason doesnt work with expanded parent
-
-            QList<QStandardItem *> items = admodel->findItems(parent_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
-
-            if (items.size() > 0) {
-                QStandardItem *dn_item = items[0];
-                QModelIndex dn_index = dn_item->index();
-                QModelIndex parent_index = dn_index.siblingAtColumn(0);
-                QStandardItem *parent = admodel->itemFromIndex(parent_index);
-
-                bool fetched_already = !admodel->canFetchMore(parent_index);
-                if (fetched_already) {
-                    load_and_add_row(parent, dn);
-                }
-            }
-        } else {
-
-        }
+        create_entry(name, dn, type);
     }
 }
 
@@ -147,8 +120,4 @@ void create_ou_dialog() {
 
 void create_group_dialog() {
     create_entry_dialog(NewEntryType::Group);
-}
-
-void create_entry_init(AdModel *admodel_in) {
-    admodel = admodel_in;
 }

@@ -35,8 +35,6 @@ int main(int argc, char **argv) {
 
     AdModel ad_model;
 
-    create_entry_init(&ad_model);
-
     // Attributes
     AttributesModel attributes_model;
     ui.attributes_view->setModel(&attributes_model);
@@ -88,7 +86,7 @@ int main(int argc, char **argv) {
             delete_entry);
     }
 
-    // Update models on entry changes
+    // Connect signals to update models on when entries are modified
     QObject::connect(
         &ad_interface, &AdInterface::entry_deleted,
         &ad_model, &AdModel::on_entry_deleted);
@@ -101,6 +99,9 @@ int main(int argc, char **argv) {
     QObject::connect(
         &ad_interface, &AdInterface::user_moved,
         &ad_model, &AdModel::on_user_moved);
+    QObject::connect(
+        &ad_interface, &AdInterface::entry_created,
+        &ad_model, &AdModel::on_entry_created);
 
     // Set root index of contents view to selection of containers view
     QObject::connect(
