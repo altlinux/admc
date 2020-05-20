@@ -269,7 +269,10 @@ int ad_get_error_num() {
 	userprincipalname
 	returns AD_SUCCESS on success 
 */
-int ad_create_user(const char *username, const char *dn) {
+int ad_create_user(const char *username_in, const char *dn_in) {
+    char *username = strdup(username_in);
+    char *dn = strdup(dn_in);
+
 	LDAP *ds;
 	LDAPMod *attrs[5];
 	LDAPMod attr1, attr2, attr3, attr4;
@@ -321,7 +324,9 @@ int ad_create_user(const char *username, const char *dn) {
 		ad_error_code=AD_SUCCESS;
 	}
 
-	free(domain);
+    free(domain);
+    free(username);
+    free(dn);
 	return ad_error_code;
 }
 
