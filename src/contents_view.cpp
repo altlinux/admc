@@ -121,7 +121,7 @@ void ContentsView::dragMoveEvent(QDragMoveEvent *event) {
     // hovered entry
     // This only changes the drag icon
 
-    QTreeView::dragMoveEvent(event);
+    // QTreeView::dragMoveEvent(event);
     
     QPoint pos = event->pos();
     QModelIndex index = this->indexAt(pos);
@@ -138,7 +138,6 @@ void ContentsView::dragMoveEvent(QDragMoveEvent *event) {
 }
 
 void ContentsView::dropEvent(QDropEvent *event) {
-    QTreeView::dropEvent(event);
     // TODO: should accept? determining whether move succeeded is delayed until ad request is complete, so not sure how that works out
     // event->acceptProposedAction();
 

@@ -215,14 +215,20 @@ void AdModel::on_user_moved(const QString &old_dn, const QString &new_dn, const 
 
     printf("on_user_moved: %s %s\n", qPrintable(new_dn), qPrintable(new_parent_dn));
 
-
-    // Load entry at new parent
+    // Need to load entry at new parent if the parent has already
+    // been expanded/fetched
+    // NOTE: loading if parent has already been fetched will
+    // create a duplicate
     QList<QStandardItem *> parent_items = this->findItems(new_parent_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
     if (parent_items.size() > 0) {
-        QStandardItem *parent = parent_items[0];
+        QStandardItem *parent_dn_item = parent_items[0];
+        QModelIndex parent_dn_index = parent_dn_item->index();
+        QModelIndex parent_index = parent_dn_index.siblingAtColumn(Column::Name);
 
-        printf("xd\n");
+        QStandardItem *parent_item = this->itemFromIndex(parent_index);
 
-        load_and_add_row(parent, new_dn);
+        if (!this->canFetchMore(parent_index)) {
+            load_and_add_row(parent_item, new_dn);
+        }
     }
 }
