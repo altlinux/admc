@@ -108,11 +108,6 @@ int main(int argc, char **argv) {
         ui.containers_view->selectionModel(), &QItemSelectionModel::selectionChanged,
         ui.contents_view, &ContentsView::set_root_index_from_selection);
     
-    // Update entry values in AD model when that entry's attributes are changed in attributes view
-    QObject::connect(
-        &attributes_model, &AttributesModel::entry_changed,
-        &ad_model, &AdModel::on_entry_changed);
-
     // Connect menubar "New" submenu's to entry creation dialogs
     QObject::connect(
         ui.menubar_new_user, &QAction::triggered,
