@@ -6,7 +6,31 @@ extern "C" {
 #include "active_directory.h"
 }
 
-// TODO: replace C active_directory.h with C++ version
+// TODO: replace C active_directory.h with C++ version or other better version
+
+// "CN=foo,CN=bar,DC=domain,DC=com"
+// =>
+// "foo"
+QString extract_name_from_dn(const QString &dn) {
+    int equals_i = dn.indexOf('=') + 1;
+    int comma_i = dn.indexOf(',');
+    int segment_length = comma_i - equals_i;
+
+    QString name = dn.mid(equals_i, segment_length);
+
+    return name;
+}
+
+// "CN=foo,CN=bar,DC=domain,DC=com"
+// =>
+// "CN=bar,DC=domain,DC=com"
+QString extract_parent_dn_from_dn(const QString &dn) {
+    int comma_i = dn.indexOf(',');
+
+    QString parent_dn = dn.mid(comma_i + 1);
+
+    return parent_dn;
+}
 
 // -----------------------------------------------------------------
 // FAKE STUFF
@@ -120,8 +144,9 @@ void fake_create_add_child(const QString &dn, const QString &parent) {
     fake_children[parent].push_back(dn);
 }
 
-void fake_create_user(const QString &dn, const QString &parent, const QString &name) {
-    fake_create_add_child(dn, parent);
+void fake_create_user(const QString &name, const QString &dn) {
+    QString parent_dn = extract_parent_dn_from_dn(dn);
+    fake_create_add_child(dn, parent_dn);
 
     fake_attributes[dn] = {
         {"name", {name}},
@@ -131,8 +156,9 @@ void fake_create_user(const QString &dn, const QString &parent, const QString &n
     };
 }
 
-void fake_create_computer(const QString &dn, const QString &parent, const QString &name) {
-    fake_create_add_child(dn, parent);
+void fake_create_computer(const QString &name, const QString &dn) {
+    QString parent_dn = extract_parent_dn_from_dn(dn);
+    fake_create_add_child(dn, parent_dn);
 
     fake_attributes[dn] = {
         {"name", {name}},
@@ -142,8 +168,9 @@ void fake_create_computer(const QString &dn, const QString &parent, const QStrin
     };
 }
 
-void fake_create_ou(const QString &dn, const QString &parent, const QString &name) {
-    fake_create_add_child(dn, parent);
+void fake_create_ou(const QString &name, const QString &dn) {
+    QString parent_dn = extract_parent_dn_from_dn(dn);
+    fake_create_add_child(dn, parent_dn);
 
     fake_attributes[dn] = {
         {"name", {name}},
@@ -154,8 +181,9 @@ void fake_create_ou(const QString &dn, const QString &parent, const QString &nam
     };
 }
 
-void fake_create_group(const QString &dn, const QString &parent, const QString &name) {
-    fake_create_add_child(dn, parent);
+void fake_create_group(const QString &name, const QString &dn) {
+    QString parent_dn = extract_parent_dn_from_dn(dn);
+    fake_create_add_child(dn, parent_dn);
 
     fake_attributes[dn] = {
         {"name", {name}},
@@ -330,25 +358,25 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
 }
 
 // TODO: can probably make a create_anything() function with enum parameter
-bool create_entry(const QString &name, const QString &dn, const QString &parent_dn, NewEntryType type) {
+bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
     // TODO: handle errors
 
     if (FAKE_AD) {
         switch (type) {
             case User: {
-                fake_create_user(dn, parent_dn, name);
+                fake_create_user(name, dn);
                 break;
             }
             case Computer: {
-                fake_create_computer(dn, parent_dn, name);
+                fake_create_computer(name, dn);
                 break;
             }
             case OU: {
-                fake_create_ou(dn, parent_dn, name);
+                fake_create_ou(name, dn);
                 break;
             }
             case Group: {
-                fake_create_group(dn, parent_dn, name);
+                fake_create_group(name, dn);
                 break;
             }
         }
@@ -357,25 +385,25 @@ bool create_entry(const QString &name, const QString &dn, const QString &parent_
     }
 
     const char *name_cstr = qstring_to_cstr(name);
-    const char *parent_cstr = qstring_to_cstr(parent_dn);
+    const char *dn_cstr = qstring_to_cstr(dn);
 
     int result = AD_INVALID_DN;
 
     switch (type) {
         case User: {
-            result = ad_create_user(name_cstr, parent_cstr);
+            result = ad_create_user(name_cstr, dn_cstr);
             break;
         }
         case Computer: {
-            result = ad_create_computer(name_cstr, parent_cstr);
+            result = ad_create_computer(name_cstr, dn_cstr);
             break;
         }
         case OU: {
-            result = ad_ou_create(name_cstr, parent_cstr);
+            result = ad_ou_create(name_cstr, dn_cstr);
             break;
         }
         case Group: {
-            result = ad_group_create(name_cstr, parent_cstr);
+            result = ad_group_create(name_cstr, dn_cstr);
             break;
         }
     }
@@ -431,28 +459,4 @@ void move_user(const QString &user_dn, const QString &container_dn) {
     if (result == AD_SUCCESS) {
         emit ad_interface.user_moved(user_dn, new_dn, container_dn);
     }
-}
-
-// "CN=foo,CN=bar,DC=domain,DC=com"
-// =>
-// "foo"
-QString extract_name_from_dn(const QString &dn) {
-    int equals_i = dn.indexOf('=') + 1;
-    int comma_i = dn.indexOf(',');
-    int segment_length = comma_i - equals_i;
-
-    QString name = dn.mid(equals_i, segment_length);
-
-    return name;
-}
-
-// "CN=foo,CN=bar,DC=domain,DC=com"
-// =>
-// "CN=bar,DC=domain,DC=com"
-QString extract_parent_dn_from_dn(const QString &dn) {
-    int comma_i = dn.indexOf(',');
-
-    QString parent_dn = dn.mid(comma_i + 1);
-
-    return parent_dn;
 }

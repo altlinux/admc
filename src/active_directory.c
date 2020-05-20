@@ -316,6 +316,8 @@ int ad_create_user(const char *username_in, const char *dn_in) {
 	attrs[3]=&attr4;
 	attrs[4]=NULL;
 
+    printf(">>>%s\n", upn);
+
 	result=ldap_add_s(ds, dn, attrs);
 	if(result!=LDAP_SUCCESS) {
 		snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in ldap_add %s", ldap_err2string(result));

@@ -40,7 +40,7 @@ bool ad_interface_login();
 QList<QString> load_children(const QString &dn);
 QMap<QString, QList<QString>> load_attributes(const QString &dn);
 bool set_attribute(const QString &dn, const QString &attribute, const QString &value);
-bool create_entry(const QString &name, const QString &dn, const QString &parent_dn, NewEntryType type);
+bool create_entry(const QString &name, const QString &dn, NewEntryType type);
 void delete_entry(const QString &dn);
 bool set_attribute(const QString &dn, const QString &attribute, const QString &value);
 void move_user(const QString &user_dn, const QString &container_dn);

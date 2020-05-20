@@ -105,7 +105,7 @@ void create_entry_dialog(NewEntryType type) {
 
         const QString dn = suffix + "=" + name + "," + parent_dn;
 
-        bool success = create_entry(name, dn, parent_dn, type);
+        bool success = create_entry(name, dn, type);
 
         if (success) {
             // Load entry to model if it's parent has already been fetched
