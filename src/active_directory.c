@@ -340,7 +340,10 @@ int ad_create_user(const char *username_in, const char *dn_in) {
 	userAccountControl=4128
 	returns AD_SUCCESS on success 
 */
-int ad_create_computer(const char *name, const char *dn) {
+int ad_create_computer(const char *name_in, const char *dn_in) {
+    char *name = strdup(name_in);
+    char *dn = strdup(dn_in);
+
     LDAP *ds;
     LDAPMod *attrs[4];
     LDAPMod attr1, attr2, attr3;
@@ -383,6 +386,10 @@ int ad_create_computer(const char *name, const char *dn) {
     } else {
         ad_error_code=AD_SUCCESS;
     }
+
+    free(dn);
+    free(name);
+
     return ad_error_code;
 }
 
@@ -1000,7 +1007,10 @@ int ad_unlock_user(const char *dn) {
  sets objectclass=group and samaccountname=groupname
   Returns AD_SUCCESS on success 
 */
-int ad_group_create(const char *group_name, const char *dn) {
+int ad_group_create(const char *group_name_in, const char *dn_in) {
+    char *group_name = strdup(group_name_in);
+    char *dn = strdup(dn_in);
+
 	LDAP *ds;
 	LDAPMod *attrs[4];
 	LDAPMod attr1, attr2, attr3;
@@ -1041,6 +1051,9 @@ int ad_group_create(const char *group_name, const char *dn) {
 	} else {
 		ad_error_code=AD_SUCCESS;
 	}
+
+    free(group_name);
+    free(dn);
 	return ad_error_code;
 }
 
@@ -1113,7 +1126,10 @@ int ad_group_subtree_remove_user(const char *container_dn, const char *user_dn) 
  sets objectclass=organizationalUnit and name=ou name
   Returns AD_SUCCESS on success 
 */
-int ad_ou_create(const char *ou_name, const char *dn) {
+int ad_ou_create(const char *ou_name_in, const char *dn_in) {
+    char *ou_name = strdup(ou_name_in);
+    char *dn = strdup(dn_in);
+
 	LDAP *ds;
 	LDAPMod *attrs[3];
 	LDAPMod attr1, attr2;
@@ -1146,6 +1162,10 @@ int ad_ou_create(const char *ou_name, const char *dn) {
 	} else {
 		ad_error_code=AD_SUCCESS;
 	}
+
+    free(ou_name);
+    free(dn);
+
 	return ad_error_code;
 }
 
