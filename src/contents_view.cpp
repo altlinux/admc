@@ -82,16 +82,23 @@ void ContentsView::mouseMoveEvent(QMouseEvent *event) {
 
     QDrag *drag = new QDrag(this);
 
-    // Set drag data to the DN of clicked entry
+    // Figure out if this entry can be dragged
+    // Entry has to be a person
     QPoint pos = event->pos();
     QModelIndex index = this->indexAt(pos);
-    QModelIndex dn_index = index.siblingAtColumn(AdModel::Column::DN);
-    QString dn = dn_index.data().toString();
-    QMimeData *mime_data = new QMimeData();
-    mime_data->setText(dn);
-    drag->setMimeData(mime_data);
+    QModelIndex category_index = index.siblingAtColumn(AdModel::Column::Category);
+    QString category_text = category_index.data().toString();
 
-    Qt::DropAction dropAction = drag->exec(Qt::MoveAction);
+    if (category_text == "Person") {
+        // Set drag data to the DN of clicked entry
+        QModelIndex dn_index = index.siblingAtColumn(AdModel::Column::DN);
+        QString dn = dn_index.data().toString();
+        QMimeData *mime_data = new QMimeData();
+        mime_data->setText(dn);
+        drag->setMimeData(mime_data);
+
+        drag->exec(Qt::MoveAction);
+    }
 }
 
 void ContentsView::dragEnterEvent(QDragEnterEvent *event) {
@@ -135,14 +142,26 @@ void ContentsView::dropEvent(QDropEvent *event) {
     // TODO: should accept? determining whether move succeeded is delayed until ad request is complete, so not sure how that works out
     // event->acceptProposedAction();
 
-    printf("drop xd\n");
-
-    QString user_dn = event->mimeData()->text();
+    printf("drop\n");
 
     QPoint pos = event->pos();
-    QModelIndex index = this->indexAt(pos);
-    QModelIndex dn_index = index.siblingAtColumn(AdModel::Column::DN);
-    QString container_dn = dn_index.data().toString();
+    QModelIndex target_index = this->indexAt(pos);
+    QModelIndex target_category_index = target_index.siblingAtColumn(AdModel::Column::Category);
+    QString target_category = target_category_index.data().toString();
 
-    move_user(user_dn, container_dn);
+    // TODO: figure out all possible move targets
+    QList<QString> valid_move_target_categories = {
+        "Container", "Organizational-Unit"
+    };
+    if (valid_move_target_categories.contains(target_category)) {
+        QString user_dn = event->mimeData()->text();
+        
+        QModelIndex target_dn_index = target_index.siblingAtColumn(AdModel::Column::DN);
+        QString target_dn = target_dn_index.data().toString();
+
+        move_user(user_dn, target_dn);
+        printf("dropped with valid target\n");
+    } else {
+        printf("dropped, but invalid target\n");
+    }
 }

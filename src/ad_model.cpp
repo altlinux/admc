@@ -73,28 +73,24 @@ void load_row(QList<QStandardItem*> row, const QString &dn) {
     row[0]->setData(is_container, AdModel::Roles::IsContainer);
 
     // Set icon
-    // NOTE: default to question mark for unhandled cases (to let you know to handle them)
     // TODO: change to custom, good icons, add those icons to installation?
+    // TODO: are there cases where an entry can have multiple icons due to multiple objectClasses and one of them needs to be prioritized?
+    QMap<QString, QString> class_to_icon = {
+        {"groupPolicyContainer", "x-office-address-book"},
+        {"container", "folder"},
+        {"organizationalUnit", "network-workgroup"},
+        {"person", "avatar-default"},
+        {"group", "application-x-smb-workgroup"},
+        {"builtinDomain", "emblem-system"},
+    };
+    QList<QString> objectClasses = attributes["objectClass"];
     QString icon_name = "dialog-question";
-    QList<QString> objectClass = attributes["objectClass"];
-    for (auto o : objectClass) {
-        printf("class=%s\n", qPrintable(o));
+    for (auto c : objectClasses) {
+        if (class_to_icon.contains(c)) {
+            icon_name = class_to_icon[c];
+            break;    
+        }
     }
-
-    if (objectClass.contains("groupPolicyContainer")) {
-        icon_name = "x-office-address-book";
-    } else if (objectClass.contains("container")) {
-        icon_name = "folder";
-    } else if (objectClass.contains("organizationalUnit")) {
-        icon_name = "network-workgroup";
-    } else if (objectClass.contains("person")) {
-        icon_name = "avatar-default";
-    } else if (objectClass.contains("group")) {
-        icon_name = "application-x-smb-workgroup";
-    } else if (objectClass.contains("builtinDomain")) {
-        icon_name = "emblem-system";
-    }
-        printf("icon_name=%s\n", qPrintable(icon_name));
 
     QIcon icon = QIcon::fromTheme(icon_name);
     row[0]->setIcon(icon);

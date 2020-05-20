@@ -417,8 +417,6 @@ void move_user(const QString &user_dn, const QString &container_dn) {
     QString user_name = extract_name_from_dn(user_dn);
     QString new_dn = "CN=" + user_name + "," + container_dn;
 
-    printf("fake move %s %s\n", qPrintable(user_dn), qPrintable(container_dn));
-
     if (FAKE_AD) {
         fake_move_user(user_dn, container_dn);
 
@@ -445,8 +443,6 @@ QString extract_name_from_dn(const QString &dn) {
 
     QString name = dn.mid(equals_i, segment_length);
 
-    printf("extract_name_from_dn: %s %s\n", qPrintable(dn), qPrintable(name));
-
     return name;
 }
 
@@ -457,8 +453,6 @@ QString extract_parent_dn_from_dn(const QString &dn) {
     int comma_i = dn.indexOf(',');
 
     QString parent_dn = dn.mid(comma_i + 1);
-
-    printf("extract_parent_dn_from_dn: %s %s\n", qPrintable(dn), qPrintable(parent_dn));
 
     return parent_dn;
 }
