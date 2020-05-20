@@ -1,5 +1,5 @@
 
-#include "create_entry.h"
+#include "create_entry_dialog.h"
 #include "ad_interface.h"
 #include "constants.h"
 

@@ -5,7 +5,7 @@
 #include "ad_filter.h"
 #include "ad_model.h"
 #include "attributes_model.h"
-#include "create_entry.h"
+#include "create_entry_dialog.h"
 #include "ad_interface.h"
 #include "entry_context_menu.h"
 #include "ui_mainwindow.h"
