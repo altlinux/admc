@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     AttributesList attributes_view(ui.attributes_view);
 
     // Containers
-    AdFilter containers_proxy(ui.menubar_view_advancedView);
+    AdFilter containers_proxy(ui.menubar_view_advancedView, true);
     containers_proxy.setSourceModel(&ad_model);
     ContainersTree containers_tree(ui.containers_view, &containers_proxy);
 
