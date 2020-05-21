@@ -15,7 +15,7 @@ class AdFilter : public QSortFilterProxyModel {
 public:
     explicit AdFilter(AdModel *model, QAction *advanced_view_toggle);
 
-    bool only_show_containers;
+    bool only_show_containers = false;
 
 private slots:
     void on_advanced_view_toggled(bool checked);

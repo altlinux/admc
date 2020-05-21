@@ -25,7 +25,7 @@ public:
     void dropEvent(QDropEvent *event) override;
 
 public slots:
-    void set_root_index_from_selection(const QItemSelection &selected, const QItemSelection &);
+    void on_selected_container_changed(const QModelIndex &source_index);
 
 private:
     QPoint drag_start_position;

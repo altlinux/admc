@@ -61,8 +61,8 @@ int main(int argc, char **argv) {
 
     // Set root index of contents view to selection of containers view
     QObject::connect(
-        ui.containers_view->selectionModel(), &QItemSelectionModel::selectionChanged,
-        &contents_list, &ContentsList::set_root_index_from_selection);
+        &containers_tree, &ContainersTree::selected_container_changed,
+        &contents_list, &ContentsList::on_selected_container_changed);
     
     // Connect menubar "New" submenu's to entry creation dialogs
     QObject::connect(

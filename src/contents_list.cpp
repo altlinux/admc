@@ -24,38 +24,9 @@ proxy(model, advanced_view_toggle)
 
 // Both contents and containers share the same source model, but have different proxy's to it
 // So need to map from containers proxy to source then back to proxy of contents
-void ContentsList::set_root_index_from_selection(const QItemSelection &selected, const QItemSelection &) {
-
-    const QList<QModelIndex> indexes = selected.indexes();
-
-    if (indexes.size() == 0) {
-        return;
-    }
-
-    // Map from proxy model of given index to source model of this view (if needed)
-    QModelIndex source_index = indexes[0];
-    {
-        auto proxy_model = qobject_cast<const QSortFilterProxyModel *>(source_index.model());
-        if (proxy_model != nullptr) {
-            source_index = proxy_model->mapToSource(source_index);
-        }
-    }
-
-    // Map from source model of this view to proxy model of this view (if needed)
-    QModelIndex contents_index = source_index;
-    {
-        auto proxy_model = qobject_cast<const QSortFilterProxyModel *>(view->model());
-        if (proxy_model != nullptr) {
-            contents_index = proxy_model->mapFromSource(contents_index);
-        }
-    }
-
-    if (!view->model()->checkIndex(contents_index)) {
-        printf("ContentsList::set_root_index_from_selection received bad index!\n");
-        return;
-    }
-
-    view->setRootIndex(contents_index);
+void ContentsList::on_selected_container_changed(const QModelIndex &source_index) {
+    QModelIndex index = proxy.mapFromSource(source_index);
+    view->setRootIndex(index);
 
     // NOTE: have to hide columns after model update
     view->hideColumn(AdModel::Column::DN);
