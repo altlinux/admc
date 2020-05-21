@@ -2,16 +2,18 @@
 #ifndef CONTENTS_VIEW_H
 #define CONTENTS_VIEW_H
 
-#include <QTreeView>
+#include <QWidget>
 
-class QPoint;
+class QTreeView;
+class AdFilter;
+class QItemSelection;
 
 // Shows name, category and description of children of entry selected in containers view
-class ContentsView : public QTreeView {
+class ContentsView : public QWidget {
 Q_OBJECT
 
 public:
-    using QTreeView::QTreeView;
+    explicit ContentsView(QTreeView *view, AdFilter *proxy);
 
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -24,6 +26,7 @@ public slots:
 
 private:
     QPoint drag_start_position;
+    QTreeView *view;
 };
 
 #endif /* CONTENTS_VIEW_H */

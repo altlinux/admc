@@ -1,6 +1,7 @@
 
 #include "contents_view.h"
 #include "ad_interface.h"
+#include "ad_filter.h"
 #include "ad_model.h"
 
 #include <QApplication>
@@ -9,11 +10,19 @@
 #include <QMouseEvent>
 #include <QDrag>
 #include <QMimeData>
+#include <QTreeView>
 
-// TODO: bake this assumptions into view classes
+ContentsView::ContentsView(QTreeView *view, AdFilter *proxy): QWidget() {
+    this->view = view;
+
+    view->setModel(proxy);
+    view->hideColumn(AdModel::Column::DN);
+};
+
 // Both contents and containers share the same source model, but have different proxy's to it
 // So need to map from containers proxy to source then back to proxy of contents
 void ContentsView::set_root_index_from_selection(const QItemSelection &selected, const QItemSelection &) {
+
     const QList<QModelIndex> indexes = selected.indexes();
 
     if (indexes.size() == 0) {
@@ -32,21 +41,21 @@ void ContentsView::set_root_index_from_selection(const QItemSelection &selected,
     // Map from source model of this view to proxy model of this view (if needed)
     QModelIndex contents_index = source_index;
     {
-        auto proxy_model = qobject_cast<const QSortFilterProxyModel *>(this->model());
+        auto proxy_model = qobject_cast<const QSortFilterProxyModel *>(view->model());
         if (proxy_model != nullptr) {
             contents_index = proxy_model->mapFromSource(contents_index);
         }
     }
 
-    if (!this->model()->checkIndex(contents_index)) {
+    if (!view->model()->checkIndex(contents_index)) {
         printf("ContentsView::set_root_index_from_selection received bad index!\n");
         return;
     }
 
-    this->setRootIndex(contents_index);
+    view->setRootIndex(contents_index);
 
     // NOTE: have to hide columns after model update
-    this->hideColumn(AdModel::Column::DN);
+    view->hideColumn(AdModel::Column::DN);
 }
 
 // TODO: currently dragging doesn't work correctly most of the time
@@ -55,16 +64,16 @@ void ContentsView::set_root_index_from_selection(const QItemSelection &selected,
 // icon is incorrect for example
 // probably from dragging being started incorrectly
 void ContentsView::mousePressEvent(QMouseEvent *event) {
-    QTreeView::mousePressEvent(event);
+    // view->mousePressEvent(event);
     
     // Record drag position
     if (event->button() == Qt::LeftButton) {
-        this->drag_start_position = event->pos();
+        drag_start_position = event->pos();
     }
 }
 
 void ContentsView::mouseMoveEvent(QMouseEvent *event) {
-    QTreeView::mouseMoveEvent(event);
+    // view->mouseMoveEvent(event);
     
     // Start drag event if holding left mouse button and dragged far enough
 
@@ -73,7 +82,7 @@ void ContentsView::mouseMoveEvent(QMouseEvent *event) {
         return;
     }
 
-    int drag_distance = (event->pos() - this->drag_start_position).manhattanLength();
+    int drag_distance = (event->pos() - drag_start_position).manhattanLength();
     if (drag_distance < QApplication::startDragDistance()) {
         return;
     }
@@ -85,7 +94,7 @@ void ContentsView::mouseMoveEvent(QMouseEvent *event) {
     // Figure out if this entry can be dragged
     // Entry has to be a person
     QPoint pos = event->pos();
-    QModelIndex index = this->indexAt(pos);
+    QModelIndex index = view->indexAt(pos);
     QModelIndex category_index = index.siblingAtColumn(AdModel::Column::Category);
     QString category_text = category_index.data().toString();
 
@@ -102,7 +111,7 @@ void ContentsView::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void ContentsView::dragEnterEvent(QDragEnterEvent *event) {
-    QTreeView::dragEnterEvent(event);
+    // view->dragEnterEvent(event);
     
     // TODO: is this needed?
     if (event->mimeData()->hasText()) {
@@ -121,10 +130,10 @@ void ContentsView::dragMoveEvent(QDragMoveEvent *event) {
     // hovered entry
     // This only changes the drag icon
 
-    // QTreeView::dragMoveEvent(event);
+    // view->dragMoveEvent(event);
     
     QPoint pos = event->pos();
-    QModelIndex index = this->indexAt(pos);
+    QModelIndex index = view->indexAt(pos);
     QModelIndex category_index = index.siblingAtColumn(AdModel::Column::Category);
     QString category = category_index.data().toString();
 
@@ -144,7 +153,7 @@ void ContentsView::dropEvent(QDropEvent *event) {
     printf("drop\n");
 
     QPoint pos = event->pos();
-    QModelIndex target_index = this->indexAt(pos);
+    QModelIndex target_index = view->indexAt(pos);
     QModelIndex target_category_index = target_index.siblingAtColumn(AdModel::Column::Category);
     QString target_category = target_category_index.data().toString();
 

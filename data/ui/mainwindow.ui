@@ -26,7 +26,7 @@
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
     </property>
-    <widget class="ContainersView" name="containers_view">
+    <widget class="QTreeView" name="containers_view">
      <property name="contextMenuPolicy">
       <enum>Qt::CustomContextMenu</enum>
      </property>
@@ -46,7 +46,7 @@
       <bool>true</bool>
      </attribute>
     </widget>
-    <widget class="ContentsView" name="contents_view">
+    <widget class="QTreeView" name="contents_view">
      <property name="contextMenuPolicy">
       <enum>Qt::CustomContextMenu</enum>
      </property>
@@ -75,7 +75,7 @@
       <bool>true</bool>
      </attribute>
     </widget>
-    <widget class="AttributesView" name="attributes_view">
+    <widget class="QTreeView" name="attributes_view">
      <property name="editTriggers">
       <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
      </property>
@@ -163,23 +163,6 @@
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>ContainersView</class>
-   <extends>QTreeView</extends>
-   <header>src/containers_view.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ContentsView</class>
-   <extends>QTreeView</extends>
-   <header>src/contents_view.h</header>
-  </customwidget>
-  <customwidget>
-   <class>AttributesView</class>
-   <extends>QTreeView</extends>
-   <header>src/attributes_view.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

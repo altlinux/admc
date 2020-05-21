@@ -36,33 +36,17 @@ int main(int argc, char **argv) {
     AdModel ad_model;
 
     // Attributes
-    AttributesModel attributes_model;
-    ui.attributes_view->setModel(&attributes_model);
-
-    // Contents
-    {
-        ContentsView *view = ui.contents_view;
-
-        auto proxy = new AdFilter(ui.menubar_view_advancedView);
-        proxy->setSourceModel(&ad_model);
-        view->setModel(proxy);
-
-        view->hideColumn(AdModel::Column::DN);
-    }
+    AttributesView attributes_view(ui.attributes_view);
 
     // Containers
-    {
-        ContainersView *view = ui.containers_view;
+    AdFilter containers_proxy(ui.menubar_view_advancedView);
+    containers_proxy.setSourceModel(&ad_model);
+    ContainersView containers_view(ui.containers_view, &containers_proxy);
 
-        auto proxy = new AdFilter(ui.menubar_view_advancedView, true);
-        proxy->setSourceModel(&ad_model);
-        view->setModel(proxy);
-
-        // NOTE: have to hide columns after setting model
-        view->hideColumn(AdModel::Column::Category);
-        view->hideColumn(AdModel::Column::Description);
-        view->hideColumn(AdModel::Column::DN);
-    }
+    // Contents
+    AdFilter contents_proxy(ui.menubar_view_advancedView);
+    contents_proxy.setSourceModel(&ad_model);
+    ContentsView contents_view(ui.contents_view, &containers_proxy);
 
     //
     // Entry context menu
@@ -78,7 +62,7 @@ int main(int argc, char **argv) {
         // entry context menu is clicked
         QObject::connect(
             entry_context_menu, &EntryContextMenu::attributes_clicked,
-            ui.attributes_view, &AttributesView::set_target_dn);
+            &attributes_view, &AttributesView::set_target_dn);
 
         // Delete entry when delete button is pressed
         QObject::connect(
@@ -92,7 +76,7 @@ int main(int argc, char **argv) {
         &ad_model, &AdModel::on_entry_deleted);
     QObject::connect(
         &ad_interface, &AdInterface::entry_deleted,
-        &attributes_model, &AttributesModel::on_entry_deleted);
+        &attributes_view.model, &AttributesModel::on_entry_deleted);
     QObject::connect(
         &ad_interface, &AdInterface::entry_changed,
         &ad_model, &AdModel::on_entry_changed);
@@ -106,7 +90,7 @@ int main(int argc, char **argv) {
     // Set root index of contents view to selection of containers view
     QObject::connect(
         ui.containers_view->selectionModel(), &QItemSelectionModel::selectionChanged,
-        ui.contents_view, &ContentsView::set_root_index_from_selection);
+        &contents_view, &ContentsView::set_root_index_from_selection);
     
     // Connect menubar "New" submenu's to entry creation dialogs
     QObject::connect(

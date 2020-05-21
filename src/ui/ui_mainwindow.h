@@ -18,10 +18,8 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QSplitter>
 #include <QtWidgets/QStatusBar>
+#include <QtWidgets/QTreeView>
 #include <QtWidgets/QWidget>
-#include "src/attributes_view.h"
-#include "src/containers_view.h"
-#include "src/contents_view.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -37,9 +35,9 @@ public:
     QAction *menubar_new_group;
     QWidget *centralwidget;
     QSplitter *splitter;
-    ContainersView *containers_view;
-    ContentsView *contents_view;
-    AttributesView *attributes_view;
+    QTreeView *containers_view;
+    QTreeView *contents_view;
+    QTreeView *attributes_view;
     QMenuBar *menubar;
     QMenu *menubar_new;
     QMenu *menuEdit;
@@ -72,7 +70,7 @@ public:
         splitter->setObjectName(QString::fromUtf8("splitter"));
         splitter->setGeometry(QRect(0, 0, 1301, 591));
         splitter->setOrientation(Qt::Horizontal);
-        containers_view = new ContainersView(splitter);
+        containers_view = new QTreeView(splitter);
         containers_view->setObjectName(QString::fromUtf8("containers_view"));
         containers_view->setContextMenuPolicy(Qt::CustomContextMenu);
         containers_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -81,7 +79,7 @@ public:
         containers_view->setExpandsOnDoubleClick(true);
         splitter->addWidget(containers_view);
         containers_view->header()->setVisible(true);
-        contents_view = new ContentsView(splitter);
+        contents_view = new QTreeView(splitter);
         contents_view->setObjectName(QString::fromUtf8("contents_view"));
         contents_view->setContextMenuPolicy(Qt::CustomContextMenu);
         contents_view->setAcceptDrops(true);
@@ -93,7 +91,7 @@ public:
         contents_view->setExpandsOnDoubleClick(false);
         splitter->addWidget(contents_view);
         contents_view->header()->setVisible(true);
-        attributes_view = new AttributesView(splitter);
+        attributes_view = new QTreeView(splitter);
         attributes_view->setObjectName(QString::fromUtf8("attributes_view"));
         attributes_view->setEditTriggers(QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
         attributes_view->setSelectionMode(QAbstractItemView::NoSelection);
