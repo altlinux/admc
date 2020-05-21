@@ -379,6 +379,7 @@ bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
                 fake_create_group(name, dn);
                 break;
             }
+            case COUNT: break;
         }
 
         return true;
@@ -406,6 +407,7 @@ bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
             result = ad_group_create(name_cstr, dn_cstr);
             break;
         }
+        case COUNT: break;
     }
 
     if (result == AD_SUCCESS) {

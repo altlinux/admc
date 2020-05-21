@@ -6,15 +6,9 @@
 #include <QInputDialog>
 #include <QString>
 
-void create_entry_dialog(NewEntryType type) {
+void create_entry_dialog(NewEntryType type, const QString &given_parent_dn) {
     // Open new user dialog and name of entry from it
 
-    const QMap<NewEntryType, QString> new_entry_type_to_string = {
-        {NewEntryType::User, "User"},
-        {NewEntryType::Computer, "Computer"},
-        {NewEntryType::OU, "Organization Unit"},
-        {NewEntryType::Group, "Group"},
-    };
     QString type_string = new_entry_type_to_string[type];
     QString dialog_title = "New " + type_string;
     QString input_label = type_string + " name";
@@ -36,7 +30,12 @@ void create_entry_dialog(NewEntryType type) {
             {NewEntryType::OU, QString(HEAD_DN)},
             {NewEntryType::Group, QString(HEAD_DN)},
         };
-        QString parent_dn = new_entry_type_to_parent[type];
+        QString parent_dn;
+        if (given_parent_dn == "") {
+            parent_dn = new_entry_type_to_parent[type];
+        } else {
+            parent_dn = given_parent_dn;
+        }
 
         const QMap<NewEntryType, QString> new_entry_type_to_suffix = {
             {NewEntryType::User, "CN"},

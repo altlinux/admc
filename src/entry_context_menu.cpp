@@ -1,6 +1,7 @@
 
 #include "entry_context_menu.h"
 #include "ad_model.h"
+#include "create_entry_dialog.h"
 #include "ad_interface.h"
 
 #include <QPoint>
@@ -19,6 +20,18 @@ EntryContextMenu::EntryContextMenu(QWidget *parent) : QMenu(parent) {
         emit delete_clicked(this->target_dn);
     });
     this->addAction(delete_action);
+
+    QMenu *submenu_new = this->addMenu("New");
+    // Create "New X" menu for each entry type
+    for (int type_i = NewEntryType::User; type_i < NewEntryType::COUNT; type_i++) {
+        NewEntryType type = static_cast<NewEntryType>(type_i);
+        QString action_label = new_entry_type_to_string[type];
+        QAction *action = new QAction(action_label, this);
+        connect(action, &QAction::triggered, [this, type]() {
+            create_entry_dialog(type, this->target_dn);
+        });
+        submenu_new->addAction(action);
+    }
 }
 
 void EntryContextMenu::connect_view(const QTreeView &view) {
@@ -41,5 +54,5 @@ void EntryContextMenu::connect_view(const QTreeView &view) {
                 this->target_dn = dn;
                 this->popup(global_pos);
             }
-    });
+        });
 }

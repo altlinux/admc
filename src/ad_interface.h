@@ -13,7 +13,15 @@ enum NewEntryType {
     User,
     Computer,
     OU,
-    Group
+    Group,
+    COUNT
+};
+
+const QMap<NewEntryType, QString> new_entry_type_to_string = {
+    {NewEntryType::User, "User"},
+    {NewEntryType::Computer, "Computer"},
+    {NewEntryType::OU, "Organization Unit"},
+    {NewEntryType::Group, "Group"},
 };
 
 // Class solely for emitting signals
