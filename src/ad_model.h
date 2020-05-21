@@ -28,7 +28,7 @@ public:
     void fetchMore(const QModelIndex &parent);
     bool hasChildren(const QModelIndex &parent) const override;
 
-public slots:
+private slots:
     void on_entry_changed(const QString &dn); 
     void on_entry_deleted(const QString &dn); 
     void on_user_moved(const QString &old_dn, const QString &new_dn, const QString &new_parent_dn);

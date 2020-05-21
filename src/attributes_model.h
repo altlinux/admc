@@ -22,7 +22,7 @@ public:
 signals:
     void entry_changed(const QString &dn); 
 
-public slots:
+private slots:
     void on_entry_deleted(const QString &dn); 
 
 private:

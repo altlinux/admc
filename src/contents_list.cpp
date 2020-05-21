@@ -1,8 +1,8 @@
 
 #include "contents_list.h"
 #include "ad_interface.h"
-#include "ad_filter.h"
 #include "ad_model.h"
+#include "ad_filter.h"
 
 #include <QApplication>
 #include <QItemSelection>
@@ -12,10 +12,13 @@
 #include <QMimeData>
 #include <QTreeView>
 
-ContentsList::ContentsList(QTreeView *view, AdFilter *proxy): QWidget() {
+ContentsList::ContentsList(QTreeView *view, AdModel* model, QAction *advanced_view_toggle) :
+QWidget(), 
+proxy(model, advanced_view_toggle) 
+{
     this->view = view;
 
-    view->setModel(proxy);
+    view->setModel(&proxy);
     view->hideColumn(AdModel::Column::DN);
 };
 
@@ -65,7 +68,7 @@ void ContentsList::set_root_index_from_selection(const QItemSelection &selected,
 // probably from dragging being started incorrectly
 void ContentsList::mousePressEvent(QMouseEvent *event) {
     // view->mousePressEvent(event);
-    
+
     // Record drag position
     if (event->button() == Qt::LeftButton) {
         drag_start_position = event->pos();
@@ -74,7 +77,7 @@ void ContentsList::mousePressEvent(QMouseEvent *event) {
 
 void ContentsList::mouseMoveEvent(QMouseEvent *event) {
     // view->mouseMoveEvent(event);
-    
+
     // Start drag event if holding left mouse button and dragged far enough
 
     bool holding_left_button = event->buttons() & Qt::LeftButton;
@@ -112,7 +115,7 @@ void ContentsList::mouseMoveEvent(QMouseEvent *event) {
 
 void ContentsList::dragEnterEvent(QDragEnterEvent *event) {
     // view->dragEnterEvent(event);
-    
+
     // TODO: is this needed?
     if (event->mimeData()->hasText()) {
         event->acceptProposedAction();
@@ -131,7 +134,7 @@ void ContentsList::dragMoveEvent(QDragMoveEvent *event) {
     // This only changes the drag icon
 
     // view->dragMoveEvent(event);
-    
+
     QPoint pos = event->pos();
     QModelIndex index = view->indexAt(pos);
     QModelIndex category_index = index.siblingAtColumn(AdModel::Column::Category);

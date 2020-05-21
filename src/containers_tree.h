@@ -2,17 +2,21 @@
 #ifndef CONTAINERS_VIEW_H
 #define CONTAINERS_VIEW_H
 
+#include "ad_filter.h"
+
 class QTreeView;
-class AdFilter;
+class AdModel;
+class QAction;
 
 // Shows names of AdModel as a tree
 class ContainersTree {
 
 public:
-    ContainersTree(QTreeView *view, AdFilter *proxy);
+    ContainersTree(QTreeView *view, AdModel *model, QAction *advanced_view_toggle);
 
 private:
     QTreeView *view;
+    AdFilter proxy;
 
 };
 

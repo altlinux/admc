@@ -35,22 +35,11 @@ int main(int argc, char **argv) {
 
     AdModel ad_model;
 
-    // Attributes
+    ContainersTree containers_tree(ui.containers_view, &ad_model, ui.menubar_view_advancedView);
+    ContentsList contents_list(ui.contents_view, &ad_model, ui.menubar_view_advancedView);
     AttributesList attributes_view(ui.attributes_view);
 
-    // Containers
-    AdFilter containers_proxy(ui.menubar_view_advancedView, true);
-    containers_proxy.setSourceModel(&ad_model);
-    ContainersTree containers_tree(ui.containers_view, &containers_proxy);
-
-    // Contents
-    AdFilter contents_proxy(ui.menubar_view_advancedView);
-    contents_proxy.setSourceModel(&ad_model);
-    ContentsList contents_list(ui.contents_view, &containers_proxy);
-
-    //
     // Entry context menu
-    //
     {
         auto entry_context_menu = new EntryContextMenu(&main_window);
 
@@ -69,23 +58,6 @@ int main(int argc, char **argv) {
             entry_context_menu, &EntryContextMenu::delete_clicked,
             delete_entry);
     }
-
-    // Connect signals to update models on when entries are modified
-    QObject::connect(
-        &ad_interface, &AdInterface::entry_deleted,
-        &ad_model, &AdModel::on_entry_deleted);
-    QObject::connect(
-        &ad_interface, &AdInterface::entry_deleted,
-        &attributes_view.model, &AttributesModel::on_entry_deleted);
-    QObject::connect(
-        &ad_interface, &AdInterface::entry_changed,
-        &ad_model, &AdModel::on_entry_changed);
-    QObject::connect(
-        &ad_interface, &AdInterface::user_moved,
-        &ad_model, &AdModel::on_user_moved);
-    QObject::connect(
-        &ad_interface, &AdInterface::entry_created,
-        &ad_model, &AdModel::on_entry_created);
 
     // Set root index of contents view to selection of containers view
     QObject::connect(

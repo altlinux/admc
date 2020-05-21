@@ -4,16 +4,17 @@
 
 #include <QAction>
 
-AdFilter::AdFilter(const QAction * const advanced_view_action, bool only_show_containers) {
-    this->only_show_containers = only_show_containers;
+AdFilter::AdFilter(AdModel *model, QAction *advanced_view_toggle) {
+    this->setSourceModel(model);
 
+    connect(advanced_view_toggle, &QAction::toggled,
+        this, &AdFilter::on_advanced_view_toggled);
+}
+
+void AdFilter::on_advanced_view_toggled(bool checked) {
     // On advanced view toggle, copy advanced view flag and invalidate filter
-    connect(advanced_view_action, &QAction::toggled,
-        [this](bool checked)
-        {
-            this->advanced_view = checked;
-            this->invalidateFilter();
-        });
+    advanced_view = checked;
+    this->invalidateFilter();
 }
 
 bool AdFilter::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {

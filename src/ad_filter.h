@@ -13,13 +13,18 @@ class AdModel;
 // Connected to advanced view toggle in menubar
 class AdFilter : public QSortFilterProxyModel {
 public:
-    explicit AdFilter(const QAction * const advanced_view_action, bool only_show_containers = false);
+    explicit AdFilter(AdModel *model, QAction *advanced_view_toggle);
+
+    bool only_show_containers;
+
+private slots:
+    void on_advanced_view_toggled(bool checked);
 
 private:
     bool advanced_view = false;
-    bool only_show_containers;
 
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
+
 };
 
 #endif /* AD_FILTER_H */

@@ -5,6 +5,10 @@
 
 AttributesModel::AttributesModel(): QStandardItemModel(0, Column::COUNT) {
     change_target(QString(""));
+
+    QObject::connect(
+        &ad_interface, &AdInterface::entry_deleted,
+        this, &AttributesModel::on_entry_deleted);
 }
 
 // This will be called when an attribute value is edited

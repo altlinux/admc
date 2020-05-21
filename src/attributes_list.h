@@ -15,7 +15,7 @@ class AttributesList : public QObject {
 Q_OBJECT
 
 public:
-    explicit AttributesList(QTreeView *view);
+    AttributesList(QTreeView *view);
 
     AttributesModel model;
 

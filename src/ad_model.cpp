@@ -120,6 +120,19 @@ AdModel::AdModel(): QStandardItemModel(0, Column::COUNT) {
     QStandardItem *invis_root = this->invisibleRootItem();
     auto head_dn = QString(HEAD_DN);
     load_and_add_row(invis_root, head_dn);
+
+    QObject::connect(
+        &ad_interface, &AdInterface::entry_deleted,
+        this, &AdModel::on_entry_deleted);
+    QObject::connect(
+        &ad_interface, &AdInterface::entry_changed,
+        this, &AdModel::on_entry_changed);
+    QObject::connect(
+        &ad_interface, &AdInterface::user_moved,
+        this, &AdModel::on_user_moved);
+    QObject::connect(
+        &ad_interface, &AdInterface::entry_created,
+        this, &AdModel::on_entry_created);
 }
 
 bool AdModel::canFetchMore(const QModelIndex &parent) const {
