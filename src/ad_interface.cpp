@@ -334,19 +334,21 @@ QMap<QString, QList<QString>> load_attributes(const QString &dn) {
 }
 
 bool set_attribute(const QString &dn, const QString &attribute, const QString &value) {
+    int result = AD_INVALID_DN;
+    
     if (FAKE_AD) {
         fake_attributes[dn][attribute] = {value};
+        
+        result = AD_SUCCESS;
+    } else {
+        const char *dn_cstr = qstring_to_cstr(dn);
+        const char *attribute_cstr = qstring_to_cstr(attribute);
+        const char *value_cstr = qstring_to_cstr(value);
 
-        return true;
+        // TODO: handle errors
+
+        result = ad_mod_replace(dn_cstr, attribute_cstr, value_cstr);
     }
-
-    const char *dn_cstr = qstring_to_cstr(dn);
-    const char *attribute_cstr = qstring_to_cstr(attribute);
-    const char *value_cstr = qstring_to_cstr(value);
-
-    // TODO: handle errors
-
-    int result = ad_mod_replace(dn_cstr, attribute_cstr, value_cstr);
 
     if (result == AD_SUCCESS) {
         emit ad_interface.entry_changed(dn);
@@ -359,6 +361,8 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
 
 // TODO: can probably make a create_anything() function with enum parameter
 bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
+    int result = AD_INVALID_DN;
+    
     // TODO: handle errors
 
     if (FAKE_AD) {
@@ -382,32 +386,30 @@ bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
             case COUNT: break;
         }
 
-        return true;
-    }
+        result = AD_SUCCESS;
+    } else {
+        const char *name_cstr = qstring_to_cstr(name);
+        const char *dn_cstr = qstring_to_cstr(dn);
 
-    const char *name_cstr = qstring_to_cstr(name);
-    const char *dn_cstr = qstring_to_cstr(dn);
-
-    int result = AD_INVALID_DN;
-
-    switch (type) {
-        case User: {
-            result = ad_create_user(name_cstr, dn_cstr);
-            break;
+        switch (type) {
+            case User: {
+                result = ad_create_user(name_cstr, dn_cstr);
+                break;
+            }
+            case Computer: {
+                result = ad_create_computer(name_cstr, dn_cstr);
+                break;
+            }
+            case OU: {
+                result = ad_ou_create(name_cstr, dn_cstr);
+                break;
+            }
+            case Group: {
+                result = ad_group_create(name_cstr, dn_cstr);
+                break;
+            }
+            case COUNT: break;
         }
-        case Computer: {
-            result = ad_create_computer(name_cstr, dn_cstr);
-            break;
-        }
-        case OU: {
-            result = ad_ou_create(name_cstr, dn_cstr);
-            break;
-        }
-        case Group: {
-            result = ad_group_create(name_cstr, dn_cstr);
-            break;
-        }
-        case COUNT: break;
     }
 
     if (result == AD_SUCCESS) {
