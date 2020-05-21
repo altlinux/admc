@@ -1,5 +1,5 @@
 
-#include "contents_view.h"
+#include "contents_list.h"
 #include "ad_interface.h"
 #include "ad_filter.h"
 #include "ad_model.h"
@@ -12,7 +12,7 @@
 #include <QMimeData>
 #include <QTreeView>
 
-ContentsView::ContentsView(QTreeView *view, AdFilter *proxy): QWidget() {
+ContentsList::ContentsList(QTreeView *view, AdFilter *proxy): QWidget() {
     this->view = view;
 
     view->setModel(proxy);
@@ -21,7 +21,7 @@ ContentsView::ContentsView(QTreeView *view, AdFilter *proxy): QWidget() {
 
 // Both contents and containers share the same source model, but have different proxy's to it
 // So need to map from containers proxy to source then back to proxy of contents
-void ContentsView::set_root_index_from_selection(const QItemSelection &selected, const QItemSelection &) {
+void ContentsList::set_root_index_from_selection(const QItemSelection &selected, const QItemSelection &) {
 
     const QList<QModelIndex> indexes = selected.indexes();
 
@@ -48,7 +48,7 @@ void ContentsView::set_root_index_from_selection(const QItemSelection &selected,
     }
 
     if (!view->model()->checkIndex(contents_index)) {
-        printf("ContentsView::set_root_index_from_selection received bad index!\n");
+        printf("ContentsList::set_root_index_from_selection received bad index!\n");
         return;
     }
 
@@ -63,7 +63,7 @@ void ContentsView::set_root_index_from_selection(const QItemSelection &selected,
 // and on drag complete the item is not moved correctly
 // icon is incorrect for example
 // probably from dragging being started incorrectly
-void ContentsView::mousePressEvent(QMouseEvent *event) {
+void ContentsList::mousePressEvent(QMouseEvent *event) {
     // view->mousePressEvent(event);
     
     // Record drag position
@@ -72,7 +72,7 @@ void ContentsView::mousePressEvent(QMouseEvent *event) {
     }
 }
 
-void ContentsView::mouseMoveEvent(QMouseEvent *event) {
+void ContentsList::mouseMoveEvent(QMouseEvent *event) {
     // view->mouseMoveEvent(event);
     
     // Start drag event if holding left mouse button and dragged far enough
@@ -110,7 +110,7 @@ void ContentsView::mouseMoveEvent(QMouseEvent *event) {
     }
 }
 
-void ContentsView::dragEnterEvent(QDragEnterEvent *event) {
+void ContentsList::dragEnterEvent(QDragEnterEvent *event) {
     // view->dragEnterEvent(event);
     
     // TODO: is this needed?
@@ -125,7 +125,7 @@ bool can_drop_at() {
     return true;
 }
 
-void ContentsView::dragMoveEvent(QDragMoveEvent *event) {
+void ContentsList::dragMoveEvent(QDragMoveEvent *event) {
     // Determine whether drag action is accepted at currently 
     // hovered entry
     // This only changes the drag icon
@@ -146,7 +146,7 @@ void ContentsView::dragMoveEvent(QDragMoveEvent *event) {
     }
 }
 
-void ContentsView::dropEvent(QDropEvent *event) {
+void ContentsList::dropEvent(QDropEvent *event) {
     // TODO: should accept? determining whether move succeeded is delayed until ad request is complete, so not sure how that works out
     // event->acceptProposedAction();
 

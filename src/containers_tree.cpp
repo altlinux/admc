@@ -1,11 +1,11 @@
 
-#include "containers_view.h"
+#include "containers_tree.h"
 #include "ad_filter.h"
 #include "ad_model.h"
 
 #include <QTreeView>
 
-ContainersView::ContainersView(QTreeView *view, AdFilter *proxy) {
+ContainersTree::ContainersTree(QTreeView *view, AdFilter *proxy) {
     this->view = view;
 
     view->setModel(proxy);

@@ -1,17 +1,17 @@
 
-#include "attributes_view.h"
+#include "attributes_list.h"
 #include "ad_interface.h"
 
 #include <QWidget>
 #include <QTreeView>
 
-AttributesView::AttributesView(QTreeView *view): QObject() {
+AttributesList::AttributesList(QTreeView *view): QObject() {
     this->view = view;
 
     view->setModel(&model);
 };
 
-void AttributesView::set_target_dn(const QString &new_target_dn) {
+void AttributesList::set_target_dn(const QString &new_target_dn) {
     this->target_dn = new_target_dn;
 
     // Clear model of previous root

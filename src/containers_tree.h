@@ -6,10 +6,10 @@ class QTreeView;
 class AdFilter;
 
 // Shows names of AdModel as a tree
-class ContainersView {
+class ContainersTree {
 
 public:
-    ContainersView(QTreeView *view, AdFilter *proxy);
+    ContainersTree(QTreeView *view, AdFilter *proxy);
 
 private:
     QTreeView *view;

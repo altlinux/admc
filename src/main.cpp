@@ -1,7 +1,7 @@
 
-#include "containers_view.h"
-#include "contents_view.h"
-#include "attributes_view.h"
+#include "containers_tree.h"
+#include "contents_list.h"
+#include "attributes_list.h"
 #include "ad_filter.h"
 #include "ad_model.h"
 #include "attributes_model.h"
@@ -36,17 +36,17 @@ int main(int argc, char **argv) {
     AdModel ad_model;
 
     // Attributes
-    AttributesView attributes_view(ui.attributes_view);
+    AttributesList attributes_view(ui.attributes_view);
 
     // Containers
     AdFilter containers_proxy(ui.menubar_view_advancedView);
     containers_proxy.setSourceModel(&ad_model);
-    ContainersView containers_view(ui.containers_view, &containers_proxy);
+    ContainersTree containers_tree(ui.containers_view, &containers_proxy);
 
     // Contents
     AdFilter contents_proxy(ui.menubar_view_advancedView);
     contents_proxy.setSourceModel(&ad_model);
-    ContentsView contents_view(ui.contents_view, &containers_proxy);
+    ContentsList contents_list(ui.contents_view, &containers_proxy);
 
     //
     // Entry context menu
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
         // entry context menu is clicked
         QObject::connect(
             entry_context_menu, &EntryContextMenu::attributes_clicked,
-            &attributes_view, &AttributesView::set_target_dn);
+            &attributes_view, &AttributesList::set_target_dn);
 
         // Delete entry when delete button is pressed
         QObject::connect(
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
     // Set root index of contents view to selection of containers view
     QObject::connect(
         ui.containers_view->selectionModel(), &QItemSelectionModel::selectionChanged,
-        &contents_view, &ContentsView::set_root_index_from_selection);
+        &contents_list, &ContentsList::set_root_index_from_selection);
     
     // Connect menubar "New" submenu's to entry creation dialogs
     QObject::connect(

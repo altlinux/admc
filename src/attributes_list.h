@@ -11,11 +11,11 @@ class QString;
 class AttributesModel;
 
 // Shows names and values of attributes of the entry selected in contents view
-class AttributesView : public QObject {
+class AttributesList : public QObject {
 Q_OBJECT
 
 public:
-    explicit AttributesView(QTreeView *view);
+    explicit AttributesList(QTreeView *view);
 
     AttributesModel model;
 

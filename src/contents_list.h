@@ -9,11 +9,11 @@ class AdFilter;
 class QItemSelection;
 
 // Shows name, category and description of children of entry selected in containers view
-class ContentsView : public QWidget {
+class ContentsList : public QWidget {
 Q_OBJECT
 
 public:
-    explicit ContentsView(QTreeView *view, AdFilter *proxy);
+    explicit ContentsList(QTreeView *view, AdFilter *proxy);
 
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
