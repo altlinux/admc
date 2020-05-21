@@ -17,4 +17,4 @@ MOC_DIR = moc
 FORMS += \
     data/ui/mainwindow.ui
 
-
+RESOURCES = adtool.qrc
