@@ -3,8 +3,74 @@
 #include "ad_interface.h"
 #include "constants.h"
 
+#include <QMimeData>
 #include <QMap>
 #include <QIcon>
+
+QString get_dn_of_index(const QModelIndex &index) {
+    QModelIndex dn_index = index.siblingAtColumn(AdModel::Column::DN);
+    QString dn = dn_index.data().toString();
+
+    return dn;
+}
+
+QMimeData *AdModel::mimeData(const QModelIndexList &indexes) const {
+    QMimeData *data = QStandardItemModel::mimeData(indexes);
+
+    if (indexes.size() > 0) {
+        QModelIndex index = indexes[0];
+        QString dn = get_dn_of_index(index);
+
+        data->setText(dn);
+    }
+
+    return data;
+}
+
+bool AdModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {    
+    QString dropped_dn = data->text();
+    QString parent_dn = get_dn_of_index(parent);
+
+    // TODO: complete filtering for valid parent
+    if (parent_dn == "") {
+        return false;
+    }
+
+    if (parent_dn == HEAD_DN) {
+        return false;
+    }
+
+    // printf("canDropMimeData() parent_dn = %s\n", qPrintable(parent_dn));
+
+    return true;
+}
+
+bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction, int row, int column, const QModelIndex &parent) {
+    QString dropped_dn = data->text();
+    QString parent_dn = get_dn_of_index(parent);
+
+    // If row/column are defined, then item is dropped BEFORE
+    // drop_index
+    // TODO: using this, implement dropping at a specifix position in parent's children list
+    QModelIndex drop_index;
+    if (row == -1 && column == -1) {
+        drop_index = parent;
+    } else {
+        drop_index = this->index(row, column, parent);
+    }
+
+    // TODO: if parent is group and dropped entry is user do
+    // ad_group_add_user(dropped_dn, parent_dn); (create interface function for this)
+    // else
+    // move_user(dropped_dn, parent_dn);
+    // (parent is group if it has objectClass "group")
+    // TODO: need to save objectClass to role or column?
+    // since there it's multi-valued maybe a single bool role IsGroup?
+
+    printf("AdModel::dropMimeData(): dropped_dn = %s, parent_dn = %s\n", qPrintable(dropped_dn), qPrintable(parent_dn));
+
+    return true;
+}
 
 void load_row(QList<QStandardItem*> row, const QString &dn) {
     QMap<QString, QList<QString>> attributes = load_attributes(dn);

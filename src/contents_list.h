@@ -4,7 +4,7 @@
 
 #include "ad_filter.h"
 
-#include <QWidget>
+#include <QObject>
 
 class QTreeView;
 class AdModel;
@@ -12,23 +12,16 @@ class QAction;
 class QItemSelection;
 
 // Shows name, category and description of children of entry selected in containers view
-class ContentsList : public QWidget {
+class ContentsList : public QObject {
 Q_OBJECT
 
 public:
     ContentsList(QTreeView *view, AdModel *model, QAction *advanced_view);
 
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void dragEnterEvent(QDragEnterEvent *event) override;
-    void dragMoveEvent(QDragMoveEvent *event) override;
-    void dropEvent(QDropEvent *event) override;
-
 public slots:
     void on_selected_container_changed(const QModelIndex &source_index);
 
 private:
-    QPoint drag_start_position;
     QTreeView *view;
     AdFilter proxy;
 };

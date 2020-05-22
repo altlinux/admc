@@ -73,7 +73,9 @@ public:
         containers_view = new QTreeView(splitter);
         containers_view->setObjectName(QString::fromUtf8("containers_view"));
         containers_view->setContextMenuPolicy(Qt::CustomContextMenu);
+        containers_view->setAcceptDrops(true);
         containers_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        containers_view->setDragDropMode(QAbstractItemView::DragDrop);
         containers_view->setRootIsDecorated(true);
         containers_view->setItemsExpandable(true);
         containers_view->setExpandsOnDoubleClick(true);

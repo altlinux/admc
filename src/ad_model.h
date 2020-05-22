@@ -28,6 +28,10 @@ public:
     void fetchMore(const QModelIndex &parent);
     bool hasChildren(const QModelIndex &parent) const override;
 
+    QMimeData *mimeData(const QModelIndexList &indexes) const override;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+
 private slots:
     void on_entry_changed(const QString &dn); 
     void on_entry_deleted(const QString &dn); 
