@@ -4,6 +4,8 @@
 
 #include <QStandardItemModel>
 
+QString get_dn_of_index(const QModelIndex &index);
+
 class AdModel: public QStandardItemModel {
 Q_OBJECT
 

@@ -44,12 +44,9 @@ void EntryContextMenu::connect_view(const QTreeView &view) {
 
             // Get DN of clicked entry
             QModelIndex index = view.indexAt(pos);
-            QModelIndex dn_index = index.siblingAtColumn(AdModel::Column::DN);
-            QString dn = dn_index.data().toString();
 
             if (index.isValid()) {
-                QModelIndex dn_index = index.siblingAtColumn(AdModel::Column::DN);
-                QString dn = dn_index.data().toString();
+                QString dn = get_dn_of_index(index);
 
                 this->target_dn = dn;
                 this->popup(global_pos);

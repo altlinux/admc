@@ -216,8 +216,7 @@ void AdModel::fetchMore(const QModelIndex &parent) {
         return;
     }
 
-    QModelIndex dn_index = parent.siblingAtColumn(Column::DN);
-    QString dn = dn_index.data().toString();
+    QString dn = get_dn_of_index(parent);
 
     QStandardItem *parent_item = this->itemFromIndex(parent);
 
