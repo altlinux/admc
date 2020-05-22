@@ -8,25 +8,25 @@
 #include <QAction>
 #include <QTreeView>
 
-EntryContextMenu::EntryContextMenu(QWidget *parent) : QMenu(parent) {
-    QAction *attributes_action = new QAction("Attributes", this);
+EntryContextMenu::EntryContextMenu() : menu() {
+    QAction *attributes_action = new QAction("Attributes", &menu);
     connect(attributes_action, &QAction::triggered, [this]() {
         emit attributes_clicked(this->target_dn);
     });
-    this->addAction(attributes_action);
+    menu.addAction(attributes_action);
 
-    QAction *delete_action = new QAction("Delete", this);
+    QAction *delete_action = new QAction("Delete", &menu);
     connect(delete_action, &QAction::triggered, [this]() {
         emit delete_clicked(this->target_dn);
     });
-    this->addAction(delete_action);
+    menu.addAction(delete_action);
 
-    QMenu *submenu_new = this->addMenu("New");
+    QMenu *submenu_new = menu.addMenu("New");
     // Create "New X" menu for each entry type
     for (int type_i = NewEntryType::User; type_i < NewEntryType::COUNT; type_i++) {
         NewEntryType type = static_cast<NewEntryType>(type_i);
         QString action_label = new_entry_type_to_string[type];
-        QAction *action = new QAction(action_label, this);
+        QAction *action = new QAction(action_label, &menu);
         connect(action, &QAction::triggered, [this, type]() {
             create_entry_dialog(type, this->target_dn);
         });
@@ -40,16 +40,14 @@ void EntryContextMenu::connect_view(const QTreeView &view) {
     connect(
         &view, &QWidget::customContextMenuRequested,
         [this, &view] (const QPoint& pos) {
-            QPoint global_pos = view.mapToGlobal(pos);
-
             // Get DN of clicked entry
             QModelIndex index = view.indexAt(pos);
 
             if (index.isValid()) {
-                QString dn = get_dn_of_index(index);
+                this->target_dn = get_dn_of_index(index);
 
-                this->target_dn = dn;
-                this->popup(global_pos);
+                QPoint global_pos = view.mapToGlobal(pos);
+                this->menu.popup(global_pos);
             }
         });
 }

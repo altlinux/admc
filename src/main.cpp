@@ -40,24 +40,20 @@ int main(int argc, char **argv) {
     AttributesList attributes_view(ui.attributes_view);
 
     // Entry context menu
-    {
-        auto entry_context_menu = new EntryContextMenu(&main_window);
+    auto entry_context_menu = new EntryContextMenu();
+    entry_context_menu->connect_view(*(ui.containers_view));
+    entry_context_menu->connect_view(*(ui.contents_view));
 
-        // Popup entry context menu from both containers and contents views
-        entry_context_menu->connect_view(*(ui.containers_view));
-        entry_context_menu->connect_view(*(ui.contents_view));
+    // Set target dn of attributes view when attributes menu of
+    // entry context menu is clicked
+    QObject::connect(
+        entry_context_menu, &EntryContextMenu::attributes_clicked,
+        &attributes_view, &AttributesList::set_target_dn);
 
-        // Set target dn of attributes view when attributes menu of
-        // entry context menu is clicked
-        QObject::connect(
-            entry_context_menu, &EntryContextMenu::attributes_clicked,
-            &attributes_view, &AttributesList::set_target_dn);
-
-        // Delete entry when delete button is pressed
-        QObject::connect(
-            entry_context_menu, &EntryContextMenu::delete_clicked,
-            delete_entry);
-    }
+    // Delete entry when delete button is pressed
+    QObject::connect(
+        entry_context_menu, &EntryContextMenu::delete_clicked,
+        delete_entry);
 
     // Set root index of contents view to selection of containers view
     QObject::connect(
