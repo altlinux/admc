@@ -104,7 +104,6 @@ int main(int argc, char **argv) {
     //
     // Setup ui
     //
-    Ui::MainWindow ui;
     QMainWindow main_window;
     ui.setupUi(&main_window);
 
