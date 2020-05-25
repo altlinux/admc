@@ -18,8 +18,12 @@ proxy(model, advanced_view_toggle)
     this->view = view;
 
     view->setModel(&proxy);
-    view->hideColumn(AdModel::Column::DN);
+    this->update_column_visibility();
 };
+
+void ContentsList::update_column_visibility() {
+    view->setColumnHidden(AdModel::Column::DN, dn_column_hidden);
+}
 
 // Both contents and containers share the same source model, but have different proxy's to it
 // So need to map from containers proxy to source then back to proxy of contents
@@ -28,5 +32,5 @@ void ContentsList::on_selected_container_changed(const QModelIndex &source_index
     view->setRootIndex(index);
 
     // NOTE: have to hide columns after model update
-    view->hideColumn(AdModel::Column::DN);
+    this->update_column_visibility();
 }

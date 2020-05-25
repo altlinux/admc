@@ -179,6 +179,7 @@ AdModel::AdModel(): QStandardItemModel(0, Column::COUNT) {
     this->setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
     this->setHorizontalHeaderItem(Column::Category, new QStandardItem("Category"));
     this->setHorizontalHeaderItem(Column::Description, new QStandardItem("Description"));
+    this->setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
 
     // Load head
     QStandardItem *invis_root = this->invisibleRootItem();

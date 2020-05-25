@@ -14,6 +14,7 @@
 #include <QAction>
 
 Ui::MainWindow ui;
+ContentsList *contents_list;
 AttributesList *attributes_list;
 QAction *action_attributes;
 QAction *action_delete_entry;
@@ -88,6 +89,13 @@ void connect_view_to_entry_context_menu(const QTreeView &view) {
         });
 }
 
+void on_action_toggle_dn(bool checked) {
+    // TODO: maybe add update_column_visibility() to containers tree as well, and make visibility state an array for all columns 
+    ui.containers_view->setColumnHidden(AdModel::Column::DN, !checked);
+    contents_list->dn_column_hidden = !checked;
+    contents_list->update_column_visibility();
+}
+
 int main(int argc, char **argv) {
     // Load fake AD data if given "fake" argument
     // This also swaps all ad interface functions to their fake versions (including login)
@@ -135,6 +143,14 @@ int main(int argc, char **argv) {
         
         new_entry_actions.push_back(action);
     }
+
+    // DN toggle
+    QAction action_toggle_dn("Show DN");
+    action_toggle_dn.setCheckable(true);
+    ui.menuView->addAction(&action_toggle_dn);
+    QObject::connect(
+        &action_toggle_dn, &QAction::triggered,
+        on_action_toggle_dn);
 
     connect_view_to_entry_context_menu(*ui.containers_view);
     connect_view_to_entry_context_menu(*ui.contents_view);

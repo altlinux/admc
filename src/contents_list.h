@@ -18,6 +18,10 @@ Q_OBJECT
 public:
     ContentsList(QTreeView *view, AdModel *model, QAction *advanced_view);
 
+    bool dn_column_hidden = true;
+
+    void update_column_visibility();
+
 public slots:
     void on_selected_container_changed(const QModelIndex &source_index);
 
