@@ -107,10 +107,6 @@
     <property name="title">
      <string>New</string>
     </property>
-    <addaction name="menubar_new_user"/>
-    <addaction name="menubar_new_computer"/>
-    <addaction name="menubar_new_ou"/>
-    <addaction name="menubar_new_group"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -123,23 +119,13 @@
     <property name="title">
      <string>View</string>
     </property>
-    <addaction name="menubar_view_advancedView"/>
+    <addaction name="action_advanced_view"/>
    </widget>
    <addaction name="menubar_new"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="menubar_new_user">
-   <property name="text">
-    <string>User</string>
-   </property>
-  </action>
-  <action name="menubar_new_computer">
-   <property name="text">
-    <string>Computer</string>
-   </property>
-  </action>
   <action name="actionSomething">
    <property name="text">
     <string>Something</string>
@@ -150,22 +136,12 @@
     <string>Here</string>
    </property>
   </action>
-  <action name="menubar_view_advancedView">
+  <action name="action_advanced_view">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
     <string>Advanced view</string>
-   </property>
-  </action>
-  <action name="menubar_new_ou">
-   <property name="text">
-    <string>Organizational Unit</string>
-   </property>
-  </action>
-  <action name="menubar_new_group">
-   <property name="text">
-    <string>Group</string>
    </property>
   </action>
  </widget>

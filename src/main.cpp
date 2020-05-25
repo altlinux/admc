@@ -110,8 +110,8 @@ int main(int argc, char **argv) {
 
     AdModel ad_model;
 
-    ContainersTree containers_tree(ui.containers_view, &ad_model, ui.menubar_view_advancedView);
-    ContentsList contents_list(ui.contents_view, &ad_model, ui.menubar_view_advancedView);
+    ContainersTree containers_tree(ui.containers_view, &ad_model, ui.action_advanced_view);
+    ContentsList contents_list(ui.contents_view, &ad_model, ui.action_advanced_view);
     attributes_list = new AttributesList(ui.attributes_view);
 
     // Setup actions
@@ -145,19 +145,10 @@ int main(int argc, char **argv) {
         &containers_tree, &ContainersTree::selected_container_changed,
         &contents_list, &ContentsList::on_selected_container_changed);
     
-    // Connect menubar "New" submenu's to entry creation dialogs
-    QObject::connect(
-        ui.menubar_new_user, &QAction::triggered,
-        create_user_dialog);
-    QObject::connect(
-        ui.menubar_new_computer, &QAction::triggered,
-        create_computer_dialog);
-    QObject::connect(
-        ui.menubar_new_ou, &QAction::triggered,
-        create_ou_dialog);
-    QObject::connect(
-        ui.menubar_new_group, &QAction::triggered,
-        create_group_dialog);
+    // Add menubar actions
+    for (auto a : new_entry_actions) {
+        ui.menubar_new->addAction(a);
+    }
 
     main_window.show();
 
