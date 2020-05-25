@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
 
     ContainersTree containers_tree(ui.containers_view, &ad_model, ui.menubar_view_advancedView);
     ContentsList contents_list(ui.contents_view, &ad_model, ui.menubar_view_advancedView);
-    AttributesList attributes_view(ui.attributes_view);
+    AttributesList attributes_list(ui.attributes_view);
 
     // Entry context menu
     auto entry_context_menu = new EntryContextMenu();
@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
     // entry context menu is clicked
     QObject::connect(
         entry_context_menu, &EntryContextMenu::attributes_clicked,
-        &attributes_view, &AttributesList::set_target_dn);
+        &attributes_list, &AttributesList::set_target_dn);
 
     // Delete entry when delete button is pressed
     QObject::connect(
