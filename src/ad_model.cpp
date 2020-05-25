@@ -74,7 +74,7 @@ bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction, int row, int c
 
 void load_row(QList<QStandardItem*> row, const QString &dn) {
     load_attributes(dn);
-    auto attributes = get_attributes(dn);
+    QMap<QString, QList<QString>> attributes = get_attributes(dn);
 
     // TODO: get rid of "if (x.contains(y))"
     

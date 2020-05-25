@@ -41,7 +41,7 @@ AdInterface ad_interface;
 bool FAKE_AD = false; 
 
 QMap<QString, QList<QString>> fake_children;
-QMap<QString, QMap<QString, QList<QString>>> fake_attributes;
+QMap<QString, QMap<QString, QList<QString>>> fake_attributes_map;
 
 void fake_ad_init() {
     fake_children[HEAD_DN] = {
@@ -53,14 +53,14 @@ void fake_ad_init() {
         QString("CN=D,") + HEAD_DN,
     };
 
-    fake_attributes[HEAD_DN] = {
+    fake_attributes_map[HEAD_DN] = {
         {"name", {"domain"}},
         {"objectClass", {"container"}},
         {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
         {"showInAdvancedViewOnly", {"FALSE"}},
     };
 
-    fake_attributes[QString("CN=Users,") + HEAD_DN] = {
+    fake_attributes_map[QString("CN=Users,") + HEAD_DN] = {
         {"name", {"Users"}},
         {"objectClass", {"container"}},
         {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
@@ -68,7 +68,7 @@ void fake_ad_init() {
         {"description", {"Users's description"}},
     };
 
-    fake_attributes[QString("CN=Computers,") + HEAD_DN] = {
+    fake_attributes_map[QString("CN=Computers,") + HEAD_DN] = {
         {"name", {"Computers"}},
         {"objectClass", {"container"}},
         {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
@@ -76,7 +76,7 @@ void fake_ad_init() {
         {"description", {"Computers's description"}},
     };
 
-    fake_attributes[QString("CN=A,") + HEAD_DN] = {
+    fake_attributes_map[QString("CN=A,") + HEAD_DN] = {
         {"name", {"A"}},
         {"objectClass", {"container"}},
         {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
@@ -84,7 +84,7 @@ void fake_ad_init() {
         {"description", {"A's description"}},
     };
 
-    fake_attributes[QString("CN=B,") + HEAD_DN] = {
+    fake_attributes_map[QString("CN=B,") + HEAD_DN] = {
         {"name", {"B"}},
         {"objectClass", {"container"}},
         {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
@@ -92,14 +92,14 @@ void fake_ad_init() {
         {"description", {"B's description"}},
     };
 
-    fake_attributes[QString("CN=C,") + HEAD_DN] = {
+    fake_attributes_map[QString("CN=C,") + HEAD_DN] = {
         {"name", {"C"}},
         {"objectClass", {"person"}},
         {"objectCategory", {"CN=Person,CN=Schema,CN=Configuration"}},
         {"showInAdvancedViewOnly", {"FALSE"}},
     };
 
-    fake_attributes[QString("CN=D,") + HEAD_DN] = {
+    fake_attributes_map[QString("CN=D,") + HEAD_DN] = {
         {"name", {"D"}},
         {"objectClass", {"person"}},
         {"objectCategory", {"CN=Person,CN=Schema,CN=Configuration"}},
@@ -109,7 +109,7 @@ void fake_ad_init() {
     fake_children[QString("CN=B,") + HEAD_DN] = {
         QString("CN=B's child,CN=B,") + HEAD_DN
     };
-    fake_attributes[QString("CN=B's child,CN=B,") + HEAD_DN] = {
+    fake_attributes_map[QString("CN=B's child,CN=B,") + HEAD_DN] = {
         {"name", {"B's child"}},
         {"objectClass", {"person"}},
         {"objectCategory", {"CN=Person,CN=Schema,CN=Configuration"}},
@@ -139,7 +139,7 @@ void fake_create_user(const QString &name, const QString &dn) {
     QString parent_dn = extract_parent_dn_from_dn(dn);
     fake_create_add_child(dn, parent_dn);
 
-    fake_attributes[dn] = {
+    fake_attributes_map[dn] = {
         {"name", {name}},
         {"objectClass", {"user"}},
         {"objectCategory", {"CN=User,CN=Schema,CN=Configuration"}},
@@ -151,7 +151,7 @@ void fake_create_computer(const QString &name, const QString &dn) {
     QString parent_dn = extract_parent_dn_from_dn(dn);
     fake_create_add_child(dn, parent_dn);
 
-    fake_attributes[dn] = {
+    fake_attributes_map[dn] = {
         {"name", {name}},
         {"objectClass", {"computer"}},
         {"objectCategory", {"CN=Computer,CN=Schema,CN=Configuration"}},
@@ -163,7 +163,7 @@ void fake_create_ou(const QString &name, const QString &dn) {
     QString parent_dn = extract_parent_dn_from_dn(dn);
     fake_create_add_child(dn, parent_dn);
 
-    fake_attributes[dn] = {
+    fake_attributes_map[dn] = {
         {"name", {name}},
         {"objectClass", {"Organizational Unit"}},
         {"objectClass", {"container"}},
@@ -176,7 +176,7 @@ void fake_create_group(const QString &name, const QString &dn) {
     QString parent_dn = extract_parent_dn_from_dn(dn);
     fake_create_add_child(dn, parent_dn);
 
-    fake_attributes[dn] = {
+    fake_attributes_map[dn] = {
         {"name", {name}},
         {"objectClass", {"group"}},
         {"objectClass", {"container"}},
@@ -196,7 +196,7 @@ void fake_object_delete_recurse(const QString &dn) {
         fake_children.remove(dn);
     }
 
-    fake_attributes.remove(dn);
+    fake_attributes_map.remove(dn);
 }
 
 void fake_object_delete(const QString &dn) {
@@ -219,7 +219,7 @@ void fake_move_user(const QString &user_dn, const QString &container_dn) {
     QString new_dn = "CN=" + user_name + "," + container_dn;
 
     // TODO: does this work ok?
-    fake_attributes[new_dn] = fake_attributes[user_dn];
+    fake_attributes_map[new_dn] = fake_attributes_map[user_dn];
 
     fake_object_delete(user_dn);
 
@@ -230,7 +230,7 @@ void fake_move_user(const QString &user_dn, const QString &container_dn) {
 // REAL STUFF
 // -----------------------------------------------------------------
 
-QMap<QString, QMap<QString, QList<QString>>> attributes;
+QMap<QString, QMap<QString, QList<QString>>> attributes_map;
 
 bool ad_interface_login() {
     if (FAKE_AD) {
@@ -294,7 +294,7 @@ void load_attributes(const QString &dn) {
     // TODO: handle errors
 
     if (attributes_raw != NULL) {
-        attributes[dn] = QMap<QString, QList<QString>>();
+        attributes_map[dn] = QMap<QString, QList<QString>>();
 
         // Load attributes map
         // attributes_raw is in the form of:
@@ -306,11 +306,11 @@ void load_attributes(const QString &dn) {
             auto value = QString(attributes_raw[i + 1]);
 
             // Make values list if doesn't exist yet
-            if (!attributes[dn].contains(attribute)) {
-                attributes[dn][attribute] = QList<QString>();
+            if (!attributes_map[dn].contains(attribute)) {
+                attributes_map[dn][attribute] = QList<QString>();
             }
 
-            attributes[dn][attribute].push_back(value);
+            attributes_map[dn][attribute].push_back(value);
         }
 
         // Free attributes_raw
@@ -323,24 +323,24 @@ void load_attributes(const QString &dn) {
 
 QMap<QString, QList<QString>> get_attributes(const QString &dn) {
     if (FAKE_AD) {
-        if (!fake_attributes.contains(dn)) {
+        if (!fake_attributes_map.contains(dn)) {
             return QMap<QString, QList<QString>>();
         } else {
-            return fake_attributes[dn];
+            return fake_attributes_map[dn];
         }
     } else {
-        if (!attributes.contains(dn)) {
+        if (!attributes_map.contains(dn)) {
             return QMap<QString, QList<QString>>();
         } else {
-            return attributes[dn];
+            return attributes_map[dn];
         }
     }
 }
 
 QList<QString> get_attribute_multi(const QString &dn, const QString &attribute) {
-    auto attributes = get_attributes(dn);
+    QMap<QString, QList<QString>> attributes = get_attributes(dn);
 
-    if (attributes.contains(dn) && attributes[dn].contains(attribute)) {
+    if (attributes.contains(attribute)) {
         return attributes[attribute];
     } else {
         return QList<QString>();
@@ -348,7 +348,7 @@ QList<QString> get_attribute_multi(const QString &dn, const QString &attribute) 
 }
 
 QString get_attribute(const QString &dn, const QString &attribute) {
-    auto values = get_attribute_multi(dn, attribute);
+    QList<QString> values = get_attribute_multi(dn, attribute);
 
     if (values.size() > 0) {
         // Return first value only
@@ -362,7 +362,7 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
     int result = AD_INVALID_DN;
     
     if (FAKE_AD) {
-        fake_attributes[dn][attribute] = {value};
+        fake_attributes_map[dn][attribute] = {value};
         
         result = AD_SUCCESS;
     } else {
@@ -471,7 +471,7 @@ void delete_entry(const QString &dn) {
     if (result == AD_SUCCESS) {
         emit ad_interface.entry_deleted(dn);
 
-        attributes.remove(dn);
+        attributes_map.remove(dn);
     }
 }
 
