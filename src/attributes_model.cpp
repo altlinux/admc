@@ -21,7 +21,6 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     const QString value_str = value.toString();
     // printf("setData: %s, %s, %s\n", qPrintable(dn), qPrintable(attribute), qPrintable(value_str));
 
-    // TODO: attribute edit can fail for many reasons, handle it
     bool success = set_attribute(dn, attribute, value_str);
 
     if (success) {

@@ -73,7 +73,8 @@ bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction, int row, int c
 }
 
 void load_row(QList<QStandardItem*> row, const QString &dn) {
-    QMap<QString, QList<QString>> attributes = load_attributes(dn);
+    load_attributes(dn);
+    auto attributes = get_attributes(dn);
 
     // TODO: get rid of "if (x.contains(y))"
     
@@ -132,9 +133,6 @@ void load_row(QList<QStandardItem*> row, const QString &dn) {
     category_item->setText(category);
     description_item->setText(description);
     dn_item->setText(dn);
-
-    // NOTE: store special invisible attributes in Roles of first item
-    // TODO: shouldn't store these in roles
     row[0]->setData(advanced_view, AdModel::Roles::AdvancedViewOnly);
     row[0]->setData(is_container, AdModel::Roles::IsContainer);
 

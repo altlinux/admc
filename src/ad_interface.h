@@ -47,7 +47,10 @@ extern bool FAKE_AD;
 
 bool ad_interface_login();
 QList<QString> load_children(const QString &dn);
-QMap<QString, QList<QString>> load_attributes(const QString &dn);
+void load_attributes(const QString &dn);
+QMap<QString, QList<QString>> get_attributes(const QString &dn);
+QList<QString> get_attribute_multi(const QString &dn, const QString &attribute);
+QString get_attribute(const QString &dn, const QString &attribute);
 bool set_attribute(const QString &dn, const QString &attribute, const QString &value);
 bool create_entry(const QString &name, const QString &dn, NewEntryType type);
 void delete_entry(const QString &dn);

@@ -126,15 +126,6 @@ QList<QString> fake_load_children(const QString &dn) {
     return fake_children[dn];
 }
 
-QMap<QString, QList<QString>> fake_load_attributes(const QString &dn) {
-    if (!fake_attributes.contains(dn)) {
-        printf("load_attributes failed for %s, loading empty attributes\n", qPrintable(dn));
-        fake_attributes[dn] = QMap<QString, QList<QString>>();
-    }
-
-    return fake_attributes[dn];
-}
-
 // NOTE: this is just for fake_create() functions
 void fake_create_add_child(const QString &dn, const QString &parent) {
     if (!fake_children.contains(parent)) {
@@ -239,6 +230,7 @@ void fake_move_user(const QString &user_dn, const QString &container_dn) {
 // REAL STUFF
 // -----------------------------------------------------------------
 
+QMap<QString, QMap<QString, QList<QString>>> attributes;
 
 bool ad_interface_login() {
     if (FAKE_AD) {
@@ -289,9 +281,9 @@ QList<QString> load_children(const QString &dn) {
     }
 }
 
-QMap<QString, QList<QString>> load_attributes(const QString &dn) {
+void load_attributes(const QString &dn) {
     if (FAKE_AD) {
-        return fake_load_attributes(dn);
+        return ;
     }
 
     // TODO: save original attributes ordering and load it like that into model
@@ -302,7 +294,7 @@ QMap<QString, QList<QString>> load_attributes(const QString &dn) {
     // TODO: handle errors
 
     if (attributes_raw != NULL) {
-        auto attributes = QMap<QString, QList<QString>>();
+        attributes[dn] = QMap<QString, QList<QString>>();
 
         // Load attributes map
         // attributes_raw is in the form of:
@@ -314,11 +306,11 @@ QMap<QString, QList<QString>> load_attributes(const QString &dn) {
             auto value = QString(attributes_raw[i + 1]);
 
             // Make values list if doesn't exist yet
-            if (!attributes.contains(attribute)) {
-                attributes[attribute] = QList<QString>();
+            if (!attributes[dn].contains(attribute)) {
+                attributes[dn][attribute] = QList<QString>();
             }
 
-            attributes[attribute].push_back(value);
+            attributes[dn][attribute].push_back(value);
         }
 
         // Free attributes_raw
@@ -326,10 +318,43 @@ QMap<QString, QList<QString>> load_attributes(const QString &dn) {
             free(attributes_raw[i]);
         }
         free(attributes_raw);
+    }
+}
 
-        return attributes;
+QMap<QString, QList<QString>> get_attributes(const QString &dn) {
+    if (FAKE_AD) {
+        if (!fake_attributes.contains(dn)) {
+            return QMap<QString, QList<QString>>();
+        } else {
+            return fake_attributes[dn];
+        }
     } else {
-        return QMap<QString, QList<QString>>();
+        if (!attributes.contains(dn)) {
+            return QMap<QString, QList<QString>>();
+        } else {
+            return attributes[dn];
+        }
+    }
+}
+
+QList<QString> get_attribute_multi(const QString &dn, const QString &attribute) {
+    auto attributes = get_attributes(dn);
+
+    if (attributes.contains(dn) && attributes[dn].contains(attribute)) {
+        return attributes[attribute];
+    } else {
+        return QList<QString>();
+    }
+}
+
+QString get_attribute(const QString &dn, const QString &attribute) {
+    auto values = get_attribute_multi(dn, attribute);
+
+    if (values.size() > 0) {
+        // Return first value only
+        return values[0];
+    } else {
+        return "";
     }
 }
 
