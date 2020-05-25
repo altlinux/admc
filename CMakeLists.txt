@@ -49,7 +49,6 @@ set(ADTOOL_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/containers_tree.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/contents_list.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/create_entry_dialog.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/entry_context_menu.cpp
 )
 
 
