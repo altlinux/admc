@@ -378,6 +378,10 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
     if (result == AD_SUCCESS) {
         emit ad_interface.entry_changed(dn);
 
+        // TODO: there's a duplicate load_attributes in ad_model's on_entry_changed()
+        // Make it so that there's only one call, preferrably here
+        load_attributes(dn);
+
         return true;
     } else {
         return false;
@@ -466,6 +470,8 @@ void delete_entry(const QString &dn) {
 
     if (result == AD_SUCCESS) {
         emit ad_interface.entry_deleted(dn);
+
+        attributes.remove(dn);
     }
 }
 
