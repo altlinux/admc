@@ -74,24 +74,16 @@ MainWindow::MainWindow(): QMainWindow() {
 }
 
 void MainWindow::setupUi() {
-    if (this->objectName().isEmpty())
-        this->setObjectName(QString::fromUtf8("MainWindow"));
     this->resize(1307, 795);
     actionSomething = new QAction(this);
-    actionSomething->setObjectName(QString::fromUtf8("actionSomething"));
     actionHere = new QAction(this);
-    actionHere->setObjectName(QString::fromUtf8("actionHere"));
     action_advanced_view = new QAction(this);
-    action_advanced_view->setObjectName(QString::fromUtf8("action_advanced_view"));
     action_advanced_view->setCheckable(true);
     centralwidget = new QWidget(this);
-    centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
     splitter = new QSplitter(centralwidget);
-    splitter->setObjectName(QString::fromUtf8("splitter"));
     splitter->setGeometry(QRect(0, 0, 1301, 591));
     splitter->setOrientation(Qt::Horizontal);
     containers_view = new QTreeView(splitter);
-    containers_view->setObjectName(QString::fromUtf8("containers_view"));
     containers_view->setContextMenuPolicy(Qt::CustomContextMenu);
     containers_view->setAcceptDrops(true);
     containers_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -102,7 +94,6 @@ void MainWindow::setupUi() {
     splitter->addWidget(containers_view);
     containers_view->header()->setVisible(true);
     contents_view = new QTreeView(splitter);
-    contents_view->setObjectName(QString::fromUtf8("contents_view"));
     contents_view->setContextMenuPolicy(Qt::CustomContextMenu);
     contents_view->setAcceptDrops(true);
     contents_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -114,24 +105,18 @@ void MainWindow::setupUi() {
     splitter->addWidget(contents_view);
     contents_view->header()->setVisible(true);
     attributes_view = new QTreeView(splitter);
-    attributes_view->setObjectName(QString::fromUtf8("attributes_view"));
     attributes_view->setEditTriggers(QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
     attributes_view->setSelectionMode(QAbstractItemView::NoSelection);
     attributes_view->setSelectionBehavior(QAbstractItemView::SelectRows);
     splitter->addWidget(attributes_view);
     this->setCentralWidget(centralwidget);
     menubar = new QMenuBar(this);
-    menubar->setObjectName(QString::fromUtf8("menubar"));
     menubar->setGeometry(QRect(0, 0, 1307, 27));
     menubar_new = new QMenu(menubar);
-    menubar_new->setObjectName(QString::fromUtf8("menubar_new"));
     menuEdit = new QMenu(menubar);
-    menuEdit->setObjectName(QString::fromUtf8("menuEdit"));
     menuView = new QMenu(menubar);
-    menuView->setObjectName(QString::fromUtf8("menuView"));
     this->setMenuBar(menubar);
     statusbar = new QStatusBar(this);
-    statusbar->setObjectName(QString::fromUtf8("statusbar"));
     this->setStatusBar(statusbar);
 
     menubar->addAction(menubar_new->menuAction());
