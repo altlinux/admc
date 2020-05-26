@@ -10,7 +10,6 @@ set(CMAKE_C_STANDARD 99)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
 
 # Suppress warnings on FindDoxygen.cmake
 cmake_policy(SET CMP0054 NEW)
@@ -51,21 +50,9 @@ set(ADTOOL_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/create_entry_dialog.cpp
 )
 
-
-# This part generates header files from *.ui files using UIC.
-set(ADTOOL_UI
-	mainwindow.ui
-)
-set(CMAKE_AUTOUIC_SEARCH_PATHS
-	${CMAKE_CURRENT_SOURCE_DIR}/data/ui
-)
-qt5_wrap_ui(ADTOOL_UI_GEN ${ADTOOL_UI})
-
-
 add_definitions(${QT5_DEFINITIONS})
 add_executable(adtool
 	${ADTOOL_SOURCES}
-	${ADTOOL_UI_GEN}
 )
 
 doxygen_add_docs(adtool_doc
