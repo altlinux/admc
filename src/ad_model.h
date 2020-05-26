@@ -4,6 +4,8 @@
 
 #include <QStandardItemModel>
 
+QString get_dn_of_index(const QModelIndex &index);
+
 class AdModel: public QStandardItemModel {
 Q_OBJECT
 
@@ -27,6 +29,10 @@ public:
     bool canFetchMore(const QModelIndex &parent) const;
     void fetchMore(const QModelIndex &parent);
     bool hasChildren(const QModelIndex &parent) const override;
+
+    QMimeData *mimeData(const QModelIndexList &indexes) const override;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
 
 private slots:
     void on_entry_changed(const QString &dn); 

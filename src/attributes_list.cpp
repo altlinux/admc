@@ -18,7 +18,7 @@ void AttributesList::set_target_dn(const QString &new_target_dn) {
     model.change_target(this->target_dn);
 
     // Populate model with attributes of new root
-    QMap<QString, QList<QString>> attributes = load_attributes(this->target_dn);
+    QMap<QString, QList<QString>> attributes = get_attributes(this->target_dn);
     for (auto attribute : attributes.keys()) {
         QList<QString> values = attributes[attribute];
 

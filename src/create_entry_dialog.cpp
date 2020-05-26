@@ -50,19 +50,3 @@ void create_entry_dialog(NewEntryType type, const QString &given_parent_dn) {
         create_entry(name, dn, type);
     }
 }
-
-void create_user_dialog() {
-    create_entry_dialog(NewEntryType::User);
-}
-
-void create_computer_dialog() {
-    create_entry_dialog(NewEntryType::Computer);
-}
-
-void create_ou_dialog() {
-    create_entry_dialog(NewEntryType::OU);
-}
-
-void create_group_dialog() {
-    create_entry_dialog(NewEntryType::Group);
-}

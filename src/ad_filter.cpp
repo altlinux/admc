@@ -1,6 +1,7 @@
 
 #include "ad_filter.h"
 #include "ad_model.h"
+#include "ad_interface.h"
 
 #include <QAction>
 

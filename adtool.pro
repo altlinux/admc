@@ -11,10 +11,6 @@ SOURCES += src/active_directory.c
 
 DESTDIR = .
 OBJECTS_DIR = obj
-UI_DIR = src/ui
 MOC_DIR = moc
-
-FORMS += \
-    data/ui/mainwindow.ui
 
 RESOURCES = adtool.qrc
