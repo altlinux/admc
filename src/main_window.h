@@ -48,8 +48,6 @@ private:
     QAction *action_toggle_dn;
     QAction *action_attributes;
     QAction *action_delete_entry;
-    QAction *actionSomething;
-    QAction *actionHere;
     QAction *action_advanced_view;
     QList<QAction *> new_entry_actions;
     

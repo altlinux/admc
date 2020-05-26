@@ -75,8 +75,6 @@ MainWindow::MainWindow(): QMainWindow() {
 
 void MainWindow::setupUi() {
     this->resize(1307, 795);
-    actionSomething = new QAction(this);
-    actionHere = new QAction(this);
     action_advanced_view = new QAction(this);
     action_advanced_view->setCheckable(true);
     centralwidget = new QWidget(this);
@@ -122,8 +120,6 @@ void MainWindow::setupUi() {
     menubar->addAction(menubar_new->menuAction());
     menubar->addAction(menuEdit->menuAction());
     menubar->addAction(menuView->menuAction());
-    menuEdit->addAction(actionSomething);
-    menuEdit->addAction(actionHere);
     menuView->addAction(action_advanced_view);
 
     retranslateUi(this);
@@ -131,8 +127,6 @@ void MainWindow::setupUi() {
 
 void MainWindow::retranslateUi(QMainWindow *MainWindow) {
     MainWindow->setWindowTitle(tr("MainWindow"));
-    actionSomething->setText(tr("Something"));
-    actionHere->setText(tr("Here"));
     action_advanced_view->setText(tr("Advanced view"));
     menubar_new->setTitle(tr("New"));
     menuEdit->setTitle(tr("Edit"));
