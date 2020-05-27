@@ -6,13 +6,13 @@
 AdProxyModel::AdProxyModel(AdModel *model, QObject *parent)
 : QSortFilterProxyModel(parent)
 {
-    this->setSourceModel(model);
+    setSourceModel(model);
 }
 
 void AdProxyModel::on_advanced_view_toggled(bool checked) {
     // On advanced view toggle, copy advanced view flag and invalidate filter
     advanced_view = checked;
-    this->invalidateFilter();
+    invalidateFilter();
 }
 
 bool AdProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
@@ -20,7 +20,7 @@ bool AdProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_pa
 
     // Hide advanced view only entries if advanced view is OFF
     const bool advanced_view_only = index.data(AdModel::Roles::AdvancedViewOnly).toBool();
-    if (advanced_view_only && !this->advanced_view) {
+    if (advanced_view_only && !advanced_view) {
         return false;
     }
 

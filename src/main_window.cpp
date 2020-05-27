@@ -3,21 +3,18 @@
 #include "containers_widget.h"
 #include "contents_widget.h"
 #include "attributes_widget.h"
-#include "ad_proxy_model.h"
 #include "ad_model.h"
 #include "attributes_model.h"
 #include "create_entry_dialog.h"
 
 #include <QString>
 #include <QAction>
-#include <QVariant>
 #include <QMainWindow>
 #include <QMenu>
 #include <QMenuBar>
 #include <QSplitter>
 #include <QStatusBar>
 #include <QTreeView>
-#include <QHeaderView>
 
 MainWindow::MainWindow(): QMainWindow() {    
     //
@@ -84,12 +81,13 @@ MainWindow::MainWindow(): QMainWindow() {
     // Setup "New X" actions
     for (int type_i = NewEntryType::User; type_i < NewEntryType::COUNT; type_i++) {
         NewEntryType type = static_cast<NewEntryType>(type_i);
-        QString label = new_entry_type_to_string[type];
-        QAction *action = new QAction(label);
+        QString text = new_entry_type_to_string[type];
+        QAction *action = new QAction(text, this);
 
-        QObject::connect(action, &QAction::triggered, [type]() {
-            create_entry_dialog(type);
-        });
+        QObject::connect(action, &QAction::triggered,
+            [type] () {
+                create_entry_dialog(type);
+            });
         
         new_entry_actions.push_back(action);
         menubar_new->addAction(action);

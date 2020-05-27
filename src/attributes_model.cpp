@@ -18,12 +18,11 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     QModelIndex value_index = index;
     QModelIndex name_index = value_index.siblingAtColumn(AttributesModel::Column::Name);
 
-    const QString dn = this->target_dn;
     const QString attribute = name_index.data().toString();
     const QString value_str = value.toString();
-    // printf("setData: %s, %s, %s\n", qPrintable(dn), qPrintable(attribute), qPrintable(value_str));
+    // printf("setData: %s, %s, %s\n", qPrintable(target_dn), qPrintable(attribute), qPrintable(value_str));
 
-    bool success = set_attribute(dn, attribute, value_str);
+    bool success = set_attribute(target_dn, attribute, value_str);
 
     if (success) {
         QStandardItemModel::setData(index, value, role);
@@ -35,18 +34,34 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
 }
 
 void AttributesModel::change_target(const QString &new_target_dn) {
-    this->target_dn = new_target_dn;
+    target_dn = new_target_dn;
 
     // Clear old data
+    clear();
+    
     // NOTE: need to reset headers after clearing
-    this->clear();
-    this->setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
-    this->setHorizontalHeaderItem(Column::Value, new QStandardItem("Value"));
+    setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
+    setHorizontalHeaderItem(Column::Value, new QStandardItem("Value"));
+
+     // Populate model with attributes of new root
+    QMap<QString, QList<QString>> attributes = get_attributes(target_dn);
+    for (auto attribute : attributes.keys()) {
+        QList<QString> values = attributes[attribute];
+
+        for (auto value : values) {
+            auto name_item = new QStandardItem(attribute);
+            auto value_item = new QStandardItem(value);
+
+            name_item->setEditable(false);
+
+            appendRow({name_item, value_item});
+        }
+    }
 }
 
 void AttributesModel::on_entry_deleted(const QString &dn) {
     // Clear data if current target was deleted
-    if (this->target_dn == dn) {
-        this->change_target(QString(""));
+    if (target_dn == dn) {
+        change_target(QString(""));
     }
 }

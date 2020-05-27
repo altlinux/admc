@@ -56,7 +56,7 @@ bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction, int row, int c
     if (row == -1 && column == -1) {
         drop_index = parent;
     } else {
-        drop_index = this->index(row, column, parent);
+        drop_index = index(row, column, parent);
     }
 
     // TODO: if parent is group and dropped entry is user do
@@ -178,13 +178,13 @@ void load_and_add_row(QStandardItem *parent, const QString &dn) {
 AdModel::AdModel(QObject *parent)
 : QStandardItemModel(0, Column::COUNT, parent)
 {
-    this->setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
-    this->setHorizontalHeaderItem(Column::Category, new QStandardItem("Category"));
-    this->setHorizontalHeaderItem(Column::Description, new QStandardItem("Description"));
-    this->setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
+    setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
+    setHorizontalHeaderItem(Column::Category, new QStandardItem("Category"));
+    setHorizontalHeaderItem(Column::Description, new QStandardItem("Description"));
+    setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
 
     // Load head
-    QStandardItem *invis_root = this->invisibleRootItem();
+    QStandardItem *invis_root = invisibleRootItem();
     auto head_dn = QString(HEAD_DN);
     load_and_add_row(invis_root, head_dn);
 
@@ -213,13 +213,13 @@ bool AdModel::canFetchMore(const QModelIndex &parent) const {
 }
 
 void AdModel::fetchMore(const QModelIndex &parent) {
-    if (!parent.isValid() || !this->canFetchMore(parent)) {
+    if (!parent.isValid() || !canFetchMore(parent)) {
         return;
     }
 
     QString dn = get_dn_of_index(parent);
 
-    QStandardItem *parent_item = this->itemFromIndex(parent);
+    QStandardItem *parent_item = itemFromIndex(parent);
 
     // Add children
     QList<QString> children = load_children(dn);
@@ -235,7 +235,7 @@ void AdModel::fetchMore(const QModelIndex &parent) {
 // Override this so that unexpanded and unfetched items show the expander even though they technically don't have any children loaded
 // NOTE: expander is show if hasChildren returns true
 bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
-    if (this->canFetchMore(parent)) {
+    if (canFetchMore(parent)) {
         return true;
     } else {
         return QStandardItemModel::hasChildren(parent);
@@ -244,7 +244,7 @@ bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
 
 void AdModel::on_entry_changed(const QString &dn) {
     // TODO: confirm what kind of search is this, linear?
-    QList<QStandardItem *> items = this->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
 
     // TODO: not sure if any bad matches can happen, maybe?
     if (items.size() > 0) {
@@ -262,7 +262,7 @@ void AdModel::on_entry_changed(const QString &dn) {
         auto row = QList<QStandardItem *>();
         for (int i = 0; i < AdModel::Column::COUNT; i++) {
             QModelIndex index = indexes[i];
-            QStandardItem *item = this->itemFromIndex(index);
+            QStandardItem *item = itemFromIndex(index);
             row.push_back(item);
         }
 
@@ -272,24 +272,24 @@ void AdModel::on_entry_changed(const QString &dn) {
 }
 
 void AdModel::on_entry_deleted(const QString &dn) {
-    QList<QStandardItem *> items = this->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
 
     if (items.size() > 0) {
         QStandardItem *dn_item = items[0];
         QModelIndex dn_index = dn_item->index();
         
-        this->removeRow(dn_index.row(), dn_index.parent());
+        removeRow(dn_index.row(), dn_index.parent());
     }
 }
 
 void AdModel::on_user_moved(const QString &old_dn, const QString &new_dn, const QString &new_parent_dn) {
     // Remove old entry from model
-    QList<QStandardItem *> old_items = this->findItems(old_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    QList<QStandardItem *> old_items = findItems(old_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
     if (old_items.size() > 0) {
         QStandardItem *dn_item = old_items[0];
         QModelIndex dn_index = dn_item->index();
         
-        this->removeRow(dn_index.row(), dn_index.parent());
+        removeRow(dn_index.row(), dn_index.parent());
     }
 
     printf("on_user_moved: %s %s\n", qPrintable(new_dn), qPrintable(new_parent_dn));
@@ -298,15 +298,15 @@ void AdModel::on_user_moved(const QString &old_dn, const QString &new_dn, const 
     // been expanded/fetched
     // NOTE: loading if parent has already been fetched will
     // create a duplicate
-    QList<QStandardItem *> parent_items = this->findItems(new_parent_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    QList<QStandardItem *> parent_items = findItems(new_parent_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
     if (parent_items.size() > 0) {
         QStandardItem *parent_dn_item = parent_items[0];
         QModelIndex parent_dn_index = parent_dn_item->index();
         QModelIndex parent_index = parent_dn_index.siblingAtColumn(Column::Name);
 
-        QStandardItem *parent_item = this->itemFromIndex(parent_index);
+        QStandardItem *parent_item = itemFromIndex(parent_index);
 
-        if (!this->canFetchMore(parent_index)) {
+        if (!canFetchMore(parent_index)) {
             load_and_add_row(parent_item, new_dn);
         }
     }
@@ -316,15 +316,15 @@ void AdModel::on_entry_created(const QString &dn) {
     // Load entry to model if it's parent has already been fetched
     // If it hasn't been fetched, then this new entry will be loaded with all other children when the parent is fetched
     QString parent_dn = extract_parent_dn_from_dn(dn);
-    QList<QStandardItem *> items = this->findItems(parent_dn, Qt::MatchExactly | Qt::MatchRecursive, Column::DN);
+    QList<QStandardItem *> items = findItems(parent_dn, Qt::MatchExactly | Qt::MatchRecursive, Column::DN);
 
     if (items.size() > 0) {
         QStandardItem *dn_item = items[0];
         QModelIndex dn_index = dn_item->index();
         QModelIndex parent_index = dn_index.siblingAtColumn(0);
-        QStandardItem *parent = this->itemFromIndex(parent_index);
+        QStandardItem *parent = itemFromIndex(parent_index);
 
-        bool fetched_already = !this->canFetchMore(parent_index);
+        bool fetched_already = !canFetchMore(parent_index);
         if (fetched_already) {
             load_and_add_row(parent, dn);
         }
