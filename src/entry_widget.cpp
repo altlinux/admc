@@ -56,7 +56,7 @@ EntryWidget::EntryWidget(AdModel* model)
         });
 }
 
-void EntryWidget::connect_proxy_action(QAction *action_advanced_view) const {
+void EntryWidget::connect_proxy_action(QAction *action_advanced_view) {
     connect(
         action_advanced_view, &QAction::triggered,
         proxy, &AdProxyModel::on_advanced_view_toggled);    

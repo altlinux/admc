@@ -123,12 +123,12 @@ QString MainWindow::get_selected_dn() const {
 }
 
 void MainWindow::on_action_attributes() {
-    auto dn = get_selected_dn();
+    QString dn = get_selected_dn();
     attributes_widget->set_target_dn(dn);
 }
 
 void MainWindow::on_action_delete_entry() {
-    auto dn = get_selected_dn();
+    QString dn = get_selected_dn();
     delete_entry(dn);
 }
 

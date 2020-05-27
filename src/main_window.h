@@ -24,7 +24,7 @@ class MainWindow final : public QMainWindow {
 Q_OBJECT
 
 public:
-    MainWindow();
+    explicit MainWindow();
 
 private:
     QString get_selected_dn() const;

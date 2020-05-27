@@ -21,7 +21,7 @@ public:
     EntryWidget(AdModel *model);
 
     QString get_selected_dn() const;
-    void connect_proxy_action(QAction *action_advanced_view) const;
+    void connect_proxy_action(QAction *action_advanced_view);
 
 signals:
     void context_menu_requested(const QPoint &pos);
