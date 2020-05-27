@@ -2,22 +2,19 @@
 #ifndef ATTRIBUTES_VIEW_H
 #define ATTRIBUTES_VIEW_H
 
-#include "attributes_model.h"
-
-#include <QObject>
+#include <QWidget>
 
 class QTreeView;
 class QString;
 class AttributesModel;
 
 // Shows names and values of attributes of the entry selected in contents view
-class AttributesList : public QObject {
+class AttributesList : public QWidget {
 Q_OBJECT
 
 public:
-    AttributesList(QTreeView *view);
+    AttributesList();
 
-    AttributesModel model;
 
 public slots:
     void set_target_dn(const QString &new_target_dn);
@@ -28,8 +25,9 @@ private:
         Value,
         COUNT,
     };
-    
-    QTreeView *view;
+
+    AttributesModel *model = nullptr;
+    QTreeView *view = nullptr;
     QString target_dn;
 };
 

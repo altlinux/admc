@@ -11,7 +11,7 @@ class ContainersTree : public EntryWidget {
 Q_OBJECT
 
 public:
-    ContainersTree(QTreeView *view, AdModel *model, QAction *advanced_view_toggle);
+    ContainersTree(AdModel *model, QAction *advanced_view_toggle);
 
 signals:
     void selected_container_changed(const QModelIndex &selected);

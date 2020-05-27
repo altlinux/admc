@@ -9,7 +9,7 @@ class ContentsList : public EntryWidget {
 Q_OBJECT
 
 public:
-    ContentsList(QTreeView *view, AdModel *model, QAction *advanced_view);
+    ContentsList(AdModel *model, QAction *advanced_view);
 
 public slots:
     void on_selected_container_changed(const QModelIndex &source_index);

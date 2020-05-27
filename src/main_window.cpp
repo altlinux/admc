@@ -24,9 +24,13 @@ MainWindow::MainWindow(): QMainWindow() {
 
     ad_model = new AdModel();
 
-    containers_tree = new ContainersTree(containers_view, ad_model, action_advanced_view);
-    contents_list = new ContentsList(contents_view, ad_model, action_advanced_view);
-    attributes_list = new AttributesList(attributes_view);
+    containers_tree = new ContainersTree(ad_model, action_advanced_view);
+    contents_list = new ContentsList(ad_model, action_advanced_view);
+    attributes_list = new AttributesList();
+
+    splitter->addWidget(containers_tree);
+    splitter->addWidget(contents_list);
+    splitter->addWidget(attributes_list);
 
     // Setup actions
     action_attributes = new QAction("Attributes");
@@ -89,32 +93,7 @@ void MainWindow::setupUi() {
     splitter = new QSplitter(centralwidget);
     splitter->setGeometry(QRect(0, 0, 1301, 591));
     splitter->setOrientation(Qt::Horizontal);
-    containers_view = new QTreeView(splitter);
-    containers_view->setContextMenuPolicy(Qt::CustomContextMenu);
-    containers_view->setAcceptDrops(true);
-    containers_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    containers_view->setDragDropMode(QAbstractItemView::DragDrop);
-    containers_view->setRootIsDecorated(true);
-    containers_view->setItemsExpandable(true);
-    containers_view->setExpandsOnDoubleClick(true);
-    splitter->addWidget(containers_view);
-    containers_view->header()->setVisible(true);
-    contents_view = new QTreeView(splitter);
-    contents_view->setContextMenuPolicy(Qt::CustomContextMenu);
-    contents_view->setAcceptDrops(true);
-    contents_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    contents_view->setDragDropMode(QAbstractItemView::DragDrop);
-    contents_view->setSelectionMode(QAbstractItemView::SingleSelection);
-    contents_view->setRootIsDecorated(false);
-    contents_view->setItemsExpandable(false);
-    contents_view->setExpandsOnDoubleClick(false);
-    splitter->addWidget(contents_view);
-    contents_view->header()->setVisible(true);
-    attributes_view = new QTreeView(splitter);
-    attributes_view->setEditTriggers(QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
-    attributes_view->setSelectionMode(QAbstractItemView::NoSelection);
-    attributes_view->setSelectionBehavior(QAbstractItemView::SelectRows);
-    splitter->addWidget(attributes_view);
+    
     this->setCentralWidget(centralwidget);
     menubar = new QMenuBar(this);
     menubar->setGeometry(QRect(0, 0, 1307, 27));
@@ -130,41 +109,24 @@ void MainWindow::setupUi() {
     menubar->addAction(menuView->menuAction());
     menuView->addAction(action_advanced_view);
 
-    retranslateUi(this);
-}
-
-void MainWindow::retranslateUi(QMainWindow *MainWindow) {
-    MainWindow->setWindowTitle(tr("MainWindow"));
+    setWindowTitle(tr("MainWindow"));
     action_advanced_view->setText(tr("Advanced view"));
     menubar_new->setTitle(tr("New"));
     menuEdit->setTitle(tr("Edit"));
     menuView->setTitle(tr("View"));
 }
 
-QString MainWindow::get_selected_dn() {
-    QTreeView *focus_view = nullptr;
+QString MainWindow::get_selected_dn() const {
+    QString containers_dn = containers_tree->get_selected_dn();
+    QString contents_dn = contents_list->get_selected_dn();
     
-    if (containers_view->hasFocus()) {
-        focus_view = containers_view;
-    } else if (contents_view->hasFocus()) {
-        focus_view = contents_view;
+    if (containers_dn != "") {
+        return containers_dn;
+    } else if (contents_dn != "") {
+        return contents_dn;
+    } else {
+        return "";
     }
-
-    QString dn = "";
-
-    if (focus_view != nullptr) {
-        auto selection_model = focus_view->selectionModel();
-        auto selected_indexes = selection_model->selectedIndexes();
-
-        if (selected_indexes.size() > 0) {
-            auto selected = selected_indexes[0];
-            QModelIndex dn_index = selected.siblingAtColumn(AdModel::Column::DN);
-
-            dn = dn_index.data().toString();
-        }
-    }
-
-    return dn;
 }
 
 void MainWindow::on_action_attributes() {

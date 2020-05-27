@@ -11,14 +11,26 @@
 #include <QDrag>
 #include <QMimeData>
 #include <QTreeView>
+#include <QHeaderView>
+#include <QLabel>
+#include <QVBoxLayout>
 
-EntryWidget::EntryWidget(QTreeView *view_, AdModel* model, QAction *advanced_view_toggle) :
-QWidget()
+EntryWidget::EntryWidget(AdModel* model, QAction *advanced_view_toggle)
+: QWidget()
 {
-    view = view_;
-
     proxy = new AdFilter(model, advanced_view_toggle);
+    
+    view = new QTreeView();
+    view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setModel(proxy);
+
+    label = new QLabel("LABEL");
+
+    setLayout(new QVBoxLayout());
+    layout()->setContentsMargins(0, 0, 0, 0);
+    layout()->setSpacing(0);
+    layout()->addWidget(label);
+    layout()->addWidget(view);
 
     // Init column visibility
     for (int column_i = AdModel::Column::Name; column_i < AdModel::Column::COUNT; column_i++) {

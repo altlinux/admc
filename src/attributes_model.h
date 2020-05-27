@@ -14,7 +14,7 @@ public:
         COUNT,
     };
 
-    explicit AttributesModel();
+    explicit AttributesModel(QObject *parent);
 
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
     void change_target(const QString &new_target_dn);

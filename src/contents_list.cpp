@@ -11,10 +11,21 @@
 #include <QDrag>
 #include <QMimeData>
 #include <QTreeView>
+#include <QLabel>
 
-ContentsList::ContentsList(QTreeView *view, AdModel* model, QAction *advanced_view_toggle)
-: EntryWidget(view, model, advanced_view_toggle)
-{
+ContentsList::ContentsList(AdModel* model, QAction *advanced_view_toggle)
+: EntryWidget(model, advanced_view_toggle)
+{   
+    view->setAcceptDrops(true);
+    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    view->setDragDropMode(QAbstractItemView::DragDrop);
+    view->setSelectionMode(QAbstractItemView::SingleSelection);
+    view->setRootIsDecorated(false);
+    view->setItemsExpandable(false);
+    view->setExpandsOnDoubleClick(false);
+
+    label->setText("Contents");
+
     column_hidden[AdModel::Column::DN] = true;
     update_column_visibility();
 };

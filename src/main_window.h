@@ -6,7 +6,6 @@
 
 #include <QMainWindow>
 #include <QList>
-#include <QTreeView>
 #include <QPoint>
 
 class QString;
@@ -17,7 +16,6 @@ class AttributesList;
 class QAction;
 class QWidget;
 class QSplitter;
-class QTreeView;
 class QMenuBar;
 class QMenu;
 class QStatusBar;
@@ -30,9 +28,8 @@ public:
 
 private:
     void setupUi();
-    void retranslateUi(QMainWindow *MainWindow);
     
-    QString get_selected_dn();
+    QString get_selected_dn() const;
     void on_action_attributes();
     void on_action_delete_entry();
     void on_action_new_entry(NewEntryType type);
@@ -52,9 +49,6 @@ private:
     
     QWidget *centralwidget;
     QSplitter *splitter;
-    QTreeView *containers_view;
-    QTreeView *contents_view;
-    QTreeView *attributes_view;
     QMenuBar *menubar;
     QMenu *menubar_new;
     QMenu *menuEdit;
