@@ -52,6 +52,7 @@ set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/create_entry_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main_window.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/actions.cpp
 )
 
 add_definitions(${QT5_DEFINITIONS})

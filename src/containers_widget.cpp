@@ -18,6 +18,7 @@ ContainersWidget::ContainersWidget(AdModel *model)
 
     proxy->only_show_containers = true;
 
+    column_hidden[AdModel::Column::Name] = false;
     column_hidden[AdModel::Column::Category] = true;
     column_hidden[AdModel::Column::Description] = true;
     column_hidden[AdModel::Column::DN] = true;

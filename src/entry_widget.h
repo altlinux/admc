@@ -21,13 +21,10 @@ public:
     EntryWidget(AdModel *model);
 
     QString get_selected_dn() const;
-    void connect_proxy_action(QAction *action_advanced_view);
 
-signals:
-    void context_menu_requested(const QPoint &pos);
-
-public slots:
+private slots:
     void on_action_toggle_dn(bool checked);
+    void on_context_menu_requested(const QPoint &pos);
 
 protected:
     QTreeView *view = nullptr;

@@ -6,9 +6,9 @@
 #include "ad_model.h"
 #include "attributes_model.h"
 #include "create_entry_dialog.h"
+#include "actions.h"
 
 #include <QString>
-#include <QAction>
 #include <QMainWindow>
 #include <QMenu>
 #include <QMenuBar>
@@ -16,10 +16,14 @@
 #include <QStatusBar>
 #include <QTreeView>
 
-MainWindow::MainWindow(): QMainWindow() {    
+MainWindow::MainWindow()
+: QMainWindow()
+{  
     //
     // Setup widgets
     //
+    actions_init();
+   
     resize(1300, 800);
     setWindowTitle("MainWindow");
 
@@ -32,8 +36,16 @@ MainWindow::MainWindow(): QMainWindow() {
     const auto menubar = new QMenuBar(this);
     setMenuBar(menubar);
     menubar->setGeometry(QRect(0, 0, 1307, 27));
+    
     const auto menubar_new = menubar->addMenu("New");
+    menubar_new->addAction(&action_new_user);
+    menubar_new->addAction(&action_new_computer);
+    menubar_new->addAction(&action_new_group);
+    menubar_new->addAction(&action_new_ou);
+
     const auto menubar_view = menubar->addMenu("View");
+    menubar_view->addAction(&action_advanced_view);
+    menubar_view->addAction(&action_toggle_dn);
 
     const auto splitter = new QSplitter(central_widget);
     splitter->setGeometry(QRect(0, 0, 1301, 591));
@@ -48,58 +60,28 @@ MainWindow::MainWindow(): QMainWindow() {
     splitter->addWidget(containers_widget);
     splitter->addWidget(contents_widget);
     splitter->addWidget(attributes_widget);
-
+    
     //
-    // Setup actions
+    // Connect actions
     //
-    const auto action_advanced_view = new QAction("Advanced view", this);
-    action_advanced_view->setCheckable(true);
-    menubar_view->addAction(action_advanced_view);
-    containers_widget->connect_proxy_action(action_advanced_view);
-    contents_widget->connect_proxy_action(action_advanced_view);
-
-    const auto action_toggle_dn = new QAction("Show DN");
-    action_toggle_dn->setCheckable(true);
-    menubar_view->addAction(action_toggle_dn);
     QObject::connect(
-        action_toggle_dn, &QAction::triggered,
-        containers_widget, &EntryWidget::on_action_toggle_dn);
-    QObject::connect(
-        action_toggle_dn, &QAction::triggered,
-        contents_widget, &EntryWidget::on_action_toggle_dn);
-
-    action_attributes = new QAction("Attributes", this);
-    QObject::connect(
-        action_attributes, &QAction::triggered,
+        &action_attributes, &QAction::triggered,
         this, &MainWindow::on_action_attributes);
-
-    action_delete_entry = new QAction("Delete", this);
     QObject::connect(
-        action_delete_entry, &QAction::triggered,
+        &action_delete_entry, &QAction::triggered,
         this, &MainWindow::on_action_delete_entry);
-
-    // Setup "New X" actions
-    for (int type_i = NewEntryType::User; type_i < NewEntryType::COUNT; type_i++) {
-        NewEntryType type = static_cast<NewEntryType>(type_i);
-        QString text = new_entry_type_to_string[type];
-        QAction *action = new QAction(text, this);
-
-        QObject::connect(action, &QAction::triggered,
-            [type] () {
-                create_entry_dialog(type);
-            });
-        
-        new_entry_actions.push_back(action);
-        menubar_new->addAction(action);
-    }
-
-    // Popup context menu from containers and contents widgets
     QObject::connect(
-        containers_widget, &EntryWidget::context_menu_requested,
-        this, &MainWindow::popup_entry_context_menu);
+        &action_new_user, &QAction::triggered,
+        this, &MainWindow::on_action_new_user);
     QObject::connect(
-        contents_widget, &EntryWidget::context_menu_requested,
-        this, &MainWindow::popup_entry_context_menu);
+        &action_new_computer, &QAction::triggered,
+        this, &MainWindow::on_action_new_computer);
+    QObject::connect(
+        &action_new_group, &QAction::triggered,
+        this, &MainWindow::on_action_new_group);
+    QObject::connect(
+        &action_new_ou, &QAction::triggered,
+        this, &MainWindow::on_action_new_ou);
 
     // Set root index of contents view to selection of containers view
     QObject::connect(
@@ -122,7 +104,7 @@ QString MainWindow::get_selected_dn() const {
 
 void MainWindow::on_action_attributes() {
     QString dn = get_selected_dn();
-    attributes_widget->set_target_dn(dn);
+    attributes_widget->change_model_target(dn);
 }
 
 void MainWindow::on_action_delete_entry() {
@@ -130,21 +112,23 @@ void MainWindow::on_action_delete_entry() {
     delete_entry(dn);
 }
 
-void MainWindow::on_action_new_entry(NewEntryType type) {
+void MainWindow::on_action_new_entry_generic(NewEntryType type) {
     QString dn = get_selected_dn();
     create_entry_dialog(type, dn);
 }
 
-void MainWindow::popup_entry_context_menu(const QPoint &pos) {
-    QMenu menu;
+void MainWindow::on_action_new_user() {
+    on_action_new_entry_generic(NewEntryType::User);
+}
 
-    menu.addAction(action_attributes);
-    menu.addAction(action_delete_entry);
+void MainWindow::on_action_new_computer() {
+    on_action_new_entry_generic(NewEntryType::Computer);
+}
 
-    QMenu *submenu_new = menu.addMenu("New");
-    for (auto action : new_entry_actions) {
-        submenu_new->addAction(action);
-    }
+void MainWindow::on_action_new_group() {
+    on_action_new_entry_generic(NewEntryType::Group);
+}
 
-    menu.exec(pos, action_attributes);
+void MainWindow::on_action_new_ou() {
+    on_action_new_entry_generic(NewEntryType::OU);
 }

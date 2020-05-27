@@ -3,6 +3,7 @@
 #include "ad_interface.h"
 #include "ad_model.h"
 #include "ad_proxy_model.h"
+#include "actions.h"
 
 #include <QApplication>
 #include <QItemSelection>
@@ -14,7 +15,7 @@
 #include <QHeaderView>
 #include <QLabel>
 #include <QVBoxLayout>
-#include <QAction>
+#include <QMenu>
 
 EntryWidget::EntryWidget(AdModel* model)
 : QWidget()
@@ -41,25 +42,36 @@ EntryWidget::EntryWidget(AdModel* model)
     }
     update_column_visibility();
 
-    // Convert view's customContextMenuRequested
-    // to context_menu_requested signal with global pos
-    connect(
-        view, &QWidget::customContextMenuRequested,
-        [this] (const QPoint &pos) {
-            QModelIndex index = view->indexAt(pos);
+    QObject::connect(
+        &action_toggle_dn, &QAction::triggered,
+        this, &EntryWidget::on_action_toggle_dn);
 
-            if (index.isValid()) {
-                QPoint global_pos = view->mapToGlobal(pos);
-                
-                emit context_menu_requested(global_pos);
-            }
-        });
+    QObject::connect(
+        view, &QWidget::customContextMenuRequested,
+        this, &EntryWidget::on_context_menu_requested);
 }
 
-void EntryWidget::connect_proxy_action(QAction *action_advanced_view) {
-    connect(
-        action_advanced_view, &QAction::triggered,
-        proxy, &AdProxyModel::on_advanced_view_toggled);    
+void EntryWidget::on_context_menu_requested(const QPoint &pos) {
+    // Open entry context menu
+    QModelIndex index = view->indexAt(pos);
+
+    if (!index.isValid()) {
+        return;
+    }
+    
+    QMenu menu;
+
+    menu.addAction(&action_attributes);
+    menu.addAction(&action_delete_entry);
+
+    QMenu *submenu_new = menu.addMenu("New");
+    submenu_new->addAction(&action_new_user);
+    submenu_new->addAction(&action_new_computer);
+    submenu_new->addAction(&action_new_group);
+    submenu_new->addAction(&action_new_ou);
+
+    QPoint global_pos = view->mapToGlobal(pos);
+    menu.exec(global_pos, &action_attributes);
 }
 
 QString EntryWidget::get_selected_dn() const {

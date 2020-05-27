@@ -14,7 +14,7 @@ public:
 
     bool only_show_containers = false;
 
-public slots:
+private slots:
     void on_advanced_view_toggled(bool checked);
 
 private:

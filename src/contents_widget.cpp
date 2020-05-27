@@ -20,6 +20,9 @@ ContentsWidget::ContentsWidget(AdModel* model)
 
     label->setText("Contents");
 
+    column_hidden[AdModel::Column::Name] = false;
+    column_hidden[AdModel::Column::Category] = false;
+    column_hidden[AdModel::Column::Description] = false;
     column_hidden[AdModel::Column::DN] = true;
     update_column_visibility();
 };

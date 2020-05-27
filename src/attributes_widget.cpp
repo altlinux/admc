@@ -28,7 +28,7 @@ AttributesWidget::AttributesWidget()
     layout()->addWidget(view);
 };
 
-void AttributesWidget::set_target_dn(const QString &new_target_dn) {
+void AttributesWidget::change_model_target(const QString &new_target_dn) {
     // Set model to new target
     model->change_target(new_target_dn);
 }

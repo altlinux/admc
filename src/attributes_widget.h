@@ -16,7 +16,7 @@ public:
     AttributesWidget();
 
 public slots:
-    void set_target_dn(const QString &new_target_dn);
+    void change_model_target(const QString &new_target_dn);
 
 private:
     enum Column {

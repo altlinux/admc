@@ -2,11 +2,16 @@
 #include "ad_proxy_model.h"
 #include "ad_model.h"
 #include "ad_interface.h"
+#include "actions.h"
 
 AdProxyModel::AdProxyModel(AdModel *model, QObject *parent)
 : QSortFilterProxyModel(parent)
 {
     setSourceModel(model);
+
+    connect(
+        &action_advanced_view, &QAction::triggered,
+        this, &AdProxyModel::on_advanced_view_toggled);
 }
 
 void AdProxyModel::on_advanced_view_toggled(bool checked) {
