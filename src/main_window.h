@@ -31,7 +31,6 @@ public:
 private:
     void setupUi();
     void retranslateUi(QMainWindow *MainWindow);
-    void connect_view_to_entry_context_menu(QTreeView *view);
     
     QString get_selected_dn();
     void on_action_attributes();

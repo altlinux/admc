@@ -2,17 +2,12 @@
 #ifndef CONTAINERS_VIEW_H
 #define CONTAINERS_VIEW_H
 
-#include "ad_filter.h"
+#include "entry_widget.h"
 
-#include <QObject>
-
-class QTreeView;
-class AdModel;
-class QAction;
-class QModelIndex;
+class QItemSelection;
 
 // Shows names of AdModel as a tree
-class ContainersTree : public QObject {
+class ContainersTree : public EntryWidget {
 Q_OBJECT
 
 public:
@@ -25,8 +20,6 @@ private slots:
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
 
 private:
-    QTreeView *view;
-    AdFilter proxy;
 
 };
 

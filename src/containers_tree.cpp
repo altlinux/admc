@@ -1,20 +1,19 @@
 
 #include "containers_tree.h"
 #include "ad_model.h"
+#include "ad_filter.h"
 
 #include <QTreeView>
 
-ContainersTree::ContainersTree(QTreeView *view, AdModel *model, QAction *advanced_view_toggle):
-proxy(model, advanced_view_toggle) 
+ContainersTree::ContainersTree(QTreeView *view, AdModel *model, QAction *advanced_view_toggle)
+: EntryWidget(view, model, advanced_view_toggle)
 {
-    this->view = view;
+    proxy->only_show_containers = true;
 
-    proxy.only_show_containers = true;
-
-    view->setModel(&proxy);
-    view->hideColumn(AdModel::Column::Category);
-    view->hideColumn(AdModel::Column::Description);
-    view->hideColumn(AdModel::Column::DN);
+    column_hidden[AdModel::Column::Category] = true;
+    column_hidden[AdModel::Column::Description] = true;
+    column_hidden[AdModel::Column::DN] = true;
+    update_column_visibility();
 
     connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,
@@ -28,7 +27,7 @@ void ContainersTree::on_selection_changed(const QItemSelection &selected, const 
 
     if (indexes.size() > 0) {
         QModelIndex index = indexes[0];
-        QModelIndex source_index = proxy.mapToSource(index);
+        QModelIndex source_index = proxy->mapToSource(index);
 
         emit selected_container_changed(source_index);
     }

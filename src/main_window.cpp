@@ -57,10 +57,18 @@ MainWindow::MainWindow(): QMainWindow() {
     menuView->addAction(action_toggle_dn);
     QObject::connect(
         action_toggle_dn, &QAction::triggered,
-        this, &MainWindow::on_action_toggle_dn);
+        containers_tree, &EntryWidget::on_action_toggle_dn);
+    QObject::connect(
+        action_toggle_dn, &QAction::triggered,
+        contents_list, &EntryWidget::on_action_toggle_dn);
 
-    connect_view_to_entry_context_menu(containers_view);
-    connect_view_to_entry_context_menu(contents_view);
+
+    QObject::connect(
+        containers_tree, &EntryWidget::context_menu_requested,
+        this, &MainWindow::popup_entry_context_menu);
+    QObject::connect(
+        contents_list, &EntryWidget::context_menu_requested,
+        this, &MainWindow::popup_entry_context_menu);
 
     // Set root index of contents view to selection of containers view
     QObject::connect(
@@ -133,20 +141,6 @@ void MainWindow::retranslateUi(QMainWindow *MainWindow) {
     menuView->setTitle(tr("View"));
 }
 
-void MainWindow::connect_view_to_entry_context_menu(QTreeView *view) {
-    QObject::connect(
-        view, &QWidget::customContextMenuRequested,
-        [this, view] (const QPoint &pos) {
-            // Get DN of clicked entry
-            QModelIndex index = view->indexAt(pos);
-
-            if (index.isValid()) {
-                QPoint global_pos = view->mapToGlobal(pos);
-                this->popup_entry_context_menu(global_pos);
-            }
-        });
-}
-
 QString MainWindow::get_selected_dn() {
     QTreeView *focus_view = nullptr;
     
@@ -200,11 +194,4 @@ void MainWindow::popup_entry_context_menu(const QPoint &pos) {
     }
 
     menu.exec(pos, action_attributes);
-}
-
-void MainWindow::on_action_toggle_dn(bool checked) {
-    // TODO: maybe add update_column_visibility() to containers tree as well, and make visibility state an array for all columns 
-    containers_view->setColumnHidden(AdModel::Column::DN, !checked);
-    contents_list->dn_column_hidden = !checked;
-    contents_list->update_column_visibility();
 }
