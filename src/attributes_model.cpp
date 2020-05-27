@@ -3,7 +3,9 @@
 #include "ad_model.h"
 #include "ad_interface.h"
 
-AttributesModel::AttributesModel(QObject *parent): QStandardItemModel(0, Column::COUNT, parent) {
+AttributesModel::AttributesModel(QObject *parent)
+: QStandardItemModel(0, Column::COUNT, parent)
+{
     change_target(QString(""));
 
     QObject::connect(

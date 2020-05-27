@@ -13,7 +13,7 @@ AttributesWidget::AttributesWidget()
 {
     model = new AttributesModel(this);
 
-    view = new QTreeView();
+    view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
     view->setSelectionMode(QAbstractItemView::NoSelection);
     view->setSelectionBehavior(QAbstractItemView::SelectRows);

@@ -5,7 +5,9 @@
 
 #include <QAction>
 
-AdProxyModel::AdProxyModel(AdModel *model, QAction *advanced_view_toggle) {
+AdProxyModel::AdProxyModel(AdModel *model, QAction *advanced_view_toggle, QWidget *parent)
+: QSortFilterProxyModel(parent)
+{
     this->setSourceModel(model);
 
     connect(advanced_view_toggle, &QAction::toggled,

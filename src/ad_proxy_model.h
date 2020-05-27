@@ -13,7 +13,7 @@ class AdModel;
 // Connected to advanced view toggle in menubar
 class AdProxyModel : public QSortFilterProxyModel {
 public:
-    explicit AdProxyModel(AdModel *model, QAction *advanced_view_toggle);
+    explicit AdProxyModel(AdModel *model, QAction *advanced_view_toggle, QWidget *parent);
 
     bool only_show_containers = false;
 

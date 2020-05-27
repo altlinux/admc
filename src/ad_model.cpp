@@ -175,7 +175,9 @@ void load_and_add_row(QStandardItem *parent, const QString &dn) {
     parent->appendRow(row);
 }
 
-AdModel::AdModel(): QStandardItemModel(0, Column::COUNT) {
+AdModel::AdModel(QObject *parent)
+: QStandardItemModel(0, Column::COUNT, parent)
+{
     this->setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
     this->setHorizontalHeaderItem(Column::Category, new QStandardItem("Category"));
     this->setHorizontalHeaderItem(Column::Description, new QStandardItem("Description"));

@@ -49,7 +49,7 @@ MainWindow::MainWindow(): QMainWindow() {
     menuEdit->setTitle(tr("Edit"));
     menuView->setTitle(tr("View"));
 
-    ad_model = new AdModel();
+    ad_model = new AdModel(this);
 
     containers_widget = new ContainersWidget(ad_model, action_advanced_view);
     contents_widget = new ContentsWidget(ad_model, action_advanced_view);

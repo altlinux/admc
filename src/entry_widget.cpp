@@ -18,7 +18,7 @@
 EntryWidget::EntryWidget(AdModel* model, QAction *advanced_view_toggle)
 : QWidget()
 {
-    proxy = new AdProxyModel(model, advanced_view_toggle);
+    proxy = new AdProxyModel(model, advanced_view_toggle, this);
     
     view = new QTreeView();
     view->setContextMenuPolicy(Qt::CustomContextMenu);

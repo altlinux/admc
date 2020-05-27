@@ -18,7 +18,7 @@ public:
         COUNT,
     };
 
-    explicit AdModel();
+    explicit AdModel(QObject *parent);
 
     enum Roles {
         AdvancedViewOnly = Qt::UserRole + 1,
