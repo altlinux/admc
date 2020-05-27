@@ -26,7 +26,7 @@ const QMap<NewEntryType, QString> new_entry_type_to_string = {
 };
 
 // Class solely for emitting signals
-class AdInterface: public QObject {
+class AdInterface final : public QObject {
 Q_OBJECT
 
 public:

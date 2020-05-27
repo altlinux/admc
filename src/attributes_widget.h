@@ -9,7 +9,7 @@ class QString;
 class AttributesModel;
 
 // Shows names and values of attributes of the entry selected in contents view
-class AttributesWidget : public QWidget {
+class AttributesWidget final : public QWidget {
 Q_OBJECT
 
 public:

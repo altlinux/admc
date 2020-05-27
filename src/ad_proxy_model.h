@@ -11,7 +11,7 @@ class AdModel;
 // TODO: only allow AdModel source models
 // Filter out advanced entries when advanced view is off
 // Connected to advanced view toggle in menubar
-class AdProxyModel : public QSortFilterProxyModel {
+class AdProxyModel final : public QSortFilterProxyModel {
 public:
     explicit AdProxyModel(AdModel *model, QAction *advanced_view_toggle, QWidget *parent);
 

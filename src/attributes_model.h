@@ -4,7 +4,7 @@
 
 #include <QStandardItemModel>
 
-class AttributesModel: public QStandardItemModel {
+class AttributesModel final : public QStandardItemModel {
 Q_OBJECT
 
 public:

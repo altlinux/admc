@@ -7,7 +7,7 @@
 class QItemSelection;
 
 // Shows names of AdModel as a tree
-class ContainersWidget : public EntryWidget {
+class ContainersWidget final : public EntryWidget {
 Q_OBJECT
 
 public:

@@ -5,7 +5,7 @@
 #include "entry_widget.h"
 
 // Shows name, category and description of children of entry selected in containers view
-class ContentsWidget : public EntryWidget {
+class ContentsWidget final : public EntryWidget {
 Q_OBJECT
 
 public:
