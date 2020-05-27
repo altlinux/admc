@@ -19,8 +19,8 @@ cmake_policy(SET CMP0054 NEW)
 set(Iconv_IS_BUILT_IN FALSE)
 
 set(CMAKE_MODULE_PATH
-	${CMAKE_MODULE_PATH}
-	${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules
+    ${CMAKE_MODULE_PATH}
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules
 )
 
 find_package(Qt5 COMPONENTS Core Widgets REQUIRED) # GUI
@@ -36,44 +36,44 @@ set(ADTOOL_ORGANIZATION_DOMAIN "basealt.ru")
 configure_file("config.h.in" "config.h")
 
 set(ADTOOL_HEADER_DIRS
-	${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 set(ADTOOL_SOURCES
-	${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/active_directory.c
-	${CMAKE_CURRENT_SOURCE_DIR}/src/ad_filter.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/ad_interface.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/ad_model.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/attributes_list.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/attributes_model.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/containers_tree.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/contents_list.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/create_entry_dialog.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/active_directory.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_filter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_interface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_model.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/attributes_list.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/attributes_model.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/containers_tree.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/contents_list.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/create_entry_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main_window.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/entry_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_widget.cpp
 )
 
 add_definitions(${QT5_DEFINITIONS})
 add_executable(adtool
-	${ADTOOL_SOURCES}
+    ${ADTOOL_SOURCES}
 )
 
 doxygen_add_docs(adtool_doc
-	${ADTOOL_HEADER_DIRS}
-	COMMENT
-	"Group Policy Editor GUI documentation"
+    ${ADTOOL_HEADER_DIRS}
+    COMMENT
+    "Group Policy Editor GUI documentation"
 )
 
 
 target_link_libraries(adtool
-	Qt5::Core
-	Qt5::Widgets
-	${OPENLDAP_LIBRARIES}
+    Qt5::Core
+    Qt5::Widgets
+    ${OPENLDAP_LIBRARIES}
 )
 target_include_directories(adtool
-	PUBLIC
-	${ADTOOL_HEADER_DIRS}
+    PUBLIC
+    ${ADTOOL_HEADER_DIRS}
 )
 
 install(TARGETS adtool)
