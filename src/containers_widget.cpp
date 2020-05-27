@@ -1,12 +1,12 @@
 
-#include "containers_tree.h"
+#include "containers_widget.h"
 #include "ad_model.h"
-#include "ad_filter.h"
+#include "ad_proxy_model.h"
 
 #include <QTreeView>
 #include <QLabel>
 
-ContainersTree::ContainersTree(AdModel *model, QAction *advanced_view_toggle)
+ContainersWidget::ContainersWidget(AdModel *model, QAction *advanced_view_toggle)
 : EntryWidget(model, advanced_view_toggle)
 {
     view->setAcceptDrops(true);
@@ -27,10 +27,10 @@ ContainersTree::ContainersTree(AdModel *model, QAction *advanced_view_toggle)
 
     connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,
-        this, &ContainersTree::on_selection_changed);
+        this, &ContainersWidget::on_selection_changed);
 };
 
-void ContainersTree::on_selection_changed(const QItemSelection &selected, const QItemSelection &) {
+void ContainersWidget::on_selection_changed(const QItemSelection &selected, const QItemSelection &) {
     // Transform selected index into source index and pass it on
     // to selected_container_changed() signal
     const QList<QModelIndex> indexes = selected.indexes();

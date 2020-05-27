@@ -1,15 +1,15 @@
 
-#ifndef CONTENTS_VIEW_H
-#define CONTENTS_VIEW_H
+#ifndef CONTENTS_WIDGET_H
+#define CONTENTS_WIDGET_H
 
 #include "entry_widget.h"
 
 // Shows name, category and description of children of entry selected in containers view
-class ContentsList : public EntryWidget {
+class ContentsWidget : public EntryWidget {
 Q_OBJECT
 
 public:
-    ContentsList(AdModel *model, QAction *advanced_view);
+    ContentsWidget(AdModel *model, QAction *advanced_view);
 
 public slots:
     void on_selected_container_changed(const QModelIndex &source_index);
@@ -18,4 +18,4 @@ private:
     
 };
 
-#endif /* CONTENTS_VIEW_H */
+#endif /* CONTENTS_WIDGET_H */

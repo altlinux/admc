@@ -42,13 +42,13 @@ set(ADTOOL_HEADER_DIRS
 set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/active_directory.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_filter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_proxy_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_interface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_model.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/attributes_list.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/attributes_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/attributes_model.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/containers_tree.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/contents_list.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/containers_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/contents_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/create_entry_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main_window.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_widget.cpp

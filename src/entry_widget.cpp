@@ -2,7 +2,7 @@
 #include "entry_widget.h"
 #include "ad_interface.h"
 #include "ad_model.h"
-#include "ad_filter.h"
+#include "ad_proxy_model.h"
 
 #include <QApplication>
 #include <QItemSelection>
@@ -18,7 +18,7 @@
 EntryWidget::EntryWidget(AdModel* model, QAction *advanced_view_toggle)
 : QWidget()
 {
-    proxy = new AdFilter(model, advanced_view_toggle);
+    proxy = new AdProxyModel(model, advanced_view_toggle);
     
     view = new QTreeView();
     view->setContextMenuPolicy(Qt::CustomContextMenu);

@@ -11,7 +11,7 @@ class QTreeView;
 class QAction;
 class QLabel;
 class AdModel;
-class AdFilter;
+class AdProxyModel;
 
 // Shows names of AdModel as a tree
 class EntryWidget : public QWidget {
@@ -30,7 +30,7 @@ public slots:
 
 protected:
     QTreeView *view = nullptr;
-    AdFilter *proxy = nullptr;
+    AdProxyModel *proxy = nullptr;
     QLabel *label = nullptr;
     QMap<AdModel::Column, bool> column_hidden;
     

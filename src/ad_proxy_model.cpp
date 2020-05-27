@@ -1,24 +1,24 @@
 
-#include "ad_filter.h"
+#include "ad_proxy_model.h"
 #include "ad_model.h"
 #include "ad_interface.h"
 
 #include <QAction>
 
-AdFilter::AdFilter(AdModel *model, QAction *advanced_view_toggle) {
+AdProxyModel::AdProxyModel(AdModel *model, QAction *advanced_view_toggle) {
     this->setSourceModel(model);
 
     connect(advanced_view_toggle, &QAction::toggled,
-        this, &AdFilter::on_advanced_view_toggled);
+        this, &AdProxyModel::on_advanced_view_toggled);
 }
 
-void AdFilter::on_advanced_view_toggled(bool checked) {
+void AdProxyModel::on_advanced_view_toggled(bool checked) {
     // On advanced view toggle, copy advanced view flag and invalidate filter
     advanced_view = checked;
     this->invalidateFilter();
 }
 
-bool AdFilter::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
+bool AdProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
     const QModelIndex index = sourceModel()->index(source_row, 0, source_parent);
 
     // Hide advanced view only entries if advanced view is OFF

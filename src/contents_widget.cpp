@@ -1,8 +1,8 @@
 
-#include "contents_list.h"
+#include "contents_widget.h"
 #include "ad_interface.h"
 #include "ad_model.h"
-#include "ad_filter.h"
+#include "ad_proxy_model.h"
 
 #include <QApplication>
 #include <QItemSelection>
@@ -13,7 +13,7 @@
 #include <QTreeView>
 #include <QLabel>
 
-ContentsList::ContentsList(AdModel* model, QAction *advanced_view_toggle)
+ContentsWidget::ContentsWidget(AdModel* model, QAction *advanced_view_toggle)
 : EntryWidget(model, advanced_view_toggle)
 {   
     view->setAcceptDrops(true);
@@ -32,7 +32,7 @@ ContentsList::ContentsList(AdModel* model, QAction *advanced_view_toggle)
 
 // Both contents and containers share the same source model, but have different proxy's to it
 // So need to map from containers proxy to source then back to proxy of contents
-void ContentsList::on_selected_container_changed(const QModelIndex &source_index) {
+void ContentsWidget::on_selected_container_changed(const QModelIndex &source_index) {
     QModelIndex index = proxy->mapFromSource(source_index);
     view->setRootIndex(index);
 

@@ -1,6 +1,6 @@
 
-#ifndef ATTRIBUTES_VIEW_H
-#define ATTRIBUTES_VIEW_H
+#ifndef ATTRIBUTES_WIDGET_H
+#define ATTRIBUTES_WIDGET_H
 
 #include <QWidget>
 
@@ -9,11 +9,11 @@ class QString;
 class AttributesModel;
 
 // Shows names and values of attributes of the entry selected in contents view
-class AttributesList : public QWidget {
+class AttributesWidget : public QWidget {
 Q_OBJECT
 
 public:
-    AttributesList();
+    AttributesWidget();
 
 
 public slots:
@@ -31,4 +31,4 @@ private:
     QString target_dn;
 };
 
-#endif /* ATTRIBUTES_VIEW_H */
+#endif /* ATTRIBUTES_WIDGET_H */

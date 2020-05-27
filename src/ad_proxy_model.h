@@ -1,6 +1,6 @@
 
-#ifndef AD_FILTER_H
-#define AD_FILTER_H
+#ifndef AD_PROXY_MODEL_H
+#define AD_PROXY_MODEL_H
 
 #include <QSortFilterProxyModel>
 
@@ -11,9 +11,9 @@ class AdModel;
 // TODO: only allow AdModel source models
 // Filter out advanced entries when advanced view is off
 // Connected to advanced view toggle in menubar
-class AdFilter : public QSortFilterProxyModel {
+class AdProxyModel : public QSortFilterProxyModel {
 public:
-    explicit AdFilter(AdModel *model, QAction *advanced_view_toggle);
+    explicit AdProxyModel(AdModel *model, QAction *advanced_view_toggle);
 
     bool only_show_containers = false;
 
@@ -27,4 +27,4 @@ private:
 
 };
 
-#endif /* AD_FILTER_H */
+#endif /* AD_PROXY_MODEL_H */

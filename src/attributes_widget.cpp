@@ -1,5 +1,5 @@
 
-#include "attributes_list.h"
+#include "attributes_widget.h"
 #include "attributes_model.h"
 #include "ad_interface.h"
 
@@ -8,7 +8,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
-AttributesList::AttributesList()
+AttributesWidget::AttributesWidget()
 : QWidget()
 {
     model = new AttributesModel(this);
@@ -28,7 +28,7 @@ AttributesList::AttributesList()
     layout()->addWidget(view);
 };
 
-void AttributesList::set_target_dn(const QString &new_target_dn) {
+void AttributesWidget::set_target_dn(const QString &new_target_dn) {
     this->target_dn = new_target_dn;
 
     // Clear model of previous root

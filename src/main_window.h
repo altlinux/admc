@@ -10,9 +10,9 @@
 
 class QString;
 class AdModel;
-class ContainersTree;
-class ContentsList;
-class AttributesList;
+class ContainersWidget;
+class ContentsWidget;
+class AttributesWidget;
 class QAction;
 class QWidget;
 class QSplitter;
@@ -27,8 +27,6 @@ public:
     MainWindow();
 
 private:
-    void setupUi();
-    
     QString get_selected_dn() const;
     void on_action_attributes();
     void on_action_delete_entry();
@@ -37,9 +35,9 @@ private:
     void on_action_toggle_dn(bool checked);
 
     AdModel *ad_model;
-    ContainersTree *containers_tree;
-    ContentsList *contents_list;
-    AttributesList *attributes_list;
+    ContainersWidget *containers_widget;
+    ContentsWidget *contents_widget;
+    AttributesWidget *attributes_widget;
     
     QAction *action_toggle_dn;
     QAction *action_attributes;
