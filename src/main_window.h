@@ -32,26 +32,15 @@ private:
     void on_action_delete_entry();
     void on_action_new_entry(NewEntryType type);
     void popup_entry_context_menu(const QPoint &pos);
-    void on_action_toggle_dn(bool checked);
 
     AdModel *ad_model;
     ContainersWidget *containers_widget;
     ContentsWidget *contents_widget;
     AttributesWidget *attributes_widget;
     
-    QAction *action_toggle_dn;
     QAction *action_attributes;
     QAction *action_delete_entry;
-    QAction *action_advanced_view;
     QList<QAction *> new_entry_actions;
-    
-    QWidget *centralwidget;
-    QSplitter *splitter;
-    QMenuBar *menubar;
-    QMenu *menubar_new;
-    QMenu *menuEdit;
-    QMenu *menuView;
-    QStatusBar *statusbar;
 };
 
 #endif /* MAIN_WINDOW_H */

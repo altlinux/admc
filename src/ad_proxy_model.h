@@ -5,19 +5,16 @@
 #include <QSortFilterProxyModel>
 
 class QModelIndex;
-class QAction;
 class AdModel;
 
-// TODO: only allow AdModel source models
 // Filter out advanced entries when advanced view is off
-// Connected to advanced view toggle in menubar
 class AdProxyModel final : public QSortFilterProxyModel {
 public:
-    explicit AdProxyModel(AdModel *model, QAction *advanced_view_toggle, QWidget *parent);
+    explicit AdProxyModel(AdModel *model, QObject *parent);
 
     bool only_show_containers = false;
 
-private slots:
+public slots:
     void on_advanced_view_toggled(bool checked);
 
 private:

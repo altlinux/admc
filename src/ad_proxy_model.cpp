@@ -3,15 +3,10 @@
 #include "ad_model.h"
 #include "ad_interface.h"
 
-#include <QAction>
-
-AdProxyModel::AdProxyModel(AdModel *model, QAction *advanced_view_toggle, QWidget *parent)
+AdProxyModel::AdProxyModel(AdModel *model, QObject *parent)
 : QSortFilterProxyModel(parent)
 {
     this->setSourceModel(model);
-
-    connect(advanced_view_toggle, &QAction::toggled,
-        this, &AdProxyModel::on_advanced_view_toggled);
 }
 
 void AdProxyModel::on_advanced_view_toggled(bool checked) {

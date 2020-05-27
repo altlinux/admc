@@ -14,11 +14,12 @@
 #include <QHeaderView>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QAction>
 
-EntryWidget::EntryWidget(AdModel* model, QAction *advanced_view_toggle)
+EntryWidget::EntryWidget(AdModel* model)
 : QWidget()
 {
-    proxy = new AdProxyModel(model, advanced_view_toggle, this);
+    proxy = new AdProxyModel(model, this);
     
     view = new QTreeView();
     view->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -53,6 +54,12 @@ EntryWidget::EntryWidget(AdModel* model, QAction *advanced_view_toggle)
                 emit context_menu_requested(global_pos);
             }
         });
+}
+
+void EntryWidget::connect_proxy_action(QAction *action_advanced_view) const {
+    connect(
+        action_advanced_view, &QAction::triggered,
+        proxy, &AdProxyModel::on_advanced_view_toggled);    
 }
 
 QString EntryWidget::get_selected_dn() const {

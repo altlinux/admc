@@ -18,9 +18,10 @@ class EntryWidget : public QWidget {
 Q_OBJECT
 
 public:
-    EntryWidget(AdModel *model, QAction *advanced_view_toggle);
+    EntryWidget(AdModel *model);
 
     QString get_selected_dn() const;
+    void connect_proxy_action(QAction *action_advanced_view) const;
 
 signals:
     void context_menu_requested(const QPoint &pos);

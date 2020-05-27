@@ -6,8 +6,8 @@
 #include <QTreeView>
 #include <QLabel>
 
-ContainersWidget::ContainersWidget(AdModel *model, QAction *advanced_view_toggle)
-: EntryWidget(model, advanced_view_toggle)
+ContainersWidget::ContainersWidget(AdModel *model)
+: EntryWidget(model)
 {
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);

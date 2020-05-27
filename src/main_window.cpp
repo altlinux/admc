@@ -19,52 +19,64 @@
 #include <QTreeView>
 #include <QHeaderView>
 
-MainWindow::MainWindow(): QMainWindow() {
-    this->resize(1307, 795);
-    action_advanced_view = new QAction(this);
-    action_advanced_view->setCheckable(true);
-    centralwidget = new QWidget(this);
-    splitter = new QSplitter(centralwidget);
+MainWindow::MainWindow(): QMainWindow() {    
+    //
+    // Setup widgets
+    //
+    resize(1300, 800);
+    setWindowTitle("MainWindow");
+
+    const auto central_widget = new QWidget(this);
+    setCentralWidget(central_widget);
+    
+    const auto status_bar = new QStatusBar(this);
+    setStatusBar(status_bar);
+
+    const auto menubar = new QMenuBar(this);
+    setMenuBar(menubar);
+    menubar->setGeometry(QRect(0, 0, 1307, 27));
+    const auto menubar_new = menubar->addMenu("New");
+    const auto menubar_view = menubar->addMenu("View");
+
+    const auto splitter = new QSplitter(central_widget);
     splitter->setGeometry(QRect(0, 0, 1301, 591));
     splitter->setOrientation(Qt::Horizontal);
-    
-    this->setCentralWidget(centralwidget);
-    menubar = new QMenuBar(this);
-    menubar->setGeometry(QRect(0, 0, 1307, 27));
-    menubar_new = new QMenu(menubar);
-    menuEdit = new QMenu(menubar);
-    menuView = new QMenu(menubar);
-    this->setMenuBar(menubar);
-    statusbar = new QStatusBar(this);
-    this->setStatusBar(statusbar);
-
-    menubar->addAction(menubar_new->menuAction());
-    menubar->addAction(menuEdit->menuAction());
-    menubar->addAction(menuView->menuAction());
-    menuView->addAction(action_advanced_view);
-
-    setWindowTitle(tr("MainWindow"));
-    action_advanced_view->setText(tr("Advanced view"));
-    menubar_new->setTitle(tr("New"));
-    menuEdit->setTitle(tr("Edit"));
-    menuView->setTitle(tr("View"));
 
     ad_model = new AdModel(this);
 
-    containers_widget = new ContainersWidget(ad_model, action_advanced_view);
-    contents_widget = new ContentsWidget(ad_model, action_advanced_view);
+    containers_widget = new ContainersWidget(ad_model);
+    contents_widget = new ContentsWidget(ad_model);
     attributes_widget = new AttributesWidget();
 
     splitter->addWidget(containers_widget);
     splitter->addWidget(contents_widget);
     splitter->addWidget(attributes_widget);
 
+    //
     // Setup actions
-    action_attributes = new QAction("Attributes");
-    action_delete_entry = new QAction("Delete");
+    //
+    const auto action_advanced_view = new QAction("Advanced view", this);
+    action_advanced_view->setCheckable(true);
+    menubar_view->addAction(action_advanced_view);
+    containers_widget->connect_proxy_action(action_advanced_view);
+    contents_widget->connect_proxy_action(action_advanced_view);
+
+    const auto action_toggle_dn = new QAction("Show DN");
+    action_toggle_dn->setCheckable(true);
+    menubar_view->addAction(action_toggle_dn);
+    QObject::connect(
+        action_toggle_dn, &QAction::triggered,
+        containers_widget, &EntryWidget::on_action_toggle_dn);
+    QObject::connect(
+        action_toggle_dn, &QAction::triggered,
+        contents_widget, &EntryWidget::on_action_toggle_dn);
+
+    action_attributes = new QAction("Attributes", this);
     QObject::connect(
         action_attributes, &QAction::triggered,
         this, &MainWindow::on_action_attributes);
+
+    action_delete_entry = new QAction("Delete", this);
     QObject::connect(
         action_delete_entry, &QAction::triggered,
         this, &MainWindow::on_action_delete_entry);
@@ -80,20 +92,10 @@ MainWindow::MainWindow(): QMainWindow() {
         });
         
         new_entry_actions.push_back(action);
+        menubar_new->addAction(action);
     }
 
-    // DN toggle
-    action_toggle_dn = new QAction("Show DN");
-    action_toggle_dn->setCheckable(true);
-    menuView->addAction(action_toggle_dn);
-    QObject::connect(
-        action_toggle_dn, &QAction::triggered,
-        containers_widget, &EntryWidget::on_action_toggle_dn);
-    QObject::connect(
-        action_toggle_dn, &QAction::triggered,
-        contents_widget, &EntryWidget::on_action_toggle_dn);
-
-
+    // Popup context menu from containers and contents widgets
     QObject::connect(
         containers_widget, &EntryWidget::context_menu_requested,
         this, &MainWindow::popup_entry_context_menu);
@@ -105,11 +107,6 @@ MainWindow::MainWindow(): QMainWindow() {
     QObject::connect(
         containers_widget, &ContainersWidget::selected_container_changed,
         contents_widget, &ContentsWidget::on_selected_container_changed);
-    
-    // Add menubar actions
-    for (auto a : new_entry_actions) {
-        menubar_new->addAction(a);
-    }
 }
 
 QString MainWindow::get_selected_dn() const {

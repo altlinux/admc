@@ -9,7 +9,7 @@ class ContentsWidget final : public EntryWidget {
 Q_OBJECT
 
 public:
-    ContentsWidget(AdModel *model, QAction *advanced_view);
+    ContentsWidget(AdModel *model);
 
 public slots:
     void on_selected_container_changed(const QModelIndex &source_index);

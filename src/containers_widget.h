@@ -11,7 +11,7 @@ class ContainersWidget final : public EntryWidget {
 Q_OBJECT
 
 public:
-    ContainersWidget(AdModel *model, QAction *advanced_view_toggle);
+    ContainersWidget(AdModel *model);
 
 signals:
     void selected_container_changed(const QModelIndex &selected);

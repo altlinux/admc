@@ -4,17 +4,11 @@
 #include "ad_model.h"
 #include "ad_proxy_model.h"
 
-#include <QApplication>
-#include <QItemSelection>
-#include <QSortFilterProxyModel>
-#include <QMouseEvent>
-#include <QDrag>
-#include <QMimeData>
 #include <QTreeView>
 #include <QLabel>
 
-ContentsWidget::ContentsWidget(AdModel* model, QAction *advanced_view_toggle)
-: EntryWidget(model, advanced_view_toggle)
+ContentsWidget::ContentsWidget(AdModel* model)
+: EntryWidget(model)
 {   
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
