@@ -71,7 +71,8 @@ bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction, int row, int c
     return true;
 }
 
-void load_row(QList<QStandardItem*> row, const QString &dn) {
+// Init row's data based on attributes of entry with given dn
+void init_row(QList<QStandardItem*> row, const QString &dn) {
     QMap<QString, QList<QString>> attributes = get_attributes(dn);
 
     // TODO: get rid of "if (x.contains(y))"
@@ -158,7 +159,8 @@ void load_row(QList<QStandardItem*> row, const QString &dn) {
     row[0]->setIcon(icon);
 }
 
-void load_and_add_row(QStandardItem *parent, const QString &dn) {
+// Make new row in model at given parent based on entry with given dn
+void make_new_row(QStandardItem *parent, const QString &dn) {
     auto row = QList<QStandardItem *>();
 
     for (int i = 0; i < AdModel::Column::COUNT; i++) {
@@ -168,7 +170,7 @@ void load_and_add_row(QStandardItem *parent, const QString &dn) {
     // Load attributes since this is the first time this entry is loaded
     load_attributes(dn);
 
-    load_row(row, dn);
+    init_row(row, dn);
 
     // Set fetch flag because row is new and can be fetched
     row[0]->setData(true, AdModel::Roles::CanFetch);
@@ -187,7 +189,7 @@ AdModel::AdModel(QObject *parent)
     // Load head
     QStandardItem *invis_root = invisibleRootItem();
     auto head_dn = QString(HEAD_DN);
-    load_and_add_row(invis_root, head_dn);
+    make_new_row(invis_root, head_dn);
 
     QObject::connect(
         &ad_interface, &AdInterface::delete_entry_complete,
@@ -226,7 +228,7 @@ void AdModel::fetchMore(const QModelIndex &parent) {
     QList<QString> children = load_children(dn);
 
     for (auto child : children) {
-        load_and_add_row(parent_item, child);
+        make_new_row(parent_item, child);
     }
 
     // Unset CanFetch flag
@@ -268,7 +270,7 @@ void AdModel::on_set_attribute_complete(const QString &dn, const QString &attrib
         }
 
         // Reload row
-        load_row(row, dn);
+        init_row(row, dn);
     }
 }
 
@@ -308,7 +310,7 @@ void AdModel::on_move_user_complete(const QString &user_dn, const QString &conta
         QStandardItem *parent_item = itemFromIndex(parent_index);
 
         if (!canFetchMore(parent_index)) {
-            load_and_add_row(parent_item, new_dn);
+            make_new_row(parent_item, new_dn);
         }
     }
 }
@@ -327,7 +329,7 @@ void AdModel::on_create_entry_complete(const QString &dn, NewEntryType type) {
 
         bool fetched_already = !canFetchMore(parent_index);
         if (fetched_already) {
-            load_and_add_row(parent, dn);
+            make_new_row(parent, dn);
         }
     }
 }
