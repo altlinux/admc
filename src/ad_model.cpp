@@ -111,15 +111,11 @@ void init_row(QList<QStandardItem*> row, const QString &dn) {
 
     // is container
     bool is_container = false;
-    if (attributes.contains("objectClass")) {
-        QList<QString> objectClasses = attributes["objectClass"];
-        
-        QList<QString> container_objectClasses = {"container", "organizationalUnit", "builtinDomain", "domain"};
-        for (auto e : container_objectClasses) {
-            if (objectClasses.contains(e)) {
-                is_container = true;
-                break;
-            }
+    const QList<QString> container_objectClasses = {"container", "organizationalUnit", "builtinDomain", "domain"};
+    for (auto c : container_objectClasses) {
+        if (attribute_value_exists("objectClass", c)) {
+            is_container = true;
+            break;
         }
     }
 
@@ -146,12 +142,11 @@ void init_row(QList<QStandardItem*> row, const QString &dn) {
         {"group", "application-x-smb-workgroup"},
         {"builtinDomain", "emblem-system"},
     };
-    QList<QString> objectClasses = attributes["objectClass"];
     QString icon_name = "dialog-question";
-    for (auto c : objectClasses) {
-        if (class_to_icon.contains(c)) {
+    for (auto c : class_to_icon.keys()) {
+        if (attribute_value_exists("objectClass", c)) {
             icon_name = class_to_icon[c];
-            break;    
+            break;  
         }
     }
 
@@ -294,8 +289,6 @@ void AdModel::on_move_user_complete(const QString &user_dn, const QString &conta
         
         removeRow(dn_index.row(), dn_index.parent());
     }
-
-    printf("on_move_user_complete: %s %s\n", qPrintable(new_dn), qPrintable(container_dn));
 
     // Need to load entry at new parent if the parent has already
     // been expanded/fetched

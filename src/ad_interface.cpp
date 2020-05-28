@@ -362,6 +362,16 @@ QString get_attribute(const QString &dn, const QString &attribute) {
     }
 }
 
+bool attribute_value_exists(const QString &dn, const QString &attribute, const QString &value) {
+    QList<QString> values = get_attribute_multi(dn, attribute);
+
+    if (values.contains(value)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 bool set_attribute(const QString &dn, const QString &attribute, const QString &value) {
     int result = AD_INVALID_DN;
 
