@@ -113,7 +113,7 @@ void init_row(QList<QStandardItem*> row, const QString &dn) {
     bool is_container = false;
     const QList<QString> container_objectClasses = {"container", "organizationalUnit", "builtinDomain", "domain"};
     for (auto c : container_objectClasses) {
-        if (attribute_value_exists("objectClass", c)) {
+        if (attribute_value_exists(dn, "objectClass", c)) {
             is_container = true;
             break;
         }
@@ -144,7 +144,7 @@ void init_row(QList<QStandardItem*> row, const QString &dn) {
     };
     QString icon_name = "dialog-question";
     for (auto c : class_to_icon.keys()) {
-        if (attribute_value_exists("objectClass", c)) {
+        if (attribute_value_exists(dn, "objectClass", c)) {
             icon_name = class_to_icon[c];
             break;  
         }

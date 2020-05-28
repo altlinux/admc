@@ -34,6 +34,9 @@ public:
 public slots:
 
 signals:
+    void load_children_failed(const QString &dn, const QString &error_str);
+    void load_attributes_failed(const QString &dn, const QString &error_str);
+
     void delete_entry_complete(const QString &dn);
     void set_attribute_complete(const QString &dn, const QString &attribute, const QString &old_value, const QString &value);
     void create_entry_complete(const QString &dn, NewEntryType type);

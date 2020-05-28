@@ -264,8 +264,6 @@ QList<QString> load_children(const QString &dn) {
     const char *dn_cstr = qstring_to_cstr(dn);
     char **children_raw = ad_list(dn_cstr);
 
-    // TODO: error check
-
     if (children_raw != NULL) {
         auto children = QList<QString>();
 
@@ -281,21 +279,20 @@ QList<QString> load_children(const QString &dn) {
 
         return children;
     } else {
+        // TODO: is this still a fail if there are no children?
+        emit ad_interface.load_children_failed(dn, get_error_str());
+
         return QList<QString>();
     }
 }
 
 void load_attributes(const QString &dn) {
     if (FAKE_AD) {
-        return ;
+        return;
     }
-
-    // TODO: save original attributes ordering and load it like that into model
 
     const char *dn_cstr = qstring_to_cstr(dn);
     char** attributes_raw = ad_get_attribute(dn_cstr, NULL);
-
-    // TODO: handle errors
 
     if (attributes_raw != NULL) {
         attributes_map[dn] = QMap<QString, QList<QString>>();
@@ -322,6 +319,8 @@ void load_attributes(const QString &dn) {
             free(attributes_raw[i]);
         }
         free(attributes_raw);
+    } else {
+        emit ad_interface.load_attributes_failed(dn, get_error_str());
     }
 }
 
@@ -386,8 +385,6 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
         const char *attribute_cstr = qstring_to_cstr(attribute);
         const char *value_cstr = qstring_to_cstr(value);
 
-        // TODO: handle errors
-
         result = ad_mod_replace(dn_cstr, attribute_cstr, value_cstr);
     }
 
@@ -409,8 +406,6 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
 bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
     int result = AD_INVALID_DN;
     
-    // TODO: handle errors
-
     if (FAKE_AD) {
         switch (type) {
             case User: {
@@ -479,15 +474,12 @@ void delete_entry(const QString &dn) {
     } else {
         const char *dn_cstr = qstring_to_cstr(dn);
 
-        // TODO: handle all possible side-effects?
-        // probably a lot of stuff, like group membership and stuff
-
-        // TODO: handle errors
-
         result = ad_object_delete(dn_cstr);
     }
 
     if (result == AD_SUCCESS) {
+        // TODO: handle all possible side-effects?
+        // probably a lot of stuff, like group membership and stuff
         emit ad_interface.delete_entry_complete(dn);
 
         attributes_map.remove(dn);
@@ -499,7 +491,6 @@ void delete_entry(const QString &dn) {
 void move_user(const QString &user_dn, const QString &container_dn) {
     int result = AD_INVALID_DN;
 
-    // TODO: duplicated
     QString user_name = extract_name_from_dn(user_dn);
     QString new_dn = "CN=" + user_name + "," + container_dn;
 

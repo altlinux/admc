@@ -9,6 +9,13 @@ StatusBar::StatusBar()
 
     // Connect signals
     connect(
+        &ad_interface, &AdInterface::load_children_failed,
+        this, &StatusBar::on_load_children_failed);
+    connect(
+        &ad_interface, &AdInterface::load_attributes_failed,
+        this, &StatusBar::on_load_attributes_failed);
+
+    connect(
         &ad_interface, &AdInterface::create_entry_complete,
         this, &StatusBar::on_create_entry_complete);
     connect(
@@ -33,6 +40,17 @@ StatusBar::StatusBar()
     connect(
         &ad_interface, &AdInterface::move_user_failed,
         this, &StatusBar::on_move_user_failed);
+}
+
+void StatusBar::on_load_children_failed(const QString &dn, const QString &error_str) {
+    QString msg = QString("Failed to load children of \"%1\". Error: \"%2\"").arg(dn, error_str);
+
+    showMessage(msg);
+}
+void StatusBar::on_load_attributes_failed(const QString &dn, const QString &error_str) {
+    QString msg = QString("Failed to load attributes of \"%1\". Error: \"%2\"").arg(dn, error_str);
+
+    showMessage(msg);
 }
 
 void StatusBar::on_delete_entry_complete(const QString &dn) {

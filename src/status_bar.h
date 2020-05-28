@@ -17,6 +17,9 @@ public:
     explicit StatusBar();
 
 private slots:
+    void on_load_children_failed(const QString &dn, const QString &error_str);
+    void on_load_attributes_failed(const QString &dn, const QString &error_str);
+
     void on_delete_entry_complete(const QString &dn);
     void on_set_attribute_complete(const QString &dn, const QString &attribute, const QString &old_value, const QString &value); 
     void on_create_entry_complete(const QString &dn, NewEntryType type);
