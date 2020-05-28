@@ -72,7 +72,6 @@ bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction, int row, int c
 }
 
 void load_row(QList<QStandardItem*> row, const QString &dn) {
-    load_attributes(dn);
     QMap<QString, QList<QString>> attributes = get_attributes(dn);
 
     // TODO: get rid of "if (x.contains(y))"
@@ -165,6 +164,9 @@ void load_and_add_row(QStandardItem *parent, const QString &dn) {
     for (int i = 0; i < AdModel::Column::COUNT; i++) {
         row.push_back(new QStandardItem());
     }
+
+    // Load attributes since this is the first time this entry is loaded
+    load_attributes(dn);
 
     load_row(row, dn);
 

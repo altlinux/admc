@@ -382,11 +382,10 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
     }
 
     if (result == AD_SUCCESS) {
-        emit ad_interface.set_attribute_complete(dn, attribute, old_value, value);
-
-        // TODO: there's a duplicate load_attributes in ad_model's on_set_attribute_complete()
-        // Make it so that there's only one call, preferrably here
+        // Reload attributes to get new value
         load_attributes(dn);
+        
+        emit ad_interface.set_attribute_complete(dn, attribute, old_value, value);
 
         return true;
     } else {
