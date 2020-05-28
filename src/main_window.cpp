@@ -7,6 +7,7 @@
 #include "attributes_model.h"
 #include "create_entry_dialog.h"
 #include "actions.h"
+#include "status_bar.h"
 
 #include <QString>
 #include <QMainWindow>
@@ -30,7 +31,7 @@ MainWindow::MainWindow()
     const auto central_widget = new QWidget(this);
     setCentralWidget(central_widget);
     
-    const auto status_bar = new QStatusBar(this);
+    const auto status_bar = new StatusBar();
     setStatusBar(status_bar);
 
     const auto menubar = new QMenuBar(this);

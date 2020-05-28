@@ -29,6 +29,5 @@ AttributesWidget::AttributesWidget()
 };
 
 void AttributesWidget::change_model_target(const QString &new_target_dn) {
-    // Set model to new target
     model->change_target(new_target_dn);
 }

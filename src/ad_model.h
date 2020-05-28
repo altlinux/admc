@@ -2,6 +2,8 @@
 #ifndef AD_MODEL_H
 #define AD_MODEL_H
 
+#include "ad_interface.h"
+
 #include <QStandardItemModel>
 
 QString get_dn_of_index(const QModelIndex &index);
@@ -35,10 +37,10 @@ public:
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
 
 private slots:
-    void on_entry_changed(const QString &dn); 
-    void on_entry_deleted(const QString &dn); 
-    void on_user_moved(const QString &old_dn, const QString &new_dn, const QString &new_parent_dn);
-    void on_entry_created(const QString &dn); 
+    void on_delete_entry_complete(const QString &dn); 
+    void on_set_attribute_complete(const QString &dn, const QString &attribute, const QString &value); 
+    void on_create_entry_complete(const QString &dn, NewEntryType type); 
+    void on_move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn);
 
 private:
 

@@ -19,11 +19,8 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
     void change_target(const QString &new_target_dn);
 
-signals:
-    void entry_changed(const QString &dn); 
-
 private slots:
-    void on_entry_deleted(const QString &dn); 
+    void on_delete_entry_complete(const QString &dn); 
 
 private:
     QString target_dn;

@@ -9,8 +9,8 @@ AttributesModel::AttributesModel(QObject *parent)
     change_target(QString(""));
 
     QObject::connect(
-        &ad_interface, &AdInterface::entry_deleted,
-        this, &AttributesModel::on_entry_deleted);
+        &ad_interface, &AdInterface::delete_entry_complete,
+        this, &AttributesModel::on_delete_entry_complete);
 }
 
 // This will be called when an attribute value is edited
@@ -20,7 +20,6 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
 
     const QString attribute = name_index.data().toString();
     const QString value_str = value.toString();
-    // printf("setData: %s, %s, %s\n", qPrintable(target_dn), qPrintable(attribute), qPrintable(value_str));
 
     bool success = set_attribute(target_dn, attribute, value_str);
 
@@ -59,7 +58,7 @@ void AttributesModel::change_target(const QString &new_target_dn) {
     }
 }
 
-void AttributesModel::on_entry_deleted(const QString &dn) {
+void AttributesModel::on_delete_entry_complete(const QString &dn) {
     // Clear data if current target was deleted
     if (target_dn == dn) {
         change_target(QString(""));

@@ -34,10 +34,15 @@ public:
 public slots:
 
 signals:
-    void entry_deleted(const QString &dn);
-    void entry_changed(const QString &dn);
-    void entry_created(const QString &dn);
-    void user_moved(const QString &old_dn, const QString &new_dn , const QString &new_parent_dn);
+    void delete_entry_complete(const QString &dn);
+    void set_attribute_complete(const QString &dn, const QString &attribute, const QString &old_value, const QString &value);
+    void create_entry_complete(const QString &dn, NewEntryType type);
+    void move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn);
+
+    void delete_entry_failed(const QString &dn, const QString &error_str);
+    void set_attribute_failed(const QString &dn, const QString &attribute, const QString &old_value, const QString &value, const QString &error_str);
+    void create_entry_failed(const QString &dn, NewEntryType type, const QString &error_str);
+    void move_user_failed(const QString &user_dn, const QString &container_dn, const QString &new_dn, const QString &error_str);
 
 private:
 

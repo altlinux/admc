@@ -1,6 +1,5 @@
 
 #include "ad_model.h"
-#include "ad_interface.h"
 #include "constants.h"
 
 #include <QMimeData>
@@ -189,17 +188,17 @@ AdModel::AdModel(QObject *parent)
     load_and_add_row(invis_root, head_dn);
 
     QObject::connect(
-        &ad_interface, &AdInterface::entry_deleted,
-        this, &AdModel::on_entry_deleted);
+        &ad_interface, &AdInterface::delete_entry_complete,
+        this, &AdModel::on_delete_entry_complete);
     QObject::connect(
-        &ad_interface, &AdInterface::entry_changed,
-        this, &AdModel::on_entry_changed);
+        &ad_interface, &AdInterface::set_attribute_complete,
+        this, &AdModel::on_set_attribute_complete);
     QObject::connect(
-        &ad_interface, &AdInterface::user_moved,
-        this, &AdModel::on_user_moved);
+        &ad_interface, &AdInterface::move_user_complete,
+        this, &AdModel::on_move_user_complete);
     QObject::connect(
-        &ad_interface, &AdInterface::entry_created,
-        this, &AdModel::on_entry_created);
+        &ad_interface, &AdInterface::create_entry_complete,
+        this, &AdModel::on_create_entry_complete);
 }
 
 bool AdModel::canFetchMore(const QModelIndex &parent) const {
@@ -242,7 +241,7 @@ bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
     }
 }
 
-void AdModel::on_entry_changed(const QString &dn) {
+void AdModel::on_set_attribute_complete(const QString &dn, const QString &attribute, const QString &value) {
     // TODO: confirm what kind of search is this, linear?
     QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
 
@@ -271,7 +270,7 @@ void AdModel::on_entry_changed(const QString &dn) {
     }
 }
 
-void AdModel::on_entry_deleted(const QString &dn) {
+void AdModel::on_delete_entry_complete(const QString &dn) {
     QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
 
     if (items.size() > 0) {
@@ -282,9 +281,9 @@ void AdModel::on_entry_deleted(const QString &dn) {
     }
 }
 
-void AdModel::on_user_moved(const QString &old_dn, const QString &new_dn, const QString &new_parent_dn) {
+void AdModel::on_move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn) {
     // Remove old entry from model
-    QList<QStandardItem *> old_items = findItems(old_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    QList<QStandardItem *> old_items = findItems(user_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
     if (old_items.size() > 0) {
         QStandardItem *dn_item = old_items[0];
         QModelIndex dn_index = dn_item->index();
@@ -292,13 +291,13 @@ void AdModel::on_user_moved(const QString &old_dn, const QString &new_dn, const 
         removeRow(dn_index.row(), dn_index.parent());
     }
 
-    printf("on_user_moved: %s %s\n", qPrintable(new_dn), qPrintable(new_parent_dn));
+    printf("on_move_user_complete: %s %s\n", qPrintable(new_dn), qPrintable(container_dn));
 
     // Need to load entry at new parent if the parent has already
     // been expanded/fetched
     // NOTE: loading if parent has already been fetched will
     // create a duplicate
-    QList<QStandardItem *> parent_items = findItems(new_parent_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    QList<QStandardItem *> parent_items = findItems(container_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
     if (parent_items.size() > 0) {
         QStandardItem *parent_dn_item = parent_items[0];
         QModelIndex parent_dn_index = parent_dn_item->index();
@@ -312,7 +311,7 @@ void AdModel::on_user_moved(const QString &old_dn, const QString &new_dn, const 
     }
 }
 
-void AdModel::on_entry_created(const QString &dn) {
+void AdModel::on_create_entry_complete(const QString &dn, NewEntryType type) {
     // Load entry to model if it's parent has already been fetched
     // If it hasn't been fetched, then this new entry will be loaded with all other children when the parent is fetched
     QString parent_dn = extract_parent_dn_from_dn(dn);

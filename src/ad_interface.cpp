@@ -247,6 +247,10 @@ bool ad_interface_login() {
     }
 }
 
+QString get_error_str() {
+    return QString(ad_get_error());
+}
+
 // TODO: confirm that this encoding is ok
 const char *qstring_to_cstr(const QString &qstr) {
     return qstr.toLatin1().constData();
@@ -360,6 +364,8 @@ QString get_attribute(const QString &dn, const QString &attribute) {
 
 bool set_attribute(const QString &dn, const QString &attribute, const QString &value) {
     int result = AD_INVALID_DN;
+
+    const QString old_value = get_attribute(dn, attribute);
     
     if (FAKE_AD) {
         fake_attributes_map[dn][attribute] = {value};
@@ -376,14 +382,16 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
     }
 
     if (result == AD_SUCCESS) {
-        emit ad_interface.entry_changed(dn);
+        emit ad_interface.set_attribute_complete(dn, attribute, old_value, value);
 
-        // TODO: there's a duplicate load_attributes in ad_model's on_entry_changed()
+        // TODO: there's a duplicate load_attributes in ad_model's on_set_attribute_complete()
         // Make it so that there's only one call, preferrably here
         load_attributes(dn);
 
         return true;
     } else {
+        emit ad_interface.set_attribute_failed(dn, attribute, old_value, value, get_error_str());
+
         return false;
     }
 }
@@ -442,10 +450,12 @@ bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
     }
 
     if (result == AD_SUCCESS) {
-        emit ad_interface.entry_created(dn);
+        emit ad_interface.create_entry_complete(dn, type);
 
         return true;
     } else {
+        emit ad_interface.create_entry_failed(dn, type, get_error_str());
+
         return false;
     }
 }
@@ -469,9 +479,11 @@ void delete_entry(const QString &dn) {
     }
 
     if (result == AD_SUCCESS) {
-        emit ad_interface.entry_deleted(dn);
+        emit ad_interface.delete_entry_complete(dn);
 
         attributes_map.remove(dn);
+    } else {
+        emit ad_interface.delete_entry_failed(dn, get_error_str());
     }
 }
 
@@ -494,6 +506,8 @@ void move_user(const QString &user_dn, const QString &container_dn) {
     }
 
     if (result == AD_SUCCESS) {
-        emit ad_interface.user_moved(user_dn, new_dn, container_dn);
+        emit ad_interface.move_user_complete(user_dn, container_dn, new_dn);
+    } else {
+        emit ad_interface.move_user_failed(user_dn, container_dn, new_dn, get_error_str());
     }
 }
