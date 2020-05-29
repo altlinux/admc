@@ -20,13 +20,13 @@ public:
         COUNT,
     };
 
-    explicit AdModel(QObject *parent);
-
     enum Roles {
         AdvancedViewOnly = Qt::UserRole + 1,
         CanFetch = Qt::UserRole + 2,
         IsContainer = Qt::UserRole + 3,
     };
+
+    explicit AdModel(QObject *parent);
 
     bool canFetchMore(const QModelIndex &parent) const;
     void fetchMore(const QModelIndex &parent);
@@ -37,10 +37,10 @@ public:
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
 
 private slots:
-    void on_delete_entry_complete(const QString &dn); 
     void on_load_attributes_complete(const QString &dn);
-    void on_create_entry_complete(const QString &dn, NewEntryType type); 
+    void on_delete_entry_complete(const QString &dn); 
     void on_move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn);
+    void on_create_entry_complete(const QString &dn, NewEntryType type); 
 
 private:
 

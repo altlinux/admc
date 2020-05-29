@@ -6,93 +6,7 @@
 #include <QMap>
 #include <QIcon>
 
-QString get_dn_of_index(const QModelIndex &index) {
-    QModelIndex dn_index = index.siblingAtColumn(AdModel::Column::DN);
-    QString dn = dn_index.data().toString();
-
-    return dn;
-}
-
-QMimeData *AdModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *data = QStandardItemModel::mimeData(indexes);
-
-    if (indexes.size() > 0) {
-        QModelIndex index = indexes[0];
-        QString dn = get_dn_of_index(index);
-
-        data->setText(dn);
-    }
-
-    return data;
-}
-
-bool AdModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {    
-    QString dropped_dn = data->text();
-    QString parent_dn = get_dn_of_index(parent);
-
-    // TODO: complete filtering for valid parent
-    if (parent_dn == "") {
-        return false;
-    }
-
-    if (parent_dn == HEAD_DN) {
-        return false;
-    }
-
-    // printf("canDropMimeData() parent_dn = %s\n", qPrintable(parent_dn));
-
-    return true;
-}
-
-bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction, int row, int column, const QModelIndex &parent) {
-    QString dropped_dn = data->text();
-    QString parent_dn = get_dn_of_index(parent);
-
-    // If row/column are defined, then item is dropped BEFORE
-    // drop_index
-    // TODO: using this, implement dropping at a specifix position in parent's children list
-    QModelIndex drop_index;
-    if (row == -1 && column == -1) {
-        drop_index = parent;
-    } else {
-        drop_index = index(row, column, parent);
-    }
-
-    // TODO: if parent is group and dropped entry is user do
-    // ad_group_add_user(dropped_dn, parent_dn); (create interface function for this)
-    // else
-    // move_user(dropped_dn, parent_dn);
-    // (parent is group if it has objectClass "group")
-    // TODO: need to save objectClass to role or column?
-    // since there it's multi-valued maybe a single bool role IsGroup?
-
-    printf("AdModel::dropMimeData(): dropped_dn = %s, parent_dn = %s\n", qPrintable(dropped_dn), qPrintable(parent_dn));
-
-    return true;
-}
-
-// Make new row in model at given parent based on entry with given dn
-void make_new_row(QStandardItem *parent, const QString &dn) {
-    auto row = QList<QStandardItem *>();
-
-    for (int i = 0; i < AdModel::Column::COUNT; i++) {
-        row.push_back(new QStandardItem());
-    }
-
-    // Set fetch flag because row is new and can be fetched
-    row[0]->setData(true, AdModel::Roles::CanFetch);
-
-    // Load dn, so the row can be searched for later
-    QStandardItem *dn_item = row[AdModel::Column::DN];
-    dn_item->setText(dn);
-
-    parent->appendRow(row);
-
-    // Load attributes since this is the first time this entry is loaded
-    load_attributes(dn);
-
-    // NOTE: the row is loaded in on_load_attributes_complete() slot
-}
+void make_new_row(QStandardItem *parent, const QString &dn);
 
 AdModel::AdModel(QObject *parent)
 : QStandardItemModel(0, Column::COUNT, parent)
@@ -159,6 +73,64 @@ bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
     } else {
         return QStandardItemModel::hasChildren(parent);
     }
+}
+
+QMimeData *AdModel::mimeData(const QModelIndexList &indexes) const {
+    QMimeData *data = QStandardItemModel::mimeData(indexes);
+
+    if (indexes.size() > 0) {
+        QModelIndex index = indexes[0];
+        QString dn = get_dn_of_index(index);
+
+        data->setText(dn);
+    }
+
+    return data;
+}
+
+bool AdModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {    
+    QString dropped_dn = data->text();
+    QString parent_dn = get_dn_of_index(parent);
+
+    // TODO: complete filtering for valid parent
+    if (parent_dn == "") {
+        return false;
+    }
+
+    if (parent_dn == HEAD_DN) {
+        return false;
+    }
+
+    // printf("canDropMimeData() parent_dn = %s\n", qPrintable(parent_dn));
+
+    return true;
+}
+
+bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction, int row, int column, const QModelIndex &parent) {
+    QString dropped_dn = data->text();
+    QString parent_dn = get_dn_of_index(parent);
+
+    // If row/column are defined, then item is dropped BEFORE
+    // drop_index
+    // TODO: using this, implement dropping at a specifix position in parent's children list
+    QModelIndex drop_index;
+    if (row == -1 && column == -1) {
+        drop_index = parent;
+    } else {
+        drop_index = index(row, column, parent);
+    }
+
+    // TODO: if parent is group and dropped entry is user do
+    // ad_group_add_user(dropped_dn, parent_dn); (create interface function for this)
+    // else
+    // move_user(dropped_dn, parent_dn);
+    // (parent is group if it has objectClass "group")
+    // TODO: need to save objectClass to role or column?
+    // since there it's multi-valued maybe a single bool role IsGroup?
+
+    printf("AdModel::dropMimeData(): dropped_dn = %s, parent_dn = %s\n", qPrintable(dropped_dn), qPrintable(parent_dn));
+
+    return true;
 }
 
 void AdModel::on_load_attributes_complete(const QString &dn) {
@@ -306,4 +278,34 @@ void AdModel::on_create_entry_complete(const QString &dn, NewEntryType type) {
             make_new_row(parent, dn);
         }
     }
+}
+
+QString get_dn_of_index(const QModelIndex &index) {
+    QModelIndex dn_index = index.siblingAtColumn(AdModel::Column::DN);
+    QString dn = dn_index.data().toString();
+
+    return dn;
+}
+
+// Make new row in model at given parent based on entry with given dn
+void make_new_row(QStandardItem *parent, const QString &dn) {
+    auto row = QList<QStandardItem *>();
+
+    for (int i = 0; i < AdModel::Column::COUNT; i++) {
+        row.push_back(new QStandardItem());
+    }
+
+    // Set fetch flag because row is new and can be fetched
+    row[0]->setData(true, AdModel::Roles::CanFetch);
+
+    // Load dn, so the row can be searched for later
+    QStandardItem *dn_item = row[AdModel::Column::DN];
+    dn_item->setText(dn);
+
+    parent->appendRow(row);
+
+    // Load attributes since this is the first time this entry is loaded
+    load_attributes(dn);
+
+    // NOTE: the row is loaded in on_load_attributes_complete() slot
 }
