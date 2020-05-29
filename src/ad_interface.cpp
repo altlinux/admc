@@ -261,7 +261,8 @@ QList<QString> load_children(const QString &dn) {
         return fake_load_children(dn);
     }
 
-    const char *dn_cstr = qstring_to_cstr(dn);
+    const QByteArray dn_array = dn.toLatin1();
+    const char *dn_cstr = dn_array.constData();
     char **children_raw = ad_list(dn_cstr);
 
     if (children_raw != NULL) {
@@ -291,7 +292,8 @@ void load_attributes(const QString &dn) {
         return;
     }
 
-    const char *dn_cstr = qstring_to_cstr(dn);
+    const QByteArray dn_array = dn.toLatin1();
+    const char *dn_cstr = dn_array.constData();
     char** attributes_raw = ad_get_attribute(dn_cstr, NULL);
 
     if (attributes_raw != NULL) {
@@ -383,9 +385,14 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
         
         result = AD_SUCCESS;
     } else {
-        const char *dn_cstr = qstring_to_cstr(dn);
-        const char *attribute_cstr = qstring_to_cstr(attribute);
-        const char *value_cstr = qstring_to_cstr(value);
+        const QByteArray dn_array = dn.toLatin1();
+        const char *dn_cstr = dn_array.constData();
+
+        const QByteArray attribute_array = attribute.toLatin1();
+        const char *attribute_cstr = attribute_array.constData();
+
+        const QByteArray value_array = value.toLatin1();
+        const char *value_cstr = value_array.constData();
 
         result = ad_mod_replace(dn_cstr, attribute_cstr, value_cstr);
     }
@@ -431,8 +438,11 @@ bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
 
         result = AD_SUCCESS;
     } else {
-        const char *name_cstr = qstring_to_cstr(name);
-        const char *dn_cstr = qstring_to_cstr(dn);
+        const QByteArray name_array = name.toLatin1();
+        const char *name_cstr = name_array.constData();
+
+        const QByteArray dn_array = dn.toLatin1();
+        const char *dn_cstr = dn_array.constData();
 
         switch (type) {
             case User: {
@@ -474,7 +484,8 @@ void delete_entry(const QString &dn) {
 
         result = AD_SUCCESS;
     } else {
-        const char *dn_cstr = qstring_to_cstr(dn);
+        const QByteArray dn_array = dn.toLatin1();
+        const char *dn_cstr = dn_array.constData();
 
         result = ad_object_delete(dn_cstr);
     }
@@ -501,8 +512,11 @@ void move_user(const QString &user_dn, const QString &container_dn) {
 
         result = AD_SUCCESS;
     } else {
-        const char *user_dn_cstr = qstring_to_cstr(user_dn);
-        const char *container_dn_cstr = qstring_to_cstr(container_dn);
+        const QByteArray user_dn_array = user_dn.toLatin1();
+        const char *user_dn_cstr = user_dn_array.constData();
+
+        const QByteArray container_dn_array = container_dn.toLatin1();
+        const char *container_dn_cstr = container_dn_array.constData();
 
         result = ad_move_user(user_dn_cstr, container_dn_cstr);
     }
@@ -523,8 +537,11 @@ void add_user_to_group(const QString &group_dn, const QString &user_dn) {
 
         result = AD_SUCCESS;
     } else {
-        const char *group_dn_cstr = qstring_to_cstr(group_dn);
-        const char *user_dn_cstr = qstring_to_cstr(user_dn);
+        const QByteArray group_dn_array = group_dn.toLatin1();
+        const char *group_dn_cstr = group_dn_array.constData();
+
+        const QByteArray user_dn_array = user_dn.toLatin1();
+        const char *user_dn_cstr = user_dn_array.constData();
 
         result = ad_group_add_user(group_dn_cstr, user_dn_cstr);
     }
