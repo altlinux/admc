@@ -522,6 +522,22 @@ void move_user(const QString &user_dn, const QString &container_dn) {
     }
 
     if (result == AD_SUCCESS) {
+        // Unload attributes at old dn
+        attributes_map.remove(user_dn);
+
+        // Load attributes at new dn
+        load_attributes(new_dn);
+
+        // Reload attributes of all groups that this user is member of
+        // This is to reload the "member" attribute
+        QList<QString> groups = get_attribute_multi(new_dn, "memberOf");
+        for (auto group : groups) {
+            // Only realod if loaded already
+            if (attributes_map.contains(group)) {
+                load_attributes(group);
+            }
+        }
+
         emit ad_interface.move_user_complete(user_dn, container_dn, new_dn);
     } else {
         emit ad_interface.move_user_failed(user_dn, container_dn, new_dn, get_error_str());

@@ -83,7 +83,7 @@ void AttributesModel::on_move_user_complete(const QString &user_dn, const QStrin
 }
 
 void AttributesModel::on_load_attributes_complete(const QString &dn) {
-    // Reload entry since attributes were update
+    // Reload entry since attributes were updated
     if (target_dn == dn) {
         change_target(dn);
     }
