@@ -26,9 +26,9 @@ binddn cn=administrator,ou=admin,dc=example,dc=com
 bindpw passw0rd
 searchbase ou=users,dc=example,dc=com
 |  Any function may return: 
-|	AD_COULDNT_OPEN_CONFIG_FILE or AD_MISSING_CONFIG_PARAMETER.
+|   AD_COULDNT_OPEN_CONFIG_FILE or AD_MISSING_CONFIG_PARAMETER.
 | if there is a problem reading the config file, or
-|	AD_SERVER_CONNECT_FAILURE if a connection can't be made.
+|   AD_SERVER_CONNECT_FAILURE if a connection can't be made.
 */
 // char *system_config_file;
 // char *uri;
@@ -59,20 +59,20 @@ int ad_get_error_num();
 |  Returns AD_SUCCESS on success, or
 | AD_LDAP_OPERATION_FAILURE.
 |  Attributes set:
-|	objectClass=user
-|	sAMAccountName=username
-|	userPrincipalName=username@<domain> (derived from dn)
-|	userAccountControl=66050
+|   objectClass=user
+|   sAMAccountName=username
+|   userPrincipalName=username@<domain> (derived from dn)
+|   userAccountControl=66050
 | (ACCOUNTDISABLE|NORMAL_ACCOUNT|DONT_EXPIRE_PASSWORD)
 | see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/netdir/adsi/ads_user_flag_enum.asp for flags.
 |  Attributes set automatically by the directory:
-|	objectclass=top,person,organizationalPerson
-|	accountExpires,instanceType,objectCategory,objectGUID,
-|	objectSid,
-|	primaryGroupID=513
-|	name=username
-|	sAMAccountType=805306368
-|	uSNChanged,uSNCreated,whenChanged,whenCreated
+|   objectclass=top,person,organizationalPerson
+|   accountExpires,instanceType,objectCategory,objectGUID,
+|   objectSid,
+|   primaryGroupID=513
+|   name=username
+|   sAMAccountType=805306368
+|   uSNChanged,uSNCreated,whenChanged,whenCreated
 
 ad_create_user("new-user", "CN=new-user,CN=Users,DC=domain,DC=alt");
 */
@@ -116,7 +116,7 @@ char **ad_search(const char *attribute, const char *value);
 
 /* ad_mod_add() adds a value to the given attribute.
 | Example ad_mod_add("cn=nobody,ou=users,dc=example,dc=com",
-|		"mail", "nobody@nowhere");
+|       "mail", "nobody@nowhere");
 |  This function works only on multi-valued attributes.
 |  Returns AD_SUCCESS on success.
 */
@@ -130,7 +130,7 @@ int ad_mod_add_binary(const char *dn, const char *attribute, const char *data, i
 
 /* ad_mod_replace() overwrites the given attribute with a new value.
 | Example ad_mod_replace("cn=nobody,ou=users,dc=example,dc=com",
-|		"description", "some person");
+|       "description", "some person");
 |  On multi-valued attributes this replaces all values.
 |  Returns AD_SUCCESS or AD_LDAP_OPERATION_FAILURE.
 */
@@ -178,7 +178,7 @@ int ad_move_user(const char *current_dn, const char *new_container);
 
 /* ad_group_create() creates a new user group (of type global security)
 |  Example ad_group_create("administrators",
-|	"cn=administrators,ou=admin,dc=example,dc=com");
+|   "cn=administrators,ou=admin,dc=example,dc=com");
 |  Sets objectclass=group,
 | sAMAccountName=group name
 |  The directory automatically sets:
