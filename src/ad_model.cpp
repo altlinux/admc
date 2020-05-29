@@ -71,88 +71,6 @@ bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction, int row, int c
     return true;
 }
 
-// Init row's data based on attributes of entry with given dn
-void init_row(QList<QStandardItem*> row, const QString &dn) {
-    QMap<QString, QList<QString>> attributes = get_attributes(dn);
-    // TODO: get rid of "if (x.contains(y))"
-    
-    // Name
-    QString name = dn;
-    if (attributes.contains("name")) {
-        name = attributes["name"][0];
-    }
-
-    // Category
-    QString category = "none";
-    if (attributes.contains("objectCategory")) {
-        // TODO: convert it completely (turn '-' into ' ')
-        // NOTE: raw category is given as DN
-        QString category_as_dn = attributes["objectCategory"][0];
-        category = extract_name_from_dn(category_as_dn);
-    }
-
-    // Description
-    QString description = "none";
-    if (attributes.contains("description")) {
-        description = attributes["description"][0];
-    }
-
-    // showInAdvancedViewOnly
-    bool advanced_view = false;
-    if (attributes.contains("showInAdvancedViewOnly")) {
-        QString advanced_view_str = attributes["showInAdvancedViewOnly"][0];
-
-        if (advanced_view_str == "TRUE") {
-            advanced_view = true;
-
-        }
-    }
-
-    // is container
-    bool is_container = false;
-    const QList<QString> container_objectClasses = {"container", "organizationalUnit", "builtinDomain", "domain"};
-    for (auto c : container_objectClasses) {
-        if (attribute_value_exists(dn, "objectClass", c)) {
-            is_container = true;
-            break;
-        }
-    }
-
-    QStandardItem *name_item = row[AdModel::Column::Name];
-    QStandardItem *category_item = row[AdModel::Column::Category];
-    QStandardItem *description_item = row[AdModel::Column::Description];
-    QStandardItem *dn_item = row[AdModel::Column::DN];
-
-    name_item->setText(name);
-    category_item->setText(category);
-    description_item->setText(description);
-    dn_item->setText(dn);
-    row[0]->setData(advanced_view, AdModel::Roles::AdvancedViewOnly);
-    row[0]->setData(is_container, AdModel::Roles::IsContainer);
-
-    // Set icon
-    // TODO: change to custom, good icons, add those icons to installation?
-    // TODO: are there cases where an entry can have multiple icons due to multiple objectClasses and one of them needs to be prioritized?
-    QMap<QString, QString> class_to_icon = {
-        {"groupPolicyContainer", "x-office-address-book"},
-        {"container", "folder"},
-        {"organizationalUnit", "network-workgroup"},
-        {"person", "avatar-default"},
-        {"group", "application-x-smb-workgroup"},
-        {"builtinDomain", "emblem-system"},
-    };
-    QString icon_name = "dialog-question";
-    for (auto c : class_to_icon.keys()) {
-        if (attribute_value_exists(dn, "objectClass", c)) {
-            icon_name = class_to_icon[c];
-            break;  
-        }
-    }
-
-    QIcon icon = QIcon::fromTheme(icon_name);
-    row[0]->setIcon(icon);
-}
-
 // Make new row in model at given parent based on entry with given dn
 void make_new_row(QStandardItem *parent, const QString &dn) {
     auto row = QList<QStandardItem *>();
@@ -244,11 +162,17 @@ bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
 }
 
 void AdModel::on_load_attributes_complete(const QString &dn) {
-    // TODO: confirm what kind of search is this, linear?
-    QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    //
+    // Compose row of items
+    //
+    auto row = QList<QStandardItem *>();
+    {
+        QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
 
-    // TODO: not sure if any bad matches can happen, maybe?
-    if (items.size() > 0) {
+        if (items.size() == 0) {
+            return;
+        }
+
         QStandardItem *dn_item = items[0];
         QModelIndex dn_index = dn_item->index();
 
@@ -260,16 +184,94 @@ void AdModel::on_load_attributes_complete(const QString &dn) {
         }
 
         // Compose the row of items from indexes
-        auto row = QList<QStandardItem *>();
         for (int i = 0; i < AdModel::Column::COUNT; i++) {
             QModelIndex index = indexes[i];
             QStandardItem *item = itemFromIndex(index);
             row.push_back(item);
         }
-
-        // Reload row
-        init_row(row, dn);
     }
+
+    //
+    // Load row based on attributes
+    //
+    QMap<QString, QList<QString>> attributes = get_attributes(dn);
+    // TODO: get rid of "if (x.contains(y))"
+    
+    // Name
+    QString name = dn;
+    if (attributes.contains("name")) {
+        name = attributes["name"][0];
+    }
+
+    // Category
+    QString category = "none";
+    if (attributes.contains("objectCategory")) {
+        // TODO: convert it completely (turn '-' into ' ')
+        // NOTE: raw category is given as DN
+        QString category_as_dn = attributes["objectCategory"][0];
+        category = extract_name_from_dn(category_as_dn);
+    }
+
+    // Description
+    QString description = "none";
+    if (attributes.contains("description")) {
+        description = attributes["description"][0];
+    }
+
+    // showInAdvancedViewOnly
+    bool advanced_view = false;
+    if (attributes.contains("showInAdvancedViewOnly")) {
+        QString advanced_view_str = attributes["showInAdvancedViewOnly"][0];
+
+        if (advanced_view_str == "TRUE") {
+            advanced_view = true;
+
+        }
+    }
+
+    // is container
+    bool is_container = false;
+    const QList<QString> container_objectClasses = {"container", "organizationalUnit", "builtinDomain", "domain"};
+    for (auto c : container_objectClasses) {
+        if (attribute_value_exists(dn, "objectClass", c)) {
+            is_container = true;
+            break;
+        }
+    }
+
+    QStandardItem *name_item = row[AdModel::Column::Name];
+    QStandardItem *category_item = row[AdModel::Column::Category];
+    QStandardItem *description_item = row[AdModel::Column::Description];
+    QStandardItem *dn_item = row[AdModel::Column::DN];
+
+    name_item->setText(name);
+    category_item->setText(category);
+    description_item->setText(description);
+    dn_item->setText(dn);
+    row[0]->setData(advanced_view, AdModel::Roles::AdvancedViewOnly);
+    row[0]->setData(is_container, AdModel::Roles::IsContainer);
+
+    // Set icon
+    // TODO: change to custom, good icons, add those icons to installation?
+    // TODO: are there cases where an entry can have multiple icons due to multiple objectClasses and one of them needs to be prioritized?
+    QMap<QString, QString> class_to_icon = {
+        {"groupPolicyContainer", "x-office-address-book"},
+        {"container", "folder"},
+        {"organizationalUnit", "network-workgroup"},
+        {"person", "avatar-default"},
+        {"group", "application-x-smb-workgroup"},
+        {"builtinDomain", "emblem-system"},
+    };
+    QString icon_name = "dialog-question";
+    for (auto c : class_to_icon.keys()) {
+        if (attribute_value_exists(dn, "objectClass", c)) {
+            icon_name = class_to_icon[c];
+            break;  
+        }
+    }
+
+    QIcon icon = QIcon::fromTheme(icon_name);
+    row[0]->setIcon(icon);
 }
 
 void AdModel::on_delete_entry_complete(const QString &dn) {
