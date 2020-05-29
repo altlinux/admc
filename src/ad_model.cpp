@@ -194,42 +194,18 @@ void AdModel::on_load_attributes_complete(const QString &dn) {
     //
     // Load row based on attributes
     //
-    QMap<QString, QList<QString>> attributes = get_attributes(dn);
-    // TODO: get rid of "if (x.contains(y))"
-    
-    // Name
-    QString name = dn;
-    if (attributes.contains("name")) {
-        name = attributes["name"][0];
-    }
+    QString name = get_attribute(dn, "name");
 
-    // Category
-    QString category = "none";
-    if (attributes.contains("objectCategory")) {
-        // TODO: convert it completely (turn '-' into ' ')
-        // NOTE: raw category is given as DN
-        QString category_as_dn = attributes["objectCategory"][0];
-        category = extract_name_from_dn(category_as_dn);
-    }
+    // NOTE: this is given as raw DN and contains '-' where it should
+    // have spaces, so convert it
+    QString category = get_attribute(dn, "objectCategory");
+    category = extract_name_from_dn(category);
+    category = category.replace('-', ' ');
 
-    // Description
-    QString description = "none";
-    if (attributes.contains("description")) {
-        description = attributes["description"][0];
-    }
+    QString description = get_attribute(dn, "description");
 
-    // showInAdvancedViewOnly
-    bool advanced_view = false;
-    if (attributes.contains("showInAdvancedViewOnly")) {
-        QString advanced_view_str = attributes["showInAdvancedViewOnly"][0];
+    bool showInAdvancedViewOnly = get_attribute(dn, "showInAdvancedViewOnly") == "TRUE";
 
-        if (advanced_view_str == "TRUE") {
-            advanced_view = true;
-
-        }
-    }
-
-    // is container
     bool is_container = false;
     const QList<QString> container_objectClasses = {"container", "organizationalUnit", "builtinDomain", "domain"};
     for (auto c : container_objectClasses) {
@@ -248,7 +224,7 @@ void AdModel::on_load_attributes_complete(const QString &dn) {
     category_item->setText(category);
     description_item->setText(description);
     dn_item->setText(dn);
-    row[0]->setData(advanced_view, AdModel::Roles::AdvancedViewOnly);
+    row[0]->setData(showInAdvancedViewOnly, AdModel::Roles::AdvancedViewOnly);
     row[0]->setData(is_container, AdModel::Roles::IsContainer);
 
     // Set icon
