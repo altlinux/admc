@@ -11,6 +11,12 @@ AttributesModel::AttributesModel(QObject *parent)
     QObject::connect(
         &ad_interface, &AdInterface::delete_entry_complete,
         this, &AttributesModel::on_delete_entry_complete);
+    QObject::connect(
+        &ad_interface, &AdInterface::move_user_complete,
+        this, &AttributesModel::on_move_user_complete);
+    QObject::connect(
+        &ad_interface, &AdInterface::load_attributes_complete,
+        this, &AttributesModel::on_load_attributes_complete);
 }
 
 // This will be called when an attribute value is edited
@@ -66,5 +72,19 @@ void AttributesModel::on_delete_entry_complete(const QString &dn) {
     // Clear data if current target was deleted
     if (target_dn == dn) {
         change_target(QString(""));
+    }
+}
+
+void AttributesModel::on_move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn) {
+    // Switch to the entry at new dn (entry stays the same)
+    if (target_dn == user_dn) {
+        change_target(new_dn);
+    }
+}
+
+void AttributesModel::on_load_attributes_complete(const QString &dn) {
+    // Reload entry since attributes were update
+    if (target_dn == dn) {
+        change_target(dn);
     }
 }
