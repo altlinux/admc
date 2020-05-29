@@ -547,6 +547,11 @@ void add_user_to_group(const QString &group_dn, const QString &user_dn) {
     }
 
     if (result == AD_SUCCESS) {
+        // Reload attributes of group and user because group
+        // operations affect attributes of both
+        load_attributes(group_dn);
+        load_attributes(user_dn);
+
         emit ad_interface.add_user_to_group_complete(group_dn, user_dn);
     } else {
         emit ad_interface.add_user_to_group_failed(group_dn, user_dn, get_error_str());
