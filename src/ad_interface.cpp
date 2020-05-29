@@ -294,7 +294,7 @@ void load_attributes(const QString &dn) {
 
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
-    char** attributes_raw = ad_get_attribute(dn_cstr, NULL);
+    char** attributes_raw = ad_get_attribute(dn_cstr, "*");
 
     if (attributes_raw != NULL) {
         attributes_map[dn] = QMap<QString, QList<QString>>();
