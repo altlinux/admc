@@ -89,21 +89,26 @@ QMimeData *AdModel::mimeData(const QModelIndexList &indexes) const {
 }
 
 bool AdModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {    
-    QString dropped_dn = data->text();
-    QString parent_dn = get_dn_of_index(parent);
+    const QString dropped_dn = data->text();
+    const QString parent_dn = get_dn_of_index(parent);
 
-    // TODO: complete filtering for valid parent
+    const bool dropped_is_user = attribute_value_exists(dropped_dn, "objectClass", "user");
+
+    const bool parent_is_group = attribute_value_exists(parent_dn, "objectClass", "group");
+    const bool parent_is_ou = attribute_value_exists(parent_dn, "objectClass", "organizationalUnit");
+    const bool parent_is_container = attribute_value_exists(parent_dn, "objectClass", "container");
+
+    // TODO: support dropping non-users
+    // TODO: support dropping policies
     if (parent_dn == "") {
         return false;
-    }
-
-    if (parent_dn == HEAD_DN) {
+    } else if (parent_dn == HEAD_DN) {
+        return false;
+    } else if (dropped_is_user && (parent_is_group || parent_is_ou || parent_is_container)) {
+        return true;
+    } else {
         return false;
     }
-
-    // printf("canDropMimeData() parent_dn = %s\n", qPrintable(parent_dn));
-
-    return true;
 }
 
 bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction, int row, int column, const QModelIndex &parent) {
@@ -120,15 +125,17 @@ bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction, int row, int c
         drop_index = index(row, column, parent);
     }
 
-    // TODO: if parent is group and dropped entry is user do
-    // ad_group_add_user(dropped_dn, parent_dn); (create interface function for this)
-    // else
-    // move_user(dropped_dn, parent_dn);
-    // (parent is group if it has objectClass "group")
-    // TODO: need to save objectClass to role or column?
-    // since there it's multi-valued maybe a single bool role IsGroup?
+    const bool dropped_is_user = attribute_value_exists(dropped_dn, "objectClass", "user");
 
-    printf("AdModel::dropMimeData(): dropped_dn = %s, parent_dn = %s\n", qPrintable(dropped_dn), qPrintable(parent_dn));
+    const bool parent_is_group = attribute_value_exists(parent_dn, "objectClass", "group");
+    const bool parent_is_ou = attribute_value_exists(parent_dn, "objectClass", "organizationalUnit");
+    const bool parent_is_container = attribute_value_exists(parent_dn, "objectClass", "container");
+
+    if (dropped_is_user && (parent_is_ou || parent_is_container)) {
+        move_user(dropped_dn, parent_dn);
+    } else if (dropped_is_user && parent_is_group) {
+        add_user_to_group(parent_dn, dropped_dn);
+    }
 
     return true;
 }

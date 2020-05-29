@@ -513,3 +513,25 @@ void move_user(const QString &user_dn, const QString &container_dn) {
         emit ad_interface.move_user_failed(user_dn, container_dn, new_dn, get_error_str());
     }
 }
+
+void add_user_to_group(const QString &group_dn, const QString &user_dn) {
+    // TODO: currently getting object class violation error
+    int result = AD_INVALID_DN;
+
+    if (FAKE_AD) {
+        // TODO:
+
+        result = AD_SUCCESS;
+    } else {
+        const char *group_dn_cstr = qstring_to_cstr(group_dn);
+        const char *user_dn_cstr = qstring_to_cstr(user_dn);
+
+        result = ad_group_add_user(group_dn_cstr, user_dn_cstr);
+    }
+
+    if (result == AD_SUCCESS) {
+        emit ad_interface.add_user_to_group_complete(group_dn, user_dn);
+    } else {
+        emit ad_interface.add_user_to_group_failed(group_dn, user_dn, get_error_str());
+    }
+}

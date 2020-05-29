@@ -523,7 +523,10 @@ char **ad_search(const char *attribute, const char *value) {
     return dnlist;
 }
 
-int ad_mod_add(const char *dn, const char *attribute, const char *value) {
+int ad_mod_add(const char *dn_in, const char *attribute, const char *value_in) {
+    char *dn = strdup(dn_in);
+    char *value = strdup(value_in);
+
 	LDAP *ds;
 	LDAPMod *attrs[2];
 	LDAPMod attr;
@@ -550,6 +553,10 @@ int ad_mod_add(const char *dn, const char *attribute, const char *value) {
 	} else {
 		ad_error_code=AD_SUCCESS;
 	}
+
+    free(dn);
+    free(value);
+
 	return ad_error_code;
 }
 
@@ -905,7 +912,10 @@ int ad_rename_user(const char *dn, const char *new_username) {
   sets userprincipalname based on the destination container
 	return AD_SUCCESS on success 
 */
-int ad_move_user(const char *current_dn, const char *new_container) {
+int ad_move_user(const char *current_dn_in, const char *new_container_in) {
+    char *current_dn = strdup(current_dn_in);
+    char *new_container = strdup(new_container_in);
+
 	LDAP *ds;
 	int result;
 	char **exdn;
@@ -950,6 +960,10 @@ int ad_move_user(const char *current_dn, const char *new_container) {
 	} else {
 		ad_error_code=AD_SUCCESS;
 	}
+
+    free(current_dn);
+    free(new_container);
+
 	return ad_error_code;
 }
 

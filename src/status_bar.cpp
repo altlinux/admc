@@ -27,6 +27,9 @@ StatusBar::StatusBar()
     connect(
         &ad_interface, &AdInterface::move_user_complete,
         this, &StatusBar::on_move_user_complete);
+    connect(
+        &ad_interface, &AdInterface::add_user_to_group_complete,
+        this, &StatusBar::on_add_user_to_group_complete);
 
     connect(
         &ad_interface, &AdInterface::delete_entry_failed,
@@ -40,6 +43,9 @@ StatusBar::StatusBar()
     connect(
         &ad_interface, &AdInterface::move_user_failed,
         this, &StatusBar::on_move_user_failed);
+    connect(
+        &ad_interface, &AdInterface::add_user_to_group_failed,
+        this, &StatusBar::on_add_user_to_group_failed);
 }
 
 void StatusBar::on_load_children_failed(const QString &dn, const QString &error_str) {
@@ -74,6 +80,11 @@ void StatusBar::on_move_user_complete(const QString &user_dn, const QString &con
 
     showMessage(msg);
 }
+void StatusBar::on_add_user_to_group_complete(const QString &group_dn, const QString &user_dn) {
+    QString msg = QString("Added user \"%1\" to group \"%2\"").arg(user_dn, group_dn);
+
+    showMessage(msg);
+}
 
 // TODO: how to do translation of error messages coming from english-only lib???
 // Probably will end up not using raw error strings anyway, just process error codes to generate localized string
@@ -95,6 +106,11 @@ void StatusBar::on_create_entry_failed(const QString &dn, NewEntryType type, con
 }
 void StatusBar::on_move_user_failed(const QString &user_dn, const QString &container_dn, const QString &new_dn, const QString &error_str) {
     QString msg = QString("Failed to move user \"%1\". Error: \"%2\"").arg(user_dn, error_str);
+
+    showMessage(msg);
+}
+void StatusBar::on_add_user_to_group_failed(const QString &group_dn, const QString &user_dn, const QString &error_str) {
+    QString msg = QString("Failed to add user \"%1\" to group \"%2\". Error: \"%3\"").arg(user_dn, group_dn, error_str);
 
     showMessage(msg);
 }

@@ -46,7 +46,7 @@ void AttributesModel::change_target(const QString &new_target_dn) {
     setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
     setHorizontalHeaderItem(Column::Value, new QStandardItem("Value"));
 
-     // Populate model with attributes of new root
+    // Populate model with attributes of new root
     QMap<QString, QList<QString>> attributes = get_attributes(target_dn);
     for (auto attribute : attributes.keys()) {
         QList<QString> values = attributes[attribute];
