@@ -74,7 +74,6 @@ bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction, int row, int c
 // Init row's data based on attributes of entry with given dn
 void init_row(QList<QStandardItem*> row, const QString &dn) {
     QMap<QString, QList<QString>> attributes = get_attributes(dn);
-
     // TODO: get rid of "if (x.contains(y))"
     
     // Name
@@ -162,15 +161,19 @@ void make_new_row(QStandardItem *parent, const QString &dn) {
         row.push_back(new QStandardItem());
     }
 
-    // Load attributes since this is the first time this entry is loaded
-    load_attributes(dn);
-
-    init_row(row, dn);
-
     // Set fetch flag because row is new and can be fetched
     row[0]->setData(true, AdModel::Roles::CanFetch);
 
+    // Load dn, so the row can be searched for later
+    QStandardItem *dn_item = row[AdModel::Column::DN];
+    dn_item->setText(dn);
+
     parent->appendRow(row);
+
+    // Load attributes since this is the first time this entry is loaded
+    load_attributes(dn);
+
+    // NOTE: the row is loaded in on_load_attributes_complete() slot
 }
 
 AdModel::AdModel(QObject *parent)
@@ -181,23 +184,23 @@ AdModel::AdModel(QObject *parent)
     setHorizontalHeaderItem(Column::Description, new QStandardItem("Description"));
     setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
 
-    // Load head
-    QStandardItem *invis_root = invisibleRootItem();
-    auto head_dn = QString(HEAD_DN);
-    make_new_row(invis_root, head_dn);
-
     QObject::connect(
         &ad_interface, &AdInterface::delete_entry_complete,
         this, &AdModel::on_delete_entry_complete);
-    QObject::connect(
-        &ad_interface, &AdInterface::set_attribute_complete,
-        this, &AdModel::on_set_attribute_complete);
     QObject::connect(
         &ad_interface, &AdInterface::move_user_complete,
         this, &AdModel::on_move_user_complete);
     QObject::connect(
         &ad_interface, &AdInterface::create_entry_complete,
         this, &AdModel::on_create_entry_complete);
+    QObject::connect(
+        &ad_interface, &AdInterface::load_attributes_complete,
+        this, &AdModel::on_load_attributes_complete);
+
+    // Load head
+    QStandardItem *invis_root = invisibleRootItem();
+    auto head_dn = QString(HEAD_DN);
+    make_new_row(invis_root, head_dn);
 }
 
 bool AdModel::canFetchMore(const QModelIndex &parent) const {
@@ -240,7 +243,7 @@ bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
     }
 }
 
-void AdModel::on_set_attribute_complete(const QString &dn, const QString &attribute, const QString &value) {
+void AdModel::on_load_attributes_complete(const QString &dn) {
     // TODO: confirm what kind of search is this, linear?
     QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
 

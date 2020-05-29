@@ -319,6 +319,8 @@ void load_attributes(const QString &dn) {
             free(attributes_raw[i]);
         }
         free(attributes_raw);
+
+        emit ad_interface.load_attributes_complete(dn);
     } else {
         emit ad_interface.load_attributes_failed(dn, get_error_str());
     }
