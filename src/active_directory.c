@@ -244,7 +244,7 @@ char *dn2domain(const char *dn) {
     i=strlen(dc);
     if(i>0) dc[i-1]='\0';
     for(i=0; dc[i]!='\0'; i++) dc[i]=tolower(dc[i]);
-     return dc;
+        return dc;
 }
 
 /* public functions */
@@ -1162,15 +1162,14 @@ char **ad_list(const char *dn) {
     }
 
     for(i=1; (entry=ldap_next_entry(ds, entry))!=NULL; i++) {
-      char *child_dn=ldap_get_dn(ds, entry);
-      dnlist[i]=strdup(child_dn);
-        // NOTE: this should be freed here, right?
-      ldap_memfree(child_dn);
-  }
-  dnlist[i]=NULL;
+        char *child_dn=ldap_get_dn(ds, entry);
+        dnlist[i]=strdup(child_dn);
+        ldap_memfree(child_dn);
+    }
+    dnlist[i]=NULL;
 
-  ldap_msgfree(res);
+    ldap_msgfree(res);
 
-  ad_error_code=AD_SUCCESS;
-  return dnlist;
+    ad_error_code=AD_SUCCESS;
+    return dnlist;
 }
