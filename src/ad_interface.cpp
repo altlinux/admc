@@ -571,7 +571,7 @@ void move_user(const QString &user_dn, const QString &container_dn) {
         // This is to reload the "member" attribute
         QList<QString> groups = get_attribute_multi(new_dn, "memberOf");
         for (auto group : groups) {
-            // Only realod if loaded already
+            // Only reload if loaded already
             if (attributes_map.contains(group)) {
                 load_attributes(group);
             }

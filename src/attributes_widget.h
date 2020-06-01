@@ -25,6 +25,7 @@
 class QTreeView;
 class QString;
 class AttributesModel;
+class MembersModel;
 
 // Shows names and values of attributes of the entry selected in contents view
 class AttributesWidget final : public QTabWidget {
@@ -46,6 +47,9 @@ private:
     AttributesModel *model = nullptr;
     QTreeView *view = nullptr;
     QWidget *widget = nullptr;
+    
+    QTreeView *members_view = nullptr;
+    MembersModel *members_model = nullptr;
 };
 
 #endif /* ATTRIBUTES_WIDGET_H */

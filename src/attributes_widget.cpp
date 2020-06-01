@@ -20,10 +20,10 @@
 #include "attributes_widget.h"
 #include "attributes_model.h"
 #include "ad_interface.h"
+#include "members_model.h"
 
 #include <QTreeView>
-#include <QLabel>
-#include <QVBoxLayout>
+#include <QStandardItemModel>
 
 AttributesWidget::AttributesWidget()
 : QTabWidget()
@@ -31,14 +31,22 @@ AttributesWidget::AttributesWidget()
     model = new AttributesModel(this);
 
     view = new QTreeView(this);
+    addTab(view, "All attributes");
     view->setEditTriggers(QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
     view->setSelectionMode(QAbstractItemView::NoSelection);
     view->setSelectionBehavior(QAbstractItemView::SelectRows);
     view->setModel(model);
 
-    addTab(view, "All attributes");
+    members_view = new QTreeView(this);
+    addTab(members_view, "Group members");
+    members_model = new MembersModel(this);
+    members_view->setModel(members_model);
+    members_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 };
 
 void AttributesWidget::change_model_target(const QString &new_target_dn) {
     model->change_target(new_target_dn);
+    members_model->change_target(new_target_dn);
+
+    members_view->setColumnHidden(MembersModel::Column::DN, true);
 }
