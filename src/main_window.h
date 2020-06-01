@@ -50,10 +50,10 @@ private:
     QString get_selected_dn() const;
     void on_action_new_entry_generic(NewEntryType type);
 
-    AdModel *ad_model;
-    ContainersWidget *containers_widget;
-    ContentsWidget *contents_widget;
-    AttributesWidget *attributes_widget;
+    AdModel *ad_model = nullptr;
+    ContainersWidget *containers_widget = nullptr;
+    ContentsWidget *contents_widget = nullptr;
+    AttributesWidget *attributes_widget = nullptr;
 
     QAction *action_containers_click_attributes = nullptr;
     QAction *action_contents_click_attributes = nullptr;
