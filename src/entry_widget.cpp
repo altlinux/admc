@@ -67,6 +67,10 @@ EntryWidget::EntryWidget(AdModel* model)
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         this, &EntryWidget::on_context_menu_requested);
+
+    QObject::connect(
+        view, &QAbstractItemView::clicked,
+        this, &EntryWidget::on_view_clicked);
 }
 
 void EntryWidget::on_context_menu_requested(const QPoint &pos) {
@@ -122,4 +126,10 @@ void EntryWidget::update_column_visibility() {
 
         view->setColumnHidden(column, column_hidden[column]);
     }
+}
+
+void EntryWidget::on_view_clicked(const QModelIndex &index) {
+    const QString dn = get_dn_of_index(index);
+
+    emit clicked_dn(dn);
 }

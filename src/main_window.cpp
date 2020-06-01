@@ -42,7 +42,7 @@ MainWindow::MainWindow()
     // Setup widgets
     //
     actions_init();
-   
+
     resize(1300, 800);
     setWindowTitle("MainWindow");
 
@@ -65,6 +65,12 @@ MainWindow::MainWindow()
     const auto menubar_view = menubar->addMenu("View");
     menubar_view->addAction(&action_advanced_view);
     menubar_view->addAction(&action_toggle_dn);
+
+    const auto menubar_preferences = menubar->addMenu("Preferences");
+    action_containers_click_attributes = menubar_preferences->addAction("Open attributes on left click in Containers window");
+    action_containers_click_attributes->setCheckable(true);
+    action_contents_click_attributes = menubar_preferences->addAction("Open attributes on left click in Contents window");
+    action_contents_click_attributes->setCheckable(true);
 
     const auto splitter = new QSplitter(central_widget);
     splitter->setGeometry(QRect(0, 0, 1301, 591));
@@ -106,6 +112,14 @@ MainWindow::MainWindow()
     QObject::connect(
         containers_widget, &ContainersWidget::selected_container_changed,
         contents_widget, &ContentsWidget::on_selected_container_changed);
+
+    connect(
+        containers_widget, &EntryWidget::clicked_dn,
+        this, &MainWindow::on_containers_clicked_dn);
+
+    connect(
+        contents_widget, &EntryWidget::clicked_dn,
+        this, &MainWindow::on_contents_clicked_dn);
 }
 
 QString MainWindow::get_selected_dn() const {
@@ -124,6 +138,18 @@ QString MainWindow::get_selected_dn() const {
 void MainWindow::on_action_attributes() {
     QString dn = get_selected_dn();
     attributes_widget->change_model_target(dn);
+}
+
+void MainWindow::on_containers_clicked_dn(const QString &dn) {
+    if (action_containers_click_attributes->isChecked()) {
+        attributes_widget->change_model_target(dn);
+    }
+}
+
+void MainWindow::on_contents_clicked_dn(const QString &dn) {
+    if (action_containers_click_attributes->isChecked()) {
+        attributes_widget->change_model_target(dn);
+    }
 }
 
 void MainWindow::on_action_delete_entry() {

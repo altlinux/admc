@@ -43,6 +43,8 @@ private slots:
     void on_action_new_computer();
     void on_action_new_group();
     void on_action_new_ou();
+    void on_containers_clicked_dn(const QString &dn);
+    void on_contents_clicked_dn(const QString &dn);
 
 private:
     QString get_selected_dn() const;
@@ -52,6 +54,9 @@ private:
     ContainersWidget *containers_widget;
     ContentsWidget *contents_widget;
     AttributesWidget *attributes_widget;
+
+    QAction *action_containers_click_attributes = nullptr;
+    QAction *action_contents_click_attributes = nullptr;
 };
 
 #endif /* MAIN_WINDOW_H */

@@ -40,9 +40,13 @@ public:
 
     QString get_selected_dn() const;
 
+signals:
+    void clicked_dn(const QString &dn);
+
 private slots:
     void on_action_toggle_dn(bool checked);
     void on_context_menu_requested(const QPoint &pos);
+    void on_view_clicked(const QModelIndex &index);
 
 protected:
     QTreeView *view = nullptr;
