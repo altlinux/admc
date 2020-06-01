@@ -19,6 +19,7 @@
 
 #include "ad_model.h"
 #include "constants.h"
+#include "entry_drag_drop.h"
 
 #include <QMimeData>
 #include <QMap>
@@ -107,53 +108,28 @@ QMimeData *AdModel::mimeData(const QModelIndexList &indexes) const {
     return data;
 }
 
-bool AdModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {    
-    const QString dropped_dn = data->text();
+bool AdModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
+    const QString dn = data->text();
     const QString parent_dn = get_dn_of_index(parent);
 
-    const bool dropped_is_user = attribute_value_exists(dropped_dn, "objectClass", "user");
-
-    const bool parent_is_group = attribute_value_exists(parent_dn, "objectClass", "group");
-    const bool parent_is_ou = attribute_value_exists(parent_dn, "objectClass", "organizationalUnit");
-    const bool parent_is_container = attribute_value_exists(parent_dn, "objectClass", "container");
-
-    // TODO: support dropping non-users
-    // TODO: support dropping policies
-    if (parent_dn == "") {
-        return false;
-    } else if (parent_dn == HEAD_DN) {
-        return false;
-    } else if (dropped_is_user && (parent_is_group || parent_is_ou || parent_is_container)) {
-        return true;
-    } else {
-        return false;
-    }
+    return can_drop_entry(dn, parent_dn);
 }
 
-bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction, int row, int column, const QModelIndex &parent) {
-    QString dropped_dn = data->text();
-    QString parent_dn = get_dn_of_index(parent);
-
-    // If row/column are defined, then item is dropped BEFORE
-    // drop_index
-    // TODO: using this, implement dropping at a specifix position in parent's children list
-    QModelIndex drop_index;
-    if (row == -1 && column == -1) {
-        drop_index = parent;
-    } else {
-        drop_index = index(row, column, parent);
+bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
+    // Row/column are not -1 if dropping between nodes
+    // This is for dropping within a list at specific
+    // position which is useless for us since ldap
+    // does the ordering
+    // NOTE: don't filter this out in canDropMimeData so that there's no noise of crosses as you drag entry over a list
+    if (row != -1 || column != -1) {
+        return true;
     }
 
-    const bool dropped_is_user = attribute_value_exists(dropped_dn, "objectClass", "user");
+    if (canDropMimeData(data, action, row, column, parent)) {
+        QString dn = data->text();
+        QString parent_dn = get_dn_of_index(parent);
 
-    const bool parent_is_group = attribute_value_exists(parent_dn, "objectClass", "group");
-    const bool parent_is_ou = attribute_value_exists(parent_dn, "objectClass", "organizationalUnit");
-    const bool parent_is_container = attribute_value_exists(parent_dn, "objectClass", "container");
-
-    if (dropped_is_user && (parent_is_ou || parent_is_container)) {
-        move_user(dropped_dn, parent_dn);
-    } else if (dropped_is_user && parent_is_group) {
-        add_user_to_group(parent_dn, dropped_dn);
+        drop_entry(dn, parent_dn);
     }
 
     return true;
