@@ -513,6 +513,18 @@ bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
     }
 }
 
+// Used to update membership when changes happen to entry
+void reload_attributes_of_entry_groups(const QString &dn) {
+    QList<QString> groups = get_attribute_multi(dn, "memberOf");
+
+    for (auto group : groups) {
+        // Only reload if loaded already
+        if (attributes_map.contains(group)) {
+            load_attributes(group);
+        }
+    }
+}
+
 void delete_entry(const QString &dn) {
     int result = AD_INVALID_DN;
 
@@ -528,11 +540,11 @@ void delete_entry(const QString &dn) {
     }
 
     if (result == AD_SUCCESS) {
+        reload_attributes_of_entry_groups(dn);
+
         attributes_map.remove(dn);
         attributes_loaded.remove(dn);
 
-        // TODO: handle all possible side-effects?
-        // probably a lot of stuff, like group membership and stuff
         emit ad_interface.delete_entry_complete(dn);
     } else {
         emit ad_interface.delete_entry_failed(dn, get_error_str());
@@ -564,18 +576,8 @@ void move_user(const QString &user_dn, const QString &container_dn) {
         attributes_map.remove(user_dn);
         attributes_loaded.remove(user_dn);
 
-        // Load attributes at new dn
         load_attributes(new_dn);
-
-        // Reload attributes of all groups that this user is member of
-        // This is to reload the "member" attribute
-        QList<QString> groups = get_attribute_multi(new_dn, "memberOf");
-        for (auto group : groups) {
-            // Only reload if loaded already
-            if (attributes_map.contains(group)) {
-                load_attributes(group);
-            }
-        }
+        reload_attributes_of_entry_groups(new_dn);
 
         emit ad_interface.move_user_complete(user_dn, container_dn, new_dn);
     } else {
