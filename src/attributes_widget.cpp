@@ -28,24 +28,24 @@
 AttributesWidget::AttributesWidget()
 : QTabWidget()
 {
-    model = new AttributesModel(this);
+    attributes_model = new AttributesModel(this);
 
-    view = new QTreeView();
-    view->setEditTriggers(QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
-    view->setSelectionMode(QAbstractItemView::NoSelection);
-    view->setSelectionBehavior(QAbstractItemView::SelectRows);
-    view->setModel(model);
+    attributes_view = new QTreeView();
+    attributes_view->setEditTriggers(QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
+    attributes_view->setSelectionMode(QAbstractItemView::NoSelection);
+    attributes_view->setSelectionBehavior(QAbstractItemView::SelectRows);
+    attributes_view->setModel(attributes_model);
 
     members_view = new QTreeView();
     members_model = new MembersModel(this);
     members_view->setModel(members_model);
     members_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    change_model_target("");
+    change_target("");
 };
 
-void AttributesWidget::change_model_target(const QString &dn) {
-    model->change_target(dn);
+void AttributesWidget::change_target(const QString &dn) {
+    attributes_model->change_target(dn);
 
     members_model->change_target(dn);
     members_view->setColumnHidden(MembersModel::Column::DN, true);
@@ -53,7 +53,7 @@ void AttributesWidget::change_model_target(const QString &dn) {
     // Setup tabs
     clear();
 
-    addTab(view, "All Attributes");
+    addTab(attributes_view, "All Attributes");
 
     bool is_group = attribute_value_exists(dn, "objectClass", "group");
     if (is_group) {

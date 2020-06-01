@@ -27,7 +27,7 @@ class QString;
 class AttributesModel;
 class MembersModel;
 
-// Shows names and values of attributes of the entry selected in contents view
+// Shows info about entry's attributes in multiple tabs
 class AttributesWidget final : public QTabWidget {
 Q_OBJECT
 
@@ -35,18 +35,11 @@ public:
     AttributesWidget();
 
 public slots:
-    void change_model_target(const QString &dn);
+    void change_target(const QString &dn);
 
 private:
-    enum Column {
-        Name,
-        Value,
-        COUNT,
-    };
-
-    AttributesModel *model = nullptr;
-    QTreeView *view = nullptr;
-    QWidget *widget = nullptr;
+    AttributesModel *attributes_model = nullptr;
+    QTreeView *attributes_view = nullptr;
     
     QTreeView *members_view = nullptr;
     MembersModel *members_model = nullptr;

@@ -143,18 +143,18 @@ QString MainWindow::get_selected_dn() const {
 
 void MainWindow::on_action_attributes() {
     QString dn = get_selected_dn();
-    attributes_widget->change_model_target(dn);
+    attributes_widget->change_target(dn);
 }
 
 void MainWindow::on_containers_clicked_dn(const QString &dn) {
     if (action_containers_click_attributes->isChecked()) {
-        attributes_widget->change_model_target(dn);
+        attributes_widget->change_target(dn);
     }
 }
 
 void MainWindow::on_contents_clicked_dn(const QString &dn) {
     if (action_containers_click_attributes->isChecked()) {
-        attributes_widget->change_model_target(dn);
+        attributes_widget->change_target(dn);
     }
 }
 
