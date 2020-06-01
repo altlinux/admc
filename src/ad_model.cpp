@@ -159,65 +159,6 @@ bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction, int row, int c
     return true;
 }
 
-// Load data into row of items based on entry attributes
-void load_row(QList<QStandardItem *> row, const QString &dn) {
-    // Load row based on attributes
-    QString name = get_attribute(dn, "name");
-
-    // NOTE: this is given as raw DN and contains '-' where it should
-    // have spaces, so convert it
-    QString category = get_attribute(dn, "objectCategory");
-    category = extract_name_from_dn(category);
-    category = category.replace('-', ' ');
-
-    QString description = get_attribute(dn, "description");
-
-    bool showInAdvancedViewOnly = get_attribute(dn, "showInAdvancedViewOnly") == "TRUE";
-
-    bool is_container = false;
-    const QList<QString> container_objectClasses = {"container", "organizationalUnit", "builtinDomain", "domain"};
-    for (auto c : container_objectClasses) {
-        if (attribute_value_exists(dn, "objectClass", c)) {
-            is_container = true;
-            break;
-        }
-    }
-
-    QStandardItem *name_item = row[AdModel::Column::Name];
-    QStandardItem *category_item = row[AdModel::Column::Category];
-    QStandardItem *description_item = row[AdModel::Column::Description];
-    QStandardItem *dn_item = row[AdModel::Column::DN];
-
-    name_item->setText(name);
-    category_item->setText(category);
-    description_item->setText(description);
-    dn_item->setText(dn);
-    row[0]->setData(showInAdvancedViewOnly, AdModel::Roles::AdvancedViewOnly);
-    row[0]->setData(is_container, AdModel::Roles::IsContainer);
-
-    // Set icon
-    // TODO: change to custom, good icons, add those icons to installation?
-    // TODO: are there cases where an entry can have multiple icons due to multiple objectClasses and one of them needs to be prioritized?
-    QMap<QString, QString> class_to_icon = {
-        {"groupPolicyContainer", "x-office-address-book"},
-        {"container", "folder"},
-        {"organizationalUnit", "network-workgroup"},
-        {"person", "avatar-default"},
-        {"group", "application-x-smb-workgroup"},
-        {"builtinDomain", "emblem-system"},
-    };
-    QString icon_name = "dialog-question";
-    for (auto c : class_to_icon.keys()) {
-        if (attribute_value_exists(dn, "objectClass", c)) {
-            icon_name = class_to_icon[c];
-            break;  
-        }
-    }
-
-    QIcon icon = QIcon::fromTheme(icon_name);
-    row[0]->setIcon(icon);
-}
-
 void AdModel::on_delete_entry_complete(const QString &dn) {
     QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
 
@@ -310,6 +251,65 @@ QString get_dn_of_index(const QModelIndex &index) {
     QString dn = dn_index.data().toString();
 
     return dn;
+}
+
+// Load data into row of items based on entry attributes
+void load_row(QList<QStandardItem *> row, const QString &dn) {
+    // Load row based on attributes
+    QString name = get_attribute(dn, "name");
+
+    // NOTE: this is given as raw DN and contains '-' where it should
+    // have spaces, so convert it
+    QString category = get_attribute(dn, "objectCategory");
+    category = extract_name_from_dn(category);
+    category = category.replace('-', ' ');
+
+    QString description = get_attribute(dn, "description");
+
+    bool showInAdvancedViewOnly = get_attribute(dn, "showInAdvancedViewOnly") == "TRUE";
+
+    bool is_container = false;
+    const QList<QString> container_objectClasses = {"container", "organizationalUnit", "builtinDomain", "domain"};
+    for (auto c : container_objectClasses) {
+        if (attribute_value_exists(dn, "objectClass", c)) {
+            is_container = true;
+            break;
+        }
+    }
+
+    QStandardItem *name_item = row[AdModel::Column::Name];
+    QStandardItem *category_item = row[AdModel::Column::Category];
+    QStandardItem *description_item = row[AdModel::Column::Description];
+    QStandardItem *dn_item = row[AdModel::Column::DN];
+
+    name_item->setText(name);
+    category_item->setText(category);
+    description_item->setText(description);
+    dn_item->setText(dn);
+    row[0]->setData(showInAdvancedViewOnly, AdModel::Roles::AdvancedViewOnly);
+    row[0]->setData(is_container, AdModel::Roles::IsContainer);
+
+    // Set icon
+    // TODO: change to custom, good icons, add those icons to installation?
+    // TODO: are there cases where an entry can have multiple icons due to multiple objectClasses and one of them needs to be prioritized?
+    QMap<QString, QString> class_to_icon = {
+        {"groupPolicyContainer", "x-office-address-book"},
+        {"container", "folder"},
+        {"organizationalUnit", "network-workgroup"},
+        {"person", "avatar-default"},
+        {"group", "application-x-smb-workgroup"},
+        {"builtinDomain", "emblem-system"},
+    };
+    QString icon_name = "dialog-question";
+    for (auto c : class_to_icon.keys()) {
+        if (attribute_value_exists(dn, "objectClass", c)) {
+            icon_name = class_to_icon[c];
+            break;  
+        }
+    }
+
+    QIcon icon = QIcon::fromTheme(icon_name);
+    row[0]->setIcon(icon);
 }
 
 // Make new row in model at given parent based on entry with given dn
