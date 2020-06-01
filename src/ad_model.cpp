@@ -18,7 +18,7 @@
  */
 
 #include "ad_model.h"
-#include "constants.h"
+#include "config.h"
 #include "entry_drag_drop.h"
 
 #include <QMimeData>
