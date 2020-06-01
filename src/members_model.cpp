@@ -19,21 +19,14 @@
 
 #include "members_model.h"
 #include "ad_interface.h"
+#include "entry_drag_drop.h"
+
+#include <QMimeData>
 
 MembersModel::MembersModel(QObject *parent)
 : QStandardItemModel(0, Column::COUNT, parent)
 {
     change_target(QString(""));
-
-    connect(
-        &ad_interface, &AdInterface::delete_entry_complete,
-        this, &MembersModel::on_delete_entry_complete);
-    connect(
-        &ad_interface, &AdInterface::move_user_complete,
-        this, &MembersModel::on_move_user_complete);
-    connect(
-        &ad_interface, &AdInterface::load_attributes_complete,
-        this, &MembersModel::on_load_attributes_complete);
 }
 
 void MembersModel::change_target(const QString &new_target_dn) {
@@ -54,25 +47,44 @@ void MembersModel::change_target(const QString &new_target_dn) {
     }
 }
 
-void MembersModel::on_delete_entry_complete(const QString &dn) {
-    // Clear data if current target was deleted
-    // NOTE: if dn is member of target, then the update will propagate
-    // through on_load_attributes_complete
-    if (target_dn == dn) {
-        change_target(QString(""));
-    }
+QString MembersModel::get_dn_of_index(const QModelIndex &index) {
+    QModelIndex dn_index = index.siblingAtColumn(Column::DN);
+    QString dn = dn_index.data().toString();
+
+    return dn;
 }
 
-void MembersModel::on_move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn) {
-    // Switch to the entry at new dn (entry stays the same)
-    if (target_dn == user_dn) {
-        change_target(new_dn);
+QMimeData *MembersModel::mimeData(const QModelIndexList &indexes) const {
+    QMimeData *data = QStandardItemModel::mimeData(indexes);
+
+    if (indexes.size() > 0) {
+        QModelIndex index = indexes[0];
+        QString dn = get_dn_of_index(index);
+
+        data->setText(dn);
     }
+
+    return data;
 }
 
-void MembersModel::on_load_attributes_complete(const QString &dn) {
-    // Reload entry since attributes were updated
-    if (target_dn == dn) {
-        change_target(dn);
+bool MembersModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
+    const QString dn = data->text();
+    const QString parent_dn = get_dn_of_index(parent);
+
+    return can_drop_entry(dn, parent_dn);
+}
+
+bool MembersModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
+    if (row != -1 || column != -1) {
+        return true;
     }
+
+    if (canDropMimeData(data, action, row, column, parent)) {
+        QString dn = data->text();
+        QString parent_dn = get_dn_of_index(parent);
+
+        drop_entry(dn, parent_dn);
+    }
+
+    return true;
 }

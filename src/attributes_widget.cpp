@@ -41,6 +41,9 @@ AttributesWidget::AttributesWidget()
     members_view->setModel(members_model);
     members_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
+    members_view->setAcceptDrops(true);
+    members_view->setDragDropMode(QAbstractItemView::DragDrop);
+
     change_target("");
 };
 

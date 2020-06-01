@@ -24,8 +24,6 @@
 
 #include <QStandardItemModel>
 
-QString get_dn_of_index(const QModelIndex &index);
-
 class AdModel final : public QStandardItemModel {
 Q_OBJECT
 
@@ -53,6 +51,8 @@ public:
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+
+    static QString get_dn_of_index(const QModelIndex &index);
 
 private slots:
     void on_load_attributes_complete(const QString &dn);

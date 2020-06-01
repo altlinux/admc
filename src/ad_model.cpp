@@ -222,8 +222,8 @@ void AdModel::on_load_attributes_complete(const QString &dn) {
     load_row(row, dn);
 }
 
-QString get_dn_of_index(const QModelIndex &index) {
-    QModelIndex dn_index = index.siblingAtColumn(AdModel::Column::DN);
+QString AdModel::get_dn_of_index(const QModelIndex &index) {
+    QModelIndex dn_index = index.siblingAtColumn(Column::DN);
     QString dn = dn_index.data().toString();
 
     return dn;

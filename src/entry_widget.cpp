@@ -92,7 +92,7 @@ void EntryWidget::on_context_menu_requested(const QPoint &pos) {
     submenu_new->addAction(&action_new_group);
     submenu_new->addAction(&action_new_ou);
 
-    const QString dn = get_dn_of_index(index);
+    const QString dn = AdModel::get_dn_of_index(index);
     const bool entry_is_policy = attribute_value_exists(dn, "objectClass", "groupPolicyContainer"); 
     if (entry_is_policy) {
         menu.addAction(&action_edit_policy);
@@ -135,7 +135,7 @@ void EntryWidget::update_column_visibility() {
 }
 
 void EntryWidget::on_view_clicked(const QModelIndex &index) {
-    const QString dn = get_dn_of_index(index);
+    const QString dn = AdModel::get_dn_of_index(index);
 
     emit clicked_dn(dn);
 }
