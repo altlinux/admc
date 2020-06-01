@@ -20,14 +20,14 @@
 #ifndef ATTRIBUTES_WIDGET_H
 #define ATTRIBUTES_WIDGET_H
 
-#include <QWidget>
+#include <QTabWidget>
 
 class QTreeView;
 class QString;
 class AttributesModel;
 
 // Shows names and values of attributes of the entry selected in contents view
-class AttributesWidget final : public QWidget {
+class AttributesWidget final : public QTabWidget {
 Q_OBJECT
 
 public:
@@ -45,6 +45,7 @@ private:
 
     AttributesModel *model = nullptr;
     QTreeView *view = nullptr;
+    QWidget *widget = nullptr;
 };
 
 #endif /* ATTRIBUTES_WIDGET_H */

@@ -21,13 +21,12 @@
 #include "attributes_model.h"
 #include "ad_interface.h"
 
-#include <QWidget>
 #include <QTreeView>
 #include <QLabel>
 #include <QVBoxLayout>
 
 AttributesWidget::AttributesWidget()
-: QWidget()
+: QTabWidget()
 {
     model = new AttributesModel(this);
 
@@ -37,13 +36,7 @@ AttributesWidget::AttributesWidget()
     view->setSelectionBehavior(QAbstractItemView::SelectRows);
     view->setModel(model);
 
-    const auto label = new QLabel("Attributes");
-
-    setLayout(new QVBoxLayout());
-    layout()->setContentsMargins(0, 0, 0, 0);
-    layout()->setSpacing(0);
-    layout()->addWidget(label);
-    layout()->addWidget(view);
+    addTab(view, "All attributes");
 };
 
 void AttributesWidget::change_model_target(const QString &new_target_dn) {
