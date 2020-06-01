@@ -35,6 +35,8 @@ set(ADTOOL_ORGANIZATION_DOMAIN "basealt.ru")
 
 configure_file("config.h.in" "config.h")
 
+add_subdirectory(gpgui)
+
 set(ADTOOL_HEADER_DIRS
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/src
