@@ -36,8 +36,6 @@ private slots:
     void on_advanced_view_toggled(bool checked);
 
 private:
-    bool advanced_view = false;
-
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 
 };
