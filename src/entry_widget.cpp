@@ -60,15 +60,15 @@ EntryWidget::EntryWidget(AdModel* model)
     }
     update_column_visibility();
 
-    QObject::connect(
+    connect(
         &action_toggle_dn, &QAction::triggered,
         this, &EntryWidget::on_action_toggle_dn);
 
-    QObject::connect(
+    connect(
         view, &QWidget::customContextMenuRequested,
         this, &EntryWidget::on_context_menu_requested);
 
-    QObject::connect(
+    connect(
         view, &QAbstractItemView::clicked,
         this, &EntryWidget::on_view_clicked);
 }

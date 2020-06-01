@@ -26,13 +26,13 @@ AttributesModel::AttributesModel(QObject *parent)
 {
     change_target(QString(""));
 
-    QObject::connect(
+    connect(
         &ad_interface, &AdInterface::delete_entry_complete,
         this, &AttributesModel::on_delete_entry_complete);
-    QObject::connect(
+    connect(
         &ad_interface, &AdInterface::move_user_complete,
         this, &AttributesModel::on_move_user_complete);
-    QObject::connect(
+    connect(
         &ad_interface, &AdInterface::load_attributes_complete,
         this, &AttributesModel::on_load_attributes_complete);
 }

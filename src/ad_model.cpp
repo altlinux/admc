@@ -34,16 +34,16 @@ AdModel::AdModel(QObject *parent)
     setHorizontalHeaderItem(Column::Description, new QStandardItem("Description"));
     setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
 
-    QObject::connect(
+    connect(
         &ad_interface, &AdInterface::delete_entry_complete,
         this, &AdModel::on_delete_entry_complete);
-    QObject::connect(
+    connect(
         &ad_interface, &AdInterface::move_user_complete,
         this, &AdModel::on_move_user_complete);
-    QObject::connect(
+    connect(
         &ad_interface, &AdInterface::create_entry_complete,
         this, &AdModel::on_create_entry_complete);
-    QObject::connect(
+    connect(
         &ad_interface, &AdInterface::load_attributes_complete,
         this, &AdModel::on_load_attributes_complete);
 

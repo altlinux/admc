@@ -89,27 +89,27 @@ MainWindow::MainWindow()
     //
     // Connect actions
     //
-    QObject::connect(
+    connect(
         &action_attributes, &QAction::triggered,
         this, &MainWindow::on_action_attributes);
-    QObject::connect(
+    connect(
         &action_delete_entry, &QAction::triggered,
         this, &MainWindow::on_action_delete_entry);
-    QObject::connect(
+    connect(
         &action_new_user, &QAction::triggered,
         this, &MainWindow::on_action_new_user);
-    QObject::connect(
+    connect(
         &action_new_computer, &QAction::triggered,
         this, &MainWindow::on_action_new_computer);
-    QObject::connect(
+    connect(
         &action_new_group, &QAction::triggered,
         this, &MainWindow::on_action_new_group);
-    QObject::connect(
+    connect(
         &action_new_ou, &QAction::triggered,
         this, &MainWindow::on_action_new_ou);
 
     // Set root index of contents view to selection of containers view
-    QObject::connect(
+    connect(
         containers_widget, &ContainersWidget::selected_container_changed,
         contents_widget, &ContentsWidget::on_selected_container_changed);
 
