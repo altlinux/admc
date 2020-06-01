@@ -30,23 +30,33 @@ AttributesWidget::AttributesWidget()
 {
     model = new AttributesModel(this);
 
-    view = new QTreeView(this);
-    addTab(view, "All attributes");
+    view = new QTreeView();
     view->setEditTriggers(QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
     view->setSelectionMode(QAbstractItemView::NoSelection);
     view->setSelectionBehavior(QAbstractItemView::SelectRows);
     view->setModel(model);
 
-    members_view = new QTreeView(this);
-    addTab(members_view, "Group members");
+    members_view = new QTreeView();
     members_model = new MembersModel(this);
     members_view->setModel(members_model);
     members_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    change_model_target("");
 };
 
-void AttributesWidget::change_model_target(const QString &new_target_dn) {
-    model->change_target(new_target_dn);
-    members_model->change_target(new_target_dn);
+void AttributesWidget::change_model_target(const QString &dn) {
+    model->change_target(dn);
 
+    members_model->change_target(dn);
     members_view->setColumnHidden(MembersModel::Column::DN, true);
+
+    // Setup tabs
+    clear();
+
+    addTab(view, "All Attributes");
+
+    bool is_group = attribute_value_exists(dn, "objectClass", "group");
+    if (is_group) {
+        addTab(members_view, "Group members");
+    }
 }
