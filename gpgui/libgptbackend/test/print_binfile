@@ -1,0 +1,8 @@
+#! /usr/bin/env python3.6
+
+if __name__ == '__main__':
+    with open("Registry.pol", 'rb') as f:
+        byte = None
+        while byte != b'':
+            byte = f.read(1)
+            print('[{}] {}'.format(ord(byte), str(byte)))

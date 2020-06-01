@@ -1,0 +1,36 @@
+/*
+ * GPGUI - Group Policy Editor GUI
+ *
+ * Copyright (C) 2020 BaseALT Ltd.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+#if !defined(__GPGUI_REG_DWORD_DIALOG)
+#   define __GPGUI_REG_DWORD_DIALOG 1
+
+#include <QtWidgets>
+#include <QDialog>
+
+namespace qgui {
+
+class REG_DWORD_Dialog : public QDialog {
+    // Q_OBJECT
+public:
+    REG_DWORD_Dialog();
+}; /* class REG_DWORD_Dialog */
+
+} /* namespace qgui */
+
+#endif /* __GPGUI_REG_DWORD_DIALOG */
+

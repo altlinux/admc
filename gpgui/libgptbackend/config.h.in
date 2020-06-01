@@ -1,0 +1,14 @@
+#if !defined (__GPTBACKEND_CONFIG_H)
+#   define __GPTBACKEND_CONFIG_H 1
+
+#define _XOPEN_SOURCE 700
+#define _C99_SOURCE 1
+
+#if defined(__FreeBSD__)
+#   define _BSD_VISIBLE 1
+#endif
+
+#include <sys/param.h>
+
+#endif /* __GPTBACKEND_CONFIG_H */
+

@@ -1,0 +1,20 @@
+#if !defined(__GPGUI_CONFIG_H)
+#   define __GPGUI_CONFIG_H 1
+
+#define _XOPEN_SOURCE 700
+#define _C99_SOURCE 1
+
+#if defined(__FreeBSD__)
+#   define _BSD_VISIBLE 1
+#endif
+
+#include <sys/param.h>
+
+#   define GPGUI_VERSION "${PROJECT_VERSION}"
+#   define GPGUI_APPLICATION_NAME "${GPGUI_APPLICATION_NAME}"
+#   define GPGUI_APPLICATION_DISPLAY_NAME "${GPGUI_APPLICATION_DISPLAY_NAME}"
+#   define GPGUI_ORGANIZATION "${GPGUI_ORGANIZATION}"
+#   define GPGUI_ORGANIZATION_DOMAIN "${GPGUI_ORGANIZATION_DOMAIN}"
+
+#endif /* __GPGUI_CONFIG_H */
+
