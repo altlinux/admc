@@ -24,6 +24,8 @@ extern "C" {
 #include "active_directory.h"
 }
 
+#include <QSet>
+
 // TODO: replace C active_directory.h with C++ version or other better version
 
 // "CN=foo,CN=bar,DC=domain,DC=com"
@@ -60,6 +62,7 @@ bool FAKE_AD = false;
 
 QMap<QString, QList<QString>> fake_children;
 QMap<QString, QMap<QString, QList<QString>>> fake_attributes_map;
+QSet<QString> fake_attributes_loaded;
 
 void fake_ad_init() {
     fake_children[HEAD_DN] = {
@@ -249,6 +252,7 @@ void fake_move_user(const QString &user_dn, const QString &container_dn) {
 // -----------------------------------------------------------------
 
 QMap<QString, QMap<QString, QList<QString>>> attributes_map;
+QSet<QString> attributes_loaded;
 
 bool ad_interface_login() {
     if (FAKE_AD) {
@@ -307,6 +311,8 @@ QList<QString> load_children(const QString &dn) {
 
 void load_attributes(const QString &dn) {
     if (FAKE_AD) {
+        fake_attributes_loaded.insert(dn);
+        
         return;
     }
 
@@ -340,6 +346,8 @@ void load_attributes(const QString &dn) {
         }
         free(attributes_raw);
 
+        attributes_loaded.insert(dn);
+
         emit ad_interface.load_attributes_complete(dn);
     } else {
         emit ad_interface.load_attributes_failed(dn, get_error_str());
@@ -347,13 +355,24 @@ void load_attributes(const QString &dn) {
 }
 
 QMap<QString, QList<QString>> get_attributes(const QString &dn) {
+    // First check whether load_attributes was ever called on this dn
+    // If it hasn't, attempt to load attributes
+    // After that return whatever attributes are now loaded for this dn
     if (FAKE_AD) {
+        if (!fake_attributes_loaded.contains(dn)) {
+            load_attributes(dn);
+        }
+
         if (!fake_attributes_map.contains(dn)) {
             return QMap<QString, QList<QString>>();
         } else {
             return fake_attributes_map[dn];
         }
     } else {
+        if (!attributes_loaded.contains(dn)) {
+            load_attributes(dn);
+        }
+
         if (!attributes_map.contains(dn)) {
             return QMap<QString, QList<QString>>();
         } else {
@@ -509,11 +528,12 @@ void delete_entry(const QString &dn) {
     }
 
     if (result == AD_SUCCESS) {
+        attributes_map.remove(dn);
+        attributes_loaded.remove(dn);
+
         // TODO: handle all possible side-effects?
         // probably a lot of stuff, like group membership and stuff
         emit ad_interface.delete_entry_complete(dn);
-
-        attributes_map.remove(dn);
     } else {
         emit ad_interface.delete_entry_failed(dn, get_error_str());
     }
@@ -542,6 +562,7 @@ void move_user(const QString &user_dn, const QString &container_dn) {
     if (result == AD_SUCCESS) {
         // Unload attributes at old dn
         attributes_map.remove(user_dn);
+        attributes_loaded.remove(user_dn);
 
         // Load attributes at new dn
         load_attributes(new_dn);

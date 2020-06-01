@@ -25,6 +25,7 @@
 #include <QIcon>
 
 void make_new_row(QStandardItem *parent, const QString &dn);
+void load_row(QList<QStandardItem *> row, const QString &dn);
 
 AdModel::AdModel(QObject *parent)
 : QStandardItemModel(0, Column::COUNT, parent)
@@ -158,39 +159,9 @@ bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction, int row, int c
     return true;
 }
 
-void AdModel::on_load_attributes_complete(const QString &dn) {
-    //
-    // Compose row of items
-    //
-    auto row = QList<QStandardItem *>();
-    {
-        QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
-
-        if (items.size() == 0) {
-            return;
-        }
-
-        QStandardItem *dn_item = items[0];
-        QModelIndex dn_index = dn_item->index();
-
-        // Compose indexes for all columns
-        auto indexes = QList<QModelIndex>(); 
-        for (int i = 0; i < AdModel::Column::COUNT; i++) {
-            QModelIndex index = dn_index.siblingAtColumn(i);
-            indexes.push_back(index);
-        }
-
-        // Compose the row of items from indexes
-        for (int i = 0; i < AdModel::Column::COUNT; i++) {
-            QModelIndex index = indexes[i];
-            QStandardItem *item = itemFromIndex(index);
-            row.push_back(item);
-        }
-    }
-
-    //
+// Load data into row of items based on entry attributes
+void load_row(QList<QStandardItem *> row, const QString &dn) {
     // Load row based on attributes
-    //
     QString name = get_attribute(dn, "name");
 
     // NOTE: this is given as raw DN and contains '-' where it should
@@ -305,6 +276,35 @@ void AdModel::on_create_entry_complete(const QString &dn, NewEntryType type) {
     }
 }
 
+void AdModel::on_load_attributes_complete(const QString &dn) {
+    // Compose row based on dn
+    auto row = QList<QStandardItem *>();
+    QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+
+    if (items.size() == 0) {
+        return;
+    }
+
+    QStandardItem *dn_item = items[0];
+    QModelIndex dn_index = dn_item->index();
+
+    // Compose indexes for all columns
+    auto indexes = QList<QModelIndex>(); 
+    for (int i = 0; i < AdModel::Column::COUNT; i++) {
+        QModelIndex index = dn_index.siblingAtColumn(i);
+        indexes.push_back(index);
+    }
+
+    // Compose the row of items from indexes
+    for (int i = 0; i < AdModel::Column::COUNT; i++) {
+        QModelIndex index = indexes[i];
+        QStandardItem *item = itemFromIndex(index);
+        row.push_back(item);
+    }
+
+    load_row(row, dn);
+}
+
 QString get_dn_of_index(const QModelIndex &index) {
     QModelIndex dn_index = index.siblingAtColumn(AdModel::Column::DN);
     QString dn = dn_index.data().toString();
@@ -329,8 +329,5 @@ void make_new_row(QStandardItem *parent, const QString &dn) {
 
     parent->appendRow(row);
 
-    // Load attributes since this is the first time this entry is loaded
-    load_attributes(dn);
-
-    // NOTE: the row is loaded in on_load_attributes_complete() slot
+    load_row(row, dn);
 }
