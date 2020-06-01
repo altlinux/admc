@@ -92,6 +92,12 @@ void EntryWidget::on_context_menu_requested(const QPoint &pos) {
     submenu_new->addAction(&action_new_group);
     submenu_new->addAction(&action_new_ou);
 
+    const QString dn = get_dn_of_index(index);
+    const bool entry_is_policy = attribute_value_exists(dn, "objectClass", "groupPolicyContainer"); 
+    if (entry_is_policy) {
+        menu.addAction(&action_edit_policy);
+    }
+
     QPoint global_pos = view->mapToGlobal(pos);
     menu.exec(global_pos, &action_attributes);
 }

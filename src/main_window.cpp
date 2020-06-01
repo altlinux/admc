@@ -34,6 +34,8 @@
 #include <QSplitter>
 #include <QStatusBar>
 #include <QTreeView>
+#include <QDir>
+#include <QProcess>
 
 MainWindow::MainWindow()
 : QMainWindow()
@@ -108,6 +110,10 @@ MainWindow::MainWindow()
         &action_new_ou, &QAction::triggered,
         this, &MainWindow::on_action_new_ou);
 
+    connect(
+        &action_edit_policy, &QAction::triggered,
+        this, &MainWindow::on_action_edit_policy);
+
     // Set root index of contents view to selection of containers view
     connect(
         containers_widget, &ContainersWidget::selected_container_changed,
@@ -176,4 +182,27 @@ void MainWindow::on_action_new_group() {
 
 void MainWindow::on_action_new_ou() {
     on_action_new_entry_generic(NewEntryType::OU);
+}
+
+void MainWindow::on_action_edit_policy() {
+    // Start policy edit process
+    const auto process = new QProcess(this);
+
+    const QString program_name = "../gpgui";
+    process->setProgram(QDir::currentPath() + program_name);
+
+    const char *uri = "ldap://dc0.domain.alt";
+
+    const QString dn = get_selected_dn();
+    const QString path = get_attribute(dn, "gPCFileSysPath");
+
+    QStringList args;
+    args << uri;
+    args << path;
+    process->setArguments(args);
+
+    printf("on_action_edit_policy\ndn=%s\npath=%s\n", qPrintable(dn), qPrintable(path));
+    printf("execute command: %s %s %s\n", qPrintable(program_name), qPrintable(uri), qPrintable(path));
+
+    process->start();
 }

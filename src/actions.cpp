@@ -27,6 +27,7 @@ QAction action_new_user("New User");
 QAction action_new_computer("New Computer");
 QAction action_new_group("New Group");
 QAction action_new_ou("New OU");
+QAction action_edit_policy("Edit policy");
 
 void actions_init() {
     action_advanced_view.setCheckable(true);

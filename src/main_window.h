@@ -45,6 +45,7 @@ private slots:
     void on_action_new_ou();
     void on_containers_clicked_dn(const QString &dn);
     void on_contents_clicked_dn(const QString &dn);
+    void on_action_edit_policy();
 
 private:
     QString get_selected_dn() const;

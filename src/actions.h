@@ -30,6 +30,7 @@ extern QAction action_new_user;
 extern QAction action_new_computer;
 extern QAction action_new_group;
 extern QAction action_new_ou;
+extern QAction action_edit_policy;
 
 void actions_init();
 
