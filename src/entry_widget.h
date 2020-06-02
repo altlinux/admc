@@ -45,7 +45,6 @@ private slots:
 
 protected:
     QTreeView *view = nullptr;
-    QLabel *label = nullptr;
     QList<bool> column_hidden;
     
     void update_column_visibility();

@@ -41,12 +41,9 @@ EntryWidget::EntryWidget(int column_count, int dn_column_in)
     view = new QTreeView();
     view->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    label = new QLabel("LABEL");
-
     setLayout(new QVBoxLayout());
     layout()->setContentsMargins(0, 0, 0, 0);
     layout()->setSpacing(0);
-    layout()->addWidget(label);
     layout()->addWidget(view);
 
     // Init column visibility

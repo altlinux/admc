@@ -34,8 +34,6 @@ MembersWidget::MembersWidget()
     view->setAcceptDrops(true);
     view->setModel(model);
 
-    label->setText("Members");
-
     column_hidden[MembersModel::Column::Name] = false;
     column_hidden[MembersModel::Column::DN] = true;
     update_column_visibility();

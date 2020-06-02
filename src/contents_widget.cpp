@@ -24,6 +24,7 @@
 
 #include <QTreeView>
 #include <QLabel>
+#include <QLayout>
 
 ContentsWidget::ContentsWidget(AdModel* model)
 : EntryWidget(AdModel::Column::COUNT, AdModel::Column::DN)
@@ -39,7 +40,11 @@ ContentsWidget::ContentsWidget(AdModel* model)
     view->setExpandsOnDoubleClick(false);
     view->setModel(proxy);
 
-    label->setText("Contents");
+    // Insert label into layout
+    const auto label = new QLabel("Contents");
+    layout()->removeWidget(view);
+    layout()->addWidget(label);
+    layout()->addWidget(view);
 
     column_hidden[AdModel::Column::Name] = false;
     column_hidden[AdModel::Column::Category] = false;

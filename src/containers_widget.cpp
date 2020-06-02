@@ -23,13 +23,14 @@
 
 #include <QTreeView>
 #include <QLabel>
+#include <QLayout>
 
 ContainersWidget::ContainersWidget(AdModel *model)
 : EntryWidget(AdModel::Column::COUNT, AdModel::Column::DN)
 {
     proxy = new AdProxyModel(model, this);
     proxy->only_show_containers = true;
-    
+
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setDragDropMode(QAbstractItemView::DragDrop);
@@ -44,7 +45,11 @@ ContainersWidget::ContainersWidget(AdModel *model)
     column_hidden[AdModel::Column::DN] = true;
     update_column_visibility();
 
-    label->setText("Containers");
+    // Insert label into layout
+    const auto label = new QLabel("Containers");
+    layout()->removeWidget(view);
+    layout()->addWidget(label);
+    layout()->addWidget(view);
 
     connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,
