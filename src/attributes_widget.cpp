@@ -20,7 +20,7 @@
 #include "attributes_widget.h"
 #include "attributes_model.h"
 #include "ad_interface.h"
-#include "members_model.h"
+#include "members_widget.h"
 
 #include <QTreeView>
 #include <QStandardItemModel>
@@ -36,13 +36,7 @@ AttributesWidget::AttributesWidget()
     attributes_view->setSelectionBehavior(QAbstractItemView::SelectRows);
     attributes_view->setModel(attributes_model);
 
-    members_view = new QTreeView();
-    members_model = new MembersModel(this);
-    members_view->setModel(members_model);
-    members_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-    members_view->setAcceptDrops(true);
-    members_view->setDragDropMode(QAbstractItemView::DragDrop);
+    members_widget = new MembersWidget();
 
     connect(
         &ad_interface, &AdInterface::delete_entry_complete,
@@ -65,8 +59,7 @@ void AttributesWidget::change_target(const QString &dn) {
 
     attributes_model->change_target(target_dn);
 
-    members_model->change_target(target_dn);
-    members_view->setColumnHidden(MembersModel::Column::DN, true);
+    members_widget->change_target(target_dn);
 
     // Setup tabs
     clear();
@@ -75,7 +68,7 @@ void AttributesWidget::change_target(const QString &dn) {
 
     bool is_group = attribute_value_exists(target_dn, "objectClass", "group");
     if (is_group) {
-        addTab(members_view, "Group members");
+        addTab(members_widget, "Group members");
     }
 
     // Restore current index if it is still shown
