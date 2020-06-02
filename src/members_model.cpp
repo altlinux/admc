@@ -67,9 +67,20 @@ QMimeData *MembersModel::mimeData(const QModelIndexList &indexes) const {
     return data;
 }
 
+// The invisible root item is considered to be the group(target)
+// so return group dn so drops onto invisible root function
+// as drops onto group
+QString MembersModel::get_parent_dn(const QModelIndex &parent) const {
+    if (parent == invisibleRootItem()->index()) {
+        return target_dn;        
+    } else {
+        return get_dn_of_index(parent);
+    }
+}
+
 bool MembersModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
     const QString dn = data->text();
-    const QString parent_dn = get_dn_of_index(parent);
+    const QString parent_dn = get_parent_dn(parent);
 
     return can_drop_entry(dn, parent_dn);
 }
@@ -80,8 +91,8 @@ bool MembersModel::dropMimeData(const QMimeData *data, Qt::DropAction action, in
     }
 
     if (canDropMimeData(data, action, row, column, parent)) {
-        QString dn = data->text();
-        QString parent_dn = get_dn_of_index(parent);
+        const QString dn = data->text();
+        const QString parent_dn = get_parent_dn(parent);
 
         drop_entry(dn, parent_dn);
     }

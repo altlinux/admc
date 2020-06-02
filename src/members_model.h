@@ -46,6 +46,7 @@ private:
     QString target_dn;
 
     static QString get_dn_of_index(const QModelIndex &index);
+    QString get_parent_dn(const QModelIndex &parent) const;
 
 };
 
