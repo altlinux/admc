@@ -17,27 +17,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONTENTS_WIDGET_H
-#define CONTENTS_WIDGET_H
+#ifndef ATTRIBUTES_WIDGET_H
+#define ATTRIBUTES_WIDGET_H
 
-#include "entry_widget.h"
+#include <QTabWidget>
 
-class AdModel;
-class AdProxyModel;
+class QTreeView;
+class QString;
+class AttributesModel;
+class MembersWidget;
 
-// Shows name, category and description of children of entry selected in containers view
-class ContentsWidget final : public EntryWidget {
+// Shows info about entry's attributes in multiple tabs
+class DetailsWidget final : public QTabWidget {
 Q_OBJECT
 
 public:
-    ContentsWidget(AdModel *model);
+    DetailsWidget();
 
-public slots:
-    void on_selected_container_changed(const QModelIndex &source_index);
+    void change_target(const QString &dn);
+
+private slots:
+    void on_delete_entry_complete(const QString &dn); 
+    void on_move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn); 
+    void on_load_attributes_complete(const QString &dn);
 
 private:
-    AdProxyModel *proxy = nullptr;
+    AttributesModel *attributes_model = nullptr;
+    QTreeView *attributes_view = nullptr;
     
+    MembersWidget *members_widget = nullptr;
+
+    QString target_dn;
 };
 
-#endif /* CONTENTS_WIDGET_H */
+#endif /* ATTRIBUTES_WIDGET_H */

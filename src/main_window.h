@@ -28,7 +28,7 @@ class QString;
 class AdModel;
 class ContainersWidget;
 class ContentsWidget;
-class AttributesWidget;
+class DetailsWidget;
 
 class MainWindow final : public QMainWindow {
 Q_OBJECT
@@ -37,7 +37,7 @@ public:
     explicit MainWindow();
 
 private slots:
-    void on_action_attributes();
+    void on_action_details();
     void on_action_delete_entry();
     void on_action_new_user();
     void on_action_new_computer();
@@ -54,7 +54,7 @@ private:
     AdModel *ad_model = nullptr;
     ContainersWidget *containers_widget = nullptr;
     ContentsWidget *contents_widget = nullptr;
-    AttributesWidget *attributes_widget = nullptr;
+    DetailsWidget *details_widget = nullptr;
 
     QAction *action_containers_click_attributes = nullptr;
     QAction *action_contents_click_attributes = nullptr;

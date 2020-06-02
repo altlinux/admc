@@ -20,7 +20,7 @@
 #include "main_window.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
-#include "attributes_widget.h"
+#include "details_widget.h"
 #include "ad_model.h"
 #include "attributes_model.h"
 #include "create_entry_dialog.h"
@@ -82,18 +82,18 @@ MainWindow::MainWindow()
 
     containers_widget = new ContainersWidget(ad_model);
     contents_widget = new ContentsWidget(ad_model);
-    attributes_widget = new AttributesWidget();
+    details_widget = new DetailsWidget();
 
     splitter->addWidget(containers_widget);
     splitter->addWidget(contents_widget);
-    splitter->addWidget(attributes_widget);
+    splitter->addWidget(details_widget);
     
     //
     // Connect actions
     //
     connect(
-        &action_attributes, &QAction::triggered,
-        this, &MainWindow::on_action_attributes);
+        &action_details, &QAction::triggered,
+        this, &MainWindow::on_action_details);
     connect(
         &action_delete_entry, &QAction::triggered,
         this, &MainWindow::on_action_delete_entry);
@@ -128,43 +128,30 @@ MainWindow::MainWindow()
         this, &MainWindow::on_contents_clicked_dn);
 }
 
-QString MainWindow::get_selected_dn() const {
-    QString containers_dn = containers_widget->get_selected_dn();
-    QString contents_dn = contents_widget->get_selected_dn();
-    
-    if (containers_dn != "") {
-        return containers_dn;
-    } else if (contents_dn != "") {
-        return contents_dn;
-    } else {
-        return "";
-    }
-}
-
-void MainWindow::on_action_attributes() {
-    QString dn = get_selected_dn();
-    attributes_widget->change_target(dn);
+void MainWindow::on_action_details() {
+    QString dn = EntryWidget::get_selected_dn();
+    details_widget->change_target(dn);
 }
 
 void MainWindow::on_containers_clicked_dn(const QString &dn) {
     if (action_containers_click_attributes->isChecked()) {
-        attributes_widget->change_target(dn);
+        details_widget->change_target(dn);
     }
 }
 
 void MainWindow::on_contents_clicked_dn(const QString &dn) {
     if (action_containers_click_attributes->isChecked()) {
-        attributes_widget->change_target(dn);
+        details_widget->change_target(dn);
     }
 }
 
 void MainWindow::on_action_delete_entry() {
-    QString dn = get_selected_dn();
+    QString dn = EntryWidget::get_selected_dn();
     delete_entry(dn);
 }
 
 void MainWindow::on_action_new_entry_generic(NewEntryType type) {
-    QString dn = get_selected_dn();
+    QString dn = EntryWidget::get_selected_dn();
     create_entry_dialog(type, dn);
 }
 
@@ -193,7 +180,7 @@ void MainWindow::on_action_edit_policy() {
 
     const char *uri = "ldap://dc0.domain.alt";
 
-    const QString dn = get_selected_dn();
+    const QString dn = EntryWidget::get_selected_dn();
     const QString path = get_attribute(dn, "gPCFileSysPath");
 
     QStringList args;

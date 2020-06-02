@@ -23,6 +23,8 @@
 #include "entry_widget.h"
 
 class QItemSelection;
+class AdModel;
+class AdProxyModel;
 
 // Shows names of AdModel as a tree
 class ContainersWidget final : public EntryWidget {
@@ -38,6 +40,7 @@ private slots:
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
 
 private:
+    AdProxyModel *proxy = nullptr;
 
 };
 

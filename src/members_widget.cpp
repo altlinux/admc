@@ -17,13 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ENTRY_DRAG_DROP_H
-#define ENTRY_DRAG_DROP_H
+#include "members_widget.h"
+#include "members_model.h"
 
-class QString;
+#include <QTreeView>
+#include <QLabel>
 
-bool can_drop_entry(const QString &dn, const QString &parent_dn);
-void drop_entry(const QString &dn, const QString &parent_dn);   
+MembersWidget::MembersWidget()
+: EntryWidget(MembersModel::Column::COUNT, MembersModel::Column::DN)
+{   
+    model = new MembersModel(this);
 
+    view->setModel(model);
+    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    view->setDragDropMode(QAbstractItemView::DragDrop);
+    view->setAcceptDrops(true);
+    view->setModel(model);
 
-#endif /* ENTRY_DRAG_DROP_H */
+    column_hidden[MembersModel::Column::Name] = false;
+    column_hidden[MembersModel::Column::DN] = true;
+    update_column_visibility();
+}
+
+void MembersWidget::change_target(const QString &dn) {
+    model->change_target(dn);
+    update_column_visibility();
+}

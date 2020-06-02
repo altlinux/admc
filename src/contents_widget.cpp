@@ -24,10 +24,13 @@
 
 #include <QTreeView>
 #include <QLabel>
+#include <QLayout>
 
 ContentsWidget::ContentsWidget(AdModel* model)
-: EntryWidget(model)
+: EntryWidget(AdModel::Column::COUNT, AdModel::Column::DN)
 {   
+    proxy = new AdProxyModel(model, this);
+
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setDragDropMode(QAbstractItemView::DragDrop);
@@ -35,8 +38,13 @@ ContentsWidget::ContentsWidget(AdModel* model)
     view->setRootIsDecorated(false);
     view->setItemsExpandable(false);
     view->setExpandsOnDoubleClick(false);
+    view->setModel(proxy);
 
-    label->setText("Contents");
+    // Insert label into layout
+    const auto label = new QLabel("Contents");
+    layout()->removeWidget(view);
+    layout()->addWidget(label);
+    layout()->addWidget(view);
 
     column_hidden[AdModel::Column::Name] = false;
     column_hidden[AdModel::Column::Category] = false;

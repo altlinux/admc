@@ -25,16 +25,6 @@ AttributesModel::AttributesModel(QObject *parent)
 : QStandardItemModel(0, Column::COUNT, parent)
 {
     change_target(QString(""));
-
-    connect(
-        &ad_interface, &AdInterface::delete_entry_complete,
-        this, &AttributesModel::on_delete_entry_complete);
-    connect(
-        &ad_interface, &AdInterface::move_user_complete,
-        this, &AttributesModel::on_move_user_complete);
-    connect(
-        &ad_interface, &AdInterface::load_attributes_complete,
-        this, &AttributesModel::on_load_attributes_complete);
 }
 
 // This will be called when an attribute value is edited
@@ -46,10 +36,6 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     const QString value_str = value.toString();
 
     bool success = set_attribute(target_dn, attribute, value_str);
-
-    // TODO: probably should add on_load_attributes_complete slot
-    // and setData in there, maybe even just reload whole model
-    // on each attribute edit to be safe
 
     if (success) {
         QStandardItemModel::setData(index, value, role);
@@ -83,26 +69,5 @@ void AttributesModel::change_target(const QString &new_target_dn) {
 
             appendRow({name_item, value_item});
         }
-    }
-}
-
-void AttributesModel::on_delete_entry_complete(const QString &dn) {
-    // Clear data if current target was deleted
-    if (target_dn == dn) {
-        change_target(QString(""));
-    }
-}
-
-void AttributesModel::on_move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn) {
-    // Switch to the entry at new dn (entry stays the same)
-    if (target_dn == user_dn) {
-        change_target(new_dn);
-    }
-}
-
-void AttributesModel::on_load_attributes_complete(const QString &dn) {
-    // Reload entry since attributes were updated
-    if (target_dn == dn) {
-        change_target(dn);
     }
 }

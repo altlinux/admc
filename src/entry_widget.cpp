@@ -19,8 +19,6 @@
 
 #include "entry_widget.h"
 #include "ad_interface.h"
-#include "ad_model.h"
-#include "ad_proxy_model.h"
 #include "actions.h"
 
 #include <QApplication>
@@ -35,28 +33,26 @@
 #include <QVBoxLayout>
 #include <QMenu>
 
-EntryWidget::EntryWidget(AdModel* model)
+QSet<EntryWidget *> EntryWidget::instances;
+
+EntryWidget::EntryWidget(int column_count, int dn_column_in)
 : QWidget()
-{
-    proxy = new AdProxyModel(model, this);
-    
+{    
+    instances.insert(this);
+
+    dn_column = dn_column_in;
+
     view = new QTreeView();
     view->setContextMenuPolicy(Qt::CustomContextMenu);
-    view->setModel(proxy);
-
-    label = new QLabel("LABEL");
 
     setLayout(new QVBoxLayout());
     layout()->setContentsMargins(0, 0, 0, 0);
     layout()->setSpacing(0);
-    layout()->addWidget(label);
     layout()->addWidget(view);
 
     // Init column visibility
-    for (int column_i = AdModel::Column::Name; column_i < AdModel::Column::COUNT; column_i++) {
-        auto column = static_cast<AdModel::Column>(column_i);
-
-        column_hidden[column] = false;
+    for (int i = 0; i < column_count; i++) {
+        column_hidden.push_back(false);
     }
     update_column_visibility();
 
@@ -73,6 +69,10 @@ EntryWidget::EntryWidget(AdModel* model)
         this, &EntryWidget::on_view_clicked);
 }
 
+EntryWidget::~EntryWidget() {
+    instances.remove(this);
+}
+
 void EntryWidget::on_context_menu_requested(const QPoint &pos) {
     // Open entry context menu
     QModelIndex index = view->indexAt(pos);
@@ -83,7 +83,7 @@ void EntryWidget::on_context_menu_requested(const QPoint &pos) {
     
     QMenu menu;
 
-    menu.addAction(&action_attributes);
+    menu.addAction(&action_details);
     menu.addAction(&action_delete_entry);
 
     QMenu *submenu_new = menu.addMenu("New");
@@ -92,50 +92,57 @@ void EntryWidget::on_context_menu_requested(const QPoint &pos) {
     submenu_new->addAction(&action_new_group);
     submenu_new->addAction(&action_new_ou);
 
-    const QString dn = AdModel::get_dn_of_index(index);
+    const QString dn = get_dn_from_index(index);
     const bool entry_is_policy = attribute_value_exists(dn, "objectClass", "groupPolicyContainer"); 
     if (entry_is_policy) {
         menu.addAction(&action_edit_policy);
     }
 
     QPoint global_pos = view->mapToGlobal(pos);
-    menu.exec(global_pos, &action_attributes);
+    menu.exec(global_pos, &action_details);
 }
 
-QString EntryWidget::get_selected_dn() const {
-    // Return dn of selected entry, if any is selected and view
-    // has focus
-    const auto selection_model = view->selectionModel();
+QString EntryWidget::get_dn_from_index(const QModelIndex &index) const {
+    const QModelIndex dn_index = index.siblingAtColumn(dn_column);
+    const QString dn = dn_index.data().toString();
 
-    if (view->hasFocus() && selection_model->hasSelection()) {
-        auto selected_indexes = selection_model->selectedIndexes();
-        auto selected = selected_indexes[0];
-        QModelIndex dn_index = selected.siblingAtColumn(AdModel::Column::DN);
+    return dn;
+}
 
-        return dn_index.data().toString();
-    } else {
-        return "";
+QString EntryWidget::get_selected_dn() {
+    for (auto e : instances) {
+        if (e->view->hasFocus()) {
+            const auto selection_model = e->view->selectionModel();
+
+            if (selection_model->hasSelection()) {
+                const QList<QModelIndex> selected_indexes = selection_model->selectedIndexes();
+                const QModelIndex selected = selected_indexes[0];
+                const QString dn = e->get_dn_from_index(selected);
+
+                return dn;
+            }
+        }
     }
+    
+    return "";
 }
 
 void EntryWidget::on_action_toggle_dn(bool checked) {
     const bool dn_column_hidden = !checked;
-    column_hidden[AdModel::Column::DN] = dn_column_hidden;
+    column_hidden[dn_column] = dn_column_hidden;
 
     update_column_visibility();
 }
 
 void EntryWidget::update_column_visibility() {
     // Set column visiblity to current values in column_hidden
-    for (int column_i = AdModel::Column::Name; column_i < AdModel::Column::COUNT; column_i++) {
-        auto column = static_cast<AdModel::Column>(column_i);
-
-        view->setColumnHidden(column, column_hidden[column]);
+    for (int i = 0; i < column_hidden.size(); i++) {
+        view->setColumnHidden(i, column_hidden[i]);
     }
 }
 
 void EntryWidget::on_view_clicked(const QModelIndex &index) {
-    const QString dn = AdModel::get_dn_of_index(index);
+    const QString dn = get_dn_from_index(index);
 
     emit clicked_dn(dn);
 }

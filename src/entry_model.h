@@ -17,45 +17,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ENTRY_WIDGET_H
-#define ENTRY_WIDGET_H
+#ifndef ENTRY_MODEL_H
+#define ENTRY_MODEL_H
 
-#include <QWidget>
-#include <QList>
-#include <QSet>
+#include <QStandardItemModel>
+#include <QString>
 
-class QTreeView;
-class QLabel;
+class QMimeData;
+class QModelIndex;
 
-// Shows names of AdModel as a tree
-class EntryWidget : public QWidget {
+// Model for entries, has a required DN column and any other additional columns
+// Implements drag/drop of entries using their DN's
+class EntryModel : public QStandardItemModel {
 Q_OBJECT
 
 public:
-    EntryWidget(int column_count, int dn_column);
-    ~EntryWidget();
+    explicit EntryModel(int column_count, int dn_column_in, QObject *parent);
 
-    static QString get_selected_dn();
-
-signals:
-    void clicked_dn(const QString &dn);
-
-private slots:
-    void on_action_toggle_dn(bool checked);
-    void on_context_menu_requested(const QPoint &pos);
-    void on_view_clicked(const QModelIndex &index);
-
-protected:
-    QTreeView *view = nullptr;
-    QList<bool> column_hidden;
-    
-    void update_column_visibility();
+    QMimeData *mimeData(const QModelIndexList &indexes) const override;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
 
 private:
-    int dn_column = -1;
-    static QSet<EntryWidget *> instances;
+    const int dn_column;
 
+protected:
     QString get_dn_from_index(const QModelIndex &index) const;
+    
 };
 
-#endif /* ENTRY_WIDGET_H */
+#endif /* ENTRY_MODEL_H */

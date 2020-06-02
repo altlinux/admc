@@ -17,32 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_WIDGET_H
-#define ATTRIBUTES_WIDGET_H
+#ifndef MEMBERS_WIDGET_H
+#define MEMBERS_WIDGET_H
 
-#include <QTabWidget>
+#include "entry_widget.h"
 
-class QTreeView;
-class QString;
-class AttributesModel;
 class MembersModel;
+class QString;
 
-// Shows info about entry's attributes in multiple tabs
-class AttributesWidget final : public QTabWidget {
+// Shows name, category and description of children of entry selected in containers view
+class MembersWidget final : public EntryWidget {
 Q_OBJECT
 
 public:
-    AttributesWidget();
+    MembersWidget();
 
-public slots:
     void change_target(const QString &dn);
 
 private:
-    AttributesModel *attributes_model = nullptr;
-    QTreeView *attributes_view = nullptr;
-    
-    QTreeView *members_view = nullptr;
-    MembersModel *members_model = nullptr;
+    MembersModel *model = nullptr;
+
 };
 
-#endif /* ATTRIBUTES_WIDGET_H */
+#endif /* MEMBERS_WIDGET_H */

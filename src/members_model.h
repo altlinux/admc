@@ -20,11 +20,12 @@
 #ifndef MEMBERS_MODEL_H
 #define MEMBERS_MODEL_H
 
-#include <QStandardItemModel>
+#include "entry_model.h"
 
 class QString;
+class QModelIndex;
 
-class MembersModel final : public QStandardItemModel {
+class MembersModel final : public EntryModel {
 Q_OBJECT
 
 public:
@@ -38,14 +39,11 @@ public:
 
     void change_target(const QString &new_target_dn);
 
-    QMimeData *mimeData(const QModelIndexList &indexes) const override;
-    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
-    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
-
 private:
     QString target_dn;
 
-    static QString get_dn_of_index(const QModelIndex &index);
+protected:
+    QString get_dn_from_index(const QModelIndex &index) const;
 
 };
 

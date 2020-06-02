@@ -24,7 +24,7 @@
 
 extern QAction action_advanced_view;
 extern QAction action_toggle_dn;
-extern QAction action_attributes;
+extern QAction action_details;
 extern QAction action_delete_entry;
 extern QAction action_new_user;
 extern QAction action_new_computer;
