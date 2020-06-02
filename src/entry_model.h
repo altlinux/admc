@@ -32,16 +32,13 @@ class EntryModel : public QStandardItemModel {
 Q_OBJECT
 
 public:
+    const int dn_column;
+    
     explicit EntryModel(int column_count, int dn_column_in, QObject *parent);
 
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
-
-private:
-    const int dn_column;
-
-protected:
     QString get_dn_from_index(const QModelIndex &index) const;
     
 };

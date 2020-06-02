@@ -26,13 +26,14 @@
 
 class QTreeView;
 class QLabel;
+class EntryModel;
 
 // Shows names of AdModel as a tree
 class EntryWidget : public QWidget {
 Q_OBJECT
 
 public:
-    EntryWidget(int column_count, int dn_column);
+    EntryWidget(EntryModel *model);
     ~EntryWidget();
 
     static QString get_selected_dn();
@@ -52,10 +53,9 @@ protected:
     void update_column_visibility();
 
 private:
-    int dn_column = -1;
     static QSet<EntryWidget *> instances;
+    EntryModel *entry_model = nullptr;
 
-    QString get_dn_from_index(const QModelIndex &index) const;
 };
 
 #endif /* ENTRY_WIDGET_H */

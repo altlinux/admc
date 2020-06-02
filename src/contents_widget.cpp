@@ -27,7 +27,7 @@
 #include <QLayout>
 
 ContentsWidget::ContentsWidget(AdModel* model)
-: EntryWidget(AdModel::Column::COUNT, AdModel::Column::DN)
+: EntryWidget(model)
 {   
     proxy = new AdProxyModel(model, this);
 

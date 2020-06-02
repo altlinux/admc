@@ -36,7 +36,7 @@ DetailsWidget::DetailsWidget()
     attributes_view->setSelectionBehavior(QAbstractItemView::SelectRows);
     attributes_view->setModel(attributes_model);
 
-    members_widget = new MembersWidget();
+    members_widget = MembersWidget::make();
 
     connect(
         &ad_interface, &AdInterface::delete_entry_complete,

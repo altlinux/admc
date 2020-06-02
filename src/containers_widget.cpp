@@ -26,7 +26,7 @@
 #include <QLayout>
 
 ContainersWidget::ContainersWidget(AdModel *model)
-: EntryWidget(AdModel::Column::COUNT, AdModel::Column::DN)
+: EntryWidget(model)
 {
     proxy = new AdProxyModel(model, this);
     proxy->only_show_containers = true;

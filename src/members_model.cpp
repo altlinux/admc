@@ -33,6 +33,7 @@ void MembersModel::change_target(const QString &new_target_dn) {
 
     clear();
     setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
+    setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
 
     // Populate model with members of new root
     const QList<QString> members = get_attribute_multi(target_dn, "member");

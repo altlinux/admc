@@ -23,16 +23,23 @@
 #include <QTreeView>
 #include <QLabel>
 
-MembersWidget::MembersWidget()
-: EntryWidget(MembersModel::Column::COUNT, MembersModel::Column::DN)
-{   
-    model = new MembersModel(this);
+MembersWidget *MembersWidget::make() {
+    const auto model = new MembersModel(nullptr);
+    const auto widget = new MembersWidget(model);
+    model->setParent(widget);
 
-    view->setModel(model);
+    return widget;
+}
+
+MembersWidget::MembersWidget(MembersModel *model)
+: EntryWidget(model)
+{   
+    members_model = model;
+
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAcceptDrops(true);
-    view->setModel(model);
+    view->setModel(members_model);
 
     column_hidden[MembersModel::Column::Name] = false;
     column_hidden[MembersModel::Column::DN] = true;
@@ -40,6 +47,6 @@ MembersWidget::MembersWidget()
 }
 
 void MembersWidget::change_target(const QString &dn) {
-    model->change_target(dn);
+    members_model->change_target(dn);
     update_column_visibility();
 }

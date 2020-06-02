@@ -30,12 +30,15 @@ class MembersWidget final : public EntryWidget {
 Q_OBJECT
 
 public:
-    MembersWidget();
+    // Convenience "constructor" to avoid passing model
+    static MembersWidget *make();
 
     void change_target(const QString &dn);
 
 private:
-    MembersModel *model = nullptr;
+    MembersModel *members_model = nullptr;
+
+    MembersWidget(MembersModel *model);
 
 };
 

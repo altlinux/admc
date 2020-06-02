@@ -19,6 +19,7 @@
 
 #include "entry_widget.h"
 #include "ad_interface.h"
+#include "entry_model.h"
 #include "actions.h"
 
 #include <QApplication>
@@ -35,12 +36,12 @@
 
 QSet<EntryWidget *> EntryWidget::instances;
 
-EntryWidget::EntryWidget(int column_count, int dn_column_in)
+EntryWidget::EntryWidget(EntryModel *model)
 : QWidget()
 {    
+    entry_model = model;
+    
     instances.insert(this);
-
-    dn_column = dn_column_in;
 
     view = new QTreeView();
     view->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -51,7 +52,7 @@ EntryWidget::EntryWidget(int column_count, int dn_column_in)
     layout()->addWidget(view);
 
     // Init column visibility
-    for (int i = 0; i < column_count; i++) {
+    for (int i = 0; i < entry_model->columnCount(); i++) {
         column_hidden.push_back(false);
     }
     update_column_visibility();
@@ -92,7 +93,7 @@ void EntryWidget::on_context_menu_requested(const QPoint &pos) {
     submenu_new->addAction(&action_new_group);
     submenu_new->addAction(&action_new_ou);
 
-    const QString dn = get_dn_from_index(index);
+    const QString dn = entry_model->get_dn_from_index(index);
     const bool entry_is_policy = attribute_value_exists(dn, "objectClass", "groupPolicyContainer"); 
     if (entry_is_policy) {
         menu.addAction(&action_edit_policy);
@@ -100,13 +101,6 @@ void EntryWidget::on_context_menu_requested(const QPoint &pos) {
 
     QPoint global_pos = view->mapToGlobal(pos);
     menu.exec(global_pos, &action_details);
-}
-
-QString EntryWidget::get_dn_from_index(const QModelIndex &index) const {
-    const QModelIndex dn_index = index.siblingAtColumn(dn_column);
-    const QString dn = dn_index.data().toString();
-
-    return dn;
 }
 
 QString EntryWidget::get_selected_dn() {
@@ -117,7 +111,7 @@ QString EntryWidget::get_selected_dn() {
             if (selection_model->hasSelection()) {
                 const QList<QModelIndex> selected_indexes = selection_model->selectedIndexes();
                 const QModelIndex selected = selected_indexes[0];
-                const QString dn = e->get_dn_from_index(selected);
+                const QString dn = e->entry_model->get_dn_from_index(selected);
 
                 return dn;
             }
@@ -129,7 +123,7 @@ QString EntryWidget::get_selected_dn() {
 
 void EntryWidget::on_action_toggle_dn(bool checked) {
     const bool dn_column_hidden = !checked;
-    column_hidden[dn_column] = dn_column_hidden;
+    column_hidden[entry_model->dn_column] = dn_column_hidden;
 
     update_column_visibility();
 }
@@ -142,7 +136,7 @@ void EntryWidget::update_column_visibility() {
 }
 
 void EntryWidget::on_view_clicked(const QModelIndex &index) {
-    const QString dn = get_dn_from_index(index);
+    const QString dn = entry_model->get_dn_from_index(index);
 
     emit clicked_dn(dn);
 }
