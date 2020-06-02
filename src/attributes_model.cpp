@@ -37,10 +37,6 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
 
     bool success = set_attribute(target_dn, attribute, value_str);
 
-    // TODO: probably should add on_load_attributes_complete slot
-    // and setData in there, maybe even just reload whole model
-    // on each attribute edit to be safe
-
     if (success) {
         QStandardItemModel::setData(index, value, role);
 

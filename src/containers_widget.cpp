@@ -25,16 +25,18 @@
 #include <QLabel>
 
 ContainersWidget::ContainersWidget(AdModel *model)
-: EntryWidget(model)
+: EntryWidget(AdModel::Column::COUNT, AdModel::Column::DN)
 {
+    proxy = new AdProxyModel(model, this);
+    proxy->only_show_containers = true;
+    
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setRootIsDecorated(true);
     view->setItemsExpandable(true);
     view->setExpandsOnDoubleClick(true);
-
-    proxy->only_show_containers = true;
+    view->setModel(proxy);
 
     column_hidden[AdModel::Column::Name] = false;
     column_hidden[AdModel::Column::Category] = true;

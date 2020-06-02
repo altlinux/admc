@@ -26,8 +26,10 @@
 #include <QLabel>
 
 ContentsWidget::ContentsWidget(AdModel* model)
-: EntryWidget(model)
+: EntryWidget(AdModel::Column::COUNT, AdModel::Column::DN)
 {   
+    proxy = new AdProxyModel(model, this);
+
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setDragDropMode(QAbstractItemView::DragDrop);
@@ -35,6 +37,7 @@ ContentsWidget::ContentsWidget(AdModel* model)
     view->setRootIsDecorated(false);
     view->setItemsExpandable(false);
     view->setExpandsOnDoubleClick(false);
+    view->setModel(proxy);
 
     label->setText("Contents");
 

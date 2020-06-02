@@ -20,23 +20,18 @@
 #ifndef ENTRY_WIDGET_H
 #define ENTRY_WIDGET_H
 
-#include "ad_model.h"
-
 #include <QWidget>
-#include <QMap>
+#include <QList>
 
 class QTreeView;
-class QAction;
 class QLabel;
-class AdModel;
-class AdProxyModel;
 
 // Shows names of AdModel as a tree
 class EntryWidget : public QWidget {
 Q_OBJECT
 
 public:
-    EntryWidget(AdModel *model);
+    EntryWidget(int column_count, int dn_column);
 
     QString get_selected_dn() const;
 
@@ -50,12 +45,15 @@ private slots:
 
 protected:
     QTreeView *view = nullptr;
-    AdProxyModel *proxy = nullptr;
     QLabel *label = nullptr;
-    QMap<AdModel::Column, bool> column_hidden;
+    QList<bool> column_hidden;
     
     void update_column_visibility();
 
+private:
+    int dn_column = -1;
+
+    QString get_dn_from_index(const QModelIndex &index) const;
 };
 
 #endif /* ENTRY_WIDGET_H */
