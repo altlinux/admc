@@ -22,7 +22,7 @@ BuildRequires: doxygen
 
 Requires: openldap
 Requires: libsasl2
-Requires: qt5-base
+Requires: qt5-base-common
 
 Source0: %name-%version.tar
 
