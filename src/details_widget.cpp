@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attributes_widget.h"
+#include "details_widget.h"
 #include "attributes_model.h"
 #include "ad_interface.h"
 #include "members_widget.h"
@@ -25,7 +25,7 @@
 #include <QTreeView>
 #include <QStandardItemModel>
 
-AttributesWidget::AttributesWidget()
+DetailsWidget::DetailsWidget()
 : QTabWidget()
 {
     attributes_model = new AttributesModel(this);
@@ -40,18 +40,18 @@ AttributesWidget::AttributesWidget()
 
     connect(
         &ad_interface, &AdInterface::delete_entry_complete,
-        this, &AttributesWidget::on_delete_entry_complete);
+        this, &DetailsWidget::on_delete_entry_complete);
     connect(
         &ad_interface, &AdInterface::move_user_complete,
-        this, &AttributesWidget::on_move_user_complete);
+        this, &DetailsWidget::on_move_user_complete);
     connect(
         &ad_interface, &AdInterface::load_attributes_complete,
-        this, &AttributesWidget::on_load_attributes_complete);
+        this, &DetailsWidget::on_load_attributes_complete);
 
     change_target("");
 };
 
-void AttributesWidget::change_target(const QString &dn) {
+void DetailsWidget::change_target(const QString &dn) {
     // Save current tab/index to restore later
     QWidget *old_tab = widget(currentIndex());
 
@@ -79,21 +79,21 @@ void AttributesWidget::change_target(const QString &dn) {
     }
 }
 
-void AttributesWidget::on_delete_entry_complete(const QString &dn) {
+void DetailsWidget::on_delete_entry_complete(const QString &dn) {
     // Clear data if current target was deleted
     if (target_dn == dn) {
         change_target(QString(""));
     }
 }
 
-void AttributesWidget::on_move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn) {
+void DetailsWidget::on_move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn) {
     // Switch to the entry at new dn (entry stays the same)
     if (target_dn == user_dn) {
         change_target(new_dn);
     }
 }
 
-void AttributesWidget::on_load_attributes_complete(const QString &dn) {
+void DetailsWidget::on_load_attributes_complete(const QString &dn) {
     // Reload entry since attributes were updated
     if (target_dn == dn) {
         change_target(dn);

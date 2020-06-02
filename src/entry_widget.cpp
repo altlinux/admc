@@ -83,7 +83,7 @@ void EntryWidget::on_context_menu_requested(const QPoint &pos) {
     
     QMenu menu;
 
-    menu.addAction(&action_attributes);
+    menu.addAction(&action_details);
     menu.addAction(&action_delete_entry);
 
     QMenu *submenu_new = menu.addMenu("New");
@@ -99,7 +99,7 @@ void EntryWidget::on_context_menu_requested(const QPoint &pos) {
     }
 
     QPoint global_pos = view->mapToGlobal(pos);
-    menu.exec(global_pos, &action_attributes);
+    menu.exec(global_pos, &action_details);
 }
 
 QString EntryWidget::get_dn_from_index(const QModelIndex &index) const {

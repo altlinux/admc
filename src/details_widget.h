@@ -28,11 +28,11 @@ class AttributesModel;
 class MembersWidget;
 
 // Shows info about entry's attributes in multiple tabs
-class AttributesWidget final : public QTabWidget {
+class DetailsWidget final : public QTabWidget {
 Q_OBJECT
 
 public:
-    AttributesWidget();
+    DetailsWidget();
 
     void change_target(const QString &dn);
 

@@ -21,7 +21,7 @@
 
 QAction action_advanced_view("Advanced view");
 QAction action_toggle_dn("Show DN");
-QAction action_attributes("Attributes");
+QAction action_details("Details");
 QAction action_delete_entry("Delete");
 QAction action_new_user("New User");
 QAction action_new_computer("New Computer");
