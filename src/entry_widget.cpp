@@ -33,9 +33,13 @@
 #include <QVBoxLayout>
 #include <QMenu>
 
+QSet<EntryWidget *> EntryWidget::instances;
+
 EntryWidget::EntryWidget(int column_count, int dn_column_in)
 : QWidget()
 {    
+    instances.insert(this);
+
     dn_column = dn_column_in;
 
     view = new QTreeView();
@@ -63,6 +67,10 @@ EntryWidget::EntryWidget(int column_count, int dn_column_in)
     connect(
         view, &QAbstractItemView::clicked,
         this, &EntryWidget::on_view_clicked);
+}
+
+EntryWidget::~EntryWidget() {
+    instances.remove(this);
 }
 
 void EntryWidget::on_context_menu_requested(const QPoint &pos) {
@@ -101,20 +109,22 @@ QString EntryWidget::get_dn_from_index(const QModelIndex &index) const {
     return dn;
 }
 
-QString EntryWidget::get_selected_dn() const {
-    // Return dn of selected entry, if any is selected and view
-    // has focus
-    const auto selection_model = view->selectionModel();
+QString EntryWidget::get_selected_dn() {
+    for (auto e : instances) {
+        if (e->view->hasFocus()) {
+            const auto selection_model = e->view->selectionModel();
 
-    if (view->hasFocus() && selection_model->hasSelection()) {
-        const QList<QModelIndex> selected_indexes = selection_model->selectedIndexes();
-        const QModelIndex selected = selected_indexes[0];
-        const QString dn = get_dn_from_index(selected);
+            if (selection_model->hasSelection()) {
+                const QList<QModelIndex> selected_indexes = selection_model->selectedIndexes();
+                const QModelIndex selected = selected_indexes[0];
+                const QString dn = e->get_dn_from_index(selected);
 
-        return dn;
-    } else {
-        return "";
+                return dn;
+            }
+        }
     }
+    
+    return "";
 }
 
 void EntryWidget::on_action_toggle_dn(bool checked) {

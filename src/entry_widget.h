@@ -22,6 +22,7 @@
 
 #include <QWidget>
 #include <QList>
+#include <QSet>
 
 class QTreeView;
 class QLabel;
@@ -32,8 +33,9 @@ Q_OBJECT
 
 public:
     EntryWidget(int column_count, int dn_column);
+    ~EntryWidget();
 
-    QString get_selected_dn() const;
+    static QString get_selected_dn();
 
 signals:
     void clicked_dn(const QString &dn);
@@ -51,6 +53,7 @@ protected:
 
 private:
     int dn_column = -1;
+    static QSet<EntryWidget *> instances;
 
     QString get_dn_from_index(const QModelIndex &index) const;
 };
