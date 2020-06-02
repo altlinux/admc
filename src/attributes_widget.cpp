@@ -44,13 +44,28 @@ AttributesWidget::AttributesWidget()
     members_view->setAcceptDrops(true);
     members_view->setDragDropMode(QAbstractItemView::DragDrop);
 
+    connect(
+        &ad_interface, &AdInterface::delete_entry_complete,
+        this, &AttributesWidget::on_delete_entry_complete);
+    connect(
+        &ad_interface, &AdInterface::move_user_complete,
+        this, &AttributesWidget::on_move_user_complete);
+    connect(
+        &ad_interface, &AdInterface::load_attributes_complete,
+        this, &AttributesWidget::on_load_attributes_complete);
+
     change_target("");
 };
 
 void AttributesWidget::change_target(const QString &dn) {
-    attributes_model->change_target(dn);
+    // Save current tab/index to restore later
+    QWidget *old_tab = widget(currentIndex());
 
-    members_model->change_target(dn);
+    target_dn = dn;
+
+    attributes_model->change_target(target_dn);
+
+    members_model->change_target(target_dn);
     members_view->setColumnHidden(MembersModel::Column::DN, true);
 
     // Setup tabs
@@ -58,8 +73,36 @@ void AttributesWidget::change_target(const QString &dn) {
 
     addTab(attributes_view, "All Attributes");
 
-    bool is_group = attribute_value_exists(dn, "objectClass", "group");
+    bool is_group = attribute_value_exists(target_dn, "objectClass", "group");
     if (is_group) {
         addTab(members_view, "Group members");
+    }
+
+    // Restore current index if it is still shown
+    // Otherwise current index is set to first tab by default
+    const int old_tab_index_in_new_tabs = indexOf(old_tab);
+    if (old_tab_index_in_new_tabs != -1) {
+        setCurrentIndex(old_tab_index_in_new_tabs);
+    }
+}
+
+void AttributesWidget::on_delete_entry_complete(const QString &dn) {
+    // Clear data if current target was deleted
+    if (target_dn == dn) {
+        change_target(QString(""));
+    }
+}
+
+void AttributesWidget::on_move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn) {
+    // Switch to the entry at new dn (entry stays the same)
+    if (target_dn == user_dn) {
+        change_target(new_dn);
+    }
+}
+
+void AttributesWidget::on_load_attributes_complete(const QString &dn) {
+    // Reload entry since attributes were updated
+    if (target_dn == dn) {
+        change_target(dn);
     }
 }
