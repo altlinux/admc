@@ -19,7 +19,7 @@
 
 #include "entry_model.h"
 #include "ad_interface.h"
-#include "constants.h"
+#include "config.h"
 
 #include <QMimeData>
 

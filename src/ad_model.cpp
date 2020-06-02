@@ -18,7 +18,7 @@
  */
 
 #include "ad_model.h"
-#include "constants.h"
+#include "config.h"
 
 #include <QMimeData>
 #include <QMap>

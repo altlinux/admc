@@ -18,7 +18,7 @@
  */
 
 #include "ad_interface.h"
-#include "constants.h"
+#include "config.h"
 
 extern "C" {
 #include "active_directory.h"

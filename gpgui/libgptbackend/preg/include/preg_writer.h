@@ -1,5 +1,5 @@
 /*
- * ADMC - AD Management Center
+ * GPGUI - Group Policy Editor GUI
  *
  * Copyright (C) 2020 BaseALT Ltd.
  *
@@ -16,26 +16,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#if !defined(__GPTBACKEND_PREG_WRITER)
+#define __GPTBACKEND_PREG_WRITER 1
 
-#if !defined(__ADTOOL_CONFIG_H)
-#   define __ADTOOL_CONFIG_H 1
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <vector>
 
-#define _XOPEN_SOURCE 700
-#define _C99_SOURCE 1
+#include "preg_data.h"
 
-#if defined(__FreeBSD__)
-#   define _BSD_VISIBLE 1
-#endif
+namespace preg {
 
-#include <sys/param.h>
+class preg_writer {
+    std::ofstream preg_file;
+    char preg_magic[4]{ 'P', 'R', 'e', 'g' };
+    char preg_version[4]{ '\x01', '\x00', '\x00', '\x00' };
 
-#   define ADTOOL_VERSION "${PROJECT_VERSION}"
-#   define ADTOOL_APPLICATION_NAME "${ADTOOL_APPLICATION_NAME}"
-#   define ADTOOL_APPLICATION_DISPLAY_NAME "${ADTOOL_APPLICATION_DISPLAY_NAME}"
-#   define ADTOOL_ORGANIZATION "${ADTOOL_ORGANIZATION}"
-#   define ADTOOL_ORGANIZATION_DOMAIN "${ADTOOL_ORGANIZATION_DOMAIN}"
+public:
+    preg_writer(std::string &preg_file);
+    ~preg_writer();
 
-#   define HEAD_DN "DC=domain,DC=alt"
+    void add_entry(preg::entry &pentry);
 
-#endif /* __ADTOOL_CONFIG_H */
+    void close();
+
+private:
+    void preg_type2buf(uint16_t type);
+}; /* class preg_writer */
+
+} /* namespace preg */
+
+#endif /* namespace preg */
 

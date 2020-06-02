@@ -1,5 +1,5 @@
 /*
- * ADMC - AD Management Center
+ * GPGUI - Group Policy Editor GUI
  *
  * Copyright (C) 2020 BaseALT Ltd.
  *
@@ -16,26 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#if !defined(__GPTBACKEND_REG_H)
+#define __GPTBACKEND_REG_H 1
 
-#if !defined(__ADTOOL_CONFIG_H)
-#   define __ADTOOL_CONFIG_H 1
+#include <string>
 
-#define _XOPEN_SOURCE 700
-#define _C99_SOURCE 1
+namespace reg {
 
-#if defined(__FreeBSD__)
-#   define _BSD_VISIBLE 1
-#endif
+class reg_writer {
+public:
+    reg_writer(std::string file_path);
+};
 
-#include <sys/param.h>
+} /* namespace reg */
 
-#   define ADTOOL_VERSION "${PROJECT_VERSION}"
-#   define ADTOOL_APPLICATION_NAME "${ADTOOL_APPLICATION_NAME}"
-#   define ADTOOL_APPLICATION_DISPLAY_NAME "${ADTOOL_APPLICATION_DISPLAY_NAME}"
-#   define ADTOOL_ORGANIZATION "${ADTOOL_ORGANIZATION}"
-#   define ADTOOL_ORGANIZATION_DOMAIN "${ADTOOL_ORGANIZATION_DOMAIN}"
-
-#   define HEAD_DN "DC=domain,DC=alt"
-
-#endif /* __ADTOOL_CONFIG_H */
+#endif /* __GPTBACKEND_REG_H */
 

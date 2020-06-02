@@ -1,5 +1,5 @@
 /*
- * ADMC - AD Management Center
+ * GPGUI - Group Policy Editor GUI
  *
  * Copyright (C) 2020 BaseALT Ltd.
  *
@@ -16,26 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#if !defined(__GPGUI_REG_DWORD_DIALOG)
+#   define __GPGUI_REG_DWORD_DIALOG 1
 
-#if !defined(__ADTOOL_CONFIG_H)
-#   define __ADTOOL_CONFIG_H 1
+#include <QtWidgets>
+#include <QDialog>
 
-#define _XOPEN_SOURCE 700
-#define _C99_SOURCE 1
+namespace qgui {
 
-#if defined(__FreeBSD__)
-#   define _BSD_VISIBLE 1
-#endif
+class REG_DWORD_Dialog : public QDialog {
+    // Q_OBJECT
+public:
+    REG_DWORD_Dialog();
+}; /* class REG_DWORD_Dialog */
 
-#include <sys/param.h>
+} /* namespace qgui */
 
-#   define ADTOOL_VERSION "${PROJECT_VERSION}"
-#   define ADTOOL_APPLICATION_NAME "${ADTOOL_APPLICATION_NAME}"
-#   define ADTOOL_APPLICATION_DISPLAY_NAME "${ADTOOL_APPLICATION_DISPLAY_NAME}"
-#   define ADTOOL_ORGANIZATION "${ADTOOL_ORGANIZATION}"
-#   define ADTOOL_ORGANIZATION_DOMAIN "${ADTOOL_ORGANIZATION_DOMAIN}"
-
-#   define HEAD_DN "DC=domain,DC=alt"
-
-#endif /* __ADTOOL_CONFIG_H */
+#endif /* __GPGUI_REG_DWORD_DIALOG */
 

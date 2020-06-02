@@ -1,5 +1,5 @@
 /*
- * ADMC - AD Management Center
+ * GPGUI - Group Policy Editor GUI
  *
  * Copyright (C) 2020 BaseALT Ltd.
  *
@@ -16,26 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#if !defined(__GPTBACKEND_REGISTRY_H)
+#define __GPTBACKEND_REGISTRY_H 1
 
-#if !defined(__ADTOOL_CONFIG_H)
-#   define __ADTOOL_CONFIG_H 1
+#include <stddef.h>
+#include <stdint.h>
 
-#define _XOPEN_SOURCE 700
-#define _C99_SOURCE 1
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
-#if defined(__FreeBSD__)
-#   define _BSD_VISIBLE 1
-#endif
+const char *regtype2str(uint32_t &regtype);
+uint32_t str2regtype(const char *regtype);
 
-#include <sys/param.h>
+struct registry_entry {
+    char *keyname;
+    char *valuename;
+    uint32_t regtype;
+    char *data;
+};
 
-#   define ADTOOL_VERSION "${PROJECT_VERSION}"
-#   define ADTOOL_APPLICATION_NAME "${ADTOOL_APPLICATION_NAME}"
-#   define ADTOOL_APPLICATION_DISPLAY_NAME "${ADTOOL_APPLICATION_DISPLAY_NAME}"
-#   define ADTOOL_ORGANIZATION "${ADTOOL_ORGANIZATION}"
-#   define ADTOOL_ORGANIZATION_DOMAIN "${ADTOOL_ORGANIZATION_DOMAIN}"
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
-#   define HEAD_DN "DC=domain,DC=alt"
-
-#endif /* __ADTOOL_CONFIG_H */
-
+#endif /* __GPTBACKEND_REGISTRY_H */

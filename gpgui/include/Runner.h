@@ -1,5 +1,5 @@
 /*
- * ADMC - AD Management Center
+ * GPGUI - Group Policy Editor GUI
  *
  * Copyright (C) 2020 BaseALT Ltd.
  *
@@ -16,26 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#if !defined(__GPGUI_RUNNER_H)
+#define __GPGUI_RUNNER_H 1
 
-#if !defined(__ADTOOL_CONFIG_H)
-#   define __ADTOOL_CONFIG_H 1
+#include <QApplication>
+#include <QString>
 
-#define _XOPEN_SOURCE 700
-#define _C99_SOURCE 1
+class Runner {
+    QApplication *app;
+    int argc;
+    char **argv;
 
-#if defined(__FreeBSD__)
-#   define _BSD_VISIBLE 1
-#endif
+  public:
+    Runner(int argc, char **argv, QString dispname, QString appname,
+           QString appver, QString orgname, QString orgdomain);
+    void arg_parser();
+    int run();
+};
 
-#include <sys/param.h>
-
-#   define ADTOOL_VERSION "${PROJECT_VERSION}"
-#   define ADTOOL_APPLICATION_NAME "${ADTOOL_APPLICATION_NAME}"
-#   define ADTOOL_APPLICATION_DISPLAY_NAME "${ADTOOL_APPLICATION_DISPLAY_NAME}"
-#   define ADTOOL_ORGANIZATION "${ADTOOL_ORGANIZATION}"
-#   define ADTOOL_ORGANIZATION_DOMAIN "${ADTOOL_ORGANIZATION_DOMAIN}"
-
-#   define HEAD_DN "DC=domain,DC=alt"
-
-#endif /* __ADTOOL_CONFIG_H */
-
+#endif /* __GPGUI_RUNNER_H */

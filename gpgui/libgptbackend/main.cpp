@@ -1,5 +1,5 @@
 /*
- * ADMC - AD Management Center
+ * GPGUI - Group Policy Editor GUI
  *
  * Copyright (C) 2020 BaseALT Ltd.
  *
@@ -16,26 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "registry.h"
 
-#if !defined(__ADTOOL_CONFIG_H)
-#   define __ADTOOL_CONFIG_H 1
+#include "preg_data.h"
 
-#define _XOPEN_SOURCE 700
-#define _C99_SOURCE 1
+#include <string>
 
-#if defined(__FreeBSD__)
-#   define _BSD_VISIBLE 1
-#endif
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
-#include <sys/param.h>
+const char *regtype2str(uint32_t &regtype) {
+    return preg::regtype2str(regtype).c_str();
+}
 
-#   define ADTOOL_VERSION "${PROJECT_VERSION}"
-#   define ADTOOL_APPLICATION_NAME "${ADTOOL_APPLICATION_NAME}"
-#   define ADTOOL_APPLICATION_DISPLAY_NAME "${ADTOOL_APPLICATION_DISPLAY_NAME}"
-#   define ADTOOL_ORGANIZATION "${ADTOOL_ORGANIZATION}"
-#   define ADTOOL_ORGANIZATION_DOMAIN "${ADTOOL_ORGANIZATION_DOMAIN}"
+uint32_t str2regtype(const char *regtype) {
+    std::string reg_name(regtype);
+    return preg::str2regtype(reg_name);
+}
 
-#   define HEAD_DN "DC=domain,DC=alt"
-
-#endif /* __ADTOOL_CONFIG_H */
-
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */

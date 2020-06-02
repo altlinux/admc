@@ -1,5 +1,5 @@
 /*
- * ADMC - AD Management Center
+ * GPGUI - Group Policy Editor GUI
  *
  * Copyright (C) 2020 BaseALT Ltd.
  *
@@ -16,26 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <catch2/catch.hpp>
+#include "preg_writer.h"
 
-#if !defined(__ADTOOL_CONFIG_H)
-#   define __ADTOOL_CONFIG_H 1
+TEST_CASE("Test if PReg file may be written to disk", "[preg_writer]" /*"[!hide]"*/) {
+    preg::entry pe;
+    pe.value_name = "Software\\BaseALT\\Policies\\Control";
+    pe.key_name = "sudo";
+    pe.type = 4;
+    pe.size = 5;
+    pe.value = new char[5]{ 'T', 'e', 's', 't', '1' };
 
-#define _XOPEN_SOURCE 700
-#define _C99_SOURCE 1
+    std::string preg_path = "test.pol";
 
-#if defined(__FreeBSD__)
-#   define _BSD_VISIBLE 1
-#endif
-
-#include <sys/param.h>
-
-#   define ADTOOL_VERSION "${PROJECT_VERSION}"
-#   define ADTOOL_APPLICATION_NAME "${ADTOOL_APPLICATION_NAME}"
-#   define ADTOOL_APPLICATION_DISPLAY_NAME "${ADTOOL_APPLICATION_DISPLAY_NAME}"
-#   define ADTOOL_ORGANIZATION "${ADTOOL_ORGANIZATION}"
-#   define ADTOOL_ORGANIZATION_DOMAIN "${ADTOOL_ORGANIZATION_DOMAIN}"
-
-#   define HEAD_DN "DC=domain,DC=alt"
-
-#endif /* __ADTOOL_CONFIG_H */
+    {
+        preg::preg_writer pw(preg_path);
+        pw.add_entry(pe);
+    }
+}
 
