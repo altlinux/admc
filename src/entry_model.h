@@ -17,34 +17,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MEMBERS_MODEL_H
-#define MEMBERS_MODEL_H
+#ifndef ENTRY_MODEL_H
+#define ENTRY_MODEL_H
 
-#include "entry_model.h"
+#include <QStandardItemModel>
+#include <QString>
 
-class QString;
+class QMimeData;
 class QModelIndex;
 
-class MembersModel final : public EntryModel {
+// Model for entries, has a required DN column and any other additional columns
+// Implements drag/drop of entries using their DN's
+class EntryModel : public QStandardItemModel {
 Q_OBJECT
 
 public:
-    enum Column {
-        Name,
-        DN,
-        COUNT,
-    };
+    explicit EntryModel(int column_count, int dn_column_in, QObject *parent);
 
-    explicit MembersModel(QObject *parent);
-
-    void change_target(const QString &new_target_dn);
+    QMimeData *mimeData(const QModelIndexList &indexes) const override;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
 
 private:
-    QString target_dn;
+    const int dn_column;
 
 protected:
     QString get_dn_from_index(const QModelIndex &index) const;
-
+    
 };
 
-#endif /* MEMBERS_MODEL_H */
+#endif /* ENTRY_MODEL_H */

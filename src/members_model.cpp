@@ -19,12 +19,11 @@
 
 #include "members_model.h"
 #include "ad_interface.h"
-#include "entry_drag_drop.h"
 
 #include <QMimeData>
 
 MembersModel::MembersModel(QObject *parent)
-: QStandardItemModel(0, Column::COUNT, parent)
+: EntryModel(Column::COUNT, Column::DN, parent)
 {
     change_target(QString(""));
 }
@@ -47,55 +46,14 @@ void MembersModel::change_target(const QString &new_target_dn) {
     }
 }
 
-QString MembersModel::get_dn_of_index(const QModelIndex &index) {
-    QModelIndex dn_index = index.siblingAtColumn(Column::DN);
-    QString dn = dn_index.data().toString();
-
-    return dn;
-}
-
-QMimeData *MembersModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *data = QStandardItemModel::mimeData(indexes);
-
-    if (indexes.size() > 0) {
-        QModelIndex index = indexes[0];
-        QString dn = get_dn_of_index(index);
-
-        data->setText(dn);
-    }
-
-    return data;
-}
-
-// The invisible root item is considered to be the group(target)
-// so return group dn so drops onto invisible root function
-// as drops onto group
-QString MembersModel::get_parent_dn(const QModelIndex &parent) const {
-    if (parent == invisibleRootItem()->index()) {
-        return target_dn;        
+QString MembersModel::get_dn_from_index(const QModelIndex &index) const {
+    // NOTE: the invisible root item is considered to be 
+    // the target group
+    // This is so that drops onto invisible root work as drops
+    // onto the target group
+    if (index == invisibleRootItem()->index()) {
+        return target_dn;
     } else {
-        return get_dn_of_index(parent);
+        return EntryModel::get_dn_from_index(index);
     }
-}
-
-bool MembersModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
-    const QString dn = data->text();
-    const QString parent_dn = get_parent_dn(parent);
-
-    return can_drop_entry(dn, parent_dn);
-}
-
-bool MembersModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
-    if (row != -1 || column != -1) {
-        return true;
-    }
-
-    if (canDropMimeData(data, action, row, column, parent)) {
-        const QString dn = data->text();
-        const QString parent_dn = get_parent_dn(parent);
-
-        drop_entry(dn, parent_dn);
-    }
-
-    return true;
 }

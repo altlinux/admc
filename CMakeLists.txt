@@ -55,8 +55,8 @@ set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/actions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/status_bar.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/members_model.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_drag_drop.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/members_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_model.cpp
 )
 
 add_definitions(${QT5_DEFINITIONS})

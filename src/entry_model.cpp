@@ -17,12 +17,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "entry_model.h"
 #include "ad_interface.h"
 #include "constants.h"
 
-#include <QString>
+#include <QMimeData>
 
-bool can_drop_entry(const QString &dn, const QString &parent_dn) {    
+EntryModel::EntryModel(int column_count, int dn_column_in, QObject *parent)
+: QStandardItemModel(0, column_count, parent)
+, dn_column(dn_column_in)
+{
+
+}
+
+QString EntryModel::get_dn_from_index(const QModelIndex &index) const {
+    QModelIndex dn_index = index.siblingAtColumn(dn_column);
+    QString dn = dn_index.data().toString();
+
+    return dn;
+}
+
+QMimeData *EntryModel::mimeData(const QModelIndexList &indexes) const {
+    QMimeData *data = QStandardItemModel::mimeData(indexes);
+
+    if (indexes.size() > 0) {
+        QModelIndex index = indexes[0];
+        QString dn = get_dn_from_index(index);
+
+        data->setText(dn);
+    }
+
+    return data;
+}
+
+bool EntryModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
+    const QString dn = data->text();
+    const QString parent_dn = get_dn_from_index(parent);
+
     const bool dropped_is_user = attribute_value_exists(dn, "objectClass", "user");
 
     const bool parent_is_group = attribute_value_exists(parent_dn, "objectClass", "group");
@@ -42,7 +73,18 @@ bool can_drop_entry(const QString &dn, const QString &parent_dn) {
     }
 }
 
-void drop_entry(const QString &dn, const QString &parent_dn) {
+bool EntryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
+    if (row != -1 || column != -1) {
+        return true;
+    }
+
+    if (!canDropMimeData(data, action, row, column, parent)) {
+        return true;
+    }
+
+    const QString dn = data->text();
+    const QString parent_dn = get_dn_from_index(parent);
+
     const bool dropped_is_user = attribute_value_exists(dn, "objectClass", "user");
 
     const bool parent_is_group = attribute_value_exists(parent_dn, "objectClass", "group");
@@ -54,4 +96,6 @@ void drop_entry(const QString &dn, const QString &parent_dn) {
     } else if (dropped_is_user && parent_is_group) {
         add_user_to_group(parent_dn, dn);
     }
+
+    return true;
 }

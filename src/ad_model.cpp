@@ -19,7 +19,6 @@
 
 #include "ad_model.h"
 #include "constants.h"
-#include "entry_drag_drop.h"
 
 #include <QMimeData>
 #include <QMap>
@@ -29,7 +28,7 @@ void make_new_row(QStandardItem *parent, const QString &dn);
 void load_row(QList<QStandardItem *> row, const QString &dn);
 
 AdModel::AdModel(QObject *parent)
-: QStandardItemModel(0, Column::COUNT, parent)
+: EntryModel(Column::COUNT, Column::DN, parent)
 {
     setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
     setHorizontalHeaderItem(Column::Category, new QStandardItem("Category"));
@@ -70,7 +69,7 @@ void AdModel::fetchMore(const QModelIndex &parent) {
         return;
     }
 
-    QString dn = get_dn_of_index(parent);
+    QString dn = get_dn_from_index(parent);
 
     QStandardItem *parent_item = itemFromIndex(parent);
 
@@ -93,46 +92,6 @@ bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
     } else {
         return QStandardItemModel::hasChildren(parent);
     }
-}
-
-QMimeData *AdModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *data = QStandardItemModel::mimeData(indexes);
-
-    if (indexes.size() > 0) {
-        QModelIndex index = indexes[0];
-        QString dn = get_dn_of_index(index);
-
-        data->setText(dn);
-    }
-
-    return data;
-}
-
-bool AdModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
-    const QString dn = data->text();
-    const QString parent_dn = get_dn_of_index(parent);
-
-    return can_drop_entry(dn, parent_dn);
-}
-
-bool AdModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
-    // Row/column are not -1 if dropping between nodes
-    // This is for dropping within a list at specific
-    // position which is useless for us since ldap
-    // does the ordering
-    // NOTE: don't filter this out in canDropMimeData so that there's no noise of crosses as you drag entry over a list
-    if (row != -1 || column != -1) {
-        return true;
-    }
-
-    if (canDropMimeData(data, action, row, column, parent)) {
-        QString dn = data->text();
-        QString parent_dn = get_dn_of_index(parent);
-
-        drop_entry(dn, parent_dn);
-    }
-
-    return true;
 }
 
 void AdModel::on_delete_entry_complete(const QString &dn) {
@@ -220,13 +179,6 @@ void AdModel::on_load_attributes_complete(const QString &dn) {
     }
 
     load_row(row, dn);
-}
-
-QString AdModel::get_dn_of_index(const QModelIndex &index) {
-    QModelIndex dn_index = index.siblingAtColumn(Column::DN);
-    QString dn = dn_index.data().toString();
-
-    return dn;
 }
 
 // Load data into row of items based on entry attributes
