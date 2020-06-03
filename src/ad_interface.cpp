@@ -20,9 +20,7 @@
 #include "ad_interface.h"
 #include "config.h"
 
-extern "C" {
 #include "active_directory.h"
-}
 
 #include <QSet>
 
@@ -260,7 +258,7 @@ bool ad_interface_login() {
         return true;
     }
 
-    LDAP* ldap_connection = ad_login();
+    LDAP* ldap_connection = ad_login(HEAD_DN);
     if (ldap_connection == NULL) {
         printf("ad_login error: %s\n", ad_get_error());
         return false;
@@ -285,7 +283,7 @@ QList<QString> load_children(const QString &dn) {
 
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
-    char **children_raw = ad_list(dn_cstr);
+    char **children_raw = ad_list(dn_cstr, HEAD_DN);
 
     if (children_raw != NULL) {
         auto children = QList<QString>();
@@ -318,7 +316,7 @@ void load_attributes(const QString &dn) {
 
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
-    char** attributes_raw = ad_get_attribute(dn_cstr, "*");
+    char** attributes_raw = ad_get_attribute(dn_cstr, "*", HEAD_DN);
 
     if (attributes_raw != NULL) {
         attributes_map[dn] = QMap<QString, QList<QString>>();
@@ -431,7 +429,7 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
         const QByteArray value_array = value.toLatin1();
         const char *value_cstr = value_array.constData();
 
-        result = ad_mod_replace(dn_cstr, attribute_cstr, value_cstr);
+        result = ad_mod_replace(dn_cstr, attribute_cstr, value_cstr, HEAD_DN);
     }
 
     if (result == AD_SUCCESS) {
@@ -483,19 +481,19 @@ bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
 
         switch (type) {
             case User: {
-                result = ad_create_user(name_cstr, dn_cstr);
+                result = ad_create_user(name_cstr, dn_cstr, HEAD_DN);
                 break;
             }
             case Computer: {
-                result = ad_create_computer(name_cstr, dn_cstr);
+                result = ad_create_computer(name_cstr, dn_cstr, HEAD_DN);
                 break;
             }
             case OU: {
-                result = ad_ou_create(name_cstr, dn_cstr);
+                result = ad_ou_create(name_cstr, dn_cstr, HEAD_DN);
                 break;
             }
             case Group: {
-                result = ad_group_create(name_cstr, dn_cstr);
+                result = ad_group_create(name_cstr, dn_cstr, HEAD_DN);
                 break;
             }
             case COUNT: break;
@@ -536,7 +534,7 @@ void delete_entry(const QString &dn) {
         const QByteArray dn_array = dn.toLatin1();
         const char *dn_cstr = dn_array.constData();
 
-        result = ad_object_delete(dn_cstr);
+        result = ad_object_delete(dn_cstr, HEAD_DN);
     }
 
     if (result == AD_SUCCESS) {
@@ -568,7 +566,7 @@ void move_user(const QString &user_dn, const QString &container_dn) {
         const QByteArray container_dn_array = container_dn.toLatin1();
         const char *container_dn_cstr = container_dn_array.constData();
 
-        result = ad_move_user(user_dn_cstr, container_dn_cstr);
+        result = ad_move_user(user_dn_cstr, container_dn_cstr, HEAD_DN);
     }
 
     if (result == AD_SUCCESS) {
@@ -600,7 +598,7 @@ void add_user_to_group(const QString &group_dn, const QString &user_dn) {
         const QByteArray user_dn_array = user_dn.toLatin1();
         const char *user_dn_cstr = user_dn_array.constData();
 
-        result = ad_group_add_user(group_dn_cstr, user_dn_cstr);
+        result = ad_group_add_user(group_dn_cstr, user_dn_cstr, HEAD_DN);
     }
 
     if (result == AD_SUCCESS) {
