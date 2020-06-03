@@ -24,6 +24,8 @@
 
 #include <string>
 
+namespace adldap {
+
 class AdConnection {
     std::string uri;
     std::string search_base;
@@ -35,6 +37,8 @@ public:
     bool is_connected();
     char* get_errstr();
 };
+
+} /* namespace adldap */
 
 #endif /* __ADLDAP_AD_CONNECTION_H */
 

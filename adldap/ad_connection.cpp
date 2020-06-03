@@ -20,6 +20,8 @@
 //#include "config.h"
 #include "ad_connection.h"
 
+namespace adldap {
+
 AdConnection::AdConnection() {
 }
 
@@ -39,4 +41,6 @@ bool AdConnection::is_connected() {
 char* AdConnection::get_errstr() {
     return ad_get_error();
 }
+
+} /* namespace adldap */
 
