@@ -56,8 +56,6 @@ QString extract_parent_dn_from_dn(const QString &dn) {
 
 AdInterface ad_interface;
 
-bool FAKE_AD = false; 
-
 QMap<QString, QList<QString>> fake_children;
 QMap<QString, QMap<QString, QList<QString>>> fake_attributes_map;
 QSet<QString> fake_attributes_loaded;
@@ -253,11 +251,6 @@ QMap<QString, QMap<QString, QList<QString>>> attributes_map;
 QSet<QString> attributes_loaded;
 
 bool ad_interface_login() {
-    if (FAKE_AD) {
-        fake_ad_init();
-        return true;
-    }
-
     LDAP* ldap_connection = ad_login(HEAD_DN);
     if (ldap_connection == NULL) {
         printf("ad_login error: %s\n", ad_get_error());
@@ -277,10 +270,6 @@ const char *qstring_to_cstr(const QString &qstr) {
 }
 
 QList<QString> load_children(const QString &dn) {
-    if (FAKE_AD) {
-        return fake_load_children(dn);
-    }
-
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
     char **children_raw = ad_list(dn_cstr, HEAD_DN);
@@ -308,12 +297,6 @@ QList<QString> load_children(const QString &dn) {
 }
 
 void load_attributes(const QString &dn) {
-    if (FAKE_AD) {
-        fake_attributes_loaded.insert(dn);
-        
-        return;
-    }
-
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
     char** attributes_raw = ad_get_attribute(dn_cstr, "*", HEAD_DN);
@@ -356,17 +339,6 @@ QMap<QString, QList<QString>> get_attributes(const QString &dn) {
     // First check whether load_attributes was ever called on this dn
     // If it hasn't, attempt to load attributes
     // After that return whatever attributes are now loaded for this dn
-    if (FAKE_AD) {
-        if (!fake_attributes_loaded.contains(dn)) {
-            load_attributes(dn);
-        }
-
-        if (!fake_attributes_map.contains(dn)) {
-            return QMap<QString, QList<QString>>();
-        } else {
-            return fake_attributes_map[dn];
-        }
-    } else {
         if (!attributes_loaded.contains(dn)) {
             load_attributes(dn);
         }
@@ -376,7 +348,6 @@ QMap<QString, QList<QString>> get_attributes(const QString &dn) {
         } else {
             return attributes_map[dn];
         }
-    }
 }
 
 QList<QString> get_attribute_multi(const QString &dn, const QString &attribute) {
@@ -415,11 +386,6 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
 
     const QString old_value = get_attribute(dn, attribute);
     
-    if (FAKE_AD) {
-        fake_attributes_map[dn][attribute] = {value};
-        
-        result = AD_SUCCESS;
-    } else {
         const QByteArray dn_array = dn.toLatin1();
         const char *dn_cstr = dn_array.constData();
 
@@ -430,7 +396,6 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
         const char *value_cstr = value_array.constData();
 
         result = ad_mod_replace(dn_cstr, attribute_cstr, value_cstr, HEAD_DN);
-    }
 
     if (result == AD_SUCCESS) {
         // Reload attributes to get new value
@@ -450,29 +415,6 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
 bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
     int result = AD_INVALID_DN;
     
-    if (FAKE_AD) {
-        switch (type) {
-            case User: {
-                fake_create_user(name, dn);
-                break;
-            }
-            case Computer: {
-                fake_create_computer(name, dn);
-                break;
-            }
-            case OU: {
-                fake_create_ou(name, dn);
-                break;
-            }
-            case Group: {
-                fake_create_group(name, dn);
-                break;
-            }
-            case COUNT: break;
-        }
-
-        result = AD_SUCCESS;
-    } else {
         const QByteArray name_array = name.toLatin1();
         const char *name_cstr = name_array.constData();
 
@@ -498,7 +440,6 @@ bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
             }
             case COUNT: break;
         }
-    }
 
     if (result == AD_SUCCESS) {
         emit ad_interface.create_entry_complete(dn, type);
@@ -526,16 +467,10 @@ void reload_attributes_of_entry_groups(const QString &dn) {
 void delete_entry(const QString &dn) {
     int result = AD_INVALID_DN;
 
-    if (FAKE_AD) {
-        fake_object_delete(dn);
-
-        result = AD_SUCCESS;
-    } else {
         const QByteArray dn_array = dn.toLatin1();
         const char *dn_cstr = dn_array.constData();
 
         result = ad_object_delete(dn_cstr, HEAD_DN);
-    }
 
     if (result == AD_SUCCESS) {
         reload_attributes_of_entry_groups(dn);
@@ -555,11 +490,6 @@ void move_user(const QString &user_dn, const QString &container_dn) {
     QString user_name = extract_name_from_dn(user_dn);
     QString new_dn = "CN=" + user_name + "," + container_dn;
 
-    if (FAKE_AD) {
-        fake_move_user(user_dn, container_dn);
-
-        result = AD_SUCCESS;
-    } else {
         const QByteArray user_dn_array = user_dn.toLatin1();
         const char *user_dn_cstr = user_dn_array.constData();
 
@@ -567,7 +497,6 @@ void move_user(const QString &user_dn, const QString &container_dn) {
         const char *container_dn_cstr = container_dn_array.constData();
 
         result = ad_move_user(user_dn_cstr, container_dn_cstr, HEAD_DN);
-    }
 
     if (result == AD_SUCCESS) {
         // Unload attributes at old dn
@@ -587,11 +516,6 @@ void add_user_to_group(const QString &group_dn, const QString &user_dn) {
     // TODO: currently getting object class violation error
     int result = AD_INVALID_DN;
 
-    if (FAKE_AD) {
-        // TODO:
-
-        result = AD_SUCCESS;
-    } else {
         const QByteArray group_dn_array = group_dn.toLatin1();
         const char *group_dn_cstr = group_dn_array.constData();
 
@@ -599,7 +523,6 @@ void add_user_to_group(const QString &group_dn, const QString &user_dn) {
         const char *user_dn_cstr = user_dn_array.constData();
 
         result = ad_group_add_user(group_dn_cstr, user_dn_cstr, HEAD_DN);
-    }
 
     if (result == AD_SUCCESS) {
         // Reload attributes of group and user because group
