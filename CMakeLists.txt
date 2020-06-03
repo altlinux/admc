@@ -45,6 +45,7 @@ set(ADTOOL_HEADER_DIRS
 
 set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Application.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Runner.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_proxy_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_interface.cpp
@@ -78,7 +79,7 @@ doxygen_add_docs(adtool_doc
 target_link_libraries(adtool
     Qt5::Core
     Qt5::Widgets
-    adldap_c
+    adldap_cpp
 )
 target_include_directories(adtool
     PUBLIC

@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Application.h"
 #include "main_window.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
@@ -27,7 +28,6 @@
 #include "actions.h"
 #include "status_bar.h"
 
-#include <QApplication>
 #include <QString>
 #include <QMainWindow>
 #include <QMenu>
