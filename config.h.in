@@ -36,6 +36,7 @@
 #   define ADTOOL_ORGANIZATION_DOMAIN "${ADTOOL_ORGANIZATION_DOMAIN}"
 
 #   define HEAD_DN "DC=domain,DC=alt"
+#   define SEARCH_BASE "ldap://dc0.domain.alt"
 
 #endif /* __ADTOOL_CONFIG_H */
 

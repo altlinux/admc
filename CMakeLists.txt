@@ -24,7 +24,6 @@ set(CMAKE_MODULE_PATH
 )
 
 find_package(Qt5 COMPONENTS Core Widgets REQUIRED) # GUI
-find_package(OpenLDAP)
 find_package(Doxygen) # Code documentation
 
 # Definitions for configuration file
@@ -35,16 +34,17 @@ set(ADTOOL_ORGANIZATION_DOMAIN "basealt.ru")
 
 configure_file("config.h.in" "config.h")
 
+add_subdirectory(adldap)
 add_subdirectory(gpgui)
 
 set(ADTOOL_HEADER_DIRS
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/adldap/include
 )
 
 set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/active_directory.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_proxy_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_interface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_model.cpp
@@ -77,7 +77,7 @@ doxygen_add_docs(adtool_doc
 target_link_libraries(adtool
     Qt5::Core
     Qt5::Widgets
-    ${OPENLDAP_LIBRARIES}
+    adldap_c
 )
 target_include_directories(adtool
     PUBLIC

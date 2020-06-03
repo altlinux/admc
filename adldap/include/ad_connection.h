@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined(__ADMC_AD_CONNECTION_H)
-#define __ADMC_AD_CONNECTION_H 1
+#if !defined(__ADLDAP_AD_CONNECTION_H)
+#define __ADLDAP_AD_CONNECTION_H 1
 
 #include "active_directory.h"
 
@@ -36,5 +36,5 @@ public:
     char* get_errstr();
 };
 
-#endif /* __ADMC_AD_CONNECTION_H */
+#endif /* __ADLDAP_AD_CONNECTION_H */
 
