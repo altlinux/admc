@@ -27,6 +27,7 @@
 #include "actions.h"
 #include "status_bar.h"
 
+#include <QApplication>
 #include <QString>
 #include <QMainWindow>
 #include <QMenu>
@@ -39,7 +40,8 @@
 
 MainWindow::MainWindow()
 : QMainWindow()
-{  
+{
+    ad_interface_login();
     //
     // Setup widgets
     //

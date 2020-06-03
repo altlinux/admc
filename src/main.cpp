@@ -17,27 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "main_window.h"
-#include "ad_interface.h"
+#include "config.h"
+#include "Runner.h"
 
-#include <QApplication>
+#include <memory>
 
 int main(int argc, char **argv) {
-    // Load fake AD data if given "fake" argument
-    // This also swaps all ad interface functions to their fake versions (including login)
-    if (argc >= 1 && QString(argv[1]) == "fake") {
-        FAKE_AD = true;
-    }
+    std::unique_ptr<Runner> app(new Runner(argc,
+        argv,
+        ADTOOL_APPLICATION_DISPLAY_NAME,
+        ADTOOL_APPLICATION_NAME,
+        ADTOOL_VERSION,
+        ADTOOL_ORGANIZATION,
+        ADTOOL_ORGANIZATION_DOMAIN));
 
-    if (!ad_interface_login()) {
-        return 1;
-    }
-
-    QApplication app(argc, argv);
-    MainWindow main_window;
-    main_window.show();
-
-    const int retval = app.exec();
-
-    return retval;
+    return app->run();
 }
