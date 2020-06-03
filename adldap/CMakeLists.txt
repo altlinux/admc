@@ -40,3 +40,6 @@ add_library(adldap_cpp SHARED ${ADLDAP_CPP_SOURCES})
 target_include_directories(adldap_cpp PUBLIC ${ADLDAP_HEADER_DIRS})
 target_link_libraries(adldap_cpp ${OPENLDAP_LIBRARIES})
 
+install(TARGETS adldap_c)
+install(TARGETS adldap_cpp)
+
