@@ -4,3 +4,4 @@ Makefile
 adtool
 .qmake.stash
 *.pro.user
+build
