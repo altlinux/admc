@@ -27,9 +27,9 @@ namespace adldap {
 AdConnection::AdConnection() {
 }
 
-void AdConnection::connect(std::string uri, std::string search_base) {
-    this->uri = uri;
-    this->search_base = search_base;
+void AdConnection::connect(std::string uri_, std::string search_base_) {
+    this->uri = uri_;
+    this->search_base = search_base_;
     this->ldap_connection = ad_login(this->uri.c_str());
 }
 

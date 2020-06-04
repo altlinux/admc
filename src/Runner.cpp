@@ -25,11 +25,11 @@
 
 #include "main_window.h"
 
-Runner::Runner(int& argc, char **argv, QString dispname, QString appname, QString appver, QString orgname, QString orgdomain) {
+Runner::Runner(int& argc_, char **argv_, QString dispname, QString appname, QString appver, QString orgname, QString orgdomain) {
     //Q_INIT_RESOURCE(adtool);
 
-    this->argc = argc;
-    this->argv = argv;
+    this->argc = argc_;
+    this->argv = argv_;
 
     this->app = ADMC::create(this->argc, this->argv);
     this->app->setApplicationDisplayName(dispname);
