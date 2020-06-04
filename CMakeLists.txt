@@ -16,7 +16,9 @@ set(CMAKE_AUTORCC ON)
 # Suppress warnings on FindDoxygen.cmake
 cmake_policy(SET CMP0054 NEW)
 
-set(Iconv_IS_BUILT_IN FALSE)
+if(SYSTEM_NAME STREQUAL "FreeBSD")
+    set(Iconv_IS_BUILT_IN FALSE)
+endif()
 
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
