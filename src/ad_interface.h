@@ -52,6 +52,9 @@ public:
 public slots:
 
 signals:
+    void ad_interface_login_complete(const QString &base, const QString &head);
+    void ad_interface_login_failed(const QString &base, const QString &head);
+
     void load_children_failed(const QString &dn, const QString &error_str);
     void load_attributes_complete(const QString &dn);
     void load_attributes_failed(const QString &dn, const QString &error_str);
@@ -74,7 +77,7 @@ private:
 
 extern AdInterface ad_interface;
 
-bool ad_interface_login();
+void ad_interface_login(const QString &base, const QString &head);
 
 QList<QString> load_children(const QString &dn);
 QMap<QString, QList<QString>> get_attributes(const QString &dn);

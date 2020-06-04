@@ -37,10 +37,11 @@ public:
     void change_target(const QString &dn);
 
 private slots:
+    void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
     void on_delete_entry_complete(const QString &dn); 
     void on_move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn); 
     void on_load_attributes_complete(const QString &dn);
-
+    
 private:
     AttributesModel *attributes_model = nullptr;
     QTreeView *attributes_view = nullptr;

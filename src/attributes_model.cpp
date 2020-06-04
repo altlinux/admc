@@ -24,7 +24,10 @@
 AttributesModel::AttributesModel(QObject *parent)
 : QStandardItemModel(0, Column::COUNT, parent)
 {
-    change_target(QString(""));
+    setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
+    setHorizontalHeaderItem(Column::Value, new QStandardItem("Value"));
+    
+    change_target("");
 }
 
 // This will be called when an attribute value is edited
@@ -49,12 +52,11 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
 void AttributesModel::change_target(const QString &new_target_dn) {
     target_dn = new_target_dn;
 
-    // Clear old data
-    clear();
-    
-    // NOTE: need to reset headers after clearing
-    setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
-    setHorizontalHeaderItem(Column::Value, new QStandardItem("Value"));
+    removeRows(0, rowCount());
+
+    if (target_dn == "") {
+        return;
+    }
 
     // Populate model with attributes of new root
     QMap<QString, QList<QString>> attributes = get_attributes(target_dn);

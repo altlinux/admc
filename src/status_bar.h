@@ -35,6 +35,9 @@ public:
     explicit StatusBar();
 
 private slots:
+    void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
+    void on_ad_interface_login_failed(const QString &search_base, const QString &head_dn);
+
     void on_load_children_failed(const QString &dn, const QString &error_str);
     void on_load_attributes_failed(const QString &dn, const QString &error_str);
 

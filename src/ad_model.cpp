@@ -18,7 +18,6 @@
  */
 
 #include "ad_model.h"
-#include "config.h"
 
 #include <QMimeData>
 #include <QMap>
@@ -34,7 +33,10 @@ AdModel::AdModel(QObject *parent)
     setHorizontalHeaderItem(Column::Category, new QStandardItem("Category"));
     setHorizontalHeaderItem(Column::Description, new QStandardItem("Description"));
     setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
-
+    
+    connect(
+        &ad_interface, &AdInterface::ad_interface_login_complete,
+        this, &AdModel::on_ad_interface_login_complete);
     connect(
         &ad_interface, &AdInterface::delete_entry_complete,
         this, &AdModel::on_delete_entry_complete);
@@ -47,11 +49,6 @@ AdModel::AdModel(QObject *parent)
     connect(
         &ad_interface, &AdInterface::load_attributes_complete,
         this, &AdModel::on_load_attributes_complete);
-
-    // Load head
-    QStandardItem *invis_root = invisibleRootItem();
-    auto head_dn = QString(HEAD_DN);
-    make_new_row(invis_root, head_dn);
 }
 
 bool AdModel::canFetchMore(const QModelIndex &parent) const {
@@ -92,6 +89,14 @@ bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
     } else {
         return QStandardItemModel::hasChildren(parent);
     }
+}
+
+void AdModel::on_ad_interface_login_complete(const QString &search_base, const QString &head_dn) {
+    removeRows(0, rowCount());
+
+    // Load head
+    QStandardItem *invis_root = invisibleRootItem();
+    make_new_row(invis_root, head_dn);
 }
 
 void AdModel::on_delete_entry_complete(const QString &dn) {

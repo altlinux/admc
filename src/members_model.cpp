@@ -25,15 +25,18 @@
 MembersModel::MembersModel(QObject *parent)
 : EntryModel(Column::COUNT, Column::DN, parent)
 {
-    change_target(QString(""));
+    setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
+    setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
 }
 
 void MembersModel::change_target(const QString &new_target_dn) {
     target_dn = new_target_dn;
 
-    clear();
-    setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
-    setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
+    removeRows(0, rowCount());
+
+    if (target_dn == "") {
+        return;
+    }
 
     // Populate model with members of new root
     const QList<QString> members = get_attribute_multi(target_dn, "member");

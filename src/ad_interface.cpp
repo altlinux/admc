@@ -66,11 +66,16 @@ AdInterface ad_interface;
 QMap<QString, QMap<QString, QList<QString>>> attributes_map;
 QSet<QString> attributes_loaded;
 
-bool ad_interface_login() {
+void ad_interface_login(const QString &base, const QString &head) {
     ADMC* app = ADMC::get_instance();
     adldap::AdConnection* conn = app->get_connection();
-    conn->connect(SEARCH_BASE, HEAD_DN);
-    return conn->is_connected();
+    conn->connect(base.toStdString(), head.toStdString());
+
+    if (conn->is_connected()) {
+        emit ad_interface.ad_interface_login_complete(base, head);
+    } else {
+        emit ad_interface.ad_interface_login_failed(base, head);
+    }
 }
 
 QString get_error_str() {

@@ -25,7 +25,13 @@ StatusBar::StatusBar()
 {
     showMessage(tr("Ready"), 10 * 1000);
 
-    // Connect signals
+    connect(
+        &ad_interface, &AdInterface::ad_interface_login_complete,
+        this, &StatusBar::on_ad_interface_login_complete);
+    connect(
+        &ad_interface, &AdInterface::ad_interface_login_failed,
+        this, &StatusBar::on_ad_interface_login_failed);
+
     connect(
         &ad_interface, &AdInterface::load_children_failed,
         this, &StatusBar::on_load_children_failed);
@@ -64,6 +70,18 @@ StatusBar::StatusBar()
     connect(
         &ad_interface, &AdInterface::add_user_to_group_failed,
         this, &StatusBar::on_add_user_to_group_failed);
+}
+
+void StatusBar::on_ad_interface_login_complete(const QString &search_base, const QString &head_dn) {
+    QString msg = QString("Logged in to \"%1\" with head dn at \"%2\"").arg(search_base, head_dn);
+
+    showMessage(msg);
+}
+
+void StatusBar::on_ad_interface_login_failed(const QString &search_base, const QString &head_dn) {
+    QString msg = QString("Failed to login to \"%1\" with head dn at \"%2\"").arg(search_base, head_dn);
+
+    showMessage(msg);
 }
 
 void StatusBar::on_load_children_failed(const QString &dn, const QString &error_str) {

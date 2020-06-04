@@ -66,9 +66,11 @@ void DetailsWidget::change_target(const QString &dn) {
 
     addTab(attributes_view, "All Attributes");
 
-    bool is_group = attribute_value_exists(target_dn, "objectClass", "group");
-    if (is_group) {
-        addTab(members_widget, "Group members");
+    if (dn != "") {
+        bool is_group = attribute_value_exists(target_dn, "objectClass", "group");
+        if (is_group) {
+            addTab(members_widget, "Group members");
+        }
     }
 
     // Restore current index if it is still shown
@@ -79,10 +81,15 @@ void DetailsWidget::change_target(const QString &dn) {
     }
 }
 
+void DetailsWidget::on_ad_interface_login_complete(const QString &search_base, const QString &head_dn) {
+    // Clear data on new login
+    change_target("");
+}
+
 void DetailsWidget::on_delete_entry_complete(const QString &dn) {
     // Clear data if current target was deleted
     if (target_dn == dn) {
-        change_target(QString(""));
+        change_target("");
     }
 }
 

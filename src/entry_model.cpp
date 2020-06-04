@@ -19,7 +19,6 @@
 
 #include "entry_model.h"
 #include "ad_interface.h"
-#include "config.h"
 
 #include <QMimeData>
 
@@ -63,8 +62,6 @@ bool EntryModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int
     // TODO: support dropping non-users
     // TODO: support dropping policies
     if (parent_dn == "") {
-        return false;
-    } else if (parent_dn == HEAD_DN) {
         return false;
     } else if (dropped_is_user && (parent_is_group || parent_is_ou || parent_is_container)) {
         return true;

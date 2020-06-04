@@ -54,14 +54,6 @@ QAction *MainWindow::action_edit_policy = new QAction("Edit policy");
 MainWindow::MainWindow()
 : QMainWindow()
 {
-    /*ADMC* app = qobject_cast<ADMC*>(qApp);
-    adldap::AdConnection* conn = app->get_connection();
-    conn->connect(HEAD_DN, SEARCH_BASE);*/
-    ad_interface_login();
-    //
-    // Setup widgets
-    //
-
     // TODO: setting width to 1600+ fullscreens the window, no idea why
     resize(1500, 1000);
     setWindowTitle("MainWindow");
@@ -153,6 +145,8 @@ MainWindow::MainWindow()
     connect(
         contents_widget, &EntryWidget::clicked_dn,
         this, &MainWindow::on_contents_clicked_dn);
+
+    ad_interface_login(SEARCH_BASE, HEAD_DN);
 }
 
 void MainWindow::on_action_details() {
