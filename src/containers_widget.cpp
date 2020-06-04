@@ -33,7 +33,6 @@ ContainersWidget::ContainersWidget(AdModel *model)
 
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setRootIsDecorated(true);
     view->setItemsExpandable(true);
     view->setExpandsOnDoubleClick(true);

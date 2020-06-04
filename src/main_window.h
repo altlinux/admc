@@ -59,10 +59,12 @@ private slots:
     void on_action_edit_policy();
     void on_action_login();
     void on_action_exit();
+    void on_ad_interface_login_complete(const QString &base, const QString &head);
 
 private:
     QString get_selected_dn() const;
     void on_action_new_entry_generic(NewEntryType type);
+    void set_enabled_for_ad_actions(bool enabled);
 
     AdModel *ad_model = nullptr;
     ContainersWidget *containers_widget = nullptr;

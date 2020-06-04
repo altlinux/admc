@@ -46,6 +46,7 @@ EntryWidget::EntryWidget(EntryModel *model)
 
     view = new QTreeView();
     view->setContextMenuPolicy(Qt::CustomContextMenu);
+    view->setDragDropMode(QAbstractItemView::DragDrop);
 
     setLayout(new QVBoxLayout());
     layout()->setContentsMargins(0, 0, 0, 0);

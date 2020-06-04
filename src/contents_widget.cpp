@@ -33,7 +33,6 @@ ContentsWidget::ContentsWidget(AdModel* model)
 
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setSelectionMode(QAbstractItemView::SingleSelection);
     view->setRootIsDecorated(false);
     view->setItemsExpandable(false);

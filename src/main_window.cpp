@@ -139,6 +139,9 @@ MainWindow::MainWindow(const bool auto_login)
     connect(
         action_edit_policy, &QAction::triggered,
         this, &MainWindow::on_action_edit_policy);
+    connect(
+        &ad_interface, &AdInterface::ad_interface_login_complete,
+        this, &MainWindow::on_ad_interface_login_complete);
 
     // Set root index of contents view to selection of containers view
     connect(
@@ -160,13 +163,36 @@ MainWindow::MainWindow(const bool auto_login)
         action_exit, &QAction::triggered,
         this, &MainWindow::on_action_exit);
 
+    // Disable actions until login complete
+    set_enabled_for_ad_actions(false);
+
     if (auto_login) {
         on_action_login();
     }
 }
 
+void MainWindow::set_enabled_for_ad_actions(bool enabled) {
+    QList<QAction *> ad_actions = {
+        action_advanced_view,
+        action_details,
+        action_delete_entry,
+        action_new_user,
+        action_new_computer,
+        action_new_group,
+        action_new_ou,
+        action_edit_policy,
+    };
+    for (auto a : ad_actions) {
+        a->setEnabled(enabled);
+    }
+}
+
 void MainWindow::on_action_login() {
     ad_interface_login(SEARCH_BASE, HEAD_DN);
+}
+
+void MainWindow::on_ad_interface_login_complete(const QString &base, const QString &head) {
+    set_enabled_for_ad_actions(true);
 }
 
 void MainWindow::on_action_exit() {

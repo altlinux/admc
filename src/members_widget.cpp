@@ -37,7 +37,6 @@ MembersWidget::MembersWidget(MembersModel *model)
     members_model = model;
 
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAcceptDrops(true);
     view->setModel(members_model);
 
