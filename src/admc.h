@@ -17,16 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
+#if !defined(__ADMC_APPLICATION_H)
+#define __ADMC_APPLICATION_H 1
 
-#include "Application.h"
+#include "ad_connection.h"
 
-ADMC::ADMC(int& argc, char** argv) : QApplication(argc, argv) {
-    this->connection = new adldap::AdConnection();
-}
+#include <QApplication>
 
-adldap::AdConnection*
-ADMC::get_connection() {
-    return this->connection;
-}
+class ADMC final: public QApplication {
+Q_OBJECT
+
+public:
+    static ADMC* create(int& argc, char** argv);
+    static ADMC* get_instance();
+
+    adldap::AdConnection* get_connection();
+
+private:
+    static ADMC* instance;
+    
+    ADMC(int& argc, char** argv);
+
+    adldap::AdConnection* connection;
+};
+
+#endif /* __ADMC_APPLICATION_H */
 

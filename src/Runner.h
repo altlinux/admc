@@ -21,7 +21,7 @@
 #define __ADMC_RUNNER_H 1
 
 #include "ad_connection.h"
-#include "Application.h"
+#include "admc.h"
 
 #include <QString>
 

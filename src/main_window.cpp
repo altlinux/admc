@@ -20,7 +20,7 @@
 #include "ad_connection.h"
 #include "config.h"
 
-#include "Application.h"
+#include "admc.h"
 #include "main_window.h"
 #include "containers_widget.h"
 #include "contents_widget.h"

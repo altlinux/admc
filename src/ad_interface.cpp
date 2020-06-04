@@ -21,7 +21,7 @@
 #include "config.h"
 
 #include "active_directory.h"
-#include "Application.h"
+#include "admc.h"
 #include "ad_connection.h"
 
 #include <QSet>
@@ -67,14 +67,14 @@ QMap<QString, QMap<QString, QList<QString>>> attributes_map;
 QSet<QString> attributes_loaded;
 
 bool ad_interface_login() {
-    ADMC* app = qobject_cast<ADMC*>(qApp);
+    ADMC* app = ADMC::get_instance();
     adldap::AdConnection* conn = app->get_connection();
     conn->connect(SEARCH_BASE, HEAD_DN);
     return conn->is_connected();
 }
 
 QString get_error_str() {
-    ADMC* app = qobject_cast<ADMC*>(qApp);
+    ADMC* app = ADMC::get_instance();
     adldap::AdConnection* conn = app->get_connection();
     return QString(conn->get_errstr());
 }
@@ -198,7 +198,7 @@ bool attribute_value_exists(const QString &dn, const QString &attribute, const Q
 
 bool set_attribute(const QString &dn, const QString &attribute, const QString &value) {
     int result = AD_INVALID_DN;
-    ADMC* app = qobject_cast<ADMC*>(qApp);
+    ADMC* app = ADMC::get_instance();
     adldap::AdConnection* adconn = app->get_connection();
 
     const QString old_value = get_attribute(dn, attribute);
@@ -231,7 +231,7 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
 // TODO: can probably make a create_anything() function with enum parameter
 bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
     int result = AD_INVALID_DN;
-    ADMC* app = qobject_cast<ADMC*>(qApp);
+    ADMC* app = ADMC::get_instance();
     adldap::AdConnection* adconn = app->get_connection();
     
         const QByteArray name_array = name.toLatin1();
@@ -285,7 +285,7 @@ void reload_attributes_of_entry_groups(const QString &dn) {
 
 void delete_entry(const QString &dn) {
     int result = AD_INVALID_DN;
-    ADMC* app = qobject_cast<ADMC*>(qApp);
+    ADMC* app = ADMC::get_instance();
     adldap::AdConnection* adconn = app->get_connection();
 
         const QByteArray dn_array = dn.toLatin1();
@@ -307,7 +307,7 @@ void delete_entry(const QString &dn) {
 
 void move_user(const QString &user_dn, const QString &container_dn) {
     int result = AD_INVALID_DN;
-    ADMC* app = qobject_cast<ADMC*>(qApp);
+    ADMC* app = ADMC::get_instance();
     adldap::AdConnection* adconn = app->get_connection();
 
     QString user_name = extract_name_from_dn(user_dn);
@@ -338,7 +338,7 @@ void move_user(const QString &user_dn, const QString &container_dn) {
 void add_user_to_group(const QString &group_dn, const QString &user_dn) {
     // TODO: currently getting object class violation error
     int result = AD_INVALID_DN;
-    ADMC* app = qobject_cast<ADMC*>(qApp);
+    ADMC* app = ADMC::get_instance();
     adldap::AdConnection* adconn = app->get_connection();
 
         const QByteArray group_dn_array = group_dn.toLatin1();

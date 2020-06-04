@@ -17,22 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined(__ADMC_APPLICATION_H)
-#define __ADMC_APPLICATION_H 1
+#include "config.h"
 
-#include "ad_connection.h"
+#include "admc.h"
 
-#include <QApplication>
+ADMC* ADMC::instance;
 
-class ADMC final: public QApplication {
-    Q_OBJECT
+ADMC::ADMC(int& argc, char** argv)
+: QApplication(argc, argv)
+{
+    connection = new adldap::AdConnection();
+}
 
-    adldap::AdConnection* connection;
+ADMC *ADMC::create(int& argc, char** argv) {
+    if (instance == nullptr) {
+        instance = new ADMC(argc, argv);
 
-public:
-    ADMC(int& argc, char** argv);
-    adldap::AdConnection* get_connection();
-};
+        return instance;
+    } else {
+        printf("Error: calling ADMC::create() twice!");
 
-#endif /* __ADMC_APPLICATION_H */
+        return instance;
+    }
+}
+
+ADMC* ADMC::get_instance() {
+    if (instance == nullptr) {
+        printf("Error: calling ADMC::get_instance() before ADMC::create!");
+
+        return nullptr;
+    } else {
+        return instance;
+    }
+}
+
+adldap::AdConnection* ADMC::get_connection() {
+    return connection;
+}
 

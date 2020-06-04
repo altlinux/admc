@@ -31,7 +31,7 @@ Runner::Runner(int& argc, char **argv, QString dispname, QString appname, QStrin
     this->argc = argc;
     this->argv = argv;
 
-    this->app = new ADMC(this->argc, this->argv);
+    this->app = ADMC::create(this->argc, this->argv);
     this->app->setApplicationDisplayName(dispname);
     this->app->setApplicationName(appname);
     this->app->setApplicationVersion(appver);
