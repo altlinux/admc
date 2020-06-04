@@ -36,6 +36,7 @@
 #include <QTreeView>
 #include <QDir>
 #include <QProcess>
+#include <QVBoxLayout>
 
 MainWindow::MainWindow()
 : QMainWindow()
@@ -45,18 +46,21 @@ MainWindow::MainWindow()
     //
     actions_init();
 
-    resize(1300, 800);
+    // TODO: setting width to 1600+ fullscreens the window, no idea why
+    resize(1500, 1000);
     setWindowTitle("MainWindow");
 
     const auto central_widget = new QWidget(this);
     setCentralWidget(central_widget);
-    
+    central_widget->setLayout(new QVBoxLayout());
+    central_widget->layout()->setContentsMargins(0, 0, 0, 0);
+    central_widget->layout()->setSpacing(0);
+
     const auto status_bar = new StatusBar();
     setStatusBar(status_bar);
 
     const auto menubar = new QMenuBar(this);
     setMenuBar(menubar);
-    menubar->setGeometry(QRect(0, 0, 1307, 27));
     
     const auto menubar_new = menubar->addMenu("New");
     menubar_new->addAction(&action_new_user);
@@ -74,9 +78,9 @@ MainWindow::MainWindow()
     action_contents_click_attributes = menubar_preferences->addAction("Open attributes on left click in Contents window");
     action_contents_click_attributes->setCheckable(true);
 
-    const auto splitter = new QSplitter(central_widget);
-    splitter->setGeometry(QRect(0, 0, 1301, 591));
+    const auto splitter = new QSplitter();
     splitter->setOrientation(Qt::Horizontal);
+    central_widget->layout()->addWidget(splitter);
 
     ad_model = new AdModel(this);
 
@@ -87,6 +91,10 @@ MainWindow::MainWindow()
     splitter->addWidget(containers_widget);
     splitter->addWidget(contents_widget);
     splitter->addWidget(details_widget);
+
+    splitter->setStretchFactor(0, 1);
+    splitter->setStretchFactor(1, 2);
+    splitter->setStretchFactor(2, 2);
     
     //
     // Connect actions
