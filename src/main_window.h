@@ -35,7 +35,7 @@ class MainWindow final : public QMainWindow {
 Q_OBJECT
 
 public:
-    explicit MainWindow();
+    explicit MainWindow(const bool auto_login);
 
     static QAction *action_advanced_view;
     static QAction *action_toggle_dn;

@@ -39,19 +39,21 @@ Runner::Runner(int& argc_, char **argv_, QString dispname, QString appname, QStr
     this->app->setOrganizationDomain(orgdomain);
 }
 
-void Runner::arg_parser() {
+int Runner::run() {
     QCommandLineParser cli_parser;
     cli_parser.setApplicationDescription(QCoreApplication::applicationName());
     cli_parser.addHelpOption();
     cli_parser.addVersionOption();
     const QStringList arg_list = qApp->arguments();
+
+    QCommandLineOption option_auto_login("a", "Automatically login to default domain on startup");
+    cli_parser.addOption(option_auto_login);
+
     cli_parser.process(arg_list);
-}
 
-int Runner::run() {
-    this->arg_parser();
+    const bool auto_login = cli_parser.isSet(option_auto_login);
 
-    MainWindow main_window;
+    MainWindow main_window(auto_login);
     main_window.show();
 
     return app->exec();

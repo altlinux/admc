@@ -51,7 +51,7 @@ QAction *MainWindow::action_new_group = new QAction("New Group");
 QAction *MainWindow::action_new_ou = new QAction("New OU");
 QAction *MainWindow::action_edit_policy = new QAction("Edit policy");
 
-MainWindow::MainWindow()
+MainWindow::MainWindow(const bool auto_login)
 : QMainWindow()
 {
     action_login = new QAction("Login");
@@ -159,6 +159,10 @@ MainWindow::MainWindow()
     connect(
         action_exit, &QAction::triggered,
         this, &MainWindow::on_action_exit);
+
+    if (auto_login) {
+        on_action_login();
+    }
 }
 
 void MainWindow::on_action_login() {

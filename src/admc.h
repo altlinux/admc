@@ -38,6 +38,7 @@ private:
     
     ADMC(int& argc, char** argv);
 
+    bool auto_login;
     adldap::AdConnection* connection;
 };
 

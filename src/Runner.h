@@ -32,8 +32,8 @@ class Runner {
 
 public:
     Runner(int& argc, char **argv, QString dispname, QString appname, QString appver, QString orgname, QString orgdomain);
-    void arg_parser();
     int run();
+
 };
 
 #endif /* __ADMC_RUNNER_H */
