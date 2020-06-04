@@ -21,6 +21,8 @@
 #include "config.h"
 
 #include "active_directory.h"
+#include "Application.h"
+#include "ad_connection.h"
 
 #include <QSet>
 
@@ -56,192 +58,6 @@ QString extract_parent_dn_from_dn(const QString &dn) {
 
 AdInterface ad_interface;
 
-QMap<QString, QList<QString>> fake_children;
-QMap<QString, QMap<QString, QList<QString>>> fake_attributes_map;
-QSet<QString> fake_attributes_loaded;
-
-void fake_ad_init() {
-    fake_children[HEAD_DN] = {
-        QString("CN=Users,") + HEAD_DN,
-        QString("CN=Computers,") + HEAD_DN,
-        QString("CN=A,") + HEAD_DN,
-        QString("CN=B,") + HEAD_DN,
-        QString("CN=C,") + HEAD_DN,
-        QString("CN=D,") + HEAD_DN,
-    };
-
-    fake_attributes_map[HEAD_DN] = {
-        {"name", {"domain"}},
-        {"objectClass", {"container"}},
-        {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
-        {"showInAdvancedViewOnly", {"FALSE"}},
-    };
-
-    fake_attributes_map[QString("CN=Users,") + HEAD_DN] = {
-        {"name", {"Users"}},
-        {"objectClass", {"container"}},
-        {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
-        {"showInAdvancedViewOnly", {"FALSE"}},
-        {"description", {"Users's description"}},
-    };
-
-    fake_attributes_map[QString("CN=Computers,") + HEAD_DN] = {
-        {"name", {"Computers"}},
-        {"objectClass", {"container"}},
-        {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
-        {"showInAdvancedViewOnly", {"FALSE"}},
-        {"description", {"Computers's description"}},
-    };
-
-    fake_attributes_map[QString("CN=A,") + HEAD_DN] = {
-        {"name", {"A"}},
-        {"objectClass", {"container"}},
-        {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
-        {"showInAdvancedViewOnly", {"FALSE"}},
-        {"description", {"A's description"}},
-    };
-
-    fake_attributes_map[QString("CN=B,") + HEAD_DN] = {
-        {"name", {"B"}},
-        {"objectClass", {"container"}},
-        {"objectCategory", {"CN=Container,CN=Schema,CN=Configuration"}},
-        {"showInAdvancedViewOnly", {"FALSE"}},
-        {"description", {"B's description"}},
-    };
-
-    fake_attributes_map[QString("CN=C,") + HEAD_DN] = {
-        {"name", {"C"}},
-        {"objectClass", {"person"}},
-        {"objectCategory", {"CN=Person,CN=Schema,CN=Configuration"}},
-        {"showInAdvancedViewOnly", {"FALSE"}},
-    };
-
-    fake_attributes_map[QString("CN=D,") + HEAD_DN] = {
-        {"name", {"D"}},
-        {"objectClass", {"person"}},
-        {"objectCategory", {"CN=Person,CN=Schema,CN=Configuration"}},
-        {"showInAdvancedViewOnly", {"TRUE"}},
-    };
-
-    fake_children[QString("CN=B,") + HEAD_DN] = {
-        QString("CN=B's child,CN=B,") + HEAD_DN
-    };
-    fake_attributes_map[QString("CN=B's child,CN=B,") + HEAD_DN] = {
-        {"name", {"B's child"}},
-        {"objectClass", {"person"}},
-        {"objectCategory", {"CN=Person,CN=Schema,CN=Configuration"}},
-        {"showInAdvancedViewOnly", {"FALSE"}},
-    };
-}
-
-QList<QString> fake_load_children(const QString &dn) {
-    if (!fake_children.contains(dn)) {
-        // NOTE: ok to have empty children for leaves
-        fake_children[dn] = QList<QString>();
-    }
-    
-    return fake_children[dn];
-}
-
-// NOTE: this is just for fake_create() functions
-void fake_create_add_child(const QString &dn, const QString &parent) {
-    if (!fake_children.contains(parent)) {
-        fake_children[parent] = QList<QString>();
-    }
-    
-    fake_children[parent].push_back(dn);
-}
-
-void fake_create_user(const QString &name, const QString &dn) {
-    QString parent_dn = extract_parent_dn_from_dn(dn);
-    fake_create_add_child(dn, parent_dn);
-
-    fake_attributes_map[dn] = {
-        {"name", {name}},
-        {"objectClass", {"user"}},
-        {"objectCategory", {"CN=User,CN=Schema,CN=Configuration"}},
-        {"showInAdvancedViewOnly", {"FALSE"}},
-    };
-}
-
-void fake_create_computer(const QString &name, const QString &dn) {
-    QString parent_dn = extract_parent_dn_from_dn(dn);
-    fake_create_add_child(dn, parent_dn);
-
-    fake_attributes_map[dn] = {
-        {"name", {name}},
-        {"objectClass", {"computer"}},
-        {"objectCategory", {"CN=Computer,CN=Schema,CN=Configuration"}},
-        {"showInAdvancedViewOnly", {"FALSE"}},
-    };
-}
-
-void fake_create_ou(const QString &name, const QString &dn) {
-    QString parent_dn = extract_parent_dn_from_dn(dn);
-    fake_create_add_child(dn, parent_dn);
-
-    fake_attributes_map[dn] = {
-        {"name", {name}},
-        {"objectClass", {"Organizational Unit"}},
-        {"objectClass", {"container"}},
-        {"objectCategory", {"CN=Organizational-Unit,CN=Schema,CN=Configuration"}},
-        {"showInAdvancedViewOnly", {"FALSE"}},
-    };
-}
-
-void fake_create_group(const QString &name, const QString &dn) {
-    QString parent_dn = extract_parent_dn_from_dn(dn);
-    fake_create_add_child(dn, parent_dn);
-
-    fake_attributes_map[dn] = {
-        {"name", {name}},
-        {"objectClass", {"group"}},
-        {"objectClass", {"container"}},
-        {"objectCategory", {"CN=Group,CN=Schema,CN=Configuration"}},
-        {"showInAdvancedViewOnly", {"FALSE"}},
-    };
-}
-
-void fake_object_delete_recurse(const QString &dn) {
-    if (fake_children.contains(dn)) {
-        QList<QString> children = fake_children[dn];
-
-        for (auto child : children) {
-            fake_object_delete_recurse(child);
-        }
-
-        fake_children.remove(dn);
-    }
-
-    fake_attributes_map.remove(dn);
-}
-
-void fake_object_delete(const QString &dn) {
-    fake_object_delete_recurse(dn);
-
-    // Remove original deleted entry from parent's children list
-    for (auto key : fake_children.keys()) {
-        QList<QString> *children = &fake_children[key];
-        
-        if (children->contains(dn)) {
-            int i = children->indexOf(dn);
-
-            children->removeAt(i);
-        }
-    }
-}
-
-void fake_move_user(const QString &user_dn, const QString &container_dn) {
-    QString user_name = extract_name_from_dn(user_dn);
-    QString new_dn = "CN=" + user_name + "," + container_dn;
-
-    // TODO: does this work ok?
-    fake_attributes_map[new_dn] = fake_attributes_map[user_dn];
-
-    fake_object_delete(user_dn);
-
-    fake_children[container_dn].push_back(user_dn);
-}
 
 // -----------------------------------------------------------------
 // REAL STUFF
@@ -251,17 +67,16 @@ QMap<QString, QMap<QString, QList<QString>>> attributes_map;
 QSet<QString> attributes_loaded;
 
 bool ad_interface_login() {
-    LDAP* ldap_connection = ad_login(HEAD_DN);
-    if (ldap_connection == NULL) {
-        printf("ad_login error: %s\n", ad_get_error());
-        return false;
-    } else {
-        return true;
-    }
+    ADMC* app = qobject_cast<ADMC*>(qApp);
+    adldap::AdConnection* conn = app->get_connection();
+    conn->connect(SEARCH_BASE, HEAD_DN);
+    return conn->is_connected();
 }
 
 QString get_error_str() {
-    return QString(ad_get_error());
+    ADMC* app = qobject_cast<ADMC*>(qApp);
+    adldap::AdConnection* conn = app->get_connection();
+    return QString(conn->get_errstr());
 }
 
 // TODO: confirm that this encoding is ok
@@ -383,6 +198,8 @@ bool attribute_value_exists(const QString &dn, const QString &attribute, const Q
 
 bool set_attribute(const QString &dn, const QString &attribute, const QString &value) {
     int result = AD_INVALID_DN;
+    ADMC* app = qobject_cast<ADMC*>(qApp);
+    adldap::AdConnection* adconn = app->get_connection();
 
     const QString old_value = get_attribute(dn, attribute);
     
@@ -395,7 +212,7 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
         const QByteArray value_array = value.toLatin1();
         const char *value_cstr = value_array.constData();
 
-        result = ad_mod_replace(dn_cstr, attribute_cstr, value_cstr, HEAD_DN);
+        result = adconn->mod_replace(dn_cstr, attribute_cstr, value_cstr);
 
     if (result == AD_SUCCESS) {
         // Reload attributes to get new value
@@ -414,6 +231,8 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
 // TODO: can probably make a create_anything() function with enum parameter
 bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
     int result = AD_INVALID_DN;
+    ADMC* app = qobject_cast<ADMC*>(qApp);
+    adldap::AdConnection* adconn = app->get_connection();
     
         const QByteArray name_array = name.toLatin1();
         const char *name_cstr = name_array.constData();
@@ -423,19 +242,19 @@ bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
 
         switch (type) {
             case User: {
-                result = ad_create_user(name_cstr, dn_cstr, HEAD_DN);
+                result = adconn->create_user(name_cstr, dn_cstr);
                 break;
             }
             case Computer: {
-                result = ad_create_computer(name_cstr, dn_cstr, HEAD_DN);
+                result = adconn->create_computer(name_cstr, dn_cstr);
                 break;
             }
             case OU: {
-                result = ad_ou_create(name_cstr, dn_cstr, HEAD_DN);
+                result = adconn->ou_create(name_cstr, dn_cstr);
                 break;
             }
             case Group: {
-                result = ad_group_create(name_cstr, dn_cstr, HEAD_DN);
+                result = adconn->group_create(name_cstr, dn_cstr);
                 break;
             }
             case COUNT: break;
@@ -446,7 +265,7 @@ bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
 
         return true;
     } else {
-        emit ad_interface.create_entry_failed(dn, type, get_error_str());
+        emit ad_interface.create_entry_failed(dn, type, adconn->get_errstr());
 
         return false;
     }
@@ -466,11 +285,13 @@ void reload_attributes_of_entry_groups(const QString &dn) {
 
 void delete_entry(const QString &dn) {
     int result = AD_INVALID_DN;
+    ADMC* app = qobject_cast<ADMC*>(qApp);
+    adldap::AdConnection* adconn = app->get_connection();
 
         const QByteArray dn_array = dn.toLatin1();
         const char *dn_cstr = dn_array.constData();
 
-        result = ad_object_delete(dn_cstr, HEAD_DN);
+        result = adconn->object_delete(dn_cstr);
 
     if (result == AD_SUCCESS) {
         reload_attributes_of_entry_groups(dn);
@@ -480,12 +301,14 @@ void delete_entry(const QString &dn) {
 
         emit ad_interface.delete_entry_complete(dn);
     } else {
-        emit ad_interface.delete_entry_failed(dn, get_error_str());
+        emit ad_interface.delete_entry_failed(dn, adconn->get_errstr());
     }
 }
 
 void move_user(const QString &user_dn, const QString &container_dn) {
     int result = AD_INVALID_DN;
+    ADMC* app = qobject_cast<ADMC*>(qApp);
+    adldap::AdConnection* adconn = app->get_connection();
 
     QString user_name = extract_name_from_dn(user_dn);
     QString new_dn = "CN=" + user_name + "," + container_dn;
@@ -496,7 +319,7 @@ void move_user(const QString &user_dn, const QString &container_dn) {
         const QByteArray container_dn_array = container_dn.toLatin1();
         const char *container_dn_cstr = container_dn_array.constData();
 
-        result = ad_move_user(user_dn_cstr, container_dn_cstr, HEAD_DN);
+        result = adconn->move_user(user_dn_cstr, container_dn_cstr);
 
     if (result == AD_SUCCESS) {
         // Unload attributes at old dn
@@ -508,13 +331,15 @@ void move_user(const QString &user_dn, const QString &container_dn) {
 
         emit ad_interface.move_user_complete(user_dn, container_dn, new_dn);
     } else {
-        emit ad_interface.move_user_failed(user_dn, container_dn, new_dn, get_error_str());
+        emit ad_interface.move_user_failed(user_dn, container_dn, new_dn, adconn->get_errstr());
     }
 }
 
 void add_user_to_group(const QString &group_dn, const QString &user_dn) {
     // TODO: currently getting object class violation error
     int result = AD_INVALID_DN;
+    ADMC* app = qobject_cast<ADMC*>(qApp);
+    adldap::AdConnection* adconn = app->get_connection();
 
         const QByteArray group_dn_array = group_dn.toLatin1();
         const char *group_dn_cstr = group_dn_array.constData();
@@ -522,7 +347,7 @@ void add_user_to_group(const QString &group_dn, const QString &user_dn) {
         const QByteArray user_dn_array = user_dn.toLatin1();
         const char *user_dn_cstr = user_dn_array.constData();
 
-        result = ad_group_add_user(group_dn_cstr, user_dn_cstr, HEAD_DN);
+        result = adconn->group_add_user(group_dn_cstr, user_dn_cstr);
 
     if (result == AD_SUCCESS) {
         // Reload attributes of group and user because group
@@ -532,6 +357,6 @@ void add_user_to_group(const QString &group_dn, const QString &user_dn) {
 
         emit ad_interface.add_user_to_group_complete(group_dn, user_dn);
     } else {
-        emit ad_interface.add_user_to_group_failed(group_dn, user_dn, get_error_str());
+        emit ad_interface.add_user_to_group_failed(group_dn, user_dn, adconn->get_errstr());
     }
 }
