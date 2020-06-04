@@ -48,6 +48,10 @@ int AdConnection::get_errcode() {
     return ad_get_error_num();
 }
 
+const std::string &AdConnection::get_search_base() {
+    return search_base;
+}
+
 int AdConnection::create_user(const char *username, const char *dn) {
     return ad_create_user(username, dn, this->uri.c_str());
 }

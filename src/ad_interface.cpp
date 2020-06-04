@@ -18,7 +18,6 @@
  */
 
 #include "ad_interface.h"
-#include "config.h"
 
 #include "active_directory.h"
 #include "admc.h"
@@ -79,10 +78,21 @@ const char *qstring_to_cstr(const QString &qstr) {
     return qstr.toLatin1().constData();
 }
 
+const char *get_search_base() {
+    ADMC* app = ADMC::get_instance();
+    adldap::AdConnection* conn = app->get_connection();
+    std::string search_base = conn->get_search_base();
+    const char *search_base_cstr = search_base.c_str();
+
+    return search_base_cstr;
+}
+
 QList<QString> load_children(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
-    char **children_raw = ad_list(dn_cstr, HEAD_DN);
+
+    const char *search_base_cstr = get_search_base();
+    char **children_raw = ad_list(dn_cstr, search_base_cstr);
 
     if (children_raw != NULL) {
         auto children = QList<QString>();
@@ -109,7 +119,8 @@ QList<QString> load_children(const QString &dn) {
 void load_attributes(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
-    char** attributes_raw = ad_get_attribute(dn_cstr, "*", HEAD_DN);
+    const char *search_base_cstr = get_search_base();
+    char** attributes_raw = ad_get_attribute(dn_cstr, "*", search_base_cstr);
 
     if (attributes_raw != NULL) {
         attributes_map[dn] = QMap<QString, QList<QString>>();
