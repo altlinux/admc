@@ -165,19 +165,28 @@ int ad_mod_delete(const char *dn, const char *attribute, const char *value, cons
 */
 char **ad_get_attribute(const char *dn, const char *attribute, const char* uri);
 
-/* ad_rename_user() changes the given user's name
-| Modifies cn, sAMAccountName and userPrincipalName
-|to the new username.  Assumes that the first part of the dn
-|is composed of cn=username.
-|  Returns AD_SUCCESS or AD_LDAP_OPERATION_FAILURE;
-*/
-int ad_rename_user(const char *dn, const char *new_username, const char* uri);
+// Renames object at dn
+// new_rdn has to have appropriate prefix and be of the form "CN=name"
+// Modifies name
+// Use specialized functions to rename users and groups
+int ad_mod_rename(const char *dn, const char *new_rdn, const char* uri);
 
-/* ad_move_user() moves a user into a different container/organizational
-| unit.
-|  Changes dn and fixes userPrincipalName in case of domain change.
-|  Returns AD_SUCCESS, AD_INVALID_DN or AD_LDAP_OPERATION_FAILURE.
-*/
+// Change given user's dn
+// Modifies cn, name, sAMAccountName and userPrincipalName
+// new_name should be without prefix "CN="
+int ad_rename_user(const char *dn, const char *new_name, const char* uri);
+
+// Change given group's dn
+// Modifies cn, name and sAMAccountName
+// new_name should be without prefix "CN="
+int ad_rename_group(const char *dn, const char *new_name, const char* uri);
+
+// Moves object to new container
+// Use specialized functions to rename users and groups
+int ad_move(const char *current_dn, const char *new_container, const char* uri);
+
+// Moves user to new container
+// Modifies userPrincipalName
 int ad_move_user(const char *current_dn, const char *new_container, const char* uri);
 
 /* ad_group_create() creates a new user group (of type global security)

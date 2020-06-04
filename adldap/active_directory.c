@@ -803,12 +803,22 @@ char **ad_get_attribute(const char *dn, const char *attribute, const char* uri) 
     return out;
 }
 
-/* 
-  rename a user
-  changes samaccountname, userprincipalname and rdn/cn
-    return AD_SUCCESS on success 
-*/
-int ad_rename_user(const char *dn, const char *new_username, const char* uri) {
+int ad_mod_rename(const char *dn, const char *new_rdn, const char* uri) {
+    LDAP *ds = ad_login(uri);
+    if (ds == NULL) {
+         return ad_error_code;
+    }
+
+    int result = ldap_rename_s(ds, dn, new_rdn, NULL, 1, NULL, NULL);
+    if (result != LDAP_SUCCESS) {
+        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in ldap_rename_s for ad_mod_rename: %s\n", ldap_err2string(result));
+        return ad_error_code;
+    }
+
+    return ad_error_code;
+}
+
+int ad_rename_user(const char *dn, const char *new_name, const char* uri) {
     LDAP *ds;
     int result;
     char *new_rdn;
@@ -817,40 +827,54 @@ int ad_rename_user(const char *dn, const char *new_username, const char* uri) {
     ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
-    result=ad_mod_replace(dn, "sAMAccountName", new_username, uri);
+    result=ad_mod_replace(dn, "sAMAccountName", new_name, uri);
     if(!result) return ad_error_code;
 
     domain=dn2domain(dn);
-    upn=malloc(strlen(new_username)+strlen(domain)+2);
-    sprintf(upn, "%s@%s", new_username, domain);
+    upn=malloc(strlen(new_name)+strlen(domain)+2);
+    sprintf(upn, "%s@%s", new_name, domain);
     free(domain);
     result=ad_mod_replace(dn, "userPrincipalName", upn, uri);
     free(upn);
     if(!result) return ad_error_code;
 
-    new_rdn=malloc(strlen(new_username)+4);
-    sprintf(new_rdn, "cn=%s", new_username);
+    new_rdn=malloc(strlen(new_name)+4);
+    sprintf(new_rdn, "cn=%s", new_name);
 
-    result=ldap_modrdn2_s(ds, dn, new_rdn, 1);
-    if(result!=LDAP_SUCCESS) {
-        snprintf(ad_error_msg, MAX_ERR_LENGTH,
-          "Error in ldap_modrdn2_s for ad_rename_user: %s\n",
-          ldap_err2string(result));
-        ad_error_code=AD_LDAP_OPERATION_FAILURE;
-        free(new_rdn);
+    result = ldap_rename_s(ds, dn, new_rdn, NULL, 1, NULL, NULL);
+    if (result != LDAP_SUCCESS) {
+        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in ldap_rename_s for ad_rename_user: %s\n", ldap_err2string(result));
         return ad_error_code;
     }
 
-    ad_error_code=AD_SUCCESS;
     free(new_rdn);
     return ad_error_code;
 }
 
-/* 
-  move a user to another container
-  sets userprincipalname based on the destination container
-    return AD_SUCCESS on success 
-*/
+int ad_rename_group(const char *dn, const char *new_name, const char* uri) {
+    LDAP *ds;
+    int result;
+    char *new_rdn;
+
+    ds=ad_login(uri);
+    if(!ds) return ad_error_code;
+
+    result=ad_mod_replace(dn, "sAMAccountName", new_name, uri);
+    if(!result) return ad_error_code;
+
+    new_rdn=malloc(strlen(new_name)+4);
+    sprintf(new_rdn, "cn=%s", new_name);
+
+    result = ldap_rename_s(ds, dn, new_rdn, NULL, 1, NULL, NULL);
+    if (result != LDAP_SUCCESS) {
+        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in ldap_rename_s for ad_rename_group: %s\n", ldap_err2string(result));
+        return ad_error_code;
+    }
+
+    free(new_rdn);
+    return ad_error_code;
+}
+
 int ad_move_user(const char *current_dn, const char *new_container, const char* uri) {
     LDAP *ds;
     int result;
@@ -860,6 +884,7 @@ int ad_move_user(const char *current_dn, const char *new_container, const char* 
     ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
+    // Modify userPrincipalName in case of domain change
     username=ad_get_attribute(current_dn, "sAMAccountName", uri);;
     if(username==NULL) {
         snprintf(ad_error_msg, MAX_ERR_LENGTH,
@@ -876,10 +901,24 @@ int ad_move_user(const char *current_dn, const char *new_container, const char* 
     free(upn);
     if(!result) return ad_error_code;
 
+    ad_error_code=ad_move(current_dn, new_container, uri);
+
+    return ad_error_code;
+}
+
+int ad_move(const char *current_dn, const char *new_container, const char* uri) {
+    LDAP *ds;
+    int result;
+    char **exdn;
+    char **username, *domain, *upn;
+
+    ds=ad_login(uri);
+    if(!ds) return ad_error_code;
+
     exdn=ldap_explode_dn(current_dn, 0);
     if(exdn==NULL) {
         snprintf(ad_error_msg, MAX_ERR_LENGTH,
-          "Error exploding dn %s for ad_move_user\n",
+          "Error exploding dn %s for ad_move\n",
           current_dn);
         ad_error_code=AD_INVALID_DN;
         return ad_error_code;
@@ -890,7 +929,7 @@ int ad_move_user(const char *current_dn, const char *new_container, const char* 
     ldap_memfree(exdn);
     if(result!=LDAP_SUCCESS) {
         snprintf(ad_error_msg, MAX_ERR_LENGTH,
-          "Error in ldap_rename_s for ad_move_user: %s\n",
+          "Error in ldap_rename_s for ad_move: %s\n",
           ldap_err2string(result));
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
     } else {
