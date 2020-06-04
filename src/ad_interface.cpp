@@ -52,17 +52,7 @@ QString extract_parent_dn_from_dn(const QString &dn) {
     return parent_dn;
 }
 
-// -----------------------------------------------------------------
-// FAKE STUFF
-// -----------------------------------------------------------------
-
 AdInterface ad_interface;
-
-
-// -----------------------------------------------------------------
-// REAL STUFF
-// -----------------------------------------------------------------
-
 QMap<QString, QMap<QString, QList<QString>>> attributes_map;
 QSet<QString> attributes_loaded;
 

@@ -57,6 +57,8 @@ private slots:
     void on_containers_clicked_dn(const QString &dn);
     void on_contents_clicked_dn(const QString &dn);
     void on_action_edit_policy();
+    void on_action_login();
+    void on_action_exit();
 
 private:
     QString get_selected_dn() const;
@@ -69,6 +71,8 @@ private:
 
     QAction *action_containers_click_attributes = nullptr;
     QAction *action_contents_click_attributes = nullptr;
+    QAction *action_login = nullptr;
+    QAction *action_exit = nullptr;
 };
 
 #endif /* MAIN_WINDOW_H */

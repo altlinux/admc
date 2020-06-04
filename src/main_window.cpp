@@ -54,6 +54,9 @@ QAction *MainWindow::action_edit_policy = new QAction("Edit policy");
 MainWindow::MainWindow()
 : QMainWindow()
 {
+    action_login = new QAction("Login");
+    action_exit = new QAction("Exit");
+
     // TODO: setting width to 1600+ fullscreens the window, no idea why
     resize(1500, 1000);
     setWindowTitle("MainWindow");
@@ -70,6 +73,10 @@ MainWindow::MainWindow()
     const auto menubar = new QMenuBar(this);
     setMenuBar(menubar);
     
+    const auto menubar_file = menubar->addMenu("File");
+    menubar_file->addAction(action_login);
+    menubar_file->addAction(action_exit);
+
     const auto menubar_new = menubar->addMenu("New");
     menubar_new->addAction(action_new_user);
     menubar_new->addAction(action_new_computer);
@@ -146,7 +153,20 @@ MainWindow::MainWindow()
         contents_widget, &EntryWidget::clicked_dn,
         this, &MainWindow::on_contents_clicked_dn);
 
+    connect(
+        action_login, &QAction::triggered,
+        this, &MainWindow::on_action_login);
+    connect(
+        action_exit, &QAction::triggered,
+        this, &MainWindow::on_action_exit);
+}
+
+void MainWindow::on_action_login() {
     ad_interface_login(SEARCH_BASE, HEAD_DN);
+}
+
+void MainWindow::on_action_exit() {
+    QApplication::quit();
 }
 
 void MainWindow::on_action_details() {
