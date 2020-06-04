@@ -197,7 +197,10 @@ void MainWindow::on_action_delete_entry() {
 
 void MainWindow::on_action_new_entry_generic(NewEntryType type) {
     QString dn = EntryWidget::get_selected_dn();
-    create_entry_dialog(type, dn);
+
+    if (dn != "") {
+        create_entry_dialog(type, dn);
+    }
 }
 
 void MainWindow::on_action_new_user() {
