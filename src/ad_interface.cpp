@@ -154,15 +154,15 @@ QMap<QString, QList<QString>> get_attributes(const QString &dn) {
     // First check whether load_attributes was ever called on this dn
     // If it hasn't, attempt to load attributes
     // After that return whatever attributes are now loaded for this dn
-        if (!attributes_loaded.contains(dn)) {
-            load_attributes(dn);
-        }
+    if (!attributes_loaded.contains(dn)) {
+        load_attributes(dn);
+    }
 
-        if (!attributes_map.contains(dn)) {
-            return QMap<QString, QList<QString>>();
-        } else {
-            return attributes_map[dn];
-        }
+    if (!attributes_map.contains(dn)) {
+        return QMap<QString, QList<QString>>();
+    } else {
+        return attributes_map[dn];
+    }
 }
 
 QList<QString> get_attribute_multi(const QString &dn, const QString &attribute) {
@@ -203,16 +203,16 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
 
     const QString old_value = get_attribute(dn, attribute);
     
-        const QByteArray dn_array = dn.toLatin1();
-        const char *dn_cstr = dn_array.constData();
+    const QByteArray dn_array = dn.toLatin1();
+    const char *dn_cstr = dn_array.constData();
 
-        const QByteArray attribute_array = attribute.toLatin1();
-        const char *attribute_cstr = attribute_array.constData();
+    const QByteArray attribute_array = attribute.toLatin1();
+    const char *attribute_cstr = attribute_array.constData();
 
-        const QByteArray value_array = value.toLatin1();
-        const char *value_cstr = value_array.constData();
+    const QByteArray value_array = value.toLatin1();
+    const char *value_cstr = value_array.constData();
 
-        result = adconn->mod_replace(dn_cstr, attribute_cstr, value_cstr);
+    result = adconn->mod_replace(dn_cstr, attribute_cstr, value_cstr);
 
     if (result == AD_SUCCESS) {
         // Reload attributes to get new value
@@ -234,31 +234,31 @@ bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
     ADMC* app = ADMC::get_instance();
     adldap::AdConnection* adconn = app->get_connection();
     
-        const QByteArray name_array = name.toLatin1();
-        const char *name_cstr = name_array.constData();
+    const QByteArray name_array = name.toLatin1();
+    const char *name_cstr = name_array.constData();
 
-        const QByteArray dn_array = dn.toLatin1();
-        const char *dn_cstr = dn_array.constData();
+    const QByteArray dn_array = dn.toLatin1();
+    const char *dn_cstr = dn_array.constData();
 
-        switch (type) {
-            case User: {
-                result = adconn->create_user(name_cstr, dn_cstr);
-                break;
-            }
-            case Computer: {
-                result = adconn->create_computer(name_cstr, dn_cstr);
-                break;
-            }
-            case OU: {
-                result = adconn->ou_create(name_cstr, dn_cstr);
-                break;
-            }
-            case Group: {
-                result = adconn->group_create(name_cstr, dn_cstr);
-                break;
-            }
-            case COUNT: break;
+    switch (type) {
+        case User: {
+            result = adconn->create_user(name_cstr, dn_cstr);
+            break;
         }
+        case Computer: {
+            result = adconn->create_computer(name_cstr, dn_cstr);
+            break;
+        }
+        case OU: {
+            result = adconn->ou_create(name_cstr, dn_cstr);
+            break;
+        }
+        case Group: {
+            result = adconn->group_create(name_cstr, dn_cstr);
+            break;
+        }
+        case COUNT: break;
+    }
 
     if (result == AD_SUCCESS) {
         emit ad_interface.create_entry_complete(dn, type);
@@ -288,10 +288,10 @@ void delete_entry(const QString &dn) {
     ADMC* app = ADMC::get_instance();
     adldap::AdConnection* adconn = app->get_connection();
 
-        const QByteArray dn_array = dn.toLatin1();
-        const char *dn_cstr = dn_array.constData();
+    const QByteArray dn_array = dn.toLatin1();
+    const char *dn_cstr = dn_array.constData();
 
-        result = adconn->object_delete(dn_cstr);
+    result = adconn->object_delete(dn_cstr);
 
     if (result == AD_SUCCESS) {
         reload_attributes_of_entry_groups(dn);
@@ -313,13 +313,13 @@ void move_user(const QString &user_dn, const QString &container_dn) {
     QString user_name = extract_name_from_dn(user_dn);
     QString new_dn = "CN=" + user_name + "," + container_dn;
 
-        const QByteArray user_dn_array = user_dn.toLatin1();
-        const char *user_dn_cstr = user_dn_array.constData();
+    const QByteArray user_dn_array = user_dn.toLatin1();
+    const char *user_dn_cstr = user_dn_array.constData();
 
-        const QByteArray container_dn_array = container_dn.toLatin1();
-        const char *container_dn_cstr = container_dn_array.constData();
+    const QByteArray container_dn_array = container_dn.toLatin1();
+    const char *container_dn_cstr = container_dn_array.constData();
 
-        result = adconn->move_user(user_dn_cstr, container_dn_cstr);
+    result = adconn->move_user(user_dn_cstr, container_dn_cstr);
 
     if (result == AD_SUCCESS) {
         // Unload attributes at old dn
@@ -341,13 +341,13 @@ void add_user_to_group(const QString &group_dn, const QString &user_dn) {
     ADMC* app = ADMC::get_instance();
     adldap::AdConnection* adconn = app->get_connection();
 
-        const QByteArray group_dn_array = group_dn.toLatin1();
-        const char *group_dn_cstr = group_dn_array.constData();
+    const QByteArray group_dn_array = group_dn.toLatin1();
+    const char *group_dn_cstr = group_dn_array.constData();
 
-        const QByteArray user_dn_array = user_dn.toLatin1();
-        const char *user_dn_cstr = user_dn_array.constData();
+    const QByteArray user_dn_array = user_dn.toLatin1();
+    const char *user_dn_cstr = user_dn_array.constData();
 
-        result = adconn->group_add_user(group_dn_cstr, user_dn_cstr);
+    result = adconn->group_add_user(group_dn_cstr, user_dn_cstr);
 
     if (result == AD_SUCCESS) {
         // Reload attributes of group and user because group
