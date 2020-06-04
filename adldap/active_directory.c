@@ -442,7 +442,7 @@ int ad_setpass(const char *dn, const char *password, const char* uri) {
 }
 
 /* general search function */
-char **ad_search(const char *attribute, const char *value, char* search_base, const char* uri) {
+char **ad_search(const char *attribute, const char *value, const char* search_base, const char* uri) {
     LDAP *ds;
     char *filter;
     int filter_length;

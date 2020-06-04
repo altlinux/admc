@@ -36,6 +36,29 @@ public:
     void connect(std::string uri, std::string search_base);
     bool is_connected();
     char* get_errstr();
+    int get_errcode();
+
+    int create_user(const char *username, const char *dn);
+    int create_computer(const char *name, const char *dn);
+    int lock_user(const char *dn);
+    int unlock_user(const char *dn);
+    int object_delete(const char *dn);
+    int setpass(const char *dn, const char *password);
+    char **search(const char *attribute, const char *value);
+    int mod_add(const char *dn, const char *attribute, const char *value);
+    int mod_add_binary(const char *dn, const char *attribute, const char *data, int data_length);
+    int mod_replace(const char *dn, const char *attribute, const char *value);
+    int mod_replace_binary(const char *dn, const char *attribute, const char *data, int data_length);
+    int mod_delete(const char *dn, const char *attribute, const char *value);
+    char **get_attribute(const char *dn, const char *attribute);
+    int rename_user(const char *dn, const char *new_username);
+    int move_user(const char *current_dn, const char *new_container);
+    int group_create(const char *group_name, const char *dn);
+    int group_add_user(const char *group_dn, const char *user_dn);
+    int group_remove_user(const char *group_dn, const char *user_dn);
+    int group_subtree_remove_user(const char *container_dn, const char *user_dn);
+    int ou_create(const char *ou_name, const char *dn);
+    char **list(const char *dn);
 };
 
 } /* namespace adldap */

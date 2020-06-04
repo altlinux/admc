@@ -116,7 +116,7 @@ int ad_setpass(const char *dn, const char *password, const char* uri);
 |  Searching is done from the searchbase specified in the configuration
 | file.
 */
-char **ad_search(const char *attribute, const char *value, char* search_base, const char* uri);
+char **ad_search(const char *attribute, const char *value, const char* search_base, const char* uri);
 
 /* ad_mod_add() adds a value to the given attribute.
 | Example ad_mod_add("cn=nobody,ou=users,dc=example,dc=com",
