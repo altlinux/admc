@@ -25,7 +25,7 @@
 
 #include "main_window.h"
 
-Runner::Runner(int argc, char **argv, QString dispname, QString appname, QString appver, QString orgname, QString orgdomain) {
+Runner::Runner(int& argc, char **argv, QString dispname, QString appname, QString appver, QString orgname, QString orgdomain) {
     //Q_INIT_RESOURCE(adtool);
 
     this->argc = argc;

@@ -31,7 +31,7 @@ class Runner {
     char** argv;
 
 public:
-    Runner(int argc, char **argv, QString dispname, QString appname, QString appver, QString orgname, QString orgdomain);
+    Runner(int& argc, char **argv, QString dispname, QString appname, QString appver, QString orgname, QString orgdomain);
     void arg_parser();
     int run();
 };
