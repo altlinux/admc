@@ -156,7 +156,7 @@ void MainWindow::on_containers_clicked_dn(const QString &dn) {
 }
 
 void MainWindow::on_contents_clicked_dn(const QString &dn) {
-    if (action_containers_click_attributes->isChecked()) {
+    if (action_contents_click_attributes->isChecked()) {
         details_widget->change_target(dn);
     }
 }
