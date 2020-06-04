@@ -17,6 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "ad_connection.h"
+#include "config.h"
+
+#include "Application.h"
 #include "main_window.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
@@ -40,7 +44,11 @@
 
 MainWindow::MainWindow()
 : QMainWindow()
-{  
+{
+    /*ADMC* app = qobject_cast<ADMC*>(qApp);
+    adldap::AdConnection* conn = app->get_connection();
+    conn->connect(HEAD_DN, SEARCH_BASE);*/
+    ad_interface_login();
     //
     // Setup widgets
     //

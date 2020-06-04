@@ -73,7 +73,6 @@ private:
 }; 
 
 extern AdInterface ad_interface;
-extern bool FAKE_AD;
 
 bool ad_interface_login();
 

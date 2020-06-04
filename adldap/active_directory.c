@@ -17,7 +17,7 @@
 // TODO: ldap_add_s is deprecated but works, not a big deal
 
 #if HAVE_CONFIG_H
-#   include <config.h>
+//#   include <config.h>
 #endif
 
 #include "active_directory.h"
@@ -37,21 +37,13 @@ int ad_error_code;
 
 #define MAX_PASSWORD_LENGTH 255
 
-char *user_config_file;
-char *user_config_path;
-char *user_config_filename="/.adtool.cfg";
-// #define AD_CONFIG_FILE SYSCONFDIR "/adtool.cfg"
-#define AD_CONFIG_FILE "~/adtool.cfg"
-char *system_config_file=AD_CONFIG_FILE;
-char *config_file;
-
 // char *uri=NULL;
 char *binddn=NULL;
 char *bindpw=NULL;
 // char *search_base=NULL;
 // TODO: unhardcode this
-char* uri = "ldap://dc0.domain.alt";
-char* search_base = "DC=domain,DC=alt";
+//char* uri = "ldap://dc0.domain.alt";
+//char* search_base = "DC=domain,DC=alt";
 
 typedef struct sasl_defaults_gssapi {
     char *mech;
@@ -148,7 +140,7 @@ char **get_values(LDAP *ds, LDAPMessage *entry) {
 
 /* connect and authenticate to active directory server.
     returns an ldap connection identifier or 0 on error */
-LDAP *ad_login() {
+LDAP *ad_login(const char* uri) {
     static LDAP *ds=NULL;
 
     int version, result, bindresult;
@@ -269,7 +261,7 @@ int ad_get_error_num() {
     userprincipalname
     returns AD_SUCCESS on success 
 */
-int ad_create_user(const char *username, const char *dn) {
+int ad_create_user(const char *username, const char *dn, const char* uri) {
     LDAP *ds;
     LDAPMod *attrs[5];
     LDAPMod attr1, attr2, attr3, attr4;
@@ -281,7 +273,7 @@ int ad_create_user(const char *username, const char *dn) {
     char *upn, *domain;
     char *upn_values[2];
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
     attr1.mod_op = LDAP_MOD_ADD;
@@ -335,7 +327,7 @@ int ad_create_user(const char *username, const char *dn) {
     userAccountControl=4128
     returns AD_SUCCESS on success 
 */
-int ad_create_computer(const char *name, const char *dn) {
+int ad_create_computer(const char *name, const char *dn, const char* uri) {
     LDAP *ds;
     LDAPMod *attrs[4];
     LDAPMod attr1, attr2, attr3;
@@ -346,7 +338,7 @@ int ad_create_computer(const char *name, const char *dn) {
     char *name_values[2];
     char *accountControl_values[]={"4128", NULL};
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
     attr1.mod_op = LDAP_MOD_ADD;
@@ -386,11 +378,11 @@ int ad_create_computer(const char *name, const char *dn) {
 
 /* ad_object_delete deletes the given dn
     returns non-zero on success */
-int ad_object_delete(const char *dn) {
+int ad_object_delete(const char *dn, const char* uri) {
     LDAP *ds;
     int result;
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
     result=ldap_delete_s(ds, dn);
@@ -405,7 +397,7 @@ int ad_object_delete(const char *dn) {
 
 /* ad_setpass sets the password for the given user
     returns AD_SUCCESS on success */
-int ad_setpass(const char *dn, const char *password) {
+int ad_setpass(const char *dn, const char *password, const char* uri) {
     LDAP *ds;
     char quoted_password[MAX_PASSWORD_LENGTH+2];
     char unicode_password[(MAX_PASSWORD_LENGTH+2)*2];
@@ -416,7 +408,7 @@ int ad_setpass(const char *dn, const char *password) {
     struct berval pw;
     int result;
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
     /* put quotes around the password */
@@ -450,7 +442,7 @@ int ad_setpass(const char *dn, const char *password) {
 }
 
 /* general search function */
-char **ad_search(const char *attribute, const char *value) {
+char **ad_search(const char *attribute, const char *value, const char* search_base, const char* uri) {
     LDAP *ds;
     char *filter;
     int filter_length;
@@ -461,11 +453,11 @@ char **ad_search(const char *attribute, const char *value) {
     char **dnlist;
     char *dn;
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return (char **)-1;
 
     if(!search_base) {
-        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error: couldn't read active directory searchbase parameter from config file %s, ~/.adtool.cfg or command line", config_file);
+        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error: couldn't read active directory searchbase parameter");
         ad_error_code=AD_MISSING_CONFIG_PARAMETER;
         return (char **)-1;
     }
@@ -514,14 +506,14 @@ char **ad_search(const char *attribute, const char *value) {
     return dnlist;
 }
 
-int ad_mod_add(const char *dn, const char *attribute, const char *value) {
+int ad_mod_add(const char *dn, const char *attribute, const char *value, const char* uri) {
     LDAP *ds;
     LDAPMod *attrs[2];
     LDAPMod attr;
     char *values[2];
     int result;
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
     values[0] = strdup(value);
@@ -548,7 +540,7 @@ int ad_mod_add(const char *dn, const char *attribute, const char *value) {
     return ad_error_code;
 }
 
-int ad_mod_add_binary(const char *dn, const char *attribute, const char *data, int data_length) {
+int ad_mod_add_binary(const char *dn, const char *attribute, const char *data, int data_length, const char* uri) {
     LDAP *ds;
     LDAPMod *attrs[2];
     LDAPMod attr;
@@ -556,7 +548,7 @@ int ad_mod_add_binary(const char *dn, const char *attribute, const char *data, i
     struct berval ber_data;
     int result;
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
     ber_data.bv_val = strdup(data);
@@ -586,14 +578,14 @@ int ad_mod_add_binary(const char *dn, const char *attribute, const char *data, i
     return ad_error_code;
 }
 
-int ad_mod_replace(const char *dn, const char *attribute, const char *value) {
+int ad_mod_replace(const char *dn, const char *attribute, const char *value, const char* uri) {
     LDAP *ds;
     LDAPMod *attrs[2];
     LDAPMod attr;
     char *values[2];
     int result;
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
     values[0] = strdup(value);
@@ -620,7 +612,7 @@ int ad_mod_replace(const char *dn, const char *attribute, const char *value) {
     return ad_error_code;
 }
 
-int ad_mod_replace_binary(const char *dn, const char *attribute, const char *data, int data_length) {
+int ad_mod_replace_binary(const char *dn, const char *attribute, const char *data, int data_length, const char* uri) {
     LDAP *ds;
     LDAPMod *attrs[2];
     LDAPMod attr;
@@ -628,7 +620,7 @@ int ad_mod_replace_binary(const char *dn, const char *attribute, const char *dat
     struct berval ber_data;
     int result;
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
     ber_data.bv_val = strdup(data);
@@ -658,14 +650,14 @@ int ad_mod_replace_binary(const char *dn, const char *attribute, const char *dat
     return ad_error_code;
 }
 
-int ad_mod_delete(const char *dn, const char *attribute, const char *value) {
+int ad_mod_delete(const char *dn, const char *attribute, const char *value, const char* uri) {
     LDAP *ds;
     LDAPMod *attrs[2];
     LDAPMod attr;
     char *values[2];
     int result;
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
     values[0] = strdup(value);
@@ -698,8 +690,8 @@ typedef struct ber_list {
     struct ber_list *next;
 } ber_list;
 
-char **ad_get_attribute(const char *dn, const char *attribute) {
-    LDAP *ds=ad_login();
+char **ad_get_attribute(const char *dn, const char *attribute, const char* uri) {
+    LDAP *ds=ad_login(uri);
     if(!ds) return NULL;
 
     char *attrs[2];
@@ -816,23 +808,23 @@ char **ad_get_attribute(const char *dn, const char *attribute) {
   changes samaccountname, userprincipalname and rdn/cn
     return AD_SUCCESS on success 
 */
-int ad_rename_user(const char *dn, const char *new_username) {
+int ad_rename_user(const char *dn, const char *new_username, const char* uri) {
     LDAP *ds;
     int result;
     char *new_rdn;
     char *domain, *upn;
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
-    result=ad_mod_replace(dn, "sAMAccountName", new_username);
+    result=ad_mod_replace(dn, "sAMAccountName", new_username, uri);
     if(!result) return ad_error_code;
 
     domain=dn2domain(dn);
     upn=malloc(strlen(new_username)+strlen(domain)+2);
     sprintf(upn, "%s@%s", new_username, domain);
     free(domain);
-    result=ad_mod_replace(dn, "userPrincipalName", upn);
+    result=ad_mod_replace(dn, "userPrincipalName", upn, uri);
     free(upn);
     if(!result) return ad_error_code;
 
@@ -859,16 +851,16 @@ int ad_rename_user(const char *dn, const char *new_username) {
   sets userprincipalname based on the destination container
     return AD_SUCCESS on success 
 */
-int ad_move_user(const char *current_dn, const char *new_container) {
+int ad_move_user(const char *current_dn, const char *new_container, const char* uri) {
     LDAP *ds;
     int result;
     char **exdn;
     char **username, *domain, *upn;
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
-    username=ad_get_attribute(current_dn, "sAMAccountName");;
+    username=ad_get_attribute(current_dn, "sAMAccountName", uri);;
     if(username==NULL) {
         snprintf(ad_error_msg, MAX_ERR_LENGTH,
           "Error getting username for dn %s for ad_move_user\n",
@@ -880,7 +872,7 @@ int ad_move_user(const char *current_dn, const char *new_container) {
     upn=malloc(strlen(username[0])+strlen(domain)+2);
     sprintf(upn, "%s@%s", username[0], domain);
     free(domain);
-    result=ad_mod_replace(current_dn, "userPrincipalName", upn);
+    result=ad_mod_replace(current_dn, "userPrincipalName", upn, uri);
     free(upn);
     if(!result) return ad_error_code;
 
@@ -909,48 +901,48 @@ int ad_move_user(const char *current_dn, const char *new_container) {
 }
 
 /* returns AD_SUCCESS on success */
-int ad_lock_user(const char *dn) {
+int ad_lock_user(const char *dn, const char* uri) {
     LDAP *ds;
     int result;
     char **flags;
     char newflags[255];
     int iflags;
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
-    flags=ad_get_attribute(dn, "userAccountControl");
+    flags=ad_get_attribute(dn, "userAccountControl", uri);
     if(flags==NULL) return ad_error_code;
 
     iflags=atoi(flags[0]);
     iflags|=2;
     snprintf(newflags, sizeof(newflags), "%d", iflags);
 
-    result=ad_mod_replace(dn, "userAccountControl", newflags);
+    result=ad_mod_replace(dn, "userAccountControl", newflags, uri);
     if(!result) return AD_LDAP_OPERATION_FAILURE;
 
     return AD_SUCCESS;
 }
 
 /* Returns AD_SUCCESS on success */
-int ad_unlock_user(const char *dn) {
+int ad_unlock_user(const char *dn, const char* uri) {
     LDAP *ds;
     int result;
     char **flags;
     char newflags[255];
     int iflags;
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
-    flags=ad_get_attribute(dn, "userAccountControl");
+    flags=ad_get_attribute(dn, "userAccountControl", uri);
     if(flags==NULL) return ad_error_code;
 
     iflags=atoi(flags[0]);
     if(iflags&2) {
         iflags^=2;
         snprintf(newflags, sizeof(newflags), "%d", iflags);
-        result=ad_mod_replace(dn, "userAccountControl", newflags);
+        result=ad_mod_replace(dn, "userAccountControl", newflags, uri);
         if(!result) return AD_LDAP_OPERATION_FAILURE;
     }
 
@@ -962,7 +954,7 @@ int ad_unlock_user(const char *dn) {
  sets objectclass=group and samaccountname=groupname
   Returns AD_SUCCESS on success 
 */
-int ad_group_create(const char *group_name, const char *dn) {
+int ad_group_create(const char *group_name, const char *dn, const char* uri) {
     LDAP *ds;
     LDAPMod *attrs[4];
     LDAPMod attr1, attr2, attr3;
@@ -972,7 +964,7 @@ int ad_group_create(const char *group_name, const char *dn) {
     char *name_values[2];
     char *sAMAccountName_values[2];
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
     attr1.mod_op = LDAP_MOD_ADD;
@@ -1010,16 +1002,16 @@ int ad_group_create(const char *group_name, const char *dn) {
     return ad_error_code;
 }
 
-int ad_group_add_user(const char *group_dn, const char *user_dn) {
-    return ad_mod_add(group_dn, "member", user_dn);
+int ad_group_add_user(const char *group_dn, const char *user_dn, const char* uri) {
+    return ad_mod_add(group_dn, "member", user_dn, uri);
 }
 
-int ad_group_remove_user(const char *group_dn, const char *user_dn) {
-    return ad_mod_delete(group_dn, "member", user_dn);
+int ad_group_remove_user(const char *group_dn, const char *user_dn, const char* uri) {
+    return ad_mod_delete(group_dn, "member", user_dn, uri);
 }
 
 /* Remove the user from all groups below the given container */
-int ad_group_subtree_remove_user(const char *container_dn, const char *user_dn) {
+int ad_group_subtree_remove_user(const char *container_dn, const char *user_dn, const char* uri) {
     LDAP *ds;
     char *filter;
     int filter_length;
@@ -1029,7 +1021,7 @@ int ad_group_subtree_remove_user(const char *container_dn, const char *user_dn) 
     int result, num_results;
     char *group_dn=NULL;
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
     filter_length=(strlen(user_dn)+255);
@@ -1057,7 +1049,7 @@ int ad_group_subtree_remove_user(const char *container_dn, const char *user_dn) 
     entry=ldap_first_entry(ds, res);
     while(entry!=NULL) {
         group_dn=ldap_get_dn(ds, entry);
-        if(ad_group_remove_user(group_dn, user_dn)!=AD_SUCCESS) {
+        if(ad_group_remove_user(group_dn, user_dn, uri)!=AD_SUCCESS) {
             snprintf(ad_error_msg, MAX_ERR_LENGTH, 
                 "Error in ad_group_subtree_remove_user"
                 "\nwhen removing %s from %s:\n%s", 
@@ -1079,7 +1071,7 @@ int ad_group_subtree_remove_user(const char *container_dn, const char *user_dn) 
  sets objectclass=organizationalUnit and name=ou name
   Returns AD_SUCCESS on success 
 */
-int ad_ou_create(const char *ou_name, const char *dn) {
+int ad_ou_create(const char *ou_name, const char *dn, const char* uri) {
     LDAP *ds;
     LDAPMod *attrs[3];
     LDAPMod attr1, attr2;
@@ -1088,7 +1080,7 @@ int ad_ou_create(const char *ou_name, const char *dn) {
     char *objectClass_values[]={"organizationalUnit", NULL};
     char *name_values[2];
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return ad_error_code;
 
     attr1.mod_op = LDAP_MOD_ADD;
@@ -1121,7 +1113,7 @@ int ad_ou_create(const char *ou_name, const char *dn) {
 /* ad_list returns a NULL terminated array of character strings
     with one entry for object below the given dn
     returns NULL if no values are found */
-char **ad_list(const char *dn) {
+char **ad_list(const char *dn, const char* uri) {
     LDAP *ds;
     char *attrs[2];
     int result;
@@ -1131,7 +1123,7 @@ char **ad_list(const char *dn) {
     int i;
     char **dnlist;
 
-    ds=ad_login();
+    ds=ad_login(uri);
     if(!ds) return NULL;
 
     attrs[0]="1.1";
