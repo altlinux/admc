@@ -52,8 +52,8 @@ cd BUILD
 %files
 %doc README.md
 %_bindir/adtool
-%_libdir/libadldap_c.so
-%_libdir/libadldap_cpp.so
+%_libdir/libadldap.so
+%_libdir/libadldap++.so
 
 %files gpgui
 %_bindir/gpgui

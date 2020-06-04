@@ -79,7 +79,7 @@ doxygen_add_docs(adtool_doc
 target_link_libraries(adtool
     Qt5::Core
     Qt5::Widgets
-    adldap_cpp
+    adldap++
 )
 target_include_directories(adtool
     PUBLIC

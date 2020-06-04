@@ -32,14 +32,14 @@ set(ADLDAP_CPP_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ad_connection.cpp
 )
 
-add_library(adldap_c SHARED ${ADLDAP_C_SOURCES})
-target_include_directories(adldap_c PUBLIC ${ADLDAP_HEADER_DIRS})
-target_link_libraries(adldap_c ${OPENLDAP_LIBRARIES})
+add_library(adldap SHARED ${ADLDAP_C_SOURCES})
+target_include_directories(adldap PUBLIC ${ADLDAP_HEADER_DIRS})
+target_link_libraries(adldap ${OPENLDAP_LIBRARIES})
 
-add_library(adldap_cpp SHARED ${ADLDAP_CPP_SOURCES})
-target_include_directories(adldap_cpp PUBLIC ${ADLDAP_HEADER_DIRS})
-target_link_libraries(adldap_cpp ${OPENLDAP_LIBRARIES})
+add_library(adldap++ SHARED ${ADLDAP_CPP_SOURCES})
+target_include_directories(adldap++ PUBLIC ${ADLDAP_HEADER_DIRS})
+target_link_libraries(adldap++ ${OPENLDAP_LIBRARIES})
 
-install(TARGETS adldap_c)
-install(TARGETS adldap_cpp)
+install(TARGETS adldap)
+install(TARGETS adldap++)
 
