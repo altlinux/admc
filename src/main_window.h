@@ -24,6 +24,7 @@
 
 #include <QMainWindow>
 
+class QAction;
 class QString;
 class AdModel;
 class ContainersWidget;
@@ -35,6 +36,16 @@ Q_OBJECT
 
 public:
     explicit MainWindow();
+
+    static QAction *action_advanced_view;
+    static QAction *action_toggle_dn;
+    static QAction *action_details;
+    static QAction *action_delete_entry;
+    static QAction *action_new_user;
+    static QAction *action_new_computer;
+    static QAction *action_new_group;
+    static QAction *action_new_ou;
+    static QAction *action_edit_policy;
 
 private slots:
     void on_action_details();

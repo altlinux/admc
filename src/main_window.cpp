@@ -28,7 +28,6 @@
 #include "ad_model.h"
 #include "attributes_model.h"
 #include "create_entry_dialog.h"
-#include "actions.h"
 #include "status_bar.h"
 
 #include <QString>
@@ -42,6 +41,16 @@
 #include <QProcess>
 #include <QVBoxLayout>
 
+QAction *MainWindow::action_advanced_view = new QAction("Advanced view");
+QAction *MainWindow::action_toggle_dn = new QAction("Show DN");
+QAction *MainWindow::action_details = new QAction("Details");
+QAction *MainWindow::action_delete_entry = new QAction("Delete");
+QAction *MainWindow::action_new_user = new QAction("New User");
+QAction *MainWindow::action_new_computer = new QAction("New Computer");
+QAction *MainWindow::action_new_group = new QAction("New Group");
+QAction *MainWindow::action_new_ou = new QAction("New OU");
+QAction *MainWindow::action_edit_policy = new QAction("Edit policy");
+
 MainWindow::MainWindow()
 : QMainWindow()
 {
@@ -52,7 +61,6 @@ MainWindow::MainWindow()
     //
     // Setup widgets
     //
-    actions_init();
 
     // TODO: setting width to 1600+ fullscreens the window, no idea why
     resize(1500, 1000);
@@ -71,14 +79,14 @@ MainWindow::MainWindow()
     setMenuBar(menubar);
     
     const auto menubar_new = menubar->addMenu("New");
-    menubar_new->addAction(&action_new_user);
-    menubar_new->addAction(&action_new_computer);
-    menubar_new->addAction(&action_new_group);
-    menubar_new->addAction(&action_new_ou);
+    menubar_new->addAction(action_new_user);
+    menubar_new->addAction(action_new_computer);
+    menubar_new->addAction(action_new_group);
+    menubar_new->addAction(action_new_ou);
 
     const auto menubar_view = menubar->addMenu("View");
-    menubar_view->addAction(&action_advanced_view);
-    menubar_view->addAction(&action_toggle_dn);
+    menubar_view->addAction(action_advanced_view);
+    menubar_view->addAction(action_toggle_dn);
 
     const auto menubar_preferences = menubar->addMenu("Preferences");
     action_containers_click_attributes = menubar_preferences->addAction("Open attributes on left click in Containers window");
@@ -105,29 +113,32 @@ MainWindow::MainWindow()
     splitter->setStretchFactor(2, 2);
     
     //
-    // Connect actions
+    // Setup actions
     //
+    action_advanced_view->setCheckable(true);
+    action_toggle_dn->setCheckable(true);
+
     connect(
-        &action_details, &QAction::triggered,
+        action_details, &QAction::triggered,
         this, &MainWindow::on_action_details);
     connect(
-        &action_delete_entry, &QAction::triggered,
+        action_delete_entry, &QAction::triggered,
         this, &MainWindow::on_action_delete_entry);
     connect(
-        &action_new_user, &QAction::triggered,
+        action_new_user, &QAction::triggered,
         this, &MainWindow::on_action_new_user);
     connect(
-        &action_new_computer, &QAction::triggered,
+        action_new_computer, &QAction::triggered,
         this, &MainWindow::on_action_new_computer);
     connect(
-        &action_new_group, &QAction::triggered,
+        action_new_group, &QAction::triggered,
         this, &MainWindow::on_action_new_group);
     connect(
-        &action_new_ou, &QAction::triggered,
+        action_new_ou, &QAction::triggered,
         this, &MainWindow::on_action_new_ou);
 
     connect(
-        &action_edit_policy, &QAction::triggered,
+        action_edit_policy, &QAction::triggered,
         this, &MainWindow::on_action_edit_policy);
 
     // Set root index of contents view to selection of containers view

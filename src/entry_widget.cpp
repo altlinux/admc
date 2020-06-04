@@ -18,9 +18,9 @@
  */
 
 #include "entry_widget.h"
+#include "main_window.h"
 #include "ad_interface.h"
 #include "entry_model.h"
-#include "actions.h"
 
 #include <QApplication>
 #include <QItemSelection>
@@ -33,6 +33,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QMenu>
+#include <QAction>
 
 QSet<EntryWidget *> EntryWidget::instances;
 
@@ -58,7 +59,7 @@ EntryWidget::EntryWidget(EntryModel *model)
     update_column_visibility();
 
     connect(
-        &action_toggle_dn, &QAction::triggered,
+        MainWindow::action_toggle_dn, &QAction::triggered,
         this, &EntryWidget::on_action_toggle_dn);
 
     connect(
@@ -84,23 +85,23 @@ void EntryWidget::on_context_menu_requested(const QPoint &pos) {
     
     QMenu menu;
 
-    menu.addAction(&action_details);
-    menu.addAction(&action_delete_entry);
+    menu.addAction(MainWindow::action_details);
+    menu.addAction(MainWindow::action_delete_entry);
 
     QMenu *submenu_new = menu.addMenu("New");
-    submenu_new->addAction(&action_new_user);
-    submenu_new->addAction(&action_new_computer);
-    submenu_new->addAction(&action_new_group);
-    submenu_new->addAction(&action_new_ou);
+    submenu_new->addAction(MainWindow::action_new_user);
+    submenu_new->addAction(MainWindow::action_new_computer);
+    submenu_new->addAction(MainWindow::action_new_group);
+    submenu_new->addAction(MainWindow::action_new_ou);
 
     const QString dn = entry_model->get_dn_from_index(index);
     const bool entry_is_policy = attribute_value_exists(dn, "objectClass", "groupPolicyContainer"); 
     if (entry_is_policy) {
-        menu.addAction(&action_edit_policy);
+        menu.addAction(MainWindow::action_edit_policy);
     }
 
     QPoint global_pos = view->mapToGlobal(pos);
-    menu.exec(global_pos, &action_details);
+    menu.exec(global_pos, MainWindow::action_details);
 }
 
 QString EntryWidget::get_selected_dn() {
