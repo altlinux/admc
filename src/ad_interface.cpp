@@ -98,8 +98,9 @@ QList<QString> load_children(const QString &dn) {
 
         return children;
     } else {
-        // TODO: is this still a fail if there are no children?
-        emit ad_interface.load_children_failed(dn, get_error_str());
+        if (conn->get_errcode() != AD_SUCCESS) {
+            emit ad_interface.load_children_failed(dn, get_error_str());
+        }
 
         return QList<QString>();
     }
@@ -142,7 +143,7 @@ void load_attributes(const QString &dn) {
         attributes_loaded.insert(dn);
 
         emit ad_interface.load_attributes_complete(dn);
-    } else {
+    } else if (conn->get_errcode() != AD_SUCCESS) {
         emit ad_interface.load_attributes_failed(dn, get_error_str());
     }
 }
