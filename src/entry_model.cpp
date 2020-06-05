@@ -54,11 +54,11 @@ bool EntryModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int
     const QString dn = data->text();
     const QString parent_dn = get_dn_from_index(parent);
 
-    const bool dropped_is_user = AD()->attribute_value_exists(dn, "objectClass", "user");
+    const bool dropped_is_user = AD()->is_user(dn);
 
-    const bool parent_is_group = AD()->attribute_value_exists(parent_dn, "objectClass", "group");
-    const bool parent_is_ou = AD()->attribute_value_exists(parent_dn, "objectClass", "organizationalUnit");
-    const bool parent_is_container = AD()->attribute_value_exists(parent_dn, "objectClass", "container");
+    const bool parent_is_group = AD()->is_group(parent_dn);
+    const bool parent_is_ou = AD()->is_ou(parent_dn);
+    const bool parent_is_container = AD()->is_container(parent_dn);
 
     // TODO: support dropping non-users
     // TODO: support dropping policies
@@ -83,11 +83,11 @@ bool EntryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int 
     const QString dn = data->text();
     const QString parent_dn = get_dn_from_index(parent);
 
-    const bool dropped_is_user = AD()->attribute_value_exists(dn, "objectClass", "user");
+    const bool dropped_is_user = AD()->is_user(dn);
 
-    const bool parent_is_group = AD()->attribute_value_exists(parent_dn, "objectClass", "group");
-    const bool parent_is_ou = AD()->attribute_value_exists(parent_dn, "objectClass", "organizationalUnit");
-    const bool parent_is_container = AD()->attribute_value_exists(parent_dn, "objectClass", "container");
+    const bool parent_is_group = AD()->is_group(parent_dn);
+    const bool parent_is_ou = AD()->is_ou(parent_dn);
+    const bool parent_is_container = AD()->is_container(parent_dn);
 
     if (dropped_is_user && (parent_is_ou || parent_is_container)) {
         AD()->move_user(dn, parent_dn);

@@ -357,13 +357,10 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
     const QByteArray new_rdn_array = new_rdn.toLatin1();
     const char *new_rdn_cstr = new_rdn_array.constData();
 
-    const bool is_user = attribute_value_exists(dn, "objectClass", "user");
-    const bool is_group = attribute_value_exists(dn, "objectClass", "group");
-
     int result = AD_INVALID_DN;
-    if (is_user) {
+    if (is_user(dn)) {
         result = connection->rename_user(dn_cstr, new_name_cstr);
-    } else if (is_group) {
+    } else if (is_group(dn)) {
         result = connection->rename_group(dn_cstr, new_name_cstr);
     } else {
         result = connection->rename(dn_cstr, new_rdn_cstr);
@@ -377,4 +374,24 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
     } else {
         emit rename_failed(dn, new_name, new_dn, get_error_str());
     }
+}
+
+bool AdInterface::is_user(const QString &dn) {
+    return attribute_value_exists(dn, "objectClass", "user");
+}
+
+bool AdInterface::is_group(const QString &dn) {
+    return attribute_value_exists(dn, "objectClass", "group");
+}
+
+bool AdInterface::is_container(const QString &dn) {
+    return attribute_value_exists(dn, "objectClass", "container");
+}
+
+bool AdInterface::is_ou(const QString &dn) {
+    return attribute_value_exists(dn, "objectClass", "organizationalUnit");
+}
+
+bool AdInterface::is_policy(const QString &dn) {
+    return attribute_value_exists(dn, "objectClass", "groupPolicyContainer");
 }

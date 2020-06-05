@@ -80,6 +80,12 @@ public:
     void add_user_to_group(const QString &group_dn, const QString &user_dn);
     void rename(const QString &dn, const QString &new_name);
 
+    bool is_user(const QString &dn);
+    bool is_group(const QString &dn);
+    bool is_container(const QString &dn);
+    bool is_ou(const QString &dn);
+    bool is_policy(const QString &dn);
+
 signals:
     void ad_interface_login_complete(const QString &base, const QString &head);
     void ad_interface_login_failed(const QString &base, const QString &head);

@@ -27,6 +27,7 @@ class AdModel;
 class AdProxyModel;
 
 // Display tree of container entries
+// And some other "container-like" entries like domain, built-in, etc
 // Only shows the name column
 class ContainersWidget final : public EntryWidget {
 Q_OBJECT
