@@ -23,6 +23,11 @@
 #include "ad_interface.h"
 #include "entry_model.h"
 
+// Model for containers and contents widgets
+// Contains columns for DN(from EntryModel) and some entry attributes
+// For now only has name, category and description columns
+// Loads entries only when they become visible in views that use
+// this model
 class AdModel final : public EntryModel {
 Q_OBJECT
 

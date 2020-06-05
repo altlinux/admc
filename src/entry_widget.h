@@ -28,7 +28,7 @@ class QTreeView;
 class QLabel;
 class EntryModel;
 
-// Shows names of AdModel as a tree
+// Widget based on a QTreeView with an EntryModel
 class EntryWidget : public QWidget {
 Q_OBJECT
 

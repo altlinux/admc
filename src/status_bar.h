@@ -27,7 +27,7 @@
 void status_bar_init(QStatusBar *status_bar);
 
 
-// Shows names and values of attributes of the entry selected in contents view
+// Shows messages about AdInterface action successes/failures
 class StatusBar final : public QStatusBar {
 Q_OBJECT
 

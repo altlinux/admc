@@ -41,7 +41,6 @@
 #include <QVBoxLayout>
 #include <QInputDialog>
 #include <QMessageBox>
-#include <QSet>
 
 MainWindow *MainWindow::instance = nullptr;
 

@@ -25,7 +25,7 @@
 class MembersModel;
 class QString;
 
-// Shows name, category and description of children of entry selected in containers view
+// Shows member entries of targeted group
 class MembersWidget final : public EntryWidget {
 Q_OBJECT
 

@@ -33,8 +33,11 @@ namespace adldap
     class AdConnection;
 };
 
-// Interface functions to convert from raw char** active directory returns to Qt containers
-// Also can load fake data if program is run with "fake" option
+// Interface between the GUI and AdConnection
+// Stores attributes cache of entries
+// Attributes cache is expanded as more entries are loaded and
+// is updated on entry changes
+// Emits various signals for AD operation successes/failures
 
 enum NewEntryType {
     User,

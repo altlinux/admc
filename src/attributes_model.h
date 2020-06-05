@@ -22,6 +22,9 @@
 
 #include <QStandardItemModel>
 
+// Model for attributes view in DetailsWidget
+// Has attribute name and value columns
+// Value is editable, which also modifies attribute in AD
 class AttributesModel final : public QStandardItemModel {
 Q_OBJECT
 

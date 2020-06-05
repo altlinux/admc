@@ -25,6 +25,8 @@
 class QString;
 class QModelIndex;
 
+// Model for MembersWidget
+// Contains columns for DN(from EntryModel) and name
 class MembersModel final : public EntryModel {
 Q_OBJECT
 

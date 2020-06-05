@@ -26,7 +26,8 @@ class QItemSelection;
 class AdModel;
 class AdProxyModel;
 
-// Shows names of AdModel as a tree
+// Display tree of container entries
+// Only shows the name column
 class ContainersWidget final : public EntryWidget {
 Q_OBJECT
 

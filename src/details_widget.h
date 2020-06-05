@@ -28,6 +28,8 @@ class AttributesModel;
 class MembersWidget;
 
 // Shows info about entry's attributes in multiple tabs
+// Targeted at a particular entry
+// Updates targets of all tabs when target changes
 class DetailsWidget final : public QTabWidget {
 Q_OBJECT
 
