@@ -62,6 +62,7 @@ public:
     ~AdInterface();
 
     void ad_interface_login(const QString &base, const QString &head);
+    QString get_error_str();
 
     QList<QString> load_children(const QString &dn);
     QMap<QString, QList<QString>> get_attributes(const QString &dn);
@@ -74,7 +75,7 @@ public:
     void delete_entry(const QString &dn);
     void move_user(const QString &user_dn, const QString &container_dn);
     void add_user_to_group(const QString &group_dn, const QString &user_dn);
-    QString get_error_str();
+    void rename(const QString &dn, const QString &new_name);
 
 signals:
     void ad_interface_login_complete(const QString &base, const QString &head);
@@ -95,6 +96,9 @@ signals:
     void create_entry_failed(const QString &dn, NewEntryType type, const QString &error_str);
     void move_user_failed(const QString &user_dn, const QString &container_dn, const QString &new_dn, const QString &error_str);
     void add_user_to_group_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
+
+    void rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
+    void rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);
 
 private:
     adldap::AdConnection *connection = nullptr;

@@ -88,12 +88,12 @@ void EntryWidget::on_context_menu_requested(const QPoint &pos) {
 
     menu.addAction(MainWindow::action_details);
     menu.addAction(MainWindow::action_delete_entry);
+    menu.addAction(MainWindow::action_rename);
 
     QMenu *submenu_new = menu.addMenu("New");
     submenu_new->addAction(MainWindow::action_new_user);
     submenu_new->addAction(MainWindow::action_new_computer);
     submenu_new->addAction(MainWindow::action_new_group);
-    submenu_new->addAction(MainWindow::action_new_ou);
 
     const QString dn = entry_model->get_dn_from_index(index);
     const bool entry_is_policy = AD()->attribute_value_exists(dn, "objectClass", "groupPolicyContainer"); 

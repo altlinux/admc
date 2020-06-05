@@ -49,6 +49,7 @@ public:
     static QAction *action_new_group;
     static QAction *action_new_ou;
     static QAction *action_edit_policy;
+    static QAction *action_rename;
 
     AdInterface *ad_interface = nullptr;
     static MainWindow *instance;
@@ -60,6 +61,7 @@ private slots:
     void on_action_new_computer();
     void on_action_new_group();
     void on_action_new_ou();
+    void on_action_rename();
     void on_containers_clicked_dn(const QString &dn);
     void on_contents_clicked_dn(const QString &dn);
     void on_action_edit_policy();

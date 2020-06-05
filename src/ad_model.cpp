@@ -50,6 +50,9 @@ AdModel::AdModel(QObject *parent)
     connect(
         AD(), &AdInterface::load_attributes_complete,
         this, &AdModel::on_load_attributes_complete);
+    connect(
+        AD(), &AdInterface::rename_complete,
+        this, &AdModel::on_rename_complete);
 }
 
 bool AdModel::canFetchMore(const QModelIndex &parent) const {
@@ -160,7 +163,6 @@ void AdModel::on_create_entry_complete(const QString &dn, NewEntryType type) {
 
 void AdModel::on_load_attributes_complete(const QString &dn) {
     // Compose row based on dn
-    auto row = QList<QStandardItem *>();
     QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
 
     if (items.size() == 0) {
@@ -178,6 +180,7 @@ void AdModel::on_load_attributes_complete(const QString &dn) {
     }
 
     // Compose the row of items from indexes
+    auto row = QList<QStandardItem *>();
     for (int i = 0; i < AdModel::Column::COUNT; i++) {
         QModelIndex index = indexes[i];
         QStandardItem *item = itemFromIndex(index);
@@ -185,6 +188,22 @@ void AdModel::on_load_attributes_complete(const QString &dn) {
     }
 
     load_row(row, dn);
+}
+
+void AdModel::on_rename_complete(const QString &dn, const QString &new_name, const QString &new_dn) {
+    // Find row still attached to old dn
+    QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+
+    if (items.size() == 0) {
+        return;
+    }
+    
+    // Change dn of row to new dn
+    QStandardItem *dn_item = items[0];
+    dn_item->setText(new_dn);
+
+    // Reload attributes
+    on_load_attributes_complete(new_dn);
 }
 
 // Load data into row of items based on entry attributes

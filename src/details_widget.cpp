@@ -48,6 +48,9 @@ DetailsWidget::DetailsWidget()
     connect(
         AD(), &AdInterface::load_attributes_complete,
         this, &DetailsWidget::on_load_attributes_complete);
+    connect(
+        AD(), &AdInterface::rename_complete,
+        this, &DetailsWidget::on_rename_complete);
 
     change_target("");
 };
@@ -105,5 +108,11 @@ void DetailsWidget::on_load_attributes_complete(const QString &dn) {
     // Reload entry since attributes were updated
     if (target_dn == dn) {
         change_target(dn);
+    }
+}
+
+void DetailsWidget::on_rename_complete(const QString &dn, const QString &new_name, const QString &new_dn) {
+    if (target_dn == dn) {
+        change_target(new_dn);
     }
 }

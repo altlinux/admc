@@ -39,6 +39,7 @@
 #include <QDir>
 #include <QProcess>
 #include <QVBoxLayout>
+#include <QInputDialog>
 
 MainWindow *MainWindow::instance = nullptr;
 
@@ -51,6 +52,7 @@ QAction *MainWindow::action_new_computer = new QAction("New Computer");
 QAction *MainWindow::action_new_group = new QAction("New Group");
 QAction *MainWindow::action_new_ou = new QAction("New OU");
 QAction *MainWindow::action_edit_policy = new QAction("Edit policy");
+QAction *MainWindow::action_rename = new QAction("Rename");
 
 MainWindow::MainWindow(const bool auto_login)
 : QMainWindow()
@@ -116,6 +118,8 @@ MainWindow::MainWindow(const bool auto_login)
     splitter->addWidget(contents_widget);
     splitter->addWidget(details_widget);
 
+    // When window is resized, make containers widget half as big 
+    // as others
     splitter->setStretchFactor(0, 1);
     splitter->setStretchFactor(1, 2);
     splitter->setStretchFactor(2, 2);
@@ -144,6 +148,9 @@ MainWindow::MainWindow(const bool auto_login)
     connect(
         action_new_ou, &QAction::triggered,
         this, &MainWindow::on_action_new_ou);
+    connect(
+        action_rename, &QAction::triggered,
+        this, &MainWindow::on_action_rename);
 
     connect(
         action_edit_policy, &QAction::triggered,
@@ -257,6 +264,20 @@ void MainWindow::on_action_new_group() {
 
 void MainWindow::on_action_new_ou() {
     on_action_new_entry_generic(NewEntryType::OU);
+}
+
+void MainWindow::on_action_rename() {
+    QString dn = EntryWidget::get_selected_dn();
+
+    // Get new name from input box
+    QString dialog_title = "Rename";
+    QString input_label = "New name:";
+    bool ok;
+    QString new_name = QInputDialog::getText(nullptr, dialog_title, input_label, QLineEdit::Normal, "", &ok);
+
+    if (ok && !new_name.isEmpty()) {
+        AD()->rename(dn, new_name);
+    }
 }
 
 void MainWindow::on_action_edit_policy() {

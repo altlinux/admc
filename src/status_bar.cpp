@@ -71,6 +71,13 @@ StatusBar::StatusBar()
     connect(
         AD(), &AdInterface::add_user_to_group_failed,
         this, &StatusBar::on_add_user_to_group_failed);
+
+    connect(
+        AD(), &AdInterface::rename_complete,
+        this, &StatusBar::on_rename_complete);
+    connect(
+        AD(), &AdInterface::rename_failed,
+        this, &StatusBar::on_rename_failed);
 }
 
 void StatusBar::on_ad_interface_login_complete(const QString &search_base, const QString &head_dn) {
@@ -148,6 +155,18 @@ void StatusBar::on_move_user_failed(const QString &user_dn, const QString &conta
 }
 void StatusBar::on_add_user_to_group_failed(const QString &group_dn, const QString &user_dn, const QString &error_str) {
     QString msg = QString("Failed to add user \"%1\" to group \"%2\". Error: \"%3\"").arg(user_dn, group_dn, error_str);
+
+    showMessage(msg);
+}
+
+void StatusBar::on_rename_complete(const QString &dn, const QString &new_name, const QString &new_dn) {
+    QString msg = QString("Renamed \"%1\" to \"%2\"").arg(dn, new_name);
+
+    showMessage(msg);
+}
+
+void StatusBar::on_rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str) {
+    QString msg = QString("Failed to rename \"%1\" to \"%2\". Error: \"%3\"").arg(dn, new_name, error_str);
 
     showMessage(msg);
 }

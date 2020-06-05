@@ -53,6 +53,9 @@ private slots:
     void on_move_user_failed(const QString &user_dn, const QString &container_dn, const QString &new_dn, const QString &error_str);
     void on_add_user_to_group_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
 
+    void on_rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
+    void on_rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);
+
 };
 
 #endif /* STATUS_BAR_H */

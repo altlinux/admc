@@ -70,11 +70,6 @@ QString AdInterface::get_error_str() {
     return QString(connection->get_errstr());
 }
 
-// TODO: confirm that this encoding is ok
-const char *qstring_to_cstr(const QString &qstr) {
-    return qstr.toLatin1().constData();
-}
-
 QList<QString> AdInterface::load_children(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
@@ -322,7 +317,6 @@ void AdInterface::move_user(const QString &user_dn, const QString &container_dn)
 }
 
 void AdInterface::add_user_to_group(const QString &group_dn, const QString &user_dn) {
-    // TODO: currently getting object class violation error
     int result = AD_INVALID_DN;
 
     const QByteArray group_dn_array = group_dn.toLatin1();
@@ -342,5 +336,47 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
         emit add_user_to_group_complete(group_dn, user_dn);
     } else {
         emit add_user_to_group_failed(group_dn, user_dn, connection->get_errstr());
+    }
+}
+
+void AdInterface::rename(const QString &dn, const QString &new_name) {
+    // Compose new_rdn and new_dn
+    const QStringList exploded_dn = dn.split(',');
+    const QString old_rdn = exploded_dn[0];
+    const int prefix_i = old_rdn.indexOf('=') + 1;
+    const QString prefix = old_rdn.left(prefix_i);
+    const QString new_rdn = prefix + new_name;
+    QStringList new_exploded_dn(exploded_dn);
+    new_exploded_dn.replace(0, new_rdn);
+    const QString new_dn = new_exploded_dn.join(',');
+
+    const QByteArray dn_array = dn.toLatin1();
+    const char *dn_cstr = dn_array.constData();
+    const QByteArray new_name_array = new_name.toLatin1();
+    const char *new_name_cstr = new_name_array.constData();
+    const QByteArray new_rdn_array = new_rdn.toLatin1();
+    const char *new_rdn_cstr = new_rdn_array.constData();
+
+    const bool is_user = attribute_value_exists(dn, "objectClass", "user");
+    const bool is_group = attribute_value_exists(dn, "objectClass", "group");
+
+    int result = AD_INVALID_DN;
+    if (is_user) {
+        result = connection->rename_user(dn_cstr, new_name_cstr);
+    } else if (is_group) {
+        result = connection->rename_group(dn_cstr, new_name_cstr);
+    } else {
+        result = connection->rename(dn_cstr, new_rdn_cstr);
+    }
+
+    if (result == AD_SUCCESS) {
+        load_attributes(new_dn);
+        reload_attributes_of_entry_groups(new_dn);
+
+        emit rename_complete(dn, new_name, new_dn);
+    } else {
+        // TODO: replace connection->get_errstr with get_error_str
+        // in other places
+        emit rename_failed(dn, new_name, new_dn, get_error_str());
     }
 }
