@@ -24,6 +24,14 @@
 #include <QList>
 #include <QString>
 #include <QMap>
+#include <QSet>
+
+class AdConnection;
+
+namespace adldap
+{
+    class AdConnection;
+};
 
 // Interface functions to convert from raw char** active directory returns to Qt containers
 // Also can load fake data if program is run with "fake" option
@@ -43,13 +51,30 @@ const QMap<NewEntryType, QString> new_entry_type_to_string = {
     {NewEntryType::Group, "Group"},
 };
 
-// Class solely for emitting signals
+QString extract_name_from_dn(const QString &dn);
+QString extract_parent_dn_from_dn(const QString &dn);
+
 class AdInterface final : public QObject {
 Q_OBJECT
 
 public:
+    explicit AdInterface(QObject *parent);
+    ~AdInterface();
 
-public slots:
+    void ad_interface_login(const QString &base, const QString &head);
+
+    QList<QString> load_children(const QString &dn);
+    QMap<QString, QList<QString>> get_attributes(const QString &dn);
+    QList<QString> get_attribute_multi(const QString &dn, const QString &attribute);
+    QString get_attribute(const QString &dn, const QString &attribute);
+    bool attribute_value_exists(const QString &dn, const QString &attribute, const QString &value);
+
+    bool set_attribute(const QString &dn, const QString &attribute, const QString &value);
+    bool create_entry(const QString &name, const QString &dn, NewEntryType type);
+    void delete_entry(const QString &dn);
+    void move_user(const QString &user_dn, const QString &container_dn);
+    void add_user_to_group(const QString &group_dn, const QString &user_dn);
+    QString get_error_str();
 
 signals:
     void ad_interface_login_complete(const QString &base, const QString &head);
@@ -72,26 +97,13 @@ signals:
     void add_user_to_group_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
 
 private:
+    adldap::AdConnection *connection = nullptr;
+    QMap<QString, QMap<QString, QList<QString>>> attributes_map;
+    QSet<QString> attributes_loaded;
+
+    void load_attributes(const QString &dn);
+    void reload_attributes_of_entry_groups(const QString &dn);
 
 }; 
-
-extern AdInterface ad_interface;
-
-void ad_interface_login(const QString &base, const QString &head);
-
-QList<QString> load_children(const QString &dn);
-QMap<QString, QList<QString>> get_attributes(const QString &dn);
-QList<QString> get_attribute_multi(const QString &dn, const QString &attribute);
-QString get_attribute(const QString &dn, const QString &attribute);
-bool attribute_value_exists(const QString &dn, const QString &attribute, const QString &value);
-
-bool set_attribute(const QString &dn, const QString &attribute, const QString &value);
-bool create_entry(const QString &name, const QString &dn, NewEntryType type);
-void delete_entry(const QString &dn);
-bool set_attribute(const QString &dn, const QString &attribute, const QString &value);
-void move_user(const QString &user_dn, const QString &container_dn);
-void add_user_to_group(const QString &group_dn, const QString &user_dn);
-QString extract_name_from_dn(const QString &dn);
-QString extract_parent_dn_from_dn(const QString &dn);
 
 #endif /* AD_INTERFACE_H */

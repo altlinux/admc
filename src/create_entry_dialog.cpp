@@ -19,6 +19,7 @@
 
 #include "create_entry_dialog.h"
 #include "ad_interface.h"
+#include "main_window.h"
 
 #include <QInputDialog>
 #include <QString>
@@ -49,6 +50,6 @@ void create_entry_dialog(NewEntryType type, const QString &parent_dn) {
 
         const QString dn = suffix + "=" + name + "," + parent_dn;
 
-        create_entry(name, dn, type);
+        AD()->create_entry(name, dn, type);
     }
 }

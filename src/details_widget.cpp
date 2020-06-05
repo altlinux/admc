@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "main_window.h"
 #include "details_widget.h"
 #include "attributes_model.h"
 #include "ad_interface.h"
@@ -39,13 +40,13 @@ DetailsWidget::DetailsWidget()
     members_widget = MembersWidget::make();
 
     connect(
-        &ad_interface, &AdInterface::delete_entry_complete,
+        AD(), &AdInterface::delete_entry_complete,
         this, &DetailsWidget::on_delete_entry_complete);
     connect(
-        &ad_interface, &AdInterface::move_user_complete,
+        AD(), &AdInterface::move_user_complete,
         this, &DetailsWidget::on_move_user_complete);
     connect(
-        &ad_interface, &AdInterface::load_attributes_complete,
+        AD(), &AdInterface::load_attributes_complete,
         this, &DetailsWidget::on_load_attributes_complete);
 
     change_target("");
@@ -67,7 +68,7 @@ void DetailsWidget::change_target(const QString &dn) {
     addTab(attributes_view, "All Attributes");
 
     if (dn != "") {
-        bool is_group = attribute_value_exists(target_dn, "objectClass", "group");
+        bool is_group = AD()->attribute_value_exists(target_dn, "objectClass", "group");
         if (is_group) {
             addTab(members_widget, "Group members");
         }

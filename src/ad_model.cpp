@@ -18,6 +18,7 @@
  */
 
 #include "ad_model.h"
+#include "main_window.h"
 
 #include <QMimeData>
 #include <QMap>
@@ -35,19 +36,19 @@ AdModel::AdModel(QObject *parent)
     setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
     
     connect(
-        &ad_interface, &AdInterface::ad_interface_login_complete,
+        AD(), &AdInterface::ad_interface_login_complete,
         this, &AdModel::on_ad_interface_login_complete);
     connect(
-        &ad_interface, &AdInterface::delete_entry_complete,
+        AD(), &AdInterface::delete_entry_complete,
         this, &AdModel::on_delete_entry_complete);
     connect(
-        &ad_interface, &AdInterface::move_user_complete,
+        AD(), &AdInterface::move_user_complete,
         this, &AdModel::on_move_user_complete);
     connect(
-        &ad_interface, &AdInterface::create_entry_complete,
+        AD(), &AdInterface::create_entry_complete,
         this, &AdModel::on_create_entry_complete);
     connect(
-        &ad_interface, &AdInterface::load_attributes_complete,
+        AD(), &AdInterface::load_attributes_complete,
         this, &AdModel::on_load_attributes_complete);
 }
 
@@ -71,7 +72,7 @@ void AdModel::fetchMore(const QModelIndex &parent) {
     QStandardItem *parent_item = itemFromIndex(parent);
 
     // Add children
-    QList<QString> children = load_children(dn);
+    QList<QString> children = AD()->load_children(dn);
 
     for (auto child : children) {
         make_new_row(parent_item, child);
@@ -189,22 +190,22 @@ void AdModel::on_load_attributes_complete(const QString &dn) {
 // Load data into row of items based on entry attributes
 void load_row(QList<QStandardItem *> row, const QString &dn) {
     // Load row based on attributes
-    QString name = get_attribute(dn, "name");
+    QString name = AD()->get_attribute(dn, "name");
 
     // NOTE: this is given as raw DN and contains '-' where it should
     // have spaces, so convert it
-    QString category = get_attribute(dn, "objectCategory");
+    QString category = AD()->get_attribute(dn, "objectCategory");
     category = extract_name_from_dn(category);
     category = category.replace('-', ' ');
 
-    QString description = get_attribute(dn, "description");
+    QString description = AD()->get_attribute(dn, "description");
 
-    bool showInAdvancedViewOnly = get_attribute(dn, "showInAdvancedViewOnly") == "TRUE";
+    bool showInAdvancedViewOnly = AD()->get_attribute(dn, "showInAdvancedViewOnly") == "TRUE";
 
     bool is_container = false;
     const QList<QString> container_objectClasses = {"container", "organizationalUnit", "builtinDomain", "domain"};
     for (auto c : container_objectClasses) {
-        if (attribute_value_exists(dn, "objectClass", c)) {
+        if (AD()->attribute_value_exists(dn, "objectClass", c)) {
             is_container = true;
             break;
         }
@@ -235,7 +236,7 @@ void load_row(QList<QStandardItem *> row, const QString &dn) {
     };
     QString icon_name = "dialog-question";
     for (auto c : class_to_icon.keys()) {
-        if (attribute_value_exists(dn, "objectClass", c)) {
+        if (AD()->attribute_value_exists(dn, "objectClass", c)) {
             icon_name = class_to_icon[c];
             break;  
         }

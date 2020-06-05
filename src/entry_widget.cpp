@@ -96,7 +96,7 @@ void EntryWidget::on_context_menu_requested(const QPoint &pos) {
     submenu_new->addAction(MainWindow::action_new_ou);
 
     const QString dn = entry_model->get_dn_from_index(index);
-    const bool entry_is_policy = attribute_value_exists(dn, "objectClass", "groupPolicyContainer"); 
+    const bool entry_is_policy = AD()->attribute_value_exists(dn, "objectClass", "groupPolicyContainer"); 
     if (entry_is_policy) {
         menu.addAction(MainWindow::action_edit_policy);
     }

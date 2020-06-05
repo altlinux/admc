@@ -19,6 +19,7 @@
 
 #include "members_model.h"
 #include "ad_interface.h"
+#include "main_window.h"
 
 #include <QMimeData>
 
@@ -39,9 +40,9 @@ void MembersModel::change_target(const QString &new_target_dn) {
     }
 
     // Populate model with members of new root
-    const QList<QString> members = get_attribute_multi(target_dn, "member");
+    const QList<QString> members = AD()->get_attribute_multi(target_dn, "member");
     for (auto dn : members) {
-        const QString name = get_attribute(dn, "name");
+        const QString name = AD()->get_attribute(dn, "name");
 
         const auto name_item = new QStandardItem(name);
         const auto dn_item = new QStandardItem(dn);

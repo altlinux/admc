@@ -19,11 +19,11 @@
 
 #include "config.h"
 #include "Runner.h"
+#include "main_window.h"
 
+#include <QApplication>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
-
-#include "main_window.h"
 
 Runner::Runner(int& argc_, char **argv_, QString dispname, QString appname, QString appver, QString orgname, QString orgdomain) {
     //Q_INIT_RESOURCE(adtool);
@@ -31,7 +31,7 @@ Runner::Runner(int& argc_, char **argv_, QString dispname, QString appname, QStr
     this->argc = argc_;
     this->argv = argv_;
 
-    this->app = ADMC::create(this->argc, this->argv);
+    this->app = new QApplication(this->argc, this->argv);
     this->app->setApplicationDisplayName(dispname);
     this->app->setApplicationName(appname);
     this->app->setApplicationVersion(appver);

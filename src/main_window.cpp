@@ -17,10 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ad_connection.h"
 #include "config.h"
 
-#include "admc.h"
 #include "main_window.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
@@ -30,6 +28,7 @@
 #include "create_entry_dialog.h"
 #include "status_bar.h"
 
+#include <QApplication>
 #include <QString>
 #include <QMainWindow>
 #include <QMenu>
@@ -40,6 +39,8 @@
 #include <QDir>
 #include <QProcess>
 #include <QVBoxLayout>
+
+MainWindow *MainWindow::instance = nullptr;
 
 QAction *MainWindow::action_advanced_view = new QAction("Advanced view");
 QAction *MainWindow::action_toggle_dn = new QAction("Show DN");
@@ -54,6 +55,14 @@ QAction *MainWindow::action_edit_policy = new QAction("Edit policy");
 MainWindow::MainWindow(const bool auto_login)
 : QMainWindow()
 {
+    if (MainWindow::instance != nullptr) {
+        printf("Attempting to create MainWindow twice!");
+        return;
+    }
+    MainWindow::instance = this;
+
+    ad_interface = new AdInterface(this);
+
     action_login = new QAction("Login");
     action_exit = new QAction("Exit");
 
@@ -140,7 +149,7 @@ MainWindow::MainWindow(const bool auto_login)
         action_edit_policy, &QAction::triggered,
         this, &MainWindow::on_action_edit_policy);
     connect(
-        &ad_interface, &AdInterface::ad_interface_login_complete,
+        AD(), &AdInterface::ad_interface_login_complete,
         this, &MainWindow::on_ad_interface_login_complete);
 
     // Set root index of contents view to selection of containers view
@@ -171,6 +180,11 @@ MainWindow::MainWindow(const bool auto_login)
     }
 }
 
+AdInterface *AD() {
+    AdInterface *ad_interface = MainWindow::instance->ad_interface;
+    return ad_interface;
+}
+
 void MainWindow::set_enabled_for_ad_actions(bool enabled) {
     QList<QAction *> ad_actions = {
         action_advanced_view,
@@ -188,7 +202,7 @@ void MainWindow::set_enabled_for_ad_actions(bool enabled) {
 }
 
 void MainWindow::on_action_login() {
-    ad_interface_login(SEARCH_BASE, HEAD_DN);
+    AD()->ad_interface_login(SEARCH_BASE, HEAD_DN);
 }
 
 void MainWindow::on_ad_interface_login_complete(const QString &base, const QString &head) {
@@ -218,7 +232,7 @@ void MainWindow::on_contents_clicked_dn(const QString &dn) {
 
 void MainWindow::on_action_delete_entry() {
     QString dn = EntryWidget::get_selected_dn();
-    delete_entry(dn);
+    AD()->delete_entry(dn);
 }
 
 void MainWindow::on_action_new_entry_generic(NewEntryType type) {
@@ -255,7 +269,7 @@ void MainWindow::on_action_edit_policy() {
     const char *uri = "ldap://dc0.domain.alt";
 
     const QString dn = EntryWidget::get_selected_dn();
-    const QString path = get_attribute(dn, "gPCFileSysPath");
+    const QString path = AD()->get_attribute(dn, "gPCFileSysPath");
 
     QStringList args;
     args << uri;

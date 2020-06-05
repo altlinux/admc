@@ -18,11 +18,19 @@
  */
 
 #include "ad_interface.h"
-
-#include "admc.h"
 #include "ad_connection.h"
 
 #include <QSet>
+
+AdInterface::AdInterface(QObject *parent)
+: QObject(parent)
+{
+    connection = new adldap::AdConnection();
+}
+
+AdInterface::~AdInterface() {
+    delete connection;
+}
 
 // "CN=foo,CN=bar,DC=domain,DC=com"
 // =>
@@ -48,26 +56,18 @@ QString extract_parent_dn_from_dn(const QString &dn) {
     return parent_dn;
 }
 
-AdInterface ad_interface;
-QMap<QString, QMap<QString, QList<QString>>> attributes_map;
-QSet<QString> attributes_loaded;
+void AdInterface::ad_interface_login(const QString &base, const QString &head) {
+    connection->connect(base.toStdString(), head.toStdString());
 
-void ad_interface_login(const QString &base, const QString &head) {
-    ADMC* app = ADMC::get_instance();
-    adldap::AdConnection* conn = app->get_connection();
-    conn->connect(base.toStdString(), head.toStdString());
-
-    if (conn->is_connected()) {
-        emit ad_interface.ad_interface_login_complete(base, head);
+    if (connection->is_connected()) {
+        emit ad_interface_login_complete(base, head);
     } else {
-        emit ad_interface.ad_interface_login_failed(base, head);
+        emit ad_interface_login_failed(base, head);
     }
 }
 
-QString get_error_str() {
-    ADMC* app = ADMC::get_instance();
-    adldap::AdConnection* conn = app->get_connection();
-    return QString(conn->get_errstr());
+QString AdInterface::get_error_str() {
+    return QString(connection->get_errstr());
 }
 
 // TODO: confirm that this encoding is ok
@@ -75,13 +75,11 @@ const char *qstring_to_cstr(const QString &qstr) {
     return qstr.toLatin1().constData();
 }
 
-QList<QString> load_children(const QString &dn) {
+QList<QString> AdInterface::load_children(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    ADMC* app = ADMC::get_instance();
-    adldap::AdConnection* conn = app->get_connection();
-    char **children_raw = conn->list(dn_cstr);
+    char **children_raw = connection->list(dn_cstr);
 
     if (children_raw != NULL) {
         auto children = QList<QString>();
@@ -98,21 +96,19 @@ QList<QString> load_children(const QString &dn) {
 
         return children;
     } else {
-        if (conn->get_errcode() != AD_SUCCESS) {
-            emit ad_interface.load_children_failed(dn, get_error_str());
+        if (connection->get_errcode() != AD_SUCCESS) {
+            emit load_children_failed(dn, get_error_str());
         }
 
         return QList<QString>();
     }
 }
 
-void load_attributes(const QString &dn) {
+void AdInterface::load_attributes(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    ADMC* app = ADMC::get_instance();
-    adldap::AdConnection* conn = app->get_connection();
-    char** attributes_raw = conn->get_attribute(dn_cstr, "*");
+    char** attributes_raw = connection->get_attribute(dn_cstr, "*");
 
     if (attributes_raw != NULL) {
         attributes_map[dn] = QMap<QString, QList<QString>>();
@@ -142,13 +138,13 @@ void load_attributes(const QString &dn) {
 
         attributes_loaded.insert(dn);
 
-        emit ad_interface.load_attributes_complete(dn);
-    } else if (conn->get_errcode() != AD_SUCCESS) {
-        emit ad_interface.load_attributes_failed(dn, get_error_str());
+        emit load_attributes_complete(dn);
+    } else if (connection->get_errcode() != AD_SUCCESS) {
+        emit load_attributes_failed(dn, get_error_str());
     }
 }
 
-QMap<QString, QList<QString>> get_attributes(const QString &dn) {
+QMap<QString, QList<QString>> AdInterface::get_attributes(const QString &dn) {
     // First check whether load_attributes was ever called on this dn
     // If it hasn't, attempt to load attributes
     // After that return whatever attributes are now loaded for this dn
@@ -163,7 +159,7 @@ QMap<QString, QList<QString>> get_attributes(const QString &dn) {
     }
 }
 
-QList<QString> get_attribute_multi(const QString &dn, const QString &attribute) {
+QList<QString> AdInterface::get_attribute_multi(const QString &dn, const QString &attribute) {
     QMap<QString, QList<QString>> attributes = get_attributes(dn);
 
     if (attributes.contains(attribute)) {
@@ -173,7 +169,7 @@ QList<QString> get_attribute_multi(const QString &dn, const QString &attribute) 
     }
 }
 
-QString get_attribute(const QString &dn, const QString &attribute) {
+QString AdInterface::get_attribute(const QString &dn, const QString &attribute) {
     QList<QString> values = get_attribute_multi(dn, attribute);
 
     if (values.size() > 0) {
@@ -184,7 +180,7 @@ QString get_attribute(const QString &dn, const QString &attribute) {
     }
 }
 
-bool attribute_value_exists(const QString &dn, const QString &attribute, const QString &value) {
+bool AdInterface::attribute_value_exists(const QString &dn, const QString &attribute, const QString &value) {
     QList<QString> values = get_attribute_multi(dn, attribute);
 
     if (values.contains(value)) {
@@ -194,10 +190,8 @@ bool attribute_value_exists(const QString &dn, const QString &attribute, const Q
     }
 }
 
-bool set_attribute(const QString &dn, const QString &attribute, const QString &value) {
+bool AdInterface::set_attribute(const QString &dn, const QString &attribute, const QString &value) {
     int result = AD_INVALID_DN;
-    ADMC* app = ADMC::get_instance();
-    adldap::AdConnection* adconn = app->get_connection();
 
     const QString old_value = get_attribute(dn, attribute);
     
@@ -210,27 +204,25 @@ bool set_attribute(const QString &dn, const QString &attribute, const QString &v
     const QByteArray value_array = value.toLatin1();
     const char *value_cstr = value_array.constData();
 
-    result = adconn->mod_replace(dn_cstr, attribute_cstr, value_cstr);
+    result = connection->mod_replace(dn_cstr, attribute_cstr, value_cstr);
 
     if (result == AD_SUCCESS) {
         // Reload attributes to get new value
         load_attributes(dn);
         
-        emit ad_interface.set_attribute_complete(dn, attribute, old_value, value);
+        emit set_attribute_complete(dn, attribute, old_value, value);
 
         return true;
     } else {
-        emit ad_interface.set_attribute_failed(dn, attribute, old_value, value, get_error_str());
+        emit set_attribute_failed(dn, attribute, old_value, value, get_error_str());
 
         return false;
     }
 }
 
 // TODO: can probably make a create_anything() function with enum parameter
-bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
+bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryType type) {
     int result = AD_INVALID_DN;
-    ADMC* app = ADMC::get_instance();
-    adldap::AdConnection* adconn = app->get_connection();
     
     const QByteArray name_array = name.toLatin1();
     const char *name_cstr = name_array.constData();
@@ -240,37 +232,37 @@ bool create_entry(const QString &name, const QString &dn, NewEntryType type) {
 
     switch (type) {
         case User: {
-            result = adconn->create_user(name_cstr, dn_cstr);
+            result = connection->create_user(name_cstr, dn_cstr);
             break;
         }
         case Computer: {
-            result = adconn->create_computer(name_cstr, dn_cstr);
+            result = connection->create_computer(name_cstr, dn_cstr);
             break;
         }
         case OU: {
-            result = adconn->ou_create(name_cstr, dn_cstr);
+            result = connection->ou_create(name_cstr, dn_cstr);
             break;
         }
         case Group: {
-            result = adconn->group_create(name_cstr, dn_cstr);
+            result = connection->group_create(name_cstr, dn_cstr);
             break;
         }
         case COUNT: break;
     }
 
     if (result == AD_SUCCESS) {
-        emit ad_interface.create_entry_complete(dn, type);
+        emit create_entry_complete(dn, type);
 
         return true;
     } else {
-        emit ad_interface.create_entry_failed(dn, type, adconn->get_errstr());
+        emit create_entry_failed(dn, type, connection->get_errstr());
 
         return false;
     }
 }
 
 // Used to update membership when changes happen to entry
-void reload_attributes_of_entry_groups(const QString &dn) {
+void AdInterface::reload_attributes_of_entry_groups(const QString &dn) {
     QList<QString> groups = get_attribute_multi(dn, "memberOf");
 
     for (auto group : groups) {
@@ -281,15 +273,13 @@ void reload_attributes_of_entry_groups(const QString &dn) {
     }
 }
 
-void delete_entry(const QString &dn) {
+void AdInterface::delete_entry(const QString &dn) {
     int result = AD_INVALID_DN;
-    ADMC* app = ADMC::get_instance();
-    adldap::AdConnection* adconn = app->get_connection();
 
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    result = adconn->object_delete(dn_cstr);
+    result = connection->object_delete(dn_cstr);
 
     if (result == AD_SUCCESS) {
         reload_attributes_of_entry_groups(dn);
@@ -297,16 +287,14 @@ void delete_entry(const QString &dn) {
         attributes_map.remove(dn);
         attributes_loaded.remove(dn);
 
-        emit ad_interface.delete_entry_complete(dn);
+        emit delete_entry_complete(dn);
     } else {
-        emit ad_interface.delete_entry_failed(dn, adconn->get_errstr());
+        emit delete_entry_failed(dn, connection->get_errstr());
     }
 }
 
-void move_user(const QString &user_dn, const QString &container_dn) {
+void AdInterface::move_user(const QString &user_dn, const QString &container_dn) {
     int result = AD_INVALID_DN;
-    ADMC* app = ADMC::get_instance();
-    adldap::AdConnection* adconn = app->get_connection();
 
     QString user_name = extract_name_from_dn(user_dn);
     QString new_dn = "CN=" + user_name + "," + container_dn;
@@ -317,7 +305,7 @@ void move_user(const QString &user_dn, const QString &container_dn) {
     const QByteArray container_dn_array = container_dn.toLatin1();
     const char *container_dn_cstr = container_dn_array.constData();
 
-    result = adconn->move_user(user_dn_cstr, container_dn_cstr);
+    result = connection->move_user(user_dn_cstr, container_dn_cstr);
 
     if (result == AD_SUCCESS) {
         // Unload attributes at old dn
@@ -327,17 +315,15 @@ void move_user(const QString &user_dn, const QString &container_dn) {
         load_attributes(new_dn);
         reload_attributes_of_entry_groups(new_dn);
 
-        emit ad_interface.move_user_complete(user_dn, container_dn, new_dn);
+        emit move_user_complete(user_dn, container_dn, new_dn);
     } else {
-        emit ad_interface.move_user_failed(user_dn, container_dn, new_dn, adconn->get_errstr());
+        emit move_user_failed(user_dn, container_dn, new_dn, connection->get_errstr());
     }
 }
 
-void add_user_to_group(const QString &group_dn, const QString &user_dn) {
+void AdInterface::add_user_to_group(const QString &group_dn, const QString &user_dn) {
     // TODO: currently getting object class violation error
     int result = AD_INVALID_DN;
-    ADMC* app = ADMC::get_instance();
-    adldap::AdConnection* adconn = app->get_connection();
 
     const QByteArray group_dn_array = group_dn.toLatin1();
     const char *group_dn_cstr = group_dn_array.constData();
@@ -345,7 +331,7 @@ void add_user_to_group(const QString &group_dn, const QString &user_dn) {
     const QByteArray user_dn_array = user_dn.toLatin1();
     const char *user_dn_cstr = user_dn_array.constData();
 
-    result = adconn->group_add_user(group_dn_cstr, user_dn_cstr);
+    result = connection->group_add_user(group_dn_cstr, user_dn_cstr);
 
     if (result == AD_SUCCESS) {
         // Reload attributes of group and user because group
@@ -353,8 +339,8 @@ void add_user_to_group(const QString &group_dn, const QString &user_dn) {
         load_attributes(group_dn);
         load_attributes(user_dn);
 
-        emit ad_interface.add_user_to_group_complete(group_dn, user_dn);
+        emit add_user_to_group_complete(group_dn, user_dn);
     } else {
-        emit ad_interface.add_user_to_group_failed(group_dn, user_dn, adconn->get_errstr());
+        emit add_user_to_group_failed(group_dn, user_dn, connection->get_errstr());
     }
 }

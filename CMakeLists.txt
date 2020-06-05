@@ -47,7 +47,6 @@ set(ADTOOL_HEADER_DIRS
 
 set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/admc.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Runner.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_proxy_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_interface.cpp

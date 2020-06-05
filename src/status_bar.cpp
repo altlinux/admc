@@ -19,6 +19,7 @@
 
 #include "status_bar.h"
 #include "ad_interface.h"
+#include "main_window.h"
 
 StatusBar::StatusBar()
 : QStatusBar()
@@ -26,49 +27,49 @@ StatusBar::StatusBar()
     showMessage(tr("Ready"), 10 * 1000);
 
     connect(
-        &ad_interface, &AdInterface::ad_interface_login_complete,
+        AD(), &AdInterface::ad_interface_login_complete,
         this, &StatusBar::on_ad_interface_login_complete);
     connect(
-        &ad_interface, &AdInterface::ad_interface_login_failed,
+        AD(), &AdInterface::ad_interface_login_failed,
         this, &StatusBar::on_ad_interface_login_failed);
 
     connect(
-        &ad_interface, &AdInterface::load_children_failed,
+        AD(), &AdInterface::load_children_failed,
         this, &StatusBar::on_load_children_failed);
     connect(
-        &ad_interface, &AdInterface::load_attributes_failed,
+        AD(), &AdInterface::load_attributes_failed,
         this, &StatusBar::on_load_attributes_failed);
 
     connect(
-        &ad_interface, &AdInterface::create_entry_complete,
+        AD(), &AdInterface::create_entry_complete,
         this, &StatusBar::on_create_entry_complete);
     connect(
-        &ad_interface, &AdInterface::set_attribute_complete,
+        AD(), &AdInterface::set_attribute_complete,
         this, &StatusBar::on_set_attribute_complete);
     connect(
-        &ad_interface, &AdInterface::create_entry_complete,
+        AD(), &AdInterface::create_entry_complete,
         this, &StatusBar::on_create_entry_complete);
     connect(
-        &ad_interface, &AdInterface::move_user_complete,
+        AD(), &AdInterface::move_user_complete,
         this, &StatusBar::on_move_user_complete);
     connect(
-        &ad_interface, &AdInterface::add_user_to_group_complete,
+        AD(), &AdInterface::add_user_to_group_complete,
         this, &StatusBar::on_add_user_to_group_complete);
 
     connect(
-        &ad_interface, &AdInterface::delete_entry_failed,
+        AD(), &AdInterface::delete_entry_failed,
         this, &StatusBar::on_delete_entry_failed);
     connect(
-        &ad_interface, &AdInterface::set_attribute_failed,
+        AD(), &AdInterface::set_attribute_failed,
         this, &StatusBar::on_set_attribute_failed);
     connect(
-        &ad_interface, &AdInterface::create_entry_failed,
+        AD(), &AdInterface::create_entry_failed,
         this, &StatusBar::on_create_entry_failed);
     connect(
-        &ad_interface, &AdInterface::move_user_failed,
+        AD(), &AdInterface::move_user_failed,
         this, &StatusBar::on_move_user_failed);
     connect(
-        &ad_interface, &AdInterface::add_user_to_group_failed,
+        AD(), &AdInterface::add_user_to_group_failed,
         this, &StatusBar::on_add_user_to_group_failed);
 }
 

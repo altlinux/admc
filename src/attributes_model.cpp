@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "main_window.h"
 #include "attributes_model.h"
 #include "ad_model.h"
 #include "ad_interface.h"
@@ -38,7 +39,7 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     const QString attribute = name_index.data().toString();
     const QString value_str = value.toString();
 
-    bool success = set_attribute(target_dn, attribute, value_str);
+    bool success = AD()->set_attribute(target_dn, attribute, value_str);
 
     if (success) {
         QStandardItemModel::setData(index, value, role);
@@ -59,7 +60,7 @@ void AttributesModel::change_target(const QString &new_target_dn) {
     }
 
     // Populate model with attributes of new root
-    QMap<QString, QList<QString>> attributes = get_attributes(target_dn);
+    QMap<QString, QList<QString>> attributes = AD()->get_attributes(target_dn);
     for (auto attribute : attributes.keys()) {
         QList<QString> values = attributes[attribute];
 

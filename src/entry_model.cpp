@@ -18,6 +18,7 @@
  */
 
 #include "entry_model.h"
+#include "main_window.h"
 #include "ad_interface.h"
 
 #include <QMimeData>
@@ -53,11 +54,11 @@ bool EntryModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int
     const QString dn = data->text();
     const QString parent_dn = get_dn_from_index(parent);
 
-    const bool dropped_is_user = attribute_value_exists(dn, "objectClass", "user");
+    const bool dropped_is_user = AD()->attribute_value_exists(dn, "objectClass", "user");
 
-    const bool parent_is_group = attribute_value_exists(parent_dn, "objectClass", "group");
-    const bool parent_is_ou = attribute_value_exists(parent_dn, "objectClass", "organizationalUnit");
-    const bool parent_is_container = attribute_value_exists(parent_dn, "objectClass", "container");
+    const bool parent_is_group = AD()->attribute_value_exists(parent_dn, "objectClass", "group");
+    const bool parent_is_ou = AD()->attribute_value_exists(parent_dn, "objectClass", "organizationalUnit");
+    const bool parent_is_container = AD()->attribute_value_exists(parent_dn, "objectClass", "container");
 
     // TODO: support dropping non-users
     // TODO: support dropping policies
@@ -82,16 +83,16 @@ bool EntryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int 
     const QString dn = data->text();
     const QString parent_dn = get_dn_from_index(parent);
 
-    const bool dropped_is_user = attribute_value_exists(dn, "objectClass", "user");
+    const bool dropped_is_user = AD()->attribute_value_exists(dn, "objectClass", "user");
 
-    const bool parent_is_group = attribute_value_exists(parent_dn, "objectClass", "group");
-    const bool parent_is_ou = attribute_value_exists(parent_dn, "objectClass", "organizationalUnit");
-    const bool parent_is_container = attribute_value_exists(parent_dn, "objectClass", "container");
+    const bool parent_is_group = AD()->attribute_value_exists(parent_dn, "objectClass", "group");
+    const bool parent_is_ou = AD()->attribute_value_exists(parent_dn, "objectClass", "organizationalUnit");
+    const bool parent_is_container = AD()->attribute_value_exists(parent_dn, "objectClass", "container");
 
     if (dropped_is_user && (parent_is_ou || parent_is_container)) {
-        move_user(dn, parent_dn);
+        AD()->move_user(dn, parent_dn);
     } else if (dropped_is_user && parent_is_group) {
-        add_user_to_group(parent_dn, dn);
+        AD()->add_user_to_group(parent_dn, dn);
     }
 
     return true;

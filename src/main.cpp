@@ -23,7 +23,7 @@
 #include <memory>
 
 int main(int argc, char **argv) {
-    std::unique_ptr<Runner> app(new Runner(argc,
+    std::unique_ptr<Runner> runner(new Runner(argc,
         argv,
         ADTOOL_APPLICATION_DISPLAY_NAME,
         ADTOOL_APPLICATION_NAME,
@@ -31,5 +31,5 @@ int main(int argc, char **argv) {
         ADTOOL_ORGANIZATION,
         ADTOOL_ORGANIZATION_DOMAIN));
 
-    return app->run();
+    return runner->run();
 }

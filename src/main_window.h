@@ -31,6 +31,9 @@ class ContainersWidget;
 class ContentsWidget;
 class DetailsWidget;
 
+// Convenience function to get AdInterface member of the MainWindow instance
+AdInterface *AD();
+
 class MainWindow final : public QMainWindow {
 Q_OBJECT
 
@@ -46,6 +49,9 @@ public:
     static QAction *action_new_group;
     static QAction *action_new_ou;
     static QAction *action_edit_policy;
+
+    AdInterface *ad_interface = nullptr;
+    static MainWindow *instance;
 
 private slots:
     void on_action_details();

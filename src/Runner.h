@@ -20,13 +20,12 @@
 #if !defined(__ADMC_RUNNER_H)
 #define __ADMC_RUNNER_H 1
 
-#include "ad_connection.h"
-#include "admc.h"
-
 #include <QString>
 
+class QApplication;
+
 class Runner {
-    ADMC* app;
+    QApplication* app;
     int argc;
     char** argv;
 
