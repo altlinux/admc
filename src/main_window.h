@@ -73,6 +73,7 @@ private:
     QString get_selected_dn() const;
     void on_action_new_entry_generic(NewEntryType type);
     void set_enabled_for_ad_actions(bool enabled);
+    bool confirmation_dialog(const QString &text);
 
     AdModel *ad_model = nullptr;
     ContainersWidget *containers_widget = nullptr;
@@ -83,6 +84,7 @@ private:
     QAction *action_contents_click_attributes = nullptr;
     QAction *action_login = nullptr;
     QAction *action_exit = nullptr;
+    QAction *action_toggle_confirmations = nullptr;
 };
 
 #endif /* MAIN_WINDOW_H */

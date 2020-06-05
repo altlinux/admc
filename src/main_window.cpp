@@ -40,6 +40,8 @@
 #include <QProcess>
 #include <QVBoxLayout>
 #include <QInputDialog>
+#include <QMessageBox>
+#include <QSet>
 
 MainWindow *MainWindow::instance = nullptr;
 
@@ -99,10 +101,15 @@ MainWindow::MainWindow(const bool auto_login)
     menubar_view->addAction(action_toggle_dn);
 
     const auto menubar_preferences = menubar->addMenu("Preferences");
-    action_containers_click_attributes = menubar_preferences->addAction("Open attributes on left click in Containers window");
-    action_containers_click_attributes->setCheckable(true);
-    action_contents_click_attributes = menubar_preferences->addAction("Open attributes on left click in Contents window");
-    action_contents_click_attributes->setCheckable(true);
+    {
+        action_containers_click_attributes = menubar_preferences->addAction("Open attributes on left click in Containers window");
+        action_contents_click_attributes = menubar_preferences->addAction("Open attributes on left click in Contents window");
+        action_toggle_confirmations = menubar_preferences->addAction("Confirm some actions");
+        
+        action_containers_click_attributes->setCheckable(true);
+        action_contents_click_attributes->setCheckable(true);
+        action_toggle_confirmations->setCheckable(true);
+    }
 
     const auto splitter = new QSplitter();
     splitter->setOrientation(Qt::Horizontal);
@@ -217,7 +224,12 @@ void MainWindow::on_ad_interface_login_complete(const QString &base, const QStri
 }
 
 void MainWindow::on_action_exit() {
-    QApplication::quit();
+    const QString text = QString("Are you sure you want to exit?");
+    const bool confirmed = confirmation_dialog(text);
+
+    if (confirmed) {
+        QApplication::quit();
+    }   
 }
 
 void MainWindow::on_action_details() {
@@ -237,9 +249,32 @@ void MainWindow::on_contents_clicked_dn(const QString &dn) {
     }
 }
 
+bool MainWindow::confirmation_dialog(const QString &text) {
+    const bool confirm_actions = action_toggle_confirmations->isChecked();
+    if (!confirm_actions) {
+        return true;
+    }
+
+    const QString title = "ADMC";
+    const QMessageBox::StandardButton reply = QMessageBox::question(this, title, text, QMessageBox::Yes|QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void MainWindow::on_action_delete_entry() {
-    QString dn = EntryWidget::get_selected_dn();
-    AD()->delete_entry(dn);
+    const QString dn = EntryWidget::get_selected_dn();
+
+    const QString name = AD()->get_attribute(dn, "name");
+    const QString text = QString("Are you sure you want to delete \"%1\"?").arg(name);
+    const bool confirmed = confirmation_dialog(text);
+
+    if (confirmed) {
+        AD()->delete_entry(dn);
+    }    
 }
 
 void MainWindow::on_action_new_entry_generic(NewEntryType type) {
