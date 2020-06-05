@@ -375,8 +375,6 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
 
         emit rename_complete(dn, new_name, new_dn);
     } else {
-        // TODO: replace connection->get_errstr with get_error_str
-        // in other places
         emit rename_failed(dn, new_name, new_dn, get_error_str());
     }
 }

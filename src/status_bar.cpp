@@ -44,33 +44,43 @@ StatusBar::StatusBar()
         AD(), &AdInterface::create_entry_complete,
         this, &StatusBar::on_create_entry_complete);
     connect(
+        AD(), &AdInterface::create_entry_failed,
+        this, &StatusBar::on_create_entry_failed);
+
+    connect(
         AD(), &AdInterface::set_attribute_complete,
         this, &StatusBar::on_set_attribute_complete);
+    connect(
+        AD(), &AdInterface::set_attribute_failed,
+        this, &StatusBar::on_set_attribute_failed);
+
     connect(
         AD(), &AdInterface::create_entry_complete,
         this, &StatusBar::on_create_entry_complete);
     connect(
+        AD(), &AdInterface::create_entry_failed,
+        this, &StatusBar::on_create_entry_failed);
+    
+    connect(
         AD(), &AdInterface::move_user_complete,
         this, &StatusBar::on_move_user_complete);
     connect(
-        AD(), &AdInterface::add_user_to_group_complete,
-        this, &StatusBar::on_add_user_to_group_complete);
-
-    connect(
-        AD(), &AdInterface::delete_entry_failed,
-        this, &StatusBar::on_delete_entry_failed);
-    connect(
-        AD(), &AdInterface::set_attribute_failed,
-        this, &StatusBar::on_set_attribute_failed);
-    connect(
-        AD(), &AdInterface::create_entry_failed,
-        this, &StatusBar::on_create_entry_failed);
-    connect(
         AD(), &AdInterface::move_user_failed,
         this, &StatusBar::on_move_user_failed);
+
+    connect(
+        AD(), &AdInterface::add_user_to_group_complete,
+        this, &StatusBar::on_add_user_to_group_complete);
     connect(
         AD(), &AdInterface::add_user_to_group_failed,
         this, &StatusBar::on_add_user_to_group_failed);
+
+    connect(
+        AD(), &AdInterface::delete_entry_complete,
+        this, &StatusBar::on_delete_entry_complete);
+    connect(
+        AD(), &AdInterface::delete_entry_failed,
+        this, &StatusBar::on_delete_entry_failed);
 
     connect(
         AD(), &AdInterface::rename_complete,
