@@ -101,8 +101,20 @@ char** AdConnection::get_attribute(const char *dn, const char *attribute) {
     return ad_get_attribute(ldap_connection, dn, attribute);
 }
 
+int AdConnection::rename(const char *dn, const char *new_name) {
+    return ad_mod_rename(ldap_connection, dn, new_name);
+}
+
 int AdConnection::rename_user(const char *dn, const char *new_username) {
     return ad_rename_user(ldap_connection, dn, new_username);
+}
+
+int AdConnection::rename_group(const char *dn, const char *new_name) {
+    return ad_rename_group(ldap_connection, dn, new_name);
+}
+
+int AdConnection::move(const char *current_dn, const char *new_container) {
+    return ad_move(ldap_connection, current_dn, new_container);
 }
 
 int AdConnection::move_user(const char *current_dn, const char *new_container) {
