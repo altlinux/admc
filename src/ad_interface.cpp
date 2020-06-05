@@ -250,7 +250,7 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
 
         return true;
     } else {
-        emit create_entry_failed(dn, type, connection->get_errstr());
+        emit create_entry_failed(dn, type, get_error_str());
 
         return false;
     }
@@ -284,7 +284,7 @@ void AdInterface::delete_entry(const QString &dn) {
 
         emit delete_entry_complete(dn);
     } else {
-        emit delete_entry_failed(dn, connection->get_errstr());
+        emit delete_entry_failed(dn, get_error_str());
     }
 }
 
@@ -312,7 +312,7 @@ void AdInterface::move_user(const QString &user_dn, const QString &container_dn)
 
         emit move_user_complete(user_dn, container_dn, new_dn);
     } else {
-        emit move_user_failed(user_dn, container_dn, new_dn, connection->get_errstr());
+        emit move_user_failed(user_dn, container_dn, new_dn, get_error_str());
     }
 }
 
@@ -335,7 +335,7 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
 
         emit add_user_to_group_complete(group_dn, user_dn);
     } else {
-        emit add_user_to_group_failed(group_dn, user_dn, connection->get_errstr());
+        emit add_user_to_group_failed(group_dn, user_dn, get_error_str());
     }
 }
 
