@@ -20,8 +20,8 @@
 #include "config.h"
 #include "Runner.h"
 #include "main_window.h"
+#include "admc.h"
 
-#include <QApplication>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 
@@ -31,7 +31,7 @@ Runner::Runner(int& argc_, char **argv_, QString dispname, QString appname, QStr
     this->argc = argc_;
     this->argv = argv_;
 
-    this->app = new QApplication(this->argc, this->argv);
+    this->app = new ADMC(argc, argv);
     this->app->setApplicationDisplayName(dispname);
     this->app->setApplicationName(appname);
     this->app->setApplicationVersion(appver);

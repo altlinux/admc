@@ -19,7 +19,6 @@
 
 #include "create_entry_dialog.h"
 #include "ad_interface.h"
-#include "main_window.h"
 
 #include <QInputDialog>
 #include <QString>

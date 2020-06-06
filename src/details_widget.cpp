@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "main_window.h"
 #include "details_widget.h"
 #include "attributes_model.h"
 #include "ad_interface.h"

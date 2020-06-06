@@ -123,4 +123,7 @@ private:
 
 }; 
 
+// Convenience function to get AdInterface from qApp instance
+AdInterface *AD();
+
 #endif /* AD_INTERFACE_H */

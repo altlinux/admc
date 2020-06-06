@@ -18,7 +18,7 @@
  */
 
 #include "ad_model.h"
-#include "main_window.h"
+#include "ad_interface.h"
 
 #include <QMimeData>
 #include <QMap>

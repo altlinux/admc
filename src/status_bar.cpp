@@ -19,7 +19,6 @@
 
 #include "status_bar.h"
 #include "ad_interface.h"
-#include "main_window.h"
 
 StatusBar::StatusBar()
 : QStatusBar()

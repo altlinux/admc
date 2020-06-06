@@ -19,6 +19,7 @@
 
 #include "ad_interface.h"
 #include "ad_connection.h"
+#include "admc.h"
 
 #include <QSet>
 
@@ -394,4 +395,10 @@ bool AdInterface::is_ou(const QString &dn) {
 
 bool AdInterface::is_policy(const QString &dn) {
     return attribute_value_exists(dn, "objectClass", "groupPolicyContainer");
+}
+
+AdInterface *AD() {
+    ADMC *app = qobject_cast<ADMC *>(qApp);
+    AdInterface *ad = app->ad_interface();
+    return ad;
 }

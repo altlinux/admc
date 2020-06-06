@@ -19,7 +19,6 @@
 
 #include "members_model.h"
 #include "ad_interface.h"
-#include "main_window.h"
 
 #include <QMimeData>
 

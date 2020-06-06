@@ -42,8 +42,6 @@
 #include <QInputDialog>
 #include <QMessageBox>
 
-MainWindow *MainWindow::instance = nullptr;
-
 QAction *MainWindow::action_advanced_view = new QAction("Advanced view");
 QAction *MainWindow::action_toggle_dn = new QAction("Show DN");
 QAction *MainWindow::action_details = new QAction("Details");
@@ -58,14 +56,6 @@ QAction *MainWindow::action_rename = new QAction("Rename");
 MainWindow::MainWindow(const bool auto_login)
 : QMainWindow()
 {
-    if (MainWindow::instance != nullptr) {
-        printf("Attempting to create MainWindow twice!");
-        return;
-    }
-    MainWindow::instance = this;
-
-    ad_interface = new AdInterface(this);
-
     action_login = new QAction("Login");
     action_exit = new QAction("Exit");
 
@@ -191,11 +181,6 @@ MainWindow::MainWindow(const bool auto_login)
     if (auto_login) {
         on_action_login();
     }
-}
-
-AdInterface *AD() {
-    AdInterface *ad_interface = MainWindow::instance->ad_interface;
-    return ad_interface;
 }
 
 void MainWindow::set_enabled_for_ad_actions(bool enabled) {
