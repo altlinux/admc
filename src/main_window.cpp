@@ -185,32 +185,32 @@ bool MainWindow::confirmation_dialog(const QString &text) {
 
 void MainWindow::connect_entry_widget(const EntryWidget &widget) {
     connect(
-        &widget, &EntryWidget::request_details,
+        &widget, &EntryWidget::context_menu_details,
         details_widget, &DetailsWidget::on_context_menu_details);
     connect(
-        &widget, &EntryWidget::request_rename,
-        this, &MainWindow::on_request_rename);
+        &widget, &EntryWidget::context_menu_rename,
+        this, &MainWindow::on_context_menu_rename);
     connect(
-        &widget, &EntryWidget::request_delete,
-        this, &MainWindow::on_request_delete);
+        &widget, &EntryWidget::context_menu_delete,
+        this, &MainWindow::on_context_menu_delete);
     connect(
-        &widget, &EntryWidget::request_new_user,
-        this, &MainWindow::on_request_new_user);
+        &widget, &EntryWidget::context_menu_new_user,
+        this, &MainWindow::on_context_menu_new_user);
     connect(
-        &widget, &EntryWidget::request_new_computer,
-        this, &MainWindow::on_request_new_computer);
+        &widget, &EntryWidget::context_menu_new_computer,
+        this, &MainWindow::on_context_menu_new_computer);
     connect(
-        &widget, &EntryWidget::request_new_group,
-        this, &MainWindow::on_request_new_group);
+        &widget, &EntryWidget::context_menu_new_group,
+        this, &MainWindow::on_context_menu_new_group);
     connect(
-        &widget, &EntryWidget::request_new_ou,
-        this, &MainWindow::on_request_new_ou);
+        &widget, &EntryWidget::context_menu_new_ou,
+        this, &MainWindow::on_context_menu_new_ou);
     connect(
-        &widget, &EntryWidget::request_edit_policy,
-        this, &MainWindow::on_request_edit_policy);
+        &widget, &EntryWidget::context_menu_edit_policy,
+        this, &MainWindow::on_context_menu_edit_policy);
 }
 
-void MainWindow::on_request_delete(const QString &dn) {
+void MainWindow::on_context_menu_delete(const QString &dn) {
     const QString name = AD()->get_attribute(dn, "name");
     const QString text = QString("Are you sure you want to delete \"%1\"?").arg(name);
     const bool confirmed = confirmation_dialog(text);
@@ -222,27 +222,27 @@ void MainWindow::on_request_delete(const QString &dn) {
     contents_widget->setEnabled(false);
 }
 
-void MainWindow::on_request_new_entry_generic(const QString &dn, NewEntryType type) {
+void MainWindow::new_entry_generic(const QString &dn, NewEntryType type) {
     create_entry_dialog(type, dn);
 }
 
-void MainWindow::on_request_new_user(const QString &dn) {
-    on_request_new_entry_generic(dn, NewEntryType::User);
+void MainWindow::on_context_menu_new_user(const QString &dn) {
+    new_entry_generic(dn, NewEntryType::User);
 }
 
-void MainWindow::on_request_new_computer(const QString &dn) {
-    on_request_new_entry_generic(dn, NewEntryType::Computer);
+void MainWindow::on_context_menu_new_computer(const QString &dn) {
+    new_entry_generic(dn, NewEntryType::Computer);
 }
 
-void MainWindow::on_request_new_group(const QString &dn) {
-    on_request_new_entry_generic(dn, NewEntryType::Group);
+void MainWindow::on_context_menu_new_group(const QString &dn) {
+    new_entry_generic(dn, NewEntryType::Group);
 }
 
-void MainWindow::on_request_new_ou(const QString &dn) {
-    on_request_new_entry_generic(dn, NewEntryType::OU);
+void MainWindow::on_context_menu_new_ou(const QString &dn) {
+    new_entry_generic(dn, NewEntryType::OU);
 }
 
-void MainWindow::on_request_rename(const QString &dn) {
+void MainWindow::on_context_menu_rename(const QString &dn) {
     // Get new name from input box
     QString dialog_title = "Rename";
     QString input_label = "New name:";
@@ -254,7 +254,7 @@ void MainWindow::on_request_rename(const QString &dn) {
     }
 }
 
-void MainWindow::on_request_edit_policy(const QString &dn) {
+void MainWindow::on_context_menu_edit_policy(const QString &dn) {
     // Start policy edit process
     const auto process = new QProcess(this);
 

@@ -81,33 +81,33 @@ void EntryWidget::on_context_menu_requested(const QPoint &pos) {
     QMenu menu;
 
     QAction *action_to_show_menu_at = menu.addAction("Details", [this, dn]() {
-        emit request_details(dn);
+        emit context_menu_details(dn);
     });
     menu.addAction("Delete", [this, dn]() {
-        emit request_delete(dn);
+        emit context_menu_delete(dn);
     });
     menu.addAction("Rename", [this, dn]() {
-        emit request_rename(dn);
+        emit context_menu_rename(dn);
     });
 
     QMenu *submenu_new = menu.addMenu("New");
     submenu_new->addAction("New User", [this, dn]() {
-        emit request_new_user(dn);
+        emit context_menu_new_user(dn);
     });
     submenu_new->addAction("New Computer", [this, dn]() {
-        emit request_new_computer(dn);
+        emit context_menu_new_computer(dn);
     });
     submenu_new->addAction("New Group", [this, dn]() {
-        emit request_new_group(dn);
+        emit context_menu_new_group(dn);
     });
     submenu_new->addAction("New OU", [this, dn]() {
-        emit request_new_ou(dn);
+        emit context_menu_new_ou(dn);
     });
 
     const bool is_policy = AD()->is_policy(dn); 
     if (is_policy) {
         submenu_new->addAction("Edit Policy", [this, dn]() {
-            emit request_edit_policy(dn);
+            emit context_menu_edit_policy(dn);
         });
     }
 

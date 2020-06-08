@@ -37,14 +37,14 @@ public:
 
 signals:
     void clicked_dn(const QString &dn);
-    void request_details(const QString &dn);
-    void request_rename(const QString &dn);
-    void request_delete(const QString &dn);
-    void request_new_user(const QString &dn);
-    void request_new_computer(const QString &dn);
-    void request_new_group(const QString &dn);
-    void request_new_ou(const QString &dn);
-    void request_edit_policy(const QString &dn);
+    void context_menu_details(const QString &dn);
+    void context_menu_rename(const QString &dn);
+    void context_menu_delete(const QString &dn);
+    void context_menu_new_user(const QString &dn);
+    void context_menu_new_computer(const QString &dn);
+    void context_menu_new_group(const QString &dn);
+    void context_menu_new_ou(const QString &dn);
+    void context_menu_edit_policy(const QString &dn);
 
 private slots:
     void on_toggle_show_dn_column(bool checked);
