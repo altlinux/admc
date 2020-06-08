@@ -32,6 +32,9 @@ public:
 
     QAction *toggle_advanced_view = nullptr;
     QAction *toggle_show_dn_column = nullptr;
+    QAction *details_on_containers_click = nullptr;
+    QAction *details_on_contents_click = nullptr;
+    QAction *confirm_actions = nullptr;
 
 };
 

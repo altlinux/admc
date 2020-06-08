@@ -22,16 +22,22 @@
 
 #include <QAction>
 
+QAction *make_checkable_action(const QString& text) {
+    QAction *action = new QAction(text);
+    action->setCheckable(true);
+    action->setChecked(false);
+
+    return action;
+}
+
 Settings::Settings(QObject *parent)
 : QObject(parent)
 {
-    toggle_advanced_view = new QAction("Advanced View");
-    toggle_advanced_view->setCheckable(true);
-    toggle_advanced_view->setChecked(false);
-
-    toggle_show_dn_column = new QAction("Show DN column");
-    toggle_show_dn_column->setCheckable(true);
-    toggle_show_dn_column->setChecked(false);
+    toggle_advanced_view = make_checkable_action("Advanced View");
+    toggle_show_dn_column = make_checkable_action("Show DN column");
+    details_on_containers_click = make_checkable_action("Open attributes on left click in Containers window");
+    details_on_contents_click = make_checkable_action("Open attributes on left click in Contents window");
+    confirm_actions = make_checkable_action("Confirm actions");
 }
 
 const Settings *SETTINGS() {

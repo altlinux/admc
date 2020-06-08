@@ -65,11 +65,8 @@ private:
     ContentsWidget *contents_widget = nullptr;
     DetailsWidget *details_widget = nullptr;
 
-    QAction *action_containers_click_attributes = nullptr;
-    QAction *action_contents_click_attributes = nullptr;
     QAction *action_login = nullptr;
     QAction *action_exit = nullptr;
-    QAction *action_toggle_confirmations = nullptr;
 };
 
 #endif /* MAIN_WINDOW_H */
