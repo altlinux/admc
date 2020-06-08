@@ -35,15 +35,11 @@
 #include <QMenu>
 #include <QAction>
 
-QSet<EntryWidget *> EntryWidget::instances;
-
 EntryWidget::EntryWidget(EntryModel *model)
 : QWidget()
 {    
     entry_model = model;
     
-    instances.insert(this);
-
     view = new QTreeView();
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
@@ -70,10 +66,6 @@ EntryWidget::EntryWidget(EntryModel *model)
     connect(
         view, &QAbstractItemView::clicked,
         this, &EntryWidget::on_view_clicked);
-}
-
-EntryWidget::~EntryWidget() {
-    instances.remove(this);
 }
 
 void EntryWidget::on_context_menu_requested(const QPoint &pos) {
@@ -121,24 +113,6 @@ void EntryWidget::on_context_menu_requested(const QPoint &pos) {
 
     QPoint global_pos = view->mapToGlobal(pos);
     menu.exec(global_pos, action_to_show_menu_at);
-}
-
-QString EntryWidget::get_selected_dn() {
-    for (auto e : instances) {
-        if (e->view->hasFocus()) {
-            const auto selection_model = e->view->selectionModel();
-
-            if (selection_model->hasSelection()) {
-                const QList<QModelIndex> selected_indexes = selection_model->selectedIndexes();
-                const QModelIndex selected = selected_indexes[0];
-                const QString dn = e->entry_model->get_dn_from_index(selected);
-
-                return dn;
-            }
-        }
-    }
-    
-    return "";
 }
 
 void EntryWidget::on_toggle_show_dn_column(bool checked) {

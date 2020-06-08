@@ -54,7 +54,6 @@ private slots:
     void on_ad_interface_login_complete(const QString &base, const QString &head);
 
 private:
-    QString get_selected_dn() const;
     void on_request_new_entry_generic(const QString &dn, NewEntryType type);
     void set_enabled_for_widgets(bool enabled);
     bool confirmation_dialog(const QString &text);

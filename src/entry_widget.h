@@ -34,9 +34,6 @@ Q_OBJECT
 
 public:
     EntryWidget(EntryModel *model);
-    ~EntryWidget();
-
-    static QString get_selected_dn();
 
 signals:
     void clicked_dn(const QString &dn);
@@ -61,7 +58,6 @@ protected:
     void update_column_visibility();
 
 private:
-    static QSet<EntryWidget *> instances;
     EntryModel *entry_model = nullptr;
 
 };
