@@ -51,7 +51,7 @@ private slots:
     void on_ad_interface_login_complete(const QString &base, const QString &head);
 
 private:
-    void new_entry_generic(const QString &dn, NewEntryType type);
+    void new_entry_dialog(const QString &parent_dn, NewEntryType type);
     void set_enabled_for_widgets(bool enabled);
     bool confirmation_dialog(const QString &text);
     void connect_entry_widget(const EntryWidget &widget);

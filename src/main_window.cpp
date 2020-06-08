@@ -26,7 +26,6 @@
 #include "details_widget.h"
 #include "ad_model.h"
 #include "attributes_model.h"
-#include "create_entry_dialog.h"
 #include "status_bar.h"
 #include "entry_widget.h"
 #include "settings.h"
@@ -222,24 +221,48 @@ void MainWindow::on_context_menu_delete(const QString &dn) {
     contents_widget->setEnabled(false);
 }
 
-void MainWindow::new_entry_generic(const QString &dn, NewEntryType type) {
-    create_entry_dialog(type, dn);
+void MainWindow::new_entry_dialog(const QString &parent_dn, NewEntryType type) {
+    QString type_string = new_entry_type_to_string[type];
+    QString dialog_title = "New " + type_string;
+    QString input_label = type_string + " name";
+
+    bool ok;
+    QString name = QInputDialog::getText(nullptr, dialog_title, input_label, QLineEdit::Normal, "", &ok);
+
+    // TODO: maybe expand tree to newly created entry?
+
+    // Create user once dialog is complete
+    if (ok && !name.isEmpty()) {
+        // Attempt to create user in AD
+
+        const QMap<NewEntryType, QString> new_entry_type_to_suffix = {
+            {NewEntryType::User, "CN"},
+            {NewEntryType::Computer, "CN"},
+            {NewEntryType::OU, "OU"},
+            {NewEntryType::Group, "CN"},
+        };
+        QString suffix = new_entry_type_to_suffix[type];
+
+        const QString dn = suffix + "=" + name + "," + parent_dn;
+
+        AD()->create_entry(name, dn, type);
+    }
 }
 
 void MainWindow::on_context_menu_new_user(const QString &dn) {
-    new_entry_generic(dn, NewEntryType::User);
+    new_entry_dialog(dn, NewEntryType::User);
 }
 
 void MainWindow::on_context_menu_new_computer(const QString &dn) {
-    new_entry_generic(dn, NewEntryType::Computer);
+    new_entry_dialog(dn, NewEntryType::Computer);
 }
 
 void MainWindow::on_context_menu_new_group(const QString &dn) {
-    new_entry_generic(dn, NewEntryType::Group);
+    new_entry_dialog(dn, NewEntryType::Group);
 }
 
 void MainWindow::on_context_menu_new_ou(const QString &dn) {
-    new_entry_generic(dn, NewEntryType::OU);
+    new_entry_dialog(dn, NewEntryType::OU);
 }
 
 void MainWindow::on_context_menu_rename(const QString &dn) {
