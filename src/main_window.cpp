@@ -113,11 +113,11 @@ MainWindow::MainWindow(const bool auto_login)
 
     connect(
         containers_widget, &EntryWidget::clicked_dn,
-        this, &MainWindow::on_containers_clicked_dn);
+        details_widget, &DetailsWidget::on_containers_clicked_dn);
 
     connect(
         contents_widget, &EntryWidget::clicked_dn,
-        this, &MainWindow::on_contents_clicked_dn);
+        details_widget, &DetailsWidget::on_contents_clicked_dn);
 
     connect(
         action_login, &QAction::triggered,
@@ -167,22 +167,6 @@ void MainWindow::on_action_exit() {
     }   
 }
 
-void MainWindow::on_request_details(const QString &dn) {
-    details_widget->change_target(dn);
-}
-
-void MainWindow::on_containers_clicked_dn(const QString &dn) {
-    if (SETTINGS()->details_on_containers_click->isChecked()) {
-        details_widget->change_target(dn);
-    }
-}
-
-void MainWindow::on_contents_clicked_dn(const QString &dn) {
-    if (SETTINGS()->details_on_contents_click->isChecked()) {
-        details_widget->change_target(dn);
-    }
-}
-
 bool MainWindow::confirmation_dialog(const QString &text) {
     const bool confirm_actions = SETTINGS()->confirm_actions->isChecked();
     if (!confirm_actions) {
@@ -202,7 +186,7 @@ bool MainWindow::confirmation_dialog(const QString &text) {
 void MainWindow::connect_entry_widget(const EntryWidget &widget) {
     connect(
         &widget, &EntryWidget::request_details,
-        this, &MainWindow::on_request_details);
+        details_widget, &DetailsWidget::on_context_menu_details);
     connect(
         &widget, &EntryWidget::request_rename,
         this, &MainWindow::on_request_rename);

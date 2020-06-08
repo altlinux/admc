@@ -39,7 +39,6 @@ public:
     explicit MainWindow(const bool auto_login);
 
 private slots:
-    void on_request_details(const QString &dn);
     void on_request_rename(const QString &dn);
     void on_request_delete(const QString &dn);
     void on_request_new_user(const QString &dn);
@@ -47,8 +46,6 @@ private slots:
     void on_request_new_group(const QString &dn);
     void on_request_new_ou(const QString &dn);
     void on_request_edit_policy(const QString &dn);
-    void on_containers_clicked_dn(const QString &dn);
-    void on_contents_clicked_dn(const QString &dn);
     void on_action_login();
     void on_action_exit();
     void on_ad_interface_login_complete(const QString &base, const QString &head);

@@ -21,9 +21,11 @@
 #include "attributes_model.h"
 #include "ad_interface.h"
 #include "members_widget.h"
+#include "settings.h"
 
 #include <QTreeView>
 #include <QStandardItemModel>
+#include <QAction>
 
 DetailsWidget::DetailsWidget(MembersWidget *members_widget_)
 : QTabWidget()
@@ -38,6 +40,9 @@ DetailsWidget::DetailsWidget(MembersWidget *members_widget_)
     attributes_view->setSelectionBehavior(QAbstractItemView::SelectRows);
     attributes_view->setModel(attributes_model);
 
+    connect(
+        AD(), &AdInterface::ad_interface_login_complete,
+        this, &DetailsWidget::on_ad_interface_login_complete);
     connect(
         AD(), &AdInterface::delete_entry_complete,
         this, &DetailsWidget::on_delete_entry_complete);
@@ -114,4 +119,20 @@ void DetailsWidget::on_rename_complete(const QString &dn, const QString &new_nam
     if (target_dn == dn) {
         change_target(new_dn);
     }
+}
+
+void DetailsWidget::on_containers_clicked_dn(const QString &dn) {
+    if (SETTINGS()->details_on_containers_click->isChecked()) {
+        change_target(dn);
+    }
+}
+
+void DetailsWidget::on_contents_clicked_dn(const QString &dn) {
+    if (SETTINGS()->details_on_contents_click->isChecked()) {
+        change_target(dn);
+    }
+}
+
+void DetailsWidget::on_context_menu_details(const QString &dn) {
+    change_target(dn);
 }
