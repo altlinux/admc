@@ -17,21 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "admc.h"
-#include "ad_interface.h"
-#include "settings.h"
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
-ADMC::ADMC(int& argc, char** argv)
-: QApplication(argc, argv)
-{
-    m_ad_interface = new AdInterface(this);
-    m_settings = new Settings(this);
-}
+#include <QObject>
 
-AdInterface *ADMC::ad_interface() {
-    return m_ad_interface;
-}
+class QAction;
 
-const Settings *ADMC::settings() {
-    return m_settings;
-}
+class Settings final : public QObject {
+Q_OBJECT
+
+public:
+    explicit Settings(QObject *parent);
+
+    QAction *toggle_advanced_view = nullptr;
+    QAction *toggle_show_dn_column = nullptr;
+
+};
+
+const Settings *SETTINGS();
+
+#endif /* SETTINGS_H */

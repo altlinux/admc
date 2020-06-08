@@ -40,9 +40,17 @@ public:
 
 signals:
     void clicked_dn(const QString &dn);
+    void request_details(const QString &dn);
+    void request_rename(const QString &dn);
+    void request_delete(const QString &dn);
+    void request_new_user(const QString &dn);
+    void request_new_computer(const QString &dn);
+    void request_new_group(const QString &dn);
+    void request_new_ou(const QString &dn);
+    void request_edit_policy(const QString &dn);
 
 private slots:
-    void on_action_toggle_dn(bool checked);
+    void on_toggle_show_dn_column(bool checked);
     void on_context_menu_requested(const QPoint &pos);
     void on_view_clicked(const QModelIndex &index);
 

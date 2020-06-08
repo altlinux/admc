@@ -17,21 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "admc.h"
-#include "ad_interface.h"
 #include "settings.h"
+#include "admc.h"
 
-ADMC::ADMC(int& argc, char** argv)
-: QApplication(argc, argv)
+#include <QAction>
+
+Settings::Settings(QObject *parent)
+: QObject(parent)
 {
-    m_ad_interface = new AdInterface(this);
-    m_settings = new Settings(this);
+    toggle_advanced_view = new QAction("Advanced View");
+    toggle_advanced_view->setCheckable(true);
+    toggle_advanced_view->setChecked(false);
+
+    toggle_show_dn_column = new QAction("Show DN column");
+    toggle_show_dn_column->setCheckable(true);
+    toggle_show_dn_column->setChecked(false);
 }
 
-AdInterface *ADMC::ad_interface() {
-    return m_ad_interface;
-}
-
-const Settings *ADMC::settings() {
-    return m_settings;
+const Settings *SETTINGS() {
+    ADMC *app = qobject_cast<ADMC *>(qApp);
+    const Settings *settings = app->settings();
+    return settings;
 }

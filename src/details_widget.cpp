@@ -25,9 +25,11 @@
 #include <QTreeView>
 #include <QStandardItemModel>
 
-DetailsWidget::DetailsWidget()
+DetailsWidget::DetailsWidget(MembersWidget *members_widget_)
 : QTabWidget()
 {
+    members_widget = members_widget_;
+
     attributes_model = new AttributesModel(this);
 
     attributes_view = new QTreeView();
@@ -35,8 +37,6 @@ DetailsWidget::DetailsWidget()
     attributes_view->setSelectionMode(QAbstractItemView::NoSelection);
     attributes_view->setSelectionBehavior(QAbstractItemView::SelectRows);
     attributes_view->setModel(attributes_model);
-
-    members_widget = MembersWidget::make();
 
     connect(
         AD(), &AdInterface::delete_entry_complete,

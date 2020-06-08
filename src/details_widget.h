@@ -34,7 +34,7 @@ class DetailsWidget final : public QTabWidget {
 Q_OBJECT
 
 public:
-    DetailsWidget();
+    DetailsWidget(MembersWidget *members_widget_);
 
     void change_target(const QString &dn);
 
