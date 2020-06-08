@@ -21,23 +21,61 @@
 #include "admc.h"
 
 #include <QAction>
+#include <QSettings>
+#include <QApplication>
+#include <QList>
 
-QAction *make_checkable_action(const QString& text) {
+QAction *make_checkable_action(const QSettings &settings, const QString& text) {
     QAction *action = new QAction(text);
     action->setCheckable(true);
-    action->setChecked(false);
+
+    // Load checked state from settings
+    bool checked = settings.value(text, false).toBool();
+    action->setChecked(checked);
 
     return action;
+}
+
+QString get_settings_file_path() {
+    // NOTE: save to app dir for now for easier debugging
+    QString settings_file_path = QApplication::applicationDirPath() + "/settings.ini";
+    return settings_file_path;
 }
 
 Settings::Settings(QObject *parent)
 : QObject(parent)
 {
-    toggle_advanced_view = make_checkable_action("Advanced View");
-    toggle_show_dn_column = make_checkable_action("Show DN column");
-    details_on_containers_click = make_checkable_action("Open attributes on left click in Containers window");
-    details_on_contents_click = make_checkable_action("Open attributes on left click in Contents window");
-    confirm_actions = make_checkable_action("Confirm actions");
+    const QString settings_file_path = get_settings_file_path();
+    const QSettings settings(settings_file_path, QSettings::NativeFormat);
+    
+    toggle_advanced_view = make_checkable_action(settings, "Advanced View");
+    toggle_show_dn_column = make_checkable_action(settings, "Show DN column");
+    details_on_containers_click = make_checkable_action(settings, "Open attributes on left click in Containers window");
+    details_on_contents_click = make_checkable_action(settings, "Open attributes on left click in Contents window");
+    confirm_actions = make_checkable_action(settings, "Confirm actions");
+
+    // Save settings before the app quits
+    connect(
+        qApp, &QCoreApplication::aboutToQuit,
+        this, &Settings::save_settings);
+}
+
+void Settings::save_settings() {
+    const QString settings_file_path = get_settings_file_path();
+    QSettings settings(settings_file_path, QSettings::NativeFormat);
+
+    QList<QAction *> checkable_actions = {
+        toggle_advanced_view,
+        toggle_show_dn_column,
+        details_on_containers_click,
+        details_on_contents_click,
+        confirm_actions,
+    };
+    for (auto action : checkable_actions) {
+        const bool checked = action->isChecked();
+        const QString text = action->text();
+        settings.setValue(text, checked);
+    }
 }
 
 const Settings *SETTINGS() {

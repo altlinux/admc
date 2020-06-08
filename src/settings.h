@@ -36,6 +36,9 @@ public:
     QAction *details_on_contents_click = nullptr;
     QAction *confirm_actions = nullptr;
 
+private:
+    void save_settings();
+
 };
 
 const Settings *SETTINGS();
