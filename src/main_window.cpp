@@ -130,21 +130,11 @@ MainWindow::MainWindow(const bool auto_login)
     connect_entry_widget(*contents_widget);
     connect_entry_widget(*members_widget);
 
-    // Disable actions until login complete
-    set_enabled_for_ad_actions(false);
+    // Disable widgets until logged in
+    set_enabled_for_widgets(false);
 
     if (auto_login) {
         on_action_login();
-    }
-}
-
-void MainWindow::set_enabled_for_ad_actions(bool enabled) {
-    // TODO: redo this for new action locations
-    QList<QAction *> ad_actions = {
-
-    };
-    for (auto a : ad_actions) {
-        a->setEnabled(enabled);
     }
 }
 
@@ -152,8 +142,20 @@ void MainWindow::on_action_login() {
     AD()->ad_interface_login(SEARCH_BASE, HEAD_DN);
 }
 
+void MainWindow::set_enabled_for_widgets(bool enabled) {
+    QList<QWidget *> widgets = {
+        containers_widget,
+        contents_widget,
+        details_widget
+    };
+
+    for (auto e : widgets) {
+        e->setEnabled(enabled);
+    }
+}
+
 void MainWindow::on_ad_interface_login_complete(const QString &base, const QString &head) {
-    set_enabled_for_ad_actions(true);
+    set_enabled_for_widgets(true);
 }
 
 void MainWindow::on_action_exit() {
@@ -232,6 +234,8 @@ void MainWindow::on_request_delete(const QString &dn) {
     if (confirmed) {
         AD()->delete_entry(dn);
     }    
+
+    contents_widget->setEnabled(false);
 }
 
 void MainWindow::on_request_new_entry_generic(const QString &dn, NewEntryType type) {
