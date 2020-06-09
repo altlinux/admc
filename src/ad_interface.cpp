@@ -301,7 +301,15 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     const QByteArray new_container_array = new_container.toLatin1();
     const char *new_container_cstr = new_container_array.constData();
 
+    const bool entry_is_group = is_user(dn);
     const bool entry_is_user = is_user(dn);
+
+    if (!entry_is_user && !entry_is_group) {
+        emit move_failed(dn, new_container, new_dn, "AdInterface::move() only supports moving users and groups at the moment");
+
+        return;
+    }
+
     if (entry_is_user) {
         result = connection->move_user(dn_cstr, new_container_cstr);
     } else {
@@ -428,7 +436,6 @@ enum DropType {
 DropType get_drop_type(const QString &dn, const QString &target_dn) {
     const bool dropped_is_user = AD()->is_user(dn);
     const bool dropped_is_group = AD()->is_group(dn);
-    const bool dropped_is_ou = AD()->is_ou(dn);
 
     const bool target_is_group = AD()->is_group(target_dn);
     const bool target_is_ou = AD()->is_ou(target_dn);
