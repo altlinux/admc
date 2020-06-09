@@ -7,8 +7,11 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wshadow")
+add_compile_options(-pedantic -g3 -Wall -Wshadow)
+
+option(ENABLE_TESTS "Enable unit tests for libadldap" ON)
 
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
@@ -17,7 +20,6 @@ set(CMAKE_MODULE_PATH
 
 find_package(OpenLDAP REQUIRED)
 find_package(Doxygen) # Code documentation
-
 
 set(ADLDAP_HEADER_DIRS
 	${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -42,4 +44,12 @@ target_link_libraries(adldap++ ${OPENLDAP_LIBRARIES})
 
 install(TARGETS adldap)
 install(TARGETS adldap++)
+
+if(ENABLE_TESTS)
+	find_package(CMocka CONFIG REQUIRED)
+	include(AddCMockaTest)
+	include(AddMockedTest)
+	enable_testing()
+	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/test)
+endif()
 
