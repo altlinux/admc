@@ -22,11 +22,13 @@
 #include "main_window.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
+#include "members_widget.h"
 #include "details_widget.h"
 #include "ad_model.h"
 #include "attributes_model.h"
-#include "create_entry_dialog.h"
 #include "status_bar.h"
+#include "entry_widget.h"
+#include "settings.h"
 
 #include <QApplication>
 #include <QString>
@@ -41,17 +43,6 @@
 #include <QVBoxLayout>
 #include <QInputDialog>
 #include <QMessageBox>
-
-QAction *MainWindow::action_advanced_view = new QAction("Advanced view");
-QAction *MainWindow::action_toggle_dn = new QAction("Show DN");
-QAction *MainWindow::action_details = new QAction("Details");
-QAction *MainWindow::action_delete_entry = new QAction("Delete");
-QAction *MainWindow::action_new_user = new QAction("New User");
-QAction *MainWindow::action_new_computer = new QAction("New Computer");
-QAction *MainWindow::action_new_group = new QAction("New Group");
-QAction *MainWindow::action_new_ou = new QAction("New OU");
-QAction *MainWindow::action_edit_policy = new QAction("Edit policy");
-QAction *MainWindow::action_rename = new QAction("Rename");
 
 MainWindow::MainWindow(const bool auto_login)
 : QMainWindow()
@@ -79,26 +70,14 @@ MainWindow::MainWindow(const bool auto_login)
     menubar_file->addAction(action_login);
     menubar_file->addAction(action_exit);
 
-    const auto menubar_new = menubar->addMenu("New");
-    menubar_new->addAction(action_new_user);
-    menubar_new->addAction(action_new_computer);
-    menubar_new->addAction(action_new_group);
-    menubar_new->addAction(action_new_ou);
-
     const auto menubar_view = menubar->addMenu("View");
-    menubar_view->addAction(action_advanced_view);
-    menubar_view->addAction(action_toggle_dn);
+    menubar_view->addAction(SETTINGS()->toggle_advanced_view);
+    menubar_view->addAction(SETTINGS()->toggle_show_dn_column);
 
     const auto menubar_preferences = menubar->addMenu("Preferences");
-    {
-        action_containers_click_attributes = menubar_preferences->addAction("Open attributes on left click in Containers window");
-        action_contents_click_attributes = menubar_preferences->addAction("Open attributes on left click in Contents window");
-        action_toggle_confirmations = menubar_preferences->addAction("Confirm some actions");
-        
-        action_containers_click_attributes->setCheckable(true);
-        action_contents_click_attributes->setCheckable(true);
-        action_toggle_confirmations->setCheckable(true);
-    }
+    menubar_preferences->addAction(SETTINGS()->details_on_containers_click);
+    menubar_preferences->addAction(SETTINGS()->details_on_contents_click);
+    menubar_preferences->addAction(SETTINGS()->confirm_actions);
 
     const auto splitter = new QSplitter();
     splitter->setOrientation(Qt::Horizontal);
@@ -108,7 +87,9 @@ MainWindow::MainWindow(const bool auto_login)
 
     containers_widget = new ContainersWidget(ad_model);
     contents_widget = new ContentsWidget(ad_model);
-    details_widget = new DetailsWidget();
+
+    MembersWidget *members_widget = MembersWidget::make();
+    details_widget = new DetailsWidget(members_widget);
 
     splitter->addWidget(containers_widget);
     splitter->addWidget(contents_widget);
@@ -120,37 +101,6 @@ MainWindow::MainWindow(const bool auto_login)
     splitter->setStretchFactor(1, 2);
     splitter->setStretchFactor(2, 2);
     
-    //
-    // Setup actions
-    //
-    action_advanced_view->setCheckable(true);
-    action_toggle_dn->setCheckable(true);
-
-    connect(
-        action_details, &QAction::triggered,
-        this, &MainWindow::on_action_details);
-    connect(
-        action_delete_entry, &QAction::triggered,
-        this, &MainWindow::on_action_delete_entry);
-    connect(
-        action_new_user, &QAction::triggered,
-        this, &MainWindow::on_action_new_user);
-    connect(
-        action_new_computer, &QAction::triggered,
-        this, &MainWindow::on_action_new_computer);
-    connect(
-        action_new_group, &QAction::triggered,
-        this, &MainWindow::on_action_new_group);
-    connect(
-        action_new_ou, &QAction::triggered,
-        this, &MainWindow::on_action_new_ou);
-    connect(
-        action_rename, &QAction::triggered,
-        this, &MainWindow::on_action_rename);
-
-    connect(
-        action_edit_policy, &QAction::triggered,
-        this, &MainWindow::on_action_edit_policy);
     connect(
         AD(), &AdInterface::ad_interface_login_complete,
         this, &MainWindow::on_ad_interface_login_complete);
@@ -162,11 +112,11 @@ MainWindow::MainWindow(const bool auto_login)
 
     connect(
         containers_widget, &EntryWidget::clicked_dn,
-        this, &MainWindow::on_containers_clicked_dn);
+        details_widget, &DetailsWidget::on_containers_clicked_dn);
 
     connect(
         contents_widget, &EntryWidget::clicked_dn,
-        this, &MainWindow::on_contents_clicked_dn);
+        details_widget, &DetailsWidget::on_contents_clicked_dn);
 
     connect(
         action_login, &QAction::triggered,
@@ -175,27 +125,15 @@ MainWindow::MainWindow(const bool auto_login)
         action_exit, &QAction::triggered,
         this, &MainWindow::on_action_exit);
 
-    // Disable actions until login complete
-    set_enabled_for_ad_actions(false);
+    connect_entry_widget(*containers_widget);
+    connect_entry_widget(*contents_widget);
+    connect_entry_widget(*members_widget);
+
+    // Disable widgets until logged in
+    set_enabled_for_widgets(false);
 
     if (auto_login) {
         on_action_login();
-    }
-}
-
-void MainWindow::set_enabled_for_ad_actions(bool enabled) {
-    QList<QAction *> ad_actions = {
-        action_advanced_view,
-        action_details,
-        action_delete_entry,
-        action_new_user,
-        action_new_computer,
-        action_new_group,
-        action_new_ou,
-        action_edit_policy,
-    };
-    for (auto a : ad_actions) {
-        a->setEnabled(enabled);
     }
 }
 
@@ -203,8 +141,20 @@ void MainWindow::on_action_login() {
     AD()->ad_interface_login(SEARCH_BASE, HEAD_DN);
 }
 
+void MainWindow::set_enabled_for_widgets(bool enabled) {
+    QList<QWidget *> widgets = {
+        containers_widget,
+        contents_widget,
+        details_widget
+    };
+
+    for (auto e : widgets) {
+        e->setEnabled(enabled);
+    }
+}
+
 void MainWindow::on_ad_interface_login_complete(const QString &base, const QString &head) {
-    set_enabled_for_ad_actions(true);
+    set_enabled_for_widgets(true);
 }
 
 void MainWindow::on_action_exit() {
@@ -216,25 +166,8 @@ void MainWindow::on_action_exit() {
     }   
 }
 
-void MainWindow::on_action_details() {
-    QString dn = EntryWidget::get_selected_dn();
-    details_widget->change_target(dn);
-}
-
-void MainWindow::on_containers_clicked_dn(const QString &dn) {
-    if (action_containers_click_attributes->isChecked()) {
-        details_widget->change_target(dn);
-    }
-}
-
-void MainWindow::on_contents_clicked_dn(const QString &dn) {
-    if (action_contents_click_attributes->isChecked()) {
-        details_widget->change_target(dn);
-    }
-}
-
 bool MainWindow::confirmation_dialog(const QString &text) {
-    const bool confirm_actions = action_toggle_confirmations->isChecked();
+    const bool confirm_actions = SETTINGS()->confirm_actions->isChecked();
     if (!confirm_actions) {
         return true;
     }
@@ -249,9 +182,34 @@ bool MainWindow::confirmation_dialog(const QString &text) {
     }
 }
 
-void MainWindow::on_action_delete_entry() {
-    const QString dn = EntryWidget::get_selected_dn();
+void MainWindow::connect_entry_widget(const EntryWidget &widget) {
+    connect(
+        &widget, &EntryWidget::context_menu_details,
+        details_widget, &DetailsWidget::on_context_menu_details);
+    connect(
+        &widget, &EntryWidget::context_menu_rename,
+        this, &MainWindow::on_context_menu_rename);
+    connect(
+        &widget, &EntryWidget::context_menu_delete,
+        this, &MainWindow::on_context_menu_delete);
+    connect(
+        &widget, &EntryWidget::context_menu_new_user,
+        this, &MainWindow::on_context_menu_new_user);
+    connect(
+        &widget, &EntryWidget::context_menu_new_computer,
+        this, &MainWindow::on_context_menu_new_computer);
+    connect(
+        &widget, &EntryWidget::context_menu_new_group,
+        this, &MainWindow::on_context_menu_new_group);
+    connect(
+        &widget, &EntryWidget::context_menu_new_ou,
+        this, &MainWindow::on_context_menu_new_ou);
+    connect(
+        &widget, &EntryWidget::context_menu_edit_policy,
+        this, &MainWindow::on_context_menu_edit_policy);
+}
 
+void MainWindow::on_context_menu_delete(const QString &dn) {
     const QString name = AD()->get_attribute(dn, "name");
     const QString text = QString("Are you sure you want to delete \"%1\"?").arg(name);
     const bool confirmed = confirmation_dialog(text);
@@ -259,35 +217,55 @@ void MainWindow::on_action_delete_entry() {
     if (confirmed) {
         AD()->delete_entry(dn);
     }    
+
+    contents_widget->setEnabled(false);
 }
 
-void MainWindow::on_action_new_entry_generic(NewEntryType type) {
-    QString dn = EntryWidget::get_selected_dn();
+void MainWindow::new_entry_dialog(const QString &parent_dn, NewEntryType type) {
+    QString type_string = new_entry_type_to_string[type];
+    QString dialog_title = "New " + type_string;
+    QString input_label = type_string + " name";
 
-    if (dn != "") {
-        create_entry_dialog(type, dn);
+    bool ok;
+    QString name = QInputDialog::getText(nullptr, dialog_title, input_label, QLineEdit::Normal, "", &ok);
+
+    // TODO: maybe expand tree to newly created entry?
+
+    // Create user once dialog is complete
+    if (ok && !name.isEmpty()) {
+        // Attempt to create user in AD
+
+        const QMap<NewEntryType, QString> new_entry_type_to_suffix = {
+            {NewEntryType::User, "CN"},
+            {NewEntryType::Computer, "CN"},
+            {NewEntryType::OU, "OU"},
+            {NewEntryType::Group, "CN"},
+        };
+        QString suffix = new_entry_type_to_suffix[type];
+
+        const QString dn = suffix + "=" + name + "," + parent_dn;
+
+        AD()->create_entry(name, dn, type);
     }
 }
 
-void MainWindow::on_action_new_user() {
-    on_action_new_entry_generic(NewEntryType::User);
+void MainWindow::on_context_menu_new_user(const QString &dn) {
+    new_entry_dialog(dn, NewEntryType::User);
 }
 
-void MainWindow::on_action_new_computer() {
-    on_action_new_entry_generic(NewEntryType::Computer);
+void MainWindow::on_context_menu_new_computer(const QString &dn) {
+    new_entry_dialog(dn, NewEntryType::Computer);
 }
 
-void MainWindow::on_action_new_group() {
-    on_action_new_entry_generic(NewEntryType::Group);
+void MainWindow::on_context_menu_new_group(const QString &dn) {
+    new_entry_dialog(dn, NewEntryType::Group);
 }
 
-void MainWindow::on_action_new_ou() {
-    on_action_new_entry_generic(NewEntryType::OU);
+void MainWindow::on_context_menu_new_ou(const QString &dn) {
+    new_entry_dialog(dn, NewEntryType::OU);
 }
 
-void MainWindow::on_action_rename() {
-    QString dn = EntryWidget::get_selected_dn();
-
+void MainWindow::on_context_menu_rename(const QString &dn) {
     // Get new name from input box
     QString dialog_title = "Rename";
     QString input_label = "New name:";
@@ -299,7 +277,7 @@ void MainWindow::on_action_rename() {
     }
 }
 
-void MainWindow::on_action_edit_policy() {
+void MainWindow::on_context_menu_edit_policy(const QString &dn) {
     // Start policy edit process
     const auto process = new QProcess(this);
 
@@ -308,7 +286,6 @@ void MainWindow::on_action_edit_policy() {
 
     const char *uri = "ldap://dc0.domain.alt";
 
-    const QString dn = EntryWidget::get_selected_dn();
     const QString path = AD()->get_attribute(dn, "gPCFileSysPath");
 
     QStringList args;

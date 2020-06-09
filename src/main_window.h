@@ -30,6 +30,7 @@ class AdModel;
 class ContainersWidget;
 class ContentsWidget;
 class DetailsWidget;
+class EntryWidget;
 
 class MainWindow final : public QMainWindow {
 Q_OBJECT
@@ -37,48 +38,31 @@ Q_OBJECT
 public:
     explicit MainWindow(const bool auto_login);
 
-    static QAction *action_advanced_view;
-    static QAction *action_toggle_dn;
-    static QAction *action_details;
-    static QAction *action_delete_entry;
-    static QAction *action_new_user;
-    static QAction *action_new_computer;
-    static QAction *action_new_group;
-    static QAction *action_new_ou;
-    static QAction *action_edit_policy;
-    static QAction *action_rename;
-
 private slots:
-    void on_action_details();
-    void on_action_delete_entry();
-    void on_action_new_user();
-    void on_action_new_computer();
-    void on_action_new_group();
-    void on_action_new_ou();
-    void on_action_rename();
-    void on_containers_clicked_dn(const QString &dn);
-    void on_contents_clicked_dn(const QString &dn);
-    void on_action_edit_policy();
+    void on_context_menu_rename(const QString &dn);
+    void on_context_menu_delete(const QString &dn);
+    void on_context_menu_new_user(const QString &dn);
+    void on_context_menu_new_computer(const QString &dn);
+    void on_context_menu_new_group(const QString &dn);
+    void on_context_menu_new_ou(const QString &dn);
+    void on_context_menu_edit_policy(const QString &dn);
     void on_action_login();
     void on_action_exit();
     void on_ad_interface_login_complete(const QString &base, const QString &head);
 
 private:
-    QString get_selected_dn() const;
-    void on_action_new_entry_generic(NewEntryType type);
-    void set_enabled_for_ad_actions(bool enabled);
+    void new_entry_dialog(const QString &parent_dn, NewEntryType type);
+    void set_enabled_for_widgets(bool enabled);
     bool confirmation_dialog(const QString &text);
+    void connect_entry_widget(const EntryWidget &widget);
 
     AdModel *ad_model = nullptr;
     ContainersWidget *containers_widget = nullptr;
     ContentsWidget *contents_widget = nullptr;
     DetailsWidget *details_widget = nullptr;
 
-    QAction *action_containers_click_attributes = nullptr;
-    QAction *action_contents_click_attributes = nullptr;
     QAction *action_login = nullptr;
     QAction *action_exit = nullptr;
-    QAction *action_toggle_confirmations = nullptr;
 };
 
 #endif /* MAIN_WINDOW_H */

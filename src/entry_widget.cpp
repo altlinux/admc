@@ -18,9 +18,9 @@
  */
 
 #include "entry_widget.h"
-#include "main_window.h"
 #include "ad_interface.h"
 #include "entry_model.h"
+#include "settings.h"
 
 #include <QApplication>
 #include <QItemSelection>
@@ -35,15 +35,11 @@
 #include <QMenu>
 #include <QAction>
 
-QSet<EntryWidget *> EntryWidget::instances;
-
 EntryWidget::EntryWidget(EntryModel *model)
 : QWidget()
 {    
     entry_model = model;
     
-    instances.insert(this);
-
     view = new QTreeView();
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
@@ -60,8 +56,8 @@ EntryWidget::EntryWidget(EntryModel *model)
     update_column_visibility();
 
     connect(
-        MainWindow::action_toggle_dn, &QAction::triggered,
-        this, &EntryWidget::on_action_toggle_dn);
+        SETTINGS()->toggle_show_dn_column, &QAction::triggered,
+        this, &EntryWidget::on_toggle_show_dn_column);
 
     connect(
         view, &QWidget::customContextMenuRequested,
@@ -72,10 +68,6 @@ EntryWidget::EntryWidget(EntryModel *model)
         this, &EntryWidget::on_view_clicked);
 }
 
-EntryWidget::~EntryWidget() {
-    instances.remove(this);
-}
-
 void EntryWidget::on_context_menu_requested(const QPoint &pos) {
     // Open entry context menu
     QModelIndex index = view->indexAt(pos);
@@ -84,47 +76,46 @@ void EntryWidget::on_context_menu_requested(const QPoint &pos) {
         return;
     }
     
+    const QString dn = entry_model->get_dn_from_index(index);
+    
     QMenu menu;
 
-    menu.addAction(MainWindow::action_details);
-    menu.addAction(MainWindow::action_delete_entry);
-    menu.addAction(MainWindow::action_rename);
+    QAction *action_to_show_menu_at = menu.addAction("Details", [this, dn]() {
+        emit context_menu_details(dn);
+    });
+    menu.addAction("Delete", [this, dn]() {
+        emit context_menu_delete(dn);
+    });
+    menu.addAction("Rename", [this, dn]() {
+        emit context_menu_rename(dn);
+    });
 
     QMenu *submenu_new = menu.addMenu("New");
-    submenu_new->addAction(MainWindow::action_new_user);
-    submenu_new->addAction(MainWindow::action_new_computer);
-    submenu_new->addAction(MainWindow::action_new_group);
-    submenu_new->addAction(MainWindow::action_new_ou);
+    submenu_new->addAction("New User", [this, dn]() {
+        emit context_menu_new_user(dn);
+    });
+    submenu_new->addAction("New Computer", [this, dn]() {
+        emit context_menu_new_computer(dn);
+    });
+    submenu_new->addAction("New Group", [this, dn]() {
+        emit context_menu_new_group(dn);
+    });
+    submenu_new->addAction("New OU", [this, dn]() {
+        emit context_menu_new_ou(dn);
+    });
 
-    const QString dn = entry_model->get_dn_from_index(index);
     const bool is_policy = AD()->is_policy(dn); 
     if (is_policy) {
-        menu.addAction(MainWindow::action_edit_policy);
+        submenu_new->addAction("Edit Policy", [this, dn]() {
+            emit context_menu_edit_policy(dn);
+        });
     }
 
     QPoint global_pos = view->mapToGlobal(pos);
-    menu.exec(global_pos, MainWindow::action_details);
+    menu.exec(global_pos, action_to_show_menu_at);
 }
 
-QString EntryWidget::get_selected_dn() {
-    for (auto e : instances) {
-        if (e->view->hasFocus()) {
-            const auto selection_model = e->view->selectionModel();
-
-            if (selection_model->hasSelection()) {
-                const QList<QModelIndex> selected_indexes = selection_model->selectedIndexes();
-                const QModelIndex selected = selected_indexes[0];
-                const QString dn = e->entry_model->get_dn_from_index(selected);
-
-                return dn;
-            }
-        }
-    }
-    
-    return "";
-}
-
-void EntryWidget::on_action_toggle_dn(bool checked) {
+void EntryWidget::on_toggle_show_dn_column(bool checked) {
     const bool dn_column_hidden = !checked;
     column_hidden[entry_model->dn_column] = dn_column_hidden;
 

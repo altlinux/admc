@@ -56,13 +56,13 @@ set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/attributes_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/containers_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/contents_widget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/create_entry_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main_window.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/status_bar.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/members_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/members_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_model.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/settings.cpp
 )
 
 add_definitions(${QT5_DEFINITIONS})

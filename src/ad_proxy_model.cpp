@@ -20,7 +20,7 @@
 #include "ad_proxy_model.h"
 #include "ad_model.h"
 #include "ad_interface.h"
-#include "main_window.h"
+#include "settings.h"
 
 #include <QAction>
 
@@ -30,7 +30,7 @@ AdProxyModel::AdProxyModel(AdModel *model, QObject *parent)
     setSourceModel(model);
 
     connect(
-        MainWindow::action_advanced_view, &QAction::triggered,
+        SETTINGS()->toggle_advanced_view, &QAction::triggered,
         this, &AdProxyModel::on_advanced_view_toggled);
 }
 
@@ -43,7 +43,7 @@ bool AdProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_pa
 
     // Hide advanced view only entries if advanced view is OFF
     const bool advanced_view_only = index.data(AdModel::Roles::AdvancedViewOnly).toBool();
-    const bool advanced_view_is_on = MainWindow::action_advanced_view->isChecked();
+    const bool advanced_view_is_on = SETTINGS()->toggle_advanced_view->isChecked();
     if (advanced_view_only && !advanced_view_is_on) {
         return false;
     }

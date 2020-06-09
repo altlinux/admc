@@ -34,15 +34,20 @@ Q_OBJECT
 
 public:
     EntryWidget(EntryModel *model);
-    ~EntryWidget();
-
-    static QString get_selected_dn();
 
 signals:
     void clicked_dn(const QString &dn);
+    void context_menu_details(const QString &dn);
+    void context_menu_rename(const QString &dn);
+    void context_menu_delete(const QString &dn);
+    void context_menu_new_user(const QString &dn);
+    void context_menu_new_computer(const QString &dn);
+    void context_menu_new_group(const QString &dn);
+    void context_menu_new_ou(const QString &dn);
+    void context_menu_edit_policy(const QString &dn);
 
 private slots:
-    void on_action_toggle_dn(bool checked);
+    void on_toggle_show_dn_column(bool checked);
     void on_context_menu_requested(const QPoint &pos);
     void on_view_clicked(const QModelIndex &index);
 
@@ -53,7 +58,6 @@ protected:
     void update_column_visibility();
 
 private:
-    static QSet<EntryWidget *> instances;
     EntryModel *entry_model = nullptr;
 
 };

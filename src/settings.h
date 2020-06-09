@@ -17,11 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATE_ENTRY_H
-#define CREATE_ENTRY_H
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
-#include "ad_interface.h"
+#include <QObject>
 
-void create_entry_dialog(NewEntryType type, const QString &given_parent_dn);
+class QAction;
 
-#endif /* CREATE_ENTRY_H */
+class Settings final : public QObject {
+Q_OBJECT
+
+public:
+    explicit Settings(QObject *parent);
+
+    QAction *toggle_advanced_view = nullptr;
+    QAction *toggle_show_dn_column = nullptr;
+    QAction *details_on_containers_click = nullptr;
+    QAction *details_on_contents_click = nullptr;
+    QAction *confirm_actions = nullptr;
+
+private:
+    void save_settings();
+
+};
+
+const Settings *SETTINGS();
+
+#endif /* SETTINGS_H */

@@ -34,9 +34,12 @@ class DetailsWidget final : public QTabWidget {
 Q_OBJECT
 
 public:
-    DetailsWidget();
+    DetailsWidget(MembersWidget *members_widget_);
 
-    void change_target(const QString &dn);
+public slots:
+    void on_containers_clicked_dn(const QString &dn);
+    void on_contents_clicked_dn(const QString &dn);
+    void on_context_menu_details(const QString &dn);
 
 private slots:
     void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
@@ -44,14 +47,14 @@ private slots:
     void on_move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn); 
     void on_load_attributes_complete(const QString &dn);
     void on_rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
-    
+
 private:
     AttributesModel *attributes_model = nullptr;
     QTreeView *attributes_view = nullptr;
-    
     MembersWidget *members_widget = nullptr;
-
     QString target_dn;
+
+    void change_target(const QString &dn);
 };
 
 #endif /* ATTRIBUTES_WIDGET_H */
