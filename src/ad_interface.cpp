@@ -427,15 +427,24 @@ enum DropType {
 // If drop type is none, then can't drop this entry on this target
 DropType get_drop_type(const QString &dn, const QString &target_dn) {
     const bool dropped_is_user = AD()->is_user(dn);
+    const bool dropped_is_group = AD()->is_group(dn);
+    const bool dropped_is_ou = AD()->is_ou(dn);
 
     const bool target_is_group = AD()->is_group(target_dn);
     const bool target_is_ou = AD()->is_ou(target_dn);
     const bool target_is_container = AD()->is_container(target_dn);
+    const bool target_is_container_like = AD()->is_container_like(target_dn);
 
-    if (dropped_is_user && (target_is_ou || target_is_container)) {
-        return DropType_Move;
-    } else if (dropped_is_user && target_is_group) {
-        return DropType_AddToGroup;
+    if (dropped_is_user) {
+        if (target_is_ou || target_is_container) {
+            return DropType_Move;
+        } else if (target_is_group) {
+            return DropType_AddToGroup;
+        }
+    } else if (dropped_is_group || dropped_is_ou) {
+        if (target_is_ou || target_is_container || target_is_container_like) {
+            return DropType_Move;
+        }
     }
 
     return DropType_None;
