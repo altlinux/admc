@@ -397,16 +397,16 @@ bool AdInterface::is_policy(const QString &dn) {
     return attribute_value_exists(dn, "objectClass", "groupPolicyContainer");
 }
 
-bool AdInterface::can_drop_entry(const QString &dn, const QString &parent_dn) {
+bool AdInterface::can_drop_entry(const QString &dn, const QString &target_dn) {
     const bool dropped_is_user = AD()->is_user(dn);
 
-    const bool parent_is_group = AD()->is_group(parent_dn);
-    const bool parent_is_ou = AD()->is_ou(parent_dn);
-    const bool parent_is_container = AD()->is_container(parent_dn);
+    const bool parent_is_group = AD()->is_group(target_dn);
+    const bool parent_is_ou = AD()->is_ou(target_dn);
+    const bool parent_is_container = AD()->is_container(target_dn);
 
     // TODO: support dropping non-users
     // TODO: support dropping policies
-    if (parent_dn == "") {
+    if (target_dn == "") {
         return false;
     } else if (dropped_is_user && (parent_is_group || parent_is_ou || parent_is_container)) {
         return true;
@@ -416,17 +416,17 @@ bool AdInterface::can_drop_entry(const QString &dn, const QString &parent_dn) {
 }
 
 // General "drop" operation that can either move, link or change membership depending on which types of entries are involved
-void AdInterface::drop_entry(const QString &dn, const QString &parent_dn) {
+void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
     const bool dropped_is_user = AD()->is_user(dn);
 
-    const bool parent_is_group = AD()->is_group(parent_dn);
-    const bool parent_is_ou = AD()->is_ou(parent_dn);
-    const bool parent_is_container = AD()->is_container(parent_dn);
+    const bool parent_is_group = AD()->is_group(target_dn);
+    const bool parent_is_ou = AD()->is_ou(target_dn);
+    const bool parent_is_container = AD()->is_container(target_dn);
 
     if (dropped_is_user && (parent_is_ou || parent_is_container)) {
-        AD()->move_user(dn, parent_dn);
+        AD()->move_user(dn, target_dn);
     } else if (dropped_is_user && parent_is_group) {
-        AD()->add_user_to_group(parent_dn, dn);
+        AD()->add_user_to_group(target_dn, dn);
     }
 }
 

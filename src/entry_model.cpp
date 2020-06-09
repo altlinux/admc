@@ -51,9 +51,9 @@ QMimeData *EntryModel::mimeData(const QModelIndexList &indexes) const {
 
 bool EntryModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
     const QString dn = data->text();
-    const QString parent_dn = get_dn_from_index(parent);
+    const QString target_dn = get_dn_from_index(parent);
 
-    const bool can_drop = AD()->can_drop_entry(dn, parent_dn);
+    const bool can_drop = AD()->can_drop_entry(dn, target_dn);
 
     return can_drop;
 }
@@ -68,9 +68,9 @@ bool EntryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int 
     }
 
     const QString dn = data->text();
-    const QString parent_dn = get_dn_from_index(parent);
+    const QString target_dn = get_dn_from_index(parent);
 
-    AD()->drop_entry(dn, parent_dn);
+    AD()->drop_entry(dn, target_dn);
 
     return true;
 }
