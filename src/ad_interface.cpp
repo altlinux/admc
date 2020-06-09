@@ -417,26 +417,15 @@ bool AdInterface::is_container_like(const QString &dn) {
     return false;
 }
 
-bool AdInterface::can_drop_entry(const QString &dn, const QString &target_dn) {
-    const bool dropped_is_user = AD()->is_user(dn);
+enum DropType {
+    DropType_Move,
+    DropType_AddToGroup,
+    DropType_None
+};
 
-    const bool target_is_group = AD()->is_group(target_dn);
-    const bool target_is_ou = AD()->is_ou(target_dn);
-    const bool target_is_container = AD()->is_container(target_dn);
-
-    // TODO: support dropping non-users
-    // TODO: support dropping policies
-    if (target_dn == "") {
-        return false;
-    } else if (dropped_is_user && (target_is_group || target_is_ou || target_is_container)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-// General "drop" operation that can either move, link or change membership depending on which types of entries are involved
-void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
+// Determine what kind of drop type is dropping this entry onto target
+// If drop type is none, then can't drop this entry on this target
+DropType get_drop_type(const QString &dn, const QString &target_dn) {
     const bool dropped_is_user = AD()->is_user(dn);
 
     const bool target_is_group = AD()->is_group(target_dn);
@@ -444,9 +433,40 @@ void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
     const bool target_is_container = AD()->is_container(target_dn);
 
     if (dropped_is_user && (target_is_ou || target_is_container)) {
-        AD()->move(dn, target_dn);
+        return DropType_Move;
     } else if (dropped_is_user && target_is_group) {
-        AD()->add_user_to_group(target_dn, dn);
+        return DropType_AddToGroup;
+    }
+
+    return DropType_None;
+}
+
+bool AdInterface::can_drop_entry(const QString &dn, const QString &target_dn) {
+    DropType drop_type = get_drop_type(dn, target_dn);
+
+    if (drop_type == DropType_None) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+// General "drop" operation that can either move, link or change membership depending on which types of entries are involved
+void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
+    DropType drop_type = get_drop_type(dn, target_dn);
+
+    switch (drop_type) {
+        case DropType_Move: {
+            AD()->move(dn, target_dn);
+            break;
+        }
+        case DropType_AddToGroup: {
+            AD()->add_user_to_group(target_dn, dn);
+            break;
+        }
+        case DropType_None: {
+            break;
+        }
     }
 }
 
