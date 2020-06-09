@@ -19,6 +19,7 @@ BuildRequires(pre): cmake-modules
 
 BuildRequires: openldap-devel
 BuildRequires: libsasl2-devel
+BuildRequires: libcmocka-devel
 BuildRequires: qt5-base-common
 BuildRequires: doxygen
 
