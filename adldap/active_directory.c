@@ -31,6 +31,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#include <errno.h>
+
 #define MAX_ERR_LENGTH 1024
 char ad_error_msg[MAX_ERR_LENGTH];
 int ad_error_code;
@@ -209,31 +211,81 @@ LDAP *ad_login(const char* uri) {
     return ds;
 }
 
-/* 
-convert a distinguished name into the domain controller
-dns domain, eg: "ou=users,dc=example,dc=com" returns
-"example.com".
-memory allocated should be returned with free()
-*/
-char *dn2domain(const char *dn) {
-    char **exp_dn;
-    int i;
-    char *dc;
+/**
+ * Convert a distinguished name into the domain controller
+ * dns domain, eg: "ou=users,dc=example,dc=com" returns
+ * "example.com".
+ * memory allocated should be returned with free()
+ */
+int dn2domain(const char *dn, char** domain) {
+    LDAPDN ldn = NULL;
+    LDAPRDN lrdn = NULL;
+    LDAPAVA* lattr = NULL;
 
-    dc=malloc(1024);
-    dc[0]='\0';
-    exp_dn=ldap_explode_dn(dn, 0);
-    for(i=0; exp_dn[i]!=NULL; i++) {
-        if(!strncasecmp("dc=", exp_dn[i], 3)) {
-            strncat(dc, exp_dn[i]+3, 1024);
+    int result = AD_SUCCESS;
+    int i;
+    /* This way we'll always have null-terminated string without
+     * workarounds. Cost of memory initialization is not comparable
+     * with code readability */
+    char *dc = calloc(1024, sizeof(char));
+    /* Catch malloc error */
+    if (NULL == dc) {
+        result = ENOMEM;
+        goto dn2domain_end;
+    }
+
+    /* Explode string into set of structures representing RDNs */
+    if (ldap_str2dn(dn, &ldn, LDAP_DN_FORMAT_LDAPV3) != LDAP_SUCCESS) {
+        result = AD_INVALID_DN;
+        goto dn2domain_end;
+    }
+
+    /* Iterate over RDNs checking for Domain Components and extract
+     * their values */
+    for(i = 0; NULL != ldn[i]; i++) {
+        lrdn = ldn[i];
+        /* Multi-valued RDNs are not supported so no iteration over
+         * lrdn[x] */
+        /* Check that we have at least one RDN */
+        if (NULL == lrdn[0]) {
+            result = AD_ATTRIBUTE_ENTRY_NOT_FOUND;
+            goto dn2domain_end;
+        }
+        lattr = lrdn[0];
+        /* BER/DER encoded attributes are unsupported */
+        if (0 == (lattr->la_flags & LDAP_AVA_STRING)) {
+            result = AD_LDAP_OPERATION_FAILURE;
+            goto dn2domain_end;
+        }
+        if(!strncasecmp("DC", lattr[0].la_attr.bv_val, 2)) {
+            strncat(dc, lattr[0].la_value.bv_val, lattr[0].la_value.bv_len);
             strncat(dc, ".", 1024);
         }
     }
-    ldap_value_free(exp_dn);
-    i=strlen(dc);
-    if(i>0) dc[i-1]='\0';
-    for(i=0; dc[i]!='\0'; i++) dc[i]=tolower(dc[i]);
-        return dc;
+
+    i = strlen(dc);
+    for(i = 0; '\0' != dc[i]; i++) {
+        dc[i] = tolower(dc[i]);
+    }
+
+dn2domain_end:
+    /* Free the memory allocated by ldap_str2dn */
+    if (NULL != ldn) {
+        ldap_dnfree(ldn);
+    }
+
+    /* Free the memory allocated for resolved DNS domain name in case
+     * of resolution errors */
+    if (AD_SUCCESS != result) {
+        if (NULL != dc) {
+            free(dc);
+            dc = NULL;
+        }
+    }
+
+    (*domain) = dc;
+
+    return result;
 }
 
 /* public functions */
@@ -262,11 +314,13 @@ int ad_create_user(const LDAP *ds, const char *username, const char *dn) {
     LDAPMod *attrs[5];
     LDAPMod attr1, attr2, attr3, attr4;
     int result;
+    int result_dn2domain;
 
     char *objectClass_values[]={"user", NULL};
     char *name_values[2];
     char *accountControl_values[]={"66050", NULL};
-    char *upn, *domain;
+    char* upn = NULL;
+    char* domain = NULL;
     char *upn_values[2];
 
     attr1.mod_op = LDAP_MOD_ADD;
@@ -283,7 +337,11 @@ int ad_create_user(const LDAP *ds, const char *username, const char *dn) {
     attr3.mod_type = "userAccountControl";
     attr3.mod_values = accountControl_values;
 
-    domain=dn2domain(dn);
+    result_dn2domain = dn2domain(dn, &domain);
+    if (AD_SUCCESS != result_dn2domain) {
+        ad_error_code = result_dn2domain;
+        goto ad_create_user_end;
+    }
     upn=malloc(strlen(username)+strlen(domain)+2);
     sprintf(upn, "%s@%s", username, domain);
     upn_values[0]=upn;
@@ -306,8 +364,13 @@ int ad_create_user(const LDAP *ds, const char *username, const char *dn) {
         ad_error_code=AD_SUCCESS;
     }
 
-    free(domain);
-    free(name_values[0]);
+ad_create_user_end:
+    if (NULL != domain) {
+        free(domain);
+    }
+    if (NULL != name_values[0]) {
+        free(name_values[0]);
+    }
 
     return ad_error_code;
 }
@@ -769,19 +832,25 @@ int ad_mod_rename(const LDAP *ds, const char *dn, const char *new_rdn) {
 
 int ad_rename_user(const LDAP *ds, const char *dn, const char *new_name) {
     int result;
-    char *new_rdn;
-    char *domain, *upn;
+    int result_dn2domain;
+    char* new_rdn = NULL;
+    char* domain = NULL;
+    char* upn = NULL;
 
     result=ad_mod_replace(ds, dn, "sAMAccountName", new_name);
     if(!result) return ad_error_code;
 
-    domain=dn2domain(dn);
+    result_dn2domain = dn2domain(dn, &domain);
+    if (AD_SUCCESS != result_dn2domain) {
+        ad_error_code = result_dn2domain;
+        goto ad_rename_user_end;
+    }
     upn=malloc(strlen(new_name)+strlen(domain)+2);
     sprintf(upn, "%s@%s", new_name, domain);
-    free(domain);
     result=ad_mod_replace(ds, dn, "userPrincipalName", upn);
-    free(upn);
-    if(!result) return ad_error_code;
+    if (!result) {
+        goto ad_rename_user_end;
+    }
 
     new_rdn=malloc(strlen(new_name)+4);
     sprintf(new_rdn, "cn=%s", new_name);
@@ -789,10 +858,23 @@ int ad_rename_user(const LDAP *ds, const char *dn, const char *new_name) {
     result = ldap_rename_s(ds, dn, new_rdn, NULL, 1, NULL, NULL);
     if (result != LDAP_SUCCESS) {
         snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in ldap_rename_s for ad_rename_user: %s\n", ldap_err2string(result));
-        return ad_error_code;
+        goto ad_rename_user_end;
     }
 
-    free(new_rdn);
+ad_rename_user_end:
+    if (NULL != domain) {
+        free(domain);
+        domain = NULL;
+    }
+    if (NULL != upn) {
+        free(upn);
+        upn = NULL;
+    }
+    if (NULL != new_rdn) {
+        free(new_rdn);
+        new_rdn = NULL;
+    }
+
     return ad_error_code;
 }
 
@@ -818,8 +900,11 @@ int ad_rename_group(const LDAP *ds, const char *dn, const char *new_name) {
 
 int ad_move_user(const LDAP *ds, const char *current_dn, const char *new_container) {
     int result;
+    int result_dn2domain;
     char **exdn;
-    char **username, *domain, *upn;
+    char **username;
+    char* domain = NULL;
+    char* upn = NULL;
 
     // Modify userPrincipalName in case of domain change
     username=ad_get_attribute(ds, current_dn, "sAMAccountName");;
@@ -830,15 +915,29 @@ int ad_move_user(const LDAP *ds, const char *current_dn, const char *new_contain
         ad_error_code=AD_INVALID_DN;
         return ad_error_code;
     }
-    domain=dn2domain(new_container);
+    result_dn2domain = dn2domain(new_container, &domain);
+    if (AD_SUCCESS != result_dn2domain) {
+        ad_error_code = result_dn2domain;
+        goto ad_move_user_end;
+    }
     upn=malloc(strlen(username[0])+strlen(domain)+2);
     sprintf(upn, "%s@%s", username[0], domain);
-    free(domain);
     result=ad_mod_replace(ds, current_dn, "userPrincipalName", upn);
-    free(upn);
-    if(!result) return ad_error_code;
+    if (!result) {
+        goto ad_move_user_end;
+    }
 
     ad_error_code=ad_move(ds, current_dn, new_container);
+
+ad_move_user_end:
+    if (NULL != domain) {
+        free(domain);
+        domain = NULL;
+    }
+    if (NULL != upn) {
+        free(upn);
+        upn = NULL;
+    }
 
     return ad_error_code;
 }
