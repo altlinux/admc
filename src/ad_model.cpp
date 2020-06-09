@@ -126,7 +126,7 @@ void AdModel::on_move_complete(const QString &dn, const QString &new_container, 
 
     // Need to load entry at new parent if the parent has already
     // been expanded/fetched
-    // NOTE: loading if parent has already been fetched will
+    // NOTE: loading if parent hasn't been fetched will
     // create a duplicate
     QList<QStandardItem *> parent_items = findItems(new_container, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
     if (parent_items.size() > 0) {
