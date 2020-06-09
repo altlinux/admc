@@ -86,6 +86,9 @@ public:
     bool is_ou(const QString &dn);
     bool is_policy(const QString &dn);
 
+    bool can_drop_entry(const QString &dn, const QString &parent_dn);
+    void drop_entry(const QString &dn, const QString &parent_dn);
+
 signals:
     void ad_interface_login_complete(const QString &base, const QString &head);
     void ad_interface_login_failed(const QString &base, const QString &head);

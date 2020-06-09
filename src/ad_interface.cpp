@@ -397,6 +397,39 @@ bool AdInterface::is_policy(const QString &dn) {
     return attribute_value_exists(dn, "objectClass", "groupPolicyContainer");
 }
 
+bool AdInterface::can_drop_entry(const QString &dn, const QString &parent_dn) {
+    const bool dropped_is_user = AD()->is_user(dn);
+
+    const bool parent_is_group = AD()->is_group(parent_dn);
+    const bool parent_is_ou = AD()->is_ou(parent_dn);
+    const bool parent_is_container = AD()->is_container(parent_dn);
+
+    // TODO: support dropping non-users
+    // TODO: support dropping policies
+    if (parent_dn == "") {
+        return false;
+    } else if (dropped_is_user && (parent_is_group || parent_is_ou || parent_is_container)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// General "drop" operation that can either move, link or change membership depending on which types of entries are involved
+void AdInterface::drop_entry(const QString &dn, const QString &parent_dn) {
+    const bool dropped_is_user = AD()->is_user(dn);
+
+    const bool parent_is_group = AD()->is_group(parent_dn);
+    const bool parent_is_ou = AD()->is_ou(parent_dn);
+    const bool parent_is_container = AD()->is_container(parent_dn);
+
+    if (dropped_is_user && (parent_is_ou || parent_is_container)) {
+        AD()->move_user(dn, parent_dn);
+    } else if (dropped_is_user && parent_is_group) {
+        AD()->add_user_to_group(parent_dn, dn);
+    }
+}
+
 AdInterface *AD() {
     ADMC *app = qobject_cast<ADMC *>(qApp);
     AdInterface *ad = app->ad_interface();
