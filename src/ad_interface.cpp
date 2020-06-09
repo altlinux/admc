@@ -420,15 +420,15 @@ bool AdInterface::is_container_like(const QString &dn) {
 bool AdInterface::can_drop_entry(const QString &dn, const QString &target_dn) {
     const bool dropped_is_user = AD()->is_user(dn);
 
-    const bool parent_is_group = AD()->is_group(target_dn);
-    const bool parent_is_ou = AD()->is_ou(target_dn);
-    const bool parent_is_container = AD()->is_container(target_dn);
+    const bool target_is_group = AD()->is_group(target_dn);
+    const bool target_is_ou = AD()->is_ou(target_dn);
+    const bool target_is_container = AD()->is_container(target_dn);
 
     // TODO: support dropping non-users
     // TODO: support dropping policies
     if (target_dn == "") {
         return false;
-    } else if (dropped_is_user && (parent_is_group || parent_is_ou || parent_is_container)) {
+    } else if (dropped_is_user && (target_is_group || target_is_ou || target_is_container)) {
         return true;
     } else {
         return false;
@@ -439,13 +439,13 @@ bool AdInterface::can_drop_entry(const QString &dn, const QString &target_dn) {
 void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
     const bool dropped_is_user = AD()->is_user(dn);
 
-    const bool parent_is_group = AD()->is_group(target_dn);
-    const bool parent_is_ou = AD()->is_ou(target_dn);
-    const bool parent_is_container = AD()->is_container(target_dn);
+    const bool target_is_group = AD()->is_group(target_dn);
+    const bool target_is_ou = AD()->is_ou(target_dn);
+    const bool target_is_container = AD()->is_container(target_dn);
 
-    if (dropped_is_user && (parent_is_ou || parent_is_container)) {
+    if (dropped_is_user && (target_is_ou || target_is_container)) {
         AD()->move(dn, target_dn);
-    } else if (dropped_is_user && parent_is_group) {
+    } else if (dropped_is_user && target_is_group) {
         AD()->add_user_to_group(target_dn, dn);
     }
 }
