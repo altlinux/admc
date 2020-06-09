@@ -405,6 +405,18 @@ bool AdInterface::is_policy(const QString &dn) {
     return attribute_value_exists(dn, "objectClass", "groupPolicyContainer");
 }
 
+bool AdInterface::is_container_like(const QString &dn) {
+    // TODO: check that this includes all fitting objectClasses
+    const QList<QString> containerlike_objectClasses = {"organizationalUnit", "builtinDomain", "domain"};
+    for (auto c : containerlike_objectClasses) {
+        if (AD()->attribute_value_exists(dn, "objectClass", c)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool AdInterface::can_drop_entry(const QString &dn, const QString &target_dn) {
     const bool dropped_is_user = AD()->is_user(dn);
 

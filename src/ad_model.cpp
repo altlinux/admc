@@ -221,14 +221,7 @@ void load_row(QList<QStandardItem *> row, const QString &dn) {
 
     bool showInAdvancedViewOnly = AD()->get_attribute(dn, "showInAdvancedViewOnly") == "TRUE";
 
-    bool is_container = false;
-    const QList<QString> container_objectClasses = {"container", "organizationalUnit", "builtinDomain", "domain"};
-    for (auto c : container_objectClasses) {
-        if (AD()->attribute_value_exists(dn, "objectClass", c)) {
-            is_container = true;
-            break;
-        }
-    }
+    bool is_container = AD()->is_container_like(dn);
 
     QStandardItem *name_item = row[AdModel::Column::Name];
     QStandardItem *category_item = row[AdModel::Column::Category];

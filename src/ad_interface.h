@@ -85,6 +85,7 @@ public:
     bool is_container(const QString &dn);
     bool is_ou(const QString &dn);
     bool is_policy(const QString &dn);
+    bool is_container_like(const QString &dn);
 
     bool can_drop_entry(const QString &dn, const QString &target_dn);
     void drop_entry(const QString &dn, const QString &target_dn);
