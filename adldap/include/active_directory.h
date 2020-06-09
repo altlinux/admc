@@ -80,32 +80,32 @@ int ad_get_error_num();
 
 ad_create_user("new-user", "CN=new-user,CN=Users,DC=domain,DC=alt");
 */
-int ad_create_user(const LDAP *ds, const char *username, const char *dn);
+int ad_create_user(LDAP *ds, const char *username, const char *dn);
 
 /* create computer object */
-int ad_create_computer(const LDAP *ds, const char *name, const char *dn);
+int ad_create_computer(LDAP *ds, const char *name, const char *dn);
 
 /* ad_lock_user() disables a user account
 |  Returns AD_SUCCESS, AD_OBJECT_NOT_FOUND or AD_LDAP_OPERATIONS_FAILURE.
 */
-int ad_lock_user(const LDAP *ds, const char *dn);
+int ad_lock_user(LDAP *ds, const char *dn);
 
 /* ad_unlock_user() unlocks a disabled user account
 |  Returns AD_SUCCESS, AD_OBJECT_NOT_FOUND or AD_LDAP_OPERATIONS_FAILURE.
 */
-int ad_unlock_user(const LDAP *ds, const char *dn);
+int ad_unlock_user(LDAP *ds, const char *dn);
 
 /* ad_object_delete() deletes the given dn
 |  Returns AD_SUCCESS or AD_LDAP_OPERATION_FAILURE.
 */
-int ad_object_delete(const LDAP *ds, const char *dn);
+int ad_object_delete(LDAP *ds, const char *dn);
 
 /* ad_setpass() sets the user's password to the password string given
 |  This requires an ssl connection to work 
 | (use a uri of ldaps:// rather than ldap:// in the configuration file)
 |  Returns AD_SUCCESS or AD_LDAP_OPERATION_FAILURE.
 */
-int ad_setpass(const LDAP *ds, const char *dn, const char *password);
+int ad_setpass(LDAP *ds, const char *dn, const char *password);
 
 /* ad_search() is a more generalised search function
 |  Returns a NULL terminated array of dns which match the given 
@@ -116,7 +116,7 @@ int ad_setpass(const LDAP *ds, const char *dn, const char *password);
 |  Searching is done from the searchbase specified in the configuration
 | file.
 */
-char **ad_search(const LDAP *ds, const char *attribute, const char *value, const char* search_base);
+char **ad_search(LDAP *ds, const char *attribute, const char *value, const char* search_base);
 
 /* ad_mod_add() adds a value to the given attribute.
 | Example ad_mod_add("cn=nobody,ou=users,dc=example,dc=com",
@@ -124,13 +124,13 @@ char **ad_search(const LDAP *ds, const char *attribute, const char *value, const
 |  This function works only on multi-valued attributes.
 |  Returns AD_SUCCESS on success.
 */
-int ad_mod_add(const LDAP *ds, const char *dn, const char *attribute, const char *value);
+int ad_mod_add(LDAP *ds, const char *dn, const char *attribute, const char *value);
 
 /* ad_mod_add_binary()
 |  Works the same as ad_mod_add() except for binary data.
 |  Returns AD_SUCCESS or AD_LDAP_OPERATION_FAILURE.
 */
-int ad_mod_add_binary(const LDAP *ds, const char *dn, const char *attribute, const char *data, int data_length);
+int ad_mod_add_binary(LDAP *ds, const char *dn, const char *attribute, const char *data, int data_length);
 
 /* ad_mod_replace() overwrites the given attribute with a new value.
 | Example ad_mod_replace("cn=nobody,ou=users,dc=example,dc=com",
@@ -138,13 +138,13 @@ int ad_mod_add_binary(const LDAP *ds, const char *dn, const char *attribute, con
 |  On multi-valued attributes this replaces all values.
 |  Returns AD_SUCCESS or AD_LDAP_OPERATION_FAILURE.
 */
-int ad_mod_replace(const LDAP *ds, const char *dn, const char *attribute, const char *value);
+int ad_mod_replace(LDAP *ds, const char *dn, const char *attribute, const char *value);
 
 /* ad_mod_replace_binary()
 |  Works the same as ad_mod_replace() except for binary data.
 |  Returns AD_SUCCESS or AD_LDAP_OPERATION_FAILURE.
 */
-int ad_mod_replace_binary(const LDAP *ds, const char *dn, const char *attribute, const char *data, int data_length);
+int ad_mod_replace_binary(LDAP *ds, const char *dn, const char *attribute, const char *data, int data_length);
 
 /* ad_mod_delete() removes attribute data from an object.
 |  If user nobody has 'othertelephone' numbers
@@ -154,7 +154,7 @@ int ad_mod_replace_binary(const LDAP *ds, const char *dn, const char *attribute,
 | will delete both numbers.
 |  Returns AD_SUCCESS or AD_LDAP_OPERATION_FAILURE.
 */
-int ad_mod_delete(const LDAP *ds, const char *dn, const char *attribute, const char *value);
+int ad_mod_delete(LDAP *ds, const char *dn, const char *attribute, const char *value);
 
 /* ad_get_attribute() returns a pointer to a NULL terminated
 | array of strings containing values for the given attribute.
@@ -163,31 +163,31 @@ int ad_mod_delete(const LDAP *ds, const char *dn, const char *attribute, const c
 | AD_ATTRIBUTE_ENTRY_NOT_FOUND or AD_LDAP_OPERATION_FAILURE
 | even if there are no values for the given attribute.
 */
-char **ad_get_attribute(const LDAP *ds, const char *dn, const char *attribute);
+char **ad_get_attribute(LDAP *ds, const char *dn, const char *attribute);
 
 // Renames object at dn
 // new_rdn has to have appropriate prefix and be of the form "CN=name"
 // Modifies name
 // Use specialized functions to rename users and groups
-int ad_mod_rename(const LDAP *ds, const char *dn, const char *new_rdn);
+int ad_mod_rename(LDAP *ds, const char *dn, const char *new_rdn);
 
 // Change given user's dn
 // Modifies cn, name, sAMAccountName and userPrincipalName
 // new_name should be without prefix "CN="
-int ad_rename_user(const LDAP *ds, const char *dn, const char *new_name);
+int ad_rename_user(LDAP *ds, const char *dn, const char *new_name);
 
 // Change given group's dn
 // Modifies cn, name and sAMAccountName
 // new_name should be without prefix "CN="
-int ad_rename_group(const LDAP *ds, const char *dn, const char *new_name);
+int ad_rename_group(LDAP *ds, const char *dn, const char *new_name);
 
 // Moves object to new container
 // Use specialized functions to rename users and groups
-int ad_move(const LDAP *ds, const char *current_dn, const char *new_container);
+int ad_move(LDAP *ds, const char *current_dn, const char *new_container);
 
 // Moves user to new container
 // Modifies userPrincipalName
-int ad_move_user(const LDAP *ds, const char *current_dn, const char *new_container);
+int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container);
 
 /* ad_group_create() creates a new user group (of type global security)
 |  Example ad_group_create("administrators",
@@ -200,37 +200,37 @@ int ad_move_user(const LDAP *ds, const char *current_dn, const char *new_contain
 | name,sAMAccountType,uSNChanged,uSNCreated,whenChanged,whenCreated
 |  Returns AD_SUCCESS or AD_LDAP_OPERATION_FAILURE.
 */
-int ad_group_create(const LDAP *ds, const char *group_name, const char *dn);
+int ad_group_create(LDAP *ds, const char *group_name, const char *dn);
 
 /* ad_group_add_user()
 | adds a user to a group
 | Returns AD_SUCCESS or AD_LDAP_OPERATION_FAILURE.
 */
-int ad_group_add_user(const LDAP *ds, const char *group_dn, const char *user_dn);
+int ad_group_add_user(LDAP *ds, const char *group_dn, const char *user_dn);
 
 /* ad_group_remove_user()
 | removes a user from a group
 | Returns AD_SUCCESS or AD_LDAP_OPERATION_FAILURE.
 */
-int ad_group_remove_user(const LDAP *ds, const char *group_dn, const char *user_dn);
+int ad_group_remove_user(LDAP *ds, const char *group_dn, const char *user_dn);
 
 /* ad_group_subtree_remove_user()
 |  Removes the user from all groups underneath the given container
 |  Returns AD_SUCCESS or AD_LDAP_OPERATION_FAILURE.
 */
-int ad_group_subtree_remove_user(const LDAP *ds, const char *container_dn, const char *user_dn);
+int ad_group_subtree_remove_user(LDAP *ds, const char *container_dn, const char *user_dn);
 
 /* ad_ou_create()
 |  Create an organizational unit
 |  Sets objectclass=organizationalUnit
 |  Returns AD_SUCCESS or AD_LDAP_OPERATION_FAILURE.
 */
-int ad_ou_create(const LDAP *ds, const char *ou_name, const char *dn);
+int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn);
 
 /* ad_list()
 |  Return NULL terminated array of entries
 */
-char **ad_list(const LDAP *ds, const char *dn);
+char **ad_list(LDAP *ds, const char *dn);
 
 LDAP *ad_login(const char* uri);
 
