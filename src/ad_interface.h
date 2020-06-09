@@ -123,7 +123,7 @@ private:
     QSet<QString> attributes_loaded;
 
     void load_attributes(const QString &dn);
-    void reload_attributes_of_entry_groups(const QString &dn);
+    void update_related_entries(const QString &dn);
 
 }; 
 

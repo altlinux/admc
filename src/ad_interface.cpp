@@ -257,14 +257,24 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
     }
 }
 
-// Used to update membership when changes happen to entry
-void AdInterface::reload_attributes_of_entry_groups(const QString &dn) {
+// Update all entries that are related to this one through
+// membership
+void AdInterface::update_related_entries(const QString &dn) {
+    // Update all groups that have this entry as member
     QList<QString> groups = get_attribute_multi(dn, "memberOf");
-
     for (auto group : groups) {
         // Only reload if loaded already
         if (attributes_map.contains(group)) {
             load_attributes(group);
+        }
+    }
+
+    // Update all entries that are members of this group
+    QList<QString> members = get_attribute_multi(dn, "member");
+    for (auto member : members) {
+        // Only reload if loaded already
+        if (attributes_map.contains(member)) {
+            load_attributes(member);
         }
     }
 }
@@ -278,7 +288,7 @@ void AdInterface::delete_entry(const QString &dn) {
     result = connection->object_delete(dn_cstr);
 
     if (result == AD_SUCCESS) {
-        reload_attributes_of_entry_groups(dn);
+        update_related_entries(dn);
 
         attributes_map.remove(dn);
         attributes_loaded.remove(dn);
@@ -322,10 +332,7 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
         attributes_loaded.remove(dn);
 
         load_attributes(new_dn);
-
-        if (entry_is_user) {
-            reload_attributes_of_entry_groups(new_dn);
-        }
+        update_related_entries(new_dn);
 
         emit move_complete(dn, new_container, new_dn);
     } else {
@@ -385,7 +392,7 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
 
     if (result == AD_SUCCESS) {
         load_attributes(new_dn);
-        reload_attributes_of_entry_groups(new_dn);
+        update_related_entries(new_dn);
 
         emit rename_complete(dn, new_name, new_dn);
     } else {
