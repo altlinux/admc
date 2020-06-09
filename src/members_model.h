@@ -41,6 +41,9 @@ public:
 
     void change_target(const QString &new_target_dn);
 
+private slots:
+    void on_move_complete(const QString &dn, const QString &new_container, const QString &new_dn);
+
 private:
     QString target_dn;
 
