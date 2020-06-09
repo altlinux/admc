@@ -42,8 +42,8 @@ AdModel::AdModel(QObject *parent)
         AD(), &AdInterface::delete_entry_complete,
         this, &AdModel::on_delete_entry_complete);
     connect(
-        AD(), &AdInterface::move_user_complete,
-        this, &AdModel::on_move_user_complete);
+        AD(), &AdInterface::move_complete,
+        this, &AdModel::on_move_complete);
     connect(
         AD(), &AdInterface::create_entry_complete,
         this, &AdModel::on_create_entry_complete);
@@ -114,9 +114,9 @@ void AdModel::on_delete_entry_complete(const QString &dn) {
     }
 }
 
-void AdModel::on_move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn) {
+void AdModel::on_move_complete(const QString &dn, const QString &new_container, const QString &new_dn) {
     // Remove old entry from model
-    QList<QStandardItem *> old_items = findItems(user_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    QList<QStandardItem *> old_items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
     if (old_items.size() > 0) {
         QStandardItem *dn_item = old_items[0];
         QModelIndex dn_index = dn_item->index();
@@ -128,7 +128,7 @@ void AdModel::on_move_user_complete(const QString &user_dn, const QString &conta
     // been expanded/fetched
     // NOTE: loading if parent has already been fetched will
     // create a duplicate
-    QList<QStandardItem *> parent_items = findItems(container_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    QList<QStandardItem *> parent_items = findItems(new_container, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
     if (parent_items.size() > 0) {
         QStandardItem *parent_dn_item = parent_items[0];
         QModelIndex parent_dn_index = parent_dn_item->index();

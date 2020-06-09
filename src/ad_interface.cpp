@@ -319,9 +319,9 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
             reload_attributes_of_entry_groups(new_dn);
         }
 
-        // emit move_user_complete(user_dn, container_dn, new_dn);
+        emit move_complete(dn, new_container, new_dn);
     } else {
-        // emit move_user_failed(user_dn, container_dn, new_dn, get_error_str());
+        emit move_failed(dn, new_container, new_dn, get_error_str());
     }
 }
 

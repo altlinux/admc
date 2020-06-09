@@ -42,8 +42,8 @@ DetailsWidget::DetailsWidget()
         AD(), &AdInterface::delete_entry_complete,
         this, &DetailsWidget::on_delete_entry_complete);
     connect(
-        AD(), &AdInterface::move_user_complete,
-        this, &DetailsWidget::on_move_user_complete);
+        AD(), &AdInterface::move_complete,
+        this, &DetailsWidget::on_move_complete);
     connect(
         AD(), &AdInterface::load_attributes_complete,
         this, &DetailsWidget::on_load_attributes_complete);
@@ -96,9 +96,9 @@ void DetailsWidget::on_delete_entry_complete(const QString &dn) {
     }
 }
 
-void DetailsWidget::on_move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn) {
+void DetailsWidget::on_move_complete(const QString &dn, const QString &new_container, const QString &new_dn) {
     // Switch to the entry at new dn (entry stays the same)
-    if (target_dn == user_dn) {
+    if (target_dn == dn) {
         change_target(new_dn);
     }
 }

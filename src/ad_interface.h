@@ -107,8 +107,8 @@ signals:
     void create_entry_complete(const QString &dn, NewEntryType type);
     void create_entry_failed(const QString &dn, NewEntryType type, const QString &error_str);
 
-    void move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn);
-    void move_user_failed(const QString &user_dn, const QString &container_dn, const QString &new_dn, const QString &error_str);
+    void move_complete(const QString &dn, const QString &new_container, const QString &new_dn);
+    void move_failed(const QString &dn, const QString &new_container, const QString &new_dn, const QString &error_str);
     
     void add_user_to_group_complete(const QString &group_dn, const QString &user_dn);
     void add_user_to_group_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
