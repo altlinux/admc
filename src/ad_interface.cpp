@@ -289,31 +289,39 @@ void AdInterface::delete_entry(const QString &dn) {
     }
 }
 
-void AdInterface::move_user(const QString &user_dn, const QString &container_dn) {
+void AdInterface::move(const QString &dn, const QString &new_container) {
     int result = AD_INVALID_DN;
 
-    QString user_name = extract_name_from_dn(user_dn);
-    QString new_dn = "CN=" + user_name + "," + container_dn;
+    QList<QString> dn_split = dn.split(',');
+    QString new_dn = dn_split[0] + "," + new_container;
 
-    const QByteArray user_dn_array = user_dn.toLatin1();
-    const char *user_dn_cstr = user_dn_array.constData();
+    const QByteArray dn_array = dn.toLatin1();
+    const char *dn_cstr = dn_array.constData();
 
-    const QByteArray container_dn_array = container_dn.toLatin1();
-    const char *container_dn_cstr = container_dn_array.constData();
+    const QByteArray new_container_array = new_container.toLatin1();
+    const char *new_container_cstr = new_container_array.constData();
 
-    result = connection->move_user(user_dn_cstr, container_dn_cstr);
-
+    const bool entry_is_user = is_user(dn);
+    if (entry_is_user) {
+        result = connection->move_user(dn_cstr, new_container_cstr);
+    } else {
+        result = connection->move(dn_cstr, new_container_cstr);
+    }
+    
     if (result == AD_SUCCESS) {
         // Unload attributes at old dn
-        attributes_map.remove(user_dn);
-        attributes_loaded.remove(user_dn);
+        attributes_map.remove(dn);
+        attributes_loaded.remove(dn);
 
         load_attributes(new_dn);
-        reload_attributes_of_entry_groups(new_dn);
 
-        emit move_user_complete(user_dn, container_dn, new_dn);
+        if (entry_is_user) {
+            reload_attributes_of_entry_groups(new_dn);
+        }
+
+        // emit move_user_complete(user_dn, container_dn, new_dn);
     } else {
-        emit move_user_failed(user_dn, container_dn, new_dn, get_error_str());
+        // emit move_user_failed(user_dn, container_dn, new_dn, get_error_str());
     }
 }
 
@@ -424,7 +432,7 @@ void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
     const bool parent_is_container = AD()->is_container(target_dn);
 
     if (dropped_is_user && (parent_is_ou || parent_is_container)) {
-        AD()->move_user(dn, target_dn);
+        AD()->move(dn, target_dn);
     } else if (dropped_is_user && parent_is_group) {
         AD()->add_user_to_group(target_dn, dn);
     }
