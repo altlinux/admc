@@ -441,7 +441,7 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
         } else if (target_is_group) {
             return DropType_AddToGroup;
         }
-    } else if (dropped_is_group || dropped_is_ou) {
+    } else if (dropped_is_group) {
         if (target_is_ou || target_is_container || target_is_container_like) {
             return DropType_Move;
         }
