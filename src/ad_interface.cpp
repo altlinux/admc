@@ -301,7 +301,7 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     const QByteArray new_container_array = new_container.toLatin1();
     const char *new_container_cstr = new_container_array.constData();
 
-    const bool entry_is_group = is_user(dn);
+    const bool entry_is_group = is_group(dn);
     const bool entry_is_user = is_user(dn);
 
     if (!entry_is_user && !entry_is_group) {
