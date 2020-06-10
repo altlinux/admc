@@ -194,8 +194,6 @@ void MainWindow::on_context_menu_delete(const QString &dn) {
     if (confirmed) {
         AD()->delete_entry(dn);
     }    
-
-    contents_widget->setEnabled(false);
 }
 
 void MainWindow::new_entry_dialog(const QString &parent_dn, NewEntryType type) {
