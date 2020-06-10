@@ -1,5 +1,6 @@
 /**
  * Copyright (c) by: Mike Dawson mike _at_ no spam gp2x.org
+ * Copyright (C) 2020 BaseALT Ltd.
  *
  * This file may be used subject to the terms and conditions of the
  * GNU Library General Public License Version 2, or any later version
