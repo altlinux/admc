@@ -76,7 +76,7 @@ public:
     bool set_attribute(const QString &dn, const QString &attribute, const QString &value);
     bool create_entry(const QString &name, const QString &dn, NewEntryType type);
     void delete_entry(const QString &dn);
-    void move_user(const QString &user_dn, const QString &container_dn);
+    void move(const QString &dn, const QString &new_container);
     void add_user_to_group(const QString &group_dn, const QString &user_dn);
     void rename(const QString &dn, const QString &new_name);
 
@@ -85,6 +85,10 @@ public:
     bool is_container(const QString &dn);
     bool is_ou(const QString &dn);
     bool is_policy(const QString &dn);
+    bool is_container_like(const QString &dn);
+
+    bool can_drop_entry(const QString &dn, const QString &target_dn);
+    void drop_entry(const QString &dn, const QString &target_dn);
 
 signals:
     void ad_interface_login_complete(const QString &base, const QString &head);
@@ -104,8 +108,8 @@ signals:
     void create_entry_complete(const QString &dn, NewEntryType type);
     void create_entry_failed(const QString &dn, NewEntryType type, const QString &error_str);
 
-    void move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn);
-    void move_user_failed(const QString &user_dn, const QString &container_dn, const QString &new_dn, const QString &error_str);
+    void move_complete(const QString &dn, const QString &new_container, const QString &new_dn);
+    void move_failed(const QString &dn, const QString &new_container, const QString &new_dn, const QString &error_str);
     
     void add_user_to_group_complete(const QString &group_dn, const QString &user_dn);
     void add_user_to_group_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
@@ -119,7 +123,7 @@ private:
     QSet<QString> attributes_loaded;
 
     void load_attributes(const QString &dn);
-    void reload_attributes_of_entry_groups(const QString &dn);
+    void update_related_entries(const QString &dn);
 
 }; 
 

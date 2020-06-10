@@ -257,14 +257,24 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
     }
 }
 
-// Used to update membership when changes happen to entry
-void AdInterface::reload_attributes_of_entry_groups(const QString &dn) {
+// Update all entries that are related to this one through
+// membership
+void AdInterface::update_related_entries(const QString &dn) {
+    // Update all groups that have this entry as member
     QList<QString> groups = get_attribute_multi(dn, "memberOf");
-
     for (auto group : groups) {
         // Only reload if loaded already
         if (attributes_map.contains(group)) {
             load_attributes(group);
+        }
+    }
+
+    // Update all entries that are members of this group
+    QList<QString> members = get_attribute_multi(dn, "member");
+    for (auto member : members) {
+        // Only reload if loaded already
+        if (attributes_map.contains(member)) {
+            load_attributes(member);
         }
     }
 }
@@ -278,7 +288,7 @@ void AdInterface::delete_entry(const QString &dn) {
     result = connection->object_delete(dn_cstr);
 
     if (result == AD_SUCCESS) {
-        reload_attributes_of_entry_groups(dn);
+        update_related_entries(dn);
 
         attributes_map.remove(dn);
         attributes_loaded.remove(dn);
@@ -289,31 +299,44 @@ void AdInterface::delete_entry(const QString &dn) {
     }
 }
 
-void AdInterface::move_user(const QString &user_dn, const QString &container_dn) {
+void AdInterface::move(const QString &dn, const QString &new_container) {
     int result = AD_INVALID_DN;
 
-    QString user_name = extract_name_from_dn(user_dn);
-    QString new_dn = "CN=" + user_name + "," + container_dn;
+    QList<QString> dn_split = dn.split(',');
+    QString new_dn = dn_split[0] + "," + new_container;
 
-    const QByteArray user_dn_array = user_dn.toLatin1();
-    const char *user_dn_cstr = user_dn_array.constData();
+    const QByteArray dn_array = dn.toLatin1();
+    const char *dn_cstr = dn_array.constData();
 
-    const QByteArray container_dn_array = container_dn.toLatin1();
-    const char *container_dn_cstr = container_dn_array.constData();
+    const QByteArray new_container_array = new_container.toLatin1();
+    const char *new_container_cstr = new_container_array.constData();
 
-    result = connection->move_user(user_dn_cstr, container_dn_cstr);
+    const bool entry_is_group = is_group(dn);
+    const bool entry_is_user = is_user(dn);
 
+    if (!entry_is_user && !entry_is_group) {
+        emit move_failed(dn, new_container, new_dn, "AdInterface::move() only supports moving users and groups at the moment");
+
+        return;
+    }
+
+    if (entry_is_user) {
+        result = connection->move_user(dn_cstr, new_container_cstr);
+    } else {
+        result = connection->move(dn_cstr, new_container_cstr);
+    }
+    
     if (result == AD_SUCCESS) {
         // Unload attributes at old dn
-        attributes_map.remove(user_dn);
-        attributes_loaded.remove(user_dn);
+        attributes_map.remove(dn);
+        attributes_loaded.remove(dn);
 
         load_attributes(new_dn);
-        reload_attributes_of_entry_groups(new_dn);
+        update_related_entries(new_dn);
 
-        emit move_user_complete(user_dn, container_dn, new_dn);
+        emit move_complete(dn, new_container, new_dn);
     } else {
-        emit move_user_failed(user_dn, container_dn, new_dn, get_error_str());
+        emit move_failed(dn, new_container, new_dn, get_error_str());
     }
 }
 
@@ -369,7 +392,7 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
 
     if (result == AD_SUCCESS) {
         load_attributes(new_dn);
-        reload_attributes_of_entry_groups(new_dn);
+        update_related_entries(new_dn);
 
         emit rename_complete(dn, new_name, new_dn);
     } else {
@@ -395,6 +418,79 @@ bool AdInterface::is_ou(const QString &dn) {
 
 bool AdInterface::is_policy(const QString &dn) {
     return attribute_value_exists(dn, "objectClass", "groupPolicyContainer");
+}
+
+bool AdInterface::is_container_like(const QString &dn) {
+    // TODO: check that this includes all fitting objectClasses
+    const QList<QString> containerlike_objectClasses = {"organizationalUnit", "builtinDomain", "domain"};
+    for (auto c : containerlike_objectClasses) {
+        if (AD()->attribute_value_exists(dn, "objectClass", c)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+enum DropType {
+    DropType_Move,
+    DropType_AddToGroup,
+    DropType_None
+};
+
+// Determine what kind of drop type is dropping this entry onto target
+// If drop type is none, then can't drop this entry on this target
+DropType get_drop_type(const QString &dn, const QString &target_dn) {
+    const bool dropped_is_user = AD()->is_user(dn);
+    const bool dropped_is_group = AD()->is_group(dn);
+
+    const bool target_is_group = AD()->is_group(target_dn);
+    const bool target_is_ou = AD()->is_ou(target_dn);
+    const bool target_is_container = AD()->is_container(target_dn);
+    const bool target_is_container_like = AD()->is_container_like(target_dn);
+
+    if (dropped_is_user) {
+        if (target_is_ou || target_is_container) {
+            return DropType_Move;
+        } else if (target_is_group) {
+            return DropType_AddToGroup;
+        }
+    } else if (dropped_is_group) {
+        if (target_is_ou || target_is_container || target_is_container_like) {
+            return DropType_Move;
+        }
+    }
+
+    return DropType_None;
+}
+
+bool AdInterface::can_drop_entry(const QString &dn, const QString &target_dn) {
+    DropType drop_type = get_drop_type(dn, target_dn);
+
+    if (drop_type == DropType_None) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+// General "drop" operation that can either move, link or change membership depending on which types of entries are involved
+void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
+    DropType drop_type = get_drop_type(dn, target_dn);
+
+    switch (drop_type) {
+        case DropType_Move: {
+            AD()->move(dn, target_dn);
+            break;
+        }
+        case DropType_AddToGroup: {
+            AD()->add_user_to_group(target_dn, dn);
+            break;
+        }
+        case DropType_None: {
+            break;
+        }
+    }
 }
 
 AdInterface *AD() {

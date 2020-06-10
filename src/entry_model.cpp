@@ -51,23 +51,11 @@ QMimeData *EntryModel::mimeData(const QModelIndexList &indexes) const {
 
 bool EntryModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
     const QString dn = data->text();
-    const QString parent_dn = get_dn_from_index(parent);
+    const QString target_dn = get_dn_from_index(parent);
 
-    const bool dropped_is_user = AD()->is_user(dn);
+    const bool can_drop = AD()->can_drop_entry(dn, target_dn);
 
-    const bool parent_is_group = AD()->is_group(parent_dn);
-    const bool parent_is_ou = AD()->is_ou(parent_dn);
-    const bool parent_is_container = AD()->is_container(parent_dn);
-
-    // TODO: support dropping non-users
-    // TODO: support dropping policies
-    if (parent_dn == "") {
-        return false;
-    } else if (dropped_is_user && (parent_is_group || parent_is_ou || parent_is_container)) {
-        return true;
-    } else {
-        return false;
-    }
+    return can_drop;
 }
 
 bool EntryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
@@ -80,19 +68,9 @@ bool EntryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int 
     }
 
     const QString dn = data->text();
-    const QString parent_dn = get_dn_from_index(parent);
+    const QString target_dn = get_dn_from_index(parent);
 
-    const bool dropped_is_user = AD()->is_user(dn);
-
-    const bool parent_is_group = AD()->is_group(parent_dn);
-    const bool parent_is_ou = AD()->is_ou(parent_dn);
-    const bool parent_is_container = AD()->is_container(parent_dn);
-
-    if (dropped_is_user && (parent_is_ou || parent_is_container)) {
-        AD()->move_user(dn, parent_dn);
-    } else if (dropped_is_user && parent_is_group) {
-        AD()->add_user_to_group(parent_dn, dn);
-    }
+    AD()->drop_entry(dn, target_dn);
 
     return true;
 }

@@ -61,11 +61,11 @@ StatusBar::StatusBar()
         this, &StatusBar::on_create_entry_failed);
     
     connect(
-        AD(), &AdInterface::move_user_complete,
-        this, &StatusBar::on_move_user_complete);
+        AD(), &AdInterface::move_complete,
+        this, &StatusBar::on_move_complete);
     connect(
-        AD(), &AdInterface::move_user_failed,
-        this, &StatusBar::on_move_user_failed);
+        AD(), &AdInterface::move_failed,
+        this, &StatusBar::on_move_failed);
 
     connect(
         AD(), &AdInterface::add_user_to_group_complete,
@@ -128,8 +128,8 @@ void StatusBar::on_create_entry_complete(const QString &dn, NewEntryType type) {
 
     showMessage(msg);
 }
-void StatusBar::on_move_user_complete(const QString &user_dn, const QString &container_dn, const QString &new_dn) {
-    QString msg = QString("Moved entry \"%1\" to \"%2\"").arg(user_dn).arg(new_dn);
+void StatusBar::on_move_complete(const QString &dn, const QString &new_container, const QString &new_dn) {
+    QString msg = QString("Moved \"%1\" to \"%2\"").arg(dn).arg(new_container);
 
     showMessage(msg);
 }
@@ -157,8 +157,8 @@ void StatusBar::on_create_entry_failed(const QString &dn, NewEntryType type, con
 
     showMessage(msg);
 }
-void StatusBar::on_move_user_failed(const QString &user_dn, const QString &container_dn, const QString &new_dn, const QString &error_str) {
-    QString msg = QString("Failed to move user \"%1\". Error: \"%2\"").arg(user_dn, error_str);
+void StatusBar::on_move_failed(const QString &dn, const QString &new_container, const QString &new_dn, const QString &error_str) {
+    QString msg = QString("Failed to move \"%1\" to \"%2\". Error: \"%3\"").arg(dn, new_container, error_str);
 
     showMessage(msg);
 }
