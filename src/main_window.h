@@ -48,7 +48,6 @@ private slots:
     void on_context_menu_edit_policy(const QString &dn);
     void on_action_login();
     void on_action_exit();
-    void on_ad_interface_login_complete(const QString &base, const QString &head);
 
 private:
     void new_entry_dialog(const QString &parent_dn, NewEntryType type);

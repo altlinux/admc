@@ -27,6 +27,7 @@
 class QTreeView;
 class QLabel;
 class EntryModel;
+class QString;
 
 // Widget based on a QTreeView with an EntryModel
 class EntryWidget : public QWidget {
@@ -50,6 +51,7 @@ private slots:
     void on_toggle_show_dn_column(bool checked);
     void on_context_menu_requested(const QPoint &pos);
     void on_view_clicked(const QModelIndex &index);
+    void on_ad_interface_login_complete(const QString &base, const QString &head);
 
 protected:
     QTreeView *view = nullptr;

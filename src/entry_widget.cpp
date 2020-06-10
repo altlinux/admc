@@ -66,6 +66,17 @@ EntryWidget::EntryWidget(EntryModel *model)
     connect(
         view, &QAbstractItemView::clicked,
         this, &EntryWidget::on_view_clicked);
+    connect(
+        AD(), &AdInterface::ad_interface_login_complete,
+        this, &EntryWidget::on_ad_interface_login_complete);
+
+    // Start off disabled until login
+    setEnabled(false);
+}
+
+void EntryWidget::on_ad_interface_login_complete(const QString &base, const QString &head) {
+    // Enable on login
+    setEnabled(true);
 }
 
 void EntryWidget::on_context_menu_requested(const QPoint &pos) {

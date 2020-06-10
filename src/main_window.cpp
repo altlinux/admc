@@ -101,10 +101,6 @@ MainWindow::MainWindow(const bool auto_login)
     splitter->setStretchFactor(1, 2);
     splitter->setStretchFactor(2, 2);
     
-    connect(
-        AD(), &AdInterface::ad_interface_login_complete,
-        this, &MainWindow::on_ad_interface_login_complete);
-
     // Set root index of contents view to selection of containers view
     connect(
         containers_widget, &ContainersWidget::selected_container_changed,
@@ -129,9 +125,6 @@ MainWindow::MainWindow(const bool auto_login)
     connect_entry_widget(*contents_widget);
     connect_entry_widget(*members_widget);
 
-    // Disable widgets until logged in
-    set_enabled_for_widgets(false);
-
     if (auto_login) {
         on_action_login();
     }
@@ -139,22 +132,6 @@ MainWindow::MainWindow(const bool auto_login)
 
 void MainWindow::on_action_login() {
     AD()->ad_interface_login(SEARCH_BASE, HEAD_DN);
-}
-
-void MainWindow::set_enabled_for_widgets(bool enabled) {
-    QList<QWidget *> widgets = {
-        containers_widget,
-        contents_widget,
-        details_widget
-    };
-
-    for (auto e : widgets) {
-        e->setEnabled(enabled);
-    }
-}
-
-void MainWindow::on_ad_interface_login_complete(const QString &base, const QString &head) {
-    set_enabled_for_widgets(true);
 }
 
 void MainWindow::on_action_exit() {
