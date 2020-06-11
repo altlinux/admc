@@ -249,9 +249,6 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
     }
 
     if (result == AD_SUCCESS) {
-        // Newly created entry so load it's attributes
-        load_attributes(dn);
-
         emit create_entry_complete(dn, type);
 
         return true;
