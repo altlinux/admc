@@ -141,9 +141,6 @@ void AdInterface::load_attributes(const QString &dn) {
 }
 
 QMap<QString, QList<QString>> AdInterface::get_attributes(const QString &dn) {
-    // First check whether load_attributes was ever called on this dn
-    // If it hasn't, attempt to load attributes
-    // After that return whatever attributes are now loaded for this dn
     if (!attributes_loaded(dn)) {
         load_attributes(dn);
     }
