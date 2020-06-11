@@ -68,10 +68,18 @@ public:
     QString get_error_str();
 
     QList<QString> load_children(const QString &dn);
+
+    // These functions implicitly load attributes if haven't loaded yet
     QMap<QString, QList<QString>> get_attributes(const QString &dn);
     QList<QString> get_attribute_multi(const QString &dn, const QString &attribute);
     QString get_attribute(const QString &dn, const QString &attribute);
     bool attribute_value_exists(const QString &dn, const QString &attribute, const QString &value);
+    bool is_user(const QString &dn);
+    bool is_group(const QString &dn);
+    bool is_container(const QString &dn);
+    bool is_ou(const QString &dn);
+    bool is_policy(const QString &dn);
+    bool is_container_like(const QString &dn);
 
     bool set_attribute(const QString &dn, const QString &attribute, const QString &value);
     bool create_entry(const QString &name, const QString &dn, NewEntryType type);
@@ -79,13 +87,6 @@ public:
     void move(const QString &dn, const QString &new_container);
     void add_user_to_group(const QString &group_dn, const QString &user_dn);
     void rename(const QString &dn, const QString &new_name);
-
-    bool is_user(const QString &dn);
-    bool is_group(const QString &dn);
-    bool is_container(const QString &dn);
-    bool is_ou(const QString &dn);
-    bool is_policy(const QString &dn);
-    bool is_container_like(const QString &dn);
 
     bool can_drop_entry(const QString &dn, const QString &target_dn);
     void drop_entry(const QString &dn, const QString &target_dn);
