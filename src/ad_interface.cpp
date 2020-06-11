@@ -264,11 +264,10 @@ void AdInterface::delete_entry(const QString &dn) {
     result = connection->object_delete(dn_cstr);
 
     if (result == AD_SUCCESS) {
-        update_related_entries(dn, "");
-        
-        emit delete_entry_complete(dn);
-    
+        update_related_entries(dn, "");    
         unload_internal_attributes(dn);
+
+        emit delete_entry_complete(dn);
     } else {
         emit delete_entry_failed(dn, get_error_str());
     }
@@ -310,11 +309,10 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
         load_attributes(new_dn);
 
         update_related_entries(dn, new_dn);
+        unload_internal_attributes(dn);
 
         emit dn_changed(dn, new_dn);
         emit move_complete(dn, new_container, new_dn);
-
-        unload_internal_attributes(dn);
     } else {
         emit move_failed(dn, new_container, new_dn, get_error_str());
     }
@@ -386,12 +384,11 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
         load_attributes(new_dn);
 
         update_related_entries(dn, new_dn);
+        unload_internal_attributes(dn);
 
         emit dn_changed(dn, new_dn);
         emit attributes_changed(new_dn);
         emit rename_complete(dn, new_name, new_dn);
-
-        unload_internal_attributes(dn);
     } else {
         emit rename_failed(dn, new_name, new_dn, get_error_str());
     }
