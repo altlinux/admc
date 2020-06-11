@@ -508,10 +508,20 @@ char **ad_search(LDAP *ds, const char *attribute, const char *value, const char*
     filter=malloc(filter_length);
     snprintf(filter, filter_length, "(%s=%s)", attribute, value);
 
-    result=ldap_search_s(ds, search_base, LDAP_SCOPE_SUBTREE, filter, attrs, 1, &res);
+    result = ldap_search_ext_s(ds,
+        search_base,
+        LDAP_SCOPE_SUBTREE,
+        filter,
+        attrs,
+        1,
+        NULL,
+        NULL,
+        NULL,
+        LDAP_NO_LIMIT,
+        &res);
     if(result!=LDAP_SUCCESS) {
         snprintf(ad_error_msg, MAX_ERR_LENGTH, 
-            "Error in ldap_search_s for ad_search: %s", 
+            "Error in ldap_search_ext_s for ad_search: %s", 
             ldap_err2string(result));
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
         return (char **)-1;
@@ -1086,11 +1096,20 @@ int ad_group_subtree_remove_user(LDAP *ds, const char *container_dn, const char 
     snprintf(filter, filter_length, 
         "(&(objectclass=group)(member=%s))", user_dn);
 
-    result=ldap_search_s(ds, container_dn, LDAP_SCOPE_SUBTREE, 
-        filter, attrs, 0, &res);
+    result = ldap_search_ext_s(ds,
+        container_dn,
+        LDAP_SCOPE_SUBTREE, 
+        filter,
+        attrs,
+        0,
+        NULL,
+        NULL,
+        NULL,
+        LDAP_NO_LIMIT,
+        &res);
     if(result!=LDAP_SUCCESS) {
         snprintf(ad_error_msg, MAX_ERR_LENGTH, 
-            "Error in ldap_search_s for ad_group_subtree_remove_user: %s", 
+            "Error in ldap_search_ext_s for ad_group_subtree_remove_user: %s", 
             ldap_err2string(result));
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
         return ad_error_code;
@@ -1178,10 +1197,20 @@ char **ad_list(LDAP *ds, const char *dn) {
     attrs[0]="1.1";
     attrs[1]=NULL;
 
-    result=ldap_search_s(ds, dn, LDAP_SCOPE_ONELEVEL, "(objectclass=*)", attrs, 0, &res);
+    result = ldap_search_ext_s(ds,
+        dn,
+        LDAP_SCOPE_ONELEVEL,
+        "(objectclass=*)",
+        attrs,
+        0,
+        NULL,
+        NULL,
+        NULL,
+        LDAP_NO_LIMIT,
+        &res);
     if(result!=LDAP_SUCCESS) {
         snprintf(ad_error_msg, MAX_ERR_LENGTH,
-            "Error in ldap_search_s for ad_list: %s",
+            "Error in ldap_search_ext_s for ad_list: %s",
             ldap_err2string(result));
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
         return NULL;
