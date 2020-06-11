@@ -69,7 +69,7 @@ public:
 
     QList<QString> load_children(const QString &dn);
 
-    // These functions implicitly load attributes if haven't loaded yet
+    // These functions load attributes if haven't loaded yet
     QMap<QString, QList<QString>> get_attributes(const QString &dn);
     QList<QString> get_attribute_multi(const QString &dn, const QString &attribute);
     QString get_attribute(const QString &dn, const QString &attribute);
