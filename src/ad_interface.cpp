@@ -257,9 +257,8 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
 }
 
 void AdInterface::delete_entry(const QString &dn) {
-    // Load attributes so they are available for objects
-    // connecting to signals
-    // NOTE: have to do this because operation
+    // Load attributes so they are available for objects connecting to signals
+    // NOTE: have to do this before operation
     if (!attributes_loaded(dn)) {
         load_attributes(dn);
     }
@@ -283,9 +282,8 @@ void AdInterface::delete_entry(const QString &dn) {
 }
 
 void AdInterface::move(const QString &dn, const QString &new_container) {
-    // Load attributes so they are available for objects
-    // connecting to signals
-    // NOTE: have to do this because operation
+    // Load attributes so they are available for objects connecting to signals
+    // NOTE: have to do this before operation
     if (!attributes_loaded(dn)) {
         load_attributes(dn);
     }
@@ -356,9 +354,8 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
 }
 
 void AdInterface::rename(const QString &dn, const QString &new_name) {
-    // Load attributes so they are available for objects
-    // connecting to signals
-    // NOTE: have to do this because operation
+    // Load attributes so they are available for objects connecting to signals
+    // NOTE: have to do this before operation
     if (!attributes_loaded(dn)) {
         load_attributes(dn);
     }
