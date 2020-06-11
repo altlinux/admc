@@ -511,11 +511,9 @@ void AdInterface::replace_attribute_internal(const QString &dn, const QString &a
 // to this one through membership
 // LDAP database does all this on it's own so need to replicate it
 // NOTE: if entry was deleted, new_dn should be ""
-// NOTE: if entry was created, old_dn should be ""
 // NOTE: attributes_map should contain both new_dn and old_dn when
 // this is called, so that signals/connections can access both
 void AdInterface::update_related_entries(const QString &old_dn, const QString &new_dn) {
-    const bool created = (old_dn == "" && new_dn != "");
     const bool deleted = (old_dn != "" && new_dn == "");
     const bool changed = (old_dn != "" && new_dn != "" && old_dn != new_dn);
 
@@ -531,9 +529,7 @@ void AdInterface::update_related_entries(const QString &old_dn, const QString &n
     for (auto group : groups) {
         // Only update if loaded
         if (attributes_loaded.contains(group)) {
-            if (created) {
-                add_attribute_internal(group, "member", new_dn);
-            } else if (deleted) {
+            if (deleted) {
                 remove_attribute_internal(group, "member", old_dn);
             } else if (changed) {
                 replace_attribute_internal(group, "member", old_dn, new_dn);
@@ -546,9 +542,7 @@ void AdInterface::update_related_entries(const QString &old_dn, const QString &n
     for (auto member : members) {
         // Only update if loaded
         if (attributes_loaded.contains(member)) {
-            if (created) {
-                add_attribute_internal(member, "memberOf", new_dn);
-            } else if (deleted) {
+            if (deleted) {
                 remove_attribute_internal(member, "memberOf", old_dn);
             } else if (changed) {
                 replace_attribute_internal(member, "memberOf", old_dn, new_dn);
