@@ -96,44 +96,6 @@ int sasl_interact_gssapi(LDAP *ds, unsigned flags, void *indefaults, void *in) {
     return LDAP_SUCCESS;
 }
 
-/*
-AD can set following limit (http://support.microsoft.com/kb/315071/en-us):
- MaxValRange - This value controls the number of values that are returned
-   for an attribute of an object, independent of how many attributes that
-   object has, or of how many objects were in the search result. If an
-   attribute has more than the number of values that are specified by the
-   MaxValRange value, you must use value range controls in LDAP to retrieve
-   values that exceed the MaxValRange value. MaxValueRange controls the
-   number of values that are returned on a single attribute on a single object.
-
-OpenLDAP does not support ranged controls for values:
-  https://www.mail-archive.com/openldap-its@openldap.org/msg00962.html
-
-So the only way is it increase MaxValRange in DC:
- Ntdsutil.exe
-   LDAP policies
-     connections
-       connect to server "DNS name of server"
-       q
-     Show Values
-     Set MaxValRange to 10000
-     Show Values
-     Commit Changes
-     Show Values
-     q
-   q
-*/
-char **get_values(LDAP *ds, LDAPMessage *entry) {
-    if (ds == NULL) {
-        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in get_values: ds is NULL");
-        ad_error_code=AD_SERVER_CONNECT_FAILURE;
-        return NULL;
-    }
-
-    
-}
-
-
 /* connect and authenticate to active directory server.
     returns an ldap connection identifier or 0 on error */
 LDAP *ad_login(const char* uri) {
