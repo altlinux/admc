@@ -128,10 +128,11 @@ private:
     QSet<QString> attributes_loaded;
 
     void load_attributes(const QString &dn);
+    void unload_internal_attributes(const QString &dn);
     void add_attribute_internal(const QString &dn, const QString &attribute, const QString &value);
     void remove_attribute_internal(const QString &dn, const QString &attribute, const QString &value);
     void replace_attribute_internal(const QString &dn, const QString &attribute, const QString &old_value, const QString &new_value);
-    void change_dn_internal(const QString &old_dn, const QString &new_dn);
+    void update_related_entries(const QString &old_dn, const QString &new_dn);
 
 }; 
 

@@ -219,7 +219,6 @@ bool AdInterface::set_attribute(const QString &dn, const QString &attribute, con
     }
 }
 
-// TODO: can probably make a create_anything() function with enum parameter
 bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryType type) {
     int result = AD_INVALID_DN;
     
@@ -250,7 +249,8 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
     }
 
     if (result == AD_SUCCESS) {
-        change_dn_internal("", dn);
+        // Newly created entry so load it's attributes
+        load_attributes(dn);
 
         emit create_entry_complete(dn, type);
 
@@ -271,7 +271,9 @@ void AdInterface::delete_entry(const QString &dn) {
     result = connection->object_delete(dn_cstr);
 
     if (result == AD_SUCCESS) {
-        change_dn_internal(dn, "");
+        update_related_entries(dn, "");
+        
+        unload_internal_attributes(old_dn);
 
         emit delete_entry_complete(dn);
     } else {
@@ -307,7 +309,13 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     }
     
     if (result == AD_SUCCESS) {
-        change_dn_internal(dn, new_dn);
+        // Copy attributes to new_dn
+        attributes_map[new_dn] = attributes_map[old_dn];
+        attributes_loaded.insert(new_dn);
+
+        update_related_entries(dn, new_dn);
+
+        unload_internal_attributes(old_dn);
 
         emit move_complete(dn, new_container, new_dn);
     } else {
@@ -365,7 +373,13 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
     }
 
     if (result == AD_SUCCESS) {
-        change_dn_internal(dn, new_dn);
+        // Rename modifies attributes non-trivially so reload
+        // attributes completely
+        load_attributes(new_dn);
+
+        update_related_entries(dn, new_dn);
+
+        unload_internal_attributes(old_dn);
 
         emit rename_complete(dn, new_name, new_dn);
     } else {
@@ -466,6 +480,11 @@ void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
     }
 }
 
+void unload_internal_attributes(const QString &dn) {
+    attributes_map.remove(dn);
+    attributes_loaded.remove(dn);
+}
+
 void AdInterface::add_attribute_internal(const QString &dn, const QString &attribute, const QString &value) {
     attributes_map[dn][attribute].push_back(value);
     
@@ -488,24 +507,17 @@ void AdInterface::replace_attribute_internal(const QString &dn, const QString &a
     emit attribute_replaced(dn, attribute, old_value, new_value);
 }
 
-// Apply DN changes to all internal state connected to the DN
-// DN changes first affect the DN itself
-// In addition, DN changes can affect other DN's by changing
-// their DN's or attributes
+// Update DN and/or attributes of all entries that are related
+// to this one through membership
 // LDAP database does all this on it's own so need to replicate it
 // NOTE: if entry was deleted, new_dn should be ""
 // NOTE: if entry was created, old_dn should be ""
-void AdInterface::change_dn_internal(const QString &old_dn, const QString &new_dn) {
+// NOTE: attributes_map should contain both new_dn and old_dn when
+// this is called, so that signals/connections can access both
+void AdInterface::update_related_entries(const QString &old_dn, const QString &new_dn) {
     const bool created = (old_dn == "" && new_dn != "");
     const bool deleted = (old_dn != "" && new_dn == "");
     const bool changed = (old_dn != "" && new_dn != "" && old_dn != new_dn);
-
-    // Load updated attributes at new_dn
-    // NOTE: need to do this before changing related entries
-    // so that updated attributes are available
-    if (created || changed) {
-        load_attributes(new_dn);
-    }
 
     // TODO: update state connected through policy linkage
 
@@ -542,14 +554,6 @@ void AdInterface::change_dn_internal(const QString &old_dn, const QString &new_d
                 replace_attribute_internal(member, "memberOf", old_dn, new_dn);
             }
         }
-    }
-
-    // Remove attributes at old_dn
-    // NOTE: need to do this after changing related entries
-    // so that old attributes are available
-    if (changed || deleted) {
-        attributes_map.remove(old_dn);
-        attributes_loaded.remove(old_dn);
     }
 }
 
