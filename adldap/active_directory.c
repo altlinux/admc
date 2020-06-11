@@ -15,8 +15,6 @@
 /* active_directory.c
  * generic directory management functions */
 
-// TODO: ldap_add_s is deprecated but works, not a big deal
-
 #if HAVE_CONFIG_H
 //#   include <config.h>
 #endif
@@ -1059,7 +1057,7 @@ int ad_group_create(LDAP *ds, const char *group_name, const char *dn) {
     attrs[2]=&attr3;
     attrs[3]=NULL;
 
-    result=ldap_add_s(ds, dn, attrs);
+    result = ldap_add_ext_s(ds, dn, attrs, NULL, NULL);
     if(result!=LDAP_SUCCESS) {
         snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in ldap_add: %s", ldap_err2string(result));
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
@@ -1169,7 +1167,7 @@ int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn) {
     attrs[1]=&attr2;
     attrs[2]=NULL;
 
-    result=ldap_add_s(ds, dn, attrs);
+    result = ldap_add_ext_s(ds, dn, attrs, NULL, NULL);
     if(result!=LDAP_SUCCESS) {
         snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in ldap_add: %s", ldap_err2string(result));
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
