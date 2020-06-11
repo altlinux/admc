@@ -358,7 +358,7 @@ int ad_create_user(LDAP *ds, const char *username, const char *dn) {
     attrs[3]=&attr4;
     attrs[4]=NULL;
 
-    result=ldap_add_s(ds, dn, attrs);
+    result = ldap_add_ext_s(ds, dn, attrs, NULL, NULL);
     if(result!=LDAP_SUCCESS) {
         snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in ldap_add %s", ldap_err2string(result));
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
@@ -417,7 +417,7 @@ int ad_create_computer(LDAP *ds, const char *name, const char *dn) {
     attrs[2]=&attr3;
     attrs[3]=NULL;
 
-    result=ldap_add_s(ds, dn, attrs);
+    result = ldap_add_ext_s(ds, dn, attrs, NULL, NULL);
     if(result!=LDAP_SUCCESS) {
         snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in ldap_add %s", ldap_err2string(result));
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
