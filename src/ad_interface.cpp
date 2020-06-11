@@ -132,7 +132,7 @@ void AdInterface::load_attributes(const QString &dn) {
         }
         free(attributes_raw);
 
-        attributes_loaded.insert(dn);
+        attributes_loaded_set.insert(dn);
 
         emit load_attributes_complete(dn);
     } else if (connection->get_errcode() != AD_SUCCESS) {
@@ -144,7 +144,7 @@ QMap<QString, QList<QString>> AdInterface::get_attributes(const QString &dn) {
     // First check whether load_attributes was ever called on this dn
     // If it hasn't, attempt to load attributes
     // After that return whatever attributes are now loaded for this dn
-    if (!attributes_loaded.contains(dn)) {
+    if (!attributes_loaded(dn)) {
         load_attributes(dn);
     }
 
@@ -308,7 +308,7 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     if (result == AD_SUCCESS) {
         // Copy attributes to new_dn
         attributes_map[new_dn] = attributes_map[dn];
-        attributes_loaded.insert(new_dn);
+        attributes_loaded_set.insert(new_dn);
 
         update_related_entries(dn, new_dn);
 
@@ -477,9 +477,14 @@ void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
     }
 }
 
+bool AdInterface::attributes_loaded(const QString &dn) {
+    const bool loaded = attributes_loaded_set.contains(dn);
+    return loaded;
+}
+
 void AdInterface::unload_internal_attributes(const QString &dn) {
     attributes_map.remove(dn);
-    attributes_loaded.remove(dn);
+    attributes_loaded_set.remove(dn);
 }
 
 void AdInterface::add_attribute_internal(const QString &dn, const QString &attribute, const QString &value) {
@@ -525,7 +530,7 @@ void AdInterface::update_related_entries(const QString &old_dn, const QString &n
     QList<QString> groups = get_attribute_multi(old_dn, "memberOf");
     for (auto group : groups) {
         // Only update if loaded
-        if (attributes_loaded.contains(group)) {
+        if (attributes_loaded(group)) {
             if (deleted) {
                 remove_attribute_internal(group, "member", old_dn);
             } else if (changed) {
@@ -538,7 +543,7 @@ void AdInterface::update_related_entries(const QString &old_dn, const QString &n
     QList<QString> members = get_attribute_multi(old_dn, "member");
     for (auto member : members) {
         // Only update if loaded
-        if (attributes_loaded.contains(member)) {
+        if (attributes_loaded(member)) {
             if (deleted) {
                 remove_attribute_internal(member, "memberOf", old_dn);
             } else if (changed) {
