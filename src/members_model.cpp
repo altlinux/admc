@@ -27,10 +27,6 @@ MembersModel::MembersModel(QObject *parent)
 {
     setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
     setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
-
-    connect(
-        AD(), &AdInterface::move_complete,
-        this, &MembersModel::on_move_complete);
 }
 
 void MembersModel::change_target(const QString &new_target_dn) {
@@ -63,15 +59,5 @@ QString MembersModel::get_dn_from_index(const QModelIndex &index) const {
         return target_dn;
     } else {
         return EntryModel::get_dn_from_index(index);
-    }
-}
-
-void MembersModel::on_move_complete(const QString &dn, const QString &new_container, const QString &new_dn) {
-    // If entry is in members model, need to update it's dn
-    QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, Column::DN);
-
-    if (items.size() > 0) {
-        QStandardItem *dn_item = items[Column::DN];
-        dn_item->setText(new_dn);
     }
 }
