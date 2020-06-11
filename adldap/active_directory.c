@@ -258,6 +258,7 @@ int dn2domain(const char *dn, char** domain) {
             result = AD_LDAP_OPERATION_FAILURE;
             goto dn2domain_end;
         }
+        // FIXME: Check for buffer overflow
         if(!strncasecmp("DC", lattr[0].la_attr.bv_val, 2)) {
             strncat(dc, lattr[0].la_value.bv_val, lattr[0].la_value.bv_len);
             strncat(dc, ".", 1024);
