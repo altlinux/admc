@@ -435,7 +435,7 @@ int ad_create_computer(LDAP *ds, const char *name, const char *dn) {
 int ad_object_delete(LDAP *ds, const char *dn) {
     int result;
 
-    result=ldap_delete_s(ds, dn);
+    result = ldap_delete_ext_s(ds, dn, NULL, NULL);
     if(result!=LDAP_SUCCESS) {
         snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in ldap_delete: %s", ldap_err2string(result));
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
