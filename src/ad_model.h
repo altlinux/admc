@@ -58,8 +58,6 @@ private slots:
     void on_delete_entry_complete(const QString &dn); 
     void on_move_complete(const QString &dn, const QString &new_container, const QString &new_dn);
     void on_create_entry_complete(const QString &dn, NewEntryType type); 
-    void on_rename_complete(const QString &dn, const QString &new_name, const QString &new_dn); 
-
 private:
     void set_headers();
 

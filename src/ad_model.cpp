@@ -42,17 +42,14 @@ AdModel::AdModel(QObject *parent)
         AD(), &AdInterface::delete_entry_complete,
         this, &AdModel::on_delete_entry_complete);
     connect(
-        AD(), &AdInterface::move_complete,
-        this, &AdModel::on_move_complete);
+        AD(), &AdInterface::dn_changed,
+        this, &AdModel::on_dn_changed);
     connect(
         AD(), &AdInterface::create_entry_complete,
         this, &AdModel::on_create_entry_complete);
     connect(
         AD(), &AdInterface::attributes_changed,
         this, &AdModel::on_attributes_changed);
-    connect(
-        AD(), &AdInterface::rename_complete,
-        this, &AdModel::on_rename_complete);
 }
 
 bool AdModel::canFetchMore(const QModelIndex &parent) const {
@@ -114,7 +111,7 @@ void AdModel::on_delete_entry_complete(const QString &dn) {
     }
 }
 
-void AdModel::on_move_complete(const QString &dn, const QString &new_container, const QString &new_dn) {
+void AdModel::on_dn_changed(const QString &dn, const QString &new_dn) {
     // Remove old entry from model
     QList<QStandardItem *> old_items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
     if (old_items.size() > 0) {
@@ -188,22 +185,6 @@ void AdModel::on_attributes_changed(const QString &dn) {
     }
 
     load_row(row, dn);
-}
-
-void AdModel::on_rename_complete(const QString &dn, const QString &new_name, const QString &new_dn) {
-    // Find row still attached to old dn
-    QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
-
-    if (items.size() == 0) {
-        return;
-    }
-    
-    // Change dn of row to new dn
-    QStandardItem *dn_item = items[0];
-    dn_item->setText(new_dn);
-
-    // Reload attributes
-    on_attributes_changed(new_dn);
 }
 
 // Load data into row of items based on entry attributes

@@ -134,8 +134,6 @@ void AdInterface::load_attributes(const QString &dn) {
 
         attributes_loaded_set.insert(dn);
 
-        emit attributes_changed(dn);
-        
         emit load_attributes_complete(dn);
     } else if (connection->get_errcode() != AD_SUCCESS) {
         emit load_attributes_failed(dn, get_error_str());
@@ -202,12 +200,10 @@ bool AdInterface::set_attribute(const QString &dn, const QString &attribute, con
     result = connection->mod_replace(dn_cstr, attribute_cstr, value_cstr);
 
     if (result == AD_SUCCESS) {
-        // TODO: use add/removed/replace_attribute_internal() to emit
-        // more specific signals and avoid the extra LDAP request
-
         // Reload attributes to get new value
         load_attributes(dn);
-        
+
+        emit attributes_changed(dn);
         emit set_attribute_complete(dn, attribute, old_value, value);
 
         return true;
@@ -218,7 +214,7 @@ bool AdInterface::set_attribute(const QString &dn, const QString &attribute, con
     }
 }
 
-bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryType type) {
+void AdInterface::create_entry(const QString &name, const QString &dn, NewEntryType type) {
     int result = AD_INVALID_DN;
     
     const QByteArray name_array = name.toLatin1();
@@ -249,12 +245,8 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
 
     if (result == AD_SUCCESS) {
         emit create_entry_complete(dn, type);
-
-        return true;
     } else {
         emit create_entry_failed(dn, type, get_error_str());
-
-        return false;
     }
 }
 
@@ -319,6 +311,7 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
 
         update_related_entries(dn, new_dn);
 
+        emit dn_changed(dn, new_dn);
         emit move_complete(dn, new_container, new_dn);
 
         unload_internal_attributes(dn);
@@ -394,6 +387,8 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
 
         update_related_entries(dn, new_dn);
 
+        emit dn_changed(dn, new_dn);
+        emit attributes_changed(new_dn);
         emit rename_complete(dn, new_name, new_dn);
 
         unload_internal_attributes(dn);

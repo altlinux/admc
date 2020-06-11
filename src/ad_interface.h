@@ -82,7 +82,7 @@ public:
     bool is_container_like(const QString &dn);
 
     bool set_attribute(const QString &dn, const QString &attribute, const QString &value);
-    bool create_entry(const QString &name, const QString &dn, NewEntryType type);
+    void create_entry(const QString &name, const QString &dn, NewEntryType type);
     void delete_entry(const QString &dn);
     void move(const QString &dn, const QString &new_container);
     void add_user_to_group(const QString &group_dn, const QString &user_dn);
@@ -118,8 +118,8 @@ signals:
     void rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
     void rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);
 
+    void dn_changed(const QString &dn, const QString &new_dn);
     void attributes_changed(const QString &dn);
-
 
 private:
     adldap::AdConnection *connection = nullptr;
