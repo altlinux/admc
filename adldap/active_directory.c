@@ -38,13 +38,8 @@ int ad_error_code;
 
 #define MAX_PASSWORD_LENGTH 255
 
-// char *uri=NULL;
 char *binddn=NULL;
 char *bindpw=NULL;
-// char *search_base=NULL;
-// TODO: unhardcode this
-//char* uri = "ldap://dc0.domain.alt";
-//char* search_base = "DC=domain,DC=alt";
 
 typedef struct sasl_defaults_gssapi {
     char *mech;
