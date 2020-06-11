@@ -105,7 +105,7 @@ void DetailsWidget::on_attributes_changed(const QString &dn) {
     }
 }
 
-void DetailsWidget::on_dn_changed(const QString &dn, const QString &new_name, const QString &new_dn) {
+void DetailsWidget::on_dn_changed(const QString &dn, const QString &new_dn) {
     if (target_dn == dn) {
         change_target(new_dn);
     }

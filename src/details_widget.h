@@ -44,7 +44,7 @@ public slots:
 private slots:
     void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
     void on_delete_entry_complete(const QString &dn); 
-    void on_dn_changed(const QString &dn, const QString &new_container, const QString &new_dn); 
+    void on_dn_changed(const QString &dn, const QString &new_dn); 
     void on_attributes_changed(const QString &dn);
 
 private:

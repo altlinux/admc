@@ -42,11 +42,11 @@ AdModel::AdModel(QObject *parent)
         AD(), &AdInterface::delete_entry_complete,
         this, &AdModel::on_delete_entry_complete);
     connect(
-        AD(), &AdInterface::dn_changed,
-        this, &AdModel::on_dn_changed);
-    connect(
         AD(), &AdInterface::create_entry_complete,
         this, &AdModel::on_create_entry_complete);
+    connect(
+        AD(), &AdInterface::dn_changed,
+        this, &AdModel::on_dn_changed);
     connect(
         AD(), &AdInterface::attributes_changed,
         this, &AdModel::on_attributes_changed);
@@ -125,7 +125,8 @@ void AdModel::on_dn_changed(const QString &dn, const QString &new_dn) {
     // been expanded/fetched
     // NOTE: loading if parent hasn't been fetched will
     // create a duplicate
-    QList<QStandardItem *> parent_items = findItems(new_container, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    const QString new_parent = extract_parent_dn_from_dn(new_dn);
+    QList<QStandardItem *> parent_items = findItems(new_parent, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
     if (parent_items.size() > 0) {
         QStandardItem *parent_dn_item = parent_items[0];
         QModelIndex parent_dn_index = parent_dn_item->index();
