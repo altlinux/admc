@@ -333,13 +333,14 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
         // Update attributes of user and group
         if (attributes_loaded(group_dn)) {
             add_attribute_internal(group_dn, "member", user_dn);
+        
+            emit attributes_changed(user_dn);
         }
         if (attributes_loaded(group_dn)) {
             add_attribute_internal(user_dn, "memberOf", group_dn);
+        
+            emit attributes_changed(group_dn);
         }
-
-        emit attributes_changed(user_dn);
-        emit attributes_changed(group_dn);
 
         emit add_user_to_group_complete(group_dn, user_dn);
     } else {
