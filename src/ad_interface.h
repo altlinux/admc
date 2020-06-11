@@ -118,9 +118,7 @@ signals:
     void rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
     void rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);
 
-    void attribute_added(const QString &dn, const QString &attribute, const QString &value);
-    void attribute_removed(const QString &dn, const QString &attribute, const QString &value);
-    void attribute_replaced(const QString &dn, const QString &attribute, const QString &old_value, const QString &new_value);
+    void attributes_changed(const QString &dn);
 
 
 private:

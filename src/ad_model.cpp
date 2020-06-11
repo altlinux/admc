@@ -48,8 +48,8 @@ AdModel::AdModel(QObject *parent)
         AD(), &AdInterface::create_entry_complete,
         this, &AdModel::on_create_entry_complete);
     connect(
-        AD(), &AdInterface::load_attributes_complete,
-        this, &AdModel::on_load_attributes_complete);
+        AD(), &AdInterface::attributes_changed,
+        this, &AdModel::on_attributes_changed);
     connect(
         AD(), &AdInterface::rename_complete,
         this, &AdModel::on_rename_complete);
@@ -161,7 +161,7 @@ void AdModel::on_create_entry_complete(const QString &dn, NewEntryType type) {
     }
 }
 
-void AdModel::on_load_attributes_complete(const QString &dn) {
+void AdModel::on_attributes_changed(const QString &dn) {
     // Compose row based on dn
     QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
 
@@ -203,7 +203,7 @@ void AdModel::on_rename_complete(const QString &dn, const QString &new_name, con
     dn_item->setText(new_dn);
 
     // Reload attributes
-    on_load_attributes_complete(new_dn);
+    on_attributes_changed(new_dn);
 }
 
 // Load data into row of items based on entry attributes

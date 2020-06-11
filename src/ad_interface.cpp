@@ -134,6 +134,8 @@ void AdInterface::load_attributes(const QString &dn) {
 
         attributes_loaded_set.insert(dn);
 
+        emit attributes_changed(dn);
+        
         emit load_attributes_complete(dn);
     } else if (connection->get_errcode() != AD_SUCCESS) {
         emit load_attributes_failed(dn, get_error_str());
@@ -257,8 +259,7 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
 }
 
 void AdInterface::delete_entry(const QString &dn) {
-    // Load attributes so they are available for objects connecting to signals
-    // NOTE: have to do this before operation
+    // Load attributes so they are available in signal connections
     if (!attributes_loaded(dn)) {
         load_attributes(dn);
     }
@@ -282,8 +283,7 @@ void AdInterface::delete_entry(const QString &dn) {
 }
 
 void AdInterface::move(const QString &dn, const QString &new_container) {
-    // Load attributes so they are available for objects connecting to signals
-    // NOTE: have to do this before operation
+    // Load attributes so they are available in signal connections
     if (!attributes_loaded(dn)) {
         load_attributes(dn);
     }
@@ -346,6 +346,9 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
         if (attributes_loaded(group_dn)) {
             add_attribute_internal(user_dn, "memberOf", group_dn);
         }
+
+        emit attributes_changed(user_dn);
+        emit attributes_changed(group_dn);
 
         emit add_user_to_group_complete(group_dn, user_dn);
     } else {
@@ -504,15 +507,11 @@ void AdInterface::unload_internal_attributes(const QString &dn) {
 
 void AdInterface::add_attribute_internal(const QString &dn, const QString &attribute, const QString &value) {
     attributes_map[dn][attribute].push_back(value);
-    
-    emit attribute_added(dn, attribute, value);
 }
 
 void AdInterface::remove_attribute_internal(const QString &dn, const QString &attribute, const QString &value) {
     const int value_i = attributes_map[dn][attribute].indexOf(value);
     attributes_map[dn][attribute].removeAt(value_i);
-    
-    emit attribute_removed(dn, attribute, value);
 }
 
 // NOTE: keeps order of attributes
@@ -520,8 +519,6 @@ void AdInterface::remove_attribute_internal(const QString &dn, const QString &at
 void AdInterface::replace_attribute_internal(const QString &dn, const QString &attribute, const QString &old_value, const QString &new_value) {
     const int old_value_i = attributes_map[dn][attribute].indexOf(old_value);
     attributes_map[dn][attribute].replace(old_value_i, new_value);
-
-    emit attribute_replaced(dn, attribute, old_value, new_value);
 }
 
 // Update DN and/or attributes of all entries that are related
@@ -533,6 +530,8 @@ void AdInterface::replace_attribute_internal(const QString &dn, const QString &a
 void AdInterface::update_related_entries(const QString &old_dn, const QString &new_dn) {
     const bool deleted = (old_dn != "" && new_dn == "");
     const bool changed = (old_dn != "" && new_dn != "" && old_dn != new_dn);
+
+    QList<QString> updated_entries;
 
     // TODO: update state connected through policy linkage
 
@@ -548,8 +547,10 @@ void AdInterface::update_related_entries(const QString &old_dn, const QString &n
         if (attributes_loaded(group)) {
             if (deleted) {
                 remove_attribute_internal(group, "member", old_dn);
+                updated_entries.append(group);
             } else if (changed) {
                 replace_attribute_internal(group, "member", old_dn, new_dn);
+                updated_entries.append(group);
             }
         }
     }
@@ -561,10 +562,16 @@ void AdInterface::update_related_entries(const QString &old_dn, const QString &n
         if (attributes_loaded(member)) {
             if (deleted) {
                 remove_attribute_internal(member, "memberOf", old_dn);
+                updated_entries.append(member);
             } else if (changed) {
                 replace_attribute_internal(member, "memberOf", old_dn, new_dn);
+                updated_entries.append(member);
             }
         }
+    }
+
+    for (auto dn : updated_entries) {
+        emit attributes_changed(dn);
     }
 }
 

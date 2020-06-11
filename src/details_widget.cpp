@@ -50,8 +50,8 @@ DetailsWidget::DetailsWidget(MembersWidget *members_widget_)
         AD(), &AdInterface::move_complete,
         this, &DetailsWidget::on_move_complete);
     connect(
-        AD(), &AdInterface::load_attributes_complete,
-        this, &DetailsWidget::on_load_attributes_complete);
+        AD(), &AdInterface::attributes_changed,
+        this, &DetailsWidget::on_attributes_changed);
     connect(
         AD(), &AdInterface::rename_complete,
         this, &DetailsWidget::on_rename_complete);
@@ -108,7 +108,7 @@ void DetailsWidget::on_move_complete(const QString &dn, const QString &new_conta
     }
 }
 
-void DetailsWidget::on_load_attributes_complete(const QString &dn) {
+void DetailsWidget::on_attributes_changed(const QString &dn) {
     // Reload entry since attributes were updated
     if (target_dn == dn) {
         change_target(dn);
