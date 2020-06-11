@@ -144,7 +144,7 @@ char **get_values(LDAP *ds, LDAPMessage *entry) {
 /* connect and authenticate to active directory server.
     returns an ldap connection identifier or 0 on error */
 LDAP *ad_login(const char* uri) {
-    int version, result, bindresult;
+    int version, result;
 
     /* open the connection to the ldap server */
     LDAP *ds = NULL;
