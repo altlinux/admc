@@ -257,6 +257,13 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
 }
 
 void AdInterface::delete_entry(const QString &dn) {
+    // Load attributes so they are available for objects
+    // connecting to signals
+    // NOTE: have to do this because operation
+    if (!attributes_loaded(dn)) {
+        load_attributes(dn);
+    }
+
     int result = AD_INVALID_DN;
 
     const QByteArray dn_array = dn.toLatin1();
@@ -276,6 +283,13 @@ void AdInterface::delete_entry(const QString &dn) {
 }
 
 void AdInterface::move(const QString &dn, const QString &new_container) {
+    // Load attributes so they are available for objects
+    // connecting to signals
+    // NOTE: have to do this because operation
+    if (!attributes_loaded(dn)) {
+        load_attributes(dn);
+    }
+
     int result = AD_INVALID_DN;
 
     QList<QString> dn_split = dn.split(',');
@@ -303,13 +317,7 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     }
     
     if (result == AD_SUCCESS) {
-        // Load or copy attributes to new_dn
-        if (attributes_loaded(dn)) {
-            attributes_map[new_dn] = attributes_map[dn];
-            attributes_loaded_set.insert(new_dn);
-        } else {
-            load_attributes(new_dn);
-        }
+        load_attributes(new_dn);
 
         update_related_entries(dn, new_dn);
 
@@ -348,6 +356,13 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
 }
 
 void AdInterface::rename(const QString &dn, const QString &new_name) {
+    // Load attributes so they are available for objects
+    // connecting to signals
+    // NOTE: have to do this because operation
+    if (!attributes_loaded(dn)) {
+        load_attributes(dn);
+    }
+
     // Compose new_rdn and new_dn
     const QStringList exploded_dn = dn.split(',');
     const QString old_rdn = exploded_dn[0];
@@ -375,8 +390,6 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
     }
 
     if (result == AD_SUCCESS) {
-        // Rename modifies attributes non-trivially so reload
-        // attributes completely
         load_attributes(new_dn);
 
         update_related_entries(dn, new_dn);
@@ -519,7 +532,7 @@ void AdInterface::replace_attribute_internal(const QString &dn, const QString &a
 // LDAP database does all this on it's own so need to replicate it
 // NOTE: if entry was deleted, new_dn should be ""
 // NOTE: attributes_map should contain both new_dn and old_dn when
-// this is called, so that signals/connections can access both
+// this is called, so that signals/connections can access them
 void AdInterface::update_related_entries(const QString &old_dn, const QString &new_dn) {
     const bool deleted = (old_dn != "" && new_dn == "");
     const bool changed = (old_dn != "" && new_dn != "" && old_dn != new_dn);
