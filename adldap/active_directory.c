@@ -906,7 +906,6 @@ int ad_rename_group(LDAP *ds, const char *dn, const char *new_name) {
 int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
     int result;
     int result_dn2domain;
-    char **exdn;
     char **username;
     char* domain = NULL;
     char* upn = NULL;
@@ -950,7 +949,6 @@ ad_move_user_end:
 int ad_move(LDAP *ds, const char *current_dn, const char *new_container) {
     int result;
     char **exdn;
-    char **username, *domain, *upn;
 
     exdn=ldap_explode_dn(current_dn, 0);
     if(exdn==NULL) {
