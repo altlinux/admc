@@ -117,13 +117,21 @@ signals:
     void rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
     void rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);
 
+    void attribute_added(const QString &dn, const QString &attribute, const QString &value);
+    void attribute_removed(const QString &dn, const QString &attribute, const QString &value);
+    void attribute_replaced(const QString &dn, const QString &attribute, const QString &old_value, const QString &new_value);
+
+
 private:
     adldap::AdConnection *connection = nullptr;
     QMap<QString, QMap<QString, QList<QString>>> attributes_map;
     QSet<QString> attributes_loaded;
 
     void load_attributes(const QString &dn);
-    void update_related_entries(const QString &dn);
+    void add_attribute_internal(const QString &dn, const QString &attribute, const QString &value);
+    void remove_attribute_internal(const QString &dn, const QString &attribute, const QString &value);
+    void replace_attribute_internal(const QString &dn, const QString &attribute, const QString &old_value, const QString &new_value);
+    void change_dn_internal(const QString &old_dn, const QString &new_dn);
 
 }; 
 
