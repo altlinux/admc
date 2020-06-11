@@ -523,7 +523,7 @@ void AdInterface::update_related_entries(const QString &old_dn, const QString &n
     const bool deleted = (old_dn != "" && new_dn == "");
     const bool changed = (old_dn != "" && new_dn != "" && old_dn != new_dn);
 
-    QList<QString> updated_entries;
+    QSet<QString> updated_entries;
 
     // TODO: update state connected through policy linkage
 
@@ -539,10 +539,10 @@ void AdInterface::update_related_entries(const QString &old_dn, const QString &n
         if (attributes_loaded(group)) {
             if (deleted) {
                 remove_attribute_internal(group, "member", old_dn);
-                updated_entries.append(group);
+                updated_entries.insert(group);
             } else if (changed) {
                 replace_attribute_internal(group, "member", old_dn, new_dn);
-                updated_entries.append(group);
+                updated_entries.insert(group);
             }
         }
     }
@@ -554,10 +554,10 @@ void AdInterface::update_related_entries(const QString &old_dn, const QString &n
         if (attributes_loaded(member)) {
             if (deleted) {
                 remove_attribute_internal(member, "memberOf", old_dn);
-                updated_entries.append(member);
+                updated_entries.insert(member);
             } else if (changed) {
                 replace_attribute_internal(member, "memberOf", old_dn, new_dn);
-                updated_entries.append(member);
+                updated_entries.insert(member);
             }
         }
     }
