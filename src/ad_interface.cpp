@@ -273,7 +273,7 @@ void AdInterface::delete_entry(const QString &dn) {
     if (result == AD_SUCCESS) {
         update_related_entries(dn, "");
         
-        unload_internal_attributes(old_dn);
+        unload_internal_attributes(dn);
 
         emit delete_entry_complete(dn);
     } else {
@@ -310,12 +310,12 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     
     if (result == AD_SUCCESS) {
         // Copy attributes to new_dn
-        attributes_map[new_dn] = attributes_map[old_dn];
+        attributes_map[new_dn] = attributes_map[dn];
         attributes_loaded.insert(new_dn);
 
         update_related_entries(dn, new_dn);
 
-        unload_internal_attributes(old_dn);
+        unload_internal_attributes(dn);
 
         emit move_complete(dn, new_container, new_dn);
     } else {
@@ -379,7 +379,7 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
 
         update_related_entries(dn, new_dn);
 
-        unload_internal_attributes(old_dn);
+        unload_internal_attributes(dn);
 
         emit rename_complete(dn, new_name, new_dn);
     } else {
@@ -480,7 +480,7 @@ void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
     }
 }
 
-void unload_internal_attributes(const QString &dn) {
+void AdInterface::unload_internal_attributes(const QString &dn) {
     attributes_map.remove(dn);
     attributes_loaded.remove(dn);
 }
