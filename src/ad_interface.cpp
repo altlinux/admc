@@ -313,9 +313,11 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
 
 void AdInterface::add_attribute_internal(const QString &dn, const QString &attribute, const QString &dn) {
     // TODO: insert attributes near other attributes with same name
-    attributes_map[dn][attribute].append(dn);
-    
-    emit attributes_changed(dn);
+    if (attributes_loaded.contains(group_dn)) {
+        attributes_map[dn][attribute].append(dn);
+
+        emit attributes_changed(dn);
+    }
 }
 
 void AdInterface::add_user_to_group(const QString &group_dn, const QString &user_dn) {
@@ -331,12 +333,8 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
 
     if (result == AD_SUCCESS) {
         // Update attributes of user and group
-        if (attributes_loaded.contains(group_dn)) {
-            add_attribute_internal(group_dn, "member", user_dn);
-        }
-        if (attributes_loaded.contains(group_dn)) {
-            add_attribute_internal(user_dn, "memberOf", group_dn);
-        }
+        add_attribute_internal(group_dn, "member", user_dn);
+        add_attribute_internal(user_dn, "memberOf", group_dn);
 
         emit add_user_to_group_complete(group_dn, user_dn);
     } else {
