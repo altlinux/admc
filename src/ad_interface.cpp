@@ -217,7 +217,7 @@ bool AdInterface::set_attribute(const QString &dn, const QString &attribute, con
     }
 }
 
-void AdInterface::create_entry(const QString &name, const QString &dn, NewEntryType type) {
+bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryType type) {
     int result = AD_INVALID_DN;
     
     const QByteArray name_array = name.toLatin1();
@@ -248,8 +248,12 @@ void AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
 
     if (result == AD_SUCCESS) {
         emit create_entry_complete(dn, type);
+
+        return true;
     } else {
         emit create_entry_failed(dn, type, get_error_str());
+
+        return false;
     }
 }
 

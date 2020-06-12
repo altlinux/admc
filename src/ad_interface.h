@@ -82,7 +82,7 @@ public:
     bool is_container_like(const QString &dn);
 
     bool set_attribute(const QString &dn, const QString &attribute, const QString &value);
-    void create_entry(const QString &name, const QString &dn, NewEntryType type);
+    bool create_entry(const QString &name, const QString &dn, NewEntryType type);
     void delete_entry(const QString &dn);
     void move(const QString &dn, const QString &new_container);
     void add_user_to_group(const QString &group_dn, const QString &user_dn);
