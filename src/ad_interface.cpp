@@ -311,10 +311,10 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     }
 }
 
-void AdInterface::add_attribute_internal(const QString &dn, const QString &attribute, const QString &dn) {
+void AdInterface::add_attribute_internal(const QString &dn, const QString &attribute, const QString &value) {
     // TODO: insert attributes near other attributes with same name
-    if (attributes_loaded.contains(group_dn)) {
-        attributes_map[dn][attribute].append(dn);
+    if (attributes_loaded.contains(dn)) {
+        attributes_map[dn][attribute].append(value);
 
         emit attributes_changed(dn);
     }
