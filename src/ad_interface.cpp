@@ -132,7 +132,7 @@ void AdInterface::load_attributes(const QString &dn) {
         }
         free(attributes_raw);
 
-        attributes_loaded_set.insert(dn);
+        attributes_loaded.insert(dn);
 
         emit load_attributes_complete(dn);
     } else if (connection->get_errcode() != AD_SUCCESS) {
@@ -141,7 +141,7 @@ void AdInterface::load_attributes(const QString &dn) {
 }
 
 QMap<QString, QList<QString>> AdInterface::get_attributes(const QString &dn) {
-    if (!attributes_loaded(dn)) {
+    if (!attributes_loaded.contains(dn)) {
         load_attributes(dn);
     }
 
@@ -318,13 +318,13 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
     if (result == AD_SUCCESS) {
         // Update attributes of user and group
         // TODO: insert attributes near other attributes with same name
-        if (attributes_loaded(group_dn)) {
+        if (attributes_loaded.contains(group_dn)) {
             // Add attribute "member = user_dn" to group
             attributes_map[group_dn]["member"].append(user_dn);
 
             emit attributes_changed(user_dn);
         }
-        if (attributes_loaded(group_dn)) {
+        if (attributes_loaded.contains(group_dn)) {
             // Add attribute "memberOf = group_dn" to user
             attributes_map[user_dn]["memberOf"].append(group_dn);
 
@@ -468,11 +468,6 @@ void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
     }
 }
 
-bool AdInterface::attributes_loaded(const QString &dn) {
-    const bool loaded = attributes_loaded_set.contains(dn);
-    return loaded;
-}
-
 // Update all attributes that contain this dn, by deleting
 // or replacing with new one
 // LDAP database does all this on it's own so need to replicate it
@@ -482,11 +477,11 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
     const bool changed = (old_dn != "" && new_dn != "" && old_dn != new_dn);
 
     // Update entry's attributes
-    if (attributes_loaded(old_dn)) {
+    if (attributes_loaded.contains(old_dn)) {
         if (deleted || changed) {
             // Unload attributes for old dn
             attributes_map.remove(old_dn);
-            attributes_loaded_set.remove(old_dn);
+            attributes_loaded.remove(old_dn);
         }
 
         if (changed) {

@@ -124,10 +124,9 @@ signals:
 private:
     adldap::AdConnection *connection = nullptr;
     QMap<QString, QMap<QString, QList<QString>>> attributes_map;
-    QSet<QString> attributes_loaded_set;
+    QSet<QString> attributes_loaded;
 
     void load_attributes(const QString &dn);
-    bool attributes_loaded(const QString &dn);
     void update_cache(const QString &old_dn, const QString &new_dn);
 
 }; 
