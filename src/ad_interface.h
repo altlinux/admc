@@ -68,7 +68,6 @@ public:
     QString get_error_str();
 
     QList<QString> load_children(const QString &dn);
-
     QMap<QString, QList<QString>> get_attributes(const QString &dn);
     QList<QString> get_attribute_multi(const QString &dn, const QString &attribute);
     QString get_attribute(const QString &dn, const QString &attribute);
