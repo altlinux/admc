@@ -473,8 +473,7 @@ void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
     }
 }
 
-// Update all attributes that contain this dn, by deleting
-// or replacing with new one
+// Update cache for this entry and all related entries
 // LDAP database does all this on it's own so need to replicate it
 // NOTE: if entry was deleted, new_dn should be ""
 void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
