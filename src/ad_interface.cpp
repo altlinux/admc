@@ -495,8 +495,6 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
 
     // Update attributes of entries related to this entry
     QSet<QString> updated_entries;
-
-    // Iterate through all attributes and update if needed
     for (const QString &dn : attributes_map.keys()) {
         for (auto &values : attributes_map[dn]) {
             const int old_dn_i = values.indexOf(old_dn);
