@@ -128,8 +128,7 @@ private:
 
     void load_attributes(const QString &dn);
     bool attributes_loaded(const QString &dn);
-    void unload_internal_attributes(const QString &dn);
-    void update_related_entries(const QString &old_dn, const QString &new_dn);
+    void update_cache(const QString &old_dn, const QString &new_dn);
 
 }; 
 

@@ -259,8 +259,7 @@ void AdInterface::delete_entry(const QString &dn) {
     result = connection->object_delete(dn_cstr);
 
     if (result == AD_SUCCESS) {
-        unload_internal_attributes(dn);
-        update_related_entries(dn, "");    
+        update_cache(dn, "");    
 
         emit delete_entry_complete(dn);
     } else {
@@ -296,9 +295,7 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     }
     
     if (result == AD_SUCCESS) {
-        unload_internal_attributes(dn);
-        load_attributes(new_dn);
-        update_related_entries(dn, new_dn);
+        update_cache(dn, new_dn);
 
         emit dn_changed(dn, new_dn);
         emit move_complete(dn, new_container, new_dn);
@@ -341,12 +338,6 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
 }
 
 void AdInterface::rename(const QString &dn, const QString &new_name) {
-    // Load attributes so they are available for objects connecting to signals
-    // NOTE: have to do this before operation
-    if (!attributes_loaded(dn)) {
-        load_attributes(dn);
-    }
-
     // Compose new_rdn and new_dn
     const QStringList exploded_dn = dn.split(',');
     const QString old_rdn = exploded_dn[0];
@@ -374,9 +365,7 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
     }
 
     if (result == AD_SUCCESS) {
-        unload_internal_attributes(dn);
-        load_attributes(new_dn);
-        update_related_entries(dn, new_dn);
+        update_cache(dn, new_dn);
 
         emit dn_changed(dn, new_dn);
         emit attributes_changed(new_dn);
@@ -484,30 +473,29 @@ bool AdInterface::attributes_loaded(const QString &dn) {
     return loaded;
 }
 
-void AdInterface::unload_internal_attributes(const QString &dn) {
-    attributes_map.remove(dn);
-    attributes_loaded_set.remove(dn);
-}
-
 // Update all attributes that contain this dn, by deleting
 // or replacing with new one
 // LDAP database does all this on it's own so need to replicate it
 // NOTE: if entry was deleted, new_dn should be ""
-void AdInterface::update_related_entries(const QString &old_dn, const QString &new_dn) {
+void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
     const bool deleted = (old_dn != "" && new_dn == "");
     const bool changed = (old_dn != "" && new_dn != "" && old_dn != new_dn);
 
+    // Update entry's attributes
+    if (attributes_loaded(old_dn)) {
+        if (deleted || changed) {
+            // Unload attributes for old dn
+            attributes_map.remove(old_dn);
+            attributes_loaded_set.remove(old_dn);
+        }
+
+        if (changed) {
+            load_attributes(new_dn);
+        }
+    }
+
+    // Update attributes of entries related to this entry
     QSet<QString> updated_entries;
-
-    // TODO: confirm that this solution works for policy linkage, that is that it links are stored similarly to membership
-
-    // TODO: update state connected through tree/children relationship
-    // if deleted, need to remove all loaded child DN's
-    // if changed, need to change all loaded child DN's
-    // Then for both cases, need to do another iteration of
-    // update_related_entries() on changed child DN's
-    // OR
-    // could instead do it in one iteration by searching for attributes that contain parent DN and changing/deleting those
 
     // Iterate through all attributes and update if needed
     for (const QString &dn : attributes_map.keys()) {
