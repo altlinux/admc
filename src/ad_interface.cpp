@@ -303,7 +303,7 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     }
     
     if (result == AD_SUCCESS) {
-        update_cache(dn, "");
+        update_cache(dn, new_dn);
 
         emit dn_changed(dn, new_dn);
         emit move_complete(dn, new_container, new_dn);
