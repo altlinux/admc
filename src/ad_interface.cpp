@@ -305,6 +305,7 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     if (result == AD_SUCCESS) {
         update_cache(dn, "");
 
+        emit dn_changed(dn, new_dn);
         emit move_complete(dn, new_container, new_dn);
     } else {
         emit move_failed(dn, new_container, new_dn, get_error_str());
@@ -363,6 +364,7 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
     if (result == AD_SUCCESS) {
         update_cache(dn, "");
 
+        emit dn_changed(dn, new_dn);
         emit attributes_changed(dn);
         emit rename_complete(dn, new_name, new_dn);
     } else {
