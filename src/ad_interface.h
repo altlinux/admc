@@ -124,6 +124,7 @@ private:
 
     void load_attributes(const QString &dn);
     void update_cache(const QString &old_dn, const QString &new_dn);
+    void add_attribute_internal(const QString &dn, const QString &attribute, const QString &value);
 
 }; 
 

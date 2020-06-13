@@ -322,10 +322,9 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
     result = connection->group_add_user(group_dn_cstr, user_dn_cstr);
 
     if (result == AD_SUCCESS) {
-        // Reload attributes of group and user because group
-        // operations affect attributes of both
-        load_attributes(group_dn);
-        load_attributes(user_dn);
+        // Update attributes of user and group
+        add_attribute_internal(group_dn, "member", user_dn);
+        add_attribute_internal(user_dn, "memberOf", group_dn);
 
         emit add_user_to_group_complete(group_dn, user_dn);
     } else {
@@ -498,6 +497,12 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
     }
 }
 
+void AdInterface::add_attribute_internal(const QString &dn, const QString &attribute, const QString &value) {
+    // TODO: insert attributes near other attributes with same name
+    if (attributes_loaded.contains(dn)) {
+        attributes_map[dn][attribute].append(value);
+    }
+}
 
 AdInterface *AD() {
     ADMC *app = qobject_cast<ADMC *>(qApp);
