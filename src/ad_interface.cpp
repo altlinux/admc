@@ -365,7 +365,7 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
         update_cache(dn, new_dn);
 
         emit dn_changed(dn, new_dn);
-        emit attributes_changed(dn);
+        emit attributes_changed(new_dn);
         emit rename_complete(dn, new_name, new_dn);
     } else {
         emit rename_failed(dn, new_name, new_dn, get_error_str());
