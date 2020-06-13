@@ -117,6 +117,8 @@ signals:
     void rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
     void rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);
 
+    void attributes_changed(const QString &dn);
+
 private:
     adldap::AdConnection *connection = nullptr;
     QMap<QString, QMap<QString, QList<QString>>> attributes_map;

@@ -206,6 +206,7 @@ bool AdInterface::set_attribute(const QString &dn, const QString &attribute, con
         // Reload attributes to get new value
         load_attributes(dn);
         
+        emit attributes_changed(dn);
         emit set_attribute_complete(dn, attribute, old_value, value);
 
         return true;
@@ -362,6 +363,7 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
     if (result == AD_SUCCESS) {
         update_cache(dn, "");
 
+        emit attributes_changed(dn);
         emit rename_complete(dn, new_name, new_dn);
     } else {
         emit rename_failed(dn, new_name, new_dn, get_error_str());
@@ -482,6 +484,7 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
     }
 
     // Update attributes of entries related to this entry
+    QSet<QString> updated_entries;
     for (const QString &dn : attributes_map.keys()) {
         for (auto &values : attributes_map[dn]) {
             const int old_dn_i = values.indexOf(old_dn);
@@ -489,11 +492,18 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
             if (old_dn_i != -1) {
                 if (deleted) {
                     values.removeAt(old_dn_i);
+                    updated_entries.insert(dn);
                 } else if (changed) {
                     values.replace(old_dn_i, new_dn);
+                    updated_entries.insert(dn);
                 }
             }
         }
+    }
+
+    // Emit signals about all entries whose attributes changed
+    for (auto dn : updated_entries) {
+        emit attributes_changed(dn);
     }
 }
 
@@ -501,6 +511,8 @@ void AdInterface::add_attribute_internal(const QString &dn, const QString &attri
     // TODO: insert attributes near other attributes with same name
     if (attributes_loaded.contains(dn)) {
         attributes_map[dn][attribute].append(value);
+
+        emit attributes_changed(dn);
     }
 }
 
