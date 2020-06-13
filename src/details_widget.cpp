@@ -98,9 +98,9 @@ void DetailsWidget::on_delete_entry_complete(const QString &dn) {
     }
 }
 
-void DetailsWidget::on_dn_changed(const QString &dn, const QString &new_dn) {
+void DetailsWidget::on_dn_changed(const QString &old_dn, const QString &new_dn) {
     // Switch to the entry at new dn (entry stays the same)
-    if (target_dn == dn) {
+    if (target_dn == old_dn) {
         change_target(new_dn);
     }
 }

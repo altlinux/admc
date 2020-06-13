@@ -111,9 +111,9 @@ void AdModel::on_delete_entry_complete(const QString &dn) {
     }
 }
 
-void AdModel::on_dn_changed(const QString &dn, const QString &new_dn) {
+void AdModel::on_dn_changed(const QString &old_dn, const QString &new_dn) {
     // Remove old entry from model
-    QList<QStandardItem *> old_items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    QList<QStandardItem *> old_items = findItems(old_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
     if (old_items.size() > 0) {
         QStandardItem *dn_item = old_items[0];
         QModelIndex dn_index = dn_item->index();
