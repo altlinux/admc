@@ -22,6 +22,7 @@
 #include "admc.h"
 
 #include <QSet>
+#include <algorithm>
 
 AdInterface::AdInterface(QObject *parent)
 : QObject(parent)
@@ -287,20 +288,15 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     const QByteArray new_container_array = new_container.toLatin1();
     const char *new_container_cstr = new_container_array.constData();
 
-    const bool entry_is_group = is_group(dn);
     const bool entry_is_user = is_user(dn);
-
-    if (!entry_is_user && !entry_is_group) {
-        emit move_failed(dn, new_container, new_dn, "AdInterface::move() only supports moving users and groups at the moment");
-
-        return;
-    }
-
     if (entry_is_user) {
         result = connection->move_user(dn_cstr, new_container_cstr);
     } else {
         result = connection->move(dn_cstr, new_container_cstr);
     }
+
+    // TODO: drag and drop handles checking move compatibility but need
+    // to do this here as well for CLI?
     
     if (result == AD_SUCCESS) {
         update_cache(dn, new_dn);
@@ -410,13 +406,18 @@ enum DropType {
 // Determine what kind of drop type is dropping this entry onto target
 // If drop type is none, then can't drop this entry on this target
 DropType get_drop_type(const QString &dn, const QString &target_dn) {
+    if (dn == target_dn) {
+        return DropType_None;
+    }
+
     const bool dropped_is_user = AD()->is_user(dn);
     const bool dropped_is_group = AD()->is_group(dn);
+    const bool dropped_is_ou = AD()->is_ou(dn);
 
+    const bool target_is_user = AD()->is_user(target_dn);
     const bool target_is_group = AD()->is_group(target_dn);
     const bool target_is_ou = AD()->is_ou(target_dn);
     const bool target_is_container = AD()->is_container(target_dn);
-    const bool target_is_container_like = AD()->is_container_like(target_dn);
 
     if (dropped_is_user) {
         if (target_is_ou || target_is_container) {
@@ -424,8 +425,8 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
         } else if (target_is_group) {
             return DropType_AddToGroup;
         }
-    } else if (dropped_is_group) {
-        if (target_is_ou || target_is_container || target_is_container_like) {
+    } else if (dropped_is_group || dropped_is_ou) {
+        if (!target_is_user && !target_is_group) {
             return DropType_Move;
         }
     }
@@ -462,50 +463,101 @@ void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
     }
 }
 
-// Update cache for entry and all related entries after a DN change
+// Update all DN's and attributes that contain the changed DN
+// including the DN itself
 // LDAP database does this internally so need to replicate it
 // NOTE: if entry was deleted, new_dn should be ""
 void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
     const bool deleted = (old_dn != "" && new_dn == "");
-    const bool changed = (old_dn != "" && new_dn != "" && old_dn != new_dn);
 
-    // Update entry's attributes
-    if (attributes_loaded.contains(old_dn)) {
-        if (deleted || changed) {
-            // Unload old attributes
-            attributes_map.remove(old_dn);
-            attributes_loaded.remove(old_dn);
-        }
+    // Find entries containing this DN and update their DN's
+    // including original entry
+    {
+        QList<QString> dn_changes;
+        QMap<QString, QString> update_dns;
 
-        if (changed) {
-            load_attributes(new_dn);
+        for (const QString &dn : attributes_map.keys()) {
+            if (dn.contains(old_dn)) {
+                const QString updated_dn = QString(dn).replace(old_dn, new_dn);
+                
+                if (attributes_loaded.contains(dn)) {
+                    if (deleted) {
+                        attributes_map.remove(dn);
+                        attributes_loaded.remove(dn);
+                    } else {
+                        // Move attributes from old DN to new DN
+                        attributes_map[updated_dn] = attributes_map[old_dn];
+                        attributes_loaded.insert(updated_dn);
 
-            emit dn_changed(old_dn, new_dn);
-            emit attributes_changed(new_dn);
-        }
-    }
+                        attributes_map.remove(dn);
+                        attributes_loaded.remove(dn);
+                    }
+                }
 
-    // Update attributes of entries related to this entry
-    QSet<QString> updated_entries;
-    for (const QString &dn : attributes_map.keys()) {
-        for (auto &values : attributes_map[dn]) {
-            const int old_dn_i = values.indexOf(old_dn);
-
-            if (old_dn_i != -1) {
-                if (deleted) {
-                    values.removeAt(old_dn_i);
-                    updated_entries.insert(dn);
-                } else if (changed) {
-                    values.replace(old_dn_i, new_dn);
-                    updated_entries.insert(dn);
+                // Save dn and updated_dn to later emit dn_changed_signals
+                if (!dn_changes.contains(dn)) {
+                    dn_changes.append(dn);
+                    update_dns[dn] = updated_dn;
                 }
             }
         }
+
+        // Sort all dn changes in order of depth, lowest first
+        // so that signals are emitted in order of depth
+        std::sort(dn_changes.begin(), dn_changes.end(),
+            [] (const QString &a, const QString &b) {
+                const int a_depth = a.count(',');
+                const int b_depth = b.count(',');
+
+                return a_depth < b_depth;   
+            });
+
+        for (auto dn : dn_changes) {
+            const QString updated_dn = update_dns[dn];
+
+            emit dn_changed(dn, updated_dn);
+        }
     }
 
-    // Emit signals about all entries whose attributes changed
-    for (auto dn : updated_entries) {
-        emit attributes_changed(dn);
+    // Reload original entry's attributes
+    // NOTE: do this after updating DN's, so that attributes_changed()
+    // is emitted after dn_changed()
+    if (attributes_loaded.contains(new_dn)) {
+        load_attributes(new_dn);
+
+        emit attributes_changed(new_dn);
+    }
+
+    // Update all attributes that contain this DN
+    {
+        // Use set container to emit only one attributes_changed() signal
+        // per entry even if multiple attributes of entry were changed
+        QSet<QString> attribute_changes;
+
+        for (const QString &dn : attributes_map.keys()) {
+            for (auto &values : attributes_map[dn]) {
+                for (auto &value : values) {
+                    if (value.contains(old_dn)) {
+                        const int value_i = values.indexOf(value);
+
+                        if (deleted) {
+                            values.removeAt(value_i);
+
+                            attribute_changes.insert(dn);
+                        } else {
+                            const QString updated_value = QString(value).replace(old_dn, new_dn);
+                            values.replace(value_i, updated_value);
+
+                            attribute_changes.insert(dn);
+                        }
+                    }
+                }
+            }
+        }
+
+        for (auto dn : attribute_changes) {
+            emit attributes_changed(dn);
+        }
     }
 }
 

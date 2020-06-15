@@ -44,9 +44,6 @@ DetailsWidget::DetailsWidget(MembersWidget *members_widget_)
         AD(), &AdInterface::ad_interface_login_complete,
         this, &DetailsWidget::on_ad_interface_login_complete);
     connect(
-        AD(), &AdInterface::delete_entry_complete,
-        this, &DetailsWidget::on_delete_entry_complete);
-    connect(
         AD(), &AdInterface::dn_changed,
         this, &DetailsWidget::on_dn_changed);
     connect(
@@ -91,17 +88,15 @@ void DetailsWidget::on_ad_interface_login_complete(const QString &search_base, c
     change_target("");
 }
 
-void DetailsWidget::on_delete_entry_complete(const QString &dn) {
-    // Clear data if current target was deleted
-    if (target_dn == dn) {
-        change_target("");
-    }
-}
-
 void DetailsWidget::on_dn_changed(const QString &old_dn, const QString &new_dn) {
-    // Switch to the entry at new dn (entry stays the same)
     if (target_dn == old_dn) {
-        change_target(new_dn);
+        if (new_dn == "") {
+            // Target was deleted so clear
+            change_target("");
+        } else {
+            // Switch to entry at new dn (entry stays the same)
+            change_target(new_dn);
+        }
     }
 }
 

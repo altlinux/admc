@@ -39,9 +39,6 @@ AdModel::AdModel(QObject *parent)
         AD(), &AdInterface::ad_interface_login_complete,
         this, &AdModel::on_ad_interface_login_complete);
     connect(
-        AD(), &AdInterface::delete_entry_complete,
-        this, &AdModel::on_delete_entry_complete);
-    connect(
         AD(), &AdInterface::dn_changed,
         this, &AdModel::on_dn_changed);
     connect(
@@ -100,51 +97,13 @@ void AdModel::on_ad_interface_login_complete(const QString &search_base, const Q
     make_new_row(invis_root, head_dn);
 }
 
-void AdModel::on_delete_entry_complete(const QString &dn) {
-    QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
-
-    if (items.size() > 0) {
-        QStandardItem *dn_item = items[0];
-        QModelIndex dn_index = dn_item->index();
-        
-        removeRow(dn_index.row(), dn_index.parent());
-    }
-}
-
-void AdModel::on_dn_changed(const QString &old_dn, const QString &new_dn) {
-    // Remove old entry from model
-    QList<QStandardItem *> old_items = findItems(old_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
-    if (old_items.size() > 0) {
-        QStandardItem *dn_item = old_items[0];
-        QModelIndex dn_index = dn_item->index();
-        
-        removeRow(dn_index.row(), dn_index.parent());
-    }
-
-    // Need to load entry at new parent if the parent has already
-    // been expanded/fetched
-    // NOTE: loading if parent hasn't been fetched will
-    // create a duplicate
-    const QString new_parent = extract_parent_dn_from_dn(new_dn);
-    QList<QStandardItem *> parent_items = findItems(new_parent, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
-    if (parent_items.size() > 0) {
-        QStandardItem *parent_dn_item = parent_items[0];
-        QModelIndex parent_dn_index = parent_dn_item->index();
-        QModelIndex parent_index = parent_dn_index.siblingAtColumn(Column::Name);
-
-        QStandardItem *parent_item = itemFromIndex(parent_index);
-
-        if (!canFetchMore(parent_index)) {
-            make_new_row(parent_item, new_dn);
-        }
-    }
-}
-
 void AdModel::on_create_entry_complete(const QString &dn, NewEntryType type) {
     // Load entry to model if it's parent has already been fetched
     // If it hasn't been fetched, then this new entry will be loaded with all other children when the parent is fetched
     QString parent_dn = extract_parent_dn_from_dn(dn);
     QList<QStandardItem *> items = findItems(parent_dn, Qt::MatchExactly | Qt::MatchRecursive, Column::DN);
+
+    // TODO: use find_first_row_item() here
 
     if (items.size() > 0) {
         QStandardItem *dn_item = items[0];
@@ -186,6 +145,96 @@ void AdModel::on_attributes_changed(const QString &dn) {
     }
 
     load_row(row, dn);
+}
+
+// Update DN column to new DN and move row if necessary
+// If row has children, they are moved together with parent row
+// Then, when dn_changed() is called on children, they are only renamed
+void AdModel::on_dn_changed(const QString &old_dn, const QString &new_dn) {
+    const QStandardItem *old_item = find_first_row_item(old_dn);
+
+    // Update DN
+    if (old_item != nullptr && new_dn != "") {
+        const QModelIndex old_item_index = old_item->index();
+        const QModelIndex dn_index = old_item_index.siblingAtColumn(Column::DN);
+        QStandardItem *dn_item = itemFromIndex(dn_index);
+
+        dn_item->setText(new_dn);
+    }
+
+    // NOTE: row operations do nothing if row index is -1
+    const int old_row_i = (old_item != nullptr) ? old_item->row() : -1;
+
+    const QString old_parent_dn = extract_parent_dn_from_dn(old_dn);
+    const QString new_parent_dn = extract_parent_dn_from_dn(new_dn);
+
+    QStandardItem *old_parent = find_first_row_item(old_parent_dn);
+    QStandardItem *new_parent = nullptr;
+    if (new_dn != "") {
+        new_parent = find_first_row_item(new_parent_dn);
+    }
+
+    // If parent DN didn't change, don't need to move row
+    if (old_parent_dn == new_parent_dn) {
+        return;
+    }
+
+    // If parent of row is already new parent, don't need to move row
+    // This happens when entry was moved together with it's parent
+    // or ancestor
+    if (old_item->parent() == new_parent) {
+        return;
+    }
+
+    const bool old_parent_loaded = (old_parent != nullptr);
+    const bool new_parent_loaded = (new_parent != nullptr);
+
+    // NOTE: DON'T append to new parent, if it can fetch (hasn't been
+    // expanded yet)
+    // Because parent loads children when it's fetched
+    // If we append now, it will load this row twice and create a duplicate
+    const bool append_to_new_parent = (new_parent != nullptr && !canFetchMore(new_parent->index()));
+
+    if (old_parent_loaded) {
+        if (new_parent_loaded) {
+            if (append_to_new_parent) {
+                // Transfer row from old to new parent
+                const QList<QStandardItem *> row = old_parent->takeRow(old_row_i);
+                new_parent->appendRow(row);
+            } else {
+                // Remove from old parent
+                old_parent->removeRow(old_row_i);
+            }
+        } else {
+            // Remove from old parent
+            old_parent->removeRow(old_row_i);
+        }
+    } else {
+        if (new_parent_loaded) {
+            if (append_to_new_parent) {
+                // Make row at new parent
+                make_new_row(new_parent, new_dn);
+            }
+        } else {
+
+        }
+    }
+}
+
+QStandardItem *AdModel::find_first_row_item(const QString &dn) {
+    // Find dn item (findItems returns as list)
+    const QList<QStandardItem *> dn_items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    if (dn_items.size() == 0) {
+        return nullptr;
+    }
+
+    // Get first item in parent row
+    const QStandardItem *dn_item = dn_items[0];
+    const QModelIndex dn_index = dn_item->index();
+    const QModelIndex first_item_index = dn_index.siblingAtColumn(0);
+    QStandardItem *first_item = itemFromIndex(first_item_index);
+
+    return first_item;
 }
 
 // Load data into row of items based on entry attributes
