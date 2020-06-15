@@ -45,6 +45,10 @@ MembersWidget::MembersWidget(MembersModel *model)
 }
 
 void MembersWidget::change_target(const QString &dn) {
-    members_model->change_target(dn);
+    QModelIndex root_index = members_model->change_target(dn);
+
+    // Set root to group index so that it is hidden
+    view->setRootIndex(root_index);
+
     update_column_visibility();
 }
