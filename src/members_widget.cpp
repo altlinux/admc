@@ -41,7 +41,6 @@ MembersWidget::MembersWidget(MembersModel *model)
     view->setModel(members_model);
 
     column_hidden[MembersModel::Column::Name] = false;
-    column_hidden[MembersModel::Column::DN] = true;
     update_column_visibility();
 }
 

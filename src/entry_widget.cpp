@@ -72,6 +72,10 @@ EntryWidget::EntryWidget(EntryModel *model)
 
     // Start off disabled until login
     setEnabled(false);
+
+    // Load "show dn column" setting
+    const bool show_dn_column_checked = SETTINGS()->toggle_show_dn_column->isChecked();
+    on_toggle_show_dn_column(show_dn_column_checked);
 }
 
 void EntryWidget::on_ad_interface_login_complete(const QString &base, const QString &head) {

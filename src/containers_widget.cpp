@@ -41,7 +41,6 @@ ContainersWidget::ContainersWidget(AdModel *model)
     column_hidden[AdModel::Column::Name] = false;
     column_hidden[AdModel::Column::Category] = true;
     column_hidden[AdModel::Column::Description] = true;
-    column_hidden[AdModel::Column::DN] = true;
     update_column_visibility();
 
     // Insert label into layout
