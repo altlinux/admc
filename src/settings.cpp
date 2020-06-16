@@ -71,6 +71,7 @@ void Settings::save_settings() {
         details_on_containers_click,
         details_on_contents_click,
         confirm_actions,
+        toggle_show_status_log,
     };
     for (auto action : checkable_actions) {
         const bool checked = action->isChecked();
