@@ -64,7 +64,7 @@ private:
     QStatusBar *status_bar = nullptr;
     QTextEdit* status_log = nullptr;
 
-    void showMessage(const QString &msg, int status_bar_timeout = 0);
+    void message(const QString &msg, int status_bar_timeout = 0);
 
 };
 
