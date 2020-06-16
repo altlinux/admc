@@ -22,17 +22,15 @@
 
 #include "ad_interface.h"
 
-#include <QStatusBar>
+class QTextEdit;
+class QStatusBar;
 
-void status_bar_init(QStatusBar *status_bar);
-
-
-// Shows messages about AdInterface action successes/failures
-class StatusBar final : public QStatusBar {
+// Pushes messages about AD operations to status bar and status log
+class StatusBar final : public QObject {
 Q_OBJECT
 
 public:
-    explicit StatusBar();
+    explicit StatusBar(QStatusBar *status_bar_, QTextEdit *status_log_, QObject *parent);
 
 private slots:
     void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
@@ -58,6 +56,12 @@ private slots:
 
     void on_rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
     void on_rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);
+
+private:
+    QStatusBar *status_bar = nullptr;
+    QTextEdit* status_log = nullptr;
+
+    void showMessage(const QString &msg, int status_bar_timeout = 0);
 
 };
 

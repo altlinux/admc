@@ -20,9 +20,15 @@
 #include "status_bar.h"
 #include "ad_interface.h"
 
-StatusBar::StatusBar()
-: QStatusBar()
+#include <QStatusBar>
+#include <QTextEdit>
+
+StatusBar::StatusBar(QStatusBar *status_bar_, QTextEdit *status_log_, QObject *parent)
+: QObject(parent)
 {
+    status_bar = status_bar_;
+    status_log = status_log_;
+
     showMessage(tr("Ready"), 10 * 1000);
 
     connect(
@@ -178,4 +184,23 @@ void StatusBar::on_rename_failed(const QString &dn, const QString &new_name, con
     QString msg = QString("Failed to rename \"%1\" to \"%2\". Error: \"%3\"").arg(dn, new_name, error_str);
 
     showMessage(msg);
+}
+
+void StatusBar::showMessage(const QString &msg, int status_bar_timeout) {
+    status_bar->showMessage(msg, status_bar_timeout);
+
+    const QColor original_color = status_log->textColor();
+    QColor color = original_color;
+    if (msg.contains("Failed")) {
+        color = Qt::red;
+    } else {
+        color = Qt::darkGreen;
+    }
+
+    status_log->setTextColor(color);
+    status_log->append(msg);
+    status_log->setTextColor(original_color);
+
+    // Scroll text edit to the newest message
+    status_log->ensureCursorVisible();
 }
