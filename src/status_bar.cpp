@@ -19,9 +19,11 @@
 
 #include "status_bar.h"
 #include "ad_interface.h"
+#include "settings.h"
 
 #include <QStatusBar>
 #include <QTextEdit>
+#include <QAction>
 
 StatusBar::StatusBar(QStatusBar *status_bar_, QTextEdit *status_log_, QObject *parent)
 : QObject(parent)
@@ -93,6 +95,14 @@ StatusBar::StatusBar(QStatusBar *status_bar_, QTextEdit *status_log_, QObject *p
     connect(
         AD(), &AdInterface::rename_failed,
         this, &StatusBar::on_rename_failed);
+
+    connect(
+        SETTINGS()->toggle_show_status_log, &QAction::toggled,
+        this, &StatusBar::on_toggle_show_status_log);
+
+    // Load "show status log" setting
+    const bool show_status_log_checked = SETTINGS()->toggle_show_status_log->isChecked();
+    on_toggle_show_status_log(show_status_log_checked);
 }
 
 void StatusBar::on_ad_interface_login_complete(const QString &search_base, const QString &head_dn) {
@@ -184,6 +194,14 @@ void StatusBar::on_rename_failed(const QString &dn, const QString &new_name, con
     QString msg = QString("Failed to rename \"%1\" to \"%2\". Error: \"%3\"").arg(dn, new_name, error_str);
 
     showMessage(msg);
+}
+
+void StatusBar::on_toggle_show_status_log(bool checked) {
+    if (checked) {
+        status_log->setVisible(true); 
+    } else {
+        status_log->setVisible(false); 
+    }
 }
 
 void StatusBar::showMessage(const QString &msg, int status_bar_timeout) {

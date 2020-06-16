@@ -71,6 +71,7 @@ MainWindow::MainWindow(const bool auto_login)
     const auto menubar_view = menubar->addMenu("View");
     menubar_view->addAction(SETTINGS()->toggle_advanced_view);
     menubar_view->addAction(SETTINGS()->toggle_show_dn_column);
+    menubar_view->addAction(SETTINGS()->toggle_show_status_log);
 
     const auto menubar_preferences = menubar->addMenu("Preferences");
     menubar_preferences->addAction(SETTINGS()->details_on_containers_click);

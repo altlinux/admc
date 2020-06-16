@@ -53,6 +53,7 @@ Settings::Settings(QObject *parent)
     details_on_containers_click = make_checkable_action(settings, "Open attributes on left click in Containers window");
     details_on_contents_click = make_checkable_action(settings, "Open attributes on left click in Contents window");
     confirm_actions = make_checkable_action(settings, "Confirm actions");
+    toggle_show_status_log = make_checkable_action(settings, "Show status log");
 
     // Save settings before the app quits
     connect(

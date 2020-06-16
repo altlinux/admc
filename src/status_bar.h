@@ -57,6 +57,9 @@ private slots:
     void on_rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
     void on_rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);
 
+private slots:
+    void on_toggle_show_status_log(bool checked);
+
 private:
     QStatusBar *status_bar = nullptr;
     QTextEdit* status_log = nullptr;
