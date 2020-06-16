@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "status_bar.h"
+#include "status.h"
 #include "ad_interface.h"
 #include "settings.h"
 

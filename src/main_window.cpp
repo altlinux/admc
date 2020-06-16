@@ -26,7 +26,7 @@
 #include "details_widget.h"
 #include "ad_model.h"
 #include "attributes_model.h"
-#include "status_bar.h"
+#include "status.h"
 #include "entry_widget.h"
 #include "settings.h"
 
