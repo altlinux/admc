@@ -26,11 +26,11 @@ class QTextEdit;
 class QStatusBar;
 
 // Pushes messages about AD operations to status bar and status log
-class StatusBar final : public QObject {
+class Status final : public QObject {
 Q_OBJECT
 
 public:
-    explicit StatusBar(QStatusBar *status_bar_, QTextEdit *status_log_, QObject *parent);
+    explicit Status(QStatusBar *status_bar_, QTextEdit *status_log_, QObject *parent);
 
 private slots:
     void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);

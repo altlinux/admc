@@ -108,7 +108,7 @@ MainWindow::MainWindow(const bool auto_login)
     vert_splitter->addWidget(horiz_splitter);
     vert_splitter->setStretchFactor(1, 3);
 
-    new StatusBar(statusBar(), status_log, this);
+    new Status(statusBar(), status_log, this);
 
     // Set root index of contents view to selection of containers view
     connect(
