@@ -47,14 +47,11 @@ DetailsWidget::DetailsWidget(MembersWidget *members_widget_)
         AD(), &AdInterface::delete_entry_complete,
         this, &DetailsWidget::on_delete_entry_complete);
     connect(
-        AD(), &AdInterface::move_complete,
-        this, &DetailsWidget::on_move_complete);
+        AD(), &AdInterface::dn_changed,
+        this, &DetailsWidget::on_dn_changed);
     connect(
-        AD(), &AdInterface::load_attributes_complete,
-        this, &DetailsWidget::on_load_attributes_complete);
-    connect(
-        AD(), &AdInterface::rename_complete,
-        this, &DetailsWidget::on_rename_complete);
+        AD(), &AdInterface::attributes_changed,
+        this, &DetailsWidget::on_attributes_changed);
 
     change_target("");
 };
@@ -101,23 +98,17 @@ void DetailsWidget::on_delete_entry_complete(const QString &dn) {
     }
 }
 
-void DetailsWidget::on_move_complete(const QString &dn, const QString &new_container, const QString &new_dn) {
+void DetailsWidget::on_dn_changed(const QString &old_dn, const QString &new_dn) {
     // Switch to the entry at new dn (entry stays the same)
-    if (target_dn == dn) {
+    if (target_dn == old_dn) {
         change_target(new_dn);
     }
 }
 
-void DetailsWidget::on_load_attributes_complete(const QString &dn) {
+void DetailsWidget::on_attributes_changed(const QString &dn) {
     // Reload entry since attributes were updated
     if (target_dn == dn) {
         change_target(dn);
-    }
-}
-
-void DetailsWidget::on_rename_complete(const QString &dn, const QString &new_name, const QString &new_dn) {
-    if (target_dn == dn) {
-        change_target(new_dn);
     }
 }
 

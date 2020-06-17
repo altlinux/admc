@@ -206,6 +206,7 @@ bool AdInterface::set_attribute(const QString &dn, const QString &attribute, con
         // Reload attributes to get new value
         load_attributes(dn);
         
+        emit attributes_changed(dn);
         emit set_attribute_complete(dn, attribute, old_value, value);
 
         return true;
@@ -257,28 +258,6 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
     }
 }
 
-// Update all entries that are related to this one through
-// membership
-void AdInterface::update_related_entries(const QString &dn) {
-    // Update all groups that have this entry as member
-    QList<QString> groups = get_attribute_multi(dn, "memberOf");
-    for (auto group : groups) {
-        // Only reload if loaded already
-        if (attributes_map.contains(group)) {
-            load_attributes(group);
-        }
-    }
-
-    // Update all entries that are members of this group
-    QList<QString> members = get_attribute_multi(dn, "member");
-    for (auto member : members) {
-        // Only reload if loaded already
-        if (attributes_map.contains(member)) {
-            load_attributes(member);
-        }
-    }
-}
-
 void AdInterface::delete_entry(const QString &dn) {
     int result = AD_INVALID_DN;
 
@@ -288,10 +267,7 @@ void AdInterface::delete_entry(const QString &dn) {
     result = connection->object_delete(dn_cstr);
 
     if (result == AD_SUCCESS) {
-        update_related_entries(dn);
-
-        attributes_map.remove(dn);
-        attributes_loaded.remove(dn);
+        update_cache(dn, "");
 
         emit delete_entry_complete(dn);
     } else {
@@ -327,12 +303,7 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     }
     
     if (result == AD_SUCCESS) {
-        // Unload attributes at old dn
-        attributes_map.remove(dn);
-        attributes_loaded.remove(dn);
-
-        load_attributes(new_dn);
-        update_related_entries(new_dn);
+        update_cache(dn, new_dn);
 
         emit move_complete(dn, new_container, new_dn);
     } else {
@@ -352,10 +323,9 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
     result = connection->group_add_user(group_dn_cstr, user_dn_cstr);
 
     if (result == AD_SUCCESS) {
-        // Reload attributes of group and user because group
-        // operations affect attributes of both
-        load_attributes(group_dn);
-        load_attributes(user_dn);
+        // Update attributes of user and group
+        add_attribute_internal(group_dn, "member", user_dn);
+        add_attribute_internal(user_dn, "memberOf", group_dn);
 
         emit add_user_to_group_complete(group_dn, user_dn);
     } else {
@@ -391,8 +361,7 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
     }
 
     if (result == AD_SUCCESS) {
-        load_attributes(new_dn);
-        update_related_entries(new_dn);
+        update_cache(dn, new_dn);
 
         emit rename_complete(dn, new_name, new_dn);
     } else {
@@ -490,6 +459,62 @@ void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
         case DropType_None: {
             break;
         }
+    }
+}
+
+// Update cache for entry and all related entries after a DN change
+// LDAP database does this internally so need to replicate it
+// NOTE: if entry was deleted, new_dn should be ""
+void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
+    const bool deleted = (old_dn != "" && new_dn == "");
+    const bool changed = (old_dn != "" && new_dn != "" && old_dn != new_dn);
+
+    // Update entry's attributes
+    if (attributes_loaded.contains(old_dn)) {
+        if (deleted || changed) {
+            // Unload old attributes
+            attributes_map.remove(old_dn);
+            attributes_loaded.remove(old_dn);
+        }
+
+        if (changed) {
+            load_attributes(new_dn);
+
+            emit dn_changed(old_dn, new_dn);
+            emit attributes_changed(new_dn);
+        }
+    }
+
+    // Update attributes of entries related to this entry
+    QSet<QString> updated_entries;
+    for (const QString &dn : attributes_map.keys()) {
+        for (auto &values : attributes_map[dn]) {
+            const int old_dn_i = values.indexOf(old_dn);
+
+            if (old_dn_i != -1) {
+                if (deleted) {
+                    values.removeAt(old_dn_i);
+                    updated_entries.insert(dn);
+                } else if (changed) {
+                    values.replace(old_dn_i, new_dn);
+                    updated_entries.insert(dn);
+                }
+            }
+        }
+    }
+
+    // Emit signals about all entries whose attributes changed
+    for (auto dn : updated_entries) {
+        emit attributes_changed(dn);
+    }
+}
+
+void AdInterface::add_attribute_internal(const QString &dn, const QString &attribute, const QString &value) {
+    // TODO: insert attributes near other attributes with same name
+    if (attributes_loaded.contains(dn)) {
+        attributes_map[dn][attribute].append(value);
+
+        emit attributes_changed(dn);
     }
 }
 
