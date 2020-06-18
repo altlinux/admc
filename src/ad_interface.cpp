@@ -474,7 +474,7 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
     // including original entry
     {
         QList<QString> dn_changes;
-        QMap<QString, QString> update_dns;
+        QMap<QString, QString> updated_dns;
 
         for (const QString &dn : attributes_map.keys()) {
             if (dn.contains(old_dn)) {
@@ -496,7 +496,7 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
                 // Save dn and updated_dn to later emit dn_changed signals
                 if (!dn_changes.contains(dn)) {
                     dn_changes.append(dn);
-                    update_dns[dn] = updated_dn;
+                    updated_dns[dn] = updated_dn;
                 }
             }
         }
@@ -512,7 +512,7 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
             });
 
         for (auto dn : dn_changes) {
-            const QString updated_dn = update_dns[dn];
+            const QString updated_dn = updated_dns[dn];
 
             emit dn_changed(dn, updated_dn);
         }
