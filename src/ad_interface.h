@@ -93,8 +93,8 @@ public:
 signals:
     // NOTE: signals below are mostly for logging with few exceptions
     // like login/create_entry
-    // For state updates you MUST to use dn_changed() and
-    // attributes_changed() signals instead
+    // For state updates you MUST use dn_changed() and
+    // attributes_changed() signals
     void ad_interface_login_complete(const QString &base, const QString &head);
     void ad_interface_login_failed(const QString &base, const QString &head);
 
