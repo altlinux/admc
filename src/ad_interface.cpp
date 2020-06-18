@@ -480,21 +480,20 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
             if (dn.contains(old_dn)) {
                 const QString updated_dn = QString(dn).replace(old_dn, new_dn);
                 
-                if (attributes_loaded.contains(dn)) {
-                    if (deleted) {
-                        attributes_map.remove(dn);
-                        attributes_loaded.remove(dn);
-                    } else {
-                        // Move attributes from old DN to new DN
-                        attributes_map[updated_dn] = attributes_map[old_dn];
-                        attributes_loaded.insert(updated_dn);
+                if (deleted) {
+                    // Remove attributes for old DN
+                    attributes_map.remove(dn);
+                    attributes_loaded.remove(dn);
+                } else {
+                    // Move attributes from old DN to new DN
+                    attributes_map[updated_dn] = attributes_map[old_dn];
+                    attributes_loaded.insert(updated_dn);
 
-                        attributes_map.remove(dn);
-                        attributes_loaded.remove(dn);
-                    }
+                    attributes_map.remove(dn);
+                    attributes_loaded.remove(dn);
                 }
 
-                // Save dn and updated_dn to later emit dn_changed_signals
+                // Save dn and updated_dn to later emit dn_changed signals
                 if (!dn_changes.contains(dn)) {
                     dn_changes.append(dn);
                     update_dns[dn] = updated_dn;
