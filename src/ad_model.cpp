@@ -155,8 +155,6 @@ void AdModel::on_dn_changed(const QString &old_dn, const QString &new_dn) {
         dn_item->setText(new_dn);
     }
 
-    // NOTE: row operations do nothing if row index is -1
-
     const QString old_parent_dn = extract_parent_dn_from_dn(old_dn);
     const QString new_parent_dn = extract_parent_dn_from_dn(new_dn);
 
