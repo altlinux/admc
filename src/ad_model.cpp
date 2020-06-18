@@ -163,7 +163,6 @@ void AdModel::on_dn_changed(const QString &old_dn, const QString &new_dn) {
     }
 
     // NOTE: row operations do nothing if row index is -1
-    const int old_row_i = (old_item != nullptr) ? old_item->row() : -1;
 
     const QString old_parent_dn = extract_parent_dn_from_dn(old_dn);
     const QString new_parent_dn = extract_parent_dn_from_dn(new_dn);
@@ -187,6 +186,8 @@ void AdModel::on_dn_changed(const QString &old_dn, const QString &new_dn) {
     const bool add_to_new_parent = (new_parent != nullptr && !new_parent_can_fetch);
 
     if (remove_from_old_parent) {
+        const int old_row_i = old_item->row();
+        
         if (add_to_new_parent) {
             // Transfer row from old to new parent
             const QList<QStandardItem *> row = old_parent->takeRow(old_row_i);
