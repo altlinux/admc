@@ -21,8 +21,11 @@
 #define SETTINGS_H
 
 #include <QObject>
+#include <QList>
 
 class QAction;
+class QSettings;
+class QString;
 
 class Settings final : public QObject {
 Q_OBJECT
@@ -38,6 +41,9 @@ public:
     QAction *toggle_show_status_log = nullptr;
 
 private:
+    QList<QAction *> checkable_actions;
+    QAction *make_checkable_action(const QSettings &settings, const QString& text);
+
     void save_settings();
 
 };
