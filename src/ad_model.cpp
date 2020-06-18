@@ -205,7 +205,7 @@ QStandardItem *AdModel::find_first_row_item(const QString &dn) {
         return nullptr;
     }
 
-    // Get first item in parent row
+    // Get first item in row
     const QStandardItem *dn_item = dn_items[0];
     const QModelIndex dn_index = dn_item->index();
     const QModelIndex first_item_index = dn_index.siblingAtColumn(0);
