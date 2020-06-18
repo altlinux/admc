@@ -25,8 +25,8 @@
 #include <QLabel>
 #include <QLayout>
 
-ContainersWidget::ContainersWidget(AdModel *model)
-: EntryWidget(model)
+ContainersWidget::ContainersWidget(AdModel *model, QWidget *parent)
+: EntryWidget(model, parent)
 {
     proxy = new AdProxyModel(model, this);
     proxy->only_show_containers = true;

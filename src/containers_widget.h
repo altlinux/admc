@@ -33,7 +33,7 @@ class ContainersWidget final : public EntryWidget {
 Q_OBJECT
 
 public:
-    ContainersWidget(AdModel *model);
+    ContainersWidget(AdModel *model, QWidget *parent);
 
 signals:
     void selected_container_changed(const QModelIndex &selected);

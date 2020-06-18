@@ -23,16 +23,8 @@
 #include <QTreeView>
 #include <QLabel>
 
-MembersWidget *MembersWidget::make() {
-    const auto model = new MembersModel(nullptr);
-    const auto widget = new MembersWidget(model);
-    model->setParent(widget);
-
-    return widget;
-}
-
-MembersWidget::MembersWidget(MembersModel *model)
-: EntryWidget(model)
+MembersWidget::MembersWidget(MembersModel *model, QWidget *parent)
+: EntryWidget(model, parent)
 {   
     members_model = model;
 

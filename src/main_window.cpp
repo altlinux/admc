@@ -22,6 +22,7 @@
 #include "main_window.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
+#include "members_model.h"
 #include "members_widget.h"
 #include "details_widget.h"
 #include "ad_model.h"
@@ -79,13 +80,15 @@ MainWindow::MainWindow(const bool auto_login)
     setCentralWidget(central_widget);
 
     auto ad_model = new AdModel(this);
-    auto containers_widget = new ContainersWidget(ad_model);
-    auto contents_widget = new ContentsWidget(ad_model);
+    auto containers_widget = new ContainersWidget(ad_model, this);
+    auto contents_widget = new ContentsWidget(ad_model, this);
 
-    auto members_widget = MembersWidget::make();
-    auto details_widget = new DetailsWidget(members_widget);
+    auto members_model = new MembersModel(this);
+    auto members_widget = new MembersWidget(members_model, this);
+    
+    auto details_widget = new DetailsWidget(members_widget, this);
 
-    auto status_log = new QTextEdit();
+    auto status_log = new QTextEdit(this);
     status_log->setReadOnly(true);
 
     new Status(statusBar(), status_log, this);

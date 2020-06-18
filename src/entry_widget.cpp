@@ -35,8 +35,8 @@
 #include <QMenu>
 #include <QAction>
 
-EntryWidget::EntryWidget(EntryModel *model)
-: QWidget()
+EntryWidget::EntryWidget(EntryModel *model, QWidget *parent)
+: QWidget(parent)
 {    
     entry_model = model;
     

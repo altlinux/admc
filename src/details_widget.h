@@ -34,7 +34,7 @@ class DetailsWidget final : public QTabWidget {
 Q_OBJECT
 
 public:
-    DetailsWidget(MembersWidget *members_widget_);
+    DetailsWidget(MembersWidget *members_widget_, QWidget *parent);
 
 public slots:
     void on_containers_clicked_dn(const QString &dn);

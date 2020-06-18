@@ -27,8 +27,8 @@
 #include <QStandardItemModel>
 #include <QAction>
 
-DetailsWidget::DetailsWidget(MembersWidget *members_widget_)
-: QTabWidget()
+DetailsWidget::DetailsWidget(MembersWidget *members_widget_, QWidget *parent)
+: QTabWidget(parent)
 {
     members_widget = members_widget_;
 

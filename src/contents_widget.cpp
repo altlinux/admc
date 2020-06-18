@@ -26,8 +26,8 @@
 #include <QLabel>
 #include <QLayout>
 
-ContentsWidget::ContentsWidget(AdModel* model)
-: EntryWidget(model)
+ContentsWidget::ContentsWidget(AdModel* model, QWidget *parent)
+: EntryWidget(model, parent)
 {   
     proxy = new AdProxyModel(model, this);
 

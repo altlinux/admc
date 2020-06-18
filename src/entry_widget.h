@@ -34,7 +34,7 @@ class EntryWidget : public QWidget {
 Q_OBJECT
 
 public:
-    EntryWidget(EntryModel *model);
+    EntryWidget(EntryModel *model, QWidget *parent);
 
 signals:
     void clicked_dn(const QString &dn);
