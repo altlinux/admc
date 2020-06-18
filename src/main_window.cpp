@@ -61,19 +61,16 @@ MainWindow::MainWindow(const bool auto_login)
     central_widget->layout()->setContentsMargins(0, 0, 0, 0);
     central_widget->layout()->setSpacing(0);
 
-    const auto menubar = new QMenuBar(this);
-    setMenuBar(menubar);
-    
-    const auto menubar_file = menubar->addMenu("File");
+    const auto menubar_file = menuBar()->addMenu("File");
     menubar_file->addAction(action_login);
     menubar_file->addAction(action_exit);
 
-    const auto menubar_view = menubar->addMenu("View");
+    const auto menubar_view = menuBar()->addMenu("View");
     menubar_view->addAction(SETTINGS()->toggle_advanced_view);
     menubar_view->addAction(SETTINGS()->toggle_show_dn_column);
     menubar_view->addAction(SETTINGS()->toggle_show_status_log);
 
-    const auto menubar_preferences = menubar->addMenu("Preferences");
+    const auto menubar_preferences = menuBar()->addMenu("Preferences");
     menubar_preferences->addAction(SETTINGS()->details_on_containers_click);
     menubar_preferences->addAction(SETTINGS()->details_on_contents_click);
     menubar_preferences->addAction(SETTINGS()->confirm_actions);
