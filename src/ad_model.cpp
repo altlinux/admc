@@ -186,37 +186,24 @@ void AdModel::on_dn_changed(const QString &old_dn, const QString &new_dn) {
         return;
     }
 
-    const bool old_parent_loaded = (old_parent != nullptr);
-    const bool new_parent_loaded = (new_parent != nullptr);
+    // NOTE: only add to new parent if it can't fetch
+    // if new parent can fetch, then it will load this row when
+    // it does fetch along with all other children
+    const bool remove_from_old_parent = (old_parent != nullptr);
+    const bool new_parent_can_fetch = canFetchMore(new_parent->index());
+    const bool add_to_new_parent = (new_parent != nullptr && !new_parent_can_fetch);
 
-    // NOTE: DON'T append to new parent, if it can fetch (hasn't been
-    // expanded yet)
-    // Because parent loads children when it's fetched
-    // If we append now, it will load this row twice and create a duplicate
-    const bool append_to_new_parent = (new_parent != nullptr && !canFetchMore(new_parent->index()));
-
-    if (old_parent_loaded) {
-        if (new_parent_loaded) {
-            if (append_to_new_parent) {
-                // Transfer row from old to new parent
-                const QList<QStandardItem *> row = old_parent->takeRow(old_row_i);
-                new_parent->appendRow(row);
-            } else {
-                // Remove from old parent
-                old_parent->removeRow(old_row_i);
-            }
+    if (remove_from_old_parent) {
+        if (add_to_new_parent) {
+            // Transfer row from old to new parent
+            const QList<QStandardItem *> row = old_parent->takeRow(old_row_i);
+            new_parent->appendRow(row);
         } else {
-            // Remove from old parent
             old_parent->removeRow(old_row_i);
         }
     } else {
-        if (new_parent_loaded) {
-            if (append_to_new_parent) {
-                // Make row at new parent
-                make_new_row(new_parent, new_dn);
-            }
-        } else {
-
+        if (add_to_new_parent) {
+            make_new_row(new_parent, new_dn);
         }
     }
 }
