@@ -25,11 +25,11 @@
 #include <QTextEdit>
 #include <QAction>
 
-Status::Status(QStatusBar *status_bar_, QTextEdit *status_log_, QObject *parent)
+Status::Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *parent)
 : QObject(parent)
 {
-    status_bar = status_bar_;
-    status_log = status_log_;
+    status_bar = status_bar_arg;
+    status_log = status_log_arg;
 
     message(tr("Ready"), 10 * 1000);
 
