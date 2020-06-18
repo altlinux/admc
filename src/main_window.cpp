@@ -48,89 +48,88 @@
 MainWindow::MainWindow(const bool auto_login)
 : QMainWindow()
 {
-    action_login = new QAction("Login");
-    action_exit = new QAction("Exit");
-
     // TODO: setting width to 1600+ fullscreens the window, no idea why
     resize(1500, 1000);
     setWindowTitle("MainWindow");
 
-    const auto central_widget = new QWidget(this);
+    // Menubar
+    {
+        QMenuBar *menubar = menuBar();
+        QMenu *menubar_file = menubar->addMenu("File");
+        menubar_file->addAction("Login", [this]() {
+            on_action_login();
+        });
+        menubar_file->addAction("Exit", [this]() {
+            on_action_exit();
+        });
+
+        QMenu *menubar_view = menubar->addMenu("View");
+        menubar_view->addAction(SETTINGS()->toggle_advanced_view);
+        menubar_view->addAction(SETTINGS()->toggle_show_dn_column);
+        menubar_view->addAction(SETTINGS()->toggle_show_status_log);
+
+        QMenu *menubar_preferences = menubar->addMenu("Preferences");
+        menubar_preferences->addAction(SETTINGS()->details_on_containers_click);
+        menubar_preferences->addAction(SETTINGS()->details_on_contents_click);
+        menubar_preferences->addAction(SETTINGS()->confirm_actions);
+    }
+
+    // Widgets
+    auto central_widget = new QWidget(this);
     setCentralWidget(central_widget);
-    central_widget->setLayout(new QVBoxLayout());
-    central_widget->layout()->setContentsMargins(0, 0, 0, 0);
-    central_widget->layout()->setSpacing(0);
 
-    QMenuBar *menubar = menuBar();
-    const auto menubar_file = menubar->addMenu("File");
-    menubar_file->addAction(action_login);
-    menubar_file->addAction(action_exit);
+    auto ad_model = new AdModel(this);
+    auto containers_widget = new ContainersWidget(ad_model);
+    auto contents_widget = new ContentsWidget(ad_model);
 
-    const auto menubar_view = menubar->addMenu("View");
-    menubar_view->addAction(SETTINGS()->toggle_advanced_view);
-    menubar_view->addAction(SETTINGS()->toggle_show_dn_column);
-    menubar_view->addAction(SETTINGS()->toggle_show_status_log);
-
-    const auto menubar_preferences = menubar->addMenu("Preferences");
-    menubar_preferences->addAction(SETTINGS()->details_on_containers_click);
-    menubar_preferences->addAction(SETTINGS()->details_on_contents_click);
-    menubar_preferences->addAction(SETTINGS()->confirm_actions);
-
-    const auto horiz_splitter = new QSplitter();
-    horiz_splitter->setOrientation(Qt::Horizontal);
-
-    ad_model = new AdModel(this);
-
-    containers_widget = new ContainersWidget(ad_model);
-    contents_widget = new ContentsWidget(ad_model);
-
-    MembersWidget *members_widget = MembersWidget::make();
-    details_widget = new DetailsWidget(members_widget);
-
-    horiz_splitter->addWidget(containers_widget);
-    horiz_splitter->addWidget(contents_widget);
-    horiz_splitter->addWidget(details_widget);
-
-    // Make containers widget half as big as others
-    horiz_splitter->setStretchFactor(0, 1);
-    horiz_splitter->setStretchFactor(1, 2);
-    horiz_splitter->setStretchFactor(2, 2);
+    auto members_widget = MembersWidget::make();
+    auto details_widget = new DetailsWidget(members_widget);
 
     auto status_log = new QTextEdit();
     status_log->setReadOnly(true);
 
-    const auto vert_splitter = new QSplitter(Qt::Vertical);
-    central_widget->layout()->addWidget(vert_splitter);
-    vert_splitter->addWidget(status_log);
-    vert_splitter->setStretchFactor(0, 1);
-    vert_splitter->addWidget(horiz_splitter);
-    vert_splitter->setStretchFactor(1, 3);
-
     new Status(statusBar(), status_log, this);
 
-    // Set root index of contents view to selection of containers view
-    connect(
-        containers_widget, &ContainersWidget::selected_container_changed,
-        contents_widget, &ContentsWidget::on_selected_container_changed);
+    // Layout
+    {
+        auto horiz_splitter = new QSplitter(Qt::Horizontal);
+        horiz_splitter->addWidget(containers_widget);
+        horiz_splitter->addWidget(contents_widget);
+        horiz_splitter->addWidget(details_widget);
+        horiz_splitter->setStretchFactor(0, 1);
+        horiz_splitter->setStretchFactor(1, 2);
+        horiz_splitter->setStretchFactor(2, 2);
 
-    connect(
-        containers_widget, &EntryWidget::clicked_dn,
-        details_widget, &DetailsWidget::on_containers_clicked_dn);
+        auto vert_splitter = new QSplitter(Qt::Vertical);
+        vert_splitter->addWidget(status_log);
+        vert_splitter->addWidget(horiz_splitter);
+        vert_splitter->setStretchFactor(0, 1);
+        vert_splitter->setStretchFactor(1, 3);
 
-    connect(
-        contents_widget, &EntryWidget::clicked_dn,
-        details_widget, &DetailsWidget::on_contents_clicked_dn);
+        auto central_layout = new QVBoxLayout();
+        central_layout->addWidget(vert_splitter);
+        central_layout->setContentsMargins(0, 0, 0, 0);
+        central_layout->setSpacing(0);
 
-    connect(
-        action_login, &QAction::triggered,
-        this, &MainWindow::on_action_login);
-    connect(
-        action_exit, &QAction::triggered,
-        this, &MainWindow::on_action_exit);
+        central_widget->setLayout(central_layout);
+    }
 
-    connect_entry_widget(*containers_widget);
-    connect_entry_widget(*contents_widget);
-    connect_entry_widget(*members_widget);
+    // Connect signals
+    {
+        connect(
+            containers_widget, &ContainersWidget::selected_container_changed,
+            contents_widget, &ContentsWidget::on_selected_container_changed);
+        connect(
+            containers_widget, &EntryWidget::clicked_dn,
+            details_widget, &DetailsWidget::on_containers_clicked_dn);
+        connect(
+            contents_widget, &EntryWidget::clicked_dn,
+            details_widget, &DetailsWidget::on_contents_clicked_dn);
+        
+        connect_entry_widget(containers_widget, details_widget);
+        connect_entry_widget(contents_widget, details_widget);
+        connect_entry_widget(members_widget, details_widget);
+    }
 
     if (auto_login) {
         on_action_login();
@@ -166,30 +165,30 @@ bool MainWindow::confirmation_dialog(const QString &text) {
     }
 }
 
-void MainWindow::connect_entry_widget(const EntryWidget &widget) {
+void MainWindow::connect_entry_widget(EntryWidget *widget, DetailsWidget *details_widget) {
     connect(
-        &widget, &EntryWidget::context_menu_details,
+        widget, &EntryWidget::context_menu_details,
         details_widget, &DetailsWidget::on_context_menu_details);
     connect(
-        &widget, &EntryWidget::context_menu_rename,
+        widget, &EntryWidget::context_menu_rename,
         this, &MainWindow::on_context_menu_rename);
     connect(
-        &widget, &EntryWidget::context_menu_delete,
+        widget, &EntryWidget::context_menu_delete,
         this, &MainWindow::on_context_menu_delete);
     connect(
-        &widget, &EntryWidget::context_menu_new_user,
+        widget, &EntryWidget::context_menu_new_user,
         this, &MainWindow::on_context_menu_new_user);
     connect(
-        &widget, &EntryWidget::context_menu_new_computer,
+        widget, &EntryWidget::context_menu_new_computer,
         this, &MainWindow::on_context_menu_new_computer);
     connect(
-        &widget, &EntryWidget::context_menu_new_group,
+        widget, &EntryWidget::context_menu_new_group,
         this, &MainWindow::on_context_menu_new_group);
     connect(
-        &widget, &EntryWidget::context_menu_new_ou,
+        widget, &EntryWidget::context_menu_new_ou,
         this, &MainWindow::on_context_menu_new_ou);
     connect(
-        &widget, &EntryWidget::context_menu_edit_policy,
+        widget, &EntryWidget::context_menu_edit_policy,
         this, &MainWindow::on_context_menu_edit_policy);
 }
 

@@ -53,15 +53,7 @@ private:
     void new_entry_dialog(const QString &parent_dn, NewEntryType type);
     void set_enabled_for_widgets(bool enabled);
     bool confirmation_dialog(const QString &text);
-    void connect_entry_widget(const EntryWidget &widget);
-
-    AdModel *ad_model = nullptr;
-    ContainersWidget *containers_widget = nullptr;
-    ContentsWidget *contents_widget = nullptr;
-    DetailsWidget *details_widget = nullptr;
-
-    QAction *action_login = nullptr;
-    QAction *action_exit = nullptr;
+    void connect_entry_widget(EntryWidget *widget, DetailsWidget *details_widget);
 };
 
 #endif /* MAIN_WINDOW_H */
