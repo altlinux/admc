@@ -102,8 +102,12 @@ void AdModel::on_create_entry_complete(const QString &dn, NewEntryType type) {
     QString parent_dn = extract_parent_dn_from_dn(dn);
     QStandardItem *parent = find_first_row_item(parent_dn);
 
-    if (parent != nullptr && !canFetchMore(parent_index)) {
-        make_new_row(parent, dn);
+    if (parent != nullptr) {
+        const QModelIndex parent_index = parent->index();
+
+        if (!canFetchMore(parent_index)) {
+            make_new_row(parent, dn);
+        }
     }
 }
 
