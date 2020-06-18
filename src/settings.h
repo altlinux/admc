@@ -35,6 +35,7 @@ public:
     QAction *details_on_containers_click = nullptr;
     QAction *details_on_contents_click = nullptr;
     QAction *confirm_actions = nullptr;
+    QAction *toggle_show_status_log = nullptr;
 
 private:
     void save_settings();

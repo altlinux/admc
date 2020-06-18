@@ -26,7 +26,7 @@
 #include "details_widget.h"
 #include "ad_model.h"
 #include "attributes_model.h"
-#include "status_bar.h"
+#include "status.h"
 #include "entry_widget.h"
 #include "settings.h"
 
@@ -43,6 +43,7 @@
 #include <QVBoxLayout>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QTextEdit>
 
 MainWindow::MainWindow(const bool auto_login)
 : QMainWindow()
@@ -60,9 +61,6 @@ MainWindow::MainWindow(const bool auto_login)
     central_widget->layout()->setContentsMargins(0, 0, 0, 0);
     central_widget->layout()->setSpacing(0);
 
-    const auto status_bar = new StatusBar();
-    setStatusBar(status_bar);
-
     const auto menubar = new QMenuBar(this);
     setMenuBar(menubar);
     
@@ -73,15 +71,15 @@ MainWindow::MainWindow(const bool auto_login)
     const auto menubar_view = menubar->addMenu("View");
     menubar_view->addAction(SETTINGS()->toggle_advanced_view);
     menubar_view->addAction(SETTINGS()->toggle_show_dn_column);
+    menubar_view->addAction(SETTINGS()->toggle_show_status_log);
 
     const auto menubar_preferences = menubar->addMenu("Preferences");
     menubar_preferences->addAction(SETTINGS()->details_on_containers_click);
     menubar_preferences->addAction(SETTINGS()->details_on_contents_click);
     menubar_preferences->addAction(SETTINGS()->confirm_actions);
 
-    const auto splitter = new QSplitter();
-    splitter->setOrientation(Qt::Horizontal);
-    central_widget->layout()->addWidget(splitter);
+    const auto horiz_splitter = new QSplitter();
+    horiz_splitter->setOrientation(Qt::Horizontal);
 
     ad_model = new AdModel(this);
 
@@ -91,16 +89,27 @@ MainWindow::MainWindow(const bool auto_login)
     MembersWidget *members_widget = MembersWidget::make();
     details_widget = new DetailsWidget(members_widget);
 
-    splitter->addWidget(containers_widget);
-    splitter->addWidget(contents_widget);
-    splitter->addWidget(details_widget);
+    horiz_splitter->addWidget(containers_widget);
+    horiz_splitter->addWidget(contents_widget);
+    horiz_splitter->addWidget(details_widget);
 
-    // When window is resized, make containers widget half as big 
-    // as others
-    splitter->setStretchFactor(0, 1);
-    splitter->setStretchFactor(1, 2);
-    splitter->setStretchFactor(2, 2);
-    
+    // Make containers widget half as big as others
+    horiz_splitter->setStretchFactor(0, 1);
+    horiz_splitter->setStretchFactor(1, 2);
+    horiz_splitter->setStretchFactor(2, 2);
+
+    auto status_log = new QTextEdit();
+    status_log->setReadOnly(true);
+
+    const auto vert_splitter = new QSplitter(Qt::Vertical);
+    central_widget->layout()->addWidget(vert_splitter);
+    vert_splitter->addWidget(status_log);
+    vert_splitter->setStretchFactor(0, 1);
+    vert_splitter->addWidget(horiz_splitter);
+    vert_splitter->setStretchFactor(1, 3);
+
+    new Status(statusBar(), status_log, this);
+
     // Set root index of contents view to selection of containers view
     connect(
         containers_widget, &ContainersWidget::selected_container_changed,
