@@ -169,19 +169,12 @@ void AdModel::on_dn_changed(const QString &old_dn, const QString &new_dn) {
     const QString new_parent_dn = extract_parent_dn_from_dn(new_dn);
 
     QStandardItem *old_parent = find_first_row_item(old_parent_dn);
-    QStandardItem *new_parent = nullptr;
-    if (new_dn != "") {
-        new_parent = find_first_row_item(new_parent_dn);
-    }
-
-    // If parent DN didn't change, don't need to move row
-    if (old_parent_dn == new_parent_dn) {
-        return;
-    }
+    QStandardItem *new_parent = find_first_row_item(new_parent_dn);
 
     // If parent of row is already new parent, don't need to move row
     // This happens when entry was moved together with it's parent
     // or ancestor
+    // Also true if entry was only renamed
     if (old_item->parent() == new_parent) {
         return;
     }
@@ -209,6 +202,10 @@ void AdModel::on_dn_changed(const QString &old_dn, const QString &new_dn) {
 }
 
 QStandardItem *AdModel::find_first_row_item(const QString &dn) {
+    if (dn == "") {
+        return nullptr;
+    }
+
     // Find dn item (findItems returns as list)
     const QList<QStandardItem *> dn_items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
     if (dn_items.size() == 0) {
