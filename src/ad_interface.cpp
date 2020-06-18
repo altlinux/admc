@@ -470,8 +470,8 @@ void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
 void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
     const bool deleted = (old_dn != "" && new_dn == "");
 
-    // Find entries containing this DN and update their DN's
-    // including original entry
+    // Update all DN's that contain changed DN
+    // This includes the changed entry itself and it's descendants
     {
         QList<QString> dn_changes;
         QMap<QString, QString> updated_dns;
@@ -518,7 +518,8 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
         }
     }
 
-    // Reload original entry's attributes
+    // Reload changed entry's attributes
+    // NOTE: needed because rename operation changes a number of attributes
     // NOTE: do this after updating DN's, so that attributes_changed()
     // is emitted after dn_changed()
     if (attributes_loaded.contains(new_dn)) {
@@ -527,10 +528,9 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
         emit attributes_changed(new_dn);
     }
 
-    // Update all attributes that contain this DN
+    // Update all attribute values that contain this DN
     {
-        // Use set container to emit only one attributes_changed() signal
-        // per entry even if multiple attributes of entry were changed
+        // One attributes_changed signal per DN
         QSet<QString> attribute_changes;
 
         for (const QString &dn : attributes_map.keys()) {
