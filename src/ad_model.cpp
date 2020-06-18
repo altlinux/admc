@@ -99,22 +99,11 @@ void AdModel::on_ad_interface_login_complete(const QString &search_base, const Q
 
 void AdModel::on_create_entry_complete(const QString &dn, NewEntryType type) {
     // Load entry to model if it's parent has already been fetched
-    // If it hasn't been fetched, then this new entry will be loaded with all other children when the parent is fetched
     QString parent_dn = extract_parent_dn_from_dn(dn);
-    QList<QStandardItem *> items = findItems(parent_dn, Qt::MatchExactly | Qt::MatchRecursive, Column::DN);
+    QStandardItem *parent = find_first_row_item(parent_dn);
 
-    // TODO: use find_first_row_item() here
-
-    if (items.size() > 0) {
-        QStandardItem *dn_item = items[0];
-        QModelIndex dn_index = dn_item->index();
-        QModelIndex parent_index = dn_index.siblingAtColumn(0);
-        QStandardItem *parent = itemFromIndex(parent_index);
-
-        bool fetched_already = !canFetchMore(parent_index);
-        if (fetched_already) {
-            make_new_row(parent, dn);
-        }
+    if (parent != nullptr && !canFetchMore(parent_index)) {
+        make_new_row(parent, dn);
     }
 }
 
@@ -182,12 +171,11 @@ void AdModel::on_dn_changed(const QString &old_dn, const QString &new_dn) {
     // if new parent can fetch, then it will load this row when
     // it does fetch along with all other children
     const bool remove_from_old_parent = (old_parent != nullptr);
-    const bool new_parent_can_fetch = canFetchMore(new_parent->index());
-    const bool add_to_new_parent = (new_parent != nullptr && !new_parent_can_fetch);
+    const bool add_to_new_parent = (new_parent != nullptr && !canFetchMore(new_parent->index()));
 
     if (remove_from_old_parent) {
         const int old_row_i = old_item->row();
-        
+
         if (add_to_new_parent) {
             // Transfer row from old to new parent
             const QList<QStandardItem *> row = old_parent->takeRow(old_row_i);
