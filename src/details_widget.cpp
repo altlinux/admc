@@ -71,11 +71,9 @@ void DetailsWidget::change_target(const QString &dn) {
 
     addTab(attributes_view, "All Attributes");
 
-    if (dn != "") {
-        bool is_group = AD()->attribute_value_exists(target_dn, "objectClass", "group");
-        if (is_group) {
-            addTab(members_widget, "Group members");
-        }
+    bool is_group = AD()->attribute_value_exists(target_dn, "objectClass", "group");
+    if (is_group) {
+        addTab(members_widget, "Group members");
     }
 
     // Restore current index if it is still shown

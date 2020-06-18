@@ -34,13 +34,6 @@ QModelIndex MembersModel::change_target(const QString &new_target_dn) {
 
     removeRows(0, rowCount());
 
-    if (target_dn == "") {
-        QStandardItem *invis_root_item = invisibleRootItem();
-        QModelIndex invis_root_index = invis_root_item->index();
-
-        return invis_root_index;
-    }
-
     // Create root item to represent group itself
     const QString grp_name = AD()->get_attribute(target_dn, "name");
     const auto grp_name_item = new QStandardItem(grp_name);
