@@ -24,6 +24,7 @@
 
 #include <QCommandLineParser>
 #include <QCommandLineOption>
+#include <QStringList>
 
 Runner::Runner(int& argc_, char **argv_, QString dispname, QString appname, QString appver, QString orgname, QString orgdomain) {
     //Q_INIT_RESOURCE(adtool);
@@ -51,11 +52,21 @@ int Runner::run() {
 
     cli_parser.process(arg_list);
 
-    const bool auto_login = cli_parser.isSet(option_auto_login);
+    QStringList positional_args = cli_parser.positionalArguments();
+    if (positional_args.size() > 0) {
+        // CLI
+        AD()->ad_interface_login(SEARCH_BASE, HEAD_DN);
+        AD()->command(positional_args);
 
-    MainWindow main_window(auto_login);
-    main_window.show();
+        return 0;
+    } else {
+        // GUI
+        const bool auto_login = cli_parser.isSet(option_auto_login);
 
-    return app->exec();
+        MainWindow main_window(auto_login);
+        main_window.show();
+
+        return app->exec();
+    }
 }
 
