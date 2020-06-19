@@ -17,23 +17,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef ENTRY_CONTEXT_MENU_H
+#define ENTRY_CONTEXT_MENU_H
 
-#include <QMainWindow>
+#include "ad_interface.h"
 
-class MainWindow final : public QMainWindow {
+#include <QMenu>
+
+class QString;
+class QPoint;
+
+class EntryContextMenu final : public QMenu {
 Q_OBJECT
 
 public:
-    explicit MainWindow(const bool auto_login);
+    using QMenu::QMenu;
 
-private slots:
-    void on_action_login();
-    void on_action_exit();
+signals:
+    void details(const QString &dn);
+
+public slots:
+    void on_context_menu_requested(const QString &dn, const QPoint &global_pos);
 
 private:
-    
+    void delete_entry(const QString &dn);
+    void new_entry_dialog(const QString &parent_dn, NewEntryType type);
+    void new_user(const QString &dn);
+    void new_computer(const QString &dn);
+    void new_group(const QString &dn);
+    void new_ou(const QString &dn);
+    void rename(const QString &dn);
+    void edit_policy(const QString &dn);
+
 };
 
-#endif /* MAIN_WINDOW_H */
+#endif /* ENTRY_CONTEXT_MENU_H */
