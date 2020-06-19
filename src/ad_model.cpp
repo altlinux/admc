@@ -201,10 +201,6 @@ void load_row(QList<QStandardItem *> row, const QString &dn) {
 
     QString description = AD()->get_attribute(dn, "description");
 
-    bool showInAdvancedViewOnly = AD()->get_attribute(dn, "showInAdvancedViewOnly") == "TRUE";
-
-    bool is_container = AD()->is_container_like(dn) || AD()->is_container(dn);
-
     QStandardItem *name_item = row[AdModel::Column::Name];
     QStandardItem *category_item = row[AdModel::Column::Category];
     QStandardItem *description_item = row[AdModel::Column::Description];
@@ -214,8 +210,6 @@ void load_row(QList<QStandardItem *> row, const QString &dn) {
     category_item->setText(category);
     description_item->setText(description);
     dn_item->setText(dn);
-    row[0]->setData(showInAdvancedViewOnly, AdModel::Roles::AdvancedViewOnly);
-    row[0]->setData(is_container, AdModel::Roles::IsContainer);
 
     // Set icon
     // TODO: change to custom, good icons, add those icons to installation?
