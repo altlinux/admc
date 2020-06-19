@@ -24,7 +24,7 @@
 
 class QItemSelection;
 class AdModel;
-class AdProxyModel;
+class EntryProxyModel;
 
 // Display tree of container entries
 // And some other "container-like" entries like domain, built-in, etc
@@ -42,7 +42,7 @@ private slots:
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
 
 private:
-    AdProxyModel *proxy = nullptr;
+    EntryProxyModel *proxy = nullptr;
 
 };
 

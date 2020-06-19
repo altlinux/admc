@@ -49,7 +49,6 @@ set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/admc.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Runner.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_proxy_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_interface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/details_widget.cpp
@@ -63,6 +62,7 @@ set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/members_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/settings.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_proxy_model.cpp
 )
 
 add_definitions(${QT5_DEFINITIONS})

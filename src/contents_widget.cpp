@@ -20,7 +20,7 @@
 #include "contents_widget.h"
 #include "ad_interface.h"
 #include "ad_model.h"
-#include "ad_proxy_model.h"
+#include "entry_proxy_model.h"
 
 #include <QTreeView>
 #include <QLabel>
@@ -29,7 +29,7 @@
 ContentsWidget::ContentsWidget(AdModel* model, QWidget *parent)
 : EntryWidget(model, parent)
 {   
-    proxy = new AdProxyModel(model, this);
+    proxy = new EntryProxyModel(model, this);
 
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);

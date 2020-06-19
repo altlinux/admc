@@ -19,7 +19,7 @@
 
 #include "containers_widget.h"
 #include "ad_model.h"
-#include "ad_proxy_model.h"
+#include "entry_proxy_model.h"
 
 #include <QTreeView>
 #include <QLabel>
@@ -28,7 +28,7 @@
 ContainersWidget::ContainersWidget(AdModel *model, QWidget *parent)
 : EntryWidget(model, parent)
 {
-    proxy = new AdProxyModel(model, this);
+    proxy = new EntryProxyModel(model, this);
     proxy->only_show_containers = true;
 
     view->setAcceptDrops(true);
