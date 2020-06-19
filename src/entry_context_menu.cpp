@@ -30,7 +30,6 @@
 #include <QPoint>
 
 void EntryContextMenu::on_context_menu_requested(const QString &dn, const QPoint &global_pos) {
-
     clear();
 
     QAction *action_to_show_menu_at = addAction("Details", [this, dn]() {
@@ -84,7 +83,7 @@ void EntryContextMenu::new_entry_dialog(const QString &parent_dn, NewEntryType t
     QString input_label = type_string + " name";
 
     bool ok;
-    QString name = QInputDialog::getText(nullptr, dialog_title, input_label, QLineEdit::Normal, "", &ok);
+    QString name = QInputDialog::getText(this, dialog_title, input_label, QLineEdit::Normal, "", &ok);
 
     // TODO: maybe expand tree to newly created entry?
 
@@ -127,7 +126,7 @@ void EntryContextMenu::rename(const QString &dn) {
     QString dialog_title = "Rename";
     QString input_label = "New name:";
     bool ok;
-    QString new_name = QInputDialog::getText(nullptr, dialog_title, input_label, QLineEdit::Normal, "", &ok);
+    QString new_name = QInputDialog::getText(this, dialog_title, input_label, QLineEdit::Normal, "", &ok);
 
     if (ok && !new_name.isEmpty()) {
         AD()->rename(dn, new_name);
