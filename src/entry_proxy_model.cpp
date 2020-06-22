@@ -32,7 +32,7 @@ EntryProxyModel::EntryProxyModel(EntryModel *model_arg, QObject *parent)
     setSourceModel(model);
 
     connect(
-        SETTINGS()->toggle_advanced_view, &QAction::triggered,
+        SETTINGS()->toggle_advanced_view, &QAction::toggled,
         this, &EntryProxyModel::on_advanced_view_toggled);
 }
 

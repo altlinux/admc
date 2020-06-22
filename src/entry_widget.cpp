@@ -56,7 +56,7 @@ EntryWidget::EntryWidget(EntryModel *model, QWidget *parent)
     update_column_visibility();
 
     connect(
-        SETTINGS()->toggle_show_dn_column, &QAction::triggered,
+        SETTINGS()->toggle_show_dn_column, &QAction::toggled,
         this, &EntryWidget::on_toggle_show_dn_column);
 
     connect(
@@ -72,10 +72,6 @@ EntryWidget::EntryWidget(EntryModel *model, QWidget *parent)
 
     // Start off disabled until login
     setEnabled(false);
-
-    // Load "show dn column" setting
-    const bool show_dn_column_checked = SETTINGS()->toggle_show_dn_column->isChecked();
-    on_toggle_show_dn_column(show_dn_column_checked);
 }
 
 void EntryWidget::on_ad_interface_login_complete(const QString &base, const QString &head) {

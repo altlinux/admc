@@ -93,6 +93,10 @@ MainWindow::MainWindow(const bool auto_login)
 
     new Status(statusBar(), status_log, this);
 
+    // NOTE: do this after all widgets are constructed so that all of
+    // them load initial settings correctly
+    SETTINGS()->emit_toggle_signals();
+
     // Layout
     {
         auto horiz_splitter = new QSplitter(Qt::Horizontal);
@@ -136,7 +140,7 @@ MainWindow::MainWindow(const bool auto_login)
 
     if (auto_login) {
         on_action_login();
-    }
+    }    
 }
 
 void MainWindow::on_action_login() {
