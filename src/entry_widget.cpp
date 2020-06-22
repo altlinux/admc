@@ -51,10 +51,6 @@ EntryWidget::EntryWidget(EntryModel *model, QWidget *parent)
         this, &EntryWidget::on_toggle_show_dn_column);
 
     connect(
-        view, &QWidget::customContextMenuRequested,
-        this, &EntryWidget::on_view_context_menu_requested);
-
-    connect(
         view, &QAbstractItemView::clicked,
         this, &EntryWidget::on_view_clicked);
     connect(
@@ -72,22 +68,6 @@ EntryWidget::EntryWidget(EntryModel *model, QWidget *parent)
 void EntryWidget::on_ad_interface_login_complete(const QString &base, const QString &head) {
     // Enable on login
     setEnabled(true);
-}
-
-void EntryWidget::on_view_context_menu_requested(const QPoint &pos) {
-    // Open entry context menu
-    const QModelIndex index = view->indexAt(pos);
-
-    if (!index.isValid()) {
-        return;
-    }
-    
-    const QString dn = entry_model->get_dn_from_index(index);
-    const QPoint global_pos = view->mapToGlobal(pos);
-
-    emit context_menu_requested(dn, global_pos);
-    
-    
 }
 
 void EntryWidget::on_toggle_show_dn_column(bool checked) {

@@ -26,6 +26,7 @@
 
 class QString;
 class QPoint;
+class QAbstractItemView;
 
 class EntryContextMenu final : public QMenu {
 Q_OBJECT
@@ -33,13 +34,14 @@ Q_OBJECT
 public:
     using QMenu::QMenu;
 
+    void connect_view(QAbstractItemView *view, int dn_column);
+
 signals:
     void details(const QString &dn);
-
-public slots:
-    void on_context_menu_requested(const QString &dn, const QPoint &global_pos);
-
+    
 private:
+    void open(const QString &dn, const QPoint &global_pos);
+
     void delete_entry(const QString &dn);
     void new_entry_dialog(const QString &parent_dn, NewEntryType type);
     void new_user(const QString &dn);

@@ -28,8 +28,31 @@
 #include <QProcess>
 #include <QDir>
 #include <QPoint>
+#include <QModelIndex>
+#include <QAbstractItemView>
 
-void EntryContextMenu::on_context_menu_requested(const QString &dn, const QPoint &global_pos) {
+// Open this context menu when view requests one
+void EntryContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
+    QObject::connect(
+        view, &QWidget::customContextMenuRequested,
+        [=]
+        (const QPoint pos) {
+            const QModelIndex index = view->indexAt(pos);
+
+            if (!index.isValid()) {
+                return;
+            }
+            
+            QModelIndex dn_index = index.siblingAtColumn(dn_column);
+            QString dn = dn_index.data().toString();
+
+            const QPoint global_pos = view->mapToGlobal(pos);
+
+            this->open(dn, global_pos);
+        });
+}
+
+void EntryContextMenu::open(const QString &dn, const QPoint &global_pos) {
     clear();
 
     QAction *action_to_show_menu_at = addAction("Details", [this, dn]() {

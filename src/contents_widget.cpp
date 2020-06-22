@@ -21,12 +21,13 @@
 #include "ad_interface.h"
 #include "ad_model.h"
 #include "entry_proxy_model.h"
+#include "entry_context_menu.h"
 
 #include <QTreeView>
 #include <QLabel>
 #include <QLayout>
 
-ContentsWidget::ContentsWidget(AdModel* model, QWidget *parent)
+ContentsWidget::ContentsWidget(AdModel* model, EntryContextMenu *entry_context_menu, QWidget *parent)
 : EntryWidget(model, parent)
 {   
     proxy = new EntryProxyModel(model, this);
@@ -38,6 +39,7 @@ ContentsWidget::ContentsWidget(AdModel* model, QWidget *parent)
     view->setItemsExpandable(false);
     view->setExpandsOnDoubleClick(false);
     view->setModel(proxy);
+    entry_context_menu->connect_view(view, AdModel::Column::DN);
 
     // Insert label into layout
     const auto label = new QLabel("Contents");

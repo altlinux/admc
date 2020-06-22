@@ -37,12 +37,10 @@ public:
     EntryWidget(EntryModel *model, QWidget *parent);
 
 signals:
-    void context_menu_requested(const QString &dn, const QPoint &global_pos);
     void clicked_dn(const QString &dn);
 
 private slots:
     void on_toggle_show_dn_column(bool checked);
-    void on_view_context_menu_requested(const QPoint &pos);
     void on_view_clicked(const QModelIndex &index);
     void on_ad_interface_login_complete(const QString &base, const QString &head);
 

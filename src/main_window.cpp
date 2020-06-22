@@ -77,19 +77,19 @@ MainWindow::MainWindow(const bool auto_login)
     auto central_widget = new QWidget(this);
     setCentralWidget(central_widget);
 
+    auto entry_context_menu = new EntryContextMenu(this);
+   
     auto ad_model = new AdModel(this);
-    auto containers_widget = new ContainersWidget(ad_model, this);
-    auto contents_widget = new ContentsWidget(ad_model, this);
+    auto containers_widget = new ContainersWidget(ad_model, entry_context_menu, this);
+    auto contents_widget = new ContentsWidget(ad_model, entry_context_menu, this);
 
     auto members_model = new MembersModel(this);
-    auto members_widget = new MembersWidget(members_model, this);
+    auto members_widget = new MembersWidget(members_model, entry_context_menu, this);
     
     auto details_widget = new DetailsWidget(members_widget, this);
 
     auto status_log = new QTextEdit(this);
     status_log->setReadOnly(true);
-
-    auto entry_context_menu = new EntryContextMenu(this);
 
     new Status(statusBar(), status_log, this);
 
@@ -128,19 +128,6 @@ MainWindow::MainWindow(const bool auto_login)
         connect(
             contents_widget, &EntryWidget::clicked_dn,
             details_widget, &DetailsWidget::on_contents_clicked_dn);
-        
-        // Connect entry widgets to entry context menu
-        QList<EntryWidget *> entry_widgets = {
-            containers_widget,
-            contents_widget,
-            members_widget
-        };
-        for (auto e : entry_widgets) {
-            connect(
-                e, &EntryWidget::context_menu_requested,
-                entry_context_menu, &EntryContextMenu::on_context_menu_requested);
-        }
-
         connect(
             entry_context_menu, &EntryContextMenu::details,
             details_widget, &DetailsWidget::on_context_menu_details);
