@@ -39,8 +39,6 @@ ContainersWidget::ContainersWidget(AdModel *model, QWidget *parent)
     view->setModel(proxy);
 
     column_hidden[AdModel::Column::Name] = false;
-    column_hidden[AdModel::Column::Category] = true;
-    column_hidden[AdModel::Column::Description] = true;
     update_column_visibility();
 
     // Insert label into layout

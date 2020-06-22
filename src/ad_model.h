@@ -34,8 +34,6 @@ Q_OBJECT
 public:
     enum Column {
         Name,
-        Category,
-        Description,
         DN,
         COUNT,
     };

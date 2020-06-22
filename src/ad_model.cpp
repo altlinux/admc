@@ -31,8 +31,6 @@ AdModel::AdModel(QObject *parent)
 : EntryModel(Column::COUNT, Column::DN, parent)
 {
     setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
-    setHorizontalHeaderItem(Column::Category, new QStandardItem("Category"));
-    setHorizontalHeaderItem(Column::Description, new QStandardItem("Description"));
     setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
     
     connect(
@@ -190,26 +188,10 @@ void AdModel::on_attributes_changed(const QString &dn) {
 
 // Load data into row of items based on entry attributes
 void load_row(QList<QStandardItem *> row, const QString &dn) {
-    // Load row based on attributes
     QString name = AD()->get_attribute(dn, "name");
 
-    // NOTE: this is given as raw DN and contains '-' where it should
-    // have spaces, so convert it
-    QString category = AD()->get_attribute(dn, "objectCategory");
-    category = extract_name_from_dn(category);
-    category = category.replace('-', ' ');
-
-    QString description = AD()->get_attribute(dn, "description");
-
-    QStandardItem *name_item = row[AdModel::Column::Name];
-    QStandardItem *category_item = row[AdModel::Column::Category];
-    QStandardItem *description_item = row[AdModel::Column::Description];
-    QStandardItem *dn_item = row[AdModel::Column::DN];
-
-    name_item->setText(name);
-    category_item->setText(category);
-    description_item->setText(description);
-    dn_item->setText(dn);
+    row[AdModel::Column::Name]->setText(name);
+    row[AdModel::Column::DN]->setText(dn);
 
     QIcon icon = get_entry_icon(dn);
     row[0]->setIcon(icon);
