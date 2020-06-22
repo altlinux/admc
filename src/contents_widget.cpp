@@ -20,7 +20,6 @@
 #include "contents_widget.h"
 #include "containers_widget.h"
 #include "ad_interface.h"
-#include "ad_model.h"
 #include "entry_proxy_model.h"
 #include "entry_model.h"
 
@@ -32,12 +31,12 @@ ContentsWidget::ContentsWidget(EntryModel *model_arg, ContainersWidget *containe
 : EntryWidget(model_arg, parent)
 {   
     model = model_arg;
-    model->setHorizontalHeaderItem(AdModel::Column::Name, new QStandardItem("Name"));
-    model->setHorizontalHeaderItem(AdModel::Column::Category, new QStandardItem("Category"));
-    model->setHorizontalHeaderItem(AdModel::Column::Description, new QStandardItem("Description"));
-    model->setHorizontalHeaderItem(AdModel::Column::DN, new QStandardItem("DN"));
+    model->setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
+    model->setHorizontalHeaderItem(Column::Category, new QStandardItem("Category"));
+    model->setHorizontalHeaderItem(Column::Description, new QStandardItem("Description"));
+    model->setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
 
-    const auto proxy = new EntryProxyModel(model, this);
+    proxy = new EntryProxyModel(model, this);
 
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -53,9 +52,9 @@ ContentsWidget::ContentsWidget(EntryModel *model_arg, ContainersWidget *containe
     layout()->addWidget(label);
     layout()->addWidget(view);
 
-    column_hidden[AdModel::Column::Name] = false;
-    column_hidden[AdModel::Column::Category] = false;
-    column_hidden[AdModel::Column::Description] = false;
+    column_hidden[Column::Name] = false;
+    column_hidden[Column::Category] = false;
+    column_hidden[Column::Description] = false;
     update_column_visibility();
 
     connect(
@@ -63,36 +62,48 @@ ContentsWidget::ContentsWidget(EntryModel *model_arg, ContainersWidget *containe
         this, &ContentsWidget::on_containers_selected_changed);
 }
 
+void ContentsWidget::make_new_row(QStandardItem *parent, const QString &dn) {
+    auto row = QList<QStandardItem *>();
+
+    for (int i = 0; i < Column::COUNT; i++) {
+        row.push_back(new QStandardItem());
+    }
+
+    parent->appendRow(row);
+
+    // Load values into row
+    QString name = AD()->get_attribute(dn, "name");
+
+    // NOTE: this is given as raw DN and contains '-' where it should
+    // have spaces, so convert it
+    QString category = AD()->get_attribute(dn, "objectCategory");
+    category = extract_name_from_dn(category);
+    category = category.replace('-', ' ');
+
+    QString description = AD()->get_attribute(dn, "description");
+
+    row[Column::Name]->setText(name);
+    row[Column::Category]->setText(category);
+    row[Column::Description]->setText(description);
+}
+
 void ContentsWidget::on_containers_selected_changed(const QString &dn) {
     model->removeRows(0, model->rowCount());
 
     // Load head
-    QStandardItem *head;
-    {
-        const QString name = AD()->get_attribute(dn, "name");
-        const auto name_item = new QStandardItem(name);
-        const auto category_item = new QStandardItem("category");
-        const auto description_item = new QStandardItem("descr");
-        const auto dn_item = new QStandardItem(dn);
-        model->appendRow({name_item, category_item, description_item, dn_item});
+    QStandardItem *root = model->invisibleRootItem();    
+    make_new_row(root, dn);
+    QStandardItem *head = root->child(0, 0);
 
-        head = name_item;
-    }
+    const QModelIndex head_index = head->index();
+    const QModelIndex proxy_head_index = proxy->mapFromSource(head_index);
+    view->setRootIndex(proxy_head_index);
 
     // Load children
     QList<QString> children = AD()->load_children(dn);
     for (auto child_dn : children) {
-        printf("%s\n", qPrintable(child_dn));
-        const QString name = AD()->get_attribute(child_dn, "name");
-        const auto name_item = new QStandardItem(name);
-        const auto category_item = new QStandardItem("category");
-        const auto description_item = new QStandardItem("descr");
-        const auto dn_item = new QStandardItem(child_dn);
-
-        head->appendRow({name_item, category_item, description_item, dn_item});
+        make_new_row(head, child_dn);
     }
-
-    view->setRootIndex(head->index());
 
     update_column_visibility();
 }

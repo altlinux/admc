@@ -27,6 +27,7 @@ class EntryProxyModel;
 class EntryModel;
 class QString;
 class ContainersWidget;
+class QStandardItem;
 
 // Shows name, category and description of children of entry selected in containers view
 class ContentsWidget final : public EntryWidget {
@@ -39,8 +40,19 @@ private slots:
     void on_containers_selected_changed(const QString &dn);
 
 private:
+    enum Column {
+        Name,
+        Category,
+        Description,
+        DN,
+        COUNT,
+    };
+
     EntryModel *model = nullptr;
+    EntryProxyModel *proxy = nullptr;
     
+    void make_new_row(QStandardItem *parent, const QString &dn);
+
 };
 
 #endif /* CONTENTS_WIDGET_H */
