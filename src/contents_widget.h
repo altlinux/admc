@@ -21,6 +21,7 @@
 #define CONTENTS_WIDGET_H
 
 #include "entry_widget.h"
+#include "ad_interface.h"
 
 #include <QString>
 
@@ -38,8 +39,9 @@ Q_OBJECT
 public:
     ContentsWidget(EntryModel *model_arg, ContainersWidget *containers_widget, QWidget *parent);
 
+    void change_target(const QString &dn);
+
 private slots:
-    void on_containers_selected_changed(const QString &dn);
     void on_create_entry_complete(const QString &dn, NewEntryType type);
     void on_delete_entry_complete(const QString &dn); 
     void on_dn_changed(const QString &old_dn, const QString &new_dn);
@@ -56,8 +58,10 @@ private:
 
     EntryModel *model = nullptr;
     EntryProxyModel *proxy = nullptr;
-    QString head_dn = "";
+    QString target_dn = "";
     
+    void remove_child(const QString &dn);
+    void load_row(QList<QStandardItem *> row, const QString &dn);
     void make_new_row(QStandardItem *parent, const QString &dn);
 
 };

@@ -60,7 +60,7 @@ ContentsWidget::ContentsWidget(EntryModel *model_arg, ContainersWidget *containe
 
     connect(
         containers_widget, &ContainersWidget::selected_changed,
-        this, &ContentsWidget::on_containers_selected_changed);
+        this, &ContentsWidget::change_target);
 
     connect(
         AD(), &AdInterface::create_entry_complete,
@@ -76,15 +76,7 @@ ContentsWidget::ContentsWidget(EntryModel *model_arg, ContainersWidget *containe
         this, &ContentsWidget::on_attributes_changed);
 }
 
-void ContentsWidget::make_new_row(QStandardItem *parent, const QString &dn) {
-    auto row = QList<QStandardItem *>();
-
-    for (int i = 0; i < Column::COUNT; i++) {
-        row.push_back(new QStandardItem());
-    }
-
-    parent->appendRow(row);
-
+void ContentsWidget::load_row(QList<QStandardItem *> row, const QString &dn) {
     // Load values into row
     QString name = AD()->get_attribute(dn, "name");
 
@@ -104,14 +96,25 @@ void ContentsWidget::make_new_row(QStandardItem *parent, const QString &dn) {
     row[0]->setIcon(icon);
 }
 
-void ContentsWidget::on_containers_selected_changed(const QString &dn) {
+void ContentsWidget::make_new_row(QStandardItem *parent, const QString &dn) {
+    auto row = QList<QStandardItem *>();
+    for (int i = 0; i < Column::COUNT; i++) {
+        row.push_back(new QStandardItem());
+    }
+
+    load_row(row, dn);
+
+    parent->appendRow(row);
+}
+
+void ContentsWidget::change_target(const QString &dn) {
     model->removeRows(0, model->rowCount());
 
     // Load head
-    head_dn = dn;
+    target_dn = dn;
     QStandardItem *root = model->invisibleRootItem();    
-    make_new_row(root, head_dn);
-    QStandardItem *head = root->child(0, 0);
+    make_new_row(root, target_dn);
+    QStandardItem *head = model->item(0, 0);
 
     const QModelIndex head_index = head->index();
     const QModelIndex proxy_head_index = proxy->mapFromSource(head_index);
@@ -126,89 +129,86 @@ void ContentsWidget::on_containers_selected_changed(const QString &dn) {
     update_column_visibility();
 }
 
-void ContentsWidget::on_delete_entry_complete(const QString &dn) {
-    QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, ContentsWidget::Column::DN);
+void ContentsWidget::remove_child(const QString &dn) {
+    QList<QStandardItem *> items = model->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, Column::DN);
 
     if (items.size() > 0) {
         QStandardItem *dn_item = items[0];
-        QModelIndex dn_index = dn_item->index();
-        
-        removeRow(dn_index.row(), dn_index.parent());
+        const int row_i = dn_item->row();
+
+        QStandardItem *head = model->item(0, 0);
+        head->removeRow(row_i);
+    }
+}
+
+void ContentsWidget::on_delete_entry_complete(const QString &dn) {
+    if (target_dn == "") {
+        return;
+    }
+
+    if (dn == target_dn) {
+        change_target("");
+    } else {
+        const QString parent = extract_name_from_dn(dn);
+
+        if (parent == target_dn) {
+            remove_child(dn);
+        }
     }
 }
 
 void ContentsWidget::on_dn_changed(const QString &old_dn, const QString &new_dn) {
-    const bool head_changed = (old_dn == head_dn);
+    if (target_dn == "") {
+        return;
+    }
 
-    const QString old_parent = extract_parent_dn_from_dn(old_dn);
     const QString new_parent = extract_parent_dn_from_dn(new_dn);
-    const bool child_changed = (old_parent == head_dn || new_parent == head_dn);
+    const bool is_child = (old_dn != target_dn);
+    if (is_child && new_parent != target_dn) {
+        remove_child(old_dn);
+    } else {
+        // Update DN
+        QList<QStandardItem *> old_items = model->findItems(old_dn, Qt::MatchExactly | Qt::MatchRecursive, Column::DN);
 
-    if (!head_changed && !child_changed) {
-        return;
-    }
-
-    QList<QStandardItem *> old_items = findItems(old_dn, Qt::MatchExactly | Qt::MatchRecursive, ContentsWidget::Column::DN);
-
-    if (items.size() == 0) {
-        return;
-    }
-
-    // Update DN
-    QStandardItem *dn_item = old_items[0];
-    QModelIndex dn_index = dn_item->index();
-    dn_item->setText(new_dn);
-
-    if (child_changed) {
-        if (new_parent != head_dn) {
-            QStandardItem *dn_item = items[0];
+        if (old_items.size() > 0) {
+            QStandardItem *dn_item = old_items[0];
             dn_item->setText(new_dn);
         }
     }
 }
 
 void ContentsWidget::on_create_entry_complete(const QString &dn, NewEntryType type) {
-    // Load entry to model if it's parent has already been fetched
-    // If it hasn't been fetched, then this new entry will be loaded with all other children when the parent is fetched
+    if (target_dn == "") {
+        return;
+    }
+
     QString parent_dn = extract_parent_dn_from_dn(dn);
-    QList<QStandardItem *> items = findItems(parent_dn, Qt::MatchExactly | Qt::MatchRecursive, Column::DN);
 
-    if (items.size() > 0) {
-        QStandardItem *dn_item = items[0];
-        QModelIndex dn_index = dn_item->index();
-        QModelIndex parent_index = dn_index.siblingAtColumn(0);
-        QStandardItem *parent = itemFromIndex(parent_index);
-
-        bool fetched_already = !canFetchMore(parent_index);
-        if (fetched_already) {
-            make_new_row(parent, dn);
-        }
+    if (parent_dn == target_dn) {
+        QStandardItem *head = model->item(0, 0);
+        make_new_row(head, dn);
     }
 }
 
 void ContentsWidget::on_attributes_changed(const QString &dn) {
+    if (target_dn == "") {
+        return;
+    }
+
     // Compose row based on dn
-    QList<QStandardItem *> items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, ContentsWidget::Column::DN);
+    QList<QStandardItem *> items = model->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, Column::DN);
 
     if (items.size() == 0) {
         return;
     }
 
     QStandardItem *dn_item = items[0];
-    QModelIndex dn_index = dn_item->index();
+    const QStandardItem *parent = dn_item->parent();
+    const int row_i = dn_item->row();
 
-    // Compose indexes for all columns
-    auto indexes = QList<QModelIndex>(); 
-    for (int i = 0; i < ContentsWidget::Column::COUNT; i++) {
-        QModelIndex index = dn_index.siblingAtColumn(i);
-        indexes.push_back(index);
-    }
-
-    // Compose the row of items from indexes
     auto row = QList<QStandardItem *>();
-    for (int i = 0; i < ContentsWidget::Column::COUNT; i++) {
-        QModelIndex index = indexes[i];
-        QStandardItem *item = itemFromIndex(index);
+    for (int col_i = 0; col_i < Column::COUNT; col_i++) {
+        QStandardItem *item = parent->child(row_i, col_i);
         row.push_back(item);
     }
 
