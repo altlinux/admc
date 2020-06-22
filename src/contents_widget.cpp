@@ -20,7 +20,6 @@
 #include "contents_widget.h"
 #include "containers_widget.h"
 #include "ad_interface.h"
-#include "ad_model.h"
 #include "entry_proxy_model.h"
 #include "entry_model.h"
 

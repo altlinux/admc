@@ -50,7 +50,6 @@ set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/admc.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Runner.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_interface.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/details_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/attributes_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/containers_widget.cpp

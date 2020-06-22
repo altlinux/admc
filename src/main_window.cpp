@@ -25,7 +25,6 @@
 #include "members_model.h"
 #include "members_widget.h"
 #include "details_widget.h"
-#include "ad_model.h"
 #include "attributes_model.h"
 #include "status.h"
 #include "entry_widget.h"

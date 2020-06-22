@@ -18,7 +18,6 @@
  */
 
 #include "attributes_model.h"
-#include "ad_model.h"
 #include "ad_interface.h"
 
 AttributesModel::AttributesModel(QObject *parent)
