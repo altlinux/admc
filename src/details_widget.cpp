@@ -27,8 +27,8 @@
 #include <QStandardItemModel>
 #include <QAction>
 
-DetailsWidget::DetailsWidget(MembersWidget *members_widget_)
-: QTabWidget()
+DetailsWidget::DetailsWidget(MembersWidget *members_widget_, QWidget *parent)
+: QTabWidget(parent)
 {
     members_widget = members_widget_;
 
@@ -50,6 +50,10 @@ DetailsWidget::DetailsWidget(MembersWidget *members_widget_)
         AD(), &AdInterface::attributes_changed,
         this, &DetailsWidget::on_attributes_changed);
 
+    // Add all tabs to take ownership of them
+    addTab(attributes_view, "");
+    addTab(members_widget, "");
+
     change_target("");
 };
 
@@ -68,11 +72,9 @@ void DetailsWidget::change_target(const QString &dn) {
 
     addTab(attributes_view, "All Attributes");
 
-    if (dn != "") {
-        bool is_group = AD()->attribute_value_exists(target_dn, "objectClass", "group");
-        if (is_group) {
-            addTab(members_widget, "Group members");
-        }
+    bool is_group = AD()->attribute_value_exists(target_dn, "objectClass", "group");
+    if (is_group) {
+        addTab(members_widget, "Group members");
     }
 
     // Restore current index if it is still shown

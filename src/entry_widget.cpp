@@ -35,8 +35,8 @@
 #include <QMenu>
 #include <QAction>
 
-EntryWidget::EntryWidget(EntryModel *model)
-: QWidget()
+EntryWidget::EntryWidget(EntryModel *model, QWidget *parent)
+: QWidget(parent)
 {    
     entry_model = model;
     
@@ -56,7 +56,7 @@ EntryWidget::EntryWidget(EntryModel *model)
     update_column_visibility();
 
     connect(
-        SETTINGS()->toggle_show_dn_column, &QAction::triggered,
+        SETTINGS()->toggle_show_dn_column, &QAction::toggled,
         this, &EntryWidget::on_toggle_show_dn_column);
 
     connect(

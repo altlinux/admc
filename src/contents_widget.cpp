@@ -20,16 +20,16 @@
 #include "contents_widget.h"
 #include "ad_interface.h"
 #include "ad_model.h"
-#include "ad_proxy_model.h"
+#include "entry_proxy_model.h"
 
 #include <QTreeView>
 #include <QLabel>
 #include <QLayout>
 
-ContentsWidget::ContentsWidget(AdModel* model)
-: EntryWidget(model)
+ContentsWidget::ContentsWidget(AdModel* model, QWidget *parent)
+: EntryWidget(model, parent)
 {   
-    proxy = new AdProxyModel(model, this);
+    proxy = new EntryProxyModel(model, this);
 
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -48,7 +48,6 @@ ContentsWidget::ContentsWidget(AdModel* model)
     column_hidden[AdModel::Column::Name] = false;
     column_hidden[AdModel::Column::Category] = false;
     column_hidden[AdModel::Column::Description] = false;
-    column_hidden[AdModel::Column::DN] = true;
     update_column_visibility();
 };
 

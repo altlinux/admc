@@ -19,16 +19,16 @@
 
 #include "containers_widget.h"
 #include "ad_model.h"
-#include "ad_proxy_model.h"
+#include "entry_proxy_model.h"
 
 #include <QTreeView>
 #include <QLabel>
 #include <QLayout>
 
-ContainersWidget::ContainersWidget(AdModel *model)
-: EntryWidget(model)
+ContainersWidget::ContainersWidget(AdModel *model, QWidget *parent)
+: EntryWidget(model, parent)
 {
-    proxy = new AdProxyModel(model, this);
+    proxy = new EntryProxyModel(model, this);
     proxy->only_show_containers = true;
 
     view->setAcceptDrops(true);
@@ -41,7 +41,6 @@ ContainersWidget::ContainersWidget(AdModel *model)
     column_hidden[AdModel::Column::Name] = false;
     column_hidden[AdModel::Column::Category] = true;
     column_hidden[AdModel::Column::Description] = true;
-    column_hidden[AdModel::Column::DN] = true;
     update_column_visibility();
 
     // Insert label into layout

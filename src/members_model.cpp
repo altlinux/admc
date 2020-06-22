@@ -29,14 +29,16 @@ MembersModel::MembersModel(QObject *parent)
     setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
 }
 
-void MembersModel::change_target(const QString &new_target_dn) {
+QModelIndex MembersModel::change_target(const QString &new_target_dn) {
     target_dn = new_target_dn;
 
     removeRows(0, rowCount());
 
-    if (target_dn == "") {
-        return;
-    }
+    // Create root item to represent group itself
+    const QString grp_name = AD()->get_attribute(target_dn, "name");
+    const auto grp_name_item = new QStandardItem(grp_name);
+    const auto grp_dn_item = new QStandardItem(target_dn);
+    appendRow({grp_name_item, grp_dn_item});
 
     // Populate model with members of new root
     const QList<QString> members = AD()->get_attribute_multi(target_dn, "member");
@@ -46,18 +48,10 @@ void MembersModel::change_target(const QString &new_target_dn) {
         const auto name_item = new QStandardItem(name);
         const auto dn_item = new QStandardItem(dn);
 
-        appendRow({name_item, dn_item});
+        grp_name_item->appendRow({name_item, dn_item});
     }
-}
 
-QString MembersModel::get_dn_from_index(const QModelIndex &index) const {
-    // NOTE: the invisible root item is considered to be 
-    // the target group
-    // This is so that drops onto invisible root work as drops
-    // onto the target group
-    if (index == invisibleRootItem()->index()) {
-        return target_dn;
-    } else {
-        return EntryModel::get_dn_from_index(index);
-    }
+    QModelIndex grp_index = grp_name_item->index();
+
+    return grp_index;
 }

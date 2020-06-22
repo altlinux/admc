@@ -41,9 +41,7 @@ public:
     };
 
     enum Roles {
-        AdvancedViewOnly = Qt::UserRole + 1,
-        CanFetch = Qt::UserRole + 2,
-        IsContainer = Qt::UserRole + 3,
+        CanFetch = Qt::UserRole + 1,
     };
 
     explicit AdModel(QObject *parent);

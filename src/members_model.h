@@ -22,8 +22,9 @@
 
 #include "entry_model.h"
 
+#include <QModelIndex>
+
 class QString;
-class QModelIndex;
 
 // Model for MembersWidget
 // Contains columns for DN(from EntryModel) and name
@@ -39,13 +40,10 @@ public:
 
     explicit MembersModel(QObject *parent);
 
-    void change_target(const QString &new_target_dn);
+    QModelIndex change_target(const QString &new_target_dn);
 
 private:
     QString target_dn;
-
-protected:
-    QString get_dn_from_index(const QModelIndex &index) const;
 
 };
 

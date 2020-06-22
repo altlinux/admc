@@ -142,6 +142,10 @@ void AdInterface::load_attributes(const QString &dn) {
 }
 
 QMap<QString, QList<QString>> AdInterface::get_attributes(const QString &dn) {
+    if (dn == "") {
+        return QMap<QString, QList<QString>>();
+    }
+
     // First check whether load_attributes was ever called on this dn
     // If it hasn't, attempt to load attributes
     // After that return whatever attributes are now loaded for this dn
@@ -463,8 +467,50 @@ void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
     }
 }
 
-// Update all DN's and attributes that contain the changed DN
-// including the DN itself
+void AdInterface::command(QStringList args) {
+    QString command = args[0];
+
+    QMap<QString, int> arg_count_map = {
+        {"list", 1},
+        {"get-attribute", 2},
+        {"get-attribute-multi", 2},
+    };
+
+    const int arg_count = arg_count_map[command];
+    if (args.size() - 1 != arg_count) {
+        printf("Command \"%s\" needs %d arguments!\n", qPrintable(command), arg_count);
+
+        return;
+    }
+
+    if (command == "list") {
+        QString dn = args[1];
+
+        QList<QString> children = load_children(dn);
+
+        for (auto e : children) {
+            printf("%s\n", qPrintable(e));
+        }
+    } else if (command == "get-attribute") {
+        QString dn = args[1];
+        QString attribute = args[2];
+
+        QString value = get_attribute(dn, attribute);
+
+        printf("%s\n", qPrintable(value));
+    } else if (command == "get-attribute-multi") {
+        QString dn = args[1];
+        QString attribute = args[2];
+
+        QList<QString> values = get_attribute_multi(dn, attribute);
+
+        for (auto e : values) {
+            printf("%s\n", qPrintable(e));
+        }
+    }
+}
+
+// Update cache for entry and all related entries after a DN change
 // LDAP database does this internally so need to replicate it
 // NOTE: if entry was deleted, new_dn should be ""
 void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {

@@ -23,16 +23,8 @@
 #include <QTreeView>
 #include <QLabel>
 
-MembersWidget *MembersWidget::make() {
-    const auto model = new MembersModel(nullptr);
-    const auto widget = new MembersWidget(model);
-    model->setParent(widget);
-
-    return widget;
-}
-
-MembersWidget::MembersWidget(MembersModel *model)
-: EntryWidget(model)
+MembersWidget::MembersWidget(MembersModel *model, QWidget *parent)
+: EntryWidget(model, parent)
 {   
     members_model = model;
 
@@ -41,11 +33,14 @@ MembersWidget::MembersWidget(MembersModel *model)
     view->setModel(members_model);
 
     column_hidden[MembersModel::Column::Name] = false;
-    column_hidden[MembersModel::Column::DN] = true;
     update_column_visibility();
 }
 
 void MembersWidget::change_target(const QString &dn) {
-    members_model->change_target(dn);
+    QModelIndex root_index = members_model->change_target(dn);
+
+    // Set root to group index so that it is hidden
+    view->setRootIndex(root_index);
+
     update_column_visibility();
 }

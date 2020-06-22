@@ -90,6 +90,8 @@ public:
     bool can_drop_entry(const QString &dn, const QString &target_dn);
     void drop_entry(const QString &dn, const QString &target_dn);
 
+    void command(QStringList args);
+
 signals:
     // NOTE: signals below are mostly for logging with few exceptions
     // like login/create_entry

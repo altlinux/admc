@@ -21,22 +21,30 @@
 #define SETTINGS_H
 
 #include <QObject>
+#include <QList>
 
 class QAction;
+class QSettings;
+class QString;
 
 class Settings final : public QObject {
 Q_OBJECT
 
 public:
     explicit Settings(QObject *parent);
+    void emit_toggle_signals() const;
 
     QAction *toggle_advanced_view = nullptr;
     QAction *toggle_show_dn_column = nullptr;
     QAction *details_on_containers_click = nullptr;
     QAction *details_on_contents_click = nullptr;
     QAction *confirm_actions = nullptr;
+    QAction *toggle_show_status_log = nullptr;
 
 private:
+    QList<QAction *> checkable_actions;
+    QAction *make_checkable_action(const QSettings &settings, const QString& text);
+
     void save_settings();
 
 };
