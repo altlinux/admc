@@ -91,52 +91,6 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
     }
 }
 
-AdModel::AdModel(QObject *parent)
-: EntryModel(Column::COUNT, AdModel::Column::DN, parent)
-{
-    
-}
-
-bool AdModel::canFetchMore(const QModelIndex &parent) const {
-    if (!parent.isValid()) {
-        return false;
-    }
-
-    bool can_fetch = parent.data(AdModel::Roles::CanFetch).toBool();
-
-    return can_fetch;
-}
-
-void AdModel::fetchMore(const QModelIndex &parent) {
-    if (!parent.isValid() || !canFetchMore(parent)) {
-        return;
-    }
-
-    QString dn = get_dn_from_index(parent);
-
-    QStandardItem *parent_item = itemFromIndex(parent);
-
-    // Add children
-    QList<QString> children = AD()->load_children(dn);
-
-    for (auto child : children) {
-        make_new_row(parent_item, child);
-    }
-
-    // Unset CanFetch flag
-    parent_item->setData(false, AdModel::Roles::CanFetch);
-}
-
-// Override this so that unexpanded and unfetched items show the expander even though they technically don't have any children loaded
-// NOTE: expander is show if hasChildren returns true
-bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
-    if (canFetchMore(parent)) {
-        return true;
-    } else {
-        return QStandardItemModel::hasChildren(parent);
-    }
-}
-
 void ContainersWidget::on_ad_interface_login_complete(const QString &search_base, const QString &head_dn) {
     model->removeRows(0, model->rowCount());
 
@@ -231,6 +185,52 @@ void ContainersWidget::on_attributes_changed(const QString &dn) {
     }
 
     load_row(row, dn);
+}
+
+AdModel::AdModel(QObject *parent)
+: EntryModel(Column::COUNT, AdModel::Column::DN, parent)
+{
+    
+}
+
+bool AdModel::canFetchMore(const QModelIndex &parent) const {
+    if (!parent.isValid()) {
+        return false;
+    }
+
+    bool can_fetch = parent.data(AdModel::Roles::CanFetch).toBool();
+
+    return can_fetch;
+}
+
+void AdModel::fetchMore(const QModelIndex &parent) {
+    if (!parent.isValid() || !canFetchMore(parent)) {
+        return;
+    }
+
+    QString dn = get_dn_from_index(parent);
+
+    QStandardItem *parent_item = itemFromIndex(parent);
+
+    // Add children
+    QList<QString> children = AD()->load_children(dn);
+
+    for (auto child : children) {
+        make_new_row(parent_item, child);
+    }
+
+    // Unset CanFetch flag
+    parent_item->setData(false, AdModel::Roles::CanFetch);
+}
+
+// Override this so that unexpanded and unfetched items show the expander even though they technically don't have any children loaded
+// NOTE: expander is show if hasChildren returns true
+bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
+    if (canFetchMore(parent)) {
+        return true;
+    } else {
+        return QStandardItemModel::hasChildren(parent);
+    }
 }
 
 // Load data into row of items based on entry attributes
