@@ -22,6 +22,8 @@
 
 #include "entry_widget.h"
 
+#include <QString>
+
 class AdModel;
 class EntryProxyModel;
 class EntryModel;
@@ -38,6 +40,10 @@ public:
 
 private slots:
     void on_containers_selected_changed(const QString &dn);
+    void on_create_entry_complete(const QString &dn, NewEntryType type);
+    void on_delete_entry_complete(const QString &dn); 
+    void on_dn_changed(const QString &old_dn, const QString &new_dn);
+    void on_attributes_changed(const QString &dn);
 
 private:
     enum Column {
@@ -50,6 +56,7 @@ private:
 
     EntryModel *model = nullptr;
     EntryProxyModel *proxy = nullptr;
+    QString head_dn = "";
     
     void make_new_row(QStandardItem *parent, const QString &dn);
 
