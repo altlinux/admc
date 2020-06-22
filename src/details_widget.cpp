@@ -53,6 +53,10 @@ DetailsWidget::DetailsWidget(MembersWidget *members_widget_, QWidget *parent)
         AD(), &AdInterface::attributes_changed,
         this, &DetailsWidget::on_attributes_changed);
 
+    // Add all tabs to take ownership of them
+    addTab(attributes_view, "");
+    addTab(members_widget, "");
+
     change_target("");
 };
 
