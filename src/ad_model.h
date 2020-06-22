@@ -62,4 +62,6 @@ private:
 
 };
 
+QIcon get_entry_icon(const QString &dn);
+
 #endif /* AD_MODEL_H */

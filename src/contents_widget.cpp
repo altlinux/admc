@@ -20,6 +20,7 @@
 #include "contents_widget.h"
 #include "containers_widget.h"
 #include "ad_interface.h"
+#include "ad_model.h"
 #include "entry_proxy_model.h"
 #include "entry_model.h"
 
@@ -85,6 +86,9 @@ void ContentsWidget::make_new_row(QStandardItem *parent, const QString &dn) {
     row[Column::Name]->setText(name);
     row[Column::Category]->setText(category);
     row[Column::Description]->setText(description);
+
+    QIcon icon = get_entry_icon(dn);
+    row[0]->setIcon(icon);
 }
 
 void ContentsWidget::on_containers_selected_changed(const QString &dn) {
