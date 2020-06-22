@@ -18,6 +18,7 @@
  */
 
 #include "contents_widget.h"
+#include "containers_widget.h"
 #include "ad_interface.h"
 #include "ad_model.h"
 #include "entry_proxy_model.h"
@@ -27,7 +28,7 @@
 #include <QLabel>
 #include <QLayout>
 
-ContentsWidget::ContentsWidget(EntryModel *model_arg, QWidget *parent)
+ContentsWidget::ContentsWidget(EntryModel *model_arg, ContainersWidget *containers_widget, QWidget *parent)
 : EntryWidget(model_arg, parent)
 {   
     model = model_arg;
@@ -36,7 +37,7 @@ ContentsWidget::ContentsWidget(EntryModel *model_arg, QWidget *parent)
     model->setHorizontalHeaderItem(AdModel::Column::Description, new QStandardItem("Description"));
     model->setHorizontalHeaderItem(AdModel::Column::DN, new QStandardItem("DN"));
 
-    // proxy = new EntryProxyModel(model, this);
+    const auto proxy = new EntryProxyModel(model, this);
 
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -44,7 +45,7 @@ ContentsWidget::ContentsWidget(EntryModel *model_arg, QWidget *parent)
     view->setRootIsDecorated(false);
     view->setItemsExpandable(false);
     view->setExpandsOnDoubleClick(false);
-    view->setModel(model);
+    view->setModel(proxy);
 
     // Insert label into layout
     const auto label = new QLabel("Contents");
@@ -56,9 +57,13 @@ ContentsWidget::ContentsWidget(EntryModel *model_arg, QWidget *parent)
     column_hidden[AdModel::Column::Category] = false;
     column_hidden[AdModel::Column::Description] = false;
     update_column_visibility();
-};
 
-void ContentsWidget::on_containers_clicked_dn(const QString &dn) {
+    connect(
+        containers_widget, &ContainersWidget::selected_changed,
+        this, &ContentsWidget::on_containers_selected_changed);
+}
+
+void ContentsWidget::on_containers_selected_changed(const QString &dn) {
     model->removeRows(0, model->rowCount());
 
     // Load head

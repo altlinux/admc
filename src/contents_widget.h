@@ -26,19 +26,19 @@ class AdModel;
 class EntryProxyModel;
 class EntryModel;
 class QString;
+class ContainersWidget;
 
 // Shows name, category and description of children of entry selected in containers view
 class ContentsWidget final : public EntryWidget {
 Q_OBJECT
 
 public:
-    ContentsWidget(EntryModel *model, QWidget *parent);
+    ContentsWidget(EntryModel *model_arg, ContainersWidget *containers_widget, QWidget *parent);
 
-public slots:
-    void on_containers_clicked_dn(const QString &dn);
+private slots:
+    void on_containers_selected_changed(const QString &dn);
 
 private:
-    EntryProxyModel *proxy = nullptr;
     EntryModel *model = nullptr;
     
 };

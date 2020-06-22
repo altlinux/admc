@@ -36,7 +36,7 @@ public:
     ContainersWidget(AdModel *model, QWidget *parent);
 
 signals:
-    void selected_container_changed(const QModelIndex &selected);
+    void selected_changed(const QString &dn);
 
 private slots:
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);

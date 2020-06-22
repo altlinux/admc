@@ -61,8 +61,9 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
 
     if (indexes.size() > 0) {
         QModelIndex index = indexes[0];
-        QModelIndex source_index = proxy->mapToSource(index);
+        QModelIndex dn_index = index.siblingAtColumn(AdModel::Column::DN);
+        QString dn = dn_index.data().toString();
 
-        emit selected_container_changed(source_index);
+        emit selected_changed(dn);
     }
 }
