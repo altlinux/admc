@@ -17,40 +17,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ad_proxy_model.h"
-#include "ad_model.h"
+#include "entry_proxy_model.h"
+#include "entry_model.h"
 #include "ad_interface.h"
 #include "settings.h"
 
 #include <QAction>
 
-AdProxyModel::AdProxyModel(AdModel *model, QObject *parent)
+EntryProxyModel::EntryProxyModel(EntryModel *model_arg, QObject *parent)
 : QSortFilterProxyModel(parent)
 {
+    model = model_arg;
+
     setSourceModel(model);
 
     connect(
         SETTINGS()->toggle_advanced_view, &QAction::triggered,
-        this, &AdProxyModel::on_advanced_view_toggled);
+        this, &EntryProxyModel::on_advanced_view_toggled);
 }
 
-void AdProxyModel::on_advanced_view_toggled(bool) {
+void EntryProxyModel::on_advanced_view_toggled(bool) {
     invalidateFilter();
 }
 
-bool AdProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
-    const QModelIndex index = sourceModel()->index(source_row, 0, source_parent);
+bool EntryProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
+    const QModelIndex index = model->index(source_row, 0, source_parent);
+    const QString dn = model->get_dn_from_index(index);
 
     // Hide advanced view only entries if advanced view is OFF
-    const bool advanced_view_only = index.data(AdModel::Roles::AdvancedViewOnly).toBool();
     const bool advanced_view_is_on = SETTINGS()->toggle_advanced_view->isChecked();
-    if (advanced_view_only && !advanced_view_is_on) {
-        return false;
+    if (!advanced_view_is_on) {
+        bool advanced_view_only = AD()->get_attribute(dn, "showInAdvancedViewOnly") == "TRUE";
+
+        if (advanced_view_only) {
+            return false;
+        }
     }
 
+    // Hide non-containers
     if (only_show_containers) {
-        // Hide non-containers
-        const bool is_container = index.data(AdModel::Roles::IsContainer).toBool();
+        bool is_container = AD()->is_container_like(dn) || AD()->is_container(dn);
+
         if (!is_container) {
             return false;
         }

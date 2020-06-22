@@ -23,12 +23,13 @@
 #include <QSortFilterProxyModel>
 
 class QModelIndex;
-class AdModel;
+class EntryModel;
 
-// Filter out advanced entries when advanced view is off
-class AdProxyModel final : public QSortFilterProxyModel {
+// Show/hide advanced entries depending on whether advanced view is on
+// Show/hide non-container entries
+class EntryProxyModel final : public QSortFilterProxyModel {
 public:
-    explicit AdProxyModel(AdModel *model, QObject *parent);
+    explicit EntryProxyModel(EntryModel *model_arg, QObject *parent);
 
     bool only_show_containers = false;
 
@@ -36,8 +37,9 @@ private slots:
     void on_advanced_view_toggled(bool checked);
 
 private:
-    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
+    EntryModel *model;
 
+    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
 
 #endif /* AD_PROXY_MODEL_H */
