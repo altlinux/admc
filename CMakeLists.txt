@@ -63,6 +63,7 @@ set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/settings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_proxy_model.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/move_dialog.cpp
 )
 
 add_definitions(${QT5_DEFINITIONS})

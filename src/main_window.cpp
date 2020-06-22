@@ -30,6 +30,7 @@
 #include "status.h"
 #include "entry_widget.h"
 #include "settings.h"
+#include "move_dialog.h"
 
 #include <QApplication>
 #include <QString>
@@ -53,6 +54,8 @@ MainWindow::MainWindow(const bool auto_login)
     resize(1500, 1000);
     setWindowTitle("MainWindow");
 
+    auto move_dialog_action = new QAction("Move dialog");
+
     // Menubar
     {
         QMenuBar *menubar = menuBar();
@@ -63,6 +66,7 @@ MainWindow::MainWindow(const bool auto_login)
         menubar_file->addAction("Exit", [this]() {
             on_action_exit();
         });
+        menubar_file->addAction(move_dialog_action);
 
         QMenu *menubar_view = menubar->addMenu("View");
         menubar_view->addAction(SETTINGS()->toggle_advanced_view);
@@ -92,6 +96,8 @@ MainWindow::MainWindow(const bool auto_login)
     status_log->setReadOnly(true);
 
     new Status(statusBar(), status_log, this);
+
+    const auto move_dialog = new MoveDialog(this);
 
     // NOTE: do this after all widgets are constructed so that all of
     // them load initial settings correctly
@@ -136,6 +142,10 @@ MainWindow::MainWindow(const bool auto_login)
         connect_entry_widget(containers_widget, details_widget);
         connect_entry_widget(contents_widget, details_widget);
         connect_entry_widget(members_widget, details_widget);
+    
+        connect(
+            move_dialog_action, &QAction::triggered,
+            move_dialog, &MoveDialog::open);
     }
 
     if (auto_login) {
