@@ -81,7 +81,7 @@ MainWindow::MainWindow(const bool auto_login)
 
     auto ad_model = new AdModel(this);
     auto containers_widget = new ContainersWidget(ad_model, this);
-    auto contents_widget = new ContentsWidget(ad_model, this);
+    auto contents_widget = new ContentsWidget(new EntryModel(4, 3, this), this);
 
     auto members_model = new MembersModel(this);
     auto members_widget = new MembersWidget(members_model, this);
@@ -120,8 +120,8 @@ MainWindow::MainWindow(const bool auto_login)
     // Connect signals
     {
         connect(
-            containers_widget, &ContainersWidget::selected_container_changed,
-            contents_widget, &ContentsWidget::on_selected_container_changed);
+            containers_widget, &EntryWidget::clicked_dn,
+            contents_widget, &ContentsWidget::on_containers_clicked_dn);
         connect(
             containers_widget, &EntryWidget::clicked_dn,
             details_widget, &DetailsWidget::on_containers_clicked_dn);

@@ -21,15 +21,22 @@
 #include "ad_interface.h"
 #include "ad_model.h"
 #include "entry_proxy_model.h"
+#include "entry_model.h"
 
 #include <QTreeView>
 #include <QLabel>
 #include <QLayout>
 
-ContentsWidget::ContentsWidget(AdModel* model, QWidget *parent)
-: EntryWidget(model, parent)
+ContentsWidget::ContentsWidget(EntryModel *model_arg, QWidget *parent)
+: EntryWidget(model_arg, parent)
 {   
-    proxy = new EntryProxyModel(model, this);
+    model = model_arg;
+    model->setHorizontalHeaderItem(AdModel::Column::Name, new QStandardItem("Name"));
+    model->setHorizontalHeaderItem(AdModel::Column::Category, new QStandardItem("Category"));
+    model->setHorizontalHeaderItem(AdModel::Column::Description, new QStandardItem("Description"));
+    model->setHorizontalHeaderItem(AdModel::Column::DN, new QStandardItem("DN"));
+
+    // proxy = new EntryProxyModel(model, this);
 
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -37,7 +44,7 @@ ContentsWidget::ContentsWidget(AdModel* model, QWidget *parent)
     view->setRootIsDecorated(false);
     view->setItemsExpandable(false);
     view->setExpandsOnDoubleClick(false);
-    view->setModel(proxy);
+    view->setModel(model);
 
     // Insert label into layout
     const auto label = new QLabel("Contents");
@@ -51,12 +58,36 @@ ContentsWidget::ContentsWidget(AdModel* model, QWidget *parent)
     update_column_visibility();
 };
 
-// Both contents and containers share the same source model, but have different proxy's to it
-// So need to map from containers proxy to source then back to proxy of contents
-void ContentsWidget::on_selected_container_changed(const QModelIndex &source_index) {
-    QModelIndex index = proxy->mapFromSource(source_index);
-    view->setRootIndex(index);
+void ContentsWidget::on_containers_clicked_dn(const QString &dn) {
+    model->removeRows(0, model->rowCount());
 
-    // NOTE: have to hide columns after setRootIndex
+    // Load head
+    QStandardItem *head;
+    {
+        const QString name = AD()->get_attribute(dn, "name");
+        const auto name_item = new QStandardItem(name);
+        const auto category_item = new QStandardItem("category");
+        const auto description_item = new QStandardItem("descr");
+        const auto dn_item = new QStandardItem(dn);
+        model->appendRow({name_item, category_item, description_item, dn_item});
+
+        head = name_item;
+    }
+
+    // Load children
+    QList<QString> children = AD()->load_children(dn);
+    for (auto child_dn : children) {
+        printf("%s\n", qPrintable(child_dn));
+        const QString name = AD()->get_attribute(child_dn, "name");
+        const auto name_item = new QStandardItem(name);
+        const auto category_item = new QStandardItem("category");
+        const auto description_item = new QStandardItem("descr");
+        const auto dn_item = new QStandardItem(child_dn);
+
+        head->appendRow({name_item, category_item, description_item, dn_item});
+    }
+
+    view->setRootIndex(head->index());
+
     update_column_visibility();
 }
