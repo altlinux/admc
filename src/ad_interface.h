@@ -90,6 +90,8 @@ public:
     bool can_drop_entry(const QString &dn, const QString &target_dn);
     void drop_entry(const QString &dn, const QString &target_dn);
 
+    void command(QStringList args);
+
 signals:
     void ad_interface_login_complete(const QString &base, const QString &head);
     void ad_interface_login_failed(const QString &base, const QString &head);
