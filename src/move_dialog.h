@@ -29,6 +29,7 @@ class QSortFilterProxyModel;
 class QComboBox;
 class QStandardItemModel;
 class QTreeView;
+class QLabel;
 
 class MoveDialog final : public QDialog {
 Q_OBJECT
@@ -44,7 +45,8 @@ public:
     void on_double_clicked(const QModelIndex &index);
 
 private:
-    QTreeView *view;
+    QTreeView *view = nullptr;
+    QLabel *target_label = nullptr;
     QLineEdit *filter_name_line_edit = nullptr;
     QStandardItemModel *model = nullptr;
     QSortFilterProxyModel *proxy_name = nullptr;

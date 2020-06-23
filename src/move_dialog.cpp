@@ -65,6 +65,8 @@ MoveDialog::MoveDialog(QWidget *parent)
     //
     // Objects
     //
+    target_label = new QLabel("TARGET");
+
     const auto filter_class_label = new QLabel("Class: ");
     const auto filter_class_combo_box = new QComboBox(this);
     for (int i = 0; i < ClassFilterType_COUNT; i++) {
@@ -99,11 +101,12 @@ MoveDialog::MoveDialog(QWidget *parent)
     resize(600, 600);
 
     const auto layout = new QGridLayout(this);
-    layout->addWidget(filter_class_label, 0, 0);
-    layout->addWidget(filter_class_combo_box, 0, 1, 1, 2);
-    layout->addWidget(filter_name_label, 1, 0);
-    layout->addWidget(filter_name_line_edit, 1, 1, 1, 2);
-    layout->addWidget(view, 2, 0, 1, 3);
+    layout->addWidget(target_label, 0, 0);
+    layout->addWidget(filter_class_label, 1, 0);
+    layout->addWidget(filter_class_combo_box, 1, 1, 1, 2);
+    layout->addWidget(filter_name_label, 2, 0);
+    layout->addWidget(filter_name_line_edit, 2, 1, 1, 2);
+    layout->addWidget(view, 3, 0, 1, 3);
 
     connect(
         filter_name_line_edit, &QLineEdit::textChanged,
@@ -117,6 +120,8 @@ MoveDialog::MoveDialog(QWidget *parent)
 
 void MoveDialog::open_for_entry(const QString &dn) {
     target_dn = dn;
+    const QString target_label_text = QString("Moving \"%1\"").arg(target_dn);
+    target_label->setText(target_label_text);
 
     filter_name_line_edit->setText("");
     on_filter_name_changed("");

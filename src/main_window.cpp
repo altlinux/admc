@@ -146,7 +146,7 @@ MainWindow::MainWindow(const bool auto_login)
         connect(
             move_dialog_action, &QAction::triggered,
             [move_dialog]() {
-                move_dialog->open_for_entry("");
+                move_dialog->open_for_entry("entry");
             });
     }
 
