@@ -31,8 +31,6 @@ class EntryProxyModel final : public QSortFilterProxyModel {
 public:
     explicit EntryProxyModel(EntryModel *model_arg, QObject *parent);
 
-    bool only_show_containers = false;
-
 private slots:
     void on_advanced_view_toggled(bool checked);
 

@@ -38,7 +38,6 @@ ContainersWidget::ContainersWidget(AdModel *model_arg, QWidget *parent)
     model->setHorizontalHeaderItem(AdModel::Column::DN, new QStandardItem("DN"));
 
     proxy = new EntryProxyModel(model, this);
-    proxy->only_show_containers = true;
 
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -246,6 +245,14 @@ void load_row(QList<QStandardItem *> row, const QString &dn) {
 
 // Make new row in model at given parent based on entry with given dn
 void make_new_row(QStandardItem *parent, const QString &dn) {
+    const bool is_container = AD()->is_container(dn);
+    const bool is_container_like = AD()->is_container_like(dn);
+    const bool should_be_loaded = is_container || is_container_like;
+
+    if (!should_be_loaded) {
+        return;
+    }
+
     auto row = QList<QStandardItem *>();
 
     for (int i = 0; i < AdModel::Column::COUNT; i++) {

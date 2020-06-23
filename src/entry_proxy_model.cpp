@@ -54,14 +54,5 @@ bool EntryProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source
         }
     }
 
-    // Hide non-containers
-    if (only_show_containers) {
-        bool is_container = AD()->is_container_like(dn) || AD()->is_container(dn);
-
-        if (!is_container) {
-            return false;
-        }
-    }
-
     return true;
 }

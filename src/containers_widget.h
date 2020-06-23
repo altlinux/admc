@@ -55,6 +55,9 @@ private:
 
 };
 
+// Load nodes iteratively, as they are expanded by user
+// Unexpanded nodes show the expander even if they have no children
+// If the node has no children, the expander goes away
 class AdModel final : public EntryModel {
 
 public:
