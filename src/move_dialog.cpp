@@ -45,13 +45,13 @@ enum ClassFilterType {
 const QString CONTAINER_STR = "container";
 const QString OU_STR = "organizationalUnit";
 
-const QMap<ClassFilterType, QString> class_filter_string = {
+const QMap<ClassFilterType, QString> class_filter_display_text = {
     {ClassFilterType_All, "All"},
     {ClassFilterType_Containers, "Containers"},
     {ClassFilterType_OUs, "OU's"},
 };
 
-const QMap<ClassFilterType, QString> class_filter_regexp = {
+const QMap<ClassFilterType, QString> class_filter_string = {
     {ClassFilterType_All, ""},
     {ClassFilterType_Containers, CONTAINER_STR},
     {ClassFilterType_OUs, OU_STR},
@@ -68,13 +68,7 @@ MoveDialog::MoveDialog(QWidget *parent)
     target_label = new QLabel("TARGET");
 
     const auto filter_class_label = new QLabel("Class: ");
-    const auto filter_class_combo_box = new QComboBox(this);
-    for (int i = 0; i < ClassFilterType_COUNT; i++) {
-        const ClassFilterType type = static_cast<ClassFilterType>(i);
-        const QString string = class_filter_string[type];
-
-        filter_class_combo_box->addItem(string);
-    }
+    filter_class_combo_box = new QComboBox(this);
 
     const auto filter_name_label = new QLabel("Name: ");
     filter_name_line_edit = new QLineEdit(this);
@@ -126,16 +120,33 @@ void MoveDialog::open_for_entry(const QString &dn) {
     filter_name_line_edit->setText("");
     on_filter_name_changed("");
 
+    // Select classes that this entry can be moved to
+    QList<ClassFilterType> classes;
+    const bool is_container = AD()->is_container(dn);
+    if (is_container) {
+        classes = {ClassFilterType_Containers};
+    } else {
+        classes = {ClassFilterType_Containers, ClassFilterType_OUs};
+    }
+
+    filter_class_combo_box->clear();
+    QList<ClassFilterType> combo_classes = classes;
+    combo_classes.append(ClassFilterType_All);
+    for (auto c : combo_classes) {
+        const QString string = class_filter_display_text[c];
+        const int class_i = c;
+
+        filter_class_combo_box->addItem(string, class_i);
+    }
+
     // Load model
     model->removeRows(0, model->rowCount());
+    for (auto c : classes) {
+        const QString class_string = class_filter_string[c];
 
-    const QList<QString> containers = AD()->search("objectClass", CONTAINER_STR);
-    const QList<QString> OUs = AD()->search("objectClass", OU_STR);
+        const QList<QString> entries = AD()->search("objectClass", class_string);
 
-    auto add_list =
-    [this]
-    (const QList<QString> &list, const QString &class_str) {
-        for (auto e_dn : list) {
+        for (auto e_dn : entries) {
             // TODO: make entryproxymodel into AdvancedFilter
             // that accepts any model and takes dn_column as ctor arg
             // to get the dn
@@ -153,15 +164,12 @@ void MoveDialog::open_for_entry(const QString &dn) {
             const QString name = AD()->get_attribute(e_dn, "name");
 
             row[Column_Name]->setText(name);
-            row[Column_Class]->setText(class_str);
+            row[Column_Class]->setText(class_string);
             row[Column_DN]->setText(e_dn);
 
             model->appendRow(row);
         }
-    };
-
-    add_list(containers, CONTAINER_STR);
-    add_list(OUs, OU_STR);
+    }
 
     for (int col = 0; col < Column_COUNT; col++) {
         view->resizeColumnToContents(col);
@@ -175,8 +183,9 @@ void MoveDialog::on_filter_name_changed(const QString &text) {
 }
 
 void MoveDialog::on_filter_class_changed(int index) {
-    const ClassFilterType type = static_cast<ClassFilterType>(index);
-    const QString regexp = class_filter_regexp[type];
+    const int class_i = filter_class_combo_box->itemData(index).toInt();
+    const ClassFilterType type = static_cast<ClassFilterType>(class_i);
+    const QString regexp = class_filter_string[type];
 
     proxy_class->setFilterRegExp(QRegExp(regexp, Qt::CaseInsensitive, QRegExp::FixedString));
 }

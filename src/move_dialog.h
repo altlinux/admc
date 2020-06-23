@@ -47,6 +47,7 @@ public:
 private:
     QTreeView *view = nullptr;
     QLabel *target_label = nullptr;
+    QComboBox *filter_class_combo_box = nullptr;
     QLineEdit *filter_name_line_edit = nullptr;
     QStandardItemModel *model = nullptr;
     QSortFilterProxyModel *proxy_name = nullptr;
