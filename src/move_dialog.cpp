@@ -31,6 +31,7 @@
 enum Column {
     Column_Name,
     Column_Class,
+    Column_DN,
     Column_COUNT
 };
 
@@ -109,6 +110,9 @@ MoveDialog::MoveDialog(QWidget *parent)
         this, &MoveDialog::on_filter_name_changed);
     connect(filter_class_combo_box, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &MoveDialog::on_filter_class_changed);
+    connect(
+        view, &QAbstractItemView::doubleClicked,
+        this, &MoveDialog::on_double_clicked);
 }
 
 void MoveDialog::open_for_entry(const QString &dn) {
@@ -145,6 +149,7 @@ void MoveDialog::open_for_entry(const QString &dn) {
 
             row[Column_Name]->setText(name);
             row[Column_Class]->setText(class_str);
+            row[Column_DN]->setText(e_dn);
 
             model->appendRow(row);
         }
@@ -169,4 +174,11 @@ void MoveDialog::on_filter_class_changed(int index) {
     const QString regexp = class_filter_regexp[type];
 
     proxy_class->setFilterRegExp(QRegExp(regexp, Qt::CaseInsensitive, QRegExp::FixedString));
+}
+
+void MoveDialog::on_double_clicked(const QModelIndex &index) {
+    const QModelIndex dn_index = index.siblingAtColumn(Column_DN);
+    const QString dn = dn_index.data().toString();
+
+    AD()->move(target_dn, dn);
 }
