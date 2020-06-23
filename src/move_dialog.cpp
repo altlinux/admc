@@ -180,5 +180,10 @@ void MoveDialog::on_double_clicked(const QModelIndex &index) {
     const QModelIndex dn_index = index.siblingAtColumn(Column_DN);
     const QString dn = dn_index.data().toString();
 
+    // TODO:
+    // const QString confirm_text = QString("Move \"%1\" to \"%2\"?").arg(target_dn, dn);
+    // const bool confirmed = confirmation_dialog(confirm_text);
+    // if (confirmed) {
+
     AD()->move(target_dn, dn);
 }
