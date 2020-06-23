@@ -25,7 +25,7 @@
 
 #include <QString>
 
-class AdModel;
+class ContainersModel;
 class EntryProxyModel;
 class EntryModel;
 class QString;

@@ -30,12 +30,12 @@
 void make_new_row(QStandardItem *parent, const QString &dn);
 void load_row(QList<QStandardItem *> row, const QString &dn);
 
-ContainersWidget::ContainersWidget(AdModel *model_arg, QWidget *parent)
+ContainersWidget::ContainersWidget(ContainersModel *model_arg, QWidget *parent)
 : EntryWidget(model_arg, parent)
 {
     model = model_arg;
-    model->setHorizontalHeaderItem(AdModel::Column::Name, new QStandardItem("Name"));
-    model->setHorizontalHeaderItem(AdModel::Column::DN, new QStandardItem("DN"));
+    model->setHorizontalHeaderItem(ContainersModel::Column::Name, new QStandardItem("Name"));
+    model->setHorizontalHeaderItem(ContainersModel::Column::DN, new QStandardItem("DN"));
 
     proxy = new EntryProxyModel(model, this);
 
@@ -46,7 +46,7 @@ ContainersWidget::ContainersWidget(AdModel *model_arg, QWidget *parent)
     view->setExpandsOnDoubleClick(true);
     view->setModel(proxy);
 
-    column_hidden[AdModel::Column::Name] = false;
+    column_hidden[ContainersModel::Column::Name] = false;
     update_column_visibility();
 
     // Insert label into layout
@@ -83,7 +83,7 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
 
     if (indexes.size() > 0) {
         QModelIndex index = indexes[0];
-        QModelIndex dn_index = index.siblingAtColumn(AdModel::Column::DN);
+        QModelIndex dn_index = index.siblingAtColumn(ContainersModel::Column::DN);
         QString dn = dn_index.data().toString();
 
         emit selected_changed(dn);
@@ -99,7 +99,7 @@ void ContainersWidget::on_ad_interface_login_complete(const QString &search_base
 }
 
 void ContainersWidget::on_delete_entry_complete(const QString &dn) {
-    QList<QStandardItem *> items = model->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    QList<QStandardItem *> items = model->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, ContainersModel::Column::DN);
 
     if (items.size() > 0) {
         QStandardItem *dn_item = items[0];
@@ -111,7 +111,7 @@ void ContainersWidget::on_delete_entry_complete(const QString &dn) {
 
 void ContainersWidget::on_dn_changed(const QString &old_dn, const QString &new_dn) {
     // Remove old entry from model
-    QList<QStandardItem *> old_items = model->findItems(old_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    QList<QStandardItem *> old_items = model->findItems(old_dn, Qt::MatchExactly | Qt::MatchRecursive, ContainersModel::Column::DN);
     if (old_items.size() > 0) {
         QStandardItem *dn_item = old_items[0];
         QModelIndex dn_index = dn_item->index();
@@ -124,11 +124,11 @@ void ContainersWidget::on_dn_changed(const QString &old_dn, const QString &new_d
     // NOTE: loading if parent hasn't been fetched will
     // create a duplicate
     const QString new_parent = extract_parent_dn_from_dn(new_dn);
-    QList<QStandardItem *> parent_items = model->findItems(new_parent, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    QList<QStandardItem *> parent_items = model->findItems(new_parent, Qt::MatchExactly | Qt::MatchRecursive, ContainersModel::Column::DN);
     if (parent_items.size() > 0) {
         QStandardItem *parent_dn_item = parent_items[0];
         QModelIndex parent_dn_index = parent_dn_item->index();
-        QModelIndex parent_index = parent_dn_index.siblingAtColumn(AdModel::Column::Name);
+        QModelIndex parent_index = parent_dn_index.siblingAtColumn(ContainersModel::Column::Name);
 
         QStandardItem *parent_item = model->itemFromIndex(parent_index);
 
@@ -142,7 +142,7 @@ void ContainersWidget::on_create_entry_complete(const QString &dn, NewEntryType 
     // Load entry to model if it's parent has already been fetched
     // If it hasn't been fetched, then this new entry will be loaded with all other children when the parent is fetched
     QString parent_dn = extract_parent_dn_from_dn(dn);
-    QList<QStandardItem *> items = model->findItems(parent_dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    QList<QStandardItem *> items = model->findItems(parent_dn, Qt::MatchExactly | Qt::MatchRecursive, ContainersModel::Column::DN);
 
     if (items.size() > 0) {
         QStandardItem *dn_item = items[0];
@@ -159,7 +159,7 @@ void ContainersWidget::on_create_entry_complete(const QString &dn, NewEntryType 
 
 void ContainersWidget::on_attributes_changed(const QString &dn) {
     // Compose row based on dn
-    QList<QStandardItem *> items = model->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, AdModel::Column::DN);
+    QList<QStandardItem *> items = model->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, ContainersModel::Column::DN);
 
     if (items.size() == 0) {
         return;
@@ -170,14 +170,14 @@ void ContainersWidget::on_attributes_changed(const QString &dn) {
 
     // Compose indexes for all columns
     auto indexes = QList<QModelIndex>(); 
-    for (int i = 0; i < AdModel::Column::COUNT; i++) {
+    for (int i = 0; i < ContainersModel::Column::COUNT; i++) {
         QModelIndex index = dn_index.siblingAtColumn(i);
         indexes.push_back(index);
     }
 
     // Compose the row of items from indexes
     auto row = QList<QStandardItem *>();
-    for (int i = 0; i < AdModel::Column::COUNT; i++) {
+    for (int i = 0; i < ContainersModel::Column::COUNT; i++) {
         QModelIndex index = indexes[i];
         QStandardItem *item = model->itemFromIndex(index);
         row.push_back(item);
@@ -186,23 +186,23 @@ void ContainersWidget::on_attributes_changed(const QString &dn) {
     load_row(row, dn);
 }
 
-AdModel::AdModel(QObject *parent)
-: EntryModel(Column::COUNT, AdModel::Column::DN, parent)
+ContainersModel::ContainersModel(QObject *parent)
+: EntryModel(Column::COUNT, ContainersModel::Column::DN, parent)
 {
     
 }
 
-bool AdModel::canFetchMore(const QModelIndex &parent) const {
+bool ContainersModel::canFetchMore(const QModelIndex &parent) const {
     if (!parent.isValid()) {
         return false;
     }
 
-    bool can_fetch = parent.data(AdModel::Roles::CanFetch).toBool();
+    bool can_fetch = parent.data(ContainersModel::Roles::CanFetch).toBool();
 
     return can_fetch;
 }
 
-void AdModel::fetchMore(const QModelIndex &parent) {
+void ContainersModel::fetchMore(const QModelIndex &parent) {
     if (!parent.isValid() || !canFetchMore(parent)) {
         return;
     }
@@ -219,12 +219,12 @@ void AdModel::fetchMore(const QModelIndex &parent) {
     }
 
     // Unset CanFetch flag
-    parent_item->setData(false, AdModel::Roles::CanFetch);
+    parent_item->setData(false, ContainersModel::Roles::CanFetch);
 }
 
 // Override this so that unexpanded and unfetched items show the expander even though they technically don't have any children loaded
 // NOTE: expander is show if hasChildren returns true
-bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
+bool ContainersModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
     if (canFetchMore(parent)) {
         return true;
     } else {
@@ -236,8 +236,8 @@ bool AdModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
 void load_row(QList<QStandardItem *> row, const QString &dn) {
     QString name = AD()->get_attribute(dn, "name");
 
-    row[AdModel::Column::Name]->setText(name);
-    row[AdModel::Column::DN]->setText(dn);
+    row[ContainersModel::Column::Name]->setText(name);
+    row[ContainersModel::Column::DN]->setText(dn);
 
     QIcon icon = get_entry_icon(dn);
     row[0]->setIcon(icon);
@@ -255,15 +255,15 @@ void make_new_row(QStandardItem *parent, const QString &dn) {
 
     auto row = QList<QStandardItem *>();
 
-    for (int i = 0; i < AdModel::Column::COUNT; i++) {
+    for (int i = 0; i < ContainersModel::Column::COUNT; i++) {
         row.push_back(new QStandardItem());
     }
 
     // Set fetch flag because row is new and can be fetched
-    row[0]->setData(true, AdModel::Roles::CanFetch);
+    row[0]->setData(true, ContainersModel::Roles::CanFetch);
 
     // Load dn, so the row can be searched for later
-    QStandardItem *dn_item = row[AdModel::Column::DN];
+    QStandardItem *dn_item = row[ContainersModel::Column::DN];
     dn_item->setText(dn);
 
     parent->appendRow(row);

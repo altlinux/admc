@@ -25,40 +25,9 @@
 #include "entry_model.h"
 
 class QItemSelection;
-class AdModel;
 class EntryProxyModel;
 
-// Display tree of container entries
-// And some other "container-like" entries like domain, built-in, etc
-// Only shows the name column
-class ContainersWidget final : public EntryWidget {
-Q_OBJECT
-
-public:
-    ContainersWidget(AdModel *model_arg, QWidget *parent);
-
-signals:
-    void selected_changed(const QString &dn);
-
-private slots:
-    void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
-
-    void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
-    void on_attributes_changed(const QString &dn);
-    void on_delete_entry_complete(const QString &dn); 
-    void on_dn_changed(const QString &old_dn, const QString &new_dn);
-    void on_create_entry_complete(const QString &dn, NewEntryType type); 
-
-private:
-    AdModel *model = nullptr;
-    EntryProxyModel *proxy = nullptr;
-
-};
-
-// Load nodes iteratively, as they are expanded by user
-// Unexpanded nodes show the expander even if they have no children
-// If the node has no children, the expander goes away
-class AdModel final : public EntryModel {
+class ContainersModel final : public EntryModel {
 
 public:
     enum Column {
@@ -71,11 +40,34 @@ public:
         CanFetch = Qt::UserRole + 1,
     };
 
-    explicit AdModel(QObject *parent);
+    explicit ContainersModel(QObject *parent);
 
     bool canFetchMore(const QModelIndex &parent) const;
     void fetchMore(const QModelIndex &parent);
     bool hasChildren(const QModelIndex &parent) const override;
+
+};
+
+class ContainersWidget final : public EntryWidget {
+Q_OBJECT
+
+public:
+    ContainersWidget(ContainersModel *model_arg, QWidget *parent);
+
+signals:
+    void selected_changed(const QString &dn);
+
+private slots:
+    void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
+
+    void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
+    void on_attributes_changed(const QString &dn);
+    void on_delete_entry_complete(const QString &dn); 
+    void on_dn_changed(const QString &old_dn, const QString &new_dn);
+    void on_create_entry_complete(const QString &dn, NewEntryType type); 
+private:
+    ContainersModel *model = nullptr;
+    EntryProxyModel *proxy = nullptr;
 
 };
 

@@ -78,7 +78,7 @@ MainWindow::MainWindow(const bool auto_login)
     auto central_widget = new QWidget(this);
     setCentralWidget(central_widget);
 
-    auto ad_model = new AdModel(this);
+    auto ad_model = new ContainersModel(this);
     auto containers_widget = new ContainersWidget(ad_model, this);
     auto contents_widget = new ContentsWidget(new EntryModel(4, 3, this), containers_widget, this);
 

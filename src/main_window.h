@@ -26,7 +26,7 @@
 
 class QAction;
 class QString;
-class AdModel;
+class ContainersModel;
 class ContainersWidget;
 class ContentsWidget;
 class DetailsWidget;
