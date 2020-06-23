@@ -38,7 +38,7 @@ public:
 
     void open_for_entry(const QString &dn);
 
-private slots:
+    private slots:
     void on_filter_name_changed(const QString &text);
     void on_filter_class_changed(int index);
 

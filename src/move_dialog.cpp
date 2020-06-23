@@ -18,6 +18,7 @@
  */
 
 #include "move_dialog.h"
+#include "ad_interface.h"
 
 #include <QLineEdit>
 #include <QVBoxLayout>
@@ -40,6 +41,9 @@ enum ClassFilterType {
     ClassFilterType_COUNT
 };
 
+const QString CONTAINER_STR = "container";
+const QString OU_STR = "organizationalUnit";
+
 const QMap<ClassFilterType, QString> class_filter_string = {
     {ClassFilterType_All, "All"},
     {ClassFilterType_Containers, "Containers"},
@@ -48,8 +52,8 @@ const QMap<ClassFilterType, QString> class_filter_string = {
 
 const QMap<ClassFilterType, QString> class_filter_regexp = {
     {ClassFilterType_All, ""},
-    {ClassFilterType_Containers, "container"},
-    {ClassFilterType_OUs, "organizationalUnit"},
+    {ClassFilterType_Containers, CONTAINER_STR},
+    {ClassFilterType_OUs, OU_STR},
 };
 
 MoveDialog::MoveDialog(QWidget *parent)
@@ -113,40 +117,41 @@ void MoveDialog::open_for_entry(const QString &dn) {
     filter_name_line_edit->setText("");
     on_filter_name_changed("");
 
-    // Load OU's and containers
-    // QList<QString> containers = AD()->search("objectClass=container");
-    // QList<QString> OUs = AD()->search("objectClass=organizationalUnit");
-    QList<QString> containers = {
-        "test container",
-        "apple container",
-        "apples container",
-        "orange container",
-        "oranges container",
-        "orange car container",
-        "not orange container",
-    };
-    QList<QString> OUs = {
-        "test OU",
-        "apple OU",
-        "apples OU",
-        "orange OU",
-        "oranges OU",
-        "orange car OU",
-        "not orange OU",
+    // Load model
+    model->removeRows(0, model->rowCount());
+
+    const QList<QString> containers = AD()->search("objectClass", CONTAINER_STR);
+    const QList<QString> OUs = AD()->search("objectClass", OU_STR);
+
+    auto add_list =
+    [this]
+    (const QList<QString> &list, const QString &class_str) {
+        for (auto e_dn : list) {
+            // TODO: make entryproxymodel into AdvancedFilter
+            // that accepts any model and takes dn_column as ctor arg
+            // to get the dn
+            // and then use that to filter here properly
+            const bool advanced_view_only = AD()->get_attribute(e_dn, "showInAdvancedViewOnly") == "TRUE";
+            if (advanced_view_only) {
+                continue;
+            }
+
+            auto row = QList<QStandardItem *>();
+            for (int i = 0; i < Column_COUNT; i++) {
+                row.push_back(new QStandardItem());
+            }
+
+            const QString name = AD()->get_attribute(e_dn, "name");
+
+            row[Column_Name]->setText(name);
+            row[Column_Class]->setText(class_str);
+
+            model->appendRow(row);
+        }
     };
 
-    // TODO: class string will come from objectClass attribute of entry
-    for (auto e : containers) {
-        auto name_item = new QStandardItem(e);
-        auto class_item = new QStandardItem("container");
-        model->appendRow({name_item, class_item});
-    }
-
-    for (auto e : OUs) {
-        auto name_item = new QStandardItem(e);
-        auto class_item = new QStandardItem("organizationalUnit");
-        model->appendRow({name_item, class_item});
-    }
+    add_list(containers, CONTAINER_STR);
+    add_list(OUs, OU_STR);
 
     for (int col = 0; col < Column_COUNT; col++) {
         view->resizeColumnToContents(col);
