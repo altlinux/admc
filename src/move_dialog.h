@@ -39,8 +39,8 @@ public:
     void open_for_entry(const QString &dn);
 
 private slots:
-    void on_filter_text_changed(const QString &text);
-    void on_class_combo_current_changed(int index);
+    void on_filter_name_changed(const QString &text);
+    void on_filter_class_changed(int index);
 
 private:
     QTreeView *view;
