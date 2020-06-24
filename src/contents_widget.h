@@ -58,7 +58,6 @@ private slots:
 private:
 
     EntryModel *model = nullptr;
-    EntryProxyModel *proxy = nullptr;
     QString target_dn = "";
     
     void remove_child(const QString &dn);

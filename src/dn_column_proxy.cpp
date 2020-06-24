@@ -17,27 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "members_widget.h"
-#include "members_model.h"
-#include "entry_context_menu.h"
+#include "dn_column_proxy.h"
+#include "settings.h"
 
-#include <QTreeView>
-#include <QLabel>
+#include <QAction>
 
-MembersWidget::MembersWidget(MembersModel *model, EntryContextMenu *entry_context_menu, QWidget *parent)
-: EntryWidget(model, parent)
-{   
-    members_model = model;
+DnColumnProxy::DnColumnProxy(int dn_column_arg, QObject *parent)
+: QSortFilterProxyModel(parent)
+{
+    dn_column = dn_column_arg;
 
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setAcceptDrops(true);
-    view->setModel(members_model);
-    entry_context_menu->connect_view(view, MembersModel::Column::DN);
+    connect(
+        SETTINGS()->toggle_show_dn_column, &QAction::toggled,
+        this, &DnColumnProxy::on_toggle_show_dn_column);
 }
 
-void MembersWidget::change_target(const QString &dn) {
-    QModelIndex root_index = members_model->change_target(dn);
+void DnColumnProxy::on_toggle_show_dn_column(bool) {
+    invalidateFilter();
+}
 
-    // Set root to group index so that it is hidden
-    view->setRootIndex(root_index);
+bool DnColumnProxy::filterAcceptsColumn(int source_column, const QModelIndex &parent) const {
+    if (source_column == dn_column) {
+        return false;
+    } else {
+        return true;
+    }
 }

@@ -64,6 +64,7 @@ set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_context_menu.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/confirmation_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_proxy_model.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/dn_column_proxy.cpp
 )
 
 add_definitions(${QT5_DEFINITIONS})

@@ -20,11 +20,9 @@
 #include "entry_widget.h"
 #include "ad_interface.h"
 #include "entry_model.h"
-#include "settings.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <QAction>
 
 EntryWidget::EntryWidget(EntryModel *model, QWidget *parent)
 : QWidget(parent)
@@ -40,16 +38,6 @@ EntryWidget::EntryWidget(EntryModel *model, QWidget *parent)
     layout()->setSpacing(0);
     layout()->addWidget(view);
 
-    // Init column visibility
-    for (int i = 0; i < entry_model->columnCount(); i++) {
-        column_hidden.push_back(false);
-    }
-    update_column_visibility();
-
-    connect(
-        SETTINGS()->toggle_show_dn_column, &QAction::toggled,
-        this, &EntryWidget::on_toggle_show_dn_column);
-
     connect(
         view, &QAbstractItemView::clicked,
         this, &EntryWidget::on_view_clicked);
@@ -57,27 +45,11 @@ EntryWidget::EntryWidget(EntryModel *model, QWidget *parent)
         AD(), &AdInterface::ad_interface_login_complete,
         this, &EntryWidget::on_ad_interface_login_complete);
 
-    // Start off disabled until login
     setEnabled(false);
 }
 
 void EntryWidget::on_ad_interface_login_complete(const QString &base, const QString &head) {
-    // Enable on login
     setEnabled(true);
-}
-
-void EntryWidget::on_toggle_show_dn_column(bool checked) {
-    const bool dn_column_hidden = !checked;
-    column_hidden[entry_model->dn_column] = dn_column_hidden;
-
-    update_column_visibility();
-}
-
-void EntryWidget::update_column_visibility() {
-    // Set column visiblity to current values in column_hidden
-    for (int i = 0; i < column_hidden.size(); i++) {
-        view->setColumnHidden(i, column_hidden[i]);
-    }
 }
 
 void EntryWidget::on_view_clicked(const QModelIndex &index) {

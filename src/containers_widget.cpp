@@ -20,6 +20,7 @@
 #include "containers_widget.h"
 #include "entry_proxy_model.h"
 #include "entry_context_menu.h"
+#include "dn_column_proxy.h"
 
 #include <QTreeView>
 #include <QLabel>
@@ -38,18 +39,18 @@ ContainersWidget::ContainersWidget(ContainersModel *model_arg, EntryContextMenu 
     model->setHorizontalHeaderItem(ContainersModel::Column::Name, new QStandardItem("Name"));
     model->setHorizontalHeaderItem(ContainersModel::Column::DN, new QStandardItem("DN"));
 
-    proxy = new EntryProxyModel(model, this);
+    const auto proxy = new EntryProxyModel(model, this);
+
+    const auto dn_column_proxy = new DnColumnProxy(ContainersModel::Column::DN, this);
+    dn_column_proxy->setSourceModel(proxy);   
+    view->setModel(dn_column_proxy);
 
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setRootIsDecorated(true);
     view->setItemsExpandable(true);
     view->setExpandsOnDoubleClick(true);
-    view->setModel(proxy);
     entry_context_menu->connect_view(view, ContainersModel::Column::DN);
-
-    column_hidden[ContainersModel::Column::Name] = false;
-    update_column_visibility();
 
     // Insert label into layout
     const auto label = new QLabel("Containers");
@@ -80,13 +81,31 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
     // to selected_container_changed() signal
     const QList<QModelIndex> indexes = selected.indexes();
 
-    if (indexes.size() > 0) {
-        QModelIndex index = indexes[0];
-        QModelIndex dn_index = index.siblingAtColumn(ContainersModel::Column::DN);
-        QString dn = dn_index.data().toString();
-
-        emit selected_changed(dn);
+    if (indexes.isEmpty()) {
+        return;
     }
+
+    QModelIndex index = indexes[0];
+
+    // Go down the chain of proxies, turning index into source model index
+    // TODO: this might be useful in other places
+    QAbstractItemModel *current_model = view->model();
+    while (true) {
+        const auto proxy = qobject_cast<QSortFilterProxyModel *>(current_model);
+
+        if (proxy != nullptr) {
+            index = proxy->mapToSource(index);
+
+            current_model = proxy->sourceModel();
+        } else {
+            break;
+        }
+    }
+
+    QModelIndex dn_index = index.siblingAtColumn(ContainersModel::Column::DN);
+    QString dn = dn_index.data().toString();
+
+    emit selected_changed(dn);
 }
 
 void ContainersWidget::on_ad_interface_login_complete(const QString &search_base, const QString &head_dn) {

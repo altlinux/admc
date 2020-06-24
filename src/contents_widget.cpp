@@ -23,6 +23,7 @@
 #include "entry_proxy_model.h"
 #include "entry_model.h"
 #include "entry_context_menu.h"
+#include "dn_column_proxy.h"
 
 #include <QTreeView>
 #include <QLabel>
@@ -37,7 +38,11 @@ ContentsWidget::ContentsWidget(EntryModel* model_arg, ContainersWidget *containe
     model->setHorizontalHeaderItem(Column::Description, new QStandardItem("Description"));
     model->setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
 
-    proxy = new EntryProxyModel(model, this);
+    const auto proxy = new EntryProxyModel(model, this);
+
+    const auto dn_column_proxy = new DnColumnProxy(ContainersModel::Column::DN, this);
+    dn_column_proxy->setSourceModel(proxy);
+    view->setModel(dn_column_proxy);
 
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -45,7 +50,6 @@ ContentsWidget::ContentsWidget(EntryModel* model_arg, ContainersWidget *containe
     view->setRootIsDecorated(false);
     view->setItemsExpandable(false);
     view->setExpandsOnDoubleClick(false);
-    view->setModel(proxy);
     entry_context_menu->connect_view(view, Column::DN);
 
     // Insert label into layout
@@ -53,11 +57,6 @@ ContentsWidget::ContentsWidget(EntryModel* model_arg, ContainersWidget *containe
     layout()->removeWidget(view);
     layout()->addWidget(label);
     layout()->addWidget(view);
-
-    column_hidden[Column::Name] = false;
-    column_hidden[Column::Category] = false;
-    column_hidden[Column::Description] = false;
-    update_column_visibility();
 
     connect(
         containers_widget, &ContainersWidget::selected_changed,
@@ -108,23 +107,25 @@ void ContentsWidget::make_new_row(QStandardItem *parent, const QString &dn) {
 void ContentsWidget::change_target(const QString &dn) {
     model->removeRows(0, model->rowCount());
 
+    if (dn == "") {
+        return;
+    }
+
     // Load head
     target_dn = dn;
     QStandardItem *root = model->invisibleRootItem();    
     make_new_row(root, target_dn);
     QStandardItem *head = model->item(0, 0);
 
-    const QModelIndex head_index = head->index();
-    const QModelIndex proxy_head_index = proxy->mapFromSource(head_index);
-    view->setRootIndex(proxy_head_index);
+    const QAbstractItemModel *view_model = view->model();
+    const QModelIndex head_index = view_model->index(0, 0);
+    view->setRootIndex(head_index);
 
     // Load children
     QList<QString> children = AD()->load_children(dn);
     for (auto child_dn : children) {
         make_new_row(head, child_dn);
     }
-
-    update_column_visibility();
 }
 
 void ContentsWidget::remove_child(const QString &dn) {

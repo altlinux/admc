@@ -17,27 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "members_widget.h"
-#include "members_model.h"
-#include "entry_context_menu.h"
+#ifndef DN_COLUMN_PROXY_H
+#define DN_COLUMN_PROXY_H
 
-#include <QTreeView>
-#include <QLabel>
+#include <QSortFilterProxyModel>
 
-MembersWidget::MembersWidget(MembersModel *model, EntryContextMenu *entry_context_menu, QWidget *parent)
-: EntryWidget(model, parent)
-{   
-    members_model = model;
+class QModelIndex;
+class EntryModel;
 
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setAcceptDrops(true);
-    view->setModel(members_model);
-    entry_context_menu->connect_view(view, MembersModel::Column::DN);
-}
+// Show/hide DN column depending on "show DN" setting
+class DnColumnProxy final : public QSortFilterProxyModel {
+public:
+    explicit DnColumnProxy(int dn_column_arg, QObject *parent);
 
-void MembersWidget::change_target(const QString &dn) {
-    QModelIndex root_index = members_model->change_target(dn);
+private slots:
+    void on_toggle_show_dn_column(bool checked);
 
-    // Set root to group index so that it is hidden
-    view->setRootIndex(root_index);
-}
+private:
+    int dn_column;
+
+    bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const override;
+};
+
+#endif /* DN_COLUMN_PROXY_H */

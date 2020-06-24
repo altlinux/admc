@@ -67,7 +67,6 @@ private slots:
     void on_create_entry_complete(const QString &dn, NewEntryType type); 
 private:
     ContainersModel *model = nullptr;
-    EntryProxyModel *proxy = nullptr;
 
 };
 

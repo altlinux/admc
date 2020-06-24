@@ -21,11 +21,8 @@
 #define ENTRY_WIDGET_H
 
 #include <QWidget>
-#include <QList>
-#include <QSet>
 
 class QTreeView;
-class QLabel;
 class EntryModel;
 class QString;
 
@@ -40,15 +37,11 @@ signals:
     void clicked_dn(const QString &dn);
 
 private slots:
-    void on_toggle_show_dn_column(bool checked);
     void on_view_clicked(const QModelIndex &index);
     void on_ad_interface_login_complete(const QString &base, const QString &head);
 
 protected:
     QTreeView *view = nullptr;
-    QList<bool> column_hidden;
-    
-    void update_column_visibility();
 
 private:
     EntryModel *entry_model = nullptr;
