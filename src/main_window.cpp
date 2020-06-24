@@ -22,7 +22,6 @@
 #include "main_window.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
-#include "members_model.h"
 #include "members_widget.h"
 #include "details_widget.h"
 #include "attributes_model.h"

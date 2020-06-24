@@ -22,10 +22,10 @@
 
 #include <QWidget>
 
-class MembersModel;
 class QTreeView;
 class QString;
 class EntryContextMenu;
+class EntryModel;
 
 // Shows member entries of targeted group
 class MembersWidget final : public QWidget {
@@ -37,7 +37,13 @@ public:
     void change_target(const QString &dn);
 
 private:
-    MembersModel *model = nullptr;
+    enum Column {
+        Name,
+        DN,
+        COUNT,
+    };
+
+    EntryModel *model = nullptr;
     QTreeView *view = nullptr;
 };
 

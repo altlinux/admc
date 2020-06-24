@@ -21,6 +21,7 @@
 #include "entry_proxy_model.h"
 #include "entry_context_menu.h"
 #include "dn_column_proxy.h"
+#include "entry_model.h"
 #include "utils.h"
 
 #include <QTreeView>

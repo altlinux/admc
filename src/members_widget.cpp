@@ -18,7 +18,7 @@
  */
 
 #include "members_widget.h"
-#include "members_model.h"
+#include "entry_model.h"
 #include "entry_context_menu.h"
 
 #include <QTreeView>
@@ -28,7 +28,7 @@
 MembersWidget::MembersWidget(EntryContextMenu *entry_context_menu, QWidget *parent)
 : QWidget(parent)
 {   
-    model = new MembersModel(this);
+    model = new EntryModel(Column::COUNT, Column::DN, this);
 
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -36,7 +36,7 @@ MembersWidget::MembersWidget(EntryContextMenu *entry_context_menu, QWidget *pare
     view->setModel(model);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
-    entry_context_menu->connect_view(view, MembersModel::Column::DN);
+    entry_context_menu->connect_view(view, Column::DN);
 
     const auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -45,8 +45,27 @@ MembersWidget::MembersWidget(EntryContextMenu *entry_context_menu, QWidget *pare
 }
 
 void MembersWidget::change_target(const QString &dn) {
-    QModelIndex root_index = model->change_target(dn);
+    model->removeRows(0, model->rowCount());
+
+    // Create root item to represent group itself
+    const QString grp_name = AD()->get_attribute(dn, "name");
+    const auto grp_name_item = new QStandardItem(grp_name);
+    const auto grp_dn_item = new QStandardItem(dn);
+    model->appendRow({grp_name_item, grp_dn_item});
+
+    // Populate model with members of new root
+    const QList<QString> members = AD()->get_attribute_multi(dn, "member");
+    for (auto member_dn : members) {
+        const QString name = AD()->get_attribute(member_dn, "name");
+
+        const auto name_item = new QStandardItem(name);
+        const auto dn_item = new QStandardItem(member_dn);
+
+        grp_name_item->appendRow({name_item, dn_item});
+    }
+
+    QModelIndex grp_index = grp_name_item->index();
 
     // Set root to group index so that it is hidden
-    view->setRootIndex(root_index);
+    view->setRootIndex(grp_index);
 }
