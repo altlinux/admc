@@ -45,7 +45,7 @@ void EntryContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
                 return;
             }
 
-            const QModelIndex index = convert_to_source(base_index, view->model());
+            const QModelIndex index = convert_to_source(base_index);
             
             const QModelIndex dn_index = index.siblingAtColumn(dn_column);
             const QString dn = dn_index.data().toString();

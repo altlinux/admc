@@ -18,7 +18,7 @@
  */
 
 #include "containers_widget.h"
-#include "entry_proxy_model.h"
+#include "advanced_view_proxy.h"
 #include "entry_context_menu.h"
 #include "dn_column_proxy.h"
 #include "entry_model.h"
@@ -41,7 +41,8 @@ ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget
     model->setHorizontalHeaderItem(ContainersModel::Column::Name, new QStandardItem("Name"));
     model->setHorizontalHeaderItem(ContainersModel::Column::DN, new QStandardItem("DN"));
 
-    const auto proxy = new EntryProxyModel(model, this);
+    const auto proxy = new AdvancedViewProxy(ContainersModel::Column::DN, this);
+    proxy->setSourceModel(model);   
 
     const auto dn_column_proxy = new DnColumnProxy(ContainersModel::Column::DN, this);
     dn_column_proxy->setSourceModel(proxy);   
@@ -103,7 +104,7 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
         return;
     }
 
-    const QModelIndex index = convert_to_source(indexes[0], view->model());
+    const QModelIndex index = convert_to_source(indexes[0]);
 
     QModelIndex dn_index = index.siblingAtColumn(ContainersModel::Column::DN);
     QString dn = dn_index.data().toString();

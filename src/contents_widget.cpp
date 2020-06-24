@@ -20,7 +20,7 @@
 #include "contents_widget.h"
 #include "containers_widget.h"
 #include "ad_interface.h"
-#include "entry_proxy_model.h"
+#include "advanced_view_proxy.h"
 #include "entry_model.h"
 #include "entry_context_menu.h"
 #include "dn_column_proxy.h"
@@ -38,7 +38,8 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContext
     model->setHorizontalHeaderItem(Column::Description, new QStandardItem("Description"));
     model->setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
 
-    const auto proxy = new EntryProxyModel(model, this);
+    const auto proxy = new AdvancedViewProxy(Column::DN, this);
+    proxy->setSourceModel(model);   
 
     const auto dn_column_proxy = new DnColumnProxy(Column::DN, this);
     dn_column_proxy->setSourceModel(proxy);

@@ -23,9 +23,9 @@
 #include <QSortFilterProxyModel>
 
 // Converts index all the way down to source index, going through whatever chain of proxies is present
-QModelIndex convert_to_source(const QModelIndex &index, const QAbstractItemModel *model) {
+QModelIndex convert_to_source(const QModelIndex &index) {
+    const QAbstractItemModel *current_model = index.model();
     QModelIndex current_index = index;
-    const QAbstractItemModel *current_model = model;
 
     while (true) {
         const QSortFilterProxyModel *proxy = qobject_cast<const QSortFilterProxyModel *>(current_model);
@@ -38,4 +38,13 @@ QModelIndex convert_to_source(const QModelIndex &index, const QAbstractItemModel
             return current_index;
         }
     }
+}
+
+// Row index can be an index of any column in target row and of any proxy in the proxy chain
+QString get_dn_from_index(const QModelIndex &base_row_index, int dn_column) {
+    const QModelIndex row_index = convert_to_source(base_row_index);
+    const QModelIndex dn_index = row_index.siblingAtColumn(dn_column);
+    const QString dn = dn_index.data().toString();
+
+    return dn;
 }

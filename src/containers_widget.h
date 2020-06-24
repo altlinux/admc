@@ -26,7 +26,7 @@
 #include <QWidget>
 
 class QItemSelection;
-class EntryProxyModel;
+class AdvancedViewProxy;
 class EntryContextMenu;
 class QTreeView;
 

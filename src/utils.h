@@ -24,6 +24,7 @@
 
 class QAbstractItemModel;
 
-QModelIndex convert_to_source(const QModelIndex &index, const QAbstractItemModel *model);
+QModelIndex convert_to_source(const QModelIndex &index);
+QString get_dn_from_index(const QModelIndex &base_row_index, int dn_column);
 
 #endif /* UTILS_H */
