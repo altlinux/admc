@@ -38,6 +38,14 @@ class ContentsWidget final : public EntryWidget {
 Q_OBJECT
 
 public:
+    enum Column {
+        Name,
+        Category,
+        Description,
+        DN,
+        COUNT,
+    };
+    
     ContentsWidget(EntryModel* model_arg, ContainersWidget *containers_widget, EntryContextMenu *entry_context_menu, QWidget *parent);
 
     void change_target(const QString &dn);
@@ -48,13 +56,6 @@ private slots:
     void on_attributes_changed(const QString &dn);
 
 private:
-    enum Column {
-        Name,
-        Category,
-        Description,
-        DN,
-        COUNT,
-    };
 
     EntryModel *model = nullptr;
     EntryProxyModel *proxy = nullptr;
