@@ -100,14 +100,11 @@ QList<QString> AdInterface::load_children(const QString &dn) {
     }
 }
 
-QList<QString> AdInterface::search(const QString &attribute, const QString &value) {
-    const QByteArray attribute_array = attribute.toLatin1();
-    const char *attribute_cstr = attribute_array.constData();
+QList<QString> AdInterface::search(const QString &filter) {
+    const QByteArray filter_array = filter.toLatin1();
+    const char *filter_cstr = filter_array.constData();
 
-    const QByteArray value_array = value.toLatin1();
-    const char *value_cstr = value_array.constData();
-
-    char **results_raw = connection->search(attribute_cstr, value_cstr);
+    char **results_raw = connection->search(filter_cstr);
 
     if (results_raw != NULL) {
         auto results = QList<QString>();
@@ -125,7 +122,7 @@ QList<QString> AdInterface::search(const QString &attribute, const QString &valu
         return results;
     } else {
         if (connection->get_errcode() != AD_SUCCESS) {
-            emit search_failed(attribute, value, get_error_str());
+            emit search_failed(filter, get_error_str());
         }
 
         return QList<QString>();

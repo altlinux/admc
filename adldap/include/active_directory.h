@@ -116,7 +116,8 @@ int ad_setpass(LDAP *ds, const char *dn, const char *password);
 |  Searching is done from the searchbase specified in the configuration
 | file.
 */
-char **ad_search(LDAP *ds, const char *attribute, const char *value, const char* search_base);
+char **ad_search(LDAP *ds, const char *filter_arg, const char* search_base);
+char **ad_search_attribute(LDAP *ds, const char *attribute, const char *value, const char* search_base);
 
 /* ad_mod_add() adds a value to the given attribute.
 | Example ad_mod_add("cn=nobody,ou=users,dc=example,dc=com",

@@ -19,6 +19,7 @@
 
 #include "move_dialog.h"
 #include "ad_interface.h"
+#include "settings.h"
 
 #include <QLineEdit>
 #include <QVBoxLayout>
@@ -27,6 +28,7 @@
 #include <QTreeView>
 #include <QSortFilterProxyModel>
 #include <QComboBox>
+#include <QAction>
 
 enum Column {
     Column_Name,
@@ -131,7 +133,7 @@ void MoveDialog::open_for_entry(const QString &dn) {
 
     filter_class_combo_box->clear();
     QList<ClassFilterType> combo_classes = classes;
-    combo_classes.append(ClassFilterType_All);
+    combo_classes.insert(0, ClassFilterType_All);
     for (auto c : combo_classes) {
         const QString string = class_filter_display_text[c];
         const int class_i = c;
@@ -141,21 +143,25 @@ void MoveDialog::open_for_entry(const QString &dn) {
 
     // Load model
     model->removeRows(0, model->rowCount());
+       
+    const QAction *const toggle_advanced_view = SETTINGS()->toggle_advanced_view;
+    const bool advanced_view_is_off = !toggle_advanced_view->isChecked();
+
     for (auto c : classes) {
         const QString class_string = class_filter_string[c];
 
-        const QList<QString> entries = AD()->search("objectClass", class_string);
+        QString filter = QString("(objectClass=%1)").arg(class_string);
+        if (advanced_view_is_off) {
+            filter = QString("(&%1(showInAdvancedViewOnly=FALSE))").arg(filter);
+        }
+
+        const QList<QString> entries = AD()->search(filter);
 
         for (auto e_dn : entries) {
             // TODO: make entryproxymodel into AdvancedFilter
             // that accepts any model and takes dn_column as ctor arg
             // to get the dn
             // and then use that to filter here properly
-            const bool advanced_view_only = AD()->get_attribute(e_dn, "showInAdvancedViewOnly") == "TRUE";
-            if (advanced_view_only) {
-                continue;
-            }
-
             auto row = QList<QStandardItem *>();
             for (int i = 0; i < Column_COUNT; i++) {
                 row.push_back(new QStandardItem());

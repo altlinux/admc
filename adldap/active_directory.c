@@ -488,9 +488,8 @@ int ad_setpass(LDAP *ds, const char *dn, const char *password) {
 }
 
 /* general search function */
-char **ad_search(LDAP *ds, const char *attribute, const char *value, const char* search_base) {
-    char *filter;
-    int filter_length;
+char **ad_search(LDAP *ds, const char *filter_arg, const char* search_base) {
+    char *filter = strdup(filter_arg);
     char *attrs[]={"1.1", NULL};
     LDAPMessage *res;
     LDAPMessage *entry;
@@ -503,10 +502,6 @@ char **ad_search(LDAP *ds, const char *attribute, const char *value, const char*
         ad_error_code=AD_MISSING_CONFIG_PARAMETER;
         return (char **)-1;
     }
-
-    filter_length=(strlen(attribute)+strlen(value)+4);
-    filter=malloc(filter_length);
-    snprintf(filter, filter_length, "(%s=%s)", attribute, value);
 
     result=ldap_search_s(ds, search_base, LDAP_SCOPE_SUBTREE, filter, attrs, 1, &res);
     if(result!=LDAP_SUCCESS) {
@@ -522,7 +517,7 @@ char **ad_search(LDAP *ds, const char *attribute, const char *value, const char*
     if(num_results==0) {
         ldap_msgfree(res);
         snprintf(ad_error_msg, MAX_ERR_LENGTH,
-            "%s not found", value);
+            "No matches found for %s", filter);
         ad_error_code=AD_OBJECT_NOT_FOUND;
         return NULL;
     }
@@ -546,6 +541,24 @@ char **ad_search(LDAP *ds, const char *attribute, const char *value, const char*
 
     ad_error_code=AD_SUCCESS;
     return dnlist;
+}
+
+/* search for entries matching "attribute=value" */
+char **ad_search_attribute(LDAP *ds, const char *attribute, const char *value, const char* search_base) {
+    int filter_length = strlen(attribute) + strlen(value) + 4;
+    char *filter = malloc(filter_length * sizeof(char));
+    snprintf(filter, filter_length, "(%s=%s)", attribute, value);
+
+    char **dn_list = ad_search(ds, filter, search_base);
+    free(filter);
+
+    if (ad_error_code != AD_SUCCESS) {
+        snprintf(ad_error_msg, MAX_ERR_LENGTH, 
+            "Error in ldap_search_s for ad_search_attribute: %s", 
+            ldap_err2string(ad_error_code));
+    }
+
+    return dn_list;
 }
 
 int ad_mod_add(LDAP *ds, const char *dn, const char *attribute, const char *value) {

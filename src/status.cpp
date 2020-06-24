@@ -121,8 +121,8 @@ void Status::on_load_children_failed(const QString &dn, const QString &error_str
 
     message(msg);
 }
-void Status::on_search_failed(const QString &attribute, const QString &value, const QString &error_str) {
-    QString msg = QString("Failed to search for \"%1\"=\"%2\". Error: \"%3\"").arg(attribute, value, error_str);
+void Status::on_search_failed(const QString &filter, const QString &error_str) {
+    QString msg = QString("Failed to search for \"%1\". Error: \"%2\"").arg(filter, error_str);
 
     message(msg);
 }

@@ -68,7 +68,7 @@ public:
     QString get_error_str();
 
     QList<QString> load_children(const QString &dn);
-    QList<QString> search(const QString &attribute, const QString &value);
+    QList<QString> search(const QString &filter);
     QMap<QString, QList<QString>> get_attributes(const QString &dn);
     QList<QString> get_attribute_multi(const QString &dn, const QString &attribute);
     QString get_attribute(const QString &dn, const QString &attribute);
@@ -99,7 +99,7 @@ signals:
 
     void load_children_failed(const QString &dn, const QString &error_str);
 
-    void search_failed(const QString &attribute, const QString &value, const QString &error_str);
+    void search_failed(const QString &filter, const QString &error_str);
 
     void load_attributes_complete(const QString &dn);
     void load_attributes_failed(const QString &dn, const QString &error_str);
