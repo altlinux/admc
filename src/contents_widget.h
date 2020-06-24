@@ -20,21 +20,19 @@
 #ifndef CONTENTS_WIDGET_H
 #define CONTENTS_WIDGET_H
 
-#include "entry_widget.h"
 #include "ad_interface.h"
 
+#include <QWidget>
 #include <QString>
 
-class ContainersModel;
-class EntryProxyModel;
 class EntryModel;
-class QString;
 class ContainersWidget;
 class QStandardItem;
 class EntryContextMenu;
+class QTreeView;
 
 // Shows name, category and description of children of entry selected in containers view
-class ContentsWidget final : public EntryWidget {
+class ContentsWidget final : public QWidget {
 Q_OBJECT
 
 public:
@@ -46,9 +44,12 @@ public:
         COUNT,
     };
     
-    ContentsWidget(EntryModel* model_arg, ContainersWidget *containers_widget, EntryContextMenu *entry_context_menu, QWidget *parent);
+    ContentsWidget(ContainersWidget *containers_widget, EntryContextMenu *entry_context_menu, QWidget *parent);
 
     void change_target(const QString &dn);
+
+signals:
+    void clicked_dn(const QString &dn);
 
 private slots:
     void on_create_entry_complete(const QString &dn, NewEntryType type);
@@ -56,8 +57,8 @@ private slots:
     void on_attributes_changed(const QString &dn);
 
 private:
-
     EntryModel *model = nullptr;
+    QTreeView *view = nullptr;
     QString target_dn = "";
     
     void remove_child(const QString &dn);

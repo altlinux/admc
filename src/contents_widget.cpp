@@ -29,10 +29,10 @@
 #include <QLabel>
 #include <QLayout>
 
-ContentsWidget::ContentsWidget(EntryModel* model_arg, ContainersWidget *containers_widget, EntryContextMenu *entry_context_menu, QWidget *parent)
-: EntryWidget(model_arg, parent)
+ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContextMenu *entry_context_menu, QWidget *parent)
+: QWidget(parent)
 {   
-    model = model_arg;
+    model = new EntryModel(Column::COUNT, Column::DN, this);
     model->setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
     model->setHorizontalHeaderItem(Column::Category, new QStandardItem("Category"));
     model->setHorizontalHeaderItem(Column::Description, new QStandardItem("Description"));
@@ -40,23 +40,30 @@ ContentsWidget::ContentsWidget(EntryModel* model_arg, ContainersWidget *containe
 
     const auto proxy = new EntryProxyModel(model, this);
 
-    const auto dn_column_proxy = new DnColumnProxy(ContentsModel::Column::DN, this);
+    const auto dn_column_proxy = new DnColumnProxy(Column::DN, this);
     dn_column_proxy->setSourceModel(proxy);
-    view->setModel(dn_column_proxy);
 
+    view = new QTreeView(this);
+    view->setModel(dn_column_proxy);
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setSelectionMode(QAbstractItemView::SingleSelection);
     view->setRootIsDecorated(false);
     view->setItemsExpandable(false);
     view->setExpandsOnDoubleClick(false);
+    view->setContextMenuPolicy(Qt::CustomContextMenu);
+    view->setDragDropMode(QAbstractItemView::DragDrop);
     entry_context_menu->connect_view(view, Column::DN);
 
     // Insert label into layout
     const auto label = new QLabel("Contents");
-    layout()->removeWidget(view);
-    layout()->addWidget(label);
-    layout()->addWidget(view);
+
+    const auto layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->removeWidget(view);
+    layout->addWidget(label);
+    layout->addWidget(view);
 
     connect(
         containers_widget, &ContainersWidget::selected_changed,
@@ -71,6 +78,22 @@ ContentsWidget::ContentsWidget(EntryModel* model_arg, ContainersWidget *containe
     connect(
         AD(), &AdInterface::attributes_changed,
         this, &ContentsWidget::on_attributes_changed);
+
+    connect(
+        view, &QAbstractItemView::clicked,
+        [this] (const QModelIndex &index) {
+            const QString dn = model->get_dn_from_index(index);
+
+            emit clicked_dn(dn);
+        });
+
+
+    setEnabled(false);
+    connect(
+        AD(), &AdInterface::ad_interface_login_complete,
+        [this] () {
+            setEnabled(true);
+        });
 }
 
 void ContentsWidget::load_row(QList<QStandardItem *> row, const QString &dn) {
