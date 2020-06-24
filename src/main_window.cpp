@@ -30,6 +30,8 @@
 #include "status.h"
 #include "entry_widget.h"
 #include "settings.h"
+#include "entry_context_menu.h"
+#include "confirmation_dialog.h"
 
 #include <QApplication>
 #include <QString>
@@ -39,11 +41,7 @@
 #include <QSplitter>
 #include <QStatusBar>
 #include <QTreeView>
-#include <QDir>
-#include <QProcess>
 #include <QVBoxLayout>
-#include <QInputDialog>
-#include <QMessageBox>
 #include <QTextEdit>
 
 MainWindow::MainWindow(const bool auto_login)
@@ -79,12 +77,14 @@ MainWindow::MainWindow(const bool auto_login)
     auto central_widget = new QWidget(this);
     setCentralWidget(central_widget);
 
+    auto entry_context_menu = new EntryContextMenu(this);
+   
     auto ad_model = new AdModel(this);
-    auto containers_widget = new ContainersWidget(ad_model, this);
-    auto contents_widget = new ContentsWidget(ad_model, this);
+    auto containers_widget = new ContainersWidget(ad_model, entry_context_menu, this);
+    auto contents_widget = new ContentsWidget(ad_model, entry_context_menu, this);
 
     auto members_model = new MembersModel(this);
-    auto members_widget = new MembersWidget(members_model, this);
+    auto members_widget = new MembersWidget(members_model, entry_context_menu, this);
     
     auto details_widget = new DetailsWidget(members_widget, this);
 
@@ -132,10 +132,9 @@ MainWindow::MainWindow(const bool auto_login)
         connect(
             contents_widget, &EntryWidget::clicked_dn,
             details_widget, &DetailsWidget::on_contents_clicked_dn);
-        
-        connect_entry_widget(containers_widget, details_widget);
-        connect_entry_widget(contents_widget, details_widget);
-        connect_entry_widget(members_widget, details_widget);
+        connect(
+            entry_context_menu, &EntryContextMenu::details,
+            details_widget, &DetailsWidget::on_context_menu_details);
     }
 
     if (auto_login) {
@@ -149,140 +148,9 @@ void MainWindow::on_action_login() {
 
 void MainWindow::on_action_exit() {
     const QString text = QString("Are you sure you want to exit?");
-    const bool confirmed = confirmation_dialog(text);
+    const bool confirmed = confirmation_dialog(text, this);
 
     if (confirmed) {
         QApplication::quit();
     }   
-}
-
-bool MainWindow::confirmation_dialog(const QString &text) {
-    const bool confirm_actions = SETTINGS()->confirm_actions->isChecked();
-    if (!confirm_actions) {
-        return true;
-    }
-
-    const QString title = "ADMC";
-    const QMessageBox::StandardButton reply = QMessageBox::question(this, title, text, QMessageBox::Yes|QMessageBox::No);
-
-    if (reply == QMessageBox::Yes) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-void MainWindow::connect_entry_widget(EntryWidget *widget, DetailsWidget *details_widget) {
-    connect(
-        widget, &EntryWidget::context_menu_details,
-        details_widget, &DetailsWidget::on_context_menu_details);
-    connect(
-        widget, &EntryWidget::context_menu_rename,
-        this, &MainWindow::on_context_menu_rename);
-    connect(
-        widget, &EntryWidget::context_menu_delete,
-        this, &MainWindow::on_context_menu_delete);
-    connect(
-        widget, &EntryWidget::context_menu_new_user,
-        this, &MainWindow::on_context_menu_new_user);
-    connect(
-        widget, &EntryWidget::context_menu_new_computer,
-        this, &MainWindow::on_context_menu_new_computer);
-    connect(
-        widget, &EntryWidget::context_menu_new_group,
-        this, &MainWindow::on_context_menu_new_group);
-    connect(
-        widget, &EntryWidget::context_menu_new_ou,
-        this, &MainWindow::on_context_menu_new_ou);
-    connect(
-        widget, &EntryWidget::context_menu_edit_policy,
-        this, &MainWindow::on_context_menu_edit_policy);
-}
-
-void MainWindow::on_context_menu_delete(const QString &dn) {
-    const QString name = AD()->get_attribute(dn, "name");
-    const QString text = QString("Are you sure you want to delete \"%1\"?").arg(name);
-    const bool confirmed = confirmation_dialog(text);
-
-    if (confirmed) {
-        AD()->delete_entry(dn);
-    }    
-}
-
-void MainWindow::new_entry_dialog(const QString &parent_dn, NewEntryType type) {
-    QString type_string = new_entry_type_to_string[type];
-    QString dialog_title = "New " + type_string;
-    QString input_label = type_string + " name";
-
-    bool ok;
-    QString name = QInputDialog::getText(nullptr, dialog_title, input_label, QLineEdit::Normal, "", &ok);
-
-    // TODO: maybe expand tree to newly created entry?
-
-    // Create user once dialog is complete
-    if (ok && !name.isEmpty()) {
-        // Attempt to create user in AD
-
-        const QMap<NewEntryType, QString> new_entry_type_to_suffix = {
-            {NewEntryType::User, "CN"},
-            {NewEntryType::Computer, "CN"},
-            {NewEntryType::OU, "OU"},
-            {NewEntryType::Group, "CN"},
-        };
-        QString suffix = new_entry_type_to_suffix[type];
-
-        const QString dn = suffix + "=" + name + "," + parent_dn;
-
-        AD()->create_entry(name, dn, type);
-    }
-}
-
-void MainWindow::on_context_menu_new_user(const QString &dn) {
-    new_entry_dialog(dn, NewEntryType::User);
-}
-
-void MainWindow::on_context_menu_new_computer(const QString &dn) {
-    new_entry_dialog(dn, NewEntryType::Computer);
-}
-
-void MainWindow::on_context_menu_new_group(const QString &dn) {
-    new_entry_dialog(dn, NewEntryType::Group);
-}
-
-void MainWindow::on_context_menu_new_ou(const QString &dn) {
-    new_entry_dialog(dn, NewEntryType::OU);
-}
-
-void MainWindow::on_context_menu_rename(const QString &dn) {
-    // Get new name from input box
-    QString dialog_title = "Rename";
-    QString input_label = "New name:";
-    bool ok;
-    QString new_name = QInputDialog::getText(nullptr, dialog_title, input_label, QLineEdit::Normal, "", &ok);
-
-    if (ok && !new_name.isEmpty()) {
-        AD()->rename(dn, new_name);
-    }
-}
-
-void MainWindow::on_context_menu_edit_policy(const QString &dn) {
-    // Start policy edit process
-    const auto process = new QProcess(this);
-
-    const QString program_name = "../gpgui";
-    process->setProgram(QDir::currentPath() + program_name);
-
-    const char *uri = "ldap://dc0.domain.alt";
-
-    const QString path = AD()->get_attribute(dn, "gPCFileSysPath");
-
-    QStringList args;
-    args << uri;
-    args << path;
-    process->setArguments(args);
-
-    printf("on_action_edit_policy\ndn=%s\npath=%s\n", qPrintable(dn), qPrintable(path));
-    printf("execute command: %s %s %s\n", qPrintable(program_name), qPrintable(uri), qPrintable(path));
-
-    process->start();
 }

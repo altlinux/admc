@@ -20,12 +20,13 @@
 #include "containers_widget.h"
 #include "ad_model.h"
 #include "entry_proxy_model.h"
+#include "entry_context_menu.h"
 
 #include <QTreeView>
 #include <QLabel>
 #include <QLayout>
 
-ContainersWidget::ContainersWidget(AdModel *model, QWidget *parent)
+ContainersWidget::ContainersWidget(AdModel *model, EntryContextMenu *entry_context_menu, QWidget *parent)
 : EntryWidget(model, parent)
 {
     proxy = new EntryProxyModel(model, this);
@@ -37,6 +38,7 @@ ContainersWidget::ContainersWidget(AdModel *model, QWidget *parent)
     view->setItemsExpandable(true);
     view->setExpandsOnDoubleClick(true);
     view->setModel(proxy);
+    entry_context_menu->connect_view(view, AdModel::Column::DN);
 
     column_hidden[AdModel::Column::Name] = false;
     column_hidden[AdModel::Column::Category] = true;

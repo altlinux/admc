@@ -22,17 +22,8 @@
 #include "entry_model.h"
 #include "settings.h"
 
-#include <QApplication>
-#include <QItemSelection>
-#include <QSortFilterProxyModel>
-#include <QMouseEvent>
-#include <QDrag>
-#include <QMimeData>
 #include <QTreeView>
-#include <QHeaderView>
-#include <QLabel>
 #include <QVBoxLayout>
-#include <QMenu>
 #include <QAction>
 
 EntryWidget::EntryWidget(EntryModel *model, QWidget *parent)
@@ -60,10 +51,6 @@ EntryWidget::EntryWidget(EntryModel *model, QWidget *parent)
         this, &EntryWidget::on_toggle_show_dn_column);
 
     connect(
-        view, &QWidget::customContextMenuRequested,
-        this, &EntryWidget::on_context_menu_requested);
-
-    connect(
         view, &QAbstractItemView::clicked,
         this, &EntryWidget::on_view_clicked);
     connect(
@@ -77,53 +64,6 @@ EntryWidget::EntryWidget(EntryModel *model, QWidget *parent)
 void EntryWidget::on_ad_interface_login_complete(const QString &base, const QString &head) {
     // Enable on login
     setEnabled(true);
-}
-
-void EntryWidget::on_context_menu_requested(const QPoint &pos) {
-    // Open entry context menu
-    QModelIndex index = view->indexAt(pos);
-
-    if (!index.isValid()) {
-        return;
-    }
-    
-    const QString dn = entry_model->get_dn_from_index(index);
-    
-    QMenu menu;
-
-    QAction *action_to_show_menu_at = menu.addAction("Details", [this, dn]() {
-        emit context_menu_details(dn);
-    });
-    menu.addAction("Delete", [this, dn]() {
-        emit context_menu_delete(dn);
-    });
-    menu.addAction("Rename", [this, dn]() {
-        emit context_menu_rename(dn);
-    });
-
-    QMenu *submenu_new = menu.addMenu("New");
-    submenu_new->addAction("New User", [this, dn]() {
-        emit context_menu_new_user(dn);
-    });
-    submenu_new->addAction("New Computer", [this, dn]() {
-        emit context_menu_new_computer(dn);
-    });
-    submenu_new->addAction("New Group", [this, dn]() {
-        emit context_menu_new_group(dn);
-    });
-    submenu_new->addAction("New OU", [this, dn]() {
-        emit context_menu_new_ou(dn);
-    });
-
-    const bool is_policy = AD()->is_policy(dn); 
-    if (is_policy) {
-        submenu_new->addAction("Edit Policy", [this, dn]() {
-            emit context_menu_edit_policy(dn);
-        });
-    }
-
-    QPoint global_pos = view->mapToGlobal(pos);
-    menu.exec(global_pos, action_to_show_menu_at);
 }
 
 void EntryWidget::on_toggle_show_dn_column(bool checked) {

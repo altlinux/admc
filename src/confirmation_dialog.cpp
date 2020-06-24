@@ -17,28 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONTENTS_WIDGET_H
-#define CONTENTS_WIDGET_H
+#include "settings.h"
 
-#include "entry_widget.h"
+#include <QString>
+#include <QMessageBox>
+#include <QAction>
 
-class AdModel;
-class EntryProxyModel;
-class EntryContextMenu;
+bool confirmation_dialog(const QString &text, QWidget *parent) {
+    const QAction *confirm_actions = SETTINGS()->confirm_actions;
+    const bool confirm_actions_checked = confirm_actions->isChecked();
+    if (!confirm_actions_checked) {
+        return true;
+    }
 
-// Shows name, category and description of children of entry selected in containers view
-class ContentsWidget final : public EntryWidget {
-Q_OBJECT
+    const QString title = "ADMC";
+    const QMessageBox::StandardButton reply = QMessageBox::question(parent, title, text, QMessageBox::Yes|QMessageBox::No);
 
-public:
-    ContentsWidget(AdModel *model, EntryContextMenu *entry_context_menu, QWidget *parent);
-
-public slots:
-    void on_selected_container_changed(const QModelIndex &source_index);
-
-private:
-    EntryProxyModel *proxy = nullptr;
-    
-};
-
-#endif /* CONTENTS_WIDGET_H */
+    if (reply == QMessageBox::Yes) {
+        return true;
+    } else {
+        return false;
+    }
+}

@@ -19,11 +19,12 @@
 
 #include "members_widget.h"
 #include "members_model.h"
+#include "entry_context_menu.h"
 
 #include <QTreeView>
 #include <QLabel>
 
-MembersWidget::MembersWidget(MembersModel *model, QWidget *parent)
+MembersWidget::MembersWidget(MembersModel *model, EntryContextMenu *entry_context_menu, QWidget *parent)
 : EntryWidget(model, parent)
 {   
     members_model = model;
@@ -31,6 +32,7 @@ MembersWidget::MembersWidget(MembersModel *model, QWidget *parent)
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setAcceptDrops(true);
     view->setModel(members_model);
+    entry_context_menu->connect_view(view, MembersModel::Column::DN);
 
     column_hidden[MembersModel::Column::Name] = false;
     update_column_visibility();

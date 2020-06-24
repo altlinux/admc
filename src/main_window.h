@@ -20,17 +20,7 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
-#include "ad_interface.h"
-
 #include <QMainWindow>
-
-class QAction;
-class QString;
-class AdModel;
-class ContainersWidget;
-class ContentsWidget;
-class DetailsWidget;
-class EntryWidget;
 
 class MainWindow final : public QMainWindow {
 Q_OBJECT
@@ -39,21 +29,11 @@ public:
     explicit MainWindow(const bool auto_login);
 
 private slots:
-    void on_context_menu_rename(const QString &dn);
-    void on_context_menu_delete(const QString &dn);
-    void on_context_menu_new_user(const QString &dn);
-    void on_context_menu_new_computer(const QString &dn);
-    void on_context_menu_new_group(const QString &dn);
-    void on_context_menu_new_ou(const QString &dn);
-    void on_context_menu_edit_policy(const QString &dn);
     void on_action_login();
     void on_action_exit();
 
 private:
-    void new_entry_dialog(const QString &parent_dn, NewEntryType type);
-    void set_enabled_for_widgets(bool enabled);
-    bool confirmation_dialog(const QString &text);
-    void connect_entry_widget(EntryWidget *widget, DetailsWidget *details_widget);
+    
 };
 
 #endif /* MAIN_WINDOW_H */

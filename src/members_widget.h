@@ -24,13 +24,14 @@
 
 class MembersModel;
 class QString;
+class EntryContextMenu;
 
 // Shows member entries of targeted group
 class MembersWidget final : public EntryWidget {
 Q_OBJECT
 
 public:
-    MembersWidget(MembersModel *model, QWidget *parent);
+    MembersWidget(MembersModel *model, EntryContextMenu *entry_context_menu, QWidget *parent);
 
     void change_target(const QString &dn);
 

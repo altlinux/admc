@@ -17,28 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONTENTS_WIDGET_H
-#define CONTENTS_WIDGET_H
+#ifndef CONFIRMATION_DIALOG_H
+#define CONFIRMATION_DIALOG_H
 
-#include "entry_widget.h"
+class QString;
+class QWidget;
 
-class AdModel;
-class EntryProxyModel;
-class EntryContextMenu;
+bool confirmation_dialog(const QString &text, QWidget *parent);
 
-// Shows name, category and description of children of entry selected in containers view
-class ContentsWidget final : public EntryWidget {
-Q_OBJECT
-
-public:
-    ContentsWidget(AdModel *model, EntryContextMenu *entry_context_menu, QWidget *parent);
-
-public slots:
-    void on_selected_container_changed(const QModelIndex &source_index);
-
-private:
-    EntryProxyModel *proxy = nullptr;
-    
-};
-
-#endif /* CONTENTS_WIDGET_H */
+#endif /* CONFIRMATION_DIALOG_H */
