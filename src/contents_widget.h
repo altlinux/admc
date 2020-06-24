@@ -31,13 +31,14 @@ class EntryModel;
 class QString;
 class ContainersWidget;
 class QStandardItem;
+class EntryContextMenu;
 
 // Shows name, category and description of children of entry selected in containers view
 class ContentsWidget final : public EntryWidget {
 Q_OBJECT
 
 public:
-    ContentsWidget(EntryModel *model_arg, ContainersWidget *containers_widget, QWidget *parent);
+    ContentsWidget(EntryModel* model_arg, ContainersWidget *containers_widget, EntryContextMenu *entry_context_menu, QWidget *parent);
 
     void change_target(const QString &dn);
 

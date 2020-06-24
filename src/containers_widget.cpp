@@ -19,6 +19,7 @@
 
 #include "containers_widget.h"
 #include "entry_proxy_model.h"
+#include "entry_context_menu.h"
 
 #include <QTreeView>
 #include <QLabel>
@@ -30,7 +31,7 @@
 void make_new_row(QStandardItem *parent, const QString &dn);
 void load_row(QList<QStandardItem *> row, const QString &dn);
 
-ContainersWidget::ContainersWidget(ContainersModel *model_arg, QWidget *parent)
+ContainersWidget::ContainersWidget(ContainersModel *model_arg, EntryContextMenu *entry_context_menu, QWidget *parent)
 : EntryWidget(model_arg, parent)
 {
     model = model_arg;
@@ -45,6 +46,7 @@ ContainersWidget::ContainersWidget(ContainersModel *model_arg, QWidget *parent)
     view->setItemsExpandable(true);
     view->setExpandsOnDoubleClick(true);
     view->setModel(proxy);
+    entry_context_menu->connect_view(view, ContainersModel::Column::DN);
 
     column_hidden[ContainersModel::Column::Name] = false;
     update_column_visibility();

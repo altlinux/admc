@@ -26,6 +26,7 @@
 
 class QItemSelection;
 class EntryProxyModel;
+class EntryContextMenu;
 
 class ContainersModel final : public EntryModel {
 
@@ -52,7 +53,7 @@ class ContainersWidget final : public EntryWidget {
 Q_OBJECT
 
 public:
-    ContainersWidget(ContainersModel *model_arg, QWidget *parent);
+    ContainersWidget(ContainersModel *model_arg, EntryContextMenu *entry_context_menu, QWidget *parent);
 
 signals:
     void selected_changed(const QString &dn);

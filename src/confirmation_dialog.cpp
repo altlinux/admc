@@ -17,23 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#include "settings.h"
 
-#include <QMainWindow>
+#include <QString>
+#include <QMessageBox>
+#include <QAction>
 
-class MainWindow final : public QMainWindow {
-Q_OBJECT
+bool confirmation_dialog(const QString &text, QWidget *parent) {
+    const QAction *confirm_actions = SETTINGS()->confirm_actions;
+    const bool confirm_actions_checked = confirm_actions->isChecked();
+    if (!confirm_actions_checked) {
+        return true;
+    }
 
-public:
-    explicit MainWindow(const bool auto_login);
+    const QString title = "ADMC";
+    const QMessageBox::StandardButton reply = QMessageBox::question(parent, title, text, QMessageBox::Yes|QMessageBox::No);
 
-private slots:
-    void on_action_login();
-    void on_action_exit();
-
-private:
-    
-};
-
-#endif /* MAIN_WINDOW_H */
+    if (reply == QMessageBox::Yes) {
+        return true;
+    } else {
+        return false;
+    }
+}

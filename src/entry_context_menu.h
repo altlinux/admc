@@ -17,42 +17,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ENTRY_WIDGET_H
-#define ENTRY_WIDGET_H
+#ifndef ENTRY_CONTEXT_MENU_H
+#define ENTRY_CONTEXT_MENU_H
 
-#include <QWidget>
-#include <QList>
-#include <QSet>
+#include "ad_interface.h"
 
-class QTreeView;
-class QLabel;
-class EntryModel;
+#include <QMenu>
+
 class QString;
+class QPoint;
+class QAbstractItemView;
 
-// Widget based on a QTreeView with an EntryModel
-class EntryWidget : public QWidget {
+class EntryContextMenu final : public QMenu {
 Q_OBJECT
 
 public:
-    EntryWidget(EntryModel *model, QWidget *parent);
+    using QMenu::QMenu;
+
+    void connect_view(QAbstractItemView *view, int dn_column);
 
 signals:
-    void clicked_dn(const QString &dn);
-
-private slots:
-    void on_toggle_show_dn_column(bool checked);
-    void on_view_clicked(const QModelIndex &index);
-    void on_ad_interface_login_complete(const QString &base, const QString &head);
-
-protected:
-    QTreeView *view = nullptr;
-    QList<bool> column_hidden;
+    void details(const QString &dn);
     
-    void update_column_visibility();
-
 private:
-    EntryModel *entry_model = nullptr;
+    void open(const QString &dn, const QPoint &global_pos);
+
+    void delete_entry(const QString &dn);
+    void new_entry_dialog(const QString &parent_dn, NewEntryType type);
+    void new_user(const QString &dn);
+    void new_computer(const QString &dn);
+    void new_group(const QString &dn);
+    void new_ou(const QString &dn);
+    void rename(const QString &dn);
+    void edit_policy(const QString &dn);
 
 };
 
-#endif /* ENTRY_WIDGET_H */
+#endif /* ENTRY_CONTEXT_MENU_H */

@@ -90,7 +90,13 @@ public:
     bool can_drop_entry(const QString &dn, const QString &target_dn);
     void drop_entry(const QString &dn, const QString &target_dn);
 
+    void command(QStringList args);
+
 signals:
+    // NOTE: signals below are mostly for logging with few exceptions
+    // like login/create_entry
+    // For state updates you MUST use dn_changed() and
+    // attributes_changed() signals
     void ad_interface_login_complete(const QString &base, const QString &head);
     void ad_interface_login_failed(const QString &base, const QString &head);
 
@@ -117,6 +123,16 @@ signals:
     void rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
     void rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);
 
+    // NOTE: if dn and attributes are changed together, for example
+    // due to a rename, dn_changed() signal is emitted first
+    
+    // NOTE: If multiple DN's are changed, for example by moving
+    // an entry which has children, dn_changed() is emmited for all
+    // entries that were moved and it is emmitted in order of depth
+    // starting from lowest depth
+
+    // NOTE: dn_changed() is emitted when entry is deleted with
+    // new_dn set to ""
     void dn_changed(const QString &old_dn, const QString &new_dn);
     void attributes_changed(const QString &dn);
 

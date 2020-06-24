@@ -63,6 +63,13 @@ Settings::Settings(QObject *parent)
         this, &Settings::save_settings);
 }
 
+void Settings::emit_toggle_signals() const {
+    for (auto action : checkable_actions) {
+        const bool checked = action->isChecked();
+        emit action->toggled(checked);
+    }
+}
+
 void Settings::save_settings() {
     const QString settings_file_path = get_settings_file_path();
     QSettings settings(settings_file_path, QSettings::NativeFormat);

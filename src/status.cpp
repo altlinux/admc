@@ -99,10 +99,6 @@ Status::Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *p
     connect(
         SETTINGS()->toggle_show_status_log, &QAction::toggled,
         this, &Status::on_toggle_show_status_log);
-
-    // Load "show status log" setting
-    const bool show_status_log_checked = SETTINGS()->toggle_show_status_log->isChecked();
-    on_toggle_show_status_log(show_status_log_checked);
 }
 
 void Status::on_ad_interface_login_complete(const QString &search_base, const QString &head_dn) {

@@ -32,6 +32,7 @@ Q_OBJECT
 
 public:
     explicit Settings(QObject *parent);
+    void emit_toggle_signals() const;
 
     QAction *toggle_advanced_view = nullptr;
     QAction *toggle_show_dn_column = nullptr;
