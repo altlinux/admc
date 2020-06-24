@@ -98,28 +98,24 @@ void ContainersWidget::on_ad_interface_login_complete(const QString &search_base
 }
 
 void ContainersWidget::on_dn_changed(const QString &old_dn, const QString &new_dn) {
-    const QStandardItem *old_item = model->find_first_row_item(old_dn);
+    QStandardItem *old_dn_item = model->find_item(old_dn, ContainersModel::Column::DN);
 
     // Update DN
-    if (old_item != nullptr && new_dn != "") {
-        const QModelIndex old_item_index = old_item->index();
-        const QModelIndex dn_index = old_item_index.siblingAtColumn(ContainersModel::Column::DN);
-        QStandardItem *dn_item = model->itemFromIndex(dn_index);
-
-        dn_item->setText(new_dn);
+    if (old_dn_item != nullptr && new_dn != "") {
+        old_dn_item->setText(new_dn);
     }
 
     const QString old_parent_dn = extract_parent_dn_from_dn(old_dn);
     const QString new_parent_dn = extract_parent_dn_from_dn(new_dn);
 
-    QStandardItem *old_parent = model->find_first_row_item(old_parent_dn);
-    QStandardItem *new_parent = model->find_first_row_item(new_parent_dn);
+    QStandardItem *old_parent = model->find_item(old_parent_dn, 0);
+    QStandardItem *new_parent = model->find_item(new_parent_dn, 0);
 
     // If parent of row is already new parent, don't need to move row
     // This happens when entry was moved together with it's parent
     // or ancestor
     // Also true if entry was only renamed
-    if (old_item->parent() == new_parent) {
+    if (old_dn_item->parent() == new_parent) {
         return;
     }
 
@@ -130,7 +126,7 @@ void ContainersWidget::on_dn_changed(const QString &old_dn, const QString &new_d
     const bool add_to_new_parent = (new_parent != nullptr && !model->canFetchMore(new_parent->index()));
 
     if (remove_from_old_parent) {
-        const int old_row_i = old_item->row();
+        const int old_row_i = old_dn_item->row();
 
         if (add_to_new_parent) {
             // Transfer row from old to new parent
@@ -149,7 +145,7 @@ void ContainersWidget::on_dn_changed(const QString &old_dn, const QString &new_d
 void ContainersWidget::on_create_entry_complete(const QString &dn, NewEntryType type) {
     // Load entry to model if it's parent has already been fetched
     QString parent_dn = extract_parent_dn_from_dn(dn);
-    QStandardItem *parent = model->find_first_row_item(parent_dn);
+    QStandardItem *parent = model->find_item(parent_dn, 0);
 
     if (parent != nullptr) {
         const QModelIndex parent_index = parent->index();
@@ -161,38 +157,17 @@ void ContainersWidget::on_create_entry_complete(const QString &dn, NewEntryType 
 }
 
 void ContainersWidget::on_attributes_changed(const QString &dn) {
-    // Compose row based on dn
-    QList<QStandardItem *> items = model->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, ContainersModel::Column::DN);
+    QList<QStandardItem *> row = model->find_row(dn);
 
-    if (items.size() == 0) {
-        return;
+    if (!row.isEmpty()) {
+        load_row(row, dn);
     }
-
-    QStandardItem *dn_item = items[0];
-    QModelIndex dn_index = dn_item->index();
-
-    // Compose indexes for all columns
-    auto indexes = QList<QModelIndex>(); 
-    for (int i = 0; i < ContainersModel::Column::COUNT; i++) {
-        QModelIndex index = dn_index.siblingAtColumn(i);
-        indexes.push_back(index);
-    }
-
-    // Compose the row of items from indexes
-    auto row = QList<QStandardItem *>();
-    for (int i = 0; i < ContainersModel::Column::COUNT; i++) {
-        QModelIndex index = indexes[i];
-        QStandardItem *item = model->itemFromIndex(index);
-        row.push_back(item);
-    }
-
-    load_row(row, dn);
 }
 
 ContainersModel::ContainersModel(QObject *parent)
 : EntryModel(Column::COUNT, ContainersModel::Column::DN, parent)
 {
-    
+
 }
 
 bool ContainersModel::canFetchMore(const QModelIndex &parent) const {

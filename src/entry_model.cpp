@@ -75,22 +75,31 @@ bool EntryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int 
     return true;
 }
 
-QStandardItem *EntryModel::find_first_row_item(const QString &dn) {
-    if (dn == "") {
-        return nullptr;
-    }
-
-    // Find dn item (findItems returns as list)
+QList<QStandardItem *> EntryModel::find_row(const QString &dn) {
+    // Find dn item
     const QList<QStandardItem *> dn_items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, dn_column);
-    if (dn_items.size() == 0) {
-        return nullptr;
+    if (dn_items.isEmpty()) {
+        return QList<QStandardItem *>();
     }
 
-    // Get first item in row
-    const QStandardItem *dn_item = dn_items[0];
-    const QModelIndex dn_index = dn_item->index();
-    const QModelIndex first_item_index = dn_index.siblingAtColumn(0);
-    QStandardItem *first_item = itemFromIndex(first_item_index);
+    const QStandardItem *const dn_item = dn_items[0];
+    const QStandardItem *const parent = dn_item->parent();
+    const int column_count = parent->columnCount();
+    const int row_i = dn_item->row();
 
-    return first_item;
+    // Compose the row
+    auto row = QList<QStandardItem *>();
+    for (int col_i = 0; col_i < column_count; col_i++) {
+        QStandardItem *item = parent->child(row_i, col_i);
+        row.push_back(item);
+    }
+
+    return row;
+}
+
+QStandardItem *EntryModel::find_item(const QString &dn, int col) {
+    QList<QStandardItem *> row = find_row(dn);
+    QStandardItem *item = row.value(col);
+
+    return item;
 }
