@@ -40,7 +40,7 @@ ContentsWidget::ContentsWidget(EntryModel* model_arg, ContainersWidget *containe
 
     const auto proxy = new EntryProxyModel(model, this);
 
-    const auto dn_column_proxy = new DnColumnProxy(ContainersModel::Column::DN, this);
+    const auto dn_column_proxy = new DnColumnProxy(ContentsModel::Column::DN, this);
     dn_column_proxy->setSourceModel(proxy);
     view->setModel(dn_column_proxy);
 

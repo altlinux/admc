@@ -78,8 +78,7 @@ MainWindow::MainWindow(const bool auto_login)
 
     auto entry_context_menu = new EntryContextMenu(this);
     
-    auto containers_model = new ContainersModel(this);
-    auto containers_widget = new ContainersWidget(containers_model, entry_context_menu, this);
+    auto containers_widget = new ContainersWidget(entry_context_menu, this);
 
     auto contents_model = new EntryModel(ContentsWidget::Column::COUNT, ContentsWidget::Column::DN, this);
     auto contents_widget = new ContentsWidget(contents_model, containers_widget, entry_context_menu, this);
@@ -125,7 +124,7 @@ MainWindow::MainWindow(const bool auto_login)
     // Connect signals
     {
         connect(
-            containers_widget, &EntryWidget::clicked_dn,
+            containers_widget, &ContainersWidget::clicked_dn,
             details_widget, &DetailsWidget::on_containers_clicked_dn);
         connect(
             contents_widget, &EntryWidget::clicked_dn,

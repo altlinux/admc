@@ -32,10 +32,10 @@
 void make_new_row(QStandardItem *parent, const QString &dn);
 void load_row(QList<QStandardItem *> row, const QString &dn);
 
-ContainersWidget::ContainersWidget(ContainersModel *model_arg, EntryContextMenu *entry_context_menu, QWidget *parent)
-: EntryWidget(model_arg, parent)
+ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget *parent)
+: QWidget(parent)
 {
-    model = model_arg;
+    model = new ContainersModel(this);
     model->setHorizontalHeaderItem(ContainersModel::Column::Name, new QStandardItem("Name"));
     model->setHorizontalHeaderItem(ContainersModel::Column::DN, new QStandardItem("DN"));
 
@@ -43,20 +43,26 @@ ContainersWidget::ContainersWidget(ContainersModel *model_arg, EntryContextMenu 
 
     const auto dn_column_proxy = new DnColumnProxy(ContainersModel::Column::DN, this);
     dn_column_proxy->setSourceModel(proxy);   
-    view->setModel(dn_column_proxy);
 
+    view = new QTreeView(this);
+    view->setModel(dn_column_proxy);
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setRootIsDecorated(true);
     view->setItemsExpandable(true);
     view->setExpandsOnDoubleClick(true);
+    view->setContextMenuPolicy(Qt::CustomContextMenu);
+    view->setDragDropMode(QAbstractItemView::DragDrop);
     entry_context_menu->connect_view(view, ContainersModel::Column::DN);
 
     // Insert label into layout
     const auto label = new QLabel("Containers");
-    layout()->removeWidget(view);
-    layout()->addWidget(label);
-    layout()->addWidget(view);
+
+    const auto layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(label);
+    layout->addWidget(view);
 
     connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,
@@ -74,6 +80,16 @@ ContainersWidget::ContainersWidget(ContainersModel *model_arg, EntryContextMenu 
     connect(
         AD(), &AdInterface::attributes_changed,
         this, &ContainersWidget::on_attributes_changed);
+
+    connect(
+        view, &QAbstractItemView::clicked,
+        [this] (const QModelIndex &index) {
+            const QString dn = model->get_dn_from_index(index);
+
+            emit clicked_dn(dn);
+        });
+
+    setEnabled(false);
 };
 
 void ContainersWidget::on_selection_changed(const QItemSelection &selected, const QItemSelection &) {
@@ -109,6 +125,8 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
 }
 
 void ContainersWidget::on_ad_interface_login_complete(const QString &search_base, const QString &head_dn) {
+    setEnabled(true);
+
     model->removeRows(0, model->rowCount());
 
     // Load head

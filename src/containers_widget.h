@@ -20,13 +20,15 @@
 #ifndef CONTAINERS_WIDGET_H
 #define CONTAINERS_WIDGET_H
 
-#include "entry_widget.h"
 #include "ad_interface.h"
 #include "entry_model.h"
+
+#include <QWidget>
 
 class QItemSelection;
 class EntryProxyModel;
 class EntryContextMenu;
+class QTreeView;
 
 class ContainersModel final : public EntryModel {
 
@@ -49,14 +51,15 @@ public:
 
 };
 
-class ContainersWidget final : public EntryWidget {
+class ContainersWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContainersWidget(ContainersModel *model_arg, EntryContextMenu *entry_context_menu, QWidget *parent);
+    ContainersWidget(EntryContextMenu *entry_context_menu, QWidget *parent);
 
 signals:
     void selected_changed(const QString &dn);
+    void clicked_dn(const QString &dn);
 
 private slots:
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
@@ -67,6 +70,7 @@ private slots:
     void on_create_entry_complete(const QString &dn, NewEntryType type); 
 private:
     ContainersModel *model = nullptr;
+    QTreeView *view = nullptr;
 
 };
 
