@@ -74,3 +74,32 @@ bool EntryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int 
 
     return true;
 }
+
+QList<QStandardItem *> EntryModel::find_row(const QString &dn) {
+    // Find dn item
+    const QList<QStandardItem *> dn_items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, dn_column);
+    if (dn_items.isEmpty()) {
+        return QList<QStandardItem *>();
+    }
+
+    const QStandardItem *dn_item = dn_items[0];
+    const QStandardItem *parent = dn_item->parent();
+    const int column_count = parent->columnCount();
+    const int row_i = dn_item->row();
+
+    // Compose the row
+    auto row = QList<QStandardItem *>();
+    for (int col_i = 0; col_i < column_count; col_i++) {
+        QStandardItem *item = parent->child(row_i, col_i);
+        row.push_back(item);
+    }
+
+    return row;
+}
+
+QStandardItem *EntryModel::find_item(const QString &dn, int col) {
+    QList<QStandardItem *> row = find_row(dn);
+    QStandardItem *item = row.value(col);
+
+    return item;
+}

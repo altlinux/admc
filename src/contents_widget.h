@@ -21,9 +21,16 @@
 #define CONTENTS_WIDGET_H
 
 #include "entry_widget.h"
+#include "ad_interface.h"
 
-class AdModel;
+#include <QString>
+
+class ContainersModel;
 class EntryProxyModel;
+class EntryModel;
+class QString;
+class ContainersWidget;
+class QStandardItem;
 class EntryContextMenu;
 
 // Shows name, category and description of children of entry selected in containers view
@@ -31,14 +38,33 @@ class ContentsWidget final : public EntryWidget {
 Q_OBJECT
 
 public:
-    ContentsWidget(AdModel *model, EntryContextMenu *entry_context_menu, QWidget *parent);
+    enum Column {
+        Name,
+        Category,
+        Description,
+        DN,
+        COUNT,
+    };
+    
+    ContentsWidget(EntryModel* model_arg, ContainersWidget *containers_widget, EntryContextMenu *entry_context_menu, QWidget *parent);
 
-public slots:
-    void on_selected_container_changed(const QModelIndex &source_index);
+    void change_target(const QString &dn);
+
+private slots:
+    void on_create_entry_complete(const QString &dn, NewEntryType type);
+    void on_dn_changed(const QString &old_dn, const QString &new_dn);
+    void on_attributes_changed(const QString &dn);
 
 private:
+
+    EntryModel *model = nullptr;
     EntryProxyModel *proxy = nullptr;
+    QString target_dn = "";
     
+    void remove_child(const QString &dn);
+    void load_row(QList<QStandardItem *> row, const QString &dn);
+    void make_new_row(QStandardItem *parent, const QString &dn);
+
 };
 
 #endif /* CONTENTS_WIDGET_H */

@@ -25,7 +25,6 @@
 #include "members_model.h"
 #include "members_widget.h"
 #include "details_widget.h"
-#include "ad_model.h"
 #include "attributes_model.h"
 #include "status.h"
 #include "entry_widget.h"
@@ -78,10 +77,12 @@ MainWindow::MainWindow(const bool auto_login)
     setCentralWidget(central_widget);
 
     auto entry_context_menu = new EntryContextMenu(this);
-   
-    auto ad_model = new AdModel(this);
-    auto containers_widget = new ContainersWidget(ad_model, entry_context_menu, this);
-    auto contents_widget = new ContentsWidget(ad_model, entry_context_menu, this);
+    
+    auto containers_model = new ContainersModel(this);
+    auto containers_widget = new ContainersWidget(containers_model, entry_context_menu, this);
+
+    auto contents_model = new EntryModel(ContentsWidget::Column::COUNT, ContentsWidget::Column::DN, this);
+    auto contents_widget = new ContentsWidget(contents_model, containers_widget, entry_context_menu, this);
 
     auto members_model = new MembersModel(this);
     auto members_widget = new MembersWidget(members_model, entry_context_menu, this);
@@ -123,9 +124,6 @@ MainWindow::MainWindow(const bool auto_login)
 
     // Connect signals
     {
-        connect(
-            containers_widget, &ContainersWidget::selected_container_changed,
-            contents_widget, &ContentsWidget::on_selected_container_changed);
         connect(
             containers_widget, &EntryWidget::clicked_dn,
             details_widget, &DetailsWidget::on_containers_clicked_dn);

@@ -22,6 +22,7 @@
 
 #include <QStandardItemModel>
 #include <QString>
+#include <QList>
 
 class QMimeData;
 class QModelIndex;
@@ -41,7 +42,9 @@ public:
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
     QString get_dn_from_index(const QModelIndex &index) const;
-    
+    QList<QStandardItem *> find_row(const QString &dn);
+    QStandardItem *find_item(const QString &dn, int col);
+
 };
 
 #endif /* ENTRY_MODEL_H */
