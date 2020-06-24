@@ -80,7 +80,9 @@ MainWindow::MainWindow(const bool auto_login)
     
     auto containers_model = new ContainersModel(this);
     auto containers_widget = new ContainersWidget(containers_model, entry_context_menu, this);
-    auto contents_widget = new ContentsWidget(new EntryModel(4, 3, this), containers_widget, entry_context_menu, this);
+
+    auto contents_model = new EntryModel(4, 3, this);
+    auto contents_widget = new ContentsWidget(contents_model, containers_widget, entry_context_menu, this);
 
     auto members_model = new MembersModel(this);
     auto members_widget = new MembersWidget(members_model, entry_context_menu, this);

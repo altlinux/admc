@@ -67,9 +67,6 @@ ContentsWidget::ContentsWidget(EntryModel* model_arg, ContainersWidget *containe
         AD(), &AdInterface::create_entry_complete,
         this, &ContentsWidget::on_create_entry_complete);
     connect(
-        AD(), &AdInterface::delete_entry_complete,
-        this, &ContentsWidget::on_delete_entry_complete);
-    connect(
         AD(), &AdInterface::dn_changed,
         this, &ContentsWidget::on_dn_changed);
     connect(
@@ -142,24 +139,12 @@ void ContentsWidget::remove_child(const QString &dn) {
     }
 }
 
-void ContentsWidget::on_delete_entry_complete(const QString &dn) {
-    if (target_dn == "") {
-        return;
-    }
-
-    if (dn == target_dn) {
-        change_target("");
-    } else {
-        const QString parent = extract_name_from_dn(dn);
-
-        if (parent == target_dn) {
-            remove_child(dn);
-        }
-    }
-}
-
 void ContentsWidget::on_dn_changed(const QString &old_dn, const QString &new_dn) {
-    if (target_dn == "") {
+    const bool deleted = (new_dn == "");
+
+    if (deleted && old_dn == target_dn) {
+        change_target("");
+
         return;
     }
 
@@ -179,10 +164,6 @@ void ContentsWidget::on_dn_changed(const QString &old_dn, const QString &new_dn)
 }
 
 void ContentsWidget::on_create_entry_complete(const QString &dn, NewEntryType type) {
-    if (target_dn == "") {
-        return;
-    }
-
     QString parent_dn = extract_parent_dn_from_dn(dn);
 
     if (parent_dn == target_dn) {
@@ -192,10 +173,6 @@ void ContentsWidget::on_create_entry_complete(const QString &dn, NewEntryType ty
 }
 
 void ContentsWidget::on_attributes_changed(const QString &dn) {
-    if (target_dn == "") {
-        return;
-    }
-
     // Compose row based on dn
     QList<QStandardItem *> items = model->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, Column::DN);
 

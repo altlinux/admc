@@ -44,7 +44,6 @@ public:
 
 private slots:
     void on_create_entry_complete(const QString &dn, NewEntryType type);
-    void on_delete_entry_complete(const QString &dn); 
     void on_dn_changed(const QString &old_dn, const QString &new_dn);
     void on_attributes_changed(const QString &dn);
 
