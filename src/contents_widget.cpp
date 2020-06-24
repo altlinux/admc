@@ -128,14 +128,15 @@ void ContentsWidget::change_target(const QString &dn) {
 }
 
 void ContentsWidget::remove_child(const QString &dn) {
-    QList<QStandardItem *> items = model->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, Column::DN);
+    QList<QStandardItem *> row = model->find_row(dn);
 
-    if (items.size() > 0) {
-        QStandardItem *dn_item = items[0];
-        const int row_i = dn_item->row();
+    if (!row.isEmpty()) {
+        const QStandardItem *item = row[0];
+        item = row[2];
+        QStandardItem *parent = item->parent();
+        const int row_i = item->row();
 
-        QStandardItem *head = model->item(0, 0);
-        head->removeRow(row_i);
+        parent->removeRow(row_i);
     }
 }
 
@@ -154,10 +155,9 @@ void ContentsWidget::on_dn_changed(const QString &old_dn, const QString &new_dn)
         remove_child(old_dn);
     } else {
         // Update DN
-        QList<QStandardItem *> old_items = model->findItems(old_dn, Qt::MatchExactly | Qt::MatchRecursive, Column::DN);
+        QStandardItem *dn_item = model->find_item(old_dn, Column::DN);
 
-        if (old_items.size() > 0) {
-            QStandardItem *dn_item = old_items[0];
+        if (dn_item != nullptr) {
             dn_item->setText(new_dn);
         }
     }
@@ -173,22 +173,9 @@ void ContentsWidget::on_create_entry_complete(const QString &dn, NewEntryType ty
 }
 
 void ContentsWidget::on_attributes_changed(const QString &dn) {
-    // Compose row based on dn
-    QList<QStandardItem *> items = model->findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, Column::DN);
+    QList<QStandardItem *> row = model->find_row(dn);
 
-    if (items.size() == 0) {
-        return;
+    if (!row.isEmpty()) {
+        load_row(row, dn);
     }
-
-    QStandardItem *dn_item = items[0];
-    const QStandardItem *parent = dn_item->parent();
-    const int row_i = dn_item->row();
-
-    auto row = QList<QStandardItem *>();
-    for (int col_i = 0; col_i < Column::COUNT; col_i++) {
-        QStandardItem *item = parent->child(row_i, col_i);
-        row.push_back(item);
-    }
-
-    load_row(row, dn);
 }

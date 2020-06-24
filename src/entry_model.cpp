@@ -82,8 +82,8 @@ QList<QStandardItem *> EntryModel::find_row(const QString &dn) {
         return QList<QStandardItem *>();
     }
 
-    const QStandardItem *const dn_item = dn_items[0];
-    const QStandardItem *const parent = dn_item->parent();
+    const QStandardItem *dn_item = dn_items[0];
+    const QStandardItem *parent = dn_item->parent();
     const int column_count = parent->columnCount();
     const int row_i = dn_item->row();
 
