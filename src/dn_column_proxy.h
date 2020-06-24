@@ -35,6 +35,7 @@ private slots:
 
 private:
     int dn_column;
+    bool show_dn_column;
 
     bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const override;
 };

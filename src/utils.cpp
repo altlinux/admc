@@ -17,31 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "dn_column_proxy.h"
-#include "settings.h"
+#include "utils.h"
 
-#include <QAction>
+#include <QAbstractItemModel>
+#include <QSortFilterProxyModel>
 
-DnColumnProxy::DnColumnProxy(int dn_column_arg, QObject *parent)
-: QSortFilterProxyModel(parent)
-{
-    dn_column = dn_column_arg;
+// Converts index all the way down to source index, going through whatever chain of proxies is present
+QModelIndex convert_to_source(const QModelIndex &index, const QAbstractItemModel *model) {
+    QModelIndex current_index = index;
+    const QAbstractItemModel *current_model = model;
 
-    connect(
-        SETTINGS()->toggle_show_dn_column, &QAction::toggled,
-        this, &DnColumnProxy::on_toggle_show_dn_column);
-}
+    while (true) {
+        const QSortFilterProxyModel *proxy = qobject_cast<const QSortFilterProxyModel *>(current_model);
 
-void DnColumnProxy::on_toggle_show_dn_column(bool checked) {
-    show_dn_column = checked;
+        if (proxy != nullptr) {
+            current_index = proxy->mapToSource(current_index);
 
-    invalidateFilter();
-}
-
-bool DnColumnProxy::filterAcceptsColumn(int source_column, const QModelIndex &parent) const {
-    if (!show_dn_column && source_column == dn_column) {
-        return false;
-    } else {
-        return true;
+            current_model = proxy->sourceModel();
+        } else {
+            return current_index;
+        }
     }
 }

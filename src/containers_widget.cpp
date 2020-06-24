@@ -21,6 +21,7 @@
 #include "entry_proxy_model.h"
 #include "entry_context_menu.h"
 #include "dn_column_proxy.h"
+#include "utils.h"
 
 #include <QTreeView>
 #include <QLabel>
@@ -101,22 +102,7 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
         return;
     }
 
-    QModelIndex index = indexes[0];
-
-    // Go down the chain of proxies, turning index into source model index
-    // TODO: this might be useful in other places
-    QAbstractItemModel *current_model = view->model();
-    while (true) {
-        const auto proxy = qobject_cast<QSortFilterProxyModel *>(current_model);
-
-        if (proxy != nullptr) {
-            index = proxy->mapToSource(index);
-
-            current_model = proxy->sourceModel();
-        } else {
-            break;
-        }
-    }
+    const QModelIndex index = convert_to_source(indexes[0], view->model());
 
     QModelIndex dn_index = index.siblingAtColumn(ContainersModel::Column::DN);
     QString dn = dn_index.data().toString();

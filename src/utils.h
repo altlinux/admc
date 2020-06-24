@@ -17,31 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "dn_column_proxy.h"
-#include "settings.h"
+#ifndef UTILS_H
+#define UTILS_H
 
-#include <QAction>
+#include <QModelIndex>
 
-DnColumnProxy::DnColumnProxy(int dn_column_arg, QObject *parent)
-: QSortFilterProxyModel(parent)
-{
-    dn_column = dn_column_arg;
+class QAbstractItemModel;
 
-    connect(
-        SETTINGS()->toggle_show_dn_column, &QAction::toggled,
-        this, &DnColumnProxy::on_toggle_show_dn_column);
-}
+QModelIndex convert_to_source(const QModelIndex &index, const QAbstractItemModel *model);
 
-void DnColumnProxy::on_toggle_show_dn_column(bool checked) {
-    show_dn_column = checked;
-
-    invalidateFilter();
-}
-
-bool DnColumnProxy::filterAcceptsColumn(int source_column, const QModelIndex &parent) const {
-    if (!show_dn_column && source_column == dn_column) {
-        return false;
-    } else {
-        return true;
-    }
-}
+#endif /* UTILS_H */

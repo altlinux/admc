@@ -111,6 +111,7 @@ void ContentsWidget::load_row(QList<QStandardItem *> row, const QString &dn) {
     row[Column::Name]->setText(name);
     row[Column::Category]->setText(category);
     row[Column::Description]->setText(description);
+    row[Column::DN]->setText(dn);
 
     QIcon icon = get_entry_icon(dn);
     row[0]->setIcon(icon);

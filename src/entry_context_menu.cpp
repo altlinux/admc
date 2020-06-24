@@ -21,6 +21,7 @@
 #include "ad_interface.h"
 #include "settings.h"
 #include "confirmation_dialog.h"
+#include "utils.h"
 
 #include <QString>
 #include <QMessageBox>
@@ -30,6 +31,7 @@
 #include <QPoint>
 #include <QModelIndex>
 #include <QAbstractItemView>
+#include <QSortFilterProxyModel>
 
 // Open this context menu when view requests one
 void EntryContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
@@ -37,14 +39,16 @@ void EntryContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
         view, &QWidget::customContextMenuRequested,
         [=]
         (const QPoint pos) {
-            const QModelIndex index = view->indexAt(pos);
+            const QModelIndex base_index = view->indexAt(pos);
 
-            if (!index.isValid()) {
+            if (!base_index.isValid()) {
                 return;
             }
+
+            const QModelIndex index = convert_to_source(base_index, view->model());
             
-            QModelIndex dn_index = index.siblingAtColumn(dn_column);
-            QString dn = dn_index.data().toString();
+            const QModelIndex dn_index = index.siblingAtColumn(dn_column);
+            const QString dn = dn_index.data().toString();
 
             const QPoint global_pos = view->mapToGlobal(pos);
 
