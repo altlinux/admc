@@ -168,7 +168,7 @@ void MoveDialog::open_for_entry(const QString &dn) {
                 row.push_back(new QStandardItem());
             }
 
-            const QString name = AD()->get_attribute(e_dn, "name");
+            const QString name = extract_name_from_dn(e_dn);
 
             row[Column_Name]->setText(name);
             row[Column_Class]->setText(class_string);
