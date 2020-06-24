@@ -74,3 +74,23 @@ bool EntryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int 
 
     return true;
 }
+
+QStandardItem *EntryModel::find_first_row_item(const QString &dn) {
+    if (dn == "") {
+        return nullptr;
+    }
+
+    // Find dn item (findItems returns as list)
+    const QList<QStandardItem *> dn_items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, dn_column);
+    if (dn_items.size() == 0) {
+        return nullptr;
+    }
+
+    // Get first item in row
+    const QStandardItem *dn_item = dn_items[0];
+    const QModelIndex dn_index = dn_item->index();
+    const QModelIndex first_item_index = dn_index.siblingAtColumn(0);
+    QStandardItem *first_item = itemFromIndex(first_item_index);
+
+    return first_item;
+}
