@@ -23,20 +23,29 @@
 
 #include <QTreeView>
 #include <QLabel>
+#include <QVBoxLayout>
 
-MembersWidget::MembersWidget(MembersModel *model, EntryContextMenu *entry_context_menu, QWidget *parent)
-: EntryWidget(model, parent)
+MembersWidget::MembersWidget(EntryContextMenu *entry_context_menu, QWidget *parent)
+: QWidget(parent)
 {   
-    members_model = model;
+    model = new MembersModel(this);
 
+    view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setAcceptDrops(true);
-    view->setModel(members_model);
+    view->setModel(model);
+    view->setContextMenuPolicy(Qt::CustomContextMenu);
+    view->setDragDropMode(QAbstractItemView::DragDrop);
     entry_context_menu->connect_view(view, MembersModel::Column::DN);
+
+    const auto layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(view);
 }
 
 void MembersWidget::change_target(const QString &dn) {
-    QModelIndex root_index = members_model->change_target(dn);
+    QModelIndex root_index = model->change_target(dn);
 
     // Set root to group index so that it is hidden
     view->setRootIndex(root_index);

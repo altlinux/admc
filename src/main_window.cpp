@@ -27,7 +27,6 @@
 #include "details_widget.h"
 #include "attributes_model.h"
 #include "status.h"
-#include "entry_widget.h"
 #include "settings.h"
 #include "entry_context_menu.h"
 #include "confirmation_dialog.h"
@@ -81,8 +80,7 @@ MainWindow::MainWindow(const bool auto_login)
     auto containers_widget = new ContainersWidget(entry_context_menu, this);
     auto contents_widget = new ContentsWidget(containers_widget, entry_context_menu, this);
 
-    auto members_model = new MembersModel(this);
-    auto members_widget = new MembersWidget(members_model, entry_context_menu, this);
+    auto members_widget = new MembersWidget(entry_context_menu, this);
     
     auto details_widget = new DetailsWidget(members_widget, this);
 
