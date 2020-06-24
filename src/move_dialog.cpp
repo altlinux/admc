@@ -150,9 +150,10 @@ void MoveDialog::open_for_entry(const QString &dn) {
     for (auto c : classes) {
         const QString class_string = class_filter_string[c];
 
-        QString filter = QString("(objectClass=%1)").arg(class_string);
+        QString filter = filter_EQUALS("objectClass", class_string);
         if (advanced_view_is_off) {
-            filter = QString("(&%1(showInAdvancedViewOnly=FALSE))").arg(filter);
+            const QString advanced_filter = filter_EQUALS("showInAdvancedViewOnly", "FALSE");
+            filter = filter_AND(filter, advanced_filter);
         }
 
         const QList<QString> entries = AD()->search(filter);

@@ -599,3 +599,21 @@ AdInterface *AD() {
     AdInterface *ad = app->ad_interface();
     return ad;
 }
+
+QString filter_EQUALS(const QString &attribute, const QString &value) {
+    auto filter = QString("(%1=%2)").arg(attribute, value);
+    return filter;
+}
+
+QString filter_AND(const QString &a, const QString &b) {
+    auto filter = QString("(&%1%2)").arg(a, b);
+    return filter;
+}
+QString filter_OR(const QString &a, const QString &b) {
+    auto filter = QString("(|%1%2)").arg(a, b);
+    return filter;
+}
+QString filter_NOT(const QString &a) {
+    auto filter = QString("(!%1)").arg(a);
+    return filter;
+}

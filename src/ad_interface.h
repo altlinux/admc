@@ -139,4 +139,9 @@ private:
 // Convenience function to get AdInterface from qApp instance
 AdInterface *AD();
 
+QString filter_EQUALS(const QString &attribute, const QString &value);
+QString filter_AND(const QString &a, const QString &b);
+QString filter_OR(const QString &a, const QString &b);
+QString filter_NOT(const QString &a);
+
 #endif /* AD_INTERFACE_H */
