@@ -79,10 +79,7 @@ MainWindow::MainWindow(const bool auto_login)
     
     auto containers_widget = new ContainersWidget(entry_context_menu, this);
     auto contents_widget = new ContentsWidget(containers_widget, entry_context_menu, this);
-
-    auto members_widget = new MembersWidget(entry_context_menu, this);
-    
-    auto details_widget = new DetailsWidget(members_widget, this);
+    auto details_widget = new DetailsWidget(entry_context_menu, this);
 
     auto status_log = new QTextEdit(this);
     status_log->setReadOnly(true);

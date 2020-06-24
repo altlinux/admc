@@ -22,15 +22,16 @@
 #include "ad_interface.h"
 #include "members_widget.h"
 #include "settings.h"
+#include "entry_context_menu.h"
 
 #include <QTreeView>
 #include <QStandardItemModel>
 #include <QAction>
 
-DetailsWidget::DetailsWidget(MembersWidget *members_widget_, QWidget *parent)
+DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, QWidget *parent)
 : QTabWidget(parent)
 {
-    members_widget = members_widget_;
+    members_widget = new MembersWidget(entry_context_menu, this);
 
     attributes_model = new AttributesModel(this);
 
