@@ -32,6 +32,8 @@
 #include <QSortFilterProxyModel>
 #include <QComboBox>
 #include <QAction>
+#include <QPushButton>
+#include <QItemSelectionModel>
 
 enum MoveDialogColumn {
     MoveDialogColumn_Name,
@@ -72,6 +74,19 @@ MoveDialog::MoveDialog(QWidget *parent)
     const auto filter_name_label = new QLabel("Name: ");
     filter_name_line_edit = new QLineEdit(this);
 
+    const auto select_button = new QPushButton("Select", this);
+    const auto cancel_button = new QPushButton("Cancel", this);
+
+    const auto layout = new QGridLayout(this);
+    layout->addWidget(target_label, 0, 0);
+    layout->addWidget(filter_class_label, 1, 0, Qt::AlignRight);
+    layout->addWidget(filter_class_combo_box, 1, 1, 1, 2);
+    layout->addWidget(filter_name_label, 2, 0, Qt::AlignRight);
+    layout->addWidget(filter_name_line_edit, 2, 1, 1, 2);
+    layout->addWidget(view, 3, 0, 1, 3);
+    layout->addWidget(cancel_button, 4, 0, Qt::AlignLeft);
+    layout->addWidget(select_button, 4, 2, Qt::AlignRight);
+
     model = new MoveDialogModel(this);
 
     proxy_name = new QSortFilterProxyModel(this);
@@ -84,22 +99,17 @@ MoveDialog::MoveDialog(QWidget *parent)
 
     setup_model_chain(view, model, {proxy_name, proxy_class, dn_column_proxy});
 
-    const auto layout = new QGridLayout(this);
-    layout->addWidget(target_label, 0, 0);
-    layout->addWidget(filter_class_label, 1, 0);
-    layout->addWidget(filter_class_combo_box, 1, 1, 1, 2);
-    layout->addWidget(filter_name_label, 2, 0);
-    layout->addWidget(filter_name_line_edit, 2, 1, 1, 2);
-    layout->addWidget(view, 3, 0, 1, 3);
-
     connect(
         filter_name_line_edit, &QLineEdit::textChanged,
         this, &MoveDialog::on_filter_name_changed);
     connect(filter_class_combo_box, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &MoveDialog::on_filter_class_changed);
     connect(
-        view, &QAbstractItemView::doubleClicked,
-        this, &MoveDialog::on_double_clicked);
+        select_button, &QAbstractButton::clicked,
+        this, &MoveDialog::on_select_button);
+    connect(
+        cancel_button, &QAbstractButton::clicked,
+        this, &MoveDialog::on_cancel_button);
 }
 
 void MoveDialog::open_for_entry(const QString &dn) {
@@ -134,11 +144,11 @@ void MoveDialog::open_for_entry(const QString &dn) {
     // Load model
     model->load(dn, classes);
 
-    for (int col = 0; col < MoveDialogColumn_COUNT; col++) {
+    for (int col = 0; col < view->model()->columnCount(); col++) {
         view->resizeColumnToContents(col);
     }
 
-    exec();
+    open();
 }
 
 void MoveDialog::on_filter_name_changed(const QString &text) {
@@ -146,22 +156,32 @@ void MoveDialog::on_filter_name_changed(const QString &text) {
 }
 
 void MoveDialog::on_filter_class_changed(int index) {
-    QVariant item_data = filter_class_combo_box->itemData(index);
+    const QVariant item_data = filter_class_combo_box->itemData(index);
     const ClassFilter type = item_data.value<ClassFilter>();
     const QString regexp = class_filter_string[type];
 
     proxy_class->setFilterRegExp(QRegExp(regexp, Qt::CaseInsensitive, QRegExp::FixedString));
 }
 
-void MoveDialog::on_double_clicked(const QModelIndex &index) {
-    const QString dn = get_dn_from_index(index, MoveDialogColumn_DN);
+void MoveDialog::on_select_button(bool) {
+    const QItemSelectionModel *selection_model = view->selectionModel();
+    if (!selection_model->hasSelection()) {
+        return;
+    }
+    const QModelIndex selected_index = selection_model->currentIndex();
+    const QString move_dn = get_dn_from_index(selected_index, MoveDialogColumn_DN);
+    
+    const QString confirm_text = QString("Move \"%1\" to \"%2\"?").arg(target_dn, move_dn);
 
-    const QString confirm_text = QString("Move \"%1\" to \"%2\"?").arg(target_dn, dn);
     const bool confirmed = confirmation_dialog(confirm_text, this);
     if (confirmed) {
-        AD()->move(target_dn, dn);
+        AD()->move(target_dn, move_dn);
         done(QDialog::Accepted);
     }
+}
+
+void MoveDialog::on_cancel_button(bool) {
+    done(QDialog::Rejected);
 }
 
 MoveDialogModel::MoveDialogModel(QObject *parent)
