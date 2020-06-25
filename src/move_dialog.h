@@ -22,15 +22,24 @@
 
 #include <QDialog>
 #include <QString>
+#include <QList>
+#include <QStandardItemModel>
 
 class QWidget;
 class QLineEdit;
 class QSortFilterProxyModel;
 class QComboBox;
-class QStandardItemModel;
+class MoveDialogModel;
 class QTreeView;
 class QLabel;
 class QAction;
+
+enum ClassFilterType {
+    ClassFilterType_All,
+    ClassFilterType_Containers,
+    ClassFilterType_OUs,
+    ClassFilterType_COUNT
+};
 
 class MoveDialog final : public QDialog {
 Q_OBJECT
@@ -40,7 +49,7 @@ public:
 
     void open_for_entry(const QString &dn);
 
-    private slots:
+private slots:
     void on_filter_name_changed(const QString &text);
     void on_filter_class_changed(int index);
     void on_double_clicked(const QModelIndex &index);
@@ -50,11 +59,28 @@ private:
     QLabel *target_label = nullptr;
     QComboBox *filter_class_combo_box = nullptr;
     QLineEdit *filter_name_line_edit = nullptr;
-    QStandardItemModel *model = nullptr;
+    MoveDialogModel *model = nullptr;
     QSortFilterProxyModel *proxy_name = nullptr;
     QSortFilterProxyModel *proxy_class = nullptr;
     QString target_dn = "";
-
 };
+
+class MoveDialogModel final : public QStandardItemModel {
+Q_OBJECT
+
+public:
+    MoveDialogModel(QObject *parent);
+
+    enum Column {
+        Name,
+        Class,
+        DN,
+        COUNT
+    };
+
+    void load(const QString &dn, QList<ClassFilterType> classes);
+};
+
+Q_DECLARE_METATYPE(ClassFilterType)
 
 #endif /* MOVE_DIALOG_H */

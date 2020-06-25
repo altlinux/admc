@@ -30,20 +30,6 @@
 #include <QComboBox>
 #include <QAction>
 
-enum Column {
-    Column_Name,
-    Column_Class,
-    Column_DN,
-    Column_COUNT
-};
-
-enum ClassFilterType {
-    ClassFilterType_All,
-    ClassFilterType_Containers,
-    ClassFilterType_OUs,
-    ClassFilterType_COUNT
-};
-
 const QString CONTAINER_STR = "container";
 const QString OU_STR = "organizationalUnit";
 
@@ -75,17 +61,15 @@ MoveDialog::MoveDialog(QAction *action, QWidget *parent)
     const auto filter_name_label = new QLabel("Name: ");
     filter_name_line_edit = new QLineEdit(this);
 
-    model = new QStandardItemModel(0, Column_COUNT, this);
-    model->setHorizontalHeaderItem(Column_Name, new QStandardItem("Name"));
-    model->setHorizontalHeaderItem(Column_Class, new QStandardItem("Class"));
+    model = new MoveDialogModel(this);
 
     proxy_name = new QSortFilterProxyModel(this);
     proxy_name->setSourceModel(model);
-    proxy_name->setFilterKeyColumn(Column_Name);
+    proxy_name->setFilterKeyColumn(MoveDialogModel::Column::Name);
 
     proxy_class = new QSortFilterProxyModel(this);
     proxy_class->setSourceModel(proxy_name);
-    proxy_class->setFilterKeyColumn(Column_Class);
+    proxy_class->setFilterKeyColumn(MoveDialogModel::Column::Class);
 
     view = new QTreeView(this);
     view->setModel(proxy_class);
@@ -141,13 +125,53 @@ void MoveDialog::open_for_entry(const QString &dn) {
     combo_classes.insert(0, ClassFilterType_All);
     for (auto c : combo_classes) {
         const QString string = class_filter_display_text[c];
-        const int class_i = c;
 
-        filter_class_combo_box->addItem(string, class_i);
+        filter_class_combo_box->addItem(string, c);
     }
 
     // Load model
-    model->removeRows(0, model->rowCount());
+    model->load(dn, classes);
+
+    for (int col = 0; col < MoveDialogModel::Column::COUNT; col++) {
+        view->resizeColumnToContents(col);
+    }
+
+    open();
+}
+
+void MoveDialog::on_filter_name_changed(const QString &text) {
+    proxy_name->setFilterRegExp(QRegExp(text, Qt::CaseInsensitive, QRegExp::FixedString));
+}
+
+void MoveDialog::on_filter_class_changed(int index) {
+    QVariant item_data = filter_class_combo_box->itemData(index);
+    const ClassFilterType type = item_data.value<ClassFilterType>();
+    const QString regexp = class_filter_string[type];
+
+    proxy_class->setFilterRegExp(QRegExp(regexp, Qt::CaseInsensitive, QRegExp::FixedString));
+}
+
+void MoveDialog::on_double_clicked(const QModelIndex &index) {
+    const QModelIndex dn_index = index.siblingAtColumn(MoveDialogModel::Column::DN);
+    const QString dn = dn_index.data().toString();
+
+    // TODO:
+    // const QString confirm_text = QString("Move \"%1\" to \"%2\"?").arg(target_dn, dn);
+    // const bool confirmed = confirmation_dialog(confirm_text);
+    // if (confirmed) {
+
+    AD()->move(target_dn, dn);
+}
+
+MoveDialogModel::MoveDialogModel(QObject *parent)
+: QStandardItemModel(0, Column::COUNT, parent)
+{
+    setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
+    setHorizontalHeaderItem(Column::Class, new QStandardItem("Class"));
+}
+
+void MoveDialogModel::load(const QString &dn, QList<ClassFilterType> classes) {
+    removeRows(0, rowCount());
 
     const QAction *const toggle_advanced_view = SETTINGS()->toggle_advanced_view;
     const bool advanced_view_is_off = !toggle_advanced_view->isChecked();
@@ -169,47 +193,17 @@ void MoveDialog::open_for_entry(const QString &dn) {
             // to get the dn
             // and then use that to filter here properly
             auto row = QList<QStandardItem *>();
-            for (int i = 0; i < Column_COUNT; i++) {
+            for (int i = 0; i < Column::COUNT; i++) {
                 row.push_back(new QStandardItem());
             }
 
             const QString name = extract_name_from_dn(e_dn);
 
-            row[Column_Name]->setText(name);
-            row[Column_Class]->setText(class_string);
-            row[Column_DN]->setText(e_dn);
+            row[Column::Name]->setText(name);
+            row[Column::Class]->setText(class_string);
+            row[Column::DN]->setText(e_dn);
 
-            model->appendRow(row);
+            appendRow(row);
         }
     }
-
-    for (int col = 0; col < Column_COUNT; col++) {
-        view->resizeColumnToContents(col);
-    }
-
-    open();
-}
-
-void MoveDialog::on_filter_name_changed(const QString &text) {
-    proxy_name->setFilterRegExp(QRegExp(text, Qt::CaseInsensitive, QRegExp::FixedString));
-}
-
-void MoveDialog::on_filter_class_changed(int index) {
-    const int class_i = filter_class_combo_box->itemData(index).toInt();
-    const ClassFilterType type = static_cast<ClassFilterType>(class_i);
-    const QString regexp = class_filter_string[type];
-
-    proxy_class->setFilterRegExp(QRegExp(regexp, Qt::CaseInsensitive, QRegExp::FixedString));
-}
-
-void MoveDialog::on_double_clicked(const QModelIndex &index) {
-    const QModelIndex dn_index = index.siblingAtColumn(Column_DN);
-    const QString dn = dn_index.data().toString();
-
-    // TODO:
-    // const QString confirm_text = QString("Move \"%1\" to \"%2\"?").arg(target_dn, dn);
-    // const bool confirmed = confirmation_dialog(confirm_text);
-    // if (confirmed) {
-
-    AD()->move(target_dn, dn);
 }
