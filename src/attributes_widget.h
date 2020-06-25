@@ -52,12 +52,6 @@ public:
     void change_target(const QString &dn);
 
 private:
-    enum Column {
-        Name,
-        Value,
-        COUNT,
-    };
-
     QString target_dn;
 };
 

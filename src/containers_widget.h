@@ -53,12 +53,6 @@ class ContainersModel final : public EntryModel {
 Q_OBJECT
 
 public:
-    enum Column {
-        Name,
-        DN,
-        COUNT,
-    };
-
     enum Roles {
         CanFetch = Qt::UserRole + 1,
     };

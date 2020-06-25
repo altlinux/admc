@@ -55,14 +55,6 @@ class ContentsModel final : public EntryModel {
 Q_OBJECT
 
 public:
-    enum Column {
-        Name,
-        Category,
-        Description,
-        DN,
-        COUNT,
-    };
-
     ContentsModel(QObject *parent);
 
     void change_target(const QString &dn);
