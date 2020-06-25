@@ -126,6 +126,14 @@ MainWindow::MainWindow(const bool auto_login)
         central_widget->setLayout(central_layout);
     }
 
+    // Enable central widget on login
+    central_widget->setEnabled(false);
+    QObject::connect(
+        AD(), &AdInterface::ad_interface_login_complete,
+        [central_widget] () {
+            central_widget->setEnabled(true);
+        });
+
     if (auto_login) {
         on_action_login();
     }    

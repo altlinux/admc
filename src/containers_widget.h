@@ -44,13 +44,13 @@ signals:
 private slots:
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
 
-    void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
 private:
     ContainersModel *model = nullptr;
     QTreeView *view = nullptr;
 };
 
 class ContainersModel final : public EntryModel {
+Q_OBJECT
 
 public:
     enum Column {
@@ -63,12 +63,13 @@ public:
         CanFetch = Qt::UserRole + 1,
     };
 
-    explicit ContainersModel(QObject *parent);
+    ContainersModel(QObject *parent);
 
     bool canFetchMore(const QModelIndex &parent) const;
     void fetchMore(const QModelIndex &parent);
     bool hasChildren(const QModelIndex &parent) const override;
 
+private slots:
     void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
     void on_attributes_changed(const QString &dn);
     void on_dn_changed(const QString &old_dn, const QString &new_dn);

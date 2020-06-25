@@ -21,18 +21,37 @@
 #define CONTENTS_WIDGET_H
 
 #include "ad_interface.h"
+#include "entry_model.h"
 
 #include <QWidget>
 #include <QString>
 
-class EntryModel;
 class ContainersWidget;
 class QStandardItem;
 class EntryContextMenu;
 class QTreeView;
+class ContentsModel;
 
 // Shows name, category and description of children of entry selected in containers view
 class ContentsWidget final : public QWidget {
+Q_OBJECT
+
+public:
+    ContentsWidget(ContainersWidget *containers_widget, EntryContextMenu *entry_context_menu, QWidget *parent);
+
+signals:
+    void clicked_dn(const QString &dn);
+
+private slots:
+    void on_containers_selected_changed(const QString &dn);
+
+private:
+    ContentsModel *model = nullptr;
+    QTreeView *view = nullptr;
+
+};
+
+class ContentsModel final : public EntryModel {
 Q_OBJECT
 
 public:
@@ -43,13 +62,10 @@ public:
         DN,
         COUNT,
     };
-    
-    ContentsWidget(ContainersWidget *containers_widget, EntryContextMenu *entry_context_menu, QWidget *parent);
+
+    ContentsModel(QObject *parent);
 
     void change_target(const QString &dn);
-
-signals:
-    void clicked_dn(const QString &dn);
 
 private slots:
     void on_create_entry_complete(const QString &dn, NewEntryType type);
@@ -57,14 +73,10 @@ private slots:
     void on_attributes_changed(const QString &dn);
 
 private:
-    EntryModel *model = nullptr;
-    QTreeView *view = nullptr;
     QString target_dn = "";
-    
-    void remove_child(const QString &dn);
+
     void load_row(QList<QStandardItem *> row, const QString &dn);
     void make_new_row(QStandardItem *parent, const QString &dn);
-
 };
 
 #endif /* CONTENTS_WIDGET_H */

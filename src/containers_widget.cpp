@@ -68,9 +68,6 @@ ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget
     connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,
         this, &ContainersWidget::on_selection_changed);
-    connect(
-        AD(), &AdInterface::ad_interface_login_complete,
-        this, &ContainersWidget::on_ad_interface_login_complete);
 
     connect(
         view, &QAbstractItemView::clicked,
@@ -79,8 +76,6 @@ ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget
 
             emit clicked_dn(dn);
         });
-
-    setEnabled(false);
 };
 
 void ContainersWidget::on_selection_changed(const QItemSelection &selected, const QItemSelection &) {
@@ -98,10 +93,6 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
     QString dn = dn_index.data().toString();
 
     emit selected_changed(dn);
-}
-
-void ContainersWidget::on_ad_interface_login_complete(const QString &, const QString &) {
-    setEnabled(true);
 }
 
 ContainersModel::ContainersModel(QObject *parent)
