@@ -170,25 +170,26 @@ void ContainersModel::on_ad_interface_login_complete(const QString &search_base,
 }
 
 void ContainersModel::on_dn_changed(const QString &old_dn, const QString &new_dn) {
-    QStandardItem *old_dn_item = find_item(old_dn, ContainersColumn_DN);
-
-    // Update DN
-    if (old_dn_item != nullptr && new_dn != "") {
-        old_dn_item->setText(new_dn);
-    }
-
     const QString old_parent_dn = extract_parent_dn_from_dn(old_dn);
     const QString new_parent_dn = extract_parent_dn_from_dn(new_dn);
 
     QStandardItem *old_parent = find_item(old_parent_dn, 0);
     QStandardItem *new_parent = find_item(new_parent_dn, 0);
 
-    // If parent of row is already new parent, don't need to move row
-    // This happens when entry was moved together with it's parent
-    // or ancestor
-    // Also true if entry was only renamed
-    if (old_dn_item->parent() == new_parent) {
-        return;
+    QStandardItem *old_dn_item = find_item(old_dn, ContainersColumn_DN);
+    if (old_dn_item != nullptr) {
+        // Update DN
+        if (new_dn != "") {
+            old_dn_item->setText(new_dn);
+        }
+
+        // If parent of row is already new parent, don't need to move row
+        // This happens when entry was moved together with it's parent
+        // or ancestor
+        // Also true if entry was only renamed
+        if (old_dn_item->parent() == new_parent) {
+            return;
+        }
     }
 
     // NOTE: only add to new parent if it can't fetch
@@ -197,7 +198,7 @@ void ContainersModel::on_dn_changed(const QString &old_dn, const QString &new_dn
     const bool remove_from_old_parent = (old_parent != nullptr);
     const bool add_to_new_parent = (new_parent != nullptr && !canFetchMore(new_parent->index()));
 
-    if (remove_from_old_parent) {
+    if (remove_from_old_parent && old_dn_item != nullptr) {
         const int old_row_i = old_dn_item->row();
 
         if (add_to_new_parent) {
