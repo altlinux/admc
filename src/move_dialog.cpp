@@ -21,6 +21,7 @@
 #include "ad_interface.h"
 #include "settings.h"
 #include "confirmation_dialog.h"
+#include "dn_column_proxy.h"
 #include "utils.h"
 
 #include <QLineEdit>
@@ -72,7 +73,9 @@ MoveDialog::MoveDialog(QWidget *parent)
     proxy_class = new QSortFilterProxyModel(this);
     proxy_class->setFilterKeyColumn(MoveDialogModel::Column::Class);
 
-    setup_model_chain(view, model, {proxy_name, proxy_class});
+    const auto dn_column_proxy = new DnColumnProxy(MoveDialogModel::Column::DN, this);
+
+    setup_model_chain(view, model, {proxy_name, proxy_class, dn_column_proxy});
 
     const auto layout = new QGridLayout(this);
     layout->addWidget(target_label, 0, 0);
