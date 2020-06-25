@@ -17,32 +17,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_MODEL_H
-#define ATTRIBUTES_MODEL_H
+#ifndef ATTRIBUTES_WIDGET_H
+#define ATTRIBUTES_WIDGET_H
 
 #include <QStandardItemModel>
+#include <QWidget>
+#include <QString>
 
-// Model for attributes view in DetailsWidget
-// Has attribute name and value columns
-// Value is editable, which also modifies attribute in AD
+class AttributesModel;
+class QTreeView;
+
+// Show attributes of target as a list of attribute names and values
+// Values are editable
+class AttributesWidget final : public QWidget {
+Q_OBJECT
+
+public:
+    AttributesWidget(QWidget *parent);
+
+    void change_target(const QString &dn);
+
+private:
+    AttributesModel *model = nullptr;
+    QTreeView *view = nullptr;
+};
+
 class AttributesModel final : public QStandardItemModel {
 Q_OBJECT
 
 public:
+    explicit AttributesModel(QObject *parent);
+
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    void change_target(const QString &dn);
+
+private:
     enum Column {
         Name,
         Value,
         COUNT,
     };
 
-    explicit AttributesModel(QObject *parent);
-
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-    void change_target(const QString &new_target_dn);
-
-private:
     QString target_dn;
-
 };
 
-#endif /* ATTRIBUTES_MODEL_H */
+#endif /* ATTRIBUTES_WIDGET_H */

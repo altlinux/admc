@@ -24,7 +24,7 @@
 #include "contents_widget.h"
 #include "members_widget.h"
 #include "details_widget.h"
-#include "attributes_model.h"
+#include "attributes_widget.h"
 #include "status.h"
 #include "settings.h"
 #include "entry_context_menu.h"

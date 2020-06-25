@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_WIDGET_H
-#define ATTRIBUTES_WIDGET_H
+#ifndef DETAILS_WIDGET_H
+#define DETAILS_WIDGET_H
 
 #include <QTabWidget>
 
 class QTreeView;
 class QString;
-class AttributesModel;
+class AttributesWidget;
 class MembersWidget;
 class EntryContextMenu;
 class ContainersWidget;
@@ -50,12 +50,11 @@ private slots:
     void on_attributes_changed(const QString &dn);
 
 private:
-    AttributesModel *attributes_model = nullptr;
-    QTreeView *attributes_view = nullptr;
+    AttributesWidget *attributes_widget = nullptr;
     MembersWidget *members_widget = nullptr;
     QString target_dn;
 
     void change_target(const QString &dn);
 };
 
-#endif /* ATTRIBUTES_WIDGET_H */
+#endif /* DETAILS_WIDGET_H */

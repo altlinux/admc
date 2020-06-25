@@ -18,7 +18,7 @@
  */
 
 #include "details_widget.h"
-#include "attributes_model.h"
+#include "attributes_widget.h"
 #include "ad_interface.h"
 #include "members_widget.h"
 #include "settings.h"
@@ -34,14 +34,11 @@ DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWid
 : QTabWidget(parent)
 {
     members_widget = new MembersWidget(entry_context_menu, this);
+    attributes_widget = new AttributesWidget(this);
 
-    attributes_model = new AttributesModel(this);
-
-    attributes_view = new QTreeView();
-    attributes_view->setEditTriggers(QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
-    attributes_view->setSelectionMode(QAbstractItemView::NoSelection);
-    attributes_view->setSelectionBehavior(QAbstractItemView::SelectRows);
-    attributes_view->setModel(attributes_model);
+    // Add all tabs to take ownership of them
+    addTab(attributes_widget, "");
+    addTab(members_widget, "");
 
     connect(
         AD(), &AdInterface::ad_interface_login_complete,
@@ -63,10 +60,6 @@ DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWid
         contents_widget, &ContentsWidget::clicked_dn,
         this, &DetailsWidget::on_contents_clicked_dn);
 
-    // Add all tabs to take ownership of them
-    addTab(attributes_view, "");
-    addTab(members_widget, "");
-
     change_target("");
 };
 
@@ -76,14 +69,13 @@ void DetailsWidget::change_target(const QString &dn) {
 
     target_dn = dn;
 
-    attributes_model->change_target(target_dn);
-
+    attributes_widget->change_target(target_dn);
     members_widget->change_target(target_dn);
 
     // Setup tabs
     clear();
 
-    addTab(attributes_view, "All Attributes");
+    addTab(attributes_widget, "All Attributes");
 
     bool is_group = AD()->attribute_value_exists(target_dn, "objectClass", "group");
     if (is_group) {
