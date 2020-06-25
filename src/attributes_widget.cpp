@@ -23,6 +23,12 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
+enum AttributesColumn {
+    AttributesColumn_Name,
+    AttributesColumn_Value,
+    AttributesColumn_COUNT,
+};
+
 AttributesWidget::AttributesWidget(QWidget *parent)
 : QWidget(parent)
 {
@@ -45,10 +51,10 @@ void AttributesWidget::change_target(const QString &dn) {
 }
 
 AttributesModel::AttributesModel(QObject *parent)
-: QStandardItemModel(0, Column::COUNT, parent)
+: QStandardItemModel(0, AttributesColumn_COUNT, parent)
 {
-    setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
-    setHorizontalHeaderItem(Column::Value, new QStandardItem("Value"));
+    setHorizontalHeaderItem(AttributesColumn_Name, new QStandardItem("Name"));
+    setHorizontalHeaderItem(AttributesColumn_Value, new QStandardItem("Value"));
     
     change_target("");
 }
@@ -56,7 +62,7 @@ AttributesModel::AttributesModel(QObject *parent)
 // This will be called when an attribute value is edited
 bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, int role) {
     QModelIndex value_index = index;
-    QModelIndex name_index = value_index.siblingAtColumn(AttributesModel::Column::Name);
+    QModelIndex name_index = value_index.siblingAtColumn(AttributesColumn_Name);
 
     const QString attribute = name_index.data().toString();
     const QString value_str = value.toString();

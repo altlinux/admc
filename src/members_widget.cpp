@@ -26,6 +26,12 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
+enum MembersColumn {
+    MembersColumn_Name,
+    MembersColumn_DN,
+    MembersColumn_COUNT,
+};
+
 MembersWidget::MembersWidget(EntryContextMenu *entry_context_menu, QWidget *parent)
 : QWidget(parent)
 {   
@@ -34,10 +40,10 @@ MembersWidget::MembersWidget(EntryContextMenu *entry_context_menu, QWidget *pare
     view->setAcceptDrops(true);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
-    entry_context_menu->connect_view(view, MembersModel::Column::DN);
+    entry_context_menu->connect_view(view, MembersColumn_DN);
 
     model = new MembersModel(this);
-    const auto dn_column_proxy = new DnColumnProxy(MembersModel::Column::DN, this);
+    const auto dn_column_proxy = new DnColumnProxy(MembersColumn_DN, this);
     dn_column_proxy->setSourceModel(model);
     view->setModel(dn_column_proxy);
     
@@ -54,10 +60,10 @@ void MembersWidget::change_target(const QString &dn) {
 }
 
 MembersModel::MembersModel(QObject *parent)
-: EntryModel(Column::COUNT, Column::DN, parent)
+: EntryModel(MembersColumn_COUNT, MembersColumn_DN, parent)
 {
-    setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
-    setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
+    setHorizontalHeaderItem(MembersColumn_Name, new QStandardItem("Name"));
+    setHorizontalHeaderItem(MembersColumn_DN, new QStandardItem("DN"));
 }
 
 void MembersModel::change_target(const QString &dn) {
@@ -65,12 +71,12 @@ void MembersModel::change_target(const QString &dn) {
 
     auto create_row = [this](const QString &row_dn) {
         QList<QStandardItem *> row;
-        for (int i = 0; i < Column::COUNT; i++) {
+        for (int i = 0; i < MembersColumn_COUNT; i++) {
             row.append(new QStandardItem());
         }
         const QString name = AD()->get_attribute(row_dn, "name");
-        row[Column::Name]->setText(name);
-        row[Column::DN]->setText(row_dn);
+        row[MembersColumn_Name]->setText(name);
+        row[MembersColumn_DN]->setText(row_dn);
 
         return row;
     };

@@ -31,6 +31,12 @@
 #include <QMap>
 #include <QIcon>
 
+enum ContainersColumn {
+    ContainersColumn_Name,
+    ContainersColumn_DN,
+    ContainersColumn_COUNT,
+};
+
 void make_new_row(QStandardItem *parent, const QString &dn);
 void load_row(QList<QStandardItem *> row, const QString &dn);
 
@@ -39,10 +45,10 @@ ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget
 {
     model = new ContainersModel(this);
 
-    const auto proxy = new AdvancedViewProxy(ContainersModel::Column::DN, this);
+    const auto proxy = new AdvancedViewProxy(ContainersColumn_DN, this);
     proxy->setSourceModel(model);   
 
-    const auto dn_column_proxy = new DnColumnProxy(ContainersModel::Column::DN, this);
+    const auto dn_column_proxy = new DnColumnProxy(ContainersColumn_DN, this);
     dn_column_proxy->setSourceModel(proxy);   
 
     view = new QTreeView(this);
@@ -54,7 +60,7 @@ ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget
     view->setExpandsOnDoubleClick(true);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
-    entry_context_menu->connect_view(view, ContainersModel::Column::DN);
+    entry_context_menu->connect_view(view, ContainersColumn_DN);
 
     // Insert label into layout
     const auto label = new QLabel("Containers");
@@ -72,7 +78,7 @@ ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget
     connect(
         view, &QAbstractItemView::clicked,
         [this] (const QModelIndex &index) {
-            const QString dn = get_dn_from_index(index, ContainersModel::Column::DN);
+            const QString dn = get_dn_from_index(index, ContainersColumn_DN);
 
             emit clicked_dn(dn);
         });
@@ -89,17 +95,17 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
 
     const QModelIndex index = convert_to_source(indexes[0]);
 
-    QModelIndex dn_index = index.siblingAtColumn(ContainersModel::Column::DN);
+    QModelIndex dn_index = index.siblingAtColumn(ContainersColumn_DN);
     QString dn = dn_index.data().toString();
 
     emit selected_changed(dn);
 }
 
 ContainersModel::ContainersModel(QObject *parent)
-: EntryModel(Column::COUNT, Column::DN, parent)
+: EntryModel(ContainersColumn_COUNT, ContainersColumn_DN, parent)
 {
-    setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
-    setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
+    setHorizontalHeaderItem(ContainersColumn_Name, new QStandardItem("Name"));
+    setHorizontalHeaderItem(ContainersColumn_DN, new QStandardItem("DN"));
 
     connect(
         AD(), &AdInterface::ad_interface_login_complete,
@@ -130,7 +136,7 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
         return;
     }
 
-    QString dn = get_dn_from_index(parent, Column::DN);
+    QString dn = get_dn_from_index(parent, ContainersColumn_DN);
 
     QStandardItem *parent_item = itemFromIndex(parent);
 
@@ -164,7 +170,7 @@ void ContainersModel::on_ad_interface_login_complete(const QString &search_base,
 }
 
 void ContainersModel::on_dn_changed(const QString &old_dn, const QString &new_dn) {
-    QStandardItem *old_dn_item = find_item(old_dn, ContainersModel::Column::DN);
+    QStandardItem *old_dn_item = find_item(old_dn, ContainersColumn_DN);
 
     // Update DN
     if (old_dn_item != nullptr && new_dn != "") {
@@ -233,8 +239,8 @@ void ContainersModel::on_attributes_changed(const QString &dn) {
 void load_row(QList<QStandardItem *> row, const QString &dn) {
     QString name = AD()->get_attribute(dn, "name");
 
-    row[ContainersModel::Column::Name]->setText(name);
-    row[ContainersModel::Column::DN]->setText(dn);
+    row[ContainersColumn_Name]->setText(name);
+    row[ContainersColumn_DN]->setText(dn);
 
     QIcon icon = get_entry_icon(dn);
     row[0]->setIcon(icon);
@@ -254,7 +260,7 @@ void make_new_row(QStandardItem *parent, const QString &dn) {
     }
 
     auto row = QList<QStandardItem *>();
-    for (int i = 0; i < ContainersModel::Column::COUNT; i++) {
+    for (int i = 0; i < ContainersColumn_COUNT; i++) {
         row.push_back(new QStandardItem());
     }
 

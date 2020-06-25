@@ -30,15 +30,23 @@
 #include <QLabel>
 #include <QLayout>
 
+enum ContentsColumn {
+    ContentsColumn_Name,
+    ContentsColumn_Category,
+    ContentsColumn_Description,
+    ContentsColumn_DN,
+    ContentsColumn_COUNT,
+};
+
 ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContextMenu *entry_context_menu, QWidget *parent)
 : QWidget(parent)
 {   
     model = new ContentsModel(this);
 
-    const auto proxy = new AdvancedViewProxy(ContentsModel::Column::DN, this);
-    proxy->setSourceModel(model);   
+    const auto proxy = new AdvancedViewProxy(ContentsColumn_DN, this);
+    proxy->setSourceModel(model);
 
-    const auto dn_column_proxy = new DnColumnProxy(ContentsModel::Column::DN, this);
+    const auto dn_column_proxy = new DnColumnProxy(ContentsColumn_DN, this);
     dn_column_proxy->setSourceModel(proxy);
 
     view = new QTreeView(this);
@@ -51,7 +59,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContext
     view->setExpandsOnDoubleClick(false);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
-    entry_context_menu->connect_view(view, ContentsModel::Column::DN);
+    entry_context_menu->connect_view(view, ContentsColumn_DN);
 
     // Insert label into layout
     const auto label = new QLabel("Contents");
@@ -70,7 +78,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContext
     connect(
         view, &QAbstractItemView::clicked,
         [this] (const QModelIndex &index) {
-            const QString dn = get_dn_from_index(index, ContentsModel::Column::DN);
+            const QString dn = get_dn_from_index(index, ContentsColumn_DN);
 
             emit clicked_dn(dn);
         });
@@ -83,12 +91,12 @@ void ContentsWidget::on_containers_selected_changed(const QString &dn) {
 }
 
 ContentsModel::ContentsModel(QObject *parent)
-: EntryModel(Column::COUNT, Column::DN, parent)
+: EntryModel(ContentsColumn_COUNT, ContentsColumn_DN, parent)
 {
-    setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
-    setHorizontalHeaderItem(Column::Category, new QStandardItem("Category"));
-    setHorizontalHeaderItem(Column::Description, new QStandardItem("Description"));
-    setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
+    setHorizontalHeaderItem(ContentsColumn_Name, new QStandardItem("Name"));
+    setHorizontalHeaderItem(ContentsColumn_Category, new QStandardItem("Category"));
+    setHorizontalHeaderItem(ContentsColumn_Description, new QStandardItem("Description"));
+    setHorizontalHeaderItem(ContentsColumn_DN, new QStandardItem("DN"));
 
     connect(
         AD(), &AdInterface::create_entry_complete,
@@ -155,7 +163,7 @@ void ContentsModel::on_dn_changed(const QString &old_dn, const QString &new_dn) 
         }
     } else {
         // Update DN
-        QStandardItem *dn_item = find_item(old_dn, Column::DN);
+        QStandardItem *dn_item = find_item(old_dn, ContentsColumn_DN);
 
         if (dn_item != nullptr) {
             dn_item->setText(new_dn);
@@ -182,10 +190,10 @@ void ContentsModel::load_row(QList<QStandardItem *> row, const QString &dn) {
 
     QString description = AD()->get_attribute(dn, "description");
 
-    row[Column::Name]->setText(name);
-    row[Column::Category]->setText(category);
-    row[Column::Description]->setText(description);
-    row[Column::DN]->setText(dn);
+    row[ContentsColumn_Name]->setText(name);
+    row[ContentsColumn_Category]->setText(category);
+    row[ContentsColumn_Description]->setText(description);
+    row[ContentsColumn_DN]->setText(dn);
 
     QIcon icon = get_entry_icon(dn);
     row[0]->setIcon(icon);
@@ -193,7 +201,7 @@ void ContentsModel::load_row(QList<QStandardItem *> row, const QString &dn) {
 
 void ContentsModel::make_new_row(QStandardItem *parent, const QString &dn) {
     auto row = QList<QStandardItem *>();
-    for (int i = 0; i < Column::COUNT; i++) {
+    for (int i = 0; i < ContentsColumn_COUNT; i++) {
         row.push_back(new QStandardItem());
     }
 
