@@ -34,13 +34,13 @@ class QTreeView;
 class QLabel;
 class QAction;
 
-enum ClassFilterType {
-    ClassFilterType_All,
-    ClassFilterType_Containers,
-    ClassFilterType_OUs,
-    ClassFilterType_COUNT
+enum ClassFilter {
+    ClassFilter_All,
+    ClassFilter_Containers,
+    ClassFilter_OUs,
+    ClassFilter_COUNT
 };
-Q_DECLARE_METATYPE(ClassFilterType)
+Q_DECLARE_METATYPE(ClassFilter)
 
 class MoveDialog final : public QDialog {
 Q_OBJECT
@@ -72,14 +72,7 @@ Q_OBJECT
 public:
     MoveDialogModel(QObject *parent);
 
-    enum Column {
-        Name,
-        Class,
-        DN,
-        COUNT
-    };
-
-    void load(const QString &dn, QList<ClassFilterType> classes);
+    void load(const QString &dn, QList<ClassFilter> classes);
 };
 
 #endif /* MOVE_DIALOG_H */

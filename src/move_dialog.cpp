@@ -33,19 +33,26 @@
 #include <QComboBox>
 #include <QAction>
 
+enum MoveDialogColumn {
+    MoveDialogColumn_Name,
+    MoveDialogColumn_Class,
+    MoveDialogColumn_DN,
+    MoveDialogColumn_COUNT
+};
+
 const QString CONTAINER_STR = "container";
 const QString OU_STR = "organizationalUnit";
 
-const QMap<ClassFilterType, QString> class_filter_display_text = {
-    {ClassFilterType_All, "All"},
-    {ClassFilterType_Containers, "Containers"},
-    {ClassFilterType_OUs, "OU's"},
+const QMap<ClassFilter, QString> class_filter_display_text = {
+    {ClassFilter_All, "All"},
+    {ClassFilter_Containers, "Containers"},
+    {ClassFilter_OUs, "OU's"},
 };
 
-const QMap<ClassFilterType, QString> class_filter_string = {
-    {ClassFilterType_All, ""},
-    {ClassFilterType_Containers, CONTAINER_STR},
-    {ClassFilterType_OUs, OU_STR},
+const QMap<ClassFilter, QString> class_filter_string = {
+    {ClassFilter_All, ""},
+    {ClassFilter_Containers, CONTAINER_STR},
+    {ClassFilter_OUs, OU_STR},
 };
 
 MoveDialog::MoveDialog(QWidget *parent)
@@ -68,12 +75,12 @@ MoveDialog::MoveDialog(QWidget *parent)
     model = new MoveDialogModel(this);
 
     proxy_name = new QSortFilterProxyModel(this);
-    proxy_name->setFilterKeyColumn(MoveDialogModel::Column::Name);
+    proxy_name->setFilterKeyColumn(MoveDialogColumn_Name);
 
     proxy_class = new QSortFilterProxyModel(this);
-    proxy_class->setFilterKeyColumn(MoveDialogModel::Column::Class);
+    proxy_class->setFilterKeyColumn(MoveDialogColumn_Class);
 
-    const auto dn_column_proxy = new DnColumnProxy(MoveDialogModel::Column::DN, this);
+    const auto dn_column_proxy = new DnColumnProxy(MoveDialogColumn_DN, this);
 
     setup_model_chain(view, model, {proxy_name, proxy_class, dn_column_proxy});
 
@@ -97,6 +104,7 @@ MoveDialog::MoveDialog(QWidget *parent)
 
 void MoveDialog::open_for_entry(const QString &dn) {
     target_dn = dn;
+
     const QString target_label_text = QString("Moving \"%1\"").arg(target_dn);
     target_label->setText(target_label_text);
 
@@ -104,17 +112,19 @@ void MoveDialog::open_for_entry(const QString &dn) {
     on_filter_name_changed("");
 
     // Select classes that this entry can be moved to
-    QList<ClassFilterType> classes;
+    // TODO: cover all cases
+    QList<ClassFilter> classes;
     const bool is_container = AD()->is_container(dn);
     if (is_container) {
-        classes = {ClassFilterType_Containers};
+        classes = {ClassFilter_Containers};
     } else {
-        classes = {ClassFilterType_Containers, ClassFilterType_OUs};
+        classes = {ClassFilter_Containers, ClassFilter_OUs};
     }
 
+    // Fill class combo box with possible classes PLUS the special "All" class
     filter_class_combo_box->clear();
-    QList<ClassFilterType> combo_classes = classes;
-    combo_classes.insert(0, ClassFilterType_All);
+    QList<ClassFilter> combo_classes = {ClassFilter_All};
+    combo_classes += classes;
     for (auto c : combo_classes) {
         const QString string = class_filter_display_text[c];
 
@@ -124,7 +134,7 @@ void MoveDialog::open_for_entry(const QString &dn) {
     // Load model
     model->load(dn, classes);
 
-    for (int col = 0; col < MoveDialogModel::Column::COUNT; col++) {
+    for (int col = 0; col < MoveDialogColumn_COUNT; col++) {
         view->resizeColumnToContents(col);
     }
 
@@ -137,14 +147,14 @@ void MoveDialog::on_filter_name_changed(const QString &text) {
 
 void MoveDialog::on_filter_class_changed(int index) {
     QVariant item_data = filter_class_combo_box->itemData(index);
-    const ClassFilterType type = item_data.value<ClassFilterType>();
+    const ClassFilter type = item_data.value<ClassFilter>();
     const QString regexp = class_filter_string[type];
 
     proxy_class->setFilterRegExp(QRegExp(regexp, Qt::CaseInsensitive, QRegExp::FixedString));
 }
 
 void MoveDialog::on_double_clicked(const QModelIndex &index) {
-    const QString dn = get_dn_from_index(index, MoveDialogModel::Column::DN);
+    const QString dn = get_dn_from_index(index, MoveDialogColumn_DN);
 
     const QString confirm_text = QString("Move \"%1\" to \"%2\"?").arg(target_dn, dn);
     const bool confirmed = confirmation_dialog(confirm_text, this);
@@ -155,13 +165,13 @@ void MoveDialog::on_double_clicked(const QModelIndex &index) {
 }
 
 MoveDialogModel::MoveDialogModel(QObject *parent)
-: QStandardItemModel(0, Column::COUNT, parent)
+: QStandardItemModel(0, MoveDialogColumn_COUNT, parent)
 {
-    setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
-    setHorizontalHeaderItem(Column::Class, new QStandardItem("Class"));
+    setHorizontalHeaderItem(MoveDialogColumn_Name, new QStandardItem("Name"));
+    setHorizontalHeaderItem(MoveDialogColumn_Class, new QStandardItem("Class"));
 }
 
-void MoveDialogModel::load(const QString &dn, QList<ClassFilterType> classes) {
+void MoveDialogModel::load(const QString &dn, QList<ClassFilter> classes) {
     removeRows(0, rowCount());
 
     const QAction *const toggle_advanced_view = SETTINGS()->toggle_advanced_view;
@@ -182,15 +192,15 @@ void MoveDialogModel::load(const QString &dn, QList<ClassFilterType> classes) {
 
         for (auto e_dn : entries) {
             auto row = QList<QStandardItem *>();
-            for (int i = 0; i < Column::COUNT; i++) {
+            for (int i = 0; i < MoveDialogColumn_COUNT; i++) {
                 row.push_back(new QStandardItem());
             }
 
             const QString name = extract_name_from_dn(e_dn);
 
-            row[Column::Name]->setText(name);
-            row[Column::Class]->setText(class_string);
-            row[Column::DN]->setText(e_dn);
+            row[MoveDialogColumn_Name]->setText(name);
+            row[MoveDialogColumn_Class]->setText(class_string);
+            row[MoveDialogColumn_DN]->setText(e_dn);
 
             appendRow(row);
         }
