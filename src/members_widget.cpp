@@ -18,7 +18,6 @@
  */
 
 #include "members_widget.h"
-#include "entry_model.h"
 #include "entry_context_menu.h"
 
 #include <QTreeView>
@@ -28,7 +27,7 @@
 MembersWidget::MembersWidget(EntryContextMenu *entry_context_menu, QWidget *parent)
 : QWidget(parent)
 {   
-    model = new EntryModel(Column::COUNT, Column::DN, this);
+    model = new MembersModel(this);
 
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -36,7 +35,7 @@ MembersWidget::MembersWidget(EntryContextMenu *entry_context_menu, QWidget *pare
     view->setModel(model);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
-    entry_context_menu->connect_view(view, Column::DN);
+    entry_context_menu->connect_view(view, MembersModel::Column::DN);
 
     const auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -45,13 +44,26 @@ MembersWidget::MembersWidget(EntryContextMenu *entry_context_menu, QWidget *pare
 }
 
 void MembersWidget::change_target(const QString &dn) {
-    model->removeRows(0, model->rowCount());
+    model->change_target(dn);
+
+    const QModelIndex head_index = model->index(0, 0);
+    view->setRootIndex(head_index);
+}
+
+MembersModel::MembersModel(QObject *parent)
+: EntryModel(Column::COUNT, Column::DN, parent)
+{
+
+}
+
+void MembersModel::change_target(const QString &dn) {
+    removeRows(0, rowCount());
 
     // Create root item to represent group itself
     const QString grp_name = AD()->get_attribute(dn, "name");
     const auto grp_name_item = new QStandardItem(grp_name);
     const auto grp_dn_item = new QStandardItem(dn);
-    model->appendRow({grp_name_item, grp_dn_item});
+    appendRow({grp_name_item, grp_dn_item});
 
     // Populate model with members of new root
     const QList<QString> members = AD()->get_attribute_multi(dn, "member");
@@ -63,9 +75,4 @@ void MembersWidget::change_target(const QString &dn) {
 
         grp_name_item->appendRow({name_item, dn_item});
     }
-
-    QModelIndex grp_index = grp_name_item->index();
-
-    // Set root to group index so that it is hidden
-    view->setRootIndex(grp_index);
 }
