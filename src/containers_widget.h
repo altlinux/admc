@@ -20,30 +20,60 @@
 #ifndef CONTAINERS_WIDGET_H
 #define CONTAINERS_WIDGET_H
 
-#include "entry_widget.h"
+#include "ad_interface.h"
+#include "entry_model.h"
+
+#include <QWidget>
 
 class QItemSelection;
-class AdModel;
-class EntryProxyModel;
+class AdvancedViewProxy;
+class EntryContextMenu;
+class QTreeView;
+class ContainersModel;
 
-// Display tree of container entries
-// And some other "container-like" entries like domain, built-in, etc
-// Only shows the name column
-class ContainersWidget final : public EntryWidget {
+class ContainersWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContainersWidget(AdModel *model, QWidget *parent);
+    ContainersWidget(EntryContextMenu *entry_context_menu, QWidget *parent);
 
 signals:
-    void selected_container_changed(const QModelIndex &selected);
+    void selected_changed(const QString &dn);
+    void clicked_dn(const QString &dn);
 
 private slots:
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
 
 private:
-    EntryProxyModel *proxy = nullptr;
+    ContainersModel *model = nullptr;
+    QTreeView *view = nullptr;
+};
 
+class ContainersModel final : public EntryModel {
+Q_OBJECT
+
+public:
+    enum Column {
+        Name,
+        DN,
+        COUNT,
+    };
+
+    enum Roles {
+        CanFetch = Qt::UserRole + 1,
+    };
+
+    ContainersModel(QObject *parent);
+
+    bool canFetchMore(const QModelIndex &parent) const;
+    void fetchMore(const QModelIndex &parent);
+    bool hasChildren(const QModelIndex &parent) const override;
+
+private slots:
+    void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
+    void on_attributes_changed(const QString &dn);
+    void on_dn_changed(const QString &old_dn, const QString &new_dn);
+    void on_create_entry_complete(const QString &dn, NewEntryType type); 
 };
 
 #endif /* CONTAINERS_WIDGET_H */

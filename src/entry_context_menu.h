@@ -17,45 +17,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MEMBERS_WIDGET_H
-#define MEMBERS_WIDGET_H
+#ifndef ENTRY_CONTEXT_MENU_H
+#define ENTRY_CONTEXT_MENU_H
 
-#include "entry_model.h"
+#include "ad_interface.h"
 
-#include <QWidget>
+#include <QMenu>
 
-class QTreeView;
 class QString;
-class EntryContextMenu;
-class MembersModel;
+class QPoint;
+class QAbstractItemView;
 
-// Shows member entries of targeted group
-class MembersWidget final : public QWidget {
+class EntryContextMenu final : public QMenu {
 Q_OBJECT
 
 public:
-    MembersWidget(EntryContextMenu *entry_context_menu, QWidget *parent);
+    using QMenu::QMenu;
 
-    void change_target(const QString &dn);
+    void connect_view(QAbstractItemView *view, int dn_column);
 
+signals:
+    void details(const QString &dn);
+    
 private:
-    MembersModel *model = nullptr;
-    QTreeView *view = nullptr;
+    void open(const QString &dn, const QPoint &global_pos);
+
+    void delete_entry(const QString &dn);
+    void new_entry_dialog(const QString &parent_dn, NewEntryType type);
+    void new_user(const QString &dn);
+    void new_computer(const QString &dn);
+    void new_group(const QString &dn);
+    void new_ou(const QString &dn);
+    void rename(const QString &dn);
+    void edit_policy(const QString &dn);
+
 };
 
-class MembersModel final : public EntryModel {
-Q_OBJECT
-
-public:
-    enum Column {
-        Name,
-        DN,
-        COUNT,
-    };
-
-    MembersModel(QObject *parent);
-
-    void change_target(const QString &dn);
-};
-
-#endif /* MEMBERS_WIDGET_H */
+#endif /* ENTRY_CONTEXT_MENU_H */

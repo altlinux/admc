@@ -21,6 +21,7 @@
 #include "Runner.h"
 #include "main_window.h"
 #include "admc.h"
+#include "ad_interface.h"
 
 #include <QCommandLineParser>
 #include <QCommandLineOption>

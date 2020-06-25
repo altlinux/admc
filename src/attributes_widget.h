@@ -17,45 +17,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MEMBERS_WIDGET_H
-#define MEMBERS_WIDGET_H
+#ifndef ATTRIBUTES_WIDGET_H
+#define ATTRIBUTES_WIDGET_H
 
-#include "entry_model.h"
-
+#include <QStandardItemModel>
 #include <QWidget>
+#include <QString>
 
+class AttributesModel;
 class QTreeView;
-class QString;
-class EntryContextMenu;
-class MembersModel;
 
-// Shows member entries of targeted group
-class MembersWidget final : public QWidget {
+// Show attributes of target as a list of attribute names and values
+// Values are editable
+class AttributesWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    MembersWidget(EntryContextMenu *entry_context_menu, QWidget *parent);
+    AttributesWidget(QWidget *parent);
 
     void change_target(const QString &dn);
 
 private:
-    MembersModel *model = nullptr;
+    AttributesModel *model = nullptr;
     QTreeView *view = nullptr;
 };
 
-class MembersModel final : public EntryModel {
+class AttributesModel final : public QStandardItemModel {
 Q_OBJECT
 
 public:
+    explicit AttributesModel(QObject *parent);
+
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    void change_target(const QString &dn);
+
+private:
     enum Column {
         Name,
-        DN,
+        Value,
         COUNT,
     };
 
-    MembersModel(QObject *parent);
-
-    void change_target(const QString &dn);
+    QString target_dn;
 };
 
-#endif /* MEMBERS_WIDGET_H */
+#endif /* ATTRIBUTES_WIDGET_H */

@@ -19,6 +19,7 @@
 
 #include "entry_model.h"
 #include "ad_interface.h"
+#include "utils.h"
 
 #include <QMimeData>
 
@@ -29,19 +30,12 @@ EntryModel::EntryModel(int column_count, int dn_column_in, QObject *parent)
 
 }
 
-QString EntryModel::get_dn_from_index(const QModelIndex &index) const {
-    QModelIndex dn_index = index.siblingAtColumn(dn_column);
-    QString dn = dn_index.data().toString();
-
-    return dn;
-}
-
 QMimeData *EntryModel::mimeData(const QModelIndexList &indexes) const {
     QMimeData *data = QStandardItemModel::mimeData(indexes);
 
     if (indexes.size() > 0) {
         QModelIndex index = indexes[0];
-        QString dn = get_dn_from_index(index);
+        QString dn = get_dn_from_index(index, dn_column);
 
         data->setText(dn);
     }
@@ -51,7 +45,7 @@ QMimeData *EntryModel::mimeData(const QModelIndexList &indexes) const {
 
 bool EntryModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
     const QString dn = data->text();
-    const QString target_dn = get_dn_from_index(parent);
+    const QString target_dn = get_dn_from_index(parent, dn_column);
 
     const bool can_drop = AD()->can_drop_entry(dn, target_dn);
 
@@ -68,9 +62,38 @@ bool EntryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int 
     }
 
     const QString dn = data->text();
-    const QString target_dn = get_dn_from_index(parent);
+    const QString target_dn = get_dn_from_index(parent, dn_column);
 
     AD()->drop_entry(dn, target_dn);
 
     return true;
+}
+
+QList<QStandardItem *> EntryModel::find_row(const QString &dn) {
+    // Find dn item
+    const QList<QStandardItem *> dn_items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, dn_column);
+    if (dn_items.isEmpty()) {
+        return QList<QStandardItem *>();
+    }
+
+    const QStandardItem *dn_item = dn_items[0];
+    const QStandardItem *parent = dn_item->parent();
+    const int column_count = parent->columnCount();
+    const int row_i = dn_item->row();
+
+    // Compose the row
+    auto row = QList<QStandardItem *>();
+    for (int col_i = 0; col_i < column_count; col_i++) {
+        QStandardItem *item = parent->child(row_i, col_i);
+        row.push_back(item);
+    }
+
+    return row;
+}
+
+QStandardItem *EntryModel::find_item(const QString &dn, int col) {
+    QList<QStandardItem *> row = find_row(dn);
+    QStandardItem *item = row.value(col);
+
+    return item;
 }

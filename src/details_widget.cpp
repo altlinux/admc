@@ -18,34 +18,31 @@
  */
 
 #include "details_widget.h"
-#include "attributes_model.h"
+#include "attributes_widget.h"
 #include "ad_interface.h"
 #include "members_widget.h"
 #include "settings.h"
+#include "entry_context_menu.h"
+#include "containers_widget.h"
+#include "contents_widget.h"
 
 #include <QTreeView>
 #include <QStandardItemModel>
 #include <QAction>
 
-DetailsWidget::DetailsWidget(MembersWidget *members_widget_, QWidget *parent)
+DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent)
 : QTabWidget(parent)
 {
-    members_widget = members_widget_;
+    members_widget = new MembersWidget(entry_context_menu, this);
+    attributes_widget = new AttributesWidget(this);
 
-    attributes_model = new AttributesModel(this);
-
-    attributes_view = new QTreeView();
-    attributes_view->setEditTriggers(QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
-    attributes_view->setSelectionMode(QAbstractItemView::NoSelection);
-    attributes_view->setSelectionBehavior(QAbstractItemView::SelectRows);
-    attributes_view->setModel(attributes_model);
+    // Add all tabs to take ownership of them
+    addTab(attributes_widget, "");
+    addTab(members_widget, "");
 
     connect(
         AD(), &AdInterface::ad_interface_login_complete,
         this, &DetailsWidget::on_ad_interface_login_complete);
-    connect(
-        AD(), &AdInterface::delete_entry_complete,
-        this, &DetailsWidget::on_delete_entry_complete);
     connect(
         AD(), &AdInterface::dn_changed,
         this, &DetailsWidget::on_dn_changed);
@@ -53,9 +50,15 @@ DetailsWidget::DetailsWidget(MembersWidget *members_widget_, QWidget *parent)
         AD(), &AdInterface::attributes_changed,
         this, &DetailsWidget::on_attributes_changed);
 
-    // Add all tabs to take ownership of them
-    addTab(attributes_view, "");
-    addTab(members_widget, "");
+    connect(
+        entry_context_menu, &EntryContextMenu::details,
+        this, &DetailsWidget::on_context_menu_details);
+    connect(
+        containers_widget, &ContainersWidget::clicked_dn,
+        this, &DetailsWidget::on_containers_clicked_dn);
+    connect(
+        contents_widget, &ContentsWidget::clicked_dn,
+        this, &DetailsWidget::on_contents_clicked_dn);
 
     change_target("");
 };
@@ -66,14 +69,13 @@ void DetailsWidget::change_target(const QString &dn) {
 
     target_dn = dn;
 
-    attributes_model->change_target(target_dn);
-
+    attributes_widget->change_target(target_dn);
     members_widget->change_target(target_dn);
 
     // Setup tabs
     clear();
 
-    addTab(attributes_view, "All Attributes");
+    addTab(attributes_widget, "All Attributes");
 
     bool is_group = AD()->attribute_value_exists(target_dn, "objectClass", "group");
     if (is_group) {
@@ -93,17 +95,15 @@ void DetailsWidget::on_ad_interface_login_complete(const QString &search_base, c
     change_target("");
 }
 
-void DetailsWidget::on_delete_entry_complete(const QString &dn) {
-    // Clear data if current target was deleted
-    if (target_dn == dn) {
-        change_target("");
-    }
-}
-
 void DetailsWidget::on_dn_changed(const QString &old_dn, const QString &new_dn) {
-    // Switch to the entry at new dn (entry stays the same)
     if (target_dn == old_dn) {
-        change_target(new_dn);
+        if (new_dn == "") {
+            // Target was deleted so clear
+            change_target("");
+        } else {
+            // Switch to entry at new dn (entry stays the same)
+            change_target(new_dn);
+        }
     }
 }
 

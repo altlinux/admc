@@ -17,29 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef AD_PROXY_MODEL_H
-#define AD_PROXY_MODEL_H
+#include "dn_column_proxy.h"
+#include "settings.h"
 
-#include <QSortFilterProxyModel>
+#include <QAction>
 
-class QModelIndex;
-class EntryModel;
+DnColumnProxy::DnColumnProxy(int dn_column_arg, QObject *parent)
+: QSortFilterProxyModel(parent)
+{
+    dn_column = dn_column_arg;
 
-// Show/hide advanced entries depending on whether advanced view is on
-// Show/hide non-container entries
-class EntryProxyModel final : public QSortFilterProxyModel {
-public:
-    explicit EntryProxyModel(EntryModel *model_arg, QObject *parent);
+    connect(
+        SETTINGS()->toggle_show_dn_column, &QAction::toggled,
+        this, &DnColumnProxy::on_toggle_show_dn_column);
+}
 
-    bool only_show_containers = false;
+void DnColumnProxy::on_toggle_show_dn_column(bool checked) {
+    show_dn_column = checked;
 
-private slots:
-    void on_advanced_view_toggled(bool checked);
+    invalidateFilter();
+}
 
-private:
-    EntryModel *model;
-
-    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
-};
-
-#endif /* AD_PROXY_MODEL_H */
+bool DnColumnProxy::filterAcceptsColumn(int source_column, const QModelIndex &parent) const {
+    if (!show_dn_column && source_column == dn_column) {
+        return false;
+    } else {
+        return true;
+    }
+}

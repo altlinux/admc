@@ -50,20 +50,21 @@ set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/admc.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Runner.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_interface.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/details_widget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/attributes_model.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/attributes_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/containers_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/contents_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main_window.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/status.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/members_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/members_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/settings.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_proxy_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/move_dialog.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_context_menu.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/confirmation_dialog.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/advanced_view_proxy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/dn_column_proxy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/utils.cpp
 )
 
 add_definitions(${QT5_DEFINITIONS})

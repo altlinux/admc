@@ -17,32 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_MODEL_H
-#define ATTRIBUTES_MODEL_H
+#ifndef UTILS_H
+#define UTILS_H
 
-#include <QStandardItemModel>
+#include <QModelIndex>
+#include <QIcon>
 
-// Model for attributes view in DetailsWidget
-// Has attribute name and value columns
-// Value is editable, which also modifies attribute in AD
-class AttributesModel final : public QStandardItemModel {
-Q_OBJECT
+class QAbstractItemModel;
+class QString;
+class QAbstractItemView;
 
-public:
-    enum Column {
-        Name,
-        Value,
-        COUNT,
-    };
+QModelIndex convert_to_source(const QModelIndex &index);
+QString get_dn_from_index(const QModelIndex &base_row_index, int dn_column);
+QIcon get_entry_icon(const QString &dn);
+void set_root_to_head(QAbstractItemView *view);
 
-    explicit AttributesModel(QObject *parent);
-
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-    void change_target(const QString &new_target_dn);
-
-private:
-    QString target_dn;
-
-};
-
-#endif /* ATTRIBUTES_MODEL_H */
+#endif /* UTILS_H */

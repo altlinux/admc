@@ -30,12 +30,13 @@ class QComboBox;
 class QStandardItemModel;
 class QTreeView;
 class QLabel;
+class QAction;
 
 class MoveDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    MoveDialog(QWidget *parent);
+    MoveDialog(QAction *action, QWidget *parent);
 
     void open_for_entry(const QString &dn);
 

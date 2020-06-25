@@ -17,9 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attributes_model.h"
-#include "ad_model.h"
+#include "attributes_widget.h"
 #include "ad_interface.h"
+
+#include <QTreeView>
+#include <QVBoxLayout>
+
+AttributesWidget::AttributesWidget(QWidget *parent)
+: QWidget(parent)
+{
+    model = new AttributesModel(this);
+
+    view = new QTreeView(this);
+    view->setEditTriggers(QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
+    view->setSelectionMode(QAbstractItemView::NoSelection);
+    view->setSelectionBehavior(QAbstractItemView::SelectRows);
+    view->setModel(model);
+
+    const auto layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(view);
+}
+
+void AttributesWidget::change_target(const QString &dn) {
+    model->change_target(dn);
+}
 
 AttributesModel::AttributesModel(QObject *parent)
 : QStandardItemModel(0, Column::COUNT, parent)
@@ -49,8 +72,8 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     }
 }
 
-void AttributesModel::change_target(const QString &new_target_dn) {
-    target_dn = new_target_dn;
+void AttributesModel::change_target(const QString &dn) {
+    target_dn = dn;
 
     removeRows(0, rowCount());
 

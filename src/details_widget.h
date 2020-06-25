@@ -17,15 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_WIDGET_H
-#define ATTRIBUTES_WIDGET_H
+#ifndef DETAILS_WIDGET_H
+#define DETAILS_WIDGET_H
 
 #include <QTabWidget>
 
 class QTreeView;
 class QString;
-class AttributesModel;
+class AttributesWidget;
 class MembersWidget;
+class EntryContextMenu;
+class ContainersWidget;
+class ContentsWidget;
 
 // Shows info about entry's attributes in multiple tabs
 // Targeted at a particular entry
@@ -34,7 +37,7 @@ class DetailsWidget final : public QTabWidget {
 Q_OBJECT
 
 public:
-    DetailsWidget(MembersWidget *members_widget_, QWidget *parent);
+    DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent);
 
 public slots:
     void on_containers_clicked_dn(const QString &dn);
@@ -43,17 +46,15 @@ public slots:
 
 private slots:
     void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
-    void on_delete_entry_complete(const QString &dn); 
     void on_dn_changed(const QString &old_dn, const QString &new_dn); 
     void on_attributes_changed(const QString &dn);
 
 private:
-    AttributesModel *attributes_model = nullptr;
-    QTreeView *attributes_view = nullptr;
+    AttributesWidget *attributes_widget = nullptr;
     MembersWidget *members_widget = nullptr;
     QString target_dn;
 
     void change_target(const QString &dn);
 };
 
-#endif /* ATTRIBUTES_WIDGET_H */
+#endif /* DETAILS_WIDGET_H */

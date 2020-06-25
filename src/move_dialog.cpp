@@ -59,7 +59,7 @@ const QMap<ClassFilterType, QString> class_filter_string = {
     {ClassFilterType_OUs, OU_STR},
 };
 
-MoveDialog::MoveDialog(QWidget *parent)
+MoveDialog::MoveDialog(QAction *action, QWidget *parent)
 : QDialog(parent)
 {
     setModal(true);
@@ -105,6 +105,11 @@ MoveDialog::MoveDialog(QWidget *parent)
     layout->addWidget(view, 3, 0, 1, 3);
 
     connect(
+        action, &QAction::triggered,
+        [this] () {
+            open_for_entry("entry");
+        });
+    connect(
         filter_name_line_edit, &QLineEdit::textChanged,
         this, &MoveDialog::on_filter_name_changed);
     connect(filter_class_combo_box, QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -143,7 +148,7 @@ void MoveDialog::open_for_entry(const QString &dn) {
 
     // Load model
     model->removeRows(0, model->rowCount());
-       
+
     const QAction *const toggle_advanced_view = SETTINGS()->toggle_advanced_view;
     const bool advanced_view_is_off = !toggle_advanced_view->isChecked();
 

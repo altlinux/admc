@@ -17,17 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef CONFIRMATION_DIALOG_H
+#define CONFIRMATION_DIALOG_H
 
-#include <QMainWindow>
+class QString;
+class QWidget;
 
-class MainWindow final : public QMainWindow {
-Q_OBJECT
+bool confirmation_dialog(const QString &text, QWidget *parent);
 
-public:
-    explicit MainWindow(const bool auto_login);
-
-};
-
-#endif /* MAIN_WINDOW_H */
+#endif /* CONFIRMATION_DIALOG_H */

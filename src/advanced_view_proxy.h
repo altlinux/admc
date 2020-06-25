@@ -17,34 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MEMBERS_MODEL_H
-#define MEMBERS_MODEL_H
+#ifndef AD_PROXY_MODEL_H
+#define AD_PROXY_MODEL_H
 
-#include "entry_model.h"
+#include <QSortFilterProxyModel>
 
-#include <QModelIndex>
+class QModelIndex;
 
-class QString;
-
-// Model for MembersWidget
-// Contains columns for DN(from EntryModel) and name
-class MembersModel final : public EntryModel {
-Q_OBJECT
-
+// Show/hide advanced entries depending on whether advanced view is on
+// Show/hide non-container entries
+class AdvancedViewProxy final : public QSortFilterProxyModel {
 public:
-    enum Column {
-        Name,
-        DN,
-        COUNT,
-    };
+    explicit AdvancedViewProxy(int dn_column_arg, QObject *parent);
 
-    explicit MembersModel(QObject *parent);
-
-    QModelIndex change_target(const QString &new_target_dn);
+private slots:
+    void on_advanced_view_toggled(bool checked);
 
 private:
-    QString target_dn;
+    int dn_column;
+    bool advanced_view_is_on;
 
+    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
 
-#endif /* MEMBERS_MODEL_H */
+#endif /* AD_PROXY_MODEL_H */

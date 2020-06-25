@@ -17,17 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef DN_COLUMN_PROXY_H
+#define DN_COLUMN_PROXY_H
 
-#include <QMainWindow>
+#include <QSortFilterProxyModel>
 
-class MainWindow final : public QMainWindow {
-Q_OBJECT
+class QModelIndex;
+class EntryModel;
 
+// Show/hide DN column depending on "show DN" setting
+class DnColumnProxy final : public QSortFilterProxyModel {
 public:
-    explicit MainWindow(const bool auto_login);
+    explicit DnColumnProxy(int dn_column_arg, QObject *parent);
 
+private slots:
+    void on_toggle_show_dn_column(bool checked);
+
+private:
+    int dn_column;
+    bool show_dn_column;
+
+    bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const override;
 };
 
-#endif /* MAIN_WINDOW_H */
+#endif /* DN_COLUMN_PROXY_H */

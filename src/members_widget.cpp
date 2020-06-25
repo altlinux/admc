@@ -18,29 +18,72 @@
  */
 
 #include "members_widget.h"
-#include "members_model.h"
+#include "entry_context_menu.h"
+#include "utils.h"
+#include "dn_column_proxy.h"
 
 #include <QTreeView>
 #include <QLabel>
+#include <QVBoxLayout>
 
-MembersWidget::MembersWidget(MembersModel *model, QWidget *parent)
-: EntryWidget(model, parent)
+MembersWidget::MembersWidget(EntryContextMenu *entry_context_menu, QWidget *parent)
+: QWidget(parent)
 {   
-    members_model = model;
-
+    view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setAcceptDrops(true);
-    view->setModel(members_model);
+    view->setContextMenuPolicy(Qt::CustomContextMenu);
+    view->setDragDropMode(QAbstractItemView::DragDrop);
+    entry_context_menu->connect_view(view, MembersModel::Column::DN);
 
-    column_hidden[MembersModel::Column::Name] = false;
-    update_column_visibility();
+    model = new MembersModel(this);
+    const auto dn_column_proxy = new DnColumnProxy(MembersModel::Column::DN, this);
+    dn_column_proxy->setSourceModel(model);
+    view->setModel(dn_column_proxy);
+    
+    const auto layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(view);
 }
 
 void MembersWidget::change_target(const QString &dn) {
-    QModelIndex root_index = members_model->change_target(dn);
+    model->change_target(dn);
 
-    // Set root to group index so that it is hidden
-    view->setRootIndex(root_index);
+    set_root_to_head(view);
+}
 
-    update_column_visibility();
+MembersModel::MembersModel(QObject *parent)
+: EntryModel(Column::COUNT, Column::DN, parent)
+{
+    setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
+    setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
+}
+
+void MembersModel::change_target(const QString &dn) {
+    removeRows(0, rowCount());
+
+    auto create_row = [this](const QString &row_dn) {
+        QList<QStandardItem *> row;
+        for (int i = 0; i < Column::COUNT; i++) {
+            row.append(new QStandardItem());
+        }
+        const QString name = AD()->get_attribute(row_dn, "name");
+        row[Column::Name]->setText(name);
+        row[Column::DN]->setText(row_dn);
+
+        return row;
+    };
+
+    // Create root item to represent group itself
+    QList<QStandardItem *> group_row = create_row(dn);
+    appendRow(group_row);
+    QStandardItem *group_item = group_row[0];
+
+    // Populate model with members of new root
+    const QList<QString> members = AD()->get_attribute_multi(dn, "member");
+    for (auto member_dn : members) {
+        QList<QStandardItem *> member_row = create_row(member_dn);
+        group_item->appendRow(member_row);
+    }
 }
