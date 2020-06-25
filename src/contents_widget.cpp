@@ -99,7 +99,6 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContext
 }
 
 void ContentsWidget::load_row(QList<QStandardItem *> row, const QString &dn) {
-    // Load values into row
     QString name = AD()->get_attribute(dn, "name");
 
     // NOTE: this is given as raw DN and contains '-' where it should

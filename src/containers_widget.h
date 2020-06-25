@@ -29,6 +29,26 @@ class QItemSelection;
 class AdvancedViewProxy;
 class EntryContextMenu;
 class QTreeView;
+class ContainersModel;
+
+class ContainersWidget final : public QWidget {
+Q_OBJECT
+
+public:
+    ContainersWidget(EntryContextMenu *entry_context_menu, QWidget *parent);
+
+signals:
+    void selected_changed(const QString &dn);
+    void clicked_dn(const QString &dn);
+
+private slots:
+    void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
+
+    void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
+private:
+    ContainersModel *model = nullptr;
+    QTreeView *view = nullptr;
+};
 
 class ContainersModel final : public EntryModel {
 
@@ -49,29 +69,10 @@ public:
     void fetchMore(const QModelIndex &parent);
     bool hasChildren(const QModelIndex &parent) const override;
 
-};
-
-class ContainersWidget final : public QWidget {
-Q_OBJECT
-
-public:
-    ContainersWidget(EntryContextMenu *entry_context_menu, QWidget *parent);
-
-signals:
-    void selected_changed(const QString &dn);
-    void clicked_dn(const QString &dn);
-
-private slots:
-    void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
-
     void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
     void on_attributes_changed(const QString &dn);
     void on_dn_changed(const QString &old_dn, const QString &new_dn);
     void on_create_entry_complete(const QString &dn, NewEntryType type); 
-private:
-    ContainersModel *model = nullptr;
-    QTreeView *view = nullptr;
-
 };
 
 #endif /* CONTAINERS_WIDGET_H */
