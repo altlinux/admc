@@ -20,6 +20,7 @@
 #include "move_dialog.h"
 #include "ad_interface.h"
 #include "settings.h"
+#include "confirmation_dialog.h"
 
 #include <QLineEdit>
 #include <QVBoxLayout>
@@ -53,6 +54,9 @@ MoveDialog::MoveDialog(QAction *action, QWidget *parent)
     //
     // Objects
     //
+    view = new QTreeView(this);
+    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
     target_label = new QLabel("TARGET");
 
     const auto filter_class_label = new QLabel("Class: ");
@@ -64,16 +68,14 @@ MoveDialog::MoveDialog(QAction *action, QWidget *parent)
     model = new MoveDialogModel(this);
 
     proxy_name = new QSortFilterProxyModel(this);
-    proxy_name->setSourceModel(model);
     proxy_name->setFilterKeyColumn(MoveDialogModel::Column::Name);
 
     proxy_class = new QSortFilterProxyModel(this);
-    proxy_class->setSourceModel(proxy_name);
     proxy_class->setFilterKeyColumn(MoveDialogModel::Column::Class);
 
-    view = new QTreeView(this);
+    proxy_name->setSourceModel(model);
+    proxy_class->setSourceModel(proxy_name);
     view->setModel(proxy_class);
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     //
     // Layout
@@ -155,12 +157,12 @@ void MoveDialog::on_double_clicked(const QModelIndex &index) {
     const QModelIndex dn_index = index.siblingAtColumn(MoveDialogModel::Column::DN);
     const QString dn = dn_index.data().toString();
 
-    // TODO:
-    // const QString confirm_text = QString("Move \"%1\" to \"%2\"?").arg(target_dn, dn);
-    // const bool confirmed = confirmation_dialog(confirm_text);
-    // if (confirmed) {
-
-    AD()->move(target_dn, dn);
+    const QString confirm_text = QString("Move \"%1\" to \"%2\"?").arg(target_dn, dn);
+    const bool confirmed = confirmation_dialog(confirm_text, this);
+    if (confirmed) {
+        AD()->move(target_dn, dn);
+        done(QDialog::Accepted);
+    }
 }
 
 MoveDialogModel::MoveDialogModel(QObject *parent)
