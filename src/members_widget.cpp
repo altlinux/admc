@@ -19,6 +19,7 @@
 
 #include "members_widget.h"
 #include "entry_context_menu.h"
+#include "utils.h"
 
 #include <QTreeView>
 #include <QLabel>
@@ -46,8 +47,7 @@ MembersWidget::MembersWidget(EntryContextMenu *entry_context_menu, QWidget *pare
 void MembersWidget::change_target(const QString &dn) {
     model->change_target(dn);
 
-    const QModelIndex head_index = model->index(0, 0);
-    view->setRootIndex(head_index);
+    set_root_to_head(view);
 }
 
 MembersModel::MembersModel(QObject *parent)

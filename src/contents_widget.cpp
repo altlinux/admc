@@ -79,8 +79,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContext
 void ContentsWidget::on_containers_selected_changed(const QString &dn) {
     model->change_target(dn);
 
-    const QModelIndex head_index = model->index(0, 0);
-    view->setRootIndex(head_index);
+    set_root_to_head(view);
 }
 
 ContentsModel::ContentsModel(QObject *parent)

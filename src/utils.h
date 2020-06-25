@@ -25,9 +25,11 @@
 
 class QAbstractItemModel;
 class QString;
+class QAbstractItemView;
 
 QModelIndex convert_to_source(const QModelIndex &index);
 QString get_dn_from_index(const QModelIndex &base_row_index, int dn_column);
 QIcon get_entry_icon(const QString &dn);
+void set_root_to_head(QAbstractItemView *view);
 
 #endif /* UTILS_H */

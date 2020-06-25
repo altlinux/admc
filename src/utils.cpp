@@ -22,6 +22,8 @@
 
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
+#include <QAbstractItemView>
+#include <QModelIndex>
 
 // Converts index all the way down to source index, going through whatever chain of proxies is present
 QModelIndex convert_to_source(const QModelIndex &index) {
@@ -72,4 +74,13 @@ QIcon get_entry_icon(const QString &dn) {
     QIcon icon = QIcon::fromTheme(icon_name);
 
     return icon;
+}
+
+// Set root index of view to head index of current model
+// Do this to hide a head node in view while retaining it in model
+// for drag and drop purposes
+void set_root_to_head(QAbstractItemView *view) {
+    const QAbstractItemModel *view_model = view->model();
+    const QModelIndex head_index = view_model->index(0, 0);
+    view->setRootIndex(head_index);
 }
