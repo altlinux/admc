@@ -59,20 +59,27 @@ MembersModel::MembersModel(QObject *parent)
 void MembersModel::change_target(const QString &dn) {
     removeRows(0, rowCount());
 
+    auto create_row = [this](const QString &row_dn) {
+        QList<QStandardItem *> row;
+        for (int i = 0; i < Column::COUNT; i++) {
+            row.append(new QStandardItem());
+        }
+        const QString name = AD()->get_attribute(row_dn, "name");
+        row[Column::Name]->setText(name);
+        row[Column::DN]->setText(row_dn);
+
+        return row;
+    };
+
     // Create root item to represent group itself
-    const QString grp_name = AD()->get_attribute(dn, "name");
-    const auto grp_name_item = new QStandardItem(grp_name);
-    const auto grp_dn_item = new QStandardItem(dn);
-    appendRow({grp_name_item, grp_dn_item});
+    QList<QStandardItem *> group_row = create_row(dn);
+    appendRow(group_row);
+    QStandardItem *group_item = group_row[0];
 
     // Populate model with members of new root
     const QList<QString> members = AD()->get_attribute_multi(dn, "member");
     for (auto member_dn : members) {
-        const QString name = AD()->get_attribute(member_dn, "name");
-
-        const auto name_item = new QStandardItem(name);
-        const auto dn_item = new QStandardItem(member_dn);
-
-        grp_name_item->appendRow({name_item, dn_item});
+        QList<QStandardItem *> member_row = create_row(member_dn);
+        group_item->appendRow(member_row);
     }
 }
