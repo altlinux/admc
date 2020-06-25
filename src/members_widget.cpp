@@ -20,6 +20,7 @@
 #include "members_widget.h"
 #include "entry_context_menu.h"
 #include "utils.h"
+#include "dn_column_proxy.h"
 
 #include <QTreeView>
 #include <QLabel>
@@ -28,16 +29,18 @@
 MembersWidget::MembersWidget(EntryContextMenu *entry_context_menu, QWidget *parent)
 : QWidget(parent)
 {   
-    model = new MembersModel(this);
-
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setAcceptDrops(true);
-    view->setModel(model);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
     entry_context_menu->connect_view(view, MembersModel::Column::DN);
 
+    model = new MembersModel(this);
+    const auto dn_column_proxy = new DnColumnProxy(MembersModel::Column::DN, this);
+    dn_column_proxy->setSourceModel(model);
+    view->setModel(dn_column_proxy);
+    
     const auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
@@ -53,7 +56,8 @@ void MembersWidget::change_target(const QString &dn) {
 MembersModel::MembersModel(QObject *parent)
 : EntryModel(Column::COUNT, Column::DN, parent)
 {
-
+    setHorizontalHeaderItem(Column::Name, new QStandardItem("Name"));
+    setHorizontalHeaderItem(Column::DN, new QStandardItem("DN"));
 }
 
 void MembersModel::change_target(const QString &dn) {
