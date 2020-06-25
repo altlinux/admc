@@ -40,6 +40,7 @@ enum ClassFilterType {
     ClassFilterType_OUs,
     ClassFilterType_COUNT
 };
+Q_DECLARE_METATYPE(ClassFilterType)
 
 class MoveDialog final : public QDialog {
 Q_OBJECT
@@ -80,7 +81,5 @@ public:
 
     void load(const QString &dn, QList<ClassFilterType> classes);
 };
-
-Q_DECLARE_METATYPE(ClassFilterType)
 
 #endif /* MOVE_DIALOG_H */

@@ -38,15 +38,10 @@ ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget
 : QWidget(parent)
 {
     model = new ContainersModel(this);
-
-    const auto proxy = new AdvancedViewProxy(ContainersModel::Column::DN, this);
-    proxy->setSourceModel(model);   
-
+    const auto advanced_view_proxy = new AdvancedViewProxy(ContainersModel::Column::DN, this);
     const auto dn_column_proxy = new DnColumnProxy(ContainersModel::Column::DN, this);
-    dn_column_proxy->setSourceModel(proxy);   
 
     view = new QTreeView(this);
-    view->setModel(dn_column_proxy);
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setRootIsDecorated(true);
@@ -55,6 +50,8 @@ ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
     entry_context_menu->connect_view(view, ContainersModel::Column::DN);
+
+    setup_model_chain(view, model, {advanced_view_proxy, dn_column_proxy});
 
     // Insert label into layout
     const auto label = new QLabel("Containers");

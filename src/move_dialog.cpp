@@ -21,6 +21,7 @@
 #include "ad_interface.h"
 #include "settings.h"
 #include "confirmation_dialog.h"
+#include "utils.h"
 
 #include <QLineEdit>
 #include <QVBoxLayout>
@@ -50,10 +51,8 @@ MoveDialog::MoveDialog(QAction *action, QWidget *parent)
 : QDialog(parent)
 {
     setModal(true);
+    resize(600, 600);
 
-    //
-    // Objects
-    //
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -73,14 +72,7 @@ MoveDialog::MoveDialog(QAction *action, QWidget *parent)
     proxy_class = new QSortFilterProxyModel(this);
     proxy_class->setFilterKeyColumn(MoveDialogModel::Column::Class);
 
-    proxy_name->setSourceModel(model);
-    proxy_class->setSourceModel(proxy_name);
-    view->setModel(proxy_class);
-
-    //
-    // Layout
-    //
-    resize(600, 600);
+    setup_model_chain(view, model, {proxy_name, proxy_class});
 
     const auto layout = new QGridLayout(this);
     layout->addWidget(target_label, 0, 0);
@@ -192,10 +184,6 @@ void MoveDialogModel::load(const QString &dn, QList<ClassFilterType> classes) {
         const QList<QString> entries = AD()->search(filter);
 
         for (auto e_dn : entries) {
-            // TODO: make entryproxymodel into AdvancedFilter
-            // that accepts any model and takes dn_column as ctor arg
-            // to get the dn
-            // and then use that to filter here properly
             auto row = QList<QStandardItem *>();
             for (int i = 0; i < Column::COUNT; i++) {
                 row.push_back(new QStandardItem());
