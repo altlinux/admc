@@ -144,8 +144,7 @@ void MoveDialog::on_filter_class_changed(int index) {
 }
 
 void MoveDialog::on_double_clicked(const QModelIndex &index) {
-    const QModelIndex dn_index = index.siblingAtColumn(MoveDialogModel::Column::DN);
-    const QString dn = dn_index.data().toString();
+    const QString dn = get_dn_from_index(index, MoveDialogModel::Column::DN);
 
     const QString confirm_text = QString("Move \"%1\" to \"%2\"?").arg(target_dn, dn);
     const bool confirmed = confirmation_dialog(confirm_text, this);
