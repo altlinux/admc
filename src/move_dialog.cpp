@@ -100,6 +100,9 @@ MoveDialog::MoveDialog(QWidget *parent)
     setup_model_chain(view, model, {proxy_name, proxy_class, dn_column_proxy});
 
     connect(
+        view, &QAbstractItemView::doubleClicked,
+        this, &MoveDialog::on_double_clicked);
+    connect(
         filter_name_line_edit, &QLineEdit::textChanged,
         this, &MoveDialog::on_filter_name_changed);
     connect(filter_class_combo_box, QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -163,6 +166,16 @@ void MoveDialog::on_filter_class_changed(int index) {
     proxy_class->setFilterRegExp(QRegExp(regexp, Qt::CaseInsensitive, QRegExp::FixedString));
 }
 
+void MoveDialog::complete(const QString &move_dn) {
+    const QString confirm_text = QString("Move \"%1\" to \"%2\"?").arg(target_dn, move_dn);
+
+    const bool confirmed = confirmation_dialog(confirm_text, this);
+    if (confirmed) {
+        AD()->move(target_dn, move_dn);
+        done(QDialog::Accepted);
+    }
+}
+
 void MoveDialog::on_select_button(bool) {
     const QItemSelectionModel *selection_model = view->selectionModel();
     if (!selection_model->hasSelection()) {
@@ -171,13 +184,13 @@ void MoveDialog::on_select_button(bool) {
     const QModelIndex selected_index = selection_model->currentIndex();
     const QString move_dn = get_dn_from_index(selected_index, MoveDialogColumn_DN);
     
-    const QString confirm_text = QString("Move \"%1\" to \"%2\"?").arg(target_dn, move_dn);
+    complete(move_dn);
+}
 
-    const bool confirmed = confirmation_dialog(confirm_text, this);
-    if (confirmed) {
-        AD()->move(target_dn, move_dn);
-        done(QDialog::Accepted);
-    }
+void MoveDialog::on_double_clicked(const QModelIndex &index) {
+    const QString move_dn = get_dn_from_index(index, MoveDialogColumn_DN);
+
+    complete(move_dn);
 }
 
 void MoveDialog::on_cancel_button(bool) {

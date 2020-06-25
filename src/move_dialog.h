@@ -55,6 +55,7 @@ private slots:
     void on_filter_class_changed(int index);
     void on_select_button(bool checked);
     void on_cancel_button(bool checked);
+    void on_double_clicked(const QModelIndex &index);
 
 private:
     QTreeView *view = nullptr;
@@ -65,6 +66,8 @@ private:
     QSortFilterProxyModel *proxy_name = nullptr;
     QSortFilterProxyModel *proxy_class = nullptr;
     QString target_dn = "";
+
+    void complete(const QString &move_dn);
 };
 
 class MoveDialogModel final : public QStandardItemModel {
