@@ -27,6 +27,8 @@ class QString;
 class AttributesModel;
 class MembersWidget;
 class EntryContextMenu;
+class ContainersWidget;
+class ContentsWidget;
 
 // Shows info about entry's attributes in multiple tabs
 // Targeted at a particular entry
@@ -35,7 +37,7 @@ class DetailsWidget final : public QTabWidget {
 Q_OBJECT
 
 public:
-    DetailsWidget(EntryContextMenu *entry_context_menu, QWidget *parent);
+    DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent);
 
 public slots:
     void on_containers_clicked_dn(const QString &dn);

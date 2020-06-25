@@ -23,12 +23,14 @@
 #include "members_widget.h"
 #include "settings.h"
 #include "entry_context_menu.h"
+#include "containers_widget.h"
+#include "contents_widget.h"
 
 #include <QTreeView>
 #include <QStandardItemModel>
 #include <QAction>
 
-DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, QWidget *parent)
+DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent)
 : QTabWidget(parent)
 {
     members_widget = new MembersWidget(entry_context_menu, this);
@@ -50,6 +52,16 @@ DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, QWidget *pare
     connect(
         AD(), &AdInterface::attributes_changed,
         this, &DetailsWidget::on_attributes_changed);
+
+    connect(
+        entry_context_menu, &EntryContextMenu::details,
+        this, &DetailsWidget::on_context_menu_details);
+    connect(
+        containers_widget, &ContainersWidget::clicked_dn,
+        this, &DetailsWidget::on_containers_clicked_dn);
+    connect(
+        contents_widget, &ContentsWidget::clicked_dn,
+        this, &DetailsWidget::on_contents_clicked_dn);
 
     // Add all tabs to take ownership of them
     addTab(attributes_view, "");

@@ -28,12 +28,6 @@ Q_OBJECT
 public:
     explicit MainWindow(const bool auto_login);
 
-private slots:
-    void on_action_login();
-    void on_action_exit();
-
-private:
-    
 };
 
 #endif /* MAIN_WINDOW_H */

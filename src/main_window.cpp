@@ -41,6 +41,19 @@
 #include <QVBoxLayout>
 #include <QTextEdit>
 
+void on_action_login() {
+    AD()->ad_interface_login(SEARCH_BASE, HEAD_DN);
+}
+
+void on_action_exit(QMainWindow *main_window) {
+    const QString text = QString("Are you sure you want to exit?");
+    const bool confirmed = confirmation_dialog(text, main_window);
+
+    if (confirmed) {
+        QApplication::quit();
+    }   
+}
+
 MainWindow::MainWindow(const bool auto_login)
 : QMainWindow()
 {
@@ -52,11 +65,11 @@ MainWindow::MainWindow(const bool auto_login)
     {
         QMenuBar *menubar = menuBar();
         QMenu *menubar_file = menubar->addMenu("File");
-        menubar_file->addAction("Login", [this]() {
+        menubar_file->addAction("Login", []() {
             on_action_login();
         });
         menubar_file->addAction("Exit", [this]() {
-            on_action_exit();
+            on_action_exit(this);
         });
 
         QMenu *menubar_view = menubar->addMenu("View");
@@ -78,7 +91,7 @@ MainWindow::MainWindow(const bool auto_login)
     
     auto containers_widget = new ContainersWidget(entry_context_menu, this);
     auto contents_widget = new ContentsWidget(containers_widget, entry_context_menu, this);
-    auto details_widget = new DetailsWidget(entry_context_menu, this);
+    auto details_widget = new DetailsWidget(entry_context_menu, containers_widget, contents_widget, this);
 
     auto status_log = new QTextEdit(this);
     status_log->setReadOnly(true);
@@ -113,33 +126,7 @@ MainWindow::MainWindow(const bool auto_login)
         central_widget->setLayout(central_layout);
     }
 
-    // Connect signals
-    {
-        connect(
-            containers_widget, &ContainersWidget::clicked_dn,
-            details_widget, &DetailsWidget::on_containers_clicked_dn);
-        connect(
-            contents_widget, &ContentsWidget::clicked_dn,
-            details_widget, &DetailsWidget::on_contents_clicked_dn);
-        connect(
-            entry_context_menu, &EntryContextMenu::details,
-            details_widget, &DetailsWidget::on_context_menu_details);
-    }
-
     if (auto_login) {
         on_action_login();
     }    
-}
-
-void MainWindow::on_action_login() {
-    AD()->ad_interface_login(SEARCH_BASE, HEAD_DN);
-}
-
-void MainWindow::on_action_exit() {
-    const QString text = QString("Are you sure you want to exit?");
-    const bool confirmed = confirmation_dialog(text, this);
-
-    if (confirmed) {
-        QApplication::quit();
-    }   
 }
