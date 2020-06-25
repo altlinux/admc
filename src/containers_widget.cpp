@@ -87,7 +87,7 @@ ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget
     connect(
         view, &QAbstractItemView::clicked,
         [this] (const QModelIndex &index) {
-            const QString dn = model->get_dn_from_index(index);
+            const QString dn = get_dn_from_index(index, ContainersModel::Column::DN);
 
             emit clicked_dn(dn);
         });
@@ -210,7 +210,7 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
         return;
     }
 
-    QString dn = get_dn_from_index(parent);
+    QString dn = get_dn_from_index(parent, Column::DN);
 
     QStandardItem *parent_item = itemFromIndex(parent);
 

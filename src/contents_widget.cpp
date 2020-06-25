@@ -24,6 +24,7 @@
 #include "entry_model.h"
 #include "entry_context_menu.h"
 #include "dn_column_proxy.h"
+#include "utils.h"
 
 #include <QTreeView>
 #include <QLabel>
@@ -83,7 +84,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContext
     connect(
         view, &QAbstractItemView::clicked,
         [this] (const QModelIndex &index) {
-            const QString dn = model->get_dn_from_index(index);
+            const QString dn = get_dn_from_index(index, Column::DN);
 
             emit clicked_dn(dn);
         });
