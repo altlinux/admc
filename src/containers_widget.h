@@ -74,6 +74,4 @@ private:
 
 };
 
-QIcon get_entry_icon(const QString &dn);
-
 #endif /* CONTAINERS_WIDGET_H */

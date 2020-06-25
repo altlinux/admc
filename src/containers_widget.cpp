@@ -273,27 +273,3 @@ void make_new_row(QStandardItem *parent, const QString &dn) {
 
     load_row(row, dn);
 }
-
-QIcon get_entry_icon(const QString &dn) {
-    // TODO: change to custom, good icons, add those icons to installation?
-    // TODO: are there cases where an entry can have multiple icons due to multiple objectClasses and one of them needs to be prioritized?
-    QMap<QString, QString> class_to_icon = {
-        {"groupPolicyContainer", "x-office-address-book"},
-        {"container", "folder"},
-        {"organizationalUnit", "network-workgroup"},
-        {"person", "avatar-default"},
-        {"group", "application-x-smb-workgroup"},
-        {"builtinDomain", "emblem-system"},
-    };
-    QString icon_name = "dialog-question";
-    for (auto c : class_to_icon.keys()) {
-        if (AD()->attribute_value_exists(dn, "objectClass", c)) {
-            icon_name = class_to_icon[c];
-            break;  
-        }
-    }
-
-    QIcon icon = QIcon::fromTheme(icon_name);
-
-    return icon;
-}

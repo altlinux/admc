@@ -21,10 +21,13 @@
 #define UTILS_H
 
 #include <QModelIndex>
+#include <QIcon>
 
 class QAbstractItemModel;
+class QString;
 
 QModelIndex convert_to_source(const QModelIndex &index);
 QString get_dn_from_index(const QModelIndex &base_row_index, int dn_column);
+QIcon get_entry_icon(const QString &dn);
 
 #endif /* UTILS_H */
