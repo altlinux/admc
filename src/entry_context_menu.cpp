@@ -21,6 +21,7 @@
 #include "ad_interface.h"
 #include "settings.h"
 #include "confirmation_dialog.h"
+#include "move_dialog.h"
 #include "utils.h"
 
 #include <QString>
@@ -32,6 +33,13 @@
 #include <QModelIndex>
 #include <QAbstractItemView>
 #include <QSortFilterProxyModel>
+
+EntryContextMenu::EntryContextMenu(QWidget *parent)
+: QMenu(parent)
+{
+    // NOTE: use parent, not context menu itself so dialog is centered
+    move_dialog = new MoveDialog(parent);
+}
 
 // Open this context menu when view requests one
 void EntryContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
@@ -90,6 +98,10 @@ void EntryContextMenu::open(const QString &dn, const QPoint &global_pos) {
             edit_policy(dn);
         });
     }
+
+    addAction("Move", [this, dn]() {
+        move_dialog->open_for_entry(dn);
+    });
 
     exec(global_pos, action_to_show_menu_at);
 }

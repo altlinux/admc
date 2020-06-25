@@ -47,7 +47,7 @@ const QMap<ClassFilterType, QString> class_filter_string = {
     {ClassFilterType_OUs, OU_STR},
 };
 
-MoveDialog::MoveDialog(QAction *action, QWidget *parent)
+MoveDialog::MoveDialog(QWidget *parent)
 : QDialog(parent)
 {
     setModal(true);
@@ -82,11 +82,6 @@ MoveDialog::MoveDialog(QAction *action, QWidget *parent)
     layout->addWidget(filter_name_line_edit, 2, 1, 1, 2);
     layout->addWidget(view, 3, 0, 1, 3);
 
-    connect(
-        action, &QAction::triggered,
-        [this] () {
-            open_for_entry("entry");
-        });
     connect(
         filter_name_line_edit, &QLineEdit::textChanged,
         this, &MoveDialog::on_filter_name_changed);
@@ -130,7 +125,7 @@ void MoveDialog::open_for_entry(const QString &dn) {
         view->resizeColumnToContents(col);
     }
 
-    open();
+    exec();
 }
 
 void MoveDialog::on_filter_name_changed(const QString &text) {

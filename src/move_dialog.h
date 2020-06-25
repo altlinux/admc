@@ -46,7 +46,7 @@ class MoveDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    MoveDialog(QAction *action, QWidget *parent);
+    MoveDialog(QWidget *parent);
 
     void open_for_entry(const QString &dn);
 

@@ -27,7 +27,6 @@
 #include "attributes_widget.h"
 #include "status.h"
 #include "settings.h"
-#include "move_dialog.h"
 #include "entry_context_menu.h"
 #include "confirmation_dialog.h"
 
@@ -62,8 +61,6 @@ MainWindow::MainWindow(const bool auto_login)
     resize(1500, 1000);
     setWindowTitle("MainWindow");
 
-    auto move_dialog_action = new QAction("Move dialog");
-
     // Menubar
     {
         QMenuBar *menubar = menuBar();
@@ -74,7 +71,6 @@ MainWindow::MainWindow(const bool auto_login)
         menubar_file->addAction("Exit", [this]() {
             on_action_exit(this);
         });
-        menubar_file->addAction(move_dialog_action);
 
         QMenu *menubar_view = menubar->addMenu("View");
         menubar_view->addAction(SETTINGS()->toggle_advanced_view);
@@ -102,7 +98,6 @@ MainWindow::MainWindow(const bool auto_login)
 
     new Status(statusBar(), status_log, this);
 
-    new MoveDialog(move_dialog_action, this);
 
     // NOTE: do this after all widgets are constructed so that all of
     // them load initial settings correctly
