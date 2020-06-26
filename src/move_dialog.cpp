@@ -153,27 +153,26 @@ void MoveDialog::open_for_entry(const QString &dn, MoveDialogType type_arg) {
         }
     }
 
+    // Fill class combo box with possible classes and "All" option
+    filter_class_combo_box->clear();
+    QList<ClassFilter> combo_classes = {ClassFilter_All};
+    combo_classes += classes;
+    for (auto c : combo_classes) {
+        const QString string = class_filter_display_text[c];
+
+        filter_class_combo_box->addItem(string, c);
+    }
+
+    // Show or hide class-related elements depending on type
     switch (type) {
         case MoveDialogType_Move: {
-            // Show class-related elements
             filter_class_combo_box->show();
             filter_class_label->show();
             view->setColumnHidden(MoveDialogColumn_Class, false);
 
-            // Fill class combo box with possible classes and "All" option
-            filter_class_combo_box->clear();
-            QList<ClassFilter> combo_classes = {ClassFilter_All};
-            combo_classes += classes;
-            for (auto c : combo_classes) {
-                const QString string = class_filter_display_text[c];
-
-                filter_class_combo_box->addItem(string, c);
-            }
-
             break;
         }
         case MoveDialogType_AddToGroup: {
-            // Hide class-related elements
             filter_class_combo_box->hide();
             filter_class_label->hide();
             view->setColumnHidden(MoveDialogColumn_Class, true);
