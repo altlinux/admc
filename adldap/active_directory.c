@@ -543,24 +543,6 @@ char **ad_search(LDAP *ds, const char *filter_arg, const char* search_base) {
     return dnlist;
 }
 
-/* search for entries matching "attribute=value" */
-char **ad_search_attribute(LDAP *ds, const char *attribute, const char *value, const char* search_base) {
-    int filter_length = strlen(attribute) + strlen(value) + 4;
-    char *filter = malloc(filter_length * sizeof(char));
-    snprintf(filter, filter_length, "(%s=%s)", attribute, value);
-
-    char **dn_list = ad_search(ds, filter, search_base);
-    free(filter);
-
-    if (ad_error_code != AD_SUCCESS) {
-        snprintf(ad_error_msg, MAX_ERR_LENGTH, 
-            "Error in ldap_search_s for ad_search_attribute: %s", 
-            ldap_err2string(ad_error_code));
-    }
-
-    return dn_list;
-}
-
 int ad_mod_add(LDAP *ds, const char *dn, const char *attribute, const char *value) {
     LDAPMod *attrs[2];
     LDAPMod attr;

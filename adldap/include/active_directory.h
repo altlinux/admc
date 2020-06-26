@@ -107,9 +107,9 @@ int ad_object_delete(LDAP *ds, const char *dn);
 */
 int ad_setpass(LDAP *ds, const char *dn, const char *password);
 
-/* ad_search() is a more generalised search function
-|  Returns a NULL terminated array of dns which match the given 
-| attribute and value or NULL if no results are found.  
+/* ad_search() is a general search function
+|  Returns a NULL terminated array of dns which match the given filter
+|  or NULL if no results are found.  
 |  Returns -1 on error.
 |  Sets error code to AD_SUCCESS, AD_OBJECT_NOT_FOUND 
 | or AD_LDAP_OPERATION_FAILURE.
@@ -117,7 +117,6 @@ int ad_setpass(LDAP *ds, const char *dn, const char *password);
 | file.
 */
 char **ad_search(LDAP *ds, const char *filter_arg, const char* search_base);
-char **ad_search_attribute(LDAP *ds, const char *attribute, const char *value, const char* search_base);
 
 /* ad_mod_add() adds a value to the given attribute.
 | Example ad_mod_add("cn=nobody,ou=users,dc=example,dc=com",

@@ -74,12 +74,6 @@ int AdConnection::setpass(const char *dn, const char *password) {
 
 char** AdConnection::search(const char *filter) {
     return ad_search(ldap_connection, filter, this->search_base.c_str());
-
-}
-
-char** AdConnection::search_attribute(const char *attribute, const char *value) {
-    return ad_search_attribute(ldap_connection, attribute, value, this->search_base.c_str());
-
 }
 
 int AdConnection::mod_add(const char *dn, const char *attribute, const char *value) {
