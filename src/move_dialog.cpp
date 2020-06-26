@@ -207,18 +207,20 @@ MoveDialogModel::MoveDialogModel(QObject *parent)
 void MoveDialogModel::load(const QString &dn, QList<ClassFilter> classes) {
     removeRows(0, rowCount());
 
-    const QAction *const toggle_advanced_view = SETTINGS()->toggle_advanced_view;
-    const bool advanced_view_is_off = !toggle_advanced_view->isChecked();
-
     for (auto c : classes) {
         const QString class_string = class_filter_string[c];
 
         QString filter = filter_EQUALS("objectClass", class_string);
+
+        // Filter out advanced entries if needed
+        const QAction *const toggle_advanced_view = SETTINGS()->toggle_advanced_view;
+        const bool advanced_view_is_off = !toggle_advanced_view->isChecked();
+
         if (advanced_view_is_off) {
-            // Exclude advanced view entries
-            const QString advanced_true = filter_EQUALS("showInAdvancedViewOnly", "TRUE");
-            const QString NOT_advanced_true = filter_NOT(advanced_true);
-            filter = filter_AND(filter, NOT_advanced_true);
+            const QString is_advanced = filter_EQUALS("showInAdvancedViewOnly", "TRUE");
+            const QString NOT_is_advanced = filter_NOT(is_advanced);
+            
+            filter = filter_AND(filter, NOT_is_advanced);
         }
 
         const QList<QString> entries = AD()->search(filter);
