@@ -40,7 +40,7 @@ signals:
     void details(const QString &dn);
     
 private:
-    void open(const QString &dn, const QPoint &global_pos);
+    void open(const QPoint &global_pos, const QString &dn, const QString &parent_dn);
 
     void delete_entry(const QString &dn);
     void new_entry_dialog(const QString &parent_dn, NewEntryType type);

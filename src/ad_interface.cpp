@@ -346,8 +346,8 @@ void AdInterface::group_remove_user(const QString &group_dn, const QString &user
 
     if (result == AD_SUCCESS) {
         // Update attributes of user and group
-        add_attribute_internal(group_dn, "member", user_dn);
-        add_attribute_internal(user_dn, "memberOf", group_dn);
+        remove_attribute_internal(group_dn, "member", user_dn);
+        remove_attribute_internal(user_dn, "memberOf", group_dn);
 
         emit group_remove_user_complete(group_dn, user_dn);
     } else {
