@@ -34,10 +34,16 @@ class QTreeView;
 class QLabel;
 class QAction;
 
+enum MoveDialogType {
+    MoveDialogType_Move,
+    MoveDialogType_AddToGroup
+};
+
 enum ClassFilter {
     ClassFilter_All,
     ClassFilter_Containers,
     ClassFilter_OUs,
+    ClassFilter_Groups,
     ClassFilter_COUNT
 };
 Q_DECLARE_METATYPE(ClassFilter)
@@ -48,7 +54,7 @@ Q_OBJECT
 public:
     MoveDialog(QWidget *parent);
 
-    void open_for_entry(const QString &dn);
+    void open_for_entry(const QString &dn, MoveDialogType type);
 
 private slots:
     void on_filter_name_changed(const QString &text);
@@ -60,12 +66,14 @@ private slots:
 private:
     QTreeView *view = nullptr;
     QLabel *target_label = nullptr;
+    QLabel *filter_class_label = nullptr;
     QComboBox *filter_class_combo_box = nullptr;
     QLineEdit *filter_name_line_edit = nullptr;
     MoveDialogModel *model = nullptr;
     QSortFilterProxyModel *proxy_name = nullptr;
     QSortFilterProxyModel *proxy_class = nullptr;
     QString target_dn = "";
+    MoveDialogType type;
 
     void complete(const QString &move_dn);
 };

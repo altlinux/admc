@@ -92,6 +92,10 @@ void EntryContextMenu::open(const QString &dn, const QPoint &global_pos) {
         new_ou(dn);
     });
 
+    addAction("Move", [this, dn]() {
+        move_dialog->open_for_entry(dn, MoveDialogType_Move);
+    });
+
     const bool is_policy = AD()->is_policy(dn); 
     if (is_policy) {
         submenu_new->addAction("Edit Policy", [this, dn]() {
@@ -99,9 +103,12 @@ void EntryContextMenu::open(const QString &dn, const QPoint &global_pos) {
         });
     }
 
-    addAction("Move", [this, dn]() {
-        move_dialog->open_for_entry(dn);
-    });
+    const bool is_user = AD()->is_user(dn); 
+    if (is_user) {
+        addAction("Add to group", [this, dn]() {
+            move_dialog->open_for_entry(dn, MoveDialogType_AddToGroup);
+        });
+    }
 
     exec(global_pos, action_to_show_menu_at);
 }

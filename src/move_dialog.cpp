@@ -42,19 +42,18 @@ enum MoveDialogColumn {
     MoveDialogColumn_COUNT
 };
 
-const QString CONTAINER_STR = "container";
-const QString OU_STR = "organizationalUnit";
-
 const QMap<ClassFilter, QString> class_filter_display_text = {
     {ClassFilter_All, "All"},
     {ClassFilter_Containers, "Containers"},
     {ClassFilter_OUs, "OU's"},
+    {ClassFilter_Groups, "Groups"},
 };
 
 const QMap<ClassFilter, QString> class_filter_string = {
     {ClassFilter_All, ""},
-    {ClassFilter_Containers, CONTAINER_STR},
-    {ClassFilter_OUs, OU_STR},
+    {ClassFilter_Containers, "container"},
+    {ClassFilter_OUs, "organizationalUnit"},
+    {ClassFilter_Groups, "group"},
 };
 
 MoveDialog::MoveDialog(QWidget *parent)
@@ -68,7 +67,7 @@ MoveDialog::MoveDialog(QWidget *parent)
 
     target_label = new QLabel("TARGET");
 
-    const auto filter_class_label = new QLabel("Class: ");
+    filter_class_label = new QLabel("Class: ");
     filter_class_combo_box = new QComboBox(this);
 
     const auto filter_name_label = new QLabel("Name: ");
@@ -115,36 +114,74 @@ MoveDialog::MoveDialog(QWidget *parent)
         this, &MoveDialog::on_cancel_button);
 }
 
-void MoveDialog::open_for_entry(const QString &dn) {
+void MoveDialog::open_for_entry(const QString &dn, MoveDialogType type_arg) {
     target_dn = dn;
-
-    const QString target_label_text = QString("Moving \"%1\"").arg(target_dn);
-    target_label->setText(target_label_text);
+    type = type_arg;
 
     filter_name_line_edit->setText("");
     on_filter_name_changed("");
 
+    QString target_label_text;
+    switch (type) {
+        case MoveDialogType_Move: {
+            target_label_text = QString("Moving \"%1\"").arg(target_dn);
+            break;
+        }
+        case MoveDialogType_AddToGroup: {
+            target_label_text = QString("Adding \"%1\" to group").arg(target_dn);
+            break;
+        }
+    }
+    target_label->setText(target_label_text);
+
     // Select classes that this entry can be moved to
     // TODO: cover all cases
     QList<ClassFilter> classes;
-    const bool is_container = AD()->is_container(dn);
-    if (is_container) {
-        classes = {ClassFilter_Containers};
-    } else {
-        classes = {ClassFilter_Containers, ClassFilter_OUs};
+    switch (type) {
+        case MoveDialogType_Move: {
+            const bool is_container = AD()->is_container(dn);
+            if (is_container) {
+                classes = {ClassFilter_Containers};
+            } else {
+                classes = {ClassFilter_Containers, ClassFilter_OUs};
+            }
+            break;
+        }
+        case MoveDialogType_AddToGroup: {
+            classes = {ClassFilter_Groups};
+            break;
+        }
     }
 
-    // Fill class combo box with possible classes PLUS the special "All" class
-    filter_class_combo_box->clear();
-    QList<ClassFilter> combo_classes = {ClassFilter_All};
-    combo_classes += classes;
-    for (auto c : combo_classes) {
-        const QString string = class_filter_display_text[c];
+    switch (type) {
+        case MoveDialogType_Move: {
+            // Show class-related elements
+            filter_class_combo_box->show();
+            filter_class_label->show();
+            view->setColumnHidden(MoveDialogColumn_Class, false);
 
-        filter_class_combo_box->addItem(string, c);
+            // Fill class combo box with possible classes and "All" option
+            filter_class_combo_box->clear();
+            QList<ClassFilter> combo_classes = {ClassFilter_All};
+            combo_classes += classes;
+            for (auto c : combo_classes) {
+                const QString string = class_filter_display_text[c];
+
+                filter_class_combo_box->addItem(string, c);
+            }
+
+            break;
+        }
+        case MoveDialogType_AddToGroup: {
+            // Hide class-related elements
+            filter_class_combo_box->hide();
+            filter_class_label->hide();
+            view->setColumnHidden(MoveDialogColumn_Class, true);
+
+            break;
+        }
     }
 
-    // Load model
     model->load(dn, classes);
 
     for (int col = 0; col < view->model()->columnCount(); col++) {
@@ -160,8 +197,8 @@ void MoveDialog::on_filter_name_changed(const QString &text) {
 
 void MoveDialog::on_filter_class_changed(int index) {
     const QVariant item_data = filter_class_combo_box->itemData(index);
-    const ClassFilter type = item_data.value<ClassFilter>();
-    const QString regexp = class_filter_string[type];
+    const ClassFilter class_filter = item_data.value<ClassFilter>();
+    const QString regexp = class_filter_string[class_filter];
 
     proxy_class->setFilterRegExp(QRegExp(regexp, Qt::CaseInsensitive, QRegExp::FixedString));
 }
@@ -171,7 +208,16 @@ void MoveDialog::complete(const QString &move_dn) {
 
     const bool confirmed = confirmation_dialog(confirm_text, this);
     if (confirmed) {
-        AD()->move(target_dn, move_dn);
+        switch (type) {
+            case MoveDialogType_Move: {
+                AD()->move(target_dn, move_dn);
+                break;
+            }
+            case MoveDialogType_AddToGroup: {
+                AD()->add_user_to_group(move_dn, target_dn);
+                break;
+            }
+        }
         done(QDialog::Accepted);
     }
 }
@@ -202,6 +248,7 @@ MoveDialogModel::MoveDialogModel(QObject *parent)
 {
     setHorizontalHeaderItem(MoveDialogColumn_Name, new QStandardItem("Name"));
     setHorizontalHeaderItem(MoveDialogColumn_Class, new QStandardItem("Class"));
+    setHorizontalHeaderItem(MoveDialogColumn_DN, new QStandardItem("DN"));
 }
 
 void MoveDialogModel::load(const QString &dn, QList<ClassFilter> classes) {
