@@ -112,6 +112,9 @@ MoveDialog::MoveDialog(QWidget *parent)
     connect(
         cancel_button, &QAbstractButton::clicked,
         this, &MoveDialog::on_cancel_button);
+    connect(
+        this, &QDialog::finished,
+        model, &MoveDialogModel::on_dialog_finished);
 }
 
 void MoveDialog::open_for_entry(const QString &dn, MoveDialogType type_arg) {
@@ -251,8 +254,6 @@ MoveDialogModel::MoveDialogModel(QObject *parent)
 }
 
 void MoveDialogModel::load(const QString &dn, QList<ClassFilter> classes) {
-    removeRows(0, rowCount());
-
     for (auto c : classes) {
         const QString class_string = class_filter_string[c];
 
@@ -286,4 +287,8 @@ void MoveDialogModel::load(const QString &dn, QList<ClassFilter> classes) {
             appendRow(row);
         }
     }
+}
+
+void MoveDialogModel::on_dialog_finished(int) {
+    removeRows(0, rowCount());
 }

@@ -85,6 +85,9 @@ public:
     MoveDialogModel(QObject *parent);
 
     void load(const QString &dn, QList<ClassFilter> classes);
+
+public slots:
+    void on_dialog_finished(int);
 };
 
 #endif /* MOVE_DIALOG_H */
