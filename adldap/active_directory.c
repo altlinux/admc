@@ -509,7 +509,7 @@ int dn2domain(const char *dn, char** domain) {
         dc[i] = tolower(dc[i]);
     }
 
-    dn2domain_end:
+dn2domain_end:
     /* Free the memory allocated by ldap_str2dn */
     if (NULL != ldn) {
         ldap_dnfree(ldn);
@@ -605,7 +605,7 @@ int ad_create_user(LDAP *ds, const char *username, const char *dn) {
         ad_error_code=AD_SUCCESS;
     }
 
-    ad_create_user_end:
+ad_create_user_end:
     if (NULL != domain) {
         free(domain);
     }
@@ -1102,7 +1102,7 @@ int ad_rename_user(LDAP *ds, const char *dn, const char *new_name) {
         goto ad_rename_user_end;
     }
 
-    ad_rename_user_end:
+ad_rename_user_end:
     if (NULL != domain) {
         free(domain);
         domain = NULL;
@@ -1170,7 +1170,7 @@ int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
 
     ad_error_code=ad_move(ds, current_dn, new_container);
 
-    ad_move_user_end:
+ad_move_user_end:
     if (NULL != domain) {
         free(domain);
         domain = NULL;
