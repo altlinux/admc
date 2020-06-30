@@ -59,7 +59,7 @@ int ad_get_error_num();
 // ad_free_array() frees a null-terminated array that was returned
 // by one of the functions in this library
 // NULL check of array pointer is performed inside
-void ad_free_array(char **array);
+void ad_array_free(char **array);
 
 // ad_array_size() returns size of null-terminated array
 // iterates through whole array each time
