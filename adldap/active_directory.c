@@ -57,7 +57,7 @@ char *bindpw=NULL;
 //char* search_base = "DC=domain,DC=alt";
 
 // TODO: use this in other appropriate places, like AdInterface
-size_t ad_array_size(const char **array) {
+size_t ad_array_size(char **array) {
     size_t count = 0;
 
     for (int i = 0; array[i] != NULL; i++) {

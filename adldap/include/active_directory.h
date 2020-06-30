@@ -63,7 +63,7 @@ void ad_free_array(char **array);
 
 // ad_array_size() returns size of null-terminated array
 // iterates through whole array each time
-size_t ad_array_size(const char **array);
+size_t ad_array_size(char **array);
 
 // ad_get_domain_hosts() returns a null-terminated array of hosts
 // that exist for this domain and site
