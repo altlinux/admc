@@ -377,7 +377,7 @@ LDAP *ad_login(const char* uri) {
 
     char **hosts = NULL;
     int hosts_result = ad_get_domain_hosts("DOMAIN.ALT", "SITE", &hosts);
-    if (hosts != NULL) {
+    if (hosts_result == AD_SUCCESS) {
         for (int i = 0; hosts[i] != NULL; i++) {
             printf("%s\n", hosts[i]);
         }
