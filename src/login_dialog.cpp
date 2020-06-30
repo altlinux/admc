@@ -34,6 +34,7 @@
 #include <QAction>
 #include <QPushButton>
 #include <QItemSelectionModel>
+#include <QMessageBox>
 
 LoginDialog::LoginDialog(QWidget *parent)
 : QDialog(parent)
@@ -104,7 +105,11 @@ void LoginDialog::complete(const QString &host) {
     // think listing tree with 1 lvl should do it
     AD()->ad_interface_login(uri, "DC=domain,DC=alt");
 
-    done(QDialog::Accepted);
+    if (AD()->is_connected()) {
+        done(QDialog::Accepted);
+    } else {
+        QMessageBox::critical(this, "Error", "Failed to login!");
+    }
 }
 
 void LoginDialog::on_host_double_clicked(QListWidgetItem *item) {

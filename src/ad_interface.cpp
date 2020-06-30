@@ -99,6 +99,10 @@ QString AdInterface::get_error_str() {
     return QString(connection->get_errstr());
 }
 
+bool AdInterface::is_connected() {
+    return connection->is_connected();
+}
+
 QList<QString> AdInterface::load_children(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();

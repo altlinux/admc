@@ -69,6 +69,8 @@ public:
     void ad_interface_login(const QString &base, const QString &head);
     QString get_error_str();
 
+    bool is_connected();
+
     QList<QString> load_children(const QString &dn);
     QMap<QString, QList<QString>> get_attributes(const QString &dn);
     QList<QString> get_attribute_multi(const QString &dn, const QString &attribute);
