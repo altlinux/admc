@@ -50,21 +50,6 @@ char *bindpw=NULL;
 //char* uri = "ldap://dc0.domain.alt";
 //char* search_base = "DC=domain,DC=alt";
 
-typedef struct ad_array {
-    char **data;
-    size_t max_size;
-    size_t size;
-};
-
-AdArray *ad_array_new() {
-    AdArray *array = malloc(sizeof(AdArray));
-    array->data = NULL;
-    array->max_size = 0;
-    array->size = 0;
-
-    return array;
-}
-
 void ad_array_init(AdArray *array, size_t max_size) {
     if (array->data != NULL) {
         printf("ERROR: ad_array_init() called on already initialized array!");
@@ -74,10 +59,6 @@ void ad_array_init(AdArray *array, size_t max_size) {
     array->data = malloc(sizeof(char *) * max_size);
     array->max_size = max_size;
     array->size = 0;
-}
-
-size_t ad_array_size(AdArray *array) {
-    return array->size;
 }
 
 const char *ad_array_get(AdArray *array, size_t i) {
@@ -307,8 +288,8 @@ int query_server_for_hosts(const char *dname, AdArray *hosts) {
 }
 
 int ad_get_domain_hosts(char *domain, char *site, AdArray *hosts) {
-    AdArray *site_hosts = ad_array_new();
-    AdArray *default_hosts = ad_array_new();
+    AdArray site_hosts = {0};
+    AdArray default_hosts = {0};
 
     int result = AD_SUCCESS; 
 
@@ -319,7 +300,7 @@ int ad_get_domain_hosts(char *domain, char *site, AdArray *hosts) {
         char dname[1000];
         snprintf(dname, sizeof(dname), "_ldap._tcp.%s._sites.%s", site, domain);
 
-        int query_result = query_server_for_hosts(dname, site_hosts);
+        int query_result = query_server_for_hosts(dname, &site_hosts);
         if (query_result != AD_SUCCESS) {
             result = query_result;
             goto end;
@@ -330,26 +311,26 @@ int ad_get_domain_hosts(char *domain, char *site, AdArray *hosts) {
     char dname_default[1000];
     snprintf(dname_default, sizeof(dname_default), "_ldap._tcp.%s", domain);
 
-    int query_result = query_server_for_hosts(dname_default, default_hosts);
+    int query_result = query_server_for_hosts(dname_default, &default_hosts);
     if (query_result != AD_SUCCESS) {
         result = query_result;
         goto end;
     }
 
     // Combine site and default hosts
-    const size_t hosts_max_size = ad_array_size(site_hosts) + ad_array_size(default_hosts);
+    const size_t hosts_max_size = site_hosts.size + default_hosts.size;
     ad_array_init(hosts, hosts_max_size);
     
     // Load all site hosts first
-    for (size_t i = 0; i < ad_array_size(site_hosts); i++) {
-        const char *site_host = ad_array_get(site_hosts, i);
+    for (size_t i = 0; i < site_hosts.size; i++) {
+        const char *site_host = ad_array_get(&site_hosts, i);
 
         ad_array_add(hosts, site_host);
     }
 
     // Add default hosts that aren't already in list
-    for (size_t i = 0; i < ad_array_size(default_hosts); i++) {
-        const char *default_host = ad_array_get(default_hosts, i);
+    for (size_t i = 0; i < default_hosts.size; i++) {
+        const char *default_host = ad_array_get(&default_hosts, i);
 
         bool already_in_list = false;
         for (int j = 0; j < hosts->size; j++) {
@@ -370,8 +351,8 @@ int ad_get_domain_hosts(char *domain, char *site, AdArray *hosts) {
 
     end:
     {
-        ad_array_free(site_hosts);
-        ad_array_free(default_hosts);
+        ad_array_free(&site_hosts);
+        ad_array_free(&default_hosts);
 
         return result;
     }

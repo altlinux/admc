@@ -32,13 +32,13 @@ void AdConnection::connect(std::string uri_, std::string search_base_) {
     this->search_base = search_base_;
     this->ldap_connection = ad_login(this->uri.c_str());
 
-    AdArray *hosts = ad_array_new();
-    int hosts_result = ad_get_domain_hosts("DOMAIN.ALT", "SITE", hosts);
-    for (size_t i = 0; i < ad_array_size(hosts); i++) {
-        const char *host = ad_array_get(hosts, i);
+    AdArray hosts = {0};
+    int hosts_result = ad_get_domain_hosts("DOMAIN.ALT", "SITE", &hosts);
+    for (size_t i = 0; i < hosts.size; i++) {
+        const char *host = ad_array_get(&hosts, i);
         printf("%s\n", host);
     }
-    ad_array_free(hosts);
+    ad_array_free(&hosts);
 }
 
 bool AdConnection::is_connected() {

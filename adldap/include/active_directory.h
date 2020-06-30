@@ -20,9 +20,11 @@
 extern "C" {
 #endif /* __cplusplus */
 
-typedef struct ad_array AdArray;
-AdArray *ad_array_new();
-size_t ad_array_size(AdArray *array);
+typedef struct ad_array {
+    char **data;
+    size_t max_size;
+    size_t size;
+} AdArray;
 const char *ad_array_get(AdArray *array, size_t i);
 void ad_array_free(AdArray *array);
 
