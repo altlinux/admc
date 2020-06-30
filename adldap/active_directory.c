@@ -488,8 +488,7 @@ int ad_setpass(LDAP *ds, const char *dn, const char *password) {
 }
 
 /* general search function */
-char **ad_search(LDAP *ds, const char *filter_arg, const char* search_base) {
-    char *filter = strdup(filter_arg);
+char **ad_search(LDAP *ds, const char *filter, const char* search_base) {
     char *attrs[]={"1.1", NULL};
     LDAPMessage *res;
     LDAPMessage *entry;
@@ -511,7 +510,6 @@ char **ad_search(LDAP *ds, const char *filter_arg, const char* search_base) {
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
         return (char **)-1;
     }
-    free(filter);
 
     num_results=ldap_count_entries(ds, res);
     if(num_results==0) {
