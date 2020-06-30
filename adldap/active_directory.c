@@ -50,17 +50,51 @@ char *bindpw=NULL;
 //char* uri = "ldap://dc0.domain.alt";
 //char* search_base = "DC=domain,DC=alt";
 
-// TODO: use this in other appropriate places, like AdInterface
-void ad_free_null_terminated_array(void **array) {
-    if (array == NULL) {
+void ad_array_init(AdArray *array, size_t max_size) {
+    if (array->data != NULL) {
+        printf("ERROR: ad_array_init() called on already initialized array!");
         return;
     }
 
-    for (int i = 0; array[i] != NULL; i++) {
-        free(array[i]);
+    array->data = malloc(sizeof(char *) * max_size);
+    array->max_size = max_size;
+    array->size = 0;
+}
+
+const char *ad_array_get(AdArray *array, size_t i) {
+    if (i >= array->size) {
+        printf("ERROR: ad_array_get() out of bounds: i = %lu, size = %lu!", i, array->size);
+        return NULL;
     }
 
-    free(array);
+    return array->data[i];
+}
+
+void ad_array_add(AdArray *array, const char *value) {
+    if (value == NULL) {
+        printf("ERROR: ad_array_add() value is NULL!", array->size);
+        return;
+    }
+
+    if (array->size == array->max_size) {
+        printf("ERROR: ad_array_add() out of bounds: size = %lu!", array->size);
+        return;
+    }
+
+    array->data[array->size] = strdup(value);
+    array->size++;
+}
+
+void ad_array_free(AdArray *array) {
+    char **data = array->data;
+
+    if (data != NULL) {
+        for (int i = 0; i < array->size; i++) {
+            free(data[i]);
+        }
+
+        free(data);
+    }
 }
 
 typedef struct sasl_defaults_gssapi {
@@ -161,12 +195,7 @@ char **get_values(LDAP *ds, LDAPMessage *entry) {
 // https://www.ccnx.org/releases/latest/doc/ccode/html/ccndc-srv_8c_source.html
 // Another example of similar procedure:
 // https://www.gnu.org/software/shishi/coverage/shishi/lib/resolv.c.gcov.html
-int query_server_for_hosts(const char *dname, char ***hosts, int *hosts_size) {
-    if (*hosts != NULL) {
-        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts() for %s: hosts arg is not NULL\n", dname);
-        goto error;
-    }
-
+int query_server_for_hosts(const char *dname, AdArray *hosts) {
     union dns_msg {
         HEADER header;
         unsigned char buf[NS_MAXMSG];
@@ -198,11 +227,7 @@ int query_server_for_hosts(const char *dname, char ***hosts, int *hosts_size) {
     }
 
     // Init hosts list
-    *hosts = malloc(sizeof(char *) * (answer_count + 1));
-    for (int i = 0; i < answer_count + 1; i++) {
-        (*hosts)[i] = NULL;
-    }
-    *hosts_size = 0;
+    ad_array_init(hosts, answer_count);
 
     // Process answers by collecting hosts into list
     for (int i = 0; i < answer_count; i++) {
@@ -247,8 +272,7 @@ int query_server_for_hosts(const char *dname, char ***hosts, int *hosts_size) {
             goto error;
         }
 
-        (*hosts)[i] = strdup(host);
-        (*hosts_size)++;
+        ad_array_add(hosts, (const char *)host);
 
         curr = record_end;
     }
@@ -257,34 +281,26 @@ int query_server_for_hosts(const char *dname, char ***hosts, int *hosts_size) {
 
     error:
     {
-        ad_free_null_terminated_array(*hosts);
-        *hosts = NULL;
+        ad_array_free(hosts);
 
         return AD_RESOLV_ERROR;
     }
 }
 
-int ad_get_domain_hosts(char *domain, char *site, char ***hosts) {
-    char **site_hosts = NULL;
-    char **default_hosts = NULL;
+int ad_get_domain_hosts(char *domain, char *site, AdArray *hosts) {
+    AdArray site_hosts = {0};
+    AdArray default_hosts = {0};
 
     int result = AD_SUCCESS; 
-
-    if (*hosts != NULL) {
-        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in ad_get_domain_hosts(%s, %s): hosts arg is not NULL\n", domain, site);
-        result = AD_RESOLV_ERROR;
-        goto end;
-    }
 
     // TODO: confirm site query is formatted properly, currently getting no answer back (might be working as intended, since tested on domain without sites?)
 
     // Query site hosts
-    int site_hosts_size;
     if (site != NULL) {
         char dname[1000];
         snprintf(dname, sizeof(dname), "_ldap._tcp.%s._sites.%s", site, domain);
 
-        int query_result = query_server_for_hosts(dname, &site_hosts, &site_hosts_size);
+        int query_result = query_server_for_hosts(dname, &site_hosts);
         if (query_result != AD_SUCCESS) {
             result = query_result;
             goto end;
@@ -295,32 +311,30 @@ int ad_get_domain_hosts(char *domain, char *site, char ***hosts) {
     char dname_default[1000];
     snprintf(dname_default, sizeof(dname_default), "_ldap._tcp.%s", domain);
 
-    int default_hosts_size;
-    int query_result = query_server_for_hosts(dname_default, &default_hosts, &default_hosts_size);
+    int query_result = query_server_for_hosts(dname_default, &default_hosts);
     if (query_result != AD_SUCCESS) {
         result = query_result;
         goto end;
     }
 
     // Combine site and default hosts
-    const int hosts_max_size = site_hosts_size + default_hosts_size + 1;
-    *hosts = malloc(sizeof(char *) * hosts_max_size);
-    int hosts_size = 0;
+    const size_t hosts_max_size = site_hosts.size + default_hosts.size;
+    ad_array_init(hosts, hosts_max_size);
     
     // Load all site hosts first
-    for (int i = 0; i < site_hosts_size; i++) {
-        char *site_host = site_hosts[i];
-        (*hosts)[hosts_size] = strdup(site_host);
-        hosts_size++;
+    for (size_t i = 0; i < site_hosts.size; i++) {
+        const char *site_host = ad_array_get(&site_hosts, i);
+
+        ad_array_add(hosts, site_host);
     }
 
     // Add default hosts that aren't already in list
-    for (int i = 0; i < default_hosts_size; i++) {
-        char *default_host = default_hosts[i];
+    for (size_t i = 0; i < default_hosts.size; i++) {
+        const char *default_host = ad_array_get(&default_hosts, i);
 
         bool already_in_list = false;
-        for (int j = 0; j < hosts_size; j++) {
-            char *other_host = (*hosts)[j];
+        for (int j = 0; j < hosts->size; j++) {
+            const char *other_host = ad_array_get(hosts, j);
 
             if (strcmp(default_host, other_host) == 0) {
                 already_in_list = true;
@@ -329,19 +343,16 @@ int ad_get_domain_hosts(char *domain, char *site, char ***hosts) {
         }
 
         if (!already_in_list) {
-            (*hosts)[hosts_size] = strdup(default_host);
-            hosts_size++;
+            ad_array_add(hosts, default_host);
         }
     }
-
-    (*hosts)[hosts_size] = NULL;
 
     result = AD_SUCCESS;
 
     end:
     {
-        ad_free_null_terminated_array(site_hosts);
-        ad_free_null_terminated_array(default_hosts);
+        ad_array_free(&site_hosts);
+        ad_array_free(&default_hosts);
 
         return result;
     }
@@ -351,13 +362,6 @@ int ad_get_domain_hosts(char *domain, char *site, char ***hosts) {
     returns an ldap connection identifier or 0 on error */
 LDAP *ad_login(const char* uri) {
     int version, result, bindresult;
-
-    char **hosts = NULL;
-    int hosts_result = ad_get_domain_hosts("DOMAIN.ALT", "SITE", &hosts);
-    for (int i = 0; hosts[i] != NULL; i++) {
-        printf("%s\n", hosts[i]);
-    }
-    ad_free_null_terminated_array(hosts);
 
     /* open the connection to the ldap server */
     LDAP *ds = NULL;

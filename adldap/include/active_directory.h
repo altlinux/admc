@@ -20,6 +20,14 @@
 extern "C" {
 #endif /* __cplusplus */
 
+typedef struct ad_array {
+    char **data;
+    size_t max_size;
+    size_t size;
+} AdArray;
+const char *ad_array_get(AdArray *array, size_t i);
+void ad_array_free(AdArray *array);
+
 /* Configuration options:
 |  For configuration these functions look first for the file 
 | ~/.adtool.cfg, or failing that
@@ -56,14 +64,9 @@ char *ad_get_error();
 */
 int ad_get_error_num();
 
-// Frees array contents and then array pointer itself
-// Must be a null-terminated array
-// NULL check of array pointer is performed inside
-void ad_free_null_terminated_array(void **array);
-
 // Get hosts for this domain and site, combines site and default hosts
 // hosts list is NULL-terminated
-int ad_get_domain_hosts(char *domain, char *site, char ***hosts);
+int ad_get_domain_hosts(char *domain, char *site, AdArray *hosts);
 
 /* ad_create_user() creates a new, locked user account
 | with the given user name and distinguished name
