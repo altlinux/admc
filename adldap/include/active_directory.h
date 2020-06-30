@@ -67,7 +67,7 @@ size_t ad_array_size(char **array);
 
 // ad_get_domain_hosts() returns a null-terminated array of hosts
 // that exist for this domain and site
-int ad_get_domain_hosts(char *domain, char *site, char ***hosts);
+int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts);
 
 /* ad_create_user() creates a new, locked user account
 | with the given user name and distinguished name

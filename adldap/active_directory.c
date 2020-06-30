@@ -241,7 +241,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
     }
 }
 
-int ad_get_domain_hosts(char *domain, char *site, char ***hosts) {
+int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
     int result = AD_SUCCESS; 
     
     if (*hosts != NULL) {
