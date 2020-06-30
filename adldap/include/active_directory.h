@@ -56,13 +56,13 @@ char *ad_get_error();
 */
 int ad_get_error_num();
 
-// Frees array contents and then array pointer itself
-// Must be a null-terminated array
+// ad_free_array() frees a null-terminated array that was returned
+// by one of the functions in this library
 // NULL check of array pointer is performed inside
-void ad_free_null_terminated_array(void **array);
+void ad_free_array(void **array);
 
-// Get hosts for this domain and site, combines site and default hosts
-// hosts list is NULL-terminated
+// ad_get_domain_hosts() returns a null-terminated array of hosts
+// that exist for this domain and site
 int ad_get_domain_hosts(char *domain, char *site, char ***hosts);
 
 /* ad_create_user() creates a new, locked user account

@@ -51,7 +51,7 @@ char *bindpw=NULL;
 //char* search_base = "DC=domain,DC=alt";
 
 // TODO: use this in other appropriate places, like AdInterface
-void ad_free_null_terminated_array(void **array) {
+void ad_free_array(void **array) {
     if (array == NULL) {
         return;
     }
@@ -257,7 +257,7 @@ int query_server_for_hosts(const char *dname, char ***hosts, int *hosts_size) {
 
     error:
     {
-        ad_free_null_terminated_array(*hosts);
+        ad_free_array(*hosts);
         *hosts = NULL;
 
         return AD_RESOLV_ERROR;
@@ -340,8 +340,8 @@ int ad_get_domain_hosts(char *domain, char *site, char ***hosts) {
 
     end:
     {
-        ad_free_null_terminated_array(site_hosts);
-        ad_free_null_terminated_array(default_hosts);
+        ad_free_array(site_hosts);
+        ad_free_array(default_hosts);
 
         return result;
     }
@@ -357,7 +357,7 @@ LDAP *ad_login(const char* uri) {
     for (int i = 0; hosts[i] != NULL; i++) {
         printf("%s\n", hosts[i]);
     }
-    ad_free_null_terminated_array(hosts);
+    ad_free_array(hosts);
 
     /* open the connection to the ldap server */
     LDAP *ds = NULL;
