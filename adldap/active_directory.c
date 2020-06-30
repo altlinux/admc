@@ -36,6 +36,12 @@
 
 #include <errno.h>
 
+#ifdef __GNUC__
+#  define UNUSED(x) x __attribute__((unused))
+#else
+#  define UNUSED(x) x
+#endif
+
 #define MAX_ERR_LENGTH 1024
 char ad_error_msg[MAX_ERR_LENGTH];
 int ad_error_code;
@@ -51,7 +57,17 @@ char *bindpw=NULL;
 //char* search_base = "DC=domain,DC=alt";
 
 // TODO: use this in other appropriate places, like AdInterface
-void ad_free_array(void **array) {
+size_t ad_array_size(const void **array) {
+    size_t count = 0;
+
+    for (int i = 0; array[i] != NULL; i++) {
+        count++;
+    }
+
+    return count;
+}
+
+void ad_array_free(void **array) {
     if (array == NULL) {
         return;
     }
@@ -155,15 +171,16 @@ char **get_values(LDAP *ds, LDAPMessage *entry) {
     
 }
 
+// hosts must be NULL
 // NOTE: this is rewritten from
 // https://github.com/paleg/libadclient/blob/master/adclient.cpp
 // which itself is copied from
 // https://www.ccnx.org/releases/latest/doc/ccode/html/ccndc-srv_8c_source.html
 // Another example of similar procedure:
 // https://www.gnu.org/software/shishi/coverage/shishi/lib/resolv.c.gcov.html
-int query_server_for_hosts(const char *dname, char ***hosts, int *hosts_size) {
+int query_server_for_hosts(const char *dname, char ***hosts) {
     if (*hosts != NULL) {
-        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts() for %s: hosts arg is not NULL\n", dname);
+        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): hosts pointer is not NULL\n", dname);
         goto error;
     }
 
@@ -175,7 +192,7 @@ int query_server_for_hosts(const char *dname, char ***hosts, int *hosts_size) {
     const size_t msg_len = res_search(dname, ns_c_in, ns_t_srv, msg.buf, sizeof(msg.buf));
 
     if (msg_len < 0 || msg_len < sizeof(HEADER)) {
-        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts() for %s: bad msg_len\n", dname);
+        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): bad msg_len\n", dname);
         goto error;
     }
 
@@ -190,7 +207,7 @@ int query_server_for_hosts(const char *dname, char ***hosts, int *hosts_size) {
         const int packet_len = dn_skipname(curr, eom);
 
         if (packet_len < 0) {
-            snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts() for %s: dn_skipname < 0\n", dname);
+            snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): dn_skipname < 0\n", dname);
             goto error;
         }
 
@@ -198,32 +215,32 @@ int query_server_for_hosts(const char *dname, char ***hosts, int *hosts_size) {
     }
 
     // Init hosts list
-    *hosts = malloc(sizeof(char *) * (answer_count + 1));
-    for (int i = 0; i < answer_count + 1; i++) {
-        (*hosts)[i] = NULL;
-    }
-    *hosts_size = 0;
+    const size_t hosts_size = answer_count + 1;
+    *hosts = malloc(sizeof(char *) * hosts_size);
 
     // Process answers by collecting hosts into list
+    size_t hosts_current_i = 0;
     for (int i = 0; i < answer_count; i++) {
         // Get server
         char server[NS_MAXDNAME];
         const int server_len = dn_expand(msg.buf, eom, curr, server, sizeof(server));
         if (server_len < 0) {
-            snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts() for %s: dn_expand(server) < 0\n", dname);
+            snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): dn_expand(server) < 0\n", dname);
             goto error;
         }
         curr = curr + server_len;
 
-        int record_type, record_class, ttl, record_len;
+        int record_type;
+        int UNUSED(record_class);
+        int UNUSED(ttl);
+        int record_len;
         GETSHORT(record_type, curr);
         GETSHORT(record_class, curr);
         GETLONG(ttl, curr);
         GETSHORT(record_len, curr);
-
         unsigned char *record_end = curr + record_len;
         if (record_end > eom) {
-            snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts() for %s: record_end > eom\n", dname);
+            snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): record_end > eom\n", dname);
             goto error;
         }
 
@@ -233,7 +250,9 @@ int query_server_for_hosts(const char *dname, char ***hosts, int *hosts_size) {
             continue;
         }
 
-        int priority, weight, port;
+        int UNUSED(priority);
+        int UNUSED(weight);
+        int UNUSED(port);
         GETSHORT(priority, curr);
         GETSHORT(weight, curr);
         GETSHORT(port, curr);
@@ -243,21 +262,23 @@ int query_server_for_hosts(const char *dname, char ***hosts, int *hosts_size) {
         char host[NS_MAXDNAME];
         const int host_len = dn_expand(msg.buf, eom, curr, host, sizeof(host));
         if (host_len < 0) {
-            snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts() for %s: dn_expand(host) < 0\n", dname);
+            snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): dn_expand(host) < 0\n", dname);
             goto error;
         }
 
-        (*hosts)[i] = strdup(host);
-        (*hosts_size)++;
+        (*hosts)[hosts_current_i] = strdup(host);
+        hosts_current_i++;
 
         curr = record_end;
     }
+
+    (*hosts)[hosts_current_i] = NULL;
 
     return AD_SUCCESS;
 
     error:
     {
-        ad_free_array(*hosts);
+        ad_array_free(*hosts);
         *hosts = NULL;
 
         return AD_RESOLV_ERROR;
@@ -265,53 +286,55 @@ int query_server_for_hosts(const char *dname, char ***hosts, int *hosts_size) {
 }
 
 int ad_get_domain_hosts(char *domain, char *site, char ***hosts) {
-    char **site_hosts = NULL;
-    char **default_hosts = NULL;
-
     int result = AD_SUCCESS; 
-
+    
     if (*hosts != NULL) {
-        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in ad_get_domain_hosts(%s, %s): hosts arg is not NULL\n", domain, site);
+        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in ad_get_domain_hosts(%s, %s): hosts pointer is not NULL\n", domain, site);
         result = AD_RESOLV_ERROR;
         goto end;
     }
 
+    char **site_hosts = NULL;
+    char **default_hosts = NULL;
+
     // TODO: confirm site query is formatted properly, currently getting no answer back (might be working as intended, since tested on domain without sites?)
 
     // Query site hosts
-    int site_hosts_size;
     if (site != NULL) {
         char dname[1000];
         snprintf(dname, sizeof(dname), "_ldap._tcp.%s._sites.%s", site, domain);
 
-        int query_result = query_server_for_hosts(dname, &site_hosts, &site_hosts_size);
+        int query_result = query_server_for_hosts(dname, &site_hosts);
         if (query_result != AD_SUCCESS) {
             result = query_result;
             goto end;
         }
     }
 
+    const size_t site_hosts_size = ad_array_size(site_hosts);
+
     // Query default hosts
     char dname_default[1000];
     snprintf(dname_default, sizeof(dname_default), "_ldap._tcp.%s", domain);
 
-    int default_hosts_size;
-    int query_result = query_server_for_hosts(dname_default, &default_hosts, &default_hosts_size);
+    int query_result = query_server_for_hosts(dname_default, &default_hosts);
     if (query_result != AD_SUCCESS) {
         result = query_result;
         goto end;
     }
 
+    const size_t default_hosts_size = ad_array_size(default_hosts);
+
     // Combine site and default hosts
     const int hosts_max_size = site_hosts_size + default_hosts_size + 1;
     *hosts = malloc(sizeof(char *) * hosts_max_size);
-    int hosts_size = 0;
+    size_t hosts_current_i = 0;
     
     // Load all site hosts first
     for (int i = 0; i < site_hosts_size; i++) {
         char *site_host = site_hosts[i];
-        (*hosts)[hosts_size] = strdup(site_host);
-        hosts_size++;
+        (*hosts)[hosts_current_i] = strdup(site_host);
+        hosts_current_i++;
     }
 
     // Add default hosts that aren't already in list
@@ -319,7 +342,7 @@ int ad_get_domain_hosts(char *domain, char *site, char ***hosts) {
         char *default_host = default_hosts[i];
 
         bool already_in_list = false;
-        for (int j = 0; j < hosts_size; j++) {
+        for (int j = 0; j < hosts_current_i; j++) {
             char *other_host = (*hosts)[j];
 
             if (strcmp(default_host, other_host) == 0) {
@@ -329,19 +352,19 @@ int ad_get_domain_hosts(char *domain, char *site, char ***hosts) {
         }
 
         if (!already_in_list) {
-            (*hosts)[hosts_size] = strdup(default_host);
-            hosts_size++;
+            (*hosts)[hosts_current_i] = strdup(default_host);
+            hosts_current_i++;
         }
     }
 
-    (*hosts)[hosts_size] = NULL;
+    (*hosts)[hosts_current_i] = NULL;
 
     result = AD_SUCCESS;
 
     end:
     {
-        ad_free_array(site_hosts);
-        ad_free_array(default_hosts);
+        ad_array_free(site_hosts);
+        ad_array_free(default_hosts);
 
         return result;
     }
@@ -354,10 +377,13 @@ LDAP *ad_login(const char* uri) {
 
     char **hosts = NULL;
     int hosts_result = ad_get_domain_hosts("DOMAIN.ALT", "SITE", &hosts);
-    for (int i = 0; hosts[i] != NULL; i++) {
-        printf("%s\n", hosts[i]);
+    if (hosts != NULL) {
+        for (int i = 0; hosts[i] != NULL; i++) {
+            printf("%s\n", hosts[i]);
+        }
+
+        ad_array_free(hosts);
     }
-    ad_free_array(hosts);
 
     /* open the connection to the ldap server */
     LDAP *ds = NULL;
@@ -483,7 +509,7 @@ int dn2domain(const char *dn, char** domain) {
         dc[i] = tolower(dc[i]);
     }
 
-dn2domain_end:
+    dn2domain_end:
     /* Free the memory allocated by ldap_str2dn */
     if (NULL != ldn) {
         ldap_dnfree(ldn);
@@ -579,7 +605,7 @@ int ad_create_user(LDAP *ds, const char *username, const char *dn) {
         ad_error_code=AD_SUCCESS;
     }
 
-ad_create_user_end:
+    ad_create_user_end:
     if (NULL != domain) {
         free(domain);
     }
@@ -1076,7 +1102,7 @@ int ad_rename_user(LDAP *ds, const char *dn, const char *new_name) {
         goto ad_rename_user_end;
     }
 
-ad_rename_user_end:
+    ad_rename_user_end:
     if (NULL != domain) {
         free(domain);
         domain = NULL;
@@ -1144,7 +1170,7 @@ int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
 
     ad_error_code=ad_move(ds, current_dn, new_container);
 
-ad_move_user_end:
+    ad_move_user_end:
     if (NULL != domain) {
         free(domain);
         domain = NULL;
