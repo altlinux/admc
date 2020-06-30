@@ -241,7 +241,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
     }
 }
 
-int ad_get_domain_hosts(char *domain, char *site, char ***hosts) {
+int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
     int result = AD_SUCCESS; 
     
     if (*hosts != NULL) {
@@ -330,16 +330,6 @@ int ad_get_domain_hosts(char *domain, char *site, char ***hosts) {
     returns an ldap connection identifier or 0 on error */
 LDAP *ad_login(const char* uri) {
     int version, result;
-
-    char **hosts = NULL;
-    int hosts_result = ad_get_domain_hosts("DOMAIN.ALT", "SITE", &hosts);
-    if (hosts_result == AD_SUCCESS) {
-        for (int i = 0; hosts[i] != NULL; i++) {
-            printf("%s\n", hosts[i]);
-        }
-
-        ad_array_free(hosts);
-    }
 
     /* open the connection to the ldap server */
     LDAP *ds = NULL;

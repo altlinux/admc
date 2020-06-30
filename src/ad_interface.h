@@ -61,6 +61,8 @@ class AdInterface final : public QObject {
 Q_OBJECT
 
 public:
+    static QList<QString> get_domain_hosts(const QString &domain, const QString &site);
+
     explicit AdInterface(QObject *parent);
     ~AdInterface();
 

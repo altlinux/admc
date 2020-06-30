@@ -29,6 +29,7 @@
 #include "settings.h"
 #include "entry_context_menu.h"
 #include "confirmation_dialog.h"
+#include "login_dialog.h"
 
 #include <QApplication>
 #include <QString>
@@ -62,9 +63,10 @@ MainWindow::MainWindow(const bool auto_login)
     setWindowTitle("MainWindow");
 
     // Menubar
+    QMenu *menubar_file;
     {
         QMenuBar *menubar = menuBar();
-        QMenu *menubar_file = menubar->addMenu("File");
+        menubar_file = menubar->addMenu("File");
         menubar_file->addAction("Login", []() {
             on_action_login();
         });
@@ -96,6 +98,8 @@ MainWindow::MainWindow(const bool auto_login)
     auto status_log = new QTextEdit(this);
     status_log->setReadOnly(true);
 
+    auto login_dialog = new LoginDialog(this);
+
     new Status(statusBar(), status_log, this);
 
     // NOTE: do this after all widgets are constructed so that all of
@@ -125,6 +129,12 @@ MainWindow::MainWindow(const bool auto_login)
 
         central_widget->setLayout(central_layout);
     }
+
+    menubar_file->addAction("Login dialog",
+        [login_dialog]
+        () {
+        login_dialog->open_xd();
+    });
 
     // Enable central widget on login
     central_widget->setEnabled(false);

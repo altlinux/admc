@@ -34,6 +34,33 @@ AdInterface::~AdInterface() {
     delete connection;
 }
 
+QList<QString> AdInterface::get_domain_hosts(const QString &domain, const QString &site) {
+    const QByteArray domain_array = domain.toLatin1();
+    const char *domain_cstr = domain_array.constData();
+
+    const QByteArray site_array = site.toLatin1();
+    const char *site_cstr = site_array.constData();
+
+    char **hosts_raw = NULL;
+    int hosts_result = ad_get_domain_hosts(domain_cstr, site_cstr, &hosts_raw);
+
+    if (hosts_result == AD_SUCCESS) {
+        auto hosts = QList<QString>();
+
+        for (int i = 0; hosts_raw[i] != NULL; i++) {
+            auto host = QString(hosts_raw[i]);
+            hosts.push_back(host);
+        }
+        ad_array_free(hosts_raw);
+
+        return hosts;
+    } else {
+        // emit get_domain_hosts_failed(domain, site, get_error_str());
+
+        return QList<QString>();
+    }
+}
+
 // "CN=foo,CN=bar,DC=domain,DC=com"
 // =>
 // "foo"
