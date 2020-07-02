@@ -39,7 +39,6 @@
 LoginDialog::LoginDialog(QWidget *parent)
 : QDialog(parent)
 {
-    setModal(true);
     resize(600, 600);
 
     const auto label = new QLabel("Login dialog");
@@ -83,6 +82,9 @@ LoginDialog::LoginDialog(QWidget *parent)
     connect(
         cancel_button, &QAbstractButton::clicked,
         this, &LoginDialog::on_cancel_button);
+    connect(
+        this, &QDialog::finished,
+        this, &LoginDialog::on_finished);
 }
 
 void LoginDialog::load_hosts() {
@@ -140,7 +142,9 @@ void LoginDialog::open_xd() {
 
     load_hosts();
 
-    exec();
+    open();
+}
 
+void LoginDialog::on_finished() {
     hosts_list->clear();
 }
