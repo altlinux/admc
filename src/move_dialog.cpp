@@ -59,7 +59,6 @@ const QMap<ClassFilter, QString> class_filter_string = {
 MoveDialog::MoveDialog(QWidget *parent)
 : QDialog(parent)
 {
-    setModal(true);
     resize(600, 600);
 
     view = new QTreeView(this);
