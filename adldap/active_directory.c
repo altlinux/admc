@@ -51,13 +51,17 @@ char *bindpw=NULL;
 
 // TODO: use this in other appropriate places, like AdInterface
 size_t ad_array_size(char **array) {
-    size_t count = 0;
+    if (array == NULL) {
+        return 0;
+    } else {
+        size_t count = 0;
 
-    for (int i = 0; array[i] != NULL; i++) {
-        count++;
+        for (int i = 0; array[i] != NULL; i++) {
+            count++;
+        }
+
+        return count;
     }
-
-    return count;
 }
 
 void ad_array_free(char **array) {
