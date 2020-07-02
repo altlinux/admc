@@ -260,7 +260,7 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
     // TODO: confirm site query is formatted properly, currently getting no answer back (might be working as intended, since tested on domain without sites?)
 
     // Query site hosts
-    if (site != NULL) {
+    if (site != NULL && strlen(site) > 0) {
         char dname[1000];
         snprintf(dname, sizeof(dname), "_ldap._tcp.%s._sites.%s", site, domain);
 
