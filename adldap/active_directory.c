@@ -51,13 +51,17 @@ char *bindpw=NULL;
 
 // TODO: use this in other appropriate places, like AdInterface
 size_t ad_array_size(char **array) {
-    size_t count = 0;
+    if (array == NULL) {
+        return 0;
+    } else {
+        size_t count = 0;
 
-    for (int i = 0; array[i] != NULL; i++) {
-        count++;
+        for (int i = 0; array[i] != NULL; i++) {
+            count++;
+        }
+
+        return count;
     }
-
-    return count;
 }
 
 void ad_array_free(char **array) {
@@ -256,7 +260,7 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
     // TODO: confirm site query is formatted properly, currently getting no answer back (might be working as intended, since tested on domain without sites?)
 
     // Query site hosts
-    if (site != NULL) {
+    if (site != NULL && strlen(site) > 0) {
         char dname[1000];
         snprintf(dname, sizeof(dname), "_ldap._tcp.%s._sites.%s", site, domain);
 
