@@ -50,6 +50,7 @@ public:
     QAction *details_on_contents_click = nullptr;
     QAction *confirm_actions = nullptr;
     QAction *toggle_show_status_log = nullptr;
+    QAction *auto_login = nullptr;
 
 private:
     QList<QAction *> checkable_actions;

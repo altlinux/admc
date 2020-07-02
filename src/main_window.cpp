@@ -43,7 +43,6 @@
 #include <QTextEdit>
 
 void on_action_login() {
-    AD()->ad_interface_login(SEARCH_BASE, HEAD_DN);
 }
 
 void on_action_exit(QMainWindow *main_window) {
@@ -55,7 +54,7 @@ void on_action_exit(QMainWindow *main_window) {
     }   
 }
 
-MainWindow::MainWindow(const bool auto_login)
+MainWindow::MainWindow(const bool)
 : QMainWindow()
 {
     // TODO: setting width to 1600+ fullscreens the window, no idea why
@@ -83,6 +82,7 @@ MainWindow::MainWindow(const bool auto_login)
         menubar_preferences->addAction(SETTINGS()->details_on_containers_click);
         menubar_preferences->addAction(SETTINGS()->details_on_contents_click);
         menubar_preferences->addAction(SETTINGS()->confirm_actions);
+        menubar_preferences->addAction(SETTINGS()->auto_login);
     }
 
     // Widgets
@@ -144,7 +144,14 @@ MainWindow::MainWindow(const bool auto_login)
             central_widget->setEnabled(true);
         });
 
+    const bool auto_login = SETTINGS()->auto_login->isChecked();
     if (auto_login) {
-        on_action_login();
+        const QString host = SETTINGS()->get_string(SettingString_Host);
+
+        if (!host.isEmpty()) {
+            const QString uri = "ldap://" + host;
+
+            AD()->ad_interface_login(uri, "DC=domain,DC=alt");
+        }
     }    
 }
