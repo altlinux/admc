@@ -137,13 +137,14 @@ void LoginDialog::on_host_double_clicked(QListWidgetItem *item) {
 }
 
 void LoginDialog::on_login_button(bool) {
-    QList<QListWidgetItem *> selected_items = hosts_list->selectedItems();
+    // NOTE: listwidget has to have focus to properly return current item...
+    hosts_list->setFocus();
+    QListWidgetItem *current_item = hosts_list->currentItem();
 
-    if (selected_items.isEmpty()) {
+    if (current_item == nullptr) {
         QMessageBox::warning(this, "Error", "Need to select a host to login.");
     } else {
-        QListWidgetItem *item = selected_items[0];
-        const QString host = item->text();
+        const QString host = current_item->text();
 
         complete(host);
     } 
