@@ -117,9 +117,9 @@ void LoginDialog::complete(const QString &host) {
         if (save_session) {
             const QString domain = domain_edit->text();
             const QString site = site_edit->text();
-            SETTINGS()->set_string(SESSION_DOMAIN, domain);
-            SETTINGS()->set_string(SESSION_SITE, site);
-            SETTINGS()->set_string(SESSION_HOST, host);
+            SETTINGS()->set_string(SettingString_Domain, domain);
+            SETTINGS()->set_string(SettingString_Site, site);
+            SETTINGS()->set_string(SettingString_Host, host);
         }
 
         done(QDialog::Accepted);
@@ -153,9 +153,9 @@ void LoginDialog::on_cancel_button(bool) {
 
 void LoginDialog::open() {
     // Load session values from settings
-    const QString domain = SETTINGS()->get_string(SESSION_DOMAIN);
-    const QString site = SETTINGS()->get_string(SESSION_SITE);
-    const QString host = SETTINGS()->get_string(SESSION_HOST);
+    const QString domain = SETTINGS()->get_string(SettingString_Domain);
+    const QString site = SETTINGS()->get_string(SettingString_Site);
+    const QString host = SETTINGS()->get_string(SettingString_Host);
     
     domain_edit->setText(domain);
     site_edit->setText(site);

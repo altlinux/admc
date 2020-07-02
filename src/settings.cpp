@@ -25,6 +25,12 @@
 #include <QApplication>
 #include <QList>
 
+const QHash<SettingString, QString> string_names = {
+    {SettingString_Domain, "domain"},
+    {SettingString_Site, "site"},
+    {SettingString_Host, "host"},
+};
+
 QAction *Settings::make_checkable_action(const QSettings &settings, const QString& text) {
     QAction *action = new QAction(text);
     action->setCheckable(true);
@@ -58,12 +64,12 @@ Settings::Settings(QObject *parent)
     toggle_show_status_log = make_checkable_action(settings, "Show status log");
 
     // Load strings
-    const QList<QString> string_names = {
-        SESSION_DOMAIN, SESSION_SITE, SESSION_HOST
-    };
-    for (auto name : string_names) {
+    for (int i = 0; i < SettingString_COUNT; i++) {
+        const SettingString string = (SettingString) i;
+        const QString name = string_names[string];
         const QString value = settings.value(name, "").toString();
-        strings[name] = value;
+
+        strings[string] = value;
     }
 
     connect(
@@ -78,24 +84,12 @@ void Settings::emit_toggle_signals() const {
     }
 }
 
-void Settings::set_string(const QString &name, const QString &value) {
-    if (!strings.contains(name)) {
-        printf("Error in set_string(): %s is not a valid setting name!\n", qPrintable(name));
-
-        return;
-    }
-
-    strings[name] = value;
+void Settings::set_string(SettingString string, const QString &value) {
+    strings[string] = value;
 }
 
-QString Settings::get_string(const QString &name) {
-    if (!strings.contains(name)) {
-        printf("Error in set_string(): %s is not a valid setting name!\n", qPrintable(name));
-
-        return "";
-    }
-
-    const QString value = strings[name];
+QString Settings::get_string(SettingString string) {
+    const QString value = strings[string];
 
     return value;
 }
@@ -110,8 +104,11 @@ void Settings::save_settings() {
         settings.setValue(text, checked);
     }
 
-    for (auto name : strings.keys()) {
-        const QString value = strings[name];
+    for (int i = 0; i < SettingString_COUNT; i++) {
+        const SettingString string = (SettingString) i;
+        const QString name = string_names[string];
+        const QString value = strings[string];
+
         settings.setValue(name, value);
     }
 }

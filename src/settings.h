@@ -28,9 +28,12 @@
 class QAction;
 class QSettings;
 
-#define SESSION_DOMAIN "session_domain"
-#define SESSION_SITE "session_site"
-#define SESSION_HOST "session_host"
+enum SettingString {
+    SettingString_Domain,    
+    SettingString_Site,    
+    SettingString_Host,    
+    SettingString_COUNT,    
+};
 
 class Settings final : public QObject {
 Q_OBJECT
@@ -38,8 +41,8 @@ Q_OBJECT
 public:
     explicit Settings(QObject *parent);
     void emit_toggle_signals() const;
-    void set_string(const QString &name, const QString &value);
-    QString get_string(const QString &name);
+    void set_string(SettingString string, const QString &value);
+    QString get_string(SettingString string);
 
     QAction *toggle_advanced_view = nullptr;
     QAction *toggle_show_dn_column = nullptr;
@@ -50,7 +53,7 @@ public:
 
 private:
     QList<QAction *> checkable_actions;
-    QHash<QString, QString> strings;
+    QHash<SettingString, QString> strings;
 
     QAction *make_checkable_action(const QSettings &settings, const QString& text);
     void save_settings();
