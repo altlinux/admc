@@ -54,7 +54,7 @@ void on_action_exit(QMainWindow *main_window) {
     }   
 }
 
-MainWindow::MainWindow(const bool)
+MainWindow::MainWindow()
 : QMainWindow()
 {
     // TODO: setting width to 1600+ fullscreens the window, no idea why
