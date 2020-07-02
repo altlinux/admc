@@ -27,6 +27,7 @@ class QListWidget;
 class QLabel;
 class QAction;
 class QListWidgetItem;
+class QCheckBox;
 
 class LoginDialog final : public QDialog {
 Q_OBJECT
@@ -46,6 +47,7 @@ private:
     QListWidget *hosts_list = nullptr;
     QLineEdit *domain_edit = nullptr;
     QLineEdit *site_edit = nullptr;
+    QCheckBox *save_session_checkbox = nullptr;
 
     void complete(const QString &host);
     void load_hosts();

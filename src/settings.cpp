@@ -38,6 +38,11 @@ QAction *Settings::make_checkable_action(const QSettings &settings, const QStrin
     return action;
 }
 
+void Settings::make_string(const QSettings &settings, const QString &name) {
+    const QString value = settings.value(name, "").toString();
+    strings[name] = value;
+}
+
 QString get_settings_file_path() {
     // NOTE: save to app dir for now for easier debugging
     QString settings_file_path = QApplication::applicationDirPath() + "/settings.ini";
@@ -57,7 +62,13 @@ Settings::Settings(QObject *parent)
     confirm_actions = make_checkable_action(settings, "Confirm actions");
     toggle_show_status_log = make_checkable_action(settings, "Show status log");
 
-    // Save settings before the app quits
+    const QList<QString> string_names = {
+        SESSION_DOMAIN, SESSION_SITE, SESSION_HOST
+    };
+    for (auto name : string_names) {
+        make_string(settings, name);
+    }
+
     connect(
         qApp, &QCoreApplication::aboutToQuit,
         this, &Settings::save_settings);
@@ -70,6 +81,28 @@ void Settings::emit_toggle_signals() const {
     }
 }
 
+void Settings::set_string(const QString &name, const QString &value) {
+    if (!strings.contains(name)) {
+        printf("Error in set_string(): %s is not a valid setting name!\n", qPrintable(name));
+
+        return;
+    }
+
+    strings[name] = value;
+}
+
+QString Settings::get_string(const QString &name) {
+    if (!strings.contains(name)) {
+        printf("Error in set_string(): %s is not a valid setting name!\n", qPrintable(name));
+
+        return "";
+    }
+
+    const QString value = strings[name];
+
+    return value;
+}
+
 void Settings::save_settings() {
     const QString settings_file_path = get_settings_file_path();
     QSettings settings(settings_file_path, QSettings::NativeFormat);
@@ -79,10 +112,15 @@ void Settings::save_settings() {
         const QString text = action->text();
         settings.setValue(text, checked);
     }
+
+    for (auto name : strings.keys()) {
+        const QString value = strings[name];
+        settings.setValue(name, value);
+    }
 }
 
-const Settings *SETTINGS() {
+Settings *SETTINGS() {
     ADMC *app = qobject_cast<ADMC *>(qApp);
-    const Settings *settings = app->settings();
+    Settings *settings = app->settings();
     return settings;
 }

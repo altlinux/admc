@@ -23,6 +23,7 @@
 #include "confirmation_dialog.h"
 #include "dn_column_proxy.h"
 #include "utils.h"
+#include "settings.h"
 
 #include <QLineEdit>
 #include <QVBoxLayout>
@@ -35,6 +36,7 @@
 #include <QPushButton>
 #include <QItemSelectionModel>
 #include <QMessageBox>
+#include <QCheckBox>
 
 LoginDialog::LoginDialog(QWidget *parent)
 : QDialog(parent)
@@ -56,6 +58,8 @@ LoginDialog::LoginDialog(QWidget *parent)
     hosts_list = new QListWidget(this);
     hosts_list->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
+    save_session_checkbox = new QCheckBox("Save this session", this);
+
     const auto layout = new QGridLayout(this);
     layout->addWidget(label, 0, 0);
     layout->addWidget(domain_edit_label, 1, 0);
@@ -64,8 +68,9 @@ LoginDialog::LoginDialog(QWidget *parent)
     layout->addWidget(site_edit, 1, 4);
     layout->addWidget(hosts_list_label, 3, 0);
     layout->addWidget(hosts_list, 4, 0, 1, 5);
-    layout->addWidget(cancel_button, 5, 0, Qt::AlignLeft);
-    layout->addWidget(login_button, 5, 4, Qt::AlignRight);
+    layout->addWidget(save_session_checkbox, 5, 4, Qt::AlignRight);
+    layout->addWidget(cancel_button, 6, 0, Qt::AlignLeft);
+    layout->addWidget(login_button, 6, 4, Qt::AlignRight);
 
     connect(
         domain_edit, &QLineEdit::editingFinished,
@@ -108,6 +113,15 @@ void LoginDialog::complete(const QString &host) {
     AD()->ad_interface_login(uri, "DC=domain,DC=alt");
 
     if (AD()->is_connected()) {
+        const bool save_session = save_session_checkbox->isChecked();
+        if (save_session) {
+            const QString domain = domain_edit->text();
+            const QString site = site_edit->text();
+            SETTINGS()->set_string(SESSION_DOMAIN, domain);
+            SETTINGS()->set_string(SESSION_SITE, site);
+            SETTINGS()->set_string(SESSION_HOST, host);
+        }
+
         done(QDialog::Accepted);
     } else {
         QMessageBox::critical(this, "Error", "Failed to login!");
@@ -138,11 +152,22 @@ void LoginDialog::on_cancel_button(bool) {
 }
 
 void LoginDialog::open() {
-    domain_edit->setText("");
-    site_edit->setText("");
-    hosts_list->clear();
+    // Load session values from settings
+    const QString domain = SETTINGS()->get_string(SESSION_DOMAIN);
+    const QString site = SETTINGS()->get_string(SESSION_SITE);
+    const QString host = SETTINGS()->get_string(SESSION_HOST);
+    
+    domain_edit->setText(domain);
+    site_edit->setText(site);
 
     load_hosts();
+
+    // Select saved session host in hosts list
+    QList<QListWidgetItem *> found_hosts = hosts_list->findItems(host, Qt::MatchExactly);
+    if (!found_hosts.isEmpty()) {
+        QListWidgetItem *host_item = found_hosts[0];
+        hosts_list->setCurrentItem(host_item);
+    }
 
     QDialog::open();
 }

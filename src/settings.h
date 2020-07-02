@@ -22,10 +22,15 @@
 
 #include <QObject>
 #include <QList>
+#include <QHash>
+#include <QString>
 
 class QAction;
 class QSettings;
-class QString;
+
+#define SESSION_DOMAIN "session_domain"
+#define SESSION_SITE "session_site"
+#define SESSION_HOST "session_host"
 
 class Settings final : public QObject {
 Q_OBJECT
@@ -33,6 +38,8 @@ Q_OBJECT
 public:
     explicit Settings(QObject *parent);
     void emit_toggle_signals() const;
+    void set_string(const QString &name, const QString &value);
+    QString get_string(const QString &name);
 
     QAction *toggle_advanced_view = nullptr;
     QAction *toggle_show_dn_column = nullptr;
@@ -43,12 +50,14 @@ public:
 
 private:
     QList<QAction *> checkable_actions;
-    QAction *make_checkable_action(const QSettings &settings, const QString& text);
+    QHash<QString, QString> strings;
 
+    QAction *make_checkable_action(const QSettings &settings, const QString& text);
+    void make_string(const QSettings &settings, const QString &name);
     void save_settings();
 
 };
 
-const Settings *SETTINGS();
+Settings *SETTINGS();
 
 #endif /* SETTINGS_H */

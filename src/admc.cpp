@@ -32,6 +32,6 @@ AdInterface *ADMC::ad_interface() {
     return m_ad_interface;
 }
 
-const Settings *ADMC::settings() {
+Settings *ADMC::settings() {
     return m_settings;
 }
