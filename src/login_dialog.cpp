@@ -38,7 +38,7 @@
 #include <QMessageBox>
 #include <QCheckBox>
 
-LoginDialog::LoginDialog(QWidget *parent)
+LoginDialog::LoginDialog(QAction *login_action, QWidget *parent)
 : QDialog(parent)
 {
     resize(500, 300);
@@ -90,6 +90,9 @@ LoginDialog::LoginDialog(QWidget *parent)
     connect(
         this, &QDialog::finished,
         this, &LoginDialog::on_finished);
+    connect(
+        login_action, &QAction::triggered,
+        this, &LoginDialog::on_login_action);
 }
 
 void LoginDialog::load_hosts() {
@@ -151,7 +154,7 @@ void LoginDialog::on_cancel_button(bool) {
     done(QDialog::Rejected);
 }
 
-void LoginDialog::open() {
+void LoginDialog::on_login_action() {
     // Load session values from settings
     const QString domain = SETTINGS()->get_string(SettingString_Domain);
     const QString site = SETTINGS()->get_string(SettingString_Site);

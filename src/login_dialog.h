@@ -33,15 +33,14 @@ class LoginDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    LoginDialog(QWidget *parent);
-
-    void open() override;
+    LoginDialog(QAction *login_action, QWidget *parent);
 
 private slots:
     void on_host_double_clicked(QListWidgetItem *item);
     void on_login_button(bool);
     void on_cancel_button(bool);
     void on_finished();
+    void on_login_action();
 
 private:
     QListWidget *hosts_list = nullptr;

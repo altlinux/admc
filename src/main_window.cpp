@@ -62,13 +62,11 @@ MainWindow::MainWindow()
     setWindowTitle("MainWindow");
 
     // Menubar
-    QMenu *menubar_file;
+    QAction *login_action = nullptr;
     {
         QMenuBar *menubar = menuBar();
-        menubar_file = menubar->addMenu("File");
-        menubar_file->addAction("Login", []() {
-            on_action_login();
-        });
+        QMenu *menubar_file = menubar->addMenu("File");
+        login_action = menubar_file->addAction("Login");
         menubar_file->addAction("Exit", [this]() {
             on_action_exit(this);
         });
@@ -98,7 +96,7 @@ MainWindow::MainWindow()
     auto status_log = new QTextEdit(this);
     status_log->setReadOnly(true);
 
-    auto login_dialog = new LoginDialog(this);
+    new LoginDialog(login_action, this);
 
     new Status(statusBar(), status_log, this);
 
@@ -129,12 +127,6 @@ MainWindow::MainWindow()
 
         central_widget->setLayout(central_layout);
     }
-
-    menubar_file->addAction("Login dialog",
-        [login_dialog]
-        () {
-        login_dialog->open();
-    });
 
     // Enable central widget on login
     central_widget->setEnabled(false);
