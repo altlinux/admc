@@ -59,7 +59,7 @@ MainWindow::MainWindow(const bool auto_login)
 : QMainWindow()
 {
     // TODO: setting width to 1600+ fullscreens the window, no idea why
-    resize(1500, 1000);
+    resize(1200, 700);
     setWindowTitle("MainWindow");
 
     // Menubar
@@ -133,7 +133,7 @@ MainWindow::MainWindow(const bool auto_login)
     menubar_file->addAction("Login dialog",
         [login_dialog]
         () {
-        login_dialog->open_xd();
+        login_dialog->open();
     });
 
     // Enable central widget on login

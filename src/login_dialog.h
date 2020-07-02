@@ -34,7 +34,7 @@ Q_OBJECT
 public:
     LoginDialog(QWidget *parent);
 
-    void open_xd();
+    void open() override;
 
 private slots:
     void on_host_double_clicked(QListWidgetItem *item);

@@ -39,7 +39,7 @@
 LoginDialog::LoginDialog(QWidget *parent)
 : QDialog(parent)
 {
-    resize(600, 600);
+    resize(500, 300);
 
     const auto label = new QLabel("Login dialog");
 
@@ -60,10 +60,10 @@ LoginDialog::LoginDialog(QWidget *parent)
     layout->addWidget(label, 0, 0);
     layout->addWidget(domain_edit_label, 1, 0);
     layout->addWidget(domain_edit, 1, 1);
-    layout->addWidget(site_edit_label, 1, 2);
-    layout->addWidget(site_edit, 1, 3);
+    layout->addWidget(site_edit_label, 1, 3);
+    layout->addWidget(site_edit, 1, 4);
     layout->addWidget(hosts_list_label, 3, 0);
-    layout->addWidget(hosts_list, 4, 0, 1, 4);
+    layout->addWidget(hosts_list, 4, 0, 1, 5);
     layout->addWidget(cancel_button, 5, 0, Qt::AlignLeft);
     layout->addWidget(login_button, 5, 4, Qt::AlignRight);
 
@@ -123,7 +123,9 @@ void LoginDialog::on_host_double_clicked(QListWidgetItem *item) {
 void LoginDialog::on_login_button(bool) {
     QList<QListWidgetItem *> selected_items = hosts_list->selectedItems();
 
-    if (!selected_items.isEmpty()) {
+    if (selected_items.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Need to select a host to login.");
+    } else {
         QListWidgetItem *item = selected_items[0];
         const QString host = item->text();
 
@@ -135,14 +137,14 @@ void LoginDialog::on_cancel_button(bool) {
     done(QDialog::Rejected);
 }
 
-void LoginDialog::open_xd() {
+void LoginDialog::open() {
     domain_edit->setText("");
     site_edit->setText("");
     hosts_list->clear();
 
     load_hosts();
 
-    open();
+    QDialog::open();
 }
 
 void LoginDialog::on_finished() {
