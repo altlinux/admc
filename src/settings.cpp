@@ -25,11 +25,15 @@
 #include <QApplication>
 #include <QList>
 
-const QHash<SettingString, QString> string_names = {
-    {SettingString_Domain, "domain"},
-    {SettingString_Site, "site"},
-    {SettingString_Host, "host"},
-};
+QString string_name(SettingString string) {
+    switch (string) {
+        case SettingString_Domain: return "domain";
+        case SettingString_Site: return "site";
+        case SettingString_Host: return "host";
+        case SettingString_COUNT: return "COUNT";
+    }
+    return "";
+}
 
 QAction *Settings::make_checkable_action(const QSettings &settings, const QString& text) {
     QAction *action = new QAction(text);
@@ -67,7 +71,7 @@ Settings::Settings(QObject *parent)
     // Load strings
     for (int i = 0; i < SettingString_COUNT; i++) {
         const SettingString string = (SettingString) i;
-        const QString name = string_names[string];
+        const QString name = string_name(string);
         const QString value = settings.value(name, "").toString();
 
         strings[string] = value;
@@ -107,7 +111,7 @@ void Settings::save_settings() {
 
     for (int i = 0; i < SettingString_COUNT; i++) {
         const SettingString string = (SettingString) i;
-        const QString name = string_names[string];
+        const QString name = string_name(string);
         const QString value = strings[string];
 
         settings.setValue(name, value);
