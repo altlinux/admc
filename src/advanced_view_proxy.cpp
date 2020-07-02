@@ -31,12 +31,12 @@ AdvancedViewProxy::AdvancedViewProxy(int dn_column_arg, QObject *parent)
     dn_column = dn_column_arg;
 
     connect(
-        SETTINGS()->toggle_advanced_view, &QAction::toggled,
+        SETTINGS()->checkable(SettingsCheckable_AdvancedView), &QAction::toggled,
         this, &AdvancedViewProxy::on_advanced_view_toggled);
 }
 
 void AdvancedViewProxy::on_advanced_view_toggled(bool) {
-    advanced_view_is_on = SETTINGS()->toggle_advanced_view->isChecked();
+    advanced_view_is_on = SETTINGS()->checkable(SettingsCheckable_AdvancedView)->isChecked();
 
     invalidateFilter();
 }

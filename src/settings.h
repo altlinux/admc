@@ -21,11 +21,21 @@
 #define SETTINGS_H
 
 #include <QObject>
-#include <QList>
+#include <QHash>
 
 class QAction;
 class QSettings;
 class QString;
+
+enum SettingsCheckable {
+    SettingsCheckable_AdvancedView,
+    SettingsCheckable_DnColumn,
+    SettingsCheckable_DetailsFromContainers,
+    SettingsCheckable_DetailsFromContents,
+    SettingsCheckable_ConfirmActions,
+    SettingsCheckable_ShowStatusLog,
+    SettingsCheckable_COUNT,
+};
 
 class Settings final : public QObject {
 Q_OBJECT
@@ -33,17 +43,10 @@ Q_OBJECT
 public:
     explicit Settings(QObject *parent);
     void emit_toggle_signals() const;
-
-    QAction *toggle_advanced_view = nullptr;
-    QAction *toggle_show_dn_column = nullptr;
-    QAction *details_on_containers_click = nullptr;
-    QAction *details_on_contents_click = nullptr;
-    QAction *confirm_actions = nullptr;
-    QAction *toggle_show_status_log = nullptr;
+    QAction *checkable(SettingsCheckable c) const;
 
 private:
-    QList<QAction *> checkable_actions;
-    QAction *make_checkable_action(const QSettings &settings, const QString& text);
+    QHash<SettingsCheckable, QAction *> checkables;
 
     void save_settings();
 

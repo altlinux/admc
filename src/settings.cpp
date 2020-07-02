@@ -25,17 +25,17 @@
 #include <QApplication>
 #include <QList>
 
-QAction *Settings::make_checkable_action(const QSettings &settings, const QString& text) {
-    QAction *action = new QAction(text);
-    action->setCheckable(true);
-
-    // Load checked state from settings
-    bool checked = settings.value(text, false).toBool();
-    action->setChecked(checked);
-
-    checkable_actions.append(action);
-
-    return action;
+QString checkable_text(SettingsCheckable checkable) {
+    switch (checkable) {
+        case SettingsCheckable_AdvancedView: return "Advanced View";
+        case SettingsCheckable_DnColumn: return "Show DN column";
+        case SettingsCheckable_DetailsFromContainers: return "Open attributes on left click in Containers window";
+        case SettingsCheckable_DetailsFromContents: return "Open attributes on left click in Contents window";
+        case SettingsCheckable_ConfirmActions: return "Confirm actions";
+        case SettingsCheckable_ShowStatusLog: return "Show status log";
+        case SettingsCheckable_COUNT: return "COUNT";
+    }
+    return "";
 }
 
 QString get_settings_file_path() {
@@ -50,12 +50,18 @@ Settings::Settings(QObject *parent)
     const QString settings_file_path = get_settings_file_path();
     const QSettings settings(settings_file_path, QSettings::NativeFormat);
     
-    toggle_advanced_view = make_checkable_action(settings, "Advanced View");
-    toggle_show_dn_column = make_checkable_action(settings, "Show DN column");
-    details_on_containers_click = make_checkable_action(settings, "Open attributes on left click in Containers window");
-    details_on_contents_click = make_checkable_action(settings, "Open attributes on left click in Contents window");
-    confirm_actions = make_checkable_action(settings, "Confirm actions");
-    toggle_show_status_log = make_checkable_action(settings, "Show status log");
+    for (int i = 0; i < SettingsCheckable_COUNT; i++) {
+        const SettingsCheckable checkable = (SettingsCheckable) i;
+        const QString text = checkable_text(checkable);
+
+        QAction *action = new QAction(text);
+        action->setCheckable(true);
+
+        bool checked = settings.value(text, false).toBool();
+        action->setChecked(checked);
+
+        checkables[checkable] = action;
+    }
 
     // Save settings before the app quits
     connect(
@@ -64,19 +70,23 @@ Settings::Settings(QObject *parent)
 }
 
 void Settings::emit_toggle_signals() const {
-    for (auto action : checkable_actions) {
-        const bool checked = action->isChecked();
-        emit action->toggled(checked);
+    for (auto c : checkables.values()) {
+        const bool checked = c->isChecked();
+        emit c->toggled(checked);
     }
+}
+
+QAction *checkable(SettingsCheckable c) const {
+    return checkables[c];
 }
 
 void Settings::save_settings() {
     const QString settings_file_path = get_settings_file_path();
     QSettings settings(settings_file_path, QSettings::NativeFormat);
 
-    for (auto action : checkable_actions) {
-        const bool checked = action->isChecked();
-        const QString text = action->text();
+    for (auto c : checkables.values()) {
+        const bool checked = c->isChecked();
+        const QString text = c->text();
         settings.setValue(text, checked);
     }
 }
