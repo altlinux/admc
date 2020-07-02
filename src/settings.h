@@ -53,7 +53,6 @@ private:
     QHash<QString, QString> strings;
 
     QAction *make_checkable_action(const QSettings &settings, const QString& text);
-    void make_string(const QSettings &settings, const QString &name);
     void save_settings();
 
 };

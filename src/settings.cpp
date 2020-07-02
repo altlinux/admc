@@ -38,11 +38,6 @@ QAction *Settings::make_checkable_action(const QSettings &settings, const QStrin
     return action;
 }
 
-void Settings::make_string(const QSettings &settings, const QString &name) {
-    const QString value = settings.value(name, "").toString();
-    strings[name] = value;
-}
-
 QString get_settings_file_path() {
     // NOTE: save to app dir for now for easier debugging
     QString settings_file_path = QApplication::applicationDirPath() + "/settings.ini";
@@ -62,11 +57,13 @@ Settings::Settings(QObject *parent)
     confirm_actions = make_checkable_action(settings, "Confirm actions");
     toggle_show_status_log = make_checkable_action(settings, "Show status log");
 
+    // Load strings
     const QList<QString> string_names = {
         SESSION_DOMAIN, SESSION_SITE, SESSION_HOST
     };
     for (auto name : string_names) {
-        make_string(settings, name);
+        const QString value = settings.value(name, "").toString();
+        strings[name] = value;
     }
 
     connect(
