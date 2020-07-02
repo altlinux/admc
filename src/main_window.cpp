@@ -141,9 +141,7 @@ MainWindow::MainWindow()
         const QString host = SETTINGS()->get_string(SettingString_Host);
 
         if (!host.isEmpty()) {
-            const QString uri = "ldap://" + host;
-
-            AD()->ad_interface_login(uri, "DC=domain,DC=alt");
+            AD()->ad_interface_login(host, "DC=domain,DC=alt");
         }
     }    
 }

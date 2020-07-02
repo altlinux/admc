@@ -85,13 +85,17 @@ QString extract_parent_dn_from_dn(const QString &dn) {
     return parent_dn;
 }
 
-void AdInterface::ad_interface_login(const QString &base, const QString &head) {
-    connection->connect(base.toStdString(), head.toStdString());
+void AdInterface::ad_interface_login(const QString &host, const QString &head) {
+    const QString uri = "ldap://" + host;
+    const std::string uri_std = uri.toStdString();
+    const std::string head_std = head.toStdString();
+
+    connection->connect(uri_std, head_std);
 
     if (connection->is_connected()) {
-        emit ad_interface_login_complete(base, head);
+        emit ad_interface_login_complete(host, head);
     } else {
-        emit ad_interface_login_failed(base, head);
+        emit ad_interface_login_failed(host, head);
     }
 }
 

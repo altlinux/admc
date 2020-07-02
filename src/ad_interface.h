@@ -66,7 +66,7 @@ public:
     explicit AdInterface(QObject *parent);
     ~AdInterface();
 
-    void ad_interface_login(const QString &base, const QString &head);
+    void ad_interface_login(const QString &host, const QString &head);
     QString get_error_str();
 
     bool is_connected();
@@ -101,8 +101,8 @@ signals:
     // like login/create_entry
     // For state updates you MUST use dn_changed() and
     // attributes_changed() signals
-    void ad_interface_login_complete(const QString &base, const QString &head);
-    void ad_interface_login_failed(const QString &base, const QString &head);
+    void ad_interface_login_complete(const QString &host, const QString &head);
+    void ad_interface_login_failed(const QString &host, const QString &head);
 
     void load_children_failed(const QString &dn, const QString &error_str);
 
