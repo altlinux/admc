@@ -44,6 +44,9 @@ Status::Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *p
         AD(), &AdInterface::load_children_failed,
         this, &Status::on_load_children_failed);
     connect(
+        AD(), &AdInterface::search_failed,
+        this, &Status::on_search_failed);
+    connect(
         AD(), &AdInterface::load_attributes_failed,
         this, &Status::on_load_attributes_failed);
 
@@ -83,6 +86,13 @@ Status::Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *p
         this, &Status::on_add_user_to_group_failed);
 
     connect(
+        AD(), &AdInterface::group_remove_user_complete,
+        this, &Status::on_group_remove_user_complete);
+    connect(
+        AD(), &AdInterface::group_remove_user_failed,
+        this, &Status::on_group_remove_user_failed);
+
+    connect(
         AD(), &AdInterface::delete_entry_complete,
         this, &Status::on_delete_entry_complete);
     connect(
@@ -115,6 +125,11 @@ void Status::on_ad_interface_login_failed(const QString &search_base, const QStr
 
 void Status::on_load_children_failed(const QString &dn, const QString &error_str) {
     QString msg = QString("Failed to load children of \"%1\". Error: \"%2\"").arg(dn, error_str);
+
+    message(msg);
+}
+void Status::on_search_failed(const QString &filter, const QString &error_str) {
+    QString msg = QString("Failed to search for \"%1\". Error: \"%2\"").arg(filter, error_str);
 
     message(msg);
 }
@@ -188,6 +203,18 @@ void Status::on_rename_complete(const QString &dn, const QString &new_name, cons
 
 void Status::on_rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str) {
     QString msg = QString("Failed to rename \"%1\" to \"%2\". Error: \"%3\"").arg(dn, new_name, error_str);
+
+    message(msg);
+}
+
+void Status::on_group_remove_user_complete(const QString &group_dn, const QString &user_dn) {
+    QString msg = QString("Removed user \"%1\" from group \"%2\"").arg(user_dn, group_dn);
+
+    message(msg);
+}
+
+void Status::on_group_remove_user_failed(const QString &group_dn, const QString &user_dn, const QString &error_str) {
+    QString msg = QString("Failed to remove user \"%1\" from group \"%2\". Error: \"%3\"").arg(user_dn, group_dn, error_str);
 
     message(msg);
 }

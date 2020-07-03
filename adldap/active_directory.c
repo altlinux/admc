@@ -687,9 +687,7 @@ int ad_setpass(LDAP *ds, const char *dn, const char *password) {
 }
 
 /* general search function */
-char **ad_search(LDAP *ds, const char *attribute, const char *value, const char* search_base) {
-    char *filter;
-    int filter_length;
+char **ad_search(LDAP *ds, const char *filter, const char* search_base) {
     char *attrs[]={"1.1", NULL};
     LDAPMessage *res;
     LDAPMessage *entry;
@@ -702,10 +700,6 @@ char **ad_search(LDAP *ds, const char *attribute, const char *value, const char*
         ad_error_code=AD_MISSING_CONFIG_PARAMETER;
         return (char **)-1;
     }
-
-    filter_length=(strlen(attribute)+strlen(value)+4);
-    filter=malloc(filter_length);
-    snprintf(filter, filter_length, "(%s=%s)", attribute, value);
 
     result = ldap_search_ext_s(ds,
         search_base,
@@ -725,13 +719,12 @@ char **ad_search(LDAP *ds, const char *attribute, const char *value, const char*
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
         return (char **)-1;
     }
-    free(filter);
 
     num_results=ldap_count_entries(ds, res);
     if(num_results==0) {
         ldap_msgfree(res);
         snprintf(ad_error_msg, MAX_ERR_LENGTH,
-            "%s not found", value);
+            "No matches found for %s", filter);
         ad_error_code=AD_OBJECT_NOT_FOUND;
         return NULL;
     }

@@ -37,6 +37,7 @@ private slots:
     void on_ad_interface_login_failed(const QString &search_base, const QString &head_dn);
 
     void on_load_children_failed(const QString &dn, const QString &error_str);
+    void on_search_failed(const QString &filter, const QString &error_str);
     void on_load_attributes_failed(const QString &dn, const QString &error_str);
 
     void on_delete_entry_complete(const QString &dn);
@@ -53,6 +54,9 @@ private slots:
 
     void on_add_user_to_group_complete(const QString &group_dn, const QString &user_dn);
     void on_add_user_to_group_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
+
+    void on_group_remove_user_complete(const QString &group_dn, const QString &user_dn);
+    void on_group_remove_user_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
 
     void on_rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
     void on_rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);

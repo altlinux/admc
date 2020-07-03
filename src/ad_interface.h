@@ -68,6 +68,7 @@ public:
     QString get_error_str();
 
     QList<QString> load_children(const QString &dn);
+    QList<QString> search(const QString &filter);
     QMap<QString, QList<QString>> get_attributes(const QString &dn);
     QList<QString> get_attribute_multi(const QString &dn, const QString &attribute);
     QString get_attribute(const QString &dn, const QString &attribute);
@@ -78,6 +79,7 @@ public:
     void delete_entry(const QString &dn);
     void move(const QString &dn, const QString &new_container);
     void add_user_to_group(const QString &group_dn, const QString &user_dn);
+    void group_remove_user(const QString &group_dn, const QString &user_dn);
     void rename(const QString &dn, const QString &new_name);
 
     bool is_user(const QString &dn);
@@ -102,6 +104,8 @@ signals:
 
     void load_children_failed(const QString &dn, const QString &error_str);
 
+    void search_failed(const QString &filter, const QString &error_str);
+
     void load_attributes_complete(const QString &dn);
     void load_attributes_failed(const QString &dn, const QString &error_str);
 
@@ -119,6 +123,9 @@ signals:
     
     void add_user_to_group_complete(const QString &group_dn, const QString &user_dn);
     void add_user_to_group_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
+
+    void group_remove_user_complete(const QString &group_dn, const QString &user_dn);
+    void group_remove_user_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
 
     void rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
     void rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);
@@ -144,10 +151,16 @@ private:
     void load_attributes(const QString &dn);
     void update_cache(const QString &old_dn, const QString &new_dn);
     void add_attribute_internal(const QString &dn, const QString &attribute, const QString &value);
+    void remove_attribute_internal(const QString &dn, const QString &attribute, const QString &value);
 
 }; 
 
 // Convenience function to get AdInterface from qApp instance
 AdInterface *AD();
+
+QString filter_EQUALS(const QString &attribute, const QString &value);
+QString filter_AND(const QString &a, const QString &b);
+QString filter_OR(const QString &a, const QString &b);
+QString filter_NOT(const QString &a);
 
 #endif /* AD_INTERFACE_H */

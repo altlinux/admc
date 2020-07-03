@@ -44,15 +44,10 @@ ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget
 : QWidget(parent)
 {
     model = new ContainersModel(this);
-
-    const auto proxy = new AdvancedViewProxy(ContainersColumn_DN, this);
-    proxy->setSourceModel(model);   
-
+    const auto advanced_view_proxy = new AdvancedViewProxy(ContainersColumn_DN, this);
     const auto dn_column_proxy = new DnColumnProxy(ContainersColumn_DN, this);
-    dn_column_proxy->setSourceModel(proxy);   
 
     view = new QTreeView(this);
-    view->setModel(dn_column_proxy);
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setRootIsDecorated(true);
@@ -60,7 +55,10 @@ ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget
     view->setExpandsOnDoubleClick(true);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
+    view->setAllColumnsShowFocus(true);
     entry_context_menu->connect_view(view, ContainersColumn_DN);
+
+    setup_model_chain(view, model, {advanced_view_proxy, dn_column_proxy});
 
     // Insert label into layout
     const auto label = new QLabel("Containers");
@@ -195,10 +193,10 @@ void ContainersModel::on_dn_changed(const QString &old_dn, const QString &new_dn
     // NOTE: only add to new parent if it can't fetch
     // if new parent can fetch, then it will load this row when
     // it does fetch along with all other children
-    const bool remove_from_old_parent = (old_parent != nullptr);
+    const bool remove_from_old_parent = (old_parent != nullptr && old_dn_item != nullptr);
     const bool add_to_new_parent = (new_parent != nullptr && !canFetchMore(new_parent->index()));
 
-    if (remove_from_old_parent && old_dn_item != nullptr) {
+    if (remove_from_old_parent) {
         const int old_row_i = old_dn_item->row();
 
         if (add_to_new_parent) {
