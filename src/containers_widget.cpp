@@ -193,10 +193,10 @@ void ContainersModel::on_dn_changed(const QString &old_dn, const QString &new_dn
     // NOTE: only add to new parent if it can't fetch
     // if new parent can fetch, then it will load this row when
     // it does fetch along with all other children
-    const bool remove_from_old_parent = (old_parent != nullptr);
+    const bool remove_from_old_parent = (old_parent != nullptr && old_dn_item != nullptr);
     const bool add_to_new_parent = (new_parent != nullptr && !canFetchMore(new_parent->index()));
 
-    if (remove_from_old_parent && old_dn_item != nullptr) {
+    if (remove_from_old_parent) {
         const int old_row_i = old_dn_item->row();
 
         if (add_to_new_parent) {

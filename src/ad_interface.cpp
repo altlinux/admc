@@ -361,6 +361,28 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
     }
 }
 
+void AdInterface::group_remove_user(const QString &group_dn, const QString &user_dn) {
+    int result = AD_INVALID_DN;
+
+    const QByteArray group_dn_array = group_dn.toLatin1();
+    const char *group_dn_cstr = group_dn_array.constData();
+
+    const QByteArray user_dn_array = user_dn.toLatin1();
+    const char *user_dn_cstr = user_dn_array.constData();
+
+    result = connection->group_remove_user(group_dn_cstr, user_dn_cstr);
+
+    if (result == AD_SUCCESS) {
+        // Update attributes of user and group
+        remove_attribute_internal(group_dn, "member", user_dn);
+        remove_attribute_internal(user_dn, "memberOf", group_dn);
+
+        emit group_remove_user_complete(group_dn, user_dn);
+    } else {
+        emit group_remove_user_failed(group_dn, user_dn, get_error_str());
+    }
+}
+
 void AdInterface::rename(const QString &dn, const QString &new_name) {
     // Compose new_rdn and new_dn
     const QStringList exploded_dn = dn.split(',');
@@ -640,6 +662,18 @@ void AdInterface::add_attribute_internal(const QString &dn, const QString &attri
         attributes_map[dn][attribute].append(value);
 
         emit attributes_changed(dn);
+    }
+}
+
+void AdInterface::remove_attribute_internal(const QString &dn, const QString &attribute, const QString &value) {
+    if (attributes_loaded.contains(dn)) {
+        const int value_i = attributes_map[dn][attribute].indexOf(value);
+
+        if (value_i != -1) {
+            attributes_map[dn][attribute].removeAt(value_i);
+
+            emit attributes_changed(dn);
+        }
     }
 }
 

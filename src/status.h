@@ -55,6 +55,9 @@ private slots:
     void on_add_user_to_group_complete(const QString &group_dn, const QString &user_dn);
     void on_add_user_to_group_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
 
+    void on_group_remove_user_complete(const QString &group_dn, const QString &user_dn);
+    void on_group_remove_user_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
+
     void on_rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
     void on_rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);
 
