@@ -27,10 +27,24 @@ namespace adldap {
 AdConnection::AdConnection() {
 }
 
-void AdConnection::connect(std::string uri_, std::string search_base_) {
-    this->uri = uri_;
-    this->search_base = search_base_;
-    this->ldap_connection = ad_login(this->uri.c_str());
+void AdConnection::connect(std::string uri_arg, std::string domain) {
+    uri = uri_arg;
+
+    // "DOMAIN.COM" => "DC=DOMAIN,DC=COM"
+    search_base = domain;
+    for (size_t i = 0; i < search_base.length(); i++) {
+        search_base[i] = std::tolower(search_base[i]);
+    }
+    search_base = "DC=" + search_base;
+    const std::string erase_str = ".";
+    const std::string insert_str = ",DC=";
+    size_t pos = search_base.find(erase_str);
+    if (pos != std::string::npos) {
+        search_base.erase(pos, erase_str.length());
+        search_base.insert(pos, insert_str);
+    }
+    
+    ldap_connection = ad_login(this->uri.c_str());
 }
 
 bool AdConnection::is_connected() {
@@ -46,6 +60,10 @@ char* AdConnection::get_errstr() {
 
 int AdConnection::get_errcode() {
     return ad_get_error_num();
+}
+
+const std::string AdConnection::get_search_base() const {
+    return search_base;
 }
 
 int AdConnection::create_user(const char *username, const char *dn) {

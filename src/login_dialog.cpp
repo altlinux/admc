@@ -161,16 +161,13 @@ void LoginDialog::load_hosts() {
 }
 
 void LoginDialog::complete(const QString &host) {
+    const QString domain = domain_edit->text();
 
-    // TODO: don't have to pass head_dn
-    // but need to get head_dn programmatically via ldap
-    // think listing tree with 1 lvl should do it
-    AD()->ad_interface_login(host, "DC=domain,DC=alt");
+    AD()->ad_interface_login(host, domain);
 
     if (AD()->is_connected()) {
         const bool save_session = save_session_checkbox->isChecked();
         if (save_session) {
-            const QString domain = domain_edit->text();
             const QString site = site_edit->text();
             SETTINGS()->set_string(SettingString_Domain, domain);
             SETTINGS()->set_string(SettingString_Site, site);

@@ -33,10 +33,11 @@ class AdConnection {
 
 public:
     AdConnection();
-    void connect(std::string uri, std::string search_base);
+    void connect(std::string uri_arg, std::string domain);
     bool is_connected();
     char* get_errstr();
     int get_errcode();
+    const std::string get_search_base() const;
 
     int create_user(const char *username, const char *dn);
     int create_computer(const char *name, const char *dn);

@@ -66,7 +66,7 @@ public:
     explicit AdInterface(QObject *parent);
     ~AdInterface();
 
-    void ad_interface_login(const QString &host, const QString &head);
+    void ad_interface_login(const QString &host, const QString &domain);
     QString get_error_str();
 
     bool is_connected();

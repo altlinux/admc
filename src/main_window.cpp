@@ -17,8 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
-
 #include "main_window.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
@@ -139,9 +137,10 @@ MainWindow::MainWindow()
     const bool auto_login = SETTINGS()->auto_login->isChecked();
     if (auto_login) {
         const QString host = SETTINGS()->get_string(SettingString_Host);
+        const QString domain = SETTINGS()->get_string(SettingString_Domain);
 
         if (!host.isEmpty()) {
-            AD()->ad_interface_login(host, "DC=domain,DC=alt");
+            AD()->ad_interface_login(host, domain);
         }
     }    
 }
