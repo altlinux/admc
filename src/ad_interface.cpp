@@ -101,6 +101,34 @@ QList<QString> AdInterface::load_children(const QString &dn) {
     }
 }
 
+QList<QString> AdInterface::search(const QString &filter) {
+    const QByteArray filter_array = filter.toLatin1();
+    const char *filter_cstr = filter_array.constData();
+
+    char **results_raw = connection->search(filter_cstr);
+    int search_result = connection->get_errcode();
+
+    if (search_result == AD_SUCCESS) {
+        auto results = QList<QString>();
+
+        for (int i = 0; results_raw[i] != NULL; i++) {
+            auto result = QString(results_raw[i]);
+            results.push_back(result);
+        }
+
+        for (int i = 0; results_raw[i] != NULL; i++) {
+            free(results_raw[i]);
+        }
+        free(results_raw);
+
+        return results;
+    } else {
+        emit search_failed(filter, get_error_str());
+
+        return QList<QString>();
+    }
+}
+
 void AdInterface::load_attributes(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
@@ -619,4 +647,22 @@ AdInterface *AD() {
     ADMC *app = qobject_cast<ADMC *>(qApp);
     AdInterface *ad = app->ad_interface();
     return ad;
+}
+
+QString filter_EQUALS(const QString &attribute, const QString &value) {
+    auto filter = QString("(%1=%2)").arg(attribute, value);
+    return filter;
+}
+
+QString filter_AND(const QString &a, const QString &b) {
+    auto filter = QString("(&%1%2)").arg(a, b);
+    return filter;
+}
+QString filter_OR(const QString &a, const QString &b) {
+    auto filter = QString("(|%1%2)").arg(a, b);
+    return filter;
+}
+QString filter_NOT(const QString &a) {
+    auto filter = QString("(!%1)").arg(a);
+    return filter;
 }

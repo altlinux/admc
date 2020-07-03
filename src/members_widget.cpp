@@ -45,8 +45,8 @@ MembersWidget::MembersWidget(EntryContextMenu *entry_context_menu, QWidget *pare
 
     model = new MembersModel(this);
     const auto dn_column_proxy = new DnColumnProxy(MembersColumn_DN, this);
-    dn_column_proxy->setSourceModel(model);
-    view->setModel(dn_column_proxy);
+
+    setup_model_chain(view, model, {dn_column_proxy});
     
     const auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
