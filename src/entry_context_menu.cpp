@@ -21,6 +21,7 @@
 #include "ad_interface.h"
 #include "settings.h"
 #include "confirmation_dialog.h"
+#include "move_dialog.h"
 #include "utils.h"
 
 #include <QString>
@@ -32,6 +33,13 @@
 #include <QModelIndex>
 #include <QAbstractItemView>
 #include <QSortFilterProxyModel>
+
+EntryContextMenu::EntryContextMenu(QWidget *parent)
+: QMenu(parent)
+{
+    // NOTE: use parent, not context menu itself so dialog is centered
+    move_dialog = new MoveDialog(parent);
+}
 
 // Open this context menu when view requests one
 void EntryContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
@@ -88,17 +96,28 @@ void EntryContextMenu::open(const QPoint &global_pos, const QString &dn, const Q
         new_ou(dn);
     });
 
+    addAction("Move", [this, dn]() {
+        move_dialog->open_for_entry(dn, MoveDialogType_Move);
+    });
+
     const bool is_policy = AD()->is_policy(dn); 
+    const bool is_user = AD()->is_user(dn); 
+    
     if (is_policy) {
         submenu_new->addAction("Edit Policy", [this, dn]() {
             edit_policy(dn);
         });
     }
 
+    if (is_user) {
+        addAction("Add to group", [this, dn]() {
+            move_dialog->open_for_entry(dn, MoveDialogType_AddToGroup);
+        });
+    }
+
     // Special contextual action
     // shown if parent is group and entry is user
     if (parent_dn != "") {
-        const bool is_user = AD()->is_user(dn);
         const bool parent_is_group = AD()->is_group(parent_dn);
 
         if (is_user && parent_is_group) {

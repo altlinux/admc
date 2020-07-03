@@ -27,12 +27,13 @@
 class QString;
 class QPoint;
 class QAbstractItemView;
+class MoveDialog;
 
 class EntryContextMenu final : public QMenu {
 Q_OBJECT
 
 public:
-    using QMenu::QMenu;
+    EntryContextMenu(QWidget *parent);
 
     void connect_view(QAbstractItemView *view, int dn_column);
 
@@ -40,8 +41,9 @@ signals:
     void details(const QString &dn);
     
 private:
+    MoveDialog *move_dialog = nullptr;
+    
     void open(const QPoint &global_pos, const QString &dn, const QString &parent_dn);
-
     void delete_entry(const QString &dn);
     void new_entry_dialog(const QString &parent_dn, NewEntryType type);
     void new_user(const QString &dn);

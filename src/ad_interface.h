@@ -68,6 +68,7 @@ public:
     QString get_error_str();
 
     QList<QString> load_children(const QString &dn);
+    QList<QString> search(const QString &filter);
     QMap<QString, QList<QString>> get_attributes(const QString &dn);
     QList<QString> get_attribute_multi(const QString &dn, const QString &attribute);
     QString get_attribute(const QString &dn, const QString &attribute);
@@ -102,6 +103,8 @@ signals:
     void ad_interface_login_failed(const QString &base, const QString &head);
 
     void load_children_failed(const QString &dn, const QString &error_str);
+
+    void search_failed(const QString &filter, const QString &error_str);
 
     void load_attributes_complete(const QString &dn);
     void load_attributes_failed(const QString &dn, const QString &error_str);
@@ -154,5 +157,10 @@ private:
 
 // Convenience function to get AdInterface from qApp instance
 AdInterface *AD();
+
+QString filter_EQUALS(const QString &attribute, const QString &value);
+QString filter_AND(const QString &a, const QString &b);
+QString filter_OR(const QString &a, const QString &b);
+QString filter_NOT(const QString &a);
 
 #endif /* AD_INTERFACE_H */
