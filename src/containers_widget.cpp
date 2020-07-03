@@ -60,6 +60,7 @@ ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget
     view->setExpandsOnDoubleClick(true);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
+    view->setAllColumnsShowFocus(true);
     entry_context_menu->connect_view(view, ContainersColumn_DN);
 
     // Insert label into layout

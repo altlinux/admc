@@ -42,7 +42,6 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContext
 : QWidget(parent)
 {   
     model = new ContentsModel(this);
-
     const auto proxy = new AdvancedViewProxy(ContentsColumn_DN, this);
     proxy->setSourceModel(model);
 
@@ -59,6 +58,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContext
     view->setExpandsOnDoubleClick(false);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
+    view->setAllColumnsShowFocus(true);
     entry_context_menu->connect_view(view, ContentsColumn_DN);
 
     // Insert label into layout
