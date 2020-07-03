@@ -476,7 +476,7 @@ char **ad_search(LDAP *ds, const char *filter, const char* search_base) {
     num_results=ldap_count_entries(ds, res);
     if(num_results==0) {
         ldap_msgfree(res);
-        save_ldap_error_msg("no matches found");
+        save_error_msg("no matches found");
         ad_error_code=AD_OBJECT_NOT_FOUND;
         return NULL;
     }
@@ -684,12 +684,12 @@ char **ad_get_attribute(LDAP *ds, const char *dn, const char *attribute) {
     int entries_count = ldap_count_entries(ds, res);
 
     if(entries_count==0) {
-        save_ldap_error_msg("no attribute values found");
+        save_error_msg("no attribute values found");
         ldap_msgfree(res);
         ad_error_code=AD_OBJECT_NOT_FOUND;
         return NULL;
     } else if(entries_count>1) {
-        save_ldap_error_msg("attribute has multiple values");
+        save_error_msg("attribute has multiple values");
         ldap_msgfree(res);
         ad_error_code=AD_OBJECT_NOT_FOUND;
         return NULL;
