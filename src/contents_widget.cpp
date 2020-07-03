@@ -54,6 +54,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContext
     view->setExpandsOnDoubleClick(false);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
+    view->setAllColumnsShowFocus(true);
     entry_context_menu->connect_view(view, ContentsColumn_DN);
 
     setup_model_chain(view, model, {advanced_view_proxy, dn_column_proxy});

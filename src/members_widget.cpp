@@ -40,6 +40,7 @@ MembersWidget::MembersWidget(EntryContextMenu *entry_context_menu, QWidget *pare
     view->setAcceptDrops(true);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
+    view->setAllColumnsShowFocus(true);
     entry_context_menu->connect_view(view, MembersColumn_DN);
 
     model = new MembersModel(this);
