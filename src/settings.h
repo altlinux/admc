@@ -42,7 +42,7 @@ Q_OBJECT
 public:
     explicit Settings(QObject *parent);
     void emit_toggle_signals() const;
-    QAction *checkable(SettingsCheckable c) const;
+    const QAction *checkable(SettingsCheckable c) const;
 
 private:
     QAction *checkables[SettingsCheckable_COUNT];
