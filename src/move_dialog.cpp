@@ -25,9 +25,8 @@
 #include "utils.h"
 
 #include <QLineEdit>
-#include <QVBoxLayout>
+#include <QGridLayout>
 #include <QLabel>
-#include <QStandardItemModel>
 #include <QTreeView>
 #include <QSortFilterProxyModel>
 #include <QComboBox>
