@@ -22,7 +22,6 @@
 
 #include <QObject>
 #include <QList>
-#include <QHash>
 #include <QString>
 
 class QAction;
@@ -54,7 +53,7 @@ public:
 
 private:
     QList<QAction *> checkable_actions;
-    QHash<SettingString, QString> strings;
+    QString strings[SettingString_COUNT];
 
     QAction *make_checkable_action(const QSettings &settings, const QString& text);
     void save_settings();

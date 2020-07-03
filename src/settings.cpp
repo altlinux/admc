@@ -74,7 +74,7 @@ Settings::Settings(QObject *parent)
         const QString name = string_name(string);
         const QString value = settings.value(name, "").toString();
 
-        strings[string] = value;
+        strings[i] = value;
     }
 
     connect(
