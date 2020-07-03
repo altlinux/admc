@@ -106,8 +106,9 @@ QList<QString> AdInterface::search(const QString &filter) {
     const char *filter_cstr = filter_array.constData();
 
     char **results_raw = connection->search(filter_cstr);
+    int search_result = connection->get_errcode();
 
-    if (results_raw != NULL) {
+    if (search_result == AD_SUCCESS) {
         auto results = QList<QString>();
 
         for (int i = 0; results_raw[i] != NULL; i++) {
@@ -122,9 +123,7 @@ QList<QString> AdInterface::search(const QString &filter) {
 
         return results;
     } else {
-        if (connection->get_errcode() != AD_SUCCESS) {
-            emit search_failed(filter, get_error_str());
-        }
+        emit search_failed(filter, get_error_str());
 
         return QList<QString>();
     }
