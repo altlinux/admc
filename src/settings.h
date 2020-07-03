@@ -21,7 +21,6 @@
 #define SETTINGS_H
 
 #include <QObject>
-#include <QHash>
 
 class QAction;
 class QSettings;
@@ -46,7 +45,7 @@ public:
     QAction *checkable(SettingsCheckable c) const;
 
 private:
-    QHash<SettingsCheckable, QAction *> checkables;
+    QAction *checkables[SettingsCheckable_COUNT];
 
     void save_settings();
 

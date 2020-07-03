@@ -60,7 +60,7 @@ Settings::Settings(QObject *parent)
         bool checked = settings.value(text, false).toBool();
         action->setChecked(checked);
 
-        checkables[checkable] = action;
+        checkables[i] = action;
     }
 
     // Save settings before the app quits
@@ -70,7 +70,7 @@ Settings::Settings(QObject *parent)
 }
 
 void Settings::emit_toggle_signals() const {
-    for (auto c : checkables.values()) {
+    for (auto c : checkables) {
         const bool checked = c->isChecked();
         emit c->toggled(checked);
     }
@@ -84,7 +84,7 @@ void Settings::save_settings() {
     const QString settings_file_path = get_settings_file_path();
     QSettings settings(settings_file_path, QSettings::NativeFormat);
 
-    for (auto c : checkables.values()) {
+    for (auto c : checkables) {
         const bool checked = c->isChecked();
         const QString text = c->text();
         settings.setValue(text, checked);
