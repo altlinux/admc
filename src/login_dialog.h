@@ -36,11 +36,11 @@ public:
     LoginDialog(QAction *login_action, QWidget *parent);
 
 private slots:
+    void show();
     void on_host_double_clicked(QListWidgetItem *item);
     void on_login_button(bool);
     void on_cancel_button(bool);
     void on_finished();
-    void show();
 
 private:
     QListWidget *hosts_list = nullptr;

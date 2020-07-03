@@ -95,6 +95,55 @@ LoginDialog::LoginDialog(QAction *login_action, QWidget *parent)
         this, &LoginDialog::show);
 }
 
+void LoginDialog::show() {
+    // Load session values from settings
+    const QString domain = SETTINGS()->get_string(SettingString_Domain);
+    const QString site = SETTINGS()->get_string(SettingString_Site);
+    const QString host = SETTINGS()->get_string(SettingString_Host);
+    
+    domain_edit->setText(domain);
+    site_edit->setText(site);
+
+    load_hosts();
+
+    // Select saved session host in hosts list
+    QList<QListWidgetItem *> found_hosts = hosts_list->findItems(host, Qt::MatchExactly);
+    if (!found_hosts.isEmpty()) {
+        QListWidgetItem *host_item = found_hosts[0];
+        hosts_list->setCurrentItem(host_item);
+    }
+
+    QDialog::open();
+}
+
+void LoginDialog::on_host_double_clicked(QListWidgetItem *item) {
+    const QString host = item->text();
+
+    complete(host);
+}
+
+void LoginDialog::on_login_button(bool) {
+    // NOTE: listwidget has to have focus to properly return current item...
+    hosts_list->setFocus();
+    QListWidgetItem *current_item = hosts_list->currentItem();
+
+    if (current_item == nullptr) {
+        QMessageBox::warning(this, "Error", "Need to select a host to login.");
+    } else {
+        const QString host = current_item->text();
+
+        complete(host);
+    } 
+}
+
+void LoginDialog::on_cancel_button(bool) {
+    done(QDialog::Rejected);
+}
+
+void LoginDialog::on_finished() {
+    hosts_list->clear();
+}
+
 void LoginDialog::load_hosts() {
     const QString domain = domain_edit->text();
     const QString site = site_edit->text();
@@ -128,53 +177,4 @@ void LoginDialog::complete(const QString &host) {
     } else {
         QMessageBox::critical(this, "Error", "Failed to login!");
     }
-}
-
-void LoginDialog::on_host_double_clicked(QListWidgetItem *item) {
-    const QString host = item->text();
-
-    complete(host);
-}
-
-void LoginDialog::on_login_button(bool) {
-    // NOTE: listwidget has to have focus to properly return current item...
-    hosts_list->setFocus();
-    QListWidgetItem *current_item = hosts_list->currentItem();
-
-    if (current_item == nullptr) {
-        QMessageBox::warning(this, "Error", "Need to select a host to login.");
-    } else {
-        const QString host = current_item->text();
-
-        complete(host);
-    } 
-}
-
-void LoginDialog::on_cancel_button(bool) {
-    done(QDialog::Rejected);
-}
-
-void LoginDialog::show() {
-    // Load session values from settings
-    const QString domain = SETTINGS()->get_string(SettingString_Domain);
-    const QString site = SETTINGS()->get_string(SettingString_Site);
-    const QString host = SETTINGS()->get_string(SettingString_Host);
-    
-    domain_edit->setText(domain);
-    site_edit->setText(site);
-
-    load_hosts();
-
-    // Select saved session host in hosts list
-    QList<QListWidgetItem *> found_hosts = hosts_list->findItems(host, Qt::MatchExactly);
-    if (!found_hosts.isEmpty()) {
-        QListWidgetItem *host_item = found_hosts[0];
-        hosts_list->setCurrentItem(host_item);
-    }
-
-    QDialog::open();
-}
-
-void LoginDialog::on_finished() {
-    hosts_list->clear();
 }
