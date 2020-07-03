@@ -92,7 +92,7 @@ LoginDialog::LoginDialog(QAction *login_action, QWidget *parent)
         this, &LoginDialog::on_finished);
     connect(
         login_action, &QAction::triggered,
-        this, &LoginDialog::on_login_action);
+        this, &LoginDialog::show);
 }
 
 void LoginDialog::load_hosts() {
@@ -154,7 +154,7 @@ void LoginDialog::on_cancel_button(bool) {
     done(QDialog::Rejected);
 }
 
-void LoginDialog::on_login_action() {
+void LoginDialog::show() {
     // Load session values from settings
     const QString domain = SETTINGS()->get_string(SettingString_Domain);
     const QString site = SETTINGS()->get_string(SettingString_Site);

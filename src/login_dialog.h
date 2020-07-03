@@ -40,7 +40,7 @@ private slots:
     void on_login_button(bool);
     void on_cancel_button(bool);
     void on_finished();
-    void on_login_action();
+    void show();
 
 private:
     QListWidget *hosts_list = nullptr;
