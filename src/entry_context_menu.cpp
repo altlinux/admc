@@ -60,7 +60,6 @@ void EntryContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
         });
 }
 
-// Add group if entry is displayed in MembersWidget 
 void EntryContextMenu::open(const QPoint &global_pos, const QString &dn, const QString &parent_dn) {
     clear();
 
