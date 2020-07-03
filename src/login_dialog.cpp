@@ -114,6 +114,10 @@ void LoginDialog::show() {
     }
 
     QDialog::open();
+
+    if (found_hosts.isEmpty() && host != "") {
+        QMessageBox::warning(this, "Warning", "Failed to find saved session's host");
+    }
 }
 
 void LoginDialog::on_host_double_clicked(QListWidgetItem *item) {
