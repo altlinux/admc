@@ -19,21 +19,15 @@
 
 #include "password_dialog.h"
 #include "ad_interface.h"
-#include "settings.h"
-#include "confirmation_dialog.h"
-#include "dn_column_proxy.h"
-#include "utils.h"
 
 #include <QLineEdit>
 #include <QGridLayout>
 #include <QLabel>
-#include <QTreeView>
-#include <QSortFilterProxyModel>
-#include <QComboBox>
-#include <QAction>
 #include <QPushButton>
-#include <QItemSelectionModel>
 #include <QMessageBox>
+
+// TODO: find out exact password rules and add them to dialog?
+// or display more info about constraint violations
 
 PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 : QDialog(parent)

@@ -19,13 +19,11 @@
 
 #include "utils.h"
 #include "ad_interface.h"
-#include "password_dialog.h"
 
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
 #include <QAbstractItemView>
 #include <QModelIndex>
-#include <QInputDialog>
 
 // Converts index all the way down to source index, going through whatever chain of proxies is present
 QModelIndex convert_to_source(const QModelIndex &index) {
