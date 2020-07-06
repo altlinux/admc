@@ -25,7 +25,6 @@
 #include "entry_context_menu.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
-#include "user_widget.h"
 
 #include <QTreeView>
 #include <QStandardItemModel>
@@ -36,12 +35,10 @@ DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWid
 {
     members_widget = new MembersWidget(entry_context_menu, this);
     attributes_widget = new AttributesWidget(this);
-    user_widget = new UserWidget(this);
 
     // Add all tabs to incorporate them in the layout
     addTab(attributes_widget, "");
     addTab(members_widget, "");
-    addTab(user_widget, "");
 
     connect(
         AD(), &AdInterface::ad_interface_login_complete,
@@ -83,11 +80,6 @@ void DetailsWidget::change_target(const QString &dn) {
     bool is_group = AD()->attribute_value_exists(target_dn, "objectClass", "group");
     if (is_group) {
         addTab(members_widget, "Group members");
-    }
-
-    bool is_user = AD()->is_user(target_dn);
-    if (is_user) {
-        addTab(user_widget, "User");
     }
 
     // Restore current index if it is still shown
