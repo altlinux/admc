@@ -81,7 +81,7 @@ public:
     void add_user_to_group(const QString &group_dn, const QString &user_dn);
     void group_remove_user(const QString &group_dn, const QString &user_dn);
     void rename(const QString &dn, const QString &new_name);
-    void set_pass(const QString &dn, const QString &password);
+    bool set_pass(const QString &dn, const QString &password);
 
     bool is_user(const QString &dn);
     bool is_group(const QString &dn);

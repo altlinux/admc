@@ -419,7 +419,7 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
     }
 }
 
-void AdInterface::set_pass(const QString &dn, const QString &password) {
+bool AdInterface::set_pass(const QString &dn, const QString &password) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
     const QByteArray password_array = password.toLatin1();
@@ -432,8 +432,12 @@ void AdInterface::set_pass(const QString &dn, const QString &password) {
         emit attributes_changed(dn);
 
         emit set_pass_complete(dn, password);
+
+        return true;
     } else {
         emit set_pass_failed(dn, password, get_error_str());
+
+        return false;
     }
 }
 

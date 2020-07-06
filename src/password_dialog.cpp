@@ -82,9 +82,14 @@ void PasswordDialog::on_ok_button(bool) {
         return;
     }
 
-    AD()->set_pass(target, new_password);
+    const bool success = AD()->set_pass(target, new_password);
 
-    done(QDialog::Accepted);
+    if (success) {
+        done(QDialog::Accepted);
+    } else {
+        const QString error = AD()->get_error_str();
+        QMessageBox::warning(this, "Warning", QString("Failed to set password! %1").arg(error));
+    }
 }
 
 void PasswordDialog::on_cancel_button(bool) {
