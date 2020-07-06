@@ -20,6 +20,7 @@
 #include "user_widget.h"
 #include "ad_interface.h"
 #include "utils.h"
+#include "password_dialog.h"
 
 #include <QLabel>
 #include <QVBoxLayout>
@@ -46,5 +47,6 @@ void UserWidget::change_target(const QString &dn) {
 }
 
 void UserWidget::on_reset_password_button() {
-    reset_password_dialog(this, target);
+    const auto password_dialog = new PasswordDialog(target, this);
+    password_dialog->open();
 }

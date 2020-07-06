@@ -17,21 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef PASSWORD_DIALOG_H
+#define PASSWORD_DIALOG_H
 
-#include <QModelIndex>
-#include <QIcon>
+#include <QDialog>
+#include <QString>
 
-class QAbstractItemModel;
-class QAbstractItemView;
-class QAbstractProxyModel;
-class QString;
+class QWidget;
+class QLineEdit;
 
-QModelIndex convert_to_source(const QModelIndex &index);
-QString get_dn_from_index(const QModelIndex &base_row_index, int dn_column);
-QIcon get_entry_icon(const QString &dn);
-void set_root_to_head(QAbstractItemView *view);
-void setup_model_chain(QAbstractItemView *view, QAbstractItemModel *source_model, QList<QAbstractProxyModel *> proxies);
+// Accepts input of new password and changes password when done
+class PasswordDialog final : public QDialog {
+Q_OBJECT
 
-#endif /* UTILS_H */
+public:
+    PasswordDialog(const QString &target_arg, QWidget *parent);
+
+private slots:
+    void on_ok_button(bool);
+    void on_cancel_button(bool);
+
+private:
+    QString target;
+    QLineEdit *new_password_edit = nullptr;
+    QLineEdit *confirm_password_edit = nullptr;
+
+};
+
+#endif /* PASSWORD_DIALOG_H */

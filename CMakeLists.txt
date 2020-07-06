@@ -66,6 +66,7 @@ set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/dn_column_proxy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/user_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/password_dialog.cpp
 )
 
 add_definitions(${QT5_DEFINITIONS})

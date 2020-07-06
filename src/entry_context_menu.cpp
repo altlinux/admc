@@ -23,6 +23,7 @@
 #include "confirmation_dialog.h"
 #include "move_dialog.h"
 #include "utils.h"
+#include "password_dialog.h"
 
 #include <QString>
 #include <QMessageBox>
@@ -115,7 +116,8 @@ void EntryContextMenu::open(const QPoint &global_pos, const QString &dn, const Q
         });
 
         addAction("Reset password", [this, dn]() {
-            reset_password_dialog(this, dn);
+            const auto password_dialog = new PasswordDialog(dn, this);
+            password_dialog->open();
         });
     }
 
