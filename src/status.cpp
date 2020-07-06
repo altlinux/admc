@@ -148,14 +148,12 @@ Status::Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *p
     connect(
         AD(), &AdInterface::set_pass_complete,
         [this] (const QString &dn, const QString &) {
-            QString msg = QString("Set pass of \"%1\"").arg(dn);
-            message(msg);
+            message(QString("Set pass of \"%1\"").arg(dn));
         });
     connect(
         AD(), &AdInterface::set_pass_failed,
         [this] (const QString &dn, const QString &, const QString &error_str) {
-            QString msg = QString("Failed to set pass of \"%1\". Error: \"%2\"").arg(dn, error_str);
-            message(msg);
+            message(QString("Failed to set pass of \"%1\". Error: \"%2\"").arg(dn, error_str));
         });
 }
 
