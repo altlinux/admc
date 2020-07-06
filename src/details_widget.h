@@ -29,6 +29,7 @@ class MembersWidget;
 class EntryContextMenu;
 class ContainersWidget;
 class ContentsWidget;
+class UserWidget;
 
 // Shows info about entry's attributes in multiple tabs
 // Targeted at a particular entry
@@ -52,6 +53,7 @@ private slots:
 private:
     AttributesWidget *attributes_widget = nullptr;
     MembersWidget *members_widget = nullptr;
+    UserWidget *user_widget = nullptr;
     QString target_dn;
 
     void change_target(const QString &dn);

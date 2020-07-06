@@ -428,7 +428,6 @@ void AdInterface::set_pass(const QString &dn, const QString &password) {
     int result = connection->setpass(dn_cstr, password_cstr);
 
     if (result == AD_SUCCESS) {
-        // TODO: which attribs get updated? pass shouldn't be shown
         load_attributes(dn);
         emit attributes_changed(dn);
 
