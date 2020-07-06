@@ -24,6 +24,7 @@
 #include <QSortFilterProxyModel>
 #include <QAbstractItemView>
 #include <QModelIndex>
+#include <QInputDialog>
 
 // Converts index all the way down to source index, going through whatever chain of proxies is present
 QModelIndex convert_to_source(const QModelIndex &index) {
@@ -101,4 +102,15 @@ void setup_model_chain(QAbstractItemView *view, QAbstractItemModel *source_model
     }
 
     view->setModel(proxies.last());
+}
+
+void reset_password_dialog(QWidget *parent, const QString &dn) {
+    const QString title = "Reset password";
+    const QString input_label = "New password:";
+    bool ok;
+    const QString new_password = QInputDialog::getText(parent, title, input_label, QLineEdit::Normal, "", &ok);
+
+    if (ok && !new_password.isEmpty()) {
+        AD()->set_pass(dn, new_password);
+    }
 }

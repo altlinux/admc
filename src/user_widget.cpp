@@ -19,6 +19,7 @@
 
 #include "user_widget.h"
 #include "ad_interface.h"
+#include "utils.h"
 
 #include <QLabel>
 #include <QVBoxLayout>
@@ -45,12 +46,5 @@ void UserWidget::change_target(const QString &dn) {
 }
 
 void UserWidget::on_reset_password_button() {
-    const QString title = "Reset password";
-    const QString input_label = "New password:";
-    bool ok;
-    const QString new_password = QInputDialog::getText(this, title, input_label, QLineEdit::Normal, "", &ok);
-
-    if (ok && !new_password.isEmpty()) {
-        AD()->set_pass(target, new_password);
-    }
+    reset_password_dialog(this, target);
 }

@@ -115,14 +115,7 @@ void EntryContextMenu::open(const QPoint &global_pos, const QString &dn, const Q
         });
 
         addAction("Reset password", [this, dn]() {
-            const QString title = "Reset password";
-            const QString input_label = "New password:";
-            bool ok;
-            const QString new_password = QInputDialog::getText(this, title, input_label, QLineEdit::Normal, "", &ok);
-
-            if (ok && !new_password.isEmpty()) {
-                AD()->set_pass(dn, new_password);
-            }
+            reset_password_dialog(this, dn);
         });
     }
 
