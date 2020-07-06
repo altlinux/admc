@@ -115,13 +115,15 @@ void DetailsWidget::on_attributes_changed(const QString &dn) {
 }
 
 void DetailsWidget::on_containers_clicked_dn(const QString &dn) {
-    if (SETTINGS()->details_on_containers_click->isChecked()) {
+    const QAction *details_from_containers = SETTINGS()->checkable(SettingsCheckable_DetailsFromContainers);
+    if (details_from_containers->isChecked()) {
         change_target(dn);
     }
 }
 
 void DetailsWidget::on_contents_clicked_dn(const QString &dn) {
-    if (SETTINGS()->details_on_contents_click->isChecked()) {
+    const QAction *details_from_contents = SETTINGS()->checkable(SettingsCheckable_DetailsFromContents);
+    if (details_from_contents->isChecked()) {
         change_target(dn);
     }
 }

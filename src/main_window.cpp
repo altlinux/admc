@@ -63,6 +63,13 @@ MainWindow::MainWindow(const bool auto_login)
 
     // Menubar
     {
+        QAction *advanced_view = SETTINGS()->checkable(SettingsCheckable_AdvancedView);
+        QAction *show_dn_column = SETTINGS()->checkable(SettingsCheckable_DnColumn);
+        QAction *show_status_log = SETTINGS()->checkable(SettingsCheckable_ShowStatusLog);
+        QAction *details_from_containers = SETTINGS()->checkable(SettingsCheckable_DetailsFromContainers);
+        QAction *details_from_contents = SETTINGS()->checkable(SettingsCheckable_DetailsFromContents);
+        QAction *confirm_actions = SETTINGS()->checkable(SettingsCheckable_ConfirmActions);
+
         QMenuBar *menubar = menuBar();
         QMenu *menubar_file = menubar->addMenu("File");
         menubar_file->addAction("Login", []() {
@@ -73,14 +80,14 @@ MainWindow::MainWindow(const bool auto_login)
         });
 
         QMenu *menubar_view = menubar->addMenu("View");
-        menubar_view->addAction(SETTINGS()->toggle_advanced_view);
-        menubar_view->addAction(SETTINGS()->toggle_show_dn_column);
-        menubar_view->addAction(SETTINGS()->toggle_show_status_log);
+        menubar_view->addAction(advanced_view);
+        menubar_view->addAction(show_dn_column);
+        menubar_view->addAction(show_status_log);
 
         QMenu *menubar_preferences = menubar->addMenu("Preferences");
-        menubar_preferences->addAction(SETTINGS()->details_on_containers_click);
-        menubar_preferences->addAction(SETTINGS()->details_on_contents_click);
-        menubar_preferences->addAction(SETTINGS()->confirm_actions);
+        menubar_preferences->addAction(details_from_containers);
+        menubar_preferences->addAction(details_from_contents);
+        menubar_preferences->addAction(confirm_actions);
     }
 
     // Widgets

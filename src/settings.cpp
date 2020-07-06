@@ -76,7 +76,7 @@ void Settings::emit_toggle_signals() const {
     }
 }
 
-const QAction *checkable(SettingsCheckable c) const {
+QAction *Settings::checkable(SettingsCheckable c) const {
     return checkables[c];
 }
 
