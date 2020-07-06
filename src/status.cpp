@@ -107,6 +107,19 @@ Status::Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *p
         this, &Status::on_rename_failed);
 
     connect(
+        AD(), &AdInterface::set_pass_complete,
+        [this] (const QString &dn, const QString &) {
+            QString msg = QString("Set pass of \"%1\"").arg(dn);
+            message(msg);
+        });
+    connect(
+        AD(), &AdInterface::set_pass_failed,
+        [this] (const QString &dn, const QString &, const QString &error_str) {
+            QString msg = QString("Failed to set pass of \"%1\". Error: \"%2\"").arg(dn, error_str);
+            message(msg);
+        });
+
+    connect(
         SETTINGS()->toggle_show_status_log, &QAction::toggled,
         this, &Status::on_toggle_show_status_log);
 }

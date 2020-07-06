@@ -419,6 +419,25 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
     }
 }
 
+void AdInterface::set_pass(const QString &dn, const QString &password) {
+    const QByteArray dn_array = dn.toLatin1();
+    const char *dn_cstr = dn_array.constData();
+    const QByteArray password_array = password.toLatin1();
+    const char *password_cstr = password_array.constData();
+
+    int result = connection->setpass(dn_cstr, password_cstr);
+
+    if (result == AD_SUCCESS) {
+        // TODO: which attribs get updated? pass shouldn't be shown
+        load_attributes(dn);
+        emit attributes_changed(dn);
+
+        emit set_pass_complete(dn, password);
+    } else {
+        emit set_pass_failed(dn, password, get_error_str());
+    }
+}
+
 bool AdInterface::is_user(const QString &dn) {
     return attribute_value_exists(dn, "objectClass", "user");
 }

@@ -81,6 +81,7 @@ public:
     void add_user_to_group(const QString &group_dn, const QString &user_dn);
     void group_remove_user(const QString &group_dn, const QString &user_dn);
     void rename(const QString &dn, const QString &new_name);
+    void set_pass(const QString &dn, const QString &password);
 
     bool is_user(const QString &dn);
     bool is_group(const QString &dn);
@@ -129,6 +130,9 @@ signals:
 
     void rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
     void rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);
+
+    void set_pass_complete(const QString &dn, const QString &password);
+    void set_pass_failed(const QString &dn, const QString &password, const QString &error_str);
 
     // NOTE: if dn and attributes are changed together, for example
     // due to a rename, dn_changed() signal is emitted first
