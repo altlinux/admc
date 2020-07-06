@@ -65,7 +65,6 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContext
     const auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    layout->removeWidget(view);
     layout->addWidget(label);
     layout->addWidget(view);
 
