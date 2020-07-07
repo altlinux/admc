@@ -563,8 +563,8 @@ void AdInterface::command(QStringList args) {
 // Update cache for entry and all related entries after a DN change
 // LDAP database does this internally so need to replicate it
 // NOTE: if entry was deleted, new_dn should be ""
-void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
-    const bool deleted = (old_dn != "" && new_dn == "");
+void AdInterface::update_cache(const QString &old_parent_dn, const QString &new_parent_dn) {
+    const bool deleted = (old_parent_dn != "" && new_parent_dn == "");
 
     // Update all DN's that contain changed DN
     // This includes the changed entry itself and it's descendants
@@ -573,8 +573,8 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
         QMap<QString, QString> updated_dns;
 
         for (const QString &dn : attributes_map.keys()) {
-            if (dn.contains(old_dn)) {
-                const QString updated_dn = QString(dn).replace(old_dn, new_dn);
+            if (dn.contains(old_parent_dn)) {
+                const QString updated_dn = QString(dn).replace(old_parent_dn, new_parent_dn);
                 
                 if (deleted) {
                     // Remove attributes for old DN
@@ -618,10 +618,10 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
     // NOTE: needed because rename operation changes a number of attributes
     // NOTE: do this after updating DN's, so that attributes_changed()
     // is emitted after dn_changed()
-    if (attributes_loaded.contains(new_dn)) {
-        load_attributes(new_dn);
+    if (attributes_loaded.contains(new_parent_dn)) {
+        load_attributes(new_parent_dn);
 
-        emit attributes_changed(new_dn);
+        emit attributes_changed(new_parent_dn);
     }
 
     // Update all attribute values that contain this DN
@@ -632,7 +632,7 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
         for (const QString &dn : attributes_map.keys()) {
             for (auto &values : attributes_map[dn]) {
                 for (auto &value : values) {
-                    if (value.contains(old_dn)) {
+                    if (value.contains(old_parent_dn)) {
                         const int value_i = values.indexOf(value);
 
                         if (deleted) {
@@ -640,7 +640,7 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
 
                             attribute_changes.insert(dn);
                         } else {
-                            const QString updated_value = QString(value).replace(old_dn, new_dn);
+                            const QString updated_value = QString(value).replace(old_parent_dn, new_parent_dn);
                             values.replace(value_i, updated_value);
 
                             attribute_changes.insert(dn);
