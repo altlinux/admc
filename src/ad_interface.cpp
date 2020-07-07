@@ -582,7 +582,7 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
                     attributes_loaded.remove(dn);
                 } else {
                     // Move attributes from old DN to new DN
-                    attributes_map[updated_dn] = attributes_map[old_dn];
+                    attributes_map[updated_dn] = attributes_map[dn];
                     attributes_loaded.insert(updated_dn);
 
                     attributes_map.remove(dn);
