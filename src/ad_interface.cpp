@@ -428,8 +428,11 @@ bool AdInterface::set_pass(const QString &dn, const QString &password) {
     int result = connection->setpass(dn_cstr, password_cstr);
 
     if (result == AD_SUCCESS) {
-        load_attributes(dn);
-        emit attributes_changed(dn);
+        if (attributes_loaded.contains(dn)) {
+            load_attributes(dn);
+
+            emit attributes_changed(dn);
+        }
 
         emit set_pass_complete(dn, password);
 
