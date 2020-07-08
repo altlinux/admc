@@ -65,15 +65,13 @@ size_t ad_array_size(char **array) {
 }
 
 void ad_array_free(char **array) {
-    if (array == NULL) {
-        return;
-    }
+    if (array != NULL) {
+        for (int i = 0; array[i] != NULL; i++) {
+            free(array[i]);
+        }
 
-    for (int i = 0; array[i] != NULL; i++) {
-        free(array[i]);
+        free(array);
     }
-
-    free(array);
 }
 
 typedef struct sasl_defaults_gssapi {
@@ -131,7 +129,6 @@ int sasl_interact_gssapi(LDAP *ds, unsigned flags, void *indefaults, void *in) {
     return LDAP_SUCCESS;
 }
 
-// hosts must be NULL
 // NOTE: this is rewritten from
 // https://github.com/paleg/libadclient/blob/master/adclient.cpp
 // which itself is copied from
@@ -140,7 +137,7 @@ int sasl_interact_gssapi(LDAP *ds, unsigned flags, void *indefaults, void *in) {
 // https://www.gnu.org/software/shishi/coverage/shishi/lib/resolv.c.gcov.html
 int query_server_for_hosts(const char *dname, char ***hosts) {
     if (*hosts != NULL) {
-        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): hosts pointer is not NULL\n", dname);
+        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): hosts arg is not NULL\n", dname);
         goto error;
     }
 
@@ -149,7 +146,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
         unsigned char buf[NS_MAXMSG];
     } msg;
 
-    const size_t msg_len = res_search(dname, ns_c_in, ns_t_srv, msg.buf, sizeof(msg.buf));
+    const int msg_len = res_search(dname, ns_c_in, ns_t_srv, msg.buf, sizeof(msg.buf));
 
     if (msg_len < 0 || msg_len < sizeof(HEADER)) {
         snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): bad msg_len\n", dname);
@@ -198,6 +195,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
         GETSHORT(record_class, curr);
         GETLONG(ttl, curr);
         GETSHORT(record_len, curr);
+        
         unsigned char *record_end = curr + record_len;
         if (record_end > eom) {
             snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): record_end > eom\n", dname);
