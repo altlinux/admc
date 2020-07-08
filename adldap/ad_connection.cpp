@@ -48,6 +48,14 @@ int AdConnection::get_errcode() {
     return ad_get_error_num();
 }
 
+std::string AdConnection::get_search_base() const {
+    return search_base;
+}
+
+std::string AdConnection::get_uri() const {
+    return uri;
+}
+
 int AdConnection::create_user(const char *username, const char *dn) {
     return ad_create_user(ldap_connection, username, dn);
 }

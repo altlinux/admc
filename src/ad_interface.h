@@ -68,6 +68,8 @@ public:
 
     void ad_interface_login(const QString &base, const QString &head);
     QString get_error_str();
+    QString get_search_base();
+    QString get_uri();
 
     QList<QString> load_children(const QString &dn);
     QList<QString> search(const QString &filter);

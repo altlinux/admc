@@ -77,6 +77,14 @@ QString AdInterface::get_error_str() {
     return QString(connection->get_errstr());
 }
 
+QString AdInterface::get_search_base() {
+    return QString::fromStdString(connection->get_search_base());
+}
+
+QString AdInterface::get_uri() {
+    return QString::fromStdString(connection->get_uri());
+}
+
 QList<QString> AdInterface::load_children(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
