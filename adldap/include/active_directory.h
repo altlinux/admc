@@ -56,6 +56,24 @@ char *ad_get_error();
 */
 int ad_get_error_num();
 
+/**
+ * Free a null-terminated array that was returned by one of
+ * the functions in this library
+ * NULL check of array pointer is performed inside
+ */
+void ad_array_free(char **array);
+
+/**
+ * Calculate size of null-terminated array by iterating through it
+ */
+size_t ad_array_size(char **array);
+
+/**
+ * Return a null-terminated array of hosts that exist for given
+ * domain and shit
+ */
+int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts);
+
 /* ad_create_user() creates a new, locked user account
 | with the given user name and distinguished name
 |  Example usage: 
@@ -247,5 +265,6 @@ LDAP *ad_login(const char* uri);
 #define AD_OBJECT_NOT_FOUND 6
 #define AD_ATTRIBUTE_ENTRY_NOT_FOUND 7
 #define AD_INVALID_DN 8
+#define AD_RESOLV_ERROR 9
 
 #endif /* ACTIVE_DIRECTORY_H */

@@ -44,11 +44,8 @@ DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWid
         AD(), &AdInterface::ad_interface_login_complete,
         this, &DetailsWidget::on_ad_interface_login_complete);
     connect(
-        AD(), &AdInterface::dn_changed,
-        this, &DetailsWidget::on_dn_changed);
-    connect(
-        AD(), &AdInterface::attributes_changed,
-        this, &DetailsWidget::on_attributes_changed);
+        AD(), &AdInterface::modified,
+        this, &DetailsWidget::on_ad_modified);
 
     connect(
         entry_context_menu, &EntryContextMenu::details,
@@ -95,23 +92,8 @@ void DetailsWidget::on_ad_interface_login_complete(const QString &search_base, c
     change_target("");
 }
 
-void DetailsWidget::on_dn_changed(const QString &old_dn, const QString &new_dn) {
-    if (target_dn == old_dn) {
-        if (new_dn == "") {
-            // Target was deleted so clear
-            change_target("");
-        } else {
-            // Switch to entry at new dn (entry stays the same)
-            change_target(new_dn);
-        }
-    }
-}
-
-void DetailsWidget::on_attributes_changed(const QString &dn) {
-    // Reload entry since attributes were updated
-    if (target_dn == dn) {
-        change_target(dn);
-    }
+void DetailsWidget::on_ad_modified() {
+    change_target(target_dn);
 }
 
 void DetailsWidget::on_containers_clicked_dn(const QString &dn) {

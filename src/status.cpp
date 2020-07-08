@@ -61,12 +61,6 @@ Status::Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *p
         });
 
     connect(
-        AD(), &AdInterface::load_attributes_failed,
-        [this] (const QString &dn, const QString &error_str) {
-            message(QString("Failed to load attributes of \"%1\". Error: \"%2\"").arg(dn, error_str));
-        });
-
-    connect(
         AD(), &AdInterface::delete_entry_complete,
         [this] (const QString &dn) {
             message(QString("Deleted entry \"%1\"").arg(dn));
