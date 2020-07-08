@@ -95,6 +95,8 @@ public:
     void command(QStringList args);
 
 signals:
+    void modified();
+
     // NOTE: signals below are mostly for logging with few exceptions
     // like login/create_entry
     // For state updates you MUST use dn_changed() and

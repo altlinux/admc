@@ -242,6 +242,8 @@ bool AdInterface::set_attribute(const QString &dn, const QString &attribute, con
         emit attributes_changed(dn);
         emit set_attribute_complete(dn, attribute, old_value, value);
 
+        emit modified();
+
         return true;
     } else {
         emit set_attribute_failed(dn, attribute, old_value, value, get_error_str());
@@ -283,6 +285,8 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
     if (result == AD_SUCCESS) {
         emit create_entry_complete(dn, type);
 
+        emit modified();
+
         return true;
     } else {
         emit create_entry_failed(dn, type, get_error_str());
@@ -301,6 +305,8 @@ void AdInterface::delete_entry(const QString &dn) {
 
     if (result == AD_SUCCESS) {
         update_cache(dn, "");
+
+        emit modified();
 
         emit delete_entry_complete(dn);
     } else {
@@ -333,6 +339,8 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     if (result == AD_SUCCESS) {
         update_cache(dn, new_dn);
 
+        emit modified();
+
         emit move_complete(dn, new_container, new_dn);
     } else {
         emit move_failed(dn, new_container, new_dn, get_error_str());
@@ -355,6 +363,8 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
         add_attribute_internal(group_dn, "member", user_dn);
         add_attribute_internal(user_dn, "memberOf", group_dn);
 
+        emit modified();
+
         emit add_user_to_group_complete(group_dn, user_dn);
     } else {
         emit add_user_to_group_failed(group_dn, user_dn, get_error_str());
@@ -376,6 +386,8 @@ void AdInterface::group_remove_user(const QString &group_dn, const QString &user
         // Update attributes of user and group
         remove_attribute_internal(group_dn, "member", user_dn);
         remove_attribute_internal(user_dn, "memberOf", group_dn);
+
+        emit modified();
 
         emit group_remove_user_complete(group_dn, user_dn);
     } else {
@@ -412,6 +424,8 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
 
     if (result == AD_SUCCESS) {
         update_cache(dn, new_dn);
+
+        emit modified();
 
         emit rename_complete(dn, new_name, new_dn);
     } else {
