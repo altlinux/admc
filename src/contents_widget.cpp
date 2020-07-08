@@ -73,6 +73,10 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContext
         this, &ContentsWidget::on_containers_selected_changed);
 
     connect(
+        AD(), &AdInterface::modified,
+        this, &ContentsWidget::on_ad_modified);
+
+    connect(
         view, &QAbstractItemView::clicked,
         [this] (const QModelIndex &index) {
             const QString dn = get_dn_from_index(index, ContentsColumn_DN);
@@ -83,7 +87,11 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContext
 
 void ContentsWidget::on_containers_selected_changed(const QString &dn) {
     model->change_target(dn);
+    set_root_to_head(view);
+}
 
+void ContentsWidget::on_ad_modified() {
+    model->change_target(model->target_dn);
     set_root_to_head(view);
 }
 
@@ -94,16 +102,6 @@ ContentsModel::ContentsModel(QObject *parent)
     setHorizontalHeaderItem(ContentsColumn_Category, new QStandardItem("Category"));
     setHorizontalHeaderItem(ContentsColumn_Description, new QStandardItem("Description"));
     setHorizontalHeaderItem(ContentsColumn_DN, new QStandardItem("DN"));
-
-    connect(
-        AD(), &AdInterface::create_entry_complete,
-        this, &ContentsModel::on_create_entry_complete);
-    connect(
-        AD(), &AdInterface::dn_changed,
-        this, &ContentsModel::on_dn_changed);
-    connect(
-        AD(), &AdInterface::attributes_changed,
-        this, &ContentsModel::on_attributes_changed);
 }
 
 void ContentsModel::change_target(const QString &dn) {
@@ -123,56 +121,6 @@ void ContentsModel::change_target(const QString &dn) {
     QList<QString> children = AD()->load_children(dn);
     for (auto child_dn : children) {
         make_new_row(head, child_dn);
-    }
-}
-
-void ContentsModel::on_create_entry_complete(const QString &dn, NewEntryType type) {
-    QString parent_dn = extract_parent_dn_from_dn(dn);
-
-    if (parent_dn == target_dn) {
-        QStandardItem *head = item(0, 0);
-        make_new_row(head, dn);
-    }
-}
-
-void ContentsModel::on_dn_changed(const QString &old_dn, const QString &new_dn) {
-    const bool deleted = (new_dn == "");
-
-    if (deleted && old_dn == target_dn) {
-        change_target("");
-
-        return;
-    }
-
-    const QString new_parent = extract_parent_dn_from_dn(new_dn);
-    const bool is_child = (old_dn != target_dn);
-    if (is_child && new_parent != target_dn) {
-        // Remove row
-        QList<QStandardItem *> row = find_row(old_dn);
-
-        if (!row.isEmpty()) {
-            const QStandardItem *item = row[0];
-            item = row[2];
-            QStandardItem *parent = item->parent();
-            const int row_i = item->row();
-
-            parent->removeRow(row_i);
-        }
-    } else {
-        // Update DN
-        QStandardItem *dn_item = find_item(old_dn, ContentsColumn_DN);
-
-        if (dn_item != nullptr) {
-            dn_item->setText(new_dn);
-        }
-    }
-}
-
-void ContentsModel::on_attributes_changed(const QString &dn) {
-    QList<QStandardItem *> row = find_row(dn);
-
-    if (!row.isEmpty()) {
-        load_row(row, dn);
     }
 }
 
