@@ -142,53 +142,48 @@ QList<QString> AdInterface::search(const QString &filter) {
     }
 }
 
-Attributes AdInterface::load_attributes(const QString &dn) {
-    const QByteArray dn_array = dn.toLatin1();
-    const char *dn_cstr = dn_array.constData();
-
-    char** attributes_raw = connection->get_attribute(dn_cstr, "*");
-
-    // TODO: get_attribute is busted, doesn't return success correctly
-    // so have to ignore result for now
-
-    Attributes attributes;
-    if (attributes_raw != NULL) {
-        // Load attributes map
-        // attributes_raw is in the form of:
-        // char** array of {key, value, value, key, value ...}
-        // transform it into:
-        // map of {key => {value, value ...}, key => {value, value ...} ...}
-        for (int i = 0; attributes_raw[i + 2] != NULL; i += 2) {
-            auto attribute = QString(attributes_raw[i]);
-            auto value = QString(attributes_raw[i + 1]);
-
-            // Make values list if doesn't exist yet
-            if (!attributes.contains(attribute)) {
-                attributes[attribute] = QList<QString>();
-            }
-
-            attributes[attribute].push_back(value);
-        }
-
-        // Free attributes_raw
-        for (int i = 0; attributes_raw[i] != NULL; i++) {
-            free(attributes_raw[i]);
-        }
-        free(attributes_raw);
-    }
-
-    return attributes;
-    
-    // emit load_attributes_failed(dn, get_error_str());
-}
-
 Attributes AdInterface::get_attributes(const QString &dn) {
     if (dn == "") {
         return Attributes();
     }
 
+    // Load attributes if it's not in cache
     if (!attributes_cache.contains(dn)) {
-        attributes_cache[dn] = load_attributes(dn);
+        const QByteArray dn_array = dn.toLatin1();
+        const char *dn_cstr = dn_array.constData();
+
+        char** attributes_raw = connection->get_attribute(dn_cstr, "*");
+
+        // TODO: get_attribute is busted, doesn't return success correctly
+        // so have to ignore result for now
+        // emit get_attributes_failed(dn);
+
+        Attributes attributes;
+        if (attributes_raw != NULL) {
+            // attributes_raw is in the form of:
+            // char** array of {key, value, value, key, value ...}
+            // transform it into:
+            // map of {key => {value, value ...}, key => {value, value ...} ...}
+            for (int i = 0; attributes_raw[i + 2] != NULL; i += 2) {
+                auto attribute = QString(attributes_raw[i]);
+                auto value = QString(attributes_raw[i + 1]);
+
+                // Make values list if doesn't exist yet
+                if (!attributes.contains(attribute)) {
+                    attributes[attribute] = QList<QString>();
+                }
+
+                attributes[attribute].push_back(value);
+            }
+
+            // Free attributes_raw
+            for (int i = 0; attributes_raw[i] != NULL; i++) {
+                free(attributes_raw[i]);
+            }
+            free(attributes_raw);
+        }
+
+        attributes_cache[dn] = attributes;
     }
 
     return attributes_cache[dn];
