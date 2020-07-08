@@ -98,6 +98,7 @@ MainWindow::MainWindow()
 
     new Status(statusBar(), status_log, this);
 
+
     // NOTE: do this after all widgets are constructed so that all of
     // them load initial settings correctly
     SETTINGS()->emit_toggle_signals();

@@ -139,6 +139,34 @@ QList<QString> AdInterface::load_children(const QString &dn) {
     }
 }
 
+QList<QString> AdInterface::search(const QString &filter) {
+    const QByteArray filter_array = filter.toLatin1();
+    const char *filter_cstr = filter_array.constData();
+
+    char **results_raw = connection->search(filter_cstr);
+    int search_result = connection->get_errcode();
+
+    if (search_result == AD_SUCCESS) {
+        auto results = QList<QString>();
+
+        for (int i = 0; results_raw[i] != NULL; i++) {
+            auto result = QString(results_raw[i]);
+            results.push_back(result);
+        }
+
+        for (int i = 0; results_raw[i] != NULL; i++) {
+            free(results_raw[i]);
+        }
+        free(results_raw);
+
+        return results;
+    } else {
+        emit search_failed(filter, get_error_str());
+
+        return QList<QString>();
+    }
+}
+
 void AdInterface::load_attributes(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
@@ -371,6 +399,28 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
     }
 }
 
+void AdInterface::group_remove_user(const QString &group_dn, const QString &user_dn) {
+    int result = AD_INVALID_DN;
+
+    const QByteArray group_dn_array = group_dn.toLatin1();
+    const char *group_dn_cstr = group_dn_array.constData();
+
+    const QByteArray user_dn_array = user_dn.toLatin1();
+    const char *user_dn_cstr = user_dn_array.constData();
+
+    result = connection->group_remove_user(group_dn_cstr, user_dn_cstr);
+
+    if (result == AD_SUCCESS) {
+        // Update attributes of user and group
+        remove_attribute_internal(group_dn, "member", user_dn);
+        remove_attribute_internal(user_dn, "memberOf", group_dn);
+
+        emit group_remove_user_complete(group_dn, user_dn);
+    } else {
+        emit group_remove_user_failed(group_dn, user_dn, get_error_str());
+    }
+}
+
 void AdInterface::rename(const QString &dn, const QString &new_name) {
     // Compose new_rdn and new_dn
     const QStringList exploded_dn = dn.split(',');
@@ -551,8 +601,8 @@ void AdInterface::command(QStringList args) {
 // Update cache for entry and all related entries after a DN change
 // LDAP database does this internally so need to replicate it
 // NOTE: if entry was deleted, new_dn should be ""
-void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
-    const bool deleted = (old_dn != "" && new_dn == "");
+void AdInterface::update_cache(const QString &old_parent_dn, const QString &new_parent_dn) {
+    const bool deleted = (old_parent_dn != "" && new_parent_dn == "");
 
     // Update all DN's that contain changed DN
     // This includes the changed entry itself and it's descendants
@@ -561,8 +611,8 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
         QMap<QString, QString> updated_dns;
 
         for (const QString &dn : attributes_map.keys()) {
-            if (dn.contains(old_dn)) {
-                const QString updated_dn = QString(dn).replace(old_dn, new_dn);
+            if (dn.contains(old_parent_dn)) {
+                const QString updated_dn = QString(dn).replace(old_parent_dn, new_parent_dn);
                 
                 if (deleted) {
                     // Remove attributes for old DN
@@ -570,7 +620,7 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
                     attributes_loaded.remove(dn);
                 } else {
                     // Move attributes from old DN to new DN
-                    attributes_map[updated_dn] = attributes_map[old_dn];
+                    attributes_map[updated_dn] = attributes_map[dn];
                     attributes_loaded.insert(updated_dn);
 
                     attributes_map.remove(dn);
@@ -606,10 +656,10 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
     // NOTE: needed because rename operation changes a number of attributes
     // NOTE: do this after updating DN's, so that attributes_changed()
     // is emitted after dn_changed()
-    if (attributes_loaded.contains(new_dn)) {
-        load_attributes(new_dn);
+    if (attributes_loaded.contains(new_parent_dn)) {
+        load_attributes(new_parent_dn);
 
-        emit attributes_changed(new_dn);
+        emit attributes_changed(new_parent_dn);
     }
 
     // Update all attribute values that contain this DN
@@ -620,7 +670,7 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
         for (const QString &dn : attributes_map.keys()) {
             for (auto &values : attributes_map[dn]) {
                 for (auto &value : values) {
-                    if (value.contains(old_dn)) {
+                    if (value.contains(old_parent_dn)) {
                         const int value_i = values.indexOf(value);
 
                         if (deleted) {
@@ -628,7 +678,7 @@ void AdInterface::update_cache(const QString &old_dn, const QString &new_dn) {
 
                             attribute_changes.insert(dn);
                         } else {
-                            const QString updated_value = QString(value).replace(old_dn, new_dn);
+                            const QString updated_value = QString(value).replace(old_parent_dn, new_parent_dn);
                             values.replace(value_i, updated_value);
 
                             attribute_changes.insert(dn);
@@ -653,8 +703,38 @@ void AdInterface::add_attribute_internal(const QString &dn, const QString &attri
     }
 }
 
+void AdInterface::remove_attribute_internal(const QString &dn, const QString &attribute, const QString &value) {
+    if (attributes_loaded.contains(dn)) {
+        const int value_i = attributes_map[dn][attribute].indexOf(value);
+
+        if (value_i != -1) {
+            attributes_map[dn][attribute].removeAt(value_i);
+
+            emit attributes_changed(dn);
+        }
+    }
+}
+
 AdInterface *AD() {
     ADMC *app = qobject_cast<ADMC *>(qApp);
     AdInterface *ad = app->ad_interface();
     return ad;
+}
+
+QString filter_EQUALS(const QString &attribute, const QString &value) {
+    auto filter = QString("(%1=%2)").arg(attribute, value);
+    return filter;
+}
+
+QString filter_AND(const QString &a, const QString &b) {
+    auto filter = QString("(&%1%2)").arg(a, b);
+    return filter;
+}
+QString filter_OR(const QString &a, const QString &b) {
+    auto filter = QString("(|%1%2)").arg(a, b);
+    return filter;
+}
+QString filter_NOT(const QString &a) {
+    auto filter = QString("(!%1)").arg(a);
+    return filter;
 }

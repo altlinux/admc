@@ -84,3 +84,21 @@ void set_root_to_head(QAbstractItemView *view) {
     const QModelIndex head_index = view_model->index(0, 0);
     view->setRootIndex(head_index);
 }
+
+// Setup proxy chain down to source model
+// And set view model to top proxy
+void setup_model_chain(QAbstractItemView *view, QAbstractItemModel *source_model, QList<QAbstractProxyModel *> proxies) {
+    for (int i = 0; i < proxies.size(); i++) {
+        QAbstractItemModel *source;
+        if (i == 0) {
+            source = source_model;
+        } else {
+            source = proxies[i - 1];
+        }
+
+        QAbstractProxyModel *proxy = proxies[i];
+        proxy->setSourceModel(source);
+    }
+
+    view->setModel(proxies.last());
+}

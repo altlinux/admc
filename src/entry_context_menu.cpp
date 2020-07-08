@@ -21,6 +21,7 @@
 #include "ad_interface.h"
 #include "settings.h"
 #include "confirmation_dialog.h"
+#include "move_dialog.h"
 #include "utils.h"
 
 #include <QString>
@@ -32,6 +33,13 @@
 #include <QModelIndex>
 #include <QAbstractItemView>
 #include <QSortFilterProxyModel>
+
+EntryContextMenu::EntryContextMenu(QWidget *parent)
+: QMenu(parent)
+{
+    // NOTE: use parent, not context menu itself so dialog is centered
+    move_dialog = new MoveDialog(parent);
+}
 
 // Open this context menu when view requests one
 void EntryContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
@@ -45,18 +53,22 @@ void EntryContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
                 return;
             }
 
-            const QModelIndex index = convert_to_source(base_index);
-            
-            const QModelIndex dn_index = index.siblingAtColumn(dn_column);
-            const QString dn = dn_index.data().toString();
-
             const QPoint global_pos = view->mapToGlobal(pos);
 
-            this->open(dn, global_pos);
+            const QModelIndex index = convert_to_source(base_index);
+            const QString dn = get_dn_from_index(index, dn_column);
+
+            const QModelIndex parent_index = index.parent();
+            QString parent_dn = "";
+            if (parent_index.isValid()) {
+                parent_dn = get_dn_from_index(parent_index, dn_column);
+            }
+
+            this->open(global_pos, dn, parent_dn);
         });
 }
 
-void EntryContextMenu::open(const QString &dn, const QPoint &global_pos) {
+void EntryContextMenu::open(const QPoint &global_pos, const QString &dn, const QString &parent_dn) {
     clear();
 
     QAction *action_to_show_menu_at = addAction("Details", [this, dn]() {
@@ -84,11 +96,35 @@ void EntryContextMenu::open(const QString &dn, const QPoint &global_pos) {
         new_ou(dn);
     });
 
+    addAction("Move", [this, dn]() {
+        move_dialog->open_for_entry(dn, MoveDialogType_Move);
+    });
+
     const bool is_policy = AD()->is_policy(dn); 
+    const bool is_user = AD()->is_user(dn); 
+    
     if (is_policy) {
         submenu_new->addAction("Edit Policy", [this, dn]() {
             edit_policy(dn);
         });
+    }
+
+    if (is_user) {
+        addAction("Add to group", [this, dn]() {
+            move_dialog->open_for_entry(dn, MoveDialogType_AddToGroup);
+        });
+    }
+
+    // Special contextual action
+    // shown if parent is group and entry is user
+    if (parent_dn != "") {
+        const bool parent_is_group = AD()->is_group(parent_dn);
+
+        if (is_user && parent_is_group) {
+            addAction("Remove from group", [this, dn, parent_dn]() {
+                AD()->group_remove_user(parent_dn, dn);
+            });
+        }
     }
 
     exec(global_pos, action_to_show_menu_at);
