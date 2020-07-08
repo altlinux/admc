@@ -57,6 +57,8 @@ const QMap<NewEntryType, QString> new_entry_type_to_string = {
 QString extract_name_from_dn(const QString &dn);
 QString extract_parent_dn_from_dn(const QString &dn);
 
+typedef QMap<QString, QList<QString>> Attributes;
+
 class AdInterface final : public QObject {
 Q_OBJECT
 
@@ -69,7 +71,8 @@ public:
 
     QList<QString> load_children(const QString &dn);
     QList<QString> search(const QString &filter);
-    QMap<QString, QList<QString>> get_attributes(const QString &dn);
+
+    Attributes get_attributes(const QString &dn);
     QList<QString> get_attribute_multi(const QString &dn, const QString &attribute);
     QString get_attribute(const QString &dn, const QString &attribute);
     bool attribute_value_exists(const QString &dn, const QString &attribute, const QString &value);
@@ -150,7 +153,9 @@ private:
     QMap<QString, QMap<QString, QList<QString>>> attributes_map;
     QSet<QString> attributes_loaded;
 
-    void load_attributes(const QString &dn);
+    QHash<QString, Attributes> attributes_cache;
+
+    QMap<QString, QList<QString>> load_attributes(const QString &dn);
     void update_cache(const QString &old_parent_dn, const QString &new_parent_dn);
     void add_attribute_internal(const QString &dn, const QString &attribute, const QString &value);
     void remove_attribute_internal(const QString &dn, const QString &attribute, const QString &value);

@@ -28,6 +28,11 @@ AdInterface::AdInterface(QObject *parent)
 : QObject(parent)
 {
     connection = new adldap::AdConnection();
+
+    connect(this, &AdInterface::modified,
+        [this]() {
+            attributes_cache.clear();
+        });
 }
 
 AdInterface::~AdInterface() {
@@ -129,15 +134,17 @@ QList<QString> AdInterface::search(const QString &filter) {
     }
 }
 
-void AdInterface::load_attributes(const QString &dn) {
+Attributes AdInterface::load_attributes(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
     char** attributes_raw = connection->get_attribute(dn_cstr, "*");
 
-    if (attributes_raw != NULL) {
-        attributes_map[dn] = QMap<QString, QList<QString>>();
+    // TODO: get_attribute is busted, doesn't return success correctly
+    // so have to ignore result for now
 
+    Attributes attributes;
+    if (attributes_raw != NULL) {
         // Load attributes map
         // attributes_raw is in the form of:
         // char** array of {key, value, value, key, value ...}
@@ -148,11 +155,11 @@ void AdInterface::load_attributes(const QString &dn) {
             auto value = QString(attributes_raw[i + 1]);
 
             // Make values list if doesn't exist yet
-            if (!attributes_map[dn].contains(attribute)) {
-                attributes_map[dn][attribute] = QList<QString>();
+            if (!attributes.contains(attribute)) {
+                attributes[attribute] = QList<QString>();
             }
 
-            attributes_map[dn][attribute].push_back(value);
+            attributes[attribute].push_back(value);
         }
 
         // Free attributes_raw
@@ -162,30 +169,27 @@ void AdInterface::load_attributes(const QString &dn) {
         free(attributes_raw);
 
         attributes_loaded.insert(dn);
-
-        emit load_attributes_complete(dn);
-    } else if (connection->get_errcode() != AD_SUCCESS) {
-        emit load_attributes_failed(dn, get_error_str());
+        attributes_map[dn] = attributes;
     }
+
+    return attributes;
+    
+    // emit load_attributes_failed(dn, get_error_str());
 }
 
-QMap<QString, QList<QString>> AdInterface::get_attributes(const QString &dn) {
+Attributes AdInterface::get_attributes(const QString &dn) {
+    Attributes attributes;
+
     if (dn == "") {
-        return QMap<QString, QList<QString>>();
-    }
-
-    // First check whether load_attributes was ever called on this dn
-    // If it hasn't, attempt to load attributes
-    // After that return whatever attributes are now loaded for this dn
-    if (!attributes_loaded.contains(dn)) {
-        load_attributes(dn);
-    }
-
-    if (!attributes_map.contains(dn)) {
-        return QMap<QString, QList<QString>>();
+        attributes = Attributes();
+    } else if (attributes_cache.contains(dn)) {
+        attributes = attributes_cache[dn];
     } else {
-        return attributes_map[dn];
+        attributes = load_attributes(dn);
+        attributes_cache[dn] = attributes;
     }
+
+    return attributes;
 }
 
 QList<QString> AdInterface::get_attribute_multi(const QString &dn, const QString &attribute) {
