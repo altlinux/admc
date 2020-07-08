@@ -106,8 +106,8 @@ ContainersModel::ContainersModel(QObject *parent)
     setHorizontalHeaderItem(ContainersColumn_DN, new QStandardItem("DN"));
 
     connect(
-        AD(), &AdInterface::ad_interface_login_complete,
-        this, &ContainersModel::on_ad_interface_login_complete);
+        AD(), &AdInterface::logged_in,
+        this, &ContainersModel::on_logged_in);
     connect(
         AD(), &AdInterface::modified,
         this, &ContainersModel::on_ad_modified);
@@ -153,10 +153,11 @@ bool ContainersModel::hasChildren(const QModelIndex &parent = QModelIndex()) con
     }
 }
 
-void ContainersModel::on_ad_interface_login_complete(const QString &search_base, const QString &head_dn) {
+void ContainersModel::on_logged_in() {
     removeRows(0, rowCount());
 
     // Load head
+    const QString head_dn = AD()->get_search_base();
     QStandardItem *invis_root = invisibleRootItem();
     make_new_row(invis_root, head_dn);
 }
