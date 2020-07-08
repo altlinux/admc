@@ -183,18 +183,15 @@ Attributes AdInterface::load_attributes(const QString &dn) {
 }
 
 Attributes AdInterface::get_attributes(const QString &dn) {
-    Attributes attributes;
-
     if (dn == "") {
-        attributes = Attributes();
-    } else if (attributes_cache.contains(dn)) {
-        attributes = attributes_cache[dn];
-    } else {
-        attributes = load_attributes(dn);
-        attributes_cache[dn] = attributes;
+        return Attributes();
     }
 
-    return attributes;
+    if (!attributes_cache.contains(dn)) {
+        attributes_cache[dn] = load_attributes(dn);
+    }
+
+    return attributes_cache[dn];
 }
 
 QList<QString> AdInterface::get_attribute_multi(const QString &dn, const QString &attribute) {
