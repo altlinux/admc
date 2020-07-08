@@ -21,9 +21,6 @@
 #include "ad_connection.h"
 #include "admc.h"
 
-#include <QSet>
-#include <algorithm>
-
 AdInterface::AdInterface(QObject *parent)
 : QObject(parent)
 {

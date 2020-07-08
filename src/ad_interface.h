@@ -24,7 +24,7 @@
 #include <QList>
 #include <QString>
 #include <QMap>
-#include <QSet>
+#include <QHash>
 
 class AdConnection;
 
