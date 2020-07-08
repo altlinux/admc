@@ -242,9 +242,6 @@ bool AdInterface::set_attribute(const QString &dn, const QString &attribute, con
     result = connection->mod_replace(dn_cstr, attribute_cstr, value_cstr);
 
     if (result == AD_SUCCESS) {
-        // Reload attributes to get new value
-        load_attributes(dn);
-        
         emit set_attribute_complete(dn, attribute, old_value, value);
         emit modified();
 
