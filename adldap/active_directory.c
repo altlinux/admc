@@ -899,25 +899,29 @@ char **ad_get_attribute(LDAP *ds, const char *dn, const char *attribute) {
     LDAPMessage *entry = ldap_first_entry(ds, res);
 
     // Collect values into a linked list
-    BerElement *berptr;
     ber_list *head = NULL;
-    ber_list *prev = NULL;
-    for (char *attr = ldap_first_attribute(ds, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ds, entry, berptr)) {
-        ber_list *node = (ber_list *)malloc(sizeof(ber_list));
-        node->attribute = strdup(attr);
-        node->values = ldap_get_values_len(ds, entry, attr);
-        node->next= NULL;
+    {
+        BerElement *berptr;
+        ber_list *prev = NULL;
+        for (char *attr = ldap_first_attribute(ds, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ds, entry, berptr)) {
+            ber_list *node = (ber_list *)malloc(sizeof(ber_list));
+            node->attribute = strdup(attr);
+            node->values = ldap_get_values_len(ds, entry, attr);
+            node->next= NULL;
 
-        if (head == NULL) {
-            // First entry
-            head = node;
-        } else {
-            // Append to prev
-            prev->next = node;
+            if (head == NULL) {
+                // First entry
+                head = node;
+            } else {
+                // Append to prev
+                prev->next = node;
+            }
+            prev = node;
+
+            ldap_memfree(attr);
         }
-        prev = node;
 
-        ldap_memfree(attr);
+        ber_free(berptr, 0); 
     }
 
     // Turn the linked list of values into an array of key-value pairs
@@ -964,7 +968,6 @@ char **ad_get_attribute(LDAP *ds, const char *dn, const char *attribute) {
         }
     }
 
-    ber_free(berptr, 0); 
     ldap_msgfree(res);
 
     return out;
@@ -1257,61 +1260,6 @@ int ad_group_add_user(LDAP *ds, const char *group_dn, const char *user_dn) {
 int ad_group_remove_user(LDAP *ds, const char *group_dn, const char *user_dn) {
     return ad_mod_delete(ds, group_dn, "member", user_dn);
 }
-
-/* Remove the user from all groups below the given container */
-int ad_group_subtree_remove_user(LDAP *ds, const char *container_dn, const char *user_dn) {
-    char *filter;
-    int filter_length;
-    char *attrs[]={"1.1", NULL};
-    LDAPMessage *res;
-    LDAPMessage *entry;
-    int result, num_results;
-    char *group_dn=NULL;
-
-    filter_length=(strlen(user_dn)+255);
-    filter=malloc(filter_length);
-    snprintf(filter, filter_length, 
-        "(&(objectclass=group)(member=%s))", user_dn);
-
-    const int result_search = ldap_search_ext_s(ds,
-        container_dn,
-        LDAP_SCOPE_SUBTREE, 
-        filter,
-        attrs,
-        0,
-        NULL,
-        NULL,
-        NULL,
-        LDAP_NO_LIMIT,
-        &res);
-    if(result_search!=LDAP_SUCCESS) {
-        save_ldap_error_msg(result_search);
-        ad_error_code=AD_LDAP_OPERATION_FAILURE;
-        return ad_error_code;
-    }
-    free(filter);
-
-    num_results=ldap_count_entries(ds, res);
-    if(num_results==0) {
-        ad_error_code=AD_SUCCESS;
-        return ad_error_code;
-    }
-
-    entry=ldap_first_entry(ds, res);
-    while(entry!=NULL) {
-        group_dn=ldap_get_dn(ds, entry);
-        if(ad_group_remove_user(ds, group_dn, user_dn)!=AD_SUCCESS) {
-            return ad_error_code;
-        }
-        entry=ldap_next_entry(ds, entry);
-    }
-
-    if(group_dn!=NULL) ldap_memfree(group_dn);
-    ldap_msgfree(res);
-    ad_error_code=AD_SUCCESS;
-    return ad_error_code; 
-}
-
 
 /* 
   creates a new organizational unit

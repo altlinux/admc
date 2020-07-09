@@ -61,7 +61,6 @@ public:
     int group_create(const char *group_name, const char *dn);
     int group_add_user(const char *group_dn, const char *user_dn);
     int group_remove_user(const char *group_dn, const char *user_dn);
-    int group_subtree_remove_user(const char *container_dn, const char *user_dn);
     int ou_create(const char *ou_name, const char *dn);
     char **list(const char *dn);
 };

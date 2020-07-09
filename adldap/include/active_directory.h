@@ -212,12 +212,6 @@ int ad_group_add_user(LDAP *ds, const char *group_dn, const char *user_dn);
 */
 int ad_group_remove_user(LDAP *ds, const char *group_dn, const char *user_dn);
 
-/* ad_group_subtree_remove_user()
-|  Removes the user from all groups underneath the given container
-|  Returns AD_SUCCESS or AD_LDAP_OPERATION_FAILURE.
-*/
-int ad_group_subtree_remove_user(LDAP *ds, const char *container_dn, const char *user_dn);
-
 /* ad_ou_create()
 |  Create an organizational unit
 |  Sets objectclass=organizationalUnit

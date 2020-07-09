@@ -140,10 +140,6 @@ int AdConnection::group_remove_user(const char *group_dn, const char *user_dn) {
     return ad_group_remove_user(ldap_connection, group_dn, user_dn);
 }
 
-int AdConnection::group_subtree_remove_user(const char *container_dn, const char *user_dn) {
-    return ad_group_subtree_remove_user(ldap_connection, container_dn, user_dn);
-}
-
 int AdConnection::ou_create(const char *ou_name, const char *dn) {
     return ad_ou_create(ldap_connection, ou_name, dn);
 }
