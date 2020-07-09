@@ -42,7 +42,7 @@
 #include <QTextEdit>
 
 void on_action_login() {
-    AD()->ad_interface_login(SEARCH_BASE, HEAD_DN);
+    AD()->login(SEARCH_BASE, HEAD_DN);
 }
 
 void on_action_exit(QMainWindow *main_window) {

@@ -66,12 +66,12 @@ public:
     explicit AdInterface(QObject *parent);
     ~AdInterface();
 
-    void ad_interface_login(const QString &base, const QString &head);
+    void login(const QString &base, const QString &head);
     QString get_error_str();
     QString get_search_base();
     QString get_uri();
 
-    QList<QString> load_children(const QString &dn);
+    QList<QString> list(const QString &dn);
     QList<QString> search(const QString &filter);
 
     Attributes get_attributes(const QString &dn);
@@ -80,13 +80,14 @@ public:
     bool attribute_value_exists(const QString &dn, const QString &attribute, const QString &value);
 
     bool set_attribute(const QString &dn, const QString &attribute, const QString &value);
-    bool create_entry(const QString &name, const QString &dn, NewEntryType type);
-    void delete_entry(const QString &dn);
-    void move(const QString &dn, const QString &new_container);
-    void add_user_to_group(const QString &group_dn, const QString &user_dn);
-    void group_remove_user(const QString &group_dn, const QString &user_dn);
-    void rename(const QString &dn, const QString &new_name);
+    bool object_create(const QString &name, const QString &dn, NewEntryType type);
+    void object_delete(const QString &dn);
+    void object_move(const QString &dn, const QString &new_container);
+    void object_rename(const QString &dn, const QString &new_name);
     bool set_pass(const QString &dn, const QString &password);
+    
+    void group_add_user(const QString &group_dn, const QString &user_dn);
+    void group_remove_user(const QString &group_dn, const QString &user_dn);
 
     bool is_user(const QString &dn);
     bool is_group(const QString &dn);
@@ -95,8 +96,8 @@ public:
     bool is_policy(const QString &dn);
     bool is_container_like(const QString &dn);
 
-    bool can_drop_entry(const QString &dn, const QString &target_dn);
-    void drop_entry(const QString &dn, const QString &target_dn);
+    bool object_can_drop(const QString &dn, const QString &target_dn);
+    void object_drop(const QString &dn, const QString &target_dn);
 
     void command(QStringList args);
 

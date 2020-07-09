@@ -142,7 +142,7 @@ void EntryContextMenu::delete_entry(const QString &dn) {
     const bool confirmed = confirmation_dialog(text, this);
 
     if (confirmed) {
-        AD()->delete_entry(dn);
+        AD()->object_delete(dn);
     }    
 }
 
@@ -170,7 +170,7 @@ void EntryContextMenu::new_entry_dialog(const QString &parent_dn, NewEntryType t
 
         const QString dn = suffix + "=" + name + "," + parent_dn;
 
-        AD()->create_entry(name, dn, type);
+        AD()->object_create(name, dn, type);
     }
 }
 
@@ -198,7 +198,7 @@ void EntryContextMenu::rename(const QString &dn) {
     QString new_name = QInputDialog::getText(this, dialog_title, input_label, QLineEdit::Normal, "", &ok);
 
     if (ok && !new_name.isEmpty()) {
-        AD()->rename(dn, new_name);
+        AD()->object_rename(dn, new_name);
     }
 }
 
