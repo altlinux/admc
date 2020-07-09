@@ -20,26 +20,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-/* Configuration options:
-|  For configuration these functions look first for the file 
-| ~/.adtool.cfg, or failing that
-| /(install prefix)/etc/adtool.cfg
-|  An example would look like:
-uri ldaps://dc2.example.com
-binddn cn=administrator,ou=admin,dc=example,dc=com
-bindpw passw0rd
-searchbase ou=users,dc=example,dc=com
-|  Any function may return: 
-|   AD_COULDNT_OPEN_CONFIG_FILE or AD_MISSING_CONFIG_PARAMETER.
-| if there is a problem reading the config file, or
-|   AD_SERVER_CONNECT_FAILURE if a connection can't be made.
-*/
-// char *system_config_file;
-// char *uri;
-// char *binddn;
-// char *bindpw;
-// char *search_base;
-
 /* ad_get_error() returns a pointer to a string containing an
 | explanation of the last error that occured.
 |  If no error has previously occured the string the contents are 

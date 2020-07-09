@@ -12,13 +12,6 @@
  *
 **/
 
-/* active_directory.c
- * generic directory management functions */
-
-#if HAVE_CONFIG_H
-//#   include <config.h>
-#endif
-
 #include "active_directory.h"
 #include <ldap.h>
 #include <sasl/sasl.h>
@@ -32,8 +25,6 @@
 #include <resolv.h>
 #include <stdbool.h>
 
-#include <errno.h>
-
 // NOTE: LDAP library char* inputs are non-const in the API but are
 // actually const so we opt to discard const qualifiers rather
 // than allocate copies
@@ -45,18 +36,16 @@
 #endif
 
 #define MAX_ERR_LENGTH 1024
-char ad_error_msg[MAX_ERR_LENGTH];
-int ad_error_code;
-
 #define MAX_PASSWORD_LENGTH 255
 
 // Save error message
 #define save_error_msg(msg) snprintf(ad_error_msg, MAX_ERR_LENGTH, "ERROR %s:%d: %s",  __func__, __LINE__, msg)
+
 // Convert LDAP error code to error message and save it
 #define save_ldap_error_msg(ldap_err) save_error_msg(ldap_err2string(ldap_err))
 
-char *binddn=NULL;
-char *bindpw=NULL;
+char ad_error_msg[MAX_ERR_LENGTH];
+int ad_error_code;
 
 size_t ad_array_size(char **array) {
     if (array == NULL) {
@@ -419,11 +408,6 @@ int dn2domain(const char *dn, char** domain) {
      * workarounds. Cost of memory initialization is not comparable
      * with code readability */
     char *dc = calloc(1024, sizeof(char));
-    /* Catch malloc error */
-    if (NULL == dc) {
-        result = ENOMEM;
-        goto dn2domain_end;
-    }
 
     /* Explode string into set of structures representing RDNs */
     if (ldap_str2dn(dn, &ldn, LDAP_DN_FORMAT_LDAPV3) != LDAP_SUCCESS) {
