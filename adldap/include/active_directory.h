@@ -56,6 +56,24 @@ char *ad_get_error();
 */
 int ad_get_error_num();
 
+/**
+ * Free a null-terminated array that was returned by one of
+ * the functions in this library
+ * NULL check of array pointer is performed inside
+ */
+void ad_array_free(char **array);
+
+/**
+ * Calculate size of null-terminated array by iterating through it
+ */
+size_t ad_array_size(char **array);
+
+/**
+ * Return a null-terminated array of hosts that exist for given
+ * domain and shit
+ */
+int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts);
+
 /* ad_create_user() creates a new, locked user account
 | with the given user name and distinguished name
 |  Example usage: 
@@ -107,16 +125,16 @@ int ad_object_delete(LDAP *ds, const char *dn);
 */
 int ad_setpass(LDAP *ds, const char *dn, const char *password);
 
-/* ad_search() is a more generalised search function
-|  Returns a NULL terminated array of dns which match the given 
-| attribute and value or NULL if no results are found.  
+/* ad_search() is a general search function
+|  Returns a NULL terminated array of dns which match the given filter
+|  or NULL if no results are found.  
 |  Returns -1 on error.
 |  Sets error code to AD_SUCCESS, AD_OBJECT_NOT_FOUND 
 | or AD_LDAP_OPERATION_FAILURE.
 |  Searching is done from the searchbase specified in the configuration
 | file.
 */
-char **ad_search(LDAP *ds, const char *attribute, const char *value, const char* search_base);
+char **ad_search(LDAP *ds, const char *filter, const char* search_base);
 
 /* ad_mod_add() adds a value to the given attribute.
 | Example ad_mod_add("cn=nobody,ou=users,dc=example,dc=com",
@@ -247,5 +265,6 @@ LDAP *ad_login(const char* uri);
 #define AD_OBJECT_NOT_FOUND 6
 #define AD_ATTRIBUTE_ENTRY_NOT_FOUND 7
 #define AD_INVALID_DN 8
+#define AD_RESOLV_ERROR 9
 
 #endif /* ACTIVE_DIRECTORY_H */

@@ -59,6 +59,7 @@ set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/members_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/settings.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/move_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_context_menu.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/confirmation_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/advanced_view_proxy.cpp

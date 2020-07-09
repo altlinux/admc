@@ -24,6 +24,7 @@
 
 class QTextEdit;
 class QStatusBar;
+class QStatusBar;
 
 // Pushes messages about AD operations to status bar and status log
 class Status final : public QObject {
@@ -33,38 +34,13 @@ public:
     explicit Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *parent);
 
 private slots:
-    void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
-    void on_ad_interface_login_failed(const QString &search_base, const QString &head_dn);
-
-    void on_load_children_failed(const QString &dn, const QString &error_str);
-    void on_load_attributes_failed(const QString &dn, const QString &error_str);
-
-    void on_delete_entry_complete(const QString &dn);
-    void on_delete_entry_failed(const QString &dn, const QString &error_str);
-
-    void on_set_attribute_complete(const QString &dn, const QString &attribute, const QString &old_value, const QString &value); 
-    void on_set_attribute_failed(const QString &dn, const QString &attribute, const QString &old_value, const QString &value, const QString &error_str);
-
-    void on_create_entry_complete(const QString &dn, NewEntryType type);
-    void on_create_entry_failed(const QString &dn, NewEntryType type, const QString &error_str);
-
-    void on_move_complete(const QString &dn, const QString &new_container, const QString &new_dn);
-    void on_move_failed(const QString &dn, const QString &new_container, const QString &new_dn, const QString &error_str);
-
-    void on_add_user_to_group_complete(const QString &group_dn, const QString &user_dn);
-    void on_add_user_to_group_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
-
-    void on_rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
-    void on_rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);
-
-private slots:
     void on_toggle_show_status_log(bool checked);
 
 private:
     QStatusBar *status_bar = nullptr;
     QTextEdit* status_log = nullptr;
 
-    void message(const QString &msg, int status_bar_timeout = 0);
+    void add_message(const QString &msg);
 
 };
 

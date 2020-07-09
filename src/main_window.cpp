@@ -105,6 +105,7 @@ MainWindow::MainWindow(const bool auto_login)
 
     new Status(statusBar(), status_log, this);
 
+
     // NOTE: do this after all widgets are constructed so that all of
     // them load initial settings correctly
     SETTINGS()->emit_toggle_signals();
@@ -136,7 +137,7 @@ MainWindow::MainWindow(const bool auto_login)
     // Enable central widget on login
     central_widget->setEnabled(false);
     QObject::connect(
-        AD(), &AdInterface::ad_interface_login_complete,
+        AD(), &AdInterface::logged_in,
         [central_widget] () {
             central_widget->setEnabled(true);
         });

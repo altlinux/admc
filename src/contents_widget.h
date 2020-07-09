@@ -44,6 +44,7 @@ signals:
 
 private slots:
     void on_containers_selected_changed(const QString &dn);
+    void on_ad_modified();
 
 private:
     ContentsModel *model = nullptr;
@@ -55,17 +56,14 @@ class ContentsModel final : public EntryModel {
 Q_OBJECT
 
 public:
+    // TODO: make this private again, will need to move slots into model?
+    QString target_dn = "";
+
     ContentsModel(QObject *parent);
 
     void change_target(const QString &dn);
 
-private slots:
-    void on_create_entry_complete(const QString &dn, NewEntryType type);
-    void on_dn_changed(const QString &old_dn, const QString &new_dn);
-    void on_attributes_changed(const QString &dn);
-
 private:
-    QString target_dn = "";
 
     void load_row(QList<QStandardItem *> row, const QString &dn);
     void make_new_row(QStandardItem *parent, const QString &dn);
