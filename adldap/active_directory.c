@@ -311,9 +311,7 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
     }
 }
 
-/* connect and authenticate to active directory server.
-    returns an ldap connection identifier or 0 on error */
-LDAP *ad_login(const char* uri) {
+int ad_login(const char* uri, LDAP **ds) {
     int version, result;
 
     char **hosts = NULL;
@@ -327,51 +325,46 @@ LDAP *ad_login(const char* uri) {
     }
 
     /* open the connection to the ldap server */
-    LDAP *ds = NULL;
-    result=ldap_initialize(&ds, uri);
+    result=ldap_initialize(ds, uri);
     if(result!=LDAP_SUCCESS) {
         save_ldap_error_msg(result);
-        ad_error_code=AD_SERVER_CONNECT_FAILURE;
-        return NULL;
+        return AD_SERVER_CONNECT_FAILURE;
     }
 
     // set version
     version=LDAP_VERSION3;
-    result=ldap_set_option(ds, LDAP_OPT_PROTOCOL_VERSION, &version);
+    result=ldap_set_option(*ds, LDAP_OPT_PROTOCOL_VERSION, &version);
     if(result!=LDAP_OPT_SUCCESS) {
         save_ldap_error_msg(result);
-        ad_error_code=AD_SERVER_CONNECT_FAILURE;
-        return NULL;
+        return AD_SERVER_CONNECT_FAILURE;
     }
 
     // disable referrals
-    result=ldap_set_option(ds, LDAP_OPT_REFERRALS, LDAP_OPT_OFF);
+    result=ldap_set_option(*ds, LDAP_OPT_REFERRALS, LDAP_OPT_OFF);
     if(result!=LDAP_OPT_SUCCESS) {
         save_ldap_error_msg(result);
-        ad_error_code=AD_SERVER_CONNECT_FAILURE;
-        return NULL;
+        return AD_SERVER_CONNECT_FAILURE;
     }
 
     // NOTE: use gssapi instead of simple
     char* sasl_secprops = "maxssf=56";
-    result = ldap_set_option(ds, LDAP_OPT_X_SASL_SECPROPS, (void *) sasl_secprops);
+    result = ldap_set_option(*ds, LDAP_OPT_X_SASL_SECPROPS, (void *) sasl_secprops);
     if (result != LDAP_SUCCESS) {
         save_ldap_error_msg(result);
-        ad_error_code=AD_SERVER_CONNECT_FAILURE;
-        return NULL;
+        return AD_SERVER_CONNECT_FAILURE;
     }
 
     // Setup sasl_defaults_gssapi 
     struct sasl_defaults_gssapi defaults;
     defaults.mech = "GSSAPI";
-    ldap_get_option(ds, LDAP_OPT_X_SASL_REALM, &defaults.realm);
-    ldap_get_option(ds, LDAP_OPT_X_SASL_AUTHCID, &defaults.authcid);
-    ldap_get_option(ds, LDAP_OPT_X_SASL_AUTHZID, &defaults.authzid);
+    ldap_get_option(*ds, LDAP_OPT_X_SASL_REALM, &defaults.realm);
+    ldap_get_option(*ds, LDAP_OPT_X_SASL_AUTHCID, &defaults.authcid);
+    ldap_get_option(*ds, LDAP_OPT_X_SASL_AUTHZID, &defaults.authzid);
     defaults.passwd = NULL;
 
     unsigned sasl_flags = LDAP_SASL_QUIET;
     // TODO: why is mech passed in alone and as first member of defaults?
-    result = ldap_sasl_interactive_bind_s(ds, NULL,
+    result = ldap_sasl_interactive_bind_s(*ds, NULL,
       defaults.mech, NULL, NULL,
       sasl_flags, sasl_interact_gssapi, &defaults);
 
@@ -380,15 +373,14 @@ LDAP *ad_login(const char* uri) {
     ldap_memfree(defaults.authzid);
     if (result != LDAP_SUCCESS) {
         save_ldap_error_msg(result);
-        ad_error_code=AD_SERVER_CONNECT_FAILURE;
-        return NULL;
+        return AD_SERVER_CONNECT_FAILURE;
     }
 
     // NOTE: not using this for now but might need later
     // The Man says: this function is used when an application needs to bind to another server in order to follow a referral or search continuation reference
     // ldap_set_rebind_proc(*ds, sasl_rebind_gssapi, NULL);
 
-    return ds;
+    return AD_SUCCESS;
 }
 
 /**

@@ -56,9 +56,9 @@ QString extract_parent_dn_from_dn(const QString &dn) {
 }
 
 void AdInterface::login(const QString &base, const QString &head) {
-    connection->connect(base.toStdString(), head.toStdString());
+    const int result = connection->connect(base.toStdString(), head.toStdString());
 
-    if (connection->is_connected()) {
+    if (result == AD_SUCCESS) {
         message(QString("Logged in to \"%1\" with head dn at \"%2\"").arg(base, head));
 
         emit logged_in();

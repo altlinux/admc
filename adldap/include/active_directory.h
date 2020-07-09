@@ -224,7 +224,11 @@ int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn);
 */
 char **ad_list(LDAP *ds, const char *dn);
 
-LDAP *ad_login(const char* uri);
+/**
+ * Connect and authenticate to Active Directory server
+ * If connected succesfully saves connection handle into ds
+ */
+int ad_login(const char* uri, LDAP **ds);
 
 #if defined(__cplusplus)
 }
