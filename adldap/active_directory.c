@@ -141,11 +141,6 @@ int sasl_interact_gssapi(LDAP *ds, unsigned flags, void *indefaults, void *in) {
 // Another example of similar procedure:
 // https://www.gnu.org/software/shishi/coverage/shishi/lib/resolv.c.gcov.html
 int query_server_for_hosts(const char *dname, char ***hosts) {
-    if (*hosts != NULL) {
-        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): hosts arg is not NULL\n", dname);
-        goto error;
-    }
-
     union dns_msg {
         HEADER header;
         unsigned char buf[NS_MAXMSG];
@@ -154,7 +149,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
     const int msg_len = res_search(dname, ns_c_in, ns_t_srv, msg.buf, sizeof(msg.buf));
 
     if (msg_len < 0 || msg_len < sizeof(HEADER)) {
-        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): bad msg_len\n", dname);
+        save_error_msg("bad msg_len");
         goto error;
     }
 
@@ -169,7 +164,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
         const int packet_len = dn_skipname(curr, eom);
 
         if (packet_len < 0) {
-            snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): dn_skipname < 0\n", dname);
+            save_error_msg("dn_skipname < 0");
             goto error;
         }
 
@@ -187,7 +182,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
         char server[NS_MAXDNAME];
         const int server_len = dn_expand(msg.buf, eom, curr, server, sizeof(server));
         if (server_len < 0) {
-            snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): dn_expand(server) < 0\n", dname);
+            save_error_msg("dn_expand(server) < 0");
             goto error;
         }
         curr = curr + server_len;
@@ -203,7 +198,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
         
         unsigned char *record_end = curr + record_len;
         if (record_end > eom) {
-            snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): record_end > eom\n", dname);
+            save_error_msg("record_end > eom");
             goto error;
         }
 
@@ -225,7 +220,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
         char host[NS_MAXDNAME];
         const int host_len = dn_expand(msg.buf, eom, curr, host, sizeof(host));
         if (host_len < 0) {
-            snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in query_server_for_hosts(%s): dn_expand(host) < 0\n", dname);
+            save_error_msg("dn_expand(host) < 0");
             goto error;
         }
 
@@ -250,13 +245,6 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
 
 int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
     int result = AD_SUCCESS; 
-    
-    if (*hosts != NULL) {
-        snprintf(ad_error_msg, MAX_ERR_LENGTH, "Error in ad_get_domain_hosts(%s, %s): hosts pointer is not NULL\n", domain, site);
-        result = AD_RESOLV_ERROR;
-        goto end;
-    }
-
     char **site_hosts = NULL;
     char **default_hosts = NULL;
 
@@ -321,8 +309,6 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
     }
 
     (*hosts)[hosts_current_i] = NULL;
-
-    result = AD_SUCCESS;
 
     end:
     {
