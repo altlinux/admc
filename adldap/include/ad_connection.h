@@ -37,7 +37,8 @@ public:
     bool is_connected();
     char* get_errstr();
     int get_errcode();
-    const std::string get_search_base() const;
+    std::string get_search_base() const;
+    std::string get_uri() const;
 
     int create_user(const char *username, const char *dn);
     int create_computer(const char *name, const char *dn);

@@ -24,7 +24,7 @@
 #include <QList>
 #include <QString>
 #include <QMap>
-#include <QSet>
+#include <QHash>
 
 class AdConnection;
 
@@ -57,6 +57,8 @@ const QMap<NewEntryType, QString> new_entry_type_to_string = {
 QString extract_name_from_dn(const QString &dn);
 QString extract_parent_dn_from_dn(const QString &dn);
 
+typedef QMap<QString, QList<QString>> Attributes;
+
 class AdInterface final : public QObject {
 Q_OBJECT
 
@@ -68,12 +70,15 @@ public:
 
     void ad_interface_login(const QString &host, const QString &domain);
     QString get_error_str();
+    QString get_search_base();
+    QString get_uri();
 
     bool is_connected();
 
     QList<QString> load_children(const QString &dn);
     QList<QString> search(const QString &filter);
-    QMap<QString, QList<QString>> get_attributes(const QString &dn);
+
+    Attributes get_attributes(const QString &dn);
     QList<QString> get_attribute_multi(const QString &dn, const QString &attribute);
     QString get_attribute(const QString &dn, const QString &attribute);
     bool attribute_value_exists(const QString &dn, const QString &attribute, const QString &value);
@@ -99,64 +104,16 @@ public:
     void command(QStringList args);
 
 signals:
-    // NOTE: signals below are mostly for logging with few exceptions
-    // like login/create_entry
-    // For state updates you MUST use dn_changed() and
-    // attributes_changed() signals
-    void ad_interface_login_complete(const QString &host, const QString &head);
-    void ad_interface_login_failed(const QString &host, const QString &head);
-
-    void load_children_failed(const QString &dn, const QString &error_str);
-
-    void search_failed(const QString &filter, const QString &error_str);
-
-    void load_attributes_complete(const QString &dn);
-    void load_attributes_failed(const QString &dn, const QString &error_str);
-
-    void delete_entry_complete(const QString &dn);
-    void delete_entry_failed(const QString &dn, const QString &error_str);
-
-    void set_attribute_complete(const QString &dn, const QString &attribute, const QString &old_value, const QString &value);
-    void set_attribute_failed(const QString &dn, const QString &attribute, const QString &old_value, const QString &value, const QString &error_str);
-
-    void create_entry_complete(const QString &dn, NewEntryType type);
-    void create_entry_failed(const QString &dn, NewEntryType type, const QString &error_str);
-
-    void move_complete(const QString &dn, const QString &new_container, const QString &new_dn);
-    void move_failed(const QString &dn, const QString &new_container, const QString &new_dn, const QString &error_str);
-    
-    void add_user_to_group_complete(const QString &group_dn, const QString &user_dn);
-    void add_user_to_group_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
-
-    void group_remove_user_complete(const QString &group_dn, const QString &user_dn);
-    void group_remove_user_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
-
-    void rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
-    void rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);
-
-    // NOTE: if dn and attributes are changed together, for example
-    // due to a rename, dn_changed() signal is emitted first
-    
-    // NOTE: If multiple DN's are changed, for example by moving
-    // an entry which has children, dn_changed() is emmited for all
-    // entries that were moved and it is emmitted in order of depth
-    // starting from lowest depth
-
-    // NOTE: dn_changed() is emitted when entry is deleted with
-    // new_dn set to ""
-    void dn_changed(const QString &old_dn, const QString &new_dn);
-    void attributes_changed(const QString &dn);
+    void modified();
+    void logged_in();
+    void message(const QString &msg);
 
 private:
     adldap::AdConnection *connection = nullptr;
-    QMap<QString, QMap<QString, QList<QString>>> attributes_map;
-    QSet<QString> attributes_loaded;
+    QHash<QString, Attributes> attributes_cache;
 
-    void load_attributes(const QString &dn);
-    void update_cache(const QString &old_parent_dn, const QString &new_parent_dn);
-    void add_attribute_internal(const QString &dn, const QString &attribute, const QString &value);
-    void remove_attribute_internal(const QString &dn, const QString &attribute, const QString &value);
-
+    QMap<QString, QList<QString>> load_attributes(const QString &dn);
+    void update_cache();
 }; 
 
 // Convenience function to get AdInterface from qApp instance

@@ -130,7 +130,7 @@ MainWindow::MainWindow()
     // Enable central widget on login
     central_widget->setEnabled(false);
     QObject::connect(
-        AD(), &AdInterface::ad_interface_login_complete,
+        AD(), &AdInterface::logged_in,
         [central_widget] () {
             central_widget->setEnabled(true);
         });

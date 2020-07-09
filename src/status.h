@@ -24,6 +24,7 @@
 
 class QTextEdit;
 class QStatusBar;
+class QStatusBar;
 
 // Pushes messages about AD operations to status bar and status log
 class Status final : public QObject {
@@ -39,7 +40,7 @@ private:
     QStatusBar *status_bar = nullptr;
     QTextEdit* status_log = nullptr;
 
-    void message(const QString &msg, int status_bar_timeout = 0);
+    void add_message(const QString &msg);
 
 };
 

@@ -21,9 +21,6 @@
 #include "ad_connection.h"
 #include "admc.h"
 
-#include <QSet>
-#include <algorithm>
-
 AdInterface::AdInterface(QObject *parent)
 : QObject(parent)
 {
@@ -93,12 +90,11 @@ void AdInterface::ad_interface_login(const QString &host, const QString &domain)
     connection->connect(uri_std, domain_std);
 
     if (connection->is_connected()) {
-        const std::string head_dn_std = connection->get_search_base();
-        const QString head_dn = QString::fromStdString(head_dn_std);
+        message(QString("Logged in to \"%1\" at \"%2\"").arg(host, domain));
 
-        emit ad_interface_login_complete(host, head_dn);
+        emit logged_in();
     } else {
-        emit ad_interface_login_failed(host, "");
+        message(QString("Failed to login to \"%1\" at \"%2\"").arg(host, domain));
     }
 }
 
@@ -108,6 +104,14 @@ QString AdInterface::get_error_str() {
 
 bool AdInterface::is_connected() {
     return connection->is_connected();
+}
+
+QString AdInterface::get_search_base() {
+    return QString::fromStdString(connection->get_search_base());
+}
+
+QString AdInterface::get_uri() {
+    return QString::fromStdString(connection->get_uri());
 }
 
 QList<QString> AdInterface::load_children(const QString &dn) {
@@ -132,7 +136,7 @@ QList<QString> AdInterface::load_children(const QString &dn) {
         return children;
     } else {
         if (connection->get_errcode() != AD_SUCCESS) {
-            emit load_children_failed(dn, get_error_str());
+            message(QString("Failed to load children of \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
         }
 
         return QList<QString>();
@@ -161,69 +165,57 @@ QList<QString> AdInterface::search(const QString &filter) {
 
         return results;
     } else {
-        emit search_failed(filter, get_error_str());
+        message(QString("Failed to search for \"%1\". Error: \"%2\"").arg(filter, get_error_str()));
 
         return QList<QString>();
     }
 }
 
-void AdInterface::load_attributes(const QString &dn) {
-    const QByteArray dn_array = dn.toLatin1();
-    const char *dn_cstr = dn_array.constData();
+Attributes AdInterface::get_attributes(const QString &dn) {
+    if (dn == "") {
+        return Attributes();
+    }
 
-    char** attributes_raw = connection->get_attribute(dn_cstr, "*");
+    // Load attributes if it's not in cache
+    if (!attributes_cache.contains(dn)) {
+        const QByteArray dn_array = dn.toLatin1();
+        const char *dn_cstr = dn_array.constData();
 
-    if (attributes_raw != NULL) {
-        attributes_map[dn] = QMap<QString, QList<QString>>();
+        char** attributes_raw = connection->get_attribute(dn_cstr, "*");
 
-        // Load attributes map
-        // attributes_raw is in the form of:
-        // char** array of {key, value, value, key, value ...}
-        // transform it into:
-        // map of {key => {value, value ...}, key => {value, value ...} ...}
-        for (int i = 0; attributes_raw[i + 2] != NULL; i += 2) {
-            auto attribute = QString(attributes_raw[i]);
-            auto value = QString(attributes_raw[i + 1]);
+        // TODO: get_attribute is busted, doesn't return success correctly
+        // so have to ignore result for now
+        // emit get_attributes_failed(dn);
 
-            // Make values list if doesn't exist yet
-            if (!attributes_map[dn].contains(attribute)) {
-                attributes_map[dn][attribute] = QList<QString>();
+        Attributes attributes;
+        if (attributes_raw != NULL) {
+            // attributes_raw is in the form of:
+            // char** array of {key, value, value, key, value ...}
+            // transform it into:
+            // map of {key => {value, value ...}, key => {value, value ...} ...}
+            for (int i = 0; attributes_raw[i + 2] != NULL; i += 2) {
+                auto attribute = QString(attributes_raw[i]);
+                auto value = QString(attributes_raw[i + 1]);
+
+                // Make values list if doesn't exist yet
+                if (!attributes.contains(attribute)) {
+                    attributes[attribute] = QList<QString>();
+                }
+
+                attributes[attribute].push_back(value);
             }
 
-            attributes_map[dn][attribute].push_back(value);
+            // Free attributes_raw
+            for (int i = 0; attributes_raw[i] != NULL; i++) {
+                free(attributes_raw[i]);
+            }
+            free(attributes_raw);
         }
 
-        // Free attributes_raw
-        for (int i = 0; attributes_raw[i] != NULL; i++) {
-            free(attributes_raw[i]);
-        }
-        free(attributes_raw);
-
-        attributes_loaded.insert(dn);
-
-        emit load_attributes_complete(dn);
-    } else if (connection->get_errcode() != AD_SUCCESS) {
-        emit load_attributes_failed(dn, get_error_str());
-    }
-}
-
-QMap<QString, QList<QString>> AdInterface::get_attributes(const QString &dn) {
-    if (dn == "") {
-        return QMap<QString, QList<QString>>();
+        attributes_cache[dn] = attributes;
     }
 
-    // First check whether load_attributes was ever called on this dn
-    // If it hasn't, attempt to load attributes
-    // After that return whatever attributes are now loaded for this dn
-    if (!attributes_loaded.contains(dn)) {
-        load_attributes(dn);
-    }
-
-    if (!attributes_map.contains(dn)) {
-        return QMap<QString, QList<QString>>();
-    } else {
-        return attributes_map[dn];
-    }
+    return attributes_cache[dn];
 }
 
 QList<QString> AdInterface::get_attribute_multi(const QString &dn, const QString &attribute) {
@@ -274,15 +266,13 @@ bool AdInterface::set_attribute(const QString &dn, const QString &attribute, con
     result = connection->mod_replace(dn_cstr, attribute_cstr, value_cstr);
 
     if (result == AD_SUCCESS) {
-        // Reload attributes to get new value
-        load_attributes(dn);
-        
-        emit attributes_changed(dn);
-        emit set_attribute_complete(dn, attribute, old_value, value);
+        message(QString("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"").arg(attribute, dn, old_value, value));
+
+        update_cache();
 
         return true;
     } else {
-        emit set_attribute_failed(dn, attribute, old_value, value, get_error_str());
+        message(QString("Failed to change attribute \"%1\" of entry \"%2\" from \"%3\" to \"%4\". Error: \"%5\"").arg(attribute, dn, old_value, value, get_error_str()));
 
         return false;
     }
@@ -318,12 +308,16 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
         case COUNT: break;
     }
 
+    const QString type_str = new_entry_type_to_string[type];
+
     if (result == AD_SUCCESS) {
-        emit create_entry_complete(dn, type);
+        message(QString("Created entry \"%1\" of type \"%2\"").arg(dn, type_str));
+
+        update_cache();
 
         return true;
     } else {
-        emit create_entry_failed(dn, type, get_error_str());
+        message(QString("Failed to create entry \"%1\" of type \"%2\". Error: \"%3\"").arg(dn, type_str, get_error_str()));
 
         return false;
     }
@@ -338,11 +332,11 @@ void AdInterface::delete_entry(const QString &dn) {
     result = connection->object_delete(dn_cstr);
 
     if (result == AD_SUCCESS) {
-        update_cache(dn, "");
+        message(QString("Deleted entry \"%1\"").arg(dn));
 
-        emit delete_entry_complete(dn);
+        update_cache();
     } else {
-        emit delete_entry_failed(dn, get_error_str());
+        message(QString("Failed to delete entry \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
     }
 }
 
@@ -369,11 +363,11 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     // to do this here as well for CLI?
     
     if (result == AD_SUCCESS) {
-        update_cache(dn, new_dn);
+        message(QString("Moved \"%1\" to \"%2\"").arg(dn).arg(new_container));
 
-        emit move_complete(dn, new_container, new_dn);
+        update_cache();
     } else {
-        emit move_failed(dn, new_container, new_dn, get_error_str());
+        message(QString("Failed to move \"%1\" to \"%2\". Error: \"%3\"").arg(dn, new_container, get_error_str()));
     }
 }
 
@@ -389,13 +383,11 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
     result = connection->group_add_user(group_dn_cstr, user_dn_cstr);
 
     if (result == AD_SUCCESS) {
-        // Update attributes of user and group
-        add_attribute_internal(group_dn, "member", user_dn);
-        add_attribute_internal(user_dn, "memberOf", group_dn);
+        message(QString("Added user \"%1\" to group \"%2\"").arg(user_dn, group_dn));
 
-        emit add_user_to_group_complete(group_dn, user_dn);
+        update_cache();
     } else {
-        emit add_user_to_group_failed(group_dn, user_dn, get_error_str());
+        message(QString("Failed to add user \"%1\" to group \"%2\". Error: \"%3\"").arg(user_dn, group_dn, get_error_str()));
     }
 }
 
@@ -411,13 +403,11 @@ void AdInterface::group_remove_user(const QString &group_dn, const QString &user
     result = connection->group_remove_user(group_dn_cstr, user_dn_cstr);
 
     if (result == AD_SUCCESS) {
-        // Update attributes of user and group
-        remove_attribute_internal(group_dn, "member", user_dn);
-        remove_attribute_internal(user_dn, "memberOf", group_dn);
+        message(QString("Removed user \"%1\" from group \"%2\"").arg(user_dn, group_dn));
 
-        emit group_remove_user_complete(group_dn, user_dn);
+        update_cache();
     } else {
-        emit group_remove_user_failed(group_dn, user_dn, get_error_str());
+        message(QString("Failed to remove user \"%1\" from group \"%2\". Error: \"%3\"").arg(user_dn, group_dn, get_error_str()));
     }
 }
 
@@ -449,11 +439,11 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
     }
 
     if (result == AD_SUCCESS) {
-        update_cache(dn, new_dn);
+        message(QString("Renamed \"%1\" to \"%2\"").arg(dn, new_name));
 
-        emit rename_complete(dn, new_name, new_dn);
+        update_cache();
     } else {
-        emit rename_failed(dn, new_name, new_dn, get_error_str());
+        message(QString("Failed to rename \"%1\" to \"%2\". Error: \"%3\"").arg(dn, new_name, get_error_str()));
     }
 }
 
@@ -598,121 +588,10 @@ void AdInterface::command(QStringList args) {
     }
 }
 
-// Update cache for entry and all related entries after a DN change
-// LDAP database does this internally so need to replicate it
-// NOTE: if entry was deleted, new_dn should be ""
-void AdInterface::update_cache(const QString &old_parent_dn, const QString &new_parent_dn) {
-    const bool deleted = (old_parent_dn != "" && new_parent_dn == "");
+void AdInterface::update_cache() {
+    attributes_cache.clear();
 
-    // Update all DN's that contain changed DN
-    // This includes the changed entry itself and it's descendants
-    {
-        QList<QString> dn_changes;
-        QMap<QString, QString> updated_dns;
-
-        for (const QString &dn : attributes_map.keys()) {
-            if (dn.contains(old_parent_dn)) {
-                const QString updated_dn = QString(dn).replace(old_parent_dn, new_parent_dn);
-                
-                if (deleted) {
-                    // Remove attributes for old DN
-                    attributes_map.remove(dn);
-                    attributes_loaded.remove(dn);
-                } else {
-                    // Move attributes from old DN to new DN
-                    attributes_map[updated_dn] = attributes_map[dn];
-                    attributes_loaded.insert(updated_dn);
-
-                    attributes_map.remove(dn);
-                    attributes_loaded.remove(dn);
-                }
-
-                // Save dn and updated_dn to later emit dn_changed signals
-                if (!dn_changes.contains(dn)) {
-                    dn_changes.append(dn);
-                    updated_dns[dn] = updated_dn;
-                }
-            }
-        }
-
-        // Sort all dn changes in order of depth, lowest first
-        // so that signals are emitted in order of depth
-        std::sort(dn_changes.begin(), dn_changes.end(),
-            [] (const QString &a, const QString &b) {
-                const int a_depth = a.count(',');
-                const int b_depth = b.count(',');
-
-                return a_depth < b_depth;   
-            });
-
-        for (auto dn : dn_changes) {
-            const QString updated_dn = updated_dns[dn];
-
-            emit dn_changed(dn, updated_dn);
-        }
-    }
-
-    // Reload changed entry's attributes
-    // NOTE: needed because rename operation changes a number of attributes
-    // NOTE: do this after updating DN's, so that attributes_changed()
-    // is emitted after dn_changed()
-    if (attributes_loaded.contains(new_parent_dn)) {
-        load_attributes(new_parent_dn);
-
-        emit attributes_changed(new_parent_dn);
-    }
-
-    // Update all attribute values that contain this DN
-    {
-        // One attributes_changed signal per DN
-        QSet<QString> attribute_changes;
-
-        for (const QString &dn : attributes_map.keys()) {
-            for (auto &values : attributes_map[dn]) {
-                for (auto &value : values) {
-                    if (value.contains(old_parent_dn)) {
-                        const int value_i = values.indexOf(value);
-
-                        if (deleted) {
-                            values.removeAt(value_i);
-
-                            attribute_changes.insert(dn);
-                        } else {
-                            const QString updated_value = QString(value).replace(old_parent_dn, new_parent_dn);
-                            values.replace(value_i, updated_value);
-
-                            attribute_changes.insert(dn);
-                        }
-                    }
-                }
-            }
-        }
-
-        for (auto dn : attribute_changes) {
-            emit attributes_changed(dn);
-        }
-    }
-}
-
-void AdInterface::add_attribute_internal(const QString &dn, const QString &attribute, const QString &value) {
-    // TODO: insert attributes near other attributes with same name
-    if (attributes_loaded.contains(dn)) {
-        attributes_map[dn][attribute].append(value);
-
-        emit attributes_changed(dn);
-    }
-}
-
-void AdInterface::remove_attribute_internal(const QString &dn, const QString &attribute, const QString &value) {
-    if (attributes_loaded.contains(dn)) {
-        const int value_i = attributes_map[dn][attribute].indexOf(value);
-
-        if (value_i != -1) {
-            attributes_map[dn][attribute].removeAt(value_i);
-
-            emit attributes_changed(dn);
-        }
-    }
+    emit modified();
 }
 
 AdInterface *AD() {

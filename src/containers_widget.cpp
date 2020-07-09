@@ -106,17 +106,11 @@ ContainersModel::ContainersModel(QObject *parent)
     setHorizontalHeaderItem(ContainersColumn_DN, new QStandardItem("DN"));
 
     connect(
-        AD(), &AdInterface::ad_interface_login_complete,
-        this, &ContainersModel::on_ad_interface_login_complete);
+        AD(), &AdInterface::logged_in,
+        this, &ContainersModel::on_logged_in);
     connect(
-        AD(), &AdInterface::dn_changed,
-        this, &ContainersModel::on_dn_changed);
-    connect(
-        AD(), &AdInterface::create_entry_complete,
-        this, &ContainersModel::on_create_entry_complete);
-    connect(
-        AD(), &AdInterface::attributes_changed,
-        this, &ContainersModel::on_attributes_changed);
+        AD(), &AdInterface::modified,
+        this, &ContainersModel::on_ad_modified);
 }
 
 bool ContainersModel::canFetchMore(const QModelIndex &parent) const {
@@ -159,80 +153,23 @@ bool ContainersModel::hasChildren(const QModelIndex &parent = QModelIndex()) con
     }
 }
 
-void ContainersModel::on_ad_interface_login_complete(const QString &search_base, const QString &head_dn) {
+void ContainersModel::on_logged_in() {
     removeRows(0, rowCount());
 
     // Load head
+    const QString head_dn = AD()->get_search_base();
     QStandardItem *invis_root = invisibleRootItem();
     make_new_row(invis_root, head_dn);
 }
 
-void ContainersModel::on_dn_changed(const QString &old_dn, const QString &new_dn) {
-    const QString old_parent_dn = extract_parent_dn_from_dn(old_dn);
-    const QString new_parent_dn = extract_parent_dn_from_dn(new_dn);
+void ContainersModel::on_ad_modified() {
+    removeRows(0, rowCount());
 
-    QStandardItem *old_parent = find_item(old_parent_dn, 0);
-    QStandardItem *new_parent = find_item(new_parent_dn, 0);
+    const QString head_dn = AD()->get_search_base();
 
-    QStandardItem *old_dn_item = find_item(old_dn, ContainersColumn_DN);
-    if (old_dn_item != nullptr) {
-        // Update DN
-        if (new_dn != "") {
-            old_dn_item->setText(new_dn);
-        }
-
-        // If parent of row is already new parent, don't need to move row
-        // This happens when entry was moved together with it's parent
-        // or ancestor
-        // Also true if entry was only renamed
-        if (old_dn_item->parent() == new_parent) {
-            return;
-        }
-    }
-
-    // NOTE: only add to new parent if it can't fetch
-    // if new parent can fetch, then it will load this row when
-    // it does fetch along with all other children
-    const bool remove_from_old_parent = (old_parent != nullptr && old_dn_item != nullptr);
-    const bool add_to_new_parent = (new_parent != nullptr && !canFetchMore(new_parent->index()));
-
-    if (remove_from_old_parent) {
-        const int old_row_i = old_dn_item->row();
-
-        if (add_to_new_parent) {
-            // Transfer row from old to new parent
-            const QList<QStandardItem *> row = old_parent->takeRow(old_row_i);
-            new_parent->appendRow(row);
-        } else {
-            old_parent->removeRow(old_row_i);
-        }
-    } else {
-        if (add_to_new_parent) {
-            make_new_row(new_parent, new_dn);
-        }
-    }
-}
-
-void ContainersModel::on_create_entry_complete(const QString &dn, NewEntryType type) {
-    // Load entry to model if it's parent has already been fetched
-    QString parent_dn = extract_parent_dn_from_dn(dn);
-    QStandardItem *parent = find_item(parent_dn, 0);
-
-    if (parent != nullptr) {
-        const QModelIndex parent_index = parent->index();
-
-        if (!canFetchMore(parent_index)) {
-            make_new_row(parent, dn);
-        }
-    }
-}
-
-void ContainersModel::on_attributes_changed(const QString &dn) {
-    QList<QStandardItem *> row = find_row(dn);
-
-    if (!row.isEmpty()) {
-        load_row(row, dn);
-    }
+    // Load head
+    QStandardItem *invis_root = invisibleRootItem();
+    make_new_row(invis_root, head_dn);
 }
 
 void load_row(QList<QStandardItem *> row, const QString &dn) {
