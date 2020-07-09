@@ -109,7 +109,7 @@ private:
     QHash<QString, Attributes> attributes_cache;
 
     QMap<QString, QList<QString>> load_attributes(const QString &dn);
-
+    void update_cache();
 }; 
 
 // Convenience function to get AdInterface from qApp instance
