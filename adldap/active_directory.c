@@ -34,6 +34,10 @@
 
 #include <errno.h>
 
+// NOTE: LDAP library char* inputs are non-const in the API but are
+// actually const so we opt to discard const qualifiers rather
+// than allocate copies
+
 #ifdef __GNUC__
 #  define UNUSED(x) x __attribute__((unused))
 #else
@@ -370,7 +374,7 @@ LDAP *ad_login(const char* uri) {
 
     // Setup sasl_defaults_gssapi 
     struct sasl_defaults_gssapi defaults;
-    defaults.mech = strdup("GSSAPI");
+    defaults.mech = "GSSAPI";
     ldap_get_option(ds, LDAP_OPT_X_SASL_REALM, &defaults.realm);
     ldap_get_option(ds, LDAP_OPT_X_SASL_AUTHCID, &defaults.authcid);
     ldap_get_option(ds, LDAP_OPT_X_SASL_AUTHZID, &defaults.authzid);
@@ -382,7 +386,6 @@ LDAP *ad_login(const char* uri) {
       defaults.mech, NULL, NULL,
       sasl_flags, sasl_interact_gssapi, &defaults);
 
-    free(defaults.mech);
     ldap_memfree(defaults.realm);
     ldap_memfree(defaults.authcid);
     ldap_memfree(defaults.authzid);
@@ -516,7 +519,7 @@ int ad_create_user(LDAP *ds, const char *username, const char *dn) {
     attr1.mod_type = "objectClass";
     attr1.mod_values = objectClass_values;
 
-    name_values[0]=strdup(username);
+    name_values[0]=(char *)username;
     name_values[1]=NULL;
     attr2.mod_op = LDAP_MOD_ADD;
     attr2.mod_type = "sAMAccountName";
@@ -556,9 +559,6 @@ int ad_create_user(LDAP *ds, const char *username, const char *dn) {
     ad_create_user_end:
     if (NULL != domain) {
         free(domain);
-    }
-    if (NULL != name_values[0]) {
-        free(name_values[0]);
     }
 
     return ad_error_code;
@@ -732,15 +732,15 @@ char **ad_search(LDAP *ds, const char *filter, const char* search_base) {
 int ad_mod_add(LDAP *ds, const char *dn, const char *attribute, const char *value) {
     LDAPMod *attrs[2];
     LDAPMod attr;
-    char *values[2];
+    const char *values[2];
     int result;
 
-    values[0] = strdup(value);
+    values[0] = (char *)value;
     values[1] = NULL;
 
     attr.mod_op = LDAP_MOD_ADD;
-    attr.mod_type = strdup(attribute);
-    attr.mod_values = values;
+    attr.mod_type = (char *)attribute;
+    attr.mod_values = (char **)values;
     
     attrs[0] = &attr;
     attrs[1] = NULL;
@@ -752,9 +752,6 @@ int ad_mod_add(LDAP *ds, const char *dn, const char *attribute, const char *valu
     } else {
         ad_error_code=AD_SUCCESS;
     }
-
-    free(values[0]);
-    free(attr.mod_type);
 
     return ad_error_code;
 }
@@ -773,7 +770,7 @@ int ad_mod_add_binary(LDAP *ds, const char *dn, const char *attribute, const cha
     values[1] = NULL;
 
     attr.mod_op = LDAP_MOD_ADD|LDAP_MOD_BVALUES;
-    attr.mod_type = strdup(attribute);
+    attr.mod_type = (char *)attribute;
     attr.mod_bvalues = values;
     
     attrs[0] = &attr;
@@ -796,15 +793,15 @@ int ad_mod_add_binary(LDAP *ds, const char *dn, const char *attribute, const cha
 int ad_mod_replace(LDAP *ds, const char *dn, const char *attribute, const char *value) {
     LDAPMod *attrs[2];
     LDAPMod attr;
-    char *values[2];
+    const char *values[2];
     int result;
 
-    values[0] = strdup(value);
+    values[0] = (char *)value;
     values[1] = NULL;
 
     attr.mod_op = LDAP_MOD_REPLACE;
-    attr.mod_type = strdup(attribute);
-    attr.mod_values = values;
+    attr.mod_type = (char *)attribute;
+    attr.mod_values = (char **)values;
     
     attrs[0] = &attr;
     attrs[1] = NULL;
@@ -816,9 +813,6 @@ int ad_mod_replace(LDAP *ds, const char *dn, const char *attribute, const char *
     } else {
         ad_error_code=AD_SUCCESS;
     }
-
-    free(attr.mod_type);
-    free(values[0]);
 
     return ad_error_code;
 }
@@ -837,7 +831,7 @@ int ad_mod_replace_binary(LDAP *ds, const char *dn, const char *attribute, const
     values[1] = NULL;
 
     attr.mod_op = LDAP_MOD_REPLACE|LDAP_MOD_BVALUES;
-    attr.mod_type = strdup(attribute);
+    attr.mod_type = (char *)attribute;
     attr.mod_bvalues = values;
     
     attrs[0] = &attr;
@@ -852,7 +846,6 @@ int ad_mod_replace_binary(LDAP *ds, const char *dn, const char *attribute, const
     }
 
     free(ber_data.bv_val);
-    free(attr.mod_type);
 
     return ad_error_code;
 }
@@ -860,15 +853,15 @@ int ad_mod_replace_binary(LDAP *ds, const char *dn, const char *attribute, const
 int ad_mod_delete(LDAP *ds, const char *dn, const char *attribute, const char *value) {
     LDAPMod *attrs[2];
     LDAPMod attr;
-    char *values[2];
+    const char *values[2];
     int result;
 
-    values[0] = strdup(value);
+    values[0] = (char *)value;
     values[1] = NULL;
 
     attr.mod_op = LDAP_MOD_DELETE;
-    attr.mod_type = strdup(attribute);
-    attr.mod_values = values;
+    attr.mod_type = (char *)attribute;
+    attr.mod_values = (char **)values;
     
     attrs[0] = &attr;
     attrs[1] = NULL;
@@ -881,9 +874,6 @@ int ad_mod_delete(LDAP *ds, const char *dn, const char *attribute, const char *v
         ad_error_code=AD_SUCCESS;
     }
 
-    free(values[0]);
-    free(attr.mod_type);
-
     return ad_error_code;
 }
 
@@ -895,7 +885,7 @@ typedef struct ber_list {
 
 char **ad_get_attribute(LDAP *ds, const char *dn, const char *attribute) {
     char *attrs[2];
-    attrs[0]=strdup(attribute);
+    attrs[0]=(char *)attribute;
     attrs[1]=NULL;
 
     // TODO: use paged search (need to?)
@@ -990,7 +980,6 @@ char **ad_get_attribute(LDAP *ds, const char *dn, const char *attribute) {
         }
     }
 
-    free(attrs[0]);
     ber_free(berptr, 0); 
     ldap_msgfree(res);
 
@@ -1215,24 +1204,24 @@ int ad_group_create(LDAP *ds, const char *group_name, const char *dn) {
     int result;
 
     char *objectClass_values[]={"group", NULL};
-    char *name_values[2];
-    char *sAMAccountName_values[2];
+    const char *name_values[2];
+    const char *sAMAccountName_values[2];
 
     attr1.mod_op = LDAP_MOD_ADD;
     attr1.mod_type = "objectClass";
-    attr1.mod_values = objectClass_values;
+    attr1.mod_values = (char **)objectClass_values;
 
-    name_values[0]=strdup(group_name);
-    name_values[1]=NULL;
+    name_values[0] = group_name;
+    name_values[1] = NULL;
     attr2.mod_op = LDAP_MOD_ADD;
     attr2.mod_type = "name";
-    attr2.mod_values = name_values;
+    attr2.mod_values = (char **)name_values;
     
-    sAMAccountName_values[0]=strdup(group_name);
-    sAMAccountName_values[1]=NULL;
+    sAMAccountName_values[0] = group_name;
+    sAMAccountName_values[1] = NULL;
     attr3.mod_op = LDAP_MOD_ADD;
     attr3.mod_type = "sAMAccountName";
-    attr3.mod_values = sAMAccountName_values;
+    attr3.mod_values = (char **)sAMAccountName_values;
 
     attrs[0]=&attr1;
     attrs[1]=&attr2;
@@ -1246,9 +1235,6 @@ int ad_group_create(LDAP *ds, const char *group_name, const char *dn) {
     } else {
         ad_error_code=AD_SUCCESS;
     }
-
-    free(name_values[0]);
-    free(sAMAccountName_values[0]);
 
     return ad_error_code;
 }
@@ -1327,17 +1313,17 @@ int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn) {
     int result;
 
     char *objectClass_values[]={"organizationalUnit", NULL};
-    char *name_values[2];
+    const char *name_values[2];
 
     attr1.mod_op = LDAP_MOD_ADD;
     attr1.mod_type = "objectClass";
     attr1.mod_values = objectClass_values;
 
-    name_values[0]=strdup(ou_name);
-    name_values[1]=NULL;
+    name_values[0] = ou_name;
+    name_values[1] = NULL;
     attr2.mod_op = LDAP_MOD_ADD;
     attr2.mod_type = "name";
-    attr2.mod_values = name_values;
+    attr2.mod_values = (char **)name_values;
     
     attrs[0]=&attr1;
     attrs[1]=&attr2;
@@ -1348,8 +1334,6 @@ int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn) {
         save_ldap_error_msg(result);
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
     }
-
-    free(name_values[0]);
 
     return ad_error_code;
 }
