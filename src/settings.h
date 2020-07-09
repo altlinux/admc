@@ -40,8 +40,8 @@ Q_OBJECT
 public:
     explicit Settings(QObject *parent);
     void emit_toggle_signals() const;
+    QString get_string(SettingString string) const;
     void set_string(SettingString string, const QString &value);
-    QString get_string(SettingString string);
 
     QAction *toggle_advanced_view = nullptr;
     QAction *toggle_show_dn_column = nullptr;

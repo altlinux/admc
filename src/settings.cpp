@@ -93,7 +93,7 @@ void Settings::set_string(SettingString string, const QString &value) {
     strings[string] = value;
 }
 
-QString Settings::get_string(SettingString string) {
+QString Settings::get_string(SettingString string) const {
     const QString value = strings[string];
 
     return value;
