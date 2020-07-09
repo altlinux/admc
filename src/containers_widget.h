@@ -64,7 +64,7 @@ public:
     bool hasChildren(const QModelIndex &parent) const override;
 
 private slots:
-    void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
+    void on_logged_in();
     void on_ad_modified();
 };
 

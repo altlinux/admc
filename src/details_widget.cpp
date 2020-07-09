@@ -41,8 +41,8 @@ DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWid
     addTab(members_widget, "");
 
     connect(
-        AD(), &AdInterface::ad_interface_login_complete,
-        this, &DetailsWidget::on_ad_interface_login_complete);
+        AD(), &AdInterface::logged_in,
+        this, &DetailsWidget::on_logged_in);
     connect(
         AD(), &AdInterface::modified,
         this, &DetailsWidget::on_ad_modified);
@@ -87,7 +87,7 @@ void DetailsWidget::change_target(const QString &dn) {
     }
 }
 
-void DetailsWidget::on_ad_interface_login_complete(const QString &search_base, const QString &head_dn) {
+void DetailsWidget::on_logged_in() {
     // Clear data on new login
     change_target("");
 }

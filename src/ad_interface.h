@@ -102,44 +102,15 @@ public:
 
 signals:
     void modified();
-
-    void ad_interface_login_complete(const QString &base, const QString &head);
-    void ad_interface_login_failed(const QString &base, const QString &head);
-
-    void load_children_failed(const QString &dn, const QString &error_str);
-
-    void search_failed(const QString &filter, const QString &error_str);
-
-    void delete_entry_complete(const QString &dn);
-    void delete_entry_failed(const QString &dn, const QString &error_str);
-
-    void set_attribute_complete(const QString &dn, const QString &attribute, const QString &old_value, const QString &value);
-    void set_attribute_failed(const QString &dn, const QString &attribute, const QString &old_value, const QString &value, const QString &error_str);
-
-    void create_entry_complete(const QString &dn, NewEntryType type);
-    void create_entry_failed(const QString &dn, NewEntryType type, const QString &error_str);
-
-    void move_complete(const QString &dn, const QString &new_container, const QString &new_dn);
-    void move_failed(const QString &dn, const QString &new_container, const QString &new_dn, const QString &error_str);
-    
-    void add_user_to_group_complete(const QString &group_dn, const QString &user_dn);
-    void add_user_to_group_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
-
-    void group_remove_user_complete(const QString &group_dn, const QString &user_dn);
-    void group_remove_user_failed(const QString &group_dn, const QString &user_dn, const QString &error_str);
-
-    void rename_complete(const QString &dn, const QString &new_name, const QString &new_dn);
-    void rename_failed(const QString &dn, const QString &new_name, const QString &new_dn, const QString &error_str);
-
-    void set_pass_complete(const QString &dn, const QString &password);
-    void set_pass_failed(const QString &dn, const QString &password, const QString &error_str);
+    void logged_in();
+    void message(const QString &msg);
 
 private:
     adldap::AdConnection *connection = nullptr;
     QHash<QString, Attributes> attributes_cache;
 
     QMap<QString, QList<QString>> load_attributes(const QString &dn);
-
+    void update_cache();
 }; 
 
 // Convenience function to get AdInterface from qApp instance

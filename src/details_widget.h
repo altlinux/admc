@@ -45,7 +45,7 @@ public slots:
     void on_context_menu_details(const QString &dn);
 
 private slots:
-    void on_ad_interface_login_complete(const QString &search_base, const QString &head_dn);
+    void on_logged_in();
     void on_ad_modified();
 
 private:

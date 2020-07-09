@@ -25,11 +25,6 @@ AdInterface::AdInterface(QObject *parent)
 : QObject(parent)
 {
     connection = new adldap::AdConnection();
-
-    connect(this, &AdInterface::modified,
-        [this]() {
-            attributes_cache.clear();
-        });
 }
 
 AdInterface::~AdInterface() {
@@ -64,9 +59,11 @@ void AdInterface::ad_interface_login(const QString &base, const QString &head) {
     connection->connect(base.toStdString(), head.toStdString());
 
     if (connection->is_connected()) {
-        emit ad_interface_login_complete(base, head);
+        message(QString("Logged in to \"%1\" with head dn at \"%2\"").arg(base, head));
+
+        emit logged_in();
     } else {
-        emit ad_interface_login_failed(base, head);
+        message(QString("Failed to login to \"%1\" with head dn at \"%2\"").arg(base, head));
     }
 }
 
@@ -104,7 +101,7 @@ QList<QString> AdInterface::load_children(const QString &dn) {
         return children;
     } else {
         if (connection->get_errcode() != AD_SUCCESS) {
-            emit load_children_failed(dn, get_error_str());
+            message(QString("Failed to load children of \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
         }
 
         return QList<QString>();
@@ -133,7 +130,7 @@ QList<QString> AdInterface::search(const QString &filter) {
 
         return results;
     } else {
-        emit search_failed(filter, get_error_str());
+        message(QString("Failed to search for \"%1\". Error: \"%2\"").arg(filter, get_error_str()));
 
         return QList<QString>();
     }
@@ -234,12 +231,13 @@ bool AdInterface::set_attribute(const QString &dn, const QString &attribute, con
     result = connection->mod_replace(dn_cstr, attribute_cstr, value_cstr);
 
     if (result == AD_SUCCESS) {
-        emit set_attribute_complete(dn, attribute, old_value, value);
-        emit modified();
+        message(QString("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"").arg(attribute, dn, old_value, value));
+
+        update_cache();
 
         return true;
     } else {
-        emit set_attribute_failed(dn, attribute, old_value, value, get_error_str());
+        message(QString("Failed to change attribute \"%1\" of entry \"%2\" from \"%3\" to \"%4\". Error: \"%5\"").arg(attribute, dn, old_value, value, get_error_str()));
 
         return false;
     }
@@ -275,13 +273,16 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
         case COUNT: break;
     }
 
+    const QString type_str = new_entry_type_to_string[type];
+
     if (result == AD_SUCCESS) {
-        emit create_entry_complete(dn, type);
-        emit modified();
+        message(QString("Created entry \"%1\" of type \"%2\"").arg(dn, type_str));
+
+        update_cache();
 
         return true;
     } else {
-        emit create_entry_failed(dn, type, get_error_str());
+        message(QString("Failed to create entry \"%1\" of type \"%2\". Error: \"%3\"").arg(dn, type_str, get_error_str()));
 
         return false;
     }
@@ -296,10 +297,11 @@ void AdInterface::delete_entry(const QString &dn) {
     result = connection->object_delete(dn_cstr);
 
     if (result == AD_SUCCESS) {
-        emit delete_entry_complete(dn);
-        emit modified();
+        message(QString("Deleted entry \"%1\"").arg(dn));
+
+        update_cache();
     } else {
-        emit delete_entry_failed(dn, get_error_str());
+        message(QString("Failed to delete entry \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
     }
 }
 
@@ -326,10 +328,11 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     // to do this here as well for CLI?
     
     if (result == AD_SUCCESS) {
-        emit move_complete(dn, new_container, new_dn);
-        emit modified();
+        message(QString("Moved \"%1\" to \"%2\"").arg(dn).arg(new_container));
+
+        update_cache();
     } else {
-        emit move_failed(dn, new_container, new_dn, get_error_str());
+        message(QString("Failed to move \"%1\" to \"%2\". Error: \"%3\"").arg(dn, new_container, get_error_str()));
     }
 }
 
@@ -345,10 +348,11 @@ void AdInterface::add_user_to_group(const QString &group_dn, const QString &user
     result = connection->group_add_user(group_dn_cstr, user_dn_cstr);
 
     if (result == AD_SUCCESS) {
-        emit add_user_to_group_complete(group_dn, user_dn);
-        emit modified();
+        message(QString("Added user \"%1\" to group \"%2\"").arg(user_dn, group_dn));
+
+        update_cache();
     } else {
-        emit add_user_to_group_failed(group_dn, user_dn, get_error_str());
+        message(QString("Failed to add user \"%1\" to group \"%2\". Error: \"%3\"").arg(user_dn, group_dn, get_error_str()));
     }
 }
 
@@ -364,10 +368,11 @@ void AdInterface::group_remove_user(const QString &group_dn, const QString &user
     result = connection->group_remove_user(group_dn_cstr, user_dn_cstr);
 
     if (result == AD_SUCCESS) {
-        emit group_remove_user_complete(group_dn, user_dn);
-        emit modified();
+        message(QString("Removed user \"%1\" from group \"%2\"").arg(user_dn, group_dn));
+
+        update_cache();
     } else {
-        emit group_remove_user_failed(group_dn, user_dn, get_error_str());
+        message(QString("Failed to remove user \"%1\" from group \"%2\". Error: \"%3\"").arg(user_dn, group_dn, get_error_str()));
     }
 }
 
@@ -399,10 +404,11 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
     }
 
     if (result == AD_SUCCESS) {
-        emit rename_complete(dn, new_name, new_dn);
-        emit modified();
+        message(QString("Renamed \"%1\" to \"%2\"").arg(dn, new_name));
+
+        update_cache();
     } else {
-        emit rename_failed(dn, new_name, new_dn, get_error_str());
+        message(QString("Failed to rename \"%1\" to \"%2\". Error: \"%3\"").arg(dn, new_name, get_error_str()));
     }
 }
 
@@ -415,13 +421,14 @@ bool AdInterface::set_pass(const QString &dn, const QString &password) {
     int result = connection->setpass(dn_cstr, password_cstr);
 
     if (result == AD_SUCCESS) {
-        emit set_pass_complete(dn, password);
-        emit modified();
+        message(QString("Set pass of \"%1\"").arg(dn));
+
+        update_cache();
 
         return true;
     } else {
-        emit set_pass_failed(dn, password, get_error_str());
-
+        message(QString("Failed to set pass of \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
+    
         return false;
     }
 }
@@ -565,6 +572,12 @@ void AdInterface::command(QStringList args) {
             printf("%s\n", qPrintable(e));
         }
     }
+}
+
+void AdInterface::update_cache() {
+    attributes_cache.clear();
+
+    emit modified();
 }
 
 AdInterface *AD() {
