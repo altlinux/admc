@@ -258,8 +258,8 @@ void MoveDialogModel::load(const QString &dn, QList<ClassFilter> classes) {
         QString filter = filter_EQUALS("objectClass", class_string);
 
         // Filter out advanced entries if needed
-        const QAction *const toggle_advanced_view = SETTINGS()->toggle_advanced_view;
-        const bool advanced_view_is_off = !toggle_advanced_view->isChecked();
+        const QAction *advanced_view_action = SETTINGS()->checkable(SettingsCheckable_AdvancedView);
+        const bool advanced_view_is_off = !advanced_view_action->isChecked();
 
         if (advanced_view_is_off) {
             const QString is_advanced = filter_EQUALS("showInAdvancedViewOnly", "TRUE");
