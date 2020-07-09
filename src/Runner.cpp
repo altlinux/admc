@@ -55,7 +55,7 @@ int Runner::run() {
         // adjust indexes in command()
         
         // CLI
-        AD()->ad_interface_login(SEARCH_BASE, HEAD_DN);
+        AD()->login(SEARCH_BASE, HEAD_DN);
         AD()->command(positional_args);
 
         return 0;

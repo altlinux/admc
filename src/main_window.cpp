@@ -40,9 +40,6 @@
 #include <QVBoxLayout>
 #include <QTextEdit>
 
-void on_action_login() {
-}
-
 void on_action_exit(QMainWindow *main_window) {
     const QString text = QString("Are you sure you want to exit?");
     const bool confirmed = confirmation_dialog(text, main_window);
@@ -141,7 +138,7 @@ MainWindow::MainWindow()
         const QString domain = SETTINGS()->get_string(SettingString_Domain);
 
         if (!host.isEmpty()) {
-            AD()->ad_interface_login(host, domain);
+            AD()->login(host, domain);
         }
     }    
 }
