@@ -133,7 +133,7 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
     QStandardItem *parent_item = itemFromIndex(parent);
 
     // Add children
-    QList<QString> children = AD()->load_children(dn);
+    QList<QString> children = AD()->list(dn);
 
     for (auto child : children) {
         make_new_row(parent_item, child);

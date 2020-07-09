@@ -210,11 +210,11 @@ void MoveDialog::complete(const QString &move_dn) {
     if (confirmed) {
         switch (type) {
             case MoveDialogType_Move: {
-                AD()->move(target_dn, move_dn);
+                AD()->object_move(target_dn, move_dn);
                 break;
             }
             case MoveDialogType_AddToGroup: {
-                AD()->add_user_to_group(move_dn, target_dn);
+                AD()->group_add_user(move_dn, target_dn);
                 break;
             }
         }

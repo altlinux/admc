@@ -55,7 +55,7 @@ QString extract_parent_dn_from_dn(const QString &dn) {
     return parent_dn;
 }
 
-void AdInterface::ad_interface_login(const QString &base, const QString &head) {
+void AdInterface::login(const QString &base, const QString &head) {
     connection->connect(base.toStdString(), head.toStdString());
 
     if (connection->is_connected()) {
@@ -79,7 +79,7 @@ QString AdInterface::get_uri() {
     return QString::fromStdString(connection->get_uri());
 }
 
-QList<QString> AdInterface::load_children(const QString &dn) {
+QList<QString> AdInterface::list(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
@@ -244,7 +244,7 @@ bool AdInterface::set_attribute(const QString &dn, const QString &attribute, con
 }
 
 // TODO: can probably make a create_anything() function with enum parameter
-bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryType type) {
+bool AdInterface::object_create(const QString &name, const QString &dn, NewEntryType type) {
     int result = AD_INVALID_DN;
     
     const QByteArray name_array = name.toLatin1();
@@ -288,7 +288,7 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
     }
 }
 
-void AdInterface::delete_entry(const QString &dn) {
+void AdInterface::object_delete(const QString &dn) {
     int result = AD_INVALID_DN;
 
     const QByteArray dn_array = dn.toLatin1();
@@ -305,7 +305,7 @@ void AdInterface::delete_entry(const QString &dn) {
     }
 }
 
-void AdInterface::move(const QString &dn, const QString &new_container) {
+void AdInterface::object_move(const QString &dn, const QString &new_container) {
     int result = AD_INVALID_DN;
 
     QList<QString> dn_split = dn.split(',');
@@ -336,7 +336,7 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     }
 }
 
-void AdInterface::add_user_to_group(const QString &group_dn, const QString &user_dn) {
+void AdInterface::group_add_user(const QString &group_dn, const QString &user_dn) {
     int result = AD_INVALID_DN;
 
     const QByteArray group_dn_array = group_dn.toLatin1();
@@ -376,7 +376,7 @@ void AdInterface::group_remove_user(const QString &group_dn, const QString &user
     }
 }
 
-void AdInterface::rename(const QString &dn, const QString &new_name) {
+void AdInterface::object_rename(const QString &dn, const QString &new_name) {
     // Compose new_rdn and new_dn
     const QStringList exploded_dn = dn.split(',');
     const QString old_rdn = exploded_dn[0];
@@ -481,7 +481,7 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
     return DropType_None;
 }
 
-bool AdInterface::can_drop_entry(const QString &dn, const QString &target_dn) {
+bool AdInterface::object_can_drop(const QString &dn, const QString &target_dn) {
     DropType drop_type = get_drop_type(dn, target_dn);
 
     if (drop_type == DropType_None) {
@@ -492,16 +492,16 @@ bool AdInterface::can_drop_entry(const QString &dn, const QString &target_dn) {
 }
 
 // General "drop" operation that can either move, link or change membership depending on which types of entries are involved
-void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
+void AdInterface::object_drop(const QString &dn, const QString &target_dn) {
     DropType drop_type = get_drop_type(dn, target_dn);
 
     switch (drop_type) {
         case DropType_Move: {
-            AD()->move(dn, target_dn);
+            AD()->object_move(dn, target_dn);
             break;
         }
         case DropType_AddToGroup: {
-            AD()->add_user_to_group(target_dn, dn);
+            AD()->group_add_user(target_dn, dn);
             break;
         }
         case DropType_None: {
@@ -529,7 +529,7 @@ void AdInterface::command(QStringList args) {
     if (command == "list") {
         QString dn = args[1];
 
-        QList<QString> children = load_children(dn);
+        QList<QString> children = list(dn);
 
         for (auto e : children) {
             printf("%s\n", qPrintable(e));

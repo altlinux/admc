@@ -56,7 +56,7 @@ int Runner::run() {
     QStringList positional_args = cli_parser.positionalArguments();
     if (positional_args.size() > 0) {
         // CLI
-        AD()->ad_interface_login(SEARCH_BASE, HEAD_DN);
+        AD()->login(SEARCH_BASE, HEAD_DN);
         AD()->command(positional_args);
 
         return 0;

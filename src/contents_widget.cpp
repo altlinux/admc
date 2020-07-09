@@ -118,7 +118,7 @@ void ContentsModel::change_target(const QString &dn) {
     QStandardItem *head = item(0, 0);
 
     // Load children
-    QList<QString> children = AD()->load_children(dn);
+    QList<QString> children = AD()->list(dn);
     for (auto child_dn : children) {
         make_new_row(head, child_dn);
     }
