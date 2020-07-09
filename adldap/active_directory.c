@@ -458,7 +458,7 @@ int dn2domain(const char *dn, char** domain) {
         dc[i] = tolower(dc[i]);
     }
 
-dn2domain_end:
+    dn2domain_end:
     /* Free the memory allocated by ldap_str2dn */
     if (NULL != ldn) {
         ldap_dnfree(ldn);
@@ -554,7 +554,7 @@ int ad_create_user(LDAP *ds, const char *username, const char *dn) {
         ad_error_code=AD_SUCCESS;
     }
 
-ad_create_user_end:
+    ad_create_user_end:
     if (NULL != domain) {
         free(domain);
     }
@@ -1039,7 +1039,7 @@ int ad_rename_user(LDAP *ds, const char *dn, const char *new_name) {
         goto ad_rename_user_end;
     }
 
-ad_rename_user_end:
+    ad_rename_user_end:
     if (NULL != domain) {
         free(domain);
         domain = NULL;
@@ -1079,7 +1079,7 @@ int ad_rename_group(LDAP *ds, const char *dn, const char *new_name) {
 int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
     int result;
     int result_dn2domain;
-    char **username;
+    char **username = NULL;
     char* domain = NULL;
     char* upn = NULL;
 
@@ -1087,24 +1087,27 @@ int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
     username=ad_get_attribute(ds, current_dn, "sAMAccountName");;
     if(username==NULL) {
         ad_error_code=AD_INVALID_DN;
-        return ad_error_code;
+
+        goto end;
     }
     result_dn2domain = dn2domain(new_container, &domain);
     if (AD_SUCCESS != result_dn2domain) {
         save_error_msg("dn2domain failed");
         ad_error_code = result_dn2domain;
-        goto ad_move_user_end;
+
+        goto end;
     }
     upn=malloc(strlen(username[0])+strlen(domain)+2);
     sprintf(upn, "%s@%s", username[0], domain);
     result=ad_mod_replace(ds, current_dn, "userPrincipalName", upn);
     if (!result) {
-        goto ad_move_user_end;
+        goto end;
     }
 
     ad_error_code=ad_move(ds, current_dn, new_container);
 
-    ad_move_user_end:
+    end:
+    ad_array_free(username);
     if (NULL != domain) {
         free(domain);
         domain = NULL;
@@ -1143,43 +1146,61 @@ int ad_move(LDAP *ds, const char *current_dn, const char *new_container) {
 
 /* returns AD_SUCCESS on success */
 int ad_lock_user(LDAP *ds, const char *dn) {
-    int result;
-    char **flags;
+    int result = AD_SUCCESS;
     char newflags[255];
     int iflags;
 
-    flags=ad_get_attribute(ds, dn, "userAccountControl");
-    if(flags==NULL) return ad_error_code;
+    char **flags = ad_get_attribute(ds, dn, "userAccountControl");
+    if(flags==NULL) {
+        result = ad_error_code;
+
+        goto end;
+    }
 
     iflags=atoi(flags[0]);
     iflags|=2;
     snprintf(newflags, sizeof(newflags), "%d", iflags);
 
     result=ad_mod_replace(ds, dn, "userAccountControl", newflags);
-    if(!result) {
-        return AD_LDAP_OPERATION_FAILURE;
+    if(result != LDAP_SUCCESS) {
+        result = AD_LDAP_OPERATION_FAILURE;
+        
+        goto end;
     }
 
-    return AD_SUCCESS;
+    end:
+    ad_array_free(flags);
+
+    return result;
 }
 
 /* Returns AD_SUCCESS on success */
 int ad_unlock_user(LDAP *ds, const char *dn) {
-    int result;
-    char **flags;
+    int result = AD_SUCCESS;
     char newflags[255];
     int iflags;
 
-    flags=ad_get_attribute(ds, dn, "userAccountControl");
-    if(flags==NULL) return ad_error_code;
+    char **flags = ad_get_attribute(ds, dn, "userAccountControl");
+    if(flags==NULL) {
+        result = ad_error_code;
+        
+        goto end;
+    }
 
     iflags=atoi(flags[0]);
     if(iflags&2) {
         iflags^=2;
         snprintf(newflags, sizeof(newflags), "%d", iflags);
         result=ad_mod_replace(ds, dn, "userAccountControl", newflags);
-        if(!result) return AD_LDAP_OPERATION_FAILURE;
+        if(!result) {
+            result = AD_LDAP_OPERATION_FAILURE;
+
+            goto end;
+        }
     }
+
+    end:
+    ad_array_free(flags);
 
     return AD_SUCCESS;
 }
