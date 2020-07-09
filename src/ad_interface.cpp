@@ -93,10 +93,7 @@ QList<QString> AdInterface::list(const QString &dn) {
             children.push_back(child);
         }
 
-        for (int i = 0; children_raw[i] != NULL; i++) {
-            free(children_raw[i]);
-        }
-        free(children_raw);
+        ad_array_free(children_raw);
 
         return children;
     } else {
@@ -123,10 +120,7 @@ QList<QString> AdInterface::search(const QString &filter) {
             results.push_back(result);
         }
 
-        for (int i = 0; results_raw[i] != NULL; i++) {
-            free(results_raw[i]);
-        }
-        free(results_raw);
+        ad_array_free(results_raw);
 
         return results;
     } else {
@@ -170,11 +164,7 @@ Attributes AdInterface::get_attributes(const QString &dn) {
                 attributes[attribute].push_back(value);
             }
 
-            // Free attributes_raw
-            for (int i = 0; attributes_raw[i] != NULL; i++) {
-                free(attributes_raw[i]);
-            }
-            free(attributes_raw);
+            ad_array_free(attributes_raw);   
         }
 
         attributes_cache[dn] = attributes;

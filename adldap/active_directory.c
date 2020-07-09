@@ -54,7 +54,6 @@ int ad_error_code;
 char *binddn=NULL;
 char *bindpw=NULL;
 
-// TODO: use this in other appropriate places, like AdInterface
 size_t ad_array_size(char **array) {
     if (array == NULL) {
         return 0;
