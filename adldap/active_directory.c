@@ -760,9 +760,9 @@ int ad_mod_add_binary(LDAP *ds, const char *dn, const char *attribute, const cha
     attrs[0] = &attr;
     attrs[1] = NULL;
 
-    result = ldap_modify_ext_s(ds, dn, attrs, NULL, NULL);
-    if(result!=LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
+    const int result_modify = ldap_modify_ext_s(ds, dn, attrs, NULL, NULL);
+    if(result_modify!=LDAP_SUCCESS) {
+        save_ldap_error_msg(result_modify);
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
     } else {
         ad_error_code=AD_SUCCESS;
@@ -790,9 +790,9 @@ int ad_mod_replace(LDAP *ds, const char *dn, const char *attribute, const char *
     attrs[0] = &attr;
     attrs[1] = NULL;
 
-    result = ldap_modify_ext_s(ds, dn, attrs, NULL, NULL);
-    if(result!=LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
+    const int result_modify = ldap_modify_ext_s(ds, dn, attrs, NULL, NULL);
+    if(result_modify!=LDAP_SUCCESS) {
+        save_ldap_error_msg(result_modify);
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
     } else {
         ad_error_code=AD_SUCCESS;
@@ -821,9 +821,9 @@ int ad_mod_replace_binary(LDAP *ds, const char *dn, const char *attribute, const
     attrs[0] = &attr;
     attrs[1] = NULL;
 
-    result = ldap_modify_ext_s(ds, dn, attrs, NULL, NULL);
-    if(result!=LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
+    const int result_modify = ldap_modify_ext_s(ds, dn, attrs, NULL, NULL);
+    if(result_modify!=LDAP_SUCCESS) {
+        save_ldap_error_msg(result_modify);
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
     } else {
         ad_error_code=AD_SUCCESS;
@@ -850,9 +850,9 @@ int ad_mod_delete(LDAP *ds, const char *dn, const char *attribute, const char *v
     attrs[0] = &attr;
     attrs[1] = NULL;
 
-    result = ldap_modify_ext_s(ds, dn, attrs, NULL, NULL);
-    if(result!=LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
+    const int result_modify = ldap_modify_ext_s(ds, dn, attrs, NULL, NULL);
+    if(result_modify!=LDAP_SUCCESS) {
+        save_ldap_error_msg(result_modify);
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
     } else {
         ad_error_code=AD_SUCCESS;
@@ -875,9 +875,9 @@ char **ad_get_attribute(LDAP *ds, const char *dn, const char *attribute) {
     // TODO: use paged search (need to?)
     // adclient has an implementation
     LDAPMessage *res;
-    int result = ldap_search_ext_s(ds, dn, LDAP_SCOPE_BASE, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
-    if (result != LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
+    const int result_search = ldap_search_ext_s(ds, dn, LDAP_SCOPE_BASE, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
+    if (result_search != LDAP_SUCCESS) {
+        save_ldap_error_msg(result_search);
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
         return NULL;
     }
@@ -971,9 +971,9 @@ char **ad_get_attribute(LDAP *ds, const char *dn, const char *attribute) {
 }
 
 int ad_mod_rename(LDAP *ds, const char *dn, const char *new_rdn) {
-    int result = ldap_rename_s(ds, dn, new_rdn, NULL, 1, NULL, NULL);
-    if (result != LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
+    const int result_rename = ldap_rename_s(ds, dn, new_rdn, NULL, 1, NULL, NULL);
+    if (result_rename != LDAP_SUCCESS) {
+        save_ldap_error_msg(result_rename);
         return ad_error_code;
     }
 
@@ -987,8 +987,10 @@ int ad_rename_user(LDAP *ds, const char *dn, const char *new_name) {
     char* domain = NULL;
     char* upn = NULL;
 
-    result=ad_mod_replace(ds, dn, "sAMAccountName", new_name);
-    if(!result) return ad_error_code;
+    const int result_replace = ad_mod_replace(ds, dn, "sAMAccountName", new_name);
+    if(result_replace != LDAP_SUCCESS) {
+        return ad_error_code;
+    }
 
     result_dn2domain = dn2domain(dn, &domain);
     if (AD_SUCCESS != result_dn2domain) {
@@ -1005,9 +1007,9 @@ int ad_rename_user(LDAP *ds, const char *dn, const char *new_name) {
     new_rdn=malloc(strlen(new_name)+4);
     sprintf(new_rdn, "cn=%s", new_name);
 
-    result = ldap_rename_s(ds, dn, new_rdn, NULL, 1, NULL, NULL);
-    if (result != LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
+    const int result_rename = ldap_rename_s(ds, dn, new_rdn, NULL, 1, NULL, NULL);
+    if (result_rename != LDAP_SUCCESS) {
+        save_ldap_error_msg(result_rename);
         goto ad_rename_user_end;
     }
 
@@ -1032,15 +1034,15 @@ int ad_rename_group(LDAP *ds, const char *dn, const char *new_name) {
     int result;
     char *new_rdn;
 
-    result=ad_mod_replace(ds, dn, "sAMAccountName", new_name);
-    if(!result) return ad_error_code;
+    const int result_replace=ad_mod_replace(ds, dn, "sAMAccountName", new_name);
+    if(result_replace != LDAP_SUCCESS) return ad_error_code;
 
     new_rdn=malloc(strlen(new_name)+4);
     sprintf(new_rdn, "cn=%s", new_name);
 
-    result = ldap_rename_s(ds, dn, new_rdn, NULL, 1, NULL, NULL);
-    if (result != LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
+    const int result_rename = ldap_rename_s(ds, dn, new_rdn, NULL, 1, NULL, NULL);
+    if (result_rename != LDAP_SUCCESS) {
+        save_ldap_error_msg(result_rename);
         return ad_error_code;
     }
 
@@ -1071,8 +1073,8 @@ int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
     }
     upn=malloc(strlen(username[0])+strlen(domain)+2);
     sprintf(upn, "%s@%s", username[0], domain);
-    result=ad_mod_replace(ds, current_dn, "userPrincipalName", upn);
-    if (!result) {
+    const int result_replace = ad_mod_replace(ds, current_dn, "userPrincipalName", upn);
+    if (result_replace != LDAP_SUCCESS) {
         goto end;
     }
 
@@ -1212,9 +1214,9 @@ int ad_group_create(LDAP *ds, const char *group_name, const char *dn) {
     attrs[2]=&attr3;
     attrs[3]=NULL;
 
-    result = ldap_add_ext_s(ds, dn, attrs, NULL, NULL);
-    if(result!=LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
+    const int result_add = ldap_add_ext_s(ds, dn, attrs, NULL, NULL);
+    if(result_add!=LDAP_SUCCESS) {
+        save_ldap_error_msg(result_add);
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
     } else {
         ad_error_code=AD_SUCCESS;
@@ -1246,7 +1248,7 @@ int ad_group_subtree_remove_user(LDAP *ds, const char *container_dn, const char 
     snprintf(filter, filter_length, 
         "(&(objectclass=group)(member=%s))", user_dn);
 
-    result = ldap_search_ext_s(ds,
+    const int result_search = ldap_search_ext_s(ds,
         container_dn,
         LDAP_SCOPE_SUBTREE, 
         filter,
@@ -1257,8 +1259,8 @@ int ad_group_subtree_remove_user(LDAP *ds, const char *container_dn, const char 
         NULL,
         LDAP_NO_LIMIT,
         &res);
-    if(result!=LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
+    if(result_search!=LDAP_SUCCESS) {
+        save_ldap_error_msg(result_search);
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
         return ad_error_code;
     }
@@ -1313,9 +1315,9 @@ int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn) {
     attrs[1]=&attr2;
     attrs[2]=NULL;
 
-    result = ldap_add_ext_s(ds, dn, attrs, NULL, NULL);
-    if(result!=LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
+    const int result_add = ldap_add_ext_s(ds, dn, attrs, NULL, NULL);
+    if(result_add!=LDAP_SUCCESS) {
+        save_ldap_error_msg(result_add);
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
     }
 
@@ -1337,7 +1339,7 @@ char **ad_list(LDAP *ds, const char *dn) {
     attrs[0]="1.1";
     attrs[1]=NULL;
 
-    result = ldap_search_ext_s(ds,
+    const int result_search = ldap_search_ext_s(ds,
         dn,
         LDAP_SCOPE_ONELEVEL,
         "(objectclass=*)",
@@ -1348,8 +1350,8 @@ char **ad_list(LDAP *ds, const char *dn) {
         NULL,
         LDAP_NO_LIMIT,
         &res);
-    if(result!=LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
+    if(result_search!=LDAP_SUCCESS) {
+        save_ldap_error_msg(result_search);
         ad_error_code=AD_LDAP_OPERATION_FAILURE;
         return NULL;
     }
