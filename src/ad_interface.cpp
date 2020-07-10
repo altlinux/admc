@@ -68,7 +68,7 @@ void AdInterface::login(const QString &base, const QString &head) {
 }
 
 QString AdInterface::get_error_str() {
-    return QString(connection->get_errstr());
+    return QString(connection->get_error());
 }
 
 QString AdInterface::get_search_base() {

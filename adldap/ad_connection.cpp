@@ -43,7 +43,7 @@ bool AdConnection::is_connected() {
     return false;
 }
 
-char* AdConnection::get_errstr() {
+const char *AdConnection::get_error() {
     return ad_get_error();
 }
 

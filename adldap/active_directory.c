@@ -460,7 +460,7 @@ int dn2domain(const char *dn, char** domain) {
 /* public functions */
 
 /* get a pointer to the last error message */
-char *ad_get_error() {
+const char *ad_get_error() {
     return ad_error_msg;
 }
 
@@ -953,7 +953,7 @@ int ad_mod_rename(LDAP *ds, const char *dn, const char *new_rdn) {
 }
 
 int ad_rename_user(LDAP *ds, const char *dn, const char *new_name) {
-    int result;
+    int result = AD_SUCCESS;
     int result_dn2domain;
     char* new_rdn = NULL;
     char* domain = NULL;

@@ -35,7 +35,7 @@ public:
     AdConnection();
     int connect(std::string uri_arg, std::string search_base_arg);
     bool is_connected();
-    char* get_errstr();
+    const char *get_error();
     std::string get_search_base() const;
     std::string get_uri() const;
 
