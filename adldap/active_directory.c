@@ -39,10 +39,9 @@
 #define MAX_PASSWORD_LENGTH 255
 
 // Save error message
-#define save_error_msg(msg) snprintf(ad_error_msg, MAX_ERR_LENGTH, "ERROR %s:%d: %s",  __func__, __LINE__, msg)
-
-// Convert LDAP error code to error message and save it
-#define save_ldap_error(ldap_err) save_error_msg(ldap_err2string(ldap_err))
+// Prepends function and line number of location
+#define save_error(msg) snprintf(ad_error_msg, MAX_ERR_LENGTH, "ERROR %s:%d: %s",  __func__, __LINE__, msg)
+#define save_ldap_error(ldap_err) save_error(ldap_err2string(ldap_err))
 
 char ad_error_msg[MAX_ERR_LENGTH];
 
@@ -140,7 +139,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
     const int msg_len = res_search(dname, ns_c_in, ns_t_srv, msg.buf, sizeof(msg.buf));
 
     if (msg_len < 0 || msg_len < sizeof(HEADER)) {
-        save_error_msg("bad msg_len");
+        save_error("bad msg_len");
         goto error;
     }
 
@@ -155,7 +154,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
         const int packet_len = dn_skipname(curr, eom);
 
         if (packet_len < 0) {
-            save_error_msg("dn_skipname < 0");
+            save_error("dn_skipname < 0");
             goto error;
         }
 
@@ -173,7 +172,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
         char server[NS_MAXDNAME];
         const int server_len = dn_expand(msg.buf, eom, curr, server, sizeof(server));
         if (server_len < 0) {
-            save_error_msg("dn_expand(server) < 0");
+            save_error("dn_expand(server) < 0");
             goto error;
         }
         curr = curr + server_len;
@@ -189,7 +188,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
         
         unsigned char *record_end = curr + record_len;
         if (record_end > eom) {
-            save_error_msg("record_end > eom");
+            save_error("record_end > eom");
             goto error;
         }
 
@@ -211,7 +210,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
         char host[NS_MAXDNAME];
         const int host_len = dn_expand(msg.buf, eom, curr, host, sizeof(host));
         if (host_len < 0) {
-            save_error_msg("dn_expand(host) < 0");
+            save_error("dn_expand(host) < 0");
             goto error;
         }
 
@@ -312,6 +311,10 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
 
 int ad_login(const char* uri, LDAP **ds) {
     int result = AD_SUCCESS;
+
+    save_ldap_error(LDAP_SUCCESS);
+    append_to_error("test");
+    printf(ad_error_msg);
 
     const int result_init = ldap_initialize(ds, uri);
     if (result_init != LDAP_SUCCESS) {
@@ -485,6 +488,8 @@ int ad_create_user(LDAP *ds, const char *username, const char *dn) {
     // Construct userPrincipalName
     const int result_dn2domain = dn2domain(dn, &domain);
     if (result_dn2domain != AD_SUCCESS) {
+        append_to_error("test");
+        // save_error("dn2domain failed");
         result = result_dn2domain;
 
         goto end;
@@ -778,12 +783,12 @@ int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***va
 
     const int entries_count = ldap_count_entries(ds, res);
     if (entries_count == 0) {
-        save_error_msg("no attribute entries found");
+        save_error("no attribute entries found");
         result = AD_OBJECT_NOT_FOUND;
         
         goto end;
     } else if (entries_count > 1) {
-        save_error_msg("multiple attribute entries found");
+        save_error("multiple attribute entries found");
         result = AD_OBJECT_NOT_FOUND;
         
         goto end;
@@ -887,7 +892,7 @@ int ad_rename_user(LDAP *ds, const char *dn, const char *new_name) {
 
     const int result_replace_name = ad_mod_replace(ds, dn, "sAMAccountName", new_name);
     if (result_replace_name != AD_SUCCESS) {
-        save_error_msg("failed to change sAMAccountName");
+        save_error("failed to change sAMAccountName");
         result = result_replace_name;
 
         goto end;
@@ -896,7 +901,7 @@ int ad_rename_user(LDAP *ds, const char *dn, const char *new_name) {
     // Construct userPrincipalName
     const int result_dn2domain = dn2domain(dn, &domain);
     if (result_dn2domain != AD_SUCCESS) {
-        save_error_msg("dn2domain failed");
+        save_error("dn2domain failed");
         result = result_dn2domain;
 
         goto end;
@@ -906,7 +911,7 @@ int ad_rename_user(LDAP *ds, const char *dn, const char *new_name) {
 
     const int result_replace_upn = ad_mod_replace(ds, dn, "userPrincipalName", upn);
     if (result_replace_upn != AD_SUCCESS) {
-        save_error_msg("failed to change userPrincipalName");
+        save_error("failed to change userPrincipalName");
         result = result_replace_upn;
 
         goto end;
@@ -938,7 +943,7 @@ int ad_rename_group(LDAP *ds, const char *dn, const char *new_name) {
 
     const int result_replace = ad_mod_replace(ds, dn, "sAMAccountName", new_name);
     if (result_replace != AD_SUCCESS) {
-        save_error_msg("failed to change sAMAccountName");
+        save_error("failed to change sAMAccountName");
         result = result_replace;
 
         goto end;
@@ -970,7 +975,7 @@ int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
 
     const int result_get_username = ad_get_attribute(ds, current_dn, "sAMAccountName", &username);
     if (result_get_username != AD_SUCCESS) {
-        save_error_msg("failed to get sAMAccountName");
+        save_error("failed to get sAMAccountName");
         result = AD_INVALID_DN;
 
         goto end;
@@ -979,7 +984,7 @@ int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
     // Construct userPrincipalName
     const int result_dn2domain = dn2domain(new_container, &domain);
     if (AD_SUCCESS != result_dn2domain) {
-        save_error_msg("dn2domain failed");
+        save_error("dn2domain failed");
         result = result_dn2domain;
 
         goto end;
@@ -990,7 +995,7 @@ int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
     // Modify userPrincipalName in case of domain change
     const int result_replace = ad_mod_replace(ds, current_dn, "userPrincipalName", upn);
     if (result_replace != AD_SUCCESS) {
-        save_error_msg("failed to replace userPrincipalName");
+        save_error("failed to replace userPrincipalName");
         result = AD_LDAP_OPERATION_FAILURE;
 
         goto end;
@@ -1018,7 +1023,7 @@ int ad_move(LDAP *ds, const char *current_dn, const char *new_container) {
 
     exdn = ldap_explode_dn(current_dn, 0);
     if (exdn == NULL) {
-        save_error_msg("ldap_explode_dn failed");
+        save_error("ldap_explode_dn failed");
         result = AD_INVALID_DN;
 
         goto end;
@@ -1045,7 +1050,7 @@ int ad_lock_user(LDAP *ds, const char *dn) {
     
     const int result_get_flags = ad_get_attribute(ds, dn, "userAccountControl", &flags);
     if (result_get_flags != AD_SUCCESS) {
-        save_error_msg("failed to get flags");
+        save_error("failed to get flags");
         result = AD_INVALID_DN;
 
         goto end;
@@ -1076,7 +1081,7 @@ int ad_unlock_user(LDAP *ds, const char *dn) {
 
     const int result_get_flags = ad_get_attribute(ds, dn, "userAccountControl", &flags);
     if (result_get_flags != AD_SUCCESS) {
-        save_error_msg("failed to get flags");
+        save_error("failed to get flags");
         result = AD_INVALID_DN;
         
         goto end;
