@@ -312,45 +312,32 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
 }
 
 int ad_login(const char* uri, LDAP **ds) {
-    int version, result;
-
-    char **hosts = NULL;
-    int hosts_result = ad_get_domain_hosts("DOMAIN.ALT", "SITE", &hosts);
-    if (hosts_result == AD_SUCCESS) {
-        for (int i = 0; hosts[i] != NULL; i++) {
-            printf("%s\n", hosts[i]);
-        }
-
-        ad_array_free(hosts);
-    }
-
-    /* open the connection to the ldap server */
-    result=ldap_initialize(ds, uri);
-    if(result!=LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
+    const int result_init = ldap_initialize(ds, uri);
+    if (result_init != LDAP_SUCCESS) {
+        save_ldap_error_msg(result_init);
         return AD_SERVER_CONNECT_FAILURE;
     }
 
-    // set version
-    version=LDAP_VERSION3;
-    result=ldap_set_option(*ds, LDAP_OPT_PROTOCOL_VERSION, &version);
-    if(result!=LDAP_OPT_SUCCESS) {
-        save_ldap_error_msg(result);
+    // Set version
+    const int version = LDAP_VERSION3;
+    const int result_set_version = ldap_set_option(*ds, LDAP_OPT_PROTOCOL_VERSION, &version);
+    if (result_set_version != LDAP_OPT_SUCCESS) {
+        save_ldap_error_msg(result_set_version);
         return AD_SERVER_CONNECT_FAILURE;
     }
 
-    // disable referrals
-    result=ldap_set_option(*ds, LDAP_OPT_REFERRALS, LDAP_OPT_OFF);
-    if(result!=LDAP_OPT_SUCCESS) {
-        save_ldap_error_msg(result);
+    // Disable referrals
+    const int result_referral =ldap_set_option(*ds, LDAP_OPT_REFERRALS, LDAP_OPT_OFF);
+    if (result_referral != LDAP_OPT_SUCCESS) {
+        save_ldap_error_msg(result_referral);
         return AD_SERVER_CONNECT_FAILURE;
     }
 
-    // NOTE: use gssapi instead of simple
-    char* sasl_secprops = "maxssf=56";
-    result = ldap_set_option(*ds, LDAP_OPT_X_SASL_SECPROPS, (void *) sasl_secprops);
-    if (result != LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
+    // Set maxssf
+    const char* sasl_secprops = "maxssf=56";
+    const int result_secprops = ldap_set_option(*ds, LDAP_OPT_X_SASL_SECPROPS, sasl_secprops);
+    if (result_secprops != LDAP_SUCCESS) {
+        save_ldap_error_msg(result_secprops);
         return AD_SERVER_CONNECT_FAILURE;
     }
 
@@ -362,17 +349,15 @@ int ad_login(const char* uri, LDAP **ds) {
     ldap_get_option(*ds, LDAP_OPT_X_SASL_AUTHZID, &defaults.authzid);
     defaults.passwd = NULL;
 
+    // Perform bind operation
     unsigned sasl_flags = LDAP_SASL_QUIET;
-    // TODO: why is mech passed in alone and as first member of defaults?
-    result = ldap_sasl_interactive_bind_s(*ds, NULL,
-      defaults.mech, NULL, NULL,
-      sasl_flags, sasl_interact_gssapi, &defaults);
+    const int result_sasl = ldap_sasl_interactive_bind_s(*ds, NULL,defaults.mech, NULL, NULL, sasl_flags, sasl_interact_gssapi, &defaults);
 
     ldap_memfree(defaults.realm);
     ldap_memfree(defaults.authcid);
     ldap_memfree(defaults.authzid);
-    if (result != LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
+    if (result_sasl != LDAP_SUCCESS) {
+        save_ldap_error_msg(result_sasl);
         return AD_SERVER_CONNECT_FAILURE;
     }
 
