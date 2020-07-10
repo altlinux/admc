@@ -108,10 +108,9 @@ QList<QString> AdInterface::search(const QString &filter) {
     const QByteArray filter_array = filter.toLatin1();
     const char *filter_cstr = filter_array.constData();
 
-    char **results_raw = connection->search(filter_cstr);
-    int search_result = connection->get_errcode();
-
-    if (search_result == AD_SUCCESS) {
+    char **results_raw;
+    const int result_search = connection->search(filter_cstr, &results_raw);
+    if (result_search == AD_SUCCESS) {
         auto results = QList<QString>();
 
         for (int i = 0; results_raw[i] != NULL; i++) {

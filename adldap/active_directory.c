@@ -652,59 +652,37 @@ int ad_setpass(LDAP *ds, const char *dn, const char *password) {
     return result;
 }
 
-/* general search function */
-char **ad_search(LDAP *ds, const char *filter, const char* search_base) {
-    char *attrs[]={"1.1", NULL};
+int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***dn_list) {
+    int result = AD_SUCCESS;
+
+    *dn_list = NULL;
+
+    char *attrs[] = {"1.1", NULL};
     LDAPMessage *res;
-    LDAPMessage *entry;
-    int i, result, num_results;
-    char **dnlist;
-    char *dn;
+    const int result_search = ldap_search_ext_s(ds, search_base, LDAP_SCOPE_SUBTREE, filter, attrs, 1, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
+    if (result_search != LDAP_SUCCESS) {
+        save_ldap_error_msg(result_search);
+        result = AD_LDAP_OPERATION_FAILURE;
 
-    result = ldap_search_ext_s(ds,
-        search_base,
-        LDAP_SCOPE_SUBTREE,
-        filter,
-        attrs,
-        1,
-        NULL,
-        NULL,
-        NULL,
-        LDAP_NO_LIMIT,
-        &res);
-    if(result!=LDAP_SUCCESS) {
-        save_ldap_error_msg(result);
-        result=AD_LDAP_OPERATION_FAILURE;
-        return (char **)-1;
+        goto end;
     }
 
-    num_results=ldap_count_entries(ds, res);
-    if(num_results==0) {
-        ldap_msgfree(res);
-        save_error_msg("no matches found");
-        result=AD_OBJECT_NOT_FOUND;
-        return NULL;
+    const int entries_count = ldap_count_entries(ds, res);
+    *dn_list = malloc(sizeof(char *) * (entries_count + 1));
+
+    int i = 0;
+    for (LDAPMessage *entry = ldap_first_entry(ds, res);
+        (entry = ldap_next_entry(ds, entry)) != NULL; i++) {
+        char *entry_dn = ldap_get_dn(ds, entry);
+        (*dn_list)[i] = strdup(entry_dn);
+        ldap_memfree(entry_dn);
     }
+    (*dn_list)[i] = NULL;
 
-    dnlist=malloc(sizeof(char *)*(num_results+1));
-
-    entry=ldap_first_entry(ds, res);
-    dn=ldap_get_dn(ds, entry);
-    dnlist[0]=strdup(dn);
-    ldap_memfree(dn);
-
-    for(i=1; (entry=ldap_next_entry(ds, entry))!=NULL; i++) {
-        dn=ldap_get_dn(ds, entry);
-        dnlist[i]=strdup(dn);
-        ldap_memfree(dn);
-    }
-    dnlist[i]=NULL;
-
-    // ldap_memfree(dn);
+    end:
     ldap_msgfree(res);
 
-    result=AD_SUCCESS;
-    return dnlist;
+    return result;
 }
 
 int ad_mod_add(LDAP *ds, const char *dn, const char *attribute, const char *value) {
@@ -1316,9 +1294,9 @@ int ad_list(LDAP *ds, const char *dn, char ***dn_list) {
     int i = 0; 
     for (LDAPMessage *entry = ldap_first_entry(ds, res);
         (entry = ldap_next_entry(ds, entry)) != NULL; i++) {
-        char *child_dn = ldap_get_dn(ds, entry);
-        (*dn_list)[i] = strdup(child_dn);
-        ldap_memfree(child_dn);
+        char *entry_dn = ldap_get_dn(ds, entry);
+        (*dn_list)[i] = strdup(entry_dn);
+        ldap_memfree(entry_dn);
     }
     (*dn_list)[i] = NULL;
 

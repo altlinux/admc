@@ -105,16 +105,12 @@ int ad_object_delete(LDAP *ds, const char *dn);
 */
 int ad_setpass(LDAP *ds, const char *dn, const char *password);
 
-/* ad_search() is a general search function
-|  Returns a NULL terminated array of dns which match the given filter
-|  or NULL if no results are found.  
-|  Returns -1 on error.
-|  Sets error code to AD_SUCCESS, AD_OBJECT_NOT_FOUND 
-| or AD_LDAP_OPERATION_FAILURE.
-|  Searching is done from the searchbase specified in the configuration
-| file.
-*/
-char **ad_search(LDAP *ds, const char *filter, const char* search_base);
+/**
+ * Return a NULL terminated array of DN's which match the given filter
+ * and are below the given search base
+ * dn_list should be freed by the caller using ad_array_free()
+ */
+int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***dn_list);
 
 /* ad_mod_add() adds a value to the given attribute.
 | Example ad_mod_add("cn=nobody,ou=users,dc=example,dc=com",
@@ -220,7 +216,7 @@ int ad_group_remove_user(LDAP *ds, const char *group_dn, const char *user_dn);
 int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn);
 
 /** 
- * Return a NULL terminated array of object DN's that are one level
+ * Return a NULL terminated array of DN's that are one level
  * below the given object
  * If none are found, array is still allocated and is empty
  * dn_list should be freed by the caller using ad_array_free()

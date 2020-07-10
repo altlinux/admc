@@ -46,7 +46,7 @@ public:
     int unlock_user(const char *dn);
     int object_delete(const char *dn);
     int setpass(const char *dn, const char *password);
-    char **search(const char *filter);
+    int search(const char *filter, char ***dn_list);
     int mod_add(const char *dn, const char *attribute, const char *value);
     int mod_add_binary(const char *dn, const char *attribute, const char *data, int data_length);
     int mod_replace(const char *dn, const char *attribute, const char *value);

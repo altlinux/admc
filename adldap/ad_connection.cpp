@@ -83,8 +83,8 @@ int AdConnection::setpass(const char *dn, const char *password) {
     return ad_setpass(ldap_connection, dn, password);
 }
 
-char** AdConnection::search(const char *filter) {
-    return ad_search(ldap_connection, filter, this->search_base.c_str());
+int AdConnection::search(const char *filter, char ***dn_list) {
+    return ad_search(ldap_connection, filter, this->search_base.c_str(), dn_list);
 }
 
 int AdConnection::mod_add(const char *dn, const char *attribute, const char *value) {
