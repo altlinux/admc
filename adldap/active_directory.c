@@ -38,8 +38,10 @@
 #define MAX_ERR_LENGTH 1024
 #define MAX_PASSWORD_LENGTH 255
 
-// Save error message
-// Prepends function and line number of location
+// Error message macros
+// Saves errors while also prepending function and line of location
+// LDAP version takes in LDAP error code and converts it into ldap
+// error message
 #define save_error(msg) snprintf(ad_error_msg, MAX_ERR_LENGTH, "ERROR %s:%d: %s",  __func__, __LINE__, msg)
 #define save_ldap_error(ldap_err) save_error(ldap_err2string(ldap_err))
 
@@ -312,10 +314,6 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
 int ad_login(const char* uri, LDAP **ds) {
     int result = AD_SUCCESS;
 
-    save_ldap_error(LDAP_SUCCESS);
-    append_to_error("test");
-    printf(ad_error_msg);
-
     const int result_init = ldap_initialize(ds, uri);
     if (result_init != LDAP_SUCCESS) {
         save_ldap_error(result_init);
@@ -488,8 +486,7 @@ int ad_create_user(LDAP *ds, const char *username, const char *dn) {
     // Construct userPrincipalName
     const int result_dn2domain = dn2domain(dn, &domain);
     if (result_dn2domain != AD_SUCCESS) {
-        append_to_error("test");
-        // save_error("dn2domain failed");
+        save_error("dn2domain failed");
         result = result_dn2domain;
 
         goto end;
@@ -1032,7 +1029,7 @@ int ad_move(LDAP *ds, const char *current_dn, const char *new_container) {
     const int result_rename = ldap_rename_s(ds, current_dn, exdn[0], new_container, 1, NULL, NULL);
     if (result_rename != LDAP_SUCCESS) {
         save_ldap_error(result_rename);
-        result=AD_LDAP_OPERATION_FAILURE;
+        result = AD_LDAP_OPERATION_FAILURE;
 
         goto end;
     }
@@ -1063,6 +1060,7 @@ int ad_lock_user(LDAP *ds, const char *dn) {
 
     const int result_replace = ad_mod_replace(ds, dn, "userAccountControl", newflags);
     if (result_replace != AD_SUCCESS) {
+        save_error("failed to replace userAccountControl");
         result = AD_LDAP_OPERATION_FAILURE;
         
         goto end;
@@ -1095,6 +1093,7 @@ int ad_unlock_user(LDAP *ds, const char *dn) {
         snprintf(newflags, sizeof(newflags), "%d", iflags);
         const int result_replace = ad_mod_replace(ds, dn, "userAccountControl", newflags);
         if (result_replace != AD_SUCCESS) {
+            save_error("failed to replace userAccountControl");
             result = AD_LDAP_OPERATION_FAILURE;
 
             goto end;
