@@ -54,7 +54,7 @@ typedef struct sasl_defaults_gssapi {
     char *authzid;
 } sasl_defaults_gssapi;
 
-int dn2domain(const char *dn, char** domain);
+int dn2domain(const char *dn, char **domain_out);
 int sasl_interact_gssapi(LDAP *ds, unsigned flags, void *indefaults, void *in);
 int query_server_for_hosts(const char *dname, char ***hosts);
 
@@ -993,68 +993,69 @@ int ad_group_remove_user(LDAP *ds, const char *group_dn, const char *user_dn) {
  * domain should be freed using free()
  * Returns AD_SUCCESS or error code
  */
-int dn2domain(const char *dn, char** domain) {
-    LDAPDN ldn = NULL;
-    LDAPRDN lrdn = NULL;
-    LDAPAVA* lattr = NULL;
-
+int dn2domain(const char *dn, char **domain_out) {
     int result = AD_SUCCESS;
-    int i;
-    /* This way we'll always have null-terminated string without
-     * workarounds. Cost of memory initialization is not comparable
-     * with code readability */
-    char *dc = calloc(MAX_DN_LENGTH, sizeof(char));
+    
+    LDAPDN exp_dn = NULL;
+    char *domain = NULL;
 
-    /* Explode string into set of structures representing RDNs */
-    if (ldap_str2dn(dn, &ldn, LDAP_DN_FORMAT_LDAPV3) != LDAP_SUCCESS) {
+    // Explode dn
+    const int result_str2dn = ldap_str2dn(dn, &exp_dn, LDAP_DN_FORMAT_LDAPV3);
+    if (result_str2dn != LDAP_SUCCESS) {
         result = AD_INVALID_DN;
-        goto dn2domain_end;
+
+        goto end;
     }
 
-    /* Iterate over RDNs checking for Domain Components and extract
-     * their values */
-    for(i = 0; NULL != ldn[i]; i++) {
-        lrdn = ldn[i];
-        /* Multi-valued RDNs are not supported so no iteration over
-         * lrdn[x] */
-        /* Check that we have at least one RDN */
-        if (NULL == lrdn[0]) {
-            result = AD_ATTRIBUTE_ENTRY_NOT_FOUND;
-            goto dn2domain_end;
+    // Iterate over RDNs, extracting the domain part
+    domain = calloc(MAX_DN_LENGTH, sizeof(char));
+    for (int i = 0; exp_dn[i] != NULL; i++) {
+        // NOTE: rdn can be multi-valued but we only process the first value
+        LDAPRDN rdns = exp_dn[i];
+        LDAPAVA *rdn = rdns[0];
+
+        if (rdn == NULL) {
+            result = AD_INVALID_DN;
+
+            goto end;
         }
-        lattr = lrdn[0];
-        /* BER/DER encoded attributes are unsupported */
-        if (0 == (lattr->la_flags & LDAP_AVA_STRING)) {
-            result = AD_LDAP_OPERATION_FAILURE;
-            goto dn2domain_end;
+
+        // NOTE: BER/DER encoded attributes are unsupported
+        const bool string_encoding = (rdn->la_flags & LDAP_AVA_STRING);
+        if (!string_encoding) {
+            result = AD_INVALID_DN;
+
+            goto end;
         }
-        if(!strncasecmp("DC", lattr[0].la_attr.bv_val, 2)) {
-            strncat(dc, lattr[0].la_value.bv_val, MAX_DN_LENGTH - strlen(dc) - 1);
-            strncat(dc, ".", MAX_DN_LENGTH - strlen(dc) - 1);
+
+        // Save rdn if it's part of domain string
+        const bool rdn_is_part_of_domain = (strncasecmp("DC", rdn[0].la_attr.bv_val, 2) == 0);
+        if (rdn_is_part_of_domain) {
+            printf("part of \n");
+            strncat(domain, rdn[0].la_value.bv_val, MAX_DN_LENGTH - strlen(domain) - 1);
+            strncat(domain, ".", MAX_DN_LENGTH - strlen(domain) - 1);
         }
     }
 
-    i = strlen(dc);
-    for(i = 0; '\0' != dc[i]; i++) {
-        dc[i] = tolower(dc[i]);
+    // Convert domain to lower case
+    for (int i = 0; i < strlen(domain); i++) {
+        domain[i] = tolower(domain[i]);
     }
 
     // Remove last '.'
-    if (strlen(dc) > 0) {
-        dc[strlen(dc) - 1] = '\0';
+    if (strlen(domain) > 0) {
+        domain[strlen(domain) - 1] = '\0';
     }
 
-    dn2domain_end:
-    /* Free the memory allocated by ldap_str2dn */
-    ldap_dnfree(ldn);
+    end:
+    ldap_dnfree(exp_dn);
 
-    /* Free the memory allocated for resolved DNS domain name in case
-     * of resolution errors */
-    if (AD_SUCCESS != result) {
-        free(dc);
+    if (result == AD_SUCCESS) {
+        *domain_out = domain;
+    } else {
+        *domain_out = NULL;
+        free(domain);
     }
-
-    (*domain) = dc;
 
     return result;
 }
