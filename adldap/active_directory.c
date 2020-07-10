@@ -64,8 +64,10 @@ const char *ad_get_error() {
     return ad_error_msg;
 }
 
-int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
+int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts_out) {
     int result = AD_SUCCESS; 
+
+    char **hosts = NULL;
     char **site_hosts = NULL;
     char **default_hosts = NULL;
 
@@ -79,6 +81,7 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
         int query_result = query_server_for_hosts(dname, &site_hosts);
         if (query_result != AD_SUCCESS) {
             result = query_result;
+
             goto end;
         }
     }
@@ -92,6 +95,7 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
     int query_result = query_server_for_hosts(dname_default, &default_hosts);
     if (query_result != AD_SUCCESS) {
         result = query_result;
+
         goto end;
     }
 
@@ -99,13 +103,13 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
 
     // Combine site and default hosts
     const int hosts_max_size = site_hosts_size + default_hosts_size + 1;
-    *hosts = malloc(sizeof(char *) * hosts_max_size);
+    hosts = malloc(sizeof(char *) * hosts_max_size);
     size_t hosts_current_i = 0;
     
     // Load all site hosts first
     for (int i = 0; i < site_hosts_size; i++) {
         char *site_host = site_hosts[i];
-        (*hosts)[hosts_current_i] = strdup(site_host);
+        hosts[hosts_current_i] = strdup(site_host);
         hosts_current_i++;
     }
 
@@ -115,7 +119,7 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
 
         bool already_in_list = false;
         for (int j = 0; j < hosts_current_i; j++) {
-            char *other_host = (*hosts)[j];
+            char *other_host = hosts[j];
 
             if (strcmp(default_host, other_host) == 0) {
                 already_in_list = true;
@@ -124,17 +128,24 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
         }
 
         if (!already_in_list) {
-            (*hosts)[hosts_current_i] = strdup(default_host);
+            hosts[hosts_current_i] = strdup(default_host);
             hosts_current_i++;
         }
     }
 
-    (*hosts)[hosts_current_i] = NULL;
+    hosts[hosts_current_i] = NULL;
 
     end:
     {
         ad_array_free(site_hosts);
         ad_array_free(default_hosts);
+
+        if (result == AD_SUCCESS) {
+            *hosts_out = hosts;
+        } else {
+            *hosts_out = NULL;
+            free(hosts);
+        }
 
         return result;
     }
@@ -238,10 +249,10 @@ void ad_array_free(char **array) {
     }
 }
 
-int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***dn_list) {
+int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***list_out) {
     int result = AD_SUCCESS;
 
-    *dn_list = NULL;
+    char **list = NULL;
     LDAPMessage *res;
 
     char *attrs[] = {"1.1", NULL};
@@ -254,27 +265,34 @@ int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***dn_
     }
 
     const int entries_count = ldap_count_entries(ds, res);
-    *dn_list = malloc(sizeof(char *) * (entries_count + 1));
+    list = malloc(sizeof(char *) * (entries_count + 1));
 
     int i = 0;
     for (LDAPMessage *entry = ldap_first_entry(ds, res);
         (entry = ldap_next_entry(ds, entry)) != NULL; i++) {
         char *entry_dn = ldap_get_dn(ds, entry);
-        (*dn_list)[i] = strdup(entry_dn);
+        list[i] = strdup(entry_dn);
         ldap_memfree(entry_dn);
     }
-    (*dn_list)[i] = NULL;
+    list[i] = NULL;
 
     end:
     ldap_msgfree(res);
 
+    if (result == AD_SUCCESS) {
+        *list_out = list;
+    } else {
+        *list_out = NULL;
+        free(list);
+    }
+
     return result;
 }
 
-int ad_list(LDAP *ds, const char *dn, char ***dn_list) {
+int ad_list(LDAP *ds, const char *dn, char ***list_out) {
     int result = AD_SUCCESS;
 
-    *dn_list = NULL;
+    char **list = NULL;
 
     char *attrs[] = {"1.1", NULL};
 
@@ -288,19 +306,26 @@ int ad_list(LDAP *ds, const char *dn, char ***dn_list) {
     }
 
     const int entries_count = ldap_count_entries(ds, res);
-    *dn_list = malloc(sizeof(char *) * (entries_count + 1));
+    list = malloc(sizeof(char *) * (entries_count + 1));
 
     int i = 0; 
     for (LDAPMessage *entry = ldap_first_entry(ds, res);
         (entry = ldap_next_entry(ds, entry)) != NULL; i++) {
         char *entry_dn = ldap_get_dn(ds, entry);
-        (*dn_list)[i] = strdup(entry_dn);
+        list[i] = strdup(entry_dn);
         ldap_memfree(entry_dn);
     }
-    (*dn_list)[i] = NULL;
+    list[i] = NULL;
 
     end:
     ldap_msgfree(res);
+
+    if (result == AD_SUCCESS) {
+        *list_out = list;
+    } else {
+        *list_out = NULL;
+        free(list);
+    }
 
     return result;
 }
@@ -695,7 +720,7 @@ int ad_attribute_delete(LDAP *ds, const char *dn, const char *attribute, const c
     return result;
 }
 
-int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***values) {
+int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***values_out) {
     typedef struct ber_list {
         char *attribute;
         struct berval **values;
@@ -704,7 +729,7 @@ int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***va
 
     int result = AD_SUCCESS;
 
-    *values = NULL;
+    char **values = NULL;
 
     // TODO: use paged search
     char *attrs[] = {(char *)attribute, NULL};
@@ -770,8 +795,8 @@ int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***va
 
         // NOTE: for each value we need to pair it with key, hence the '2'
         // and reserve one more for NULL termination
-        *values = (char **)malloc(sizeof(char *) * (total_count * 2 + 1));
-        (*values)[total_count * 2] = NULL;
+        values = (char **)malloc(sizeof(char *) * (total_count * 2 + 1));
+        values[total_count * 2] = NULL;
 
         curr = head;
         size_t values_i = 0;
@@ -784,9 +809,9 @@ int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***va
                 bv_str[data.bv_len] = '\0';
                 // printf("\t%s\n", bv_str);
 
-                (*values)[values_i] = strdup(curr->attribute);
+                values[values_i] = strdup(curr->attribute);
                 values_i++;
-                (*values)[values_i] = strdup(bv_str);
+                values[values_i] = strdup(bv_str);
                 values_i++;
             }
 
@@ -802,6 +827,13 @@ int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***va
 
     end:
     ldap_msgfree(res);
+
+    if (result == AD_SUCCESS) {
+        *values_out = values;
+    } else {
+        *values_out = NULL;
+        free(values);
+    }
 
     return result;
 }
