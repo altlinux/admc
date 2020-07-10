@@ -312,10 +312,14 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
 }
 
 int ad_login(const char* uri, LDAP **ds) {
+    int result = AD_SUCCESS;
+
     const int result_init = ldap_initialize(ds, uri);
     if (result_init != LDAP_SUCCESS) {
         save_ldap_error_msg(result_init);
-        return AD_SERVER_CONNECT_FAILURE;
+        result = AD_SERVER_CONNECT_FAILURE;
+        
+        goto end;
     }
 
     // Set version
@@ -323,14 +327,18 @@ int ad_login(const char* uri, LDAP **ds) {
     const int result_set_version = ldap_set_option(*ds, LDAP_OPT_PROTOCOL_VERSION, &version);
     if (result_set_version != LDAP_OPT_SUCCESS) {
         save_ldap_error_msg(result_set_version);
-        return AD_SERVER_CONNECT_FAILURE;
+        result = AD_SERVER_CONNECT_FAILURE;
+        
+        goto end;
     }
 
     // Disable referrals
     const int result_referral =ldap_set_option(*ds, LDAP_OPT_REFERRALS, LDAP_OPT_OFF);
     if (result_referral != LDAP_OPT_SUCCESS) {
         save_ldap_error_msg(result_referral);
-        return AD_SERVER_CONNECT_FAILURE;
+        result = AD_SERVER_CONNECT_FAILURE;
+        
+        goto end;
     }
 
     // Set maxssf
@@ -338,7 +346,9 @@ int ad_login(const char* uri, LDAP **ds) {
     const int result_secprops = ldap_set_option(*ds, LDAP_OPT_X_SASL_SECPROPS, sasl_secprops);
     if (result_secprops != LDAP_SUCCESS) {
         save_ldap_error_msg(result_secprops);
-        return AD_SERVER_CONNECT_FAILURE;
+        result = AD_SERVER_CONNECT_FAILURE;
+        
+        goto end;
     }
 
     // Setup sasl_defaults_gssapi 
@@ -358,14 +368,21 @@ int ad_login(const char* uri, LDAP **ds) {
     ldap_memfree(defaults.authzid);
     if (result_sasl != LDAP_SUCCESS) {
         save_ldap_error_msg(result_sasl);
-        return AD_SERVER_CONNECT_FAILURE;
+        result = AD_SERVER_CONNECT_FAILURE;
+        
+        goto end;
     }
 
     // NOTE: not using this for now but might need later
     // The Man says: this function is used when an application needs to bind to another server in order to follow a referral or search continuation reference
     // ldap_set_rebind_proc(*ds, sasl_rebind_gssapi, NULL);
 
-    return AD_SUCCESS;
+    end:
+    if (result != AD_SUCCESS) {
+        ldap_memfree(*ds);
+    }
+
+    return result;
 }
 
 /**
