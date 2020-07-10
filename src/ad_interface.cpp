@@ -83,9 +83,10 @@ QList<QString> AdInterface::list(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    char **children_raw = connection->list(dn_cstr);
+    char **children_raw;
+    const int result = connection->list(dn_cstr, &children_raw);
 
-    if (children_raw != NULL) {
+    if (result == AD_SUCCESS) {
         auto children = QList<QString>();
 
         for (int i = 0; children_raw[i] != NULL; i++) {
@@ -97,9 +98,7 @@ QList<QString> AdInterface::list(const QString &dn) {
 
         return children;
     } else {
-        if (connection->get_errcode() != AD_SUCCESS) {
-            message(QString("Failed to load children of \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
-        }
+        message(QString("Failed to load children of \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
 
         return QList<QString>();
     }

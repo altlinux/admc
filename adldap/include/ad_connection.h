@@ -62,7 +62,7 @@ public:
     int group_add_user(const char *group_dn, const char *user_dn);
     int group_remove_user(const char *group_dn, const char *user_dn);
     int ou_create(const char *ou_name, const char *dn);
-    char **list(const char *dn);
+    int list(const char *dn, char ***dn_list);
 };
 
 } /* namespace adldap */

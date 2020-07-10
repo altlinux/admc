@@ -147,8 +147,8 @@ int AdConnection::ou_create(const char *ou_name, const char *dn) {
     return ad_ou_create(ldap_connection, ou_name, dn);
 }
 
-char** AdConnection::list(const char *dn) {
-    return ad_list(ldap_connection, dn);
+int AdConnection::list(const char *dn, char ***dn_list) {
+    return ad_list(ldap_connection, dn, dn_list);
 }
 
 } /* namespace adldap */

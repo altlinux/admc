@@ -1293,62 +1293,37 @@ int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn) {
     return result;
 }
 
-/* ad_list returns a NULL terminated array of character strings
-    with one entry for object below the given dn
-    returns NULL if no values are found */
-char **ad_list(LDAP *ds, const char *dn) {
-    char *attrs[2];
-    int result;
+
+int ad_list(LDAP *ds, const char *dn, char ***dn_list) {
+    int result = AD_SUCCESS;
+
+    *dn_list = NULL;
+
+    char *attrs[] = {"1.1", NULL};
+
     LDAPMessage *res;
-    LDAPMessage *entry;
-    int num_entries;
-    int i;
-    char **dnlist;
-
-    attrs[0]="1.1";
-    attrs[1]=NULL;
-
-    const int result_search = ldap_search_ext_s(ds,
-        dn,
-        LDAP_SCOPE_ONELEVEL,
-        "(objectclass=*)",
-        attrs,
-        0,
-        NULL,
-        NULL,
-        NULL,
-        LDAP_NO_LIMIT,
-        &res);
-    if(result_search!=LDAP_SUCCESS) {
+    const int result_search = ldap_search_ext_s(ds, dn, LDAP_SCOPE_ONELEVEL, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
+    if (result_search != LDAP_SUCCESS) {
         save_ldap_error_msg(result_search);
-        result=AD_LDAP_OPERATION_FAILURE;
-        return NULL;
-    }
-    num_entries=ldap_count_entries(ds, res);
+        result = AD_LDAP_OPERATION_FAILURE;
 
-    if(num_entries==0) {
-        ldap_msgfree(res);
-        return NULL;
+        goto end;
     }
 
-    dnlist=malloc(sizeof(char *)*(num_entries+1));
+    const int entries_count = ldap_count_entries(ds, res);
+    *dn_list = malloc(sizeof(char *) * (entries_count + 1));
 
-    entry=ldap_first_entry(ds, res);
-    {
-        char *child_dn=ldap_get_dn(ds, entry);
-        dnlist[0]=strdup(child_dn);
+    int i = 0; 
+    for (LDAPMessage *entry = ldap_first_entry(ds, res);
+        (entry = ldap_next_entry(ds, entry)) != NULL; i++) {
+        char *child_dn = ldap_get_dn(ds, entry);
+        (*dn_list)[i] = strdup(child_dn);
         ldap_memfree(child_dn);
     }
+    (*dn_list)[i] = NULL;
 
-    for(i=1; (entry=ldap_next_entry(ds, entry))!=NULL; i++) {
-        char *child_dn=ldap_get_dn(ds, entry);
-        dnlist[i]=strdup(child_dn);
-        ldap_memfree(child_dn);
-    }
-    dnlist[i]=NULL;
-
+    end:
     ldap_msgfree(res);
 
-    result=AD_SUCCESS;
-    return dnlist;
+    return result;
 }

@@ -219,10 +219,13 @@ int ad_group_remove_user(LDAP *ds, const char *group_dn, const char *user_dn);
 */
 int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn);
 
-/* ad_list()
-|  Return NULL terminated array of entries
-*/
-char **ad_list(LDAP *ds, const char *dn);
+/** 
+ * Return a NULL terminated array of object DN's that are one level
+ * below the given object
+ * If none are found, array is still allocated and is empty
+ * dn_list should be freed by the caller using ad_array_free()
+ */
+int ad_list(LDAP *ds, const char *dn, char ***dn_list);
 
 /**
  * Connect and authenticate to Active Directory server
