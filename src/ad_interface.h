@@ -74,9 +74,9 @@ public:
     QList<QString> list(const QString &dn);
     QList<QString> search(const QString &filter);
 
-    Attributes get_attributes(const QString &dn);
-    QList<QString> get_attribute_multi(const QString &dn, const QString &attribute);
-    QString get_attribute(const QString &dn, const QString &attribute);
+    Attributes attribute_gets(const QString &dn);
+    QList<QString> attribute_get_multi(const QString &dn, const QString &attribute);
+    QString attribute_get(const QString &dn, const QString &attribute);
     bool attribute_value_exists(const QString &dn, const QString &attribute, const QString &value);
 
     bool set_attribute(const QString &dn, const QString &attribute, const QString &value);

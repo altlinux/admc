@@ -173,7 +173,7 @@ void ContainersModel::on_ad_modified() {
 }
 
 void load_row(QList<QStandardItem *> row, const QString &dn) {
-    QString name = AD()->get_attribute(dn, "name");
+    QString name = AD()->attribute_get(dn, "name");
 
     row[ContainersColumn_Name]->setText(name);
     row[ContainersColumn_DN]->setText(dn);

@@ -84,7 +84,7 @@ void AttributesModel::change_target(const QString &dn) {
     removeRows(0, rowCount());
 
     // Populate model with attributes of new root
-    QMap<QString, QList<QString>> attributes = AD()->get_attributes(target_dn);
+    QMap<QString, QList<QString>> attributes = AD()->attribute_gets(target_dn);
     for (auto attribute : attributes.keys()) {
         QList<QString> values = attributes[attribute];
 
