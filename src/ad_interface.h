@@ -68,13 +68,11 @@ public:
     explicit AdInterface(QObject *parent);
     ~AdInterface();
 
-    void login(const QString &host, const QString &domain);
+    bool login(const QString &host, const QString &domain);
 
     QString get_error_str();
     QString get_search_base();
     QString get_uri();
-
-    bool is_connected();
 
     QList<QString> list(const QString &dn);
     QList<QString> search(const QString &filter);

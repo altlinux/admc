@@ -82,7 +82,7 @@ QString extract_parent_dn_from_dn(const QString &dn) {
     return parent_dn;
 }
 
-void AdInterface::login(const QString &host, const QString &domain) {
+bool AdInterface::login(const QString &host, const QString &domain) {
     const QString uri = "ldap://" + host;
     const std::string uri_std = uri.toStdString();
     const std::string domain_std = domain.toStdString();
@@ -93,17 +93,17 @@ void AdInterface::login(const QString &host, const QString &domain) {
         message(QString("Logged in to \"%1\" at \"%2\"").arg(host, domain));
 
         emit logged_in();
+
+        return true;
     } else {
         message(QString("Failed to login to \"%1\" at \"%2\"").arg(host, domain));
+
+        return false;
     }
 }
 
 QString AdInterface::get_error_str() {
     return QString(connection->get_error());
-}
-
-bool AdInterface::is_connected() {
-    return connection->is_connected();
 }
 
 QString AdInterface::get_search_base() {

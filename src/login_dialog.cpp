@@ -163,9 +163,8 @@ void LoginDialog::load_hosts() {
 void LoginDialog::complete(const QString &host) {
     const QString domain = domain_edit->text();
 
-    AD()->login(host, domain);
-
-    if (AD()->is_connected()) {
+    const bool logged_in = AD()->login(host, domain);
+    if (logged_in) {
         const bool save_session = save_session_checkbox->isChecked();
         if (save_session) {
             const QString site = site_edit->text();
