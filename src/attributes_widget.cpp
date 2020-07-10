@@ -67,7 +67,7 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     const QString attribute = name_index.data().toString();
     const QString value_str = value.toString();
 
-    bool success = AD()->set_attribute(target_dn, attribute, value_str);
+    bool success = AD()->attribute_replace(target_dn, attribute, value_str);
 
     if (success) {
         QStandardItemModel::setData(index, value, role);
@@ -84,7 +84,7 @@ void AttributesModel::change_target(const QString &dn) {
     removeRows(0, rowCount());
 
     // Populate model with attributes of new root
-    QMap<QString, QList<QString>> attributes = AD()->attribute_gets(target_dn);
+    QMap<QString, QList<QString>> attributes = AD()->get_all_attributes(target_dn);
     for (auto attribute : attributes.keys()) {
         QList<QString> values = attributes[attribute];
 

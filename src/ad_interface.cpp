@@ -128,7 +128,7 @@ QList<QString> AdInterface::search(const QString &filter) {
     }
 }
 
-Attributes AdInterface::attribute_gets(const QString &dn) {
+Attributes AdInterface::get_all_attributes(const QString &dn) {
     if (dn == "") {
         return Attributes();
     }
@@ -172,7 +172,7 @@ Attributes AdInterface::attribute_gets(const QString &dn) {
 }
 
 QList<QString> AdInterface::attribute_get_multi(const QString &dn, const QString &attribute) {
-    QMap<QString, QList<QString>> attributes = attribute_gets(dn);
+    QMap<QString, QList<QString>> attributes = get_all_attributes(dn);
 
     if (attributes.contains(attribute)) {
         return attributes[attribute];
@@ -202,7 +202,7 @@ bool AdInterface::attribute_value_exists(const QString &dn, const QString &attri
     }
 }
 
-bool AdInterface::set_attribute(const QString &dn, const QString &attribute, const QString &value) {
+bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value) {
     int result = AD_INVALID_DN;
 
     const QString old_value = attribute_get(dn, attribute);
