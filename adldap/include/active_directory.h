@@ -138,26 +138,26 @@ int ad_user_set_pass(LDAP *ds, const char *dn, const char *password);
  * This function works only on multi-valued attributes
  * Returns AD_SUCCESS or error code
  */
-int ad_mod_add(LDAP *ds, const char *dn, const char *attribute, const char *value);
+int ad_attribute_add(LDAP *ds, const char *dn, const char *attribute, const char *value);
 
 /**
- * Same as ad_mod_add() but for binary data
+ * Same as ad_attribute_add() but for binary data
  * Returns AD_SUCCESS or error code
  */
-int ad_mod_add_binary(LDAP *ds, const char *dn, const char *attribute, const char *data, int data_length);
+int ad_attribute_add_binary(LDAP *ds, const char *dn, const char *attribute, const char *data, int data_length);
 
 /**
  * Replaces the value of given attribute with new value
  * If attributes has multiple values, all of them are replaced
  * Returns AD_SUCCESS or error code
  */
-int ad_mod_replace(LDAP *ds, const char *dn, const char *attribute, const char *value);
+int ad_attribute_replace(LDAP *ds, const char *dn, const char *attribute, const char *value);
 
 /**
  * Same as ad_mode_replace() but for binary data
  * Returns AD_SUCCESS or error code
  */
-int ad_mod_replace_binary(LDAP *ds, const char *dn, const char *attribute, const char *data, int data_length);
+int ad_attribute_replace_binary(LDAP *ds, const char *dn, const char *attribute, const char *data, int data_length);
 
 /**
  * Remove (attribute, value) mapping from object
@@ -165,7 +165,7 @@ int ad_mod_replace_binary(LDAP *ds, const char *dn, const char *attribute, const
  * Output a list of key-value pairs for given attribute
  * Returns AD_SUCCESS or error code
  */
-int ad_mod_delete(LDAP *ds, const char *dn, const char *attribute, const char *value);
+int ad_attribute_delete(LDAP *ds, const char *dn, const char *attribute, const char *value);
 
 /**
  * Output a list of key-value pairs for given attribute
@@ -173,7 +173,7 @@ int ad_mod_delete(LDAP *ds, const char *dn, const char *attribute, const char *v
  * list should be freed by the caller using ad_array_free()
  * Returns AD_SUCCESS or error code
  */
-int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***values);
+int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***values);
 
 /**
  * Rename object

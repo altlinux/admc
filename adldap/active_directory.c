@@ -476,7 +476,7 @@ int ad_user_lock(LDAP *ds, const char *dn) {
 
     char **flags = NULL;
     
-    const int result_get_flags = ad_get_attribute(ds, dn, "userAccountControl", &flags);
+    const int result_get_flags = ad_attribute_get(ds, dn, "userAccountControl", &flags);
     if (result_get_flags != AD_SUCCESS) {
         save_error("failed to get flags");
         result = AD_INVALID_DN;
@@ -489,7 +489,7 @@ int ad_user_lock(LDAP *ds, const char *dn) {
     iflags |= 2;
     snprintf(newflags, sizeof(newflags), "%d", iflags);
 
-    const int result_replace = ad_mod_replace(ds, dn, "userAccountControl", newflags);
+    const int result_replace = ad_attribute_replace(ds, dn, "userAccountControl", newflags);
     if (result_replace != AD_SUCCESS) {
         save_error("failed to replace userAccountControl");
         result = AD_LDAP_OPERATION_FAILURE;
@@ -508,7 +508,7 @@ int ad_user_unlock(LDAP *ds, const char *dn) {
 
     char **flags = NULL;
 
-    const int result_get_flags = ad_get_attribute(ds, dn, "userAccountControl", &flags);
+    const int result_get_flags = ad_attribute_get(ds, dn, "userAccountControl", &flags);
     if (result_get_flags != AD_SUCCESS) {
         save_error("failed to get flags");
         result = AD_INVALID_DN;
@@ -522,7 +522,7 @@ int ad_user_unlock(LDAP *ds, const char *dn) {
 
         char newflags[255];
         snprintf(newflags, sizeof(newflags), "%d", iflags);
-        const int result_replace = ad_mod_replace(ds, dn, "userAccountControl", newflags);
+        const int result_replace = ad_attribute_replace(ds, dn, "userAccountControl", newflags);
         if (result_replace != AD_SUCCESS) {
             save_error("failed to replace userAccountControl");
             result = AD_LDAP_OPERATION_FAILURE;
@@ -573,7 +573,7 @@ int ad_user_set_pass(LDAP *ds, const char *dn, const char *password) {
     return result;
 }
 
-int ad_mod_add(LDAP *ds, const char *dn, const char *attribute, const char *value) {
+int ad_attribute_add(LDAP *ds, const char *dn, const char *attribute, const char *value) {
     int result = AD_SUCCESS;
 
     LDAPMod attr;
@@ -593,7 +593,7 @@ int ad_mod_add(LDAP *ds, const char *dn, const char *attribute, const char *valu
     return result;
 }
 
-int ad_mod_add_binary(LDAP *ds, const char *dn, const char *attribute, const char *data, int data_length) {
+int ad_attribute_add_binary(LDAP *ds, const char *dn, const char *attribute, const char *data, int data_length) {
     int result = AD_SUCCESS;
 
     char *data_copy = strdup(data);
@@ -626,7 +626,7 @@ int ad_mod_add_binary(LDAP *ds, const char *dn, const char *attribute, const cha
     return result;
 }
 
-int ad_mod_replace(LDAP *ds, const char *dn, const char *attribute, const char *value) {
+int ad_attribute_replace(LDAP *ds, const char *dn, const char *attribute, const char *value) {
     int result = AD_SUCCESS;
     
     LDAPMod attr;
@@ -646,7 +646,7 @@ int ad_mod_replace(LDAP *ds, const char *dn, const char *attribute, const char *
     return result;
 }
 
-int ad_mod_replace_binary(LDAP *ds, const char *dn, const char *attribute, const char *data, int data_length) {
+int ad_attribute_replace_binary(LDAP *ds, const char *dn, const char *attribute, const char *data, int data_length) {
     int result = AD_SUCCESS;
 
     char *data_copy = strdup(data);
@@ -674,7 +674,7 @@ int ad_mod_replace_binary(LDAP *ds, const char *dn, const char *attribute, const
     return result;
 }
 
-int ad_mod_delete(LDAP *ds, const char *dn, const char *attribute, const char *value) {
+int ad_attribute_delete(LDAP *ds, const char *dn, const char *attribute, const char *value) {
     int result = AD_SUCCESS;
     
     LDAPMod attr;
@@ -694,7 +694,7 @@ int ad_mod_delete(LDAP *ds, const char *dn, const char *attribute, const char *v
     return result;
 }
 
-int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***values) {
+int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***values) {
     typedef struct ber_list {
         char *attribute;
         struct berval **values;
@@ -824,7 +824,7 @@ int ad_rename_user(LDAP *ds, const char *dn, const char *new_name) {
     char* domain = NULL;
     char* upn = NULL;
 
-    const int result_replace_name = ad_mod_replace(ds, dn, "sAMAccountName", new_name);
+    const int result_replace_name = ad_attribute_replace(ds, dn, "sAMAccountName", new_name);
     if (result_replace_name != AD_SUCCESS) {
         save_error("failed to change sAMAccountName");
         result = result_replace_name;
@@ -843,7 +843,7 @@ int ad_rename_user(LDAP *ds, const char *dn, const char *new_name) {
     upn = malloc(strlen(new_name) + strlen(domain) + 2);
     sprintf(upn, "%s@%s", new_name, domain);
 
-    const int result_replace_upn = ad_mod_replace(ds, dn, "userPrincipalName", upn);
+    const int result_replace_upn = ad_attribute_replace(ds, dn, "userPrincipalName", upn);
     if (result_replace_upn != AD_SUCCESS) {
         save_error("failed to change userPrincipalName");
         result = result_replace_upn;
@@ -875,7 +875,7 @@ int ad_rename_group(LDAP *ds, const char *dn, const char *new_name) {
 
     char *new_rdn = NULL;
 
-    const int result_replace = ad_mod_replace(ds, dn, "sAMAccountName", new_name);
+    const int result_replace = ad_attribute_replace(ds, dn, "sAMAccountName", new_name);
     if (result_replace != AD_SUCCESS) {
         save_error("failed to change sAMAccountName");
         result = result_replace;
@@ -907,7 +907,7 @@ int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
     char *domain = NULL;
     char *upn = NULL;
 
-    const int result_get_username = ad_get_attribute(ds, current_dn, "sAMAccountName", &username);
+    const int result_get_username = ad_attribute_get(ds, current_dn, "sAMAccountName", &username);
     if (result_get_username != AD_SUCCESS) {
         save_error("failed to get sAMAccountName");
         result = AD_INVALID_DN;
@@ -927,7 +927,7 @@ int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
     sprintf(upn, "%s@%s", username[0], domain);
 
     // Modify userPrincipalName in case of domain change
-    const int result_replace = ad_mod_replace(ds, current_dn, "userPrincipalName", upn);
+    const int result_replace = ad_attribute_replace(ds, current_dn, "userPrincipalName", upn);
     if (result_replace != AD_SUCCESS) {
         save_error("failed to replace userPrincipalName");
         result = AD_LDAP_OPERATION_FAILURE;
@@ -978,11 +978,11 @@ int ad_move(LDAP *ds, const char *current_dn, const char *new_container) {
 }
 
 int ad_group_add_user(LDAP *ds, const char *group_dn, const char *user_dn) {
-    return ad_mod_add(ds, group_dn, "member", user_dn);
+    return ad_attribute_add(ds, group_dn, "member", user_dn);
 }
 
 int ad_group_remove_user(LDAP *ds, const char *group_dn, const char *user_dn) {
-    return ad_mod_delete(ds, group_dn, "member", user_dn);
+    return ad_attribute_delete(ds, group_dn, "member", user_dn);
 }
 
 /**

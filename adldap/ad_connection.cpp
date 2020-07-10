@@ -84,27 +84,27 @@ int AdConnection::search(const char *filter, char ***dn_list) {
 }
 
 int AdConnection::mod_add(const char *dn, const char *attribute, const char *value) {
-    return ad_mod_add(ldap_connection, dn, attribute, value);
+    return ad_attribute_add(ldap_connection, dn, attribute, value);
 }
 
 int AdConnection::mod_add_binary(const char *dn, const char *attribute, const char *data, int data_length) {
-    return ad_mod_add_binary(ldap_connection, dn, attribute, data, data_length);
+    return ad_attribute_add_binary(ldap_connection, dn, attribute, data, data_length);
 }
 
 int AdConnection::mod_replace(const char *dn, const char *attribute, const char *value) {
-    return ad_mod_replace(ldap_connection, dn, attribute, value);
+    return ad_attribute_replace(ldap_connection, dn, attribute, value);
 }
 
 int AdConnection::mod_replace_binary(const char *dn, const char *attribute, const char *data, int data_length) {
-    return ad_mod_replace_binary(ldap_connection, dn, attribute, data, data_length);
+    return ad_attribute_replace_binary(ldap_connection, dn, attribute, data, data_length);
 }
 
 int AdConnection::mod_delete(const char *dn, const char *attribute, const char *value) {
-    return ad_mod_delete(ldap_connection, dn, attribute, value);
+    return ad_attribute_delete(ldap_connection, dn, attribute, value);
 }
 
 int AdConnection::get_attribute(const char *dn, const char *attribute, char ***values) {
-    return ad_get_attribute(ldap_connection, dn, attribute, values);
+    return ad_attribute_get(ldap_connection, dn, attribute, values);
 }
 
 int AdConnection::rename(const char *dn, const char *new_name) {
