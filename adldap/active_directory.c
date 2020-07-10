@@ -677,10 +677,11 @@ int ad_mod_add_binary(LDAP *ds, const char *dn, const char *attribute, const cha
     if (result_modify != LDAP_SUCCESS) {
         save_ldap_error(result_modify);
         result = AD_LDAP_OPERATION_FAILURE;
-    } else {
-        result = AD_SUCCESS;
+
+        goto end;
     }
 
+    end:
     free(data_copy);
 
     return result;
@@ -936,7 +937,7 @@ int ad_rename_group(LDAP *ds, const char *dn, const char *new_name) {
     char *new_rdn = NULL;
 
     const int result_replace = ad_mod_replace(ds, dn, "sAMAccountName", new_name);
-    if (result_replace != LDAP_SUCCESS) {
+    if (result_replace != AD_SUCCESS) {
         save_error_msg("failed to change sAMAccountName");
         result = result_replace;
 
@@ -988,7 +989,8 @@ int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
 
     // Modify userPrincipalName in case of domain change
     const int result_replace = ad_mod_replace(ds, current_dn, "userPrincipalName", upn);
-    if (result_replace != LDAP_SUCCESS) {
+    if (result_replace != AD_SUCCESS) {
+        save_error_msg("failed to replace userPrincipalName");
         result = AD_LDAP_OPERATION_FAILURE;
 
         goto end;
