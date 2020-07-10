@@ -16,6 +16,17 @@
 #ifndef ACTIVE_DIRECTORY_H
 #define ACTIVE_DIRECTORY_H 1
 
+/* Error codes */
+#define AD_SUCCESS 1
+#define AD_COULDNT_OPEN_CONFIG_FILE 2
+#define AD_MISSING_CONFIG_PARAMETER 3
+#define AD_SERVER_CONNECT_FAILURE 4
+#define AD_LDAP_OPERATION_FAILURE 5
+#define AD_OBJECT_NOT_FOUND 6
+#define AD_ATTRIBUTE_ENTRY_NOT_FOUND 7
+#define AD_INVALID_DN 8
+#define AD_RESOLV_ERROR 9
+
 #if defined(__cplusplus)
 extern "C" {
 #endif /* __cplusplus */
@@ -29,11 +40,19 @@ extern "C" {
 const char *ad_get_error();
 
 /**
- * Free a null-terminated array that was returned by one of
- * the functions in this library
- * NULL check is performed
+ * Output a list of hosts that exist for given domain and site
+ * list is NULL terminated
+ * list should be freed by the caller using ad_array_free()
+ * Returns AD_SUCCESS or error code
  */
-void ad_array_free(char **array);
+int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts);
+
+/**
+ * Connect and authenticate to Active Directory server
+ * If connected succesfully saves connection handle into ds
+ * Returns AD_SUCCESS or error code
+ */
+int ad_login(const char* uri, LDAP **ds);
 
 /**
  * Calculate size of null-terminated array by iterating through it
@@ -41,12 +60,28 @@ void ad_array_free(char **array);
 size_t ad_array_size(char **array);
 
 /**
- * Output a list of hosts that exist for given domain and site
+ * Free a null-terminated array that was returned by one of
+ * the functions in this library
+ * NULL check is performed
+ */
+void ad_array_free(char **array);
+
+/**
+ * Output a list of DN's which match the given filter and are
+ * below the given search base
+ * list is NULL terminated
+ * list should be freed by the caller using ad_array_free()
+ */
+int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***dn_list);
+
+/** 
+ * Output a list of DN's that are one level below the given object
+ * If none are found, list is allocated and is empty
  * list is NULL terminated
  * list should be freed by the caller using ad_array_free()
  * Returns AD_SUCCESS or error code
  */
-int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts);
+int ad_list(LDAP *ds, const char *dn, char ***dn_list);
 
 /**
  * Create user object below given DN
@@ -62,6 +97,24 @@ int ad_create_user(LDAP *ds, const char *username, const char *dn);
 int ad_create_computer(LDAP *ds, const char *name, const char *dn);
 
 /**
+ * Create an organizational unit
+ * Returns AD_SUCCESS or error code
+ */
+int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn);
+
+/**
+ * Create a group with given name below given DN
+ * Returns AD_SUCCESS or error code
+ */
+int ad_group_create(LDAP *ds, const char *group_name, const char *dn);
+
+/**
+ * Delete object
+ * Returns AD_SUCCESS or error code
+ */
+int ad_object_delete(LDAP *ds, const char *dn);
+
+/**
  * Lock a user account
  * Returns AD_SUCCESS or error code
  */
@@ -74,25 +127,11 @@ int ad_lock_user(LDAP *ds, const char *dn);
 int ad_unlock_user(LDAP *ds, const char *dn);
 
 /**
- * Delete object
- * Returns AD_SUCCESS or error code
- */
-int ad_object_delete(LDAP *ds, const char *dn);
-
-/**
  * Set the user's password to the given password string
  * SSL connection is required
  * Returns AD_SUCCESS or error code
  */
 int ad_setpass(LDAP *ds, const char *dn, const char *password);
-
-/**
- * Output a list of DN's which match the given filter and are
- * below the given search base
- * list is NULL terminated
- * list should be freed by the caller using ad_array_free()
- */
-int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***dn_list);
 
 /**
  * Adds a value to given attribute
@@ -169,12 +208,6 @@ int ad_move(LDAP *ds, const char *current_dn, const char *new_container);
 int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container);
 
 /**
- * Create a group with given name below given DN
- * Returns AD_SUCCESS or error code
- */
-int ad_group_create(LDAP *ds, const char *group_name, const char *dn);
-
-/**
  * Add user to a group
  * Returns AD_SUCCESS or error code
  */
@@ -186,41 +219,8 @@ int ad_group_add_user(LDAP *ds, const char *group_dn, const char *user_dn);
  */
 int ad_group_remove_user(LDAP *ds, const char *group_dn, const char *user_dn);
 
-/**
- * Create an organizational unit
- * Returns AD_SUCCESS or error code
- */
-int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn);
-
-/** 
- * Output a list of DN's that are one level below the given object
- * If none are found, list is allocated and is empty
- * list is NULL terminated
- * list should be freed by the caller using ad_array_free()
- * Returns AD_SUCCESS or error code
- */
-int ad_list(LDAP *ds, const char *dn, char ***dn_list);
-
-/**
- * Connect and authenticate to Active Directory server
- * If connected succesfully saves connection handle into ds
- * Returns AD_SUCCESS or error code
- */
-int ad_login(const char* uri, LDAP **ds);
-
 #if defined(__cplusplus)
 }
 #endif /* __cplusplus */
-
-/* Error codes */
-#define AD_SUCCESS 1
-#define AD_COULDNT_OPEN_CONFIG_FILE 2
-#define AD_MISSING_CONFIG_PARAMETER 3
-#define AD_SERVER_CONNECT_FAILURE 4
-#define AD_LDAP_OPERATION_FAILURE 5
-#define AD_OBJECT_NOT_FOUND 6
-#define AD_ATTRIBUTE_ENTRY_NOT_FOUND 7
-#define AD_INVALID_DN 8
-#define AD_RESOLV_ERROR 9
 
 #endif /* ACTIVE_DIRECTORY_H */

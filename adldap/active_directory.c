@@ -45,32 +45,6 @@
 #define save_error(msg) snprintf(ad_error_msg, MAX_ERR_LENGTH, "ERROR %s:%d: %s",  __func__, __LINE__, msg)
 #define save_ldap_error(ldap_err) save_error(ldap_err2string(ldap_err))
 
-char ad_error_msg[MAX_ERR_LENGTH];
-
-size_t ad_array_size(char **array) {
-    if (array == NULL) {
-        return 0;
-    } else {
-        size_t count = 0;
-
-        for (int i = 0; array[i] != NULL; i++) {
-            count++;
-        }
-
-        return count;
-    }
-}
-
-void ad_array_free(char **array) {
-    if (array != NULL) {
-        for (int i = 0; array[i] != NULL; i++) {
-            free(array[i]);
-        }
-
-        free(array);
-    }
-}
-
 typedef struct sasl_defaults_gssapi {
     char *mech;
     char *realm;
@@ -79,160 +53,14 @@ typedef struct sasl_defaults_gssapi {
     char *authzid;
 } sasl_defaults_gssapi;
 
-int sasl_interact_gssapi(LDAP *ds, unsigned flags, void *indefaults, void *in) {
-    sasl_defaults_gssapi *defaults = indefaults;
-    sasl_interact_t *interact = (sasl_interact_t*)in;
+int dn2domain(const char *dn, char** domain);
+int sasl_interact_gssapi(LDAP *ds, unsigned flags, void *indefaults, void *in);
+int query_server_for_hosts(const char *dname, char ***hosts);
 
-    if (ds == NULL) {
-        return LDAP_PARAM_ERROR;
-    }
+char ad_error_msg[MAX_ERR_LENGTH];
 
-    while (interact->id != SASL_CB_LIST_END) {
-        const char *dflt = interact->defresult;
-
-        switch (interact->id) {
-            case SASL_CB_GETREALM:
-            if (defaults)
-                dflt = defaults->realm;
-            break;
-            case SASL_CB_AUTHNAME:
-            if (defaults)
-                dflt = defaults->authcid;
-            break;
-            case SASL_CB_PASS:
-            if (defaults)
-                dflt = defaults->passwd;
-            break;
-            case SASL_CB_USER:
-            if (defaults)
-                dflt = defaults->authzid;
-            break;
-            case SASL_CB_NOECHOPROMPT:
-            break;
-            case SASL_CB_ECHOPROMPT:
-            break;
-        }
-
-        if (dflt && !*dflt) {
-            dflt = NULL;
-        }
-
-        /* input must be empty */
-        interact->result = (dflt && *dflt) ? dflt : "";
-        interact->len = strlen(interact->result);
-        interact++;
-    }
-
-    return LDAP_SUCCESS;
-}
-
-// NOTE: this is rewritten from
-// https://github.com/paleg/libadclient/blob/master/adclient.cpp
-// which itself is copied from
-// https://www.ccnx.org/releases/latest/doc/ccode/html/ccndc-srv_8c_source.html
-// Another example of similar procedure:
-// https://www.gnu.org/software/shishi/coverage/shishi/lib/resolv.c.gcov.html
-int query_server_for_hosts(const char *dname, char ***hosts) {
-    union dns_msg {
-        HEADER header;
-        unsigned char buf[NS_MAXMSG];
-    } msg;
-
-    const int msg_len = res_search(dname, ns_c_in, ns_t_srv, msg.buf, sizeof(msg.buf));
-
-    if (msg_len < 0 || msg_len < sizeof(HEADER)) {
-        save_error("bad msg_len");
-        goto error;
-    }
-
-    const int packet_count = ntohs(msg.header.qdcount);
-    const int answer_count = ntohs(msg.header.ancount);
-
-    unsigned char *curr = msg.buf + sizeof(msg.header);
-    const unsigned char *eom = msg.buf + msg_len;
-
-    // Skip over packet records
-    for (int i = packet_count; i > 0 && curr < eom; i--) {
-        const int packet_len = dn_skipname(curr, eom);
-
-        if (packet_len < 0) {
-            save_error("dn_skipname < 0");
-            goto error;
-        }
-
-        curr = curr + packet_len + QFIXEDSZ;
-    }
-
-    // Init hosts list
-    const size_t hosts_size = answer_count + 1;
-    *hosts = malloc(sizeof(char *) * hosts_size);
-
-    // Process answers by collecting hosts into list
-    size_t hosts_current_i = 0;
-    for (int i = 0; i < answer_count; i++) {
-        // Get server
-        char server[NS_MAXDNAME];
-        const int server_len = dn_expand(msg.buf, eom, curr, server, sizeof(server));
-        if (server_len < 0) {
-            save_error("dn_expand(server) < 0");
-            goto error;
-        }
-        curr = curr + server_len;
-
-        int record_type;
-        int UNUSED(record_class);
-        int UNUSED(ttl);
-        int record_len;
-        GETSHORT(record_type, curr);
-        GETSHORT(record_class, curr);
-        GETLONG(ttl, curr);
-        GETSHORT(record_len, curr);
-        
-        unsigned char *record_end = curr + record_len;
-        if (record_end > eom) {
-            save_error("record_end > eom");
-            goto error;
-        }
-
-        // Skip non-server records
-        if (record_type != ns_t_srv) {
-            curr = record_end;
-            continue;
-        }
-
-        int UNUSED(priority);
-        int UNUSED(weight);
-        int UNUSED(port);
-        GETSHORT(priority, curr);
-        GETSHORT(weight, curr);
-        GETSHORT(port, curr);
-        // TODO: need to save port field? maybe to incorporate into uri
-
-        // Get host
-        char host[NS_MAXDNAME];
-        const int host_len = dn_expand(msg.buf, eom, curr, host, sizeof(host));
-        if (host_len < 0) {
-            save_error("dn_expand(host) < 0");
-            goto error;
-        }
-
-        (*hosts)[hosts_current_i] = strdup(host);
-        hosts_current_i++;
-
-        curr = record_end;
-    }
-
-    (*hosts)[hosts_current_i] = NULL;
-
-    return AD_SUCCESS;
-
-    error:
-    {
-        ad_array_free(*hosts);
-        *hosts = NULL;
-
-        return AD_RESOLV_ERROR;
-    }
+const char *ad_get_error() {
+    return ad_error_msg;
 }
 
 int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
@@ -385,77 +213,95 @@ int ad_login(const char* uri, LDAP **ds) {
     return result;
 }
 
-/**
- * Convert a distinguished name into the domain controller
- * dns domain, eg: "ou=users,dc=example,dc=com" returns
- * "example.com".
- * domain should be freed using free()
- * Returns AD_SUCCESS or error code
- */
-int dn2domain(const char *dn, char** domain) {
-    LDAPDN ldn = NULL;
-    LDAPRDN lrdn = NULL;
-    LDAPAVA* lattr = NULL;
+size_t ad_array_size(char **array) {
+    if (array == NULL) {
+        return 0;
+    } else {
+        size_t count = 0;
 
+        for (int i = 0; array[i] != NULL; i++) {
+            count++;
+        }
+
+        return count;
+    }
+}
+
+void ad_array_free(char **array) {
+    if (array != NULL) {
+        for (int i = 0; array[i] != NULL; i++) {
+            free(array[i]);
+        }
+
+        free(array);
+    }
+}
+
+int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***dn_list) {
     int result = AD_SUCCESS;
-    int i;
-    /* This way we'll always have null-terminated string without
-     * workarounds. Cost of memory initialization is not comparable
-     * with code readability */
-    char *dc = calloc(1024, sizeof(char));
 
-    /* Explode string into set of structures representing RDNs */
-    if (ldap_str2dn(dn, &ldn, LDAP_DN_FORMAT_LDAPV3) != LDAP_SUCCESS) {
-        result = AD_INVALID_DN;
-        goto dn2domain_end;
+    *dn_list = NULL;
+    LDAPMessage *res;
+
+    char *attrs[] = {"1.1", NULL};
+    const int result_search = ldap_search_ext_s(ds, search_base, LDAP_SCOPE_SUBTREE, filter, attrs, 1, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
+    if (result_search != LDAP_SUCCESS) {
+        save_ldap_error(result_search);
+        result = AD_LDAP_OPERATION_FAILURE;
+
+        goto end;
     }
 
-    /* Iterate over RDNs checking for Domain Components and extract
-     * their values */
-    for(i = 0; NULL != ldn[i]; i++) {
-        lrdn = ldn[i];
-        /* Multi-valued RDNs are not supported so no iteration over
-         * lrdn[x] */
-        /* Check that we have at least one RDN */
-        if (NULL == lrdn[0]) {
-            result = AD_ATTRIBUTE_ENTRY_NOT_FOUND;
-            goto dn2domain_end;
-        }
-        lattr = lrdn[0];
-        /* BER/DER encoded attributes are unsupported */
-        if (0 == (lattr->la_flags & LDAP_AVA_STRING)) {
-            result = AD_LDAP_OPERATION_FAILURE;
-            goto dn2domain_end;
-        }
-        // FIXME: Check for buffer overflow
-        if(!strncasecmp("DC", lattr[0].la_attr.bv_val, 2)) {
-            strncat(dc, lattr[0].la_value.bv_val, lattr[0].la_value.bv_len);
-            strncat(dc, ".", 1024);
-        }
+    const int entries_count = ldap_count_entries(ds, res);
+    *dn_list = malloc(sizeof(char *) * (entries_count + 1));
+
+    int i = 0;
+    for (LDAPMessage *entry = ldap_first_entry(ds, res);
+        (entry = ldap_next_entry(ds, entry)) != NULL; i++) {
+        char *entry_dn = ldap_get_dn(ds, entry);
+        (*dn_list)[i] = strdup(entry_dn);
+        ldap_memfree(entry_dn);
     }
+    (*dn_list)[i] = NULL;
 
-    i = strlen(dc);
-    for(i = 0; '\0' != dc[i]; i++) {
-        dc[i] = tolower(dc[i]);
-    }
-
-    dn2domain_end:
-    /* Free the memory allocated by ldap_str2dn */
-    ldap_dnfree(ldn);
-
-    /* Free the memory allocated for resolved DNS domain name in case
-     * of resolution errors */
-    if (AD_SUCCESS != result) {
-        free(dc);
-    }
-
-    (*domain) = dc;
+    end:
+    ldap_msgfree(res);
 
     return result;
 }
 
-const char *ad_get_error() {
-    return ad_error_msg;
+int ad_list(LDAP *ds, const char *dn, char ***dn_list) {
+    int result = AD_SUCCESS;
+
+    *dn_list = NULL;
+
+    char *attrs[] = {"1.1", NULL};
+
+    LDAPMessage *res;
+    const int result_search = ldap_search_ext_s(ds, dn, LDAP_SCOPE_ONELEVEL, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
+    if (result_search != LDAP_SUCCESS) {
+        save_ldap_error(result_search);
+        result = AD_LDAP_OPERATION_FAILURE;
+
+        goto end;
+    }
+
+    const int entries_count = ldap_count_entries(ds, res);
+    *dn_list = malloc(sizeof(char *) * (entries_count + 1));
+
+    int i = 0; 
+    for (LDAPMessage *entry = ldap_first_entry(ds, res);
+        (entry = ldap_next_entry(ds, entry)) != NULL; i++) {
+        char *entry_dn = ldap_get_dn(ds, entry);
+        (*dn_list)[i] = strdup(entry_dn);
+        ldap_memfree(entry_dn);
+    }
+    (*dn_list)[i] = NULL;
+
+    end:
+    ldap_msgfree(res);
+
+    return result;
 }
 
 int ad_create_user(LDAP *ds, const char *username, const char *dn) {
@@ -555,6 +401,64 @@ int ad_create_computer(LDAP *ds, const char *name, const char *dn) {
     return result;
 }
 
+int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn) {
+    int result = AD_SUCCESS;
+
+    LDAPMod attr1;
+    char *class_values[] = {"organizationalUnit", NULL};
+    attr1.mod_op = LDAP_MOD_ADD;
+    attr1.mod_type = "objectClass";
+    attr1.mod_values = class_values;
+
+    LDAPMod attr2;
+    const char *name_values[] = {ou_name, NULL};
+    attr2.mod_op = LDAP_MOD_ADD;
+    attr2.mod_type = "name";
+    attr2.mod_values = (char **)name_values;
+    
+    LDAPMod *attrs[] = {&attr1, &attr2, NULL};
+
+    const int result_add = ldap_add_ext_s(ds, dn, attrs, NULL, NULL);
+    if (result_add != LDAP_SUCCESS) {
+        save_ldap_error(result_add);
+        result = AD_LDAP_OPERATION_FAILURE;
+    }
+
+    return result;
+}
+
+int ad_group_create(LDAP *ds, const char *group_name, const char *dn) {
+    int result = AD_SUCCESS;
+
+    LDAPMod attr1;
+    const char *class_values[] = {"group", NULL};
+    attr1.mod_op = LDAP_MOD_ADD;
+    attr1.mod_type = "objectClass";
+    attr1.mod_values = (char **)class_values;
+
+    LDAPMod attr2;
+    const char *name_values[] = {group_name, NULL};
+    attr2.mod_op = LDAP_MOD_ADD;
+    attr2.mod_type = "name";
+    attr2.mod_values = (char **)name_values;
+    
+    LDAPMod attr3;
+    const char *account_name_values[] = {group_name, NULL};
+    attr3.mod_op = LDAP_MOD_ADD;
+    attr3.mod_type = "sAMAccountName";
+    attr3.mod_values = (char **)account_name_values;
+
+    LDAPMod *attrs[] = {&attr1, &attr2, &attr3, NULL};
+
+    const int result_add = ldap_add_ext_s(ds, dn, attrs, NULL, NULL);
+    if (result_add != LDAP_SUCCESS) {
+        save_ldap_error(result_add);
+        result = AD_LDAP_OPERATION_FAILURE;
+    }
+
+    return result;
+}
+
 int ad_object_delete(LDAP *ds, const char *dn) {
     int result = AD_SUCCESS;
 
@@ -563,6 +467,72 @@ int ad_object_delete(LDAP *ds, const char *dn) {
         save_ldap_error(result_delete);
         result = AD_LDAP_OPERATION_FAILURE;
     }
+
+    return result;
+}
+
+int ad_lock_user(LDAP *ds, const char *dn) {
+    int result = AD_SUCCESS;
+
+    char **flags = NULL;
+    
+    const int result_get_flags = ad_get_attribute(ds, dn, "userAccountControl", &flags);
+    if (result_get_flags != AD_SUCCESS) {
+        save_error("failed to get flags");
+        result = AD_INVALID_DN;
+
+        goto end;
+    }
+
+    char newflags[255];
+    int iflags = atoi(flags[0]);
+    iflags |= 2;
+    snprintf(newflags, sizeof(newflags), "%d", iflags);
+
+    const int result_replace = ad_mod_replace(ds, dn, "userAccountControl", newflags);
+    if (result_replace != AD_SUCCESS) {
+        save_error("failed to replace userAccountControl");
+        result = AD_LDAP_OPERATION_FAILURE;
+        
+        goto end;
+    }
+
+    end:
+    ad_array_free(flags);
+
+    return result;
+}
+
+int ad_unlock_user(LDAP *ds, const char *dn) {
+    int result = AD_SUCCESS;
+
+    char **flags = NULL;
+
+    const int result_get_flags = ad_get_attribute(ds, dn, "userAccountControl", &flags);
+    if (result_get_flags != AD_SUCCESS) {
+        save_error("failed to get flags");
+        result = AD_INVALID_DN;
+        
+        goto end;
+    }
+
+    int iflags = atoi(flags[0]);
+    if (iflags & 2) {
+        iflags ^= 2;
+
+        char newflags[255];
+        snprintf(newflags, sizeof(newflags), "%d", iflags);
+        const int result_replace = ad_mod_replace(ds, dn, "userAccountControl", newflags);
+        if (result_replace != AD_SUCCESS) {
+            save_error("failed to replace userAccountControl");
+            result = AD_LDAP_OPERATION_FAILURE;
+
+            goto end;
+        }
+    }
+
+    end:
+    ad_array_free(flags);
 
     return result;
 }
@@ -599,39 +569,6 @@ int ad_setpass(LDAP *ds, const char *dn, const char *password) {
         save_ldap_error(result_modify);
         result = AD_LDAP_OPERATION_FAILURE;
     }
-
-    return result;
-}
-
-int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***dn_list) {
-    int result = AD_SUCCESS;
-
-    *dn_list = NULL;
-    LDAPMessage *res;
-
-    char *attrs[] = {"1.1", NULL};
-    const int result_search = ldap_search_ext_s(ds, search_base, LDAP_SCOPE_SUBTREE, filter, attrs, 1, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
-    if (result_search != LDAP_SUCCESS) {
-        save_ldap_error(result_search);
-        result = AD_LDAP_OPERATION_FAILURE;
-
-        goto end;
-    }
-
-    const int entries_count = ldap_count_entries(ds, res);
-    *dn_list = malloc(sizeof(char *) * (entries_count + 1));
-
-    int i = 0;
-    for (LDAPMessage *entry = ldap_first_entry(ds, res);
-        (entry = ldap_next_entry(ds, entry)) != NULL; i++) {
-        char *entry_dn = ldap_get_dn(ds, entry);
-        (*dn_list)[i] = strdup(entry_dn);
-        ldap_memfree(entry_dn);
-    }
-    (*dn_list)[i] = NULL;
-
-    end:
-    ldap_msgfree(res);
 
     return result;
 }
@@ -1040,104 +977,6 @@ int ad_move(LDAP *ds, const char *current_dn, const char *new_container) {
     return result;
 }
 
-int ad_lock_user(LDAP *ds, const char *dn) {
-    int result = AD_SUCCESS;
-
-    char **flags = NULL;
-    
-    const int result_get_flags = ad_get_attribute(ds, dn, "userAccountControl", &flags);
-    if (result_get_flags != AD_SUCCESS) {
-        save_error("failed to get flags");
-        result = AD_INVALID_DN;
-
-        goto end;
-    }
-
-    char newflags[255];
-    int iflags = atoi(flags[0]);
-    iflags |= 2;
-    snprintf(newflags, sizeof(newflags), "%d", iflags);
-
-    const int result_replace = ad_mod_replace(ds, dn, "userAccountControl", newflags);
-    if (result_replace != AD_SUCCESS) {
-        save_error("failed to replace userAccountControl");
-        result = AD_LDAP_OPERATION_FAILURE;
-        
-        goto end;
-    }
-
-    end:
-    ad_array_free(flags);
-
-    return result;
-}
-
-int ad_unlock_user(LDAP *ds, const char *dn) {
-    int result = AD_SUCCESS;
-
-    char **flags = NULL;
-
-    const int result_get_flags = ad_get_attribute(ds, dn, "userAccountControl", &flags);
-    if (result_get_flags != AD_SUCCESS) {
-        save_error("failed to get flags");
-        result = AD_INVALID_DN;
-        
-        goto end;
-    }
-
-    int iflags = atoi(flags[0]);
-    if (iflags & 2) {
-        iflags ^= 2;
-
-        char newflags[255];
-        snprintf(newflags, sizeof(newflags), "%d", iflags);
-        const int result_replace = ad_mod_replace(ds, dn, "userAccountControl", newflags);
-        if (result_replace != AD_SUCCESS) {
-            save_error("failed to replace userAccountControl");
-            result = AD_LDAP_OPERATION_FAILURE;
-
-            goto end;
-        }
-    }
-
-    end:
-    ad_array_free(flags);
-
-    return result;
-}
-
-int ad_group_create(LDAP *ds, const char *group_name, const char *dn) {
-    int result = AD_SUCCESS;
-
-    LDAPMod attr1;
-    const char *class_values[] = {"group", NULL};
-    attr1.mod_op = LDAP_MOD_ADD;
-    attr1.mod_type = "objectClass";
-    attr1.mod_values = (char **)class_values;
-
-    LDAPMod attr2;
-    const char *name_values[] = {group_name, NULL};
-    attr2.mod_op = LDAP_MOD_ADD;
-    attr2.mod_type = "name";
-    attr2.mod_values = (char **)name_values;
-    
-    LDAPMod attr3;
-    const char *account_name_values[] = {group_name, NULL};
-    attr3.mod_op = LDAP_MOD_ADD;
-    attr3.mod_type = "sAMAccountName";
-    attr3.mod_values = (char **)account_name_values;
-
-    LDAPMod *attrs[] = {&attr1, &attr2, &attr3, NULL};
-
-    const int result_add = ldap_add_ext_s(ds, dn, attrs, NULL, NULL);
-    if (result_add != LDAP_SUCCESS) {
-        save_ldap_error(result_add);
-        result = AD_LDAP_OPERATION_FAILURE;
-    }
-
-    return result;
-}
-
 int ad_group_add_user(LDAP *ds, const char *group_dn, const char *user_dn) {
     return ad_mod_add(ds, group_dn, "member", user_dn);
 }
@@ -1146,63 +985,234 @@ int ad_group_remove_user(LDAP *ds, const char *group_dn, const char *user_dn) {
     return ad_mod_delete(ds, group_dn, "member", user_dn);
 }
 
-int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn) {
+/**
+ * Convert a distinguished name into the domain controller
+ * dns domain, eg: "ou=users,dc=example,dc=com" returns
+ * "example.com".
+ * domain should be freed using free()
+ * Returns AD_SUCCESS or error code
+ */
+int dn2domain(const char *dn, char** domain) {
+    LDAPDN ldn = NULL;
+    LDAPRDN lrdn = NULL;
+    LDAPAVA* lattr = NULL;
+
     int result = AD_SUCCESS;
+    int i;
+    /* This way we'll always have null-terminated string without
+     * workarounds. Cost of memory initialization is not comparable
+     * with code readability */
+    char *dc = calloc(1024, sizeof(char));
 
-    LDAPMod attr1;
-    char *class_values[] = {"organizationalUnit", NULL};
-    attr1.mod_op = LDAP_MOD_ADD;
-    attr1.mod_type = "objectClass";
-    attr1.mod_values = class_values;
-
-    LDAPMod attr2;
-    const char *name_values[] = {ou_name, NULL};
-    attr2.mod_op = LDAP_MOD_ADD;
-    attr2.mod_type = "name";
-    attr2.mod_values = (char **)name_values;
-    
-    LDAPMod *attrs[] = {&attr1, &attr2, NULL};
-
-    const int result_add = ldap_add_ext_s(ds, dn, attrs, NULL, NULL);
-    if (result_add != LDAP_SUCCESS) {
-        save_ldap_error(result_add);
-        result = AD_LDAP_OPERATION_FAILURE;
+    /* Explode string into set of structures representing RDNs */
+    if (ldap_str2dn(dn, &ldn, LDAP_DN_FORMAT_LDAPV3) != LDAP_SUCCESS) {
+        result = AD_INVALID_DN;
+        goto dn2domain_end;
     }
+
+    /* Iterate over RDNs checking for Domain Components and extract
+     * their values */
+    for(i = 0; NULL != ldn[i]; i++) {
+        lrdn = ldn[i];
+        /* Multi-valued RDNs are not supported so no iteration over
+         * lrdn[x] */
+        /* Check that we have at least one RDN */
+        if (NULL == lrdn[0]) {
+            result = AD_ATTRIBUTE_ENTRY_NOT_FOUND;
+            goto dn2domain_end;
+        }
+        lattr = lrdn[0];
+        /* BER/DER encoded attributes are unsupported */
+        if (0 == (lattr->la_flags & LDAP_AVA_STRING)) {
+            result = AD_LDAP_OPERATION_FAILURE;
+            goto dn2domain_end;
+        }
+        // FIXME: Check for buffer overflow
+        if(!strncasecmp("DC", lattr[0].la_attr.bv_val, 2)) {
+            strncat(dc, lattr[0].la_value.bv_val, lattr[0].la_value.bv_len);
+            strncat(dc, ".", 1024);
+        }
+    }
+
+    i = strlen(dc);
+    for(i = 0; '\0' != dc[i]; i++) {
+        dc[i] = tolower(dc[i]);
+    }
+
+    dn2domain_end:
+    /* Free the memory allocated by ldap_str2dn */
+    ldap_dnfree(ldn);
+
+    /* Free the memory allocated for resolved DNS domain name in case
+     * of resolution errors */
+    if (AD_SUCCESS != result) {
+        free(dc);
+    }
+
+    (*domain) = dc;
 
     return result;
 }
 
+/**
+ * Callback for ldap_sasl_interactive_bind_s
+ */
+int sasl_interact_gssapi(LDAP *ds, unsigned flags, void *indefaults, void *in) {
+    sasl_defaults_gssapi *defaults = indefaults;
+    sasl_interact_t *interact = (sasl_interact_t*)in;
 
-int ad_list(LDAP *ds, const char *dn, char ***dn_list) {
-    int result = AD_SUCCESS;
-
-    *dn_list = NULL;
-
-    char *attrs[] = {"1.1", NULL};
-
-    LDAPMessage *res;
-    const int result_search = ldap_search_ext_s(ds, dn, LDAP_SCOPE_ONELEVEL, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
-    if (result_search != LDAP_SUCCESS) {
-        save_ldap_error(result_search);
-        result = AD_LDAP_OPERATION_FAILURE;
-
-        goto end;
+    if (ds == NULL) {
+        return LDAP_PARAM_ERROR;
     }
 
-    const int entries_count = ldap_count_entries(ds, res);
-    *dn_list = malloc(sizeof(char *) * (entries_count + 1));
+    while (interact->id != SASL_CB_LIST_END) {
+        const char *dflt = interact->defresult;
 
-    int i = 0; 
-    for (LDAPMessage *entry = ldap_first_entry(ds, res);
-        (entry = ldap_next_entry(ds, entry)) != NULL; i++) {
-        char *entry_dn = ldap_get_dn(ds, entry);
-        (*dn_list)[i] = strdup(entry_dn);
-        ldap_memfree(entry_dn);
+        switch (interact->id) {
+            case SASL_CB_GETREALM:
+            if (defaults)
+                dflt = defaults->realm;
+            break;
+            case SASL_CB_AUTHNAME:
+            if (defaults)
+                dflt = defaults->authcid;
+            break;
+            case SASL_CB_PASS:
+            if (defaults)
+                dflt = defaults->passwd;
+            break;
+            case SASL_CB_USER:
+            if (defaults)
+                dflt = defaults->authzid;
+            break;
+            case SASL_CB_NOECHOPROMPT:
+            break;
+            case SASL_CB_ECHOPROMPT:
+            break;
+        }
+
+        if (dflt && !*dflt) {
+            dflt = NULL;
+        }
+
+        /* input must be empty */
+        interact->result = (dflt && *dflt) ? dflt : "";
+        interact->len = strlen(interact->result);
+        interact++;
     }
-    (*dn_list)[i] = NULL;
 
-    end:
-    ldap_msgfree(res);
+    return LDAP_SUCCESS;
+}
 
-    return result;
+/**
+ * Perform a query for dname and output hosts
+ * dname is a combination of protocols (ldap, tcp), domain and site
+ * NOTE: this is rewritten from
+ * https://github.com/paleg/libadclient/blob/master/adclient.cpp
+ * which itself is copied from
+ * https://www.ccnx.org/releases/latest/doc/ccode/html/ccndc-srv_8c_source.html
+ * Another example of similar procedure:
+ * https://www.gnu.org/software/shishi/coverage/shishi/lib/resolv.c.gcov.html
+ */
+int query_server_for_hosts(const char *dname, char ***hosts) {
+    union dns_msg {
+        HEADER header;
+        unsigned char buf[NS_MAXMSG];
+    } msg;
+
+    const int msg_len = res_search(dname, ns_c_in, ns_t_srv, msg.buf, sizeof(msg.buf));
+
+    if (msg_len < 0 || msg_len < sizeof(HEADER)) {
+        save_error("bad msg_len");
+        goto error;
+    }
+
+    const int packet_count = ntohs(msg.header.qdcount);
+    const int answer_count = ntohs(msg.header.ancount);
+
+    unsigned char *curr = msg.buf + sizeof(msg.header);
+    const unsigned char *eom = msg.buf + msg_len;
+
+    // Skip over packet records
+    for (int i = packet_count; i > 0 && curr < eom; i--) {
+        const int packet_len = dn_skipname(curr, eom);
+
+        if (packet_len < 0) {
+            save_error("dn_skipname < 0");
+            goto error;
+        }
+
+        curr = curr + packet_len + QFIXEDSZ;
+    }
+
+    // Init hosts list
+    const size_t hosts_size = answer_count + 1;
+    *hosts = malloc(sizeof(char *) * hosts_size);
+
+    // Process answers by collecting hosts into list
+    size_t hosts_current_i = 0;
+    for (int i = 0; i < answer_count; i++) {
+        // Get server
+        char server[NS_MAXDNAME];
+        const int server_len = dn_expand(msg.buf, eom, curr, server, sizeof(server));
+        if (server_len < 0) {
+            save_error("dn_expand(server) < 0");
+            goto error;
+        }
+        curr = curr + server_len;
+
+        int record_type;
+        int UNUSED(record_class);
+        int UNUSED(ttl);
+        int record_len;
+        GETSHORT(record_type, curr);
+        GETSHORT(record_class, curr);
+        GETLONG(ttl, curr);
+        GETSHORT(record_len, curr);
+        
+        unsigned char *record_end = curr + record_len;
+        if (record_end > eom) {
+            save_error("record_end > eom");
+            goto error;
+        }
+
+        // Skip non-server records
+        if (record_type != ns_t_srv) {
+            curr = record_end;
+            continue;
+        }
+
+        int UNUSED(priority);
+        int UNUSED(weight);
+        int UNUSED(port);
+        GETSHORT(priority, curr);
+        GETSHORT(weight, curr);
+        GETSHORT(port, curr);
+        // TODO: need to save port field? maybe to incorporate into uri
+
+        // Get host
+        char host[NS_MAXDNAME];
+        const int host_len = dn_expand(msg.buf, eom, curr, host, sizeof(host));
+        if (host_len < 0) {
+            save_error("dn_expand(host) < 0");
+            goto error;
+        }
+
+        (*hosts)[hosts_current_i] = strdup(host);
+        hosts_current_i++;
+
+        curr = record_end;
+    }
+
+    (*hosts)[hosts_current_i] = NULL;
+
+    return AD_SUCCESS;
+
+    error:
+    {
+        ad_array_free(*hosts);
+        *hosts = NULL;
+
+        return AD_RESOLV_ERROR;
+    }
 }
