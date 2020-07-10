@@ -87,9 +87,9 @@ void AdInterface::login(const QString &host, const QString &domain) {
     const std::string uri_std = uri.toStdString();
     const std::string domain_std = domain.toStdString();
 
-    connection->connect(uri_std, domain_std);
+    const int result = connection->connect(uri_std, domain_std);
 
-    if (connection->is_connected()) {
+    if (result == AD_SUCCESS) {
         message(QString("Logged in to \"%1\" at \"%2\"").arg(host, domain));
 
         emit logged_in();
@@ -99,7 +99,7 @@ void AdInterface::login(const QString &host, const QString &domain) {
 }
 
 QString AdInterface::get_error_str() {
-    return QString(connection->get_errstr());
+    return QString(connection->get_error());
 }
 
 bool AdInterface::is_connected() {
@@ -118,9 +118,10 @@ QList<QString> AdInterface::list(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    char **children_raw = connection->list(dn_cstr);
+    char **children_raw;
+    const int result = connection->list(dn_cstr, &children_raw);
 
-    if (children_raw != NULL) {
+    if (result == AD_SUCCESS) {
         auto children = QList<QString>();
 
         for (int i = 0; children_raw[i] != NULL; i++) {
@@ -128,16 +129,11 @@ QList<QString> AdInterface::list(const QString &dn) {
             children.push_back(child);
         }
 
-        for (int i = 0; children_raw[i] != NULL; i++) {
-            free(children_raw[i]);
-        }
-        free(children_raw);
+        ad_array_free(children_raw);
 
         return children;
     } else {
-        if (connection->get_errcode() != AD_SUCCESS) {
-            message(QString("Failed to load children of \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
-        }
+        message(QString("Failed to load children of \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
 
         return QList<QString>();
     }
@@ -147,10 +143,9 @@ QList<QString> AdInterface::search(const QString &filter) {
     const QByteArray filter_array = filter.toLatin1();
     const char *filter_cstr = filter_array.constData();
 
-    char **results_raw = connection->search(filter_cstr);
-    int search_result = connection->get_errcode();
-
-    if (search_result == AD_SUCCESS) {
+    char **results_raw;
+    const int result_search = connection->search(filter_cstr, &results_raw);
+    if (result_search == AD_SUCCESS) {
         auto results = QList<QString>();
 
         for (int i = 0; results_raw[i] != NULL; i++) {
@@ -158,10 +153,7 @@ QList<QString> AdInterface::search(const QString &filter) {
             results.push_back(result);
         }
 
-        for (int i = 0; results_raw[i] != NULL; i++) {
-            free(results_raw[i]);
-        }
-        free(results_raw);
+        ad_array_free(results_raw);
 
         return results;
     } else {
@@ -181,14 +173,10 @@ Attributes AdInterface::get_attributes(const QString &dn) {
         const QByteArray dn_array = dn.toLatin1();
         const char *dn_cstr = dn_array.constData();
 
-        char** attributes_raw = connection->get_attribute(dn_cstr, "*");
-
-        // TODO: get_attribute is busted, doesn't return success correctly
-        // so have to ignore result for now
-        // emit get_attributes_failed(dn);
-
-        Attributes attributes;
-        if (attributes_raw != NULL) {
+        char** attributes_raw;
+        const int result_get_attribute = connection->get_attribute(dn_cstr, "*", &attributes_raw);
+        if (result_get_attribute == AD_SUCCESS) {
+            Attributes attributes;
             // attributes_raw is in the form of:
             // char** array of {key, value, value, key, value ...}
             // transform it into:
@@ -205,14 +193,14 @@ Attributes AdInterface::get_attributes(const QString &dn) {
                 attributes[attribute].push_back(value);
             }
 
-            // Free attributes_raw
-            for (int i = 0; attributes_raw[i] != NULL; i++) {
-                free(attributes_raw[i]);
-            }
-            free(attributes_raw);
-        }
+            ad_array_free(attributes_raw);
 
-        attributes_cache[dn] = attributes;
+            attributes_cache[dn] = attributes;
+        } else {
+            message(QString("Failed to get attributes of \"%1\"").arg(dn));
+
+            return Attributes();
+        }
     }
 
     return attributes_cache[dn];
