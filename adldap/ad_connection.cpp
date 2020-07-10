@@ -64,19 +64,19 @@ int AdConnection::create_computer(const char *name, const char *dn) {
 }
 
 int AdConnection::lock_user(const char *dn) {
-    return ad_lock_user(ldap_connection, dn);
+    return ad_user_lock(ldap_connection, dn);
 }
 
 int AdConnection::unlock_user(const char *dn) {
-    return ad_unlock_user(ldap_connection, dn);
+    return ad_user_unlock(ldap_connection, dn);
 }
 
 int AdConnection::object_delete(const char *dn) {
-    return ad_object_delete(ldap_connection, dn);
+    return ad_delete(ldap_connection, dn);
 }
 
 int AdConnection::setpass(const char *dn, const char *password) {
-    return ad_setpass(ldap_connection, dn, password);
+    return ad_user_set_pass(ldap_connection, dn, password);
 }
 
 int AdConnection::search(const char *filter, char ***dn_list) {
@@ -108,7 +108,7 @@ int AdConnection::get_attribute(const char *dn, const char *attribute, char ***v
 }
 
 int AdConnection::rename(const char *dn, const char *new_name) {
-    return ad_mod_rename(ldap_connection, dn, new_name);
+    return ad_rename(ldap_connection, dn, new_name);
 }
 
 int AdConnection::rename_user(const char *dn, const char *new_username) {
@@ -128,7 +128,7 @@ int AdConnection::move_user(const char *current_dn, const char *new_container) {
 }
 
 int AdConnection::group_create(const char *group_name, const char *dn) {
-    return ad_group_create(ldap_connection, group_name, dn);
+    return ad_create_group(ldap_connection, group_name, dn);
 }
 
 int AdConnection::group_add_user(const char *group_dn, const char *user_dn) {
@@ -140,7 +140,7 @@ int AdConnection::group_remove_user(const char *group_dn, const char *user_dn) {
 }
 
 int AdConnection::ou_create(const char *ou_name, const char *dn) {
-    return ad_ou_create(ldap_connection, ou_name, dn);
+    return ad_create_ou(ldap_connection, ou_name, dn);
 }
 
 int AdConnection::list(const char *dn, char ***dn_list) {

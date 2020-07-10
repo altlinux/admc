@@ -401,7 +401,7 @@ int ad_create_computer(LDAP *ds, const char *name, const char *dn) {
     return result;
 }
 
-int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn) {
+int ad_create_ou(LDAP *ds, const char *ou_name, const char *dn) {
     int result = AD_SUCCESS;
 
     LDAPMod attr1;
@@ -427,7 +427,7 @@ int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn) {
     return result;
 }
 
-int ad_group_create(LDAP *ds, const char *group_name, const char *dn) {
+int ad_create_group(LDAP *ds, const char *group_name, const char *dn) {
     int result = AD_SUCCESS;
 
     LDAPMod attr1;
@@ -459,7 +459,7 @@ int ad_group_create(LDAP *ds, const char *group_name, const char *dn) {
     return result;
 }
 
-int ad_object_delete(LDAP *ds, const char *dn) {
+int ad_delete(LDAP *ds, const char *dn) {
     int result = AD_SUCCESS;
 
     const int result_delete = ldap_delete_ext_s(ds, dn, NULL, NULL);
@@ -471,7 +471,7 @@ int ad_object_delete(LDAP *ds, const char *dn) {
     return result;
 }
 
-int ad_lock_user(LDAP *ds, const char *dn) {
+int ad_user_lock(LDAP *ds, const char *dn) {
     int result = AD_SUCCESS;
 
     char **flags = NULL;
@@ -503,7 +503,7 @@ int ad_lock_user(LDAP *ds, const char *dn) {
     return result;
 }
 
-int ad_unlock_user(LDAP *ds, const char *dn) {
+int ad_user_unlock(LDAP *ds, const char *dn) {
     int result = AD_SUCCESS;
 
     char **flags = NULL;
@@ -537,7 +537,7 @@ int ad_unlock_user(LDAP *ds, const char *dn) {
     return result;
 }
 
-int ad_setpass(LDAP *ds, const char *dn, const char *password) {
+int ad_user_set_pass(LDAP *ds, const char *dn, const char *password) {
     int result = AD_SUCCESS;
     
     char quoted_password[MAX_PASSWORD_LENGTH + 2];
@@ -805,7 +805,7 @@ int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***va
     return result;
 }
 
-int ad_mod_rename(LDAP *ds, const char *dn, const char *new_rdn) {
+int ad_rename(LDAP *ds, const char *dn, const char *new_rdn) {
     int result = AD_SUCCESS;
 
     const int result_rename = ldap_rename_s(ds, dn, new_rdn, NULL, 1, NULL, NULL);

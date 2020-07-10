@@ -100,38 +100,38 @@ int ad_create_computer(LDAP *ds, const char *name, const char *dn);
  * Create an organizational unit
  * Returns AD_SUCCESS or error code
  */
-int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn);
+int ad_create_ou(LDAP *ds, const char *ou_name, const char *dn);
 
 /**
  * Create a group with given name below given DN
  * Returns AD_SUCCESS or error code
  */
-int ad_group_create(LDAP *ds, const char *group_name, const char *dn);
+int ad_create_group(LDAP *ds, const char *group_name, const char *dn);
 
 /**
  * Delete object
  * Returns AD_SUCCESS or error code
  */
-int ad_object_delete(LDAP *ds, const char *dn);
+int ad_delete(LDAP *ds, const char *dn);
 
 /**
  * Lock a user account
  * Returns AD_SUCCESS or error code
  */
-int ad_lock_user(LDAP *ds, const char *dn);
+int ad_user_lock(LDAP *ds, const char *dn);
 
 /**
  * Unlock a disabled user account
  * Returns AD_SUCCESS or error code
  */
-int ad_unlock_user(LDAP *ds, const char *dn);
+int ad_user_unlock(LDAP *ds, const char *dn);
 
 /**
  * Set the user's password to the given password string
  * SSL connection is required
  * Returns AD_SUCCESS or error code
  */
-int ad_setpass(LDAP *ds, const char *dn, const char *password);
+int ad_user_set_pass(LDAP *ds, const char *dn, const char *password);
 
 /**
  * Adds a value to given attribute
@@ -180,7 +180,7 @@ int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***va
  * Use specialized functions to rename users and groups
  * Returns AD_SUCCESS or error code
  */
-int ad_mod_rename(LDAP *ds, const char *dn, const char *new_rdn);
+int ad_rename(LDAP *ds, const char *dn, const char *new_rdn);
 
 /**
  * Rename user and update related attributes
