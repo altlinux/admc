@@ -388,7 +388,8 @@ int ad_login(const char* uri, LDAP **ds) {
  * Convert a distinguished name into the domain controller
  * dns domain, eg: "ou=users,dc=example,dc=com" returns
  * "example.com".
- * memory allocated should be returned with free()
+ * domain should be freed using free()
+ * Returns AD_SUCCESS or error code
  */
 int dn2domain(const char *dn, char** domain) {
     LDAPDN ldn = NULL;
@@ -457,23 +458,10 @@ int dn2domain(const char *dn, char** domain) {
     return result;
 }
 
-/* public functions */
-
-/* get a pointer to the last error message */
 const char *ad_get_error() {
     return ad_error_msg;
 }
 
-/* 
-  creates an empty, locked user account with given username and dn
- and attributes:
-    objectClass=user
-    sAMAccountName=username
-    userAccountControl=66050 
- (ACCOUNTDISABLE|NORMAL_ACCOUNT|DONT_EXPIRE_PASSWORD)
-    userprincipalname
-    returns AD_SUCCESS on success 
-*/
 int ad_create_user(LDAP *ds, const char *username, const char *dn) {
     LDAPMod *attrs[5];
     LDAPMod attr1, attr2, attr3, attr4;
@@ -536,14 +524,6 @@ int ad_create_user(LDAP *ds, const char *username, const char *dn) {
     return result;
 }
 
-/* 
-  creates a computer account
- and attributes:
-    objectClass=top,person,organizationalPerson,user,computer
-    sAMAccountName=NAME$
-    userAccountControl=4128
-    returns AD_SUCCESS on success 
-*/
 int ad_create_computer(LDAP *ds, const char *name, const char *dn) {
     LDAPMod *attrs[4];
     LDAPMod attr1, attr2, attr3;
@@ -589,8 +569,6 @@ int ad_create_computer(LDAP *ds, const char *name, const char *dn) {
     return result;
 }
 
-/* ad_object_delete deletes the given dn
-    returns non-zero on success */
 int ad_object_delete(LDAP *ds, const char *dn) {
     int result;
 
@@ -604,8 +582,6 @@ int ad_object_delete(LDAP *ds, const char *dn) {
     return result;
 }
 
-/* ad_setpass sets the password for the given user
-    returns AD_SUCCESS on success */
 int ad_setpass(LDAP *ds, const char *dn, const char *password) {
     char quoted_password[MAX_PASSWORD_LENGTH+2];
     char unicode_password[(MAX_PASSWORD_LENGTH+2)*2];
@@ -1115,7 +1091,6 @@ int ad_move(LDAP *ds, const char *current_dn, const char *new_container) {
     return result;
 }
 
-/* returns AD_SUCCESS on success */
 int ad_lock_user(LDAP *ds, const char *dn) {
     int result = AD_SUCCESS;
     char newflags[255];
@@ -1147,7 +1122,6 @@ int ad_lock_user(LDAP *ds, const char *dn) {
     return result;
 }
 
-/* Returns AD_SUCCESS on success */
 int ad_unlock_user(LDAP *ds, const char *dn) {
     int result = AD_SUCCESS;
     char newflags[255];
@@ -1180,11 +1154,6 @@ int ad_unlock_user(LDAP *ds, const char *dn) {
     return AD_SUCCESS;
 }
 
-/* 
-  creates a new group
- sets objectclass=group and samaccountname=groupname
-  Returns AD_SUCCESS on success 
-*/
 int ad_group_create(LDAP *ds, const char *group_name, const char *dn) {
     LDAPMod *attrs[4];
     LDAPMod attr1, attr2, attr3;
@@ -1234,11 +1203,6 @@ int ad_group_remove_user(LDAP *ds, const char *group_dn, const char *user_dn) {
     return ad_mod_delete(ds, group_dn, "member", user_dn);
 }
 
-/* 
-  creates a new organizational unit
- sets objectclass=organizationalUnit and name=ou name
-  Returns AD_SUCCESS on success 
-*/
 int ad_ou_create(LDAP *ds, const char *ou_name, const char *dn) {
     LDAPMod *attrs[3];
     LDAPMod attr1, attr2;
