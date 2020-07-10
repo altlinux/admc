@@ -36,6 +36,7 @@
 #endif
 
 #define MAX_ERR_LENGTH 1024
+#define MAX_DN_LENGTH 1024
 #define MAX_PASSWORD_LENGTH 255
 
 // Error message macros
@@ -1002,7 +1003,7 @@ int dn2domain(const char *dn, char** domain) {
     /* This way we'll always have null-terminated string without
      * workarounds. Cost of memory initialization is not comparable
      * with code readability */
-    char *dc = calloc(1024, sizeof(char));
+    char *dc = calloc(MAX_DN_LENGTH, sizeof(char));
 
     /* Explode string into set of structures representing RDNs */
     if (ldap_str2dn(dn, &ldn, LDAP_DN_FORMAT_LDAPV3) != LDAP_SUCCESS) {
@@ -1027,10 +1028,9 @@ int dn2domain(const char *dn, char** domain) {
             result = AD_LDAP_OPERATION_FAILURE;
             goto dn2domain_end;
         }
-        // FIXME: Check for buffer overflow
         if(!strncasecmp("DC", lattr[0].la_attr.bv_val, 2)) {
-            strncat(dc, lattr[0].la_value.bv_val, lattr[0].la_value.bv_len);
-            strncat(dc, ".", 1024);
+            strncat(dc, lattr[0].la_value.bv_val, MAX_DN_LENGTH - strlen(dc) - 1);
+            strncat(dc, ".", MAX_DN_LENGTH - strlen(dc) - 1);
         }
     }
 
