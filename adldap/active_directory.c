@@ -1039,6 +1039,11 @@ int dn2domain(const char *dn, char** domain) {
         dc[i] = tolower(dc[i]);
     }
 
+    // Remove last '.'
+    if (strlen(dc) > 0) {
+        dc[strlen(dc) - 1] = '\0';
+    }
+
     dn2domain_end:
     /* Free the memory allocated by ldap_str2dn */
     ldap_dnfree(ldn);
