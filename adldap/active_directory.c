@@ -45,7 +45,6 @@
 #define save_ldap_error_msg(ldap_err) save_error_msg(ldap_err2string(ldap_err))
 
 char ad_error_msg[MAX_ERR_LENGTH];
-int ad_error_code;
 
 size_t ad_array_size(char **array) {
     if (array == NULL) {
@@ -465,11 +464,6 @@ char *ad_get_error() {
     return ad_error_msg;
 }
 
-/* return the last error code generated */
-int ad_get_error_num() {
-    return ad_error_code;
-}
-
 /* 
   creates an empty, locked user account with given username and dn
  and attributes:
@@ -839,33 +833,32 @@ typedef struct ber_list {
     struct ber_list *next;
 } ber_list;
 
-char **ad_get_attribute(LDAP *ds, const char *dn, const char *attribute) {
-    char *attrs[2];
-    attrs[0]=(char *)attribute;
-    attrs[1]=NULL;
+int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***values) {
+    int result = AD_SUCCESS;
 
-    // TODO: use paged search (need to?)
-    // adclient has an implementation
+    *values = NULL;
+
+    // TODO: use paged search
+    char *attrs[2] = {(char *)attribute, NULL};
     LDAPMessage *res;
     const int result_search = ldap_search_ext_s(ds, dn, LDAP_SCOPE_BASE, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
     if (result_search != LDAP_SUCCESS) {
         save_ldap_error_msg(result_search);
-        ad_error_code=AD_LDAP_OPERATION_FAILURE;
-        return NULL;
+        result = AD_LDAP_OPERATION_FAILURE;
+        goto end;
     }
 
-    int entries_count = ldap_count_entries(ds, res);
-
-    if(entries_count==0) {
-        save_error_msg("no attribute values found");
-        ldap_msgfree(res);
-        ad_error_code=AD_OBJECT_NOT_FOUND;
-        return NULL;
-    } else if(entries_count>1) {
-        save_error_msg("attribute has multiple values");
-        ldap_msgfree(res);
-        ad_error_code=AD_OBJECT_NOT_FOUND;
-        return NULL;
+    const int entries_count = ldap_count_entries(ds, res);
+    if (entries_count == 0) {
+        save_error_msg("no attribute entries found");
+        result = AD_OBJECT_NOT_FOUND;
+        
+        goto end;
+    } else if (entries_count > 1) {
+        save_error_msg("multiple attribute entries found");
+        result = AD_OBJECT_NOT_FOUND;
+        
+        goto end;
     }
 
     LDAPMessage *entry = ldap_first_entry(ds, res);
@@ -897,7 +890,6 @@ char **ad_get_attribute(LDAP *ds, const char *dn, const char *attribute) {
     }
 
     // Turn the linked list of values into an array of key-value pairs
-    char **out = NULL;
     if (head != NULL) {
         // Count values
         unsigned int total_count = 0;
@@ -908,13 +900,13 @@ char **ad_get_attribute(LDAP *ds, const char *dn, const char *attribute) {
             curr = curr->next;
         }
 
-        // NOTE: for each value we need to pair it without key(attribute description), hence the '2'
+        // NOTE: for each value we need to pair it with key, hence the '2'
         // and reserve one more for NULL termination
-        out = (char **)malloc(sizeof(char *) * (total_count * 2 + 1));
-        out[total_count * 2] = NULL;
+        *values = (char **)malloc(sizeof(char *) * (total_count * 2 + 1));
+        (*values)[total_count * 2] = NULL;
 
         curr = head;
-        size_t out_i = 0;
+        size_t values_i = 0;
         while (curr != NULL) {
             for (size_t i = 0; curr->values[i] != NULL; i++) {
                 struct berval data = *(curr->values)[i];
@@ -924,10 +916,10 @@ char **ad_get_attribute(LDAP *ds, const char *dn, const char *attribute) {
                 bv_str[data.bv_len] = '\0';
                 // printf("\t%s\n", bv_str);
 
-                out[out_i] = strdup(curr->attribute);
-                out_i++;
-                out[out_i] = strdup(bv_str);
-                out_i++;
+                (*values)[values_i] = strdup(curr->attribute);
+                values_i++;
+                (*values)[values_i] = strdup(bv_str);
+                values_i++;
             }
 
             ber_list *prev = curr;
@@ -940,9 +932,10 @@ char **ad_get_attribute(LDAP *ds, const char *dn, const char *attribute) {
         }
     }
 
+    end:
     ldap_msgfree(res);
 
-    return out;
+    return result;
 }
 
 int ad_mod_rename(LDAP *ds, const char *dn, const char *new_rdn) {
@@ -1041,18 +1034,21 @@ int ad_rename_group(LDAP *ds, const char *dn, const char *new_name) {
 }
 
 int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
-    int result;
+    int result = AD_SUCCESS;
+
     char **username = NULL;
-    char* domain = NULL;
-    char* upn = NULL;
+    char *domain = NULL;
+    char *upn = NULL;
 
     // Modify userPrincipalName in case of domain change
-    username=ad_get_attribute(ds, current_dn, "sAMAccountName");;
-    if(username==NULL) {
-        result=AD_INVALID_DN;
+    const int result_get_username = ad_get_attribute(ds, current_dn, "sAMAccountName", &username);
+    if (result_get_username != AD_SUCCESS) {
+        save_error_msg("failed to get username");
+        result = AD_INVALID_DN;
 
         goto end;
     }
+
     const int result_dn2domain = dn2domain(new_container, &domain);
     if (AD_SUCCESS != result_dn2domain) {
         save_error_msg("dn2domain failed");
@@ -1060,6 +1056,7 @@ int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
 
         goto end;
     }
+
     upn=malloc(strlen(username[0])+strlen(domain)+2);
     sprintf(upn, "%s@%s", username[0], domain);
     const int result_replace = ad_mod_replace(ds, current_dn, "userPrincipalName", upn);
@@ -1124,9 +1121,11 @@ int ad_lock_user(LDAP *ds, const char *dn) {
     char newflags[255];
     int iflags;
 
-    char **flags = ad_get_attribute(ds, dn, "userAccountControl");
-    if(flags==NULL) {
-        result = ad_error_code;
+    char **flags = NULL;
+    const int result_get_flags = ad_get_attribute(ds, dn, "userAccountControl", &flags);
+    if (result_get_flags != AD_SUCCESS) {
+        save_error_msg("failed to get flags");
+        result = AD_INVALID_DN;
 
         goto end;
     }
@@ -1154,9 +1153,11 @@ int ad_unlock_user(LDAP *ds, const char *dn) {
     char newflags[255];
     int iflags;
 
-    char **flags = ad_get_attribute(ds, dn, "userAccountControl");
-    if(flags==NULL) {
-        result = ad_error_code;
+    char **flags = NULL;
+    const int result_get_flags = ad_get_attribute(ds, dn, "userAccountControl", &flags);
+    if (result_get_flags != AD_SUCCESS) {
+        save_error_msg("failed to get flags");
+        result = AD_INVALID_DN;
         
         goto end;
     }

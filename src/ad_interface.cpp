@@ -138,14 +138,10 @@ Attributes AdInterface::get_attributes(const QString &dn) {
         const QByteArray dn_array = dn.toLatin1();
         const char *dn_cstr = dn_array.constData();
 
-        char** attributes_raw = connection->get_attribute(dn_cstr, "*");
-
-        // TODO: get_attribute is busted, doesn't return success correctly
-        // so have to ignore result for now
-        // emit get_attributes_failed(dn);
-
-        Attributes attributes;
-        if (attributes_raw != NULL) {
+        char** attributes_raw;
+        const int result_get_attribute = connection->get_attribute(dn_cstr, "*", &attributes_raw);
+        if (result_get_attribute == AD_SUCCESS) {
+            Attributes attributes;
             // attributes_raw is in the form of:
             // char** array of {key, value, value, key, value ...}
             // transform it into:
@@ -162,10 +158,14 @@ Attributes AdInterface::get_attributes(const QString &dn) {
                 attributes[attribute].push_back(value);
             }
 
-            ad_array_free(attributes_raw);   
-        }
+            ad_array_free(attributes_raw);
 
-        attributes_cache[dn] = attributes;
+            attributes_cache[dn] = attributes;
+        } else {
+            message(QString("Failed to get attributes of \"%1\"").arg(dn));
+
+            return Attributes();
+        }
     }
 
     return attributes_cache[dn];

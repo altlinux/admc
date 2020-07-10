@@ -36,7 +36,6 @@ public:
     int connect(std::string uri_arg, std::string search_base_arg);
     bool is_connected();
     char* get_errstr();
-    int get_errcode();
     std::string get_search_base() const;
     std::string get_uri() const;
 
@@ -52,7 +51,7 @@ public:
     int mod_replace(const char *dn, const char *attribute, const char *value);
     int mod_replace_binary(const char *dn, const char *attribute, const char *data, int data_length);
     int mod_delete(const char *dn, const char *attribute, const char *value);
-    char **get_attribute(const char *dn, const char *attribute);
+    int get_attribute(const char *dn, const char *attribute, char ***values);
     int rename(const char *dn, const char *new_name);
     int rename_user(const char *dn, const char *new_username);
     int rename_group(const char *dn, const char *new_name);

@@ -47,10 +47,6 @@ char* AdConnection::get_errstr() {
     return ad_get_error();
 }
 
-int AdConnection::get_errcode() {
-    return ad_get_error_num();
-}
-
 std::string AdConnection::get_search_base() const {
     return search_base;
 }
@@ -107,8 +103,8 @@ int AdConnection::mod_delete(const char *dn, const char *attribute, const char *
     return ad_mod_delete(ldap_connection, dn, attribute, value);
 }
 
-char** AdConnection::get_attribute(const char *dn, const char *attribute) {
-    return ad_get_attribute(ldap_connection, dn, attribute);
+int AdConnection::get_attribute(const char *dn, const char *attribute, char ***values) {
+    return ad_get_attribute(ldap_connection, dn, attribute, values);
 }
 
 int AdConnection::rename(const char *dn, const char *new_name) {

@@ -29,13 +29,6 @@ extern "C" {
 */
 char *ad_get_error();
 
-/* ad_get_error_num() returns the integer code for the last error
-| that occured.
-|  If no function calls have previously failed the result is undefined.
-|  See the end of this header file for the list of error codes.
-*/
-int ad_get_error_num();
-
 /**
  * Free a null-terminated array that was returned by one of
  * the functions in this library
@@ -150,14 +143,12 @@ int ad_mod_replace_binary(LDAP *ds, const char *dn, const char *attribute, const
 */
 int ad_mod_delete(LDAP *ds, const char *dn, const char *attribute, const char *value);
 
-/* ad_get_attribute() returns a pointer to a NULL terminated
-| array of strings containing values for the given attribute.
-|  Returns NULL on failure or if nothing is found.
-|  Sets error code to AD_SUCCESS, AD_OBJECT_NOT_FOUND, 
-| AD_ATTRIBUTE_ENTRY_NOT_FOUND or AD_LDAP_OPERATION_FAILURE
-| even if there are no values for the given attribute.
-*/
-char **ad_get_attribute(LDAP *ds, const char *dn, const char *attribute);
+/**
+ * Return a list of key-value pairs for given attribute
+ * The list is NULL terminated and should be freed by the caller
+ * using ad_array_free()
+ */
+int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***values);
 
 // Renames object at dn
 // new_rdn has to have appropriate prefix and be of the form "CN=name"
