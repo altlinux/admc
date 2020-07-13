@@ -36,6 +36,7 @@
 #endif
 
 #define MAX_ERR_LENGTH 1024
+#define MAX_DN_LENGTH 1024
 #define MAX_PASSWORD_LENGTH 255
 
 // Error message macros
@@ -53,7 +54,7 @@ typedef struct sasl_defaults_gssapi {
     char *authzid;
 } sasl_defaults_gssapi;
 
-int dn2domain(const char *dn, char** domain);
+int dn2domain(const char *dn, char **domain_out);
 int sasl_interact_gssapi(LDAP *ds, unsigned flags, void *indefaults, void *in);
 int query_server_for_hosts(const char *dname, char ***hosts);
 
@@ -63,8 +64,10 @@ const char *ad_get_error() {
     return ad_error_msg;
 }
 
-int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
+int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts_out) {
     int result = AD_SUCCESS; 
+
+    char **hosts = NULL;
     char **site_hosts = NULL;
     char **default_hosts = NULL;
 
@@ -78,6 +81,7 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
         int query_result = query_server_for_hosts(dname, &site_hosts);
         if (query_result != AD_SUCCESS) {
             result = query_result;
+
             goto end;
         }
     }
@@ -91,6 +95,7 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
     int query_result = query_server_for_hosts(dname_default, &default_hosts);
     if (query_result != AD_SUCCESS) {
         result = query_result;
+
         goto end;
     }
 
@@ -98,13 +103,13 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
 
     // Combine site and default hosts
     const int hosts_max_size = site_hosts_size + default_hosts_size + 1;
-    *hosts = malloc(sizeof(char *) * hosts_max_size);
+    hosts = malloc(sizeof(char *) * hosts_max_size);
     size_t hosts_current_i = 0;
     
     // Load all site hosts first
     for (int i = 0; i < site_hosts_size; i++) {
         char *site_host = site_hosts[i];
-        (*hosts)[hosts_current_i] = strdup(site_host);
+        hosts[hosts_current_i] = strdup(site_host);
         hosts_current_i++;
     }
 
@@ -114,7 +119,7 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
 
         bool already_in_list = false;
         for (int j = 0; j < hosts_current_i; j++) {
-            char *other_host = (*hosts)[j];
+            char *other_host = hosts[j];
 
             if (strcmp(default_host, other_host) == 0) {
                 already_in_list = true;
@@ -123,17 +128,24 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts) {
         }
 
         if (!already_in_list) {
-            (*hosts)[hosts_current_i] = strdup(default_host);
+            hosts[hosts_current_i] = strdup(default_host);
             hosts_current_i++;
         }
     }
 
-    (*hosts)[hosts_current_i] = NULL;
+    hosts[hosts_current_i] = NULL;
 
     end:
     {
         ad_array_free(site_hosts);
         ad_array_free(default_hosts);
+
+        if (result == AD_SUCCESS) {
+            *hosts_out = hosts;
+        } else {
+            *hosts_out = NULL;
+            free(hosts);
+        }
 
         return result;
     }
@@ -237,10 +249,10 @@ void ad_array_free(char **array) {
     }
 }
 
-int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***dn_list) {
+int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***list_out) {
     int result = AD_SUCCESS;
 
-    *dn_list = NULL;
+    char **list = NULL;
     LDAPMessage *res;
 
     char *attrs[] = {"1.1", NULL};
@@ -253,27 +265,33 @@ int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***dn_
     }
 
     const int entries_count = ldap_count_entries(ds, res);
-    *dn_list = malloc(sizeof(char *) * (entries_count + 1));
+    list = malloc(sizeof(char *) * (entries_count + 1));
 
     int i = 0;
-    for (LDAPMessage *entry = ldap_first_entry(ds, res);
-        (entry = ldap_next_entry(ds, entry)) != NULL; i++) {
+    for (LDAPMessage *entry = ldap_first_entry(ds, res); entry != NULL; entry = ldap_next_entry(ds, entry), i++) {
         char *entry_dn = ldap_get_dn(ds, entry);
-        (*dn_list)[i] = strdup(entry_dn);
+        list[i] = strdup(entry_dn);
         ldap_memfree(entry_dn);
     }
-    (*dn_list)[i] = NULL;
+    list[i] = NULL;
 
     end:
     ldap_msgfree(res);
 
+    if (result == AD_SUCCESS) {
+        *list_out = list;
+    } else {
+        *list_out = NULL;
+        free(list);
+    }
+
     return result;
 }
 
-int ad_list(LDAP *ds, const char *dn, char ***dn_list) {
+int ad_list(LDAP *ds, const char *dn, char ***list_out) {
     int result = AD_SUCCESS;
 
-    *dn_list = NULL;
+    char **list = NULL;
 
     char *attrs[] = {"1.1", NULL};
 
@@ -287,19 +305,25 @@ int ad_list(LDAP *ds, const char *dn, char ***dn_list) {
     }
 
     const int entries_count = ldap_count_entries(ds, res);
-    *dn_list = malloc(sizeof(char *) * (entries_count + 1));
+    list = malloc(sizeof(char *) * (entries_count + 1));
 
-    int i = 0; 
-    for (LDAPMessage *entry = ldap_first_entry(ds, res);
-        (entry = ldap_next_entry(ds, entry)) != NULL; i++) {
+    int i = 0;
+    for (LDAPMessage *entry = ldap_first_entry(ds, res); entry != NULL; entry = ldap_next_entry(ds, entry), i++) {
         char *entry_dn = ldap_get_dn(ds, entry);
-        (*dn_list)[i] = strdup(entry_dn);
+        list[i] = strdup(entry_dn);
         ldap_memfree(entry_dn);
     }
-    (*dn_list)[i] = NULL;
+    list[i] = NULL;
 
     end:
     ldap_msgfree(res);
+
+    if (result == AD_SUCCESS) {
+        *list_out = list;
+    } else {
+        *list_out = NULL;
+        free(list);
+    }
 
     return result;
 }
@@ -694,7 +718,7 @@ int ad_attribute_delete(LDAP *ds, const char *dn, const char *attribute, const c
     return result;
 }
 
-int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***values) {
+int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***values_out) {
     typedef struct ber_list {
         char *attribute;
         struct berval **values;
@@ -703,7 +727,7 @@ int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***va
 
     int result = AD_SUCCESS;
 
-    *values = NULL;
+    char **values = NULL;
 
     // TODO: use paged search
     char *attrs[] = {(char *)attribute, NULL};
@@ -769,8 +793,8 @@ int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***va
 
         // NOTE: for each value we need to pair it with key, hence the '2'
         // and reserve one more for NULL termination
-        *values = (char **)malloc(sizeof(char *) * (total_count * 2 + 1));
-        (*values)[total_count * 2] = NULL;
+        values = (char **)malloc(sizeof(char *) * (total_count * 2 + 1));
+        values[total_count * 2] = NULL;
 
         curr = head;
         size_t values_i = 0;
@@ -783,9 +807,9 @@ int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***va
                 bv_str[data.bv_len] = '\0';
                 // printf("\t%s\n", bv_str);
 
-                (*values)[values_i] = strdup(curr->attribute);
+                values[values_i] = strdup(curr->attribute);
                 values_i++;
-                (*values)[values_i] = strdup(bv_str);
+                values[values_i] = strdup(bv_str);
                 values_i++;
             }
 
@@ -801,6 +825,13 @@ int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***va
 
     end:
     ldap_msgfree(res);
+
+    if (result == AD_SUCCESS) {
+        *values_out = values;
+    } else {
+        *values_out = NULL;
+        free(values);
+    }
 
     return result;
 }
@@ -992,64 +1023,68 @@ int ad_group_remove_user(LDAP *ds, const char *group_dn, const char *user_dn) {
  * domain should be freed using free()
  * Returns AD_SUCCESS or error code
  */
-int dn2domain(const char *dn, char** domain) {
-    LDAPDN ldn = NULL;
-    LDAPRDN lrdn = NULL;
-    LDAPAVA* lattr = NULL;
-
+int dn2domain(const char *dn, char **domain_out) {
     int result = AD_SUCCESS;
-    int i;
-    /* This way we'll always have null-terminated string without
-     * workarounds. Cost of memory initialization is not comparable
-     * with code readability */
-    char *dc = calloc(1024, sizeof(char));
+    
+    LDAPDN exp_dn = NULL;
+    char *domain = NULL;
 
-    /* Explode string into set of structures representing RDNs */
-    if (ldap_str2dn(dn, &ldn, LDAP_DN_FORMAT_LDAPV3) != LDAP_SUCCESS) {
+    // Explode dn
+    const int result_str2dn = ldap_str2dn(dn, &exp_dn, LDAP_DN_FORMAT_LDAPV3);
+    if (result_str2dn != LDAP_SUCCESS) {
         result = AD_INVALID_DN;
-        goto dn2domain_end;
+
+        goto end;
     }
 
-    /* Iterate over RDNs checking for Domain Components and extract
-     * their values */
-    for(i = 0; NULL != ldn[i]; i++) {
-        lrdn = ldn[i];
-        /* Multi-valued RDNs are not supported so no iteration over
-         * lrdn[x] */
-        /* Check that we have at least one RDN */
-        if (NULL == lrdn[0]) {
-            result = AD_ATTRIBUTE_ENTRY_NOT_FOUND;
-            goto dn2domain_end;
+    // Iterate over RDNs, extracting the domain part
+    domain = calloc(MAX_DN_LENGTH, sizeof(char));
+    for (int i = 0; exp_dn[i] != NULL; i++) {
+        // NOTE: rdn can be multi-valued but we only process the first value
+        LDAPRDN rdns = exp_dn[i];
+        LDAPAVA *rdn = rdns[0];
+
+        if (rdn == NULL) {
+            result = AD_INVALID_DN;
+
+            goto end;
         }
-        lattr = lrdn[0];
-        /* BER/DER encoded attributes are unsupported */
-        if (0 == (lattr->la_flags & LDAP_AVA_STRING)) {
-            result = AD_LDAP_OPERATION_FAILURE;
-            goto dn2domain_end;
+
+        // NOTE: BER/DER encoded attributes are unsupported
+        const bool string_encoding = (rdn->la_flags & LDAP_AVA_STRING);
+        if (!string_encoding) {
+            result = AD_INVALID_DN;
+
+            goto end;
         }
-        // FIXME: Check for buffer overflow
-        if(!strncasecmp("DC", lattr[0].la_attr.bv_val, 2)) {
-            strncat(dc, lattr[0].la_value.bv_val, lattr[0].la_value.bv_len);
-            strncat(dc, ".", 1024);
+
+        // Save rdn if it's part of domain string
+        const bool rdn_is_part_of_domain = (strncasecmp("DC", rdn[0].la_attr.bv_val, 2) == 0);
+        if (rdn_is_part_of_domain) {
+            strncat(domain, rdn[0].la_value.bv_val, MAX_DN_LENGTH - strlen(domain) - 1);
+            strncat(domain, ".", MAX_DN_LENGTH - strlen(domain) - 1);
         }
     }
 
-    i = strlen(dc);
-    for(i = 0; '\0' != dc[i]; i++) {
-        dc[i] = tolower(dc[i]);
+    // Convert domain to lower case
+    for (int i = 0; i < strlen(domain); i++) {
+        domain[i] = tolower(domain[i]);
     }
 
-    dn2domain_end:
-    /* Free the memory allocated by ldap_str2dn */
-    ldap_dnfree(ldn);
-
-    /* Free the memory allocated for resolved DNS domain name in case
-     * of resolution errors */
-    if (AD_SUCCESS != result) {
-        free(dc);
+    // Remove last '.'
+    if (strlen(domain) > 0) {
+        domain[strlen(domain) - 1] = '\0';
     }
 
-    (*domain) = dc;
+    end:
+    ldap_dnfree(exp_dn);
+
+    if (result == AD_SUCCESS) {
+        *domain_out = domain;
+    } else {
+        *domain_out = NULL;
+        free(domain);
+    }
 
     return result;
 }

@@ -45,7 +45,7 @@ const char *ad_get_error();
  * list should be freed by the caller using ad_array_free()
  * Returns AD_SUCCESS or error code
  */
-int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts);
+int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts_out);
 
 /**
  * Connect and authenticate to Active Directory server
@@ -72,7 +72,7 @@ void ad_array_free(char **array);
  * list is NULL terminated
  * list should be freed by the caller using ad_array_free()
  */
-int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***dn_list);
+int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***list_out);
 
 /** 
  * Output a list of DN's that are one level below the given object
@@ -81,7 +81,7 @@ int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***dn_
  * list should be freed by the caller using ad_array_free()
  * Returns AD_SUCCESS or error code
  */
-int ad_list(LDAP *ds, const char *dn, char ***dn_list);
+int ad_list(LDAP *ds, const char *dn, char ***list_out);
 
 /**
  * Create user object below given DN
@@ -162,7 +162,6 @@ int ad_attribute_replace_binary(LDAP *ds, const char *dn, const char *attribute,
 /**
  * Remove (attribute, value) mapping from object
  * If given value is NULL, remove all values of this attributes
- * Output a list of key-value pairs for given attribute
  * Returns AD_SUCCESS or error code
  */
 int ad_attribute_delete(LDAP *ds, const char *dn, const char *attribute, const char *value);
@@ -173,7 +172,7 @@ int ad_attribute_delete(LDAP *ds, const char *dn, const char *attribute, const c
  * list should be freed by the caller using ad_array_free()
  * Returns AD_SUCCESS or error code
  */
-int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***values);
+int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***values_out);
 
 /**
  * Rename object

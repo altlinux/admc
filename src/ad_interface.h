@@ -77,12 +77,12 @@ public:
     QList<QString> list(const QString &dn);
     QList<QString> search(const QString &filter);
 
-    Attributes get_attributes(const QString &dn);
-    QList<QString> get_attribute_multi(const QString &dn, const QString &attribute);
-    QString get_attribute(const QString &dn, const QString &attribute);
+    Attributes get_all_attributes(const QString &dn);
+    QList<QString> attribute_get_multi(const QString &dn, const QString &attribute);
+    QString attribute_get(const QString &dn, const QString &attribute);
     bool attribute_value_exists(const QString &dn, const QString &attribute, const QString &value);
 
-    bool set_attribute(const QString &dn, const QString &attribute, const QString &value);
+    bool attribute_replace(const QString &dn, const QString &attribute, const QString &value);
     bool object_create(const QString &name, const QString &dn, NewEntryType type);
     void object_delete(const QString &dn);
     void object_move(const QString &dn, const QString &new_container);

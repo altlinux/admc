@@ -163,7 +163,7 @@ QList<QString> AdInterface::search(const QString &filter) {
     }
 }
 
-Attributes AdInterface::get_attributes(const QString &dn) {
+Attributes AdInterface::get_all_attributes(const QString &dn) {
     if (dn == "") {
         return Attributes();
     }
@@ -174,8 +174,8 @@ Attributes AdInterface::get_attributes(const QString &dn) {
         const char *dn_cstr = dn_array.constData();
 
         char** attributes_raw;
-        const int result_get_attribute = connection->get_attribute(dn_cstr, "*", &attributes_raw);
-        if (result_get_attribute == AD_SUCCESS) {
+        const int result_attribute_get = connection->attribute_get(dn_cstr, "*", &attributes_raw);
+        if (result_attribute_get == AD_SUCCESS) {
             Attributes attributes;
             // attributes_raw is in the form of:
             // char** array of {key, value, value, key, value ...}
@@ -206,8 +206,8 @@ Attributes AdInterface::get_attributes(const QString &dn) {
     return attributes_cache[dn];
 }
 
-QList<QString> AdInterface::get_attribute_multi(const QString &dn, const QString &attribute) {
-    QMap<QString, QList<QString>> attributes = get_attributes(dn);
+QList<QString> AdInterface::attribute_get_multi(const QString &dn, const QString &attribute) {
+    QMap<QString, QList<QString>> attributes = get_all_attributes(dn);
 
     if (attributes.contains(attribute)) {
         return attributes[attribute];
@@ -216,8 +216,8 @@ QList<QString> AdInterface::get_attribute_multi(const QString &dn, const QString
     }
 }
 
-QString AdInterface::get_attribute(const QString &dn, const QString &attribute) {
-    QList<QString> values = get_attribute_multi(dn, attribute);
+QString AdInterface::attribute_get(const QString &dn, const QString &attribute) {
+    QList<QString> values = attribute_get_multi(dn, attribute);
 
     if (values.size() > 0) {
         // Return first value only
@@ -228,7 +228,7 @@ QString AdInterface::get_attribute(const QString &dn, const QString &attribute) 
 }
 
 bool AdInterface::attribute_value_exists(const QString &dn, const QString &attribute, const QString &value) {
-    QList<QString> values = get_attribute_multi(dn, attribute);
+    QList<QString> values = attribute_get_multi(dn, attribute);
 
     if (values.contains(value)) {
         return true;
@@ -237,10 +237,10 @@ bool AdInterface::attribute_value_exists(const QString &dn, const QString &attri
     }
 }
 
-bool AdInterface::set_attribute(const QString &dn, const QString &attribute, const QString &value) {
+bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value) {
     int result = AD_INVALID_DN;
 
-    const QString old_value = get_attribute(dn, attribute);
+    const QString old_value = attribute_get(dn, attribute);
     
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
@@ -251,7 +251,7 @@ bool AdInterface::set_attribute(const QString &dn, const QString &attribute, con
     const QByteArray value_array = value.toLatin1();
     const char *value_cstr = value_array.constData();
 
-    result = connection->mod_replace(dn_cstr, attribute_cstr, value_cstr);
+    result = connection->attribute_replace(dn_cstr, attribute_cstr, value_cstr);
 
     if (result == AD_SUCCESS) {
         message(QString("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"").arg(attribute, dn, old_value, value));
@@ -286,11 +286,11 @@ bool AdInterface::object_create(const QString &name, const QString &dn, NewEntry
             break;
         }
         case OU: {
-            result = connection->ou_create(name_cstr, dn_cstr);
+            result = connection->create_ou(name_cstr, dn_cstr);
             break;
         }
         case Group: {
-            result = connection->group_create(name_cstr, dn_cstr);
+            result = connection->create_group(name_cstr, dn_cstr);
             break;
         }
         case COUNT: break;
@@ -561,14 +561,14 @@ void AdInterface::command(QStringList args) {
         QString dn = args[1];
         QString attribute = args[2];
 
-        QString value = get_attribute(dn, attribute);
+        QString value = attribute_get(dn, attribute);
 
         printf("%s\n", qPrintable(value));
     } else if (command == "get-attribute-multi") {
         QString dn = args[1];
         QString attribute = args[2];
 
-        QList<QString> values = get_attribute_multi(dn, attribute);
+        QList<QString> values = attribute_get_multi(dn, attribute);
 
         for (auto e : values) {
             printf("%s\n", qPrintable(e));
