@@ -30,6 +30,8 @@
 #include <QMimeData>
 #include <QMap>
 #include <QIcon>
+#include <QSet>
+#include <QStack>
 
 enum ContainersColumn {
     ContainersColumn_Name,
@@ -37,7 +39,7 @@ enum ContainersColumn {
     ContainersColumn_COUNT,
 };
 
-void make_new_row(QStandardItem *parent, const QString &dn);
+QStandardItem *make_new_row(QStandardItem *parent, const QString &dn);
 void load_row(QList<QStandardItem *> row, const QString &dn);
 
 ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget *parent)
@@ -70,6 +72,9 @@ ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget
     layout->addWidget(view);
 
     connect(
+        AD(), &AdInterface::modified,
+        this, &ContainersWidget::on_ad_modified);
+    connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,
         this, &ContainersWidget::on_selection_changed);
 
@@ -81,6 +86,138 @@ ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget
             emit clicked_dn(dn);
         });
 };
+
+void ContainersWidget::on_ad_modified() {
+    const QString head_dn = AD()->get_search_base();
+    QAbstractItemModel *view_model = view->model();
+
+    // Save DN's that were fetched
+    QSet<QString> fetched;
+    {
+        QStack<QModelIndex> stack;
+        const QModelIndex head = model->index(0, 0);
+        stack.push(head);
+
+        while (!stack.isEmpty()) {
+            const QModelIndex index = stack.pop();
+            const bool index_fetched = !model->canFetchMore(index);
+
+            if (index_fetched) {
+                const QString dn = get_dn_from_index(index, ContainersColumn_DN);
+                fetched.insert(dn);
+
+                int row = 0;
+                while (true) {
+                    const QModelIndex child = model->index(row, 0, index);
+
+                    if (child.isValid()) {
+                        stack.push(child);
+                        row++;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // Save DN's that were expanded in view
+    QSet<QString> expanded;
+    {
+        QStack<QModelIndex> stack;
+        const QModelIndex head = view_model->index(0, 0);
+        stack.push(head);
+
+        while (!stack.isEmpty()) {
+            const QModelIndex index = stack.pop();
+
+            if (view->isExpanded(index)) {
+                const QString dn = get_dn_from_index(index, ContainersColumn_DN);
+                expanded.insert(dn);
+
+                int row = 0;
+                while (true) {
+                    const QModelIndex child = view_model->index(row, 0, index);
+
+                    if (child.isValid()) {
+                        stack.push(child);
+                        row++;
+                    } else {
+                        view->expand(index);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // Clear model
+    model->removeRows(0, model->rowCount());
+
+    // NOTE: objects with changed DN's won't be refetched/re-expanded
+
+    // Reload model, refetching everything that was fetched before clear
+    {
+        QStack<QModelIndex> stack;
+
+        QStandardItem *invis_root = model->invisibleRootItem();
+        const QStandardItem *head_item = make_new_row(invis_root, head_dn);
+        stack.push(head_item->index());
+
+        while (!stack.isEmpty()) {
+            const QModelIndex index = stack.pop();
+            const QString dn = get_dn_from_index(index, ContainersColumn_DN);
+            const bool fetch_index = fetched.contains(dn);
+
+            if (fetch_index) {
+                model->fetchMore(index);
+
+                int row = 0;
+                while (true) {
+                    const QModelIndex child = model->index(row, 0, index);
+
+                    if (child.isValid()) {
+                        stack.push(child);
+                        row++;
+                    } else {
+                        view->expand(index);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // Re-expand items in view
+    {
+        const QModelIndex head = view_model->index(0, 0);
+        QStack<QModelIndex> stack;
+        stack.push(head);
+
+        while (!stack.isEmpty()) {
+            const QModelIndex index = stack.pop();
+            const QString dn = get_dn_from_index(index, ContainersColumn_DN);
+            const bool expand_index = expanded.contains(dn);
+
+            if (expand_index) {
+                view->expand(index);
+
+                int row = 0;
+                while (true) {
+                    const QModelIndex child = view_model->index(row, 0, index);
+
+                    if (child.isValid()) {
+                        stack.push(child);
+                        row++;
+                    } else {
+                        view->expand(index);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
 
 void ContainersWidget::on_selection_changed(const QItemSelection &selected, const QItemSelection &) {
     // Transform selected index into source index and pass it on
@@ -108,9 +245,6 @@ ContainersModel::ContainersModel(QObject *parent)
     connect(
         AD(), &AdInterface::logged_in,
         this, &ContainersModel::on_logged_in);
-    connect(
-        AD(), &AdInterface::modified,
-        this, &ContainersModel::on_ad_modified);
 }
 
 bool ContainersModel::canFetchMore(const QModelIndex &parent) const {
@@ -162,16 +296,6 @@ void ContainersModel::on_logged_in() {
     make_new_row(invis_root, head_dn);
 }
 
-void ContainersModel::on_ad_modified() {
-    removeRows(0, rowCount());
-
-    const QString head_dn = AD()->get_search_base();
-
-    // Load head
-    QStandardItem *invis_root = invisibleRootItem();
-    make_new_row(invis_root, head_dn);
-}
-
 void load_row(QList<QStandardItem *> row, const QString &dn) {
     QString name = AD()->attribute_get(dn, "name");
 
@@ -186,13 +310,13 @@ void load_row(QList<QStandardItem *> row, const QString &dn) {
 }
 
 // Make new row in model at given parent based on entry with given dn
-void make_new_row(QStandardItem *parent, const QString &dn) {
+QStandardItem *make_new_row(QStandardItem *parent, const QString &dn) {
     const bool is_container = AD()->is_container(dn);
     const bool is_container_like = AD()->is_container_like(dn);
     const bool should_be_loaded = is_container || is_container_like;
 
     if (!should_be_loaded) {
-        return;
+        return nullptr;
     }
 
     auto row = QList<QStandardItem *>();
@@ -203,4 +327,6 @@ void make_new_row(QStandardItem *parent, const QString &dn) {
     load_row(row, dn);
 
     parent->appendRow(row);
+
+    return row[0];
 }

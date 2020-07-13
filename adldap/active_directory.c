@@ -261,6 +261,12 @@ int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***lis
         save_ldap_error(result_search);
         result = AD_LDAP_OPERATION_FAILURE;
 
+        if (result_search == LDAP_NO_SUCH_OBJECT) {
+            result = AD_OBJECT_NOT_FOUND;
+        } else {
+            result = AD_LDAP_OPERATION_FAILURE;
+        }
+
         goto end;
     }
 
@@ -299,7 +305,12 @@ int ad_list(LDAP *ds, const char *dn, char ***list_out) {
     const int result_search = ldap_search_ext_s(ds, dn, LDAP_SCOPE_ONELEVEL, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
     if (result_search != LDAP_SUCCESS) {
         save_ldap_error(result_search);
-        result = AD_LDAP_OPERATION_FAILURE;
+
+        if (result_search == LDAP_NO_SUCH_OBJECT) {
+            result = AD_OBJECT_NOT_FOUND;
+        } else {
+            result = AD_LDAP_OPERATION_FAILURE;
+        }
 
         goto end;
     }
@@ -735,7 +746,13 @@ int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***va
     const int result_search = ldap_search_ext_s(ds, dn, LDAP_SCOPE_BASE, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
     if (result_search != LDAP_SUCCESS) {
         save_ldap_error(result_search);
-        result = AD_LDAP_OPERATION_FAILURE;
+
+        if (result_search == LDAP_NO_SUCH_OBJECT) {
+            result = AD_OBJECT_NOT_FOUND;
+        } else {
+            result = AD_LDAP_OPERATION_FAILURE;
+        }
+        
         goto end;
     }
 

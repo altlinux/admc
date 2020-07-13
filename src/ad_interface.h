@@ -112,9 +112,11 @@ signals:
 private:
     adldap::AdConnection *connection = nullptr;
     QHash<QString, Attributes> attributes_cache;
+    bool suppress_not_found_error = false;
 
     QMap<QString, QList<QString>> load_attributes(const QString &dn);
     void update_cache();
+    bool should_emit_message(int result);
 }; 
 
 // Convenience function to get AdInterface from qApp instance
