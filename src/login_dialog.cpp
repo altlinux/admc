@@ -53,6 +53,8 @@ LoginDialog::LoginDialog(QAction *login_action, QWidget *parent)
 
     const auto login_button = new QPushButton("Login", this);
     const auto cancel_button = new QPushButton("Cancel", this);
+    login_button->setAutoDefault(false);
+    cancel_button->setAutoDefault(false);
 
     const auto hosts_list_label = new QLabel("Select host:");
     hosts_list = new QListWidget(this);
