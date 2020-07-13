@@ -39,6 +39,9 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 #include <QTextEdit>
+#include <QSettings>
+
+#define MAIN_WINDOW_GEOMETRY "main_window_geometry"
 
 void on_action_exit(QMainWindow *main_window) {
     const QString text = QString("Are you sure you want to exit?");
@@ -52,9 +55,14 @@ void on_action_exit(QMainWindow *main_window) {
 MainWindow::MainWindow()
 : QMainWindow()
 {
-    // TODO: setting width to 1600+ fullscreens the window, no idea why
-    resize(1200, 700);
     setWindowTitle("MainWindow");
+
+    // Restore last geometry
+    const QString settings_file_path = get_settings_file_path();
+    const QSettings settings(settings_file_path, QSettings::NativeFormat);
+    if (settings.contains(MAIN_WINDOW_GEOMETRY)) {
+        restoreGeometry(settings.value(MAIN_WINDOW_GEOMETRY).toByteArray());
+    }
 
     // Menubar
     QAction *login_action = nullptr;
@@ -149,4 +157,11 @@ MainWindow::MainWindow()
             AD()->login(host, domain);
         }
     }    
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    // Save geometry
+    QString settings_file_path = get_settings_file_path();
+    QSettings settings(settings_file_path, QSettings::NativeFormat);
+    settings.setValue(MAIN_WINDOW_GEOMETRY, saveGeometry());
 }

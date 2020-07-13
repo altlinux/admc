@@ -63,6 +63,7 @@ private:
 
 };
 
+QString get_settings_file_path();
 Settings *SETTINGS();
 
 #endif /* SETTINGS_H */

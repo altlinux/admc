@@ -27,6 +27,7 @@ Q_OBJECT
 
 public:
     explicit MainWindow();
+    void closeEvent(QCloseEvent *event);
 
 };
 
