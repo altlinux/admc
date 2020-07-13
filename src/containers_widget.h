@@ -30,6 +30,7 @@ class AdvancedViewProxy;
 class EntryContextMenu;
 class QTreeView;
 class ContainersModel;
+class DnColumnProxy;
 
 class ContainersWidget final : public QWidget {
 Q_OBJECT
@@ -43,10 +44,14 @@ signals:
 
 private slots:
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
+    void on_ad_modified();
 
 private:
     ContainersModel *model = nullptr;
     QTreeView *view = nullptr;
+
+    AdvancedViewProxy *advanced_view_proxy;
+    DnColumnProxy *dn_column_proxy;
 };
 
 class ContainersModel final : public EntryModel {
