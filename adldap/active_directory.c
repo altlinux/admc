@@ -1061,7 +1061,6 @@ int dn2domain(const char *dn, char **domain_out) {
         // Save rdn if it's part of domain string
         const bool rdn_is_part_of_domain = (strncasecmp("DC", rdn[0].la_attr.bv_val, 2) == 0);
         if (rdn_is_part_of_domain) {
-            printf("part of \n");
             strncat(domain, rdn[0].la_value.bv_val, MAX_DN_LENGTH - strlen(domain) - 1);
             strncat(domain, ".", MAX_DN_LENGTH - strlen(domain) - 1);
         }
