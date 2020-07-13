@@ -268,8 +268,7 @@ int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***lis
     list = malloc(sizeof(char *) * (entries_count + 1));
 
     int i = 0;
-    for (LDAPMessage *entry = ldap_first_entry(ds, res);
-        (entry = ldap_next_entry(ds, entry)) != NULL; i++) {
+    for (LDAPMessage *entry = ldap_first_entry(ds, res); entry != NULL; entry = ldap_next_entry(ds, entry), i++) {
         char *entry_dn = ldap_get_dn(ds, entry);
         list[i] = strdup(entry_dn);
         ldap_memfree(entry_dn);
@@ -308,9 +307,8 @@ int ad_list(LDAP *ds, const char *dn, char ***list_out) {
     const int entries_count = ldap_count_entries(ds, res);
     list = malloc(sizeof(char *) * (entries_count + 1));
 
-    int i = 0; 
-    for (LDAPMessage *entry = ldap_first_entry(ds, res);
-        (entry = ldap_next_entry(ds, entry)) != NULL; i++) {
+    int i = 0;
+    for (LDAPMessage *entry = ldap_first_entry(ds, res); entry != NULL; entry = ldap_next_entry(ds, entry), i++) {
         char *entry_dn = ldap_get_dn(ds, entry);
         list[i] = strdup(entry_dn);
         ldap_memfree(entry_dn);
