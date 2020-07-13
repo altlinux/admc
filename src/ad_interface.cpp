@@ -400,6 +400,27 @@ void AdInterface::object_rename(const QString &dn, const QString &new_name) {
     }
 }
 
+bool AdInterface::set_pass(const QString &dn, const QString &password) {
+    const QByteArray dn_array = dn.toLatin1();
+    const char *dn_cstr = dn_array.constData();
+    const QByteArray password_array = password.toLatin1();
+    const char *password_cstr = password_array.constData();
+
+    int result = connection->user_set_pass(dn_cstr, password_cstr);
+
+    if (result == AD_SUCCESS) {
+        message(QString("Set pass of \"%1\"").arg(dn));
+
+        update_cache();
+
+        return true;
+    } else {
+        message(QString("Failed to set pass of \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
+    
+        return false;
+    }
+}
+
 bool AdInterface::is_user(const QString &dn) {
     return attribute_value_exists(dn, "objectClass", "user");
 }

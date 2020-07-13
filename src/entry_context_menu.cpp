@@ -23,6 +23,7 @@
 #include "confirmation_dialog.h"
 #include "move_dialog.h"
 #include "utils.h"
+#include "password_dialog.h"
 
 #include <QString>
 #include <QMessageBox>
@@ -112,6 +113,11 @@ void EntryContextMenu::open(const QPoint &global_pos, const QString &dn, const Q
     if (is_user) {
         addAction("Add to group", [this, dn]() {
             move_dialog->open_for_entry(dn, MoveDialogType_AddToGroup);
+        });
+
+        addAction("Reset password", [this, dn]() {
+            const auto password_dialog = new PasswordDialog(dn, this);
+            password_dialog->open();
         });
     }
 
