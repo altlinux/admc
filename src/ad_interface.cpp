@@ -406,7 +406,7 @@ bool AdInterface::set_pass(const QString &dn, const QString &password) {
     const QByteArray password_array = password.toLatin1();
     const char *password_cstr = password_array.constData();
 
-    int result = connection->setpass(dn_cstr, password_cstr);
+    int result = connection->user_set_pass(dn_cstr, password_cstr);
 
     if (result == AD_SUCCESS) {
         message(QString("Set pass of \"%1\"").arg(dn));
