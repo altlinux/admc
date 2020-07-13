@@ -43,15 +43,12 @@ signals:
     void clicked_dn(const QString &dn);
 
 private slots:
-    void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
     void on_ad_modified();
+    void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
 
 private:
     ContainersModel *model = nullptr;
     QTreeView *view = nullptr;
-
-    AdvancedViewProxy *advanced_view_proxy;
-    DnColumnProxy *dn_column_proxy;
 };
 
 class ContainersModel final : public EntryModel {
@@ -70,7 +67,6 @@ public:
 
 private slots:
     void on_logged_in();
-    void on_ad_modified();
 };
 
 #endif /* CONTAINERS_WIDGET_H */
