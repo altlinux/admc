@@ -133,7 +133,9 @@ QList<QString> AdInterface::list(const QString &dn) {
 
         return children;
     } else {
-        message(QString("Failed to load children of \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
+        if (should_emit_message(result)) {
+            message(QString("Failed to load children of \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
+        }
 
         return QList<QString>();
     }
@@ -157,7 +159,9 @@ QList<QString> AdInterface::search(const QString &filter) {
 
         return results;
     } else {
-        message(QString("Failed to search for \"%1\". Error: \"%2\"").arg(filter, get_error_str()));
+        if (should_emit_message(result_search)) {
+            message(QString("Failed to search for \"%1\". Error: \"%2\"").arg(filter, get_error_str()));
+        }
 
         return QList<QString>();
     }
@@ -197,7 +201,9 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
 
             attributes_cache[dn] = attributes;
         } else {
-            message(QString("Failed to get attributes of \"%1\"").arg(dn));
+            if (should_emit_message(result_attribute_get)) {
+                message(QString("Failed to get attributes of \"%1\"").arg(dn));
+            }
 
             return Attributes();
         }
@@ -600,7 +606,20 @@ void AdInterface::command(QStringList args) {
 void AdInterface::update_cache() {
     attributes_cache.clear();
 
+    // NOTE: Suppress "not found" errors because after modifications
+    // widgets might attempt to use outdated DN's which will cause
+    // such errors but there is no point in showing those errors
+    suppress_not_found_error = true;
     emit modified();
+    suppress_not_found_error = false;
+}
+
+bool AdInterface::should_emit_message(int result) {
+    if (result == AD_OBJECT_NOT_FOUND && suppress_not_found_error) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 AdInterface *AD() {
