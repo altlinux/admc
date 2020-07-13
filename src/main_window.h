@@ -26,7 +26,7 @@ class MainWindow final : public QMainWindow {
 Q_OBJECT
 
 public:
-    explicit MainWindow(const bool auto_login);
+    explicit MainWindow();
 
 };
 

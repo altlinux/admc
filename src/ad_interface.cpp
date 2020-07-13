@@ -31,6 +31,33 @@ AdInterface::~AdInterface() {
     delete connection;
 }
 
+QList<QString> AdInterface::get_domain_hosts(const QString &domain, const QString &site) {
+    const QByteArray domain_array = domain.toLatin1();
+    const char *domain_cstr = domain_array.constData();
+
+    const QByteArray site_array = site.toLatin1();
+    const char *site_cstr = site_array.constData();
+
+    char **hosts_raw = NULL;
+    int hosts_result = ad_get_domain_hosts(domain_cstr, site_cstr, &hosts_raw);
+
+    if (hosts_result == AD_SUCCESS) {
+        auto hosts = QList<QString>();
+
+        for (int i = 0; hosts_raw[i] != NULL; i++) {
+            auto host = QString(hosts_raw[i]);
+            hosts.push_back(host);
+        }
+        ad_array_free(hosts_raw);
+
+        return hosts;
+    } else {
+        // emit get_domain_hosts_failed(domain, site, get_error_str());
+
+        return QList<QString>();
+    }
+}
+
 // "CN=foo,CN=bar,DC=domain,DC=com"
 // =>
 // "foo"
@@ -55,15 +82,23 @@ QString extract_parent_dn_from_dn(const QString &dn) {
     return parent_dn;
 }
 
-void AdInterface::login(const QString &base, const QString &head) {
-    const int result = connection->connect(base.toStdString(), head.toStdString());
+bool AdInterface::login(const QString &host, const QString &domain) {
+    const QString uri = "ldap://" + host;
+    const std::string uri_std = uri.toStdString();
+    const std::string domain_std = domain.toStdString();
+
+    const int result = connection->connect(uri_std, domain_std);
 
     if (result == AD_SUCCESS) {
-        message(QString("Logged in to \"%1\" with head dn at \"%2\"").arg(base, head));
+        message(QString("Logged in to \"%1\" at \"%2\"").arg(host, domain));
 
         emit logged_in();
+
+        return true;
     } else {
-        message(QString("Failed to login to \"%1\" with head dn at \"%2\"").arg(base, head));
+        message(QString("Failed to login to \"%1\" at \"%2\"").arg(host, domain));
+
+        return false;
     }
 }
 

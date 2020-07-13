@@ -33,7 +33,7 @@ class AdConnection {
 
 public:
     AdConnection();
-    int connect(std::string uri_arg, std::string search_base_arg);
+    int connect(std::string uri_arg, std::string domain);
     bool is_connected();
     const char *get_error();
     std::string get_search_base() const;

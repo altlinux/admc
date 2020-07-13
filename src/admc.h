@@ -32,7 +32,7 @@ public:
     ADMC(int& argc, char** argv);
 
     AdInterface* ad_interface();
-    const Settings* settings();
+    Settings* settings();
 
 private:
     AdInterface* m_ad_interface = nullptr;

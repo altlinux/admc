@@ -22,10 +22,17 @@
 
 #include <QObject>
 #include <QList>
+#include <QString>
 
 class QAction;
 class QSettings;
-class QString;
+
+enum SettingString {
+    SettingString_Domain,    
+    SettingString_Site,    
+    SettingString_Host,    
+    SettingString_COUNT,    
+};
 
 class Settings final : public QObject {
 Q_OBJECT
@@ -33,6 +40,8 @@ Q_OBJECT
 public:
     explicit Settings(QObject *parent);
     void emit_toggle_signals() const;
+    QString get_string(SettingString string) const;
+    void set_string(SettingString string, const QString &value);
 
     QAction *toggle_advanced_view = nullptr;
     QAction *toggle_show_dn_column = nullptr;
@@ -40,15 +49,17 @@ public:
     QAction *details_on_contents_click = nullptr;
     QAction *confirm_actions = nullptr;
     QAction *toggle_show_status_log = nullptr;
+    QAction *auto_login = nullptr;
 
 private:
     QList<QAction *> checkable_actions;
-    QAction *make_checkable_action(const QSettings &settings, const QString& text);
+    QString strings[SettingString_COUNT];
 
+    QAction *make_checkable_action(const QSettings &settings, const QString& text);
     void save_settings();
 
 };
 
-const Settings *SETTINGS();
+Settings *SETTINGS();
 
 #endif /* SETTINGS_H */

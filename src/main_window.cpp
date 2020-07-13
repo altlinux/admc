@@ -17,8 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
-
 #include "main_window.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
@@ -29,6 +27,7 @@
 #include "settings.h"
 #include "entry_context_menu.h"
 #include "confirmation_dialog.h"
+#include "login_dialog.h"
 
 #include <QApplication>
 #include <QString>
@@ -41,10 +40,6 @@
 #include <QVBoxLayout>
 #include <QTextEdit>
 
-void on_action_login() {
-    AD()->login(SEARCH_BASE, HEAD_DN);
-}
-
 void on_action_exit(QMainWindow *main_window) {
     const QString text = QString("Are you sure you want to exit?");
     const bool confirmed = confirmation_dialog(text, main_window);
@@ -54,20 +49,19 @@ void on_action_exit(QMainWindow *main_window) {
     }   
 }
 
-MainWindow::MainWindow(const bool auto_login)
+MainWindow::MainWindow()
 : QMainWindow()
 {
     // TODO: setting width to 1600+ fullscreens the window, no idea why
-    resize(1500, 1000);
+    resize(1200, 700);
     setWindowTitle("MainWindow");
 
     // Menubar
+    QAction *login_action = nullptr;
     {
         QMenuBar *menubar = menuBar();
         QMenu *menubar_file = menubar->addMenu("File");
-        menubar_file->addAction("Login", []() {
-            on_action_login();
-        });
+        login_action = menubar_file->addAction("Login");
         menubar_file->addAction("Exit", [this]() {
             on_action_exit(this);
         });
@@ -81,6 +75,7 @@ MainWindow::MainWindow(const bool auto_login)
         menubar_preferences->addAction(SETTINGS()->details_on_containers_click);
         menubar_preferences->addAction(SETTINGS()->details_on_contents_click);
         menubar_preferences->addAction(SETTINGS()->confirm_actions);
+        menubar_preferences->addAction(SETTINGS()->auto_login);
     }
 
     // Widgets
@@ -95,6 +90,8 @@ MainWindow::MainWindow(const bool auto_login)
 
     auto status_log = new QTextEdit(this);
     status_log->setReadOnly(true);
+
+    new LoginDialog(login_action, this);
 
     new Status(statusBar(), status_log, this);
 
@@ -135,7 +132,13 @@ MainWindow::MainWindow(const bool auto_login)
             central_widget->setEnabled(true);
         });
 
+    const bool auto_login = SETTINGS()->auto_login->isChecked();
     if (auto_login) {
-        on_action_login();
+        const QString host = SETTINGS()->get_string(SettingString_Host);
+        const QString domain = SETTINGS()->get_string(SettingString_Domain);
+
+        if (!host.isEmpty()) {
+            AD()->login(host, domain);
+        }
     }    
 }
