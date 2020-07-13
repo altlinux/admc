@@ -33,37 +33,35 @@ class AdConnection {
 
 public:
     AdConnection();
-    void connect(std::string uri, std::string search_base);
+    int connect(std::string uri_arg, std::string search_base_arg);
     bool is_connected();
-    char* get_errstr();
-    int get_errcode();
+    const char *get_error();
     std::string get_search_base() const;
     std::string get_uri() const;
 
     int create_user(const char *username, const char *dn);
     int create_computer(const char *name, const char *dn);
-    int lock_user(const char *dn);
-    int unlock_user(const char *dn);
+    int user_lock(const char *dn);
+    int user_unlock(const char *dn);
     int object_delete(const char *dn);
-    int setpass(const char *dn, const char *password);
-    char **search(const char *filter);
-    int mod_add(const char *dn, const char *attribute, const char *value);
-    int mod_add_binary(const char *dn, const char *attribute, const char *data, int data_length);
-    int mod_replace(const char *dn, const char *attribute, const char *value);
-    int mod_replace_binary(const char *dn, const char *attribute, const char *data, int data_length);
-    int mod_delete(const char *dn, const char *attribute, const char *value);
-    char **get_attribute(const char *dn, const char *attribute);
+    int user_set_pass(const char *dn, const char *password);
+    int search(const char *filter, char ***dn_list);
+    int attribute_add(const char *dn, const char *attribute, const char *value);
+    int attribute_add_binary(const char *dn, const char *attribute, const char *data, int data_length);
+    int attribute_replace(const char *dn, const char *attribute, const char *value);
+    int attribute_replace_binary(const char *dn, const char *attribute, const char *data, int data_length);
+    int attribute_delete(const char *dn, const char *attribute, const char *value);
+    int attribute_get(const char *dn, const char *attribute, char ***values);
     int rename(const char *dn, const char *new_name);
     int rename_user(const char *dn, const char *new_username);
     int rename_group(const char *dn, const char *new_name);
     int move(const char *current_dn, const char *new_container);
     int move_user(const char *current_dn, const char *new_container);
-    int group_create(const char *group_name, const char *dn);
+    int create_group(const char *group_name, const char *dn);
     int group_add_user(const char *group_dn, const char *user_dn);
     int group_remove_user(const char *group_dn, const char *user_dn);
-    int group_subtree_remove_user(const char *container_dn, const char *user_dn);
-    int ou_create(const char *ou_name, const char *dn);
-    char **list(const char *dn);
+    int create_ou(const char *ou_name, const char *dn);
+    int list(const char *dn, char ***dn_list);
 };
 
 } /* namespace adldap */

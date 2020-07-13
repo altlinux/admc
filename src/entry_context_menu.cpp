@@ -137,7 +137,7 @@ void EntryContextMenu::open(const QPoint &global_pos, const QString &dn, const Q
 }
 
 void EntryContextMenu::delete_entry(const QString &dn) {
-    const QString name = AD()->get_attribute(dn, "name");
+    const QString name = AD()->attribute_get(dn, "name");
     const QString text = QString("Are you sure you want to delete \"%1\"?").arg(name);
     const bool confirmed = confirmation_dialog(text, this);
 
@@ -211,7 +211,7 @@ void EntryContextMenu::edit_policy(const QString &dn) {
 
     const char *uri = "ldap://dc0.domain.alt";
 
-    const QString path = AD()->get_attribute(dn, "gPCFileSysPath");
+    const QString path = AD()->attribute_get(dn, "gPCFileSysPath");
 
     QStringList args;
     args << uri;
