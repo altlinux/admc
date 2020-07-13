@@ -36,7 +36,7 @@ DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWid
     members_widget = new MembersWidget(entry_context_menu, this);
     attributes_widget = new AttributesWidget(this);
 
-    // Add all tabs to take ownership of them
+    // Add all tabs to incorporate them in the layout
     addTab(attributes_widget, "");
     addTab(members_widget, "");
 

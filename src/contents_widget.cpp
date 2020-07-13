@@ -118,22 +118,22 @@ void ContentsModel::change_target(const QString &dn) {
     QStandardItem *head = item(0, 0);
 
     // Load children
-    QList<QString> children = AD()->load_children(dn);
+    QList<QString> children = AD()->list(dn);
     for (auto child_dn : children) {
         make_new_row(head, child_dn);
     }
 }
 
 void ContentsModel::load_row(QList<QStandardItem *> row, const QString &dn) {
-    QString name = AD()->get_attribute(dn, "name");
+    QString name = AD()->attribute_get(dn, "name");
 
     // NOTE: this is given as raw DN and contains '-' where it should
     // have spaces, so convert it
-    QString category = AD()->get_attribute(dn, "objectCategory");
+    QString category = AD()->attribute_get(dn, "objectCategory");
     category = extract_name_from_dn(category);
     category = category.replace('-', ' ');
 
-    QString description = AD()->get_attribute(dn, "description");
+    QString description = AD()->attribute_get(dn, "description");
 
     row[ContentsColumn_Name]->setText(name);
     row[ContentsColumn_Category]->setText(category);

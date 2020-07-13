@@ -33,7 +33,18 @@ QString checkable_text(SettingsCheckable checkable) {
         case SettingsCheckable_DetailsFromContents: return "Open attributes on left click in Contents window";
         case SettingsCheckable_ConfirmActions: return "Confirm actions";
         case SettingsCheckable_ShowStatusLog: return "Show status log";
+        case SettingsCheckable_AutoLogin: return "Login using saved session at startup";
         case SettingsCheckable_COUNT: return "COUNT";
+    }
+    return "";
+}
+
+QString string_name(SettingString string) {
+    switch (string) {
+        case SettingString_Domain: return "domain";
+        case SettingString_Site: return "site";
+        case SettingString_Host: return "host";
+        case SettingString_COUNT: return "COUNT";
     }
     return "";
 }
@@ -63,7 +74,14 @@ Settings::Settings(QObject *parent)
         checkables[i] = action;
     }
 
-    // Save settings before the app quits
+    for (int i = 0; i < SettingString_COUNT; i++) {
+        const SettingString string = (SettingString) i;
+        const QString name = string_name(string);
+        const QString value = settings.value(name, "").toString();
+
+        strings[i] = value;
+    }
+
     connect(
         qApp, &QCoreApplication::aboutToQuit,
         this, &Settings::save_settings);
@@ -80,6 +98,16 @@ QAction *Settings::checkable(SettingsCheckable c) const {
     return checkables[c];
 }
 
+void Settings::set_string(SettingString string, const QString &value) {
+    strings[string] = value;
+}
+
+QString Settings::get_string(SettingString string) const {
+    const QString value = strings[string];
+
+    return value;
+}
+
 void Settings::save_settings() {
     const QString settings_file_path = get_settings_file_path();
     QSettings settings(settings_file_path, QSettings::NativeFormat);
@@ -89,10 +117,18 @@ void Settings::save_settings() {
         const QString text = c->text();
         settings.setValue(text, checked);
     }
+
+    for (int i = 0; i < SettingString_COUNT; i++) {
+        const SettingString string = (SettingString) i;
+        const QString name = string_name(string);
+        const QString value = strings[string];
+
+        settings.setValue(name, value);
+    }
 }
 
-const Settings *SETTINGS() {
+Settings *SETTINGS() {
     ADMC *app = qobject_cast<ADMC *>(qApp);
-    const Settings *settings = app->settings();
+    Settings *settings = app->settings();
     return settings;
 }

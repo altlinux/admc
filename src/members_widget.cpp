@@ -75,7 +75,7 @@ void MembersModel::change_target(const QString &dn) {
         for (int i = 0; i < MembersColumn_COUNT; i++) {
             row.append(new QStandardItem());
         }
-        const QString name = AD()->get_attribute(row_dn, "name");
+        const QString name = AD()->attribute_get(row_dn, "name");
         row[MembersColumn_Name]->setText(name);
         row[MembersColumn_DN]->setText(row_dn);
 
@@ -88,7 +88,7 @@ void MembersModel::change_target(const QString &dn) {
     QStandardItem *group_item = group_row[0];
 
     // Populate model with members of new root
-    const QList<QString> members = AD()->get_attribute_multi(dn, "member");
+    const QList<QString> members = AD()->attribute_get_multi(dn, "member");
     for (auto member_dn : members) {
         QList<QStandardItem *> member_row = create_row(member_dn);
         group_item->appendRow(member_row);

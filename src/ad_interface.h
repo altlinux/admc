@@ -63,29 +63,34 @@ class AdInterface final : public QObject {
 Q_OBJECT
 
 public:
+    static QList<QString> get_domain_hosts(const QString &domain, const QString &site);
+
     explicit AdInterface(QObject *parent);
     ~AdInterface();
 
-    void ad_interface_login(const QString &base, const QString &head);
+    bool login(const QString &host, const QString &domain);
+
     QString get_error_str();
     QString get_search_base();
     QString get_uri();
 
-    QList<QString> load_children(const QString &dn);
+    QList<QString> list(const QString &dn);
     QList<QString> search(const QString &filter);
 
-    Attributes get_attributes(const QString &dn);
-    QList<QString> get_attribute_multi(const QString &dn, const QString &attribute);
-    QString get_attribute(const QString &dn, const QString &attribute);
+    Attributes get_all_attributes(const QString &dn);
+    QList<QString> attribute_get_multi(const QString &dn, const QString &attribute);
+    QString attribute_get(const QString &dn, const QString &attribute);
     bool attribute_value_exists(const QString &dn, const QString &attribute, const QString &value);
 
-    bool set_attribute(const QString &dn, const QString &attribute, const QString &value);
-    bool create_entry(const QString &name, const QString &dn, NewEntryType type);
-    void delete_entry(const QString &dn);
-    void move(const QString &dn, const QString &new_container);
-    void add_user_to_group(const QString &group_dn, const QString &user_dn);
+    bool attribute_replace(const QString &dn, const QString &attribute, const QString &value);
+    bool object_create(const QString &name, const QString &dn, NewEntryType type);
+    void object_delete(const QString &dn);
+    void object_move(const QString &dn, const QString &new_container);
+    void object_rename(const QString &dn, const QString &new_name);
+    bool set_pass(const QString &dn, const QString &password);
+    
+    void group_add_user(const QString &group_dn, const QString &user_dn);
     void group_remove_user(const QString &group_dn, const QString &user_dn);
-    void rename(const QString &dn, const QString &new_name);
 
     bool is_user(const QString &dn);
     bool is_group(const QString &dn);
@@ -94,8 +99,8 @@ public:
     bool is_policy(const QString &dn);
     bool is_container_like(const QString &dn);
 
-    bool can_drop_entry(const QString &dn, const QString &target_dn);
-    void drop_entry(const QString &dn, const QString &target_dn);
+    bool object_can_drop(const QString &dn, const QString &target_dn);
+    void object_drop(const QString &dn, const QString &target_dn);
 
     void command(QStringList args);
 

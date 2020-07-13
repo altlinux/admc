@@ -17,21 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "admc.h"
-#include "ad_interface.h"
-#include "settings.h"
+#ifndef PASSWORD_DIALOG_H
+#define PASSWORD_DIALOG_H
 
-ADMC::ADMC(int& argc, char** argv)
-: QApplication(argc, argv)
-{
-    m_ad_interface = new AdInterface(this);
-    m_settings = new Settings(this);
-}
+#include <QDialog>
+#include <QString>
 
-AdInterface *ADMC::ad_interface() {
-    return m_ad_interface;
-}
+class QWidget;
+class QLineEdit;
 
-Settings *ADMC::settings() {
-    return m_settings;
-}
+// Accepts input of new password and changes password when done
+class PasswordDialog final : public QDialog {
+Q_OBJECT
+
+public:
+    PasswordDialog(const QString &target_arg, QWidget *parent);
+
+private slots:
+    void on_ok_button(bool);
+    void on_cancel_button(bool);
+
+private:
+    QString target;
+    QLineEdit *new_password_edit = nullptr;
+    QLineEdit *confirm_password_edit = nullptr;
+
+};
+
+#endif /* PASSWORD_DIALOG_H */

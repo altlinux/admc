@@ -23,6 +23,7 @@
 #include "confirmation_dialog.h"
 #include "move_dialog.h"
 #include "utils.h"
+#include "password_dialog.h"
 
 #include <QString>
 #include <QMessageBox>
@@ -113,6 +114,11 @@ void EntryContextMenu::open(const QPoint &global_pos, const QString &dn, const Q
         addAction("Add to group", [this, dn]() {
             move_dialog->open_for_entry(dn, MoveDialogType_AddToGroup);
         });
+
+        addAction("Reset password", [this, dn]() {
+            const auto password_dialog = new PasswordDialog(dn, this);
+            password_dialog->open();
+        });
     }
 
     // Special contextual action
@@ -131,12 +137,12 @@ void EntryContextMenu::open(const QPoint &global_pos, const QString &dn, const Q
 }
 
 void EntryContextMenu::delete_entry(const QString &dn) {
-    const QString name = AD()->get_attribute(dn, "name");
+    const QString name = AD()->attribute_get(dn, "name");
     const QString text = QString("Are you sure you want to delete \"%1\"?").arg(name);
     const bool confirmed = confirmation_dialog(text, this);
 
     if (confirmed) {
-        AD()->delete_entry(dn);
+        AD()->object_delete(dn);
     }    
 }
 
@@ -164,7 +170,7 @@ void EntryContextMenu::new_entry_dialog(const QString &parent_dn, NewEntryType t
 
         const QString dn = suffix + "=" + name + "," + parent_dn;
 
-        AD()->create_entry(name, dn, type);
+        AD()->object_create(name, dn, type);
     }
 }
 
@@ -192,7 +198,7 @@ void EntryContextMenu::rename(const QString &dn) {
     QString new_name = QInputDialog::getText(this, dialog_title, input_label, QLineEdit::Normal, "", &ok);
 
     if (ok && !new_name.isEmpty()) {
-        AD()->rename(dn, new_name);
+        AD()->object_rename(dn, new_name);
     }
 }
 
@@ -205,7 +211,7 @@ void EntryContextMenu::edit_policy(const QString &dn) {
 
     const char *uri = "ldap://dc0.domain.alt";
 
-    const QString path = AD()->get_attribute(dn, "gPCFileSysPath");
+    const QString path = AD()->attribute_get(dn, "gPCFileSysPath");
 
     QStringList args;
     args << uri;

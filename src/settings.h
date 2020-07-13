@@ -21,10 +21,18 @@
 #define SETTINGS_H
 
 #include <QObject>
+#include <QList>
+#include <QString>
 
 class QAction;
 class QSettings;
-class QString;
+
+enum SettingString {
+    SettingString_Domain,    
+    SettingString_Site,    
+    SettingString_Host,    
+    SettingString_COUNT,    
+};
 
 enum SettingsCheckable {
     SettingsCheckable_AdvancedView,
@@ -33,6 +41,7 @@ enum SettingsCheckable {
     SettingsCheckable_DetailsFromContents,
     SettingsCheckable_ConfirmActions,
     SettingsCheckable_ShowStatusLog,
+    SettingsCheckable_AutoLogin,
     SettingsCheckable_COUNT,
 };
 
@@ -43,14 +52,17 @@ public:
     explicit Settings(QObject *parent);
     void emit_toggle_signals() const;
     QAction *checkable(SettingsCheckable c) const;
+    QString get_string(SettingString string) const;
+    void set_string(SettingString string, const QString &value);
 
 private:
     QAction *checkables[SettingsCheckable_COUNT];
+    QString strings[SettingString_COUNT];
 
     void save_settings();
 
 };
 
-const Settings *SETTINGS();
+Settings *SETTINGS();
 
 #endif /* SETTINGS_H */

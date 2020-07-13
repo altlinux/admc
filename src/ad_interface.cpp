@@ -31,6 +31,33 @@ AdInterface::~AdInterface() {
     delete connection;
 }
 
+QList<QString> AdInterface::get_domain_hosts(const QString &domain, const QString &site) {
+    const QByteArray domain_array = domain.toLatin1();
+    const char *domain_cstr = domain_array.constData();
+
+    const QByteArray site_array = site.toLatin1();
+    const char *site_cstr = site_array.constData();
+
+    char **hosts_raw = NULL;
+    int hosts_result = ad_get_domain_hosts(domain_cstr, site_cstr, &hosts_raw);
+
+    if (hosts_result == AD_SUCCESS) {
+        auto hosts = QList<QString>();
+
+        for (int i = 0; hosts_raw[i] != NULL; i++) {
+            auto host = QString(hosts_raw[i]);
+            hosts.push_back(host);
+        }
+        ad_array_free(hosts_raw);
+
+        return hosts;
+    } else {
+        // emit get_domain_hosts_failed(domain, site, get_error_str());
+
+        return QList<QString>();
+    }
+}
+
 // "CN=foo,CN=bar,DC=domain,DC=com"
 // =>
 // "foo"
@@ -55,20 +82,28 @@ QString extract_parent_dn_from_dn(const QString &dn) {
     return parent_dn;
 }
 
-void AdInterface::ad_interface_login(const QString &base, const QString &head) {
-    connection->connect(base.toStdString(), head.toStdString());
+bool AdInterface::login(const QString &host, const QString &domain) {
+    const QString uri = "ldap://" + host;
+    const std::string uri_std = uri.toStdString();
+    const std::string domain_std = domain.toStdString();
 
-    if (connection->is_connected()) {
-        message(QString("Logged in to \"%1\" with head dn at \"%2\"").arg(base, head));
+    const int result = connection->connect(uri_std, domain_std);
+
+    if (result == AD_SUCCESS) {
+        message(QString("Logged in to \"%1\" at \"%2\"").arg(host, domain));
 
         emit logged_in();
+
+        return true;
     } else {
-        message(QString("Failed to login to \"%1\" with head dn at \"%2\"").arg(base, head));
+        message(QString("Failed to login to \"%1\" at \"%2\"").arg(host, domain));
+
+        return false;
     }
 }
 
 QString AdInterface::get_error_str() {
-    return QString(connection->get_errstr());
+    return QString(connection->get_error());
 }
 
 QString AdInterface::get_search_base() {
@@ -79,13 +114,14 @@ QString AdInterface::get_uri() {
     return QString::fromStdString(connection->get_uri());
 }
 
-QList<QString> AdInterface::load_children(const QString &dn) {
+QList<QString> AdInterface::list(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    char **children_raw = connection->list(dn_cstr);
+    char **children_raw;
+    const int result = connection->list(dn_cstr, &children_raw);
 
-    if (children_raw != NULL) {
+    if (result == AD_SUCCESS) {
         auto children = QList<QString>();
 
         for (int i = 0; children_raw[i] != NULL; i++) {
@@ -93,16 +129,11 @@ QList<QString> AdInterface::load_children(const QString &dn) {
             children.push_back(child);
         }
 
-        for (int i = 0; children_raw[i] != NULL; i++) {
-            free(children_raw[i]);
-        }
-        free(children_raw);
+        ad_array_free(children_raw);
 
         return children;
     } else {
-        if (connection->get_errcode() != AD_SUCCESS) {
-            message(QString("Failed to load children of \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
-        }
+        message(QString("Failed to load children of \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
 
         return QList<QString>();
     }
@@ -112,10 +143,9 @@ QList<QString> AdInterface::search(const QString &filter) {
     const QByteArray filter_array = filter.toLatin1();
     const char *filter_cstr = filter_array.constData();
 
-    char **results_raw = connection->search(filter_cstr);
-    int search_result = connection->get_errcode();
-
-    if (search_result == AD_SUCCESS) {
+    char **results_raw;
+    const int result_search = connection->search(filter_cstr, &results_raw);
+    if (result_search == AD_SUCCESS) {
         auto results = QList<QString>();
 
         for (int i = 0; results_raw[i] != NULL; i++) {
@@ -123,10 +153,7 @@ QList<QString> AdInterface::search(const QString &filter) {
             results.push_back(result);
         }
 
-        for (int i = 0; results_raw[i] != NULL; i++) {
-            free(results_raw[i]);
-        }
-        free(results_raw);
+        ad_array_free(results_raw);
 
         return results;
     } else {
@@ -136,7 +163,7 @@ QList<QString> AdInterface::search(const QString &filter) {
     }
 }
 
-Attributes AdInterface::get_attributes(const QString &dn) {
+Attributes AdInterface::get_all_attributes(const QString &dn) {
     if (dn == "") {
         return Attributes();
     }
@@ -146,14 +173,10 @@ Attributes AdInterface::get_attributes(const QString &dn) {
         const QByteArray dn_array = dn.toLatin1();
         const char *dn_cstr = dn_array.constData();
 
-        char** attributes_raw = connection->get_attribute(dn_cstr, "*");
-
-        // TODO: get_attribute is busted, doesn't return success correctly
-        // so have to ignore result for now
-        // emit get_attributes_failed(dn);
-
-        Attributes attributes;
-        if (attributes_raw != NULL) {
+        char** attributes_raw;
+        const int result_attribute_get = connection->attribute_get(dn_cstr, "*", &attributes_raw);
+        if (result_attribute_get == AD_SUCCESS) {
+            Attributes attributes;
             // attributes_raw is in the form of:
             // char** array of {key, value, value, key, value ...}
             // transform it into:
@@ -170,21 +193,21 @@ Attributes AdInterface::get_attributes(const QString &dn) {
                 attributes[attribute].push_back(value);
             }
 
-            // Free attributes_raw
-            for (int i = 0; attributes_raw[i] != NULL; i++) {
-                free(attributes_raw[i]);
-            }
-            free(attributes_raw);
-        }
+            ad_array_free(attributes_raw);
 
-        attributes_cache[dn] = attributes;
+            attributes_cache[dn] = attributes;
+        } else {
+            message(QString("Failed to get attributes of \"%1\"").arg(dn));
+
+            return Attributes();
+        }
     }
 
     return attributes_cache[dn];
 }
 
-QList<QString> AdInterface::get_attribute_multi(const QString &dn, const QString &attribute) {
-    QMap<QString, QList<QString>> attributes = get_attributes(dn);
+QList<QString> AdInterface::attribute_get_multi(const QString &dn, const QString &attribute) {
+    QMap<QString, QList<QString>> attributes = get_all_attributes(dn);
 
     if (attributes.contains(attribute)) {
         return attributes[attribute];
@@ -193,8 +216,8 @@ QList<QString> AdInterface::get_attribute_multi(const QString &dn, const QString
     }
 }
 
-QString AdInterface::get_attribute(const QString &dn, const QString &attribute) {
-    QList<QString> values = get_attribute_multi(dn, attribute);
+QString AdInterface::attribute_get(const QString &dn, const QString &attribute) {
+    QList<QString> values = attribute_get_multi(dn, attribute);
 
     if (values.size() > 0) {
         // Return first value only
@@ -205,7 +228,7 @@ QString AdInterface::get_attribute(const QString &dn, const QString &attribute) 
 }
 
 bool AdInterface::attribute_value_exists(const QString &dn, const QString &attribute, const QString &value) {
-    QList<QString> values = get_attribute_multi(dn, attribute);
+    QList<QString> values = attribute_get_multi(dn, attribute);
 
     if (values.contains(value)) {
         return true;
@@ -214,10 +237,10 @@ bool AdInterface::attribute_value_exists(const QString &dn, const QString &attri
     }
 }
 
-bool AdInterface::set_attribute(const QString &dn, const QString &attribute, const QString &value) {
+bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value) {
     int result = AD_INVALID_DN;
 
-    const QString old_value = get_attribute(dn, attribute);
+    const QString old_value = attribute_get(dn, attribute);
     
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
@@ -228,7 +251,7 @@ bool AdInterface::set_attribute(const QString &dn, const QString &attribute, con
     const QByteArray value_array = value.toLatin1();
     const char *value_cstr = value_array.constData();
 
-    result = connection->mod_replace(dn_cstr, attribute_cstr, value_cstr);
+    result = connection->attribute_replace(dn_cstr, attribute_cstr, value_cstr);
 
     if (result == AD_SUCCESS) {
         message(QString("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"").arg(attribute, dn, old_value, value));
@@ -244,7 +267,7 @@ bool AdInterface::set_attribute(const QString &dn, const QString &attribute, con
 }
 
 // TODO: can probably make a create_anything() function with enum parameter
-bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryType type) {
+bool AdInterface::object_create(const QString &name, const QString &dn, NewEntryType type) {
     int result = AD_INVALID_DN;
     
     const QByteArray name_array = name.toLatin1();
@@ -263,11 +286,11 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
             break;
         }
         case OU: {
-            result = connection->ou_create(name_cstr, dn_cstr);
+            result = connection->create_ou(name_cstr, dn_cstr);
             break;
         }
         case Group: {
-            result = connection->group_create(name_cstr, dn_cstr);
+            result = connection->create_group(name_cstr, dn_cstr);
             break;
         }
         case COUNT: break;
@@ -288,7 +311,7 @@ bool AdInterface::create_entry(const QString &name, const QString &dn, NewEntryT
     }
 }
 
-void AdInterface::delete_entry(const QString &dn) {
+void AdInterface::object_delete(const QString &dn) {
     int result = AD_INVALID_DN;
 
     const QByteArray dn_array = dn.toLatin1();
@@ -305,7 +328,7 @@ void AdInterface::delete_entry(const QString &dn) {
     }
 }
 
-void AdInterface::move(const QString &dn, const QString &new_container) {
+void AdInterface::object_move(const QString &dn, const QString &new_container) {
     int result = AD_INVALID_DN;
 
     QList<QString> dn_split = dn.split(',');
@@ -336,7 +359,7 @@ void AdInterface::move(const QString &dn, const QString &new_container) {
     }
 }
 
-void AdInterface::add_user_to_group(const QString &group_dn, const QString &user_dn) {
+void AdInterface::group_add_user(const QString &group_dn, const QString &user_dn) {
     int result = AD_INVALID_DN;
 
     const QByteArray group_dn_array = group_dn.toLatin1();
@@ -376,7 +399,7 @@ void AdInterface::group_remove_user(const QString &group_dn, const QString &user
     }
 }
 
-void AdInterface::rename(const QString &dn, const QString &new_name) {
+void AdInterface::object_rename(const QString &dn, const QString &new_name) {
     // Compose new_rdn and new_dn
     const QStringList exploded_dn = dn.split(',');
     const QString old_rdn = exploded_dn[0];
@@ -409,6 +432,27 @@ void AdInterface::rename(const QString &dn, const QString &new_name) {
         update_cache();
     } else {
         message(QString("Failed to rename \"%1\" to \"%2\". Error: \"%3\"").arg(dn, new_name, get_error_str()));
+    }
+}
+
+bool AdInterface::set_pass(const QString &dn, const QString &password) {
+    const QByteArray dn_array = dn.toLatin1();
+    const char *dn_cstr = dn_array.constData();
+    const QByteArray password_array = password.toLatin1();
+    const char *password_cstr = password_array.constData();
+
+    int result = connection->user_set_pass(dn_cstr, password_cstr);
+
+    if (result == AD_SUCCESS) {
+        message(QString("Set pass of \"%1\"").arg(dn));
+
+        update_cache();
+
+        return true;
+    } else {
+        message(QString("Failed to set pass of \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
+    
+        return false;
     }
 }
 
@@ -481,7 +525,7 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
     return DropType_None;
 }
 
-bool AdInterface::can_drop_entry(const QString &dn, const QString &target_dn) {
+bool AdInterface::object_can_drop(const QString &dn, const QString &target_dn) {
     DropType drop_type = get_drop_type(dn, target_dn);
 
     if (drop_type == DropType_None) {
@@ -492,16 +536,16 @@ bool AdInterface::can_drop_entry(const QString &dn, const QString &target_dn) {
 }
 
 // General "drop" operation that can either move, link or change membership depending on which types of entries are involved
-void AdInterface::drop_entry(const QString &dn, const QString &target_dn) {
+void AdInterface::object_drop(const QString &dn, const QString &target_dn) {
     DropType drop_type = get_drop_type(dn, target_dn);
 
     switch (drop_type) {
         case DropType_Move: {
-            AD()->move(dn, target_dn);
+            AD()->object_move(dn, target_dn);
             break;
         }
         case DropType_AddToGroup: {
-            AD()->add_user_to_group(target_dn, dn);
+            AD()->group_add_user(target_dn, dn);
             break;
         }
         case DropType_None: {
@@ -529,7 +573,7 @@ void AdInterface::command(QStringList args) {
     if (command == "list") {
         QString dn = args[1];
 
-        QList<QString> children = load_children(dn);
+        QList<QString> children = list(dn);
 
         for (auto e : children) {
             printf("%s\n", qPrintable(e));
@@ -538,14 +582,14 @@ void AdInterface::command(QStringList args) {
         QString dn = args[1];
         QString attribute = args[2];
 
-        QString value = get_attribute(dn, attribute);
+        QString value = attribute_get(dn, attribute);
 
         printf("%s\n", qPrintable(value));
     } else if (command == "get-attribute-multi") {
         QString dn = args[1];
         QString attribute = args[2];
 
-        QList<QString> values = get_attribute_multi(dn, attribute);
+        QList<QString> values = attribute_get_multi(dn, attribute);
 
         for (auto e : values) {
             printf("%s\n", qPrintable(e));

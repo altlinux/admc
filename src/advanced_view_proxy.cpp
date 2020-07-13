@@ -50,7 +50,7 @@ bool AdvancedViewProxy::filterAcceptsRow(int source_row, const QModelIndex &sour
 
     // Hide advanced view only entries if advanced view is OFF
     if (!advanced_view_is_on) {
-        bool advanced_view_only = AD()->get_attribute(dn, "showInAdvancedViewOnly") == "TRUE";
+        bool advanced_view_only = AD()->attribute_get(dn, "showInAdvancedViewOnly") == "TRUE";
 
         if (advanced_view_only) {
             return false;

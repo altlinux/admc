@@ -47,24 +47,21 @@ int Runner::run() {
     cli_parser.addHelpOption();
     cli_parser.addVersionOption();
     const QStringList arg_list = qApp->arguments();
-
-    QCommandLineOption option_auto_login("a", "Automatically login to default domain on startup");
-    cli_parser.addOption(option_auto_login);
-
     cli_parser.process(arg_list);
 
     QStringList positional_args = cli_parser.positionalArguments();
     if (positional_args.size() > 0) {
+        // TODO: let host be the first arg (index = 1)
+        // adjust indexes in command()
+        
         // CLI
-        AD()->ad_interface_login(SEARCH_BASE, HEAD_DN);
+        AD()->login(SEARCH_BASE, HEAD_DN);
         AD()->command(positional_args);
 
         return 0;
     } else {
         // GUI
-        const bool auto_login = cli_parser.isSet(option_auto_login);
-
-        MainWindow main_window(auto_login);
+        MainWindow main_window;
         main_window.show();
 
         return app->exec();
