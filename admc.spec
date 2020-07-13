@@ -1,13 +1,13 @@
 %define _unpackaged_files_terminate_build 1
 
-Name: adtool
+Name: admc
 Version: 0.1.0
 Release: alt1
 
 Summary: AD editor
 License: GPLv2+
 Group: Other
-Url: https://github.com/altlinuxteam/adtool
+Url: https://github.com/altlinuxteam/admc
 BuildArch: x86_64
 
 BuildRequires(pre): cmake
@@ -52,7 +52,7 @@ cd BUILD
 
 %files
 %doc README.md
-%_bindir/adtool
+%_bindir/admc
 %_libdir/libadldap.so
 %_libdir/libadldap++.so
 

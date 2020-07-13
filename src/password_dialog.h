@@ -17,19 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
-#include "Runner.h"
+#ifndef PASSWORD_DIALOG_H
+#define PASSWORD_DIALOG_H
 
-#include <memory>
+#include <QDialog>
+#include <QString>
 
-int main(int argc, char **argv) {
-    std::unique_ptr<Runner> runner(new Runner(argc,
-        argv,
-        ADMC_APPLICATION_DISPLAY_NAME,
-        ADMC_APPLICATION_NAME,
-        ADMC_VERSION,
-        ADMC_ORGANIZATION,
-        ADMC_ORGANIZATION_DOMAIN));
+class QWidget;
+class QLineEdit;
 
-    return runner->run();
-}
+// Accepts input of new password and changes password when done
+class PasswordDialog final : public QDialog {
+Q_OBJECT
+
+public:
+    PasswordDialog(const QString &target_arg, QWidget *parent);
+
+private slots:
+    void on_ok_button(bool);
+    void on_cancel_button(bool);
+
+private:
+    QString target;
+    QLineEdit *new_password_edit = nullptr;
+    QLineEdit *confirm_password_edit = nullptr;
+
+};
+
+#endif /* PASSWORD_DIALOG_H */

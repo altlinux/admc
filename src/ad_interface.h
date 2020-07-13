@@ -63,10 +63,13 @@ class AdInterface final : public QObject {
 Q_OBJECT
 
 public:
+    static QList<QString> get_domain_hosts(const QString &domain, const QString &site);
+
     explicit AdInterface(QObject *parent);
     ~AdInterface();
 
-    void login(const QString &base, const QString &head);
+    bool login(const QString &host, const QString &domain);
+
     QString get_error_str();
     QString get_search_base();
     QString get_uri();
@@ -84,6 +87,7 @@ public:
     void object_delete(const QString &dn);
     void object_move(const QString &dn, const QString &new_container);
     void object_rename(const QString &dn, const QString &new_name);
+    bool set_pass(const QString &dn, const QString &password);
     
     void group_add_user(const QString &group_dn, const QString &user_dn);
     void group_remove_user(const QString &group_dn, const QString &user_dn);

@@ -1,14 +1,13 @@
 obj/*
 moc/*
 Makefile
-adtool
+admc
 .qmake.stash
 *.pro.user
 build
 obj/*
 moc/*
 Makefile
-adtool
 .qmake.stash
 *.pro.user
 build

@@ -36,7 +36,7 @@ DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWid
     members_widget = new MembersWidget(entry_context_menu, this);
     attributes_widget = new AttributesWidget(this);
 
-    // Add all tabs to take ownership of them
+    // Add all tabs to incorporate them in the layout
     addTab(attributes_widget, "");
     addTab(members_widget, "");
 
@@ -97,13 +97,15 @@ void DetailsWidget::on_ad_modified() {
 }
 
 void DetailsWidget::on_containers_clicked_dn(const QString &dn) {
-    if (SETTINGS()->details_on_containers_click->isChecked()) {
+    const QAction *details_from_containers = SETTINGS()->checkable(SettingsCheckable_DetailsFromContainers);
+    if (details_from_containers->isChecked()) {
         change_target(dn);
     }
 }
 
 void DetailsWidget::on_contents_clicked_dn(const QString &dn) {
-    if (SETTINGS()->details_on_contents_click->isChecked()) {
+    const QAction *details_from_contents = SETTINGS()->checkable(SettingsCheckable_DetailsFromContents);
+    if (details_from_contents->isChecked()) {
         change_target(dn);
     }
 }

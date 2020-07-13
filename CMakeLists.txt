@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(adtool VERSION 0.1.0)
+project(admc VERSION 0.1.0)
 
 set(CMAKE_BUILD_TYPE Debug)
 
@@ -29,23 +29,23 @@ find_package(Qt5 COMPONENTS Core Widgets REQUIRED) # GUI
 find_package(Doxygen) # Code documentation
 
 # Definitions for configuration file
-set(ADTOOL_APPLICATION_NAME "ADTOOL")
-set(ADTOOL_APPLICATION_DISPLAY_NAME "ADTOOL")
-set(ADTOOL_ORGANIZATION "BaseALT")
-set(ADTOOL_ORGANIZATION_DOMAIN "basealt.ru")
+set(ADMC_APPLICATION_NAME "ADMC")
+set(ADMC_APPLICATION_DISPLAY_NAME "ADMC")
+set(ADMC_ORGANIZATION "BaseALT")
+set(ADMC_ORGANIZATION_DOMAIN "basealt.ru")
 
 configure_file("config.h.in" "config.h")
 
 add_subdirectory(adldap)
 add_subdirectory(gpgui)
 
-set(ADTOOL_HEADER_DIRS
+set(ADMC_HEADER_DIRS
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/adldap/include
 )
 
-set(ADTOOL_SOURCES
+set(ADMC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/admc.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Runner.cpp
@@ -65,29 +65,31 @@ set(ADTOOL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/advanced_view_proxy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/dn_column_proxy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/login_dialog.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/password_dialog.cpp
 )
 
 add_definitions(${QT5_DEFINITIONS})
-add_executable(adtool
-    ${ADTOOL_SOURCES}
+add_executable(admc
+    ${ADMC_SOURCES}
 )
 
-doxygen_add_docs(adtool_doc
-    ${ADTOOL_HEADER_DIRS}
+doxygen_add_docs(admc_doc
+    ${ADMC_HEADER_DIRS}
     COMMENT
     "Group Policy Editor GUI documentation"
 )
 
 
-target_link_libraries(adtool
+target_link_libraries(admc
     Qt5::Core
     Qt5::Widgets
     adldap++
 )
-target_include_directories(adtool
+target_include_directories(admc
     PUBLIC
-    ${ADTOOL_HEADER_DIRS}
+    ${ADMC_HEADER_DIRS}
 )
 
-install(TARGETS adtool)
+install(TARGETS admc)
 
