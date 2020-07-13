@@ -28,8 +28,6 @@
 #include <QStringList>
 
 Runner::Runner(int& argc_, char **argv_, QString dispname, QString appname, QString appver, QString orgname, QString orgdomain) {
-    //Q_INIT_RESOURCE(adtool);
-
     this->argc = argc_;
     this->argv = argv_;
 

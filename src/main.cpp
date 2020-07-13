@@ -25,11 +25,11 @@
 int main(int argc, char **argv) {
     std::unique_ptr<Runner> runner(new Runner(argc,
         argv,
-        ADTOOL_APPLICATION_DISPLAY_NAME,
-        ADTOOL_APPLICATION_NAME,
-        ADTOOL_VERSION,
-        ADTOOL_ORGANIZATION,
-        ADTOOL_ORGANIZATION_DOMAIN));
+        ADMC_APPLICATION_DISPLAY_NAME,
+        ADMC_APPLICATION_NAME,
+        ADMC_VERSION,
+        ADMC_ORGANIZATION,
+        ADMC_ORGANIZATION_DOMAIN));
 
     return runner->run();
 }
