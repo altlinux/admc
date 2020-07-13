@@ -33,8 +33,9 @@ Status::Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *p
 
     add_message(tr("Ready"));
 
+    const QAction *show_status_log = SETTINGS()->checkable(SettingsCheckable_ShowStatusLog);
     connect(
-        SETTINGS()->toggle_show_status_log, &QAction::toggled,
+        show_status_log, &QAction::toggled,
         this, &Status::on_toggle_show_status_log);
     connect(
         AD(), &AdInterface::message,
