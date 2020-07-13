@@ -20,7 +20,7 @@
 #ifndef DETAILS_WIDGET_H
 #define DETAILS_WIDGET_H
 
-#include <QTabWidget>
+#include <QWidget>
 
 class QTreeView;
 class QString;
@@ -29,11 +29,13 @@ class MembersWidget;
 class EntryContextMenu;
 class ContainersWidget;
 class ContentsWidget;
+class QTabWidget;
+class QLabel;
 
 // Shows info about entry's attributes in multiple tabs
 // Targeted at a particular entry
 // Updates targets of all tabs when target changes
-class DetailsWidget final : public QTabWidget {
+class DetailsWidget final : public QWidget {
 Q_OBJECT
 
 public:
@@ -49,8 +51,10 @@ private slots:
     void on_ad_modified();
 
 private:
+    QTabWidget *tab_widget = nullptr;
     AttributesWidget *attributes_widget = nullptr;
     MembersWidget *members_widget = nullptr;
+    QLabel *title_label = nullptr;
     QString target_dn;
 
     void change_target(const QString &dn);

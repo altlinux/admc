@@ -29,16 +29,28 @@
 #include <QTreeView>
 #include <QStandardItemModel>
 #include <QAction>
+#include <QTabWidget>
+#include <QLabel>
+#include <QVBoxLayout>
 
 DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent)
-: QTabWidget(parent)
+: QWidget(parent)
 {
+    tab_widget = new QTabWidget(this);
     members_widget = new MembersWidget(entry_context_menu, this);
     attributes_widget = new AttributesWidget(this);
 
+    title_label = new QLabel();
+
+    const auto layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(title_label);
+    layout->addWidget(tab_widget);
+
     // Add all tabs to incorporate them in the layout
-    addTab(attributes_widget, "");
-    addTab(members_widget, "");
+    tab_widget->addTab(attributes_widget, "");
+    tab_widget->addTab(members_widget, "");
 
     connect(
         AD(), &AdInterface::logged_in,
@@ -61,8 +73,12 @@ DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWid
 };
 
 void DetailsWidget::change_target(const QString &dn) {
+    const QString name = AD()->attribute_get(dn, "name");
+    const QString title_text = name.isEmpty() ? "Details" : QString("%1 Details").arg(name);
+    title_label->setText(title_text);
+
     // Save current tab/index to restore later
-    QWidget *old_tab = widget(currentIndex());
+    QWidget *old_tab = tab_widget->widget(tab_widget->currentIndex());
 
     target_dn = dn;
 
@@ -70,20 +86,20 @@ void DetailsWidget::change_target(const QString &dn) {
     members_widget->change_target(target_dn);
 
     // Setup tabs
-    clear();
+    tab_widget->clear();
 
-    addTab(attributes_widget, "All Attributes");
+    tab_widget->addTab(attributes_widget, "All Attributes");
 
     bool is_group = AD()->attribute_value_exists(target_dn, "objectClass", "group");
     if (is_group) {
-        addTab(members_widget, "Group members");
+        tab_widget->addTab(members_widget, "Group members");
     }
 
     // Restore current index if it is still shown
     // Otherwise current index is set to first tab by default
-    const int old_tab_index_in_new_tabs = indexOf(old_tab);
+    const int old_tab_index_in_new_tabs = tab_widget->indexOf(old_tab);
     if (old_tab_index_in_new_tabs != -1) {
-        setCurrentIndex(old_tab_index_in_new_tabs);
+        tab_widget->setCurrentIndex(old_tab_index_in_new_tabs);
     }
 }
 
