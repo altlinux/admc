@@ -175,7 +175,9 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
     }
 
     // Load attributes if it's not in cache
-    if (!attributes_cache.contains(dn)) {
+    if (attributes_cache.contains(dn)) {
+        return attributes_cache[dn];
+    } else {
         const QByteArray dn_array = dn.toLatin1();
         const char *dn_cstr = dn_array.constData();
 
@@ -202,6 +204,7 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
             ad_array_free(attributes_raw);
 
             attributes_cache[dn] = attributes;
+            return attributes_cache[dn];
         } else {
             if (should_emit_message(result_attribute_get)) {
                 message(QString("Failed to get attributes of \"%1\"").arg(dn));
@@ -210,8 +213,6 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
             return Attributes();
         }
     }
-
-    return attributes_cache[dn];
 }
 
 QList<QString> AdInterface::attribute_get_multi(const QString &dn, const QString &attribute) {
