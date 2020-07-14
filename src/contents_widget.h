@@ -31,6 +31,7 @@ class QStandardItem;
 class EntryContextMenu;
 class QTreeView;
 class ContentsModel;
+class QLabel;
 
 // Shows name, category and description of children of entry selected in containers view
 class ContentsWidget final : public QWidget {
@@ -49,6 +50,7 @@ private slots:
 private:
     ContentsModel *model = nullptr;
     QTreeView *view = nullptr;
+    QLabel *label = nullptr;
 
     void resize_columns();
     void showEvent(QShowEvent *event);

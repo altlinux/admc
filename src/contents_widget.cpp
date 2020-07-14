@@ -59,8 +59,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContext
 
     setup_model_chain(view, model, {advanced_view_proxy, dn_column_proxy});
 
-    // Insert label into layout
-    const auto label = new QLabel("Contents");
+    label = new QLabel();
 
     const auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -89,6 +88,20 @@ void ContentsWidget::on_containers_selected_changed(const QString &dn) {
     model->change_target(dn);
     set_root_to_head(view);
     resize_columns();
+
+    const QString target_name = AD()->attribute_get(dn, "name");
+
+    QString label_text;
+    if (target_name.isEmpty()) {
+        label_text = "";
+    } else {
+        const QAbstractItemModel *view_model = view->model();
+        const QModelIndex view_head = view_model->index(0, 0);
+        const int object_count = view_model->rowCount(view_head);
+
+        label_text = QString("%1: %2 objects").arg(target_name).arg(object_count);
+    }
+    label->setText(label_text);
 }
 
 void ContentsWidget::on_ad_modified() {

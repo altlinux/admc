@@ -35,7 +35,7 @@ AttributesWidget::AttributesWidget(QWidget *parent)
     model = new AttributesModel(this);
 
     view = new QTreeView(this);
-    view->setEditTriggers(QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
+    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setSelectionMode(QAbstractItemView::NoSelection);
     view->setSelectionBehavior(QAbstractItemView::SelectRows);
     view->setModel(model);
