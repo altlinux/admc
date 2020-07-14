@@ -105,7 +105,8 @@ MainWindow::MainWindow()
 
     new LoginDialog(login_action, this);
 
-    new Status(statusBar(), status_log, this);
+    QStatusBar *status_bar = statusBar();
+    new Status(status_bar, status_log, this);
 
 
     // NOTE: do this after all widgets are constructed so that all of
