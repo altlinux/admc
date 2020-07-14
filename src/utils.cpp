@@ -27,6 +27,10 @@
 
 // Converts index all the way down to source index, going through whatever chain of proxies is present
 QModelIndex convert_to_source(const QModelIndex &index) {
+    if (!index.isValid()) {
+        return index;
+    }
+
     const QAbstractItemModel *current_model = index.model();
     QModelIndex current_index = index;
 
