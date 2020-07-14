@@ -22,8 +22,8 @@
 
 #include <QAction>
 #include <QSettings>
-#include <QApplication>
 #include <QList>
+#include <QStandardPaths>
 
 QString checkable_text(SettingsCheckable checkable) {
     switch (checkable) {
@@ -50,8 +50,8 @@ QString string_name(SettingString string) {
 }
 
 QString get_settings_file_path() {
-    // NOTE: save to app dir for now for easier debugging
-    QString settings_file_path = QApplication::applicationDirPath() + "/settings.ini";
+    const QString appdata_path = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    const QString settings_file_path = appdata_path + "/settings.ini";
     return settings_file_path;
 }
 
