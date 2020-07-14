@@ -54,10 +54,12 @@ public:
     QAction *checkable(SettingsCheckable c) const;
     QString get_string(SettingString string) const;
     void set_string(SettingString string, const QString &value);
+    void load_settings();
 
 private:
     QAction *checkables[SettingsCheckable_COUNT];
     QString strings[SettingString_COUNT];
+    bool loaded_settings = false;
 
     void save_settings();
 

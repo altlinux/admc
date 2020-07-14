@@ -58,30 +58,6 @@ QString get_settings_file_path() {
 Settings::Settings(QObject *parent)
 : QObject(parent)
 {
-    const QString settings_file_path = get_settings_file_path();
-    const QSettings settings(settings_file_path, QSettings::NativeFormat);
-    
-    for (int i = 0; i < SettingsCheckable_COUNT; i++) {
-        const SettingsCheckable checkable = (SettingsCheckable) i;
-        const QString text = checkable_text(checkable);
-
-        QAction *action = new QAction(text);
-        action->setCheckable(true);
-
-        bool checked = settings.value(text, false).toBool();
-        action->setChecked(checked);
-
-        checkables[i] = action;
-    }
-
-    for (int i = 0; i < SettingString_COUNT; i++) {
-        const SettingString string = (SettingString) i;
-        const QString name = string_name(string);
-        const QString value = settings.value(name, "").toString();
-
-        strings[i] = value;
-    }
-
     connect(
         qApp, &QCoreApplication::aboutToQuit,
         this, &Settings::save_settings);
@@ -108,7 +84,43 @@ QString Settings::get_string(SettingString string) const {
     return value;
 }
 
+void Settings::load_settings() {
+    if (loaded_settings) {
+        printf("ERROR: loading settings more than once!");
+    } else {
+        loaded_settings = true;
+
+        const QString settings_file_path = get_settings_file_path();
+        const QSettings settings(settings_file_path, QSettings::NativeFormat);
+        
+        for (int i = 0; i < SettingsCheckable_COUNT; i++) {
+            const SettingsCheckable checkable = (SettingsCheckable) i;
+            const QString text = checkable_text(checkable);
+
+            QAction *action = new QAction(text);
+            action->setCheckable(true);
+
+            bool checked = settings.value(text, false).toBool();
+            action->setChecked(checked);
+
+            checkables[i] = action;
+        }
+
+        for (int i = 0; i < SettingString_COUNT; i++) {
+            const SettingString string = (SettingString) i;
+            const QString name = string_name(string);
+            const QString value = settings.value(name, "").toString();
+
+            strings[i] = value;
+        }
+    }
+}
+
 void Settings::save_settings() {
+    if (!loaded_settings) {
+        return;
+    }
+
     const QString settings_file_path = get_settings_file_path();
     QSettings settings(settings_file_path, QSettings::NativeFormat);
 

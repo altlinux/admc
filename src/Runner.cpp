@@ -22,6 +22,7 @@
 #include "main_window.h"
 #include "admc.h"
 #include "ad_interface.h"
+#include "settings.h"
 
 #include <QCommandLineParser>
 #include <QCommandLineOption>
@@ -31,12 +32,17 @@ Runner::Runner(int& argc_, char **argv_, QString dispname, QString appname, QStr
     this->argc = argc_;
     this->argv = argv_;
 
-    this->app = new ADMC(argc, argv);
+    const auto admc = new ADMC(argc, argv);
+    this->app = admc;
     this->app->setApplicationDisplayName(dispname);
     this->app->setApplicationName(appname);
     this->app->setApplicationVersion(appver);
     this->app->setOrganizationName(orgname);
     this->app->setOrganizationDomain(orgdomain);
+
+    // NOTE: have to load settings after org/app variables are set
+    // so that settings path is correct
+    admc->settings()->load_settings();
 }
 
 int Runner::run() {
