@@ -32,6 +32,7 @@
 #include <QIcon>
 #include <QSet>
 #include <QStack>
+#include <QHeaderView>
 
 enum ContainersColumn {
     ContainersColumn_Name,
@@ -58,17 +59,15 @@ ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
+    view->header()->hide();
     entry_context_menu->connect_view(view, ContainersColumn_DN);
 
     setup_model_chain(view, model, {advanced_view_proxy, dn_column_proxy});
 
     // Insert label into layout
-    const auto label = new QLabel("Containers");
-
     const auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    layout->addWidget(label);
     layout->addWidget(view);
 
     connect(
@@ -239,9 +238,6 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
 ContainersModel::ContainersModel(QObject *parent)
 : EntryModel(ContainersColumn_COUNT, ContainersColumn_DN, parent)
 {
-    setHorizontalHeaderItem(ContainersColumn_Name, new QStandardItem("Name"));
-    setHorizontalHeaderItem(ContainersColumn_DN, new QStandardItem("DN"));
-
     connect(
         AD(), &AdInterface::logged_in,
         this, &ContainersModel::on_logged_in);
