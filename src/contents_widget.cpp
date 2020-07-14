@@ -88,11 +88,24 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContext
 void ContentsWidget::on_containers_selected_changed(const QString &dn) {
     model->change_target(dn);
     set_root_to_head(view);
+    resize_columns();
 }
 
 void ContentsWidget::on_ad_modified() {
     model->change_target(model->target_dn);
     set_root_to_head(view);
+}
+
+void ContentsWidget::resize_columns() {
+    const int view_width = view->width();
+    const int name_width = (int) (view_width * 0.4);
+    const int category_width = (int) (view_width * 0.15);
+    view->setColumnWidth(ContentsColumn_Name, name_width);
+    view->setColumnWidth(ContentsColumn_Category, category_width);
+}
+
+void ContentsWidget::showEvent(QShowEvent *event) {
+    resize_columns();
 }
 
 ContentsModel::ContentsModel(QObject *parent)

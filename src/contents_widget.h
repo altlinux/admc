@@ -50,6 +50,9 @@ private:
     ContentsModel *model = nullptr;
     QTreeView *view = nullptr;
 
+    void resize_columns();
+    void showEvent(QShowEvent *event);
+
 };
 
 class ContentsModel final : public EntryModel {
