@@ -63,12 +63,12 @@ MoveDialog::MoveDialog(QWidget *parent)
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    target_label = new QLabel("TARGET");
+    target_label = new QLabel("TARGET", this);
 
-    filter_class_label = new QLabel("Class: ");
+    filter_class_label = new QLabel("Class: ", this);
     filter_class_combo_box = new QComboBox(this);
 
-    const auto filter_name_label = new QLabel("Name: ");
+    const auto filter_name_label = new QLabel("Name: ", this);
     filter_name_line_edit = new QLineEdit(this);
 
     const auto select_button = new QPushButton("Select", this);

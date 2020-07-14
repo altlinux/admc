@@ -59,7 +59,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContext
 
     setup_model_chain(view, model, {advanced_view_proxy, dn_column_proxy});
 
-    label = new QLabel();
+    label = new QLabel(this);
 
     const auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);

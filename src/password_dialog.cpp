@@ -36,13 +36,13 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 
     const QString target_name = extract_name_from_dn(target);
     const QString top_label_text = QString("Resetting password of \"%1\"").arg(target_name);
-    const auto top_label = new QLabel(top_label_text);
+    const auto top_label = new QLabel(top_label_text, this);
 
-    const auto new_password_label = new QLabel("New password:");
+    const auto new_password_label = new QLabel("New password:", this);
     new_password_edit = new QLineEdit(this);
     new_password_edit->setEchoMode(QLineEdit::Password);
 
-    const auto confirm_password_label = new QLabel("Confirm password:");
+    const auto confirm_password_label = new QLabel("Confirm password:", this);
     confirm_password_edit = new QLineEdit(this);
     confirm_password_edit->setEchoMode(QLineEdit::Password);
 

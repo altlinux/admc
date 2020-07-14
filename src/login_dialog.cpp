@@ -43,12 +43,12 @@ LoginDialog::LoginDialog(QAction *login_action, QWidget *parent)
 {
     resize(500, 300);
 
-    const auto label = new QLabel("Login dialog");
+    const auto label = new QLabel("Login dialog", this);
 
-    const auto domain_edit_label = new QLabel("Domain: ");
+    const auto domain_edit_label = new QLabel("Domain: ", this);
     domain_edit = new QLineEdit(this);
 
-    const auto site_edit_label = new QLabel("Site: ");
+    const auto site_edit_label = new QLabel("Site: ", this);
     site_edit = new QLineEdit(this);
 
     const auto login_button = new QPushButton("Login", this);
@@ -56,7 +56,7 @@ LoginDialog::LoginDialog(QAction *login_action, QWidget *parent)
     login_button->setAutoDefault(false);
     cancel_button->setAutoDefault(false);
 
-    const auto hosts_list_label = new QLabel("Select host:");
+    const auto hosts_list_label = new QLabel("Select host:", this);
     hosts_list = new QListWidget(this);
     hosts_list->setEditTriggers(QAbstractItemView::NoEditTriggers);
 

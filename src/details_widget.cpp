@@ -40,7 +40,7 @@ DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWid
     members_widget = new MembersWidget(entry_context_menu, this);
     attributes_widget = new AttributesWidget(this);
 
-    title_label = new QLabel();
+    title_label = new QLabel(this);
 
     const auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
