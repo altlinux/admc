@@ -33,7 +33,6 @@
 #include <QPoint>
 #include <QModelIndex>
 #include <QAbstractItemView>
-#include <QSortFilterProxyModel>
 
 EntryContextMenu::EntryContextMenu(QWidget *parent)
 : QMenu(parent)

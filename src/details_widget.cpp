@@ -26,8 +26,6 @@
 #include "containers_widget.h"
 #include "contents_widget.h"
 
-#include <QTreeView>
-#include <QStandardItemModel>
 #include <QAction>
 #include <QTabWidget>
 #include <QLabel>

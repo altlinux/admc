@@ -22,6 +22,7 @@
 #include "utils.h"
 
 #include <QMimeData>
+#include <QString>
 
 EntryModel::EntryModel(int column_count, int dn_column_in, QObject *parent)
 : QStandardItemModel(0, column_count, parent)

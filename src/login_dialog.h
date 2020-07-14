@@ -15,19 +15,14 @@
 #define LOGIN_DIALOG_H
 
 #include <QDialog>
-#include <QString>
-#include <QList>
-#include <QStandardItemModel>
 
 class QWidget;
 class QLineEdit;
-class QSortFilterProxyModel;
-class QComboBox;
 class QListWidget;
-class QLabel;
 class QAction;
 class QListWidgetItem;
 class QCheckBox;
+class QString;
 
 class LoginDialog final : public QDialog {
 Q_OBJECT

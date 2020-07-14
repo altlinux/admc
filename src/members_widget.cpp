@@ -23,7 +23,6 @@
 #include "dn_column_proxy.h"
 
 #include <QTreeView>
-#include <QLabel>
 #include <QVBoxLayout>
 
 enum MembersColumn {

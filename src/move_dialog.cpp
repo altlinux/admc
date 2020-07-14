@@ -33,6 +33,7 @@
 #include <QAction>
 #include <QPushButton>
 #include <QItemSelectionModel>
+#include <QList>
 
 enum MoveDialogColumn {
     MoveDialogColumn_Name,

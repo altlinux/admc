@@ -24,7 +24,6 @@
 
 class QTextEdit;
 class QStatusBar;
-class QStatusBar;
 
 // Pushes messages about AD operations to status bar and status log
 class Status final : public QObject {

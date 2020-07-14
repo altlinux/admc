@@ -22,8 +22,8 @@
 
 #include <QDialog>
 #include <QString>
-#include <QList>
 #include <QStandardItemModel>
+#include <QList>
 
 class QWidget;
 class QLineEdit;

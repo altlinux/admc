@@ -20,9 +20,7 @@
 #include "main_window.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
-#include "members_widget.h"
 #include "details_widget.h"
-#include "attributes_widget.h"
 #include "status.h"
 #include "settings.h"
 #include "entry_context_menu.h"
@@ -31,12 +29,10 @@
 
 #include <QApplication>
 #include <QString>
-#include <QMainWindow>
 #include <QMenu>
 #include <QMenuBar>
 #include <QSplitter>
 #include <QStatusBar>
-#include <QTreeView>
 #include <QVBoxLayout>
 #include <QTextEdit>
 #include <QSettings>

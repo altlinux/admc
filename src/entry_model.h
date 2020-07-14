@@ -21,11 +21,11 @@
 #define ENTRY_MODEL_H
 
 #include <QStandardItemModel>
-#include <QString>
 #include <QList>
 
 class QMimeData;
 class QModelIndex;
+class QString;
 
 // Model for entries
 // Requires at least a DN column

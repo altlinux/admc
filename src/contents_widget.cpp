@@ -19,16 +19,14 @@
 
 #include "contents_widget.h"
 #include "containers_widget.h"
-#include "ad_interface.h"
 #include "advanced_view_proxy.h"
-#include "entry_model.h"
 #include "entry_context_menu.h"
 #include "dn_column_proxy.h"
 #include "utils.h"
 
 #include <QTreeView>
 #include <QLabel>
-#include <QLayout>
+#include <QVBoxLayout>
 
 enum ContentsColumn {
     ContentsColumn_Name,

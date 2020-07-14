@@ -21,18 +21,14 @@
 #include "advanced_view_proxy.h"
 #include "entry_context_menu.h"
 #include "dn_column_proxy.h"
-#include "entry_model.h"
 #include "utils.h"
 
 #include <QTreeView>
-#include <QLabel>
-#include <QLayout>
-#include <QMimeData>
-#include <QMap>
 #include <QIcon>
 #include <QSet>
 #include <QStack>
 #include <QHeaderView>
+#include <QVBoxLayout>
 
 enum ContainersColumn {
     ContainersColumn_Name,

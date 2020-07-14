@@ -20,23 +20,17 @@
 #include "login_dialog.h"
 #include "ad_interface.h"
 #include "settings.h"
-#include "confirmation_dialog.h"
-#include "dn_column_proxy.h"
 #include "utils.h"
-#include "settings.h"
 
 #include <QLineEdit>
-#include <QVBoxLayout>
 #include <QLabel>
-#include <QStandardItemModel>
 #include <QListWidget>
-#include <QSortFilterProxyModel>
-#include <QComboBox>
 #include <QAction>
 #include <QPushButton>
-#include <QItemSelectionModel>
 #include <QMessageBox>
 #include <QCheckBox>
+#include <QString>
+#include <QGridLayout>
 
 LoginDialog::LoginDialog(QAction *login_action, QWidget *parent)
 : QDialog(parent)

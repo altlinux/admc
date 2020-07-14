@@ -18,7 +18,6 @@
  */
 
 #include "advanced_view_proxy.h"
-#include "entry_model.h"
 #include "ad_interface.h"
 #include "settings.h"
 #include "utils.h"
