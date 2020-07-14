@@ -115,7 +115,7 @@ private:
     bool suppress_not_found_error = false;
 
     QMap<QString, QList<QString>> load_attributes(const QString &dn);
-    void update_cache();
+    void update_cache(const QList<QString> &changed_dns);
     bool should_emit_message(int result);
 }; 
 

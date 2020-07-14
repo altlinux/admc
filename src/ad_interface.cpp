@@ -21,6 +21,8 @@
 #include "ad_connection.h"
 #include "admc.h"
 
+#include <QSet>
+
 AdInterface::AdInterface(QObject *parent)
 : QObject(parent)
 {
@@ -262,7 +264,7 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
     if (result == AD_SUCCESS) {
         message(QString("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"").arg(attribute, dn, old_value, value));
 
-        update_cache();
+        update_cache({dn});
 
         return true;
     } else {
@@ -307,7 +309,7 @@ bool AdInterface::object_create(const QString &name, const QString &dn, NewEntry
     if (result == AD_SUCCESS) {
         message(QString("Created entry \"%1\" of type \"%2\"").arg(dn, type_str));
 
-        update_cache();
+        update_cache({dn});
 
         return true;
     } else {
@@ -328,7 +330,7 @@ void AdInterface::object_delete(const QString &dn) {
     if (result == AD_SUCCESS) {
         message(QString("Deleted entry \"%1\"").arg(dn));
 
-        update_cache();
+        update_cache({dn});
     } else {
         message(QString("Failed to delete entry \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
     }
@@ -359,7 +361,7 @@ void AdInterface::object_move(const QString &dn, const QString &new_container) {
     if (result == AD_SUCCESS) {
         message(QString("Moved \"%1\" to \"%2\"").arg(dn).arg(new_container));
 
-        update_cache();
+        update_cache({dn});
     } else {
         message(QString("Failed to move \"%1\" to \"%2\". Error: \"%3\"").arg(dn, new_container, get_error_str()));
     }
@@ -379,7 +381,7 @@ void AdInterface::group_add_user(const QString &group_dn, const QString &user_dn
     if (result == AD_SUCCESS) {
         message(QString("Added user \"%1\" to group \"%2\"").arg(user_dn, group_dn));
 
-        update_cache();
+        update_cache({group_dn, user_dn});
     } else {
         message(QString("Failed to add user \"%1\" to group \"%2\". Error: \"%3\"").arg(user_dn, group_dn, get_error_str()));
     }
@@ -399,7 +401,7 @@ void AdInterface::group_remove_user(const QString &group_dn, const QString &user
     if (result == AD_SUCCESS) {
         message(QString("Removed user \"%1\" from group \"%2\"").arg(user_dn, group_dn));
 
-        update_cache();
+        update_cache({group_dn, user_dn});
     } else {
         message(QString("Failed to remove user \"%1\" from group \"%2\". Error: \"%3\"").arg(user_dn, group_dn, get_error_str()));
     }
@@ -435,7 +437,7 @@ void AdInterface::object_rename(const QString &dn, const QString &new_name) {
     if (result == AD_SUCCESS) {
         message(QString("Renamed \"%1\" to \"%2\"").arg(dn, new_name));
 
-        update_cache();
+        update_cache({dn});
     } else {
         message(QString("Failed to rename \"%1\" to \"%2\". Error: \"%3\"").arg(dn, new_name, get_error_str()));
     }
@@ -452,7 +454,7 @@ bool AdInterface::set_pass(const QString &dn, const QString &password) {
     if (result == AD_SUCCESS) {
         message(QString("Set pass of \"%1\"").arg(dn));
 
-        update_cache();
+        update_cache({dn});
 
         return true;
     } else {
@@ -603,8 +605,38 @@ void AdInterface::command(QStringList args) {
     }
 }
 
-void AdInterface::update_cache() {
-    attributes_cache.clear();
+void AdInterface::update_cache(const QList<QString> &changed_dns) {
+    // Remove objects that are affected by DN changes from cache
+    // Next time the app requests info about these objects, they
+    // will be reloaded into cache
+    QSet<QString> removed_dns;
+    for (auto changed_dn : changed_dns) {
+        for (const QString &dn : attributes_cache.keys()) {
+            // Remove if dn contains changed dn (is it's descendant)
+            if (dn.contains(changed_dn)) {
+                removed_dns.insert(dn);
+
+                continue;
+            }
+
+            // Remove if object's attributes contain changed dn
+            for (auto &values : attributes_cache[dn]) {
+                for (auto &value : values) {
+                    if (value.contains(changed_dn)) {
+                        removed_dns.insert(dn);
+
+                        goto break_outer;
+                    }
+                }
+            }
+
+            break_outer:;
+        }
+    }
+
+    for (auto removed_dn : removed_dns) {
+        attributes_cache.remove(removed_dn);
+    }
 
     // NOTE: Suppress "not found" errors because after modifications
     // widgets might attempt to use outdated DN's which will cause
