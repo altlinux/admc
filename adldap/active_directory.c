@@ -382,7 +382,7 @@ int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***va
         values[i] = strdup(values_raw[i]);
     }
     values[values_count] = NULL;
-    
+
     ldap_value_free(values_raw);
 
     end:
@@ -570,7 +570,7 @@ int ad_user_lock(LDAP *ds, const char *dn) {
 
     char **flags = NULL;
     
-    const int result_get_flags = ad_attribute_get(ds, dn, "userAccountControl", &flags);
+    const int result_get_flags = ad_get_attribute(ds, dn, "userAccountControl", &flags);
     if (result_get_flags != AD_SUCCESS) {
         save_error("failed to get flags");
         result = AD_INVALID_DN;
@@ -602,7 +602,7 @@ int ad_user_unlock(LDAP *ds, const char *dn) {
 
     char **flags = NULL;
 
-    const int result_get_flags = ad_attribute_get(ds, dn, "userAccountControl", &flags);
+    const int result_get_flags = ad_get_attribute(ds, dn, "userAccountControl", &flags);
     if (result_get_flags != AD_SUCCESS) {
         save_error("failed to get flags");
         result = AD_INVALID_DN;
@@ -788,7 +788,7 @@ int ad_attribute_delete(LDAP *ds, const char *dn, const char *attribute, const c
     return result;
 }
 
-int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***values_out) {
+int ad_get_all_attributes(LDAP *ds, const char *dn, char ***values_out) {
     typedef struct ber_list {
         char *attribute;
         struct berval **values;
@@ -800,7 +800,7 @@ int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***va
     char **values = NULL;
 
     // TODO: use paged search
-    char *attrs[] = {(char *)attribute, NULL};
+    char *attrs[] = {"*", NULL};
     LDAPMessage *res;
     const int result_search = ldap_search_ext_s(ds, dn, LDAP_SCOPE_BASE, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
     if (result_search != LDAP_SUCCESS) {
@@ -1014,7 +1014,7 @@ int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
     char *domain = NULL;
     char *upn = NULL;
 
-    const int result_get_username = ad_attribute_get(ds, current_dn, "sAMAccountName", &username);
+    const int result_get_username = ad_get_attribute(ds, current_dn, "sAMAccountName", &username);
     if (result_get_username != AD_SUCCESS) {
         save_error("failed to get sAMAccountName");
         result = AD_INVALID_DN;

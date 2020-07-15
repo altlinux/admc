@@ -179,7 +179,7 @@ int ad_attribute_delete(LDAP *ds, const char *dn, const char *attribute, const c
  * list should be freed by the caller using ad_array_free()
  * Returns AD_SUCCESS or error code
  */
-int ad_attribute_get(LDAP *ds, const char *dn, const char *attribute, char ***values_out);
+int ad_get_all_attributes(LDAP *ds, const char *dn, char ***values_out);
 
 /**
  * Rename object
