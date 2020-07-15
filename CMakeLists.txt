@@ -57,10 +57,10 @@ set(ADMC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main_window.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/status.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/members_widget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_model.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/object_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/settings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/move_dialog.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/entry_context_menu.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/object_context_menu.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/confirmation_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/advanced_view_proxy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/dn_column_proxy.cpp

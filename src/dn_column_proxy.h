@@ -23,7 +23,7 @@
 #include <QSortFilterProxyModel>
 
 class QModelIndex;
-class EntryModel;
+class ObjectModel;
 
 // Show/hide DN column depending on "show DN" setting
 class DnColumnProxy final : public QSortFilterProxyModel {

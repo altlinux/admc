@@ -17,21 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "entry_model.h"
+#include "object_model.h"
 #include "ad_interface.h"
 #include "utils.h"
 
 #include <QMimeData>
 #include <QString>
 
-EntryModel::EntryModel(int column_count, int dn_column_in, QObject *parent)
+ObjectModel::ObjectModel(int column_count, int dn_column_in, QObject *parent)
 : QStandardItemModel(0, column_count, parent)
 , dn_column(dn_column_in)
 {
 
 }
 
-QMimeData *EntryModel::mimeData(const QModelIndexList &indexes) const {
+QMimeData *ObjectModel::mimeData(const QModelIndexList &indexes) const {
     QMimeData *data = QStandardItemModel::mimeData(indexes);
 
     if (indexes.size() > 0) {
@@ -44,7 +44,7 @@ QMimeData *EntryModel::mimeData(const QModelIndexList &indexes) const {
     return data;
 }
 
-bool EntryModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
+bool ObjectModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
     const QString dn = data->text();
     const QString target_dn = get_dn_from_index(parent, dn_column);
 
@@ -53,7 +53,7 @@ bool EntryModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int
     return can_drop;
 }
 
-bool EntryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
+bool ObjectModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
     if (row != -1 || column != -1) {
         return true;
     }
@@ -70,7 +70,7 @@ bool EntryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int 
     return true;
 }
 
-QList<QStandardItem *> EntryModel::find_row(const QString &dn) {
+QList<QStandardItem *> ObjectModel::find_row(const QString &dn) {
     // Find dn item
     const QList<QStandardItem *> dn_items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, dn_column);
     if (dn_items.isEmpty()) {
@@ -92,7 +92,7 @@ QList<QStandardItem *> EntryModel::find_row(const QString &dn) {
     return row;
 }
 
-QStandardItem *EntryModel::find_item(const QString &dn, int col) {
+QStandardItem *ObjectModel::find_item(const QString &dn, int col) {
     QList<QStandardItem *> row = find_row(dn);
     QStandardItem *item = row.value(col);
 

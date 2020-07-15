@@ -26,7 +26,7 @@ class QTreeView;
 class QString;
 class AttributesWidget;
 class MembersWidget;
-class EntryContextMenu;
+class ObjectContextMenu;
 class ContainersWidget;
 class ContentsWidget;
 class QTabWidget;
@@ -39,7 +39,7 @@ class DetailsWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent);
+    DetailsWidget(ObjectContextMenu *entry_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent);
 
 public slots:
     void on_containers_clicked_dn(const QString &dn);

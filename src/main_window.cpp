@@ -23,7 +23,7 @@
 #include "details_widget.h"
 #include "status.h"
 #include "settings.h"
-#include "entry_context_menu.h"
+#include "object_context_menu.h"
 #include "confirmation_dialog.h"
 #include "login_dialog.h"
 
@@ -94,7 +94,7 @@ MainWindow::MainWindow()
     auto central_widget = new QWidget(this);
     setCentralWidget(central_widget);
 
-    auto entry_context_menu = new EntryContextMenu(this);
+    auto entry_context_menu = new ObjectContextMenu(this);
     
     auto containers_widget = new ContainersWidget(entry_context_menu, this);
     auto contents_widget = new ContentsWidget(containers_widget, entry_context_menu, this);

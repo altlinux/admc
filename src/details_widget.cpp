@@ -22,7 +22,7 @@
 #include "ad_interface.h"
 #include "members_widget.h"
 #include "settings.h"
-#include "entry_context_menu.h"
+#include "object_context_menu.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
 
@@ -31,7 +31,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
-DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent)
+DetailsWidget::DetailsWidget(ObjectContextMenu *entry_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent)
 : QWidget(parent)
 {
     tab_widget = new QTabWidget(this);
@@ -58,7 +58,7 @@ DetailsWidget::DetailsWidget(EntryContextMenu *entry_context_menu, ContainersWid
         this, &DetailsWidget::on_ad_modified);
 
     connect(
-        entry_context_menu, &EntryContextMenu::details,
+        entry_context_menu, &ObjectContextMenu::details,
         this, &DetailsWidget::on_context_menu_details);
     connect(
         containers_widget, &ContainersWidget::clicked_dn,

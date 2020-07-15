@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ENTRY_CONTEXT_MENU_H
-#define ENTRY_CONTEXT_MENU_H
+#ifndef OBJECT_CONTEXT_MENU_H
+#define OBJECT_CONTEXT_MENU_H
 
 #include "ad_interface.h"
 
@@ -29,11 +29,11 @@ class QPoint;
 class QAbstractItemView;
 class MoveDialog;
 
-class EntryContextMenu final : public QMenu {
+class ObjectContextMenu final : public QMenu {
 Q_OBJECT
 
 public:
-    EntryContextMenu(QWidget *parent);
+    ObjectContextMenu(QWidget *parent);
 
     void connect_view(QAbstractItemView *view, int dn_column);
 
@@ -55,4 +55,4 @@ private:
 
 };
 
-#endif /* ENTRY_CONTEXT_MENU_H */
+#endif /* OBJECT_CONTEXT_MENU_H */

@@ -20,13 +20,13 @@
 #ifndef MEMBERS_WIDGET_H
 #define MEMBERS_WIDGET_H
 
-#include "entry_model.h"
+#include "object_model.h"
 
 #include <QWidget>
 
 class QTreeView;
 class QString;
-class EntryContextMenu;
+class ObjectContextMenu;
 class MembersModel;
 
 // Shows member entries of targeted group
@@ -34,7 +34,7 @@ class MembersWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    MembersWidget(EntryContextMenu *entry_context_menu, QWidget *parent);
+    MembersWidget(ObjectContextMenu *entry_context_menu, QWidget *parent);
 
     void change_target(const QString &dn);
 
@@ -43,7 +43,7 @@ private:
     QTreeView *view = nullptr;
 };
 
-class MembersModel final : public EntryModel {
+class MembersModel final : public ObjectModel {
 Q_OBJECT
 
 public:

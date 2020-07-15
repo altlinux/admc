@@ -21,14 +21,14 @@
 #define CONTENTS_WIDGET_H
 
 #include "ad_interface.h"
-#include "entry_model.h"
+#include "object_model.h"
 
 #include <QWidget>
 #include <QString>
 
 class ContainersWidget;
 class QStandardItem;
-class EntryContextMenu;
+class ObjectContextMenu;
 class QTreeView;
 class ContentsModel;
 class QLabel;
@@ -38,7 +38,7 @@ class ContentsWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContentsWidget(ContainersWidget *containers_widget, EntryContextMenu *entry_context_menu, QWidget *parent);
+    ContentsWidget(ContainersWidget *containers_widget, ObjectContextMenu *entry_context_menu, QWidget *parent);
 
 signals:
     void clicked_dn(const QString &dn);
@@ -57,7 +57,7 @@ private:
 
 };
 
-class ContentsModel final : public EntryModel {
+class ContentsModel final : public ObjectModel {
 Q_OBJECT
 
 public:

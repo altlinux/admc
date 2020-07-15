@@ -19,7 +19,7 @@
 
 #include "containers_widget.h"
 #include "advanced_view_proxy.h"
-#include "entry_context_menu.h"
+#include "object_context_menu.h"
 #include "dn_column_proxy.h"
 #include "utils.h"
 
@@ -39,7 +39,7 @@ enum ContainersColumn {
 QStandardItem *make_new_row(QStandardItem *parent, const QString &dn);
 void load_row(QList<QStandardItem *> row, const QString &dn);
 
-ContainersWidget::ContainersWidget(EntryContextMenu *entry_context_menu, QWidget *parent)
+ContainersWidget::ContainersWidget(ObjectContextMenu *entry_context_menu, QWidget *parent)
 : QWidget(parent)
 {
     model = new ContainersModel(this);
@@ -234,7 +234,7 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
 }
 
 ContainersModel::ContainersModel(QObject *parent)
-: EntryModel(ContainersColumn_COUNT, ContainersColumn_DN, parent)
+: ObjectModel(ContainersColumn_COUNT, ContainersColumn_DN, parent)
 {
     connect(
         AD(), &AdInterface::logged_in,

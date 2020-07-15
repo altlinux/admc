@@ -20,7 +20,7 @@
 #include "contents_widget.h"
 #include "containers_widget.h"
 #include "advanced_view_proxy.h"
-#include "entry_context_menu.h"
+#include "object_context_menu.h"
 #include "dn_column_proxy.h"
 #include "utils.h"
 
@@ -36,7 +36,7 @@ enum ContentsColumn {
     ContentsColumn_COUNT,
 };
 
-ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, EntryContextMenu *entry_context_menu, QWidget *parent)
+ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, ObjectContextMenu *entry_context_menu, QWidget *parent)
 : QWidget(parent)
 {   
     model = new ContentsModel(this);
@@ -120,7 +120,7 @@ void ContentsWidget::showEvent(QShowEvent *event) {
 }
 
 ContentsModel::ContentsModel(QObject *parent)
-: EntryModel(ContentsColumn_COUNT, ContentsColumn_DN, parent)
+: ObjectModel(ContentsColumn_COUNT, ContentsColumn_DN, parent)
 {
     setHorizontalHeaderItem(ContentsColumn_Name, new QStandardItem("Name"));
     setHorizontalHeaderItem(ContentsColumn_Category, new QStandardItem("Category"));

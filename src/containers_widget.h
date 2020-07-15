@@ -21,13 +21,13 @@
 #define CONTAINERS_WIDGET_H
 
 #include "ad_interface.h"
-#include "entry_model.h"
+#include "object_model.h"
 
 #include <QWidget>
 
 class QItemSelection;
 class AdvancedViewProxy;
-class EntryContextMenu;
+class ObjectContextMenu;
 class QTreeView;
 class ContainersModel;
 class DnColumnProxy;
@@ -36,7 +36,7 @@ class ContainersWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContainersWidget(EntryContextMenu *entry_context_menu, QWidget *parent);
+    ContainersWidget(ObjectContextMenu *entry_context_menu, QWidget *parent);
 
 signals:
     void selected_changed(const QString &dn);
@@ -51,7 +51,7 @@ private:
     QTreeView *view = nullptr;
 };
 
-class ContainersModel final : public EntryModel {
+class ContainersModel final : public ObjectModel {
 Q_OBJECT
 
 public:

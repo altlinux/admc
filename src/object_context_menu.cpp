@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "entry_context_menu.h"
+#include "object_context_menu.h"
 #include "ad_interface.h"
 #include "settings.h"
 #include "confirmation_dialog.h"
@@ -34,7 +34,7 @@
 #include <QModelIndex>
 #include <QAbstractItemView>
 
-EntryContextMenu::EntryContextMenu(QWidget *parent)
+ObjectContextMenu::ObjectContextMenu(QWidget *parent)
 : QMenu(parent)
 {
     // NOTE: use parent, not context menu itself so dialog is centered
@@ -42,7 +42,7 @@ EntryContextMenu::EntryContextMenu(QWidget *parent)
 }
 
 // Open this context menu when view requests one
-void EntryContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
+void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         [=]
@@ -68,7 +68,7 @@ void EntryContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
         });
 }
 
-void EntryContextMenu::open(const QPoint &global_pos, const QString &dn, const QString &parent_dn) {
+void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const QString &parent_dn) {
     clear();
 
     QAction *action_to_show_menu_at = addAction("Details", [this, dn]() {
@@ -135,7 +135,7 @@ void EntryContextMenu::open(const QPoint &global_pos, const QString &dn, const Q
     exec(global_pos, action_to_show_menu_at);
 }
 
-void EntryContextMenu::delete_entry(const QString &dn) {
+void ObjectContextMenu::delete_entry(const QString &dn) {
     const QString name = AD()->attribute_get(dn, "name");
     const QString text = QString("Are you sure you want to delete \"%1\"?").arg(name);
     const bool confirmed = confirmation_dialog(text, this);
@@ -145,7 +145,7 @@ void EntryContextMenu::delete_entry(const QString &dn) {
     }    
 }
 
-void EntryContextMenu::new_entry_dialog(const QString &parent_dn, NewEntryType type) {
+void ObjectContextMenu::new_entry_dialog(const QString &parent_dn, NewEntryType type) {
     QString type_string = new_entry_type_to_string[type];
     QString dialog_title = "New " + type_string;
     QString input_label = type_string + " name";
@@ -173,23 +173,23 @@ void EntryContextMenu::new_entry_dialog(const QString &parent_dn, NewEntryType t
     }
 }
 
-void EntryContextMenu::new_user(const QString &dn) {
+void ObjectContextMenu::new_user(const QString &dn) {
     new_entry_dialog(dn, NewEntryType::User);
 }
 
-void EntryContextMenu::new_computer(const QString &dn) {
+void ObjectContextMenu::new_computer(const QString &dn) {
     new_entry_dialog(dn, NewEntryType::Computer);
 }
 
-void EntryContextMenu::new_group(const QString &dn) {
+void ObjectContextMenu::new_group(const QString &dn) {
     new_entry_dialog(dn, NewEntryType::Group);
 }
 
-void EntryContextMenu::new_ou(const QString &dn) {
+void ObjectContextMenu::new_ou(const QString &dn) {
     new_entry_dialog(dn, NewEntryType::OU);
 }
 
-void EntryContextMenu::rename(const QString &dn) {
+void ObjectContextMenu::rename(const QString &dn) {
     // Get new name from input box
     QString dialog_title = "Rename";
     QString input_label = "New name:";
@@ -201,7 +201,7 @@ void EntryContextMenu::rename(const QString &dn) {
     }
 }
 
-void EntryContextMenu::edit_policy(const QString &dn) {
+void ObjectContextMenu::edit_policy(const QString &dn) {
     // Start policy edit process
     const auto process = new QProcess(this);
 

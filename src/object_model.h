@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ENTRY_MODEL_H
-#define ENTRY_MODEL_H
+#ifndef OBJECT_MODEL_H
+#define OBJECT_MODEL_H
 
 #include <QStandardItemModel>
 #include <QList>
@@ -30,13 +30,13 @@ class QString;
 // Model for entries
 // Requires at least a DN column
 // Implements drag/drop of entries using their DN's
-class EntryModel : public QStandardItemModel {
+class ObjectModel : public QStandardItemModel {
 Q_OBJECT
 
 public:
     const int dn_column;
     
-    explicit EntryModel(int column_count, int dn_column_in, QObject *parent);
+    explicit ObjectModel(int column_count, int dn_column_in, QObject *parent);
 
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
@@ -46,4 +46,4 @@ public:
 
 };
 
-#endif /* ENTRY_MODEL_H */
+#endif /* OBJECT_MODEL_H */

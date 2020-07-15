@@ -18,7 +18,7 @@
  */
 
 #include "members_widget.h"
-#include "entry_context_menu.h"
+#include "object_context_menu.h"
 #include "utils.h"
 #include "dn_column_proxy.h"
 
@@ -31,7 +31,7 @@ enum MembersColumn {
     MembersColumn_COUNT,
 };
 
-MembersWidget::MembersWidget(EntryContextMenu *entry_context_menu, QWidget *parent)
+MembersWidget::MembersWidget(ObjectContextMenu *entry_context_menu, QWidget *parent)
 : QWidget(parent)
 {   
     view = new QTreeView(this);
@@ -60,7 +60,7 @@ void MembersWidget::change_target(const QString &dn) {
 }
 
 MembersModel::MembersModel(QObject *parent)
-: EntryModel(MembersColumn_COUNT, MembersColumn_DN, parent)
+: ObjectModel(MembersColumn_COUNT, MembersColumn_DN, parent)
 {
     setHorizontalHeaderItem(MembersColumn_Name, new QStandardItem("Name"));
     setHorizontalHeaderItem(MembersColumn_DN, new QStandardItem("DN"));
