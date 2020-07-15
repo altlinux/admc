@@ -84,6 +84,13 @@ int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***lis
 int ad_list(LDAP *ds, const char *dn, char ***list_out);
 
 /**
+ * Output a NULL terminated array of values for the given attribute
+ * Array should be freed by the caller using ad_array_free()
+ * Returns AD_SUCCESS or error code
+ */
+int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***values_out);
+
+/**
  * Create user object below given DN
  * New user object is locked by default
  * Returns AD_SUCCESS or error code

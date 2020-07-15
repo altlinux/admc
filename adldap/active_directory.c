@@ -339,6 +339,65 @@ int ad_list(LDAP *ds, const char *dn, char ***list_out) {
     return result;
 }
 
+int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***values_out) {
+    int result = AD_SUCCESS;
+
+    char **values = NULL;
+
+    char *attrs[] = {(char *)attribute, NULL};
+    LDAPMessage *res;
+    const int result_search = ldap_search_ext_s(ds, dn, LDAP_SCOPE_BASE, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
+    if (result_search != LDAP_SUCCESS) {
+        save_ldap_error(result_search);
+
+        if (result_search == LDAP_NO_SUCH_OBJECT) {
+            result = AD_OBJECT_NOT_FOUND;
+        } else {
+            result = AD_LDAP_OPERATION_FAILURE;
+        }
+        
+        goto end;
+    }
+
+    const int entries_count = ldap_count_entries(ds, res);
+    if (entries_count == 0) {
+        save_error("no attribute entries found");
+        result = AD_OBJECT_NOT_FOUND;
+        
+        goto end;
+    } else if (entries_count > 1) {
+        save_error("multiple attribute entries found");
+        result = AD_OBJECT_NOT_FOUND;
+        
+        goto end;
+    }
+
+    LDAPMessage *entry = ldap_first_entry(ds, res);
+
+    char **values_raw = ldap_get_values(ds, entry, attribute);
+    const int values_count = ldap_count_values(values_raw);
+
+    values = malloc(sizeof(char *) * (values_count + 1));
+    for (int i = 0; i < values_count; i++) {
+        values[i] = strdup(values_raw[i]);
+    }
+    values[values_count] = NULL;
+    
+    ldap_value_free(values_raw);
+
+    end:
+    ldap_msgfree(res);
+
+    if (result == AD_SUCCESS) {
+        *values_out = values;
+    } else {
+        *values_out = NULL;
+        free(values);
+    }
+
+    return result;
+}
+
 int ad_create_user(LDAP *ds, const char *username, const char *dn) {
     int result = AD_SUCCESS;
 
