@@ -115,7 +115,7 @@ int AdConnection::attribute_delete(const char *dn, const char *attribute, const 
     return ad_attribute_delete(ldap_connection, dn, attribute, value);
 }
 
-int AdConnection::attribute_get(const char *dn, char ***values) {
+int AdConnection::get_all_attributes(const char *dn, char ***values) {
     return ad_get_all_attributes(ldap_connection, dn, values);
 }
 

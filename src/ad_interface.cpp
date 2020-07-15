@@ -182,7 +182,7 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
         const char *dn_cstr = dn_array.constData();
 
         char** attributes_raw;
-        const int result_attribute_get = connection->attribute_get(dn_cstr, &attributes_raw);
+        const int result_attribute_get = connection->get_all_attributes(dn_cstr, &attributes_raw);
         if (result_attribute_get == AD_SUCCESS) {
             Attributes attributes;
             // attributes_raw is in the form of:
