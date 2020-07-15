@@ -57,6 +57,7 @@ typedef struct sasl_defaults_gssapi {
 int dn2domain(const char *dn, char **domain_out);
 int sasl_interact_gssapi(LDAP *ds, unsigned flags, void *indefaults, void *in);
 int query_server_for_hosts(const char *dname, char ***hosts);
+int ad_get_all_attributes_internal(LDAP *ds, const char *dn, const char *attribute, LDAPMessage **res_out);
 
 char ad_error_msg[MAX_ERR_LENGTH];
 
@@ -352,31 +353,9 @@ int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***va
 
     char **values = NULL;
 
-    char *attrs[] = {(char *)attribute, NULL};
     LDAPMessage *res;
-    const int result_search = ldap_search_ext_s(ds, dn, LDAP_SCOPE_BASE, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
-    if (result_search != LDAP_SUCCESS) {
-        save_ldap_error(result_search);
-
-        if (result_search == LDAP_NO_SUCH_OBJECT) {
-            result = AD_OBJECT_NOT_FOUND;
-        } else {
-            result = AD_LDAP_OPERATION_FAILURE;
-        }
-        
-        goto end;
-    }
-
-    const int entries_count = ldap_count_entries(ds, res);
-    if (entries_count == 0) {
-        save_error("no attribute entries found");
-        result = AD_OBJECT_NOT_FOUND;
-        
-        goto end;
-    } else if (entries_count > 1) {
-        save_error("multiple attribute entries found");
-        result = AD_OBJECT_NOT_FOUND;
-        
+    const int result_get = ad_get_all_attributes_internal(ds, dn, attribute, &res);
+    if (result_get != LDAP_SUCCESS) {
         goto end;
     }
 
@@ -801,34 +780,12 @@ int ad_get_all_attributes(LDAP *ds, const char *dn, char ****attributes_out) {
 
     char ***attributes = NULL;
 
-    // TODO: use paged search
-    char *attrs[] = {"*", NULL};
     LDAPMessage *res;
-    const int result_search = ldap_search_ext_s(ds, dn, LDAP_SCOPE_BASE, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
-    if (result_search != LDAP_SUCCESS) {
-        save_ldap_error(result_search);
-
-        if (result_search == LDAP_NO_SUCH_OBJECT) {
-            result = AD_OBJECT_NOT_FOUND;
-        } else {
-            result = AD_LDAP_OPERATION_FAILURE;
-        }
-        
+    const int result_get = ad_get_all_attributes_internal(ds, dn, "*", &res);
+    if (result_get != AD_SUCCESS) {
         goto end;
     }
 
-    const int entries_count = ldap_count_entries(ds, res);
-    if (entries_count == 0) {
-        save_error("no attribute entries found");
-        result = AD_OBJECT_NOT_FOUND;
-        
-        goto end;
-    } else if (entries_count > 1) {
-        save_error("multiple attribute entries found");
-        result = AD_OBJECT_NOT_FOUND;
-        
-        goto end;
-    }
     LDAPMessage *entry = ldap_first_entry(ds, res);
 
     // Count attributes
@@ -1295,4 +1252,47 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
 
         return AD_RESOLV_ERROR;
     }
+}
+
+/**
+ * Perform an attribute search on object
+ * Outputs LDAPMessage res which contains results of the search
+ * res should bbe freed by the caller using ldap_msgfree()
+ */
+int ad_get_all_attributes_internal(LDAP *ds, const char *dn, const char *attribute, LDAPMessage **res_out) {
+    int result = AD_SUCCESS;
+
+    // TODO: use paged search
+    char *attrs[] = {(char *)attribute, NULL};
+    LDAPMessage *res;
+    const int result_search = ldap_search_ext_s(ds, dn, LDAP_SCOPE_BASE, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
+    if (result_search != LDAP_SUCCESS) {
+        save_ldap_error(result_search);
+
+        if (result_search == LDAP_NO_SUCH_OBJECT) {
+            result = AD_OBJECT_NOT_FOUND;
+        } else {
+            result = AD_LDAP_OPERATION_FAILURE;
+        }
+        
+        goto end;
+    }
+
+    const int entries_count = ldap_count_entries(ds, res);
+    if (entries_count == 0) {
+        save_error("no attribute entries found");
+        result = AD_OBJECT_NOT_FOUND;
+        
+        goto end;
+    } else if (entries_count > 1) {
+        save_error("multiple attribute entries found");
+        result = AD_OBJECT_NOT_FOUND;
+        
+        goto end;
+    }
+
+    end:
+    *res_out = res;
+
+    return result;
 }
