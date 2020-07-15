@@ -63,13 +63,13 @@ MainWindow::MainWindow()
     // Menubar
     QAction *login_action = nullptr;
     {
-        QAction *advanced_view = SETTINGS()->checkable(SettingsCheckable_AdvancedView);
-        QAction *show_dn_column = SETTINGS()->checkable(SettingsCheckable_DnColumn);
-        QAction *show_status_log = SETTINGS()->checkable(SettingsCheckable_ShowStatusLog);
-        QAction *details_from_containers = SETTINGS()->checkable(SettingsCheckable_DetailsFromContainers);
-        QAction *details_from_contents = SETTINGS()->checkable(SettingsCheckable_DetailsFromContents);
-        QAction *confirm_actions = SETTINGS()->checkable(SettingsCheckable_ConfirmActions);
-        QAction *auto_login = SETTINGS()->checkable(SettingsCheckable_AutoLogin);
+        QAction *advanced_view = Settings::instance.checkable(SettingsCheckable_AdvancedView);
+        QAction *show_dn_column = Settings::instance.checkable(SettingsCheckable_DnColumn);
+        QAction *show_status_log = Settings::instance.checkable(SettingsCheckable_ShowStatusLog);
+        QAction *details_from_containers = Settings::instance.checkable(SettingsCheckable_DetailsFromContainers);
+        QAction *details_from_contents = Settings::instance.checkable(SettingsCheckable_DetailsFromContents);
+        QAction *confirm_actions = Settings::instance.checkable(SettingsCheckable_ConfirmActions);
+        QAction *auto_login = Settings::instance.checkable(SettingsCheckable_AutoLogin);
 
         QMenuBar *menubar = menuBar();
         QMenu *menubar_file = menubar->addMenu("File");
@@ -111,7 +111,7 @@ MainWindow::MainWindow()
 
     // NOTE: do this after all widgets are constructed so that all of
     // them load initial settings correctly
-    SETTINGS()->emit_toggle_signals();
+    Settings::instance.emit_toggle_signals();
 
     // Layout
     {
@@ -145,10 +145,10 @@ MainWindow::MainWindow()
             central_widget->setEnabled(true);
         });
 
-    QAction *auto_login = SETTINGS()->checkable(SettingsCheckable_AutoLogin);
+    QAction *auto_login = Settings::instance.checkable(SettingsCheckable_AutoLogin);
     if (auto_login->isChecked()) {
-        const QString host = SETTINGS()->get_string(SettingString_Host);
-        const QString domain = SETTINGS()->get_string(SettingString_Domain);
+        const QString host = Settings::instance.get_string(SettingString_Host);
+        const QString domain = Settings::instance.get_string(SettingString_Domain);
 
         if (!host.isEmpty()) {
             AD()->login(host, domain);

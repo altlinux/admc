@@ -33,9 +33,13 @@ int main(int argc, char **argv) {
     admc->setApplicationVersion(ADMC_VERSION);
     admc->setOrganizationName(ADMC_ORGANIZATION);
     admc->setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
+
     // NOTE: must load settings after setting app/org names so that
     // settings file path is correct
-    admc->settings()->load_settings();
+    Settings::instance.load_settings();
+    QObject::connect(
+        admc, &QCoreApplication::aboutToQuit,
+        &Settings::instance, &Settings::save_settings);
 
     QCommandLineParser cli_parser;
     cli_parser.setApplicationDescription(QCoreApplication::applicationName());

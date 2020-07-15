@@ -23,7 +23,6 @@
 #include <QApplication>
 
 class AdInterface;
-class Settings;
 
 class ADMC final: public QApplication {
 Q_OBJECT
@@ -32,11 +31,9 @@ public:
     ADMC(int& argc, char** argv);
 
     AdInterface* ad_interface();
-    Settings* settings();
 
 private:
     AdInterface* m_ad_interface = nullptr;
-    Settings* m_settings = nullptr;
 };
 
 #endif /* __ADMC_APPLICATION_H */

@@ -45,27 +45,27 @@ enum SettingsCheckable {
     SettingsCheckable_COUNT,
 };
 
+class Settings;
+
 class Settings final : public QObject {
 Q_OBJECT
 
 public:
-    explicit Settings(QObject *parent);
+    static Settings instance;
+
     void emit_toggle_signals() const;
     QAction *checkable(SettingsCheckable c) const;
     QString get_string(SettingString string) const;
     void set_string(SettingString string, const QString &value);
     void load_settings();
+    void save_settings();
 
 private:
     QAction *checkables[SettingsCheckable_COUNT];
     QString strings[SettingString_COUNT];
     bool loaded_settings = false;
-
-    void save_settings();
-
 };
 
 QString get_settings_file_path();
-Settings *SETTINGS();
 
 #endif /* SETTINGS_H */

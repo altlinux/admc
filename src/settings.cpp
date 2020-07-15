@@ -25,6 +25,8 @@
 #include <QList>
 #include <QStandardPaths>
 
+Settings Settings::instance;
+
 QString checkable_text(SettingsCheckable checkable) {
     switch (checkable) {
         case SettingsCheckable_AdvancedView: return "Advanced View";
@@ -53,14 +55,6 @@ QString get_settings_file_path() {
     const QString appdata_path = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
     const QString settings_file_path = appdata_path + "/settings.ini";
     return settings_file_path;
-}
-
-Settings::Settings(QObject *parent)
-: QObject(parent)
-{
-    connect(
-        qApp, &QCoreApplication::aboutToQuit,
-        this, &Settings::save_settings);
 }
 
 void Settings::emit_toggle_signals() const {
@@ -137,10 +131,4 @@ void Settings::save_settings() {
 
         settings.setValue(name, value);
     }
-}
-
-Settings *SETTINGS() {
-    ADMC *app = qobject_cast<ADMC *>(qApp);
-    Settings *settings = app->settings();
-    return settings;
 }
