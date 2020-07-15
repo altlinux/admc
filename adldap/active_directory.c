@@ -385,6 +385,69 @@ int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***va
     return result;
 }
 
+int ad_get_all_attributes(LDAP *ds, const char *dn, char ****attributes_out) {
+    int result = AD_SUCCESS;
+
+    char ***attributes = NULL;
+
+    LDAPMessage *res;
+    const int result_get = ad_get_all_attributes_internal(ds, dn, "*", &res);
+    if (result_get != AD_SUCCESS) {
+        goto end;
+    }
+
+    LDAPMessage *entry = ldap_first_entry(ds, res);
+
+    // Count attributes
+    int attributes_count = 0;
+    {
+        BerElement *berptr;
+        for (char *attr = ldap_first_attribute(ds, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ds, entry, berptr)) {
+            ldap_memfree(attr);
+            attributes_count++;
+        }
+        ber_free(berptr, 0);
+    }
+
+    const int attributes_size = attributes_count + 1;
+    attributes = malloc(sizeof(char **) * attributes_size);
+    attributes[attributes_size - 1] = NULL;
+
+    // Copy attribute values
+    BerElement *berptr;
+    int attributes_i = 0;
+    for (char *attr = ldap_first_attribute(ds, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ds, entry, berptr)) {
+        char **values_ldap = ldap_get_values(ds, entry, attr);
+        const int values_count = ldap_count_values(values_ldap);
+
+        const int values_size = values_count + 2;
+        char **values = malloc(sizeof(char *) * values_size);
+        values[0] = strdup(attr);
+        values[values_size - 1] = NULL;
+        for (int i = 0; i < values_count; i++) {
+            values[i + 1] = strdup(values_ldap[i]);
+        }
+
+        ldap_value_free(values_ldap);
+        ldap_memfree(attr);
+
+        attributes[attributes_i] = values;
+        attributes_i++;
+    }
+    ber_free(berptr, 0);
+
+    end:
+    ldap_msgfree(res);
+
+    if (result == AD_SUCCESS) {
+        *attributes_out = attributes;
+    } else {
+        *attributes_out = NULL;
+    }
+
+    return result;
+}
+
 int ad_create_user(LDAP *ds, const char *username, const char *dn) {
     int result = AD_SUCCESS;
 
@@ -770,69 +833,6 @@ int ad_attribute_delete(LDAP *ds, const char *dn, const char *attribute, const c
     if (result_modify != LDAP_SUCCESS) {
         save_ldap_error(result_modify);
         result = AD_LDAP_OPERATION_FAILURE;
-    }
-
-    return result;
-}
-
-int ad_get_all_attributes(LDAP *ds, const char *dn, char ****attributes_out) {
-    int result = AD_SUCCESS;
-
-    char ***attributes = NULL;
-
-    LDAPMessage *res;
-    const int result_get = ad_get_all_attributes_internal(ds, dn, "*", &res);
-    if (result_get != AD_SUCCESS) {
-        goto end;
-    }
-
-    LDAPMessage *entry = ldap_first_entry(ds, res);
-
-    // Count attributes
-    int attributes_count = 0;
-    {
-        BerElement *berptr;
-        for (char *attr = ldap_first_attribute(ds, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ds, entry, berptr)) {
-            ldap_memfree(attr);
-            attributes_count++;
-        }
-        ber_free(berptr, 0);
-    }
-
-    const int attributes_size = attributes_count + 1;
-    attributes = malloc(sizeof(char **) * attributes_size);
-    attributes[attributes_size - 1] = NULL;
-
-    // Copy attribute values
-    BerElement *berptr;
-    int attributes_i = 0;
-    for (char *attr = ldap_first_attribute(ds, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ds, entry, berptr)) {
-        char **values_ldap = ldap_get_values(ds, entry, attr);
-        const int values_count = ldap_count_values(values_ldap);
-
-        const int values_size = values_count + 2;
-        char **values = malloc(sizeof(char *) * values_size);
-        values[0] = strdup(attr);
-        values[values_size - 1] = NULL;
-        for (int i = 0; i < values_count; i++) {
-            values[i + 1] = strdup(values_ldap[i]);
-        }
-
-        ldap_value_free(values_ldap);
-        ldap_memfree(attr);
-
-        attributes[attributes_i] = values;
-        attributes_i++;
-    }
-    ber_free(berptr, 0);
-
-    end:
-    ldap_msgfree(res);
-
-    if (result == AD_SUCCESS) {
-        *attributes_out = attributes;
-    } else {
-        *attributes_out = NULL;
     }
 
     return result;
