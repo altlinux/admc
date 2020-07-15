@@ -51,10 +51,10 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
     tab_widget->addTab(members_widget, "");
 
     connect(
-        AD(), &AdInterface::logged_in,
+        &AdInterface::instance, &AdInterface::logged_in,
         this, &DetailsWidget::on_logged_in);
     connect(
-        AD(), &AdInterface::modified,
+        &AdInterface::instance, &AdInterface::modified,
         this, &DetailsWidget::on_ad_modified);
 
     connect(
@@ -71,7 +71,7 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
 };
 
 void DetailsWidget::change_target(const QString &dn) {
-    const QString name = AD()->attribute_get(dn, "name");
+    const QString name = AdInterface::instance.attribute_get(dn, "name");
     const QString title_text = name.isEmpty() ? "Details" : QString("%1 Details").arg(name);
     title_label->setText(title_text);
 
@@ -88,7 +88,7 @@ void DetailsWidget::change_target(const QString &dn) {
 
     tab_widget->addTab(attributes_widget, "All Attributes");
 
-    bool is_group = AD()->attribute_value_exists(target_dn, "objectClass", "group");
+    bool is_group = AdInterface::instance.attribute_value_exists(target_dn, "objectClass", "group");
     if (is_group) {
         tab_widget->addTab(members_widget, "Group members");
     }

@@ -23,8 +23,10 @@
 
 #include <QSet>
 
-AdInterface::AdInterface(QObject *parent)
-: QObject(parent)
+AdInterface AdInterface::instance;
+
+AdInterface::AdInterface()
+: QObject()
 {
     connection = new adldap::AdConnection();
 }
@@ -492,7 +494,7 @@ bool AdInterface::is_container_like(const QString &dn) {
     // TODO: check that this includes all fitting objectClasses
     const QList<QString> containerlike_objectClasses = {"organizationalUnit", "builtinDomain", "domain"};
     for (auto c : containerlike_objectClasses) {
-        if (AD()->attribute_value_exists(dn, "objectClass", c)) {
+        if (AdInterface::instance.attribute_value_exists(dn, "objectClass", c)) {
             return true;
         }
     }
@@ -513,14 +515,14 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
         return DropType_None;
     }
 
-    const bool dropped_is_user = AD()->is_user(dn);
-    const bool dropped_is_group = AD()->is_group(dn);
-    const bool dropped_is_ou = AD()->is_ou(dn);
+    const bool dropped_is_user = AdInterface::instance.is_user(dn);
+    const bool dropped_is_group = AdInterface::instance.is_group(dn);
+    const bool dropped_is_ou = AdInterface::instance.is_ou(dn);
 
-    const bool target_is_user = AD()->is_user(target_dn);
-    const bool target_is_group = AD()->is_group(target_dn);
-    const bool target_is_ou = AD()->is_ou(target_dn);
-    const bool target_is_container = AD()->is_container(target_dn);
+    const bool target_is_user = AdInterface::instance.is_user(target_dn);
+    const bool target_is_group = AdInterface::instance.is_group(target_dn);
+    const bool target_is_ou = AdInterface::instance.is_ou(target_dn);
+    const bool target_is_container = AdInterface::instance.is_container(target_dn);
 
     if (dropped_is_user) {
         if (target_is_ou || target_is_container) {
@@ -553,11 +555,11 @@ void AdInterface::object_drop(const QString &dn, const QString &target_dn) {
 
     switch (drop_type) {
         case DropType_Move: {
-            AD()->object_move(dn, target_dn);
+            AdInterface::instance.object_move(dn, target_dn);
             break;
         }
         case DropType_AddToGroup: {
-            AD()->group_add_user(target_dn, dn);
+            AdInterface::instance.group_add_user(target_dn, dn);
             break;
         }
         case DropType_None: {
@@ -656,12 +658,6 @@ bool AdInterface::should_emit_message(int result) {
     } else {
         return true;
     }
-}
-
-AdInterface *AD() {
-    ADMC *app = qobject_cast<ADMC *>(qApp);
-    AdInterface *ad = app->ad_interface();
-    return ad;
 }
 
 QString filter_EQUALS(const QString &attribute, const QString &value) {

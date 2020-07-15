@@ -141,7 +141,7 @@ void MoveDialog::open_for_object(const QString &dn, MoveDialogType type_arg) {
     QList<ClassFilter> classes;
     switch (type) {
         case MoveDialogType_Move: {
-            const bool is_container = AD()->is_container(dn);
+            const bool is_container = AdInterface::instance.is_container(dn);
             if (is_container) {
                 classes = {ClassFilter_Containers};
             } else {
@@ -211,11 +211,11 @@ void MoveDialog::complete(const QString &move_dn) {
     if (confirmed) {
         switch (type) {
             case MoveDialogType_Move: {
-                AD()->object_move(target_dn, move_dn);
+                AdInterface::instance.object_move(target_dn, move_dn);
                 break;
             }
             case MoveDialogType_AddToGroup: {
-                AD()->group_add_user(move_dn, target_dn);
+                AdInterface::instance.group_add_user(move_dn, target_dn);
                 break;
             }
         }
@@ -269,7 +269,7 @@ void MoveDialogModel::load(const QString &dn, QList<ClassFilter> classes) {
             filter = filter_AND(filter, NOT_is_advanced);
         }
 
-        const QList<QString> objects = AD()->search(filter);
+        const QList<QString> objects = AdInterface::instance.search(filter);
 
         for (auto e_dn : objects) {
             auto row = QList<QStandardItem *>();

@@ -23,9 +23,5 @@
 ADMC::ADMC(int& argc, char** argv)
 : QApplication(argc, argv)
 {
-    m_ad_interface = new AdInterface(this);
 }
 
-AdInterface *ADMC::ad_interface() {
-    return m_ad_interface;
-}

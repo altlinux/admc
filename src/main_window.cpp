@@ -140,7 +140,7 @@ MainWindow::MainWindow()
     // Enable central widget on login
     central_widget->setEnabled(false);
     QObject::connect(
-        AD(), &AdInterface::logged_in,
+        &AdInterface::instance, &AdInterface::logged_in,
         [central_widget] () {
             central_widget->setEnabled(true);
         });
@@ -151,7 +151,7 @@ MainWindow::MainWindow()
         const QString domain = Settings::instance.get_string(SettingString_Domain);
 
         if (!host.isEmpty()) {
-            AD()->login(host, domain);
+            AdInterface::instance.login(host, domain);
         }
     }    
 }

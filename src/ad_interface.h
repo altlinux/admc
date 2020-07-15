@@ -63,9 +63,11 @@ class AdInterface final : public QObject {
 Q_OBJECT
 
 public:
+    static AdInterface instance;
+    
     static QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 
-    explicit AdInterface(QObject *parent);
+    explicit AdInterface();
     ~AdInterface();
 
     bool login(const QString &host, const QString &domain);
@@ -118,9 +120,6 @@ private:
     void update_cache(const QList<QString> &changed_dns);
     bool should_emit_message(int result);
 }; 
-
-// Convenience function to get AdInterface from qApp instance
-AdInterface *AD();
 
 QString filter_EQUALS(const QString &attribute, const QString &value);
 QString filter_AND(const QString &a, const QString &b);

@@ -100,8 +100,8 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
         move_dialog->open_for_object(dn, MoveDialogType_Move);
     });
 
-    const bool is_policy = AD()->is_policy(dn); 
-    const bool is_user = AD()->is_user(dn); 
+    const bool is_policy = AdInterface::instance.is_policy(dn); 
+    const bool is_user = AdInterface::instance.is_user(dn); 
     
     if (is_policy) {
         submenu_new->addAction("Edit Policy", [this, dn]() {
@@ -123,11 +123,11 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
     // Special contextual action
     // shown if parent is group and object is user
     if (parent_dn != "") {
-        const bool parent_is_group = AD()->is_group(parent_dn);
+        const bool parent_is_group = AdInterface::instance.is_group(parent_dn);
 
         if (is_user && parent_is_group) {
             addAction("Remove from group", [this, dn, parent_dn]() {
-                AD()->group_remove_user(parent_dn, dn);
+                AdInterface::instance.group_remove_user(parent_dn, dn);
             });
         }
     }
@@ -136,12 +136,12 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
 }
 
 void ObjectContextMenu::delete_object(const QString &dn) {
-    const QString name = AD()->attribute_get(dn, "name");
+    const QString name = AdInterface::instance.attribute_get(dn, "name");
     const QString text = QString("Are you sure you want to delete \"%1\"?").arg(name);
     const bool confirmed = confirmation_dialog(text, this);
 
     if (confirmed) {
-        AD()->object_delete(dn);
+        AdInterface::instance.object_delete(dn);
     }    
 }
 
@@ -169,7 +169,7 @@ void ObjectContextMenu::new_object_dialog(const QString &parent_dn, NewObjectTyp
 
         const QString dn = suffix + "=" + name + "," + parent_dn;
 
-        AD()->object_create(name, dn, type);
+        AdInterface::instance.object_create(name, dn, type);
     }
 }
 
@@ -197,7 +197,7 @@ void ObjectContextMenu::rename(const QString &dn) {
     QString new_name = QInputDialog::getText(this, dialog_title, input_label, QLineEdit::Normal, "", &ok);
 
     if (ok && !new_name.isEmpty()) {
-        AD()->object_rename(dn, new_name);
+        AdInterface::instance.object_rename(dn, new_name);
     }
 }
 
@@ -210,7 +210,7 @@ void ObjectContextMenu::edit_policy(const QString &dn) {
 
     const char *uri = "ldap://dc0.domain.alt";
 
-    const QString path = AD()->attribute_get(dn, "gPCFileSysPath");
+    const QString path = AdInterface::instance.attribute_get(dn, "gPCFileSysPath");
 
     QStringList args;
     args << uri;

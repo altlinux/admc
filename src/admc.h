@@ -30,10 +30,7 @@ Q_OBJECT
 public:
     ADMC(int& argc, char** argv);
 
-    AdInterface* ad_interface();
-
 private:
-    AdInterface* m_ad_interface = nullptr;
 };
 
 #endif /* __ADMC_APPLICATION_H */

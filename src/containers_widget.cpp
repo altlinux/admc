@@ -69,7 +69,7 @@ ContainersWidget::ContainersWidget(ObjectContextMenu *object_context_menu, QWidg
     layout->addWidget(view);
 
     connect(
-        AD(), &AdInterface::modified,
+        &AdInterface::instance, &AdInterface::modified,
         this, &ContainersWidget::on_ad_modified);
     connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,
@@ -85,7 +85,7 @@ ContainersWidget::ContainersWidget(ObjectContextMenu *object_context_menu, QWidg
 };
 
 void ContainersWidget::on_ad_modified() {
-    const QString head_dn = AD()->get_search_base();
+    const QString head_dn = AdInterface::instance.get_search_base();
     QAbstractItemModel *view_model = view->model();
 
     // Save DN's that were fetched
@@ -237,7 +237,7 @@ ContainersModel::ContainersModel(QObject *parent)
 : ObjectModel(ContainersColumn_COUNT, ContainersColumn_DN, parent)
 {
     connect(
-        AD(), &AdInterface::logged_in,
+        &AdInterface::instance, &AdInterface::logged_in,
         this, &ContainersModel::on_logged_in);
 }
 
@@ -261,7 +261,7 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
     QStandardItem *parent_item = itemFromIndex(parent);
 
     // Add children
-    QList<QString> children = AD()->list(dn);
+    QList<QString> children = AdInterface::instance.list(dn);
 
     for (auto child : children) {
         make_new_row(parent_item, child);
@@ -285,13 +285,13 @@ void ContainersModel::on_logged_in() {
     removeRows(0, rowCount());
 
     // Load head
-    const QString head_dn = AD()->get_search_base();
+    const QString head_dn = AdInterface::instance.get_search_base();
     QStandardItem *invis_root = invisibleRootItem();
     make_new_row(invis_root, head_dn);
 }
 
 void load_row(QList<QStandardItem *> row, const QString &dn) {
-    QString name = AD()->attribute_get(dn, "name");
+    QString name = AdInterface::instance.attribute_get(dn, "name");
 
     row[ContainersColumn_Name]->setText(name);
     row[ContainersColumn_DN]->setText(dn);
@@ -305,8 +305,8 @@ void load_row(QList<QStandardItem *> row, const QString &dn) {
 
 // Make new row in model at given parent based on object with given dn
 QStandardItem *make_new_row(QStandardItem *parent, const QString &dn) {
-    const bool is_container = AD()->is_container(dn);
-    const bool is_container_like = AD()->is_container_like(dn);
+    const bool is_container = AdInterface::instance.is_container(dn);
+    const bool is_container_like = AdInterface::instance.is_container_like(dn);
     const bool should_be_loaded = is_container || is_container_like;
 
     if (!should_be_loaded) {
