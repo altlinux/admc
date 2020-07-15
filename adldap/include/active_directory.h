@@ -62,9 +62,16 @@ size_t ad_array_size(char **array);
 /**
  * Free a null-terminated array that was returned by one of
  * the functions in this library
- * NULL check is performed
+ * If array is NULL, nothing is done
  */
 void ad_array_free(char **array);
+
+/**
+ * Free a null-terminated array that was returned by one of
+ * the functions in this library
+ * If array is NULL, nothing is done
+ */
+void ad_2d_array_free(char ***array);
 
 /**
  * Output a list of DN's which match the given filter and are
@@ -91,12 +98,13 @@ int ad_list(LDAP *ds, const char *dn, char ***list_out);
 int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***values_out);
 
 /**
- * Output a list of key-value pairs for given attribute
- * list is NULL terminated
- * list should be freed by the caller using ad_array_free()
+ * Output a 2d NULL terminated array of attribute values for given
+ * object
+ * Each sub-array contains an attribute name followed by it's values
+ * Output should be freed by the caller using ad_2d_array_free()
  * Returns AD_SUCCESS or error code
  */
-int ad_get_all_attributes(LDAP *ds, const char *dn, char ***values_out);
+int ad_get_all_attributes(LDAP *ds, const char *dn, char ****attributes_out);
 
 /**
  * Create user object below given DN

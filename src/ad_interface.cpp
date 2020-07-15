@@ -181,27 +181,30 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
         const QByteArray dn_array = dn.toLatin1();
         const char *dn_cstr = dn_array.constData();
 
-        char** attributes_raw;
-        const int result_attribute_get = connection->get_all_attributes(dn_cstr, &attributes_raw);
+        char ***attributes_ad;
+        const int result_attribute_get = connection->get_all_attributes(dn_cstr, &attributes_ad);
         if (result_attribute_get == AD_SUCCESS) {
             Attributes attributes;
-            // attributes_raw is in the form of:
-            // char** array of {key, value, value, key, value ...}
+            // attributes_ad is in the form of:
+            // char** array of {{keyA, value1, value2, ...},
+            // {keyB, value1, value2, ...}, ...}
             // transform it into:
             // map of {key => {value, value ...}, key => {value, value ...} ...}
-            for (int i = 0; attributes_raw[i + 2] != NULL; i += 2) {
-                auto attribute = QString(attributes_raw[i]);
-                auto value = QString(attributes_raw[i + 1]);
+            for (int i = 0; attributes_ad[i] != NULL; i++) {
+                char **attributes_and_values = attributes_ad[i];
 
-                // Make values list if doesn't exist yet
-                if (!attributes.contains(attribute)) {
-                    attributes[attribute] = QList<QString>();
+                char *attribute_cstr = attributes_and_values[0];
+                auto attribute = QString(attribute_cstr);
+                attributes[attribute] = QList<QString>();
+
+                for (int j = 1; attributes_and_values[j] != NULL; j++) {
+                    char *value_cstr = attributes_and_values[j];
+                    auto value = QString(value_cstr);
+                    attributes[attribute].push_back(value);
                 }
-
-                attributes[attribute].push_back(value);
             }
 
-            ad_array_free(attributes_raw);
+            ad_2d_array_free(attributes_ad);
 
             attributes_cache[dn] = attributes;
             return attributes_cache[dn];

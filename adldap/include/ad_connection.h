@@ -51,7 +51,7 @@ public:
     int attribute_replace(const char *dn, const char *attribute, const char *value);
     int attribute_replace_binary(const char *dn, const char *attribute, const char *data, int data_length);
     int attribute_delete(const char *dn, const char *attribute, const char *value);
-    int get_all_attributes(const char *dn, char ***values);
+    int get_all_attributes(const char *dn, char ****attributes);
     int rename(const char *dn, const char *new_name);
     int rename_user(const char *dn, const char *new_username);
     int rename_group(const char *dn, const char *new_name);

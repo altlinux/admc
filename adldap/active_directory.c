@@ -249,6 +249,16 @@ void ad_array_free(char **array) {
     }
 }
 
+void ad_2d_array_free(char ***array) {
+    if (array != NULL) {
+        for (int i = 0; array[i] != NULL; i++) {
+            ad_array_free(array[i]);
+        }
+
+        free(array);
+    }
+}
+
 int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***list_out) {
     int result = AD_SUCCESS;
 
@@ -788,16 +798,10 @@ int ad_attribute_delete(LDAP *ds, const char *dn, const char *attribute, const c
     return result;
 }
 
-int ad_get_all_attributes(LDAP *ds, const char *dn, char ***values_out) {
-    typedef struct ber_list {
-        char *attribute;
-        struct berval **values;
-        struct ber_list *next;
-    } ber_list;
-
+int ad_get_all_attributes(LDAP *ds, const char *dn, char ****attributes_out) {
     int result = AD_SUCCESS;
 
-    char **values = NULL;
+    char ***attributes = NULL;
 
     // TODO: use paged search
     char *attrs[] = {"*", NULL};
@@ -827,86 +831,53 @@ int ad_get_all_attributes(LDAP *ds, const char *dn, char ***values_out) {
         
         goto end;
     }
-
     LDAPMessage *entry = ldap_first_entry(ds, res);
 
-    // Collect values into a linked list
-    ber_list *head = NULL;
+    // Count attributes
+    int attributes_count = 0;
     {
         BerElement *berptr;
-        ber_list *prev = NULL;
         for (char *attr = ldap_first_attribute(ds, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ds, entry, berptr)) {
-            ber_list *node = (ber_list *)malloc(sizeof(ber_list));
-            node->attribute = strdup(attr);
-            node->values = ldap_get_values_len(ds, entry, attr);
-            node->next= NULL;
-
-            if (head == NULL) {
-                // First entry
-                head = node;
-            } else {
-                // Append to prev
-                prev->next = node;
-            }
-            prev = node;
-
             ldap_memfree(attr);
+            attributes_count++;
         }
-
-        ber_free(berptr, 0); 
+        ber_free(berptr, 0);
     }
 
-    // Turn the linked list of values into an array of key-value pairs
-    if (head != NULL) {
-        // Count values
-        unsigned int total_count = 0;
-        ber_list *curr = head;
-        while (curr != NULL) {
-            total_count += ldap_count_values_len(curr->values);
+    const int attributes_size = attributes_count + 1;
+    attributes = malloc(sizeof(char **) * attributes_size);
+    attributes[attributes_size - 1] = NULL;
 
-            curr = curr->next;
+    // Copy attribute values
+    BerElement *berptr;
+    int attributes_i = 0;
+    for (char *attr = ldap_first_attribute(ds, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ds, entry, berptr)) {
+        char **values_ldap = ldap_get_values(ds, entry, attr);
+        const int values_count = ldap_count_values(values_ldap);
+
+        const int values_size = values_count + 2;
+        char **values = malloc(sizeof(char *) * values_size);
+        values[0] = strdup(attr);
+        values[values_size - 1] = NULL;
+        for (int i = 0; i < values_count; i++) {
+            values[i + 1] = strdup(values_ldap[i]);
         }
 
-        // NOTE: for each value we need to pair it with key, hence the '2'
-        // and reserve one more for NULL termination
-        values = (char **)malloc(sizeof(char *) * (total_count * 2 + 1));
-        values[total_count * 2] = NULL;
+        ldap_value_free(values_ldap);
+        ldap_memfree(attr);
 
-        curr = head;
-        size_t values_i = 0;
-        while (curr != NULL) {
-            for (size_t i = 0; curr->values[i] != NULL; i++) {
-                struct berval data = *(curr->values)[i];
-                char bv_str[1000];
-                // TODO: test if bv_len includes null terminator
-                strncpy(bv_str, data.bv_val, data.bv_len);
-                bv_str[data.bv_len] = '\0';
-                // printf("\t%s\n", bv_str);
-
-                values[values_i] = strdup(curr->attribute);
-                values_i++;
-                values[values_i] = strdup(bv_str);
-                values_i++;
-            }
-
-            ber_list *prev = curr;
-            curr = curr->next;
-            
-            // Free prev
-            free(prev->attribute);
-            ldap_value_free_len(prev->values);
-            free(prev);
-        }
+        attributes[attributes_i] = values;
+        attributes_i++;
     }
+    ber_free(berptr, 0);
 
     end:
     ldap_msgfree(res);
 
     if (result == AD_SUCCESS) {
-        *values_out = values;
+        *attributes_out = attributes;
     } else {
-        *values_out = NULL;
-        free(values);
+        *attributes_out = NULL;
     }
 
     return result;
