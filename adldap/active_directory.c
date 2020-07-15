@@ -298,7 +298,6 @@ int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***lis
         *list_out = list;
     } else {
         *list_out = NULL;
-        free(list);
     }
 
     return result;
@@ -343,7 +342,6 @@ int ad_list(LDAP *ds, const char *dn, char ***list_out) {
         *list_out = list;
     } else {
         *list_out = NULL;
-        free(list);
     }
 
     return result;
