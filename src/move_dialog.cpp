@@ -116,7 +116,7 @@ MoveDialog::MoveDialog(QWidget *parent)
         model, &MoveDialogModel::on_dialog_finished);
 }
 
-void MoveDialog::open_for_entry(const QString &dn, MoveDialogType type_arg) {
+void MoveDialog::open_for_object(const QString &dn, MoveDialogType type_arg) {
     target_dn = dn;
     type = type_arg;
 
@@ -136,7 +136,7 @@ void MoveDialog::open_for_entry(const QString &dn, MoveDialogType type_arg) {
     }
     target_label->setText(target_label_text);
 
-    // Select classes that this entry can be moved to
+    // Select classes that this object can be moved to
     // TODO: cover all cases
     QList<ClassFilter> classes;
     switch (type) {
@@ -258,7 +258,7 @@ void MoveDialogModel::load(const QString &dn, QList<ClassFilter> classes) {
 
         QString filter = filter_EQUALS("objectClass", class_string);
 
-        // Filter out advanced entries if needed
+        // Filter out advanced objects if needed
         const QAction *advanced_view_action = SETTINGS()->checkable(SettingsCheckable_AdvancedView);
         const bool advanced_view_is_off = !advanced_view_action->isChecked();
 
@@ -269,9 +269,9 @@ void MoveDialogModel::load(const QString &dn, QList<ClassFilter> classes) {
             filter = filter_AND(filter, NOT_is_advanced);
         }
 
-        const QList<QString> entries = AD()->search(filter);
+        const QList<QString> objects = AD()->search(filter);
 
-        for (auto e_dn : entries) {
+        for (auto e_dn : objects) {
             auto row = QList<QStandardItem *>();
             for (int i = 0; i < MoveDialogColumn_COUNT; i++) {
                 row.push_back(new QStandardItem());

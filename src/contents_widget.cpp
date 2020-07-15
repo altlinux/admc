@@ -36,7 +36,7 @@ enum ContentsColumn {
     ContentsColumn_COUNT,
 };
 
-ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, ObjectContextMenu *entry_context_menu, QWidget *parent)
+ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, ObjectContextMenu *object_context_menu, QWidget *parent)
 : QWidget(parent)
 {   
     model = new ContentsModel(this);
@@ -53,7 +53,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, ObjectContex
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
-    entry_context_menu->connect_view(view, ContentsColumn_DN);
+    object_context_menu->connect_view(view, ContentsColumn_DN);
 
     setup_model_chain(view, model, {advanced_view_proxy, dn_column_proxy});
 
@@ -164,7 +164,7 @@ void ContentsModel::load_row(QList<QStandardItem *> row, const QString &dn) {
     row[ContentsColumn_Description]->setText(description);
     row[ContentsColumn_DN]->setText(dn);
 
-    QIcon icon = get_entry_icon(dn);
+    QIcon icon = get_object_icon(dn);
     row[0]->setIcon(icon);
 }
 

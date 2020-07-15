@@ -27,9 +27,9 @@ class QMimeData;
 class QModelIndex;
 class QString;
 
-// Model for entries
+// Model for objects
 // Requires at least a DN column
-// Implements drag/drop of entries using their DN's
+// Implements drag/drop of objects using their DN's
 class ObjectModel : public QStandardItemModel {
 Q_OBJECT
 

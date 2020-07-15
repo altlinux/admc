@@ -36,7 +36,7 @@ class ContainersWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContainersWidget(ObjectContextMenu *entry_context_menu, QWidget *parent);
+    ContainersWidget(ObjectContextMenu *object_context_menu, QWidget *parent);
 
 signals:
     void selected_changed(const QString &dn);

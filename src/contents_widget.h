@@ -33,12 +33,12 @@ class QTreeView;
 class ContentsModel;
 class QLabel;
 
-// Shows name, category and description of children of entry selected in containers view
+// Shows name, category and description of children of object selected in containers view
 class ContentsWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContentsWidget(ContainersWidget *containers_widget, ObjectContextMenu *entry_context_menu, QWidget *parent);
+    ContentsWidget(ContainersWidget *containers_widget, ObjectContextMenu *object_context_menu, QWidget *parent);
 
 signals:
     void clicked_dn(const QString &dn);

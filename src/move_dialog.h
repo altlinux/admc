@@ -54,7 +54,7 @@ Q_OBJECT
 public:
     MoveDialog(QWidget *parent);
 
-    void open_for_entry(const QString &dn, MoveDialogType type);
+    void open_for_object(const QString &dn, MoveDialogType type);
 
 private slots:
     void on_filter_name_changed(const QString &text);

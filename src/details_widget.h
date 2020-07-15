@@ -32,14 +32,14 @@ class ContentsWidget;
 class QTabWidget;
 class QLabel;
 
-// Shows info about entry's attributes in multiple tabs
-// Targeted at a particular entry
+// Shows info about object's attributes in multiple tabs
+// Targeted at a particular object
 // Updates targets of all tabs when target changes
 class DetailsWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    DetailsWidget(ObjectContextMenu *entry_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent);
+    DetailsWidget(ObjectContextMenu *object_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent);
 
 public slots:
     void on_containers_clicked_dn(const QString &dn);

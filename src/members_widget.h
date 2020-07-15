@@ -29,12 +29,12 @@ class QString;
 class ObjectContextMenu;
 class MembersModel;
 
-// Shows member entries of targeted group
+// Shows member objects of targeted group
 class MembersWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    MembersWidget(ObjectContextMenu *entry_context_menu, QWidget *parent);
+    MembersWidget(ObjectContextMenu *object_context_menu, QWidget *parent);
 
     void change_target(const QString &dn);
 

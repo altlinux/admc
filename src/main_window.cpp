@@ -94,11 +94,11 @@ MainWindow::MainWindow()
     auto central_widget = new QWidget(this);
     setCentralWidget(central_widget);
 
-    auto entry_context_menu = new ObjectContextMenu(this);
+    auto object_context_menu = new ObjectContextMenu(this);
     
-    auto containers_widget = new ContainersWidget(entry_context_menu, this);
-    auto contents_widget = new ContentsWidget(containers_widget, entry_context_menu, this);
-    auto details_widget = new DetailsWidget(entry_context_menu, containers_widget, contents_widget, this);
+    auto containers_widget = new ContainersWidget(object_context_menu, this);
+    auto contents_widget = new ContentsWidget(containers_widget, object_context_menu, this);
+    auto details_widget = new DetailsWidget(object_context_menu, containers_widget, contents_widget, this);
 
     auto status_log = new QTextEdit(this);
     status_log->setReadOnly(true);

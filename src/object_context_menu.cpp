@@ -76,7 +76,7 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
     });
 
     addAction("Delete", [this, dn]() {
-        delete_entry(dn);
+        delete_object(dn);
     });
     addAction("Rename", [this, dn]() {
         rename(dn);
@@ -97,7 +97,7 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
     });
 
     addAction("Move", [this, dn]() {
-        move_dialog->open_for_entry(dn, MoveDialogType_Move);
+        move_dialog->open_for_object(dn, MoveDialogType_Move);
     });
 
     const bool is_policy = AD()->is_policy(dn); 
@@ -111,7 +111,7 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
 
     if (is_user) {
         addAction("Add to group", [this, dn]() {
-            move_dialog->open_for_entry(dn, MoveDialogType_AddToGroup);
+            move_dialog->open_for_object(dn, MoveDialogType_AddToGroup);
         });
 
         addAction("Reset password", [this, dn]() {
@@ -121,7 +121,7 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
     }
 
     // Special contextual action
-    // shown if parent is group and entry is user
+    // shown if parent is group and object is user
     if (parent_dn != "") {
         const bool parent_is_group = AD()->is_group(parent_dn);
 
@@ -135,7 +135,7 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
     exec(global_pos, action_to_show_menu_at);
 }
 
-void ObjectContextMenu::delete_entry(const QString &dn) {
+void ObjectContextMenu::delete_object(const QString &dn) {
     const QString name = AD()->attribute_get(dn, "name");
     const QString text = QString("Are you sure you want to delete \"%1\"?").arg(name);
     const bool confirmed = confirmation_dialog(text, this);
@@ -145,27 +145,27 @@ void ObjectContextMenu::delete_entry(const QString &dn) {
     }    
 }
 
-void ObjectContextMenu::new_entry_dialog(const QString &parent_dn, NewEntryType type) {
-    QString type_string = new_entry_type_to_string[type];
+void ObjectContextMenu::new_object_dialog(const QString &parent_dn, NewObjectType type) {
+    QString type_string = new_object_type_to_string[type];
     QString dialog_title = "New " + type_string;
     QString input_label = type_string + " name";
 
     bool ok;
     QString name = QInputDialog::getText(this, dialog_title, input_label, QLineEdit::Normal, "", &ok);
 
-    // TODO: maybe expand tree to newly created entry?
+    // TODO: maybe expand tree to newly created object?
 
     // Create user once dialog is complete
     if (ok && !name.isEmpty()) {
         // Attempt to create user in AD
 
-        const QMap<NewEntryType, QString> new_entry_type_to_suffix = {
-            {NewEntryType::User, "CN"},
-            {NewEntryType::Computer, "CN"},
-            {NewEntryType::OU, "OU"},
-            {NewEntryType::Group, "CN"},
+        const QMap<NewObjectType, QString> new_object_type_to_suffix = {
+            {NewObjectType::User, "CN"},
+            {NewObjectType::Computer, "CN"},
+            {NewObjectType::OU, "OU"},
+            {NewObjectType::Group, "CN"},
         };
-        QString suffix = new_entry_type_to_suffix[type];
+        QString suffix = new_object_type_to_suffix[type];
 
         const QString dn = suffix + "=" + name + "," + parent_dn;
 
@@ -174,19 +174,19 @@ void ObjectContextMenu::new_entry_dialog(const QString &parent_dn, NewEntryType 
 }
 
 void ObjectContextMenu::new_user(const QString &dn) {
-    new_entry_dialog(dn, NewEntryType::User);
+    new_object_dialog(dn, NewObjectType::User);
 }
 
 void ObjectContextMenu::new_computer(const QString &dn) {
-    new_entry_dialog(dn, NewEntryType::Computer);
+    new_object_dialog(dn, NewObjectType::Computer);
 }
 
 void ObjectContextMenu::new_group(const QString &dn) {
-    new_entry_dialog(dn, NewEntryType::Group);
+    new_object_dialog(dn, NewObjectType::Group);
 }
 
 void ObjectContextMenu::new_ou(const QString &dn) {
-    new_entry_dialog(dn, NewEntryType::OU);
+    new_object_dialog(dn, NewObjectType::OU);
 }
 
 void ObjectContextMenu::rename(const QString &dn) {

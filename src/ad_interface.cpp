@@ -272,14 +272,14 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
 
         return true;
     } else {
-        message(QString("Failed to change attribute \"%1\" of entry \"%2\" from \"%3\" to \"%4\". Error: \"%5\"").arg(attribute, dn, old_value, value, get_error_str()));
+        message(QString("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\". Error: \"%5\"").arg(attribute, dn, old_value, value, get_error_str()));
 
         return false;
     }
 }
 
 // TODO: can probably make a create_anything() function with enum parameter
-bool AdInterface::object_create(const QString &name, const QString &dn, NewEntryType type) {
+bool AdInterface::object_create(const QString &name, const QString &dn, NewObjectType type) {
     int result = AD_INVALID_DN;
     
     const QByteArray name_array = name.toLatin1();
@@ -308,16 +308,16 @@ bool AdInterface::object_create(const QString &name, const QString &dn, NewEntry
         case COUNT: break;
     }
 
-    const QString type_str = new_entry_type_to_string[type];
+    const QString type_str = new_object_type_to_string[type];
 
     if (result == AD_SUCCESS) {
-        message(QString("Created entry \"%1\" of type \"%2\"").arg(dn, type_str));
+        message(QString("Created object \"%1\" of type \"%2\"").arg(dn, type_str));
 
         update_cache({dn});
 
         return true;
     } else {
-        message(QString("Failed to create entry \"%1\" of type \"%2\". Error: \"%3\"").arg(dn, type_str, get_error_str()));
+        message(QString("Failed to create object \"%1\" of type \"%2\". Error: \"%3\"").arg(dn, type_str, get_error_str()));
 
         return false;
     }
@@ -332,11 +332,11 @@ void AdInterface::object_delete(const QString &dn) {
     result = connection->object_delete(dn_cstr);
 
     if (result == AD_SUCCESS) {
-        message(QString("Deleted entry \"%1\"").arg(dn));
+        message(QString("Deleted object \"%1\"").arg(dn));
 
         update_cache({dn});
     } else {
-        message(QString("Failed to delete entry \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
+        message(QString("Failed to delete object \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
     }
 }
 
@@ -352,8 +352,8 @@ void AdInterface::object_move(const QString &dn, const QString &new_container) {
     const QByteArray new_container_array = new_container.toLatin1();
     const char *new_container_cstr = new_container_array.constData();
 
-    const bool entry_is_user = is_user(dn);
-    if (entry_is_user) {
+    const bool object_is_user = is_user(dn);
+    if (object_is_user) {
         result = connection->move_user(dn_cstr, new_container_cstr);
     } else {
         result = connection->move(dn_cstr, new_container_cstr);
@@ -506,8 +506,8 @@ enum DropType {
     DropType_None
 };
 
-// Determine what kind of drop type is dropping this entry onto target
-// If drop type is none, then can't drop this entry on this target
+// Determine what kind of drop type is dropping this object onto target
+// If drop type is none, then can't drop this object on this target
 DropType get_drop_type(const QString &dn, const QString &target_dn) {
     if (dn == target_dn) {
         return DropType_None;
@@ -547,7 +547,7 @@ bool AdInterface::object_can_drop(const QString &dn, const QString &target_dn) {
     }
 }
 
-// General "drop" operation that can either move, link or change membership depending on which types of entries are involved
+// General "drop" operation that can either move, link or change membership depending on which types of objects are involved
 void AdInterface::object_drop(const QString &dn, const QString &target_dn) {
     DropType drop_type = get_drop_type(dn, target_dn);
 

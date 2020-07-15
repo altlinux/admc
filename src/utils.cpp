@@ -56,9 +56,9 @@ QString get_dn_from_index(const QModelIndex &base_row_index, int dn_column) {
     return dn;
 }
 
-QIcon get_entry_icon(const QString &dn) {
+QIcon get_object_icon(const QString &dn) {
     // TODO: change to custom, good icons, add those icons to installation?
-    // TODO: are there cases where an entry can have multiple icons due to multiple objectClasses and one of them needs to be prioritized?
+    // TODO: are there cases where an object can have multiple icons due to multiple objectClasses and one of them needs to be prioritized?
     QMap<QString, QString> class_to_icon = {
         {"groupPolicyContainer", "x-office-address-book"},
         {"container", "folder"},

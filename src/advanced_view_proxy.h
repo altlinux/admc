@@ -24,8 +24,7 @@
 
 class QModelIndex;
 
-// Show/hide advanced entries depending on whether advanced view is on
-// Show/hide non-container entries
+// Show/hide advanced objects depending on whether advanced view is on
 class AdvancedViewProxy final : public QSortFilterProxyModel {
 public:
     explicit AdvancedViewProxy(int dn_column_arg, QObject *parent);

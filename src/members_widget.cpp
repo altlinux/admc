@@ -31,7 +31,7 @@ enum MembersColumn {
     MembersColumn_COUNT,
 };
 
-MembersWidget::MembersWidget(ObjectContextMenu *entry_context_menu, QWidget *parent)
+MembersWidget::MembersWidget(ObjectContextMenu *object_context_menu, QWidget *parent)
 : QWidget(parent)
 {   
     view = new QTreeView(this);
@@ -40,7 +40,7 @@ MembersWidget::MembersWidget(ObjectContextMenu *entry_context_menu, QWidget *par
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
-    entry_context_menu->connect_view(view, MembersColumn_DN);
+    object_context_menu->connect_view(view, MembersColumn_DN);
 
     model = new MembersModel(this);
     const auto dn_column_proxy = new DnColumnProxy(MembersColumn_DN, this);

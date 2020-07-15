@@ -39,7 +39,7 @@ enum ContainersColumn {
 QStandardItem *make_new_row(QStandardItem *parent, const QString &dn);
 void load_row(QList<QStandardItem *> row, const QString &dn);
 
-ContainersWidget::ContainersWidget(ObjectContextMenu *entry_context_menu, QWidget *parent)
+ContainersWidget::ContainersWidget(ObjectContextMenu *object_context_menu, QWidget *parent)
 : QWidget(parent)
 {
     model = new ContainersModel(this);
@@ -55,7 +55,7 @@ ContainersWidget::ContainersWidget(ObjectContextMenu *entry_context_menu, QWidge
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
-    entry_context_menu->connect_view(view, ContainersColumn_DN);
+    object_context_menu->connect_view(view, ContainersColumn_DN);
 
     QHeaderView *view_header = view->header();
     view_header->hide();
@@ -296,14 +296,14 @@ void load_row(QList<QStandardItem *> row, const QString &dn) {
     row[ContainersColumn_Name]->setText(name);
     row[ContainersColumn_DN]->setText(dn);
 
-    QIcon icon = get_entry_icon(dn);
+    QIcon icon = get_object_icon(dn);
     row[0]->setIcon(icon);
 
     // Set fetch flag because row is new and can be fetched
     row[0]->setData(true, ContainersModel::Roles::CanFetch);
 }
 
-// Make new row in model at given parent based on entry with given dn
+// Make new row in model at given parent based on object with given dn
 QStandardItem *make_new_row(QStandardItem *parent, const QString &dn) {
     const bool is_container = AD()->is_container(dn);
     const bool is_container_like = AD()->is_container_like(dn);

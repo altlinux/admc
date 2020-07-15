@@ -31,11 +31,11 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
-DetailsWidget::DetailsWidget(ObjectContextMenu *entry_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent)
+DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent)
 : QWidget(parent)
 {
     tab_widget = new QTabWidget(this);
-    members_widget = new MembersWidget(entry_context_menu, this);
+    members_widget = new MembersWidget(object_context_menu, this);
     attributes_widget = new AttributesWidget(this);
 
     title_label = new QLabel(this);
@@ -58,7 +58,7 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *entry_context_menu, ContainersWi
         this, &DetailsWidget::on_ad_modified);
 
     connect(
-        entry_context_menu, &ObjectContextMenu::details,
+        object_context_menu, &ObjectContextMenu::details,
         this, &DetailsWidget::on_context_menu_details);
     connect(
         containers_widget, &ContainersWidget::clicked_dn,

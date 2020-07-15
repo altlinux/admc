@@ -44,8 +44,8 @@ private:
     MoveDialog *move_dialog = nullptr;
     
     void open(const QPoint &global_pos, const QString &dn, const QString &parent_dn);
-    void delete_entry(const QString &dn);
-    void new_entry_dialog(const QString &parent_dn, NewEntryType type);
+    void delete_object(const QString &dn);
+    void new_object_dialog(const QString &parent_dn, NewObjectType type);
     void new_user(const QString &dn);
     void new_computer(const QString &dn);
     void new_group(const QString &dn);

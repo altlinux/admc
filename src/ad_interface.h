@@ -34,12 +34,12 @@ namespace adldap
 };
 
 // Interface between the GUI and AdConnection
-// Stores attributes cache of entries
-// Attributes cache is expanded as more entries are loaded and
-// is updated on entry changes
+// Stores attributes cache of objects
+// Attributes cache is expanded as more objects are loaded and
+// is updated on object changes
 // Emits various signals for AD operation successes/failures
 
-enum NewEntryType {
+enum NewObjectType {
     User,
     Computer,
     OU,
@@ -47,11 +47,11 @@ enum NewEntryType {
     COUNT
 };
 
-const QMap<NewEntryType, QString> new_entry_type_to_string = {
-    {NewEntryType::User, "User"},
-    {NewEntryType::Computer, "Computer"},
-    {NewEntryType::OU, "Organization Unit"},
-    {NewEntryType::Group, "Group"},
+const QMap<NewObjectType, QString> new_object_type_to_string = {
+    {NewObjectType::User, "User"},
+    {NewObjectType::Computer, "Computer"},
+    {NewObjectType::OU, "Organization Unit"},
+    {NewObjectType::Group, "Group"},
 };
 
 QString extract_name_from_dn(const QString &dn);
@@ -83,7 +83,7 @@ public:
     bool attribute_value_exists(const QString &dn, const QString &attribute, const QString &value);
 
     bool attribute_replace(const QString &dn, const QString &attribute, const QString &value);
-    bool object_create(const QString &name, const QString &dn, NewEntryType type);
+    bool object_create(const QString &name, const QString &dn, NewObjectType type);
     void object_delete(const QString &dn);
     void object_move(const QString &dn, const QString &new_container);
     void object_rename(const QString &dn, const QString &new_name);
