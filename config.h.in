@@ -35,8 +35,5 @@
 #   define ADMC_ORGANIZATION "${ADMC_ORGANIZATION}"
 #   define ADMC_ORGANIZATION_DOMAIN "${ADMC_ORGANIZATION_DOMAIN}"
 
-#   define HEAD_DN "DC=domain,DC=alt"
-#   define SEARCH_BASE "ldap://dc0.domain.alt"
-
 #endif /* __ADMC_CONFIG_H */
 

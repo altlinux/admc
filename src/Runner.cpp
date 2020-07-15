@@ -50,16 +50,27 @@ int Runner::run() {
     cli_parser.setApplicationDescription(QCoreApplication::applicationName());
     cli_parser.addHelpOption();
     cli_parser.addVersionOption();
+
+    cli_parser.addOption({{"H", "host"}, "Host to use for login", "host"});
+    cli_parser.addOption({{"D", "domain"}, "Domain to use for login", "domain"});
+
     const QStringList arg_list = qApp->arguments();
     cli_parser.process(arg_list);
 
     QStringList positional_args = cli_parser.positionalArguments();
     if (positional_args.size() > 0) {
-        // TODO: let host be the first arg (index = 1)
-        // adjust indexes in command()
-        
         // CLI
-        AD()->login(SEARCH_BASE, HEAD_DN);
+        const bool defined_login_values = cli_parser.isSet("host") && cli_parser.isSet("domain");
+        if (!defined_login_values) {
+            printf("Error: must define host and domain options, see help for options.");
+
+            return 1;
+        }
+
+        const QString host = cli_parser.value("host");
+        const QString domain = cli_parser.value("domain");
+        
+        AD()->login(host, domain);
         AD()->command(positional_args);
 
         return 0;
