@@ -19,7 +19,6 @@
 
 #include "ad_interface.h"
 #include "ad_connection.h"
-#include "admc.h"
 
 #include <QSet>
 

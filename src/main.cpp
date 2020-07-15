@@ -18,29 +18,22 @@
  */
 
 #include "config.h"
-#include "admc.h"
 #include "main_window.h"
 #include "ad_interface.h"
 #include "settings.h"
 
+#include <QApplication>
 #include <QCommandLineParser>
 #include <QStringList>
 
 int main(int argc, char **argv) {
-    const auto admc = new ADMC(argc, argv);
-    admc->setApplicationDisplayName(ADMC_APPLICATION_DISPLAY_NAME);
-    admc->setApplicationName(ADMC_APPLICATION_NAME);
-    admc->setApplicationVersion(ADMC_VERSION);
-    admc->setOrganizationName(ADMC_ORGANIZATION);
-    admc->setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
-
-    // NOTE: must load settings after setting app/org names so that
-    // settings file path is correct
-    Settings::instance.load_settings();
-    QObject::connect(
-        admc, &QCoreApplication::aboutToQuit,
-        &Settings::instance, &Settings::save_settings);
-
+    QApplication app(argc, argv);
+    app.setApplicationDisplayName(ADMC_APPLICATION_DISPLAY_NAME);
+    app.setApplicationName(ADMC_APPLICATION_NAME);
+    app.setApplicationVersion(ADMC_VERSION);
+    app.setOrganizationName(ADMC_ORGANIZATION);
+    app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
+    
     QCommandLineParser cli_parser;
     cli_parser.setApplicationDescription(QCoreApplication::applicationName());
     cli_parser.addHelpOption();
@@ -71,10 +64,18 @@ int main(int argc, char **argv) {
         return 0;
     } else {
         // GUI
+
+        // NOTE: must load settings after setting app/org names so that
+        // settings file path is correct
+        Settings::instance.load_settings();
+        QObject::connect(
+            &app, &QCoreApplication::aboutToQuit,
+            &Settings::instance, &Settings::save_settings);
+
         MainWindow main_window;
         main_window.show();
 
-        const int retval = admc->exec();
+        const int retval = app.exec();
 
         return retval;
     }

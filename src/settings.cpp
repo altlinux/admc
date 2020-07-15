@@ -18,7 +18,6 @@
  */
 
 #include "settings.h"
-#include "admc.h"
 
 #include <QAction>
 #include <QSettings>
