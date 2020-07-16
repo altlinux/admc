@@ -18,6 +18,7 @@
  */
 
 #include "settings.h"
+#include "config.h"
 
 #include <QAction>
 #include <QSettings>
@@ -27,6 +28,11 @@
 Settings *Settings::instance() {
     static Settings settings;
     return &settings;
+}
+
+QSettings *Settings::qsettings() {
+    static QSettings qsettings(ADMC_ORGANIZATION, ADMC_APPLICATION_NAME);
+    return &qsettings;
 }
 
 QString checkable_text(SettingsCheckable checkable) {
@@ -53,12 +59,6 @@ QString string_name(SettingString string) {
     return "";
 }
 
-QString get_settings_file_path() {
-    const QString appdata_path = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-    const QString settings_file_path = appdata_path + "/settings.ini";
-    return settings_file_path;
-}
-
 void Settings::emit_toggle_signals() const {
     for (auto c : checkables) {
         const bool checked = c->isChecked();
@@ -80,50 +80,34 @@ QString Settings::get_string(SettingString string) const {
     return value;
 }
 
-void Settings::load_settings() {
-    if (loaded_settings) {
-        printf("ERROR: loading settings more than once!");
-    } else {
-        loaded_settings = true;
+Settings::Settings() {
+    for (int i = 0; i < SettingsCheckable_COUNT; i++) {
+        const SettingsCheckable checkable = (SettingsCheckable) i;
+        const QString text = checkable_text(checkable);
 
-        const QString settings_file_path = get_settings_file_path();
-        const QSettings settings(settings_file_path, QSettings::NativeFormat);
-        
-        for (int i = 0; i < SettingsCheckable_COUNT; i++) {
-            const SettingsCheckable checkable = (SettingsCheckable) i;
-            const QString text = checkable_text(checkable);
+        QAction *action = new QAction(text);
+        action->setCheckable(true);
 
-            QAction *action = new QAction(text);
-            action->setCheckable(true);
+        bool checked = qsettings()->value(text, false).toBool();
+        action->setChecked(checked);
 
-            bool checked = settings.value(text, false).toBool();
-            action->setChecked(checked);
+        checkables[i] = action;
+    }
 
-            checkables[i] = action;
-        }
+    for (int i = 0; i < SettingString_COUNT; i++) {
+        const SettingString string = (SettingString) i;
+        const QString name = string_name(string);
+        const QString value = qsettings()->value(name, "").toString();
 
-        for (int i = 0; i < SettingString_COUNT; i++) {
-            const SettingString string = (SettingString) i;
-            const QString name = string_name(string);
-            const QString value = settings.value(name, "").toString();
-
-            strings[i] = value;
-        }
+        strings[i] = value;
     }
 }
 
 void Settings::save_settings() {
-    if (!loaded_settings) {
-        return;
-    }
-
-    const QString settings_file_path = get_settings_file_path();
-    QSettings settings(settings_file_path, QSettings::NativeFormat);
-
     for (auto c : checkables) {
         const bool checked = c->isChecked();
         const QString text = c->text();
-        settings.setValue(text, checked);
+        qsettings()->setValue(text, checked);
     }
 
     for (int i = 0; i < SettingString_COUNT; i++) {
@@ -131,12 +115,6 @@ void Settings::save_settings() {
         const QString name = string_name(string);
         const QString value = strings[string];
 
-        settings.setValue(name, value);
+        qsettings()->setValue(name, value);
     }
-}
-
-Settings::Settings()
-: QObject()
-{
-
 }

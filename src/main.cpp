@@ -67,7 +67,6 @@ int main(int argc, char **argv) {
 
         // NOTE: must load settings after setting app/org names so that
         // settings file path is correct
-        Settings::instance()->load_settings();
         QObject::connect(
             &app, &QCoreApplication::aboutToQuit,
             Settings::instance(), &Settings::save_settings);

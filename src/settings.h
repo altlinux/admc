@@ -57,22 +57,19 @@ public:
     Settings& operator=(Settings&&) = delete;
 
     static Settings *instance();
+    static QSettings *qsettings();
 
     void emit_toggle_signals() const;
     QAction *checkable(SettingsCheckable c) const;
     QString get_string(SettingString string) const;
     void set_string(SettingString string, const QString &value);
-    void load_settings();
     void save_settings();
 
 private:
     QAction *checkables[SettingsCheckable_COUNT];
     QString strings[SettingString_COUNT];
-    bool loaded_settings = false;
 
     Settings();
 };
-
-QString get_settings_file_path();
 
 #endif /* SETTINGS_H */

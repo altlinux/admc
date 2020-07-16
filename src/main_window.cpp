@@ -54,10 +54,8 @@ MainWindow::MainWindow()
     setWindowTitle("MainWindow");
 
     // Restore last geometry
-    const QString settings_file_path = get_settings_file_path();
-    const QSettings settings(settings_file_path, QSettings::NativeFormat);
-    if (settings.contains(MAIN_WINDOW_GEOMETRY)) {
-        restoreGeometry(settings.value(MAIN_WINDOW_GEOMETRY).toByteArray());
+    if (Settings::qsettings()->contains(MAIN_WINDOW_GEOMETRY)) {
+        restoreGeometry(Settings::qsettings()->value(MAIN_WINDOW_GEOMETRY).toByteArray());
     }
 
     // Menubar
@@ -157,8 +155,5 @@ MainWindow::MainWindow()
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-    // Save geometry
-    QString settings_file_path = get_settings_file_path();
-    QSettings settings(settings_file_path, QSettings::NativeFormat);
-    settings.setValue(MAIN_WINDOW_GEOMETRY, saveGeometry());
+    Settings::qsettings()->setValue(MAIN_WINDOW_GEOMETRY, saveGeometry());
 }
