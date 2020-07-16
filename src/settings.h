@@ -21,17 +21,17 @@
 #define SETTINGS_H
 
 #include <QObject>
-#include <QList>
-#include <QString>
 
 class QAction;
 class QSettings;
+class QVariant;
 
-enum SettingString {
-    SettingString_Domain,    
-    SettingString_Site,    
-    SettingString_Host,    
-    SettingString_COUNT,    
+enum SettingsValue {
+    SettingsValue_Domain,    
+    SettingsValue_Site,    
+    SettingsValue_Host,    
+    SettingsValue_MainWindowGeometry,
+    SettingsValue_COUNT,    
 };
 
 enum SettingsCheckable {
@@ -57,17 +57,15 @@ public:
     Settings& operator=(Settings&&) = delete;
 
     static Settings *instance();
-    static QSettings *qsettings();
 
     void emit_toggle_signals() const;
     QAction *checkable(SettingsCheckable c) const;
-    QString get_string(SettingString string) const;
-    void set_string(SettingString string, const QString &value);
-    void save_settings();
+    QVariant get_value(SettingsValue value_enum) const;
+    void set_value(SettingsValue value_enum, const QVariant &value);
 
 private:
+    QSettings *qsettings = nullptr;
     QAction *checkables[SettingsCheckable_COUNT];
-    QString strings[SettingString_COUNT];
 
     Settings();
 };

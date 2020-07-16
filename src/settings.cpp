@@ -22,17 +22,10 @@
 
 #include <QAction>
 #include <QSettings>
-#include <QList>
-#include <QStandardPaths>
 
 Settings *Settings::instance() {
     static Settings settings;
     return &settings;
-}
-
-QSettings *Settings::qsettings() {
-    static QSettings qsettings(ADMC_ORGANIZATION, ADMC_APPLICATION_NAME);
-    return &qsettings;
 }
 
 QString checkable_text(SettingsCheckable checkable) {
@@ -49,12 +42,13 @@ QString checkable_text(SettingsCheckable checkable) {
     return "";
 }
 
-QString string_name(SettingString string) {
-    switch (string) {
-        case SettingString_Domain: return "domain";
-        case SettingString_Site: return "site";
-        case SettingString_Host: return "host";
-        case SettingString_COUNT: return "COUNT";
+QString value_name(SettingsValue value_enum) {
+    switch (value_enum) {
+        case SettingsValue_Domain: return "domain";
+        case SettingsValue_Site: return "site";
+        case SettingsValue_Host: return "host";
+        case SettingsValue_MainWindowGeometry: return "main window geometry";
+        case SettingsValue_COUNT: return "COUNT";
     }
     return "";
 }
@@ -70,17 +64,21 @@ QAction *Settings::checkable(SettingsCheckable c) const {
     return checkables[c];
 }
 
-void Settings::set_string(SettingString string, const QString &value) {
-    strings[string] = value;
+void Settings::set_value(SettingsValue value_enum, const QVariant &value) {
+    const QString name = value_name(value_enum);
+    qsettings->setValue(name, value); 
 }
 
-QString Settings::get_string(SettingString string) const {
-    const QString value = strings[string];
+QVariant Settings::get_value(SettingsValue value_enum) const {
+    const QString name = value_name(value_enum);
+    const QVariant value = qsettings->value(name); 
 
     return value;
 }
 
 Settings::Settings() {
+    qsettings = new QSettings(ADMC_ORGANIZATION, ADMC_APPLICATION_NAME, this);
+
     for (int i = 0; i < SettingsCheckable_COUNT; i++) {
         const SettingsCheckable checkable = (SettingsCheckable) i;
         const QString text = checkable_text(checkable);
@@ -88,33 +86,17 @@ Settings::Settings() {
         QAction *action = new QAction(text);
         action->setCheckable(true);
 
-        bool checked = qsettings()->value(text, false).toBool();
-        action->setChecked(checked);
+        const bool was_checked = qsettings->value(text, false).toBool();
+        action->setChecked(was_checked);
 
         checkables[i] = action;
-    }
 
-    for (int i = 0; i < SettingString_COUNT; i++) {
-        const SettingString string = (SettingString) i;
-        const QString name = string_name(string);
-        const QString value = qsettings()->value(name, "").toString();
-
-        strings[i] = value;
-    }
-}
-
-void Settings::save_settings() {
-    for (auto c : checkables) {
-        const bool checked = c->isChecked();
-        const QString text = c->text();
-        qsettings()->setValue(text, checked);
-    }
-
-    for (int i = 0; i < SettingString_COUNT; i++) {
-        const SettingString string = (SettingString) i;
-        const QString name = string_name(string);
-        const QString value = strings[string];
-
-        qsettings()->setValue(name, value);
+        // Update value in qsettings when action is toggled
+        connect(
+            action, &QAction::toggled,
+            [this, action] (bool checked) {
+                qsettings->setValue(action->text(), checked);
+            }
+            );
     }
 }

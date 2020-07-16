@@ -64,13 +64,6 @@ int main(int argc, char **argv) {
         return 0;
     } else {
         // GUI
-
-        // NOTE: must load settings after setting app/org names so that
-        // settings file path is correct
-        QObject::connect(
-            &app, &QCoreApplication::aboutToQuit,
-            Settings::instance(), &Settings::save_settings);
-
         MainWindow main_window;
         main_window.show();
 

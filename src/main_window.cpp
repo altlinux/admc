@@ -37,8 +37,6 @@
 #include <QTextEdit>
 #include <QSettings>
 
-#define MAIN_WINDOW_GEOMETRY "main_window_geometry"
-
 void on_action_exit(QMainWindow *main_window) {
     const QString text = QString("Are you sure you want to exit?");
     const bool confirmed = confirmation_dialog(text, main_window);
@@ -54,8 +52,9 @@ MainWindow::MainWindow()
     setWindowTitle("MainWindow");
 
     // Restore last geometry
-    if (Settings::qsettings()->contains(MAIN_WINDOW_GEOMETRY)) {
-        restoreGeometry(Settings::qsettings()->value(MAIN_WINDOW_GEOMETRY).toByteArray());
+    const QByteArray geometry = Settings::instance()->get_value(SettingsValue_MainWindowGeometry).toByteArray();
+    if (!geometry.isEmpty()) {
+        restoreGeometry(geometry);
     }
 
     // Menubar
@@ -145,8 +144,8 @@ MainWindow::MainWindow()
 
     QAction *auto_login = Settings::instance()->checkable(SettingsCheckable_AutoLogin);
     if (auto_login->isChecked()) {
-        const QString host = Settings::instance()->get_string(SettingString_Host);
-        const QString domain = Settings::instance()->get_string(SettingString_Domain);
+        const QString host = Settings::instance()->get_value(SettingsValue_Host).toString();
+        const QString domain = Settings::instance()->get_value(SettingsValue_Domain).toString();
 
         if (!host.isEmpty()) {
             AdInterface::instance()->login(host, domain);
@@ -155,5 +154,6 @@ MainWindow::MainWindow()
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-    Settings::qsettings()->setValue(MAIN_WINDOW_GEOMETRY, saveGeometry());
+    const QByteArray geometry = saveGeometry();
+    Settings::instance()->set_value(SettingsValue_MainWindowGeometry, QVariant(geometry));
 }
