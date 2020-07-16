@@ -23,36 +23,16 @@
 #include <QAction>
 #include <QSettings>
 
+QString checkable_text(SettingsCheckable checkable);
+QString value_name(SettingsValue value_enum);
+
 Settings *Settings::instance() {
     static Settings settings;
     return &settings;
 }
 
-QString checkable_text(SettingsCheckable checkable) {
-    switch (checkable) {
-        case SettingsCheckable_AdvancedView: return "Advanced View";
-        case SettingsCheckable_DnColumn: return "Show DN column";
-        case SettingsCheckable_DetailsFromContainers: return "Open attributes on left click in Containers window";
-        case SettingsCheckable_DetailsFromContents: return "Open attributes on left click in Contents window";
-        case SettingsCheckable_ConfirmActions: return "Confirm actions";
-        case SettingsCheckable_ShowStatusLog: return "Show status log";
-        case SettingsCheckable_AutoLogin: return "Login using saved session at startup";
-        case SettingsCheckable_COUNT: return "COUNT";
-    }
-    return "";
-}
-
-QString value_name(SettingsValue value_enum) {
-    switch (value_enum) {
-        case SettingsValue_Domain: return "domain";
-        case SettingsValue_Site: return "site";
-        case SettingsValue_Host: return "host";
-        case SettingsValue_MainWindowGeometry: return "main window geometry";
-        case SettingsValue_COUNT: return "COUNT";
-    }
-    return "";
-}
-
+// Call this after widget construction is finished so that widgets
+// load checkable state
 void Settings::emit_toggle_signals() const {
     for (auto c : checkables) {
         const bool checked = c->isChecked();
@@ -64,16 +44,16 @@ QAction *Settings::checkable(SettingsCheckable c) const {
     return checkables[c];
 }
 
-void Settings::set_value(SettingsValue value_enum, const QVariant &value) {
-    const QString name = value_name(value_enum);
-    qsettings->setValue(name, value); 
-}
-
 QVariant Settings::get_value(SettingsValue value_enum) const {
     const QString name = value_name(value_enum);
     const QVariant value = qsettings->value(name); 
 
     return value;
+}
+
+void Settings::set_value(SettingsValue value_enum, const QVariant &value) {
+    const QString name = value_name(value_enum);
+    qsettings->setValue(name, value); 
 }
 
 Settings::Settings() {
@@ -99,4 +79,29 @@ Settings::Settings() {
             }
             );
     }
+}
+
+QString checkable_text(SettingsCheckable checkable) {
+    switch (checkable) {
+        case SettingsCheckable_AdvancedView: return "Advanced View";
+        case SettingsCheckable_DnColumn: return "Show DN column";
+        case SettingsCheckable_DetailsFromContainers: return "Open attributes on left click in Containers window";
+        case SettingsCheckable_DetailsFromContents: return "Open attributes on left click in Contents window";
+        case SettingsCheckable_ConfirmActions: return "Confirm actions";
+        case SettingsCheckable_ShowStatusLog: return "Show status log";
+        case SettingsCheckable_AutoLogin: return "Login using saved session at startup";
+        case SettingsCheckable_COUNT: return "COUNT";
+    }
+    return "";
+}
+
+QString value_name(SettingsValue value_enum) {
+    switch (value_enum) {
+        case SettingsValue_Domain: return "domain";
+        case SettingsValue_Site: return "site";
+        case SettingsValue_Host: return "host";
+        case SettingsValue_MainWindowGeometry: return "main window geometry";
+        case SettingsValue_COUNT: return "COUNT";
+    }
+    return "";
 }

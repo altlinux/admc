@@ -20,6 +20,14 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+// Provides access to settings via enums rather than plain strings
+// for better safety
+// Stores checkable actions which correspond to booleans in settings
+// so that it is possible to respond to checkable changes
+// by connecting to their "toggled" signals
+// Saves settings to file automatically when it is destructed
+// at the end of the program
+
 #include <QObject>
 
 class QAction;
@@ -44,8 +52,6 @@ enum SettingsCheckable {
     SettingsCheckable_AutoLogin,
     SettingsCheckable_COUNT,
 };
-
-class Settings;
 
 class Settings final : public QObject {
 Q_OBJECT

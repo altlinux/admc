@@ -105,9 +105,7 @@ MainWindow::MainWindow()
     QStatusBar *status_bar = statusBar();
     new Status(status_bar, status_log, this);
 
-
-    // NOTE: do this after all widgets are constructed so that all of
-    // them load initial settings correctly
+    // NOTE: must do this after all widgets are constructed
     Settings::instance()->emit_toggle_signals();
 
     // Layout
