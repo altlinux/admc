@@ -27,7 +27,7 @@ DnColumnProxy::DnColumnProxy(int dn_column_arg, QObject *parent)
 {
     dn_column = dn_column_arg;
 
-    const QAction *dn_column_action = Settings::instance.checkable(SettingsCheckable_DnColumn);
+    const QAction *dn_column_action = Settings::instance()->checkable(SettingsCheckable_DnColumn);
     connect(
         dn_column_action, &QAction::toggled,
         this, &DnColumnProxy::on_toggle_show_dn_column);

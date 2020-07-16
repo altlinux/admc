@@ -51,7 +51,12 @@ class Settings final : public QObject {
 Q_OBJECT
 
 public:
-    static Settings instance;
+    Settings(const Settings&) = delete;
+    Settings& operator=(const Settings&) = delete;
+    Settings(Settings&&) = delete;
+    Settings& operator=(Settings&&) = delete;
+
+    static Settings *instance();
 
     void emit_toggle_signals() const;
     QAction *checkable(SettingsCheckable c) const;
@@ -64,6 +69,8 @@ private:
     QAction *checkables[SettingsCheckable_COUNT];
     QString strings[SettingString_COUNT];
     bool loaded_settings = false;
+
+    Settings();
 };
 
 QString get_settings_file_path();

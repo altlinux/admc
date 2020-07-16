@@ -93,9 +93,9 @@ LoginDialog::LoginDialog(QAction *login_action, QWidget *parent)
 
 void LoginDialog::show() {
     // Load session values from settings
-    const QString domain = Settings::instance.get_string(SettingString_Domain);
-    const QString site = Settings::instance.get_string(SettingString_Site);
-    const QString host = Settings::instance.get_string(SettingString_Host);
+    const QString domain = Settings::instance()->get_string(SettingString_Domain);
+    const QString site = Settings::instance()->get_string(SettingString_Site);
+    const QString host = Settings::instance()->get_string(SettingString_Host);
     
     domain_edit->setText(domain);
     site_edit->setText(site);
@@ -164,9 +164,9 @@ void LoginDialog::complete(const QString &host) {
         const bool save_session = save_session_checkbox->isChecked();
         if (save_session) {
             const QString site = site_edit->text();
-            Settings::instance.set_string(SettingString_Domain, domain);
-            Settings::instance.set_string(SettingString_Site, site);
-            Settings::instance.set_string(SettingString_Host, host);
+            Settings::instance()->set_string(SettingString_Domain, domain);
+            Settings::instance()->set_string(SettingString_Site, site);
+            Settings::instance()->set_string(SettingString_Host, host);
         }
 
         done(QDialog::Accepted);

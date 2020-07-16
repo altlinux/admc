@@ -111,14 +111,14 @@ void DetailsWidget::on_ad_modified() {
 }
 
 void DetailsWidget::on_containers_clicked_dn(const QString &dn) {
-    const QAction *details_from_containers = Settings::instance.checkable(SettingsCheckable_DetailsFromContainers);
+    const QAction *details_from_containers = Settings::instance()->checkable(SettingsCheckable_DetailsFromContainers);
     if (details_from_containers->isChecked()) {
         change_target(dn);
     }
 }
 
 void DetailsWidget::on_contents_clicked_dn(const QString &dn) {
-    const QAction *details_from_contents = Settings::instance.checkable(SettingsCheckable_DetailsFromContents);
+    const QAction *details_from_contents = Settings::instance()->checkable(SettingsCheckable_DetailsFromContents);
     if (details_from_contents->isChecked()) {
         change_target(dn);
     }

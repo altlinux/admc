@@ -24,7 +24,10 @@
 #include <QList>
 #include <QStandardPaths>
 
-Settings Settings::instance;
+Settings *Settings::instance() {
+    static Settings settings;
+    return &settings;
+}
 
 QString checkable_text(SettingsCheckable checkable) {
     switch (checkable) {
@@ -130,4 +133,10 @@ void Settings::save_settings() {
 
         settings.setValue(name, value);
     }
+}
+
+Settings::Settings()
+: QObject()
+{
+
 }
