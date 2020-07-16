@@ -69,7 +69,7 @@ QIcon get_object_icon(const QString &dn) {
     };
     QString icon_name = "dialog-question";
     for (auto c : class_to_icon.keys()) {
-        if (AdInterface::instance.attribute_value_exists(dn, "objectClass", c)) {
+        if (AdInterface::instance()->attribute_value_exists(dn, "objectClass", c)) {
             icon_name = class_to_icon[c];
             break;  
         }

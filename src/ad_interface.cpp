@@ -22,16 +22,19 @@
 
 #include <QSet>
 
-AdInterface AdInterface::instance;
+AdInterface::~AdInterface() {
+    delete connection;
+}
+
+AdInterface *AdInterface::instance() {
+    static AdInterface ad_interface;
+    return &ad_interface;
+}
 
 AdInterface::AdInterface()
 : QObject()
 {
     connection = new adldap::AdConnection();
-}
-
-AdInterface::~AdInterface() {
-    delete connection;
 }
 
 QList<QString> AdInterface::get_domain_hosts(const QString &domain, const QString &site) {
@@ -493,7 +496,7 @@ bool AdInterface::is_container_like(const QString &dn) {
     // TODO: check that this includes all fitting objectClasses
     const QList<QString> containerlike_objectClasses = {"organizationalUnit", "builtinDomain", "domain"};
     for (auto c : containerlike_objectClasses) {
-        if (AdInterface::instance.attribute_value_exists(dn, "objectClass", c)) {
+        if (AdInterface::instance()->attribute_value_exists(dn, "objectClass", c)) {
             return true;
         }
     }
@@ -514,14 +517,14 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
         return DropType_None;
     }
 
-    const bool dropped_is_user = AdInterface::instance.is_user(dn);
-    const bool dropped_is_group = AdInterface::instance.is_group(dn);
-    const bool dropped_is_ou = AdInterface::instance.is_ou(dn);
+    const bool dropped_is_user = AdInterface::instance()->is_user(dn);
+    const bool dropped_is_group = AdInterface::instance()->is_group(dn);
+    const bool dropped_is_ou = AdInterface::instance()->is_ou(dn);
 
-    const bool target_is_user = AdInterface::instance.is_user(target_dn);
-    const bool target_is_group = AdInterface::instance.is_group(target_dn);
-    const bool target_is_ou = AdInterface::instance.is_ou(target_dn);
-    const bool target_is_container = AdInterface::instance.is_container(target_dn);
+    const bool target_is_user = AdInterface::instance()->is_user(target_dn);
+    const bool target_is_group = AdInterface::instance()->is_group(target_dn);
+    const bool target_is_ou = AdInterface::instance()->is_ou(target_dn);
+    const bool target_is_container = AdInterface::instance()->is_container(target_dn);
 
     if (dropped_is_user) {
         if (target_is_ou || target_is_container) {
@@ -554,11 +557,11 @@ void AdInterface::object_drop(const QString &dn, const QString &target_dn) {
 
     switch (drop_type) {
         case DropType_Move: {
-            AdInterface::instance.object_move(dn, target_dn);
+            AdInterface::instance()->object_move(dn, target_dn);
             break;
         }
         case DropType_AddToGroup: {
-            AdInterface::instance.group_add_user(target_dn, dn);
+            AdInterface::instance()->group_add_user(target_dn, dn);
             break;
         }
         case DropType_None: {

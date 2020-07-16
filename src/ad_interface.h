@@ -63,12 +63,16 @@ class AdInterface final : public QObject {
 Q_OBJECT
 
 public:
-    static AdInterface instance;
+    AdInterface(const AdInterface&) = delete;
+    AdInterface& operator=(const AdInterface&) = delete;
+    AdInterface(AdInterface&&) = delete;
+    AdInterface& operator=(AdInterface&&) = delete;
     
-    static QList<QString> get_domain_hosts(const QString &domain, const QString &site);
-
-    explicit AdInterface();
     ~AdInterface();
+
+    static AdInterface *instance();
+
+    static QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 
     bool login(const QString &host, const QString &domain);
 
@@ -115,6 +119,8 @@ private:
     adldap::AdConnection *connection = nullptr;
     QHash<QString, Attributes> attributes_cache;
     bool suppress_not_found_error = false;
+
+    AdInterface();
 
     QMap<QString, QList<QString>> load_attributes(const QString &dn);
     void update_cache(const QList<QString> &changed_dns);

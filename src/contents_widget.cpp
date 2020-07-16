@@ -70,7 +70,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, ObjectContex
         this, &ContentsWidget::on_containers_selected_changed);
 
     connect(
-        &AdInterface::instance, &AdInterface::modified,
+        AdInterface::instance(), &AdInterface::modified,
         this, &ContentsWidget::on_ad_modified);
 
     connect(
@@ -87,7 +87,7 @@ void ContentsWidget::on_containers_selected_changed(const QString &dn) {
     set_root_to_head(view);
     resize_columns();
 
-    const QString target_name = AdInterface::instance.attribute_get(dn, "name");
+    const QString target_name = AdInterface::instance()->attribute_get(dn, "name");
 
     QString label_text;
     if (target_name.isEmpty()) {
@@ -142,22 +142,22 @@ void ContentsModel::change_target(const QString &dn) {
     QStandardItem *head = item(0, 0);
 
     // Load children
-    QList<QString> children = AdInterface::instance.list(dn);
+    QList<QString> children = AdInterface::instance()->list(dn);
     for (auto child_dn : children) {
         make_new_row(head, child_dn);
     }
 }
 
 void ContentsModel::load_row(QList<QStandardItem *> row, const QString &dn) {
-    QString name = AdInterface::instance.attribute_get(dn, "name");
+    QString name = AdInterface::instance()->attribute_get(dn, "name");
 
     // NOTE: this is given as raw DN and contains '-' where it should
     // have spaces, so convert it
-    QString category = AdInterface::instance.attribute_get(dn, "objectCategory");
+    QString category = AdInterface::instance()->attribute_get(dn, "objectCategory");
     category = extract_name_from_dn(category);
     category = category.replace('-', ' ');
 
-    QString description = AdInterface::instance.attribute_get(dn, "description");
+    QString description = AdInterface::instance()->attribute_get(dn, "description");
 
     row[ContentsColumn_Name]->setText(name);
     row[ContentsColumn_Category]->setText(category);
