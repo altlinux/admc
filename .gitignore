@@ -21,3 +21,4 @@ CMakeCache.txt
 *.tcl
 *.in
 config.h
+*.qm

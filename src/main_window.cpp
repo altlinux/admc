@@ -69,18 +69,18 @@ MainWindow::MainWindow()
         QAction *auto_login = Settings::instance()->checkable(SettingsCheckable_AutoLogin);
 
         QMenuBar *menubar = menuBar();
-        QMenu *menubar_file = menubar->addMenu("File");
-        login_action = menubar_file->addAction("Login");
-        menubar_file->addAction("Exit", [this]() {
+        QMenu *menubar_file = menubar->addMenu(tr("File"));
+        login_action = menubar_file->addAction(tr("Login"));
+        menubar_file->addAction(tr("Exit"), [this]() {
             on_action_exit(this);
         });
 
-        QMenu *menubar_view = menubar->addMenu("View");
+        QMenu *menubar_view = menubar->addMenu(tr("View"));
         menubar_view->addAction(advanced_view);
         menubar_view->addAction(show_dn_column);
         menubar_view->addAction(show_status_log);
 
-        QMenu *menubar_preferences = menubar->addMenu("Preferences");
+        QMenu *menubar_preferences = menubar->addMenu(tr("Preferences"));
         menubar_preferences->addAction(details_from_containers);
         menubar_preferences->addAction(details_from_contents);
         menubar_preferences->addAction(confirm_actions);

@@ -20,11 +20,11 @@
 #include "config.h"
 #include "main_window.h"
 #include "ad_interface.h"
-#include "settings.h"
 
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QStringList>
+#include <QTranslator>
 
 int main(int argc, char **argv) {
     QApplication app(argc, argv);
@@ -33,7 +33,12 @@ int main(int argc, char **argv) {
     app.setApplicationVersion(ADMC_VERSION);
     app.setOrganizationName(ADMC_ORGANIZATION);
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
-    
+
+    QTranslator translator;
+    translator.load(QLocale().system(), QString(), QString(), ":/translations");
+    // translator.load(QLocale(QLocale::Russian), QString(), QString(), ":/translations");
+    app.installTranslator(&translator);
+
     QCommandLineParser cli_parser;
     cli_parser.setApplicationDescription(QCoreApplication::applicationName());
     cli_parser.addHelpOption();

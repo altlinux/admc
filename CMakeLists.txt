@@ -25,7 +25,7 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules
 )
 
-find_package(Qt5 COMPONENTS Core Widgets REQUIRED) # GUI
+find_package(Qt5 COMPONENTS Core Widgets LinguistTools REQUIRED) # GUI
 find_package(Doxygen) # Code documentation
 
 # Definitions for configuration file
@@ -38,6 +38,7 @@ configure_file("config.h.in" "config.h")
 
 add_subdirectory(adldap)
 add_subdirectory(gpgui)
+# add_subdirectory(translations)
 
 set(ADMC_HEADER_DIRS
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -67,9 +68,24 @@ set(ADMC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/password_dialog.cpp
 )
 
+set(TS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)
+set(TS_FILES ${TS_DIR}/ru.ts)
+
+# `make translations` to generate translation sources (.ts)
+# NOTE: put this in a custom target so that translations aren't rebuilt on every source change
+add_custom_target(translations
+    DEPENDS ${TS_FILES}
+    COMMAND ${Qt5_LUPDATE_EXECUTABLE} -recursive ${CMAKE_SOURCE_DIR} -ts ${TS_FILES}
+)
+
+# Generate translation binaries (.qm) from sources (.ts)
+set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION ${TS_DIR})
+qt5_add_translation(QM_FILES ${TS_FILES})
+
 add_definitions(${QT5_DEFINITIONS})
 add_executable(admc
     ${ADMC_SOURCES}
+    ${TS_DIR}/translations.qrc
 )
 
 doxygen_add_docs(admc_doc
