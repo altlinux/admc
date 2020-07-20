@@ -23,7 +23,8 @@
 #include <QAction>
 #include <QSettings>
 
-QString checkable_text(SettingsCheckable checkable);
+QString checkable_display_text(SettingsCheckable checkable);
+QString checkable_to_string(SettingsCheckable checkable);
 QString value_name(SettingsValue value_enum);
 
 Settings *Settings::instance() {
@@ -61,12 +62,13 @@ Settings::Settings() {
 
     for (int i = 0; i < SettingsCheckable_COUNT; i++) {
         const SettingsCheckable checkable = (SettingsCheckable) i;
-        const QString text = checkable_text(checkable);
-
-        QAction *action = new QAction(text);
+        
+        const QString display_text = checkable_display_text(checkable);
+        QAction *action = new QAction(display_text);
         action->setCheckable(true);
 
-        const bool was_checked = qsettings->value(text, false).toBool();
+        const QString checkable_str = checkable_to_string(checkable);
+        const bool was_checked = qsettings->value(checkable_str, false).toBool();
         action->setChecked(was_checked);
 
         checkables[i] = action;
@@ -74,14 +76,16 @@ Settings::Settings() {
         // Update value in qsettings when action is toggled
         connect(
             action, &QAction::toggled,
-            [this, action] (bool checked) {
-                qsettings->setValue(action->text(), checked);
+            [this, checkable_str] (bool checked) {
+                qsettings->setValue(checkable_str, checked);
             }
             );
     }
 }
 
-QString checkable_text(SettingsCheckable checkable) {
+// Display text for checkable that's attached to corresponding action
+// Is translated
+QString checkable_display_text(SettingsCheckable checkable) {
     switch (checkable) {
         case SettingsCheckable_AdvancedView: return "Advanced View";
         case SettingsCheckable_DnColumn: return "Show DN column";
@@ -93,6 +97,27 @@ QString checkable_text(SettingsCheckable checkable) {
         case SettingsCheckable_COUNT: return "COUNT";
     }
     return "";
+}
+
+// Convert enum to string literal via macro and return
+// UNTRANSLATED value
+// SettingsCheckable_Foo => "SettingsCheckable_Foo"
+QString checkable_to_string(SettingsCheckable checkable) {
+    #define CASE_ENUM_TO_STRING(ENUM) case ENUM: return #ENUM
+
+    switch (checkable) {
+        CASE_ENUM_TO_STRING(SettingsCheckable_AdvancedView);
+        CASE_ENUM_TO_STRING(SettingsCheckable_DnColumn);
+        CASE_ENUM_TO_STRING(SettingsCheckable_DetailsFromContainers);
+        CASE_ENUM_TO_STRING(SettingsCheckable_DetailsFromContents);
+        CASE_ENUM_TO_STRING(SettingsCheckable_ConfirmActions);
+        CASE_ENUM_TO_STRING(SettingsCheckable_ShowStatusLog);
+        CASE_ENUM_TO_STRING(SettingsCheckable_AutoLogin);
+        CASE_ENUM_TO_STRING(SettingsCheckable_COUNT);
+    }
+    return "";
+
+    #undef CASE_ENUM_TO_STRING
 }
 
 QString value_name(SettingsValue value_enum) {
