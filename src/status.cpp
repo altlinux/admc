@@ -37,6 +37,8 @@ Status::Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *p
     connect(
         show_status_log_setting, &BoolSetting::changed,
         this, &Status::on_toggle_show_status_log);
+    on_toggle_show_status_log();
+    
     connect(
         AdInterface::instance(), &AdInterface::message,
         this, &Status::add_message);

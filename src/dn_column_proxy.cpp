@@ -29,6 +29,7 @@ DnColumnProxy::DnColumnProxy(int dn_column_arg, QObject *parent)
     connect(
         dn_column_setting, &BoolSetting::changed,
         this, &DnColumnProxy::on_toggle_show_dn_column);
+    on_toggle_show_dn_column();
 }
 
 void DnColumnProxy::on_toggle_show_dn_column() {

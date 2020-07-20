@@ -30,6 +30,7 @@
 
 #include <QObject>
 
+class QAction;
 class QSettings;
 class QVariant;
 
@@ -69,8 +70,6 @@ public:
 
     static Settings *instance();
 
-    void emit_toggle_signals() const;
-
     QVariant get_value(SettingsValue value_enum) const;
     void set_value(SettingsValue value_enum, const QVariant &value);
 
@@ -78,9 +77,9 @@ public:
     bool get_bool(BoolSettingType type) const;
 
     /** 
-     * Makes action checkable
-     * Connects action and bool setting so that toggling the action
+     * Connect action and bool setting so that toggling the action
      * updates setting value as well
+     * Action becomes checkable
      */ 
     void connect_action_to_bool_setting(QAction *action, BoolSettingType type);
 

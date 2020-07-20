@@ -33,6 +33,7 @@ AdvancedViewProxy::AdvancedViewProxy(int dn_column_arg, QObject *parent)
     connect(
         advanced_view_setting, &BoolSetting::changed,
         this, &AdvancedViewProxy::on_advanced_view_toggled);
+    on_advanced_view_toggled();
 }
 
 void AdvancedViewProxy::on_advanced_view_toggled() {

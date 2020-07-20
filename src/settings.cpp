@@ -31,15 +31,6 @@ Settings *Settings::instance() {
     return &settings;
 }
 
-// Call this after widget construction is finished so that widgets
-// load checkable state
-void Settings::emit_toggle_signals() const {
-    // for (auto c : checkables) {
-    //     const bool checked = c->isChecked();
-    //     emit c->toggled(checked);
-    // }
-}
-
 const BoolSetting *Settings::bool_setting(BoolSettingType type) const {
     return &bools[type];
 }
@@ -65,7 +56,6 @@ void Settings::set_value(SettingsValue value_enum, const QVariant &value) {
 
 Settings::Settings() {
     qsettings = new QSettings(ADMC_ORGANIZATION, ADMC_APPLICATION_NAME, this);
-    printf("%s\n", qPrintable(qsettings->fileName()));
 }
 
 void Settings::connect_action_to_bool_setting(QAction *action, BoolSettingType type) {

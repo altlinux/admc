@@ -103,9 +103,6 @@ MainWindow::MainWindow()
     QStatusBar *status_bar = statusBar();
     new Status(status_bar, status_log, this);
 
-    // NOTE: must do this after all widgets are constructed
-    Settings::instance()->emit_toggle_signals();
-
     // Layout
     {
         auto horiz_splitter = new QSplitter(Qt::Horizontal);
@@ -150,7 +147,6 @@ MainWindow::MainWindow()
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-    printf("?\n");
     const QByteArray geometry = saveGeometry();
     Settings::instance()->set_value(SettingsValue_MainWindowGeometry, QVariant(geometry));
 }
