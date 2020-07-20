@@ -20,21 +20,19 @@
 #include "dn_column_proxy.h"
 #include "settings.h"
 
-#include <QAction>
-
 DnColumnProxy::DnColumnProxy(int dn_column_arg, QObject *parent)
 : QSortFilterProxyModel(parent)
 {
     dn_column = dn_column_arg;
 
-    const QAction *dn_column_action = Settings::instance()->checkable(SettingsCheckable_DnColumn);
+    const BoolSetting *dn_column_setting = Settings::instance()->bool_setting(BoolSettingType_DnColumn);
     connect(
-        dn_column_action, &QAction::toggled,
+        dn_column_setting, &BoolSetting::changed,
         this, &DnColumnProxy::on_toggle_show_dn_column);
 }
 
-void DnColumnProxy::on_toggle_show_dn_column(bool checked) {
-    show_dn_column = checked;
+void DnColumnProxy::on_toggle_show_dn_column() {
+    show_dn_column = Settings::instance()->get_bool(BoolSettingType_DnColumn);
 
     invalidateFilter();
 }

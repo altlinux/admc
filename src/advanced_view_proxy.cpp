@@ -29,15 +29,14 @@ AdvancedViewProxy::AdvancedViewProxy(int dn_column_arg, QObject *parent)
 {
     dn_column = dn_column_arg;
 
-    const QAction *advanced_view_action = Settings::instance()->checkable(SettingsCheckable_AdvancedView);
+    const BoolSetting *advanced_view_setting = Settings::instance()->bool_setting(BoolSettingType_AdvancedView);
     connect(
-        advanced_view_action, &QAction::toggled,
+        advanced_view_setting, &BoolSetting::changed,
         this, &AdvancedViewProxy::on_advanced_view_toggled);
 }
 
-void AdvancedViewProxy::on_advanced_view_toggled(bool) {
-    const QAction *advanced_view_action = Settings::instance()->checkable(SettingsCheckable_AdvancedView);
-    advanced_view_is_on = advanced_view_action->isChecked();
+void AdvancedViewProxy::on_advanced_view_toggled() {
+    advanced_view_is_on = Settings::instance()->get_bool(BoolSettingType_AdvancedView);
 
     invalidateFilter();
 }

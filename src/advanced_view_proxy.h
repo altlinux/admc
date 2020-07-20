@@ -30,7 +30,7 @@ public:
     explicit AdvancedViewProxy(int dn_column_arg, QObject *parent);
 
 private slots:
-    void on_advanced_view_toggled(bool checked);
+    void on_advanced_view_toggled();
 
 private:
     int dn_column;

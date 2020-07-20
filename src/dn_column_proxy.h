@@ -31,7 +31,7 @@ public:
     explicit DnColumnProxy(int dn_column_arg, QObject *parent);
 
 private slots:
-    void on_toggle_show_dn_column(bool checked);
+    void on_toggle_show_dn_column();
 
 private:
     int dn_column;

@@ -33,17 +33,19 @@ Status::Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *p
 
     add_message(tr("Ready"));
 
-    const QAction *show_status_log = Settings::instance()->checkable(SettingsCheckable_ShowStatusLog);
+    const BoolSetting *show_status_log_setting = Settings::instance()->bool_setting(BoolSettingType_ShowStatusLog);
     connect(
-        show_status_log, &QAction::toggled,
+        show_status_log_setting, &BoolSetting::changed,
         this, &Status::on_toggle_show_status_log);
     connect(
         AdInterface::instance(), &AdInterface::message,
         this, &Status::add_message);
 }
 
-void Status::on_toggle_show_status_log(bool checked) {
-    if (checked) {
+void Status::on_toggle_show_status_log() {
+    const bool show_status_log = Settings::instance()->get_bool(BoolSettingType_ShowStatusLog);
+
+    if (show_status_log) {
         status_log->setVisible(true); 
     } else {
         status_log->setVisible(false); 

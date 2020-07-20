@@ -20,17 +20,16 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-// Provides access to settings via enums rather than plain strings
-// for better safety
-// Stores checkable actions which correspond to booleans in settings
-// so that it is possible to respond to checkable changes
-// by connecting to their "toggled" signals
-// Saves settings to file automatically when it is destructed
-// at the end of the program
+/**
+ * Provides access to settings via enums rather than plain strings.
+ * Settings are saved to file automatically when this object is
+ * destructed.
+ * Settings of boolean type have BoolSetting objects which emit
+ * changed() signal when setting is changed
+ */
 
 #include <QObject>
 
-class QAction;
 class QSettings;
 class QVariant;
 
@@ -42,15 +41,21 @@ enum SettingsValue {
     SettingsValue_COUNT,    
 };
 
-enum SettingsCheckable {
-    SettingsCheckable_AdvancedView,
-    SettingsCheckable_DnColumn,
-    SettingsCheckable_DetailsFromContainers,
-    SettingsCheckable_DetailsFromContents,
-    SettingsCheckable_ConfirmActions,
-    SettingsCheckable_ShowStatusLog,
-    SettingsCheckable_AutoLogin,
-    SettingsCheckable_COUNT,
+enum BoolSettingType {
+    BoolSettingType_AdvancedView,
+    BoolSettingType_DnColumn,
+    BoolSettingType_DetailsFromContainers,
+    BoolSettingType_DetailsFromContents,
+    BoolSettingType_ConfirmActions,
+    BoolSettingType_ShowStatusLog,
+    BoolSettingType_AutoLogin,
+    BoolSettingType_COUNT,
+};
+
+class BoolSetting final : public QObject {
+Q_OBJECT
+signals:
+    void changed();
 };
 
 class Settings final : public QObject {
@@ -65,13 +70,23 @@ public:
     static Settings *instance();
 
     void emit_toggle_signals() const;
-    QAction *checkable(SettingsCheckable c) const;
+
     QVariant get_value(SettingsValue value_enum) const;
     void set_value(SettingsValue value_enum, const QVariant &value);
 
+    const BoolSetting *bool_setting(BoolSettingType type) const;
+    bool get_bool(BoolSettingType type) const;
+
+    /** 
+     * Makes action checkable
+     * Connects action and bool setting so that toggling the action
+     * updates setting value as well
+     */ 
+    void connect_action_to_bool_setting(QAction *action, BoolSettingType type);
+
 private:
     QSettings *qsettings = nullptr;
-    QAction *checkables[SettingsCheckable_COUNT];
+    BoolSetting bools[BoolSettingType_COUNT];
 
     Settings();
 };

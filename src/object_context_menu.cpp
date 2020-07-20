@@ -19,7 +19,6 @@
 
 #include "object_context_menu.h"
 #include "ad_interface.h"
-#include "settings.h"
 #include "confirmation_dialog.h"
 #include "move_dialog.h"
 #include "utils.h"

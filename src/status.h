@@ -33,7 +33,7 @@ public:
     explicit Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *parent);
 
 private slots:
-    void on_toggle_show_status_log(bool checked);
+    void on_toggle_show_status_log();
 
 private:
     QStatusBar *status_bar = nullptr;

@@ -23,9 +23,8 @@
 #include <QAction>
 #include <QSettings>
 
-QString checkable_display_text(SettingsCheckable checkable);
-QString checkable_to_string(SettingsCheckable checkable);
-QString value_name(SettingsValue value_enum);
+QString bool_to_string(BoolSettingType type);
+QString value_to_string(SettingsValue type);
 
 Settings *Settings::instance() {
     static Settings settings;
@@ -35,98 +34,84 @@ Settings *Settings::instance() {
 // Call this after widget construction is finished so that widgets
 // load checkable state
 void Settings::emit_toggle_signals() const {
-    for (auto c : checkables) {
-        const bool checked = c->isChecked();
-        emit c->toggled(checked);
-    }
+    // for (auto c : checkables) {
+    //     const bool checked = c->isChecked();
+    //     emit c->toggled(checked);
+    // }
 }
 
-QAction *Settings::checkable(SettingsCheckable c) const {
-    return checkables[c];
+const BoolSetting *Settings::bool_setting(BoolSettingType type) const {
+    return &bools[type];
+}
+
+bool Settings::get_bool(BoolSettingType type) const {
+    const QString setting_str = bool_to_string(type);
+    const bool value = qsettings->value(setting_str, false).toBool();
+
+    return value;
 }
 
 QVariant Settings::get_value(SettingsValue value_enum) const {
-    const QString name = value_name(value_enum);
+    const QString name = value_to_string(value_enum);
     const QVariant value = qsettings->value(name); 
 
     return value;
 }
 
 void Settings::set_value(SettingsValue value_enum, const QVariant &value) {
-    const QString name = value_name(value_enum);
-    qsettings->setValue(name, value); 
+    const QString name = value_to_string(value_enum);
+    qsettings->setValue(name, value);
 }
 
 Settings::Settings() {
     qsettings = new QSettings(ADMC_ORGANIZATION, ADMC_APPLICATION_NAME, this);
-
-    for (int i = 0; i < SettingsCheckable_COUNT; i++) {
-        const SettingsCheckable checkable = (SettingsCheckable) i;
-        
-        const QString display_text = checkable_display_text(checkable);
-        QAction *action = new QAction(display_text);
-        action->setCheckable(true);
-
-        const QString checkable_str = checkable_to_string(checkable);
-        const bool was_checked = qsettings->value(checkable_str, false).toBool();
-        action->setChecked(was_checked);
-
-        checkables[i] = action;
-
-        // Update value in qsettings when action is toggled
-        connect(
-            action, &QAction::toggled,
-            [this, checkable_str] (bool checked) {
-                qsettings->setValue(checkable_str, checked);
-            }
-            );
-    }
+    printf("%s\n", qPrintable(qsettings->fileName()));
 }
 
-// Display text for checkable that's attached to corresponding action
-// Is translated
-QString checkable_display_text(SettingsCheckable checkable) {
-    switch (checkable) {
-        case SettingsCheckable_AdvancedView: return "Advanced View";
-        case SettingsCheckable_DnColumn: return "Show DN column";
-        case SettingsCheckable_DetailsFromContainers: return "Open attributes on left click in Containers window";
-        case SettingsCheckable_DetailsFromContents: return "Open attributes on left click in Contents window";
-        case SettingsCheckable_ConfirmActions: return "Confirm actions";
-        case SettingsCheckable_ShowStatusLog: return "Show status log";
-        case SettingsCheckable_AutoLogin: return "Login using saved session at startup";
-        case SettingsCheckable_COUNT: return "COUNT";
-    }
-    return "";
+void Settings::connect_action_to_bool_setting(QAction *action, BoolSettingType type) {
+    action->setCheckable(true);
+
+    const QString setting_str = bool_to_string(type);
+    
+    // Init action state to saved value
+    const bool saved_value = qsettings->value(setting_str, false).toBool();
+    action->setChecked(saved_value);
+
+    // Update saved value when action is toggled
+    connect(
+        action, &QAction::toggled,
+        [this, type, setting_str](bool checked) {
+            qsettings->setValue(setting_str, checked);
+
+            emit bools[type].changed();
+        });
 }
 
-// Convert enum to string literal via macro and return
-// UNTRANSLATED value
-// SettingsCheckable_Foo => "SettingsCheckable_Foo"
-QString checkable_to_string(SettingsCheckable checkable) {
-    #define CASE_ENUM_TO_STRING(ENUM) case ENUM: return #ENUM
+#define CASE_ENUM_TO_STRING(ENUM) case ENUM: return #ENUM
 
-    switch (checkable) {
-        CASE_ENUM_TO_STRING(SettingsCheckable_AdvancedView);
-        CASE_ENUM_TO_STRING(SettingsCheckable_DnColumn);
-        CASE_ENUM_TO_STRING(SettingsCheckable_DetailsFromContainers);
-        CASE_ENUM_TO_STRING(SettingsCheckable_DetailsFromContents);
-        CASE_ENUM_TO_STRING(SettingsCheckable_ConfirmActions);
-        CASE_ENUM_TO_STRING(SettingsCheckable_ShowStatusLog);
-        CASE_ENUM_TO_STRING(SettingsCheckable_AutoLogin);
-        CASE_ENUM_TO_STRING(SettingsCheckable_COUNT);
+// Convert enum to string literal via macro
+// BoolSettingType_Foo => "BoolSettingType_Foo"
+QString bool_to_string(BoolSettingType type) {
+    switch (type) {
+        CASE_ENUM_TO_STRING(BoolSettingType_AdvancedView);
+        CASE_ENUM_TO_STRING(BoolSettingType_DnColumn);
+        CASE_ENUM_TO_STRING(BoolSettingType_DetailsFromContainers);
+        CASE_ENUM_TO_STRING(BoolSettingType_DetailsFromContents);
+        CASE_ENUM_TO_STRING(BoolSettingType_ConfirmActions);
+        CASE_ENUM_TO_STRING(BoolSettingType_ShowStatusLog);
+        CASE_ENUM_TO_STRING(BoolSettingType_AutoLogin);
+        CASE_ENUM_TO_STRING(BoolSettingType_COUNT);
     }
     return "";
-
-    #undef CASE_ENUM_TO_STRING
 }
 
-QString value_name(SettingsValue value_enum) {
-    switch (value_enum) {
-        case SettingsValue_Domain: return "domain";
-        case SettingsValue_Site: return "site";
-        case SettingsValue_Host: return "host";
-        case SettingsValue_MainWindowGeometry: return "main window geometry";
-        case SettingsValue_COUNT: return "COUNT";
+QString value_to_string(SettingsValue type) {
+    switch (type) {
+        CASE_ENUM_TO_STRING(SettingsValue_Domain);
+        CASE_ENUM_TO_STRING(SettingsValue_Site);
+        CASE_ENUM_TO_STRING(SettingsValue_Host);
+        CASE_ENUM_TO_STRING(SettingsValue_MainWindowGeometry);
+        CASE_ENUM_TO_STRING(SettingsValue_COUNT);
     }
     return "";
 }

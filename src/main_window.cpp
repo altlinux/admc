@@ -35,13 +35,13 @@
 #include <QStatusBar>
 #include <QVBoxLayout>
 #include <QTextEdit>
-#include <QSettings>
 
 void on_action_exit(QMainWindow *main_window) {
     const QString text = QString("Are you sure you want to exit?");
     const bool confirmed = confirmation_dialog(text, main_window);
 
     if (confirmed) {
+        QApplication::closeAllWindows();
         QApplication::quit();
     }   
 }
@@ -60,14 +60,6 @@ MainWindow::MainWindow()
     // Menubar
     QAction *login_action = nullptr;
     {
-        QAction *advanced_view = Settings::instance()->checkable(SettingsCheckable_AdvancedView);
-        QAction *show_dn_column = Settings::instance()->checkable(SettingsCheckable_DnColumn);
-        QAction *show_status_log = Settings::instance()->checkable(SettingsCheckable_ShowStatusLog);
-        QAction *details_from_containers = Settings::instance()->checkable(SettingsCheckable_DetailsFromContainers);
-        QAction *details_from_contents = Settings::instance()->checkable(SettingsCheckable_DetailsFromContents);
-        QAction *confirm_actions = Settings::instance()->checkable(SettingsCheckable_ConfirmActions);
-        QAction *auto_login = Settings::instance()->checkable(SettingsCheckable_AutoLogin);
-
         QMenuBar *menubar = menuBar();
         QMenu *menubar_file = menubar->addMenu(tr("File"));
         login_action = menubar_file->addAction(tr("Login"));
@@ -75,16 +67,22 @@ MainWindow::MainWindow()
             on_action_exit(this);
         });
 
+        auto add_bool_setting_action = 
+        [](QMenu *menu, QString display_text, BoolSettingType type) {
+            QAction *action = menu->addAction(display_text);
+            Settings::instance()->connect_action_to_bool_setting(action, type);
+        };
+
         QMenu *menubar_view = menubar->addMenu(tr("View"));
-        menubar_view->addAction(advanced_view);
-        menubar_view->addAction(show_dn_column);
-        menubar_view->addAction(show_status_log);
+        add_bool_setting_action(menubar_view, "Advanced view", BoolSettingType_AdvancedView);
+        add_bool_setting_action(menubar_view, "Show DN column", BoolSettingType_DnColumn);
+        add_bool_setting_action(menubar_view, "Show status log", BoolSettingType_ShowStatusLog);
 
         QMenu *menubar_preferences = menubar->addMenu(tr("Preferences"));
-        menubar_preferences->addAction(details_from_containers);
-        menubar_preferences->addAction(details_from_contents);
-        menubar_preferences->addAction(confirm_actions);
-        menubar_preferences->addAction(auto_login);
+        add_bool_setting_action(menubar_preferences, "Open attributes on left click in Containers window", BoolSettingType_DetailsFromContainers);
+        add_bool_setting_action(menubar_preferences, "Open attributes on left click in Contents window", BoolSettingType_DetailsFromContents);
+        add_bool_setting_action(menubar_preferences, "Confirm actions", BoolSettingType_ConfirmActions);
+        add_bool_setting_action(menubar_preferences, "Login using saved session at startup", BoolSettingType_AutoLogin);
     }
 
     // Widgets
@@ -140,8 +138,8 @@ MainWindow::MainWindow()
             central_widget->setEnabled(true);
         });
 
-    QAction *auto_login = Settings::instance()->checkable(SettingsCheckable_AutoLogin);
-    if (auto_login->isChecked()) {
+    const bool auto_login = Settings::instance()->get_bool(BoolSettingType_AutoLogin);
+    if (auto_login) {
         const QString host = Settings::instance()->get_value(SettingsValue_Host).toString();
         const QString domain = Settings::instance()->get_value(SettingsValue_Domain).toString();
 
@@ -152,6 +150,7 @@ MainWindow::MainWindow()
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
+    printf("?\n");
     const QByteArray geometry = saveGeometry();
     Settings::instance()->set_value(SettingsValue_MainWindowGeometry, QVariant(geometry));
 }
