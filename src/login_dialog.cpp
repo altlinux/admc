@@ -37,24 +37,24 @@ LoginDialog::LoginDialog(QAction *login_action, QWidget *parent)
 {
     resize(500, 300);
 
-    const auto label = new QLabel("Login dialog", this);
+    const auto label = new QLabel(tr("Login dialog"), this);
 
-    const auto domain_edit_label = new QLabel("Domain: ", this);
+    const auto domain_edit_label = new QLabel(tr("Domain: "), this);
     domain_edit = new QLineEdit(this);
 
-    const auto site_edit_label = new QLabel("Site: ", this);
+    const auto site_edit_label = new QLabel(tr("Site: "), this);
     site_edit = new QLineEdit(this);
 
-    const auto login_button = new QPushButton("Login", this);
-    const auto cancel_button = new QPushButton("Cancel", this);
+    const auto login_button = new QPushButton(tr("Login"), this);
+    const auto cancel_button = new QPushButton(tr("Cancel"), this);
     login_button->setAutoDefault(false);
     cancel_button->setAutoDefault(false);
 
-    const auto hosts_list_label = new QLabel("Select host:", this);
+    const auto hosts_list_label = new QLabel(tr("Select host:"), this);
     hosts_list = new QListWidget(this);
     hosts_list->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    save_session_checkbox = new QCheckBox("Save this session", this);
+    save_session_checkbox = new QCheckBox(tr("Save this session"), this);
 
     const auto layout = new QGridLayout(this);
     layout->addWidget(label, 0, 0);
@@ -112,7 +112,7 @@ void LoginDialog::show() {
     QDialog::open();
 
     if (found_hosts.isEmpty() && host != "") {
-        QMessageBox::warning(this, "Warning", "Failed to find saved session's host");
+        QMessageBox::warning(this, tr("Warning"), tr("Failed to find saved session's host"));
     }
 }
 
@@ -128,7 +128,7 @@ void LoginDialog::on_login_button(bool) {
     QListWidgetItem *current_item = hosts_list->currentItem();
 
     if (current_item == nullptr) {
-        QMessageBox::warning(this, "Error", "Need to select a host to login.");
+        QMessageBox::warning(this, tr("Error"), tr("Need to select a host to login."));
     } else {
         const QString host = current_item->text();
 
@@ -171,6 +171,6 @@ void LoginDialog::complete(const QString &host) {
 
         done(QDialog::Accepted);
     } else {
-        QMessageBox::critical(this, "Error", "Failed to login!");
+        QMessageBox::critical(this, tr("Error"), tr("Failed to login!"));
     }
 }

@@ -29,6 +29,9 @@ public:
     explicit MainWindow();
     void closeEvent(QCloseEvent *event);
 
+private slots:
+    void on_action_exit();
+
 };
 
 #endif /* MAIN_WINDOW_H */

@@ -72,7 +72,7 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
 
 void DetailsWidget::change_target(const QString &dn) {
     const QString name = AdInterface::instance()->attribute_get(dn, "name");
-    const QString title_text = name.isEmpty() ? "Details" : QString("%1 Details").arg(name);
+    const QString title_text = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
     title_label->setText(title_text);
 
     // Save current tab/index to restore later
@@ -86,11 +86,11 @@ void DetailsWidget::change_target(const QString &dn) {
     // Setup tabs
     tab_widget->clear();
 
-    tab_widget->addTab(attributes_widget, "All Attributes");
+    tab_widget->addTab(attributes_widget, tr("All Attributes"));
 
     bool is_group = AdInterface::instance()->attribute_value_exists(target_dn, "objectClass", "group");
     if (is_group) {
-        tab_widget->addTab(members_widget, "Group members");
+        tab_widget->addTab(members_widget, tr("Group members"));
     }
 
     // Restore current index if it is still shown

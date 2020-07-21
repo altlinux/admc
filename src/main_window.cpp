@@ -36,21 +36,9 @@
 #include <QVBoxLayout>
 #include <QTextEdit>
 
-void on_action_exit(QMainWindow *main_window) {
-    const QString text = QString("Are you sure you want to exit?");
-    const bool confirmed = confirmation_dialog(text, main_window);
-
-    if (confirmed) {
-        QApplication::closeAllWindows();
-        QApplication::quit();
-    }   
-}
-
 MainWindow::MainWindow()
 : QMainWindow()
 {
-    setWindowTitle("MainWindow");
-
     // Restore last geometry
     const QByteArray geometry = Settings::instance()->get_variant(VariantSetting_MainWindowGeometry).toByteArray();
     if (!geometry.isEmpty()) {
@@ -63,9 +51,9 @@ MainWindow::MainWindow()
         QMenuBar *menubar = menuBar();
         QMenu *menubar_file = menubar->addMenu(tr("File"));
         login_action = menubar_file->addAction(tr("Login"));
-        menubar_file->addAction(tr("Exit"), [this]() {
-            on_action_exit(this);
-        });
+        QAction *exit_action = menubar_file->addAction(tr("Exit"));
+        connect(exit_action, &QAction::triggered,
+            this, &MainWindow::on_action_exit);
 
         auto add_bool_setting_action = 
         [](QMenu *menu, QString display_text, BoolSetting type) {
@@ -74,15 +62,15 @@ MainWindow::MainWindow()
         };
 
         QMenu *menubar_view = menubar->addMenu(tr("View"));
-        add_bool_setting_action(menubar_view, "Advanced view", BoolSetting_AdvancedView);
-        add_bool_setting_action(menubar_view, "Show DN column", BoolSetting_DnColumn);
-        add_bool_setting_action(menubar_view, "Show status log", BoolSetting_ShowStatusLog);
+        add_bool_setting_action(menubar_view, tr("Advanced view"), BoolSetting_AdvancedView);
+        add_bool_setting_action(menubar_view, tr("Show DN column"), BoolSetting_DnColumn);
+        add_bool_setting_action(menubar_view, tr("Show status log"), BoolSetting_ShowStatusLog);
 
         QMenu *menubar_preferences = menubar->addMenu(tr("Preferences"));
-        add_bool_setting_action(menubar_preferences, "Open attributes on left click in Containers window", BoolSetting_DetailsFromContainers);
-        add_bool_setting_action(menubar_preferences, "Open attributes on left click in Contents window", BoolSetting_DetailsFromContents);
-        add_bool_setting_action(menubar_preferences, "Confirm actions", BoolSetting_ConfirmActions);
-        add_bool_setting_action(menubar_preferences, "Login using saved session at startup", BoolSetting_AutoLogin);
+        add_bool_setting_action(menubar_preferences, tr("Open attributes on left click in Containers window"), BoolSetting_DetailsFromContainers);
+        add_bool_setting_action(menubar_preferences, tr("Open attributes on left click in Contents window"), BoolSetting_DetailsFromContents);
+        add_bool_setting_action(menubar_preferences, tr("Confirm actions"), BoolSetting_ConfirmActions);
+        add_bool_setting_action(menubar_preferences, tr("Login using saved session at startup"), BoolSetting_AutoLogin);
     }
 
     // Widgets
@@ -149,4 +137,14 @@ MainWindow::MainWindow()
 void MainWindow::closeEvent(QCloseEvent *event) {
     const QByteArray geometry = saveGeometry();
     Settings::instance()->set_variant(VariantSetting_MainWindowGeometry, QVariant(geometry));
+}
+
+void MainWindow::on_action_exit() {
+    const QString text = QString(tr("Are you sure you want to exit?"));
+    const bool confirmed = confirmation_dialog(text, this);
+
+    if (confirmed) {
+        QApplication::closeAllWindows();
+        QApplication::quit();
+    }   
 }

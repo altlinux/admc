@@ -53,8 +53,8 @@ void AttributesWidget::change_target(const QString &dn) {
 AttributesModel::AttributesModel(QObject *parent)
 : QStandardItemModel(0, AttributesColumn_COUNT, parent)
 {
-    setHorizontalHeaderItem(AttributesColumn_Name, new QStandardItem("Name"));
-    setHorizontalHeaderItem(AttributesColumn_Value, new QStandardItem("Value"));
+    setHorizontalHeaderItem(AttributesColumn_Name, new QStandardItem(tr("Name")));
+    setHorizontalHeaderItem(AttributesColumn_Value, new QStandardItem(tr("Value")));
     
     change_target("");
 }

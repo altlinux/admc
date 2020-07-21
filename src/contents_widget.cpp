@@ -97,7 +97,7 @@ void ContentsWidget::on_containers_selected_changed(const QString &dn) {
         const QModelIndex view_head = view_model->index(0, 0);
         const int object_count = view_model->rowCount(view_head);
 
-        label_text = QString("%1: %2 objects").arg(target_name).arg(object_count);
+        label_text = QString(tr("%1: %2 objects")).arg(target_name).arg(object_count);
     }
     label->setText(label_text);
 }

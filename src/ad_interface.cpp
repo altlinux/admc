@@ -64,6 +64,17 @@ QList<QString> AdInterface::get_domain_hosts(const QString &domain, const QStrin
     }
 }
 
+QString new_object_type_to_display_string(NewObjectType type) {
+    switch (type) {
+        case NewObjectType::User: return AdInterface::tr("User");
+        case NewObjectType::Computer: return AdInterface::tr("Computer");
+        case NewObjectType::OU: return AdInterface::tr("Organization Unit");
+        case NewObjectType::Group: return AdInterface::tr("Group");
+        case NewObjectType::COUNT: return "COUNT";
+    }
+    return "";
+}
+
 // "CN=foo,CN=bar,DC=domain,DC=com"
 // =>
 // "foo"
@@ -96,13 +107,13 @@ bool AdInterface::login(const QString &host, const QString &domain) {
     const int result = connection->connect(uri_std, domain_std);
 
     if (result == AD_SUCCESS) {
-        message(QString("Logged in to \"%1\" at \"%2\"").arg(host, domain));
+        message(QString(tr("Logged in to \"%1\" at \"%2\"")).arg(host, domain));
 
         emit logged_in();
 
         return true;
     } else {
-        message(QString("Failed to login to \"%1\" at \"%2\"").arg(host, domain));
+        message(QString(tr("Failed to login to \"%1\" at \"%2\"")).arg(host, domain));
 
         return false;
     }
@@ -140,7 +151,7 @@ QList<QString> AdInterface::list(const QString &dn) {
         return children;
     } else {
         if (should_emit_message(result)) {
-            message(QString("Failed to load children of \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
+            message(QString(tr("Failed to load children of \"%1\". Error: \"%2\"")).arg(dn, get_error_str()));
         }
 
         return QList<QString>();
@@ -166,7 +177,7 @@ QList<QString> AdInterface::search(const QString &filter) {
         return results;
     } else {
         if (should_emit_message(result_search)) {
-            message(QString("Failed to search for \"%1\". Error: \"%2\"").arg(filter, get_error_str()));
+            message(QString(tr("Failed to search for \"%1\". Error: \"%2\"")).arg(filter, get_error_str()));
         }
 
         return QList<QString>();
@@ -214,7 +225,7 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
             return attributes_cache[dn];
         } else {
             if (should_emit_message(result_attribute_get)) {
-                message(QString("Failed to get attributes of \"%1\"").arg(dn));
+                message(QString(tr("Failed to get attributes of \"%1\"")).arg(dn));
             }
 
             return Attributes();
@@ -270,13 +281,13 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
     result = connection->attribute_replace(dn_cstr, attribute_cstr, value_cstr);
 
     if (result == AD_SUCCESS) {
-        message(QString("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"").arg(attribute, dn, old_value, value));
+        message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, dn, old_value, value));
 
         update_cache({dn});
 
         return true;
     } else {
-        message(QString("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\". Error: \"%5\"").arg(attribute, dn, old_value, value, get_error_str()));
+        message(QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\". Error: \"%5\"")).arg(attribute, dn, old_value, value, get_error_str()));
 
         return false;
     }
@@ -312,16 +323,16 @@ bool AdInterface::object_create(const QString &name, const QString &dn, NewObjec
         case COUNT: break;
     }
 
-    const QString type_str = new_object_type_to_string[type];
+    const QString type_str = new_object_type_to_display_string(type);
 
     if (result == AD_SUCCESS) {
-        message(QString("Created object \"%1\" of type \"%2\"").arg(dn, type_str));
+        message(QString(tr("Created object \"%1\" of type \"%2\"")).arg(dn, type_str));
 
         update_cache({dn});
 
         return true;
     } else {
-        message(QString("Failed to create object \"%1\" of type \"%2\". Error: \"%3\"").arg(dn, type_str, get_error_str()));
+        message(QString(tr("Failed to create object \"%1\" of type \"%2\". Error: \"%3\"")).arg(dn, type_str, get_error_str()));
 
         return false;
     }
@@ -336,11 +347,11 @@ void AdInterface::object_delete(const QString &dn) {
     result = connection->object_delete(dn_cstr);
 
     if (result == AD_SUCCESS) {
-        message(QString("Deleted object \"%1\"").arg(dn));
+        message(QString(tr("Deleted object \"%1\"")).arg(dn));
 
         update_cache({dn});
     } else {
-        message(QString("Failed to delete object \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
+        message(QString(tr("Failed to delete object \"%1\". Error: \"%2\"")).arg(dn, get_error_str()));
     }
 }
 
@@ -367,11 +378,11 @@ void AdInterface::object_move(const QString &dn, const QString &new_container) {
     // to do this here as well for CLI?
     
     if (result == AD_SUCCESS) {
-        message(QString("Moved \"%1\" to \"%2\"").arg(dn).arg(new_container));
+        message(QString(tr("Moved \"%1\" to \"%2\"")).arg(dn).arg(new_container));
 
         update_cache({dn});
     } else {
-        message(QString("Failed to move \"%1\" to \"%2\". Error: \"%3\"").arg(dn, new_container, get_error_str()));
+        message(QString(tr("Failed to move \"%1\" to \"%2\". Error: \"%3\"")).arg(dn, new_container, get_error_str()));
     }
 }
 
@@ -387,11 +398,11 @@ void AdInterface::group_add_user(const QString &group_dn, const QString &user_dn
     result = connection->group_add_user(group_dn_cstr, user_dn_cstr);
 
     if (result == AD_SUCCESS) {
-        message(QString("Added user \"%1\" to group \"%2\"").arg(user_dn, group_dn));
+        message(QString(tr("Added user \"%1\" to group \"%2\"")).arg(user_dn, group_dn));
 
         update_cache({group_dn, user_dn});
     } else {
-        message(QString("Failed to add user \"%1\" to group \"%2\". Error: \"%3\"").arg(user_dn, group_dn, get_error_str()));
+        message(QString(tr("Failed to add user \"%1\" to group \"%2\". Error: \"%3\"")).arg(user_dn, group_dn, get_error_str()));
     }
 }
 
@@ -407,11 +418,11 @@ void AdInterface::group_remove_user(const QString &group_dn, const QString &user
     result = connection->group_remove_user(group_dn_cstr, user_dn_cstr);
 
     if (result == AD_SUCCESS) {
-        message(QString("Removed user \"%1\" from group \"%2\"").arg(user_dn, group_dn));
+        message(QString(tr("Removed user \"%1\" from group \"%2\"")).arg(user_dn, group_dn));
 
         update_cache({group_dn, user_dn});
     } else {
-        message(QString("Failed to remove user \"%1\" from group \"%2\". Error: \"%3\"").arg(user_dn, group_dn, get_error_str()));
+        message(QString(tr("Failed to remove user \"%1\" from group \"%2\". Error: \"%3\"")).arg(user_dn, group_dn, get_error_str()));
     }
 }
 
@@ -443,11 +454,11 @@ void AdInterface::object_rename(const QString &dn, const QString &new_name) {
     }
 
     if (result == AD_SUCCESS) {
-        message(QString("Renamed \"%1\" to \"%2\"").arg(dn, new_name));
+        message(QString(tr("Renamed \"%1\" to \"%2\"")).arg(dn, new_name));
 
         update_cache({dn});
     } else {
-        message(QString("Failed to rename \"%1\" to \"%2\". Error: \"%3\"").arg(dn, new_name, get_error_str()));
+        message(QString(tr("Failed to rename \"%1\" to \"%2\". Error: \"%3\"")).arg(dn, new_name, get_error_str()));
     }
 }
 
@@ -460,13 +471,13 @@ bool AdInterface::set_pass(const QString &dn, const QString &password) {
     int result = connection->user_set_pass(dn_cstr, password_cstr);
 
     if (result == AD_SUCCESS) {
-        message(QString("Set pass of \"%1\"").arg(dn));
+        message(QString(tr("Set pass of \"%1\"")).arg(dn));
 
         update_cache({dn});
 
         return true;
     } else {
-        message(QString("Failed to set pass of \"%1\". Error: \"%2\"").arg(dn, get_error_str()));
+        message(QString(tr("Failed to set pass of \"%1\". Error: \"%2\"")).arg(dn, get_error_str()));
     
         return false;
     }

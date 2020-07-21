@@ -35,19 +35,19 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
     target = target_arg;
 
     const QString target_name = extract_name_from_dn(target);
-    const QString top_label_text = QString("Resetting password of \"%1\"").arg(target_name);
+    const QString top_label_text = QString(tr("Resetting password of \"%1\"")).arg(target_name);
     const auto top_label = new QLabel(top_label_text, this);
 
-    const auto new_password_label = new QLabel("New password:", this);
+    const auto new_password_label = new QLabel(tr("New password:"), this);
     new_password_edit = new QLineEdit(this);
     new_password_edit->setEchoMode(QLineEdit::Password);
 
-    const auto confirm_password_label = new QLabel("Confirm password:", this);
+    const auto confirm_password_label = new QLabel(tr("Confirm password:"), this);
     confirm_password_edit = new QLineEdit(this);
     confirm_password_edit->setEchoMode(QLineEdit::Password);
 
-    const auto ok_button = new QPushButton("OK", this);
-    const auto cancel_button = new QPushButton("Cancel", this);
+    const auto ok_button = new QPushButton(tr("OK"), this);
+    const auto cancel_button = new QPushButton(tr("Cancel"), this);
 
     const auto layout = new QGridLayout(this);
     layout->addWidget(top_label, 0, 0);
@@ -71,7 +71,7 @@ void PasswordDialog::on_ok_button(bool) {
     const QString confirm_password = confirm_password_edit->text();
 
     if (new_password != confirm_password) {
-        QMessageBox::warning(this, "Warning", "Passwords don't match!");
+        QMessageBox::warning(this, tr("Warning"), tr("Passwords don't match!"));
         
         return;
     }
@@ -82,7 +82,7 @@ void PasswordDialog::on_ok_button(bool) {
         done(QDialog::Accepted);
     } else {
         const QString error = AdInterface::instance()->get_error_str();
-        QMessageBox::warning(this, "Warning", QString("Failed to set password! %1").arg(error));
+        QMessageBox::warning(this, "Warning", QString(tr("Failed to set password! %1")).arg(error));
     }
 }
 

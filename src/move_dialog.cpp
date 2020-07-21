@@ -42,13 +42,6 @@ enum MoveDialogColumn {
     MoveDialogColumn_COUNT
 };
 
-const QMap<ClassFilter, QString> class_filter_display_text = {
-    {ClassFilter_All, "All"},
-    {ClassFilter_Containers, "Containers"},
-    {ClassFilter_OUs, "OU's"},
-    {ClassFilter_Groups, "Groups"},
-};
-
 const QMap<ClassFilter, QString> class_filter_string = {
     {ClassFilter_All, ""},
     {ClassFilter_Containers, "container"},
@@ -64,16 +57,16 @@ MoveDialog::MoveDialog(QWidget *parent)
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    target_label = new QLabel("TARGET", this);
+    target_label = new QLabel(tr("TARGET"), this);
 
-    filter_class_label = new QLabel("Class: ", this);
+    filter_class_label = new QLabel(tr("Class: "), this);
     filter_class_combo_box = new QComboBox(this);
 
-    const auto filter_name_label = new QLabel("Name: ", this);
+    const auto filter_name_label = new QLabel(tr("Name: "), this);
     filter_name_line_edit = new QLineEdit(this);
 
-    const auto select_button = new QPushButton("Select", this);
-    const auto cancel_button = new QPushButton("Cancel", this);
+    const auto select_button = new QPushButton(tr("Select"), this);
+    const auto cancel_button = new QPushButton(tr("Cancel"), this);
 
     const auto layout = new QGridLayout(this);
     layout->addWidget(target_label, 0, 0);
@@ -126,11 +119,11 @@ void MoveDialog::open_for_object(const QString &dn, MoveDialogType type_arg) {
     QString target_label_text;
     switch (type) {
         case MoveDialogType_Move: {
-            target_label_text = QString("Moving \"%1\"").arg(target_dn);
+            target_label_text = QString(tr("Moving \"%1\"")).arg(target_dn);
             break;
         }
         case MoveDialogType_AddToGroup: {
-            target_label_text = QString("Adding \"%1\" to group").arg(target_dn);
+            target_label_text = QString(tr("Adding \"%1\" to group")).arg(target_dn);
             break;
         }
     }
@@ -160,9 +153,21 @@ void MoveDialog::open_for_object(const QString &dn, MoveDialogType type_arg) {
     QList<ClassFilter> combo_classes = {ClassFilter_All};
     combo_classes += classes;
     for (auto c : combo_classes) {
-        const QString string = class_filter_display_text[c];
+        auto filter_display_string =
+        [] (ClassFilter filter) {
+            switch (filter) {
+                case ClassFilter_All: return MoveDialog::tr("All");
+                case ClassFilter_Containers: return MoveDialog::tr("Containers");
+                case ClassFilter_OUs: return MoveDialog::tr("OU's");
+                case ClassFilter_Groups: return MoveDialog::tr("Groups");
+                case ClassFilter_COUNT: return QString("COUNT");
+            }
+            return QString("");
+        };
 
-        filter_class_combo_box->addItem(string, c);
+        const QString display_string = filter_display_string(c);
+
+        filter_class_combo_box->addItem(display_string, c);
     }
 
     // Show or hide class-related elements depending on type
@@ -205,7 +210,7 @@ void MoveDialog::on_filter_class_changed(int index) {
 }
 
 void MoveDialog::complete(const QString &move_dn) {
-    const QString confirm_text = QString("Move \"%1\" to \"%2\"?").arg(target_dn, move_dn);
+    const QString confirm_text = QString(tr("Move \"%1\" to \"%2\"?")).arg(target_dn, move_dn);
 
     const bool confirmed = confirmation_dialog(confirm_text, this);
     if (confirmed) {
@@ -244,12 +249,14 @@ void MoveDialog::on_cancel_button(bool) {
     done(QDialog::Rejected);
 }
 
+
+
 MoveDialogModel::MoveDialogModel(QObject *parent)
 : QStandardItemModel(0, MoveDialogColumn_COUNT, parent)
 {
-    setHorizontalHeaderItem(MoveDialogColumn_Name, new QStandardItem("Name"));
-    setHorizontalHeaderItem(MoveDialogColumn_Class, new QStandardItem("Class"));
-    setHorizontalHeaderItem(MoveDialogColumn_DN, new QStandardItem("DN"));
+    setHorizontalHeaderItem(MoveDialogColumn_Name, new QStandardItem(tr("Name")));
+    setHorizontalHeaderItem(MoveDialogColumn_Class, new QStandardItem(tr("Class")));
+    setHorizontalHeaderItem(MoveDialogColumn_DN, new QStandardItem(tr("DN")));
 }
 
 void MoveDialogModel::load(const QString &dn, QList<ClassFilter> classes) {

@@ -70,32 +70,32 @@ void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
 void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const QString &parent_dn) {
     clear();
 
-    QAction *action_to_show_menu_at = addAction("Details", [this, dn]() {
+    QAction *action_to_show_menu_at = addAction(tr("Details"), [this, dn]() {
         emit details(dn);
     });
 
-    addAction("Delete", [this, dn]() {
+    addAction(tr("Delete"), [this, dn]() {
         delete_object(dn);
     });
-    addAction("Rename", [this, dn]() {
+    addAction(tr("Rename"), [this, dn]() {
         rename(dn);
     });
 
     QMenu *submenu_new = addMenu("New");
-    submenu_new->addAction("New User", [this, dn]() {
+    submenu_new->addAction(tr("New User"), [this, dn]() {
         new_user(dn);
     });
-    submenu_new->addAction("New Computer", [this, dn]() {
+    submenu_new->addAction(tr("New Computer"), [this, dn]() {
         new_computer(dn);
     });
-    submenu_new->addAction("New Group", [this, dn]() {
+    submenu_new->addAction(tr("New Group"), [this, dn]() {
         new_group(dn);
     });
-    submenu_new->addAction("New OU", [this, dn]() {
+    submenu_new->addAction(tr("New OU"), [this, dn]() {
         new_ou(dn);
     });
 
-    addAction("Move", [this, dn]() {
+    addAction(tr("Move"), [this, dn]() {
         move_dialog->open_for_object(dn, MoveDialogType_Move);
     });
 
@@ -103,17 +103,17 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
     const bool is_user = AdInterface::instance()->is_user(dn); 
     
     if (is_policy) {
-        submenu_new->addAction("Edit Policy", [this, dn]() {
+        submenu_new->addAction(tr("Edit Policy"), [this, dn]() {
             edit_policy(dn);
         });
     }
 
     if (is_user) {
-        addAction("Add to group", [this, dn]() {
+        addAction(tr("Add to group"), [this, dn]() {
             move_dialog->open_for_object(dn, MoveDialogType_AddToGroup);
         });
 
-        addAction("Reset password", [this, dn]() {
+        addAction(tr("Reset password"), [this, dn]() {
             const auto password_dialog = new PasswordDialog(dn, this);
             password_dialog->open();
         });
@@ -125,7 +125,7 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
         const bool parent_is_group = AdInterface::instance()->is_group(parent_dn);
 
         if (is_user && parent_is_group) {
-            addAction("Remove from group", [this, dn, parent_dn]() {
+            addAction(tr("Remove from group"), [this, dn, parent_dn]() {
                 AdInterface::instance()->group_remove_user(parent_dn, dn);
             });
         }
@@ -136,7 +136,7 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
 
 void ObjectContextMenu::delete_object(const QString &dn) {
     const QString name = AdInterface::instance()->attribute_get(dn, "name");
-    const QString text = QString("Are you sure you want to delete \"%1\"?").arg(name);
+    const QString text = QString(tr("Are you sure you want to delete \"%1\"?")).arg(name);
     const bool confirmed = confirmation_dialog(text, this);
 
     if (confirmed) {
@@ -145,9 +145,9 @@ void ObjectContextMenu::delete_object(const QString &dn) {
 }
 
 void ObjectContextMenu::new_object_dialog(const QString &parent_dn, NewObjectType type) {
-    QString type_string = new_object_type_to_string[type];
-    QString dialog_title = "New " + type_string;
-    QString input_label = type_string + " name";
+    QString type_string = new_object_type_to_display_string(type);
+    QString dialog_title = tr("New ") + type_string;
+    QString input_label = type_string + tr(" name");
 
     bool ok;
     QString name = QInputDialog::getText(this, dialog_title, input_label, QLineEdit::Normal, "", &ok);
@@ -190,8 +190,8 @@ void ObjectContextMenu::new_ou(const QString &dn) {
 
 void ObjectContextMenu::rename(const QString &dn) {
     // Get new name from input box
-    QString dialog_title = "Rename";
-    QString input_label = "New name:";
+    QString dialog_title = tr("Rename");
+    QString input_label = tr("New name:");
     bool ok;
     QString new_name = QInputDialog::getText(this, dialog_title, input_label, QLineEdit::Normal, "", &ok);
 

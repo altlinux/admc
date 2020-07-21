@@ -59,7 +59,8 @@ void Status::add_message(const QString &msg) {
 
     const QColor original_color = status_log->textColor();
     QColor color = original_color;
-    if (msg.contains("Failed")) {
+    // TODO: this is unreliable with translation
+    if (msg.contains(tr("Failed"))) {
         color = Qt::red;
     } else {
         color = Qt::darkGreen;

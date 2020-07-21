@@ -62,8 +62,8 @@ void MembersWidget::change_target(const QString &dn) {
 MembersModel::MembersModel(QObject *parent)
 : ObjectModel(MembersColumn_COUNT, MembersColumn_DN, parent)
 {
-    setHorizontalHeaderItem(MembersColumn_Name, new QStandardItem("Name"));
-    setHorizontalHeaderItem(MembersColumn_DN, new QStandardItem("DN"));
+    setHorizontalHeaderItem(MembersColumn_Name, new QStandardItem(tr("Name")));
+    setHorizontalHeaderItem(MembersColumn_DN, new QStandardItem(tr("DN")));
 }
 
 void MembersModel::change_target(const QString &dn) {
