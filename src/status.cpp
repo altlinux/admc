@@ -31,7 +31,7 @@ Status::Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *p
     status_bar = status_bar_arg;
     status_log = status_log_arg;
 
-    add_message(tr("Ready"));
+    add_message(tr("Ready"), Qt::black);
 
     const BoolSettingSignal *show_status_log_setting = Settings::instance()->get_bool_signal(BoolSetting_ShowStatusLog);
     connect(
@@ -41,7 +41,7 @@ Status::Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *p
     
     connect(
         AdInterface::instance(), &AdInterface::message,
-        this, &Status::add_message);
+        this, &Status::on_ad_interface_message);
 }
 
 void Status::on_toggle_show_status_log() {
@@ -54,22 +54,28 @@ void Status::on_toggle_show_status_log() {
     }
 }
 
-void Status::add_message(const QString &msg) {
+void Status::add_message(const QString &msg, QColor color) {
     status_bar->showMessage(msg);
-
+    
     const QColor original_color = status_log->textColor();
-    QColor color = original_color;
-    // TODO: this is unreliable with translation
-    if (msg.contains(tr("Failed"))) {
-        color = Qt::red;
-    } else {
-        color = Qt::darkGreen;
-    }
-
     status_log->setTextColor(color);
     status_log->append(msg);
     status_log->setTextColor(original_color);
 
     // Scroll text edit to the newest message
     status_log->ensureCursorVisible();
+}
+
+void Status::on_ad_interface_message(const QString &msg, AdInterfaceMessageType type) {
+    auto get_color =
+    [type]() {
+        switch (type) {
+            case AdInterfaceMessageType_Success: return Qt::darkGreen;
+            case AdInterfaceMessageType_Error: return Qt::red;
+        }
+        return Qt::black;
+    };
+    QColor color = get_color();
+
+    add_message(msg, color);    
 }

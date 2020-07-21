@@ -34,12 +34,13 @@ public:
 
 private slots:
     void on_toggle_show_status_log();
+    void on_ad_interface_message(const QString &msg, AdInterfaceMessageType type);
 
 private:
     QStatusBar *status_bar = nullptr;
     QTextEdit* status_log = nullptr;
 
-    void add_message(const QString &msg);
+    void add_message(const QString &msg, QColor color);
 
 };
 

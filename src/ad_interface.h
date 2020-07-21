@@ -47,6 +47,11 @@ enum NewObjectType {
     COUNT
 };
 
+enum AdInterfaceMessageType {
+    AdInterfaceMessageType_Success,
+    AdInterfaceMessageType_Error
+};
+
 QString new_object_type_to_display_string(NewObjectType type);
 QString extract_name_from_dn(const QString &dn);
 QString extract_parent_dn_from_dn(const QString &dn);
@@ -107,7 +112,7 @@ public:
 signals:
     void modified();
     void logged_in();
-    void message(const QString &msg);
+    void message(const QString &msg, AdInterfaceMessageType type);
 
 private:
     adldap::AdConnection *connection = nullptr;
@@ -119,6 +124,8 @@ private:
     QMap<QString, QList<QString>> load_attributes(const QString &dn);
     void update_cache(const QList<QString> &changed_dns);
     bool should_emit_message(int result);
+    void success_message(const QString &msg);
+    void error_message(const QString &msg);
 }; 
 
 QString filter_EQUALS(const QString &attribute, const QString &value);
