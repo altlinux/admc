@@ -48,10 +48,12 @@ private slots:
     void on_ad_modified();
 
 private:
+    QString target_dn = "";
     ContentsModel *model = nullptr;
     QTreeView *view = nullptr;
     QLabel *label = nullptr;
 
+    void change_target(const QString &dn);
     void resize_columns();
     void showEvent(QShowEvent *event);
 
@@ -61,17 +63,12 @@ class ContentsModel final : public ObjectModel {
 Q_OBJECT
 
 public:
-    // TODO: make this private again, will need to move slots into model?
-    QString target_dn = "";
-
     ContentsModel(QObject *parent);
 
     void change_target(const QString &dn);
 
 private:
-
-    void load_row(QList<QStandardItem *> row, const QString &dn);
-    void make_new_row(QStandardItem *parent, const QString &dn);
+    void make_row(QStandardItem *parent, const QString &dn);
 };
 
 #endif /* CONTENTS_WIDGET_H */

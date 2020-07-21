@@ -83,11 +83,22 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, ObjectContex
 }
 
 void ContentsWidget::on_containers_selected_changed(const QString &dn) {
-    model->change_target(dn);
+    change_target(dn);
+}
+
+void ContentsWidget::on_ad_modified() {
+    change_target(target_dn);
+}
+
+void ContentsWidget::change_target(const QString &dn) {
+    target_dn = dn;
+
+    model->change_target(target_dn);
+    
     set_root_to_head(view);
     resize_columns();
 
-    const QString target_name = AdInterface::instance()->attribute_get(dn, "name");
+    const QString target_name = AdInterface::instance()->attribute_get(target_dn, "name");
 
     QString label_text;
     if (target_name.isEmpty()) {
@@ -100,11 +111,6 @@ void ContentsWidget::on_containers_selected_changed(const QString &dn) {
         label_text = QString(tr("%1: %2 objects")).arg(target_name).arg(object_count);
     }
     label->setText(label_text);
-}
-
-void ContentsWidget::on_ad_modified() {
-    model->change_target(model->target_dn);
-    set_root_to_head(view);
 }
 
 void ContentsWidget::resize_columns() {
@@ -128,28 +134,32 @@ ContentsModel::ContentsModel(QObject *parent)
     setHorizontalHeaderItem(ContentsColumn_DN, new QStandardItem("DN"));
 }
 
-void ContentsModel::change_target(const QString &dn) {
+void ContentsModel::change_target(const QString &target_dn) {
     removeRows(0, rowCount());
 
-    if (dn == "") {
+    if (target_dn == "") {
         return;
     }
 
     // Load head
-    target_dn = dn;
     QStandardItem *root = invisibleRootItem();    
-    make_new_row(root, target_dn);
+    make_row(root, target_dn);
     QStandardItem *head = item(0, 0);
 
     // Load children
-    QList<QString> children = AdInterface::instance()->list(dn);
+    QList<QString> children = AdInterface::instance()->list(target_dn);
     for (auto child_dn : children) {
-        make_new_row(head, child_dn);
+        make_row(head, child_dn);
     }
 }
 
-void ContentsModel::load_row(QList<QStandardItem *> row, const QString &dn) {
-    QString name = AdInterface::instance()->attribute_get(dn, "name");
+void ContentsModel::make_row(QStandardItem *parent, const QString &dn) {
+    auto row = QList<QStandardItem *>();
+    for (int i = 0; i < ContentsColumn_COUNT; i++) {
+        row.push_back(new QStandardItem());
+    }
+
+    const QString name = AdInterface::instance()->attribute_get(dn, "name");
 
     // NOTE: this is given as raw DN and contains '-' where it should
     // have spaces, so convert it
@@ -157,24 +167,15 @@ void ContentsModel::load_row(QList<QStandardItem *> row, const QString &dn) {
     category = extract_name_from_dn(category);
     category = category.replace('-', ' ');
 
-    QString description = AdInterface::instance()->attribute_get(dn, "description");
+    const QString description = AdInterface::instance()->attribute_get(dn, "description");
 
     row[ContentsColumn_Name]->setText(name);
     row[ContentsColumn_Category]->setText(category);
     row[ContentsColumn_Description]->setText(description);
     row[ContentsColumn_DN]->setText(dn);
 
-    QIcon icon = get_object_icon(dn);
+    const QIcon icon = get_object_icon(dn);
     row[0]->setIcon(icon);
-}
-
-void ContentsModel::make_new_row(QStandardItem *parent, const QString &dn) {
-    auto row = QList<QStandardItem *>();
-    for (int i = 0; i < ContentsColumn_COUNT; i++) {
-        row.push_back(new QStandardItem());
-    }
-
-    load_row(row, dn);
 
     parent->appendRow(row);
 }
