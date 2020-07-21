@@ -101,6 +101,7 @@ QString value_to_string(VariantSetting type) {
         CASE_ENUM_TO_STRING(VariantSetting_Site);
         CASE_ENUM_TO_STRING(VariantSetting_Host);
         CASE_ENUM_TO_STRING(VariantSetting_MainWindowGeometry);
+        CASE_ENUM_TO_STRING(VariantSetting_Locale);
         CASE_ENUM_TO_STRING(VariantSetting_COUNT);
     }
     return "";

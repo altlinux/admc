@@ -39,6 +39,7 @@ enum VariantSetting {
     VariantSetting_Site,    
     VariantSetting_Host,    
     VariantSetting_MainWindowGeometry,
+    VariantSetting_Locale,
     VariantSetting_COUNT,    
 };
 

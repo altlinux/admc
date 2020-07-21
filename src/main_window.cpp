@@ -35,6 +35,7 @@
 #include <QStatusBar>
 #include <QVBoxLayout>
 #include <QTextEdit>
+#include <QActionGroup>
 
 MainWindow::MainWindow()
 : QMainWindow()
@@ -71,6 +72,38 @@ MainWindow::MainWindow()
         add_bool_setting_action(menubar_preferences, tr("Open attributes on left click in Contents window"), BoolSetting_DetailsFromContents);
         add_bool_setting_action(menubar_preferences, tr("Confirm actions"), BoolSetting_ConfirmActions);
         add_bool_setting_action(menubar_preferences, tr("Login using saved session at startup"), BoolSetting_AutoLogin);
+
+        QMenu *language_menu = menubar_preferences->addMenu(tr("Language"));
+        auto language_group = new QActionGroup(language_menu);
+
+        auto add_language_action =
+        [language_menu, language_group] (QLocale::Language language) {
+            const QString language_string = QLocale::languageToString(language);
+            QLocale locale(language);
+
+            const auto action = new QAction(language_string, language_group);
+            action->setCheckable(true);
+            language_group->addAction(action);
+            language_menu->addAction(action);
+
+            const QLocale saved_locale = Settings::instance()->get_variant(VariantSetting_Locale).toLocale();
+            const QLocale::Language saved_language = saved_locale.language();
+            if (language == saved_language) {
+                action->setChecked(true);
+            }
+
+            connect(
+                action, &QAction::toggled,
+                [locale](bool checked) {
+                    if (checked) {
+                        Settings::instance()->set_variant(VariantSetting_Locale, locale);
+                    }
+                }
+                );
+        };
+
+        add_language_action(QLocale::English);
+        add_language_action(QLocale::Russian);
     }
 
     // Widgets

@@ -20,6 +20,7 @@
 #include "config.h"
 #include "main_window.h"
 #include "ad_interface.h"
+#include "settings.h"
 
 #include <QApplication>
 #include <QCommandLineParser>
@@ -34,9 +35,10 @@ int main(int argc, char **argv) {
     app.setOrganizationName(ADMC_ORGANIZATION);
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
 
+    const QLocale saved_locale = Settings::instance()->get_variant(VariantSetting_Locale).toLocale();
+
     QTranslator translator;
-    translator.load(QLocale().system(), QString(), QString(), ":/translations");
-    // translator.load(QLocale(QLocale::Russian), QString(), QString(), ":/translations");
+    translator.load(saved_locale, QString(), QString(), ":/translations");
     app.installTranslator(&translator);
 
     QCommandLineParser cli_parser;
