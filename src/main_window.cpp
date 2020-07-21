@@ -52,7 +52,7 @@ MainWindow::MainWindow()
     setWindowTitle("MainWindow");
 
     // Restore last geometry
-    const QByteArray geometry = Settings::instance()->get_value(SettingsValue_MainWindowGeometry).toByteArray();
+    const QByteArray geometry = Settings::instance()->get_variant(VariantSetting_MainWindowGeometry).toByteArray();
     if (!geometry.isEmpty()) {
         restoreGeometry(geometry);
     }
@@ -68,21 +68,21 @@ MainWindow::MainWindow()
         });
 
         auto add_bool_setting_action = 
-        [](QMenu *menu, QString display_text, BoolSettingType type) {
+        [](QMenu *menu, QString display_text, BoolSetting type) {
             QAction *action = menu->addAction(display_text);
-            Settings::instance()->connect_action_to_bool_setting(action, type);
+            Settings::instance()->connect_action_to_get_bool_signal(action, type);
         };
 
         QMenu *menubar_view = menubar->addMenu(tr("View"));
-        add_bool_setting_action(menubar_view, "Advanced view", BoolSettingType_AdvancedView);
-        add_bool_setting_action(menubar_view, "Show DN column", BoolSettingType_DnColumn);
-        add_bool_setting_action(menubar_view, "Show status log", BoolSettingType_ShowStatusLog);
+        add_bool_setting_action(menubar_view, "Advanced view", BoolSetting_AdvancedView);
+        add_bool_setting_action(menubar_view, "Show DN column", BoolSetting_DnColumn);
+        add_bool_setting_action(menubar_view, "Show status log", BoolSetting_ShowStatusLog);
 
         QMenu *menubar_preferences = menubar->addMenu(tr("Preferences"));
-        add_bool_setting_action(menubar_preferences, "Open attributes on left click in Containers window", BoolSettingType_DetailsFromContainers);
-        add_bool_setting_action(menubar_preferences, "Open attributes on left click in Contents window", BoolSettingType_DetailsFromContents);
-        add_bool_setting_action(menubar_preferences, "Confirm actions", BoolSettingType_ConfirmActions);
-        add_bool_setting_action(menubar_preferences, "Login using saved session at startup", BoolSettingType_AutoLogin);
+        add_bool_setting_action(menubar_preferences, "Open attributes on left click in Containers window", BoolSetting_DetailsFromContainers);
+        add_bool_setting_action(menubar_preferences, "Open attributes on left click in Contents window", BoolSetting_DetailsFromContents);
+        add_bool_setting_action(menubar_preferences, "Confirm actions", BoolSetting_ConfirmActions);
+        add_bool_setting_action(menubar_preferences, "Login using saved session at startup", BoolSetting_AutoLogin);
     }
 
     // Widgets
@@ -135,10 +135,10 @@ MainWindow::MainWindow()
             central_widget->setEnabled(true);
         });
 
-    const bool auto_login = Settings::instance()->get_bool(BoolSettingType_AutoLogin);
+    const bool auto_login = Settings::instance()->get_bool(BoolSetting_AutoLogin);
     if (auto_login) {
-        const QString host = Settings::instance()->get_value(SettingsValue_Host).toString();
-        const QString domain = Settings::instance()->get_value(SettingsValue_Domain).toString();
+        const QString host = Settings::instance()->get_variant(VariantSetting_Host).toString();
+        const QString domain = Settings::instance()->get_variant(VariantSetting_Domain).toString();
 
         if (!host.isEmpty()) {
             AdInterface::instance()->login(host, domain);
@@ -148,5 +148,5 @@ MainWindow::MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event) {
     const QByteArray geometry = saveGeometry();
-    Settings::instance()->set_value(SettingsValue_MainWindowGeometry, QVariant(geometry));
+    Settings::instance()->set_variant(VariantSetting_MainWindowGeometry, QVariant(geometry));
 }

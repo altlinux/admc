@@ -33,9 +33,9 @@ Status::Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *p
 
     add_message(tr("Ready"));
 
-    const BoolSetting *show_status_log_setting = Settings::instance()->bool_setting(BoolSettingType_ShowStatusLog);
+    const BoolSettingSignal *show_status_log_setting = Settings::instance()->get_bool_signal(BoolSetting_ShowStatusLog);
     connect(
-        show_status_log_setting, &BoolSetting::changed,
+        show_status_log_setting, &BoolSettingSignal::changed,
         this, &Status::on_toggle_show_status_log);
     on_toggle_show_status_log();
     
@@ -45,7 +45,7 @@ Status::Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *p
 }
 
 void Status::on_toggle_show_status_log() {
-    const bool show_status_log = Settings::instance()->get_bool(BoolSettingType_ShowStatusLog);
+    const bool show_status_log = Settings::instance()->get_bool(BoolSetting_ShowStatusLog);
 
     if (show_status_log) {
         status_log->setVisible(true); 

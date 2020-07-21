@@ -24,7 +24,7 @@
  * Provides access to settings via enums rather than plain strings.
  * Settings are saved to file automatically when this object is
  * destructed.
- * Settings of boolean type have BoolSetting objects which emit
+ * Settings of boolean type have BoolSettingSignal objects which emit
  * changed() signal when setting is changed
  */
 
@@ -34,26 +34,26 @@ class QAction;
 class QSettings;
 class QVariant;
 
-enum SettingsValue {
-    SettingsValue_Domain,    
-    SettingsValue_Site,    
-    SettingsValue_Host,    
-    SettingsValue_MainWindowGeometry,
-    SettingsValue_COUNT,    
+enum VariantSetting {
+    VariantSetting_Domain,    
+    VariantSetting_Site,    
+    VariantSetting_Host,    
+    VariantSetting_MainWindowGeometry,
+    VariantSetting_COUNT,    
 };
 
-enum BoolSettingType {
-    BoolSettingType_AdvancedView,
-    BoolSettingType_DnColumn,
-    BoolSettingType_DetailsFromContainers,
-    BoolSettingType_DetailsFromContents,
-    BoolSettingType_ConfirmActions,
-    BoolSettingType_ShowStatusLog,
-    BoolSettingType_AutoLogin,
-    BoolSettingType_COUNT,
+enum BoolSetting {
+    BoolSetting_AdvancedView,
+    BoolSetting_DnColumn,
+    BoolSetting_DetailsFromContainers,
+    BoolSetting_DetailsFromContents,
+    BoolSetting_ConfirmActions,
+    BoolSetting_ShowStatusLog,
+    BoolSetting_AutoLogin,
+    BoolSetting_COUNT,
 };
 
-class BoolSetting final : public QObject {
+class BoolSettingSignal final : public QObject {
 Q_OBJECT
 signals:
     void changed();
@@ -70,22 +70,22 @@ public:
 
     static Settings *instance();
 
-    QVariant get_value(SettingsValue value_enum) const;
-    void set_value(SettingsValue value_enum, const QVariant &value);
+    QVariant get_variant(VariantSetting type) const;
+    void set_variant(VariantSetting type, const QVariant &value);
 
-    const BoolSetting *bool_setting(BoolSettingType type) const;
-    bool get_bool(BoolSettingType type) const;
+    const BoolSettingSignal *get_bool_signal(BoolSetting type) const;
+    bool get_bool(BoolSetting type) const;
 
     /** 
      * Connect action and bool setting so that toggling the action
      * updates setting value as well
      * Action becomes checkable
      */ 
-    void connect_action_to_bool_setting(QAction *action, BoolSettingType type);
+    void connect_action_to_get_bool_signal(QAction *action, BoolSetting type);
 
 private:
     QSettings *qsettings = nullptr;
-    BoolSetting bools[BoolSettingType_COUNT];
+    BoolSettingSignal bools[BoolSetting_COUNT];
 
     Settings();
 };

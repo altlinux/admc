@@ -23,34 +23,34 @@
 #include <QAction>
 #include <QSettings>
 
-QString bool_to_string(BoolSettingType type);
-QString value_to_string(SettingsValue type);
+QString bool_to_string(BoolSetting type);
+QString value_to_string(VariantSetting type);
 
 Settings *Settings::instance() {
     static Settings settings;
     return &settings;
 }
 
-const BoolSetting *Settings::bool_setting(BoolSettingType type) const {
+const BoolSettingSignal *Settings::get_bool_signal(BoolSetting type) const {
     return &bools[type];
 }
 
-bool Settings::get_bool(BoolSettingType type) const {
+bool Settings::get_bool(BoolSetting type) const {
     const QString setting_str = bool_to_string(type);
     const bool value = qsettings->value(setting_str, false).toBool();
 
     return value;
 }
 
-QVariant Settings::get_value(SettingsValue value_enum) const {
-    const QString name = value_to_string(value_enum);
+QVariant Settings::get_variant(VariantSetting type) const {
+    const QString name = value_to_string(type);
     const QVariant value = qsettings->value(name); 
 
     return value;
 }
 
-void Settings::set_value(SettingsValue value_enum, const QVariant &value) {
-    const QString name = value_to_string(value_enum);
+void Settings::set_variant(VariantSetting type, const QVariant &value) {
+    const QString name = value_to_string(type);
     qsettings->setValue(name, value);
 }
 
@@ -58,7 +58,7 @@ Settings::Settings() {
     qsettings = new QSettings(ADMC_ORGANIZATION, ADMC_APPLICATION_NAME, this);
 }
 
-void Settings::connect_action_to_bool_setting(QAction *action, BoolSettingType type) {
+void Settings::connect_action_to_get_bool_signal(QAction *action, BoolSetting type) {
     action->setCheckable(true);
 
     const QString setting_str = bool_to_string(type);
@@ -80,28 +80,28 @@ void Settings::connect_action_to_bool_setting(QAction *action, BoolSettingType t
 #define CASE_ENUM_TO_STRING(ENUM) case ENUM: return #ENUM
 
 // Convert enum to string literal via macro
-// BoolSettingType_Foo => "BoolSettingType_Foo"
-QString bool_to_string(BoolSettingType type) {
+// BoolSetting_Foo => "BoolSetting_Foo"
+QString bool_to_string(BoolSetting type) {
     switch (type) {
-        CASE_ENUM_TO_STRING(BoolSettingType_AdvancedView);
-        CASE_ENUM_TO_STRING(BoolSettingType_DnColumn);
-        CASE_ENUM_TO_STRING(BoolSettingType_DetailsFromContainers);
-        CASE_ENUM_TO_STRING(BoolSettingType_DetailsFromContents);
-        CASE_ENUM_TO_STRING(BoolSettingType_ConfirmActions);
-        CASE_ENUM_TO_STRING(BoolSettingType_ShowStatusLog);
-        CASE_ENUM_TO_STRING(BoolSettingType_AutoLogin);
-        CASE_ENUM_TO_STRING(BoolSettingType_COUNT);
+        CASE_ENUM_TO_STRING(BoolSetting_AdvancedView);
+        CASE_ENUM_TO_STRING(BoolSetting_DnColumn);
+        CASE_ENUM_TO_STRING(BoolSetting_DetailsFromContainers);
+        CASE_ENUM_TO_STRING(BoolSetting_DetailsFromContents);
+        CASE_ENUM_TO_STRING(BoolSetting_ConfirmActions);
+        CASE_ENUM_TO_STRING(BoolSetting_ShowStatusLog);
+        CASE_ENUM_TO_STRING(BoolSetting_AutoLogin);
+        CASE_ENUM_TO_STRING(BoolSetting_COUNT);
     }
     return "";
 }
 
-QString value_to_string(SettingsValue type) {
+QString value_to_string(VariantSetting type) {
     switch (type) {
-        CASE_ENUM_TO_STRING(SettingsValue_Domain);
-        CASE_ENUM_TO_STRING(SettingsValue_Site);
-        CASE_ENUM_TO_STRING(SettingsValue_Host);
-        CASE_ENUM_TO_STRING(SettingsValue_MainWindowGeometry);
-        CASE_ENUM_TO_STRING(SettingsValue_COUNT);
+        CASE_ENUM_TO_STRING(VariantSetting_Domain);
+        CASE_ENUM_TO_STRING(VariantSetting_Site);
+        CASE_ENUM_TO_STRING(VariantSetting_Host);
+        CASE_ENUM_TO_STRING(VariantSetting_MainWindowGeometry);
+        CASE_ENUM_TO_STRING(VariantSetting_COUNT);
     }
     return "";
 }

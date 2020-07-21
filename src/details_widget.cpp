@@ -111,14 +111,14 @@ void DetailsWidget::on_ad_modified() {
 }
 
 void DetailsWidget::on_containers_clicked_dn(const QString &dn) {
-    const bool details_from_containers = Settings::instance()->get_bool(BoolSettingType_DetailsFromContainers);
+    const bool details_from_containers = Settings::instance()->get_bool(BoolSetting_DetailsFromContainers);
     if (details_from_containers) {
         change_target(dn);
     }
 }
 
 void DetailsWidget::on_contents_clicked_dn(const QString &dn) {
-    const bool details_from_contents = Settings::instance()->get_bool(BoolSettingType_DetailsFromContents);
+    const bool details_from_contents = Settings::instance()->get_bool(BoolSetting_DetailsFromContents);
     if (details_from_contents) {
         change_target(dn);
     }
