@@ -78,10 +78,10 @@ MainWindow::MainWindow()
 
         auto add_language_action =
         [language_menu, language_group] (QLocale::Language language) {
-            const QString language_string = QLocale::languageToString(language);
             QLocale locale(language);
+            const QString language_name = locale.nativeLanguageName();
 
-            const auto action = new QAction(language_string, language_group);
+            const auto action = new QAction(language_name, language_group);
             action->setCheckable(true);
             language_group->addAction(action);
             language_menu->addAction(action);
