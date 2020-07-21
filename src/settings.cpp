@@ -24,7 +24,7 @@
 #include <QSettings>
 
 QString bool_to_string(BoolSetting type);
-QString value_to_string(VariantSetting type);
+QString variant_to_string(VariantSetting type);
 
 Settings *Settings::instance() {
     static Settings settings;
@@ -43,14 +43,14 @@ bool Settings::get_bool(BoolSetting type) const {
 }
 
 QVariant Settings::get_variant(VariantSetting type) const {
-    const QString name = value_to_string(type);
+    const QString name = variant_to_string(type);
     const QVariant value = qsettings->value(name); 
 
     return value;
 }
 
 void Settings::set_variant(VariantSetting type, const QVariant &value) {
-    const QString name = value_to_string(type);
+    const QString name = variant_to_string(type);
     qsettings->setValue(name, value);
 }
 
@@ -95,7 +95,7 @@ QString bool_to_string(BoolSetting type) {
     return "";
 }
 
-QString value_to_string(VariantSetting type) {
+QString variant_to_string(VariantSetting type) {
     switch (type) {
         CASE_ENUM_TO_STRING(VariantSetting_Domain);
         CASE_ENUM_TO_STRING(VariantSetting_Site);
