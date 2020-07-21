@@ -36,6 +36,7 @@
 #include <QVBoxLayout>
 #include <QTextEdit>
 #include <QActionGroup>
+#include <QMessageBox>
 
 MainWindow::MainWindow()
 : QMainWindow()
@@ -77,7 +78,7 @@ MainWindow::MainWindow()
         auto language_group = new QActionGroup(language_menu);
 
         auto add_language_action =
-        [language_menu, language_group] (QLocale::Language language) {
+        [this, language_menu, language_group] (QLocale::Language language) {
             QLocale locale(language);
             const QString language_name = locale.nativeLanguageName();
 
@@ -94,9 +95,11 @@ MainWindow::MainWindow()
 
             connect(
                 action, &QAction::toggled,
-                [locale](bool checked) {
+                [this, locale](bool checked) {
                     if (checked) {
                         Settings::instance()->set_variant(VariantSetting_Locale, locale);
+
+                        QMessageBox::information(this, tr("Info"), tr("App needs to be restarted for the language option to take effect."));
                     }
                 }
                 );
