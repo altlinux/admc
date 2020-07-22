@@ -64,17 +64,6 @@ QList<QString> AdInterface::get_domain_hosts(const QString &domain, const QStrin
     }
 }
 
-QString new_object_type_to_display_string(NewObjectType type) {
-    switch (type) {
-        case NewObjectType::User: return AdInterface::tr("User");
-        case NewObjectType::Computer: return AdInterface::tr("Computer");
-        case NewObjectType::OU: return AdInterface::tr("Organization Unit");
-        case NewObjectType::Group: return AdInterface::tr("Group");
-        case NewObjectType::COUNT: return "COUNT";
-    }
-    return "";
-}
-
 // "CN=foo,CN=bar,DC=domain,DC=com"
 // =>
 // "foo"
@@ -323,16 +312,14 @@ bool AdInterface::object_create(const QString &name, const QString &dn, NewObjec
         case COUNT: break;
     }
 
-    const QString type_str = new_object_type_to_display_string(type);
-
     if (result == AD_SUCCESS) {
-        success_message(QString(tr("Created object \"%1\" of type \"%2\"")).arg(dn, type_str));
+        success_message(QString(tr("Created \"%1\"")).arg(dn));
 
         update_cache({dn});
 
         return true;
     } else {
-        error_message(QString(tr("Failed to create object \"%1\" of type \"%2\"")).arg(dn, type_str));
+        error_message(QString(tr("Failed to create \"%1\"")).arg(dn));
 
         return false;
     }

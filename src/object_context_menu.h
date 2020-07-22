@@ -46,10 +46,6 @@ private:
     void open(const QPoint &global_pos, const QString &dn, const QString &parent_dn);
     void delete_object(const QString &dn);
     void new_object_dialog(const QString &parent_dn, NewObjectType type);
-    void new_user(const QString &dn);
-    void new_computer(const QString &dn);
-    void new_group(const QString &dn);
-    void new_ou(const QString &dn);
     void rename(const QString &dn);
     void edit_policy(const QString &dn);
 

@@ -52,7 +52,6 @@ enum AdInterfaceMessageType {
     AdInterfaceMessageType_Error
 };
 
-QString new_object_type_to_display_string(NewObjectType type);
 QString extract_name_from_dn(const QString &dn);
 QString extract_parent_dn_from_dn(const QString &dn);
 

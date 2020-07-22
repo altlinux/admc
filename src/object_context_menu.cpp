@@ -33,6 +33,8 @@
 #include <QModelIndex>
 #include <QAbstractItemView>
 
+QString get_new_object_display_string(NewObjectType type);
+
 ObjectContextMenu::ObjectContextMenu(QWidget *parent)
 : QMenu(parent)
 {
@@ -82,18 +84,14 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
     });
 
     QMenu *submenu_new = addMenu("New");
-    submenu_new->addAction(tr("New User"), [this, dn]() {
-        new_user(dn);
-    });
-    submenu_new->addAction(tr("New Computer"), [this, dn]() {
-        new_computer(dn);
-    });
-    submenu_new->addAction(tr("New Group"), [this, dn]() {
-        new_group(dn);
-    });
-    submenu_new->addAction(tr("New OU"), [this, dn]() {
-        new_ou(dn);
-    });
+    for (int i = 0; i < NewObjectType::COUNT; i++) {
+        const NewObjectType type = (NewObjectType) i;
+        const QString object_string = get_new_object_display_string(type);
+
+        submenu_new->addAction(object_string, [this, dn, type]() {
+            new_object_dialog(dn, type);
+        });
+    }
 
     addAction(tr("Move"), [this, dn]() {
         move_dialog->open_for_object(dn, MoveDialogType_Move);
@@ -145,19 +143,15 @@ void ObjectContextMenu::delete_object(const QString &dn) {
 }
 
 void ObjectContextMenu::new_object_dialog(const QString &parent_dn, NewObjectType type) {
-    QString type_string = new_object_type_to_display_string(type);
-    QString dialog_title = tr("New ") + type_string;
-    QString input_label = type_string + tr(" name");
+    const QString dialog_title = tr("New object: ") + get_new_object_display_string(type);
+    const QString input_label = tr("Name");
 
     bool ok;
     QString name = QInputDialog::getText(this, dialog_title, input_label, QLineEdit::Normal, "", &ok);
 
     // TODO: maybe expand tree to newly created object?
 
-    // Create user once dialog is complete
     if (ok && !name.isEmpty()) {
-        // Attempt to create user in AD
-
         const QMap<NewObjectType, QString> new_object_type_to_suffix = {
             {NewObjectType::User, "CN"},
             {NewObjectType::Computer, "CN"},
@@ -170,22 +164,6 @@ void ObjectContextMenu::new_object_dialog(const QString &parent_dn, NewObjectTyp
 
         AdInterface::instance()->object_create(name, dn, type);
     }
-}
-
-void ObjectContextMenu::new_user(const QString &dn) {
-    new_object_dialog(dn, NewObjectType::User);
-}
-
-void ObjectContextMenu::new_computer(const QString &dn) {
-    new_object_dialog(dn, NewObjectType::Computer);
-}
-
-void ObjectContextMenu::new_group(const QString &dn) {
-    new_object_dialog(dn, NewObjectType::Group);
-}
-
-void ObjectContextMenu::new_ou(const QString &dn) {
-    new_object_dialog(dn, NewObjectType::OU);
 }
 
 void ObjectContextMenu::rename(const QString &dn) {
@@ -220,4 +198,15 @@ void ObjectContextMenu::edit_policy(const QString &dn) {
     printf("execute command: %s %s %s\n", qPrintable(program_name), qPrintable(uri), qPrintable(path));
 
     process->start();
+}
+
+QString get_new_object_display_string(NewObjectType type) {
+    switch (type) {
+        case NewObjectType::User: return ObjectContextMenu::tr("User");
+        case NewObjectType::Computer: return ObjectContextMenu::tr("Computer");
+        case NewObjectType::OU: return ObjectContextMenu::tr("Organization Unit");
+        case NewObjectType::Group: return ObjectContextMenu::tr("Group");
+        case NewObjectType::COUNT: return "COUNT";
+    }
+    return "";
 }

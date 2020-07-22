@@ -4,127 +4,107 @@
 <context>
     <name>AdInterface</name>
     <message>
-        <location filename="../src/ad_interface.cpp" line="69"/>
-        <source>User</source>
-        <translation>Пользователь</translation>
-    </message>
-    <message>
-        <location filename="../src/ad_interface.cpp" line="70"/>
-        <source>Computer</source>
-        <translation>Компьютер</translation>
-    </message>
-    <message>
-        <location filename="../src/ad_interface.cpp" line="71"/>
-        <source>Organization Unit</source>
-        <translation>Организация</translation>
-    </message>
-    <message>
-        <location filename="../src/ad_interface.cpp" line="72"/>
-        <source>Group</source>
-        <translation>Група</translation>
-    </message>
-    <message>
-        <location filename="../src/ad_interface.cpp" line="110"/>
+        <location filename="../src/ad_interface.cpp" line="99"/>
         <source>Logged in to &quot;%1&quot; at &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="116"/>
+        <location filename="../src/ad_interface.cpp" line="105"/>
         <source>Failed to login to &quot;%1&quot; at &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="154"/>
+        <location filename="../src/ad_interface.cpp" line="143"/>
         <source>Failed to load children of &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="180"/>
+        <location filename="../src/ad_interface.cpp" line="169"/>
         <source>Failed to search for &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="290"/>
+        <location filename="../src/ad_interface.cpp" line="279"/>
         <source>Failed to change attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="335"/>
-        <source>Failed to create object &quot;%1&quot; of type &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ad_interface.cpp" line="354"/>
+        <location filename="../src/ad_interface.cpp" line="341"/>
         <source>Failed to delete object &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="385"/>
+        <location filename="../src/ad_interface.cpp" line="372"/>
         <source>Failed to move &quot;%1&quot; to &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="405"/>
+        <location filename="../src/ad_interface.cpp" line="392"/>
         <source>Failed to add user &quot;%1&quot; to group &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="425"/>
+        <location filename="../src/ad_interface.cpp" line="412"/>
         <source>Failed to remove user &quot;%1&quot; from group &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="228"/>
+        <location filename="../src/ad_interface.cpp" line="217"/>
         <source>Failed to get attributes of &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="284"/>
+        <location filename="../src/ad_interface.cpp" line="273"/>
         <source>Changed attribute &quot;%1&quot; of &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="329"/>
-        <source>Created object &quot;%1&quot; of type &quot;%2&quot;</source>
+        <location filename="../src/ad_interface.cpp" line="316"/>
+        <source>Created &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="350"/>
+        <location filename="../src/ad_interface.cpp" line="322"/>
+        <source>Failed to create &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="337"/>
         <source>Deleted object &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="381"/>
+        <location filename="../src/ad_interface.cpp" line="368"/>
         <source>Moved &quot;%1&quot; to &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="401"/>
+        <location filename="../src/ad_interface.cpp" line="388"/>
         <source>Added user &quot;%1&quot; to group &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="421"/>
+        <location filename="../src/ad_interface.cpp" line="408"/>
         <source>Removed user &quot;%1&quot; from group &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="457"/>
+        <location filename="../src/ad_interface.cpp" line="444"/>
         <source>Renamed &quot;%1&quot; to &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="461"/>
+        <location filename="../src/ad_interface.cpp" line="448"/>
         <source>Failed to rename &quot;%1&quot; to &quot;%2&quot;. Error: &quot;%3&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="474"/>
+        <location filename="../src/ad_interface.cpp" line="461"/>
         <source>Set pass of &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="480"/>
+        <location filename="../src/ad_interface.cpp" line="467"/>
         <source>Failed to set pass of &quot;%1&quot;. Error: &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -426,83 +406,83 @@
 <context>
     <name>ObjectContextMenu</name>
     <message>
-        <location filename="../src/object_context_menu.cpp" line="73"/>
+        <location filename="../src/object_context_menu.cpp" line="75"/>
         <source>Details</source>
         <translation>Детали</translation>
     </message>
     <message>
-        <location filename="../src/object_context_menu.cpp" line="77"/>
+        <location filename="../src/object_context_menu.cpp" line="79"/>
         <source>Delete</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/object_context_menu.cpp" line="80"/>
-        <location filename="../src/object_context_menu.cpp" line="193"/>
+        <location filename="../src/object_context_menu.cpp" line="82"/>
+        <location filename="../src/object_context_menu.cpp" line="171"/>
         <source>Rename</source>
         <translation>Переименовать</translation>
     </message>
     <message>
-        <location filename="../src/object_context_menu.cpp" line="85"/>
-        <source>New User</source>
-        <translation>Новый Пользователь</translation>
-    </message>
-    <message>
-        <location filename="../src/object_context_menu.cpp" line="88"/>
-        <source>New Computer</source>
-        <translation>Новый Компъютер</translation>
-    </message>
-    <message>
-        <location filename="../src/object_context_menu.cpp" line="91"/>
-        <source>New Group</source>
-        <translation>Новая Группа</translation>
-    </message>
-    <message>
-        <location filename="../src/object_context_menu.cpp" line="94"/>
-        <source>New OU</source>
-        <translation>Новая Организация</translation>
-    </message>
-    <message>
-        <location filename="../src/object_context_menu.cpp" line="98"/>
+        <location filename="../src/object_context_menu.cpp" line="96"/>
         <source>Move</source>
         <translation>Переместить</translation>
     </message>
     <message>
-        <location filename="../src/object_context_menu.cpp" line="106"/>
+        <location filename="../src/object_context_menu.cpp" line="104"/>
         <source>Edit Policy</source>
         <translation>Редактировать политику</translation>
     </message>
     <message>
-        <location filename="../src/object_context_menu.cpp" line="112"/>
+        <location filename="../src/object_context_menu.cpp" line="110"/>
         <source>Add to group</source>
         <translation>Добавить в группу</translation>
     </message>
     <message>
-        <location filename="../src/object_context_menu.cpp" line="116"/>
+        <location filename="../src/object_context_menu.cpp" line="114"/>
         <source>Reset password</source>
         <translation>Поменять пароль</translation>
     </message>
     <message>
-        <location filename="../src/object_context_menu.cpp" line="128"/>
+        <location filename="../src/object_context_menu.cpp" line="126"/>
         <source>Remove from group</source>
         <translation>Убрать из группы</translation>
     </message>
     <message>
-        <location filename="../src/object_context_menu.cpp" line="139"/>
+        <location filename="../src/object_context_menu.cpp" line="137"/>
         <source>Are you sure you want to delete &quot;%1&quot;?</source>
         <translation>Вы уверены что хотите удалить %1?</translation>
     </message>
     <message>
-        <location filename="../src/object_context_menu.cpp" line="149"/>
-        <source>New </source>
-        <translation>Новое(вая)(вый)( &gt;.&lt;) </translation>
+        <location filename="../src/object_context_menu.cpp" line="146"/>
+        <source>New object: </source>
+        <translation>Новый объект: </translation>
     </message>
     <message>
-        <location filename="../src/object_context_menu.cpp" line="150"/>
-        <source> name</source>
-        <translation> имя</translation>
+        <location filename="../src/object_context_menu.cpp" line="147"/>
+        <source>Name</source>
+        <translation>Имя</translation>
     </message>
     <message>
-        <location filename="../src/object_context_menu.cpp" line="194"/>
+        <location filename="../src/object_context_menu.cpp" line="205"/>
+        <source>User</source>
+        <translation>Пользователь</translation>
+    </message>
+    <message>
+        <location filename="../src/object_context_menu.cpp" line="206"/>
+        <source>Computer</source>
+        <translation>Компьютер</translation>
+    </message>
+    <message>
+        <location filename="../src/object_context_menu.cpp" line="207"/>
+        <source>Organization Unit</source>
+        <translation>Организация</translation>
+    </message>
+    <message>
+        <location filename="../src/object_context_menu.cpp" line="208"/>
+        <source>Group</source>
+        <translation>Группа</translation>
+    </message>
+    <message>
+        <location filename="../src/object_context_menu.cpp" line="172"/>
         <source>New name:</source>
         <translation>Новое имя:</translation>
     </message>
@@ -624,7 +604,7 @@
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="82"/>
         <source>Ready</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Готово</translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="89"/>
