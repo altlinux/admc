@@ -70,7 +70,10 @@ set(ADMC_SOURCES
 )
 
 set(TS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)
-set(TS_FILES ${TS_DIR}/ru.ts)
+set(TS_FILES
+    ${TS_DIR}/ru.ts
+    ${TS_DIR}/en.ts
+)
 
 # `make translations` to generate translation sources (.ts)
 # NOTE: put this in a custom target so that translations aren't rebuilt on every source change
