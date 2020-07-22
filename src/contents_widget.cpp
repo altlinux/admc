@@ -108,7 +108,8 @@ void ContentsWidget::change_target(const QString &dn) {
         const QModelIndex view_head = view_model->index(0, 0);
         const int object_count = view_model->rowCount(view_head);
 
-        label_text = QString(tr("%1: %2 objects")).arg(target_name).arg(object_count);
+        const QString objects_string = tr("%n object(s)", "", object_count);
+        label_text = QString("%1: %2").arg(target_name, objects_string);
     }
     label->setText(label_text);
 }
