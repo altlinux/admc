@@ -17,20 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef MENUBAR_H
+#define MENUBAR_H
 
-#include <QMainWindow>
+#include <QMenuBar>
 
-class MainWindow final : public QMainWindow {
+class LoginDialog;
+
+class MenuBar final : public QMenuBar {
 Q_OBJECT
 
 public:
-    explicit MainWindow();
+    explicit MenuBar(QWidget* parent);
 
-protected:
-    void closeEvent(QCloseEvent *event);
+private slots:
+    void on_login_action();
+    void on_exit_action();
+
+private:
+    LoginDialog *login_dialog = nullptr;
 
 };
 
-#endif /* MAIN_WINDOW_H */
+#endif /* MENUBAR_H */
