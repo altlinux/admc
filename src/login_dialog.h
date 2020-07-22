@@ -19,7 +19,6 @@
 class QWidget;
 class QLineEdit;
 class QListWidget;
-class QAction;
 class QListWidgetItem;
 class QCheckBox;
 class QString;
@@ -28,10 +27,11 @@ class LoginDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    LoginDialog(QAction *login_action, QWidget *parent);
+    LoginDialog(QWidget *parent);
+
+    void open();
 
 private slots:
-    void show();
     void on_host_double_clicked(QListWidgetItem *item);
     void on_login_button(bool);
     void on_cancel_button(bool);

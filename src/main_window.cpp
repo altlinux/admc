@@ -47,12 +47,16 @@ MainWindow::MainWindow()
         restoreGeometry(geometry);
     }
 
+    auto login_dialog = new LoginDialog(nullptr);
+    
     // Menubar
-    QAction *login_action = nullptr;
     {
         QMenuBar *menubar = menuBar();
         QMenu *menubar_file = menubar->addMenu(tr("File"));
-        login_action = menubar_file->addAction(tr("Login"));
+        menubar_file->addAction(tr("Login"),
+            [login_dialog] () {
+                login_dialog->open();
+            });
         QAction *exit_action = menubar_file->addAction(tr("Exit"));
         connect(exit_action, &QAction::triggered,
             this, &MainWindow::on_action_exit);
@@ -121,8 +125,6 @@ MainWindow::MainWindow()
 
     auto status_log = new QTextEdit(this);
     status_log->setReadOnly(true);
-
-    new LoginDialog(login_action, this);
 
     QStatusBar *status_bar = statusBar();
     new Status(status_bar, status_log, this);

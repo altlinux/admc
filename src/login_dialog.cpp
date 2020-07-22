@@ -25,14 +25,13 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QListWidget>
-#include <QAction>
 #include <QPushButton>
 #include <QMessageBox>
 #include <QCheckBox>
 #include <QString>
 #include <QGridLayout>
 
-LoginDialog::LoginDialog(QAction *login_action, QWidget *parent)
+LoginDialog::LoginDialog(QWidget *parent)
 : QDialog(parent)
 {
     resize(500, 300);
@@ -86,12 +85,9 @@ LoginDialog::LoginDialog(QAction *login_action, QWidget *parent)
     connect(
         this, &QDialog::finished,
         this, &LoginDialog::on_finished);
-    connect(
-        login_action, &QAction::triggered,
-        this, &LoginDialog::show);
 }
 
-void LoginDialog::show() {
+void LoginDialog::open() {
     // Load session values from settings
     const QString domain = Settings::instance()->get_variant(VariantSetting_Domain).toString();
     const QString site = Settings::instance()->get_variant(VariantSetting_Site).toString();
