@@ -981,18 +981,18 @@ int ad_move_user(LDAP *ds, const char *current_dn, const char *new_container) {
 int ad_move(LDAP *ds, const char *current_dn, const char *new_container) {
     int result = AD_SUCCESS;
 
-    char **exdn = NULL;
+    char *rdn = strdup(current_dn);
 
-    // TODO: deprecated, use ldap_str2dn and also save_ldap_error()
-    exdn = ldap_explode_dn(current_dn, 0);
-    if (exdn == NULL) {
-        save_error("Failed to explode DN");
+    char *comma_ptr = strchr(rdn, ',');
+    if (comma_ptr == NULL) {
+        save_error("Failed to extract RDN from DN");
         result = AD_INVALID_DN;
 
         goto end;
     }
+    *comma_ptr = '\0';
 
-    const int result_rename = ldap_rename_s(ds, current_dn, exdn[0], new_container, 1, NULL, NULL);
+    const int result_rename = ldap_rename_s(ds, current_dn, rdn, new_container, 1, NULL, NULL);
     if (result_rename != LDAP_SUCCESS) {
         save_ldap_error(result_rename);
         result = AD_LDAP_OPERATION_FAILURE;
@@ -1001,7 +1001,7 @@ int ad_move(LDAP *ds, const char *current_dn, const char *new_container) {
     }
 
     end:
-    ldap_memfree(exdn);
+    free(rdn);
 
     return result;
 }
