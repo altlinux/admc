@@ -140,7 +140,9 @@ QList<QString> AdInterface::list(const QString &dn) {
         return children;
     } else {
         if (should_emit_message(result)) {
-            error_message(QString(tr("Failed to load children of \"%1\"")).arg(dn));
+            const QString name = extract_name_from_dn(dn);
+
+            error_message(QString(tr("Failed to load children of \"%1\"")).arg(name));
         }
 
         return QList<QString>();
@@ -214,7 +216,9 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
             return attributes_cache[dn];
         } else {
             if (should_emit_message(result_attribute_get)) {
-                error_message(QString(tr("Failed to get attributes of \"%1\"")).arg(dn));
+                const QString name = extract_name_from_dn(dn);
+                
+                error_message(QString(tr("Failed to get attributes of \"%1\"")).arg(name));
             }
 
             return Attributes();
@@ -269,14 +273,16 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
 
     result = connection->attribute_replace(dn_cstr, attribute_cstr, value_cstr);
 
+    const QString name = extract_name_from_dn(dn);
+
     if (result == AD_SUCCESS) {
-        success_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, dn, old_value, value));
+        success_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value, value));
 
         update_cache({dn});
 
         return true;
     } else {
-        error_message(QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, dn, old_value, value));
+        error_message(QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value, value));
 
         return false;
     }
@@ -313,13 +319,13 @@ bool AdInterface::object_create(const QString &name, const QString &dn, NewObjec
     }
 
     if (result == AD_SUCCESS) {
-        success_message(QString(tr("Created \"%1\"")).arg(dn));
+        success_message(QString(tr("Created \"%1\"")).arg(name));
 
         update_cache({dn});
 
         return true;
     } else {
-        error_message(QString(tr("Failed to create \"%1\"")).arg(dn));
+        error_message(QString(tr("Failed to create \"%1\"")).arg(name));
 
         return false;
     }
@@ -333,12 +339,14 @@ void AdInterface::object_delete(const QString &dn) {
 
     result = connection->object_delete(dn_cstr);
 
+    const QString name = extract_name_from_dn(dn);
+    
     if (result == AD_SUCCESS) {
-        success_message(QString(tr("Deleted object \"%1\"")).arg(dn));
+        success_message(QString(tr("Deleted object \"%1\"")).arg(name));
 
         update_cache({dn});
     } else {
-        error_message(QString(tr("Failed to delete object \"%1\"")).arg(dn));
+        error_message(QString(tr("Failed to delete object \"%1\"")).arg(name));
     }
 }
 
@@ -364,12 +372,15 @@ void AdInterface::object_move(const QString &dn, const QString &new_container) {
     // TODO: drag and drop handles checking move compatibility but need
     // to do this here as well for CLI?
     
+    const QString object_name = extract_name_from_dn(dn);
+    const QString container_name = extract_name_from_dn(new_container);
+    
     if (result == AD_SUCCESS) {
-        success_message(QString(tr("Moved \"%1\" to \"%2\"")).arg(dn).arg(new_container));
+        success_message(QString(tr("Moved \"%1\" to \"%2\"")).arg(object_name, container_name));
 
         update_cache({dn});
     } else {
-        error_message(QString(tr("Failed to move \"%1\" to \"%2\"")).arg(dn, new_container));
+        error_message(QString(tr("Failed to move \"%1\" to \"%2\"")).arg(object_name, container_name));
     }
 }
 
@@ -384,12 +395,15 @@ void AdInterface::group_add_user(const QString &group_dn, const QString &user_dn
 
     result = connection->group_add_user(group_dn_cstr, user_dn_cstr);
 
+    const QString user_name = extract_name_from_dn(user_dn);
+    const QString group_name = extract_name_from_dn(group_dn);
+    
     if (result == AD_SUCCESS) {
-        success_message(QString(tr("Added user \"%1\" to group \"%2\"")).arg(user_dn, group_dn));
+        success_message(QString(tr("Added user \"%1\" to group \"%2\"")).arg(user_name, group_name));
 
         update_cache({group_dn, user_dn});
     } else {
-        error_message(QString(tr("Failed to add user \"%1\" to group \"%2\"")).arg(user_dn, group_dn));
+        error_message(QString(tr("Failed to add user \"%1\" to group \"%2\"")).arg(user_name, group_name));
     }
 }
 
@@ -404,12 +418,15 @@ void AdInterface::group_remove_user(const QString &group_dn, const QString &user
 
     result = connection->group_remove_user(group_dn_cstr, user_dn_cstr);
 
+    const QString user_name = extract_name_from_dn(user_dn);
+    const QString group_name = extract_name_from_dn(group_dn);
+
     if (result == AD_SUCCESS) {
-        success_message(QString(tr("Removed user \"%1\" from group \"%2\"")).arg(user_dn, group_dn));
+        success_message(QString(tr("Removed user \"%1\" from group \"%2\"")).arg(user_name, group_name));
 
         update_cache({group_dn, user_dn});
     } else {
-        error_message(QString(tr("Failed to remove user \"%1\" from group \"%2\"")).arg(user_dn, group_dn));
+        error_message(QString(tr("Failed to remove user \"%1\" from group \"%2\"")).arg(user_name, group_name));
     }
 }
 
@@ -440,12 +457,14 @@ void AdInterface::object_rename(const QString &dn, const QString &new_name) {
         result = connection->rename(dn_cstr, new_rdn_cstr);
     }
 
+    const QString old_name = extract_name_from_dn(dn);
+
     if (result == AD_SUCCESS) {
-        success_message(QString(tr("Renamed \"%1\" to \"%2\"")).arg(dn, new_name));
+        success_message(QString(tr("Renamed \"%1\" to \"%2\"")).arg(old_name, new_name));
 
         update_cache({dn});
     } else {
-        error_message(QString(tr("Failed to rename \"%1\" to \"%2\"")).arg(dn, new_name));
+        error_message(QString(tr("Failed to rename \"%1\" to \"%2\"")).arg(old_name, new_name));
     }
 }
 
@@ -457,14 +476,16 @@ bool AdInterface::set_pass(const QString &dn, const QString &password) {
 
     int result = connection->user_set_pass(dn_cstr, password_cstr);
 
+    const QString name = extract_name_from_dn(dn);
+    
     if (result == AD_SUCCESS) {
-        success_message(QString(tr("Set pass of \"%1\"")).arg(dn));
+        success_message(QString(tr("Set pass of \"%1\"")).arg(name));
 
         update_cache({dn});
 
         return true;
     } else {
-        error_message(QString(tr("Failed to set pass of \"%1\"")).arg(dn));
+        error_message(QString(tr("Failed to set pass of \"%1\"")).arg(name));
     
         return false;
     }
@@ -667,7 +688,7 @@ void AdInterface::success_message(const QString &msg) {
 void AdInterface::error_message(const QString &msg) {
     const QString error_str = get_error_str();
 
-    emit message(QString("%1. Error: %2").arg(msg, error_str), AdInterfaceMessageType_Error);
+    emit message(QString("%1. Error: \"%2\"").arg(msg, error_str), AdInterfaceMessageType_Error);
 }
 
 QString filter_EQUALS(const QString &attribute, const QString &value) {
