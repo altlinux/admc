@@ -445,7 +445,7 @@ void AdInterface::object_rename(const QString &dn, const QString &new_name) {
 
         update_cache({dn});
     } else {
-        error_message(QString(tr("Failed to rename \"%1\" to \"%2\". Error: \"%3\"")).arg(dn, new_name));
+        error_message(QString(tr("Failed to rename \"%1\" to \"%2\"")).arg(dn, new_name));
     }
 }
 
@@ -464,7 +464,7 @@ bool AdInterface::set_pass(const QString &dn, const QString &password) {
 
         return true;
     } else {
-        error_message(QString(tr("Failed to set pass of \"%1\". Error: \"%2\"")).arg(dn));
+        error_message(QString(tr("Failed to set pass of \"%1\"")).arg(dn));
     
         return false;
     }
