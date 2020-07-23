@@ -143,7 +143,7 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts_out)
             *hosts_out = hosts;
         } else {
             *hosts_out = NULL;
-            free(hosts);
+            ad_array_free(hosts);
         }
 
         return result;
@@ -377,7 +377,7 @@ int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***va
         *values_out = values;
     } else {
         *values_out = NULL;
-        free(values);
+        ad_array_free(values);
     }
 
     return result;
