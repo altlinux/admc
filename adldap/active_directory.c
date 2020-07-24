@@ -102,7 +102,7 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts_out)
 
     // Combine site and default hosts
     const int hosts_max_size = site_hosts_size + default_hosts_size + 1;
-    hosts = malloc(sizeof(char *) * hosts_max_size);
+    hosts = calloc(hosts_max_size, sizeof(char *));
     size_t hosts_current_i = 0;
     
     // Load all site hosts first
@@ -131,8 +131,6 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts_out)
             hosts_current_i++;
         }
     }
-
-    hosts[hosts_current_i] = NULL;
 
     end:
     {
@@ -280,7 +278,7 @@ int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***lis
     }
 
     const int entries_count = ldap_count_entries(ds, res);
-    list = malloc(sizeof(char *) * (entries_count + 1));
+    list = calloc(entries_count + 1, sizeof(char *));
 
     int i = 0;
     for (LDAPMessage *entry = ldap_first_entry(ds, res); entry != NULL; entry = ldap_next_entry(ds, entry), i++) {
@@ -288,7 +286,6 @@ int ad_search(LDAP *ds, const char *filter, const char* search_base, char ***lis
         list[i] = strdup(entry_dn);
         ldap_memfree(entry_dn);
     }
-    list[i] = NULL;
 
     end:
     ldap_msgfree(res);
@@ -324,7 +321,7 @@ int ad_list(LDAP *ds, const char *dn, char ***list_out) {
     }
 
     const int entries_count = ldap_count_entries(ds, res);
-    list = malloc(sizeof(char *) * (entries_count + 1));
+    list = calloc(entries_count + 1, sizeof(char *));
 
     int i = 0;
     for (LDAPMessage *entry = ldap_first_entry(ds, res); entry != NULL; entry = ldap_next_entry(ds, entry), i++) {
@@ -332,7 +329,6 @@ int ad_list(LDAP *ds, const char *dn, char ***list_out) {
         list[i] = strdup(entry_dn);
         ldap_memfree(entry_dn);
     }
-    list[i] = NULL;
 
     end:
     ldap_msgfree(res);
@@ -362,11 +358,10 @@ int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***va
     char **values_raw = ldap_get_values(ds, entry, attribute);
     const int values_count = ldap_count_values(values_raw);
 
-    values = malloc(sizeof(char *) * (values_count + 1));
+    values = calloc(values_count + 1, sizeof(char *));
     for (int i = 0; i < values_count; i++) {
         values[i] = strdup(values_raw[i]);
     }
-    values[values_count] = NULL;
 
     ldap_value_free(values_raw);
 
@@ -408,8 +403,7 @@ int ad_get_all_attributes(LDAP *ds, const char *dn, char ****attributes_out) {
     }
 
     const int attributes_size = attributes_count + 1;
-    attributes = malloc(sizeof(char **) * attributes_size);
-    attributes[attributes_size - 1] = NULL;
+    attributes = calloc(attributes_size, sizeof(char **));
 
     // Copy attribute values
     BerElement *berptr;
@@ -419,9 +413,8 @@ int ad_get_all_attributes(LDAP *ds, const char *dn, char ****attributes_out) {
         const int values_count = ldap_count_values(values_ldap);
 
         const int values_size = values_count + 2;
-        char **values = malloc(sizeof(char *) * values_size);
+        char **values = calloc(values_size, sizeof(char *));
         values[0] = strdup(attr);
-        values[values_size - 1] = NULL;
         for (int i = 0; i < values_count; i++) {
             values[i + 1] = strdup(values_ldap[i]);
         }
@@ -1183,7 +1176,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
 
     // Init hosts list
     const size_t hosts_size = answer_count + 1;
-    *hosts = malloc(sizeof(char *) * hosts_size);
+    *hosts = calloc(hosts_size, sizeof(char *));
 
     // Process answers by collecting hosts into list
     size_t hosts_current_i = 0;
@@ -1243,8 +1236,6 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
 
         curr = record_end;
     }
-
-    (*hosts)[hosts_current_i] = NULL;
 
     return AD_SUCCESS;
 
