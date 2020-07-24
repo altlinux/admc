@@ -8,7 +8,6 @@ Summary: AD editor
 License: GPLv2+
 Group: Other
 Url: https://github.com/altlinuxteam/admc
-BuildArch: x86_64
 
 BuildRequires(pre): cmake
 BuildRequires(pre): rpm-macros-cmake
