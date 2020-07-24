@@ -1,7 +1,7 @@
 %define _unpackaged_files_terminate_build 1
 
 Name: admc
-Version: 0.1.0
+Version: 0.2.0
 Release: alt1
 
 Summary: AD editor
@@ -62,6 +62,12 @@ cd BUILD
 %_libdir/libgptbackend.so
 
 %changelog
+* Fri Jul 24 2020 Igor Chudov <nir@altlinux.org> 0.2.0-alt1
+- Translations added
+- Logon dialog implemented
+- libadldap improved
+- Various UI improvements added
+
 * Thu May 21 2020 Igor Chudov <nir@altlinux.org> 0.1.0-alt1
 - Initial build
 
