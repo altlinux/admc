@@ -149,10 +149,12 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts_out)
     }
 }
 
-int ad_login(const char* uri, LDAP **ld) {
+int ad_login(const char* uri, LDAP **ld_out) {
     int result = AD_SUCCESS;
 
-    const int result_init = ldap_initialize(ld, uri);
+    LDAP *ld = NULL;
+
+    const int result_init = ldap_initialize(&ld, uri);
     if (result_init != LDAP_SUCCESS) {
         save_ldap_error(result_init);
         result = AD_SERVER_CONNECT_FAILURE;
@@ -162,7 +164,7 @@ int ad_login(const char* uri, LDAP **ld) {
 
     // Set version
     const int version = LDAP_VERSION3;
-    const int result_set_version = ldap_set_option(*ld, LDAP_OPT_PROTOCOL_VERSION, &version);
+    const int result_set_version = ldap_set_option(ld, LDAP_OPT_PROTOCOL_VERSION, &version);
     if (result_set_version != LDAP_OPT_SUCCESS) {
         save_ldap_error(result_set_version);
         result = AD_SERVER_CONNECT_FAILURE;
@@ -171,7 +173,7 @@ int ad_login(const char* uri, LDAP **ld) {
     }
 
     // Disable referrals
-    const int result_referral =ldap_set_option(*ld, LDAP_OPT_REFERRALS, LDAP_OPT_OFF);
+    const int result_referral =ldap_set_option(ld, LDAP_OPT_REFERRALS, LDAP_OPT_OFF);
     if (result_referral != LDAP_OPT_SUCCESS) {
         save_ldap_error(result_referral);
         result = AD_SERVER_CONNECT_FAILURE;
@@ -181,7 +183,7 @@ int ad_login(const char* uri, LDAP **ld) {
 
     // Set maxssf
     const char* sasl_secprops = "maxssf=56";
-    const int result_secprops = ldap_set_option(*ld, LDAP_OPT_X_SASL_SECPROPS, sasl_secprops);
+    const int result_secprops = ldap_set_option(ld, LDAP_OPT_X_SASL_SECPROPS, sasl_secprops);
     if (result_secprops != LDAP_SUCCESS) {
         save_ldap_error(result_secprops);
         result = AD_SERVER_CONNECT_FAILURE;
@@ -192,14 +194,14 @@ int ad_login(const char* uri, LDAP **ld) {
     // Setup sasl_defaults_gssapi 
     struct sasl_defaults_gssapi defaults;
     defaults.mech = "GSSAPI";
-    ldap_get_option(*ld, LDAP_OPT_X_SASL_REALM, &defaults.realm);
-    ldap_get_option(*ld, LDAP_OPT_X_SASL_AUTHCID, &defaults.authcid);
-    ldap_get_option(*ld, LDAP_OPT_X_SASL_AUTHZID, &defaults.authzid);
+    ldap_get_option(ld, LDAP_OPT_X_SASL_REALM, &defaults.realm);
+    ldap_get_option(ld, LDAP_OPT_X_SASL_AUTHCID, &defaults.authcid);
+    ldap_get_option(ld, LDAP_OPT_X_SASL_AUTHZID, &defaults.authzid);
     defaults.passwd = NULL;
 
     // Perform bind operation
     unsigned sasl_flags = LDAP_SASL_QUIET;
-    const int result_sasl = ldap_sasl_interactive_bind_s(*ld, NULL,defaults.mech, NULL, NULL, sasl_flags, sasl_interact_gssapi, &defaults);
+    const int result_sasl = ldap_sasl_interactive_bind_s(ld, NULL,defaults.mech, NULL, NULL, sasl_flags, sasl_interact_gssapi, &defaults);
 
     ldap_memfree(defaults.realm);
     ldap_memfree(defaults.authcid);
@@ -213,14 +215,19 @@ int ad_login(const char* uri, LDAP **ld) {
 
     // NOTE: not using this for now but might need later
     // The Man says: this function is used when an application needs to bind to another server in order to follow a referral or search continuation reference
-    // ldap_set_rebind_proc(*ld, sasl_rebind_gssapi, NULL);
+    // ldap_set_rebind_proc(ld, sasl_rebind_gssapi, NULL);
 
     end:
-    if (result != AD_SUCCESS) {
-        ldap_memfree(*ld);
-    }
+    {
+        if (result == AD_SUCCESS) {
+            *ld_out = ld;
+        } else {
+            ldap_memfree(ld);
+            *ld_out = NULL;
+        }
 
-    return result;
+        return result;
+    }
 }
 
 size_t ad_array_size(char **array) {

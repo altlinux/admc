@@ -52,7 +52,7 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts_out)
  * If connected succesfully saves connection handle into ds
  * Returns AD_SUCCESS or error code
  */
-int ad_login(const char* uri, LDAP **ds);
+int ad_login(const char* uri, LDAP **ld_out);
 
 /**
  * Calculate size of null-terminated array by iterating through it
