@@ -56,6 +56,7 @@ int dn2domain(const char *dn, char **domain_out);
 int sasl_interact_gssapi(LDAP *ds, unsigned flags, void *indefaults, void *in);
 int query_server_for_hosts(const char *dname, char ***hosts_out);
 int ad_get_all_attributes_internal(LDAP *ds, const char *dn, const char *attribute, LDAPMessage **res_out);
+int get_ldap_result_code(LDAP *ds);
 
 char ad_error_msg[MAX_ERR_LENGTH];
 
@@ -360,8 +361,7 @@ int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***va
 
     values_ldap = ldap_get_values_len(ds, entry, attribute);
     if (values_ldap == NULL) {
-        int get_values_error;
-        ldap_get_option(ds, LDAP_OPT_RESULT_CODE, &get_values_error);
+        int get_values_error = get_ldap_result_code(ds);
         save_ldap_error(get_values_error);
 
         goto end;
@@ -422,34 +422,47 @@ int ad_get_all_attributes(LDAP *ds, const char *dn, char ****attributes_out) {
     BerElement *berptr;
     int attributes_i = 0;
     for (char *attr = ldap_first_attribute(ds, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ds, entry, berptr)) {
-        char **values_ldap = ldap_get_values(ds, entry, attr);
-        const int values_count = ldap_count_values(values_ldap);
+        struct berval **values_ldap = ldap_get_values_len(ds, entry, attr);
+        if (values_ldap == NULL) {
+            int get_values_error = get_ldap_result_code(ds);
+            save_ldap_error(get_values_error);
+
+            ldap_value_free_len(values_ldap);
+
+            goto end;
+        }
+
+        const int values_count = ldap_count_values_len(values_ldap);
 
         const int values_size = values_count + 2;
         char **values = calloc(values_size, sizeof(char *));
         values[0] = strdup(attr);
         for (int i = 0; i < values_count; i++) {
-            values[i + 1] = strdup(values_ldap[i]);
+            struct berval value_berval = *values_ldap[i];
+            values[i + 1] = strdup(value_berval.bv_val);
         }
-
-        ldap_value_free(values_ldap);
-        ldap_memfree(attr);
 
         attributes[attributes_i] = values;
         attributes_i++;
+
+        ldap_value_free_len(values_ldap);
+        ldap_memfree(attr);
     }
     ber_free(berptr, 0);
 
     end:
-    ldap_msgfree(res);
+    {
+        ldap_msgfree(res);
 
-    if (result == AD_SUCCESS) {
-        *attributes_out = attributes;
-    } else {
-        *attributes_out = NULL;
+        if (result == AD_SUCCESS) {
+            *attributes_out = attributes;
+        } else {
+            ad_2d_array_free(attributes);
+            *attributes_out = NULL;
+        }
+
+        return result;
     }
-
-    return result;
 }
 
 int ad_create_user(LDAP *ds, const char *username, const char *dn) {
@@ -1312,4 +1325,15 @@ int ad_get_all_attributes_internal(LDAP *ds, const char *dn, const char *attribu
     *res_out = res;
 
     return result;
+}
+
+/**
+ * Use this to get result code of ldap functions that don't directly
+ * return it
+ */
+int get_ldap_result_code(LDAP *ds) {
+    int result_code;
+    ldap_get_option(ds, LDAP_OPT_RESULT_CODE, &result_code);
+
+    return result_code;
 }
