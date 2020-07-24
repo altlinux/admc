@@ -14,6 +14,7 @@ BuildRequires(pre): cmake
 BuildRequires(pre): rpm-macros-cmake
 BuildRequires(pre): gcc-c++
 BuildRequires(pre): qt5-base-devel
+BuildRequires(pre): qt5-tools-devel
 BuildRequires(pre): catch2-devel
 BuildRequires(pre): cmake-modules
 
