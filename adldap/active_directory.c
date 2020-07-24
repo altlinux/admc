@@ -345,37 +345,50 @@ int ad_list(LDAP *ds, const char *dn, char ***list_out) {
 int ad_get_attribute(LDAP *ds, const char *dn, const char *attribute, char ***values_out) {
     int result = AD_SUCCESS;
 
+    LDAPMessage *res;
+    struct berval **values_ldap = NULL;
     char **values = NULL;
 
-    LDAPMessage *res;
     const int result_get = ad_get_all_attributes_internal(ds, dn, attribute, &res);
-    if (result_get != LDAP_SUCCESS) {
+    if (result_get != AD_SUCCESS) {
+        result = result_get;
+
         goto end;
     }
 
     LDAPMessage *entry = ldap_first_entry(ds, res);
 
-    char **values_raw = ldap_get_values(ds, entry, attribute);
-    const int values_count = ldap_count_values(values_raw);
+    values_ldap = ldap_get_values_len(ds, entry, attribute);
+    if (values_ldap == NULL) {
+        int get_values_error;
+        ldap_get_option(ds, LDAP_OPT_RESULT_CODE, &get_values_error);
+        save_ldap_error(get_values_error);
+
+        goto end;
+    }
+
+    const int values_count = ldap_count_values_len(values_ldap);
 
     values = calloc(values_count + 1, sizeof(char *));
     for (int i = 0; i < values_count; i++) {
-        values[i] = strdup(values_raw[i]);
+        struct berval value_berval = *values_ldap[i];
+        values[i] = strdup(value_berval.bv_val);
     }
-
-    ldap_value_free(values_raw);
 
     end:
-    ldap_msgfree(res);
+    {
+        ldap_msgfree(res);
+        ldap_value_free_len(values_ldap);
 
-    if (result == AD_SUCCESS) {
-        *values_out = values;
-    } else {
-        *values_out = NULL;
-        ad_array_free(values);
+        if (result == AD_SUCCESS) {
+            *values_out = values;
+        } else {
+            *values_out = NULL;
+            ad_array_free(values);
+        }
+
+        return result;
     }
-
-    return result;
 }
 
 int ad_get_all_attributes(LDAP *ds, const char *dn, char ****attributes_out) {
@@ -1261,6 +1274,7 @@ int query_server_for_hosts(const char *dname, char ***hosts_out) {
  * Perform an attribute search on object
  * Outputs LDAPMessage res which contains results of the search
  * res should bbe freed by the caller using ldap_msgfree()
+ * Returns AD_SUCCESS or error code
  */
 int ad_get_all_attributes_internal(LDAP *ds, const char *dn, const char *attribute, LDAPMessage **res_out) {
     int result = AD_SUCCESS;
