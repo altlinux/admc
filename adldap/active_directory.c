@@ -54,7 +54,7 @@ typedef struct sasl_defaults_gssapi {
 
 int dn2domain(const char *dn, char **domain_out);
 int sasl_interact_gssapi(LDAP *ds, unsigned flags, void *indefaults, void *in);
-int query_server_for_hosts(const char *dname, char ***hosts);
+int query_server_for_hosts(const char *dname, char ***hosts_out);
 int ad_get_all_attributes_internal(LDAP *ds, const char *dn, const char *attribute, LDAPMessage **res_out);
 
 char ad_error_msg[MAX_ERR_LENGTH];
@@ -1141,18 +1141,21 @@ int sasl_interact_gssapi(LDAP *ds, unsigned flags, void *indefaults, void *in) {
  * Another example of similar procedure:
  * https://www.gnu.org/software/shishi/coverage/shishi/lib/resolv.c.gcov.html
  */
-int query_server_for_hosts(const char *dname, char ***hosts) {
+int query_server_for_hosts(const char *dname, char ***hosts_out) {
     union dns_msg {
         HEADER header;
         unsigned char buf[NS_MAXMSG];
     } msg;
 
+    int result = AD_SUCCESS;
+
     const int msg_len = res_search(dname, ns_c_in, ns_t_srv, msg.buf, sizeof(msg.buf));
 
     if (msg_len < 0 || msg_len < sizeof(HEADER)) {
         save_error("Bad msg_len");
+        result = AD_RESOLV_ERROR;
 
-        goto error;
+        goto end;
     }
 
     const int packet_count = ntohs(msg.header.qdcount);
@@ -1167,8 +1170,9 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
 
         if (packet_len < 0) {
             save_error("dn_skipname < 0");
+            result = AD_RESOLV_ERROR;
 
-            goto error;
+            goto end;
         }
 
         curr = curr + packet_len + QFIXEDSZ;
@@ -1176,7 +1180,7 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
 
     // Init hosts list
     const size_t hosts_size = answer_count + 1;
-    *hosts = calloc(hosts_size, sizeof(char *));
+    char **hosts = calloc(hosts_size, sizeof(char *));
 
     // Process answers by collecting hosts into list
     size_t hosts_current_i = 0;
@@ -1186,8 +1190,9 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
         const int server_len = dn_expand(msg.buf, eom, curr, server, sizeof(server));
         if (server_len < 0) {
             save_error("dn_expand(server) < 0");
+            result = AD_RESOLV_ERROR;
 
-            goto error;
+            goto end;
         }
         curr = curr + server_len;
 
@@ -1203,8 +1208,9 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
         unsigned char *record_end = curr + record_len;
         if (record_end > eom) {
             save_error("record_end > eom");
+            result = AD_RESOLV_ERROR;
 
-            goto error;
+            goto end;
         }
 
         // Skip non-server records
@@ -1227,24 +1233,27 @@ int query_server_for_hosts(const char *dname, char ***hosts) {
         const int host_len = dn_expand(msg.buf, eom, curr, host, sizeof(host));
         if (host_len < 0) {
             save_error("dn_expand(host) < 0");
+            result = AD_RESOLV_ERROR;
 
-            goto error;
+            goto end;
         }
 
-        (*hosts)[hosts_current_i] = strdup(host);
+        hosts[hosts_current_i] = strdup(host);
         hosts_current_i++;
 
         curr = record_end;
     }
 
-    return AD_SUCCESS;
-
-    error:
+    end:
     {
-        ad_array_free(*hosts);
-        *hosts = NULL;
+        if (result == AD_SUCCESS) {
+            *hosts_out = hosts;
+        } else {
+            *hosts_out = NULL;
+            ad_array_free(hosts);
+        }
 
-        return AD_RESOLV_ERROR;
+        return result;
     }
 }
 
