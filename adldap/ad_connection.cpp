@@ -55,8 +55,9 @@ bool AdConnection::is_connected() {
     return false;
 }
 
-const char *AdConnection::get_error() {
-    return ad_get_error();
+int AdConnection::get_ldap_result() const {
+    const int result = ad_get_ldap_result(ldap_connection);
+    return result;
 }
 
 std::string AdConnection::get_search_base() const {

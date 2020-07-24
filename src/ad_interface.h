@@ -74,7 +74,7 @@ public:
 
     bool login(const QString &host, const QString &domain);
 
-    QString get_error_str();
+    QString get_last_error_string() const;
     QString get_search_base();
     QString get_uri();
 
@@ -117,6 +117,7 @@ private:
     adldap::AdConnection *connection = nullptr;
     QHash<QString, Attributes> attributes_cache;
     bool suppress_not_found_error = false;
+    QString last_error_string = "";
 
     AdInterface();
 
@@ -124,7 +125,7 @@ private:
     void update_cache(const QList<QString> &changed_dns);
     bool should_emit_message(int result);
     void success_message(const QString &msg);
-    void error_message(const QString &msg);
+    void error_message(const QString &msg, int result);
 }; 
 
 QString filter_EQUALS(const QString &attribute, const QString &value);

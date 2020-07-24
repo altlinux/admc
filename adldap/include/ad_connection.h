@@ -35,9 +35,9 @@ public:
     AdConnection();
     int connect(std::string uri_arg, std::string domain);
     bool is_connected();
-    const char *get_error();
     std::string get_search_base() const;
     std::string get_uri() const;
+    int get_ldap_result() const;
 
     int create_user(const char *username, const char *dn);
     int create_computer(const char *name, const char *dn);

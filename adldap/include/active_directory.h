@@ -12,38 +12,32 @@
 **/
 
 #include <ldap.h>
+#include <stdbool.h>
 
 #ifndef ACTIVE_DIRECTORY_H
 #define ACTIVE_DIRECTORY_H 1
 
-/* Error codes */
-#define AD_SUCCESS 1
-#define AD_COULDNT_OPEN_CONFIG_FILE 2
-#define AD_MISSING_CONFIG_PARAMETER 3
-#define AD_SERVER_CONNECT_FAILURE 4
-#define AD_LDAP_OPERATION_FAILURE 5
-#define AD_OBJECT_NOT_FOUND 6
-#define AD_ATTRIBUTE_ENTRY_NOT_FOUND 7
-#define AD_INVALID_DN 8
-#define AD_RESOLV_ERROR 9
+// Result codes
+#define AD_SUCCESS 0
+#define AD_ERROR 1
+#define AD_LDAP_ERROR 2
 
 #if defined(__cplusplus)
 extern "C" {
 #endif /* __cplusplus */
 
 /**
- * Output a pointer to a string containing an explanation
- * of the last error that occured. If no error has previously occured
- * the string the contents are undefined. Subsequent active directory
- * library calls may over-write this string.
+ * Return a result code from last LDAP operation
+ * When a library function returns AD_LDAP_ERROR, use this to get
+ * the ldap error code
  */
-const char *ad_get_error();
+int ad_get_ldap_result(LDAP *ld);
 
 /**
  * Output a list of hosts that exist for given domain and site
  * list is NULL terminated
  * list should be freed by the caller using ad_array_free()
- * Returns AD_SUCCESS or error code
+ * Returns a result code
  */
 int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts_out);
 
