@@ -697,10 +697,14 @@ void AdInterface::default_error_message(const QString &context, int ad_result) {
             // NOTE: hardcode ldap errors here so that they can be translated
             const int ldap_result = connection->get_ldap_result();
             switch (ldap_result) {
+                case LDAP_NO_SUCH_OBJECT: return tr("No such object");
+                case LDAP_CONSTRAINT_VIOLATION: return tr("Constraint violation");
                 default: return tr("Unknown LDAP error");
             }
         } else {
             switch (ad_result) {
+                case AD_SUCCESS: return tr("AD success");
+                case AD_ERROR: return tr("Generic AD error");
                 case AD_INVALID_DN: return tr("Invalid DN");
                 default: return tr("Unknown AD error");
             }
