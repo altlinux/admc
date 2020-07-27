@@ -694,7 +694,6 @@ void AdInterface::default_error_message(const QString &context, int ad_result) {
     auto get_error =
     [this, ad_result]() {
         if (ad_result == AD_LDAP_ERROR) {
-            // NOTE: hardcode ldap errors here so that they can be translated
             const int ldap_result = connection->get_ldap_result();
             switch (ldap_result) {
                 case LDAP_NO_SUCH_OBJECT: return tr("No such object");
