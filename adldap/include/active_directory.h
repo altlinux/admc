@@ -44,7 +44,6 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts_out)
 /**
  * Connect and authenticate to Active Directory server
  * If connected succesfully saves connection handle into ds
- * Returns AD_SUCCESS or error code
  */
 int ad_login(const char* uri, LDAP **ld_out);
 
@@ -80,14 +79,12 @@ int ad_search(LDAP *ld, const char *filter, const char* search_base, char ***lis
  * If none are found, list is allocated and is empty
  * list is NULL terminated
  * list should be freed by the caller using ad_array_free()
- * Returns AD_SUCCESS or error code
  */
 int ad_list(LDAP *ld, const char *dn, char ***list_out);
 
 /**
  * Output a NULL terminated array of values for the given attribute
  * Array should be freed by the caller using ad_array_free()
- * Returns AD_SUCCESS or error code
  */
 int ad_get_attribute(LDAP *ld, const char *dn, const char *attribute, char ***values_out);
 
@@ -96,134 +93,113 @@ int ad_get_attribute(LDAP *ld, const char *dn, const char *attribute, char ***va
  * object
  * Each sub-array contains an attribute name followed by it's values
  * Output should be freed by the caller using ad_2d_array_free()
- * Returns AD_SUCCESS or error code
  */
 int ad_get_all_attributes(LDAP *ld, const char *dn, char ****attributes_out);
 
 /**
  * Create user object below given DN
  * New user object is locked by default
- * Returns AD_SUCCESS or error code
  */
 int ad_create_user(LDAP *ld, const char *username, const char *dn);
 
 /**
  * Create computer object below given DN
- * Returns AD_SUCCESS or error code
  */
 int ad_create_computer(LDAP *ld, const char *name, const char *dn);
 
 /**
  * Create an organizational unit
- * Returns AD_SUCCESS or error code
  */
 int ad_create_ou(LDAP *ld, const char *ou_name, const char *dn);
 
 /**
  * Create a group with given name below given DN
- * Returns AD_SUCCESS or error code
  */
 int ad_create_group(LDAP *ld, const char *group_name, const char *dn);
 
 /**
  * Delete object
- * Returns AD_SUCCESS or error code
  */
 int ad_delete(LDAP *ld, const char *dn);
 
 /**
  * Lock a user account
- * Returns AD_SUCCESS or error code
  */
 int ad_user_lock(LDAP *ld, const char *dn);
 
 /**
  * Unlock a disabled user account
- * Returns AD_SUCCESS or error code
  */
 int ad_user_unlock(LDAP *ld, const char *dn);
 
 /**
  * Set the user's password to the given password string
  * SSL connection is required
- * Returns AD_SUCCESS or error code
  */
 int ad_user_set_pass(LDAP *ld, const char *dn, const char *password);
 
 /**
  * Adds a value to given attribute
  * This function works only on multi-valued attributes
- * Returns AD_SUCCESS or error code
  */
 int ad_attribute_add(LDAP *ld, const char *dn, const char *attribute, const char *value);
 
 /**
  * Same as ad_attribute_add() but for binary data
- * Returns AD_SUCCESS or error code
  */
 int ad_attribute_add_binary(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length);
 
 /**
  * Replaces the value of given attribute with new value
  * If attributes has multiple values, all of them are replaced
- * Returns AD_SUCCESS or error code
  */
 int ad_attribute_replace(LDAP *ld, const char *dn, const char *attribute, const char *value);
 
 /**
  * Same as ad_mode_replace() but for binary data
- * Returns AD_SUCCESS or error code
  */
 int ad_attribute_replace_binary(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length);
 
 /**
  * Remove (attribute, value) mapping from object
  * If given value is NULL, remove all values of this attributes
- * Returns AD_SUCCESS or error code
  */
 int ad_attribute_delete(LDAP *ld, const char *dn, const char *attribute, const char *value);
 
 /**
  * Rename object
  * Use specialized functions to rename users and groups
- * Returns AD_SUCCESS or error code
  */
 int ad_rename(LDAP *ld, const char *dn, const char *new_rdn);
 
 /**
  * Rename user and update related attributes
- * Returns AD_SUCCESS or error code
  */
 int ad_rename_user(LDAP *ld, const char *dn, const char *new_name);
 
 /**
  * Rename group and update related attributes
- * Returns AD_SUCCESS or error code
  */
 int ad_rename_group(LDAP *ld, const char *dn, const char *new_name);
 
 /**
  * Move object
  * Use ad_move_user() for user objects
- * Returns AD_SUCCESS or error code
  */
 int ad_move(LDAP *ld, const char *current_dn, const char *new_container);
 
 /**
  * Move user and update attributes affected by move
- * Returns AD_SUCCESS or error code
  */
 int ad_move_user(LDAP *ld, const char *current_dn, const char *new_container);
 
 /**
  * Add user to a group
- * Returns AD_SUCCESS or error code
  */
 int ad_group_add_user(LDAP *ld, const char *group_dn, const char *user_dn);
 
 /**
  * Remove user from a group
- * Returns AD_SUCCESS or error code
  */
 int ad_group_remove_user(LDAP *ld, const char *group_dn, const char *user_dn);
 

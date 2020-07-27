@@ -1006,7 +1006,6 @@ int ad_group_remove_user(LDAP *ld, const char *group_dn, const char *user_dn) {
  * dns domain, eg: "ou=users,dc=example,dc=com" returns
  * "example.com".
  * domain should be freed using free()
- * Returns AD_SUCCESS or error code
  */
 int dn2domain(const char *dn, char **domain_out) {
     int result = AD_SUCCESS;
@@ -1249,7 +1248,6 @@ int query_server_for_hosts(const char *dname, char ***hosts_out) {
  * Perform an attribute search on object
  * Outputs LDAPMessage res which contains results of the search
  * res should bbe freed by the caller using ldap_msgfree()
- * Returns AD_SUCCESS or error code
  */
 int ad_get_all_attributes_internal(LDAP *ld, const char *dn, const char *attribute, LDAPMessage **res_out) {
     int result = AD_SUCCESS;
