@@ -482,7 +482,7 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
             error_string = tr("Password doesn't match rules");
         }
 
-        error_message(QString(tr("Failed to set pass of \"%1\". Error: \"%2\"")).arg(name, error_string));
+        error_message(QString(tr("Failed to set pass of \"%1\"")).arg(name), error_string);
 
         return make_result(false, error_string);
     }
@@ -684,16 +684,30 @@ void AdInterface::success_message(const QString &msg) {
     emit message(msg, AdInterfaceMessageType_Success);
 }
 
-void AdInterface::error_message(const QString &msg) {
-    emit message(msg, AdInterfaceMessageType_Error);
-}
-
-void AdInterface::default_error_message(const QString &context, int result) {
-    // TODO: convert result code to string using ldap lib
-    const QString error = "";
+void AdInterface::error_message(const QString &context, const QString &error) {
     const QString msg = QString(tr("%1. Error: \"%2\"")).arg(context, error);
 
     emit message(msg, AdInterfaceMessageType_Error);
+}
+
+void AdInterface::default_error_message(const QString &context, int ad_result) {
+    auto get_error =
+    [this, ad_result]() {
+        if (ad_result == AD_LDAP_ERROR) {
+            // NOTE: hardcode ldap errors here so that they can be translated
+            const int ldap_result = connection->get_ldap_result();
+            switch (ldap_result) {
+                default: return tr("Unknown LDAP error");
+            }
+        } else {
+            switch (ad_result) {
+                default: return tr("Unknown AD error");
+            }
+        }
+    };
+    const QString error = get_error();
+
+    error_message(context, error);
 }
 
 QString filter_EQUALS(const QString &attribute, const QString &value) {

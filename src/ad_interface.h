@@ -128,8 +128,8 @@ private:
     void update_cache(const QList<QString> &changed_dns);
     bool should_emit_message(int result);
     void success_message(const QString &msg);
-    void error_message(const QString &msg);
-    void default_error_message(const QString &context, int result);
+    void error_message(const QString &context, const QString &error);
+    void default_error_message(const QString &context, int ad_result);
 }; 
 
 QString filter_EQUALS(const QString &attribute, const QString &value);
