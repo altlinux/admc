@@ -74,9 +74,9 @@ public:
 
     bool login(const QString &host, const QString &domain);
 
-    QString get_last_error_string() const;
     QString get_search_base();
     QString get_uri();
+    QString get_last_error_string() const;
 
     QList<QString> list(const QString &dn);
     QList<QString> search(const QString &filter);
@@ -117,8 +117,10 @@ private:
     adldap::AdConnection *connection = nullptr;
     QHash<QString, Attributes> attributes_cache;
     bool suppress_not_found_error = false;
-    QString last_error_string = "";
-
+    int last_error;
+    
+    static QString get_ldap_error_string(int error);
+    
     AdInterface();
 
     QMap<QString, QList<QString>> load_attributes(const QString &dn);

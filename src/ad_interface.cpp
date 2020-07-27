@@ -109,16 +109,23 @@ bool AdInterface::login(const QString &host, const QString &domain) {
     }
 }
 
-QString AdInterface::get_last_error_string() const {
-    return last_error_string;
-}
-
 QString AdInterface::get_search_base() {
     return QString::fromStdString(connection->get_search_base());
 }
 
 QString AdInterface::get_uri() {
     return QString::fromStdString(connection->get_uri());
+}
+
+QString AdInterface::get_last_error_string() const {
+    if (last_error == AD_LDAP_ERROR) {
+        const int last_ldap_result = connection->get_ldap_result();
+        const QString ldap_result_string = get_ldap_error_string(last_ldap_result);
+
+        return ldap_result_string;
+    } else {
+        return QString();
+    }
 }
 
 QList<QString> AdInterface::list(const QString &dn) {
@@ -681,9 +688,24 @@ void AdInterface::success_message(const QString &msg) {
 }
 
 void AdInterface::error_message(const QString &msg, int error) {
-    
+    last_error = error;
 
-    emit message(QString("%1. Error: \"%2\"").arg(msg, last_error_string), AdInterfaceMessageType_Error);
+    const QString error_string = get_last_error_string();
+
+    QString message_string;
+    if (error_string.isEmpty()) {
+        message_string = QString("%1.").arg(msg);
+    } else {
+        message_string = QString("%1. Error: \"%2\"").arg(msg, error_string);
+    }
+
+    emit message(message_string, AdInterfaceMessageType_Error);
+}
+
+QString AdInterface::get_ldap_error_string(int error) {
+    switch (error) {
+        default: return tr("LDAP error");
+    }
 }
 
 QString filter_EQUALS(const QString &attribute, const QString &value) {
