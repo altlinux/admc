@@ -855,7 +855,7 @@ int ad_rename_user(LDAP *ld, const char *dn, const char *new_name) {
     // Construct userPrincipalName
     const int result_dn2domain = dn2domain(dn, &domain);
     if (result_dn2domain != AD_SUCCESS) {
-        result = AD_ERROR;
+        result = result_dn2domain;
 
         goto end;
     }
@@ -935,7 +935,7 @@ int ad_move_user(LDAP *ld, const char *current_dn, const char *new_container) {
     // Construct userPrincipalName
     const int result_dn2domain = dn2domain(new_container, &domain);
     if (AD_SUCCESS != result_dn2domain) {
-        result = AD_ERROR;
+        result = result_dn2domain;
 
         goto end;
     }
@@ -974,7 +974,7 @@ int ad_move(LDAP *ld, const char *current_dn, const char *new_container) {
     char *comma_ptr = strchr(rdn, ',');
     if (comma_ptr == NULL) {
         // Failed to extract RDN from DN
-        result = AD_ERROR;
+        result = AD_INVALID_DN;
 
         goto end;
     }
@@ -1016,7 +1016,7 @@ int dn2domain(const char *dn, char **domain_out) {
     // Explode dn
     const int result_str2dn = ldap_str2dn(dn, &exp_dn, LDAP_DN_FORMAT_LDAPV3);
     if (result_str2dn != LDAP_SUCCESS) {
-        result = AD_ERROR;
+        result = AD_INVALID_DN;
 
         goto end;
     }
@@ -1029,7 +1029,7 @@ int dn2domain(const char *dn, char **domain_out) {
         LDAPAVA *rdn = rdns[0];
 
         if (rdn == NULL) {
-            result = AD_ERROR;
+            result = AD_INVALID_DN;
 
             goto end;
         }
@@ -1037,7 +1037,7 @@ int dn2domain(const char *dn, char **domain_out) {
         // NOTE: BER/DER encoded attributes are unsupported
         const bool string_encoding = (rdn->la_flags & LDAP_AVA_STRING);
         if (!string_encoding) {
-            result = AD_ERROR;
+            result = AD_INVALID_DN;
 
             goto end;
         }

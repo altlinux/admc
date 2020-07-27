@@ -701,6 +701,7 @@ void AdInterface::default_error_message(const QString &context, int ad_result) {
             }
         } else {
             switch (ad_result) {
+                case AD_INVALID_DN: return tr("Invalid DN");
                 default: return tr("Unknown AD error");
             }
         }

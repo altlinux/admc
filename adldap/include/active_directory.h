@@ -21,6 +21,7 @@
 #define AD_SUCCESS 0
 #define AD_ERROR 1
 #define AD_LDAP_ERROR 2
+#define AD_INVALID_DN 3
 
 #if defined(__cplusplus)
 extern "C" {
