@@ -4,109 +4,154 @@
 <context>
     <name>AdInterface</name>
     <message>
-        <location filename="../src/ad_interface.cpp" line="99"/>
+        <location filename="../src/ad_interface.cpp" line="102"/>
         <source>Logged in to &quot;%1&quot; at &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Логин в &quot;%1&quot; на &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="105"/>
+        <location filename="../src/ad_interface.cpp" line="108"/>
         <source>Failed to login to &quot;%1&quot; at &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Логин не удался в &quot;%1&quot; на &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="143"/>
+        <location filename="../src/ad_interface.cpp" line="144"/>
         <source>Failed to load children of &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось загрузить детей &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="169"/>
+        <location filename="../src/ad_interface.cpp" line="170"/>
         <source>Failed to search for &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось выполнить поиск &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="279"/>
+        <location filename="../src/ad_interface.cpp" line="282"/>
         <source>Failed to change attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось изменить атрибут &quot;%1&quot; объекта &quot;%2&quot; с &quot;%3&quot; на &quot;%4&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="341"/>
+        <location filename="../src/ad_interface.cpp" line="344"/>
         <source>Failed to delete object &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось удалить &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="372"/>
+        <location filename="../src/ad_interface.cpp" line="378"/>
         <source>Failed to move &quot;%1&quot; to &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось переместить &quot;%1&quot; в &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="392"/>
+        <location filename="../src/ad_interface.cpp" line="399"/>
         <source>Failed to add user &quot;%1&quot; to group &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось добавить &quot;%1&quot; в группу &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="412"/>
+        <location filename="../src/ad_interface.cpp" line="420"/>
         <source>Failed to remove user &quot;%1&quot; from group &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось удалить пользователя &quot;%1&quot; из группы &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="217"/>
+        <location filename="../src/ad_interface.cpp" line="458"/>
+        <source>Failed to rename &quot;%1&quot; to &quot;%2&quot;</source>
+        <translation>Не удалось переименовать &quot;%1&quot; в &quot;%2&quot;</translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="482"/>
+        <source>Password doesn&apos;t match rules</source>
+        <translation>Пароль не соответствует правилам</translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="485"/>
+        <source>Failed to set pass of &quot;%1&quot;</source>
+        <translation>Не удалось установить пароль для %1</translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="688"/>
+        <source>%1. Error: &quot;%2&quot;</source>
+        <translation>%1. Ошибка: &quot;%2&quot;</translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="700"/>
+        <source>No such object</source>
+        <translation>Нет такого объекта</translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="701"/>
+        <source>Constraint violation</source>
+        <translation>Нарушение ограничений</translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="702"/>
+        <source>Unknown LDAP error</source>
+        <translation>Неизвестная LDAP ошибка</translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="706"/>
+        <source>AD success</source>
+        <translation>AD успех</translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="707"/>
+        <source>Generic AD error</source>
+        <translation>AD ошибка</translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="708"/>
+        <source>Invalid DN</source>
+        <translation>Недействительный DN</translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="709"/>
+        <source>Unknown AD error</source>
+        <translation>Неизвестная AD ошибка</translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="220"/>
         <source>Failed to get attributes of &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось получить атрибуты для &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="273"/>
+        <location filename="../src/ad_interface.cpp" line="276"/>
         <source>Changed attribute &quot;%1&quot; of &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменен атрибут &quot;%1&quot; из &quot;%2&quot; с &quot;%3&quot; на &quot;%4&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="316"/>
+        <location filename="../src/ad_interface.cpp" line="319"/>
         <source>Created &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Создан объект - &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="322"/>
+        <location filename="../src/ad_interface.cpp" line="325"/>
         <source>Failed to create &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать объект &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="337"/>
+        <location filename="../src/ad_interface.cpp" line="340"/>
         <source>Deleted object &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Удален объект - &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="368"/>
+        <location filename="../src/ad_interface.cpp" line="374"/>
         <source>Moved &quot;%1&quot; to &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Перемещен объект - &quot;%1&quot; в &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="388"/>
+        <location filename="../src/ad_interface.cpp" line="395"/>
         <source>Added user &quot;%1&quot; to group &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавлен пользователь &quot;%1&quot; в группу &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="408"/>
+        <location filename="../src/ad_interface.cpp" line="416"/>
         <source>Removed user &quot;%1&quot; from group &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Удален пользователь &quot;%1&quot; из группы &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="444"/>
+        <location filename="../src/ad_interface.cpp" line="454"/>
         <source>Renamed &quot;%1&quot; to &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Переименован объект &quot;%1&quot; в &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="448"/>
-        <source>Failed to rename &quot;%1&quot; to &quot;%2&quot;. Error: &quot;%3&quot;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ad_interface.cpp" line="461"/>
+        <location filename="../src/ad_interface.cpp" line="473"/>
         <source>Set pass of &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ad_interface.cpp" line="467"/>
-        <source>Failed to set pass of &quot;%1&quot;. Error: &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Установлен пароль для %1</translation>
     </message>
 </context>
 <context>
@@ -525,7 +570,7 @@
         <translation>Пароли не совпадают!</translation>
     </message>
     <message>
-        <location filename="../src/password_dialog.cpp" line="85"/>
+        <location filename="../src/password_dialog.cpp" line="84"/>
         <source>Failed to set password! %1</source>
         <translation>Не удалось установить пароль! %1</translation>
     </message>
