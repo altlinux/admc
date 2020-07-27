@@ -344,7 +344,7 @@ int ad_get_attribute(LDAP *ld, const char *dn, const char *attribute, char ***va
 
     values_ldap = ldap_get_values_len(ld, entry, attribute);
     if (values_ldap == NULL) {
-        result = AD_ERROR;
+        result = AD_LDAP_ERROR;
 
         goto end;
     }
@@ -408,7 +408,7 @@ int ad_get_all_attributes(LDAP *ld, const char *dn, char ****attributes_out) {
     for (char *attr = ldap_first_attribute(ld, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ld, entry, berptr)) {
         struct berval **values_ldap = ldap_get_values_len(ld, entry, attr);
         if (values_ldap == NULL) {
-            result = AD_ERROR;
+            result = AD_LDAP_ERROR;
 
             ldap_value_free_len(values_ldap);
 
@@ -616,8 +616,7 @@ int ad_user_lock(LDAP *ld, const char *dn) {
     
     const int result_get_flags = ad_get_attribute(ld, dn, "userAccountControl", &flags);
     if (result_get_flags != AD_SUCCESS) {
-        // Failed to get flags
-        result = AD_ERROR;
+        result = result_get_flags;
 
         goto end;
     }
@@ -629,7 +628,6 @@ int ad_user_lock(LDAP *ld, const char *dn) {
 
     const int result_replace = ad_attribute_replace(ld, dn, "userAccountControl", newflags);
     if (result_replace != AD_SUCCESS) {
-        // Failed to replace userAccountControl
         result = result_replace;
 
         goto end;
