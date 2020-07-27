@@ -310,11 +310,11 @@ int ad_search(LDAP *ld, const char *filter, const char* search_base, char ***lis
 int ad_list(LDAP *ld, const char *dn, char ***list_out) {
     int result = AD_SUCCESS;
 
+    LDAPMessage *res;
     char **list = NULL;
 
     char *attrs[] = {"1.1", NULL};
 
-    LDAPMessage *res;
     const int result_search = ldap_search_ext_s(ld, dn, LDAP_SCOPE_ONELEVEL, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
     if (result_search != LDAP_SUCCESS) {
         save_ldap_error(result_search);
@@ -345,6 +345,7 @@ int ad_list(LDAP *ld, const char *dn, char ***list_out) {
         *list_out = list;
     } else {
         *list_out = NULL;
+        ad_array_free(list);
     }
 
     return result;
@@ -402,8 +403,8 @@ int ad_get_all_attributes(LDAP *ld, const char *dn, char ****attributes_out) {
     int result = AD_SUCCESS;
 
     char ***attributes = NULL;
-
     LDAPMessage *res;
+
     const int result_get = ad_get_all_attributes_internal(ld, dn, "*", &res);
     if (result_get != AD_SUCCESS) {
         goto end;
@@ -1182,6 +1183,8 @@ int query_server_for_hosts(const char *dname, char ***hosts_out) {
 
     int result = AD_SUCCESS;
 
+    char **hosts = NULL;
+
     const int msg_len = res_search(dname, ns_c_in, ns_t_srv, msg.buf, sizeof(msg.buf));
 
     if (msg_len < 0 || msg_len < sizeof(HEADER)) {
@@ -1213,7 +1216,7 @@ int query_server_for_hosts(const char *dname, char ***hosts_out) {
 
     // Init hosts list
     const size_t hosts_size = answer_count + 1;
-    char **hosts = calloc(hosts_size, sizeof(char *));
+    hosts = calloc(hosts_size, sizeof(char *));
 
     // Process answers by collecting hosts into list
     size_t hosts_current_i = 0;
@@ -1299,9 +1302,10 @@ int query_server_for_hosts(const char *dname, char ***hosts_out) {
 int ad_get_all_attributes_internal(LDAP *ld, const char *dn, const char *attribute, LDAPMessage **res_out) {
     int result = AD_SUCCESS;
 
+    LDAPMessage *res;
+
     // TODO: use paged search
     char *attrs[] = {(char *)attribute, NULL};
-    LDAPMessage *res;
     const int result_search = ldap_search_ext_s(ld, dn, LDAP_SCOPE_BASE, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
     if (result_search != LDAP_SUCCESS) {
         save_ldap_error(result_search);
@@ -1329,9 +1333,16 @@ int ad_get_all_attributes_internal(LDAP *ld, const char *dn, const char *attribu
     }
 
     end:
-    *res_out = res;
+    {
+        if (result == AD_SUCCESS) {
+            *res_out = res;
+        } else {
+            *res_out = NULL;
+            ldap_msgfree(res);
+        }
 
-    return result;
+        return result;
+    }
 }
 
 /**
