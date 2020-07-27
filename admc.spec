@@ -1,14 +1,13 @@
 %define _unpackaged_files_terminate_build 1
 
 Name: admc
-Version: 0.2.0
+Version: 0.3.0
 Release: alt1
 
 Summary: AD editor
 License: GPLv2+
 Group: Other
 Url: https://github.com/altlinuxteam/admc
-BuildArch: x86_64
 
 BuildRequires(pre): cmake
 BuildRequires(pre): rpm-macros-cmake
@@ -62,6 +61,9 @@ cd BUILD
 %_libdir/libgptbackend.so
 
 %changelog
+* Fri Jul 24 2020 Igor Chudov <nir@altlinux.org> 0.3.0-alt1
+- Build ADMC for all architectures
+
 * Fri Jul 24 2020 Igor Chudov <nir@altlinux.org> 0.2.0-alt1
 - Translations added
 - Logon dialog implemented
