@@ -623,7 +623,6 @@ int ad_user_lock(LDAP *ld, const char *dn) {
     
     const int result_get_flags = ad_get_attribute(ld, dn, "userAccountControl", &flags);
     if (result_get_flags != AD_SUCCESS || flags[0] == NULL) {
-        save_error("Failed to get flags");
         result = result_get_flags;
 
         goto end;
