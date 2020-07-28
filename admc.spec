@@ -1,7 +1,7 @@
 %define _unpackaged_files_terminate_build 1
 
 Name: admc
-Version: 0.3.0
+Version: 0.3.1
 Release: alt1
 
 Summary: AD editor
@@ -61,6 +61,10 @@ cd BUILD
 %_libdir/libgptbackend.so
 
 %changelog
+* Tue Jul 28 2020 Dmitry Degtyarev <kevl@altlinux.org> 0.3.1-alt1
+- Fixed login dialog closing app
+- Fixed app sometimes segfaulting when reading ber format attributes
+
 * Fri Jul 24 2020 Igor Chudov <nir@altlinux.org> 0.3.0-alt1
 - Build ADMC for all architectures
 
