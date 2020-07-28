@@ -114,37 +114,48 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="700"/>
+        <location filename="../src/ad_interface.cpp" line="699"/>
         <source>No such object</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="701"/>
+        <location filename="../src/ad_interface.cpp" line="700"/>
         <source>Constraint violation</source>
         <translation></translation>
     </message>
     <message>
+        <location filename="../src/ad_interface.cpp" line="701"/>
+        <source>Server is unwilling to perform</source>
+        <translation>Server is unwilling to perform</translation>
+    </message>
+    <message>
         <location filename="../src/ad_interface.cpp" line="702"/>
+        <source>Already exists</source>
+        <translatorcomment>add &quot;object&quot; to avoid gendering verb in russian</translatorcomment>
+        <translation>Object already exists</translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="703"/>
         <source>Unknown LDAP error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="706"/>
+        <location filename="../src/ad_interface.cpp" line="707"/>
         <source>AD success</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="707"/>
+        <location filename="../src/ad_interface.cpp" line="708"/>
         <source>Generic AD error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="708"/>
+        <location filename="../src/ad_interface.cpp" line="709"/>
         <source>Invalid DN</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="709"/>
+        <location filename="../src/ad_interface.cpp" line="710"/>
         <source>Unknown AD error</source>
         <translation></translation>
     </message>

@@ -698,6 +698,8 @@ void AdInterface::default_error_message(const QString &context, int ad_result) {
             switch (ldap_result) {
                 case LDAP_NO_SUCH_OBJECT: return tr("No such object");
                 case LDAP_CONSTRAINT_VIOLATION: return tr("Constraint violation");
+                case LDAP_UNWILLING_TO_PERFORM: return tr("Server is unwilling to perform");
+                case LDAP_ALREADY_EXISTS: return tr("Already exists");
                 default: return tr("Unknown LDAP error");
             }
         } else {
