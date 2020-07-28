@@ -64,30 +64,6 @@ QList<QString> AdInterface::get_domain_hosts(const QString &domain, const QStrin
     }
 }
 
-// "CN=foo,CN=bar,DC=domain,DC=com"
-// =>
-// "foo"
-QString extract_name_from_dn(const QString &dn) {
-    int equals_i = dn.indexOf('=') + 1;
-    int comma_i = dn.indexOf(',');
-    int segment_length = comma_i - equals_i;
-
-    QString name = dn.mid(equals_i, segment_length);
-
-    return name;
-}
-
-// "CN=foo,CN=bar,DC=domain,DC=com"
-// =>
-// "CN=bar,DC=domain,DC=com"
-QString extract_parent_dn_from_dn(const QString &dn) {
-    int comma_i = dn.indexOf(',');
-
-    QString parent_dn = dn.mid(comma_i + 1);
-
-    return parent_dn;
-}
-
 bool AdInterface::login(const QString &host, const QString &domain) {
     const QString uri = "ldap://" + host;
     const std::string uri_std = uri.toStdString();
@@ -689,6 +665,30 @@ void AdInterface::error_message(const QString &msg) {
     const QString error_str = get_error_str();
 
     emit message(QString("%1. Error: \"%2\"").arg(msg, error_str), AdInterfaceMessageType_Error);
+}
+
+// "CN=foo,CN=bar,DC=domain,DC=com"
+// =>
+// "foo"
+QString extract_name_from_dn(const QString &dn) {
+    int equals_i = dn.indexOf('=') + 1;
+    int comma_i = dn.indexOf(',');
+    int segment_length = comma_i - equals_i;
+
+    QString name = dn.mid(equals_i, segment_length);
+
+    return name;
+}
+
+// "CN=foo,CN=bar,DC=domain,DC=com"
+// =>
+// "CN=bar,DC=domain,DC=com"
+QString extract_parent_dn_from_dn(const QString &dn) {
+    int comma_i = dn.indexOf(',');
+
+    QString parent_dn = dn.mid(comma_i + 1);
+
+    return parent_dn;
 }
 
 QString filter_EQUALS(const QString &attribute, const QString &value) {
