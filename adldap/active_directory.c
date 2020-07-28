@@ -296,15 +296,17 @@ int ad_search(LDAP *ld, const char *filter, const char* search_base, char ***lis
     }
 
     end:
-    ldap_msgfree(res);
+    {
+        ldap_msgfree(res);
 
-    if (result == AD_SUCCESS) {
-        *list_out = list;
-    } else {
-        *list_out = NULL;
+        if (result == AD_SUCCESS) {
+            *list_out = list;
+        } else {
+            *list_out = NULL;
+        }
+
+        return result;
     }
-
-    return result;
 }
 
 int ad_list(LDAP *ld, const char *dn, char ***list_out) {
@@ -339,16 +341,18 @@ int ad_list(LDAP *ld, const char *dn, char ***list_out) {
     }
 
     end:
-    ldap_msgfree(res);
+    {
+        ldap_msgfree(res);
 
-    if (result == AD_SUCCESS) {
-        *list_out = list;
-    } else {
-        *list_out = NULL;
-        ad_array_free(list);
+        if (result == AD_SUCCESS) {
+            *list_out = list;
+        } else {
+            *list_out = NULL;
+            ad_array_free(list);
+        }
+
+        return result;
     }
-
-    return result;
 }
 
 int ad_get_attribute(LDAP *ld, const char *dn, const char *attribute, char ***values_out) {
@@ -521,10 +525,12 @@ int ad_create_user(LDAP *ld, const char *username, const char *dn) {
     }
 
     end:
-    free(domain);
-    free(upn);
+    {
+        free(domain);
+        free(upn);
 
-    return result;
+        return result;
+    }
 }
 
 int ad_create_computer(LDAP *ld, const char *name, const char *dn) {
@@ -666,9 +672,11 @@ int ad_user_lock(LDAP *ld, const char *dn) {
     }
 
     end:
-    ad_array_free(flags);
-
-    return result;
+    {
+        ad_array_free(flags);
+         
+        return result;
+    }
 }
 
 int ad_user_unlock(LDAP *ld, const char *dn) {
@@ -700,9 +708,11 @@ int ad_user_unlock(LDAP *ld, const char *dn) {
     }
 
     end:
-    ad_array_free(flags);
+    {
+        ad_array_free(flags);
 
-    return result;
+        return result;
+    }
 }
 
 int ad_user_set_pass(LDAP *ld, const char *dn, const char *password) {
@@ -789,9 +799,11 @@ int ad_attribute_add_binary(LDAP *ld, const char *dn, const char *attribute, con
     }
 
     end:
-    free(data_copy);
+    {
+        free(data_copy);
 
-    return result;
+        return result;
+    }
 }
 
 int ad_attribute_replace(LDAP *ld, const char *dn, const char *attribute, const char *value) {
@@ -919,11 +931,13 @@ int ad_rename_user(LDAP *ld, const char *dn, const char *new_name) {
     }
 
     end:
-    free(domain);
-    free(upn);
-    free(new_rdn);
+    {
+        free(domain);
+        free(upn);
+        free(new_rdn);
 
-    return result;
+        return result;
+    }
 }
 
 int ad_rename_group(LDAP *ld, const char *dn, const char *new_name) {
@@ -951,9 +965,11 @@ int ad_rename_group(LDAP *ld, const char *dn, const char *new_name) {
     }
 
     end:
-    free(new_rdn);
+    {
+        free(new_rdn);
 
-    return result;
+        return result;
+    }
 }
 
 int ad_move_user(LDAP *ld, const char *current_dn, const char *new_container) {
@@ -998,11 +1014,13 @@ int ad_move_user(LDAP *ld, const char *current_dn, const char *new_container) {
     }
     
     end:
-    ad_array_free(username);
-    free(domain);
-    free(upn);
+    {
+        ad_array_free(username);
+        free(domain);
+        free(upn);
 
-    return result;
+        return result;
+    }
 }
 
 int ad_move(LDAP *ld, const char *current_dn, const char *new_container) {
@@ -1028,9 +1046,11 @@ int ad_move(LDAP *ld, const char *current_dn, const char *new_container) {
     }
 
     end:
-    free(rdn);
+    {
+        free(rdn);
 
-    return result;
+        return result;
+    }
 }
 
 int ad_group_add_user(LDAP *ld, const char *group_dn, const char *user_dn) {
@@ -1102,17 +1122,19 @@ int dn2domain(const char *dn, char **domain_out) {
     }
 
     end:
-    ldap_dnfree(exp_dn);
+    {
+        ldap_dnfree(exp_dn);
 
-    if (result == AD_SUCCESS) {
-        *domain_out = domain;
-    } else {
-        *domain_out = NULL;
-        free(domain);
-        save_error("Failed to convert DN to Domain");
+        if (result == AD_SUCCESS) {
+            *domain_out = domain;
+        } else {
+            *domain_out = NULL;
+            free(domain);
+            save_error("Failed to convert DN to Domain");
+        }
+
+        return result;
     }
-
-    return result;
 }
 
 /**
