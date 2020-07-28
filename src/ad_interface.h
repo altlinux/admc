@@ -52,6 +52,11 @@ enum AdInterfaceMessageType {
     AdInterfaceMessageType_Error
 };
 
+struct AdResult {
+    bool success;
+    QString msg;
+};
+
 typedef QMap<QString, QList<QString>> Attributes;
 
 class AdInterface final : public QObject {
@@ -71,7 +76,6 @@ public:
 
     bool login(const QString &host, const QString &domain);
 
-    QString get_error_str();
     QString get_search_base();
     QString get_uri();
 
@@ -88,7 +92,7 @@ public:
     void object_delete(const QString &dn);
     void object_move(const QString &dn, const QString &new_container);
     void object_rename(const QString &dn, const QString &new_name);
-    bool set_pass(const QString &dn, const QString &password);
+    AdResult set_pass(const QString &dn, const QString &password);
     
     void group_add_user(const QString &group_dn, const QString &user_dn);
     void group_remove_user(const QString &group_dn, const QString &user_dn);
@@ -114,13 +118,14 @@ private:
     adldap::AdConnection *connection = nullptr;
     QHash<QString, Attributes> attributes_cache;
     bool suppress_not_found_error = false;
-
+        
     AdInterface();
 
     void update_cache(const QList<QString> &changed_dns);
     bool should_emit_message(int result);
     void success_message(const QString &msg);
-    void error_message(const QString &msg);
+    void error_message(const QString &context, const QString &error);
+    void default_error_message(const QString &context, int ad_result);
 }; 
 
 QString extract_name_from_dn(const QString &dn);

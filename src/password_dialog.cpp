@@ -76,13 +76,12 @@ void PasswordDialog::on_ok_button(bool) {
         return;
     }
 
-    const bool success = AdInterface::instance()->set_pass(target, new_password);
+    const AdResult result = AdInterface::instance()->set_pass(target, new_password);
 
-    if (success) {
+    if (result.success) {
         done(QDialog::Accepted);
     } else {
-        const QString error = AdInterface::instance()->get_error_str();
-        QMessageBox::warning(this, "Warning", QString(tr("Failed to set password! %1")).arg(error));
+        QMessageBox::warning(this, "Warning", QString(tr("Failed to set password! %1")).arg(result.msg));
     }
 }
 

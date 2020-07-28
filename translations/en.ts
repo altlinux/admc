@@ -4,108 +4,164 @@
 <context>
     <name>AdInterface</name>
     <message>
-        <location filename="../src/ad_interface.cpp" line="99"/>
+        <location filename="../src/ad_interface.cpp" line="102"/>
         <source>Logged in to &quot;%1&quot; at &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="105"/>
+        <location filename="../src/ad_interface.cpp" line="108"/>
         <source>Failed to login to &quot;%1&quot; at &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="143"/>
+        <location filename="../src/ad_interface.cpp" line="144"/>
         <source>Failed to load children of &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="169"/>
+        <location filename="../src/ad_interface.cpp" line="170"/>
         <source>Failed to search for &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="217"/>
+        <location filename="../src/ad_interface.cpp" line="220"/>
         <source>Failed to get attributes of &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="273"/>
+        <location filename="../src/ad_interface.cpp" line="276"/>
         <source>Changed attribute &quot;%1&quot; of &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="279"/>
+        <location filename="../src/ad_interface.cpp" line="282"/>
         <source>Failed to change attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="316"/>
+        <location filename="../src/ad_interface.cpp" line="319"/>
         <source>Created &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="322"/>
+        <location filename="../src/ad_interface.cpp" line="325"/>
         <source>Failed to create &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="337"/>
+        <location filename="../src/ad_interface.cpp" line="340"/>
         <source>Deleted object &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="341"/>
+        <location filename="../src/ad_interface.cpp" line="344"/>
         <source>Failed to delete object &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="368"/>
+        <location filename="../src/ad_interface.cpp" line="374"/>
         <source>Moved &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="372"/>
+        <location filename="../src/ad_interface.cpp" line="378"/>
         <source>Failed to move &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="388"/>
+        <location filename="../src/ad_interface.cpp" line="395"/>
         <source>Added user &quot;%1&quot; to group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="392"/>
+        <location filename="../src/ad_interface.cpp" line="399"/>
         <source>Failed to add user &quot;%1&quot; to group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="408"/>
+        <location filename="../src/ad_interface.cpp" line="416"/>
         <source>Removed user &quot;%1&quot; from group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="412"/>
+        <location filename="../src/ad_interface.cpp" line="420"/>
         <source>Failed to remove user &quot;%1&quot; from group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="444"/>
+        <location filename="../src/ad_interface.cpp" line="454"/>
         <source>Renamed &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="448"/>
-        <source>Failed to rename &quot;%1&quot; to &quot;%2&quot;. Error: &quot;%3&quot;</source>
+        <location filename="../src/ad_interface.cpp" line="458"/>
+        <source>Failed to rename &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ad_interface.cpp" line="461"/>
+        <location filename="../src/ad_interface.cpp" line="482"/>
+        <source>Password doesn&apos;t match rules</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="485"/>
+        <source>Failed to set pass of &quot;%1&quot;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="688"/>
+        <source>%1. Error: &quot;%2&quot;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="699"/>
+        <source>No such object</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="700"/>
+        <source>Constraint violation</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="701"/>
+        <source>Server is unwilling to perform</source>
+        <translation>Server is unwilling to perform</translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="702"/>
+        <source>Already exists</source>
+        <translatorcomment>add &quot;object&quot; to avoid gendering verb in russian</translatorcomment>
+        <translation>Object already exists</translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="703"/>
+        <source>Unknown LDAP error</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="707"/>
+        <source>AD success</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="708"/>
+        <source>Generic AD error</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="709"/>
+        <source>Invalid DN</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="710"/>
+        <source>Unknown AD error</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ad_interface.cpp" line="473"/>
         <source>Set pass of &quot;%1&quot;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/ad_interface.cpp" line="467"/>
-        <source>Failed to set pass of &quot;%1&quot;. Error: &quot;%2&quot;</source>
         <translation></translation>
     </message>
 </context>
@@ -520,7 +576,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/password_dialog.cpp" line="85"/>
+        <location filename="../src/password_dialog.cpp" line="84"/>
         <source>Failed to set password! %1</source>
         <translation></translation>
     </message>
@@ -553,89 +609,89 @@
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="65"/>
         <source>Open PReg file for editing</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="67"/>
         <source>&amp;Save PReg file</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="68"/>
         <source>Save active PReg file</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="70"/>
         <source>&amp;Save REG file</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="71"/>
         <source>Save active PReg file as REG</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="73"/>
         <source>&amp;Exit</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="74"/>
         <source>Exit GPGUI</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="77"/>
         <source>&amp;About</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="78"/>
         <location filename="../gpgui/gui/MainWindow.cpp" line="134"/>
         <source>About GPGUI</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="82"/>
         <source>Ready</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="89"/>
         <source>Select PReg file to edit</source>
         <extracomment>QMainWindow(parent)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="94"/>
         <source>Select PReg file to save</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="102"/>
         <source>PReg editor</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="103"/>
         <source>GPO editor</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="104"/>
         <source>Domain Control</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="134"/>
         <source>GPGUI about</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../gpgui/gui/MainWindow.cpp" line="182"/>
         <source>Loaded PReg file</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 </TS>

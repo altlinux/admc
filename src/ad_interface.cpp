@@ -19,8 +19,11 @@
 
 #include "ad_interface.h"
 #include "ad_connection.h"
+#include "ldap.h"
 
 #include <QSet>
+
+AdResult make_result(bool success, const QString &msg);
 
 AdInterface::~AdInterface() {
     delete connection;
@@ -78,14 +81,10 @@ bool AdInterface::login(const QString &host, const QString &domain) {
 
         return true;
     } else {
-        error_message(QString(tr("Failed to login to \"%1\" at \"%2\"")).arg(host, domain));
+        default_error_message(QString(tr("Failed to login to \"%1\" at \"%2\"")).arg(host, domain), result);
 
         return false;
     }
-}
-
-QString AdInterface::get_error_str() {
-    return QString(connection->get_error());
 }
 
 QString AdInterface::get_search_base() {
@@ -118,7 +117,7 @@ QList<QString> AdInterface::list(const QString &dn) {
         if (should_emit_message(result)) {
             const QString name = extract_name_from_dn(dn);
 
-            error_message(QString(tr("Failed to load children of \"%1\"")).arg(name));
+            default_error_message(QString(tr("Failed to load children of \"%1\"")).arg(name), result);
         }
 
         return QList<QString>();
@@ -144,7 +143,7 @@ QList<QString> AdInterface::search(const QString &filter) {
         return results;
     } else {
         if (should_emit_message(result_search)) {
-            error_message(QString(tr("Failed to search for \"%1\"")).arg(filter));
+            default_error_message(QString(tr("Failed to search for \"%1\"")).arg(filter), result_search);
         }
 
         return QList<QString>();
@@ -194,7 +193,7 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
             if (should_emit_message(result_attribute_get)) {
                 const QString name = extract_name_from_dn(dn);
                 
-                error_message(QString(tr("Failed to get attributes of \"%1\"")).arg(name));
+                default_error_message(QString(tr("Failed to get attributes of \"%1\"")).arg(name), result_attribute_get);
             }
 
             return Attributes();
@@ -234,8 +233,6 @@ bool AdInterface::attribute_value_exists(const QString &dn, const QString &attri
 }
 
 bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value) {
-    int result = AD_INVALID_DN;
-
     const QString old_value = attribute_get(dn, attribute);
     
     const QByteArray dn_array = dn.toLatin1();
@@ -247,7 +244,7 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
     const QByteArray value_array = value.toLatin1();
     const char *value_cstr = value_array.constData();
 
-    result = connection->attribute_replace(dn_cstr, attribute_cstr, value_cstr);
+    int result = connection->attribute_replace(dn_cstr, attribute_cstr, value_cstr);
 
     const QString name = extract_name_from_dn(dn);
 
@@ -258,7 +255,7 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
 
         return true;
     } else {
-        error_message(QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value, value));
+        default_error_message(QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value, value), result);
 
         return false;
     }
@@ -266,14 +263,14 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
 
 // TODO: can probably make a create_anything() function with enum parameter
 bool AdInterface::object_create(const QString &name, const QString &dn, NewObjectType type) {
-    int result = AD_INVALID_DN;
-    
+
     const QByteArray name_array = name.toLatin1();
     const char *name_cstr = name_array.constData();
 
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
+    int result = AD_ERROR;
     switch (type) {
         case User: {
             result = connection->create_user(name_cstr, dn_cstr);
@@ -301,19 +298,17 @@ bool AdInterface::object_create(const QString &name, const QString &dn, NewObjec
 
         return true;
     } else {
-        error_message(QString(tr("Failed to create \"%1\"")).arg(name));
+        default_error_message(QString(tr("Failed to create \"%1\"")).arg(name), result);
 
         return false;
     }
 }
 
 void AdInterface::object_delete(const QString &dn) {
-    int result = AD_INVALID_DN;
-
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    result = connection->object_delete(dn_cstr);
+    int result = connection->object_delete(dn_cstr);
 
     const QString name = extract_name_from_dn(dn);
     
@@ -322,12 +317,11 @@ void AdInterface::object_delete(const QString &dn) {
 
         update_cache({dn});
     } else {
-        error_message(QString(tr("Failed to delete object \"%1\"")).arg(name));
+        default_error_message(QString(tr("Failed to delete object \"%1\"")).arg(name), result);
     }
 }
 
 void AdInterface::object_move(const QString &dn, const QString &new_container) {
-    int result = AD_INVALID_DN;
 
     QList<QString> dn_split = dn.split(',');
     QString new_dn = dn_split[0] + "," + new_container;
@@ -338,6 +332,7 @@ void AdInterface::object_move(const QString &dn, const QString &new_container) {
     const QByteArray new_container_array = new_container.toLatin1();
     const char *new_container_cstr = new_container_array.constData();
 
+    int result = AD_ERROR;
     const bool object_is_user = is_user(dn);
     if (object_is_user) {
         result = connection->move_user(dn_cstr, new_container_cstr);
@@ -356,20 +351,18 @@ void AdInterface::object_move(const QString &dn, const QString &new_container) {
 
         update_cache({dn});
     } else {
-        error_message(QString(tr("Failed to move \"%1\" to \"%2\"")).arg(object_name, container_name));
+        default_error_message(QString(tr("Failed to move \"%1\" to \"%2\"")).arg(object_name, container_name), result);
     }
 }
 
 void AdInterface::group_add_user(const QString &group_dn, const QString &user_dn) {
-    int result = AD_INVALID_DN;
-
     const QByteArray group_dn_array = group_dn.toLatin1();
     const char *group_dn_cstr = group_dn_array.constData();
 
     const QByteArray user_dn_array = user_dn.toLatin1();
     const char *user_dn_cstr = user_dn_array.constData();
 
-    result = connection->group_add_user(group_dn_cstr, user_dn_cstr);
+    int result = connection->group_add_user(group_dn_cstr, user_dn_cstr);
 
     const QString user_name = extract_name_from_dn(user_dn);
     const QString group_name = extract_name_from_dn(group_dn);
@@ -379,20 +372,18 @@ void AdInterface::group_add_user(const QString &group_dn, const QString &user_dn
 
         update_cache({group_dn, user_dn});
     } else {
-        error_message(QString(tr("Failed to add user \"%1\" to group \"%2\"")).arg(user_name, group_name));
+        default_error_message(QString(tr("Failed to add user \"%1\" to group \"%2\"")).arg(user_name, group_name), result);
     }
 }
 
 void AdInterface::group_remove_user(const QString &group_dn, const QString &user_dn) {
-    int result = AD_INVALID_DN;
-
     const QByteArray group_dn_array = group_dn.toLatin1();
     const char *group_dn_cstr = group_dn_array.constData();
 
     const QByteArray user_dn_array = user_dn.toLatin1();
     const char *user_dn_cstr = user_dn_array.constData();
 
-    result = connection->group_remove_user(group_dn_cstr, user_dn_cstr);
+    int result = connection->group_remove_user(group_dn_cstr, user_dn_cstr);
 
     const QString user_name = extract_name_from_dn(user_dn);
     const QString group_name = extract_name_from_dn(group_dn);
@@ -402,7 +393,7 @@ void AdInterface::group_remove_user(const QString &group_dn, const QString &user
 
         update_cache({group_dn, user_dn});
     } else {
-        error_message(QString(tr("Failed to remove user \"%1\" from group \"%2\"")).arg(user_name, group_name));
+        default_error_message(QString(tr("Failed to remove user \"%1\" from group \"%2\"")).arg(user_name, group_name), result);
     }
 }
 
@@ -424,7 +415,7 @@ void AdInterface::object_rename(const QString &dn, const QString &new_name) {
     const QByteArray new_rdn_array = new_rdn.toLatin1();
     const char *new_rdn_cstr = new_rdn_array.constData();
 
-    int result = AD_INVALID_DN;
+    int result = AD_ERROR;
     if (is_user(dn)) {
         result = connection->rename_user(dn_cstr, new_name_cstr);
     } else if (is_group(dn)) {
@@ -440,11 +431,11 @@ void AdInterface::object_rename(const QString &dn, const QString &new_name) {
 
         update_cache({dn});
     } else {
-        error_message(QString(tr("Failed to rename \"%1\" to \"%2\"")).arg(old_name, new_name));
+        default_error_message(QString(tr("Failed to rename \"%1\" to \"%2\"")).arg(old_name, new_name), result);
     }
 }
 
-bool AdInterface::set_pass(const QString &dn, const QString &password) {
+AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
     const QByteArray password_array = password.toLatin1();
@@ -459,11 +450,17 @@ bool AdInterface::set_pass(const QString &dn, const QString &password) {
 
         update_cache({dn});
 
-        return true;
+        return make_result(true, "");
     } else {
-        error_message(QString(tr("Failed to set pass of \"%1\"")).arg(name));
-    
-        return false;
+        QString error_string;
+        const int ldap_result = connection->get_ldap_result();
+        if (result == AD_LDAP_ERROR && ldap_result == LDAP_CONSTRAINT_VIOLATION) {
+            error_string = tr("Password doesn't match rules");
+        }
+
+        error_message(QString(tr("Failed to set pass of \"%1\"")).arg(name), error_string);
+
+        return make_result(false, error_string);
     }
 }
 
@@ -650,7 +647,9 @@ void AdInterface::update_cache(const QList<QString> &changed_dns) {
 }
 
 bool AdInterface::should_emit_message(int result) {
-    if (result == AD_OBJECT_NOT_FOUND && suppress_not_found_error) {
+    const int ldap_result = connection->get_ldap_result();
+
+    if (suppress_not_found_error && result == AD_LDAP_ERROR && ldap_result == LDAP_NO_SUCH_OBJECT) {
         return false;
     } else {
         return true;
@@ -661,10 +660,36 @@ void AdInterface::success_message(const QString &msg) {
     emit message(msg, AdInterfaceMessageType_Success);
 }
 
-void AdInterface::error_message(const QString &msg) {
-    const QString error_str = get_error_str();
+void AdInterface::error_message(const QString &context, const QString &error) {
+    const QString msg = QString(tr("%1. Error: \"%2\"")).arg(context, error);
 
-    emit message(QString("%1. Error: \"%2\"").arg(msg, error_str), AdInterfaceMessageType_Error);
+    emit message(msg, AdInterfaceMessageType_Error);
+}
+
+void AdInterface::default_error_message(const QString &context, int ad_result) {
+    auto get_error =
+    [this, ad_result]() {
+        if (ad_result == AD_LDAP_ERROR) {
+            const int ldap_result = connection->get_ldap_result();
+            switch (ldap_result) {
+                case LDAP_NO_SUCH_OBJECT: return tr("No such object");
+                case LDAP_CONSTRAINT_VIOLATION: return tr("Constraint violation");
+                case LDAP_UNWILLING_TO_PERFORM: return tr("Server is unwilling to perform");
+                case LDAP_ALREADY_EXISTS: return tr("Already exists");
+                default: return tr("Unknown LDAP error");
+            }
+        } else {
+            switch (ad_result) {
+                case AD_SUCCESS: return tr("AD success");
+                case AD_ERROR: return tr("Generic AD error");
+                case AD_INVALID_DN: return tr("Invalid DN");
+                default: return tr("Unknown AD error");
+            }
+        }
+    };
+    const QString error = get_error();
+
+    error_message(context, error);
 }
 
 // "CN=foo,CN=bar,DC=domain,DC=com"
@@ -707,4 +732,12 @@ QString filter_OR(const QString &a, const QString &b) {
 QString filter_NOT(const QString &a) {
     auto filter = QString("(!%1)").arg(a);
     return filter;
+}
+
+AdResult make_result(bool success, const QString &msg) {
+    AdResult result;
+    result.success = success;
+    result.msg = msg;
+
+    return result;
 }
