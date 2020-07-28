@@ -57,9 +57,6 @@ struct AdResult {
     QString msg;
 };
 
-QString extract_name_from_dn(const QString &dn);
-QString extract_parent_dn_from_dn(const QString &dn);
-
 typedef QMap<QString, QList<QString>> Attributes;
 
 class AdInterface final : public QObject {
@@ -124,7 +121,6 @@ private:
         
     AdInterface();
 
-    QMap<QString, QList<QString>> load_attributes(const QString &dn);
     void update_cache(const QList<QString> &changed_dns);
     bool should_emit_message(int result);
     void success_message(const QString &msg);
@@ -132,6 +128,8 @@ private:
     void default_error_message(const QString &context, int ad_result);
 }; 
 
+QString extract_name_from_dn(const QString &dn);
+QString extract_parent_dn_from_dn(const QString &dn);
 QString filter_EQUALS(const QString &attribute, const QString &value);
 QString filter_AND(const QString &a, const QString &b);
 QString filter_OR(const QString &a, const QString &b);

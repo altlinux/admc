@@ -98,13 +98,6 @@ MenuBar::MenuBar(QWidget* parent)
 
 void MenuBar::on_login_action() {
     login_dialog->open();
-    const QString text = QString(tr("Are you sure you want to exit?"));
-    const bool confirmed = confirmation_dialog(text, this);
-
-    if (confirmed) {
-        QApplication::closeAllWindows();
-        QApplication::quit();
-    }   
 }
 
 void MenuBar::on_exit_action() {

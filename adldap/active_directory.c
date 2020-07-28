@@ -278,25 +278,27 @@ int ad_search(LDAP *ld, const char *filter, const char* search_base, char ***lis
     }
 
     end:
-    ldap_msgfree(res);
+    {
+        ldap_msgfree(res);
 
-    if (result == AD_SUCCESS) {
-        *list_out = list;
-    } else {
-        *list_out = NULL;
+        if (result == AD_SUCCESS) {
+            *list_out = list;
+        } else {
+            *list_out = NULL;
+        }
+
+        return result;
     }
-
-    return result;
 }
 
 int ad_list(LDAP *ld, const char *dn, char ***list_out) {
     int result = AD_SUCCESS;
 
+    LDAPMessage *res;
     char **list = NULL;
 
     char *attrs[] = {"1.1", NULL};
 
-    LDAPMessage *res;
     const int result_search = ldap_search_ext_s(ld, dn, LDAP_SCOPE_ONELEVEL, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
     if (result_search != LDAP_SUCCESS) {
         result = AD_LDAP_ERROR;
@@ -315,15 +317,18 @@ int ad_list(LDAP *ld, const char *dn, char ***list_out) {
     }
 
     end:
-    ldap_msgfree(res);
+    {
+        ldap_msgfree(res);
 
-    if (result == AD_SUCCESS) {
-        *list_out = list;
-    } else {
-        *list_out = NULL;
+        if (result == AD_SUCCESS) {
+            *list_out = list;
+        } else {
+            *list_out = NULL;
+            ad_array_free(list);
+        }
+
+        return result;
     }
-
-    return result;
 }
 
 int ad_get_attribute(LDAP *ld, const char *dn, const char *attribute, char ***values_out) {
@@ -377,8 +382,8 @@ int ad_get_all_attributes(LDAP *ld, const char *dn, char ****attributes_out) {
     int result = AD_SUCCESS;
 
     char ***attributes = NULL;
-
     LDAPMessage *res;
+
     const int result_get = ad_get_all_attributes_internal(ld, dn, "*", &res);
     if (result_get != AD_SUCCESS) {
         result = result_get;
@@ -495,10 +500,12 @@ int ad_create_user(LDAP *ld, const char *username, const char *dn) {
     }
 
     end:
-    free(domain);
-    free(upn);
+    {
+        free(domain);
+        free(upn);
 
-    return result;
+        return result;
+    }
 }
 
 int ad_create_computer(LDAP *ld, const char *name, const char *dn) {
@@ -615,7 +622,8 @@ int ad_user_lock(LDAP *ld, const char *dn) {
     char **flags = NULL;
     
     const int result_get_flags = ad_get_attribute(ld, dn, "userAccountControl", &flags);
-    if (result_get_flags != AD_SUCCESS) {
+    if (result_get_flags != AD_SUCCESS || flags[0] == NULL) {
+        save_error("Failed to get flags");
         result = result_get_flags;
 
         goto end;
@@ -634,9 +642,11 @@ int ad_user_lock(LDAP *ld, const char *dn) {
     }
 
     end:
-    ad_array_free(flags);
-
-    return result;
+    {
+        ad_array_free(flags);
+         
+        return result;
+    }
 }
 
 int ad_user_unlock(LDAP *ld, const char *dn) {
@@ -645,8 +655,7 @@ int ad_user_unlock(LDAP *ld, const char *dn) {
     char **flags = NULL;
 
     const int result_get_flags = ad_get_attribute(ld, dn, "userAccountControl", &flags);
-    if (result_get_flags != AD_SUCCESS) {
-        // Failed to get flags
+    if (result_get_flags != AD_SUCCESS || flags[0] == NULL) {
         result = result_get_flags;
         
         goto end;
@@ -668,9 +677,11 @@ int ad_user_unlock(LDAP *ld, const char *dn) {
     }
 
     end:
-    ad_array_free(flags);
+    {
+        ad_array_free(flags);
 
-    return result;
+        return result;
+    }
 }
 
 int ad_user_set_pass(LDAP *ld, const char *dn, const char *password) {
@@ -754,9 +765,11 @@ int ad_attribute_add_binary(LDAP *ld, const char *dn, const char *attribute, con
     }
 
     end:
-    free(data_copy);
+    {
+        free(data_copy);
 
-    return result;
+        return result;
+    }
 }
 
 int ad_attribute_replace(LDAP *ld, const char *dn, const char *attribute, const char *value) {
@@ -879,11 +892,13 @@ int ad_rename_user(LDAP *ld, const char *dn, const char *new_name) {
     }
 
     end:
-    free(domain);
-    free(upn);
-    free(new_rdn);
+    {
+        free(domain);
+        free(upn);
+        free(new_rdn);
 
-    return result;
+        return result;
+    }
 }
 
 int ad_rename_group(LDAP *ld, const char *dn, const char *new_name) {
@@ -910,9 +925,11 @@ int ad_rename_group(LDAP *ld, const char *dn, const char *new_name) {
     }
 
     end:
-    free(new_rdn);
+    {
+        free(new_rdn);
 
-    return result;
+        return result;
+    }
 }
 
 int ad_move_user(LDAP *ld, const char *current_dn, const char *new_container) {
@@ -923,8 +940,7 @@ int ad_move_user(LDAP *ld, const char *current_dn, const char *new_container) {
     char *upn = NULL;
 
     const int result_get_username = ad_get_attribute(ld, current_dn, "sAMAccountName", &username);
-    if (result_get_username != AD_SUCCESS) {
-        // Failed to get sAMAccountName
+    if (result_get_username != AD_SUCCESS || username[0] == NULL) {
         result = result_get_username;
 
         goto end;
@@ -957,11 +973,13 @@ int ad_move_user(LDAP *ld, const char *current_dn, const char *new_container) {
     }
     
     end:
-    ad_array_free(username);
-    free(domain);
-    free(upn);
+    {
+        ad_array_free(username);
+        free(domain);
+        free(upn);
 
-    return result;
+        return result;
+    }
 }
 
 int ad_move(LDAP *ld, const char *current_dn, const char *new_container) {
@@ -986,9 +1004,11 @@ int ad_move(LDAP *ld, const char *current_dn, const char *new_container) {
     }
 
     end:
-    free(rdn);
+    {
+        free(rdn);
 
-    return result;
+        return result;
+    }
 }
 
 int ad_group_add_user(LDAP *ld, const char *group_dn, const char *user_dn) {
@@ -1059,16 +1079,18 @@ int dn2domain(const char *dn, char **domain_out) {
     }
 
     end:
-    ldap_dnfree(exp_dn);
+    {
+        ldap_dnfree(exp_dn);
 
-    if (result == AD_SUCCESS) {
+        if (result == AD_SUCCESS) {
         *domain_out = domain;
-    } else {
-        *domain_out = NULL;
-        free(domain);
-    }
+        } else {
+            *domain_out = NULL;
+            free(domain);
+        }
 
-    return result;
+        return result;
+    }
 }
 
 /**
@@ -1139,6 +1161,8 @@ int query_server_for_hosts(const char *dname, char ***hosts_out) {
 
     int result = AD_SUCCESS;
 
+    char **hosts = NULL;
+
     const int msg_len = res_search(dname, ns_c_in, ns_t_srv, msg.buf, sizeof(msg.buf));
 
     if (msg_len < 0 || msg_len < sizeof(HEADER)) {
@@ -1168,7 +1192,7 @@ int query_server_for_hosts(const char *dname, char ***hosts_out) {
 
     // Init hosts list
     const size_t hosts_size = answer_count + 1;
-    char **hosts = calloc(hosts_size, sizeof(char *));
+    hosts = calloc(hosts_size, sizeof(char *));
 
     // Process answers by collecting hosts into list
     size_t hosts_current_i = 0;
@@ -1250,9 +1274,10 @@ int query_server_for_hosts(const char *dname, char ***hosts_out) {
 int ad_get_all_attributes_internal(LDAP *ld, const char *dn, const char *attribute, LDAPMessage **res_out) {
     int result = AD_SUCCESS;
 
+    LDAPMessage *res;
+
     // TODO: use paged search
     char *attrs[] = {(char *)attribute, NULL};
-    LDAPMessage *res;
     const int result_search = ldap_search_ext_s(ld, dn, LDAP_SCOPE_BASE, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
     if (result_search != LDAP_SUCCESS) {
         result = AD_LDAP_ERROR;
@@ -1274,7 +1299,14 @@ int ad_get_all_attributes_internal(LDAP *ld, const char *dn, const char *attribu
     }
 
     end:
-    *res_out = res;
+    {
+        if (result == AD_SUCCESS) {
+            *res_out = res;
+        } else {
+            *res_out = NULL;
+            ldap_msgfree(res);
+        }
 
-    return result;
+        return result;
+    }
 }
