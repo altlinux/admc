@@ -51,6 +51,7 @@ enum BoolSetting {
     BoolSetting_ConfirmActions,
     BoolSetting_ShowStatusLog,
     BoolSetting_AutoLogin,
+    BoolSetting_DevMode,
     BoolSetting_COUNT,
 };
 

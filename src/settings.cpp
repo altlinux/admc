@@ -90,6 +90,7 @@ QString bool_to_string(BoolSetting type) {
         CASE_ENUM_TO_STRING(BoolSetting_ConfirmActions);
         CASE_ENUM_TO_STRING(BoolSetting_ShowStatusLog);
         CASE_ENUM_TO_STRING(BoolSetting_AutoLogin);
+        CASE_ENUM_TO_STRING(BoolSetting_DevMode);
         CASE_ENUM_TO_STRING(BoolSetting_COUNT);
     }
     return "";

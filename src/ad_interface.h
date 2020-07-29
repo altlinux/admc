@@ -93,6 +93,7 @@ public:
     void object_move(const QString &dn, const QString &new_container);
     void object_rename(const QString &dn, const QString &new_name);
     AdResult set_pass(const QString &dn, const QString &password);
+    void update_cache(const QList<QString> &changed_dns);
     
     void group_add_user(const QString &group_dn, const QString &user_dn);
     void group_remove_user(const QString &group_dn, const QString &user_dn);
@@ -121,7 +122,6 @@ private:
         
     AdInterface();
 
-    void update_cache(const QList<QString> &changed_dns);
     bool should_emit_message(int result);
     void success_message(const QString &msg);
     void error_message(const QString &context, const QString &error);

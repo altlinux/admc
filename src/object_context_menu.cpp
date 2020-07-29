@@ -23,6 +23,7 @@
 #include "move_dialog.h"
 #include "utils.h"
 #include "password_dialog.h"
+#include "settings.h"
 
 #include <QString>
 #include <QMessageBox>
@@ -34,6 +35,7 @@
 #include <QAbstractItemView>
 
 QString get_new_object_display_string(NewObjectType type);
+void force_reload_attributes_and_diff(const QString &dn);
 
 ObjectContextMenu::ObjectContextMenu(QWidget *parent)
 : QMenu(parent)
@@ -129,6 +131,13 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
         }
     }
 
+    const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
+    if (dev_mode) {
+        addAction(tr("Force reload attributes and diff"), [dn]() {
+            force_reload_attributes_and_diff(dn);
+        });
+    }
+
     exec(global_pos, action_to_show_menu_at);
 }
 
@@ -209,4 +218,46 @@ QString get_new_object_display_string(NewObjectType type) {
         case NewObjectType::COUNT: return "COUNT";
     }
     return "";
+}
+
+void force_reload_attributes_and_diff(const QString &dn) {
+
+    QMap<QString, QList<QString>> old_attributes = AdInterface::instance()->get_all_attributes(dn);
+
+    AdInterface::instance()->update_cache({dn});
+
+    QList<QString> changes;
+
+    QMap<QString, QList<QString>> new_attributes = AdInterface::instance()->get_all_attributes(dn);
+
+    for (auto &attribute : old_attributes.keys()) {
+        const QString old_value = old_attributes[attribute][0];
+
+        if (new_attributes.contains(attribute)) {
+            const QString new_value = new_attributes[attribute][0];
+            
+            if (new_value != old_value) {
+                changes.append(QString("\"%1\": \"%2\"->\"%3\"").arg(attribute, old_value, new_value));
+            }
+        } else {
+            changes.append(QString("\"%1\": \"%2\"->\"unset\"").arg(attribute, old_value));
+        }
+    }
+
+    for (auto &attribute : old_attributes.keys()) {
+        if (!old_attributes.contains(attribute)) {
+            const QString new_value = new_attributes[attribute][0];
+            changes.append(QString("\"%1\": \"unset\"->\"%2\"").arg(attribute, new_value));
+        }
+    }
+
+    if (!changes.isEmpty()) {
+        const QString name = AdInterface::instance()->attribute_get(dn, "name");
+
+        printf("Attributes of object \"%s\" changed:\n", qPrintable(name));
+
+        for (auto change : changes) {
+            printf("%s\n", qPrintable(change));
+        }
+    }
 }

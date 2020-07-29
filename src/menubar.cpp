@@ -60,6 +60,7 @@ MenuBar::MenuBar(QWidget* parent)
     add_bool_setting_action(menubar_preferences, tr("Open attributes on left click in Contents window"), BoolSetting_DetailsFromContents);
     add_bool_setting_action(menubar_preferences, tr("Confirm actions"), BoolSetting_ConfirmActions);
     add_bool_setting_action(menubar_preferences, tr("Login using saved session at startup"), BoolSetting_AutoLogin);
+    add_bool_setting_action(menubar_preferences, tr("Dev mode"), BoolSetting_DevMode);
 
     QMenu *language_menu = menubar_preferences->addMenu(tr("Language"));
     auto language_group = new QActionGroup(language_menu);
