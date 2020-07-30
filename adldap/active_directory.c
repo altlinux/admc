@@ -1023,6 +1023,7 @@ int ad_group_remove_user(LDAP *ld, const char *group_dn, const char *user_dn) {
  * dns domain, eg: "ou=users,dc=example,dc=com" returns
  * "example.com".
  * domain should be freed using free()
+ * Returns AD_SUCCESS, AD_INVALID_DN
  */
 int dn2domain(const char *dn, char **domain_out) {
     int result = AD_SUCCESS;
