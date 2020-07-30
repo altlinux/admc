@@ -34,7 +34,7 @@ public:
 
 private slots:
     void on_toggle_show_status_log();
-    void on_ad_interface_message(const QString &msg, AdInterfaceMessageType type);
+    void on_ad_interface_status_message(const QString &msg, AdInterfaceMessageType type);
 
 private:
     QStatusBar *status_bar = nullptr;

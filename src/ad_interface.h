@@ -116,7 +116,7 @@ public:
 signals:
     void modified();
     void logged_in();
-    void message(const QString &msg, AdInterfaceMessageType type);
+    void status_message(const QString &msg, AdInterfaceMessageType type);
 
 private:
     adldap::AdConnection *connection = nullptr;
@@ -125,9 +125,9 @@ private:
         
     AdInterface();
 
-    bool should_emit_message(int result);
-    void success_message(const QString &msg);
-    void error_message(const QString &context, const QString &error);
+    bool should_emit_status_message(int result);
+    void success_status_message(const QString &msg);
+    void error_status_message(const QString &context, const QString &error);
     QString default_error_string(int ad_result) const;
 }; 
 

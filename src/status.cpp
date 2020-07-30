@@ -40,8 +40,8 @@ Status::Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *p
     on_toggle_show_status_log();
     
     connect(
-        AdInterface::instance(), &AdInterface::message,
-        this, &Status::on_ad_interface_message);
+        AdInterface::instance(), &AdInterface::status_message,
+        this, &Status::on_ad_interface_status_message);
 }
 
 void Status::on_toggle_show_status_log() {
@@ -66,7 +66,7 @@ void Status::add_message(const QString &msg, QColor color) {
     status_log->ensureCursorVisible();
 }
 
-void Status::on_ad_interface_message(const QString &msg, AdInterfaceMessageType type) {
+void Status::on_ad_interface_status_message(const QString &msg, AdInterfaceMessageType type) {
     auto get_color =
     [type]() {
         switch (type) {
