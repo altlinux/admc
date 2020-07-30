@@ -67,6 +67,7 @@ set(ADMC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/login_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/password_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/menubar.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/account_widget.cpp
 )
 
 set(TS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)

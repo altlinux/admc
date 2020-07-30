@@ -110,6 +110,8 @@ public:
     bool is_policy(const QString &dn);
     bool is_container_like(const QString &dn);
 
+    bool user_locked(const QString &dn);
+
     bool object_can_drop(const QString &dn, const QString &target_dn);
     void object_drop(const QString &dn, const QString &target_dn);
 

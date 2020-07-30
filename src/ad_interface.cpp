@@ -598,6 +598,14 @@ bool AdInterface::is_container_like(const QString &dn) {
     return false;
 }
 
+bool AdInterface::user_locked(const QString &dn) {
+    const QString userAccountControl_string = attribute_get(dn, "userAccountControl");
+    const int userAccountControl = userAccountControl_string.toInt();
+    const bool locked = ((userAccountControl & 2) != 0);
+
+    return locked;
+}
+
 enum DropType {
     DropType_Move,
     DropType_AddToGroup,

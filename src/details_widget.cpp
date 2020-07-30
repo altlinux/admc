@@ -25,6 +25,7 @@
 #include "object_context_menu.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
+#include "account_widget.h"
 
 #include <QAction>
 #include <QTabWidget>
@@ -37,6 +38,7 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
     tab_widget = new QTabWidget(this);
     members_widget = new MembersWidget(object_context_menu, this);
     attributes_widget = new AttributesWidget(this);
+    account_widget = new AccountWidget(this);
 
     title_label = new QLabel(this);
 
@@ -49,6 +51,7 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
     // Add all tabs to incorporate them in the layout
     tab_widget->addTab(attributes_widget, "");
     tab_widget->addTab(members_widget, "");
+    tab_widget->addTab(account_widget, "");
 
     connect(
         AdInterface::instance(), &AdInterface::logged_in,
@@ -82,6 +85,7 @@ void DetailsWidget::change_target(const QString &dn) {
 
     attributes_widget->change_target(target_dn);
     members_widget->change_target(target_dn);
+    account_widget->change_target(target_dn);
 
     // Setup tabs
     tab_widget->clear();
@@ -91,6 +95,11 @@ void DetailsWidget::change_target(const QString &dn) {
     bool is_group = AdInterface::instance()->attribute_value_exists(target_dn, "objectClass", "group");
     if (is_group) {
         tab_widget->addTab(members_widget, tr("Group members"));
+    }
+
+    const bool is_user = AdInterface::instance()->is_user(target_dn);
+    if (is_user) {
+        tab_widget->addTab(account_widget, tr("Account"));
     }
 
     // Restore current index if it is still shown
