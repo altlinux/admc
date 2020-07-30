@@ -37,13 +37,11 @@ public:
     void change_target(const QString &dn);
 
 private slots:
-    void on_lock_button();
 
 private:
     QString target_dn;
     QLineEdit *logon_name_edit;
-    QLabel *lock_label;
-    QPushButton *lock_button;
+    QLabel *disabled_label;
 };
 
 #endif /* ACCOUNT_WIDGET_H */

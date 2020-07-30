@@ -76,12 +76,12 @@ int AdConnection::create_computer(const char *name, const char *dn) {
     return ad_create_computer(ldap_connection, name, dn);
 }
 
-int AdConnection::user_lock(const char *dn) {
-    return ad_user_lock(ldap_connection, dn);
+int AdConnection::user_disable(const char *dn) {
+    return ad_user_disable(ldap_connection, dn);
 }
 
-int AdConnection::user_unlock(const char *dn) {
-    return ad_user_unlock(ldap_connection, dn);
+int AdConnection::user_enable(const char *dn) {
+    return ad_user_enable(ldap_connection, dn);
 }
 
 int AdConnection::object_delete(const char *dn) {

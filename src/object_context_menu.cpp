@@ -118,15 +118,14 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
             password_dialog->open();
         });
 
-        const bool locked = AdInterface::instance()->user_locked(dn);
-        QString lock_text;
-        if (locked) {
-            addAction(tr("Unlock account"), [this, dn]() {
-                AdInterface::instance()->user_unlock(dn);
+        const bool enabled = AdInterface::instance()->user_enabled(dn);
+        if (enabled) {
+            addAction(tr("Disable account"), [this, dn]() {
+                AdInterface::instance()->user_disable(dn);
             });
         } else {
-            addAction(tr("Lock account"), [this, dn]() {
-                AdInterface::instance()->user_lock(dn);
+            addAction(tr("Enable account"), [this, dn]() {
+                AdInterface::instance()->user_enable(dn);
             });
         }
     }

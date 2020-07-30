@@ -616,7 +616,7 @@ int ad_delete(LDAP *ld, const char *dn) {
     return result;
 }
 
-int ad_user_lock(LDAP *ld, const char *dn) {
+int ad_user_disable(LDAP *ld, const char *dn) {
     int result = AD_SUCCESS;
 
     char **flags = NULL;
@@ -648,7 +648,7 @@ int ad_user_lock(LDAP *ld, const char *dn) {
     }
 }
 
-int ad_user_unlock(LDAP *ld, const char *dn) {
+int ad_user_enable(LDAP *ld, const char *dn) {
     int result = AD_SUCCESS;
 
     char **flags = NULL;

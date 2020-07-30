@@ -32,18 +32,12 @@ AccountWidget::AccountWidget(QWidget *parent)
 
     logon_name_edit = new QLineEdit(this);
 
-    lock_label = new QLabel(this);
-    lock_button = new QPushButton(this);
+    disabled_label = new QLabel(this);
 
     const auto layout = new QGridLayout(this);
     layout->addWidget(logon_name_label, 0, 0);
     layout->addWidget(logon_name_edit, 1, 0);
-    layout->addWidget(lock_label, 2, 0);
-    layout->addWidget(lock_button, 2, 1);
-
-    connect(
-        lock_button, &QAbstractButton::clicked,
-        this, &AccountWidget::on_lock_button);
+    layout->addWidget(disabled_label, 2, 0);
 }
 
 void AccountWidget::change_target(const QString &dn) {
@@ -52,31 +46,13 @@ void AccountWidget::change_target(const QString &dn) {
     const QString logon_name = AdInterface::instance()->attribute_get(target_dn, "userPrincipalName");
     logon_name_edit->setText(logon_name);
 
-    const bool locked = AdInterface::instance()->user_locked(target_dn);
+    const bool enabled = AdInterface::instance()->user_enabled(target_dn);
 
-    QString lock_label_text;
-    if (locked) {
-        lock_label_text = "Account locked";
+    QString disabled_label_text;
+    if (enabled) {
+        disabled_label_text = "Account enabled";
     } else {
-        lock_label_text = "Account unlocked";
+        disabled_label_text = "Account disabled";
     }
-    lock_label->setText(lock_label_text);
-
-    QString lock_button_text;
-    if (locked) {
-        lock_button_text = "Unlock";
-    } else {
-        lock_button_text = "Lock";
-    }
-    lock_button->setText(lock_button_text);
-}
-
-void AccountWidget::on_lock_button() {
-    const bool locked = AdInterface::instance()->user_locked(target_dn);
-   
-    if (locked) {
-        AdInterface::instance()->user_unlock(target_dn);
-    } else {
-        AdInterface::instance()->user_lock(target_dn);
-    }
+    disabled_label->setText(disabled_label_text);
 }

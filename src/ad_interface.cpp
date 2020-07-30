@@ -516,11 +516,11 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
     }
 }
 
-AdResult AdInterface::user_lock(const QString &dn) {
+AdResult AdInterface::user_disable(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    const int result = connection->user_lock(dn_cstr);
+    const int result = connection->user_disable(dn_cstr);
 
     const QString name = extract_name_from_dn(dn);
     
@@ -541,11 +541,11 @@ AdResult AdInterface::user_lock(const QString &dn) {
     }
 }
 
-AdResult AdInterface::user_unlock(const QString &dn) {
+AdResult AdInterface::user_enable(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    const int result = connection->user_unlock(dn_cstr);
+    const int result = connection->user_enable(dn_cstr);
 
     const QString name = extract_name_from_dn(dn);
     
@@ -598,7 +598,7 @@ bool AdInterface::is_container_like(const QString &dn) {
     return false;
 }
 
-bool AdInterface::user_locked(const QString &dn) {
+bool AdInterface::user_enabled(const QString &dn) {
     const QString userAccountControl_string = attribute_get(dn, "userAccountControl");
     const int userAccountControl = userAccountControl_string.toInt();
     const bool locked = ((userAccountControl & 2) != 0);
