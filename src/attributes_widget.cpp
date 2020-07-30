@@ -67,9 +67,9 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     const QString attribute = name_index.data().toString();
     const QString value_str = value.toString();
 
-    bool success = AdInterface::instance()->attribute_replace(target_dn, attribute, value_str);
+    const AdResult result_replace = AdInterface::instance()->attribute_replace(target_dn, attribute, value_str);
 
-    if (success) {
+    if (result_replace.success) {
         QStandardItemModel::setData(index, value, role);
 
         return true;

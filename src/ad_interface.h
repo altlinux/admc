@@ -52,9 +52,12 @@ enum AdInterfaceMessageType {
     AdInterfaceMessageType_Error
 };
 
-struct AdResult {
+class AdResult {
+public:
     bool success;
     QString msg;
+
+    AdResult(bool success_arg, const QString &msg);
 };
 
 typedef QMap<QString, QList<QString>> Attributes;
@@ -74,7 +77,7 @@ public:
 
     static QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 
-    bool login(const QString &host, const QString &domain);
+    AdResult login(const QString &host, const QString &domain);
 
     QString get_search_base();
     QString get_uri();
@@ -87,16 +90,16 @@ public:
     QString attribute_get(const QString &dn, const QString &attribute);
     bool attribute_value_exists(const QString &dn, const QString &attribute, const QString &value);
 
-    bool attribute_replace(const QString &dn, const QString &attribute, const QString &value);
-    bool object_create(const QString &name, const QString &dn, NewObjectType type);
-    void object_delete(const QString &dn);
-    void object_move(const QString &dn, const QString &new_container);
-    void object_rename(const QString &dn, const QString &new_name);
+    AdResult attribute_replace(const QString &dn, const QString &attribute, const QString &value);
+    AdResult object_create(const QString &name, const QString &dn, NewObjectType type);
+    AdResult object_delete(const QString &dn);
+    AdResult object_move(const QString &dn, const QString &new_container);
+    AdResult object_rename(const QString &dn, const QString &new_name);
     AdResult set_pass(const QString &dn, const QString &password);
     void update_cache(const QList<QString> &changed_dns);
     
-    void group_add_user(const QString &group_dn, const QString &user_dn);
-    void group_remove_user(const QString &group_dn, const QString &user_dn);
+    AdResult group_add_user(const QString &group_dn, const QString &user_dn);
+    AdResult group_remove_user(const QString &group_dn, const QString &user_dn);
 
     bool is_user(const QString &dn);
     bool is_group(const QString &dn);
@@ -125,7 +128,7 @@ private:
     bool should_emit_message(int result);
     void success_message(const QString &msg);
     void error_message(const QString &context, const QString &error);
-    void default_error_message(const QString &context, int ad_result);
+    QString default_error_string(int ad_result) const;
 }; 
 
 QString extract_name_from_dn(const QString &dn);
