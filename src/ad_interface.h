@@ -96,6 +96,8 @@ public:
     AdResult object_move(const QString &dn, const QString &new_container);
     AdResult object_rename(const QString &dn, const QString &new_name);
     AdResult set_pass(const QString &dn, const QString &password);
+    AdResult user_lock(const QString &dn);
+    AdResult user_unlock(const QString &dn);
     void update_cache(const QList<QString> &changed_dns);
     
     AdResult group_add_user(const QString &group_dn, const QString &user_dn);

@@ -516,6 +516,56 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
     }
 }
 
+AdResult AdInterface::user_lock(const QString &dn) {
+    const QByteArray dn_array = dn.toLatin1();
+    const char *dn_cstr = dn_array.constData();
+
+    const int result = connection->user_lock(dn_cstr);
+
+    const QString name = extract_name_from_dn(dn);
+    
+    if (result == AD_SUCCESS) {
+        success_status_message(QString(tr("Locked user - \"%1\"")).arg(name));
+
+        update_cache({dn});
+
+        return AdResult(true, "");
+    } else {
+        const QString context = QString(tr("Failed to lock user - \"%1\"")).arg(name);
+
+        const QString error_string = default_error_string(result);
+
+        error_status_message(context, error_string);
+
+        return AdResult(false, error_string);
+    }
+}
+
+AdResult AdInterface::user_unlock(const QString &dn) {
+    const QByteArray dn_array = dn.toLatin1();
+    const char *dn_cstr = dn_array.constData();
+
+    const int result = connection->user_unlock(dn_cstr);
+
+    const QString name = extract_name_from_dn(dn);
+    
+    if (result == AD_SUCCESS) {
+        success_status_message(QString(tr("Unlocked user - \"%1\"")).arg(name));
+
+        update_cache({dn});
+
+        return AdResult(true, "");
+    } else {
+        const QString context = QString(tr("Failed to unlock user - \"%1\"")).arg(name);
+
+        const QString error_string = default_error_string(result);
+
+        error_status_message(context, error_string);
+
+        return AdResult(false, error_string);
+    }
+}
+
 bool AdInterface::is_user(const QString &dn) {
     return attribute_value_exists(dn, "objectClass", "user");
 }
