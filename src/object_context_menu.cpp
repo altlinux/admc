@@ -117,6 +117,18 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
             const auto password_dialog = new PasswordDialog(dn, this);
             password_dialog->open();
         });
+
+        const bool locked = AdInterface::instance()->user_locked(dn);
+        QString lock_text;
+        if (locked) {
+            addAction(tr("Unlock account"), [this, dn]() {
+                AdInterface::instance()->user_unlock(dn);
+            });
+        } else {
+            addAction(tr("Lock account"), [this, dn]() {
+                AdInterface::instance()->user_lock(dn);
+            });
+        }
     }
 
     // Special contextual action
