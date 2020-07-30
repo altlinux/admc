@@ -24,6 +24,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QPushButton>
+#include <QCheckBox>
 
 AccountWidget::AccountWidget(QWidget *parent)
 : QWidget(parent)
@@ -33,11 +34,17 @@ AccountWidget::AccountWidget(QWidget *parent)
     logon_name_edit = new QLineEdit(this);
 
     disabled_label = new QLabel(this);
+    disabled_check = new QCheckBox("Account disabled", this);
 
     const auto layout = new QGridLayout(this);
     layout->addWidget(logon_name_label, 0, 0);
     layout->addWidget(logon_name_edit, 1, 0);
     layout->addWidget(disabled_label, 2, 0);
+    layout->addWidget(disabled_check, 2, 0);
+
+    connect(
+        disabled_check, &QCheckBox::stateChanged,
+        this, &AccountWidget::on_disabled_check_changed);
 }
 
 void AccountWidget::change_target(const QString &dn) {
@@ -54,5 +61,20 @@ void AccountWidget::change_target(const QString &dn) {
     } else {
         disabled_label_text = "Account disabled";
     }
-    disabled_label->setText(disabled_label_text);
+
+    disabled_check->setChecked(!enabled);
+}
+
+void AccountWidget::on_disabled_check_changed() {
+    if (target_dn.isEmpty()) {
+        return;
+    }
+
+    const bool disabled = (disabled_check->checkState() == Qt::Checked);
+
+    if (disabled) {
+        AdInterface::instance()->user_enable(target_dn);
+    } else {
+        AdInterface::instance()->user_disable(target_dn);
+    }
 }

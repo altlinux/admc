@@ -26,6 +26,7 @@ class QString;
 class QLineEdit;
 class QLabel;
 class QPushButton;
+class QCheckBox;
 
 // Shows member objects of targeted group
 class AccountWidget final : public QWidget {
@@ -37,11 +38,13 @@ public:
     void change_target(const QString &dn);
 
 private slots:
-
+    void on_disabled_check_changed();
+    
 private:
     QString target_dn;
     QLineEdit *logon_name_edit;
     QLabel *disabled_label;
+    QCheckBox *disabled_check;
 };
 
 #endif /* ACCOUNT_WIDGET_H */

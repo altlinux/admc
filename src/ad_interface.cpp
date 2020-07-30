@@ -600,6 +600,10 @@ bool AdInterface::is_container_like(const QString &dn) {
 
 bool AdInterface::user_enabled(const QString &dn) {
     const QString userAccountControl_string = attribute_get(dn, "userAccountControl");
+    if (userAccountControl_string.isEmpty()) {
+        return false;
+    }
+
     const int userAccountControl = userAccountControl_string.toInt();
     const bool locked = ((userAccountControl & 2) != 0);
 
