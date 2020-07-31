@@ -518,7 +518,7 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
 
 AdResult AdInterface::user_set_user_account_control(const QString &dn, int bit, bool set) {
     if (dn.isEmpty()) {
-        return;
+        return AdResult(false, "");
     }
 
     const QByteArray dn_array = dn.toLatin1();

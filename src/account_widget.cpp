@@ -33,27 +33,41 @@ AccountWidget::AccountWidget(QWidget *parent)
 
     logon_name_edit = new QLineEdit(this);
 
-    disabled_label = new QLabel(this);
-    disabled_check = new QCheckBox("Account disabled", this);
+    disabled_check = new QCheckBox(tr("Account disabled"), this);
+
+    password_expired_check = new QCheckBox(tr("User must change password on next logon"), this);
 
     // NOTE: can't show lock status, can only provide the button
     // determining whether an account is locked is VERY complicated
-    unlock_button = new QPushButton("Unlock account", this);
+    const auto unlock_button = new QPushButton(tr("Unlock account"), this);
 
     const auto layout = new QGridLayout(this);
     layout->addWidget(logon_name_label, 0, 0);
     layout->addWidget(logon_name_edit, 1, 0);
-    layout->addWidget(disabled_label, 2, 0);
-    layout->addWidget(disabled_check, 2, 0);
-    layout->addWidget(unlock_button, 3, 0);
-
-    connect(
-        disabled_check, &QCheckBox::stateChanged,
-        this, &AccountWidget::on_disabled_check_changed);
+    layout->addWidget(unlock_button, 2, 0);
+    layout->addWidget(password_expired_check, 3, 0);
+    layout->addWidget(disabled_check, 4, 0);
 
     connect(
         unlock_button, &QAbstractButton::clicked,
         this, &AccountWidget::on_unlock_button_clicked);
+
+    auto connect_uac_check =
+    [this](QCheckBox *check, int bit) {
+        connect(
+            check, &QCheckBox::stateChanged,
+            [this, check, bit]() {
+                const bool current_state = AdInterface::instance()->user_get_user_account_control(target_dn, bit);
+                const bool new_state = (check->checkState() == Qt::Checked);
+
+                if (current_state != new_state) {
+                    AdInterface::instance()->user_set_user_account_control(target_dn, bit, new_state);
+                }
+            });
+    };
+
+    connect_uac_check(disabled_check, UAC_ACCOUNTDISABLE);
+    connect_uac_check(password_expired_check, UAC_PASSWORD_EXPIRED);
 }
 
 void AccountWidget::change_target(const QString &dn) {
@@ -65,15 +79,6 @@ void AccountWidget::change_target(const QString &dn) {
     const bool disabled = AdInterface::instance()->user_get_user_account_control(target_dn, UAC_ACCOUNTDISABLE);
 
     disabled_check->setChecked(disabled);
-}
-
-void AccountWidget::on_disabled_check_changed() {
-    const bool disabled_current = AdInterface::instance()->user_get_user_account_control(target_dn, UAC_ACCOUNTDISABLE);
-    const bool disabled_new = (disabled_check->checkState() == Qt::Checked);
-
-    if (disabled_current != disabled_new) {
-        AdInterface::instance()->user_set_user_account_control(target_dn, UAC_ACCOUNTDISABLE, disabled_new);
-    }
 }
 
 void AccountWidget::on_unlock_button_clicked() {

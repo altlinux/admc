@@ -38,15 +38,13 @@ public:
     void change_target(const QString &dn);
 
 private slots:
-    void on_disabled_check_changed();
     void on_unlock_button_clicked();
     
 private:
     QString target_dn;
     QLineEdit *logon_name_edit;
-    QLabel *disabled_label;
     QCheckBox *disabled_check;
-    QPushButton *unlock_button;
+    QCheckBox *password_expired_check;
 };
 
 #endif /* ACCOUNT_WIDGET_H */
