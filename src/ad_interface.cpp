@@ -520,8 +520,8 @@ AdResult AdInterface::user_set_disabled(const QString &dn, bool disabled) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    const QString control = attribute_get(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
-    if (userAccountControl_string.isEmpty()) {
+    QString control = attribute_get(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
+    if (control.isEmpty()) {
         control = "0";
     }
 
