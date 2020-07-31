@@ -521,10 +521,9 @@ AdResult AdInterface::user_set_disabled(const QString &dn, bool disabled) {
     const char *dn_cstr = dn_array.constData();
 
     const QString control = attribute_get(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
-    // if (userAccountControl_string.isEmpty()) {
-    // TODO: error
-    //     return false;
-    // }
+    if (userAccountControl_string.isEmpty()) {
+        control = "0";
+    }
 
     int control_int = control.toInt();
     if (disabled) {
