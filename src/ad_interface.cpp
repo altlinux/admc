@@ -575,7 +575,7 @@ AdResult AdInterface::user_set_user_account_control(const QString &dn, int bit, 
                     }
                 }
                 default: {
-                    return QString(tr("Failed to enable user - \"%1\"")).arg(name);
+                    return QString(tr("Failed to set userAccountControl bit \"%1\" of user - \"%2\" to \"%3\"")).arg(bit).arg(name).arg(set);
                 }
             }
         };
