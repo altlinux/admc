@@ -541,28 +541,49 @@ AdResult AdInterface::user_set_user_account_control(const QString &dn, int bit, 
     const QString name = extract_name_from_dn(dn);
     
     if (result == AD_SUCCESS) {
-        QString context;
-        if (set) {
-            context = QString(tr("Disabled user - \"%1\"")).arg(name);
-        } else {
-            context = QString(tr("Enabled user - \"%1\"")).arg(name);
-        }
-        success_status_message(context);
+        auto get_success_context =
+        [bit, set, name]() {
+            switch (bit) {
+                case UAC_ACCOUNTDISABLE: {
+                    if (set) {
+                        return QString(tr("Disabled account for user - \"%1\"")).arg(name);
+                    } else {
+                        return QString(tr("Enabled account user - \"%1\"")).arg(name);
+                    }
+                }
+                default: {
+                    return QString(tr("Set userAccountControl bit \"%1\" of user - \"%2\" to \"%3\"")).arg(bit).arg(name).arg(set);
+                }
+            }
+        };
+        const QString success_context = get_success_context();
+        
+        success_status_message(success_context);
 
         update_cache({dn});
 
         return AdResult(true, "");
     } else {
-        QString context;
-        if (set) {
-            context = QString(tr("Failed to disable user - \"%1\"")).arg(name);
-        } else {
-            context = QString(tr("Failed to enable user - \"%1\"")).arg(name);
-        }
+        auto get_success_context =
+        [bit, set, name]() {
+            switch (bit) {
+                case UAC_ACCOUNTDISABLE: {
+                    if (set) {
+                        return QString(tr("Failed to disable account for user - \"%1\"")).arg(name);
+                    } else {
+                        return QString(tr("Enabled account for user - \"%1\"")).arg(name);
+                    }
+                }
+                default: {
+                    return QString(tr("Failed to enable user - \"%1\"")).arg(name);
+                }
+            }
+        };
+        const QString error_context = get_success_context();
 
         const QString error_string = default_error_string(result);
 
-        error_status_message(context, error_string);
+        error_status_message(error_context, error_string);
 
         return AdResult(false, error_string);
     }
