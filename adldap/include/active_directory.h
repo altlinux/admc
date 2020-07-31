@@ -134,18 +134,6 @@ int ad_create_group(LDAP *ld, const char *group_name, const char *dn);
 int ad_delete(LDAP *ld, const char *dn);
 
 /**
- * Lock a user account
- * Returns AD_SUCCESS, AD_LDAP_ERROR
- */
-int ad_user_disable(LDAP *ld, const char *dn);
-
-/**
- * Unlock a disabled user account
- * Returns AD_SUCCESS, AD_LDAP_ERROR
- */
-int ad_user_enable(LDAP *ld, const char *dn);
-
-/**
  * Set the user's password to the given password string
  * SSL connection is required
  * Returns AD_SUCCESS, AD_LDAP_ERROR
