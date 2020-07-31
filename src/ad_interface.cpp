@@ -516,7 +516,7 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
     }
 }
 
-AdResult AdInterface::user_set_disabled(const QString &dn, bool disabled) {
+AdResult AdInterface::user_set_user_account_control(const QString &dn, int bit, bool set) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
@@ -526,10 +526,10 @@ AdResult AdInterface::user_set_disabled(const QString &dn, bool disabled) {
     }
 
     int control_int = control.toInt();
-    if (disabled) {
-        control_int |= 2;
+    if (set) {
+        control_int |= bit;
     } else {
-        control_int ^= 2;
+        control_int ^= bit;
     }
 
     const QString control_updated = QString::number(control_int);
@@ -542,7 +542,7 @@ AdResult AdInterface::user_set_disabled(const QString &dn, bool disabled) {
     
     if (result == AD_SUCCESS) {
         QString context;
-        if (disabled) {
+        if (set) {
             context = QString(tr("Disabled user - \"%1\"")).arg(name);
         } else {
             context = QString(tr("Enabled user - \"%1\"")).arg(name);
@@ -554,7 +554,7 @@ AdResult AdInterface::user_set_disabled(const QString &dn, bool disabled) {
         return AdResult(true, "");
     } else {
         QString context;
-        if (disabled) {
+        if (set) {
             context = QString(tr("Failed to disable user - \"%1\"")).arg(name);
         } else {
             context = QString(tr("Failed to enable user - \"%1\"")).arg(name);
@@ -600,15 +600,15 @@ bool AdInterface::is_container_like(const QString &dn) {
     return false;
 }
 
-bool AdInterface::user_is_disabled(const QString &dn) {
+bool AdInterface::user_get_user_account_control(const QString &dn, int bit) {
     const QString control = attribute_get(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
     if (control.isEmpty()) {
         return false;
     }
 
     const int control_int = control.toInt();
-    const bool disabled = ((control_int & 2) != 0);
-    return disabled;
+    const bool set = ((control_int & bit) != 0);
+    return set;
 }
 
 enum DropType {

@@ -53,8 +53,8 @@ void AccountWidget::change_target(const QString &dn) {
     const QString logon_name = AdInterface::instance()->attribute_get(target_dn, "userPrincipalName");
     logon_name_edit->setText(logon_name);
 
-    const bool disabled = AdInterface::instance()->user_is_disabled(target_dn);
-    
+    const bool disabled = AdInterface::instance()->user_get_user_account_control(target_dn, UAC_ACCOUNTDISABLE);
+
     disabled_check->setChecked(disabled);
 }
 
@@ -63,10 +63,10 @@ void AccountWidget::on_disabled_check_changed() {
         return;
     }
 
-    const bool disabled_current = AdInterface::instance()->user_is_disabled(target_dn);
+    const bool disabled_current = AdInterface::instance()->user_get_user_account_control(target_dn, UAC_ACCOUNTDISABLE);
     const bool disabled_new = (disabled_check->checkState() == Qt::Checked);
 
     if (disabled_current != disabled_new) {
-        AdInterface::instance()->user_set_disabled(target_dn, disabled_new);
+        AdInterface::instance()->user_set_user_account_control(target_dn, UAC_ACCOUNTDISABLE, disabled_new);
     }
 }

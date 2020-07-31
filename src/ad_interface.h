@@ -40,6 +40,7 @@ namespace adldap
 // Emits various signals for AD operation successes/failures
 
 #define ATTRIBUTE_USER_ACCOUNT_CONTROL "userAccountControl"
+#define UAC_ACCOUNTDISABLE 0x0002
 
 enum NewObjectType {
     User,
@@ -98,7 +99,7 @@ public:
     AdResult object_move(const QString &dn, const QString &new_container);
     AdResult object_rename(const QString &dn, const QString &new_name);
     AdResult set_pass(const QString &dn, const QString &password);
-    AdResult user_set_disabled(const QString &dn, bool disabled);
+    AdResult user_set_user_account_control(const QString &dn, int bit, bool set);
     void update_cache(const QList<QString> &changed_dns);
     
     AdResult group_add_user(const QString &group_dn, const QString &user_dn);
@@ -111,7 +112,7 @@ public:
     bool is_policy(const QString &dn);
     bool is_container_like(const QString &dn);
 
-    bool user_is_disabled(const QString &dn);
+    bool user_get_user_account_control(const QString &dn, int bit);
 
     bool object_can_drop(const QString &dn, const QString &target_dn);
     void object_drop(const QString &dn, const QString &target_dn);
