@@ -96,8 +96,7 @@ public:
     AdResult object_move(const QString &dn, const QString &new_container);
     AdResult object_rename(const QString &dn, const QString &new_name);
     AdResult set_pass(const QString &dn, const QString &password);
-    AdResult user_disable(const QString &dn);
-    AdResult user_enable(const QString &dn);
+    AdResult user_set_disabled(const QString &dn, bool disabled);
     void update_cache(const QList<QString> &changed_dns);
     
     AdResult group_add_user(const QString &group_dn, const QString &user_dn);
@@ -110,7 +109,7 @@ public:
     bool is_policy(const QString &dn);
     bool is_container_like(const QString &dn);
 
-    bool user_enabled(const QString &dn);
+    bool user_is_disabled(const QString &dn);
 
     bool object_can_drop(const QString &dn, const QString &target_dn);
     void object_drop(const QString &dn, const QString &target_dn);

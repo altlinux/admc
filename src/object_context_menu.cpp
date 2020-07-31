@@ -118,16 +118,16 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
             password_dialog->open();
         });
 
-        const bool enabled = AdInterface::instance()->user_enabled(dn);
-        if (enabled) {
-            addAction(tr("Disable account"), [this, dn]() {
-                AdInterface::instance()->user_disable(dn);
-            });
+        const bool disabled = AdInterface::instance()->user_is_disabled(dn);
+        QString disable_text;
+        if (disabled) {
+            disable_text = tr("Enable account");
         } else {
-            addAction(tr("Enable account"), [this, dn]() {
-                AdInterface::instance()->user_enable(dn);
-            });
+            disable_text = tr("Disable account");
         }
+        addAction(disable_text, [this, dn, disabled]() {
+            AdInterface::instance()->user_set_disabled(dn, !disabled);
+        });
     }
 
     // Special contextual action

@@ -516,47 +516,50 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
     }
 }
 
-AdResult AdInterface::user_disable(const QString &dn) {
+AdResult AdInterface::user_set_disabled(const QString &dn, bool disabled) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    const int result = connection->user_disable(dn_cstr);
+    const QString control = attribute_get(dn, "userAccountControl");
+    // if (userAccountControl_string.isEmpty()) {
+    // TODO: error
+    //     return false;
+    // }
 
-    const QString name = extract_name_from_dn(dn);
-    
-    if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Locked user - \"%1\"")).arg(name));
-
-        update_cache({dn});
-
-        return AdResult(true, "");
+    int control_int = control.toInt();
+    if (disabled) {
+        control_int |= 2;
     } else {
-        const QString context = QString(tr("Failed to lock user - \"%1\"")).arg(name);
-
-        const QString error_string = default_error_string(result);
-
-        error_status_message(context, error_string);
-
-        return AdResult(false, error_string);
+        control_int ^= 2;
     }
-}
 
-AdResult AdInterface::user_enable(const QString &dn) {
-    const QByteArray dn_array = dn.toLatin1();
-    const char *dn_cstr = dn_array.constData();
+    const QString control_updated = QString::number(control_int);
+    const QByteArray control_updated_array = control_updated.toLatin1();
+    const char *control_updated_cstr = control_updated_array.constData();
 
-    const int result = connection->user_enable(dn_cstr);
+    const int result = connection->attribute_replace(dn_cstr, "userAccountControl", control_updated_cstr);
 
     const QString name = extract_name_from_dn(dn);
     
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Unlocked user - \"%1\"")).arg(name));
+        QString context;
+        if (disabled) {
+            context = QString(tr("Disabled user - \"%1\"")).arg(name);
+        } else {
+            context = QString(tr("Enabled user - \"%1\"")).arg(name);
+        }
+        success_status_message(context);
 
         update_cache({dn});
 
         return AdResult(true, "");
     } else {
-        const QString context = QString(tr("Failed to unlock user - \"%1\"")).arg(name);
+        QString context;
+        if (disabled) {
+            context = QString(tr("Failed to disable user - \"%1\"")).arg(name);
+        } else {
+            context = QString(tr("Failed to enable user - \"%1\"")).arg(name);
+        }
 
         const QString error_string = default_error_string(result);
 
@@ -598,16 +601,15 @@ bool AdInterface::is_container_like(const QString &dn) {
     return false;
 }
 
-bool AdInterface::user_enabled(const QString &dn) {
+bool AdInterface::user_is_disabled(const QString &dn) {
     const QString userAccountControl_string = attribute_get(dn, "userAccountControl");
     if (userAccountControl_string.isEmpty()) {
         return false;
     }
 
     const int userAccountControl = userAccountControl_string.toInt();
-    const bool locked = ((userAccountControl & 2) != 0);
-
-    return locked;
+    const bool disabled = ((userAccountControl & 2) != 0);
+    return disabled;
 }
 
 enum DropType {
