@@ -39,6 +39,8 @@ namespace adldap
 // is updated on object changes
 // Emits various signals for AD operation successes/failures
 
+#define ATTRIBUTE_USER_ACCOUNT_CONTROL "userAccountControl"
+
 enum NewObjectType {
     User,
     Computer,

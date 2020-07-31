@@ -520,7 +520,7 @@ AdResult AdInterface::user_set_disabled(const QString &dn, bool disabled) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    const QString control = attribute_get(dn, "userAccountControl");
+    const QString control = attribute_get(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
     // if (userAccountControl_string.isEmpty()) {
     // TODO: error
     //     return false;
@@ -537,7 +537,7 @@ AdResult AdInterface::user_set_disabled(const QString &dn, bool disabled) {
     const QByteArray control_updated_array = control_updated.toLatin1();
     const char *control_updated_cstr = control_updated_array.constData();
 
-    const int result = connection->attribute_replace(dn_cstr, "userAccountControl", control_updated_cstr);
+    const int result = connection->attribute_replace(dn_cstr, ATTRIBUTE_USER_ACCOUNT_CONTROL, control_updated_cstr);
 
     const QString name = extract_name_from_dn(dn);
     
@@ -602,13 +602,13 @@ bool AdInterface::is_container_like(const QString &dn) {
 }
 
 bool AdInterface::user_is_disabled(const QString &dn) {
-    const QString userAccountControl_string = attribute_get(dn, "userAccountControl");
-    if (userAccountControl_string.isEmpty()) {
+    const QString control = attribute_get(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
+    if (control.isEmpty()) {
         return false;
     }
 
-    const int userAccountControl = userAccountControl_string.toInt();
-    const bool disabled = ((userAccountControl & 2) != 0);
+    const int control_int = control.toInt();
+    const bool disabled = ((control_int & 2) != 0);
     return disabled;
 }
 
