@@ -36,15 +36,24 @@ AccountWidget::AccountWidget(QWidget *parent)
     disabled_label = new QLabel(this);
     disabled_check = new QCheckBox("Account disabled", this);
 
+    // NOTE: can't show lock status, can only provide the button
+    // determining whether an account is locked is VERY complicated
+    unlock_button = new QPushButton("Unlock account", this);
+
     const auto layout = new QGridLayout(this);
     layout->addWidget(logon_name_label, 0, 0);
     layout->addWidget(logon_name_edit, 1, 0);
     layout->addWidget(disabled_label, 2, 0);
     layout->addWidget(disabled_check, 2, 0);
+    layout->addWidget(unlock_button, 3, 0);
 
     connect(
         disabled_check, &QCheckBox::stateChanged,
         this, &AccountWidget::on_disabled_check_changed);
+
+    connect(
+        unlock_button, &QAbstractButton::clicked,
+        this, &AccountWidget::on_unlock_button_clicked);
 }
 
 void AccountWidget::change_target(const QString &dn) {
@@ -59,14 +68,14 @@ void AccountWidget::change_target(const QString &dn) {
 }
 
 void AccountWidget::on_disabled_check_changed() {
-    if (target_dn.isEmpty()) {
-        return;
-    }
-
     const bool disabled_current = AdInterface::instance()->user_get_user_account_control(target_dn, UAC_ACCOUNTDISABLE);
     const bool disabled_new = (disabled_check->checkState() == Qt::Checked);
 
     if (disabled_current != disabled_new) {
         AdInterface::instance()->user_set_user_account_control(target_dn, UAC_ACCOUNTDISABLE, disabled_new);
     }
+}
+
+void AccountWidget::on_unlock_button_clicked() {
+    AdInterface::instance()->attribute_replace(target_dn, "lockoutTime", "0");
 }
