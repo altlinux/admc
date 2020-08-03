@@ -21,12 +21,18 @@
 #define ACCOUNT_WIDGET_H
 
 #include <QWidget>
+#include <QList>
 
 class QString;
 class QLineEdit;
 class QLabel;
 class QPushButton;
 class QCheckBox;
+
+struct UACCheck {
+    QCheckBox *check;
+    int bit;
+};
 
 // Shows member objects of targeted group
 class AccountWidget final : public QWidget {
@@ -43,8 +49,7 @@ private slots:
 private:
     QString target_dn;
     QLineEdit *logon_name_edit;
-    QCheckBox *disabled_check;
-    QCheckBox *password_expired_check;
+    QList<UACCheck> uac_checks;
 };
 
 #endif /* ACCOUNT_WIDGET_H */

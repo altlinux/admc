@@ -20,11 +20,15 @@
 #include "account_widget.h"
 #include "ad_interface.h"
 
-#include <QGridLayout>
+#include <QVBoxLayout>
 #include <QLineEdit>
 #include <QLabel>
 #include <QPushButton>
 #include <QCheckBox>
+
+// LOCKOUT - set by system, unlocked by setting lockoutTime, but the bit doesn't change until user logs in, therefore very difficult to show whether user is locked or not
+
+// PASSWD_CANT_CHANGE - difficult, see: https://docs.microsoft.com/en-us/windows/win32/adsi/modifying-user-cannot-change-password-ldap-provider?redirectedfrom=MSDN
 
 AccountWidget::AccountWidget(QWidget *parent)
 : QWidget(parent)
@@ -33,27 +37,29 @@ AccountWidget::AccountWidget(QWidget *parent)
 
     logon_name_edit = new QLineEdit(this);
 
-    disabled_check = new QCheckBox(tr("Account disabled"), this);
-
-    password_expired_check = new QCheckBox(tr("User must change password on next logon"), this);
-
-    // NOTE: can't show lock status, can only provide the button
-    // determining whether an account is locked is VERY complicated
     const auto unlock_button = new QPushButton(tr("Unlock account"), this);
 
-    const auto layout = new QGridLayout(this);
-    layout->addWidget(logon_name_label, 0, 0);
-    layout->addWidget(logon_name_edit, 1, 0);
-    layout->addWidget(unlock_button, 2, 0);
-    layout->addWidget(password_expired_check, 3, 0);
-    layout->addWidget(disabled_check, 4, 0);
+    const auto layout = new QVBoxLayout(this);
+    layout->addWidget(logon_name_label);
+    layout->addWidget(logon_name_edit);
+    layout->addWidget(unlock_button);
 
     connect(
         unlock_button, &QAbstractButton::clicked,
         this, &AccountWidget::on_unlock_button_clicked);
 
     auto connect_uac_check =
-    [this](QCheckBox *check, int bit) {
+    [this, layout](const QString &text, int bit) {
+        auto check = new QCheckBox(text);
+
+        layout->addWidget(check);
+
+        UACCheck uac_check = {
+            check,
+            bit
+        };
+        uac_checks.append(uac_check);
+
         connect(
             check, &QCheckBox::stateChanged,
             [this, check, bit]() {
@@ -66,8 +72,9 @@ AccountWidget::AccountWidget(QWidget *parent)
             });
     };
 
-    connect_uac_check(disabled_check, UAC_ACCOUNTDISABLE);
-    connect_uac_check(password_expired_check, UAC_PASSWORD_EXPIRED);
+    connect_uac_check(tr("Account disabled"), UAC_ACCOUNTDISABLE);
+    connect_uac_check(tr("User must change password on next logon"), UAC_PASSWORD_EXPIRED);
+    connect_uac_check(tr("Don't expire password"), DONT_EXPIRE_PASSWORD);
 }
 
 void AccountWidget::change_target(const QString &dn) {
@@ -76,9 +83,14 @@ void AccountWidget::change_target(const QString &dn) {
     const QString logon_name = AdInterface::instance()->attribute_get(target_dn, "userPrincipalName");
     logon_name_edit->setText(logon_name);
 
-    const bool disabled = AdInterface::instance()->user_get_user_account_control(target_dn, UAC_ACCOUNTDISABLE);
+    for (auto uac_check : uac_checks) {
+        QCheckBox *check = uac_check.check;
+        const int bit = uac_check.bit;
 
-    disabled_check->setChecked(disabled);
+        const bool bit_is_set = AdInterface::instance()->user_get_user_account_control(target_dn, bit);
+
+        check->setChecked(bit_is_set);
+    }
 }
 
 void AccountWidget::on_unlock_button_clicked() {

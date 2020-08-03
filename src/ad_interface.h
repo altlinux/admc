@@ -42,6 +42,7 @@ namespace adldap
 #define ATTRIBUTE_USER_ACCOUNT_CONTROL "userAccountControl"
 #define UAC_ACCOUNTDISABLE 0x0002
 #define UAC_PASSWORD_EXPIRED 0x800000
+#define DONT_EXPIRE_PASSWORD 0x10000
 
 enum NewObjectType {
     User,
