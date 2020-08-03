@@ -170,6 +170,7 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
 
         char ***attributes_ad;
         const int result_attribute_get = connection->get_all_attributes(dn_cstr, &attributes_ad);
+
         if (result_attribute_get == AD_SUCCESS) {
             Attributes attributes;
             // attributes_ad is in the form of:

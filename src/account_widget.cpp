@@ -26,9 +26,7 @@
 #include <QPushButton>
 #include <QCheckBox>
 
-// LOCKOUT - set by system, unlocked by setting lockoutTime, but the bit doesn't change until user logs in, therefore very difficult to show whether user is locked or not
-
-// PASSWD_CANT_CHANGE - difficult, see: https://docs.microsoft.com/en-us/windows/win32/adsi/modifying-user-cannot-change-password-ldap-provider?redirectedfrom=MSDN
+// NOTE: https://ldapwiki.com/wiki/MMC%20Account%20Tab
 
 AccountWidget::AccountWidget(QWidget *parent)
 : QWidget(parent)
@@ -72,9 +70,18 @@ AccountWidget::AccountWidget(QWidget *parent)
             });
     };
 
+    // TODO:
+    // "User cannot change password" - CAN'T just set PASSWD_CANT_CHANGE. See: https://docs.microsoft.com/en-us/windows/win32/adsi/modifying-user-cannot-change-password-ldap-provider?redirectedfrom=MSDN
+    // "This account supports 128bit encryption" (and for 256bit)
+    // "Use Kerberos DES encryption types for this account"
     connect_uac_check(tr("Account disabled"), UAC_ACCOUNTDISABLE);
     connect_uac_check(tr("User must change password on next logon"), UAC_PASSWORD_EXPIRED);
     connect_uac_check(tr("Don't expire password"), DONT_EXPIRE_PASSWORD);
+    connect_uac_check(tr("Store password using reversible encryption"), USE_DES_KEY_ONLY);
+    connect_uac_check(tr("Smartcard is required for interactive logon"), SMARTCARD_REQUIRED);
+    connect_uac_check(tr("Account is sensitive and cannot be delegated"), NOT_DELEGATED );
+    connect_uac_check(tr("Don't require Kerberos preauthentication"), DONT_REQUIRE_PREAUTH);
+
 }
 
 void AccountWidget::change_target(const QString &dn) {
