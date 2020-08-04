@@ -23,6 +23,22 @@
 
 #include <QSet>
 
+// TODO: not sure if AD datetime fromat is always this one, LDAP allows multiple alternatives: https://ldapwiki.com/wiki/DateTime
+#define ISO8601_FORMAT_STRING "yyyyMMddhhmmss.zZ"
+
+#define MILLIS_TO_100_NANOS 10000
+
+enum DatetimeFormat {
+    DatetimeFormat_LargeInteger,
+    DatetimeFormat_ISO8601,
+    DatetimeFormat_None
+};
+
+const QHash<QString, DatetimeFormat> datetime_formats = {
+    {"accountExpires", DatetimeFormat_LargeInteger},
+    {"whenChanged", DatetimeFormat_ISO8601},
+};
+
 AdInterface::~AdInterface() {
     delete connection;
 }
@@ -228,6 +244,73 @@ QString AdInterface::attribute_get(const QString &dn, const QString &attribute) 
     } else {
         return "";
     }
+}
+
+QDateTime AdInterface::attribute_datetime_get(const QString &dn, const QString &attribute) {
+    const QString datetime_string = attribute_get(dn, attribute);
+
+    const DatetimeFormat format = datetime_formats.value(attribute, DatetimeFormat_None);
+
+    QDateTime datetime;
+
+    switch (format) {
+        case DatetimeFormat_LargeInteger: {
+            // TODO: couldn't find epoch in qt, but maybe its hidden somewhere
+            datetime = QDateTime(QDate(1601, 1, 1));
+            const qint64 hundred_nanos = datetime_string.toLongLong();
+            const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
+            datetime = datetime.addMSecs(millis);
+
+            break;
+        }
+        case DatetimeFormat_ISO8601: {
+            datetime = QDateTime::fromString(datetime_string, ISO8601_FORMAT_STRING);
+
+            break;
+        }
+        case DatetimeFormat_None: {
+            datetime = QDateTime();
+
+            break;
+        }
+    }
+
+    return datetime;
+}
+
+AdResult AdInterface::attribute_datetime_replace(const QString &dn, const QString &attribute, const QDateTime &datetime) {
+    const DatetimeFormat format = datetime_formats.value(attribute, DatetimeFormat_None);
+
+    QString datetime_string;
+    switch (format) {
+        case DatetimeFormat_LargeInteger: {
+            const QDateTime ntfs_epoch(QDate(1601, 1, 1));
+            const qint64 millis = ntfs_epoch.msecsTo(datetime);
+            const qint64 hundred_nanos = millis * MILLIS_TO_100_NANOS;
+            
+            datetime_string = QString::number(hundred_nanos);
+
+            break;
+        }
+        case DatetimeFormat_ISO8601: {
+            datetime_string = datetime.toString(ISO8601_FORMAT_STRING);
+
+            break;
+        }
+        case DatetimeFormat_None: return AdResult(false, "");
+    }
+
+    const AdResult result = attribute_replace(dn, attribute, datetime_string);
+
+    return result;
+}
+
+// NOTE: can't do this with DateTime arg because that loses sub-millis precision
+bool AdInterface::datetime_is_never(const QString &dn, const QString &attribute) {
+    const QString datetime_string = attribute_get(dn, attribute);
+    const bool is_never = (datetime_string == AD_LONGTIME_NEVER_1 || datetime_string == AD_LONGTIME_NEVER_2);
+
+    return is_never;
 }
 
 AdResult AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value) {

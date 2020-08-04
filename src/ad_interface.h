@@ -25,6 +25,10 @@
 #include <QString>
 #include <QMap>
 #include <QHash>
+#include <QDateTime>
+
+#define AD_LONGTIME_NEVER_1 "0"
+#define AD_LONGTIME_NEVER_2 "9223372036854775807"
 
 class AdConnection;
 
@@ -97,6 +101,10 @@ public:
     AdResult set_pass(const QString &dn, const QString &password);
     void update_cache(const QList<QString> &changed_dns);
     
+    QDateTime attribute_datetime_get(const QString &dn, const QString &attribute);
+    AdResult attribute_datetime_replace(const QString &dn, const QString &attribute, const QDateTime &datetime);
+    bool datetime_is_never(const QString &dn, const QString &attribute);
+
     AdResult group_add_user(const QString &group_dn, const QString &user_dn);
     AdResult group_remove_user(const QString &group_dn, const QString &user_dn);
 
