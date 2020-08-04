@@ -39,7 +39,9 @@ namespace adldap
 // is updated on object changes
 // Emits various signals for AD operation successes/failures
 
-#define ATTRIBUTE_USER_ACCOUNT_CONTROL "userAccountControl"
+#define ATTRIBUTE_USER_ACCOUNT_CONTROL  "userAccountControl"
+#define ATTRIBUTE_USER_PRINCIPAL_NAME   "userPrincipalName"
+#define ATTRIBUTE_LOCKOUT_TIME          "lockoutTime"
 
 #define UAC_ACCOUNTDISABLE      0x0002
 #define DONT_EXPIRE_PASSWORD    0x10000
@@ -48,6 +50,8 @@ namespace adldap
 #define USE_DES_KEY_ONLY        0x200000
 #define DONT_REQUIRE_PREAUTH    0x400000
 #define UAC_PASSWORD_EXPIRED    0x800000
+
+#define LOCKOUT_UNLOCKED_VALUE "0"
 
 enum NewObjectType {
     User,

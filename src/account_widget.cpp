@@ -44,7 +44,10 @@ AccountWidget::AccountWidget(QWidget *parent)
 
     connect(
         unlock_button, &QAbstractButton::clicked,
-        this, &AccountWidget::on_unlock_button_clicked);
+        this, &AccountWidget::on_unlock_button);
+    connect(
+        logon_name_edit, &QLineEdit::editingFinished,
+        this, &AccountWidget::on_logon_name_edit);
 
     auto connect_uac_check =
     [this, layout](const QString &text, int bit) {
@@ -82,13 +85,13 @@ AccountWidget::AccountWidget(QWidget *parent)
     connect_uac_check(tr("Account is sensitive and cannot be delegated"), NOT_DELEGATED );
     connect_uac_check(tr("Don't require Kerberos preauthentication"), DONT_REQUIRE_PREAUTH);
 
+    // TODO: account expiry datetime
 }
 
 void AccountWidget::change_target(const QString &dn) {
     target_dn = dn;
 
-    const QString logon_name = AdInterface::instance()->attribute_get(target_dn, "userPrincipalName");
-    logon_name_edit->setText(logon_name);
+    reset_logon_name_edit();
 
     for (auto uac_check : uac_checks) {
         QCheckBox *check = uac_check.check;
@@ -100,6 +103,25 @@ void AccountWidget::change_target(const QString &dn) {
     }
 }
 
-void AccountWidget::on_unlock_button_clicked() {
-    AdInterface::instance()->attribute_replace(target_dn, "lockoutTime", "0");
+void AccountWidget::on_unlock_button() {
+    AdInterface::instance()->attribute_replace(target_dn, ATTRIBUTE_LOCKOUT_TIME, LOCKOUT_UNLOCKED_VALUE);
+}
+
+void AccountWidget::on_logon_name_edit() {
+    const QString new_logon_name = logon_name_edit->text();
+    const QString current_logon_name = AdInterface::instance()->attribute_get(target_dn, ATTRIBUTE_USER_PRINCIPAL_NAME);
+
+    if (new_logon_name != current_logon_name) {
+        const AdResult result = AdInterface::instance()->attribute_replace(target_dn, ATTRIBUTE_USER_PRINCIPAL_NAME, new_logon_name);
+
+        if (!result.success) {
+            // TODO: show error
+            reset_logon_name_edit();
+        }
+    }
+}
+
+void AccountWidget::reset_logon_name_edit() {
+    const QString logon_name = AdInterface::instance()->attribute_get(target_dn, ATTRIBUTE_USER_PRINCIPAL_NAME);
+    logon_name_edit->setText(logon_name);
 }

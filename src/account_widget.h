@@ -44,12 +44,15 @@ public:
     void change_target(const QString &dn);
 
 private slots:
-    void on_unlock_button_clicked();
+    void on_unlock_button();
+    void on_logon_name_edit();
     
 private:
     QString target_dn;
     QLineEdit *logon_name_edit;
     QList<UACCheck> uac_checks;
+
+    void reset_logon_name_edit();
 };
 
 #endif /* ACCOUNT_WIDGET_H */
