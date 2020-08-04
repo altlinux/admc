@@ -79,11 +79,11 @@ AccountWidget::AccountWidget(QWidget *parent)
     // "Use Kerberos DES encryption types for this account"
     connect_uac_check(tr("Account disabled"), UAC_ACCOUNTDISABLE);
     connect_uac_check(tr("User must change password on next logon"), UAC_PASSWORD_EXPIRED);
-    connect_uac_check(tr("Don't expire password"), DONT_EXPIRE_PASSWORD);
-    connect_uac_check(tr("Store password using reversible encryption"), USE_DES_KEY_ONLY);
-    connect_uac_check(tr("Smartcard is required for interactive logon"), SMARTCARD_REQUIRED);
-    connect_uac_check(tr("Account is sensitive and cannot be delegated"), NOT_DELEGATED );
-    connect_uac_check(tr("Don't require Kerberos preauthentication"), DONT_REQUIRE_PREAUTH);
+    connect_uac_check(tr("Don't expire password"), UAC_DONT_EXPIRE_PASSWORD);
+    connect_uac_check(tr("Store password using reversible encryption"), UAC_USE_DES_KEY_ONLY);
+    connect_uac_check(tr("Smartcard is required for interactive logon"), UAC_SMARTCARD_REQUIRED);
+    connect_uac_check(tr("Account is sensitive and cannot be delegated"), UAC_NOT_DELEGATED );
+    connect_uac_check(tr("Don't require Kerberos preauthentication"), UAC_DONT_REQUIRE_PREAUTH);
 
     // TODO: account expiry datetime
 }
