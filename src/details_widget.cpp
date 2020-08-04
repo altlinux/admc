@@ -89,7 +89,7 @@ void DetailsWidget::change_target(const QString &dn) {
     tab_widget->addTab(attributes_widget, tr("All Attributes"));
     attributes_widget->change_target(target_dn);
 
-    bool is_group = AdInterface::instance()->attribute_value_exists(target_dn, "objectClass", "group");
+    bool is_group = AdInterface::instance()->is_group(target_dn);
     if (is_group) {
         tab_widget->addTab(members_widget, tr("Group members"));
         members_widget->change_target(target_dn);
