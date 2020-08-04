@@ -43,7 +43,6 @@ MainWindow::MainWindow()
         restoreGeometry(geometry);
     }
 
-    
     auto menubar = new MenuBar(this);
     setMenuBar(menubar);
 

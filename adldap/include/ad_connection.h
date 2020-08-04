@@ -41,8 +41,6 @@ public:
 
     int create_user(const char *username, const char *dn);
     int create_computer(const char *name, const char *dn);
-    int user_lock(const char *dn);
-    int user_unlock(const char *dn);
     int object_delete(const char *dn);
     int user_set_pass(const char *dn, const char *password);
     int search(const char *filter, char ***dn_list);

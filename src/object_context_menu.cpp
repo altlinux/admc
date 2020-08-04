@@ -117,6 +117,17 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
             const auto password_dialog = new PasswordDialog(dn, this);
             password_dialog->open();
         });
+
+        const bool disabled = AdInterface::instance()->user_get_uac_bit(dn, UAC_ACCOUNTDISABLE);
+        QString disable_text;
+        if (disabled) {
+            disable_text = tr("Enable account");
+        } else {
+            disable_text = tr("Disable account");
+        }
+        addAction(disable_text, [this, dn, disabled]() {
+            AdInterface::instance()->user_set_uac_bit(dn, UAC_ACCOUNTDISABLE, !disabled);
+        });
     }
 
     // Special contextual action

@@ -186,6 +186,7 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
 
         char ***attributes_ad;
         const int result_attribute_get = connection->get_all_attributes(dn_cstr, &attributes_ad);
+
         if (result_attribute_get == AD_SUCCESS) {
             Attributes attributes;
             // attributes_ad is in the form of:
@@ -589,6 +590,83 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
     }
 }
 
+AdResult AdInterface::user_set_uac_bit(const QString &dn, int bit, bool set) {
+    if (dn.isEmpty()) {
+        return AdResult(false, "");
+    }
+
+    const QByteArray dn_array = dn.toLatin1();
+    const char *dn_cstr = dn_array.constData();
+
+    QString control = attribute_get(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
+    if (control.isEmpty()) {
+        control = "0";
+    }
+
+    int control_int = control.toInt();
+    if (set) {
+        control_int |= bit;
+    } else {
+        control_int ^= bit;
+    }
+
+    const QString control_updated = QString::number(control_int);
+    const QByteArray control_updated_array = control_updated.toLatin1();
+    const char *control_updated_cstr = control_updated_array.constData();
+
+    const int result = connection->attribute_replace(dn_cstr, ATTRIBUTE_USER_ACCOUNT_CONTROL, control_updated_cstr);
+
+    const QString name = extract_name_from_dn(dn);
+    
+    if (result == AD_SUCCESS) {
+        auto get_success_context =
+        [bit, set, name]() {
+            switch (bit) {
+                case UAC_ACCOUNTDISABLE: {
+                    if (set) {
+                        return QString(tr("Disabled account for user - \"%1\"")).arg(name);
+                    } else {
+                        return QString(tr("Enabled account user - \"%1\"")).arg(name);
+                    }
+                }
+                default: {
+                    return QString(tr("Set userAccountControl bit \"%1\" of user - \"%2\" to \"%3\"")).arg(bit).arg(name).arg(set);
+                }
+            }
+        };
+        const QString success_context = get_success_context();
+        
+        success_status_message(success_context);
+
+        update_cache({dn});
+
+        return AdResult(true, "");
+    } else {
+        auto get_success_context =
+        [bit, set, name]() {
+            switch (bit) {
+                case UAC_ACCOUNTDISABLE: {
+                    if (set) {
+                        return QString(tr("Failed to disable account for user - \"%1\"")).arg(name);
+                    } else {
+                        return QString(tr("Enabled account for user - \"%1\"")).arg(name);
+                    }
+                }
+                default: {
+                    return QString(tr("Failed to set userAccountControl bit \"%1\" of user - \"%2\" to \"%3\"")).arg(bit).arg(name).arg(set);
+                }
+            }
+        };
+        const QString error_context = get_success_context();
+
+        const QString error_string = default_error_string(result);
+
+        error_status_message(error_context, error_string);
+
+        return AdResult(false, error_string);
+    }
+}
+
 bool AdInterface::is_class(const QString &dn, const QString &object_class) {
     const QList<QString> classes = attribute_get_multi(dn, "objectClass");
     const bool is_class = classes.contains(object_class);
@@ -626,6 +704,17 @@ bool AdInterface::is_container_like(const QString &dn) {
     }
 
     return false;
+}
+
+bool AdInterface::user_get_uac_bit(const QString &dn, int bit) {
+    const QString control = attribute_get(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
+    if (control.isEmpty()) {
+        return false;
+    }
+
+    const int control_int = control.toInt();
+    const bool set = ((control_int & bit) != 0);
+    return set;
 }
 
 enum DropType {
