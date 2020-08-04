@@ -88,7 +88,6 @@ public:
     Attributes get_all_attributes(const QString &dn);
     QList<QString> attribute_get_multi(const QString &dn, const QString &attribute);
     QString attribute_get(const QString &dn, const QString &attribute);
-    bool attribute_value_exists(const QString &dn, const QString &attribute, const QString &value);
 
     AdResult attribute_replace(const QString &dn, const QString &attribute, const QString &value);
     AdResult object_create(const QString &name, const QString &dn, NewObjectType type);
@@ -101,6 +100,7 @@ public:
     AdResult group_add_user(const QString &group_dn, const QString &user_dn);
     AdResult group_remove_user(const QString &group_dn, const QString &user_dn);
 
+    bool is_class(const QString &dn, const QString &object_class);
     bool is_user(const QString &dn);
     bool is_group(const QString &dn);
     bool is_container(const QString &dn);

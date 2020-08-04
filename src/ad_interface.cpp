@@ -230,16 +230,6 @@ QString AdInterface::attribute_get(const QString &dn, const QString &attribute) 
     }
 }
 
-bool AdInterface::attribute_value_exists(const QString &dn, const QString &attribute, const QString &value) {
-    QList<QString> values = attribute_get_multi(dn, attribute);
-
-    if (values.contains(value)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 AdResult AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value) {
     const QString old_value = attribute_get(dn, attribute);
     
@@ -516,31 +506,38 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
     }
 }
 
+bool AdInterface::is_class(const QString &dn, const QString &object_class) {
+    const QList<QString> classes = attribute_get_multi(dn, "objectClass");
+    const bool is_class = classes.contains(object_class);
+
+    return is_class;
+}
+
 bool AdInterface::is_user(const QString &dn) {
-    return attribute_value_exists(dn, "objectClass", "user");
+    return is_class(dn, "user");
 }
 
 bool AdInterface::is_group(const QString &dn) {
-    return attribute_value_exists(dn, "objectClass", "group");
+    return is_class(dn, "group");
 }
 
 bool AdInterface::is_container(const QString &dn) {
-    return attribute_value_exists(dn, "objectClass", "container");
+    return is_class(dn, "container");
 }
 
 bool AdInterface::is_ou(const QString &dn) {
-    return attribute_value_exists(dn, "objectClass", "organizationalUnit");
+    return is_class(dn, "organizationalUnit");
 }
 
 bool AdInterface::is_policy(const QString &dn) {
-    return attribute_value_exists(dn, "objectClass", "groupPolicyContainer");
+    return is_class(dn, "groupPolicyContainer");
 }
 
 bool AdInterface::is_container_like(const QString &dn) {
     // TODO: check that this includes all fitting objectClasses
     const QList<QString> containerlike_objectClasses = {"organizationalUnit", "builtinDomain", "domain"};
     for (auto c : containerlike_objectClasses) {
-        if (AdInterface::instance()->attribute_value_exists(dn, "objectClass", c)) {
+        if (is_class(dn, c)) {
             return true;
         }
     }
