@@ -64,11 +64,11 @@ AccountWidget::AccountWidget(QWidget *parent)
         connect(
             check, &QCheckBox::stateChanged,
             [this, check, bit]() {
-                const bool current_state = AdInterface::instance()->user_get_user_account_control(target_dn, bit);
+                const bool current_state = AdInterface::instance()->user_get_uac_bit(target_dn, bit);
                 const bool new_state = (check->checkState() == Qt::Checked);
 
                 if (current_state != new_state) {
-                    AdInterface::instance()->user_set_user_account_control(target_dn, bit, new_state);
+                    AdInterface::instance()->user_set_uac_bit(target_dn, bit, new_state);
                 }
             });
     };
@@ -97,7 +97,7 @@ void AccountWidget::change_target(const QString &dn) {
         QCheckBox *check = uac_check.check;
         const int bit = uac_check.bit;
 
-        const bool bit_is_set = AdInterface::instance()->user_get_user_account_control(target_dn, bit);
+        const bool bit_is_set = AdInterface::instance()->user_get_uac_bit(target_dn, bit);
 
         check->setChecked(bit_is_set);
     }

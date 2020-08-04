@@ -517,7 +517,7 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
     }
 }
 
-AdResult AdInterface::user_set_user_account_control(const QString &dn, int bit, bool set) {
+AdResult AdInterface::user_set_uac_bit(const QString &dn, int bit, bool set) {
     if (dn.isEmpty()) {
         return AdResult(false, "");
     }
@@ -626,7 +626,7 @@ bool AdInterface::is_container_like(const QString &dn) {
     return false;
 }
 
-bool AdInterface::user_get_user_account_control(const QString &dn, int bit) {
+bool AdInterface::user_get_uac_bit(const QString &dn, int bit) {
     const QString control = attribute_get(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
     if (control.isEmpty()) {
         return false;

@@ -118,7 +118,7 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
             password_dialog->open();
         });
 
-        const bool disabled = AdInterface::instance()->user_get_user_account_control(dn, UAC_ACCOUNTDISABLE);
+        const bool disabled = AdInterface::instance()->user_get_uac_bit(dn, UAC_ACCOUNTDISABLE);
         QString disable_text;
         if (disabled) {
             disable_text = tr("Enable account");
@@ -126,7 +126,7 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
             disable_text = tr("Disable account");
         }
         addAction(disable_text, [this, dn, disabled]() {
-            AdInterface::instance()->user_set_user_account_control(dn, UAC_ACCOUNTDISABLE, !disabled);
+            AdInterface::instance()->user_set_uac_bit(dn, UAC_ACCOUNTDISABLE, !disabled);
         });
     }
 
