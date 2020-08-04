@@ -83,23 +83,22 @@ void DetailsWidget::change_target(const QString &dn) {
 
     target_dn = dn;
 
-    attributes_widget->change_target(target_dn);
-    members_widget->change_target(target_dn);
-    account_widget->change_target(target_dn);
-
     // Setup tabs
     tab_widget->clear();
 
     tab_widget->addTab(attributes_widget, tr("All Attributes"));
+    attributes_widget->change_target(target_dn);
 
     bool is_group = AdInterface::instance()->attribute_value_exists(target_dn, "objectClass", "group");
     if (is_group) {
         tab_widget->addTab(members_widget, tr("Group members"));
+        members_widget->change_target(target_dn);
     }
 
     const bool is_user = AdInterface::instance()->is_user(target_dn);
     if (is_user) {
         tab_widget->addTab(account_widget, tr("Account"));
+        account_widget->change_target(target_dn);
     }
 
     // Restore current index if it is still shown
