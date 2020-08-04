@@ -616,41 +616,6 @@ int ad_delete(LDAP *ld, const char *dn) {
     return result;
 }
 
-int ad_user_enable(LDAP *ld, const char *dn) {
-    int result = AD_SUCCESS;
-
-    char **flags = NULL;
-
-    const int result_get_flags = ad_get_attribute(ld, dn, "userAccountControl", &flags);
-    if (result_get_flags != AD_SUCCESS || flags[0] == NULL) {
-        result = result_get_flags;
-        
-        goto end;
-    }
-
-    int iflags = atoi(flags[0]);
-    if (iflags & 2) {
-        iflags ^= 2;
-
-        char newflags[255];
-        snprintf(newflags, sizeof(newflags), "%d", iflags);
-        const int result_replace = ad_attribute_replace(ld, dn, "userAccountControl", newflags);
-        if (result_replace != AD_SUCCESS) {
-            // Failed to replace userAccountControl
-            result = result_replace;
-
-            goto end;
-        }
-    }
-
-    end:
-    {
-        ad_array_free(flags);
-
-        return result;
-    }
-}
-
 int ad_user_set_pass(LDAP *ld, const char *dn, const char *password) {
     int result = AD_SUCCESS;
     
