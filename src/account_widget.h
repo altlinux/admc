@@ -25,8 +25,6 @@
 
 class QString;
 class QLineEdit;
-class QLabel;
-class QPushButton;
 class QCheckBox;
 
 struct UACCheck {
