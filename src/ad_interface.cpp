@@ -78,8 +78,6 @@ QList<QString> AdInterface::get_domain_hosts(const QString &domain, const QStrin
 
         return hosts;
     } else {
-        // emit get_domain_hosts_failed(domain, site, get_error_str());
-
         return QList<QString>();
     }
 }

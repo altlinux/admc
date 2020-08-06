@@ -28,6 +28,8 @@
 #include <QDateTimeEdit>
 #include <QButtonGroup>
 
+// TODO: logon hours, logon computers, remove crazy spacing
+
 // NOTE: https://ldapwiki.com/wiki/MMC%20Account%20Tab
 
 bool checkbox_is_checked(const QCheckBox *checkbox) {
