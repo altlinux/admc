@@ -630,7 +630,13 @@ AdResult AdInterface::user_set_uac_bit(const QString &dn, int bit, bool set) {
                     }
                 }
                 default: {
-                    return QString(tr("Set userAccountControl bit \"%1\" of user - \"%2\" to \"%3\"")).arg(bit).arg(name).arg(set);
+                    const QString bit_description = get_uac_bit_description(bit);
+
+                    if (set) {
+                        return QString(tr("Turned on account option \"%1\" of user \"%2\"")).arg(bit_description).arg(name);
+                    } else {
+                        return QString(tr("Turned off account option \"%1\" of user \"%2\"")).arg(bit_description).arg(name);
+                    }
                 }
             }
         };
@@ -969,6 +975,19 @@ QString filter_OR(const QString &a, const QString &b) {
 QString filter_NOT(const QString &a) {
     auto filter = QString("(!%1)").arg(a);
     return filter;
+}
+
+QString get_uac_bit_description(int bit) {
+    switch (bit) {
+        case UAC_ACCOUNTDISABLE: return AdInterface::tr("Account disabled");
+        case UAC_PASSWORD_EXPIRED: return AdInterface::tr("User must change password on next logon");
+        case UAC_DONT_EXPIRE_PASSWORD: return AdInterface::tr("Don't expire password");
+        case UAC_USE_DES_KEY_ONLY: return AdInterface::tr("Store password using reversible encryption");
+        case UAC_SMARTCARD_REQUIRED: return AdInterface::tr("Smartcard is required for interactive logon");
+        case UAC_NOT_DELEGATED: return AdInterface::tr("Account is sensitive and cannot be delegated");
+        case UAC_DONT_REQUIRE_PREAUTH: return AdInterface::tr("Don't require Kerberos preauthentication");
+        default: return QString(AdInterface::tr("Unknown uac bit %1")).arg(bit);
+    }
 }
 
 AdResult::AdResult(bool success_arg) {

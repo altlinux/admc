@@ -80,8 +80,15 @@ AccountWidget::AccountWidget(QWidget *parent)
         expiry_edit, &QDateTimeEdit::dateTimeChanged,
         this, &AccountWidget::on_expiry_edit);
 
-    auto connect_uac_check =
-    [this, layout](const QString &text, int bit) {
+    // TODO:
+    // "User cannot change password" - CAN'T just set PASSWD_CANT_CHANGE. See: https://docs.microsoft.com/en-us/windows/win32/adsi/modifying-user-cannot-change-password-ldap-provider?redirectedfrom=MSDN
+    // "This account supports 128bit encryption" (and for 256bit)
+    // "Use Kerberos DES encryption types for this account"
+    const QList<int> uac_bits = {
+        UAC_ACCOUNTDISABLE, UAC_PASSWORD_EXPIRED, UAC_DONT_EXPIRE_PASSWORD, UAC_USE_DES_KEY_ONLY, UAC_SMARTCARD_REQUIRED, UAC_NOT_DELEGATED, UAC_DONT_REQUIRE_PREAUTH
+    };
+    for (auto bit : uac_bits) {
+        const QString text = get_uac_bit_description(bit);
         auto check = new QCheckBox(text);
 
         layout->addWidget(check);
@@ -98,19 +105,7 @@ AccountWidget::AccountWidget(QWidget *parent)
                 const bool checked = checkbox_is_checked(check);
                 AdInterface::instance()->user_set_uac_bit(target_dn, bit, checked);
             });
-    };
-
-    // TODO:
-    // "User cannot change password" - CAN'T just set PASSWD_CANT_CHANGE. See: https://docs.microsoft.com/en-us/windows/win32/adsi/modifying-user-cannot-change-password-ldap-provider?redirectedfrom=MSDN
-    // "This account supports 128bit encryption" (and for 256bit)
-    // "Use Kerberos DES encryption types for this account"
-    connect_uac_check(tr("Account disabled"), UAC_ACCOUNTDISABLE);
-    connect_uac_check(tr("User must change password on next logon"), UAC_PASSWORD_EXPIRED);
-    connect_uac_check(tr("Don't expire password"), UAC_DONT_EXPIRE_PASSWORD);
-    connect_uac_check(tr("Store password using reversible encryption"), UAC_USE_DES_KEY_ONLY);
-    connect_uac_check(tr("Smartcard is required for interactive logon"), UAC_SMARTCARD_REQUIRED);
-    connect_uac_check(tr("Account is sensitive and cannot be delegated"), UAC_NOT_DELEGATED );
-    connect_uac_check(tr("Don't require Kerberos preauthentication"), UAC_DONT_REQUIRE_PREAUTH);
+    }
 }
 
 void AccountWidget::change_target(const QString &dn) {

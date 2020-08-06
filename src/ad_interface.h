@@ -170,5 +170,6 @@ QString filter_EQUALS(const QString &attribute, const QString &value);
 QString filter_AND(const QString &a, const QString &b);
 QString filter_OR(const QString &a, const QString &b);
 QString filter_NOT(const QString &a);
+QString get_uac_bit_description(int bit);
 
 #endif /* AD_INTERFACE_H */
