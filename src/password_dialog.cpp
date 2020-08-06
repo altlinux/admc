@@ -81,7 +81,7 @@ void PasswordDialog::on_ok_button(bool) {
     if (result.success) {
         done(QDialog::Accepted);
     } else {
-        QMessageBox::warning(this, "Warning", QString(tr("Failed to set password! %1")).arg(result.msg));
+        QMessageBox::warning(this, "Warning", QString(tr("Failed to set password! %1")).arg(result.error));
     }
 }
 

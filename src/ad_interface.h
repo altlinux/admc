@@ -79,9 +79,10 @@ enum EmitStatusMessage {
 class AdResult {
 public:
     bool success;
-    QString msg;
+    QString error;
 
-    AdResult(bool success_arg, const QString &msg);
+    AdResult(bool success_arg);
+    AdResult(bool success_arg, const QString &error_arg);
 };
 
 typedef QMap<QString, QList<QString>> Attributes;

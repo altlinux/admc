@@ -93,7 +93,7 @@ AdResult AdInterface::login(const QString &host, const QString &domain) {
 
         emit logged_in();
 
-        return AdResult(true, "");
+        return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to login to \"%1\" at \"%2\"")).arg(host, domain);
         const QString error_string = default_error_string(result);
@@ -335,7 +335,7 @@ AdResult AdInterface::attribute_replace(const QString &dn, const QString &attrib
 
         update_cache({dn});
 
-        return AdResult(true, "");
+        return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value, value);
         const QString error_string = default_error_string(result);
@@ -381,7 +381,7 @@ AdResult AdInterface::object_create(const QString &name, const QString &dn, NewO
 
         update_cache({dn});
 
-        return AdResult(true, "");
+        return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to create \"%1\"")).arg(name);
         const QString error_string = default_error_string(result);
@@ -405,7 +405,7 @@ AdResult AdInterface::object_delete(const QString &dn) {
 
         update_cache({dn});
 
-        return AdResult(true, "");
+        return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to delete object \"%1\"")).arg(name);
         const QString error_string = default_error_string(result);
@@ -445,7 +445,7 @@ AdResult AdInterface::object_move(const QString &dn, const QString &new_containe
 
         update_cache({dn});
 
-        return AdResult(true, "");
+        return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to move \"%1\" to \"%2\"")).arg(object_name, container_name);
         const QString error_string = default_error_string(result);
@@ -473,7 +473,7 @@ AdResult AdInterface::group_add_user(const QString &group_dn, const QString &use
 
         update_cache({group_dn, user_dn});
 
-        return AdResult(true, "");
+        return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to add user \"%1\" to group \"%2\"")).arg(user_name, group_name);
         const QString error_string = default_error_string(result);
@@ -501,7 +501,7 @@ AdResult AdInterface::group_remove_user(const QString &group_dn, const QString &
 
         update_cache({group_dn, user_dn});
 
-        return AdResult(true, "");
+        return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to remove user \"%1\" from group \"%2\"")).arg(user_name, group_name);
         const QString error_string = default_error_string(result);
@@ -546,7 +546,7 @@ AdResult AdInterface::object_rename(const QString &dn, const QString &new_name) 
 
         update_cache({dn});
 
-        return AdResult(true, "");
+        return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to rename \"%1\" to \"%2\"")).arg(old_name, new_name);
         const QString error_string = default_error_string(result);
@@ -572,7 +572,7 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
 
         update_cache({dn});
 
-        return AdResult(true, "");
+        return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to set pass of \"%1\"")).arg(name);
 
@@ -640,7 +640,7 @@ AdResult AdInterface::user_set_uac_bit(const QString &dn, int bit, bool set) {
 
         update_cache({dn});
 
-        return AdResult(true, "");
+        return AdResult(true);
     } else {
         auto get_success_context =
         [bit, set, name]() {
@@ -675,11 +675,11 @@ AdResult AdInterface::user_unlock(const QString &dn) {
     if (result.success) {
         success_status_message(QString(tr("Unlocked user \"%1\"")).arg(name));
         
-        return AdResult(true, "");
+        return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to unlock user \"%1\"")).arg(name);
 
-        error_status_message(context, result.msg);
+        error_status_message(context, result.error);
 
         return result;
     }
@@ -971,7 +971,12 @@ QString filter_NOT(const QString &a) {
     return filter;
 }
 
-AdResult::AdResult(bool success_arg, const QString &msg_arg) {
+AdResult::AdResult(bool success_arg) {
     success = success_arg;
-    msg = msg_arg;
+    error = "";
+}
+
+AdResult::AdResult(bool success_arg, const QString &error_arg) {
+    success = success_arg;
+    error = error_arg;
 }
