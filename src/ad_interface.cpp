@@ -28,6 +28,9 @@
 
 #define MILLIS_TO_100_NANOS 10000
 
+#define AD_PWD_LAST_SET_EXPIRED "0"
+#define AD_PWD_LAST_SET_RESET   "-1"
+
 enum DatetimeFormat {
     DatetimeFormat_LargeInteger,
     DatetimeFormat_ISO8601,
@@ -590,39 +593,58 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
     }
 }
 
-AdResult AdInterface::user_set_uac_bit(const QString &dn, int bit, bool set) {
+// TODO:
+// "User cannot change password" - CAN'T just set PASSWD_CANT_CHANGE. See: https://docs.microsoft.com/en-us/windows/win32/adsi/modifying-user-cannot-change-password-ldap-provider?redirectedfrom=MSDN
+// "This account supports 128bit encryption" (and for 256bit)
+// "Use Kerberos DES encryption types for this account"
+AdResult AdInterface::user_set_account_option(const QString &dn, AccountOption option, bool set) {
     if (dn.isEmpty()) {
         return AdResult(false, "");
     }
 
-    const QByteArray dn_array = dn.toLatin1();
-    const char *dn_cstr = dn_array.constData();
+    AdResult result(false);
 
-    QString control = attribute_get(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
-    if (control.isEmpty()) {
-        control = "0";
+    switch (option) {
+        case AccountOption_PasswordExpired: {
+            QString pwdLastSet_value;
+            if (set) {
+                pwdLastSet_value = AD_PWD_LAST_SET_EXPIRED;
+            } else {
+                pwdLastSet_value = AD_PWD_LAST_SET_RESET;
+            }
+
+            result = attribute_replace(dn, ATTRIBUTE_PWD_LAST_SET, pwdLastSet_value, EmitStatusMessage_No);
+
+            break;
+        }
+        default: {
+            QString control = attribute_get(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
+            if (control.isEmpty()) {
+                control = "0";
+            }
+
+            const int bit = get_account_option_bit(option);
+
+            int control_int = control.toInt();
+            if (set) {
+                control_int |= bit;
+            } else {
+                control_int ^= bit;
+            }
+
+            const QString control_updated = QString::number(control_int);
+
+            result = attribute_replace(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, control_updated, EmitStatusMessage_No);
+        }
     }
-
-    int control_int = control.toInt();
-    if (set) {
-        control_int |= bit;
-    } else {
-        control_int ^= bit;
-    }
-
-    const QString control_updated = QString::number(control_int);
-    const QByteArray control_updated_array = control_updated.toLatin1();
-    const char *control_updated_cstr = control_updated_array.constData();
-
-    const int result = connection->attribute_replace(dn_cstr, ATTRIBUTE_USER_ACCOUNT_CONTROL, control_updated_cstr);
 
     const QString name = extract_name_from_dn(dn);
     
-    if (result == AD_SUCCESS) {
+    if (result.success) {
         auto get_success_context =
-        [bit, set, name]() {
-            switch (bit) {
-                case UAC_ACCOUNTDISABLE: {
+        [option, set, name]() {
+            switch (option) {
+                case AccountOption_Disabled: {
                     if (set) {
                         return QString(tr("Disabled account for user - \"%1\"")).arg(name);
                     } else {
@@ -630,12 +652,12 @@ AdResult AdInterface::user_set_uac_bit(const QString &dn, int bit, bool set) {
                     }
                 }
                 default: {
-                    const QString bit_description = get_uac_bit_description(bit);
+                    const QString description = get_account_option_description(option);
 
                     if (set) {
-                        return QString(tr("Turned on account option \"%1\" of user \"%2\"")).arg(bit_description).arg(name);
+                        return QString(tr("Turned ON account option \"%1\" of user \"%2\"")).arg(description, name);
                     } else {
-                        return QString(tr("Turned off account option \"%1\" of user \"%2\"")).arg(bit_description).arg(name);
+                        return QString(tr("Turned OFF account option \"%1\" of user \"%2\"")).arg(description, name);
                     }
                 }
             }
@@ -649,9 +671,9 @@ AdResult AdInterface::user_set_uac_bit(const QString &dn, int bit, bool set) {
         return AdResult(true);
     } else {
         auto get_success_context =
-        [bit, set, name]() {
-            switch (bit) {
-                case UAC_ACCOUNTDISABLE: {
+        [option, set, name]() {
+            switch (option) {
+                case AccountOption_Disabled: {
                     if (set) {
                         return QString(tr("Failed to disable account for user - \"%1\"")).arg(name);
                     } else {
@@ -659,17 +681,21 @@ AdResult AdInterface::user_set_uac_bit(const QString &dn, int bit, bool set) {
                     }
                 }
                 default: {
-                    return QString(tr("Failed to set userAccountControl bit \"%1\" of user - \"%2\" to \"%3\"")).arg(bit).arg(name).arg(set);
+                    const QString description = get_account_option_description(option);
+
+                    if (set) {
+                        return QString(tr("Failed to turn ON account option \"%1\" of user \"%2\"")).arg(description, name);
+                    } else {
+                        return QString(tr("Failed to turn OFF account option \"%1\" of user \"%2\"")).arg(description, name);
+                    }
                 }
             }
         };
         const QString error_context = get_success_context();
 
-        const QString error_string = default_error_string(result);
+        error_status_message(error_context, result.error);
 
-        error_status_message(error_context, error_string);
-
-        return AdResult(false, error_string);
+        return AdResult(false, result.error);
     }
 }
 
@@ -730,15 +756,29 @@ bool AdInterface::is_container_like(const QString &dn) {
     return false;
 }
 
-bool AdInterface::user_get_uac_bit(const QString &dn, int bit) {
-    const QString control = attribute_get(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
-    if (control.isEmpty()) {
-        return false;
-    }
+bool AdInterface::user_get_account_option(const QString &dn, AccountOption option) {
+    switch (option) {
+        case AccountOption_PasswordExpired: {
+            const QString pwdLastSet_value = attribute_get(dn, ATTRIBUTE_PWD_LAST_SET);
+            const bool expired = (pwdLastSet_value == AD_PWD_LAST_SET_EXPIRED);
 
-    const int control_int = control.toInt();
-    const bool set = ((control_int & bit) != 0);
-    return set;
+            return expired;
+        }
+        default: {
+            // Account option is a UAC bit
+            const QString control = attribute_get(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
+            if (control.isEmpty()) {
+                return false;
+            }
+
+            const int bit = get_account_option_bit(option);
+
+            const int control_int = control.toInt();
+            const bool set = ((control_int & bit) != 0);
+
+            return set;
+        }
+    }
 }
 
 enum DropType {
@@ -977,17 +1017,36 @@ QString filter_NOT(const QString &a) {
     return filter;
 }
 
-QString get_uac_bit_description(int bit) {
-    switch (bit) {
-        case UAC_ACCOUNTDISABLE: return AdInterface::tr("Account disabled");
-        case UAC_PASSWORD_EXPIRED: return AdInterface::tr("User must change password on next logon");
-        case UAC_DONT_EXPIRE_PASSWORD: return AdInterface::tr("Don't expire password");
-        case UAC_USE_DES_KEY_ONLY: return AdInterface::tr("Store password using reversible encryption");
-        case UAC_SMARTCARD_REQUIRED: return AdInterface::tr("Smartcard is required for interactive logon");
-        case UAC_NOT_DELEGATED: return AdInterface::tr("Account is sensitive and cannot be delegated");
-        case UAC_DONT_REQUIRE_PREAUTH: return AdInterface::tr("Don't require Kerberos preauthentication");
-        default: return QString(AdInterface::tr("Unknown uac bit %1")).arg(bit);
+QString get_account_option_description(const AccountOption &option) {
+    switch (option) {
+        case AccountOption_Disabled: return AdInterface::tr("Account disabled");
+        case AccountOption_PasswordExpired: return AdInterface::tr("User must change password on next logon");
+        case AccountOption_DontExpirePassword: return AdInterface::tr("Don't expire password");
+        case AccountOption_UseDesKey: return AdInterface::tr("Store password using reversible encryption");
+        case AccountOption_SmartcardRequired: return AdInterface::tr("Smartcard is required for interactive logon");
+        case AccountOption_CantDelegate: return AdInterface::tr("Account is sensitive and cannot be delegated");
+        case AccountOption_DontRequirePreauth: return AdInterface::tr("Don't require Kerberos preauthentication");
+        case AccountOption_COUNT: return QString("AccountOption_COUNT");
     }
+
+    return "";
+}
+
+int get_account_option_bit(const AccountOption &option) {
+    // NOTE: not all account options have bits
+    switch (option) {
+        case AccountOption_Disabled: return 0x0002;
+        case AccountOption_DontExpirePassword: return 0x10000;
+        case AccountOption_UseDesKey: return 0x200000;
+        case AccountOption_SmartcardRequired: return 0x40000;
+        case AccountOption_DontRequirePreauth: return 0x800000;
+        case AccountOption_CantDelegate: return 0x100000;
+
+        case AccountOption_PasswordExpired: return 0;
+        case AccountOption_COUNT: return 0;
+    }
+
+    return 0;
 }
 
 AdResult::AdResult(bool success_arg) {

@@ -18,7 +18,6 @@
  */
 
 #include "account_widget.h"
-#include "ad_interface.h"
 
 #include <QVBoxLayout>
 #include <QLineEdit>
@@ -80,30 +79,24 @@ AccountWidget::AccountWidget(QWidget *parent)
         expiry_edit, &QDateTimeEdit::dateTimeChanged,
         this, &AccountWidget::on_expiry_edit);
 
-    // TODO:
-    // "User cannot change password" - CAN'T just set PASSWD_CANT_CHANGE. See: https://docs.microsoft.com/en-us/windows/win32/adsi/modifying-user-cannot-change-password-ldap-provider?redirectedfrom=MSDN
-    // "This account supports 128bit encryption" (and for 256bit)
-    // "Use Kerberos DES encryption types for this account"
-    const QList<int> uac_bits = {
-        UAC_ACCOUNTDISABLE, UAC_PASSWORD_EXPIRED, UAC_DONT_EXPIRE_PASSWORD, UAC_USE_DES_KEY_ONLY, UAC_SMARTCARD_REQUIRED, UAC_NOT_DELEGATED, UAC_DONT_REQUIRE_PREAUTH
-    };
-    for (auto bit : uac_bits) {
-        const QString text = get_uac_bit_description(bit);
+    for (int i = 0; i < AccountOption_COUNT; i++) {
+        const AccountOption option = (AccountOption) i;
+        const QString text = get_account_option_description(option);
         auto check = new QCheckBox(text);
 
         layout->addWidget(check);
 
         UACCheck uac_check = {
             check,
-            bit
+            option
         };
         uac_checks.append(uac_check);
 
         connect(
             check, &QCheckBox::stateChanged,
-            [this, check, bit]() {
+            [this, check, option]() {
                 const bool checked = checkbox_is_checked(check);
-                AdInterface::instance()->user_set_uac_bit(target_dn, bit, checked);
+                AdInterface::instance()->user_set_account_option(target_dn, option, checked);
             });
     }
 }
@@ -126,12 +119,9 @@ void AccountWidget::change_target(const QString &dn) {
     }
 
     for (auto uac_check : uac_checks) {
-        QCheckBox *check = uac_check.check;
-        const int bit = uac_check.bit;
+        const bool option_is_set = AdInterface::instance()->user_get_account_option(target_dn, uac_check.option);
 
-        const bool bit_is_set = AdInterface::instance()->user_get_uac_bit(target_dn, bit);
-
-        check->setChecked(bit_is_set);
+        uac_check.check->setChecked(option_is_set);
     }
 
     // NOTE: since each of the checkboxes makes a server modification, the whole widget is reloaded and what is below will always happen after checkbox state changes

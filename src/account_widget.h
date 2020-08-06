@@ -20,6 +20,8 @@
 #ifndef ACCOUNT_WIDGET_H
 #define ACCOUNT_WIDGET_H
 
+#include "ad_interface.h"
+
 #include <QWidget>
 #include <QList>
 
@@ -30,7 +32,7 @@ class QDateTimeEdit;
 
 struct UACCheck {
     QCheckBox *check;
-    int bit;
+    AccountOption option;
 };
 
 // Shows member objects of targeted group

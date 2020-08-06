@@ -37,14 +37,7 @@
 #define ATTRIBUTE_USER_PRINCIPAL_NAME   "userPrincipalName"
 #define ATTRIBUTE_LOCKOUT_TIME          "lockoutTime"
 #define ATTRIBUTE_ACCOUNT_EXPIRES       "accountExpires"
-
-#define UAC_ACCOUNTDISABLE          0x0002
-#define UAC_DONT_EXPIRE_PASSWORD    0x10000
-#define UAC_SMARTCARD_REQUIRED      0x40000
-#define UAC_NOT_DELEGATED           0x100000
-#define UAC_USE_DES_KEY_ONLY        0x200000
-#define UAC_DONT_REQUIRE_PREAUTH    0x400000
-#define UAC_PASSWORD_EXPIRED        0x800000
+#define ATTRIBUTE_PWD_LAST_SET          "pwdLastSet"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 
@@ -64,6 +57,17 @@ enum NewObjectType {
     OU,
     Group,
     COUNT
+};
+
+enum AccountOption {
+    AccountOption_Disabled,
+    AccountOption_PasswordExpired,
+    AccountOption_DontExpirePassword,
+    AccountOption_UseDesKey,
+    AccountOption_SmartcardRequired,
+    AccountOption_CantDelegate,
+    AccountOption_DontRequirePreauth,
+    AccountOption_COUNT
 };
 
 enum AdInterfaceMessageType {
@@ -120,7 +124,7 @@ public:
     AdResult object_move(const QString &dn, const QString &new_container);
     AdResult object_rename(const QString &dn, const QString &new_name);
     AdResult set_pass(const QString &dn, const QString &password);
-    AdResult user_set_uac_bit(const QString &dn, int bit, bool set);
+    AdResult user_set_account_option(const QString &dn, AccountOption option, bool set);
     AdResult user_unlock(const QString &dn);
     void update_cache(const QList<QString> &changed_dns);
     
@@ -139,7 +143,7 @@ public:
     bool is_policy(const QString &dn);
     bool is_container_like(const QString &dn);
 
-    bool user_get_uac_bit(const QString &dn, int bit);
+    bool user_get_account_option(const QString &dn, AccountOption option);
 
     bool object_can_drop(const QString &dn, const QString &target_dn);
     void object_drop(const QString &dn, const QString &target_dn);
@@ -170,6 +174,7 @@ QString filter_EQUALS(const QString &attribute, const QString &value);
 QString filter_AND(const QString &a, const QString &b);
 QString filter_OR(const QString &a, const QString &b);
 QString filter_NOT(const QString &a);
-QString get_uac_bit_description(int bit);
+QString get_account_option_description(const AccountOption &option);
+int get_account_option_bit(const AccountOption &option);
 
 #endif /* AD_INTERFACE_H */
