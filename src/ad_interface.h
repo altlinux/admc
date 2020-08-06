@@ -27,16 +27,6 @@
 #include <QHash>
 #include <QDateTime>
 
-#define AD_LONGTIME_NEVER_1 "0"
-#define AD_LONGTIME_NEVER_2 "9223372036854775807"
-
-class AdConnection;
-
-namespace adldap
-{
-    class AdConnection;
-};
-
 // Interface between the GUI and AdConnection
 // Stores attributes cache of objects
 // Attributes cache is expanded as more objects are loaded and
@@ -46,16 +36,27 @@ namespace adldap
 #define ATTRIBUTE_USER_ACCOUNT_CONTROL  "userAccountControl"
 #define ATTRIBUTE_USER_PRINCIPAL_NAME   "userPrincipalName"
 #define ATTRIBUTE_LOCKOUT_TIME          "lockoutTime"
+#define ATTRIBUTE_ACCOUNT_EXPIRES       "accountExpires"
 
-#define UAC_ACCOUNTDISABLE      0x0002
+#define UAC_ACCOUNTDISABLE          0x0002
 #define UAC_DONT_EXPIRE_PASSWORD    0x10000
 #define UAC_SMARTCARD_REQUIRED      0x40000
 #define UAC_NOT_DELEGATED           0x100000
 #define UAC_USE_DES_KEY_ONLY        0x200000
 #define UAC_DONT_REQUIRE_PREAUTH    0x400000
-#define UAC_PASSWORD_EXPIRED    0x800000
+#define UAC_PASSWORD_EXPIRED        0x800000
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
+
+#define AD_LARGEINTEGERTIME_NEVER_1 "0"
+#define AD_LARGEINTEGERTIME_NEVER_2 "9223372036854775807"
+
+class AdConnection;
+
+namespace adldap
+{
+    class AdConnection;
+};
 
 enum NewObjectType {
     User,
@@ -68,6 +69,11 @@ enum NewObjectType {
 enum AdInterfaceMessageType {
     AdInterfaceMessageType_Success,
     AdInterfaceMessageType_Error
+};
+
+enum EmitStatusMessage {
+    EmitStatusMessage_Yes,
+    EmitStatusMessage_No
 };
 
 class AdResult {
@@ -107,13 +113,14 @@ public:
     QList<QString> attribute_get_multi(const QString &dn, const QString &attribute);
     QString attribute_get(const QString &dn, const QString &attribute);
 
-    AdResult attribute_replace(const QString &dn, const QString &attribute, const QString &value);
+    AdResult attribute_replace(const QString &dn, const QString &attribute, const QString &value, EmitStatusMessage emit_message = EmitStatusMessage_Yes);
     AdResult object_create(const QString &name, const QString &dn, NewObjectType type);
     AdResult object_delete(const QString &dn);
     AdResult object_move(const QString &dn, const QString &new_container);
     AdResult object_rename(const QString &dn, const QString &new_name);
     AdResult set_pass(const QString &dn, const QString &password);
     AdResult user_set_uac_bit(const QString &dn, int bit, bool set);
+    AdResult user_unlock(const QString &dn);
     void update_cache(const QList<QString> &changed_dns);
     
     QDateTime attribute_datetime_get(const QString &dn, const QString &attribute);
@@ -151,8 +158,8 @@ private:
     AdInterface();
 
     bool should_emit_status_message(int result);
-    void success_status_message(const QString &msg);
-    void error_status_message(const QString &context, const QString &error);
+    void success_status_message(const QString &msg, EmitStatusMessage emit_message = EmitStatusMessage_Yes);
+    void error_status_message(const QString &context, const QString &error, EmitStatusMessage emit_message = EmitStatusMessage_Yes);
     QString default_error_string(int ad_result) const;
 }; 
 

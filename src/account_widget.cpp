@@ -25,8 +25,15 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QCheckBox>
+#include <QDateTime>
+#include <QDateTimeEdit>
+#include <QButtonGroup>
 
 // NOTE: https://ldapwiki.com/wiki/MMC%20Account%20Tab
+
+bool checkbox_is_checked(const QCheckBox *checkbox) {
+    return (checkbox->checkState() == Qt::Checked);
+}
 
 AccountWidget::AccountWidget(QWidget *parent)
 : QWidget(parent)
@@ -37,10 +44,25 @@ AccountWidget::AccountWidget(QWidget *parent)
 
     const auto unlock_button = new QPushButton(tr("Unlock account"), this);
 
+    expiry_never_check = new QCheckBox(tr("Never"), this);
+    expiry_set_check = new QCheckBox(tr("End of:"), this);
+    auto expiry_button_group = new QButtonGroup(this);
+    expiry_button_group->setExclusive(true);
+    expiry_button_group->addButton(expiry_never_check);
+    expiry_button_group->addButton(expiry_set_check);
+
+    auto expiry_label = new QLabel(tr("Account expires:"), this);
+
+    expiry_edit = new QDateTimeEdit(this);
+
     const auto layout = new QVBoxLayout(this);
     layout->addWidget(logon_name_label);
     layout->addWidget(logon_name_edit);
     layout->addWidget(unlock_button);
+    layout->addWidget(expiry_label);
+    layout->addWidget(expiry_never_check);
+    layout->addWidget(expiry_set_check);
+    layout->addWidget(expiry_edit);
 
     connect(
         unlock_button, &QAbstractButton::clicked,
@@ -48,6 +70,15 @@ AccountWidget::AccountWidget(QWidget *parent)
     connect(
         logon_name_edit, &QLineEdit::editingFinished,
         this, &AccountWidget::on_logon_name_edit);
+    connect(
+        expiry_never_check, &QCheckBox::stateChanged,
+        this, &AccountWidget::on_expiry_never_check);
+    connect(
+        expiry_set_check, &QCheckBox::stateChanged,
+        this, &AccountWidget::on_expiry_set_check);
+    connect(
+        expiry_edit, &QDateTimeEdit::dateTimeChanged,
+        this, &AccountWidget::on_expiry_edit);
 
     auto connect_uac_check =
     [this, layout](const QString &text, int bit) {
@@ -64,12 +95,8 @@ AccountWidget::AccountWidget(QWidget *parent)
         connect(
             check, &QCheckBox::stateChanged,
             [this, check, bit]() {
-                const bool current_state = AdInterface::instance()->user_get_uac_bit(target_dn, bit);
-                const bool new_state = (check->checkState() == Qt::Checked);
-
-                if (current_state != new_state) {
-                    AdInterface::instance()->user_set_uac_bit(target_dn, bit, new_state);
-                }
+                const bool checked = checkbox_is_checked(check);
+                AdInterface::instance()->user_set_uac_bit(target_dn, bit, checked);
             });
     };
 
@@ -84,14 +111,24 @@ AccountWidget::AccountWidget(QWidget *parent)
     connect_uac_check(tr("Smartcard is required for interactive logon"), UAC_SMARTCARD_REQUIRED);
     connect_uac_check(tr("Account is sensitive and cannot be delegated"), UAC_NOT_DELEGATED );
     connect_uac_check(tr("Don't require Kerberos preauthentication"), UAC_DONT_REQUIRE_PREAUTH);
-
-    // TODO: account expiry datetime
 }
 
 void AccountWidget::change_target(const QString &dn) {
     target_dn = dn;
 
     reset_logon_name_edit();
+
+    // NOTE: block signals from setChecked()
+    QList<QObject *> block_signals = {
+        expiry_never_check, expiry_set_check
+    };
+    for (auto e : uac_checks) {
+        block_signals.append(e.check);
+    }
+
+    for (auto e : block_signals) {
+        e->blockSignals(true);
+    }
 
     for (auto uac_check : uac_checks) {
         QCheckBox *check = uac_check.check;
@@ -101,10 +138,29 @@ void AccountWidget::change_target(const QString &dn) {
 
         check->setChecked(bit_is_set);
     }
+
+    // NOTE: since each of the checkboxes makes a server modification, the whole widget is reloaded and what is below will always happen after checkbox state changes
+    const bool expires_never = AdInterface::instance()->datetime_is_never(target_dn, ATTRIBUTE_ACCOUNT_EXPIRES);
+    if (expires_never) {
+        expiry_edit->setEnabled(false);
+        expiry_never_check->setChecked(true);
+
+        expiry_edit->setDateTime(QDateTime::currentDateTime());
+    } else {
+        expiry_edit->setEnabled(true);
+        expiry_set_check->setChecked(true);
+        
+        const QDateTime expires = AdInterface::instance()->attribute_datetime_get(target_dn, ATTRIBUTE_ACCOUNT_EXPIRES);
+        expiry_edit->setDateTime(expires);
+    }
+
+    for (auto e : block_signals) {
+        e->blockSignals(false);
+    }
 }
 
 void AccountWidget::on_unlock_button() {
-    AdInterface::instance()->attribute_replace(target_dn, ATTRIBUTE_LOCKOUT_TIME, LOCKOUT_UNLOCKED_VALUE);
+    AdInterface::instance()->user_unlock(target_dn);
 }
 
 void AccountWidget::on_logon_name_edit() {
@@ -118,6 +174,30 @@ void AccountWidget::on_logon_name_edit() {
             // TODO: show error
             reset_logon_name_edit();
         }
+    }
+}
+
+void AccountWidget::on_expiry_never_check() {
+    if (checkbox_is_checked(expiry_never_check)) {
+        AdInterface::instance()->attribute_replace(target_dn, ATTRIBUTE_ACCOUNT_EXPIRES, AD_LARGEINTEGERTIME_NEVER_1);
+    }
+}
+
+void AccountWidget::on_expiry_set_check() {
+    if (checkbox_is_checked(expiry_set_check)) {
+        const QDateTime expires = expiry_edit->dateTime();
+        
+        // TODO: handle errors
+        const AdResult result = AdInterface::instance()->attribute_datetime_replace(target_dn, ATTRIBUTE_ACCOUNT_EXPIRES, expires);
+    }
+}
+
+void AccountWidget::on_expiry_edit() {
+    if (checkbox_is_checked(expiry_set_check)) {
+        const QDateTime new_datetime = expiry_edit->dateTime();
+
+        // TODO: handle errors? don't know if possible
+        const AdResult result = AdInterface::instance()->attribute_datetime_replace(target_dn, ATTRIBUTE_ACCOUNT_EXPIRES, new_datetime);
     }
 }
 

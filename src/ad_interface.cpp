@@ -309,12 +309,12 @@ AdResult AdInterface::attribute_datetime_replace(const QString &dn, const QStrin
 // NOTE: can't do this with DateTime arg because that loses sub-millis precision
 bool AdInterface::datetime_is_never(const QString &dn, const QString &attribute) {
     const QString datetime_string = attribute_get(dn, attribute);
-    const bool is_never = (datetime_string == AD_LONGTIME_NEVER_1 || datetime_string == AD_LONGTIME_NEVER_2);
+    const bool is_never = (datetime_string == AD_LARGEINTEGERTIME_NEVER_1 || datetime_string == AD_LARGEINTEGERTIME_NEVER_2);
 
     return is_never;
 }
 
-AdResult AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value) {
+AdResult AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value, EmitStatusMessage emit_message) {
     const QString old_value = attribute_get(dn, attribute);
     
     const QByteArray dn_array = dn.toLatin1();
@@ -331,7 +331,7 @@ AdResult AdInterface::attribute_replace(const QString &dn, const QString &attrib
     const QString name = extract_name_from_dn(dn);
 
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value, value));
+        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value, value), emit_message);
 
         update_cache({dn});
 
@@ -340,7 +340,7 @@ AdResult AdInterface::attribute_replace(const QString &dn, const QString &attrib
         const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value, value);
         const QString error_string = default_error_string(result);
 
-        error_status_message(context, error_string);
+        error_status_message(context, error_string, emit_message);
 
         return AdResult(false, error_string);
     }
@@ -667,6 +667,24 @@ AdResult AdInterface::user_set_uac_bit(const QString &dn, int bit, bool set) {
     }
 }
 
+AdResult AdInterface::user_unlock(const QString &dn) {
+    const AdResult result = AdInterface::instance()->attribute_replace(dn, ATTRIBUTE_LOCKOUT_TIME, LOCKOUT_UNLOCKED_VALUE, EmitStatusMessage_No);
+
+    const QString name = extract_name_from_dn(dn);
+    
+    if (result.success) {
+        success_status_message(QString(tr("Unlocked user \"%1\"")).arg(name));
+        
+        return AdResult(true, "");
+    } else {
+        const QString context = QString(tr("Failed to unlock user \"%1\"")).arg(name);
+
+        error_status_message(context, result.msg);
+
+        return result;
+    }
+}
+
 bool AdInterface::is_class(const QString &dn, const QString &object_class) {
     const QList<QString> classes = attribute_get_multi(dn, "objectClass");
     const bool is_class = classes.contains(object_class);
@@ -877,14 +895,18 @@ bool AdInterface::should_emit_status_message(int result) {
     }
 }
 
-void AdInterface::success_status_message(const QString &msg) {
-    emit status_message(msg, AdInterfaceMessageType_Success);
+void AdInterface::success_status_message(const QString &msg, EmitStatusMessage emit_message) {
+    if (emit_message == EmitStatusMessage_Yes) {
+        emit status_message(msg, AdInterfaceMessageType_Success);
+    }
 }
 
-void AdInterface::error_status_message(const QString &context, const QString &error) {
-    const QString msg = QString(tr("%1. Error: \"%2\"")).arg(context, error);
+void AdInterface::error_status_message(const QString &context, const QString &error, EmitStatusMessage emit_message) {
+    if (emit_message == EmitStatusMessage_Yes) {
+        const QString msg = QString(tr("%1. Error: \"%2\"")).arg(context, error);
 
-    emit status_message(msg, AdInterfaceMessageType_Error);
+        emit status_message(msg, AdInterfaceMessageType_Error);
+    }
 }
 
 QString AdInterface::default_error_string(int ad_result) const {
