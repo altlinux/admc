@@ -28,7 +28,8 @@
 class QString;
 class QLineEdit;
 class QCheckBox;
-class QDateTimeEdit;
+class QLabel;
+class QPushButton;
 
 struct UACCheck {
     QCheckBox *check;
@@ -49,15 +50,17 @@ private slots:
     void on_logon_name_edit();
     void on_expiry_never_check();
     void on_expiry_set_check();
-    void on_expiry_edit();
+    void on_expiry_edit_button();
     
 private:
     QString target_dn;
     QLineEdit *logon_name_edit;
     QList<UACCheck> uac_checks;
+
     QCheckBox *expiry_never_check;
     QCheckBox *expiry_set_check;
-    QDateTimeEdit *expiry_edit;
+    QLabel *expiry_display;
+    QPushButton *expiry_edit_button;
 
     void reset_logon_name_edit();
 };
