@@ -30,7 +30,8 @@
 #include <QCalendarWidget>
 #include <QDialog>
 
-// TODO: logon hours, logon computers, remove crazy spacing
+// TODO: add "other" values for phone and homepage. This looks like the attribute is multi-valued but couldn't see that it is in attrib editor for some reason.
+// TODO: show icon if needed
 
 // NOTE: https://ldapwiki.com/wiki/MMC%20Account%20Tab
 
@@ -44,22 +45,19 @@ GeneralWidget::GeneralWidget(QWidget *parent)
     const auto top_layout = new QVBoxLayout(this);
     top_layout->addWidget(name_label);
 
-    const auto second_layout = new QHBoxLayout();
-    top_layout->insertLayout(-1, second_layout);
+    const auto attributes_layout = new QHBoxLayout();
+    top_layout->insertLayout(-1, attributes_layout);
 
     const auto label_layout = new QVBoxLayout();
     const auto edit_layout = new QVBoxLayout();
-    second_layout->insertLayout(-1, label_layout);
-    second_layout->insertLayout(-1, edit_layout);
+    attributes_layout->insertLayout(-1, label_layout);
+    attributes_layout->insertLayout(-1, edit_layout);
 
     auto make_line_edit =
     [this, label_layout, edit_layout](const QString &attribute, const QString &label_text) {
         auto label = new QLabel(label_text, this);
         auto edit = new QLineEdit(this);
 
-        // TODO: what to do about parent of layout?
-        // is it null
-        // maybe inserting assigns it
         label_layout->addWidget(label);
         edit_layout->addWidget(edit);
 
@@ -82,8 +80,6 @@ GeneralWidget::GeneralWidget(QWidget *parent)
                 edit->setText(current_value);
             });
     };
-
-    // TODO: add "other" values for phone and homepage. In ADUC they appear to just be a list, but actually there are specific attributes for different types of phones, look into it.
 
     make_line_edit(ATTRIBUTE_DISPLAY_NAME, tr("Display name:"));
     make_line_edit(ATTRIBUTE_DESCRIPTION, tr("Description:"));
