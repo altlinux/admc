@@ -38,6 +38,7 @@
 #define ATTRIBUTE_LOCKOUT_TIME          "lockoutTime"
 #define ATTRIBUTE_ACCOUNT_EXPIRES       "accountExpires"
 #define ATTRIBUTE_PWD_LAST_SET          "pwdLastSet"
+#define ATTRIBUTE_NAME                  "name"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 
@@ -130,7 +131,6 @@ public:
     
     QDateTime attribute_datetime_get(const QString &dn, const QString &attribute);
     AdResult attribute_datetime_replace(const QString &dn, const QString &attribute, const QDateTime &datetime);
-    bool datetime_is_never(const QString &dn, const QString &attribute);
 
     AdResult group_add_user(const QString &group_dn, const QString &user_dn);
     AdResult group_remove_user(const QString &group_dn, const QString &user_dn);
@@ -176,5 +176,9 @@ QString filter_OR(const QString &a, const QString &b);
 QString filter_NOT(const QString &a);
 QString get_account_option_description(const AccountOption &option);
 int get_account_option_bit(const AccountOption &option);
+bool attribute_is_datetime(const QString &attribute);
+bool datetime_is_never(const QString &attribute, const QString &value);
+QString datetime_raw_to_string(const QString &attribute, const QString &raw_value);
+QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_value);
 
 #endif /* AD_INTERFACE_H */

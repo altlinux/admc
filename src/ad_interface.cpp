@@ -31,16 +31,15 @@
 #define AD_PWD_LAST_SET_EXPIRED "0"
 #define AD_PWD_LAST_SET_RESET   "-1"
 
+#define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm"
+
 enum DatetimeFormat {
     DatetimeFormat_LargeInteger,
     DatetimeFormat_ISO8601,
     DatetimeFormat_None
 };
 
-const QHash<QString, DatetimeFormat> datetime_formats = {
-    {"accountExpires", DatetimeFormat_LargeInteger},
-    {"whenChanged", DatetimeFormat_ISO8601},
-};
+DatetimeFormat get_attribute_time_format(const QString &attribute);
 
 AdInterface::~AdInterface() {
     delete connection;
@@ -249,39 +248,14 @@ QString AdInterface::attribute_get(const QString &dn, const QString &attribute) 
 }
 
 QDateTime AdInterface::attribute_datetime_get(const QString &dn, const QString &attribute) {
-    const QString datetime_string = attribute_get(dn, attribute);
-
-    const DatetimeFormat format = datetime_formats.value(attribute, DatetimeFormat_None);
-
-    QDateTime datetime;
-
-    switch (format) {
-        case DatetimeFormat_LargeInteger: {
-            // TODO: couldn't find epoch in qt, but maybe its hidden somewhere
-            datetime = QDateTime(QDate(1601, 1, 1));
-            const qint64 hundred_nanos = datetime_string.toLongLong();
-            const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
-            datetime = datetime.addMSecs(millis);
-
-            break;
-        }
-        case DatetimeFormat_ISO8601: {
-            datetime = QDateTime::fromString(datetime_string, ISO8601_FORMAT_STRING);
-
-            break;
-        }
-        case DatetimeFormat_None: {
-            datetime = QDateTime();
-
-            break;
-        }
-    }
+    const QString raw_value = attribute_get(dn, attribute);
+    const QDateTime datetime = datetime_raw_to_datetime(attribute, raw_value);
 
     return datetime;
 }
 
 AdResult AdInterface::attribute_datetime_replace(const QString &dn, const QString &attribute, const QDateTime &datetime) {
-    const DatetimeFormat format = datetime_formats.value(attribute, DatetimeFormat_None);
+    const DatetimeFormat format = get_attribute_time_format(attribute);
 
     QString datetime_string;
     switch (format) {
@@ -307,16 +281,15 @@ AdResult AdInterface::attribute_datetime_replace(const QString &dn, const QStrin
     return result;
 }
 
-// NOTE: can't do this with DateTime arg because that loses sub-millis precision
-bool AdInterface::datetime_is_never(const QString &dn, const QString &attribute) {
-    const QString datetime_string = attribute_get(dn, attribute);
-    const bool is_never = (datetime_string == AD_LARGEINTEGERTIME_NEVER_1 || datetime_string == AD_LARGEINTEGERTIME_NEVER_2);
-
-    return is_never;
-}
-
 AdResult AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value, EmitStatusMessage emit_message) {
-    const QString old_value = attribute_get(dn, attribute);
+    QString old_value_string;
+
+    if (attribute_is_datetime(attribute)) {
+        const QString old_value_raw = attribute_get(dn, attribute);
+        old_value_string = datetime_raw_to_string(attribute, old_value_raw);
+    } else {
+        old_value_string = attribute_get(dn, attribute);
+    }
     
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
@@ -331,14 +304,21 @@ AdResult AdInterface::attribute_replace(const QString &dn, const QString &attrib
 
     const QString name = extract_name_from_dn(dn);
 
+    QString new_value_string;
+    if (attribute_is_datetime(attribute)) {
+        new_value_string = datetime_raw_to_string(attribute, value);
+    } else {
+        new_value_string = value;
+    }
+
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value, value), emit_message);
+        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_string, new_value_string), emit_message);
 
         update_cache({dn});
 
         return AdResult(true);
     } else {
-        const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value, value);
+        const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_string, new_value_string);
         const QString error_string = default_error_string(result);
 
         error_status_message(context, error_string, emit_message);
@@ -1045,6 +1025,67 @@ int get_account_option_bit(const AccountOption &option) {
     }
 
     return 0;
+}
+
+bool datetime_is_never(const QString &attribute, const QString &value) {
+    const DatetimeFormat format = get_attribute_time_format(attribute);
+
+    if (format == DatetimeFormat_LargeInteger) {
+        const bool is_never = (value == AD_LARGEINTEGERTIME_NEVER_1 || value == AD_LARGEINTEGERTIME_NEVER_2);
+        
+        return is_never;
+    } else {
+        return false;
+    }
+}
+
+bool attribute_is_datetime(const QString &attribute) {
+    const DatetimeFormat format = get_attribute_time_format(attribute);
+    return format != DatetimeFormat_None;
+}
+
+DatetimeFormat get_attribute_time_format(const QString &attribute) {
+    static const QHash<QString, DatetimeFormat> datetime_formats = {
+        {"accountExpires", DatetimeFormat_LargeInteger},
+        {"whenChanged", DatetimeFormat_ISO8601},
+    };
+
+    return datetime_formats.value(attribute, DatetimeFormat_None);
+}
+
+QString datetime_raw_to_string(const QString &attribute, const QString &raw_value) {
+    if (datetime_is_never(attribute, raw_value)) {
+        return "(never)";
+    }
+
+    const QDateTime datetime = datetime_raw_to_datetime(attribute, raw_value);
+    const QString string = datetime.toString(DATETIME_DISPLAY_FORMAT);
+
+    return string;
+}
+
+QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_value) {
+    const DatetimeFormat format = get_attribute_time_format(attribute);
+
+    switch (format) {
+        case DatetimeFormat_LargeInteger: {
+            // TODO: couldn't find epoch in qt, but maybe its hidden somewhere
+            QDateTime datetime(QDate(1601, 1, 1));
+            const qint64 hundred_nanos = raw_value.toLongLong();
+            const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
+            datetime = datetime.addMSecs(millis);
+
+            return datetime;
+        }
+        case DatetimeFormat_ISO8601: {
+            return QDateTime::fromString(raw_value, ISO8601_FORMAT_STRING);
+        }
+        case DatetimeFormat_None: {
+            return QDateTime();
+        }
+    }
+
+    return QDateTime();
 }
 
 AdResult::AdResult(bool success_arg) {

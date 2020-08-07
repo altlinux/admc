@@ -134,7 +134,8 @@ void AccountWidget::change_target(const QString &dn) {
     }
 
     // NOTE: since each of the checkboxes makes a server modification, the whole widget is reloaded and what is below will always happen after checkbox state changes
-    const bool expires_never = AdInterface::instance()->datetime_is_never(target_dn, ATTRIBUTE_ACCOUNT_EXPIRES);
+    const QString expires_raw = AdInterface::instance()->attribute_get(target_dn, ATTRIBUTE_ACCOUNT_EXPIRES);
+    const bool expires_never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, expires_raw);
     if (expires_never) {
         expiry_display->setEnabled(false);
         expiry_never_check->setChecked(true);
@@ -216,8 +217,6 @@ void AccountWidget::on_expiry_edit_button() {
         [this, dialog, calendar]() {
             const QDate date = calendar->selectedDate();
             const QDateTime new_expiry(date, END_OF_DAY);
-
-            const QTime time = new_expiry.time();
 
             const AdResult result = AdInterface::instance()->attribute_datetime_replace(target_dn, ATTRIBUTE_ACCOUNT_EXPIRES, new_expiry);
 
