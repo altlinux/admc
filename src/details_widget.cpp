@@ -86,7 +86,9 @@ void DetailsWidget::change_target(const QString &dn) {
     // Setup tabs
     tab_widget->clear();
 
-    tab_widget->addTab(attributes_widget, tr("All Attributes"));
+    if (!target_dn.isEmpty()) {
+        tab_widget->addTab(attributes_widget, tr("All Attributes"));
+    }
     attributes_widget->change_target(target_dn);
 
     bool is_group = AdInterface::instance()->is_group(target_dn);
