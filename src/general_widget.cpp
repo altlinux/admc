@@ -42,7 +42,7 @@ GeneralWidget::GeneralWidget(QWidget *parent)
     const auto layout = new QVBoxLayout(this);
     layout->addWidget(name_label);
 
-    auto add_thingie =
+    auto make_line_edit =
     [this, layout](const QString &attribute, const QString &label_text) {
         auto label = new QLabel(label_text, this);
         auto edit = new QLineEdit(this);
@@ -64,9 +64,16 @@ GeneralWidget::GeneralWidget(QWidget *parent)
                     AdInterface::instance()->attribute_replace(target_dn, attribute, new_value);
                 }
             });
+        connect(
+            this, &GeneralWidget::target_changed,
+            [this, edit, attribute]() {
+                const QString current_value = AdInterface::instance()->attribute_get(target_dn, attribute);
+
+                edit->setText(current_value);
+            });
     };
 
-    add_thingie("displayName", tr("Display name:"));
+    make_line_edit("displayName", tr("Display name:"));
 }
 
 void GeneralWidget::change_target(const QString &dn) {
@@ -74,4 +81,6 @@ void GeneralWidget::change_target(const QString &dn) {
 
     const QString name = AdInterface::instance()->attribute_get(target_dn, ATTRIBUTE_NAME);
     name_label->setText(name);
+
+    emit target_changed();
 }

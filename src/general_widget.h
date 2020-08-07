@@ -42,7 +42,10 @@ public:
     void change_target(const QString &dn);
 
 private slots:
-    
+
+signals:
+    void target_changed();
+
 private:
     QString target_dn;
     QLabel *name_label;
