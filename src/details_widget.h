@@ -32,6 +32,7 @@ class ContentsWidget;
 class QTabWidget;
 class QLabel;
 class AccountWidget;
+class GeneralWidget;
 
 // Shows info about object's attributes in multiple tabs
 // Targeted at a particular object
@@ -56,6 +57,7 @@ private:
     AttributesWidget *attributes_widget = nullptr;
     MembersWidget *members_widget = nullptr;
     AccountWidget *account_widget = nullptr;
+    GeneralWidget *general_widget = nullptr;
     QLabel *title_label = nullptr;
     QString target_dn;
 
