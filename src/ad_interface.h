@@ -39,6 +39,15 @@
 #define ATTRIBUTE_ACCOUNT_EXPIRES       "accountExpires"
 #define ATTRIBUTE_PWD_LAST_SET          "pwdLastSet"
 #define ATTRIBUTE_NAME                  "name"
+#define ATTRIBUTE_DISPLAY_NAME          "displayName"
+#define ATTRIBUTE_DESCRIPTION           "description"
+#define ATTRIBUTE_GIVEN_NAME            "givenName"
+#define ATTRIBUTE_INITIALS              "initials"
+#define ATTRIBUTE_MAIL                  "mail"
+#define ATTRIBUTE_OFFICE                "physicalDeliveryOfficeName"
+#define ATTRIBUTE_SN                    "sn"
+#define ATTRIBUTE_TELEPHONE_NUMBER      "telephoneNumber"
+#define ATTRIBUTE_WWW_HOMEPAGE          "wWWHomePage"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 
