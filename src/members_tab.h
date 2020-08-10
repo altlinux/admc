@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MEMBERS_WIDGET_H
-#define MEMBERS_WIDGET_H
+#ifndef MEMBERS_TAB_H
+#define MEMBERS_TAB_H
 
 #include "details_tab.h"
 #include "object_model.h"
@@ -52,4 +52,4 @@ public:
     void change_target(const QString &dn);
 };
 
-#endif /* MEMBERS_WIDGET_H */
+#endif /* MEMBERS_TAB_H */

@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACCOUNT_WIDGET_H
-#define ACCOUNT_WIDGET_H
+#ifndef ACCOUNT_TAB_H
+#define ACCOUNT_TAB_H
 
 #include "details_tab.h"
 #include "ad_interface.h"
@@ -65,4 +65,4 @@ private:
     void reset_logon_name_edit();
 };
 
-#endif /* ACCOUNT_WIDGET_H */
+#endif /* ACCOUNT_TAB_H */

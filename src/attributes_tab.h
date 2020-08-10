@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_WIDGET_H
-#define ATTRIBUTES_WIDGET_H
+#ifndef ATTRIBUTES_TAB_H
+#define ATTRIBUTES_TAB_H
 
 #include "details_tab.h"
 
@@ -57,4 +57,4 @@ private:
     AttributesTab *attributes_tab;
 };
 
-#endif /* ATTRIBUTES_WIDGET_H */
+#endif /* ATTRIBUTES_TAB_H */

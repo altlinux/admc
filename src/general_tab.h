@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERAL_WIDGET_H
-#define GENERAL_WIDGET_H
+#ifndef GENERAL_TAB_H
+#define GENERAL_TAB_H
 
 #include "details_tab.h"
 
@@ -44,4 +44,4 @@ private:
     QLabel *name_label;
 };
 
-#endif /* GENERAL_WIDGET_H */
+#endif /* GENERAL_TAB_H */
