@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "general_tab.h"
+#include "address_tab.h"
 #include "ad_interface.h"
 
 #include <QVBoxLayout>
@@ -31,22 +31,14 @@
 #include <QCalendarWidget>
 #include <QDialog>
 
-// TODO: add "other" values for phone and homepage. This looks like the attribute is multi-valued but couldn't see that it is in attrib editor for some reason.
-// TODO: show icon if needed
-
-// NOTE: https://ldapwiki.com/wiki/MMC%20Account%20Tab
-
-GeneralTab::GeneralTab(DetailsWidget *details_arg)
+AddressTab::AddressTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
-    title = tr("General");
+    title = tr("Address");
 
-    name_label = new QLabel(this);
-
-    // Put labels in one vertical layout and edits in another
-    // So that they are all aligned and get enough space
+    // TODO: don't know why, but if i just have hbox as top layout, the widgets are misaligned
     const auto top_layout = new QVBoxLayout(this);
-    top_layout->addWidget(name_label);
+    // top_layout->addWidget(name_label);
 
     const auto attributes_layout = new QHBoxLayout();
     top_layout->insertLayout(-1, attributes_layout);
@@ -61,24 +53,18 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
         add_attribute_edit(attribute, label_text, label_layout, edit_layout);
     };
 
-    make_line_edit(ATTRIBUTE_DISPLAY_NAME, tr("Display name:"));
-    make_line_edit(ATTRIBUTE_DESCRIPTION, tr("Description:"));
-    make_line_edit(ATTRIBUTE_GIVEN_NAME, tr("First name"));
-    make_line_edit(ATTRIBUTE_INITIALS, tr("Initials:"));
-    make_line_edit(ATTRIBUTE_MAIL, tr("Email:"));
-    make_line_edit(ATTRIBUTE_OFFICE, tr("Office:"));
-    make_line_edit(ATTRIBUTE_SN, tr("Last name:"));
-    make_line_edit(ATTRIBUTE_TELEPHONE_NUMBER, tr("Phone:"));
-    make_line_edit(ATTRIBUTE_WWW_HOMEPAGE, tr("Homepage:"));
+    make_line_edit(ATTRIBUTE_STREET, tr("Street:"));
+    make_line_edit(ATTRIBUTE_PO_BOX, tr("P.O. Box:"));
+    make_line_edit(ATTRIBUTE_CITY, tr("City"));
+    make_line_edit(ATTRIBUTE_STATE, tr("State/province:"));
+    make_line_edit(ATTRIBUTE_POSTAL_CODE, tr("Postal code:"));
+    // make_line_edit(ATTRIBUTE_COUNTRY, tr("Country:"));
 }
 
-void GeneralTab::reload() {
-    const QString name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_NAME);
-    name_label->setText(name);
-
+void AddressTab::reload() {
     emit reloaded();
 }
 
-bool GeneralTab::accepts_target() const {
-    return !target().isEmpty();
+bool AddressTab::accepts_target() const {
+    return AdInterface::instance()->is_user(target());
 }

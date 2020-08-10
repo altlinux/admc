@@ -17,37 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DETAILS_TAB_H
-#define DETAILS_TAB_H
+#ifndef ADDRESS_TAB_H
+#define ADDRESS_TAB_H
 
-#include <QWidget>
-#include <QString>
+#include "details_tab.h"
 
 class DetailsWidget;
-class QLayout;
 
-class DetailsTab : public QWidget {
+// Shows member objects of targeted group
+class AddressTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    DetailsTab(DetailsWidget *details_arg);
-    
-    QString target() const;
-    QString get_title() const;
+    AddressTab(DetailsWidget *details_arg);
 
-    virtual void reload() = 0;
-    virtual bool accepts_target() const = 0;
-
-signals:
-    void reloaded();
-
-protected:
-    QString title;
-
-    void add_attribute_edit(const QString &attribute, const QString &label_text, QLayout *label_layout, QLayout *edit_layout);
-
-private:
-    DetailsWidget *details;
+    void reload();
+    bool accepts_target() const;
 };
 
-#endif /* DETAILS_TAB_H */
+#endif /* ADDRESS_TAB_H */

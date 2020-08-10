@@ -35,11 +35,6 @@ public:
     void reload();
     bool accepts_target() const;
 
-public slots:
-
-signals:
-    void target_changed();
-
 private:
     QLabel *name_label;
 };

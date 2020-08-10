@@ -23,6 +23,7 @@
 #include "members_tab.h"
 #include "account_tab.h"
 #include "general_tab.h"
+#include "address_tab.h"
 #include "ad_interface.h"
 #include "settings.h"
 #include "object_context_menu.h"
@@ -44,7 +45,8 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
         new GeneralTab(this),
         new AttributesTab(this),
         new AccountTab(this),
-        new MembersTab(object_context_menu, this)
+        new MembersTab(object_context_menu, this),
+        new AddressTab(this)
     };
 
     // NOTE: need to hide tabs because they float at the top level  until they are added to tab widget

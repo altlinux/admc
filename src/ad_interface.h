@@ -48,6 +48,14 @@
 #define ATTRIBUTE_SN                    "sn"
 #define ATTRIBUTE_TELEPHONE_NUMBER      "telephoneNumber"
 #define ATTRIBUTE_WWW_HOMEPAGE          "wWWHomePage"
+#define ATTRIBUTE_COUNTRY_ABBREVIATION  "c"
+#define ATTRIBUTE_COUNTRY               "co"
+#define ATTRIBUTE_COUNTRY_CODE          "countryCode"
+#define ATTRIBUTE_CITY                  "l"
+#define ATTRIBUTE_PO_BOX                "postOfficeBox"
+#define ATTRIBUTE_POSTAL_CODE           "postalCode"
+#define ATTRIBUTE_STATE                 "st"
+#define ATTRIBUTE_STREET                "streetAddress"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 
