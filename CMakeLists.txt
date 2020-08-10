@@ -51,12 +51,12 @@ set(ADMC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ad_interface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/details_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/details_tab.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/attributes_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/attributes_tab.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/containers_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/contents_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main_window.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/status.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/members_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/members_tab.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/object_model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/settings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/move_dialog.cpp
@@ -68,8 +68,8 @@ set(ADMC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/login_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/password_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/menubar.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/account_widget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/general_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/account_tab.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/general_tab.cpp
 )
 
 set(TS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)

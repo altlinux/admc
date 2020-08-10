@@ -19,15 +19,15 @@
 
 #include "details_widget.h"
 #include "details_tab.h"
-#include "attributes_widget.h"
+#include "attributes_tab.h"
+#include "members_tab.h"
+#include "account_tab.h"
+#include "general_tab.h"
 #include "ad_interface.h"
-#include "members_widget.h"
 #include "settings.h"
 #include "object_context_menu.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
-#include "account_widget.h"
-#include "general_widget.h"
 
 #include <QAction>
 #include <QTabWidget>
@@ -41,10 +41,10 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
     tab_widget = new QTabWidget(this);
 
     tabs = {
-        new GeneralWidget(this),
-        new AttributesWidget(this),
-        new AccountWidget(this),
-        new MembersWidget(object_context_menu, this)
+        new GeneralTab(this),
+        new AttributesTab(this),
+        new AccountTab(this),
+        new MembersTab(object_context_menu, this)
     };
 
     // NOTE: need to hide tabs because they float at the top level  until they are added to tab widget

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "members_widget.h"
+#include "members_tab.h"
 #include "object_context_menu.h"
 #include "utils.h"
 #include "dn_column_proxy.h"
@@ -31,7 +31,7 @@ enum MembersColumn {
     MembersColumn_COUNT,
 };
 
-MembersWidget::MembersWidget(ObjectContextMenu *object_context_menu, DetailsWidget *details_arg)
+MembersTab::MembersTab(ObjectContextMenu *object_context_menu, DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
     title = tr("Group members");
@@ -55,13 +55,13 @@ MembersWidget::MembersWidget(ObjectContextMenu *object_context_menu, DetailsWidg
     layout->addWidget(view);
 }
 
-void MembersWidget::reload() {
+void MembersTab::reload() {
     model->change_target(target());
 
     set_root_to_head(view);
 }
 
-bool MembersWidget::accepts_target() const {
+bool MembersTab::accepts_target() const {
     bool is_group = AdInterface::instance()->is_group(target());
 
     return is_group;

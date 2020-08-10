@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attributes_widget.h"
+#include "attributes_tab.h"
 #include "ad_interface.h"
 
 #include <QTreeView>
@@ -29,7 +29,7 @@ enum AttributesColumn {
     AttributesColumn_COUNT,
 };
 
-AttributesWidget::AttributesWidget(DetailsWidget *details_widget_arg)
+AttributesTab::AttributesTab(DetailsWidget *details_widget_arg)
 : DetailsTab(details_widget_arg)
 {
     title = tr("All Attributes");
@@ -48,18 +48,18 @@ AttributesWidget::AttributesWidget(DetailsWidget *details_widget_arg)
     layout->addWidget(view);
 }
 
-void AttributesWidget::reload() {
+void AttributesTab::reload() {
     model->reload();
 }
 
-bool AttributesWidget::accepts_target() const {
+bool AttributesTab::accepts_target() const {
     return !target().isEmpty();
 }
 
-AttributesModel::AttributesModel(AttributesWidget *attributes_widget_arg)
-: QStandardItemModel(0, AttributesColumn_COUNT, attributes_widget_arg)
+AttributesModel::AttributesModel(AttributesTab *attributes_tab_arg)
+: QStandardItemModel(0, AttributesColumn_COUNT, attributes_tab_arg)
 {
-    attributes_widget = attributes_widget_arg;
+    attributes_tab = attributes_tab_arg;
 
     setHorizontalHeaderItem(AttributesColumn_Name, new QStandardItem(tr("Name")));
     setHorizontalHeaderItem(AttributesColumn_Value, new QStandardItem(tr("Value")));
@@ -70,7 +70,7 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     QModelIndex value_index = index;
     QModelIndex name_index = value_index.siblingAtColumn(AttributesColumn_Name);
 
-    const QString target = attributes_widget->target();
+    const QString target = attributes_tab->target();
     const QString attribute = name_index.data().toString();
     const QString value_str = value.toString();
 
@@ -89,7 +89,7 @@ void AttributesModel::reload() {
     removeRows(0, rowCount());
 
     // Populate model with attributes of new root
-    const QString target = attributes_widget->target();
+    const QString target = attributes_tab->target();
     QMap<QString, QList<QString>> attributes = AdInterface::instance()->get_all_attributes(target);
     for (auto attribute : attributes.keys()) {
         QList<QString> values = attributes[attribute];

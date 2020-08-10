@@ -168,12 +168,12 @@
 <context>
     <name>AttributesModel</name>
     <message>
-        <location filename="../src/attributes_widget.cpp" line="56"/>
+        <location filename="../src/attributes_tab.cpp" line="56"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/attributes_widget.cpp" line="57"/>
+        <location filename="../src/attributes_tab.cpp" line="57"/>
         <source>Value</source>
         <translation></translation>
     </message>
@@ -279,12 +279,12 @@
 <context>
     <name>MembersModel</name>
     <message>
-        <location filename="../src/members_widget.cpp" line="65"/>
+        <location filename="../src/members_tab.cpp" line="65"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/members_widget.cpp" line="66"/>
+        <location filename="../src/members_tab.cpp" line="66"/>
         <source>DN</source>
         <translation></translation>
     </message>

@@ -17,31 +17,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERAL_WIDGET_H
-#define GENERAL_WIDGET_H
+#ifndef ACCOUNT_WIDGET_H
+#define ACCOUNT_WIDGET_H
 
 #include "details_tab.h"
+#include "ad_interface.h"
 
+#include <QList>
+
+class QString;
+class QLineEdit;
+class QCheckBox;
 class QLabel;
-class DetailsWidget;
+class QPushButton;
+
+struct UACCheck {
+    QCheckBox *check;
+    AccountOption option;
+};
 
 // Shows member objects of targeted group
-class GeneralWidget final : public DetailsTab {
+class AccountTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    GeneralWidget(DetailsWidget *details_arg);
+    AccountTab(DetailsWidget *details_arg);
 
     void reload();
     bool accepts_target() const;
 
-public slots:
-
-signals:
-    void target_changed();
-
+private slots:
+    void on_unlock_button();
+    void on_logon_name_edit();
+    void on_expiry_never_check();
+    void on_expiry_set_check();
+    void on_expiry_edit_button();
+    
 private:
-    QLabel *name_label;
+    QLineEdit *logon_name_edit;
+    QList<UACCheck> uac_checks;
+
+    QCheckBox *expiry_never_check;
+    QCheckBox *expiry_set_check;
+    QLabel *expiry_display;
+    QPushButton *expiry_edit_button;
+
+    void reset_logon_name_edit();
 };
 
-#endif /* GENERAL_WIDGET_H */
+#endif /* ACCOUNT_WIDGET_H */

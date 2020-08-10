@@ -17,52 +17,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACCOUNT_WIDGET_H
-#define ACCOUNT_WIDGET_H
+#ifndef ATTRIBUTES_WIDGET_H
+#define ATTRIBUTES_WIDGET_H
 
 #include "details_tab.h"
-#include "ad_interface.h"
 
-#include <QList>
+#include <QStandardItemModel>
+#include <QString>
 
-class QString;
-class QLineEdit;
-class QCheckBox;
-class QLabel;
-class QPushButton;
+class AttributesModel;
+class QTreeView;
 
-struct UACCheck {
-    QCheckBox *check;
-    AccountOption option;
-};
-
-// Shows member objects of targeted group
-class AccountWidget final : public DetailsTab {
+// Show attributes of target as a list of attribute names and values
+// Values are editable
+class AttributesTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    AccountWidget(DetailsWidget *details_arg);
+    AttributesTab(DetailsWidget *details_arg);
 
     void reload();
     bool accepts_target() const;
 
-private slots:
-    void on_unlock_button();
-    void on_logon_name_edit();
-    void on_expiry_never_check();
-    void on_expiry_set_check();
-    void on_expiry_edit_button();
-    
 private:
-    QLineEdit *logon_name_edit;
-    QList<UACCheck> uac_checks;
-
-    QCheckBox *expiry_never_check;
-    QCheckBox *expiry_set_check;
-    QLabel *expiry_display;
-    QPushButton *expiry_edit_button;
-
-    void reset_logon_name_edit();
+    AttributesModel *model = nullptr;
+    QTreeView *view = nullptr;
 };
 
-#endif /* ACCOUNT_WIDGET_H */
+class AttributesModel final : public QStandardItemModel {
+Q_OBJECT
+
+public:
+    explicit AttributesModel(AttributesTab *attributes_tab_arg);
+
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    void reload();
+
+private:
+    AttributesTab *attributes_tab;
+};
+
+#endif /* ATTRIBUTES_WIDGET_H */

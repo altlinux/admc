@@ -17,44 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_WIDGET_H
-#define ATTRIBUTES_WIDGET_H
+#ifndef GENERAL_WIDGET_H
+#define GENERAL_WIDGET_H
 
 #include "details_tab.h"
 
-#include <QStandardItemModel>
-#include <QString>
+class QLabel;
+class DetailsWidget;
 
-class AttributesModel;
-class QTreeView;
-
-// Show attributes of target as a list of attribute names and values
-// Values are editable
-class AttributesWidget final : public DetailsTab {
+// Shows member objects of targeted group
+class GeneralTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    AttributesWidget(DetailsWidget *details_arg);
+    GeneralTab(DetailsWidget *details_arg);
 
     void reload();
     bool accepts_target() const;
 
-private:
-    AttributesModel *model = nullptr;
-    QTreeView *view = nullptr;
-};
+public slots:
 
-class AttributesModel final : public QStandardItemModel {
-Q_OBJECT
-
-public:
-    explicit AttributesModel(AttributesWidget *attributes_widget_arg);
-
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-    void reload();
+signals:
+    void target_changed();
 
 private:
-    AttributesWidget *attributes_widget;
+    QLabel *name_label;
 };
 
-#endif /* ATTRIBUTES_WIDGET_H */
+#endif /* GENERAL_WIDGET_H */

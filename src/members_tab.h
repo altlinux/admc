@@ -29,11 +29,11 @@ class ObjectContextMenu;
 class MembersModel;
 
 // Shows member objects of targeted group
-class MembersWidget final : public DetailsTab {
+class MembersTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    MembersWidget(ObjectContextMenu *object_context_menu, DetailsWidget *details_arg);
+    MembersTab(ObjectContextMenu *object_context_menu, DetailsWidget *details_arg);
 
     void reload();
     bool accepts_target() const;

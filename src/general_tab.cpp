@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "general_widget.h"
+#include "general_tab.h"
 #include "ad_interface.h"
 
 #include <QVBoxLayout>
@@ -36,7 +36,7 @@
 
 // NOTE: https://ldapwiki.com/wiki/MMC%20Account%20Tab
 
-GeneralWidget::GeneralWidget(DetailsWidget *details_arg)
+GeneralTab::GeneralTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
     title = tr("General");
@@ -76,7 +76,7 @@ GeneralWidget::GeneralWidget(DetailsWidget *details_arg)
                 }
             });
         connect(
-            this, &GeneralWidget::target_changed,
+            this, &GeneralTab::target_changed,
             [this, edit, attribute]() {
                 const QString current_value = AdInterface::instance()->attribute_get(target(), attribute);
 
@@ -95,13 +95,13 @@ GeneralWidget::GeneralWidget(DetailsWidget *details_arg)
     make_line_edit(ATTRIBUTE_WWW_HOMEPAGE, tr("Homepage:"));
 }
 
-void GeneralWidget::reload() {
+void GeneralTab::reload() {
     const QString name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_NAME);
     name_label->setText(name);
 
     emit target_changed();
 }
 
-bool GeneralWidget::accepts_target() const {
+bool GeneralTab::accepts_target() const {
     return !target().isEmpty();
 }

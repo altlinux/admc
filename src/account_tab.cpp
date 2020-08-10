@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "account_widget.h"
+#include "account_tab.h"
 
 #include <QVBoxLayout>
 #include <QLineEdit>
@@ -40,7 +40,7 @@ const QTime END_OF_DAY(23, 59);
 QDateTime convert_to_end_of_day(const QDateTime &datetime);
 bool checkbox_is_checked(const QCheckBox *checkbox);
 
-AccountWidget::AccountWidget(DetailsWidget *details_arg)
+AccountTab::AccountTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
     title = tr("Account");
@@ -75,19 +75,19 @@ AccountWidget::AccountWidget(DetailsWidget *details_arg)
 
     connect(
         unlock_button, &QAbstractButton::clicked,
-        this, &AccountWidget::on_unlock_button);
+        this, &AccountTab::on_unlock_button);
     connect(
         logon_name_edit, &QLineEdit::editingFinished,
-        this, &AccountWidget::on_logon_name_edit);
+        this, &AccountTab::on_logon_name_edit);
     connect(
         expiry_never_check, &QCheckBox::stateChanged,
-        this, &AccountWidget::on_expiry_never_check);
+        this, &AccountTab::on_expiry_never_check);
     connect(
         expiry_set_check, &QCheckBox::stateChanged,
-        this, &AccountWidget::on_expiry_set_check);
+        this, &AccountTab::on_expiry_set_check);
     connect(
         expiry_edit_button, &QAbstractButton::clicked,
-        this, &AccountWidget::on_expiry_edit_button);
+        this, &AccountTab::on_expiry_edit_button);
 
     for (int i = 0; i < AccountOption_COUNT; i++) {
         const AccountOption option = (AccountOption) i;
@@ -111,7 +111,7 @@ AccountWidget::AccountWidget(DetailsWidget *details_arg)
     }
 }
 
-void AccountWidget::reload() {
+void AccountTab::reload() {
     reset_logon_name_edit();
 
     // NOTE: block signals from setChecked() so they are not processed
@@ -159,17 +159,17 @@ void AccountWidget::reload() {
     }
 }
 
-bool AccountWidget::accepts_target() const {
+bool AccountTab::accepts_target() const {
     const bool is_user = AdInterface::instance()->is_user(target());
 
     return is_user;
 }
 
-void AccountWidget::on_unlock_button() {
+void AccountTab::on_unlock_button() {
     AdInterface::instance()->user_unlock(target());
 }
 
-void AccountWidget::on_logon_name_edit() {
+void AccountTab::on_logon_name_edit() {
     const QString new_logon_name = logon_name_edit->text();
     const QString current_logon_name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_USER_PRINCIPAL_NAME);
 
@@ -183,14 +183,14 @@ void AccountWidget::on_logon_name_edit() {
     }
 }
 
-void AccountWidget::on_expiry_never_check() {
+void AccountTab::on_expiry_never_check() {
     if (checkbox_is_checked(expiry_never_check)) {
         AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_ACCOUNT_EXPIRES, AD_LARGEINTEGERTIME_NEVER_1);
     }
 }
 
 // TODO: need time to be "end of" for that day, so 23:59?
-void AccountWidget::on_expiry_set_check() {
+void AccountTab::on_expiry_set_check() {
     if (checkbox_is_checked(expiry_set_check)) {
         expiry_display->setEnabled(true);
         expiry_set_check->setChecked(true);
@@ -204,7 +204,7 @@ void AccountWidget::on_expiry_set_check() {
     }
 }
 
-void AccountWidget::on_expiry_edit_button() {
+void AccountTab::on_expiry_edit_button() {
     auto dialog = new QDialog(this);
 
     auto label = new QLabel(tr("Edit expiry time"), dialog);
@@ -238,7 +238,7 @@ void AccountWidget::on_expiry_edit_button() {
     dialog->open();
 }
 
-void AccountWidget::reset_logon_name_edit() {
+void AccountTab::reset_logon_name_edit() {
     const QString logon_name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_USER_PRINCIPAL_NAME);
     logon_name_edit->setText(logon_name);
 }
