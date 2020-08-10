@@ -26,6 +26,7 @@
 #include "containers_widget.h"
 #include "contents_widget.h"
 #include "account_widget.h"
+#include "general_widget.h"
 
 #include <QAction>
 #include <QTabWidget>
@@ -39,6 +40,7 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
     members_widget = new MembersWidget(object_context_menu, this);
     attributes_widget = new AttributesWidget(this);
     account_widget = new AccountWidget(this);
+    general_widget = new GeneralWidget(this);
 
     title_label = new QLabel(this);
 
@@ -52,6 +54,7 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
     tab_widget->addTab(attributes_widget, "");
     tab_widget->addTab(members_widget, "");
     tab_widget->addTab(account_widget, "");
+    tab_widget->addTab(general_widget, "");
 
     connect(
         AdInterface::instance(), &AdInterface::logged_in,
@@ -87,9 +90,12 @@ void DetailsWidget::change_target(const QString &dn) {
     tab_widget->clear();
 
     if (!target_dn.isEmpty()) {
+        tab_widget->addTab(general_widget, tr("General"));
+        general_widget->change_target(target_dn);
+
         tab_widget->addTab(attributes_widget, tr("All Attributes"));
+        attributes_widget->change_target(target_dn);
     }
-    attributes_widget->change_target(target_dn);
 
     bool is_group = AdInterface::instance()->is_group(target_dn);
     if (is_group) {
