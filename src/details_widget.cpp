@@ -18,6 +18,7 @@
  */
 
 #include "details_widget.h"
+#include "details_tab.h"
 #include "attributes_widget.h"
 #include "ad_interface.h"
 #include "members_widget.h"
@@ -36,25 +37,26 @@
 DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent)
 : QWidget(parent)
 {
-    tab_widget = new QTabWidget(this);
-    members_widget = new MembersWidget(object_context_menu, this);
-    attributes_widget = new AttributesWidget(this);
-    account_widget = new AccountWidget(this);
-    general_widget = new GeneralWidget(this);
-
     title_label = new QLabel(this);
+    tab_widget = new QTabWidget(this);
+
+    tabs = {
+        new GeneralWidget(this),
+        new AttributesWidget(this),
+        new AccountWidget(this),
+        new MembersWidget(object_context_menu, this)
+    };
+
+    // NOTE: need to hide tabs because they float at the top level  until they are added to tab widget
+    for (auto tab : tabs) {
+        tab->hide();
+    }
 
     const auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(title_label);
     layout->addWidget(tab_widget);
-
-    // Add all tabs to incorporate them in the layout
-    tab_widget->addTab(attributes_widget, "");
-    tab_widget->addTab(members_widget, "");
-    tab_widget->addTab(account_widget, "");
-    tab_widget->addTab(general_widget, "");
 
     connect(
         AdInterface::instance(), &AdInterface::logged_in,
@@ -73,40 +75,33 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
         contents_widget, &ContentsWidget::clicked_dn,
         this, &DetailsWidget::on_contents_clicked_dn);
 
-    change_target("");
-};
+    reload("");
+}
 
-void DetailsWidget::change_target(const QString &dn) {
-    const QString name = AdInterface::instance()->attribute_get(dn, "name");
+QString DetailsWidget::get_target() const {
+    return target;
+}
+
+void DetailsWidget::reload(const QString &new_target) {
+    target = new_target;
+    
+    const QString name = AdInterface::instance()->attribute_get(target, "name");
     const QString title_text = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
     title_label->setText(title_text);
 
     // Save current tab/index to restore later
     QWidget *old_tab = tab_widget->widget(tab_widget->currentIndex());
 
-    target_dn = dn;
-
     // Setup tabs
     tab_widget->clear();
 
-    if (!target_dn.isEmpty()) {
-        tab_widget->addTab(general_widget, tr("General"));
-        general_widget->change_target(target_dn);
+    for (auto tab : tabs) {
+        const bool accepts_target = tab->accepts_target();
 
-        tab_widget->addTab(attributes_widget, tr("All Attributes"));
-        attributes_widget->change_target(target_dn);
-    }
-
-    bool is_group = AdInterface::instance()->is_group(target_dn);
-    if (is_group) {
-        tab_widget->addTab(members_widget, tr("Group members"));
-        members_widget->change_target(target_dn);
-    }
-
-    const bool is_user = AdInterface::instance()->is_user(target_dn);
-    if (is_user) {
-        tab_widget->addTab(account_widget, tr("Account"));
-        account_widget->change_target(target_dn);
+        if (accepts_target) {
+            tab->reload();
+            tab_widget->addTab(tab, tab->get_title());
+        }
     }
 
     // Restore current index if it is still shown
@@ -119,27 +114,27 @@ void DetailsWidget::change_target(const QString &dn) {
 
 void DetailsWidget::on_logged_in() {
     // Clear data on new login
-    change_target("");
+    reload("");
 }
 
 void DetailsWidget::on_ad_modified() {
-    change_target(target_dn);
+    reload(target);
 }
 
 void DetailsWidget::on_containers_clicked_dn(const QString &dn) {
     const bool details_from_containers = Settings::instance()->get_bool(BoolSetting_DetailsFromContainers);
     if (details_from_containers) {
-        change_target(dn);
+        reload(dn);
     }
 }
 
 void DetailsWidget::on_contents_clicked_dn(const QString &dn) {
     const bool details_from_contents = Settings::instance()->get_bool(BoolSetting_DetailsFromContents);
     if (details_from_contents) {
-        change_target(dn);
+        reload(dn);
     }
 }
 
 void DetailsWidget::on_context_menu_details(const QString &dn) {
-    change_target(dn);
+    reload(dn);
 }

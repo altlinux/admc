@@ -29,9 +29,11 @@ enum AttributesColumn {
     AttributesColumn_COUNT,
 };
 
-AttributesWidget::AttributesWidget(QWidget *parent)
-: QWidget(parent)
+AttributesWidget::AttributesWidget(DetailsWidget *details_widget_arg)
+: DetailsTab(details_widget_arg)
 {
+    title = tr("All Attributes");
+
     model = new AttributesModel(this);
 
     view = new QTreeView(this);
@@ -46,17 +48,21 @@ AttributesWidget::AttributesWidget(QWidget *parent)
     layout->addWidget(view);
 }
 
-void AttributesWidget::change_target(const QString &dn) {
-    model->change_target(dn);
+void AttributesWidget::reload() {
+    model->reload();
 }
 
-AttributesModel::AttributesModel(QObject *parent)
-: QStandardItemModel(0, AttributesColumn_COUNT, parent)
+bool AttributesWidget::accepts_target() const {
+    return !target().isEmpty();
+}
+
+AttributesModel::AttributesModel(AttributesWidget *attributes_widget_arg)
+: QStandardItemModel(0, AttributesColumn_COUNT, attributes_widget_arg)
 {
+    attributes_widget = attributes_widget_arg;
+
     setHorizontalHeaderItem(AttributesColumn_Name, new QStandardItem(tr("Name")));
     setHorizontalHeaderItem(AttributesColumn_Value, new QStandardItem(tr("Value")));
-    
-    change_target("");
 }
 
 // This will be called when an attribute value is edited
@@ -64,10 +70,11 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     QModelIndex value_index = index;
     QModelIndex name_index = value_index.siblingAtColumn(AttributesColumn_Name);
 
+    const QString target = attributes_widget->target();
     const QString attribute = name_index.data().toString();
     const QString value_str = value.toString();
 
-    const AdResult result_replace = AdInterface::instance()->attribute_replace(target_dn, attribute, value_str);
+    const AdResult result_replace = AdInterface::instance()->attribute_replace(target, attribute, value_str);
 
     if (result_replace.success) {
         QStandardItemModel::setData(index, value, role);
@@ -78,13 +85,12 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     }
 }
 
-void AttributesModel::change_target(const QString &dn) {
-    target_dn = dn;
-
+void AttributesModel::reload() {
     removeRows(0, rowCount());
 
     // Populate model with attributes of new root
-    QMap<QString, QList<QString>> attributes = AdInterface::instance()->get_all_attributes(target_dn);
+    const QString target = attributes_widget->target();
+    QMap<QString, QList<QString>> attributes = AdInterface::instance()->get_all_attributes(target);
     for (auto attribute : attributes.keys()) {
         QList<QString> values = attributes[attribute];
 

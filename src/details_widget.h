@@ -21,18 +21,17 @@
 #define DETAILS_WIDGET_H
 
 #include <QWidget>
+#include <QList>
+#include <QString>
 
 class QTreeView;
 class QString;
-class AttributesWidget;
-class MembersWidget;
 class ObjectContextMenu;
 class ContainersWidget;
 class ContentsWidget;
 class QTabWidget;
 class QLabel;
-class AccountWidget;
-class GeneralWidget;
+class DetailsTab;
 
 // Shows info about object's attributes in multiple tabs
 // Targeted at a particular object
@@ -42,6 +41,8 @@ Q_OBJECT
 
 public:
     DetailsWidget(ObjectContextMenu *object_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent);
+
+    QString get_target() const;
 
 public slots:
     void on_containers_clicked_dn(const QString &dn);
@@ -54,14 +55,11 @@ private slots:
 
 private:
     QTabWidget *tab_widget = nullptr;
-    AttributesWidget *attributes_widget = nullptr;
-    MembersWidget *members_widget = nullptr;
-    AccountWidget *account_widget = nullptr;
-    GeneralWidget *general_widget = nullptr;
     QLabel *title_label = nullptr;
-    QString target_dn;
+    QList<DetailsTab *> tabs;
+    QString target;
 
-    void change_target(const QString &dn);
+    void reload(const QString &new_target);
 };
 
 #endif /* DETAILS_WIDGET_H */

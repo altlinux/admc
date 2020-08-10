@@ -20,8 +20,9 @@
 #ifndef ATTRIBUTES_WIDGET_H
 #define ATTRIBUTES_WIDGET_H
 
+#include "details_tab.h"
+
 #include <QStandardItemModel>
-#include <QWidget>
 #include <QString>
 
 class AttributesModel;
@@ -29,13 +30,14 @@ class QTreeView;
 
 // Show attributes of target as a list of attribute names and values
 // Values are editable
-class AttributesWidget final : public QWidget {
+class AttributesWidget final : public DetailsTab {
 Q_OBJECT
 
 public:
-    AttributesWidget(QWidget *parent);
+    AttributesWidget(DetailsWidget *details_arg);
 
-    void change_target(const QString &dn);
+    void reload();
+    bool accepts_target() const;
 
 private:
     AttributesModel *model = nullptr;
@@ -46,13 +48,13 @@ class AttributesModel final : public QStandardItemModel {
 Q_OBJECT
 
 public:
-    explicit AttributesModel(QObject *parent);
+    explicit AttributesModel(AttributesWidget *attributes_widget_arg);
 
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-    void change_target(const QString &dn);
+    void reload();
 
 private:
-    QString target_dn;
+    AttributesWidget *attributes_widget;
 };
 
 #endif /* ATTRIBUTES_WIDGET_H */

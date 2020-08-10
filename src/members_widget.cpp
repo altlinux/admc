@@ -31,9 +31,11 @@ enum MembersColumn {
     MembersColumn_COUNT,
 };
 
-MembersWidget::MembersWidget(ObjectContextMenu *object_context_menu, QWidget *parent)
-: QWidget(parent)
+MembersWidget::MembersWidget(ObjectContextMenu *object_context_menu, DetailsWidget *details_arg)
+: DetailsTab(details_arg)
 {   
+    title = tr("Group members");
+
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setAcceptDrops(true);
@@ -53,10 +55,16 @@ MembersWidget::MembersWidget(ObjectContextMenu *object_context_menu, QWidget *pa
     layout->addWidget(view);
 }
 
-void MembersWidget::change_target(const QString &dn) {
-    model->change_target(dn);
+void MembersWidget::reload() {
+    model->change_target(target());
 
     set_root_to_head(view);
+}
+
+bool MembersWidget::accepts_target() const {
+    bool is_group = AdInterface::instance()->is_group(target());
+
+    return is_group;
 }
 
 MembersModel::MembersModel(QObject *parent)

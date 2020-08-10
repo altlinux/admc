@@ -17,39 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MEMBERS_WIDGET_H
-#define MEMBERS_WIDGET_H
+#ifndef DETAILS_TAB_H
+#define DETAILS_TAB_H
 
-#include "details_tab.h"
-#include "object_model.h"
+#include <QWidget>
+#include <QString>
 
-class QTreeView;
-class QString;
-class ObjectContextMenu;
-class MembersModel;
+class DetailsWidget;
 
-// Shows member objects of targeted group
-class MembersWidget final : public DetailsTab {
+class DetailsTab : public QWidget {
 Q_OBJECT
 
 public:
-    MembersWidget(ObjectContextMenu *object_context_menu, DetailsWidget *details_arg);
+    DetailsTab(DetailsWidget *details_arg);
+    
+    QString target() const;
+    QString get_title() const;
 
-    void reload();
-    bool accepts_target() const;
+    virtual void reload() = 0;
+    virtual bool accepts_target() const = 0;
+
+protected:
+    QString title;
 
 private:
-    MembersModel *model = nullptr;
-    QTreeView *view = nullptr;
+    DetailsWidget *details;
 };
 
-class MembersModel final : public ObjectModel {
-Q_OBJECT
-
-public:
-    MembersModel(QObject *parent);
-
-    void change_target(const QString &dn);
-};
-
-#endif /* MEMBERS_WIDGET_H */
+#endif /* DETAILS_TAB_H */

@@ -20,9 +20,9 @@
 #ifndef ACCOUNT_WIDGET_H
 #define ACCOUNT_WIDGET_H
 
+#include "details_tab.h"
 #include "ad_interface.h"
 
-#include <QWidget>
 #include <QList>
 
 class QString;
@@ -37,13 +37,14 @@ struct UACCheck {
 };
 
 // Shows member objects of targeted group
-class AccountWidget final : public QWidget {
+class AccountWidget final : public DetailsTab {
 Q_OBJECT
 
 public:
-    AccountWidget(QWidget *parent);
+    AccountWidget(DetailsWidget *details_arg);
 
-    void change_target(const QString &dn);
+    void reload();
+    bool accepts_target() const;
 
 private slots:
     void on_unlock_button();
@@ -53,7 +54,6 @@ private slots:
     void on_expiry_edit_button();
     
 private:
-    QString target_dn;
     QLineEdit *logon_name_edit;
     QList<UACCheck> uac_checks;
 

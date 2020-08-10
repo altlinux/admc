@@ -20,34 +20,27 @@
 #ifndef GENERAL_WIDGET_H
 #define GENERAL_WIDGET_H
 
-#include "ad_interface.h"
+#include "details_tab.h"
 
-#include <QWidget>
-#include <QList>
-#include <QString>
-
-class QString;
-class QLineEdit;
-class QCheckBox;
 class QLabel;
-class QPushButton;
+class DetailsWidget;
 
 // Shows member objects of targeted group
-class GeneralWidget final : public QWidget {
+class GeneralWidget final : public DetailsTab {
 Q_OBJECT
 
 public:
-    GeneralWidget(QWidget *parent);
+    GeneralWidget(DetailsWidget *details_arg);
 
-    void change_target(const QString &dn);
+    void reload();
+    bool accepts_target() const;
 
-private slots:
+public slots:
 
 signals:
     void target_changed();
 
 private:
-    QString target_dn;
     QLabel *name_label;
 };
 

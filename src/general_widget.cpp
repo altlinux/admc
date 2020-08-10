@@ -18,6 +18,7 @@
  */
 
 #include "general_widget.h"
+#include "ad_interface.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -35,9 +36,11 @@
 
 // NOTE: https://ldapwiki.com/wiki/MMC%20Account%20Tab
 
-GeneralWidget::GeneralWidget(QWidget *parent)
-: QWidget(parent)
+GeneralWidget::GeneralWidget(DetailsWidget *details_arg)
+: DetailsTab(details_arg)
 {   
+    title = tr("General");
+
     name_label = new QLabel(this);
 
     // Put labels in one vertical layout and edits in another
@@ -65,17 +68,17 @@ GeneralWidget::GeneralWidget(QWidget *parent)
             edit, &QLineEdit::editingFinished,
             [this, edit, attribute]() {
                 const QString new_value = edit->text();
-                const QString current_value = AdInterface::instance()->attribute_get(target_dn, attribute);
+                const QString current_value = AdInterface::instance()->attribute_get(target(), attribute);
                 edit->text();
 
                 if (new_value != current_value) {
-                    AdInterface::instance()->attribute_replace(target_dn, attribute, new_value);
+                    AdInterface::instance()->attribute_replace(target(), attribute, new_value);
                 }
             });
         connect(
             this, &GeneralWidget::target_changed,
             [this, edit, attribute]() {
-                const QString current_value = AdInterface::instance()->attribute_get(target_dn, attribute);
+                const QString current_value = AdInterface::instance()->attribute_get(target(), attribute);
 
                 edit->setText(current_value);
             });
@@ -92,11 +95,13 @@ GeneralWidget::GeneralWidget(QWidget *parent)
     make_line_edit(ATTRIBUTE_WWW_HOMEPAGE, tr("Homepage:"));
 }
 
-void GeneralWidget::change_target(const QString &dn) {
-    target_dn = dn;
-
-    const QString name = AdInterface::instance()->attribute_get(target_dn, ATTRIBUTE_NAME);
+void GeneralWidget::reload() {
+    const QString name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_NAME);
     name_label->setText(name);
 
     emit target_changed();
+}
+
+bool GeneralWidget::accepts_target() const {
+    return !target().isEmpty();
 }

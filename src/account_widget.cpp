@@ -40,9 +40,11 @@ const QTime END_OF_DAY(23, 59);
 QDateTime convert_to_end_of_day(const QDateTime &datetime);
 bool checkbox_is_checked(const QCheckBox *checkbox);
 
-AccountWidget::AccountWidget(QWidget *parent)
-: QWidget(parent)
+AccountWidget::AccountWidget(DetailsWidget *details_arg)
+: DetailsTab(details_arg)
 {   
+    title = tr("Account");
+
     const auto logon_name_label = new QLabel(tr("Logon name:"), this);
 
     logon_name_edit = new QLineEdit(this);
@@ -104,14 +106,12 @@ AccountWidget::AccountWidget(QWidget *parent)
             check, &QCheckBox::stateChanged,
             [this, check, option]() {
                 const bool checked = checkbox_is_checked(check);
-                AdInterface::instance()->user_set_account_option(target_dn, option, checked);
+                AdInterface::instance()->user_set_account_option(target(), option, checked);
             });
     }
 }
 
-void AccountWidget::change_target(const QString &dn) {
-    target_dn = dn;
-
+void AccountWidget::reload() {
     reset_logon_name_edit();
 
     // NOTE: block signals from setChecked() so they are not processed
@@ -128,13 +128,13 @@ void AccountWidget::change_target(const QString &dn) {
     }
 
     for (auto uac_check : uac_checks) {
-        const bool option_is_set = AdInterface::instance()->user_get_account_option(target_dn, uac_check.option);
+        const bool option_is_set = AdInterface::instance()->user_get_account_option(target(), uac_check.option);
 
         uac_check.check->setChecked(option_is_set);
     }
 
     // NOTE: since each of the checkboxes makes a server modification, the whole widget is reloaded and what is below will always happen after checkbox state changes
-    const QString expires_raw = AdInterface::instance()->attribute_get(target_dn, ATTRIBUTE_ACCOUNT_EXPIRES);
+    const QString expires_raw = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_ACCOUNT_EXPIRES);
     const bool expires_never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, expires_raw);
     if (expires_never) {
         expiry_display->setEnabled(false);
@@ -149,7 +149,7 @@ void AccountWidget::change_target(const QString &dn) {
         expiry_set_check->setChecked(true);
         expiry_edit_button->setEnabled(true);
 
-        const QDateTime current_expiry = AdInterface::instance()->attribute_datetime_get(target_dn, ATTRIBUTE_ACCOUNT_EXPIRES);
+        const QDateTime current_expiry = AdInterface::instance()->attribute_datetime_get(target(), ATTRIBUTE_ACCOUNT_EXPIRES);
         const QString current_expiry_string = current_expiry.toString(DATE_FORMAT);
         expiry_display->setText(current_expiry_string);
     }
@@ -159,16 +159,22 @@ void AccountWidget::change_target(const QString &dn) {
     }
 }
 
+bool AccountWidget::accepts_target() const {
+    const bool is_user = AdInterface::instance()->is_user(target());
+
+    return is_user;
+}
+
 void AccountWidget::on_unlock_button() {
-    AdInterface::instance()->user_unlock(target_dn);
+    AdInterface::instance()->user_unlock(target());
 }
 
 void AccountWidget::on_logon_name_edit() {
     const QString new_logon_name = logon_name_edit->text();
-    const QString current_logon_name = AdInterface::instance()->attribute_get(target_dn, ATTRIBUTE_USER_PRINCIPAL_NAME);
+    const QString current_logon_name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_USER_PRINCIPAL_NAME);
 
     if (new_logon_name != current_logon_name) {
-        const AdResult result = AdInterface::instance()->attribute_replace(target_dn, ATTRIBUTE_USER_PRINCIPAL_NAME, new_logon_name);
+        const AdResult result = AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_USER_PRINCIPAL_NAME, new_logon_name);
 
         if (!result.success) {
             // TODO: show error
@@ -179,7 +185,7 @@ void AccountWidget::on_logon_name_edit() {
 
 void AccountWidget::on_expiry_never_check() {
     if (checkbox_is_checked(expiry_never_check)) {
-        AdInterface::instance()->attribute_replace(target_dn, ATTRIBUTE_ACCOUNT_EXPIRES, AD_LARGEINTEGERTIME_NEVER_1);
+        AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_ACCOUNT_EXPIRES, AD_LARGEINTEGERTIME_NEVER_1);
     }
 }
 
@@ -194,7 +200,7 @@ void AccountWidget::on_expiry_set_check() {
         const QDateTime expires(expires_date, END_OF_DAY);
 
         // TODO: handle errors
-        const AdResult result = AdInterface::instance()->attribute_datetime_replace(target_dn, ATTRIBUTE_ACCOUNT_EXPIRES, expires);
+        const AdResult result = AdInterface::instance()->attribute_datetime_replace(target(), ATTRIBUTE_ACCOUNT_EXPIRES, expires);
     }
 }
 
@@ -218,7 +224,7 @@ void AccountWidget::on_expiry_edit_button() {
             const QDate date = calendar->selectedDate();
             const QDateTime new_expiry(date, END_OF_DAY);
 
-            const AdResult result = AdInterface::instance()->attribute_datetime_replace(target_dn, ATTRIBUTE_ACCOUNT_EXPIRES, new_expiry);
+            const AdResult result = AdInterface::instance()->attribute_datetime_replace(target(), ATTRIBUTE_ACCOUNT_EXPIRES, new_expiry);
 
             dialog->accept();
         });
@@ -233,7 +239,7 @@ void AccountWidget::on_expiry_edit_button() {
 }
 
 void AccountWidget::reset_logon_name_edit() {
-    const QString logon_name = AdInterface::instance()->attribute_get(target_dn, ATTRIBUTE_USER_PRINCIPAL_NAME);
+    const QString logon_name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_USER_PRINCIPAL_NAME);
     logon_name_edit->setText(logon_name);
 }
 
