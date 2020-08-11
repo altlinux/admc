@@ -29,6 +29,8 @@
 #include <algorithm>
 
 // TODO: translate country strings to Russian (qt doesn't have it)
+
+// NOTE: country codes are 3 digits only, so 0-999 = 1000
 QString country_strings[1000];
 QString country_abbreviations[1000];
 
