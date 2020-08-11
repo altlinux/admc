@@ -33,6 +33,9 @@
 // is updated on object changes
 // Emits various signals for AD operation successes/failures
 
+// TODO: not sure if AD datetime fromat is always this one, LDAP allows multiple alternatives: https://ldapwiki.com/wiki/DateTime
+#define ISO8601_FORMAT_STRING "yyyyMMddhhmmss.zZ"
+
 #define ATTRIBUTE_USER_ACCOUNT_CONTROL  "userAccountControl"
 #define ATTRIBUTE_USER_PRINCIPAL_NAME   "userPrincipalName"
 #define ATTRIBUTE_LOCKOUT_TIME          "lockoutTime"
@@ -56,6 +59,14 @@
 #define ATTRIBUTE_POSTAL_CODE           "postalCode"
 #define ATTRIBUTE_STATE                 "st"
 #define ATTRIBUTE_STREET                "streetAddress"
+#define ATTRIBUTE_CN                    "cn"
+#define ATTRIBUTE_DISTINGUISHED_NAME    "distinguishedName"
+#define ATTRIBUTE_OBJECT_CLASS          "objectClass"
+#define ATTRIBUTE_WHEN_CREATED          "whenCreated"
+#define ATTRIBUTE_WHEN_CHANGED          "whenChanged"
+#define ATTRIBUTE_USN_CHANGED           "uSNChanged"
+#define ATTRIBUTE_USN_CREATED           "uSNCreated"
+#define ATTRIBUTE_OBJECT_CATEGORY       "objectCategory"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 

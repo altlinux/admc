@@ -25,6 +25,7 @@
 
 class DetailsWidget;
 class QLayout;
+class QLineEdit;
 
 class DetailsTab : public QWidget {
 Q_OBJECT
@@ -45,9 +46,12 @@ protected:
     QString title;
 
     void add_attribute_edit(const QString &attribute, const QString &label_text, QLayout *label_layout, QLayout *edit_layout);
+    void add_attribute_display(const QString &attribute, const QString &label_text, QLayout *label_layout, QLayout *edit_layout);
 
 private:
     DetailsWidget *details;
+
+    void reload_attribute_edit(QLineEdit *edit, const QString &attribute);
 };
 
 #endif /* DETAILS_TAB_H */

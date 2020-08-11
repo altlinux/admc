@@ -24,6 +24,7 @@
 #include "account_tab.h"
 #include "general_tab.h"
 #include "address_tab.h"
+#include "object_tab.h"
 #include "ad_interface.h"
 #include "settings.h"
 #include "object_context_menu.h"
@@ -43,6 +44,7 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
 
     tabs = {
         new GeneralTab(this),
+        new ObjectTab(this),
         new AttributesTab(this),
         new AccountTab(this),
         new MembersTab(object_context_menu, this),

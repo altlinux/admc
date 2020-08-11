@@ -23,9 +23,6 @@
 
 #include <QSet>
 
-// TODO: not sure if AD datetime fromat is always this one, LDAP allows multiple alternatives: https://ldapwiki.com/wiki/DateTime
-#define ISO8601_FORMAT_STRING "yyyyMMddhhmmss.zZ"
-
 #define MILLIS_TO_100_NANOS 10000
 
 #define AD_PWD_LAST_SET_EXPIRED "0"
@@ -1046,8 +1043,9 @@ bool attribute_is_datetime(const QString &attribute) {
 
 DatetimeFormat get_attribute_time_format(const QString &attribute) {
     static const QHash<QString, DatetimeFormat> datetime_formats = {
-        {"accountExpires", DatetimeFormat_LargeInteger},
-        {"whenChanged", DatetimeFormat_ISO8601},
+        {ATTRIBUTE_ACCOUNT_EXPIRES, DatetimeFormat_LargeInteger},
+        {ATTRIBUTE_WHEN_CREATED, DatetimeFormat_ISO8601},
+        {ATTRIBUTE_WHEN_CHANGED, DatetimeFormat_ISO8601},
     };
 
     return datetime_formats.value(attribute, DatetimeFormat_None);
