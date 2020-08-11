@@ -67,6 +67,17 @@
 #define ATTRIBUTE_USN_CHANGED           "uSNChanged"
 #define ATTRIBUTE_USN_CREATED           "uSNCreated"
 #define ATTRIBUTE_OBJECT_CATEGORY       "objectCategory"
+#define ATTRIBUTE_MEMBER                "member"
+#define ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY "showInAdvancedViewOnly"
+    
+#define CLASS_GROUP                     "group"
+#define CLASS_USER                      "user"
+#define CLASS_CONTAINER                 "container"
+#define CLASS_OU                        "organizationalUnit"
+#define CLASS_BUILTIN_DOMAIN            "builtinDomain"
+#define CLASS_PERSON                    "person"
+#define CLASS_GP_CONTAINER              "groupPolicyContainer"
+#define CLASS_DOMAIN                    "domain"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 

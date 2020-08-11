@@ -693,35 +693,35 @@ AdResult AdInterface::user_unlock(const QString &dn) {
 }
 
 bool AdInterface::is_class(const QString &dn, const QString &object_class) {
-    const QList<QString> classes = attribute_get_multi(dn, "objectClass");
+    const QList<QString> classes = attribute_get_multi(dn, ATTRIBUTE_OBJECT_CLASS);
     const bool is_class = classes.contains(object_class);
 
     return is_class;
 }
 
 bool AdInterface::is_user(const QString &dn) {
-    return is_class(dn, "user");
+    return is_class(dn, CLASS_USER);
 }
 
 bool AdInterface::is_group(const QString &dn) {
-    return is_class(dn, "group");
+    return is_class(dn, CLASS_GROUP);
 }
 
 bool AdInterface::is_container(const QString &dn) {
-    return is_class(dn, "container");
+    return is_class(dn, CLASS_CONTAINER);
 }
 
 bool AdInterface::is_ou(const QString &dn) {
-    return is_class(dn, "organizationalUnit");
+    return is_class(dn, CLASS_OU);
 }
 
 bool AdInterface::is_policy(const QString &dn) {
-    return is_class(dn, "groupPolicyContainer");
+    return is_class(dn, CLASS_GP_CONTAINER);
 }
 
 bool AdInterface::is_container_like(const QString &dn) {
     // TODO: check that this includes all fitting objectClasses
-    const QList<QString> containerlike_objectClasses = {"organizationalUnit", "builtinDomain", "domain"};
+    const QList<QString> containerlike_objectClasses = {CLASS_OU, CLASS_BUILTIN_DOMAIN, CLASS_DOMAIN};
     for (auto c : containerlike_objectClasses) {
         if (is_class(dn, c)) {
             return true;

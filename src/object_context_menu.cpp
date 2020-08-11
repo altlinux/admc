@@ -153,7 +153,7 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
 }
 
 void ObjectContextMenu::delete_object(const QString &dn) {
-    const QString name = AdInterface::instance()->attribute_get(dn, "name");
+    const QString name = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_NAME);
     const QString text = QString(tr("Are you sure you want to delete \"%1\"?")).arg(name);
     const bool confirmed = confirmation_dialog(text, this);
 
@@ -263,7 +263,7 @@ void force_reload_attributes_and_diff(const QString &dn) {
     }
 
     if (!changes.isEmpty()) {
-        const QString name = AdInterface::instance()->attribute_get(dn, "name");
+        const QString name = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_NAME);
 
         printf("Attributes of object \"%s\" changed:\n", qPrintable(name));
 

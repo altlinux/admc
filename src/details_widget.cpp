@@ -89,7 +89,7 @@ QString DetailsWidget::get_target() const {
 void DetailsWidget::reload(const QString &new_target) {
     target = new_target;
     
-    const QString name = AdInterface::instance()->attribute_get(target, "name");
+    const QString name = AdInterface::instance()->attribute_get(target, ATTRIBUTE_NAME);
     const QString title_text = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
     title_label->setText(title_text);
 

@@ -44,9 +44,9 @@ enum MoveDialogColumn {
 
 const QMap<ClassFilter, QString> class_filter_string = {
     {ClassFilter_All, ""},
-    {ClassFilter_Containers, "container"},
-    {ClassFilter_OUs, "organizationalUnit"},
-    {ClassFilter_Groups, "group"},
+    {ClassFilter_Containers, CLASS_CONTAINER},
+    {ClassFilter_OUs, CLASS_OU},
+    {ClassFilter_Groups, CLASS_GROUP},
 };
 
 MoveDialog::MoveDialog(QWidget *parent)
@@ -263,13 +263,13 @@ void MoveDialogModel::load(const QString &dn, QList<ClassFilter> classes) {
     for (auto c : classes) {
         const QString class_string = class_filter_string[c];
 
-        QString filter = filter_EQUALS("objectClass", class_string);
+        QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, class_string);
 
         // Filter out advanced objects if needed
         const bool advanced_view = Settings::instance()->get_bool(BoolSetting_AdvancedView);
 
         if (!advanced_view) {
-            const QString is_advanced = filter_EQUALS("showInAdvancedViewOnly", "TRUE");
+            const QString is_advanced = filter_EQUALS(ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
             const QString NOT_is_advanced = filter_NOT(is_advanced);
             
             filter = filter_AND(filter, NOT_is_advanced);

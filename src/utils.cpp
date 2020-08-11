@@ -60,12 +60,12 @@ QIcon get_object_icon(const QString &dn) {
     // TODO: change to custom, good icons, add those icons to installation?
     // TODO: are there cases where an object can have multiple icons due to multiple objectClasses and one of them needs to be prioritized?
     QMap<QString, QString> class_to_icon = {
-        {"groupPolicyContainer", "x-office-address-book"},
-        {"container", "folder"},
-        {"organizationalUnit", "network-workgroup"},
-        {"person", "avatar-default"},
-        {"group", "application-x-smb-workgroup"},
-        {"builtinDomain", "emblem-system"},
+        {CLASS_GP_CONTAINER, "x-office-address-book"},
+        {CLASS_CONTAINER, "folder"},
+        {CLASS_OU, "network-workgroup"},
+        {CLASS_PERSON, "avatar-default"},
+        {CLASS_GROUP, "application-x-smb-workgroup"},
+        {CLASS_BUILTIN_DOMAIN, "emblem-system"},
     };
     QString icon_name = "dialog-question";
     for (auto c : class_to_icon.keys()) {
