@@ -244,6 +244,24 @@ QString AdInterface::attribute_get(const QString &dn, const QString &attribute) 
     }
 }
 
+bool AdInterface::attribute_bool_get(const QString &dn, const QString &attribute) {
+    const QString value_string = attribute_get(dn, attribute);
+    const bool value = (value_string == AD_TRUE);
+
+    return value;
+}
+
+void AdInterface::attribute_bool_replace(const QString &dn, const QString &attribute, bool value) {
+    QString value_string;
+    if (value) {
+        value_string = AD_TRUE;
+    } else {
+        value_string = AD_FALSE;
+    }
+
+    attribute_replace(dn, attribute, value_string);
+}
+
 QDateTime AdInterface::attribute_datetime_get(const QString &dn, const QString &attribute) {
     const QString raw_value = attribute_get(dn, attribute);
     const QDateTime datetime = datetime_raw_to_datetime(attribute, raw_value);

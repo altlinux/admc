@@ -269,7 +269,7 @@ void MoveDialogModel::load(const QString &dn, QList<ClassFilter> classes) {
         const bool advanced_view = Settings::instance()->get_bool(BoolSetting_AdvancedView);
 
         if (!advanced_view) {
-            const QString is_advanced = filter_EQUALS(ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
+            const QString is_advanced = filter_EQUALS(ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, AD_TRUE);
             const QString NOT_is_advanced = filter_NOT(is_advanced);
             
             filter = filter_AND(filter, NOT_is_advanced);

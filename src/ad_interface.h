@@ -84,6 +84,9 @@
 #define AD_LARGEINTEGERTIME_NEVER_1 "0"
 #define AD_LARGEINTEGERTIME_NEVER_2 "9223372036854775807"
 
+#define AD_TRUE  "TRUE"
+#define AD_FALSE "FALSE"
+
 class AdConnection;
 
 namespace adldap
@@ -157,6 +160,9 @@ public:
     Attributes get_all_attributes(const QString &dn);
     QList<QString> attribute_get_multi(const QString &dn, const QString &attribute);
     QString attribute_get(const QString &dn, const QString &attribute);
+
+    bool attribute_bool_get(const QString &dn, const QString &attribute);
+    void attribute_bool_replace(const QString &dn, const QString &attribute, bool value);
 
     AdResult attribute_replace(const QString &dn, const QString &attribute, const QString &value, EmitStatusMessage emit_message = EmitStatusMessage_Yes);
     AdResult object_create(const QString &name, const QString &dn, NewObjectType type);
