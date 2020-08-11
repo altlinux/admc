@@ -23,6 +23,7 @@
 #include "details_tab.h"
 
 class DetailsWidget;
+class QComboBox;
 
 // Shows member objects of targeted group
 class AddressTab final : public DetailsTab {
@@ -33,6 +34,12 @@ public:
 
     void reload();
     bool accepts_target() const;
+
+private slots:
+    void on_country_combo(int index);
+
+private:
+    QComboBox *country_combo;
 };
 
 #endif /* ADDRESS_TAB_H */

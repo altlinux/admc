@@ -289,7 +289,6 @@ AdResult AdInterface::attribute_replace(const QString &dn, const QString &attrib
         old_value_string = datetime_raw_to_string(attribute, old_value_raw);
     } else {
         old_value_string = attribute_get(dn, attribute);
-        printf("%s\n", qPrintable(old_value_string));
     }
     
     const QByteArray dn_array = dn.toLatin1();

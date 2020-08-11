@@ -22,14 +22,15 @@
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QLineEdit>
+#include <QComboBox>
 #include <QLabel>
-#include <QPushButton>
-#include <QCheckBox>
-#include <QDateTime>
-#include <QButtonGroup>
-#include <QCalendarWidget>
-#include <QDialog>
+#include <QHash>
+#include <QFile>
+#include <algorithm>
+
+// TODO: translate country strings to Russian (qt doesn't have it)
+QString country_strings[1000];
+QString country_abbreviations[1000];
 
 AddressTab::AddressTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
@@ -38,7 +39,6 @@ AddressTab::AddressTab(DetailsWidget *details_arg)
 
     // TODO: don't know why, but if i just have hbox as top layout, the widgets are misaligned
     const auto top_layout = new QVBoxLayout(this);
-    // top_layout->addWidget(name_label);
 
     const auto attributes_layout = new QHBoxLayout();
     top_layout->insertLayout(-1, attributes_layout);
@@ -58,13 +58,94 @@ AddressTab::AddressTab(DetailsWidget *details_arg)
     make_line_edit(ATTRIBUTE_CITY, tr("City"));
     make_line_edit(ATTRIBUTE_STATE, tr("State/province:"));
     make_line_edit(ATTRIBUTE_POSTAL_CODE, tr("Postal code:"));
-    // make_line_edit(ATTRIBUTE_COUNTRY, tr("Country:"));
+
+    auto country_label = new QLabel("Country:");
+    label_layout->addWidget(country_label);
+
+    country_combo = new QComboBox(this);
+    edit_layout->addWidget(country_combo);
+
+    connect(country_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &AddressTab::on_country_combo);
+
+    // NOTE: temp collections to sort items for combo box
+    QList<QString> all_countries;
+    QHash<QString, int> string_to_code;
+
+    QFile file(":/countries.csv");
+    if (!file.open(QIODevice::ReadOnly)) {
+        printf("ERROR: Failed to load countries file!\n");
+    } else {
+        // Load countries csv into maps
+        // Map country code to country string and country abbreviation
+        QHash<QString, int> country_string_to_code;
+        
+        // Skip header
+        file.readLine();
+
+        while (!file.atEnd()) {
+            const QByteArray line_array = file.readLine();
+            const QString line(line_array);
+            const QList<QString> line_split = line.split(',');
+
+            if (line_split.size() != 3) {
+                continue;
+            }
+
+            const QString country_string = line_split[0];
+            const QString abbreviation = line_split[1];
+            const QString code_string = line_split[2];
+            const int code = code_string.toInt();
+
+            country_strings[code] = country_string;
+            country_abbreviations[code] = abbreviation;
+
+            all_countries.append(country_string);
+            string_to_code[country_string] = code;
+        }
+    }
+
+    // Put country strings/codes into combo box, sorted by strings
+    std::sort(all_countries.begin(), all_countries.end());
+
+    country_combo->blockSignals(true);
+    for (auto country_string : all_countries) {
+        const int code = string_to_code[country_string];
+
+        country_combo->addItem(country_string, code);
+    }
+    country_combo->blockSignals(false);
 }
 
 void AddressTab::reload() {
+    // Load country
+    const QString current_code_string = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_COUNTRY_CODE);
+    const int current_code = current_code_string.toInt();
+    const QVariant code_variant(current_code);
+    const int index = country_combo->findData(code_variant);
+    if (index != -1) {
+        country_combo->blockSignals(true);
+        country_combo->setCurrentIndex(index);
+        country_combo->blockSignals(false);
+    }
+
     emit reloaded();
 }
 
 bool AddressTab::accepts_target() const {
     return AdInterface::instance()->is_user(target());
+}
+
+void AddressTab::on_country_combo(int index) {
+    const QVariant item_data = country_combo->itemData(index);
+    const int code = item_data.value<int>();
+
+    const QString code_string = QString::number(code);
+    const QString country_string = country_strings[code];
+    const QString abbreviation = country_abbreviations[code];
+
+    // TODO: not sure if want to pretty up the messages for this to maybe say just "Changed country to X" instead of showing changes of 3 mysterious attributes. For now at least do country change last so that status bar displays that
+    AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY_CODE, code_string);
+    AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY_ABBREVIATION, abbreviation);
+    AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY, country_string);
 }

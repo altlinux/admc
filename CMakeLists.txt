@@ -93,6 +93,7 @@ qt5_add_translation(QM_FILES ${TS_FILES})
 add_definitions(${QT5_DEFINITIONS})
 add_executable(admc
     ${ADMC_SOURCES}
+    ${CMAKE_CURRENT_SOURCE_DIR}/admc.qrc
     ${TS_DIR}/translations.qrc
 )
 
