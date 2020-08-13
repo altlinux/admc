@@ -53,7 +53,7 @@ void AttributesTab::reload() {
 }
 
 bool AttributesTab::accepts_target() const {
-    return !target().isEmpty();
+    return AdInterface::instance()->has_attributes(target());
 }
 
 AttributesModel::AttributesModel(AttributesTab *attributes_tab_arg)

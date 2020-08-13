@@ -80,5 +80,5 @@ void GeneralTab::reload() {
 }
 
 bool GeneralTab::accepts_target() const {
-    return !target().isEmpty();
+    return AdInterface::instance()->has_attributes(target());
 }

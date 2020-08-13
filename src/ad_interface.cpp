@@ -701,6 +701,12 @@ AdResult AdInterface::user_unlock(const QString &dn) {
     }
 }
 
+bool AdInterface::has_attributes(const QString &dn) {
+    const Attributes attributes = get_all_attributes(dn);
+
+    return !attributes.isEmpty();
+}
+
 bool AdInterface::is_class(const QString &dn, const QString &object_class) {
     const QList<QString> classes = attribute_get_multi(dn, ATTRIBUTE_OBJECT_CLASS);
     const bool is_class = classes.contains(object_class);

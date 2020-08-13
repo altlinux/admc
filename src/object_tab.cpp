@@ -60,5 +60,5 @@ void ObjectTab::reload() {
 }
 
 bool ObjectTab::accepts_target() const {
-    return !target().isEmpty();
+    return AdInterface::instance()->has_attributes(target());
 }

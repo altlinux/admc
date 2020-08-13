@@ -181,6 +181,7 @@ public:
     AdResult group_add_user(const QString &group_dn, const QString &user_dn);
     AdResult group_remove_user(const QString &group_dn, const QString &user_dn);
 
+    bool has_attributes(const QString &dn);
     bool is_class(const QString &dn, const QString &object_class);
     bool is_user(const QString &dn);
     bool is_group(const QString &dn);
