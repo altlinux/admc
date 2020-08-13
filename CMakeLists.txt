@@ -73,6 +73,7 @@ set(ADMC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/address_tab.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/object_tab.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/rename_dialog.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/create_dialog.cpp
 )
 
 set(TS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)

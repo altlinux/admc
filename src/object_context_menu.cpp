@@ -24,6 +24,7 @@
 #include "rename_dialog.h"
 #include "utils.h"
 #include "password_dialog.h"
+#include "create_dialog.h"
 #include "settings.h"
 
 #include <QString>
@@ -35,7 +36,6 @@
 #include <QModelIndex>
 #include <QAbstractItemView>
 
-QString get_new_object_display_string(NewObjectType type);
 void force_reload_attributes_and_diff(const QString &dn);
 
 ObjectContextMenu::ObjectContextMenu(QWidget *parent)
@@ -88,12 +88,13 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
     });
 
     QMenu *submenu_new = addMenu("New");
-    for (int i = 0; i < NewObjectType::COUNT; i++) {
-        const NewObjectType type = (NewObjectType) i;
-        const QString object_string = get_new_object_display_string(type);
+    for (int i = 0; i < CreateType::COUNT; i++) {
+        const CreateType type = (CreateType) i;
+        const QString object_string = create_type_to_string(type);
 
         submenu_new->addAction(object_string, [this, dn, type]() {
-            new_object_dialog(dn, type);
+            auto create_dialog = new CreateDialog(dn, type, this);
+            create_dialog->open();
         });
     }
 
@@ -164,30 +165,6 @@ void ObjectContextMenu::delete_object(const QString &dn) {
     }    
 }
 
-void ObjectContextMenu::new_object_dialog(const QString &parent_dn, NewObjectType type) {
-    const QString dialog_title = tr("New object: ") + get_new_object_display_string(type);
-    const QString input_label = tr("Name");
-
-    bool ok;
-    QString name = QInputDialog::getText(this, dialog_title, input_label, QLineEdit::Normal, "", &ok);
-
-    // TODO: maybe expand tree to newly created object?
-
-    if (ok && !name.isEmpty()) {
-        const QMap<NewObjectType, QString> new_object_type_to_suffix = {
-            {NewObjectType::User, "CN"},
-            {NewObjectType::Computer, "CN"},
-            {NewObjectType::OU, "OU"},
-            {NewObjectType::Group, "CN"},
-        };
-        QString suffix = new_object_type_to_suffix[type];
-
-        const QString dn = suffix + "=" + name + "," + parent_dn;
-
-        AdInterface::instance()->object_create(name, dn, type);
-    }
-}
-
 void ObjectContextMenu::edit_policy(const QString &dn) {
     // Start policy edit process
     const auto process = new QProcess(this);
@@ -208,17 +185,6 @@ void ObjectContextMenu::edit_policy(const QString &dn) {
     printf("execute command: %s %s %s\n", qPrintable(program_name), qPrintable(uri), qPrintable(path));
 
     process->start();
-}
-
-QString get_new_object_display_string(NewObjectType type) {
-    switch (type) {
-        case NewObjectType::User: return ObjectContextMenu::tr("User");
-        case NewObjectType::Computer: return ObjectContextMenu::tr("Computer");
-        case NewObjectType::OU: return ObjectContextMenu::tr("Organization Unit");
-        case NewObjectType::Group: return ObjectContextMenu::tr("Group");
-        case NewObjectType::COUNT: return "COUNT";
-    }
-    return "";
 }
 
 void force_reload_attributes_and_diff(const QString &dn) {

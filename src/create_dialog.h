@@ -17,36 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_CONTEXT_MENU_H
-#define OBJECT_CONTEXT_MENU_H
+#ifndef CREATE_DIALOG_H
+#define CREATE_DIALOG_H
 
 #include "ad_interface.h"
 
-#include <QMenu>
+#include <QString>
+#include <QDialog>
+#include <QList>
 
-class QString;
-class QPoint;
-class QAbstractItemView;
-class MoveDialog;
+class QLineEdit;
+class QVBoxLayout;
 
-class ObjectContextMenu final : public QMenu {
+class CreateDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    ObjectContextMenu(QWidget *parent);
+    CreateDialog(const QString &parent_arg, CreateType type_arg, QWidget *parent_widget);
 
-    void connect_view(QAbstractItemView *view, int dn_column);
+private slots:
+    void on_accepted();
 
-signals:
-    void details(const QString &dn);
-    
 private:
-    MoveDialog *move_dialog = nullptr;
-    
-    void open(const QPoint &global_pos, const QString &dn, const QString &parent_dn);
-    void delete_object(const QString &dn);
-    void edit_policy(const QString &dn);
-
+    QString parent;
+    CreateType type;
+    QLineEdit *name_edit;
 };
 
-#endif /* OBJECT_CONTEXT_MENU_H */
+#endif /* CREATE_DIALOG_H */

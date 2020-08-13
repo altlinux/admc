@@ -345,7 +345,7 @@ AdResult AdInterface::attribute_replace(const QString &dn, const QString &attrib
 }
 
 // TODO: can probably make a create_anything() function with enum parameter
-AdResult AdInterface::object_create(const QString &name, const QString &dn, NewObjectType type) {
+AdResult AdInterface::object_create(const QString &name, const QString &dn, CreateType type) {
 
     const QByteArray name_array = name.toLatin1();
     const char *name_cstr = name_array.constData();
@@ -1105,6 +1105,17 @@ QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_
     }
 
     return QDateTime();
+}
+
+QString create_type_to_string(const CreateType &type) {
+    switch (type) {
+        case CreateType::User: return AdInterface::tr("User");
+        case CreateType::Computer: return AdInterface::tr("Computer");
+        case CreateType::OU: return AdInterface::tr("Organization Unit");
+        case CreateType::Group: return AdInterface::tr("Group");
+        case CreateType::COUNT: return "COUNT";
+    }
+    return "";
 }
 
 AdResult::AdResult(bool success_arg) {
