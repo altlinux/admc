@@ -19,6 +19,7 @@
 
 #include "address_tab.h"
 #include "ad_interface.h"
+#include "status.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -144,8 +145,10 @@ void AddressTab::on_country_combo(int index) {
     const QString country_string = country_strings[code];
     const QString abbreviation = country_abbreviations[code];
 
-    // TODO: not sure if want to pretty up the messages for this to maybe say just "Changed country to X" instead of showing changes of 3 mysterious attributes. For now at least do country change last so that status bar displays that
     AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY_CODE, code_string);
     AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY_ABBREVIATION, abbreviation);
     AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY, country_string);
+
+    const QString name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_NAME);
+    Status::instance()->message(QString(tr("Changed country of object - %1")).arg(name), StatusType_Success);
 }

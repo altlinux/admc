@@ -19,6 +19,7 @@
 
 #include "rename_dialog.h"
 #include "ad_interface.h"
+#include "status.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -115,6 +116,9 @@ void RenameDialog::on_accepted() {
     if (name_edit.edit != nullptr) {
         push_changes_from_attribute_edit(name_edit);
     }
+
+    const QString name = AdInterface::instance()->attribute_get(target, ATTRIBUTE_NAME);
+    Status::instance()->message(QString(tr("Renamed object - %1")).arg(name), StatusType_Success);
 }
 
 void RenameDialog::add_attribute_edit(const QString &attribute, const QString &label_text) {
