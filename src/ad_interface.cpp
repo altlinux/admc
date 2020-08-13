@@ -521,19 +521,10 @@ AdResult AdInterface::object_rename(const QString &dn, const QString &new_name) 
 
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
-    const QByteArray new_name_array = new_name.toLatin1();
-    const char *new_name_cstr = new_name_array.constData();
     const QByteArray new_rdn_array = new_rdn.toLatin1();
     const char *new_rdn_cstr = new_rdn_array.constData();
 
-    int result = AD_ERROR;
-    if (is_user(dn)) {
-        result = connection->rename_user(dn_cstr, new_name_cstr);
-    } else if (is_group(dn)) {
-        result = connection->rename_group(dn_cstr, new_name_cstr);
-    } else {
-        result = connection->rename(dn_cstr, new_rdn_cstr);
-    }
+    int result = connection->rename(dn_cstr, new_rdn_cstr);
 
     const QString old_name = extract_name_from_dn(dn);
 
@@ -956,7 +947,11 @@ QString AdInterface::default_error_string(int ad_result) const {
             case LDAP_CONSTRAINT_VIOLATION: return tr("Constraint violation");
             case LDAP_UNWILLING_TO_PERFORM: return tr("Server is unwilling to perform");
             case LDAP_ALREADY_EXISTS: return tr("Already exists");
-            default: return tr("Unknown LDAP error");
+            default: {
+                char *ldap_err = ldap_err2string(ldap_result);
+                const QString ldap_err_qstr(ldap_err);
+                return QString(tr("LDAP error: %1")).arg(ldap_err_qstr);
+            }
         }
     } else {
         switch (ad_result) {

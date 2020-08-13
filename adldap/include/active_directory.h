@@ -175,22 +175,9 @@ int ad_attribute_delete(LDAP *ld, const char *dn, const char *attribute, const c
 
 /**
  * Rename object
- * Use specialized functions to rename users and groups
  * Returns AD_SUCCESS, AD_LDAP_ERROR
  */
 int ad_rename(LDAP *ld, const char *dn, const char *new_rdn);
-
-/**
- * Rename user and update related attributes
- * Returns AD_SUCCESS, AD_LDAP_ERROR, AD_INVALID_DN
- */
-int ad_rename_user(LDAP *ld, const char *dn, const char *new_name);
-
-/**
- * Rename group and update related attributes
- * Returns AD_SUCCESS, AD_LDAP_ERROR
- */
-int ad_rename_group(LDAP *ld, const char *dn, const char *new_name);
 
 /**
  * Move object

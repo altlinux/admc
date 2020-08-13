@@ -51,8 +51,6 @@ public:
     int attribute_delete(const char *dn, const char *attribute, const char *value);
     int get_all_attributes(const char *dn, char ****attributes);
     int rename(const char *dn, const char *new_name);
-    int rename_user(const char *dn, const char *new_username);
-    int rename_group(const char *dn, const char *new_name);
     int move(const char *current_dn, const char *new_container);
     int move_user(const char *current_dn, const char *new_container);
     int create_group(const char *group_name, const char *dn);

@@ -17,37 +17,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_CONTEXT_MENU_H
-#define OBJECT_CONTEXT_MENU_H
+#ifndef RENAME_DIALOG_H
+#define RENAME_DIALOG_H
 
-#include "ad_interface.h"
+#include <QString>
+#include <QDialog>
+#include <QList>
 
-#include <QMenu>
+class QLineEdit;
+class QVBoxLayout;
 
-class QString;
-class QPoint;
-class QAbstractItemView;
-class MoveDialog;
-
-class ObjectContextMenu final : public QMenu {
+class RenameDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    ObjectContextMenu(QWidget *parent);
+    RenameDialog(const QString &target_arg, QWidget *parent);
 
-    void connect_view(QAbstractItemView *view, int dn_column);
+private slots:
+    void on_accepted();
 
-signals:
-    void details(const QString &dn);
-    
 private:
-    MoveDialog *move_dialog = nullptr;
-    
-    void open(const QPoint &global_pos, const QString &dn, const QString &parent_dn);
-    void delete_object(const QString &dn);
-    void new_object_dialog(const QString &parent_dn, NewObjectType type);
-    void edit_policy(const QString &dn);
+    struct AttributeEdit {
+        QString attribute;
+        QLineEdit *edit;
+    };
 
+    QString target;
+    QVBoxLayout *label_layout;
+    QVBoxLayout *edit_layout;
+    AttributeEdit name_edit;
+    QList<AttributeEdit> edits;
+
+    void add_attribute_edit(const QString &attribute, const QString &label_text);
 };
 
-#endif /* OBJECT_CONTEXT_MENU_H */
+#endif /* RENAME_DIALOG_H */

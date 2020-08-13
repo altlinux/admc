@@ -21,6 +21,7 @@
 #include "ad_interface.h"
 #include "confirmation_dialog.h"
 #include "move_dialog.h"
+#include "rename_dialog.h"
 #include "utils.h"
 #include "password_dialog.h"
 #include "settings.h"
@@ -82,7 +83,8 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
         delete_object(dn);
     });
     addAction(tr("Rename"), [this, dn]() {
-        rename(dn);
+        auto rename_dialog = new RenameDialog(dn, this);
+        rename_dialog->open();
     });
 
     QMenu *submenu_new = addMenu("New");
@@ -183,18 +185,6 @@ void ObjectContextMenu::new_object_dialog(const QString &parent_dn, NewObjectTyp
         const QString dn = suffix + "=" + name + "," + parent_dn;
 
         AdInterface::instance()->object_create(name, dn, type);
-    }
-}
-
-void ObjectContextMenu::rename(const QString &dn) {
-    // Get new name from input box
-    QString dialog_title = tr("Rename");
-    QString input_label = tr("New name:");
-    bool ok;
-    QString new_name = QInputDialog::getText(this, dialog_title, input_label, QLineEdit::Normal, "", &ok);
-
-    if (ok && !new_name.isEmpty()) {
-        AdInterface::instance()->object_rename(dn, new_name);
     }
 }
 
