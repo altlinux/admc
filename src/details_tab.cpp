@@ -53,6 +53,12 @@ void DetailsTab::add_attribute_edit(const QString &attribute, const QString &lab
     label_layout->addWidget(label);
     edit_layout->addWidget(edit);
 
+    AttributeEdit attribute_edit = {
+        QString(attribute),
+        edit
+    };
+    attribute_edits.append(attribute_edit);
+
     switch (type) {
         case AttributeEditType_ReadOnly: {
             edit->setReadOnly(true);
