@@ -31,8 +31,10 @@ Q_OBJECT
 public:
     ObjectTab(DetailsWidget *details_arg);
 
-    void reload_internal();
     bool accepts_target() const;
+
+private:
+    void reload_internal();
 };
 
 #endif /* OBJECT_TAB_H */

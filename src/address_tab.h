@@ -32,7 +32,6 @@ Q_OBJECT
 public:
     AddressTab(DetailsWidget *details_arg);
 
-    void reload_internal();
     bool accepts_target() const;
 
 private slots:
@@ -40,6 +39,8 @@ private slots:
 
 private:
     QComboBox *country_combo;
+
+    void reload_internal();
 };
 
 #endif /* ADDRESS_TAB_H */

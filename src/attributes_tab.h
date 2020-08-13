@@ -36,12 +36,13 @@ Q_OBJECT
 public:
     AttributesTab(DetailsWidget *details_arg);
 
-    void reload_internal();
     bool accepts_target() const;
 
 private:
     AttributesModel *model = nullptr;
     QTreeView *view = nullptr;
+
+    void reload_internal();
 };
 
 class AttributesModel final : public QStandardItemModel {

@@ -32,11 +32,12 @@ Q_OBJECT
 public:
     GeneralTab(DetailsWidget *details_arg);
 
-    void reload_internal();
     bool accepts_target() const;
 
 private:
     QLabel *name_label;
+
+    void reload_internal();
 };
 
 #endif /* GENERAL_TAB_H */

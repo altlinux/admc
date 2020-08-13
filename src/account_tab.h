@@ -43,7 +43,6 @@ Q_OBJECT
 public:
     AccountTab(DetailsWidget *details_arg);
 
-    void reload_internal();
     bool accepts_target() const;
 
 private slots:
@@ -62,6 +61,7 @@ private:
     QLabel *expiry_display;
     QPushButton *expiry_edit_button;
 
+    void reload_internal();
     void reset_logon_name_edit();
 };
 
