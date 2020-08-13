@@ -27,6 +27,8 @@
 #include <QPushButton>
 #include <QList>
 
+// TODO: figure out what can and can't be renamed and disable renaming for exceptions (computers can't for example)
+
 RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
 : QDialog(parent)
 {

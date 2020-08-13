@@ -20,27 +20,40 @@
 #ifndef STATUS_BAR_H
 #define STATUS_BAR_H
 
-#include "ad_interface.h"
+#include <QObject>
 
 class QTextEdit;
 class QStatusBar;
+
+enum StatusType {
+    StatusType_Success,
+    StatusType_Error
+};
 
 // Pushes messages about AD operations to status bar and status log
 class Status final : public QObject {
 Q_OBJECT
 
 public:
-    explicit Status(QStatusBar *status_bar_arg, QTextEdit *status_log_arg, QObject *parent);
+    Status(const Status&) = delete;
+    Status& operator=(const Status&) = delete;
+    Status(Status&&) = delete;
+    Status& operator=(Status&&) = delete;
+
+    static Status *instance();
+    
+    void init(QStatusBar *status_bar_arg, QTextEdit *status_log_arg);
+    void message(const QString &msg, const StatusType &type);
 
 private slots:
     void on_toggle_show_status_log();
-    void on_ad_interface_status_message(const QString &msg, AdInterfaceMessageType type);
 
 private:
+    bool initialized = false;
     QStatusBar *status_bar = nullptr;
     QTextEdit* status_log = nullptr;
 
-    void add_message(const QString &msg, QColor color);
+    using QObject::QObject;
 
 };
 

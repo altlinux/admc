@@ -60,7 +60,7 @@ MainWindow::MainWindow()
     status_log->setReadOnly(true);
 
     QStatusBar *status_bar = statusBar();
-    new Status(status_bar, status_log, this);
+    Status::instance()->init(status_bar, status_log);
 
     // Layout
     auto horiz_splitter = new QSplitter(Qt::Horizontal);

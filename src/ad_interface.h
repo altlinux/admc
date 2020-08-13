@@ -114,11 +114,6 @@ enum AccountOption {
     AccountOption_COUNT
 };
 
-enum AdInterfaceMessageType {
-    AdInterfaceMessageType_Success,
-    AdInterfaceMessageType_Error
-};
-
 enum EmitStatusMessage {
     EmitStatusMessage_Yes,
     EmitStatusMessage_No
@@ -200,7 +195,6 @@ public:
 signals:
     void modified();
     void logged_in();
-    void status_message(const QString &msg, AdInterfaceMessageType type);
 
 private:
     adldap::AdConnection *connection = nullptr;

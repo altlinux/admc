@@ -19,6 +19,8 @@
 
 #include "ad_interface.h"
 #include "ad_connection.h"
+#include "status.h"
+
 #include "ldap.h"
 
 #include <QSet>
@@ -933,7 +935,7 @@ bool AdInterface::should_emit_status_message(int result) {
 
 void AdInterface::success_status_message(const QString &msg, EmitStatusMessage emit_message) {
     if (emit_message == EmitStatusMessage_Yes) {
-        emit status_message(msg, AdInterfaceMessageType_Success);
+        Status::instance()->message(msg, StatusType_Success);
     }
 }
 
@@ -941,7 +943,7 @@ void AdInterface::error_status_message(const QString &context, const QString &er
     if (emit_message == EmitStatusMessage_Yes) {
         const QString msg = QString(tr("%1. Error: \"%2\"")).arg(context, error);
 
-        emit status_message(msg, AdInterfaceMessageType_Error);
+        Status::instance()->message(msg, StatusType_Error);
     }
 }
 
