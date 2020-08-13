@@ -56,29 +56,27 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
     attributes_layout->insertLayout(-1, label_layout);
     attributes_layout->insertLayout(-1, edit_layout);
 
-    auto make_line_edit =
+    auto add_edit =
     [this, label_layout, edit_layout](const QString &attribute, const QString &label_text) {
-        add_attribute_edit(attribute, label_text, label_layout, edit_layout);
+        add_attribute_edit(attribute, label_text, label_layout, edit_layout, AttributeEditType_Editable);
     };
 
-    make_line_edit(ATTRIBUTE_DISPLAY_NAME, tr("Display name:"));
-    make_line_edit(ATTRIBUTE_DESCRIPTION, tr("Description:"));
-    make_line_edit(ATTRIBUTE_GIVEN_NAME, tr("First name"));
-    make_line_edit(ATTRIBUTE_INITIALS, tr("Initials:"));
-    make_line_edit(ATTRIBUTE_MAIL, tr("Email:"));
-    make_line_edit(ATTRIBUTE_OFFICE, tr("Office:"));
-    make_line_edit(ATTRIBUTE_SN, tr("Last name:"));
-    make_line_edit(ATTRIBUTE_TELEPHONE_NUMBER, tr("Phone:"));
-    make_line_edit(ATTRIBUTE_WWW_HOMEPAGE, tr("Homepage:"));
-}
-
-void GeneralTab::reload() {
-    const QString name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_NAME);
-    name_label->setText(name);
-
-    emit reloaded();
+    add_edit(ATTRIBUTE_DISPLAY_NAME, tr("Display name:"));
+    add_edit(ATTRIBUTE_DESCRIPTION, tr("Description:"));
+    add_edit(ATTRIBUTE_GIVEN_NAME, tr("First name"));
+    add_edit(ATTRIBUTE_INITIALS, tr("Initials:"));
+    add_edit(ATTRIBUTE_MAIL, tr("Email:"));
+    add_edit(ATTRIBUTE_OFFICE, tr("Office:"));
+    add_edit(ATTRIBUTE_SN, tr("Last name:"));
+    add_edit(ATTRIBUTE_TELEPHONE_NUMBER, tr("Phone:"));
+    add_edit(ATTRIBUTE_WWW_HOMEPAGE, tr("Homepage:"));
 }
 
 bool GeneralTab::accepts_target() const {
     return AdInterface::instance()->has_attributes(target());
+}
+
+void GeneralTab::reload_internal() {
+    const QString name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_NAME);
+    name_label->setText(name);
 }

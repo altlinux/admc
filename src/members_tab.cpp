@@ -55,7 +55,7 @@ MembersTab::MembersTab(ObjectContextMenu *object_context_menu, DetailsWidget *de
     layout->addWidget(view);
 }
 
-void MembersTab::reload() {
+void MembersTab::reload_internal() {
     model->change_target(target());
 
     set_root_to_head(view);

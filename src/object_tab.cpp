@@ -40,23 +40,22 @@ ObjectTab::ObjectTab(DetailsWidget *details_arg)
     attributes_layout->insertLayout(-1, label_layout);
     attributes_layout->insertLayout(-1, edit_layout);
 
-    auto make_line_edit =
+    auto add_edit =
     [this, label_layout, edit_layout](const QString &attribute, const QString &label_text) {
-        add_attribute_display(attribute, label_text, label_layout, edit_layout);
+        add_attribute_edit(attribute, label_text, label_layout, edit_layout, AttributeEditType_ReadOnly);
     };
 
     // TODO: canonical name in ADUC replaces "CN=" with "/" making it look like a directory path
-    make_line_edit(ATTRIBUTE_DISTINGUISHED_NAME, tr("Canonical name:"));
-    make_line_edit(ATTRIBUTE_OBJECT_CLASS, tr("Object class:"));
-    make_line_edit(ATTRIBUTE_WHEN_CREATED, tr("Created:"));
-    make_line_edit(ATTRIBUTE_WHEN_CHANGED, tr("Changed:"));
-    make_line_edit(ATTRIBUTE_USN_CREATED, tr("USN created:"));
-    make_line_edit(ATTRIBUTE_USN_CHANGED, tr("USN changed:"));
+    add_edit(ATTRIBUTE_DISTINGUISHED_NAME, tr("Canonical name:"));
+    add_edit(ATTRIBUTE_OBJECT_CLASS, tr("Object class:"));
+    add_edit(ATTRIBUTE_WHEN_CREATED, tr("Created:"));
+    add_edit(ATTRIBUTE_WHEN_CHANGED, tr("Changed:"));
+    add_edit(ATTRIBUTE_USN_CREATED, tr("USN created:"));
+    add_edit(ATTRIBUTE_USN_CHANGED, tr("USN changed:"));
 }
 
-void ObjectTab::reload() {
+void ObjectTab::reload_internal() {
 
-    emit reloaded();
 }
 
 bool ObjectTab::accepts_target() const {

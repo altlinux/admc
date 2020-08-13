@@ -111,7 +111,7 @@ AccountTab::AccountTab(DetailsWidget *details_arg)
     }
 }
 
-void AccountTab::reload() {
+void AccountTab::reload_internal() {
     reset_logon_name_edit();
 
     // NOTE: block signals from setChecked() so they are not processed

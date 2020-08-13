@@ -46,56 +46,59 @@ QString DetailsTab::get_title() const {
     return title;
 }
 
-void DetailsTab::add_attribute_edit(const QString &attribute, const QString &label_text, QLayout *label_layout, QLayout *edit_layout) {
+void DetailsTab::add_attribute_edit(const QString &attribute, const QString &label_text, QLayout *label_layout, QLayout *edit_layout, AttributeEditType type) {
     auto label = new QLabel(label_text, this);
     auto edit = new QLineEdit(this);
 
     label_layout->addWidget(label);
     edit_layout->addWidget(edit);
 
-    connect(
-        edit, &QLineEdit::editingFinished,
-        [this, edit, attribute]() {
-            const QString new_value = edit->text();
-            const QString current_value = AdInterface::instance()->attribute_get(target(), attribute);
-            edit->text();
+    switch (type) {
+        case AttributeEditType_ReadOnly: {
+            edit->setReadOnly(true);
 
-            if (new_value != current_value) {
-                AdInterface::instance()->attribute_replace(target(), attribute, new_value);
-            }
-        });
-    reload_attribute_edit(edit, attribute);
+            break;
+        }
+        case AttributeEditType_Editable: {
+            // Push changes from edit to AD when edit is modified
+            connect(
+                edit, &QLineEdit::editingFinished,
+                [this, edit, attribute]() {
+                    const QString new_value = edit->text();
+                    const QString current_value = AdInterface::instance()->attribute_get(target(), attribute);
+                    edit->text();
+
+                    if (new_value != current_value) {
+                        AdInterface::instance()->attribute_replace(target(), attribute, new_value);
+                    }
+                });
+
+            break;
+        }
+    }
 }
 
-void DetailsTab::add_attribute_display(const QString &attribute, const QString &label_text, QLayout *label_layout, QLayout *edit_layout) {
-    auto label = new QLabel(label_text, this);
-    auto edit = new QLineEdit(this);
+void DetailsTab::reload() {
+    reload_internal();
 
-    edit->setReadOnly(true);
+    // Load values into attribute edits
+    for (auto e : attribute_edits) {
+        const QString attribute = e.attribute;
+        QLineEdit *edit = e.edit;
 
-    label_layout->addWidget(label);
-    edit_layout->addWidget(edit);
+        QString value;
 
-    reload_attribute_edit(edit, attribute);
-}
+        if (attribute_is_datetime(attribute)) {
+            const QString datetime_raw = AdInterface::instance()->attribute_get(target(), attribute);
+            value = datetime_raw_to_string(attribute, datetime_raw);
+        } else if (attribute == ATTRIBUTE_OBJECT_CLASS) {
+            // TODO: not sure how to get the "primary" attribute, for now just getting the last one
+            const QList<QString> classes = AdInterface::instance()->attribute_get_multi(target(), attribute);
+            value = classes.last();
+        } else {
+            value = AdInterface::instance()->attribute_get(target(), attribute);
+        }
 
-void DetailsTab::reload_attribute_edit(QLineEdit *edit, const QString &attribute) {
-    connect(
-        this, &DetailsTab::reloaded,
-        [this, edit, attribute]() {
-            QString current_value;
-
-            if (attribute_is_datetime(attribute)) {
-                const QString datetime_raw = AdInterface::instance()->attribute_get(target(), attribute);
-                current_value = datetime_raw_to_string(attribute, datetime_raw);
-            } else if (attribute == ATTRIBUTE_OBJECT_CLASS) {
-                // TODO: not sure how to get the "primary" attribute, for now just getting the last one
-                const QList<QString> classes = AdInterface::instance()->attribute_get_multi(target(), attribute);
-                current_value = classes.last();
-            } else {
-                current_value = AdInterface::instance()->attribute_get(target(), attribute);
-            }
-
-            edit->setText(current_value);
-        });
+        edit->setText(value);
+    }
 }

@@ -32,7 +32,7 @@ Q_OBJECT
 public:
     GeneralTab(DetailsWidget *details_arg);
 
-    void reload();
+    void reload_internal();
     bool accepts_target() const;
 
 private:

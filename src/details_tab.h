@@ -27,6 +27,11 @@ class DetailsWidget;
 class QLayout;
 class QLineEdit;
 
+enum AttributeEditType {
+    AttributeEditType_ReadOnly,
+    AttributeEditType_Editable
+};
+
 class DetailsTab : public QWidget {
 Q_OBJECT
 
@@ -36,21 +41,26 @@ public:
     QString target() const;
     QString get_title() const;
 
-    virtual void reload() = 0;
+    void reload();
     virtual bool accepts_target() const = 0;
-
-signals:
-    void reloaded();
 
 protected:
     QString title;
 
-    void add_attribute_edit(const QString &attribute, const QString &label_text, QLayout *label_layout, QLayout *edit_layout);
-    void add_attribute_display(const QString &attribute, const QString &label_text, QLayout *label_layout, QLayout *edit_layout);
+    // Implement this in subclass to reload member widgets
+
+    void add_attribute_edit(const QString &attribute, const QString &label_text, QLayout *label_layout, QLayout *edit_layout, AttributeEditType type);
 
 private:
-    DetailsWidget *details;
+    struct AttributeEdit {
+        QString attribute;
+        QLineEdit *edit;
+    };
 
+    DetailsWidget *details;
+    QList<AttributeEdit> attribute_edits;
+
+    virtual void reload_internal() = 0;
     void reload_attribute_edit(QLineEdit *edit, const QString &attribute);
 };
 

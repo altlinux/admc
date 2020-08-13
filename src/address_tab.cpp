@@ -52,7 +52,7 @@ AddressTab::AddressTab(DetailsWidget *details_arg)
 
     auto make_line_edit =
     [this, label_layout, edit_layout](const QString &attribute, const QString &label_text) {
-        add_attribute_edit(attribute, label_text, label_layout, edit_layout);
+        add_attribute_edit(attribute, label_text, label_layout, edit_layout, AttributeEditType_Editable);
     };
 
     make_line_edit(ATTRIBUTE_STREET, tr("Street:"));
@@ -119,7 +119,7 @@ AddressTab::AddressTab(DetailsWidget *details_arg)
     country_combo->blockSignals(false);
 }
 
-void AddressTab::reload() {
+void AddressTab::reload_internal() {
     // Load country
     const QString current_code_string = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_COUNTRY_CODE);
     const int current_code = current_code_string.toInt();
@@ -130,8 +130,6 @@ void AddressTab::reload() {
         country_combo->setCurrentIndex(index);
         country_combo->blockSignals(false);
     }
-
-    emit reloaded();
 }
 
 bool AddressTab::accepts_target() const {

@@ -35,7 +35,7 @@ Q_OBJECT
 public:
     MembersTab(ObjectContextMenu *object_context_menu, DetailsWidget *details_arg);
 
-    void reload();
+    void reload_internal();
     bool accepts_target() const;
 
 private:

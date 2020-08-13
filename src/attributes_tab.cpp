@@ -48,7 +48,7 @@ AttributesTab::AttributesTab(DetailsWidget *details_widget_arg)
     layout->addWidget(view);
 }
 
-void AttributesTab::reload() {
+void AttributesTab::reload_internal() {
     model->reload();
 }
 
