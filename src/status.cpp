@@ -61,6 +61,8 @@ void Status::on_toggle_show_status_log() {
 }
 
 void Status::message(const QString &msg, const StatusType &type) {
+    status_bar->showMessage(msg);
+    
     auto get_color =
     [type]() {
         switch (type) {
