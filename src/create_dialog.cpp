@@ -79,11 +79,11 @@ void CreateDialog::on_accepted() {
     auto get_suffix =
     [](CreateType type_arg) {
         switch (type_arg) {
-            case CreateType::User: return "CN";
-            case CreateType::Computer: return "CN";
-            case CreateType::OU: return "OU";
-            case CreateType::Group: return "CN";
-            case CreateType::COUNT: return "COUNT";
+            case CreateType_User: return "CN";
+            case CreateType_Computer: return "CN";
+            case CreateType_OU: return "OU";
+            case CreateType_Group: return "CN";
+            case CreateType_COUNT: return "COUNT";
         }
         return "";
     };
@@ -97,11 +97,11 @@ void CreateDialog::on_accepted() {
         static const char *classes_computer[] = {CLASS_TOP, CLASS_PERSON, CLASS_ORG_PERSON, CLASS_USER, CLASS_COMPUTER, NULL};
 
         switch (type_arg) {
-            case User: return classes_user;
-            case Computer: return classes_computer;
-            case OU: return classes_ou;
-            case Group: return classes_group;
-            case COUNT: return classes_user;
+            case CreateType_User: return classes_user;
+            case CreateType_Computer: return classes_computer;
+            case CreateType_OU: return classes_ou;
+            case CreateType_Group: return classes_group;
+            case CreateType_COUNT: return classes_user;
         }
         return classes_user;
     };
@@ -110,4 +110,15 @@ void CreateDialog::on_accepted() {
     const QString dn = suffix + "=" + name + "," + parent;
 
     AdInterface::instance()->object_add(dn, classes);
+}
+
+QString create_type_to_string(const CreateType &type) {
+    switch (type) {
+        case CreateType_User: return AdInterface::tr("User");
+        case CreateType_Computer: return AdInterface::tr("Computer");
+        case CreateType_OU: return AdInterface::tr("Organization Unit");
+        case CreateType_Group: return AdInterface::tr("Group");
+        case CreateType_COUNT: return "COUNT";
+    }
+    return "";
 }

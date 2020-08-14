@@ -98,14 +98,6 @@ namespace adldap
     class AdConnection;
 };
 
-enum CreateType {
-    User,
-    Computer,
-    OU,
-    Group,
-    COUNT
-};
-
 enum AccountOption {
     AccountOption_Disabled,
     AccountOption_PasswordExpired,
@@ -165,7 +157,6 @@ public:
 
     AdResult attribute_replace(const QString &dn, const QString &attribute, const QString &value, EmitStatusMessage emit_message = EmitStatusMessage_Yes);
     AdResult object_add(const QString &dn, const char **classes);
-    AdResult object_create(const QString &name, const QString &dn, CreateType type);
     AdResult object_delete(const QString &dn);
     AdResult object_move(const QString &dn, const QString &new_container);
     AdResult object_rename(const QString &dn, const QString &new_name);
@@ -225,6 +216,5 @@ bool attribute_is_datetime(const QString &attribute);
 bool datetime_is_never(const QString &attribute, const QString &value);
 QString datetime_raw_to_string(const QString &attribute, const QString &raw_value);
 QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_value);
-QString create_type_to_string(const CreateType &type);
 
 #endif /* AD_INTERFACE_H */

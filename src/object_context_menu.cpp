@@ -88,7 +88,7 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
     });
 
     QMenu *submenu_new = addMenu("New");
-    for (int i = 0; i < CreateType::COUNT; i++) {
+    for (int i = 0; i < CreateType_COUNT; i++) {
         const CreateType type = (CreateType) i;
         const QString object_string = create_type_to_string(type);
 

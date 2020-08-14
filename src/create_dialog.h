@@ -29,6 +29,14 @@
 class QLineEdit;
 class QVBoxLayout;
 
+enum CreateType {
+    CreateType_User,
+    CreateType_Computer,
+    CreateType_OU,
+    CreateType_Group,
+    CreateType_COUNT
+};
+
 class CreateDialog final : public QDialog {
 Q_OBJECT
 
@@ -43,5 +51,7 @@ private:
     CreateType type;
     QLineEdit *name_edit;
 };
+
+QString create_type_to_string(const CreateType &type);
 
 #endif /* CREATE_DIALOG_H */
