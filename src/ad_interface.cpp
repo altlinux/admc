@@ -424,13 +424,7 @@ AdResult AdInterface::object_move(const QString &dn, const QString &new_containe
     const QByteArray new_container_array = new_container.toLatin1();
     const char *new_container_cstr = new_container_array.constData();
 
-    int result = AD_ERROR;
-    const bool object_is_user = is_user(dn);
-    if (object_is_user) {
-        result = connection->move_user(dn_cstr, new_container_cstr);
-    } else {
-        result = connection->move(dn_cstr, new_container_cstr);
-    }
+    const int result = connection->move(dn_cstr, new_container_cstr);
 
     // TODO: drag and drop handles checking move compatibility but need
     // to do this here as well for CLI?

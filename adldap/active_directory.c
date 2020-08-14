@@ -780,56 +780,6 @@ int ad_rename(LDAP *ld, const char *dn, const char *new_rdn) {
     return result;
 }
 
-int ad_move_user(LDAP *ld, const char *current_dn, const char *new_container) {
-    int result = AD_SUCCESS;
-
-    char **username = NULL;
-    char *domain = NULL;
-    char *upn = NULL;
-
-    const int result_get_username = ad_get_attribute(ld, current_dn, "sAMAccountName", &username);
-    if (result_get_username != AD_SUCCESS || username[0] == NULL) {
-        result = result_get_username;
-
-        goto end;
-    }
-
-    // Construct userPrincipalName
-    const int result_dn2domain = dn2domain(new_container, &domain);
-    if (AD_SUCCESS != result_dn2domain) {
-        result = result_dn2domain;
-
-        goto end;
-    }
-    upn = malloc(strlen(username[0]) + strlen(domain) + 2);
-    sprintf(upn, "%s@%s", username[0], domain);
-
-    // Modify userPrincipalName in case of domain change
-    const int result_replace = ad_attribute_replace(ld, current_dn, "userPrincipalName", upn);
-    if (result_replace != AD_SUCCESS) {
-        // Failed to change userPrincipalName
-        result = result_replace;
-
-        goto end;
-    }
-
-    const int result_move = ad_move(ld, current_dn, new_container);
-    if (result_move != AD_SUCCESS) {
-        result = result_move;
-
-        goto end;
-    }
-    
-    end:
-    {
-        ad_array_free(username);
-        free(domain);
-        free(upn);
-
-        return result;
-    }
-}
-
 int ad_move(LDAP *ld, const char *current_dn, const char *new_container) {
     int result = AD_SUCCESS;
 

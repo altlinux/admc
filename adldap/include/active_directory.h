@@ -181,16 +181,9 @@ int ad_rename(LDAP *ld, const char *dn, const char *new_rdn);
 
 /**
  * Move object
- * Use ad_move_user() for user objects
  * Returns AD_SUCCESS, AD_LDAP_ERROR
  */
 int ad_move(LDAP *ld, const char *current_dn, const char *new_container);
-
-/**
- * Move user and update attributes affected by move
- * Returns AD_SUCCESS, AD_LDAP_ERROR, AD_INVALID_DN
- */
-int ad_move_user(LDAP *ld, const char *current_dn, const char *new_container);
 
 /**
  * Add user to a group

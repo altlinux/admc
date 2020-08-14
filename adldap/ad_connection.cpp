@@ -120,10 +120,6 @@ int AdConnection::move(const char *current_dn, const char *new_container) {
     return ad_move(ldap_connection, current_dn, new_container);
 }
 
-int AdConnection::move_user(const char *current_dn, const char *new_container) {
-    return ad_move_user(ldap_connection, current_dn, new_container);
-}
-
 int AdConnection::create_group(const char *group_name, const char *dn) {
     return ad_create_group(ldap_connection, group_name, dn);
 }
