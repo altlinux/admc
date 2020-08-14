@@ -344,44 +344,19 @@ AdResult AdInterface::attribute_replace(const QString &dn, const QString &attrib
     }
 }
 
-// TODO: can probably make a create_anything() function with enum parameter
-AdResult AdInterface::object_create(const QString &name, const QString &dn, CreateType type) {
-
-    const QByteArray name_array = name.toLatin1();
-    const char *name_cstr = name_array.constData();
-
+AdResult AdInterface::object_add(const QString &dn, const char **classes) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    int result = AD_ERROR;
-    switch (type) {
-        case User: {
-            result = connection->create_user(name_cstr, dn_cstr);
-            break;
-        }
-        case Computer: {
-            result = connection->create_computer(name_cstr, dn_cstr);
-            break;
-        }
-        case OU: {
-            result = connection->create_ou(name_cstr, dn_cstr);
-            break;
-        }
-        case Group: {
-            result = connection->create_group(name_cstr, dn_cstr);
-            break;
-        }
-        case COUNT: break;
-    }
-
+    const int result = connection->add(dn_cstr, classes);
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Created \"%1\"")).arg(name));
+        success_status_message(QString(tr("Created \"%1\"")).arg(dn));
 
         update_cache({dn});
 
         return AdResult(true);
     } else {
-        const QString context = QString(tr("Failed to create \"%1\"")).arg(name);
+        const QString context = QString(tr("Failed to create \"%1\"")).arg(dn);
         const QString error_string = default_error_string(result);
 
         error_status_message(context, error_string);

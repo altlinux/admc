@@ -46,7 +46,6 @@ typedef struct sasl_defaults_gssapi {
     char *authzid;
 } sasl_defaults_gssapi;
 
-int dn2domain(const char *dn, char **domain_out);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 int query_server_for_hosts(const char *dname, char ***hosts_out);
 int ad_get_all_attributes_internal(LDAP *ld, const char *dn, const char *attribute, LDAPMessage **res_out);
@@ -453,156 +452,20 @@ int ad_get_all_attributes(LDAP *ld, const char *dn, char ****attributes_out) {
     }
 }
 
-int ad_create_user(LDAP *ld, const char *username, const char *dn) {
-    int result = AD_SUCCESS;
+int ad_add(LDAP *ld, const char *dn, const char **objectClass) {
+    LDAPMod attr;
+    attr.mod_op = LDAP_MOD_ADD;
+    attr.mod_type = "objectClass";
+    attr.mod_values = (char **)objectClass;
 
-    char *upn = NULL;
-    char *domain = NULL;
-
-    LDAPMod attr1;
-    const char *class_values[] = {"user", NULL};
-    attr1.mod_op = LDAP_MOD_ADD;
-    attr1.mod_type = "objectClass";
-    attr1.mod_values = (char **)class_values;
-
-    LDAPMod attr2;
-    const char *name_values[] = {username, NULL};
-    attr2.mod_op = LDAP_MOD_ADD;
-    attr2.mod_type = "sAMAccountName";
-    attr2.mod_values = (char **)name_values;
-    
-    LDAPMod attr3;
-    const char *control_values[] = {"66050", NULL};
-    attr3.mod_op = LDAP_MOD_ADD;
-    attr3.mod_type = "userAccountControl";
-    attr3.mod_values = (char **)control_values;
-
-    LDAPMod attr4;
-    // Construct userPrincipalName
-    const int result_dn2domain = dn2domain(dn, &domain);
-    if (result_dn2domain != AD_SUCCESS) {
-        result = result_dn2domain;
-
-        goto end;
-    }
-    upn = malloc(strlen(username) + strlen(domain) + 2);
-    sprintf(upn, "%s@%s", username, domain);
-    const char *upn_values[] = {upn, NULL};
-    attr4.mod_op = LDAP_MOD_ADD;
-    attr4.mod_type = "userPrincipalName";
-    attr4.mod_values = (char **)upn_values;
-
-    LDAPMod *attrs[] = {&attr1, &attr2, &attr3, &attr4, NULL};
-
-    const int result_add_attributes = ldap_add_ext_s(ld, dn, attrs, NULL, NULL);
-    if (result_add_attributes != LDAP_SUCCESS) {
-        result = AD_LDAP_ERROR;
-    }
-
-    end:
-    {
-        free(domain);
-        free(upn);
-
-        return result;
-    }
-}
-
-int ad_create_computer(LDAP *ld, const char *name, const char *dn) {
-    int result = AD_SUCCESS;
-
-    char *account_name = NULL;
-
-    LDAPMod attr1;
-    const char *class_values[] = {"top", "person", "organizationalPerson", "user", "computer", NULL};
-    attr1.mod_op = LDAP_MOD_ADD;
-    attr1.mod_type = "objectClass";
-    attr1.mod_values = (char **)class_values;
-
-    LDAPMod attr2;
-    // Construct sAMAccountName
-    account_name = malloc(strlen(name) + 2);
-    sprintf(account_name, "%s$", name);
-    for (int i = 0; i < strlen(account_name); i++) {
-        account_name[i] = toupper(account_name[i]);
-    } 
-    const char *name_values[] = {account_name, NULL};
-    attr2.mod_op = LDAP_MOD_ADD;
-    attr2.mod_type = "sAMAccountName";
-    attr2.mod_values = (char **)name_values;
-
-    LDAPMod attr3;
-    const char *control_values[] = {"4128", NULL};
-    attr3.mod_op = LDAP_MOD_ADD;
-    attr3.mod_type = "userAccountControl";
-    attr3.mod_values = (char **)control_values;
-
-    LDAPMod *attrs[] = {&attr1, &attr2, &attr3, NULL};
+    LDAPMod *attrs[] = {&attr, NULL};
 
     const int result_add = ldap_add_ext_s(ld, dn, attrs, NULL, NULL);
     if (result_add != LDAP_SUCCESS) {
-        result = AD_LDAP_ERROR;
+        return AD_LDAP_ERROR;
+    } else {
+        return AD_SUCCESS;
     }
-
-    free(account_name);
-
-    return result;
-}
-
-int ad_create_ou(LDAP *ld, const char *ou_name, const char *dn) {
-    int result = AD_SUCCESS;
-
-    LDAPMod attr1;
-    char *class_values[] = {"organizationalUnit", NULL};
-    attr1.mod_op = LDAP_MOD_ADD;
-    attr1.mod_type = "objectClass";
-    attr1.mod_values = class_values;
-
-    LDAPMod attr2;
-    const char *name_values[] = {ou_name, NULL};
-    attr2.mod_op = LDAP_MOD_ADD;
-    attr2.mod_type = "name";
-    attr2.mod_values = (char **)name_values;
-    
-    LDAPMod *attrs[] = {&attr1, &attr2, NULL};
-
-    const int result_add = ldap_add_ext_s(ld, dn, attrs, NULL, NULL);
-    if (result_add != LDAP_SUCCESS) {
-        result = AD_LDAP_ERROR;
-    }
-
-    return result;
-}
-
-int ad_create_group(LDAP *ld, const char *group_name, const char *dn) {
-    int result = AD_SUCCESS;
-
-    LDAPMod attr1;
-    const char *class_values[] = {"group", NULL};
-    attr1.mod_op = LDAP_MOD_ADD;
-    attr1.mod_type = "objectClass";
-    attr1.mod_values = (char **)class_values;
-
-    LDAPMod attr2;
-    const char *name_values[] = {group_name, NULL};
-    attr2.mod_op = LDAP_MOD_ADD;
-    attr2.mod_type = "name";
-    attr2.mod_values = (char **)name_values;
-    
-    LDAPMod attr3;
-    const char *account_name_values[] = {group_name, NULL};
-    attr3.mod_op = LDAP_MOD_ADD;
-    attr3.mod_type = "sAMAccountName";
-    attr3.mod_values = (char **)account_name_values;
-
-    LDAPMod *attrs[] = {&attr1, &attr2, &attr3, NULL};
-
-    const int result_add = ldap_add_ext_s(ld, dn, attrs, NULL, NULL);
-    if (result_add != LDAP_SUCCESS) {
-        result = AD_LDAP_ERROR;
-    }
-
-    return result;
 }
 
 int ad_delete(LDAP *ld, const char *dn) {
@@ -815,81 +678,6 @@ int ad_group_add_user(LDAP *ld, const char *group_dn, const char *user_dn) {
 
 int ad_group_remove_user(LDAP *ld, const char *group_dn, const char *user_dn) {
     return ad_attribute_delete(ld, group_dn, "member", user_dn);
-}
-
-/**
- * Convert a distinguished name into the domain controller
- * dns domain, eg: "ou=users,dc=example,dc=com" returns
- * "example.com".
- * domain should be freed using free()
- * Returns AD_SUCCESS, AD_INVALID_DN
- */
-int dn2domain(const char *dn, char **domain_out) {
-    int result = AD_SUCCESS;
-    
-    LDAPDN exp_dn = NULL;
-    char *domain = NULL;
-
-    // Explode dn
-    const int result_str2dn = ldap_str2dn(dn, &exp_dn, LDAP_DN_FORMAT_LDAPV3);
-    if (result_str2dn != LDAP_SUCCESS) {
-        result = AD_INVALID_DN;
-
-        goto end;
-    }
-
-    // Iterate over RDNs, extracting the domain part
-    domain = calloc(MAX_DN_LENGTH, sizeof(char));
-    for (int i = 0; exp_dn[i] != NULL; i++) {
-        // NOTE: rdn can be multi-valued but we only process the first value
-        LDAPRDN rdns = exp_dn[i];
-        LDAPAVA *rdn = rdns[0];
-
-        if (rdn == NULL) {
-            result = AD_INVALID_DN;
-
-            goto end;
-        }
-
-        // NOTE: BER/DER encoded attributes are unsupported
-        const bool string_encoding = (rdn->la_flags & LDAP_AVA_STRING);
-        if (!string_encoding) {
-            result = AD_INVALID_DN;
-
-            goto end;
-        }
-
-        // Save rdn if it's part of domain string
-        const bool rdn_is_part_of_domain = (strncasecmp("DC", rdn[0].la_attr.bv_val, 2) == 0);
-        if (rdn_is_part_of_domain) {
-            strncat(domain, rdn[0].la_value.bv_val, MAX_DN_LENGTH - strlen(domain) - 1);
-            strncat(domain, ".", MAX_DN_LENGTH - strlen(domain) - 1);
-        }
-    }
-
-    // Convert domain to lower case
-    for (int i = 0; i < strlen(domain); i++) {
-        domain[i] = tolower(domain[i]);
-    }
-
-    // Remove last '.'
-    if (strlen(domain) > 0) {
-        domain[strlen(domain) - 1] = '\0';
-    }
-
-    end:
-    {
-        ldap_dnfree(exp_dn);
-
-        if (result == AD_SUCCESS) {
-        *domain_out = domain;
-        } else {
-            *domain_out = NULL;
-            free(domain);
-        }
-
-        return result;
-    }
 }
 
 /**

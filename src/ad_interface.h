@@ -79,6 +79,9 @@
 #define CLASS_PERSON                    "person"
 #define CLASS_GP_CONTAINER              "groupPolicyContainer"
 #define CLASS_DOMAIN                    "domain"
+#define CLASS_TOP                       "top"
+#define CLASS_COMPUTER                  "computer"
+#define CLASS_ORG_PERSON                "organizationalPerson"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 
@@ -161,6 +164,7 @@ public:
     void attribute_bool_replace(const QString &dn, const QString &attribute, bool value);
 
     AdResult attribute_replace(const QString &dn, const QString &attribute, const QString &value, EmitStatusMessage emit_message = EmitStatusMessage_Yes);
+    AdResult object_add(const QString &dn, const char **classes);
     AdResult object_create(const QString &name, const QString &dn, CreateType type);
     AdResult object_delete(const QString &dn);
     AdResult object_move(const QString &dn, const QString &new_container);

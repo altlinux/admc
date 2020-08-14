@@ -68,12 +68,8 @@ std::string AdConnection::get_uri() const {
     return uri;
 }
 
-int AdConnection::create_user(const char *username, const char *dn) {
-    return ad_create_user(ldap_connection, username, dn);
-}
-
-int AdConnection::create_computer(const char *name, const char *dn) {
-    return ad_create_computer(ldap_connection, name, dn);
+int AdConnection::add(const char *dn, const char **objectClass) {
+    return ad_add(ldap_connection, dn, objectClass);
 }
 
 int AdConnection::object_delete(const char *dn) {
@@ -120,20 +116,12 @@ int AdConnection::move(const char *current_dn, const char *new_container) {
     return ad_move(ldap_connection, current_dn, new_container);
 }
 
-int AdConnection::create_group(const char *group_name, const char *dn) {
-    return ad_create_group(ldap_connection, group_name, dn);
-}
-
 int AdConnection::group_add_user(const char *group_dn, const char *user_dn) {
     return ad_group_add_user(ldap_connection, group_dn, user_dn);
 }
 
 int AdConnection::group_remove_user(const char *group_dn, const char *user_dn) {
     return ad_group_remove_user(ldap_connection, group_dn, user_dn);
-}
-
-int AdConnection::create_ou(const char *ou_name, const char *dn) {
-    return ad_create_ou(ldap_connection, ou_name, dn);
 }
 
 int AdConnection::list(const char *dn, char ***dn_list) {

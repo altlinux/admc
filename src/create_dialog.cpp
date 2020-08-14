@@ -89,7 +89,25 @@ void CreateDialog::on_accepted() {
     };
     const QString suffix = get_suffix(type);
 
+    auto get_classes =
+    [](CreateType type_arg) {
+        static const char *classes_user[] = {CLASS_USER, NULL};
+        static const char *classes_group[] = {CLASS_GROUP, NULL};
+        static const char *classes_ou[] = {CLASS_OU, NULL};
+        static const char *classes_computer[] = {CLASS_TOP, CLASS_PERSON, CLASS_ORG_PERSON, CLASS_USER, CLASS_COMPUTER, NULL};
+
+        switch (type_arg) {
+            case User: return classes_user;
+            case Computer: return classes_computer;
+            case OU: return classes_ou;
+            case Group: return classes_group;
+            case COUNT: return classes_user;
+        }
+        return classes_user;
+    };
+    const char **classes = get_classes(type);
+    
     const QString dn = suffix + "=" + name + "," + parent;
 
-    AdInterface::instance()->object_create(name, dn, type);
+    AdInterface::instance()->object_add(dn, classes);
 }

@@ -39,8 +39,7 @@ public:
     std::string get_uri() const;
     int get_ldap_result() const;
 
-    int create_user(const char *username, const char *dn);
-    int create_computer(const char *name, const char *dn);
+    int add(const char *dn, const char **objectClass);
     int object_delete(const char *dn);
     int user_set_pass(const char *dn, const char *password);
     int search(const char *filter, char ***dn_list);
@@ -52,10 +51,8 @@ public:
     int get_all_attributes(const char *dn, char ****attributes);
     int rename(const char *dn, const char *new_name);
     int move(const char *current_dn, const char *new_container);
-    int create_group(const char *group_name, const char *dn);
     int group_add_user(const char *group_dn, const char *user_dn);
     int group_remove_user(const char *group_dn, const char *user_dn);
-    int create_ou(const char *ou_name, const char *dn);
     int list(const char *dn, char ***dn_list);
 };
 

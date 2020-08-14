@@ -103,29 +103,12 @@ int ad_get_attribute(LDAP *ld, const char *dn, const char *attribute, char ***va
 int ad_get_all_attributes(LDAP *ld, const char *dn, char ****attributes_out);
 
 /**
- * Create user object below given DN
- * New user object is locked by default
- * Returns AD_SUCCESS, AD_LDAP_ERROR, AD_INVALID_DN
- */
-int ad_create_user(LDAP *ld, const char *username, const char *dn);
-
-/**
- * Create computer object below given DN
+ * Adds an object with given DN and objectClass
+ * objectClass is a NULL terminated array of objectClass values
+ * All ancestors of object must already exist
  * Returns AD_SUCCESS, AD_LDAP_ERROR
  */
-int ad_create_computer(LDAP *ld, const char *name, const char *dn);
-
-/**
- * Create an organizational unit
- * Returns AD_SUCCESS, AD_LDAP_ERROR
- */
-int ad_create_ou(LDAP *ld, const char *ou_name, const char *dn);
-
-/**
- * Create a group with given name below given DN
- * Returns AD_SUCCESS, AD_LDAP_ERROR
- */
-int ad_create_group(LDAP *ld, const char *group_name, const char *dn);
+int ad_add(LDAP *ld, const char *dn, const char **objectClass);
 
 /**
  * Delete object
