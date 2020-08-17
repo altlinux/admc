@@ -105,7 +105,7 @@ AdResult AdInterface::login(const QString &host, const QString &domain) {
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string);
+        return AdResult(false, error_string, context);
     }
 }
 
@@ -312,7 +312,7 @@ AdResult AdInterface::attribute_datetime_replace(const QString &dn, const QStrin
 
             break;
         }
-        case DatetimeFormat_None: return AdResult(false, "");
+        case DatetimeFormat_None: return AdResult(false);
     }
 
     const AdResult result = attribute_replace(dn, attribute, datetime_string);
@@ -369,7 +369,7 @@ AdResult AdInterface::attribute_replace(const QString &dn, const QString &attrib
 
         error_status_message(context, error_string, emit_message);
 
-        return AdResult(false, error_string);
+        return AdResult(false, error_string, context);
     }
 }
 
@@ -414,7 +414,7 @@ AdResult AdInterface::object_delete(const QString &dn) {
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string);
+        return AdResult(false, error_string, context);
     }
 }
 
@@ -448,7 +448,7 @@ AdResult AdInterface::object_move(const QString &dn, const QString &new_containe
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string);
+        return AdResult(false, error_string, context);
     }
 }
 
@@ -476,7 +476,7 @@ AdResult AdInterface::group_add_user(const QString &group_dn, const QString &use
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string);
+        return AdResult(false, error_string, context);
     }
 }
 
@@ -504,7 +504,7 @@ AdResult AdInterface::group_remove_user(const QString &group_dn, const QString &
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string);
+        return AdResult(false, error_string, context);
     }
 }
 
@@ -633,7 +633,7 @@ AdResult AdInterface::object_rename(const QString &dn, const QString &new_name) 
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string);
+        return AdResult(false, error_string, context);
     }
 }
 
@@ -666,7 +666,7 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string);
+        return AdResult(false, error_string, context);
     }
 }
 
@@ -676,7 +676,7 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
 // "Use Kerberos DES encryption types for this account"
 AdResult AdInterface::user_set_account_option(const QString &dn, AccountOption option, bool set) {
     if (dn.isEmpty()) {
-        return AdResult(false, "");
+        return AdResult(false);
     }
 
     AdResult result(false);
@@ -747,7 +747,7 @@ AdResult AdInterface::user_set_account_option(const QString &dn, AccountOption o
 
         return AdResult(true);
     } else {
-        auto get_success_context =
+        auto get_context =
         [option, set, name]() {
             switch (option) {
                 case AccountOption_Disabled: {
@@ -768,11 +768,11 @@ AdResult AdInterface::user_set_account_option(const QString &dn, AccountOption o
                 }
             }
         };
-        const QString error_context = get_success_context();
+        const QString context = get_context();
 
-        error_status_message(error_context, result.error);
+        error_status_message(context, result.error);
 
-        return AdResult(false, result.error);
+        return AdResult(false, result.error, context);
     }
 }
 
@@ -1230,12 +1230,6 @@ QString group_type_to_string(GroupType type) {
 AdResult::AdResult(bool success_arg) {
     success = success_arg;
     error = "";
-    error_with_context = "";
-}
-
-AdResult::AdResult(bool success_arg, const QString &error_arg) {
-    success = success_arg;
-    error = error_arg;
     error_with_context = "";
 }
 

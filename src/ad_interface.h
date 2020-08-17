@@ -135,7 +135,6 @@ public:
     QString error_with_context;
 
     AdResult(bool success_arg);
-    AdResult(bool success_arg, const QString &error_arg);
     AdResult(bool success_arg, const QString &error_arg, const QString &context);
 };
 
