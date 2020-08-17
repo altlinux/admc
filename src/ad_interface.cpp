@@ -322,13 +322,15 @@ AdResult AdInterface::attribute_datetime_replace(const QString &dn, const QStrin
 
 AdResult AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value, EmitStatusMessage emit_message) {
     QString old_value_string;
-
     if (attribute_is_datetime(attribute)) {
         const QString old_value_raw = attribute_get(dn, attribute);
         old_value_string = datetime_raw_to_string(attribute, old_value_raw);
     } else {
         old_value_string = attribute_get(dn, attribute);
     }
+
+    const QByteArray old_value_array = old_value_string.toLatin1();
+    const char *old_value_cstr = old_value_array.constData();
     
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
@@ -339,7 +341,12 @@ AdResult AdInterface::attribute_replace(const QString &dn, const QString &attrib
     const QByteArray value_array = value.toLatin1();
     const char *value_cstr = value_array.constData();
 
-    int result = connection->attribute_replace(dn_cstr, attribute_cstr, value_cstr);
+    int result;
+    if (value.isEmpty()) {
+        result = connection->attribute_delete(dn_cstr, attribute_cstr, old_value_cstr);
+    } else {
+        result = connection->attribute_replace(dn_cstr, attribute_cstr, value_cstr);
+    }
 
     const QString name = extract_name_from_dn(dn);
 
