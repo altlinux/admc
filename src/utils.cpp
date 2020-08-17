@@ -24,6 +24,7 @@
 #include <QSortFilterProxyModel>
 #include <QAbstractItemView>
 #include <QModelIndex>
+#include <QCheckBox>
 
 // Converts index all the way down to source index, going through whatever chain of proxies is present
 QModelIndex convert_to_source(const QModelIndex &index) {
@@ -105,4 +106,8 @@ void setup_model_chain(QAbstractItemView *view, QAbstractItemModel *source_model
     }
 
     view->setModel(proxies.last());
+}
+
+bool checkbox_is_checked(const QCheckBox *checkbox) {
+    return (checkbox->checkState() == Qt::Checked);
 }

@@ -70,6 +70,7 @@
 #define ATTRIBUTE_OBJECT_CATEGORY       "objectCategory"
 #define ATTRIBUTE_MEMBER                "member"
 #define ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY "showInAdvancedViewOnly"
+#define ATTRIBUTE_GROUP_TYPE            "groupType"
     
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
@@ -88,8 +89,8 @@
 #define AD_LARGEINTEGERTIME_NEVER_1 "0"
 #define AD_LARGEINTEGERTIME_NEVER_2 "9223372036854775807"
 
-#define AD_TRUE  "TRUE"
-#define AD_FALSE "FALSE"
+#define LDAP_BOOL_TRUE  "TRUE"
+#define LDAP_BOOL_FALSE "FALSE"
 
 class AdConnection;
 
@@ -109,6 +110,19 @@ enum AccountOption {
     AccountOption_COUNT
 };
 
+enum GroupScope {
+    GroupScope_Global,
+    GroupScope_DomainLocal,
+    GroupScope_Universal,
+    GroupScope_COUNT
+};
+
+enum GroupType {
+    GroupType_Security,
+    GroupType_Distribution,
+    GroupType_COUNT
+};
+
 enum EmitStatusMessage {
     EmitStatusMessage_Yes,
     EmitStatusMessage_No
@@ -118,9 +132,11 @@ class AdResult {
 public:
     bool success;
     QString error;
+    QString error_with_context;
 
     AdResult(bool success_arg);
     AdResult(bool success_arg, const QString &error_arg);
+    AdResult(bool success_arg, const QString &error_arg, const QString &context);
 };
 
 typedef QMap<QString, QList<QString>> Attributes;
@@ -153,7 +169,10 @@ public:
     QString attribute_get(const QString &dn, const QString &attribute);
 
     bool attribute_bool_get(const QString &dn, const QString &attribute);
-    void attribute_bool_replace(const QString &dn, const QString &attribute, bool value);
+    AdResult attribute_bool_replace(const QString &dn, const QString &attribute, bool value, EmitStatusMessage emit_message);
+
+    int attribute_int_get(const QString &dn, const QString &attribute);
+    AdResult attribute_int_replace(const QString &dn, const QString &attribute, const int value, EmitStatusMessage emit_message);
 
     AdResult attribute_replace(const QString &dn, const QString &attribute, const QString &value, EmitStatusMessage emit_message = EmitStatusMessage_Yes);
     AdResult object_add(const QString &dn, const char **classes);
@@ -170,6 +189,10 @@ public:
 
     AdResult group_add_user(const QString &group_dn, const QString &user_dn);
     AdResult group_remove_user(const QString &group_dn, const QString &user_dn);
+    GroupScope group_get_scope(const QString &dn);
+    AdResult group_set_scope(const QString &dn, GroupScope scope);
+    GroupType group_get_type(const QString &dn);
+    AdResult group_set_type(const QString &dn, GroupType type);
 
     bool has_attributes(const QString &dn);
     bool is_class(const QString &dn, const QString &object_class);
@@ -216,5 +239,7 @@ bool attribute_is_datetime(const QString &attribute);
 bool datetime_is_never(const QString &attribute, const QString &value);
 QString datetime_raw_to_string(const QString &attribute, const QString &raw_value);
 QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_value);
+QString group_scope_to_string(GroupScope scope);
+QString group_type_to_string(GroupType type);
 
 #endif /* AD_INTERFACE_H */

@@ -32,6 +32,8 @@
 
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm"
 
+#define GROUP_TYPE_BIT_SECURITY 0x80000000
+
 enum DatetimeFormat {
     DatetimeFormat_LargeInteger,
     DatetimeFormat_ISO8601,
@@ -39,6 +41,10 @@ enum DatetimeFormat {
 };
 
 DatetimeFormat get_attribute_time_format(const QString &attribute);
+int group_scope_to_bit(GroupScope scope);
+int bit_set(int bitmask, int bit, bool set);
+bool bit_is_set(int bitmask, int bit);
+QString combine_context_and_error(const QString &context, const QString &error);
 
 AdInterface::~AdInterface() {
     delete connection;
@@ -248,20 +254,36 @@ QString AdInterface::attribute_get(const QString &dn, const QString &attribute) 
 
 bool AdInterface::attribute_bool_get(const QString &dn, const QString &attribute) {
     const QString value_string = attribute_get(dn, attribute);
-    const bool value = (value_string == AD_TRUE);
+    const bool value = (value_string == LDAP_BOOL_TRUE);
 
     return value;
 }
 
-void AdInterface::attribute_bool_replace(const QString &dn, const QString &attribute, bool value) {
+AdResult AdInterface::attribute_bool_replace(const QString &dn, const QString &attribute, bool value, EmitStatusMessage emit_message) {
     QString value_string;
     if (value) {
-        value_string = AD_TRUE;
+        value_string = LDAP_BOOL_TRUE;
     } else {
-        value_string = AD_FALSE;
+        value_string = LDAP_BOOL_FALSE;
     }
 
-    attribute_replace(dn, attribute, value_string);
+    const AdResult result = attribute_replace(dn, attribute, value_string, emit_message);
+
+    return result;
+}
+
+int AdInterface::attribute_int_get(const QString &dn, const QString &attribute) {
+    const QString value_raw = attribute_get(dn, attribute);
+    const int value = value_raw.toInt();
+
+    return value;
+}
+
+AdResult AdInterface::attribute_int_replace(const QString &dn, const QString &attribute, const int value, EmitStatusMessage emit_message) {
+    const QString value_string = QString::number(value);
+    const AdResult result = attribute_replace(dn, attribute, value_string, emit_message);
+
+    return result;
 }
 
 QDateTime AdInterface::attribute_datetime_get(const QString &dn, const QString &attribute) {
@@ -361,7 +383,7 @@ AdResult AdInterface::object_add(const QString &dn, const char **classes) {
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string);
+        return AdResult(false, error_string, context);
     }
 }
 
@@ -476,6 +498,99 @@ AdResult AdInterface::group_remove_user(const QString &group_dn, const QString &
         error_status_message(context, error_string);
 
         return AdResult(false, error_string);
+    }
+}
+
+GroupScope AdInterface::group_get_scope(const QString &dn) {
+    const int group_type = attribute_int_get(dn, ATTRIBUTE_GROUP_TYPE);
+
+    for (int i = 0; i < GroupScope_COUNT; i++) {
+        const GroupScope this_scope = (GroupScope) i;
+        const int scope_bit = group_scope_to_bit(this_scope);
+
+        if (bit_is_set(group_type, scope_bit)) {
+            return this_scope;
+        }
+    }
+
+    return GroupScope_Global;
+}
+
+// TODO: are there side-effects on group members from this?...
+AdResult AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
+    int group_type = attribute_int_get(dn, ATTRIBUTE_GROUP_TYPE);
+
+    // Unset all scope bits, because scope bits are exclusive
+    for (int i = 0; i < GroupScope_COUNT; i++) {
+        const GroupScope this_scope = (GroupScope) i;
+        const int this_scope_bit = group_scope_to_bit(this_scope);
+
+        group_type = bit_set(group_type, this_scope_bit, false);
+    }
+
+    // Set given scope bit
+    const int scope_bit = group_scope_to_bit(scope);
+    group_type = bit_set(group_type, scope_bit, true);
+
+    const QString name = extract_name_from_dn(dn);
+    const QString scope_string = group_scope_to_string(scope);
+    
+    const AdResult result = attribute_int_replace(dn, ATTRIBUTE_GROUP_TYPE, group_type, EmitStatusMessage_No);
+    if (result.success) {
+        success_status_message(QString(tr("Set scope for group \"%1\" to \"%2\"")).arg(name, scope_string));
+
+        update_cache({dn});
+
+        return AdResult(true);
+    } else {
+        const QString context = QString(tr("Failed to set scope for group \"%1\" to \"%2\"")).arg(name, scope_string);
+        error_status_message(context, result.error);
+
+        return AdResult(false, result.error, context);
+    }
+}
+
+// NOTE: "group type" is really only the last bit of the groupType attribute, yeah it's confusing
+GroupType AdInterface::group_get_type(const QString &dn) {
+    const QString group_type = attribute_get(dn, ATTRIBUTE_GROUP_TYPE);
+    const int group_type_int = group_type.toInt();
+
+    const bool security_bit_set = ((group_type_int & GROUP_TYPE_BIT_SECURITY) != 0);
+
+    if (security_bit_set) {
+        return GroupType_Security;
+    } else {
+        return GroupType_Distribution;
+    }
+}
+
+AdResult AdInterface::group_set_type(const QString &dn, GroupType type) {
+    const QString group_type = attribute_get(dn, ATTRIBUTE_GROUP_TYPE);
+    int group_type_int = group_type.toInt();
+
+    if (type == GroupType_Security) {
+        group_type_int |= GROUP_TYPE_BIT_SECURITY;
+    } else if (type == GroupType_Distribution) {
+        group_type_int ^= GROUP_TYPE_BIT_SECURITY;
+    }
+
+    const QString update_group_type = QString::number(group_type_int);
+
+    const QString name = extract_name_from_dn(dn);
+    const QString type_string = group_type_to_string(type);
+    
+    const AdResult result = attribute_replace(dn, ATTRIBUTE_GROUP_TYPE, update_group_type, EmitStatusMessage_No);
+    if (result.success) {
+        success_status_message(QString(tr("Set type for group \"%1\" to \"%2\"")).arg(name, type_string));
+
+        update_cache({dn});
+
+        return AdResult(true);
+    } else {
+        const QString context = QString(tr("Failed to set type for group \"%1\" to \"%2\"")).arg(name, type_string);
+        error_status_message(context, result.error);
+
+        return AdResult(false, result.error, context);
     }
 }
 
@@ -910,7 +1025,7 @@ void AdInterface::success_status_message(const QString &msg, EmitStatusMessage e
 
 void AdInterface::error_status_message(const QString &context, const QString &error, EmitStatusMessage emit_message) {
     if (emit_message == EmitStatusMessage_Yes) {
-        const QString msg = QString(tr("%1. Error: \"%2\"")).arg(context, error);
+        const QString msg = combine_context_and_error(context, error);
 
         Status::instance()->message(msg, StatusType_Error);
     }
@@ -1076,12 +1191,67 @@ QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_
     return QDateTime();
 }
 
+int group_scope_to_bit(GroupScope scope) {
+    switch (scope) {
+        case GroupScope_Global: return 0x00000002;
+        case GroupScope_DomainLocal: return 0x00000004;
+        case GroupScope_Universal: return 0x00000008;
+        case GroupScope_COUNT: return 0;
+    }
+    return 0;
+}
+
+QString group_scope_to_string(GroupScope scope) {
+    switch (scope) {
+        case GroupScope_Global: return AdInterface::tr("Global");
+        case GroupScope_DomainLocal: return AdInterface::tr("DomainLocal");
+        case GroupScope_Universal: return AdInterface::tr("Universal");
+        case GroupScope_COUNT: return "COUNT";
+    }
+    return "";
+}
+
+QString group_type_to_string(GroupType type) {
+    switch (type) {
+        case GroupType_Security: return AdInterface::tr("Security");
+        case GroupType_Distribution: return AdInterface::tr("Distribution");
+        case GroupType_COUNT: return "COUNT";
+    }
+    return "";
+}
+
 AdResult::AdResult(bool success_arg) {
     success = success_arg;
     error = "";
+    error_with_context = "";
 }
 
 AdResult::AdResult(bool success_arg, const QString &error_arg) {
     success = success_arg;
     error = error_arg;
+    error_with_context = "";
+}
+
+AdResult::AdResult(bool success_arg, const QString &error_arg, const QString &context) {
+    success = success_arg;
+    error = error_arg;
+    error_with_context = combine_context_and_error(context, error_arg);
+}
+
+int bit_set(int bitmask, int bit, bool set) {
+    if (set) {
+        return bitmask | bit;
+    } else {
+        return bitmask & ~bit;
+    }
+}
+
+bool bit_is_set(int bitmask, int bit) {
+    return ((bitmask & bit) != 0);
+}
+
+QString combine_context_and_error(const QString &context, const QString &error) {
+    const QString error_with_context = QString(AdInterface::tr("%1. Error: \"%2\"")).arg(context, error);
+
+    return error_with_context;
 }

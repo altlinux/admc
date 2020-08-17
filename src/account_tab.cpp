@@ -18,6 +18,7 @@
  */
 
 #include "account_tab.h"
+#include "utils.h"
 
 #include <QVBoxLayout>
 #include <QLineEdit>
@@ -38,7 +39,6 @@
 const QTime END_OF_DAY(23, 59);
 
 QDateTime convert_to_end_of_day(const QDateTime &datetime);
-bool checkbox_is_checked(const QCheckBox *checkbox);
 
 AccountTab::AccountTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
@@ -241,8 +241,4 @@ void AccountTab::on_expiry_edit_button() {
 void AccountTab::reset_logon_name_edit() {
     const QString logon_name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_USER_PRINCIPAL_NAME);
     logon_name_edit->setText(logon_name);
-}
-
-bool checkbox_is_checked(const QCheckBox *checkbox) {
-    return (checkbox->checkState() == Qt::Checked);
 }

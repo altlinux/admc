@@ -28,6 +28,7 @@
 
 class QLineEdit;
 class QVBoxLayout;
+class QComboBox;
 
 enum CreateType {
     CreateType_User,
@@ -37,19 +38,39 @@ enum CreateType {
     CreateType_COUNT
 };
 
+// Create and open a create dialog appropriate for given type
+void create_dialog(const QString &parent_dn, CreateType type, QWidget *parent);
+
 class CreateDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    CreateDialog(const QString &parent_arg, CreateType type_arg, QWidget *parent_widget);
+    CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QWidget *parent);
 
 private slots:
     void on_accepted();
 
 private:
-    QString parent;
+    QString parent_dn;
     CreateType type;
     QLineEdit *name_edit;
+};
+
+class CreateGroupDialog final : public QDialog {
+Q_OBJECT
+
+public:
+    CreateGroupDialog(const QString &parent_dn_arg, QWidget *parent);
+
+private slots:
+    void on_accepted();
+
+private:
+    QString parent_dn;
+    QLineEdit *name_edit;
+    QLineEdit *sama_edit;
+    QComboBox *scope_combo;
+    QComboBox *type_combo;
 };
 
 QString create_type_to_string(const CreateType &type);
