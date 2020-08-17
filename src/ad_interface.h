@@ -131,11 +131,13 @@ enum EmitStatusMessage {
 class AdResult {
 public:
     bool success;
+    // "Object does not exist"
     QString error;
+    // "Failed to change attribute. Error: Object does not exist"
     QString error_with_context;
 
     AdResult(bool success_arg);
-    AdResult(bool success_arg, const QString &error_arg, const QString &context);
+    AdResult(bool success_arg, const QString &context, const QString &error_arg);
 };
 
 typedef QMap<QString, QList<QString>> Attributes;

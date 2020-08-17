@@ -105,7 +105,7 @@ AdResult AdInterface::login(const QString &host, const QString &domain) {
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string, context);
+        return AdResult(false, context, error_string);
     }
 }
 
@@ -369,7 +369,7 @@ AdResult AdInterface::attribute_replace(const QString &dn, const QString &attrib
 
         error_status_message(context, error_string, emit_message);
 
-        return AdResult(false, error_string, context);
+        return AdResult(false, context, error_string);
     }
 }
 
@@ -390,7 +390,7 @@ AdResult AdInterface::object_add(const QString &dn, const char **classes) {
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string, context);
+        return AdResult(false, context, error_string);
     }
 }
 
@@ -414,7 +414,7 @@ AdResult AdInterface::object_delete(const QString &dn) {
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string, context);
+        return AdResult(false, context, error_string);
     }
 }
 
@@ -448,7 +448,7 @@ AdResult AdInterface::object_move(const QString &dn, const QString &new_containe
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string, context);
+        return AdResult(false, context, error_string);
     }
 }
 
@@ -476,7 +476,7 @@ AdResult AdInterface::group_add_user(const QString &group_dn, const QString &use
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string, context);
+        return AdResult(false, context, error_string);
     }
 }
 
@@ -504,7 +504,7 @@ AdResult AdInterface::group_remove_user(const QString &group_dn, const QString &
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string, context);
+        return AdResult(false, context, error_string);
     }
 }
 
@@ -553,7 +553,7 @@ AdResult AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
         const QString context = QString(tr("Failed to set scope for group \"%1\" to \"%2\"")).arg(name, scope_string);
         error_status_message(context, result.error);
 
-        return AdResult(false, result.error, context);
+        return AdResult(false, context, result.error);
     }
 }
 
@@ -597,7 +597,7 @@ AdResult AdInterface::group_set_type(const QString &dn, GroupType type) {
         const QString context = QString(tr("Failed to set type for group \"%1\" to \"%2\"")).arg(name, type_string);
         error_status_message(context, result.error);
 
-        return AdResult(false, result.error, context);
+        return AdResult(false, context, result.error);
     }
 }
 
@@ -633,7 +633,7 @@ AdResult AdInterface::object_rename(const QString &dn, const QString &new_name) 
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string, context);
+        return AdResult(false, context, error_string);
     }
 }
 
@@ -666,7 +666,7 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
 
         error_status_message(context, error_string);
 
-        return AdResult(false, error_string, context);
+        return AdResult(false, context, error_string);
     }
 }
 
@@ -772,7 +772,7 @@ AdResult AdInterface::user_set_account_option(const QString &dn, AccountOption o
 
         error_status_message(context, result.error);
 
-        return AdResult(false, result.error, context);
+        return AdResult(false, context, result.error);
     }
 }
 
