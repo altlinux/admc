@@ -225,7 +225,7 @@ private:
     bool should_emit_status_message(int result);
     void success_status_message(const QString &msg, EmitStatusMessage emit_message = EmitStatusMessage_Yes);
     void error_status_message(const QString &context, const QString &error, EmitStatusMessage emit_message = EmitStatusMessage_Yes);
-    QString default_error_string(int ad_result) const;
+    QString default_error(int ad_result) const;
 }; 
 
 QString extract_name_from_dn(const QString &dn);

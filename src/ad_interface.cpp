@@ -101,11 +101,11 @@ AdResult AdInterface::login(const QString &host, const QString &domain) {
         return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to login to \"%1\" at \"%2\"")).arg(host, domain);
-        const QString error_string = default_error_string(result);
+        const QString error = default_error(result);
 
-        error_status_message(context, error_string);
+        error_status_message(context, error);
 
-        return AdResult(false, context, error_string);
+        return AdResult(false, context, error);
     }
 }
 
@@ -139,9 +139,9 @@ QList<QString> AdInterface::list(const QString &dn) {
         if (should_emit_status_message(result)) {
             const QString name = extract_name_from_dn(dn);
             const QString context = QString(tr("Failed to load children of \"%1\"")).arg(name);
-            const QString error_string = default_error_string(result);
+            const QString error = default_error(result);
 
-            error_status_message(context, error_string);
+            error_status_message(context, error);
         }
 
         return QList<QString>();
@@ -168,9 +168,9 @@ QList<QString> AdInterface::search(const QString &filter) {
     } else {
         if (should_emit_status_message(result_search)) {
             const QString context = QString(tr("Failed to search for \"%1\"")).arg(filter);
-            const QString error_string = default_error_string(result_search);
+            const QString error = default_error(result_search);
 
-            error_status_message(context, error_string);
+            error_status_message(context, error);
         }
 
         return QList<QString>();
@@ -221,9 +221,9 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
             if (should_emit_status_message(result_attribute_get)) {
                 const QString name = extract_name_from_dn(dn);
                 const QString context = QString(tr("Failed to get attributes of \"%1\"")).arg(name);
-                const QString error_string = default_error_string(result_attribute_get);
+                const QString error = default_error(result_attribute_get);
 
-                error_status_message(context, error_string);
+                error_status_message(context, error);
             }
 
             return Attributes();
@@ -365,11 +365,11 @@ AdResult AdInterface::attribute_replace(const QString &dn, const QString &attrib
         return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_string, new_value_string);
-        const QString error_string = default_error_string(result);
+        const QString error = default_error(result);
 
-        error_status_message(context, error_string, emit_message);
+        error_status_message(context, error, emit_message);
 
-        return AdResult(false, context, error_string);
+        return AdResult(false, context, error);
     }
 }
 
@@ -386,11 +386,11 @@ AdResult AdInterface::object_add(const QString &dn, const char **classes) {
         return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to create \"%1\"")).arg(dn);
-        const QString error_string = default_error_string(result);
+        const QString error = default_error(result);
 
-        error_status_message(context, error_string);
+        error_status_message(context, error);
 
-        return AdResult(false, context, error_string);
+        return AdResult(false, context, error);
     }
 }
 
@@ -410,11 +410,11 @@ AdResult AdInterface::object_delete(const QString &dn) {
         return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to delete object \"%1\"")).arg(name);
-        const QString error_string = default_error_string(result);
+        const QString error = default_error(result);
 
-        error_status_message(context, error_string);
+        error_status_message(context, error);
 
-        return AdResult(false, context, error_string);
+        return AdResult(false, context, error);
     }
 }
 
@@ -444,11 +444,11 @@ AdResult AdInterface::object_move(const QString &dn, const QString &new_containe
         return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to move \"%1\" to \"%2\"")).arg(object_name, container_name);
-        const QString error_string = default_error_string(result);
+        const QString error = default_error(result);
 
-        error_status_message(context, error_string);
+        error_status_message(context, error);
 
-        return AdResult(false, context, error_string);
+        return AdResult(false, context, error);
     }
 }
 
@@ -472,11 +472,11 @@ AdResult AdInterface::group_add_user(const QString &group_dn, const QString &use
         return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to add user \"%1\" to group \"%2\"")).arg(user_name, group_name);
-        const QString error_string = default_error_string(result);
+        const QString error = default_error(result);
 
-        error_status_message(context, error_string);
+        error_status_message(context, error);
 
-        return AdResult(false, context, error_string);
+        return AdResult(false, context, error);
     }
 }
 
@@ -500,11 +500,11 @@ AdResult AdInterface::group_remove_user(const QString &group_dn, const QString &
         return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to remove user \"%1\" from group \"%2\"")).arg(user_name, group_name);
-        const QString error_string = default_error_string(result);
+        const QString error = default_error(result);
 
-        error_status_message(context, error_string);
+        error_status_message(context, error);
 
-        return AdResult(false, context, error_string);
+        return AdResult(false, context, error);
     }
 }
 
@@ -629,11 +629,11 @@ AdResult AdInterface::object_rename(const QString &dn, const QString &new_name) 
         return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to rename \"%1\" to \"%2\"")).arg(old_name, new_name);
-        const QString error_string = default_error_string(result);
+        const QString error = default_error(result);
 
-        error_status_message(context, error_string);
+        error_status_message(context, error);
 
-        return AdResult(false, context, error_string);
+        return AdResult(false, context, error);
     }
 }
 
@@ -656,17 +656,17 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
     } else {
         const QString context = QString(tr("Failed to set pass of \"%1\"")).arg(name);
 
-        QString error_string;
+        QString error;
         const int ldap_result = connection->get_ldap_result();
         if (result == AD_LDAP_ERROR && ldap_result == LDAP_CONSTRAINT_VIOLATION) {
-            error_string = tr("Password doesn't match rules");
+            error = tr("Password doesn't match rules");
         } else {
-            error_string = default_error_string(result);
+            error = default_error(result);
         }
 
-        error_status_message(context, error_string);
+        error_status_message(context, error);
 
-        return AdResult(false, context, error_string);
+        return AdResult(false, context, error);
     }
 }
 
@@ -1038,7 +1038,7 @@ void AdInterface::error_status_message(const QString &context, const QString &er
     }
 }
 
-QString AdInterface::default_error_string(int ad_result) const {
+QString AdInterface::default_error(int ad_result) const {
     if (ad_result == AD_LDAP_ERROR) {
         const int ldap_result = connection->get_ldap_result();
         switch (ldap_result) {
