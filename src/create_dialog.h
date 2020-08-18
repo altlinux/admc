@@ -90,14 +90,9 @@ private:
     QLineEdit *name_edit;
     QMap<QString, QLineEdit *> attributes;
     QMap<AccountOption, QCheckBox *> account_options;
+    
     // QLineEdit *pass_edit;
     // QLineEdit *pass_confirm_edit;
-
-    QCheckBox *must_change_pass_check;
-    // TODO: implement cannot change pass option
-    // QCheckBox *cannot_change_pass_check;
-    QCheckBox *never_expire_pass_check;
-    QCheckBox *account_disabled_check;
 };
 
 QString create_type_to_string(const CreateType &type);

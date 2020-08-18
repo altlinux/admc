@@ -19,11 +19,19 @@
 
 #include "attribute_widgets.h"
 #include "attribute_display_strings.h"
+#include "utils.h"
 
 #include <QLineEdit>
 #include <QGridLayout>
 #include <QLabel>
 #include <QMessageBox>
+#include <QCheckBox>
+
+void layout_labeled_widget(QGridLayout *layout, QLabel *label, QWidget *widget) {
+    const int row = layout->rowCount();
+    layout->addWidget(label, row, 0);
+    layout->addWidget(widget, row, 1);
+}
 
 void make_attribute_edits(const QList<QString> attributes, QGridLayout *layout, QMap<QString, QLineEdit *> *edits_out) {
     for (auto attribute : attributes) {
@@ -33,9 +41,7 @@ void make_attribute_edits(const QList<QString> attributes, QGridLayout *layout, 
         auto edit = new QLineEdit();
         edits_out->insert(attribute, edit);
 
-        const int row = layout->rowCount();
-        layout->addWidget(label, row, 0);
-        layout->addWidget(edit, row, 1);
+        layout_labeled_widget(layout, label, edit);
     }
 }
 
@@ -49,6 +55,36 @@ QList<AdResult> apply_attribute_edits(const QMap<QString, QLineEdit *> &edits, c
 
         if (new_value != old_value) {
             const AdResult result = AdInterface::instance()->attribute_replace(dn, attribute, new_value);
+
+            results.append(result);
+        }
+    }
+
+    return results;
+}
+
+void make_account_option_checks(const QList<AccountOption> options, QGridLayout *layout, QMap<AccountOption, QCheckBox *> *checks_out) {
+    for (auto option : options) {
+        const QString option_display_string = get_account_option_description(option);
+        const auto label = new QLabel(option_display_string);
+
+        auto check = new QCheckBox();
+        checks_out->insert(option, check);
+
+        layout_labeled_widget(layout, label, check);
+    }
+}
+
+QList<AdResult> apply_account_option_checks(const QMap<AccountOption, QCheckBox *> &checks, const QString &dn) {
+    QList<AdResult> results;
+
+    for (auto option : checks.keys()) {
+        const QCheckBox *check = checks[option];
+        const bool new_value = checkbox_is_checked(check);
+        const bool old_value = AdInterface::instance()->user_get_account_option(dn, option);
+
+        if (new_value != old_value) {
+            const AdResult result = AdInterface::instance()->user_set_account_option(dn, option, new_value);
 
             results.append(result);
         }

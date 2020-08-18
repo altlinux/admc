@@ -323,26 +323,8 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, QWidget *parent
     const auto top_layout = new QGridLayout(this);
     top_layout->addWidget(title_label, 0, 0);
 
-    auto add_to_layout =
-    [top_layout](const QString label_text, QWidget *widget) {
-        const auto label = new QLabel(label_text);
-
-        const int row = top_layout->rowCount();
-
-        top_layout->addWidget(label, row, 0);
-        top_layout->addWidget(widget, row, 1);
-    };
-
-    auto make_check =
-    [this, add_to_layout](AccountOption option, QCheckBox **check_ptr) {
-        const QString label_text = get_account_option_description(option);
-        auto check = new QCheckBox(this);
-        *check_ptr = check;
-        add_to_layout(label_text, check);
-    };
-
     name_edit = new QLineEdit(this);
-    add_to_layout(tr("Name"), name_edit);
+    layout_labeled_widget(top_layout, new QLabel(tr("Name")), name_edit);
 
     // TODO: do password, make it share code with password dialog
     // make_edit(tr("Password"), &pass_edit);
@@ -358,27 +340,35 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, QWidget *parent
     };
     make_attribute_edits(attributes_to_make, top_layout, &attributes);
 
-    make_check(AccountOption_PasswordExpired, &must_change_pass_check);
-    // make_check(AccountOption_?, &cannot_change_pass_check);
-    make_check(AccountOption_DontExpirePassword, &never_expire_pass_check);
-    make_check(AccountOption_Disabled, &account_disabled_check);
+    const QList<AccountOption> options_to_make = {
+        AccountOption_PasswordExpired,
+        AccountOption_DontExpirePassword,
+        AccountOption_Disabled
+        // TODO:
+        // AccountOption_CannotChangePass
+    };
+    make_account_option_checks(options_to_make, top_layout, &account_options);
 
     const int button_row = top_layout->rowCount();
     top_layout->addWidget(cancel_button, button_row, 0, Qt::AlignLeft);
     top_layout->addWidget(ok_button, button_row, 1, Qt::AlignRight);
 
-    // PasswordExpired conflicts with CannotChange and DontExpirePassword
+    // When PasswordExpired is set, you can't set CannotChange and DontExpirePassword
     // Prevent the conflicting checks from being set when PasswordExpired is set already and show a message about it
     auto connect_never_expire_conflict =
-    [this](QCheckBox *conflict, AccountOption conflicting_option) {
-        connect(never_expire_pass_check, &QCheckBox::stateChanged,
-            [this, conflict, conflicting_option]() {
-                if (checkbox_is_checked(never_expire_pass_check) && checkbox_is_checked(conflict)) {
+    [this](AccountOption option) {
+        QCheckBox *conflict = account_options[option]; 
+        
+        connect(conflict, &QCheckBox::stateChanged,
+            [this, conflict, option]() {
+                QCheckBox *pass_expired = account_options[AccountOption_PasswordExpired]; 
+                
+                if (checkbox_is_checked(pass_expired) && checkbox_is_checked(conflict)) {
                     conflict->setCheckState(Qt::Checked);
 
-                    const QString never_expire_text = get_account_option_description(AccountOption_DontExpirePassword);
-                    const QString conflicting_text = get_account_option_description(conflicting_option);
-                    const QString error = QString(tr("Can't set \"%1\" when \"%2\" is set already.")).arg(conflicting_text, never_expire_text);
+                    const QString pass_expired_text = get_account_option_description(AccountOption_PasswordExpired);
+                    const QString conflict_text = get_account_option_description(option);
+                    const QString error = QString(tr("Can't set \"%1\" when \"%2\" is set already.")).arg(conflict_text, pass_expired_text);
 
                     QMessageBox::warning(this, "Error", error);
                 }
@@ -386,10 +376,10 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, QWidget *parent
             );
     };
 
+    connect_never_expire_conflict(AccountOption_PasswordExpired);
+    // connect_never_expire_conflict(AccountOption_CannotChange);
+
     // TODO: make full name auto-generate from first/last
-    
-    connect_never_expire_conflict(must_change_pass_check, AccountOption_PasswordExpired);
-    // connect_never_expire_conflict(must_change_pass_check, AccountOption_?);
 
     connect(
         this, &QDialog::accepted,

@@ -24,9 +24,17 @@
 #include <QMap>
 
 class QLineEdit;
+class QCheckBox;
 class QGridLayout;
+class QLabel;
+class QWidget;
+
+void layout_labeled_widget(QGridLayout *layout, QLabel *label, QWidget *widget);
 
 void make_attribute_edits(const QList<QString> attributes, QGridLayout *layout, QMap<QString, QLineEdit *> *edits_out);
 QList<AdResult> apply_attribute_edits(const QMap<QString, QLineEdit *> &edits, const QString &dn);
 void show_warnings_for_error_results(const QList<AdResult> &results, QWidget *parent);
 bool no_errors(const QList<AdResult> &results);
+
+void make_account_option_checks(const QList<AccountOption> options, QGridLayout *layout, QMap<AccountOption, QCheckBox *> *checks_out);
+QList<AdResult> apply_account_option_checks(const QMap<AccountOption, QCheckBox *> &checks, const QString &dn);
