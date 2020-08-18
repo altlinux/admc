@@ -26,6 +26,7 @@
 #include <QMap>
 #include <QHash>
 #include <QDateTime>
+#include <QSet>
 
 // Interface between the GUI and AdConnection
 // Stores attributes cache of objects
@@ -161,12 +162,18 @@ public:
 
     AdResult login(const QString &host, const QString &domain);
 
+    // Use this if you are doing a series of AD modifications and want 
+    // to avoid having multiple reloads of widgets
+    // Each start call must be followed by a matching end call!
+    void start_batch();
+    void end_batch();
+
     QString get_search_base();
     QString get_uri();
 
     QList<QString> list(const QString &dn);
     QList<QString> search(const QString &filter);
-
+    
     Attributes get_all_attributes(const QString &dn);
     QList<QString> attribute_get_multi(const QString &dn, const QString &attribute);
     QString attribute_get(const QString &dn, const QString &attribute);
@@ -221,6 +228,8 @@ private:
     adldap::AdConnection *connection = nullptr;
     QHash<QString, Attributes> attributes_cache;
     bool suppress_not_found_error = false;
+    QSet<QString> batched_dns;
+    bool batch_in_progress = false;
         
     AdInterface();
 

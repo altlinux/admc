@@ -402,27 +402,30 @@ void CreateUserDialog::on_accepted() {
     const QString dn = "CN=" + name + "," + parent_dn;
     const char **classes = get_create_type_classes(CreateType_User);
 
-    const AdResult result_add = AdInterface::instance()->object_add(dn, classes);
-    QList<AdResult> all_results = { result_add };
-    if (result_add.success) {
-        const QList<AdResult> attribute_results = apply_attribute_edits(attributes, dn);
-        all_results.append(attribute_results);
-    }
-
-    if (no_errors(all_results)) {
-        Status::instance()->message(QString(tr("Created user - \"%1\"")).arg(name), StatusType_Success);
-    } else {
-        // Delete object if it was added
+    AdInterface::instance()->start_batch();
+    {
+        const AdResult result_add = AdInterface::instance()->object_add(dn, classes);
+        QList<AdResult> all_results = { result_add };
         if (result_add.success) {
-            AdInterface::instance()->object_delete(dn);
+            const QList<AdResult> attribute_results = apply_attribute_edits(attributes, dn);
+            all_results.append(attribute_results);
         }
 
-        show_warnings_for_error_results(all_results, this);
+        if (no_errors(all_results)) {
+            Status::instance()->message(QString(tr("Created user - \"%1\"")).arg(name), StatusType_Success);
+        } else {
+            // Delete object if it was added
+            if (result_add.success) {
+                AdInterface::instance()->object_delete(dn);
+            }
 
-        Status::instance()->message(QString(tr("Failed to create user - \"%1\"")).arg(name), StatusType_Error);
+            show_warnings_for_error_results(all_results, this);
+
+            Status::instance()->message(QString(tr("Failed to create user - \"%1\"")).arg(name), StatusType_Error);
+        }
+
     }
-
-    apply_attribute_edits(attributes, dn);
+    AdInterface::instance()->end_batch();
 }
 
 const char **get_create_type_classes(const CreateType type) {

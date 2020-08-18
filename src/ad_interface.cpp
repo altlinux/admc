@@ -109,6 +109,27 @@ AdResult AdInterface::login(const QString &host, const QString &domain) {
     }
 }
 
+void AdInterface::start_batch() {
+    if (batch_in_progress) {
+        printf("Called start_batch() while batch is in progress!\n");
+        return;
+    }
+
+    batch_in_progress = true;
+}
+
+void AdInterface::end_batch() {
+    if (!batch_in_progress) {
+        printf("Called end_batch() before start_batch()!\n");
+        return;
+    }
+
+    batch_in_progress = false;
+
+    update_cache(batched_dns.toList());
+    batched_dns.clear();
+}
+
 QString AdInterface::get_search_base() {
     return QString::fromStdString(connection->get_search_base());
 }
@@ -974,6 +995,14 @@ void AdInterface::command(QStringList args) {
 }
 
 void AdInterface::update_cache(const QList<QString> &changed_dns) {
+    if (batch_in_progress) {
+        for (auto dn : changed_dns) {
+            batched_dns.insert(dn);
+        }
+        
+        return;
+    }
+
     // Remove objects that are affected by DN changes from cache
     // Next time the app requests info about these objects, they
     // will be reloaded into cache
