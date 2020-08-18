@@ -324,7 +324,7 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, QWidget *parent
     top_layout->addWidget(title_label, 0, 0);
 
     name_edit = new QLineEdit(this);
-    layout_labeled_widget(top_layout, new QLabel(tr("Name")), name_edit);
+    layout_labeled_widget(top_layout, tr("Name"), name_edit);
 
     // TODO: do password, make it share code with password dialog
     // make_edit(tr("Password"), &pass_edit);

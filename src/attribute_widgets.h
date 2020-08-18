@@ -29,7 +29,7 @@ class QGridLayout;
 class QLabel;
 class QWidget;
 
-void layout_labeled_widget(QGridLayout *layout, QLabel *label, QWidget *widget);
+void layout_labeled_widget(QGridLayout *layout, const QString &label_text, QWidget *widget);
 
 void make_attribute_edits(const QList<QString> attributes, QGridLayout *layout, QMap<QString, QLineEdit *> *edits_out);
 QList<AdResult> apply_attribute_edits(const QMap<QString, QLineEdit *> &edits, const QString &dn);

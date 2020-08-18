@@ -27,7 +27,9 @@
 #include <QMessageBox>
 #include <QCheckBox>
 
-void layout_labeled_widget(QGridLayout *layout, QLabel *label, QWidget *widget) {
+void layout_labeled_widget(QGridLayout *layout, const QString &label_text, QWidget *widget) {
+    const auto label = new QLabel(label_text);
+
     const int row = layout->rowCount();
     layout->addWidget(label, row, 0);
     layout->addWidget(widget, row, 1);
@@ -36,12 +38,11 @@ void layout_labeled_widget(QGridLayout *layout, QLabel *label, QWidget *widget) 
 void make_attribute_edits(const QList<QString> attributes, QGridLayout *layout, QMap<QString, QLineEdit *> *edits_out) {
     for (auto attribute : attributes) {
         const QString attribute_display_string = get_attribute_display_string(attribute);
-        const auto label = new QLabel(attribute_display_string);
 
         auto edit = new QLineEdit();
         edits_out->insert(attribute, edit);
 
-        layout_labeled_widget(layout, label, edit);
+        layout_labeled_widget(layout, attribute_display_string, edit);
     }
 }
 
@@ -66,12 +67,11 @@ QList<AdResult> apply_attribute_edits(const QMap<QString, QLineEdit *> &edits, c
 void make_account_option_checks(const QList<AccountOption> options, QGridLayout *layout, QMap<AccountOption, QCheckBox *> *checks_out) {
     for (auto option : options) {
         const QString option_display_string = get_account_option_description(option);
-        const auto label = new QLabel(option_display_string);
 
         auto check = new QCheckBox();
         checks_out->insert(option, check);
 
-        layout_labeled_widget(layout, label, check);
+        layout_labeled_widget(layout, option_display_string, check);
     }
 }
 
