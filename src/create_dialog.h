@@ -50,7 +50,7 @@ public:
     CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QWidget *parent);
 
 private slots:
-    void on_accepted();
+    void on_ok();
 
 private:
     QString parent_dn;
@@ -65,7 +65,7 @@ public:
     CreateGroupDialog(const QString &parent_dn_arg, QWidget *parent);
 
 private slots:
-    void on_accepted();
+    void on_ok();
 
 private:
     QString parent_dn;
@@ -83,7 +83,7 @@ public:
     CreateUserDialog(const QString &parent_dn_arg, QWidget *parent);
 
 private slots:
-    void on_accepted();
+    void on_ok();
 
 private:
     QString parent_dn;

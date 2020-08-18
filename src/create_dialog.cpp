@@ -81,17 +81,14 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QW
     layout_buttons(layout, cancel_button, ok_button);
 
     connect(
-        this, &QDialog::accepted,
-        this, &CreateDialog::on_accepted);
+        ok_button, &QAbstractButton::clicked,
+        this, &CreateDialog::on_ok);
     connect(
         cancel_button, &QAbstractButton::clicked,
         this, &QDialog::reject);
-    connect(
-        ok_button, &QAbstractButton::clicked,
-        this, &QDialog::accept);
 }
 
-void CreateDialog::on_accepted() {
+void CreateDialog::on_ok() {
     const QString name = name_edit->text();
 
     QString dn;
@@ -157,17 +154,14 @@ CreateGroupDialog::CreateGroupDialog(const QString &parent_dn_arg, QWidget *pare
     layout_buttons(layout, cancel_button, ok_button);
 
     connect(
-        ok_button, &QAbstractButton::clicked,
-        this, &QDialog::accept);
-    connect(
         cancel_button, &QAbstractButton::clicked,
         this, &QDialog::reject);
     connect(
-        this, &QDialog::accepted,
-        this, &CreateGroupDialog::on_accepted);
+        ok_button, &QAbstractButton::clicked,
+        this, &CreateGroupDialog::on_ok);
 }
 
-void CreateGroupDialog::on_accepted() {
+void CreateGroupDialog::on_ok() {
     const CreateType type = CreateType_Group;
     const QString name = name_edit->text();
 
@@ -188,6 +182,8 @@ void CreateGroupDialog::on_accepted() {
 
     if (no_errors(results)) {
         success_message(name, type);
+
+        done(QDialog::Accepted);
     } else {
         // Delete object if it was created
         if (result_create.success) {
@@ -215,9 +211,6 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, QWidget *parent
     make_title_label(layout, type, parent_dn);
 
     const auto ok_button = new QPushButton(tr("OK"), this);
-    connect(
-        ok_button, &QAbstractButton::clicked,
-        this, &QDialog::accept);
 
     const auto cancel_button = new QPushButton(tr("Cancel"), this);
     connect(
@@ -283,11 +276,11 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, QWidget *parent
     // TODO: make full name auto-generate from first/last
 
     connect(
-        this, &QDialog::accepted,
-        this, &CreateUserDialog::on_accepted);
+        ok_button, &QAbstractButton::clicked,
+        this, &CreateUserDialog::on_ok);
 }
 
-void CreateUserDialog::on_accepted() {
+void CreateUserDialog::on_ok() {
     const CreateType type = CreateType_Group;
     const QString name = name_edit->text();
 
@@ -305,6 +298,8 @@ void CreateUserDialog::on_accepted() {
 
         if (no_errors(results)) {
             success_message(name, type);
+
+            done(QDialog::Accepted);
         } else {
             // Delete object if it was added
             if (result_create.success) {
