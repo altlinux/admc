@@ -44,6 +44,13 @@ enum CreateType {
 // Create and open a create dialog appropriate for given type
 void create_dialog(const QString &parent_dn, CreateType type, QWidget *parent);
 
+/**
+ * By default only has line edit for name and creates an object with
+ * that name.
+ * Subclass to add more widgets.
+ * Then override apply_more_widgets() to apply changes from
+ * those widgets after object is created.
+ */
 class CreateDialog : public QDialog {
 Q_OBJECT
 
@@ -63,6 +70,7 @@ private:
     QString parent_dn;
     CreateType type;
 
+    // Override this in subclass
     virtual QList<AdResult> apply_more_widgets(const QString &dn);
 };
 

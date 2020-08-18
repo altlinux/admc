@@ -36,7 +36,6 @@
 
 // TODO: implement cannot change pass
 
-void layout_buttons(QGridLayout *layout, QPushButton *cancel, QPushButton *ok);
 void autofill_edit_text_from_other_edit(QLineEdit *from, QLineEdit *to);
 QString create_type_to_string(const CreateType &type);
 
@@ -93,6 +92,8 @@ void CreateDialog::on_ok() {
     };
     const QString suffix = get_suffix(type);
 
+    const QString dn = suffix + "=" + name + "," + parent_dn;
+
     auto get_classes =
     [](CreateType type_arg) {
         static const char *classes_user[] = {CLASS_USER, NULL};
@@ -110,8 +111,6 @@ void CreateDialog::on_ok() {
         return classes_user;
     };
     const char **classes = get_classes(type);
-    
-    const QString dn = suffix + "=" + name + "," + parent_dn;
 
     const AdResult result_add = AdInterface::instance()->object_add(dn, classes);
     QList<AdResult> results = { result_add };
@@ -143,7 +142,10 @@ void CreateDialog::on_ok() {
 void CreateDialog::add_ok_cancel_buttons() {
     const auto ok_button = new QPushButton(tr("OK"), this);
     const auto cancel_button = new QPushButton(tr("Cancel"), this);
-    layout_buttons(layout, cancel_button, ok_button);
+
+    const int button_row = layout->rowCount();
+    layout->addWidget(cancel, button_row, 0, Qt::AlignLeft);
+    layout->addWidget(ok, button_row, 1, Qt::AlignRight);
 
     connect(
         ok_button, &QAbstractButton::clicked,
@@ -264,12 +266,6 @@ QList<AdResult> CreateUserDialog::apply_more_widgets(const QString &dn) {
     // TODO: account options and batching (for all other create dialogs too)
 
     return results;
-}
-
-void layout_buttons(QGridLayout *layout, QPushButton *cancel, QPushButton *ok) {
-    const int button_row = layout->rowCount();
-    layout->addWidget(cancel, button_row, 0, Qt::AlignLeft);
-    layout->addWidget(ok, button_row, 1, Qt::AlignRight);
 }
 
 // When "from" edit is edited, the text is copied to "to" edit
