@@ -36,9 +36,13 @@
 
 // TODO: implement cannot change pass
 
-const char **get_create_type_classes(const CreateType type);
 void layout_buttons(QGridLayout *layout, QPushButton *cancel, QPushButton *ok);
 void autofill_edit_text_from_other_edit(QLineEdit *from, QLineEdit *to);
+AdResult create_object(const QString &name, const QString &parent_dn, CreateType type, QString *dn_out);
+void success_message(const QString &name, CreateType type);
+void fail_message(const QString &name, CreateType type);
+void make_title_label(QGridLayout *layout, CreateType type, const QString &parent_dn);
+QString create_type_to_string(const CreateType &type);
 
 void create_dialog(const QString &parent_dn, CreateType type, QWidget *parent) {
     auto get_create_dialog =
@@ -67,10 +71,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QW
     const auto layout = new QGridLayout();
     setLayout(layout);
 
-    const QString type_name = create_type_to_string(type);
-    const QString title_label_text = QString(tr("Create object - \"%1\"")).arg(type_name);
-    const auto title_label = new QLabel(title_label_text, this);
-    layout->addWidget(title_label, 0, 0);
+    make_title_label(layout, type, parent_dn);
 
     name_edit = new QLineEdit(this);
     layout_labeled_widget(layout, tr("Name"), name_edit);
@@ -93,51 +94,19 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QW
 void CreateDialog::on_accepted() {
     const QString name = name_edit->text();
 
-    auto get_suffix =
-    [](CreateType type_arg) {
-        switch (type_arg) {
-            case CreateType_User: return "CN";
-            case CreateType_Computer: return "CN";
-            case CreateType_OU: return "OU";
-            case CreateType_Group: return "CN";
-            case CreateType_COUNT: return "COUNT";
-        }
-        return "";
+    QString dn;
+    const AdResult result_create = create_object(name, parent_dn, type, &dn);
+    const QList<AdResult> results = {
+        result_create
     };
-    const QString suffix = get_suffix(type);
 
-    auto get_classes =
-    [](CreateType type_arg) {
-        static const char *classes_user[] = {CLASS_USER, NULL};
-        static const char *classes_group[] = {CLASS_GROUP, NULL};
-        static const char *classes_ou[] = {CLASS_OU, NULL};
-        static const char *classes_computer[] = {CLASS_TOP, CLASS_PERSON, CLASS_ORG_PERSON, CLASS_USER, CLASS_COMPUTER, NULL};
+    if (no_errors(results)) {
+        Status::instance()->message(QString(tr("Created object - \"%1\"")).arg(name), StatusType_Success);
+    } else {
+        show_warnings_for_error_results(results, this);
 
-        switch (type_arg) {
-            case CreateType_User: return classes_user;
-            case CreateType_Computer: return classes_computer;
-            case CreateType_OU: return classes_ou;
-            case CreateType_Group: return classes_group;
-            case CreateType_COUNT: return classes_user;
-        }
-        return classes_user;
-    };
-    const char **classes = get_classes(type);
-    
-    const QString dn = suffix + "=" + name + "," + parent_dn;
-
-    AdInterface::instance()->object_add(dn, classes);
-}
-
-QString create_type_to_string(const CreateType &type) {
-    switch (type) {
-        case CreateType_User: return AdInterface::tr("User");
-        case CreateType_Computer: return AdInterface::tr("Computer");
-        case CreateType_OU: return AdInterface::tr("Organization Unit");
-        case CreateType_Group: return AdInterface::tr("Group");
-        case CreateType_COUNT: return "COUNT";
+        Status::instance()->message(QString(tr("Failed to create object - \"%1\"")).arg(name), StatusType_Error);
     }
-    return "";
 }
 
 CreateGroupDialog::CreateGroupDialog(const QString &parent_dn_arg, QWidget *parent)
@@ -153,10 +122,7 @@ CreateGroupDialog::CreateGroupDialog(const QString &parent_dn_arg, QWidget *pare
     const auto layout = new QGridLayout();
     setLayout(layout);
 
-    const QString type_name = create_type_to_string(type);
-    const QString title_label_text = QString(tr("Create \"%1\" in \"%2\"")).arg(type_name, parent_dn_arg);
-    const auto title_label = new QLabel(title_label_text, this);
-    layout->addWidget(title_label, 0, 0);
+    make_title_label(layout, type, parent_dn);
 
     name_edit = new QLineEdit(this);
     layout_labeled_widget(layout, tr("Name:"), name_edit);
@@ -202,18 +168,15 @@ CreateGroupDialog::CreateGroupDialog(const QString &parent_dn_arg, QWidget *pare
 }
 
 void CreateGroupDialog::on_accepted() {
+    const CreateType type = CreateType_Group;
     const QString name = name_edit->text();
 
-    const char **classes = get_create_type_classes(CreateType_Group);
-    
-    const QString dn = "CN=" + name + "," + parent_dn;
-
-    // Create object and then apply attribute edits
-    const AdResult result_add = AdInterface::instance()->object_add(dn, classes);
+    QString dn;
+    const AdResult result_create = create_object(name, parent_dn, type, &dn);
     QList<AdResult> results = {
-        result_add
+        result_create
     };
-    if (result_add.success) {
+    if (result_create.success) {
         const GroupScope group_scope = (GroupScope)scope_combo->currentData().toInt();
         const GroupType group_type = (GroupType)scope_combo->currentData().toInt();
 
@@ -224,16 +187,16 @@ void CreateGroupDialog::on_accepted() {
     }
 
     if (no_errors(results)) {
-        Status::instance()->message(QString(tr("Created group - \"%1\"")).arg(name), StatusType_Success);
+        success_message(name, type);
     } else {
-        // Delete object if it was added
-        if (result_add.success) {
+        // Delete object if it was created
+        if (result_create.success) {
             AdInterface::instance()->object_delete(dn);
         }
 
         show_warnings_for_error_results(results, this);
 
-        Status::instance()->message(QString(tr("Failed to create group - \"%1\"")).arg(name), StatusType_Error);
+        fail_message(name, type);
     }
 }
 
@@ -246,10 +209,10 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, QWidget *parent
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    const QString type_name = create_type_to_string(type);
-    // TODO: maybe make general create type X in Y, switch on type. To reduce number of same strings for translation
-    const auto title_label_text = QString(tr("Create \"%1\" in \"%2\"")).arg(type_name, parent_dn_arg);
-    const auto title_label = new QLabel(title_label_text, this);
+    const auto layout = new QGridLayout();
+    setLayout(layout);
+
+    make_title_label(layout, type, parent_dn);
 
     const auto ok_button = new QPushButton(tr("OK"), this);
     connect(
@@ -260,10 +223,6 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, QWidget *parent
     connect(
         cancel_button, &QAbstractButton::clicked,
         this, &QDialog::reject);
-
-    const auto layout = new QGridLayout();
-    setLayout(layout);
-    layout->addWidget(title_label, 0, 0);
 
     name_edit = new QLineEdit(this);
     layout_labeled_widget(layout, tr("Name"), name_edit);
@@ -329,53 +288,36 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, QWidget *parent
 }
 
 void CreateUserDialog::on_accepted() {
+    const CreateType type = CreateType_Group;
     const QString name = name_edit->text();
-
-    const QString dn = "CN=" + name + "," + parent_dn;
-    const char **classes = get_create_type_classes(CreateType_User);
 
     AdInterface::instance()->start_batch();
     {
-        const AdResult result_add = AdInterface::instance()->object_add(dn, classes);
+        QString dn;
+        const AdResult result_create = create_object(name, parent_dn, type, &dn);
         QList<AdResult> results = {
-            result_add
+            result_create
         };
-        if (result_add.success) {
+        if (result_create.success) {
             const QList<AdResult> attribute_results = apply_attribute_edits(attributes, dn);
             results.append(attribute_results);
         }
 
         if (no_errors(results)) {
-            Status::instance()->message(QString(tr("Created user - \"%1\"")).arg(name), StatusType_Success);
+            success_message(name, type);
         } else {
             // Delete object if it was added
-            if (result_add.success) {
+            if (result_create.success) {
                 AdInterface::instance()->object_delete(dn);
             }
 
             show_warnings_for_error_results(results, this);
 
-            Status::instance()->message(QString(tr("Failed to create user - \"%1\"")).arg(name), StatusType_Error);
+            fail_message(name, type);
         }
 
     }
     AdInterface::instance()->end_batch();
-}
-
-const char **get_create_type_classes(const CreateType type) {
-    static const char *classes_user[] = {CLASS_USER, NULL};
-    static const char *classes_group[] = {CLASS_GROUP, NULL};
-    static const char *classes_ou[] = {CLASS_OU, NULL};
-    static const char *classes_computer[] = {CLASS_TOP, CLASS_PERSON, CLASS_ORG_PERSON, CLASS_USER, CLASS_COMPUTER, NULL};
-
-    switch (type) {
-        case CreateType_User: return classes_user;
-        case CreateType_Computer: return classes_computer;
-        case CreateType_OU: return classes_ou;
-        case CreateType_Group: return classes_group;
-        case CreateType_COUNT: return classes_user;
-    }
-    return classes_user;
 }
 
 void layout_buttons(QGridLayout *layout, QPushButton *cancel, QPushButton *ok) {
@@ -392,4 +334,81 @@ void autofill_edit_text_from_other_edit(QLineEdit *from, QLineEdit *to) {
         [=] () {
             to->setText(from->text());
         });
+}
+
+// Create bare object with just name, objectClasses and default
+// attributes for those classes filled out by the server
+AdResult create_object(const QString &name, const QString &parent_dn, CreateType type, QString *dn_out) {
+    auto get_suffix =
+    [](CreateType type_arg) {
+        switch (type_arg) {
+            case CreateType_User: return "CN";
+            case CreateType_Computer: return "CN";
+            case CreateType_OU: return "OU";
+            case CreateType_Group: return "CN";
+            case CreateType_COUNT: return "COUNT";
+        }
+        return "";
+    };
+    const QString suffix = get_suffix(type);
+
+    auto get_classes =
+    [](CreateType type_arg) {
+        static const char *classes_user[] = {CLASS_USER, NULL};
+        static const char *classes_group[] = {CLASS_GROUP, NULL};
+        static const char *classes_ou[] = {CLASS_OU, NULL};
+        static const char *classes_computer[] = {CLASS_TOP, CLASS_PERSON, CLASS_ORG_PERSON, CLASS_USER, CLASS_COMPUTER, NULL};
+
+        switch (type_arg) {
+            case CreateType_User: return classes_user;
+            case CreateType_Computer: return classes_computer;
+            case CreateType_OU: return classes_ou;
+            case CreateType_Group: return classes_group;
+            case CreateType_COUNT: return classes_user;
+        }
+        return classes_user;
+    };
+    const char **classes = get_classes(type);
+    
+    const QString dn = suffix + "=" + name + "," + parent_dn;
+
+    const AdResult result = AdInterface::instance()->object_add(dn, classes);
+
+    dn_out->clear();
+    dn_out->append(dn);
+
+    return result;
+}
+
+void success_message(const QString &name, CreateType type) {
+    const QString type_string = create_type_to_string(type);
+    const QString message = QString(CreateDialog::tr("Created %1 - \"%2\"")).arg(type_string, name);
+
+    Status::instance()->message(message, StatusType_Success);
+}
+
+void fail_message(const QString &name, CreateType type) {
+    const QString type_string = create_type_to_string(type);
+    const QString message = QString(CreateDialog::tr("Failed to create %1 - \"%2\"")).arg(type_string, name);
+    
+    Status::instance()->message(message, StatusType_Error);
+}
+
+void make_title_label(QGridLayout *layout, CreateType type, const QString &parent_dn) {
+    const QString type_string = create_type_to_string(type);
+    const auto title_text = QString(CreateDialog::tr("Create %1 in \"%2\"")).arg(type_string, parent_dn);
+    auto label = new QLabel(title_text);
+
+    layout->addWidget(label);
+}
+
+QString create_type_to_string(const CreateType &type) {
+    switch (type) {
+        case CreateType_User: return CreateDialog::tr("User");
+        case CreateType_Computer: return CreateDialog::tr("Computer");
+        case CreateType_OU: return CreateDialog::tr("Organization Unit");
+        case CreateType_Group: return CreateDialog::tr("Group");
+        case CreateType_COUNT: return "COUNT";
+    }
+    return "";
 }
