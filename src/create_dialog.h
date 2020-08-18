@@ -31,6 +31,7 @@ class QLineEdit;
 class QVBoxLayout;
 class QComboBox;
 class QCheckBox;
+class QGridLayout;
 
 enum CreateType {
     CreateType_User,
@@ -43,7 +44,7 @@ enum CreateType {
 // Create and open a create dialog appropriate for given type
 void create_dialog(const QString &parent_dn, CreateType type, QWidget *parent);
 
-class CreateDialog final : public QDialog {
+class CreateDialog : public QDialog {
 Q_OBJECT
 
 public:
@@ -52,46 +53,45 @@ public:
 private slots:
     void on_ok();
 
+protected:
+    QGridLayout *layout;
+    QLineEdit *name_edit;
+
+    void add_ok_cancel_buttons();
+
 private:
     QString parent_dn;
     CreateType type;
-    QLineEdit *name_edit;
+
+    virtual QList<AdResult> apply_more_widgets(const QString &dn);
 };
 
-class CreateGroupDialog final : public QDialog {
+class CreateGroupDialog final : public CreateDialog {
 Q_OBJECT
 
 public:
-    CreateGroupDialog(const QString &parent_dn_arg, QWidget *parent);
-
-private slots:
-    void on_ok();
+    CreateGroupDialog(const QString &parent_dn_arg, CreateType type_arg, QWidget *parent);
 
 private:
-    QString parent_dn;
-    
-    QLineEdit *name_edit;
     QMap<QString, QLineEdit *> attributes;
     QComboBox *scope_combo;
     QComboBox *type_combo;
+
+    QList<AdResult> apply_more_widgets(const QString &dn) override;
 };
 
-class CreateUserDialog final : public QDialog {
+class CreateUserDialog final : public CreateDialog {
 Q_OBJECT
 
 public:
-    CreateUserDialog(const QString &parent_dn_arg, QWidget *parent);
-
-private slots:
-    void on_ok();
+    CreateUserDialog(const QString &parent_dn_arg, CreateType type_arg, QWidget *parent);
 
 private:
-    QString parent_dn;
-    
-    QLineEdit *name_edit;
     QMap<QString, QLineEdit *> attributes;
     QMap<AccountOption, QCheckBox *> account_options;
     
+    QList<AdResult> apply_more_widgets(const QString &dn) override;
+
     // QLineEdit *pass_edit;
     // QLineEdit *pass_confirm_edit;
 };
