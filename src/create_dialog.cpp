@@ -21,6 +21,7 @@
 #include "ad_interface.h"
 #include "utils.h"
 #include "status.h"
+#include "attribute_widgets.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -31,12 +32,18 @@
 #include <QList>
 #include <QComboBox>
 #include <QMessageBox>
+#include <QCheckBox>
+
+// TODO: implement cannot change pass
+
+const char **get_create_type_classes(const CreateType type);
 
 void create_dialog(const QString &parent_dn, CreateType type, QWidget *parent) {
     auto get_create_dialog =
     [=]() -> QDialog * {
         switch (type) {
             case CreateType_Group: return new CreateGroupDialog(parent_dn, parent);
+            case CreateType_User: return new CreateUserDialog(parent_dn, parent);
             default: return new CreateDialog(parent_dn, type, parent);
         }
         return nullptr;
@@ -247,23 +254,7 @@ void CreateGroupDialog::on_accepted() {
     };
     const QString suffix = get_suffix();
 
-    auto get_classes =
-    [type]() {
-        static const char *classes_user[] = {CLASS_USER, NULL};
-        static const char *classes_group[] = {CLASS_GROUP, NULL};
-        static const char *classes_ou[] = {CLASS_OU, NULL};
-        static const char *classes_computer[] = {CLASS_TOP, CLASS_PERSON, CLASS_ORG_PERSON, CLASS_USER, CLASS_COMPUTER, NULL};
-
-        switch (type) {
-            case CreateType_User: return classes_user;
-            case CreateType_Computer: return classes_computer;
-            case CreateType_OU: return classes_ou;
-            case CreateType_Group: return classes_group;
-            case CreateType_COUNT: return classes_user;
-        }
-        return classes_user;
-    };
-    const char **classes = get_classes();
+    const char **classes = get_create_type_classes(type);
     
     const QString dn = suffix + "=" + name + "," + parent_dn;
 
@@ -303,4 +294,149 @@ void CreateGroupDialog::on_accepted() {
 
         Status::instance()->message(QString(tr("Failed to create group - \"%1\"")).arg(name), StatusType_Error);
     }
+}
+
+CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, QWidget *parent)
+: QDialog(parent)
+{
+    const CreateType type = CreateType_User;
+
+    parent_dn = parent_dn_arg;
+
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    const QString type_name = create_type_to_string(type);
+    // TODO: maybe make general create type X in Y, switch on type. To reduce number of same strings for translation
+    const auto title_label_text = QString(tr("Create \"%1\" in \"%2\"")).arg(type_name, parent_dn_arg);
+    const auto title_label = new QLabel(title_label_text, this);
+
+    const auto ok_button = new QPushButton(tr("OK"), this);
+    connect(
+        ok_button, &QAbstractButton::clicked,
+        this, &QDialog::accept);
+
+    const auto cancel_button = new QPushButton(tr("Cancel"), this);
+    connect(
+        cancel_button, &QAbstractButton::clicked,
+        this, &QDialog::reject);
+
+    const auto top_layout = new QGridLayout(this);
+    top_layout->addWidget(title_label, 0, 0);
+
+    auto add_to_layout =
+    [top_layout](const QString label_text, QWidget *widget) {
+        const auto label = new QLabel(label_text);
+
+        const int row = top_layout->rowCount();
+
+        top_layout->addWidget(label, row, 0);
+        top_layout->addWidget(widget, row, 1);
+    };
+
+    auto make_check =
+    [this, add_to_layout](AccountOption option, QCheckBox **check_ptr) {
+        const QString label_text = get_account_option_description(option);
+        auto check = new QCheckBox(this);
+        *check_ptr = check;
+        add_to_layout(label_text, check);
+    };
+
+    name_edit = new QLineEdit(this);
+    add_to_layout(tr("Name"), name_edit);
+
+    // TODO: do password, make it share code with password dialog
+    // make_edit(tr("Password"), &pass_edit);
+    // make_edit(tr("Confirm password"), &pass_confirm_edit);
+
+    const QList<QString> attributes_to_make = {
+        ATTRIBUTE_FIRST_NAME,
+        ATTRIBUTE_LAST_NAME,
+        ATTRIBUTE_DISPLAY_NAME,
+        ATTRIBUTE_INITIALS,
+        ATTRIBUTE_USER_PRINCIPAL_NAME,
+        ATTRIBUTE_SAMACCOUNT_NAME,
+    };
+    make_attribute_edits(attributes_to_make, top_layout, &attributes);
+
+    make_check(AccountOption_PasswordExpired, &must_change_pass_check);
+    // make_check(AccountOption_?, &cannot_change_pass_check);
+    make_check(AccountOption_DontExpirePassword, &never_expire_pass_check);
+    make_check(AccountOption_Disabled, &account_disabled_check);
+
+    const int button_row = top_layout->rowCount();
+    top_layout->addWidget(cancel_button, button_row, 0, Qt::AlignLeft);
+    top_layout->addWidget(ok_button, button_row, 1, Qt::AlignRight);
+
+    // PasswordExpired conflicts with CannotChange and DontExpirePassword
+    // Prevent the conflicting checks from being set when PasswordExpired is set already and show a message about it
+    auto connect_never_expire_conflict =
+    [this](QCheckBox *conflict, AccountOption conflicting_option) {
+        connect(never_expire_pass_check, &QCheckBox::stateChanged,
+            [this, conflict, conflicting_option]() {
+                if (checkbox_is_checked(never_expire_pass_check) && checkbox_is_checked(conflict)) {
+                    conflict->setCheckState(Qt::Checked);
+
+                    const QString never_expire_text = get_account_option_description(AccountOption_DontExpirePassword);
+                    const QString conflicting_text = get_account_option_description(conflicting_option);
+                    const QString error = QString(tr("Can't set \"%1\" when \"%2\" is set already.")).arg(conflicting_text, never_expire_text);
+
+                    QMessageBox::warning(this, "Error", error);
+                }
+            }
+            );
+    };
+
+    // TODO: make full name auto-generate from first/last
+    
+    connect_never_expire_conflict(must_change_pass_check, AccountOption_PasswordExpired);
+    // connect_never_expire_conflict(must_change_pass_check, AccountOption_?);
+
+    connect(
+        this, &QDialog::accepted,
+        this, &CreateUserDialog::on_accepted);
+}
+
+void CreateUserDialog::on_accepted() {
+    const QString name = name_edit->text();
+
+    const QString dn = "CN=" + name + "," + parent_dn;
+    const char **classes = get_create_type_classes(CreateType_User);
+
+    const AdResult result_add = AdInterface::instance()->object_add(dn, classes);
+    QList<AdResult> all_results = { result_add };
+    if (result_add.success) {
+        const QList<AdResult> attribute_results = apply_attribute_edits(attributes, dn);
+        all_results.append(attribute_results);
+    }
+
+    if (no_errors(all_results)) {
+        Status::instance()->message(QString(tr("Created user - \"%1\"")).arg(name), StatusType_Success);
+    } else {
+        // Delete object if it was added
+        if (result_add.success) {
+            AdInterface::instance()->object_delete(dn);
+        }
+
+        show_warnings_for_error_results(all_results, this);
+
+        Status::instance()->message(QString(tr("Failed to create user - \"%1\"")).arg(name), StatusType_Error);
+    }
+
+    apply_attribute_edits(attributes, dn);
+}
+
+const char **get_create_type_classes(const CreateType type) {
+    static const char *classes_user[] = {CLASS_USER, NULL};
+    static const char *classes_group[] = {CLASS_GROUP, NULL};
+    static const char *classes_ou[] = {CLASS_OU, NULL};
+    static const char *classes_computer[] = {CLASS_TOP, CLASS_PERSON, CLASS_ORG_PERSON, CLASS_USER, CLASS_COMPUTER, NULL};
+
+    switch (type) {
+        case CreateType_User: return classes_user;
+        case CreateType_Computer: return classes_computer;
+        case CreateType_OU: return classes_ou;
+        case CreateType_Group: return classes_group;
+        case CreateType_COUNT: return classes_user;
+    }
+    return classes_user;
 }

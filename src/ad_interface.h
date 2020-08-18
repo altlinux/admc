@@ -71,6 +71,8 @@
 #define ATTRIBUTE_MEMBER                "member"
 #define ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY "showInAdvancedViewOnly"
 #define ATTRIBUTE_GROUP_TYPE            "groupType"
+#define ATTRIBUTE_FIRST_NAME            "givenName"
+#define ATTRIBUTE_LAST_NAME             "sn"
     
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"

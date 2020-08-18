@@ -25,10 +25,12 @@
 #include <QString>
 #include <QDialog>
 #include <QList>
+#include <QMap>
 
 class QLineEdit;
 class QVBoxLayout;
 class QComboBox;
+class QCheckBox;
 
 enum CreateType {
     CreateType_User,
@@ -71,6 +73,31 @@ private:
     QLineEdit *sama_edit;
     QComboBox *scope_combo;
     QComboBox *type_combo;
+};
+
+class CreateUserDialog final : public QDialog {
+Q_OBJECT
+
+public:
+    CreateUserDialog(const QString &parent_dn_arg, QWidget *parent);
+
+private slots:
+    void on_accepted();
+
+private:
+    QString parent_dn;
+    
+    QLineEdit *name_edit;
+    QMap<QString, QLineEdit *> attributes;
+    QMap<AccountOption, QCheckBox *> account_options;
+    // QLineEdit *pass_edit;
+    // QLineEdit *pass_confirm_edit;
+
+    QCheckBox *must_change_pass_check;
+    // TODO: implement cannot change pass option
+    // QCheckBox *cannot_change_pass_check;
+    QCheckBox *never_expire_pass_check;
+    QCheckBox *account_disabled_check;
 };
 
 QString create_type_to_string(const CreateType &type);

@@ -1,0 +1,41 @@
+/*
+ * ADMC - AD Management Center
+ *
+ * Copyright (C) 2020 BaseALT Ltd.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "ad_interface.h"
+
+#include <QHash>
+
+// NOTE: have to do this like this because for translation to work, the "tr()" calls need to happen after QTranslator is setup
+QString get_attribute_display_string(const QString &attribute) {
+    static const QHash<QString, QString> display_strings = {
+        {ATTRIBUTE_DISPLAY_NAME, QObject::tr("Full name")},
+        {ATTRIBUTE_DESCRIPTION, QObject::tr("Description")},
+        {ATTRIBUTE_GIVEN_NAME, QObject::tr("Given name")},
+        {ATTRIBUTE_USER_PRINCIPAL_NAME, QObject::tr("Logon name")},
+        {ATTRIBUTE_SAMACCOUNT_NAME, QObject::tr("Logon name (pre-2000)")},
+        {ATTRIBUTE_FIRST_NAME, QObject::tr("First name")},
+        {ATTRIBUTE_LAST_NAME, QObject::tr("Last name")},
+        {ATTRIBUTE_INITIALS, QObject::tr("Initials")},
+    };
+    static const QString default_value = QObject::tr("UNKNOWN ATTRIBUTE NAME");
+
+    const QString display_string = display_strings.value(attribute, default_value);
+
+    return display_string;
+}
