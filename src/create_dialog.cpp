@@ -37,6 +37,8 @@
 // TODO: implement cannot change pass
 
 const char **get_create_type_classes(const CreateType type);
+void layout_buttons(QGridLayout *layout, QPushButton *cancel, QPushButton *ok);
+void autofill_edit_text_from_other_edit(QLineEdit *from, QLineEdit *to);
 
 void create_dialog(const QString &parent_dn, CreateType type, QWidget *parent) {
     auto get_create_dialog =
@@ -62,43 +64,30 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QW
     setAttribute(Qt::WA_DeleteOnClose);
     resize(600, 600);
 
+    const auto layout = new QGridLayout();
+    setLayout(layout);
+
     const QString type_name = create_type_to_string(type);
-    const auto title_label = new QLabel(QString(tr("Create object - \"%1\"")).arg(type_name), this);
+    const QString title_label_text = QString(tr("Create object - \"%1\"")).arg(type_name);
+    const auto title_label = new QLabel(title_label_text, this);
+    layout->addWidget(title_label, 0, 0);
+
+    name_edit = new QLineEdit(this);
+    layout_labeled_widget(layout, tr("Name"), name_edit);
 
     const auto ok_button = new QPushButton(tr("OK"), this);
-    connect(
-        ok_button, &QAbstractButton::clicked,
-        this, &QDialog::accept);
-
     const auto cancel_button = new QPushButton(tr("Cancel"), this);
-    connect(
-        cancel_button, &QAbstractButton::clicked,
-        this, &QDialog::reject);
-
-    const auto label_layout = new QVBoxLayout();
-    const auto widget_layout = new QVBoxLayout();
-
-    const auto attributes_layout = new QHBoxLayout();
-    attributes_layout->insertLayout(-1, label_layout);
-    attributes_layout->insertLayout(-1, widget_layout);
-
-    const auto top_layout = new QGridLayout(this);
-    top_layout->addWidget(title_label, 0, 0);
-    top_layout->addLayout(attributes_layout, 1, 0);
-    top_layout->addWidget(cancel_button, 2, 0, Qt::AlignLeft);
-    top_layout->addWidget(ok_button, 2, 2, Qt::AlignRight);
-
-    {
-        auto name_edit_label = new QLabel(tr("Name:"));
-        name_edit = new QLineEdit(this);
-
-        label_layout->addWidget(name_edit_label);
-        widget_layout->addWidget(name_edit);
-    }
+    layout_buttons(layout, cancel_button, ok_button);
 
     connect(
         this, &QDialog::accepted,
         this, &CreateDialog::on_accepted);
+    connect(
+        cancel_button, &QAbstractButton::clicked,
+        this, &QDialog::reject);
+    connect(
+        ok_button, &QAbstractButton::clicked,
+        this, &QDialog::accept);
 }
 
 void CreateDialog::on_accepted() {
@@ -161,52 +150,23 @@ CreateGroupDialog::CreateGroupDialog(const QString &parent_dn_arg, QWidget *pare
     setAttribute(Qt::WA_DeleteOnClose);
     resize(600, 600);
 
+    const auto layout = new QGridLayout();
+    setLayout(layout);
+
     const QString type_name = create_type_to_string(type);
-    const auto title_label = new QLabel(QString(tr("Create group \"%1\" in \"%2\"")).arg(type_name, parent_dn_arg), this);
-
-    const auto ok_button = new QPushButton(tr("OK"), this);
-    connect(
-        ok_button, &QAbstractButton::clicked,
-        this, &QDialog::accept);
-
-    const auto cancel_button = new QPushButton(tr("Cancel"), this);
-    connect(
-        cancel_button, &QAbstractButton::clicked,
-        this, &QDialog::reject);
-
-    const auto label_layout = new QVBoxLayout();
-    const auto widget_layout = new QVBoxLayout();
-
-    const auto attributes_layout = new QHBoxLayout();
-    attributes_layout->insertLayout(-1, label_layout);
-    attributes_layout->insertLayout(-1, widget_layout);
-
-    const auto top_layout = new QGridLayout(this);
-    top_layout->addWidget(title_label, 0, 0);
-    top_layout->addLayout(attributes_layout, 1, 0);
-    top_layout->addWidget(cancel_button, 2, 0, Qt::AlignLeft);
-    top_layout->addWidget(ok_button, 2, 2, Qt::AlignRight);
-
-    auto add_to_layout =
-    [label_layout, widget_layout](const QString label_text, QWidget *widget) {
-        const auto label = new QLabel(label_text);
-
-        label_layout->addWidget(label);
-        widget_layout->addWidget(widget);
-    };
+    const QString title_label_text = QString(tr("Create \"%1\" in \"%2\"")).arg(type_name, parent_dn_arg);
+    const auto title_label = new QLabel(title_label_text, this);
+    layout->addWidget(title_label, 0, 0);
 
     name_edit = new QLineEdit(this);
-    add_to_layout(tr("Name:"), name_edit);
+    layout_labeled_widget(layout, tr("Name:"), name_edit);
 
-    sama_edit = new QLineEdit(this);
-    add_to_layout(tr("Sama name:"), sama_edit);
+    const QList<QString> attributes_to_make = {
+        ATTRIBUTE_SAMACCOUNT_NAME,
+    };
+    make_attribute_edits(attributes_to_make, layout, &attributes);
 
-    // Copy name into sama name when name changes
-    connect(
-        name_edit, &QLineEdit::textChanged,
-        [this] () {
-            sama_edit->setText(name_edit->text());
-        });
+    autofill_edit_text_from_other_edit(name_edit, attributes[ATTRIBUTE_SAMACCOUNT_NAME]);
 
     scope_combo = new QComboBox(this);
     for (int i = 0; i < GroupScope_COUNT; i++) {
@@ -215,7 +175,7 @@ CreateGroupDialog::CreateGroupDialog(const QString &parent_dn_arg, QWidget *pare
 
         scope_combo->addItem(scope_string, (int)scope);
     }
-    add_to_layout(tr("Group scope:"), scope_combo);
+    layout_labeled_widget(layout, tr("Group scope:"), scope_combo);
 
     type_combo = new QComboBox(this);
     for (int i = 0; i < GroupType_COUNT; i++) {
@@ -224,8 +184,18 @@ CreateGroupDialog::CreateGroupDialog(const QString &parent_dn_arg, QWidget *pare
 
         type_combo->addItem(type_string, (int)group_type);
     }
-    add_to_layout(tr("Group type:"), type_combo);
+    layout_labeled_widget(layout, tr("Group type:"), type_combo);
 
+    const auto ok_button = new QPushButton(tr("OK"), this);
+    const auto cancel_button = new QPushButton(tr("Cancel"), this);
+    layout_buttons(layout, cancel_button, ok_button);
+
+    connect(
+        ok_button, &QAbstractButton::clicked,
+        this, &QDialog::accept);
+    connect(
+        cancel_button, &QAbstractButton::clicked,
+        this, &QDialog::reject);
     connect(
         this, &QDialog::accepted,
         this, &CreateGroupDialog::on_accepted);
@@ -234,29 +204,9 @@ CreateGroupDialog::CreateGroupDialog(const QString &parent_dn_arg, QWidget *pare
 void CreateGroupDialog::on_accepted() {
     const QString name = name_edit->text();
 
-    const QString sama_name = sama_edit->text();
-
-    const GroupScope group_scope = (GroupScope)scope_combo->currentData().toInt();
-    const GroupType group_type = (GroupType)scope_combo->currentData().toInt();
-
-    const CreateType type = CreateType_Group;
-
-    auto get_suffix =
-    [type]() {
-        switch (type) {
-            case CreateType_User: return "CN";
-            case CreateType_Computer: return "CN";
-            case CreateType_OU: return "OU";
-            case CreateType_Group: return "CN";
-            case CreateType_COUNT: return "COUNT";
-        }
-        return "";
-    };
-    const QString suffix = get_suffix();
-
-    const char **classes = get_create_type_classes(type);
+    const char **classes = get_create_type_classes(CreateType_Group);
     
-    const QString dn = suffix + "=" + name + "," + parent_dn;
+    const QString dn = "CN=" + name + "," + parent_dn;
 
     // Create object and then apply attribute edits
     const AdResult result_add = AdInterface::instance()->object_add(dn, classes);
@@ -264,33 +214,24 @@ void CreateGroupDialog::on_accepted() {
         result_add
     };
     if (result_add.success) {
-        const AdResult result_sama = AdInterface::instance()->attribute_replace(dn, ATTRIBUTE_SAMACCOUNT_NAME, sama_edit->text());
-        const AdResult result_type = AdInterface::instance()->group_set_type(dn, group_type);
-        const AdResult result_scope = AdInterface::instance()->group_set_scope(dn, group_scope);
+        const GroupScope group_scope = (GroupScope)scope_combo->currentData().toInt();
+        const GroupType group_type = (GroupType)scope_combo->currentData().toInt();
 
-        results.append({
-            result_sama, result_type, result_scope
-        });
+        results.append(apply_attribute_edits(attributes, dn));
+
+        results.append(AdInterface::instance()->group_set_type(dn, group_type));
+        results.append(AdInterface::instance()->group_set_scope(dn, group_scope));
     }
 
-    // Determine if succeeded totally and open error popups for any
-    // failed actions
-    bool total_success = true;
-    for (auto result : results) {
-        if (!result.success) {
-            total_success = false;
-
-            QMessageBox::critical(this, "Error", result.error_with_context);
-        }
-    }
-
-    if (total_success) {
+    if (no_errors(results)) {
         Status::instance()->message(QString(tr("Created group - \"%1\"")).arg(name), StatusType_Success);
     } else {
         // Delete object if it was added
         if (result_add.success) {
             AdInterface::instance()->object_delete(dn);
         }
+
+        show_warnings_for_error_results(results, this);
 
         Status::instance()->message(QString(tr("Failed to create group - \"%1\"")).arg(name), StatusType_Error);
     }
@@ -320,11 +261,12 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, QWidget *parent
         cancel_button, &QAbstractButton::clicked,
         this, &QDialog::reject);
 
-    const auto top_layout = new QGridLayout(this);
-    top_layout->addWidget(title_label, 0, 0);
+    const auto layout = new QGridLayout();
+    setLayout(layout);
+    layout->addWidget(title_label, 0, 0);
 
     name_edit = new QLineEdit(this);
-    layout_labeled_widget(top_layout, tr("Name"), name_edit);
+    layout_labeled_widget(layout, tr("Name"), name_edit);
 
     // TODO: do password, make it share code with password dialog
     // make_edit(tr("Password"), &pass_edit);
@@ -338,7 +280,9 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, QWidget *parent
         ATTRIBUTE_USER_PRINCIPAL_NAME,
         ATTRIBUTE_SAMACCOUNT_NAME,
     };
-    make_attribute_edits(attributes_to_make, top_layout, &attributes);
+    make_attribute_edits(attributes_to_make, layout, &attributes);
+
+    autofill_edit_text_from_other_edit(name_edit, attributes[ATTRIBUTE_SAMACCOUNT_NAME]);
 
     const QList<AccountOption> options_to_make = {
         AccountOption_PasswordExpired,
@@ -347,11 +291,9 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, QWidget *parent
         // TODO:
         // AccountOption_CannotChangePass
     };
-    make_account_option_checks(options_to_make, top_layout, &account_options);
+    make_account_option_checks(options_to_make, layout, &account_options);
 
-    const int button_row = top_layout->rowCount();
-    top_layout->addWidget(cancel_button, button_row, 0, Qt::AlignLeft);
-    top_layout->addWidget(ok_button, button_row, 1, Qt::AlignRight);
+    layout_buttons(layout, cancel_button, ok_button);
 
     // When PasswordExpired is set, you can't set CannotChange and DontExpirePassword
     // Prevent the conflicting checks from being set when PasswordExpired is set already and show a message about it
@@ -395,13 +337,15 @@ void CreateUserDialog::on_accepted() {
     AdInterface::instance()->start_batch();
     {
         const AdResult result_add = AdInterface::instance()->object_add(dn, classes);
-        QList<AdResult> all_results = { result_add };
+        QList<AdResult> results = {
+            result_add
+        };
         if (result_add.success) {
             const QList<AdResult> attribute_results = apply_attribute_edits(attributes, dn);
-            all_results.append(attribute_results);
+            results.append(attribute_results);
         }
 
-        if (no_errors(all_results)) {
+        if (no_errors(results)) {
             Status::instance()->message(QString(tr("Created user - \"%1\"")).arg(name), StatusType_Success);
         } else {
             // Delete object if it was added
@@ -409,7 +353,7 @@ void CreateUserDialog::on_accepted() {
                 AdInterface::instance()->object_delete(dn);
             }
 
-            show_warnings_for_error_results(all_results, this);
+            show_warnings_for_error_results(results, this);
 
             Status::instance()->message(QString(tr("Failed to create user - \"%1\"")).arg(name), StatusType_Error);
         }
@@ -432,4 +376,20 @@ const char **get_create_type_classes(const CreateType type) {
         case CreateType_COUNT: return classes_user;
     }
     return classes_user;
+}
+
+void layout_buttons(QGridLayout *layout, QPushButton *cancel, QPushButton *ok) {
+    const int button_row = layout->rowCount();
+    layout->addWidget(cancel, button_row, 0, Qt::AlignLeft);
+    layout->addWidget(ok, button_row, 1, Qt::AlignRight);
+}
+
+// When "from" edit is edited, the text is copied to "to" edit
+// But "to" can still be edited separately if needed
+void autofill_edit_text_from_other_edit(QLineEdit *from, QLineEdit *to) {
+    QObject::connect(
+        from, &QLineEdit::textChanged,
+        [=] () {
+            to->setText(from->text());
+        });
 }

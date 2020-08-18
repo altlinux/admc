@@ -69,8 +69,9 @@ private slots:
 
 private:
     QString parent_dn;
+    
     QLineEdit *name_edit;
-    QLineEdit *sama_edit;
+    QMap<QString, QLineEdit *> attributes;
     QComboBox *scope_combo;
     QComboBox *type_combo;
 };
