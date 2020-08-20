@@ -63,7 +63,7 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
 
     add_edit(ATTRIBUTE_DISPLAY_NAME, tr("Display name:"));
     add_edit(ATTRIBUTE_DESCRIPTION, tr("Description:"));
-    add_edit(ATTRIBUTE_GIVEN_NAME, tr("First name"));
+    add_edit(ATTRIBUTE_FIRST_NAME, tr("First name"));
     add_edit(ATTRIBUTE_INITIALS, tr("Initials:"));
     add_edit(ATTRIBUTE_MAIL, tr("Email:"));
     add_edit(ATTRIBUTE_OFFICE, tr("Office:"));

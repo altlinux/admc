@@ -46,7 +46,6 @@
 #define ATTRIBUTE_SAMACCOUNT_NAME       "sAMAccountName"
 #define ATTRIBUTE_DISPLAY_NAME          "displayName"
 #define ATTRIBUTE_DESCRIPTION           "description"
-#define ATTRIBUTE_GIVEN_NAME            "givenName"
 #define ATTRIBUTE_USER_PRINCIPAL_NAME   "userPrincipalName"
 #define ATTRIBUTE_MAIL                  "mail"
 #define ATTRIBUTE_OFFICE                "physicalDeliveryOfficeName"
@@ -167,6 +166,7 @@ public:
     // Each start call must be followed by a matching end call!
     void start_batch();
     void end_batch();
+    bool batch_is_in_progress() const;
 
     QString get_search_base();
     QString get_uri();

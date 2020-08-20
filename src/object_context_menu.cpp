@@ -93,7 +93,8 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
         const QString object_string = create_type_to_string(type);
 
         submenu_new->addAction(object_string, [this, dn, type]() {
-            create_dialog(dn, type, this);
+            const auto create_dialog = new CreateDialog(dn, type, this);
+            create_dialog->open();
         });
     }
 

@@ -21,12 +21,13 @@
 
 #include <QHash>
 
+// TODO: I think scheme might have these mappings available BUT, it's unlikely that it has them in anything but English, soooo would prefer to not hardcode all of these here and use some external resource that already exists, BUT might be impossible due to needing a translation. Worst case scenario should at least bring this out into a resource file
+
 // NOTE: have to do this like this because for translation to work, the "tr()" calls need to happen after QTranslator is setup
 QString get_attribute_display_string(const QString &attribute) {
     static const QHash<QString, QString> display_strings = {
         {ATTRIBUTE_DISPLAY_NAME, QObject::tr("Full name")},
         {ATTRIBUTE_DESCRIPTION, QObject::tr("Description")},
-        {ATTRIBUTE_GIVEN_NAME, QObject::tr("Given name")},
         {ATTRIBUTE_USER_PRINCIPAL_NAME, QObject::tr("Logon name")},
         {ATTRIBUTE_SAMACCOUNT_NAME, QObject::tr("Logon name (pre-2000)")},
         {ATTRIBUTE_FIRST_NAME, QObject::tr("First name")},

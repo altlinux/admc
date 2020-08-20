@@ -25,6 +25,8 @@
 #include <QAbstractItemView>
 #include <QModelIndex>
 #include <QCheckBox>
+#include <QLabel>
+#include <QGridLayout>
 
 // Converts index all the way down to source index, going through whatever chain of proxies is present
 QModelIndex convert_to_source(const QModelIndex &index) {
@@ -110,4 +112,12 @@ void setup_model_chain(QAbstractItemView *view, QAbstractItemModel *source_model
 
 bool checkbox_is_checked(const QCheckBox *checkbox) {
     return (checkbox->checkState() == Qt::Checked);
+}
+
+void append_to_grid_layout_with_label(QGridLayout *layout, const QString &label_text, QWidget *widget) {
+    const auto label = new QLabel(label_text);
+
+    const int row = layout->rowCount();
+    layout->addWidget(label, row, 0);
+    layout->addWidget(widget, row, 1);
 }

@@ -21,7 +21,8 @@
 #include "ad_interface.h"
 #include "utils.h"
 #include "status.h"
-#include "attribute_widgets.h"
+#include "attribute_edit.h"
+#include "utils.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -33,26 +34,13 @@
 #include <QComboBox>
 #include <QMessageBox>
 #include <QCheckBox>
+#include <QDialogButtonBox>
 
 // TODO: implement cannot change pass
 
-void autofill_edit_text_from_other_edit(QLineEdit *from, QLineEdit *to);
+void autofill_edit_from_other_edit(QLineEdit *from, QLineEdit *to);
+void autofill_full_name(QLineEdit *full_name_edit, QLineEdit *first_name_edit, QLineEdit *last_name_edit);
 QString create_type_to_string(const CreateType &type);
-
-void create_dialog(const QString &parent_dn, CreateType type, QWidget *parent) {
-    auto get_create_dialog =
-    [=]() -> QDialog * {
-        switch (type) {
-            case CreateType_Group: return new CreateGroupDialog(parent_dn, CreateType_Group, parent);
-            case CreateType_User: return new CreateUserDialog(parent_dn, CreateType_User, parent);
-            default: return new CreateDialog(parent_dn, type, parent);
-        }
-        return nullptr;
-    };
-
-    const auto create_dialog = get_create_dialog();
-    create_dialog->open();
-}
 
 CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QWidget *parent)
 : QDialog(parent)
@@ -70,30 +58,41 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QW
     edits_layout = new QGridLayout();
 
     name_edit = new QLineEdit();
-    layout_labeled_widget(edits_layout, tr("Name"), name_edit);
+    append_to_grid_layout_with_label(edits_layout, tr("Name"), name_edit);
 
-    const auto ok_button = new QPushButton(tr("OK"));
-    const auto cancel_button = new QPushButton(tr("Cancel"));
+    switch (type) {
+        case CreateType_User: {
+            make_user_edits();
+            break;
+        }
+        case CreateType_Group: {
+            make_group_edits();
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 
-    const auto button_layout = new QHBoxLayout();
-    button_layout->addWidget(cancel_button);
-    button_layout->addWidget(ok_button);
+    layout_attribute_edits(all_edits, edits_layout, this);
+
+    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addWidget(title_label);
     top_layout->addLayout(edits_layout);
-    top_layout->addLayout(button_layout);
+    top_layout->addWidget(button_box);
 
     connect(
-        ok_button, &QAbstractButton::clicked,
-        this, &CreateDialog::on_ok);
+        button_box, &QDialogButtonBox::accepted,
+        this, &CreateDialog::accept);
     connect(
-        cancel_button, &QAbstractButton::clicked,
+        button_box, &QDialogButtonBox::rejected,
         this, &QDialog::reject);
 }
 
-void CreateDialog::on_ok() {
+void CreateDialog::accept() {
     const QString name = name_edit->text();
 
     auto get_suffix =
@@ -110,6 +109,11 @@ void CreateDialog::on_ok() {
     const QString suffix = get_suffix(type);
 
     const QString dn = suffix + "=" + name + "," + parent_dn;
+
+    const bool verify_success = verify_attribute_edits(all_edits, this);
+    if (!verify_success) {
+        return;
+    }
 
     auto get_classes =
     [](CreateType type_arg) {
@@ -129,86 +133,57 @@ void CreateDialog::on_ok() {
     };
     const char **classes = get_classes(type);
 
-    const AdResult result_add = AdInterface::instance()->object_add(dn, classes);
-    QList<AdResult> results = { result_add };
+    AdInterface::instance()->start_batch();
+    {
+        const AdResult result_add = AdInterface::instance()->object_add(dn, classes);
 
-    if (result_add.success) {
-        const QList<AdResult> results_more = apply_more_widgets(dn);
-        results.append(results_more);
-    }
-
-    const QString type_string = create_type_to_string(type);
-
-    if (no_errors(results)) {
-        const QString message = QString(CreateDialog::tr("Created %1 - \"%2\"")).arg(type_string, name);
-
-        Status::instance()->message(message, StatusType_Success);
-    } else {
+        bool result_apply = false;
         if (result_add.success) {
-            AdInterface::instance()->object_delete(dn);
+            result_apply = apply_attribute_edits(all_edits, dn, ApplyAttributeEditBatch_No, this);
         }
 
-        show_warnings_for_error_results(results, this);
+        const QString type_string = create_type_to_string(type);
 
-        const QString message = QString(CreateDialog::tr("Failed to create %1 - \"%2\"")).arg(type_string, name);
+        if (result_add.success & result_apply) {
+            const QString message = QString(CreateDialog::tr("Created %1 - \"%2\"")).arg(type_string, name);
 
-        Status::instance()->message(message, StatusType_Error);
+            Status::instance()->message(message, StatusType_Success);
+
+            QDialog::accept();
+        } else {
+            if (result_add.success) {
+                AdInterface::instance()->object_delete(dn);
+            } else {
+                QMessageBox::critical(this, QObject::tr("Error"), result_add.error_with_context);
+            }
+
+            const QString message = QString(CreateDialog::tr("Failed to create %1 - \"%2\"")).arg(type_string, name);
+            Status::instance()->message(message, StatusType_Error);
+        }
     }
+    AdInterface::instance()->end_batch();
 }
 
-QList<AdResult> CreateDialog::apply_more_widgets(const QString &dn) {
-    return QList<AdResult>();
-}
+void CreateDialog::make_group_edits() {
+    const auto sama_name = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME);
+    autofill_edit_from_other_edit(name_edit, sama_name->edit);
 
-CreateGroupDialog::CreateGroupDialog(const QString &parent_dn_arg, CreateType type_arg, QWidget *parent)
-:CreateDialog(parent_dn_arg, type_arg, parent) {
-    const QList<QString> attributes_to_make = {
-        ATTRIBUTE_SAMACCOUNT_NAME,
+    const auto group_scope = new GroupScopeEdit();
+    const auto group_type = new GroupTypeEdit();
+
+    all_edits = {
+        sama_name,
+        group_scope,
+        group_type
     };
-    make_attribute_edits(attributes_to_make, edits_layout, &attributes);
-
-    autofill_edit_text_from_other_edit(name_edit, attributes[ATTRIBUTE_SAMACCOUNT_NAME]);
-
-    scope_combo = new QComboBox(this);
-    for (int i = 0; i < GroupScope_COUNT; i++) {
-        const GroupScope scope = (GroupScope) i;
-        const QString scope_string = group_scope_to_string(scope);
-
-        scope_combo->addItem(scope_string, (int)scope);
-    }
-    layout_labeled_widget(edits_layout, tr("Group scope:"), scope_combo);
-
-    type_combo = new QComboBox(this);
-    for (int i = 0; i < GroupType_COUNT; i++) {
-        const GroupType group_type = (GroupType) i;
-        const QString type_string = group_type_to_string(group_type);
-
-        type_combo->addItem(type_string, (int)group_type);
-    }
-    layout_labeled_widget(edits_layout, tr("Group type:"), type_combo);
 }
 
-QList<AdResult> CreateGroupDialog::apply_more_widgets(const QString &dn) {
-    QList<AdResult> results;
-
-    const GroupScope group_scope = (GroupScope)scope_combo->currentData().toInt();
-    const GroupType group_type = (GroupType)scope_combo->currentData().toInt();
-
-    results.append(apply_attribute_edits(attributes, dn));
-
-    results.append(AdInterface::instance()->group_set_type(dn, group_type));
-    results.append(AdInterface::instance()->group_set_scope(dn, group_scope));
-
-    return results;
-}
-
-CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, CreateType type_arg, QWidget *parent)
-:CreateDialog(parent_dn_arg, type_arg, parent) {
+void CreateDialog::make_user_edits() {
     // TODO: do password, make it share code with password dialog
     // make_edit(tr("Password"), &pass_edit);
     // make_edit(tr("Confirm password"), &pass_confirm_edit);
 
-    const QList<QString> attributes_to_make = {
+    const QList<QString> string_attributes = {
         ATTRIBUTE_FIRST_NAME,
         ATTRIBUTE_LAST_NAME,
         ATTRIBUTE_DISPLAY_NAME,
@@ -216,30 +191,39 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, CreateType type
         ATTRIBUTE_USER_PRINCIPAL_NAME,
         ATTRIBUTE_SAMACCOUNT_NAME,
     };
-    make_attribute_edits(attributes_to_make, edits_layout, &attributes);
+    QMap<QString, StringEdit *> string_edits;
+    make_string_edits(string_attributes, &string_edits);
 
-    autofill_edit_text_from_other_edit(name_edit, attributes[ATTRIBUTE_SAMACCOUNT_NAME]);
+    QLineEdit *sama_name_edit = string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->edit;
+    autofill_edit_from_other_edit(name_edit, sama_name_edit);
 
-    const QList<AccountOption> options_to_make = {
+    const QList<AccountOption> options = {
         AccountOption_PasswordExpired,
         AccountOption_DontExpirePassword,
         AccountOption_Disabled
-        // TODO:
-        // AccountOption_CannotChangePass
+        // TODO: AccountOption_CannotChangePass
     };
-    make_account_option_checks(options_to_make, edits_layout, &account_options);
+    QMap<AccountOption, AccountOptionEdit *> option_edits;
+    make_accout_option_edits(options, &option_edits);
+
+    // NOTE: use keys from lists to get correct order
+    for (auto attribute : string_attributes) {
+        all_edits.append(string_edits[attribute]);
+    }
+    for (auto option : options) {
+        all_edits.append(option_edits[option]);
+    }
 
     // When PasswordExpired is set, you can't set CannotChange and DontExpirePassword
     // Prevent the conflicting checks from being set when PasswordExpired is set already and show a message about it
+    const QCheckBox *pass_expired_check = option_edits[AccountOption_PasswordExpired]->check;
     auto connect_never_expire_conflict =
-    [this](AccountOption option) {
-        QCheckBox *conflict = account_options[option]; 
+    [this, pass_expired_check, option_edits](AccountOption option) {
+        QCheckBox *conflict = option_edits[option]->check; 
         
         connect(conflict, &QCheckBox::stateChanged,
-            [this, conflict, option]() {
-                QCheckBox *pass_expired = account_options[AccountOption_PasswordExpired]; 
-                
-                if (checkbox_is_checked(pass_expired) && checkbox_is_checked(conflict)) {
+            [this, conflict, option, pass_expired_check]() {
+                if (checkbox_is_checked(pass_expired_check) && checkbox_is_checked(conflict)) {
                     conflict->setCheckState(Qt::Checked);
 
                     const QString pass_expired_text = get_account_option_description(AccountOption_PasswordExpired);
@@ -252,27 +236,41 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, CreateType type
             );
     };
 
+    QLineEdit *full_name_edit = string_edits[ATTRIBUTE_DISPLAY_NAME]->edit;
+    QLineEdit *first_name_edit = string_edits[ATTRIBUTE_FIRST_NAME]->edit;
+    QLineEdit *last_name_edit = string_edits[ATTRIBUTE_LAST_NAME]->edit;
+    autofill_full_name(full_name_edit, first_name_edit, last_name_edit);
+
     connect_never_expire_conflict(AccountOption_PasswordExpired);
-    // connect_never_expire_conflict(AccountOption_CannotChange);
-
-    // TODO: make full name auto-generate from first/last
-}
-
-QList<AdResult> CreateUserDialog::apply_more_widgets(const QString &dn) {
-    const QList<AdResult> results = apply_attribute_edits(attributes, dn);
-    // TODO: account options and batching (for all other create dialogs too)
-
-    return results;
+    // TODO: connect_never_expire_conflict(AccountOption_CannotChange);
 }
 
 // When "from" edit is edited, the text is copied to "to" edit
 // But "to" can still be edited separately if needed
-void autofill_edit_text_from_other_edit(QLineEdit *from, QLineEdit *to) {
+void autofill_edit_from_other_edit(QLineEdit *from, QLineEdit *to) {
     QObject::connect(
         from, &QLineEdit::textChanged,
         [=] () {
             to->setText(from->text());
         });
+}
+
+void autofill_full_name(QLineEdit *full_name_edit, QLineEdit *first_name_edit, QLineEdit *last_name_edit) {
+    auto autofill =
+    [=]() {
+        const QString first_name = first_name_edit->text(); 
+        const QString last_name = last_name_edit->text();
+        const QString full_name = first_name + " " + last_name; 
+
+        full_name_edit->setText(full_name);
+    };
+
+    QObject::connect(
+        first_name_edit, &QLineEdit::textChanged,
+        autofill);
+    QObject::connect(
+        last_name_edit, &QLineEdit::textChanged,
+        autofill);
 }
 
 QString create_type_to_string(const CreateType &type) {

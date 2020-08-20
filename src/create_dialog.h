@@ -32,6 +32,10 @@ class QVBoxLayout;
 class QComboBox;
 class QCheckBox;
 class QGridLayout;
+class AttributeEdit;
+class StringEdit;
+class GroupScopeEdit;
+class GroupTypeEdit;
 
 enum CreateType {
     CreateType_User,
@@ -41,14 +45,11 @@ enum CreateType {
     CreateType_COUNT
 };
 
-// Create and open a create dialog appropriate for given type
-void create_dialog(const QString &parent_dn, CreateType type, QWidget *parent);
-
 /**
  * By default only has line edit for name and creates an object with
  * that name.
  * Subclass to add more widgets.
- * Then override apply_more_widgets() to apply changes from
+ bool apply_more_widgets() to apply changes from
  * those widgets after object is created.
  */
 class CreateDialog : public QDialog {
@@ -60,45 +61,17 @@ public:
 protected:
     QGridLayout *edits_layout;
     QLineEdit *name_edit;
+    QList<AttributeEdit *> all_edits;
 
 private slots:
-    void on_ok();
-    
+    void accept();
+
 private:
     QString parent_dn;
     CreateType type;
 
-    virtual QList<AdResult> apply_more_widgets(const QString &dn);
-};
-
-class CreateGroupDialog final : public CreateDialog {
-Q_OBJECT
-
-public:
-    CreateGroupDialog(const QString &parent_dn_arg, CreateType type_arg, QWidget *parent);
-
-private:
-    QMap<QString, QLineEdit *> attributes;
-    QComboBox *scope_combo;
-    QComboBox *type_combo;
-
-    QList<AdResult> apply_more_widgets(const QString &dn) override;
-};
-
-class CreateUserDialog final : public CreateDialog {
-Q_OBJECT
-
-public:
-    CreateUserDialog(const QString &parent_dn_arg, CreateType type_arg, QWidget *parent);
-
-private:
-    QMap<QString, QLineEdit *> attributes;
-    QMap<AccountOption, QCheckBox *> account_options;
-    
-    QList<AdResult> apply_more_widgets(const QString &dn) override;
-
-    // QLineEdit *pass_edit;
-    // QLineEdit *pass_confirm_edit;
+    void make_user_edits();
+    void make_group_edits();
 };
 
 QString create_type_to_string(const CreateType &type);

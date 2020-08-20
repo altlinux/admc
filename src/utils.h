@@ -28,6 +28,8 @@ class QAbstractItemView;
 class QAbstractProxyModel;
 class QString;
 class QCheckBox;
+class QGridLayout;
+class widget;
 
 QModelIndex convert_to_source(const QModelIndex &index);
 QString get_dn_from_index(const QModelIndex &base_row_index, int dn_column);
@@ -35,5 +37,6 @@ QIcon get_object_icon(const QString &dn);
 void set_root_to_head(QAbstractItemView *view);
 void setup_model_chain(QAbstractItemView *view, QAbstractItemModel *source_model, QList<QAbstractProxyModel *> proxies);
 bool checkbox_is_checked(const QCheckBox *checkbox);
+void append_to_grid_layout_with_label(QGridLayout *layout, const QString &label_text, QWidget *widget);
 
 #endif /* UTILS_H */

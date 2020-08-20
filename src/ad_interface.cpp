@@ -130,6 +130,10 @@ void AdInterface::end_batch() {
     batched_dns.clear();
 }
 
+bool AdInterface::batch_is_in_progress() const {
+    return batch_in_progress;
+}
+
 QString AdInterface::get_search_base() {
     return QString::fromStdString(connection->get_search_base());
 }
