@@ -83,7 +83,7 @@ private:
 class GroupTypeEdit final : public AttributeEdit {
 public:
     QComboBox *combo;
-    
+
     GroupTypeEdit();
 
     void add_to_layout(QGridLayout *layout);
@@ -96,6 +96,21 @@ public:
     QCheckBox *check;
 
     AccountOptionEdit(const AccountOption option_arg);
+
+    void add_to_layout(QGridLayout *layout);
+    bool verify_input(QWidget *parent);
+    AdResult apply(const QString &dn);
+
+private:
+    AccountOption option;
+};
+
+class PasswordEdit final : public AttributeEdit {
+public:
+    QLineEdit *edit;
+    QLineEdit *confirm_edit;
+
+    PasswordEdit();
 
     void add_to_layout(QGridLayout *layout);
     bool verify_input(QWidget *parent);

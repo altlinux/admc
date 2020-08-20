@@ -230,3 +230,38 @@ AdResult AccountOptionEdit::apply(const QString &dn) {
 
     return result;
 }
+
+PasswordEdit::PasswordEdit() {
+    edit = new QLineEdit();
+    confirm_edit = new QLineEdit();
+
+    edit->setEchoMode(QLineEdit::Password);
+    confirm_edit->setEchoMode(QLineEdit::Password);
+}
+
+void PasswordEdit::add_to_layout(QGridLayout *layout) {
+    append_to_grid_layout_with_label(layout, QObject::tr("Password") , edit);
+    append_to_grid_layout_with_label(layout, QObject::tr("Confirm password") , confirm_edit);
+}
+
+bool PasswordEdit::verify_input(QWidget *parent) {
+    const QString pass = edit->text();
+    const QString confirm_pass = confirm_edit->text();
+
+    if (pass != confirm_pass) {
+        const QString error_text = QString(QObject::tr("Passwords don't match!"));
+        QMessageBox::warning(parent, QObject::tr("Error"), error_text);
+
+        return false;
+    }
+
+    return true;
+}
+
+AdResult PasswordEdit::apply(const QString &dn) {
+    const QString new_value = edit->text();
+
+    AdResult result = AdInterface::instance()->set_pass(dn, new_value);
+
+    return result;
+}

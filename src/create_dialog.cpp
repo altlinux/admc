@@ -179,10 +179,6 @@ void CreateDialog::make_group_edits() {
 }
 
 void CreateDialog::make_user_edits() {
-    // TODO: do password, make it share code with password dialog
-    // make_edit(tr("Password"), &pass_edit);
-    // make_edit(tr("Confirm password"), &pass_confirm_edit);
-
     const QList<QString> string_attributes = {
         ATTRIBUTE_FIRST_NAME,
         ATTRIBUTE_LAST_NAME,
@@ -194,8 +190,7 @@ void CreateDialog::make_user_edits() {
     QMap<QString, StringEdit *> string_edits;
     make_string_edits(string_attributes, &string_edits);
 
-    QLineEdit *sama_name_edit = string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->edit;
-    autofill_edit_from_other_edit(name_edit, sama_name_edit);
+    auto password_edit = new PasswordEdit();
 
     const QList<AccountOption> options = {
         AccountOption_PasswordExpired,
@@ -210,9 +205,13 @@ void CreateDialog::make_user_edits() {
     for (auto attribute : string_attributes) {
         all_edits.append(string_edits[attribute]);
     }
+    all_edits.append(password_edit);
     for (auto option : options) {
         all_edits.append(option_edits[option]);
     }
+
+    QLineEdit *sama_name_edit = string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->edit;
+    autofill_edit_from_other_edit(name_edit, sama_name_edit);
 
     // When PasswordExpired is set, you can't set CannotChange and DontExpirePassword
     // Prevent the conflicting checks from being set when PasswordExpired is set already and show a message about it
