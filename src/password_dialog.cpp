@@ -19,6 +19,7 @@
 
 #include "password_dialog.h"
 #include "ad_interface.h"
+#include "attribute_edit.h"
 
 #include <QLineEdit>
 #include <QGridLayout>
@@ -38,23 +39,14 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
     const QString top_label_text = QString(tr("Resetting password of \"%1\"")).arg(target_name);
     const auto top_label = new QLabel(top_label_text, this);
 
-    const auto new_password_label = new QLabel(tr("New password:"), this);
-    new_password_edit = new QLineEdit(this);
-    new_password_edit->setEchoMode(QLineEdit::Password);
-
-    const auto confirm_password_label = new QLabel(tr("Confirm password:"), this);
-    confirm_password_edit = new QLineEdit(this);
-    confirm_password_edit->setEchoMode(QLineEdit::Password);
+    password_edit = new PasswordEdit();
 
     const auto ok_button = new QPushButton(tr("OK"), this);
     const auto cancel_button = new QPushButton(tr("Cancel"), this);
 
     const auto layout = new QGridLayout(this);
     layout->addWidget(top_label, 0, 0);
-    layout->addWidget(new_password_label, 1, 0);
-    layout->addWidget(new_password_edit, 1, 1, 1, 2);
-    layout->addWidget(confirm_password_label, 2, 0);
-    layout->addWidget(confirm_password_edit, 2, 1, 1, 2);
+    password_edit->add_to_layout(layout);
     layout->addWidget(cancel_button, 3, 0, Qt::AlignLeft);
     layout->addWidget(ok_button, 3, 2, Qt::AlignRight);
 
@@ -67,21 +59,17 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 }
 
 void PasswordDialog::on_ok_button(bool) {
-    const QString new_password = new_password_edit->text();
-    const QString confirm_password = confirm_password_edit->text();
-
-    if (new_password != confirm_password) {
-        QMessageBox::warning(this, tr("Warning"), tr("Passwords don't match!"));
-        
+    const bool verify_success = password_edit->verify_input(this);  
+    if (!verify_success) {
         return;
     }
 
-    const AdResult result = AdInterface::instance()->set_pass(target, new_password);
+    const AdResult apply_result = password_edit->apply(target);
 
-    if (result.success) {
-        done(QDialog::Accepted);
+    if (apply_result.success) {
+        QDialog::accept();
     } else {
-        QMessageBox::warning(this, "Warning", QString(tr("Failed to set password! %1")).arg(result.error));
+        apply_result.show_error_popup(this);
     }
 }
 

@@ -45,8 +45,6 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, Appl
 void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *edits_out);
 void make_accout_option_edits(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *edits_out);
 
-// NOTE: verify_input reuses AdResult even though it doesn't actually call any AdInterface functions, not sure about this but seems to be decent for now. Might make more sense to have an overall Result, not specific to Ad, though for that only bool + string make sense. The thing with error vs error_with_context only makes sense for AdInterface. Though maybe that should be changed, leaving only error(with context), because error alone is barely used and doesn't seem necessary
-
 class AttributeEdit {
 public:
     virtual void add_to_layout(QGridLayout *layout) = 0;

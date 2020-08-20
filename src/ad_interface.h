@@ -140,6 +140,8 @@ public:
 
     AdResult(bool success_arg);
     AdResult(bool success_arg, const QString &context, const QString &error_arg);
+    
+    void show_error_popup(QWidget *parent) const;
 };
 
 typedef QMap<QString, QList<QString>> Attributes;

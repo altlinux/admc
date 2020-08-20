@@ -66,7 +66,7 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, Appl
         if (!result.success) {
             success = false;
 
-            QMessageBox::critical(parent, QObject::tr("Error"), result.error_with_context);
+            result.show_error_popup(parent);
         }
     }
 

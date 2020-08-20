@@ -24,7 +24,7 @@
 #include <QString>
 
 class QWidget;
-class QLineEdit;
+class PasswordEdit;
 
 // Accepts input of new password and changes password when done
 class PasswordDialog final : public QDialog {
@@ -39,8 +39,7 @@ private slots:
 
 private:
     QString target;
-    QLineEdit *new_password_edit = nullptr;
-    QLineEdit *confirm_password_edit = nullptr;
+    PasswordEdit *password_edit;
 
 };
 
