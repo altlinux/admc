@@ -34,8 +34,7 @@ public:
     PasswordDialog(const QString &target_arg, QWidget *parent);
 
 private slots:
-    void on_ok_button(bool);
-    void on_cancel_button(bool);
+    void accept();
 
 private:
     QString target;

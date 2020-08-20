@@ -1273,10 +1273,6 @@ AdResult::AdResult(bool success_arg, const QString &error_arg, const QString &co
     error_with_context = combine_context_and_error(context, error_arg);
 }
 
-void AdResult::show_error_popup(QWidget *parent) const {
-    QMessageBox::critical(parent, QObject::tr("Error"), error_with_context);
-}
-
 int bit_set(int bitmask, int bit, bool set) {
     if (set) {
         return bitmask | bit;

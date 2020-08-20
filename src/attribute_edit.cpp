@@ -66,7 +66,7 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, Appl
         if (!result.success) {
             success = false;
 
-            result.show_error_popup(parent);
+            QMessageBox::critical(parent, QObject::tr("Error"), result.error_with_context);
         }
     }
 
@@ -75,6 +75,15 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, Appl
     }
 
     return success;
+}
+
+bool apply_attribute_edit(AttributeEdit *edit, const QString &dn, QWidget *parent) {
+    QList<AttributeEdit* > edits;
+    edits.append(edit);
+
+    const bool apply_success = apply_attribute_edits(edits, dn, ApplyAttributeEditBatch_No, parent);
+
+    return apply_success;
 }
 
 void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *edits_out) {

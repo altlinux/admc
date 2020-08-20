@@ -26,6 +26,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QDialogButtonBox>
 
 // TODO: find out exact password rules and add them to dialog?
 // or display more info about constraint violations
@@ -36,43 +37,34 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
     target = target_arg;
 
     const QString target_name = extract_name_from_dn(target);
-    const QString top_label_text = QString(tr("Resetting password of \"%1\"")).arg(target_name);
-    const auto top_label = new QLabel(top_label_text, this);
+    const QString title_label_text = QString(tr("Resetting password of \"%1\"")).arg(target_name);
+    const auto title_label = new QLabel(title_label_text, this);
+
+    auto edits_layout = new QGridLayout();
 
     password_edit = new PasswordEdit();
+    password_edit->add_to_layout(edits_layout);
 
-    const auto ok_button = new QPushButton(tr("OK"), this);
-    const auto cancel_button = new QPushButton(tr("Cancel"), this);
+    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
 
-    const auto layout = new QGridLayout(this);
-    layout->addWidget(top_label, 0, 0);
-    password_edit->add_to_layout(layout);
-    layout->addWidget(cancel_button, 3, 0, Qt::AlignLeft);
-    layout->addWidget(ok_button, 3, 2, Qt::AlignRight);
+    const auto layout = new QVBoxLayout();
+    setLayout(layout);
+    layout->addWidget(title_label);
+    layout->addLayout(edits_layout);
+    layout->addWidget(button_box);
 
     connect(
-        ok_button, &QAbstractButton::clicked,
-        this, &PasswordDialog::on_ok_button);
+        button_box, &QDialogButtonBox::accepted,
+        this, &PasswordDialog::accept);
     connect(
-        cancel_button, &QAbstractButton::clicked,
-        this, &PasswordDialog::on_cancel_button);
+        button_box, &QDialogButtonBox::rejected,
+        this, &QDialog::reject);
 }
 
-void PasswordDialog::on_ok_button(bool) {
-    const bool verify_success = password_edit->verify_input(this);  
-    if (!verify_success) {
-        return;
-    }
+void PasswordDialog::accept() {
+    const bool apply_success = apply_attribute_edit(password_edit, target, this);
 
-    const AdResult apply_result = password_edit->apply(target);
-
-    if (apply_result.success) {
+    if (apply_success) {
         QDialog::accept();
-    } else {
-        apply_result.show_error_popup(this);
     }
-}
-
-void PasswordDialog::on_cancel_button(bool) {
-    done(QDialog::Rejected);
 }
