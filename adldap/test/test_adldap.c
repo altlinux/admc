@@ -27,44 +27,20 @@
 #include "active_directory.h"
 
 /* This function is not present in header files */
-int dn2domain(const char* dn, char** domain);
+size_t ad_array_size(char **array);
 
-static void test_dn2domain_correct(void **state) {
-    const char* test_dn = "DC=domain,DC=alt";
-    const char* desired_result = "domain.alt.";
-    char* domain = NULL;
-    int result = dn2domain(test_dn, &domain);
+static void test_ad_array_size(void **state) {
+    char *test_array[] = {"1", "2", "3", NULL};
 
-    assert_return_code(result, AD_SUCCESS);
-    assert_non_null(domain);
-    assert_string_equal(domain, desired_result);
+    size_t size = ad_array_size((char **)test_array);
 
-    if (NULL != domain) {
-        free(domain);
-        domain = NULL;
-    }
-}
-
-static void test_dn2domain_incorrect(void **state) {
-    const char* test_dn = "some-shit";
-    char* domain = NULL;
-    int result = dn2domain(test_dn, &domain);
-
-    assert_return_code(result, AD_LDAP_OPERATION_FAILURE);
-    assert_null(domain);
-
-    if (NULL != domain) {
-        free(domain);
-        domain = NULL;
-    }
+    assert_true(size == 3);
 }
 
 int main(void) {
     const struct CMUnitTest tests[] = {
-          cmocka_unit_test(test_dn2domain_correct)
-        , cmocka_unit_test(test_dn2domain_incorrect)
+        cmocka_unit_test(test_ad_array_size)
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
-

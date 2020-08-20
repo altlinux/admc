@@ -144,8 +144,8 @@ void CreateDialog::add_ok_cancel_buttons() {
     const auto cancel_button = new QPushButton(tr("Cancel"), this);
 
     const int button_row = layout->rowCount();
-    layout->addWidget(cancel, button_row, 0, Qt::AlignLeft);
-    layout->addWidget(ok, button_row, 1, Qt::AlignRight);
+    layout->addWidget(cancel_button, button_row, 0, Qt::AlignLeft);
+    layout->addWidget(ok_button, button_row, 1, Qt::AlignRight);
 
     connect(
         ok_button, &QAbstractButton::clicked,
