@@ -57,20 +57,17 @@ Q_OBJECT
 public:
     CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QWidget *parent);
 
-private slots:
-    void on_ok();
-
 protected:
-    QGridLayout *layout;
+    QGridLayout *edits_layout;
     QLineEdit *name_edit;
 
-    void add_ok_cancel_buttons();
-
+private slots:
+    void on_ok();
+    
 private:
     QString parent_dn;
     CreateType type;
 
-    // Override this in subclass
     virtual QList<AdResult> apply_more_widgets(const QString &dn);
 };
 

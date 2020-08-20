@@ -63,17 +63,34 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QW
     setAttribute(Qt::WA_DeleteOnClose);
     resize(600, 600);
 
-    layout = new QGridLayout();
-    setLayout(layout);
-
     const QString type_string = create_type_to_string(type);
     const auto title_text = QString(CreateDialog::tr("Create %1 in \"%2\"")).arg(type_string, parent_dn);
-    auto label = new QLabel(title_text);
+    const auto title_label = new QLabel(title_text);
+    
+    edits_layout = new QGridLayout();
 
-    layout->addWidget(label);
+    name_edit = new QLineEdit();
+    layout_labeled_widget(edits_layout, tr("Name"), name_edit);
 
-    name_edit = new QLineEdit(this);
-    layout_labeled_widget(layout, tr("Name"), name_edit);
+    const auto ok_button = new QPushButton(tr("OK"));
+    const auto cancel_button = new QPushButton(tr("Cancel"));
+
+    const auto button_layout = new QHBoxLayout();
+    button_layout->addWidget(cancel_button);
+    button_layout->addWidget(ok_button);
+
+    const auto top_layout = new QVBoxLayout();
+    setLayout(top_layout);
+    top_layout->addWidget(title_label);
+    top_layout->addLayout(edits_layout);
+    top_layout->addLayout(button_layout);
+
+    connect(
+        ok_button, &QAbstractButton::clicked,
+        this, &CreateDialog::on_ok);
+    connect(
+        cancel_button, &QAbstractButton::clicked,
+        this, &QDialog::reject);
 }
 
 void CreateDialog::on_ok() {
@@ -139,22 +156,6 @@ void CreateDialog::on_ok() {
     }
 }
 
-void CreateDialog::add_ok_cancel_buttons() {
-    const auto ok_button = new QPushButton(tr("OK"), this);
-    const auto cancel_button = new QPushButton(tr("Cancel"), this);
-
-    const int button_row = layout->rowCount();
-    layout->addWidget(cancel_button, button_row, 0, Qt::AlignLeft);
-    layout->addWidget(ok_button, button_row, 1, Qt::AlignRight);
-
-    connect(
-        ok_button, &QAbstractButton::clicked,
-        this, &CreateDialog::on_ok);
-    connect(
-        cancel_button, &QAbstractButton::clicked,
-        this, &QDialog::reject);
-}
-
 QList<AdResult> CreateDialog::apply_more_widgets(const QString &dn) {
     return QList<AdResult>();
 }
@@ -164,7 +165,7 @@ CreateGroupDialog::CreateGroupDialog(const QString &parent_dn_arg, CreateType ty
     const QList<QString> attributes_to_make = {
         ATTRIBUTE_SAMACCOUNT_NAME,
     };
-    make_attribute_edits(attributes_to_make, layout, &attributes);
+    make_attribute_edits(attributes_to_make, edits_layout, &attributes);
 
     autofill_edit_text_from_other_edit(name_edit, attributes[ATTRIBUTE_SAMACCOUNT_NAME]);
 
@@ -175,7 +176,7 @@ CreateGroupDialog::CreateGroupDialog(const QString &parent_dn_arg, CreateType ty
 
         scope_combo->addItem(scope_string, (int)scope);
     }
-    layout_labeled_widget(layout, tr("Group scope:"), scope_combo);
+    layout_labeled_widget(edits_layout, tr("Group scope:"), scope_combo);
 
     type_combo = new QComboBox(this);
     for (int i = 0; i < GroupType_COUNT; i++) {
@@ -184,9 +185,7 @@ CreateGroupDialog::CreateGroupDialog(const QString &parent_dn_arg, CreateType ty
 
         type_combo->addItem(type_string, (int)group_type);
     }
-    layout_labeled_widget(layout, tr("Group type:"), type_combo);
-
-    add_ok_cancel_buttons();
+    layout_labeled_widget(edits_layout, tr("Group type:"), type_combo);
 }
 
 QList<AdResult> CreateGroupDialog::apply_more_widgets(const QString &dn) {
@@ -217,7 +216,7 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, CreateType type
         ATTRIBUTE_USER_PRINCIPAL_NAME,
         ATTRIBUTE_SAMACCOUNT_NAME,
     };
-    make_attribute_edits(attributes_to_make, layout, &attributes);
+    make_attribute_edits(attributes_to_make, edits_layout, &attributes);
 
     autofill_edit_text_from_other_edit(name_edit, attributes[ATTRIBUTE_SAMACCOUNT_NAME]);
 
@@ -228,7 +227,7 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, CreateType type
         // TODO:
         // AccountOption_CannotChangePass
     };
-    make_account_option_checks(options_to_make, layout, &account_options);
+    make_account_option_checks(options_to_make, edits_layout, &account_options);
 
     // When PasswordExpired is set, you can't set CannotChange and DontExpirePassword
     // Prevent the conflicting checks from being set when PasswordExpired is set already and show a message about it
@@ -257,8 +256,6 @@ CreateUserDialog::CreateUserDialog(const QString &parent_dn_arg, CreateType type
     // connect_never_expire_conflict(AccountOption_CannotChange);
 
     // TODO: make full name auto-generate from first/last
-
-    add_ok_cancel_buttons();
 }
 
 QList<AdResult> CreateUserDialog::apply_more_widgets(const QString &dn) {
