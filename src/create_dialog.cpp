@@ -197,8 +197,7 @@ void CreateDialog::make_user_edits() {
         AccountOption_Disabled
         // TODO: AccountOption_CannotChangePass
     };
-    QMap<AccountOption, AccountOptionEdit *> option_edits;
-    make_accout_option_edits(options, &option_edits);
+    QMap<AccountOption, AccountOptionEdit *> option_edits = make_account_option_edits(options, this);
 
     // NOTE: use keys from lists to get correct order
     for (auto attribute : string_attributes) {
@@ -212,35 +211,10 @@ void CreateDialog::make_user_edits() {
     QLineEdit *sama_name_edit = string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->edit;
     autofill_edit_from_other_edit(name_edit, sama_name_edit);
 
-    // When PasswordExpired is set, you can't set CannotChange and DontExpirePassword
-    // Prevent the conflicting checks from being set when PasswordExpired is set already and show a message about it
-    const QCheckBox *pass_expired_check = option_edits[AccountOption_PasswordExpired]->check;
-    auto connect_never_expire_conflict =
-    [this, pass_expired_check, option_edits](AccountOption option) {
-        QCheckBox *conflict = option_edits[option]->check; 
-        
-        connect(conflict, &QCheckBox::stateChanged,
-            [this, conflict, option, pass_expired_check]() {
-                if (checkbox_is_checked(pass_expired_check) && checkbox_is_checked(conflict)) {
-                    conflict->setCheckState(Qt::Checked);
-
-                    const QString pass_expired_text = get_account_option_description(AccountOption_PasswordExpired);
-                    const QString conflict_text = get_account_option_description(option);
-                    const QString error = QString(tr("Can't set \"%1\" when \"%2\" is set already.")).arg(conflict_text, pass_expired_text);
-
-                    QMessageBox::warning(this, "Error", error);
-                }
-            }
-            );
-    };
-
     QLineEdit *full_name_edit = string_edits[ATTRIBUTE_DISPLAY_NAME]->edit;
     QLineEdit *first_name_edit = string_edits[ATTRIBUTE_FIRST_NAME]->edit;
     QLineEdit *last_name_edit = string_edits[ATTRIBUTE_LAST_NAME]->edit;
     autofill_full_name(full_name_edit, first_name_edit, last_name_edit);
-
-    connect_never_expire_conflict(AccountOption_PasswordExpired);
-    // TODO: connect_never_expire_conflict(AccountOption_CannotChange);
 }
 
 // When "from" edit is edited, the text is copied to "to" edit

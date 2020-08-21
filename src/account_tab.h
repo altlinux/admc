@@ -30,13 +30,8 @@ class QLineEdit;
 class QCheckBox;
 class QLabel;
 class QPushButton;
+class AttributeEdit;
 
-struct UACCheck {
-    QCheckBox *check;
-    AccountOption option;
-};
-
-// Shows member objects of targeted group
 class AccountTab final : public DetailsTab {
 Q_OBJECT
 
@@ -48,22 +43,19 @@ public:
 
 private slots:
     void on_unlock_button();
-    void on_logon_name_edit();
     void on_expiry_never_check();
     void on_expiry_set_check();
     void on_expiry_edit_button();
     
 private:
-    QLineEdit *logon_name_edit;
-    QList<UACCheck> uac_checks;
+    QList<AttributeEdit *> edits;
 
-    QCheckBox *expiry_never_check;
-    QCheckBox *expiry_set_check;
-    QLabel *expiry_display;
-    QPushButton *expiry_edit_button;
+    // QCheckBox *expiry_never_check;
+    // QCheckBox *expiry_set_check;
+    // QLabel *expiry_display;
+    // QPushButton *expiry_edit_button;
 
     void reload_internal();
-    void reset_logon_name_edit();
 };
 
 #endif /* ACCOUNT_TAB_H */

@@ -93,11 +93,54 @@ void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit
     }
 }
 
-void make_accout_option_edits(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *edits_out) {
+QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<AccountOption> options, QWidget *parent) {
+    QMap<AccountOption, AccountOptionEdit *> edits;
+
     for (auto option : options) {
         auto edit = new AccountOptionEdit(option);
-        edits_out->insert(option, edit);
+        edits.insert(option, edit);
     }
+
+    // PasswordExpired conflicts with (DontExpirePassword and CantChangePassword)
+    // When PasswordExpired is set, the other two can't be set
+    // When any of the other two are set, PasswordExpired can't be set
+    // Implement this by connecting to state changes of all options and
+    // resetting to previous state if state transition is invalid
+    auto setup_conflict =
+    [parent, edits](const AccountOption subject, const AccountOption blocker) {
+        QCheckBox *subject_check = edits[subject]->check;
+        QCheckBox *blocker_check = edits[blocker]->check;
+
+        QObject::connect(subject_check, &QCheckBox::stateChanged,
+            [subject, blocker, subject_check, blocker_check, parent]() {
+                if (checkbox_is_checked(subject_check) && checkbox_is_checked(blocker_check)) {
+                    subject_check->setCheckState(Qt::Unchecked);
+
+                    const QString subject_name = get_account_option_description(subject);
+                    const QString blocker_name = get_account_option_description(blocker);
+                    const QString error = QString(QObject::tr("Can't set \"%1\" when \"%2\" is set.")).arg(blocker_name, subject_name);
+                    QMessageBox::warning(parent, QObject::tr("Error"), error);
+                }
+            }
+            );
+    };
+
+    // NOTE: only setup conflicts for options that exist
+    if (options.contains(AccountOption_PasswordExpired)) {
+        const QList<AccountOption> other_two_options = {
+            AccountOption_DontExpirePassword,
+            // TODO: AccountOption_CantChangePassword
+        };
+
+        for (auto other_option : other_two_options) {
+            if (options.contains(other_option)) {
+                setup_conflict(AccountOption_PasswordExpired, other_option);
+                setup_conflict(other_option, AccountOption_PasswordExpired);
+            }
+        }
+    }
+
+    return edits;
 }
 
 StringEdit::StringEdit(const QString &attribute_arg, const EditReadOnly read_only) {
@@ -240,6 +283,7 @@ AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg) {
 void AccountOptionEdit::load(const QString &dn) {
     const bool option_is_set = AdInterface::instance()->user_get_account_option(dn, option);
 
+    // TODO: block for all? logical i think
     check->blockSignals(true);
     {
         Qt::CheckState check_state;

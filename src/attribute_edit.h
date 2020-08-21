@@ -51,7 +51,7 @@ bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent);
 bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, ApplyAttributeEditBatch batch, QWidget *parent);
 bool apply_attribute_edit(AttributeEdit *edit, const QString &dn, QWidget *parent);
 void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *edits_out);
-void make_accout_option_edits(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *edits_out);
+QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<AccountOption> options, QWidget *parent);
 
 class AttributeEdit {
 public:

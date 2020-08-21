@@ -22,6 +22,7 @@
 
 #include <QModelIndex>
 #include <QIcon>
+#include <QMap>
 
 class QAbstractItemModel;
 class QAbstractItemView;
@@ -30,6 +31,7 @@ class QString;
 class QCheckBox;
 class QGridLayout;
 class QLineEdit;
+class AccountOptionEdit;
 
 QModelIndex convert_to_source(const QModelIndex &index);
 QString get_dn_from_index(const QModelIndex &base_row_index, int dn_column);
