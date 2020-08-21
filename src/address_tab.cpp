@@ -33,6 +33,8 @@
 
 // TODO: translate country strings to Russian (qt doesn't have it)
 
+#define COUNTRY_CODE_NONE 0
+
 // NOTE: country codes are 3 digits only, so 0-999 = 1000
 QString country_strings[1000];
 QString country_abbreviations[1000];
@@ -111,6 +113,14 @@ AddressTab::AddressTab(DetailsWidget *details_arg)
     // Put country strings/codes into combo box, sorted by strings
     std::sort(all_countries.begin(), all_countries.end());
 
+    // Special case for "None" country
+    // TODO: this seems really easy to break
+    const QString none_string = tr("None");
+    string_to_code[none_string] = COUNTRY_CODE_NONE;
+    all_countries.insert(0, none_string);
+    country_strings[COUNTRY_CODE_NONE] = "";
+    country_abbreviations[COUNTRY_CODE_NONE] = "";
+
     country_combo->blockSignals(true);
     for (auto country_string : all_countries) {
         const int code = string_to_code[country_string];
@@ -145,8 +155,12 @@ void AddressTab::reload_internal() {
     }
 
     // Load country
-    const QString current_code_string = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_COUNTRY_CODE);
-    const int current_code = current_code_string.toInt();
+    QString current_code_string = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_COUNTRY_CODE);
+    int current_code = current_code_string.toInt();
+    if (current_code_string == "") {
+        current_code = COUNTRY_CODE_NONE;
+    }
+
     const QVariant code_variant(current_code);
     const int index = country_combo->findData(code_variant);
     if (index != -1) {
