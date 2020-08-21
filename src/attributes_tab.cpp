@@ -52,10 +52,6 @@ void AttributesTab::apply() {
 
 }
 
-void AttributesTab::cancel() {
-
-}
-
 void AttributesTab::reload_internal() {
     model->reload();
 }

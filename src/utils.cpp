@@ -27,6 +27,7 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QGridLayout>
+#include <QLineEdit>
 
 // Converts index all the way down to source index, going through whatever chain of proxies is present
 QModelIndex convert_to_source(const QModelIndex &index) {
@@ -120,4 +121,22 @@ void append_to_grid_layout_with_label(QGridLayout *layout, const QString &label_
     const int row = layout->rowCount();
     layout->addWidget(label, row, 0);
     layout->addWidget(widget, row, 1);
+}
+
+void autofill_full_name(QLineEdit *full_name_edit, QLineEdit *first_name_edit, QLineEdit *last_name_edit) {
+    auto autofill =
+    [=]() {
+        const QString first_name = first_name_edit->text(); 
+        const QString last_name = last_name_edit->text();
+        const QString full_name = first_name + " " + last_name; 
+
+        full_name_edit->setText(full_name);
+    };
+
+    QObject::connect(
+        first_name_edit, &QLineEdit::textChanged,
+        autofill);
+    QObject::connect(
+        last_name_edit, &QLineEdit::textChanged,
+        autofill);
 }

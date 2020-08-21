@@ -63,10 +63,6 @@ void ObjectTab::apply() {
 
 }
 
-void ObjectTab::cancel() {
-
-}
-
 void ObjectTab::reload_internal() {
     for (auto edit : edits) {
         edit->load(target());

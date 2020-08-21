@@ -49,7 +49,6 @@
 #define ATTRIBUTE_USER_PRINCIPAL_NAME   "userPrincipalName"
 #define ATTRIBUTE_MAIL                  "mail"
 #define ATTRIBUTE_OFFICE                "physicalDeliveryOfficeName"
-#define ATTRIBUTE_SN                    "sn"
 #define ATTRIBUTE_TELEPHONE_NUMBER      "telephoneNumber"
 #define ATTRIBUTE_WWW_HOMEPAGE          "wWWHomePage"
 #define ATTRIBUTE_COUNTRY_ABBREVIATION  "c"

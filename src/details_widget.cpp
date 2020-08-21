@@ -143,17 +143,19 @@ void DetailsWidget::on_ad_modified() {
 }
 
 void DetailsWidget::on_apply() {
+    AdInterface::instance()->start_batch();
     for (auto tab : tabs) {
         if (tab->accepts_target()) {
             tab->apply();
         }
     }
+    AdInterface::instance()->end_batch();
 }
 
 void DetailsWidget::on_cancel() {
     for (auto tab : tabs) {
         if (tab->accepts_target()) {
-            tab->cancel();
+            tab->reload();
         }
     }
 }

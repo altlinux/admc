@@ -39,6 +39,10 @@ QString get_attribute_display_string(const QString &attribute) {
         {ATTRIBUTE_WHEN_CHANGED, QObject::tr("Changed")},
         {ATTRIBUTE_USN_CREATED, QObject::tr("USN created")},
         {ATTRIBUTE_USN_CHANGED, QObject::tr("USN changed")},
+        {ATTRIBUTE_MAIL, QObject::tr("Email")},
+        {ATTRIBUTE_OFFICE, QObject::tr("Office")},
+        {ATTRIBUTE_TELEPHONE_NUMBER, QObject::tr("Phone")},
+        {ATTRIBUTE_WWW_HOMEPAGE, QObject::tr("Homepage")},
     };
     static const QString default_value = QObject::tr("UNKNOWN ATTRIBUTE NAME");
 

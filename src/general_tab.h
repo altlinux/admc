@@ -22,8 +22,11 @@
 
 #include "details_tab.h"
 
+#include <QList>
+
 class QLabel;
 class DetailsWidget;
+class AttributeEdit;
 
 // Shows member objects of targeted group
 class GeneralTab final : public DetailsTab {
@@ -33,11 +36,11 @@ public:
     GeneralTab(DetailsWidget *details_arg);
 
     void apply();
-    void cancel();
     bool accepts_target() const;
 
 private:
     QLabel *name_label;
+    QList<AttributeEdit *> edits;
 
     void reload_internal();
 };

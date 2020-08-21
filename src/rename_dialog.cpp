@@ -76,7 +76,7 @@ RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
     const bool is_group = AdInterface::instance()->is_group(target);
     if (is_user) {
         add_attribute_edit(ATTRIBUTE_FIRST_NAME, tr("First name:"));
-        add_attribute_edit(ATTRIBUTE_SN, tr("Last name:"));
+        add_attribute_edit(ATTRIBUTE_LAST_NAME, tr("Last name:"));
         add_attribute_edit(ATTRIBUTE_DISPLAY_NAME, tr("Display name:"));
         add_attribute_edit(ATTRIBUTE_USER_PRINCIPAL_NAME, tr("Logon name:"));
         add_attribute_edit(ATTRIBUTE_SAMACCOUNT_NAME, tr("Logon name (pre-2000):"));

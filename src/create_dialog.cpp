@@ -39,7 +39,6 @@
 // TODO: implement cannot change pass
 
 void autofill_edit_from_other_edit(QLineEdit *from, QLineEdit *to);
-void autofill_full_name(QLineEdit *full_name_edit, QLineEdit *first_name_edit, QLineEdit *last_name_edit);
 QString create_type_to_string(const CreateType &type);
 
 CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QWidget *parent)
@@ -252,24 +251,6 @@ void autofill_edit_from_other_edit(QLineEdit *from, QLineEdit *to) {
         [=] () {
             to->setText(from->text());
         });
-}
-
-void autofill_full_name(QLineEdit *full_name_edit, QLineEdit *first_name_edit, QLineEdit *last_name_edit) {
-    auto autofill =
-    [=]() {
-        const QString first_name = first_name_edit->text(); 
-        const QString last_name = last_name_edit->text();
-        const QString full_name = first_name + " " + last_name; 
-
-        full_name_edit->setText(full_name);
-    };
-
-    QObject::connect(
-        first_name_edit, &QLineEdit::textChanged,
-        autofill);
-    QObject::connect(
-        last_name_edit, &QLineEdit::textChanged,
-        autofill);
 }
 
 QString create_type_to_string(const CreateType &type) {

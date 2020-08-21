@@ -19,6 +19,8 @@
 
 #include "general_tab.h"
 #include "ad_interface.h"
+#include "attribute_edit.h"
+#include "utils.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -30,6 +32,8 @@
 #include <QButtonGroup>
 #include <QCalendarWidget>
 #include <QDialog>
+#include <QGridLayout>
+#include <QMap>
 
 // TODO: add "other" values for phone and homepage. This looks like the attribute is multi-valued but couldn't see that it is in attrib editor for some reason.
 // TODO: show icon if needed
@@ -41,43 +45,44 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
 {   
     title = tr("General");
 
-    name_label = new QLabel(this);
+    name_label = new QLabel();
 
-    // Put labels in one vertical layout and edits in another
-    // So that they are all aligned and get enough space
-    const auto top_layout = new QVBoxLayout(this);
+    const auto edits_layout = new QGridLayout();
+
+    const auto top_layout = new QVBoxLayout();
+    setLayout(top_layout);
     top_layout->addWidget(name_label);
+    top_layout->addLayout(edits_layout);
 
-    const auto attributes_layout = new QHBoxLayout();
-    top_layout->insertLayout(-1, attributes_layout);
-
-    const auto label_layout = new QVBoxLayout();
-    const auto edit_layout = new QVBoxLayout();
-    attributes_layout->insertLayout(-1, label_layout);
-    attributes_layout->insertLayout(-1, edit_layout);
-
-    auto add_edit =
-    [this, label_layout, edit_layout](const QString &attribute, const QString &label_text) {
-        add_attribute_edit(attribute, label_text, label_layout, edit_layout, OldAttributeEditType_Editable);
+    const QList<QString> attributes = {
+        ATTRIBUTE_DESCRIPTION,
+        ATTRIBUTE_FIRST_NAME,
+        ATTRIBUTE_LAST_NAME,
+        ATTRIBUTE_DISPLAY_NAME,
+        ATTRIBUTE_INITIALS,
+        ATTRIBUTE_MAIL,
+        ATTRIBUTE_OFFICE,
+        ATTRIBUTE_TELEPHONE_NUMBER,
+        ATTRIBUTE_WWW_HOMEPAGE
     };
 
-    add_edit(ATTRIBUTE_DISPLAY_NAME, tr("Display name:"));
-    add_edit(ATTRIBUTE_DESCRIPTION, tr("Description:"));
-    add_edit(ATTRIBUTE_FIRST_NAME, tr("First name"));
-    add_edit(ATTRIBUTE_INITIALS, tr("Initials:"));
-    add_edit(ATTRIBUTE_MAIL, tr("Email:"));
-    add_edit(ATTRIBUTE_OFFICE, tr("Office:"));
-    add_edit(ATTRIBUTE_SN, tr("Last name:"));
-    add_edit(ATTRIBUTE_TELEPHONE_NUMBER, tr("Phone:"));
-    add_edit(ATTRIBUTE_WWW_HOMEPAGE, tr("Homepage:"));
+    QMap<QString, StringEdit *> string_edits;
+    make_string_edits(attributes, &string_edits);
+
+    for (auto attribute : attributes) {
+        auto edit = string_edits[attribute];
+        edit->add_to_layout(edits_layout);
+        edits.append(edit);
+    }
+
+    QLineEdit *full_name_edit = string_edits[ATTRIBUTE_DISPLAY_NAME]->edit;
+    QLineEdit *first_name_edit = string_edits[ATTRIBUTE_FIRST_NAME]->edit;
+    QLineEdit *last_name_edit = string_edits[ATTRIBUTE_LAST_NAME]->edit;
+    autofill_full_name(full_name_edit, first_name_edit, last_name_edit);
 }
 
 void GeneralTab::apply() {
-
-}
-
-void GeneralTab::cancel() {
-
+    apply_attribute_edits(edits, target(), ApplyAttributeEditBatch_No, this);
 }
 
 bool GeneralTab::accepts_target() const {
@@ -87,4 +92,8 @@ bool GeneralTab::accepts_target() const {
 void GeneralTab::reload_internal() {
     const QString name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_NAME);
     name_label->setText(name);
+
+    for (auto edit : edits) {
+        edit->load(target());
+    }
 }

@@ -36,7 +36,6 @@ public:
     MembersTab(ObjectContextMenu *object_context_menu, DetailsWidget *details_arg);
 
     void apply();
-    void cancel();
     bool accepts_target() const;
 
 private:

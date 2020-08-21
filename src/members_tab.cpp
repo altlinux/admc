@@ -59,10 +59,6 @@ void MembersTab::apply() {
 
 }
 
-void MembersTab::cancel() {
-
-}
-
 void MembersTab::reload_internal() {
     model->change_target(target());
 
