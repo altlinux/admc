@@ -48,6 +48,7 @@ void make_accout_option_edits(const QList<AccountOption> options, QMap<AccountOp
 
 class AttributeEdit {
 public:
+    virtual void load(const QString &dn) = 0;
     virtual void add_to_layout(QGridLayout *layout) = 0;
     virtual bool verify_input(QWidget *parent) = 0;
     virtual AdResult apply(const QString &dn) = 0;
@@ -57,9 +58,10 @@ class StringEdit final : public AttributeEdit {
 public:
     QLineEdit *edit;
 
-    void add_to_layout(QGridLayout *layout);
     StringEdit(const QString &attribute_arg);
-
+    
+    void load(const QString &dn);
+    void add_to_layout(QGridLayout *layout);
     bool verify_input(QWidget *parent);
     AdResult apply(const QString &dn);
 
@@ -71,6 +73,7 @@ class GroupScopeEdit final : public AttributeEdit {
 public:
     GroupScopeEdit();
 
+    void load(const QString &dn);
     void add_to_layout(QGridLayout *layout);
     bool verify_input(QWidget *parent);
     AdResult apply(const QString &dn);
@@ -85,6 +88,7 @@ public:
 
     GroupTypeEdit();
 
+    void load(const QString &dn);
     void add_to_layout(QGridLayout *layout);
     bool verify_input(QWidget *parent);
     AdResult apply(const QString &dn);
@@ -96,6 +100,7 @@ public:
 
     AccountOptionEdit(const AccountOption option_arg);
 
+    void load(const QString &dn);
     void add_to_layout(QGridLayout *layout);
     bool verify_input(QWidget *parent);
     AdResult apply(const QString &dn);
@@ -111,6 +116,7 @@ public:
 
     PasswordEdit();
 
+    void load(const QString &dn);
     void add_to_layout(QGridLayout *layout);
     bool verify_input(QWidget *parent);
     AdResult apply(const QString &dn);

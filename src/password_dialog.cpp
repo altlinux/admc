@@ -21,11 +21,8 @@
 #include "ad_interface.h"
 #include "attribute_edit.h"
 
-#include <QLineEdit>
 #include <QGridLayout>
 #include <QLabel>
-#include <QPushButton>
-#include <QMessageBox>
 #include <QDialogButtonBox>
 
 // TODO: find out exact password rules and add them to dialog?

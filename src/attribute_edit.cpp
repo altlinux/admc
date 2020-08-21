@@ -48,7 +48,6 @@ bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent) {
 }
 
 // NOTE: apply and collect results, THEN show error popups, so that all AD requests are done first and there are no stutters between popups
-// NOTE: turn off batch if you already started a batch outside
 bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, ApplyAttributeEditBatch batch, QWidget *parent) {
     if (batch == ApplyAttributeEditBatch_Yes) {
         AdInterface::instance()->start_batch();
@@ -105,6 +104,11 @@ StringEdit::StringEdit(const QString &attribute_arg) {
     attribute = attribute_arg;
 }
 
+void StringEdit::load(const QString &dn) {
+    const QString value = AdInterface::instance()->attribute_get(dn, attribute);
+    edit->setText(value);
+}
+
 void StringEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = get_attribute_display_string(attribute);
     QWidget *widget = edit;
@@ -152,6 +156,12 @@ GroupScopeEdit::GroupScopeEdit() {
     }
 }
 
+void GroupScopeEdit::load(const QString &dn) {
+    const GroupScope scope = AdInterface::instance()->group_get_scope(dn);
+    const int scope_int = (int)scope;
+    combo->setCurrentIndex(scope_int);
+}
+
 void GroupScopeEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = QObject::tr("Group scope");
     QWidget *widget = combo;
@@ -187,6 +197,12 @@ GroupTypeEdit::GroupTypeEdit() {
     }
 }
 
+void GroupTypeEdit::load(const QString &dn) {
+    const GroupType type = AdInterface::instance()->group_get_type(dn);
+    const int type_int = (int)type;
+    combo->setCurrentIndex(type_int);
+}
+
 void GroupTypeEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = QObject::tr("Group type");
     QWidget *widget = combo;
@@ -214,6 +230,23 @@ AdResult GroupTypeEdit::apply(const QString &dn) {
 AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg) {
     option = option_arg;
     check = new QCheckBox();
+}
+
+void AccountOptionEdit::load(const QString &dn) {
+    const bool option_is_set = AdInterface::instance()->user_get_account_option(dn, option);
+
+    check->blockSignals(true);
+    {
+        Qt::CheckState check_state;
+        if (option_is_set) {
+            check_state = Qt::Checked;
+        } else {
+            check_state = Qt::Unchecked;
+        }
+
+        check->setCheckState(check_state);
+    }
+    check->blockSignals(false);
 }
 
 void AccountOptionEdit::add_to_layout(QGridLayout *layout) {
@@ -248,6 +281,10 @@ PasswordEdit::PasswordEdit() {
     confirm_edit->setEchoMode(QLineEdit::Password);
 }
 
+void PasswordEdit::load(const QString &dn) {
+    // NOTE: PasswordEdit does not load current value, it starts out blank
+}
+
 void PasswordEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, QObject::tr("Password") , edit);
     append_to_grid_layout_with_label(layout, QObject::tr("Confirm password") , confirm_edit);
@@ -270,7 +307,7 @@ bool PasswordEdit::verify_input(QWidget *parent) {
 AdResult PasswordEdit::apply(const QString &dn) {
     const QString new_value = edit->text();
 
-    AdResult result = AdInterface::instance()->set_pass(dn, new_value);
+    const AdResult result = AdInterface::instance()->set_pass(dn, new_value);
 
     return result;
 }
