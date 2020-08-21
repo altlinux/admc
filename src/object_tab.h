@@ -23,6 +23,7 @@
 #include "details_tab.h"
 
 class DetailsWidget;
+class AttributeEdit;
 
 // Shows member objects of targeted group
 class ObjectTab final : public DetailsTab {
@@ -36,6 +37,8 @@ public:
     bool accepts_target() const;
 
 private:
+    QList<AttributeEdit *> edits;
+
     void reload_internal();
 };
 

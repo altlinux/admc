@@ -26,6 +26,7 @@
 #include <QComboBox>
 #include <QGridLayout>
 #include <QMessageBox>
+#include <QDateTimeEdit>
 
 void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout, QWidget *parent) {
     for (auto edit : edits) {
@@ -99,9 +100,13 @@ void make_accout_option_edits(const QList<AccountOption> options, QMap<AccountOp
     }
 }
 
-StringEdit::StringEdit(const QString &attribute_arg) {
+StringEdit::StringEdit(const QString &attribute_arg, const EditReadOnly read_only) {
     edit = new QLineEdit();
     attribute = attribute_arg;
+
+    if (read_only == EditReadOnly_Yes) {
+        edit->setReadOnly(true);
+    }
 }
 
 void StringEdit::load(const QString &dn) {
@@ -308,6 +313,40 @@ AdResult PasswordEdit::apply(const QString &dn) {
     const QString new_value = edit->text();
 
     const AdResult result = AdInterface::instance()->set_pass(dn, new_value);
+
+    return result;
+}
+
+DateTimeEdit::DateTimeEdit(const QString &attribute_arg, EditReadOnly read_only) {
+    edit = new QDateTimeEdit();
+    attribute = attribute_arg;
+
+    if (read_only == EditReadOnly_Yes) {
+        edit->setReadOnly(true);
+    }
+}
+
+void DateTimeEdit::load(const QString &dn) {
+    const QDateTime value = AdInterface::instance()->attribute_datetime_get(dn, attribute);
+
+    edit->setDateTime(value);
+}
+
+void DateTimeEdit::add_to_layout(QGridLayout *layout) {
+    const QString label_text = get_attribute_display_string(attribute);
+    append_to_grid_layout_with_label(layout, label_text, edit);
+}
+
+bool DateTimeEdit::verify_input(QWidget *parent) {
+    // TODO: datetime should fit within bounds of it's format, so greater than start of epoch for NTFS format?
+
+    return true;
+}
+
+AdResult DateTimeEdit::apply(const QString &dn) {
+    const QDateTime new_value = edit->dateTime();
+
+    const AdResult result = AdInterface::instance()->attribute_datetime_replace(dn, attribute, new_value);
 
     return result;
 }

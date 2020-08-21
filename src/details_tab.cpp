@@ -46,26 +46,26 @@ QString DetailsTab::get_title() const {
     return title;
 }
 
-void DetailsTab::add_attribute_edit(const QString &attribute, const QString &label_text, QLayout *label_layout, QLayout *edit_layout, AttributeEditType type) {
+void DetailsTab::add_attribute_edit(const QString &attribute, const QString &label_text, QLayout *label_layout, QLayout *edit_layout, OldAttributeEditType type) {
     auto label = new QLabel(label_text, this);
     auto edit = new QLineEdit(this);
 
     label_layout->addWidget(label);
     edit_layout->addWidget(edit);
 
-    AttributeEdit attribute_edit = {
+    OldAttributeEdit attribute_edit = {
         QString(attribute),
         edit
     };
     attribute_edits.append(attribute_edit);
 
     switch (type) {
-        case AttributeEditType_ReadOnly: {
+        case OldAttributeEditType_ReadOnly: {
             edit->setReadOnly(true);
 
             break;
         }
-        case AttributeEditType_Editable: {
+        case OldAttributeEditType_Editable: {
             // Push changes from edit to AD when edit is modified
             connect(
                 edit, &QLineEdit::editingFinished,

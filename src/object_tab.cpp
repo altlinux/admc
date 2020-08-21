@@ -19,39 +19,44 @@
 
 #include "object_tab.h"
 #include "ad_interface.h"
+#include "attribute_edit.h"
 
 #include <QVBoxLayout>
-#include <QHBoxLayout>
+#include <QGridLayout>
 #include <QLabel>
+
+// TODO: canonical name in ADUC replaces "CN=" with "/" making it look like a directory path
 
 ObjectTab::ObjectTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
     title = tr("Object");
 
-    // TODO: don't know why, but if i just have hbox as top layout, the widgets are misaligned
-    const auto top_layout = new QVBoxLayout(this);
+    const auto top_layout = new QVBoxLayout();
+    setLayout(top_layout);
 
-    const auto attributes_layout = new QHBoxLayout();
-    top_layout->insertLayout(-1, attributes_layout);
+    const auto edits_layout = new QGridLayout();
+    top_layout->addLayout(edits_layout);
 
-    const auto label_layout = new QVBoxLayout();
-    const auto edit_layout = new QVBoxLayout();
-    attributes_layout->insertLayout(-1, label_layout);
-    attributes_layout->insertLayout(-1, edit_layout);
-
-    auto add_edit =
-    [this, label_layout, edit_layout](const QString &attribute, const QString &label_text) {
-        add_attribute_edit(attribute, label_text, label_layout, edit_layout, AttributeEditType_ReadOnly);
+    const QList<QString> attributes = {
+        ATTRIBUTE_DISTINGUISHED_NAME,
+        ATTRIBUTE_OBJECT_CLASS,
+        ATTRIBUTE_WHEN_CREATED,
+        ATTRIBUTE_WHEN_CHANGED,
+        ATTRIBUTE_USN_CREATED,
+        ATTRIBUTE_USN_CHANGED
     };
+    for (auto attribute : attributes) {
+        AttributeEdit *edit;
+        if (attribute_is_datetime(attribute)) {
+            edit = new DateTimeEdit(attribute, EditReadOnly_Yes);
+        } else {
+            edit = new StringEdit(attribute, EditReadOnly_Yes);
+        }
+        edit->add_to_layout(edits_layout);
 
-    // TODO: canonical name in ADUC replaces "CN=" with "/" making it look like a directory path
-    add_edit(ATTRIBUTE_DISTINGUISHED_NAME, tr("Canonical name:"));
-    add_edit(ATTRIBUTE_OBJECT_CLASS, tr("Object class:"));
-    add_edit(ATTRIBUTE_WHEN_CREATED, tr("Created:"));
-    add_edit(ATTRIBUTE_WHEN_CHANGED, tr("Changed:"));
-    add_edit(ATTRIBUTE_USN_CREATED, tr("USN created:"));
-    add_edit(ATTRIBUTE_USN_CHANGED, tr("USN changed:"));
+        edits.append(edit);
+    }
 }
 
 void ObjectTab::apply() {
@@ -63,7 +68,9 @@ void ObjectTab::cancel() {
 }
 
 void ObjectTab::reload_internal() {
-
+    for (auto edit : edits) {
+        edit->load(target());
+    }
 }
 
 bool ObjectTab::accepts_target() const {

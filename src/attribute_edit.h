@@ -34,10 +34,16 @@ class AttributeEdit;
 class StringEdit;
 class AccountOptionEdit;
 class QCalendarWidget;
+class QDateTimeEdit;
 
 enum ApplyAttributeEditBatch {
     ApplyAttributeEditBatch_Yes,
     ApplyAttributeEditBatch_No
+};
+
+enum EditReadOnly {
+    EditReadOnly_Yes,
+    EditReadOnly_No
 };
 
 void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout, QWidget *parent);
@@ -59,7 +65,7 @@ class StringEdit final : public AttributeEdit {
 public:
     QLineEdit *edit;
 
-    StringEdit(const QString &attribute_arg);
+    StringEdit(const QString &attribute_arg, const EditReadOnly read_only = EditReadOnly_No);
 
     void load(const QString &dn);
     void add_to_layout(QGridLayout *layout);
@@ -124,6 +130,21 @@ public:
 
 private:
     AccountOption option;
+};
+
+class DateTimeEdit final : public AttributeEdit {
+public:
+    QDateTimeEdit *edit;
+
+    DateTimeEdit(const QString &attribute_arg, const EditReadOnly read_only = EditReadOnly_No);
+
+    void load(const QString &dn);
+    void add_to_layout(QGridLayout *layout);
+    bool verify_input(QWidget *parent);
+    AdResult apply(const QString &dn);
+
+private:
+    QString attribute;
 };
 
 #endif /* ATTRIBUTE_EDIT_H */

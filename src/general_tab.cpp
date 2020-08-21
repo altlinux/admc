@@ -58,7 +58,7 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
 
     auto add_edit =
     [this, label_layout, edit_layout](const QString &attribute, const QString &label_text) {
-        add_attribute_edit(attribute, label_text, label_layout, edit_layout, AttributeEditType_Editable);
+        add_attribute_edit(attribute, label_text, label_layout, edit_layout, OldAttributeEditType_Editable);
     };
 
     add_edit(ATTRIBUTE_DISPLAY_NAME, tr("Display name:"));

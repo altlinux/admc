@@ -27,9 +27,9 @@ class DetailsWidget;
 class QLayout;
 class QLineEdit;
 
-enum AttributeEditType {
-    AttributeEditType_ReadOnly,
-    AttributeEditType_Editable
+enum OldAttributeEditType {
+    OldAttributeEditType_ReadOnly,
+    OldAttributeEditType_Editable
 };
 
 class DetailsTab : public QWidget {
@@ -51,16 +51,16 @@ protected:
 
     // Implement this in subclass to reload member widgets
 
-    void add_attribute_edit(const QString &attribute, const QString &label_text, QLayout *label_layout, QLayout *edit_layout, AttributeEditType type);
+    void add_attribute_edit(const QString &attribute, const QString &label_text, QLayout *label_layout, QLayout *edit_layout, OldAttributeEditType type);
 
 private:
-    struct AttributeEdit {
+    struct OldAttributeEdit {
         QString attribute;
         QLineEdit *edit;
     };
 
     DetailsWidget *details;
-    QList<AttributeEdit> attribute_edits;
+    QList<OldAttributeEdit> attribute_edits;
 
     virtual void reload_internal() = 0;
     void reload_attribute_edit(QLineEdit *edit, const QString &attribute);
