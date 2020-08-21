@@ -23,15 +23,8 @@
 #include "utils.h"
 
 #include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QLineEdit>
 #include <QLabel>
-#include <QPushButton>
-#include <QCheckBox>
-#include <QDateTime>
-#include <QButtonGroup>
-#include <QCalendarWidget>
-#include <QDialog>
 #include <QGridLayout>
 #include <QMap>
 

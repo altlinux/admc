@@ -23,7 +23,6 @@
 
 #include <QVBoxLayout>
 #include <QGridLayout>
-#include <QLabel>
 
 // TODO: canonical name in ADUC replaces "CN=" with "/" making it look like a directory path
 

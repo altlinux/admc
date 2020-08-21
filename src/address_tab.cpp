@@ -20,11 +20,13 @@
 #include "address_tab.h"
 #include "ad_interface.h"
 #include "status.h"
+#include "attribute_edit.h"
+#include "attribute_display_strings.h"
+#include "utils.h"
 
 #include <QVBoxLayout>
-#include <QHBoxLayout>
+#include <QGridLayout>
 #include <QComboBox>
-#include <QLabel>
 #include <QHash>
 #include <QFile>
 #include <algorithm>
@@ -40,37 +42,35 @@ AddressTab::AddressTab(DetailsWidget *details_arg)
 {   
     title = tr("Address");
 
-    // TODO: don't know why, but if i just have hbox as top layout, the widgets are misaligned
-    const auto top_layout = new QVBoxLayout(this);
+    const auto top_layout = new QVBoxLayout();
+    setLayout(top_layout);
 
-    const auto attributes_layout = new QHBoxLayout();
-    top_layout->insertLayout(-1, attributes_layout);
-
-    const auto label_layout = new QVBoxLayout();
-    const auto edit_layout = new QVBoxLayout();
-    attributes_layout->insertLayout(-1, label_layout);
-    attributes_layout->insertLayout(-1, edit_layout);
-
-    auto make_line_edit =
-    [this, label_layout, edit_layout](const QString &attribute, const QString &label_text) {
-        add_attribute_edit(attribute, label_text, label_layout, edit_layout, OldAttributeEditType_Editable);
+    const auto edits_layout = new QGridLayout();
+    top_layout->addLayout(edits_layout);
+    
+    const QList<QString> attributes = {
+        ATTRIBUTE_STREET,
+        ATTRIBUTE_PO_BOX,
+        ATTRIBUTE_CITY,
+        ATTRIBUTE_STATE,
+        ATTRIBUTE_POSTAL_CODE
     };
 
-    make_line_edit(ATTRIBUTE_STREET, tr("Street:"));
-    make_line_edit(ATTRIBUTE_PO_BOX, tr("P.O. Box:"));
-    make_line_edit(ATTRIBUTE_CITY, tr("City"));
-    make_line_edit(ATTRIBUTE_STATE, tr("State/province:"));
-    make_line_edit(ATTRIBUTE_POSTAL_CODE, tr("Postal code:"));
+    QMap<QString, StringEdit *> string_edits;
+    make_string_edits(attributes, &string_edits);
 
-    auto country_label = new QLabel("Country:");
-    label_layout->addWidget(country_label);
+    for (auto attribute : attributes) {
+        auto edit = string_edits[attribute];
+        edits.append(edit);
+        edit->add_to_layout(edits_layout);
+    }
 
     country_combo = new QComboBox(this);
-    edit_layout->addWidget(country_combo);
 
-    connect(country_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        this, &AddressTab::on_country_combo);
+    const QString country_display_string = get_attribute_display_string(ATTRIBUTE_COUNTRY);
+    append_to_grid_layout_with_label(edits_layout, country_display_string, country_combo);
 
+    // Load all country names into combobox
     // NOTE: temp collections to sort items for combo box
     QList<QString> all_countries;
     QHash<QString, int> string_to_code;
@@ -121,10 +121,29 @@ AddressTab::AddressTab(DetailsWidget *details_arg)
 }
 
 void AddressTab::apply() {
+    apply_attribute_edits(edits, target(), ApplyAttributeEditBatch_No, this);
 
+    // Apply country
+    const QVariant item_data = country_combo->currentData();
+    const int code = item_data.value<int>();
+
+    const QString code_string = QString::number(code);
+    const QString country_string = country_strings[code];
+    const QString abbreviation = country_abbreviations[code];
+
+    AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY_CODE, code_string);
+    AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY_ABBREVIATION, abbreviation);
+    AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY, country_string);
+
+    const QString name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_NAME);
+    Status::instance()->message(QString(tr("Changed country of object - %1")).arg(name), StatusType_Success);
 }
 
 void AddressTab::reload_internal() {
+    for (auto edit : edits) {
+        edit->load(target());
+    }
+
     // Load country
     const QString current_code_string = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_COUNTRY_CODE);
     const int current_code = current_code_string.toInt();
@@ -139,20 +158,4 @@ void AddressTab::reload_internal() {
 
 bool AddressTab::accepts_target() const {
     return AdInterface::instance()->is_user(target());
-}
-
-void AddressTab::on_country_combo(int index) {
-    const QVariant item_data = country_combo->itemData(index);
-    const int code = item_data.value<int>();
-
-    const QString code_string = QString::number(code);
-    const QString country_string = country_strings[code];
-    const QString abbreviation = country_abbreviations[code];
-
-    AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY_CODE, code_string);
-    AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY_ABBREVIATION, abbreviation);
-    AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY, country_string);
-
-    const QString name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_NAME);
-    Status::instance()->message(QString(tr("Changed country of object - %1")).arg(name), StatusType_Success);
 }

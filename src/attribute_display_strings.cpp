@@ -43,6 +43,12 @@ QString get_attribute_display_string(const QString &attribute) {
         {ATTRIBUTE_OFFICE, QObject::tr("Office")},
         {ATTRIBUTE_TELEPHONE_NUMBER, QObject::tr("Phone")},
         {ATTRIBUTE_WWW_HOMEPAGE, QObject::tr("Homepage")},
+        {ATTRIBUTE_STREET, QObject::tr("Street")},
+        {ATTRIBUTE_PO_BOX, QObject::tr("P.O. box")},
+        {ATTRIBUTE_CITY, QObject::tr("City")},
+        {ATTRIBUTE_STATE, QObject::tr("State/province")},
+        {ATTRIBUTE_POSTAL_CODE, QObject::tr("Postal code")},
+        {ATTRIBUTE_COUNTRY, QObject::tr("Country")},
     };
     static const QString default_value = QObject::tr("UNKNOWN ATTRIBUTE NAME");
 
