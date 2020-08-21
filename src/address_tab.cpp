@@ -23,6 +23,7 @@
 #include "attribute_edit.h"
 #include "attribute_display_strings.h"
 #include "utils.h"
+#include "details_widget.h"
 
 #include <QVBoxLayout>
 #include <QGridLayout>
@@ -128,6 +129,11 @@ AddressTab::AddressTab(DetailsWidget *details_arg)
         country_combo->addItem(country_string, code);
     }
     country_combo->blockSignals(false);
+
+    connect_edits_to_details(edits, details);
+    connect(
+        country_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        details, &DetailsWidget::on_edit_changed);
 }
 
 void AddressTab::apply() {
@@ -137,16 +143,19 @@ void AddressTab::apply() {
     const QVariant item_data = country_combo->currentData();
     const int code = item_data.value<int>();
 
-    const QString code_string = QString::number(code);
-    const QString country_string = country_strings[code];
-    const QString abbreviation = country_abbreviations[code];
+    const bool country_code_changed = (code != original_country_code);
+    if (country_code_changed) {
+        const QString code_string = QString::number(code);
+        const QString country_string = country_strings[code];
+        const QString abbreviation = country_abbreviations[code];
 
-    AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY_CODE, code_string);
-    AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY_ABBREVIATION, abbreviation);
-    AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY, country_string);
+        AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY_CODE, code_string);
+        AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY_ABBREVIATION, abbreviation);
+        AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_COUNTRY, country_string);
 
-    const QString name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_NAME);
-    Status::instance()->message(QString(tr("Changed country of object - %1")).arg(name), StatusType_Success);
+        const QString name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_NAME);
+        Status::instance()->message(QString(tr("Changed country of object - %1")).arg(name), StatusType_Success);
+    }
 }
 
 void AddressTab::reload_internal() {
@@ -160,6 +169,7 @@ void AddressTab::reload_internal() {
     if (current_code_string == "") {
         current_code = COUNTRY_CODE_NONE;
     }
+    original_country_code = current_code;
 
     const QVariant code_variant(current_code);
     const int index = country_combo->findData(code_variant);

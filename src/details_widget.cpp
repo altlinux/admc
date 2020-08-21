@@ -97,6 +97,10 @@ QString DetailsWidget::get_target() const {
     return target;
 }
 
+void DetailsWidget::on_edit_changed() {
+    button_box->setEnabled(true);
+}
+
 void DetailsWidget::reload(const QString &new_target) {
     target = new_target;
     
@@ -131,6 +135,9 @@ void DetailsWidget::reload(const QString &new_target) {
     } else {
         button_box->hide();
     }
+
+    // Disable apply/cancel since this is a fresh reload and there are no changes
+    button_box->setEnabled(false);
 }
 
 void DetailsWidget::on_logged_in() {
@@ -153,11 +160,7 @@ void DetailsWidget::on_apply() {
 }
 
 void DetailsWidget::on_cancel() {
-    for (auto tab : tabs) {
-        if (tab->accepts_target()) {
-            tab->reload();
-        }
-    }
+    reload(target);
 }
 
 void DetailsWidget::on_containers_clicked_dn(const QString &dn) {

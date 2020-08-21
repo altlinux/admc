@@ -20,6 +20,7 @@
 #include "attribute_edit.h"
 #include "attribute_display_strings.h"
 #include "utils.h"
+#include "details_widget.h"
 
 #include <QCheckBox>
 #include <QLineEdit>
@@ -143,6 +144,12 @@ QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<A
     return edits;
 }
 
+void connect_edits_to_details(QList<AttributeEdit *> edits, DetailsWidget *details) {
+    for (auto edit : edits) {
+        edit->connect_to_details(details);
+    }
+}
+
 StringEdit::StringEdit(const QString &attribute_arg, const EditReadOnly read_only) {
     edit = new QLineEdit();
     attribute = attribute_arg;
@@ -163,6 +170,12 @@ void StringEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label_text , widget);
 }
 
+void StringEdit::connect_to_details(DetailsWidget *details) const {
+    QObject::connect(
+        edit, &QLineEdit::textChanged,
+        details, &DetailsWidget::on_edit_changed);
+}
+
 bool StringEdit::verify_input(QWidget *parent) {
     if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
         const QString new_value = edit->text();
@@ -181,14 +194,7 @@ bool StringEdit::verify_input(QWidget *parent) {
 
 AdResult StringEdit::apply(const QString &dn) {
     const QString new_value = edit->text();
-    const QString old_value = AdInterface::instance()->attribute_get(dn, attribute);
-
-    const bool need_to_apply = (new_value != old_value);
-
-    AdResult result(true);
-    if (need_to_apply) {
-        result = AdInterface::instance()->attribute_replace(dn, attribute, new_value);
-    }
+    const AdResult result = AdInterface::instance()->attribute_replace(dn, attribute, new_value);
 
     return result;
 }
@@ -216,20 +222,19 @@ void GroupScopeEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label_text , widget);
 }
 
+void GroupScopeEdit::connect_to_details(DetailsWidget *details) const {
+    QObject::connect(
+        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        details, &DetailsWidget::on_edit_changed);
+}
+
 bool GroupScopeEdit::verify_input(QWidget *parent) {
     return true;
 }
 
 AdResult GroupScopeEdit::apply(const QString &dn) {
     const GroupScope new_value = (GroupScope)combo->currentData().toInt();
-    const GroupScope old_value = AdInterface::instance()->group_get_scope(dn);
-
-    const bool need_to_apply = (new_value != old_value);
-
-    AdResult result(true);
-    if (need_to_apply) {
-        result = AdInterface::instance()->group_set_scope(dn, new_value);
-    }
+    const AdResult result = AdInterface::instance()->group_set_scope(dn, new_value);
 
     return result;
 }
@@ -257,20 +262,19 @@ void GroupTypeEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label_text , widget);
 }
 
+void GroupTypeEdit::connect_to_details(DetailsWidget *details) const {
+    QObject::connect(
+        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        details, &DetailsWidget::on_edit_changed);
+}
+
 bool GroupTypeEdit::verify_input(QWidget *parent) {
     return true;
 }
 
 AdResult GroupTypeEdit::apply(const QString &dn) {
     const GroupType new_value = (GroupType)combo->currentData().toInt();
-    const GroupType old_value = AdInterface::instance()->group_get_type(dn);
-
-    const bool need_to_apply = (new_value != old_value);
-
-    AdResult result(true);
-    if (need_to_apply) {
-        result = AdInterface::instance()->group_set_type(dn, new_value);
-    }
+    const AdResult result = AdInterface::instance()->group_set_type(dn, new_value);
 
     return result;
 }
@@ -304,20 +308,19 @@ void AccountOptionEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label_text , widget);
 }
 
+void AccountOptionEdit::connect_to_details(DetailsWidget *details) const {
+    QObject::connect(
+        check, &QCheckBox::stateChanged,
+        details, &DetailsWidget::on_edit_changed);
+}
+
 bool AccountOptionEdit::verify_input(QWidget *parent) {
     return true;
 }
 
 AdResult AccountOptionEdit::apply(const QString &dn) {
     const bool new_value = checkbox_is_checked(check);
-    const bool old_value = AdInterface::instance()->user_get_account_option(dn, option);
-
-    const bool need_to_apply = (new_value != old_value);
-
-    AdResult result(true);
-    if (need_to_apply) {
-        result = AdInterface::instance()->user_set_account_option(dn, option, new_value);
-    }
+    const AdResult result = AdInterface::instance()->user_set_account_option(dn, option, new_value);
 
     return result;
 }
@@ -337,6 +340,10 @@ void PasswordEdit::load(const QString &dn) {
 void PasswordEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, QObject::tr("Password") , edit);
     append_to_grid_layout_with_label(layout, QObject::tr("Confirm password") , confirm_edit);
+}
+
+void PasswordEdit::connect_to_details(DetailsWidget *details) const {
+
 }
 
 bool PasswordEdit::verify_input(QWidget *parent) {
@@ -379,6 +386,12 @@ void DateTimeEdit::load(const QString &dn) {
 void DateTimeEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = get_attribute_display_string(attribute);
     append_to_grid_layout_with_label(layout, label_text, edit);
+}
+
+void DateTimeEdit::connect_to_details(DetailsWidget *details) const {
+    QObject::connect(
+        edit, &QDateTimeEdit::dateTimeChanged,
+        details, &DetailsWidget::on_edit_changed);
 }
 
 bool DateTimeEdit::verify_input(QWidget *parent) {

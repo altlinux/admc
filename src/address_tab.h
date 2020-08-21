@@ -39,6 +39,7 @@ public:
 
 private:
     QComboBox *country_combo;
+    int original_country_code;
     QList<AttributeEdit *> edits;
 
     void reload_internal();

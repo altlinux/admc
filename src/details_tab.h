@@ -45,6 +45,8 @@ public:
     virtual void apply() = 0;
     virtual bool accepts_target() const = 0;
 
+    DetailsWidget *details;
+
 protected:
     QString title;
 
@@ -58,7 +60,6 @@ private:
         QLineEdit *edit;
     };
 
-    DetailsWidget *details;
     QList<OldAttributeEdit> attribute_edits;
 
     virtual void reload_internal() = 0;

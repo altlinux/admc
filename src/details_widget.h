@@ -46,6 +46,7 @@ public:
     QString get_target() const;
 
 public slots:
+    void on_edit_changed();
     void on_containers_clicked_dn(const QString &dn);
     void on_contents_clicked_dn(const QString &dn);
     void on_context_menu_details(const QString &dn);

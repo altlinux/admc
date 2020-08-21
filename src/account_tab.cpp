@@ -66,6 +66,8 @@ AccountTab::AccountTab(DetailsWidget *details_arg)
         edit->add_to_layout(edits_layout);
     }
 
+    connect_edits_to_details(edits, details);
+
     // expiry_never_check = new QCheckBox(tr("Never"), this);
     // expiry_set_check = new QCheckBox(tr("End of:"), this);
     // auto expiry_button_group = new QButtonGroup(this);
