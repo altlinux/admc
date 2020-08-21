@@ -48,6 +48,14 @@ AttributesTab::AttributesTab(DetailsWidget *details_widget_arg)
     layout->addWidget(view);
 }
 
+void AttributesTab::apply() {
+
+}
+
+void AttributesTab::cancel() {
+
+}
+
 void AttributesTab::reload_internal() {
     model->reload();
 }

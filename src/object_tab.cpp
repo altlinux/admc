@@ -54,6 +54,14 @@ ObjectTab::ObjectTab(DetailsWidget *details_arg)
     add_edit(ATTRIBUTE_USN_CHANGED, tr("USN changed:"));
 }
 
+void ObjectTab::apply() {
+
+}
+
+void ObjectTab::cancel() {
+
+}
+
 void ObjectTab::reload_internal() {
 
 }

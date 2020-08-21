@@ -72,6 +72,14 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
     add_edit(ATTRIBUTE_WWW_HOMEPAGE, tr("Homepage:"));
 }
 
+void GeneralTab::apply() {
+
+}
+
+void GeneralTab::cancel() {
+
+}
+
 bool GeneralTab::accepts_target() const {
     return AdInterface::instance()->has_attributes(target());
 }

@@ -35,6 +35,8 @@
 #include <QTabWidget>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QDialogButtonBox>
+#include <QPushButton>
 
 DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent)
 : QWidget(parent)
@@ -56,11 +58,14 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
         tab->hide();
     }
 
+    button_box = new QDialogButtonBox(QDialogButtonBox::Apply |  QDialogButtonBox::Cancel, this);
+
     const auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(title_label);
     layout->addWidget(tab_widget);
+    layout->addWidget(button_box);
 
     connect(
         AdInterface::instance(), &AdInterface::logged_in,
@@ -78,6 +83,12 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
     connect(
         contents_widget, &ContentsWidget::clicked_dn,
         this, &DetailsWidget::on_contents_clicked_dn);
+    connect(
+        button_box->button(QDialogButtonBox::Apply), &QPushButton::clicked,
+        this, &DetailsWidget::on_apply);
+    connect(
+        button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
+        this, &DetailsWidget::on_cancel);
 
     reload("");
 }
@@ -114,6 +125,12 @@ void DetailsWidget::reload(const QString &new_target) {
     if (old_tab_index_in_new_tabs != -1) {
         tab_widget->setCurrentIndex(old_tab_index_in_new_tabs);
     }
+
+    if (tab_widget->count() > 0) {
+        button_box->show();
+    } else {
+        button_box->hide();
+    }
 }
 
 void DetailsWidget::on_logged_in() {
@@ -123,6 +140,22 @@ void DetailsWidget::on_logged_in() {
 
 void DetailsWidget::on_ad_modified() {
     reload(target);
+}
+
+void DetailsWidget::on_apply() {
+    for (auto tab : tabs) {
+        if (tab->accepts_target()) {
+            tab->apply();
+        }
+    }
+}
+
+void DetailsWidget::on_cancel() {
+    for (auto tab : tabs) {
+        if (tab->accepts_target()) {
+            tab->cancel();
+        }
+    }
 }
 
 void DetailsWidget::on_containers_clicked_dn(const QString &dn) {

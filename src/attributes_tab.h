@@ -36,6 +36,8 @@ Q_OBJECT
 public:
     AttributesTab(DetailsWidget *details_arg);
 
+    void apply();
+    void cancel();
     bool accepts_target() const;
 
 private:

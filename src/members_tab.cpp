@@ -55,6 +55,14 @@ MembersTab::MembersTab(ObjectContextMenu *object_context_menu, DetailsWidget *de
     layout->addWidget(view);
 }
 
+void MembersTab::apply() {
+
+}
+
+void MembersTab::cancel() {
+
+}
+
 void MembersTab::reload_internal() {
     model->change_target(target());
 

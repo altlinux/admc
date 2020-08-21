@@ -111,6 +111,14 @@ AccountTab::AccountTab(DetailsWidget *details_arg)
     }
 }
 
+void AccountTab::apply() {
+
+}
+
+void AccountTab::cancel() {
+
+}
+
 void AccountTab::reload_internal() {
     reset_logon_name_edit();
 

@@ -33,6 +33,7 @@ class QComboBox;
 class AttributeEdit;
 class StringEdit;
 class AccountOptionEdit;
+class QCalendarWidget;
 
 enum ApplyAttributeEditBatch {
     ApplyAttributeEditBatch_Yes,
@@ -59,7 +60,7 @@ public:
     QLineEdit *edit;
 
     StringEdit(const QString &attribute_arg);
-    
+
     void load(const QString &dn);
     void add_to_layout(QGridLayout *layout);
     bool verify_input(QWidget *parent);

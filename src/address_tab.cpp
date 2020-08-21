@@ -120,6 +120,14 @@ AddressTab::AddressTab(DetailsWidget *details_arg)
     country_combo->blockSignals(false);
 }
 
+void AddressTab::apply() {
+
+}
+
+void AddressTab::cancel() {
+
+}
+
 void AddressTab::reload_internal() {
     // Load country
     const QString current_code_string = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_COUNTRY_CODE);

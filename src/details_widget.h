@@ -32,6 +32,7 @@ class ContentsWidget;
 class QTabWidget;
 class QLabel;
 class DetailsTab;
+class QDialogButtonBox;
 
 // Shows info about object's attributes in multiple tabs
 // Targeted at a particular object
@@ -52,10 +53,13 @@ public slots:
 private slots:
     void on_logged_in();
     void on_ad_modified();
+    void on_apply();
+    void on_cancel();
 
 private:
     QTabWidget *tab_widget = nullptr;
     QLabel *title_label = nullptr;
+    QDialogButtonBox *button_box = nullptr;
     QList<DetailsTab *> tabs;
     QString target;
 

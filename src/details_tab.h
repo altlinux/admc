@@ -42,6 +42,8 @@ public:
     QString get_title() const;
 
     void reload();
+    virtual void apply() = 0;
+    virtual void cancel() = 0;
     virtual bool accepts_target() const = 0;
 
 protected:

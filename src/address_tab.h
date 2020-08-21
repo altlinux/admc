@@ -32,6 +32,8 @@ Q_OBJECT
 public:
     AddressTab(DetailsWidget *details_arg);
 
+    void apply();
+    void cancel();
     bool accepts_target() const;
 
 private slots:
