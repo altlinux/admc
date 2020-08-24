@@ -160,7 +160,16 @@ StringEdit::StringEdit(const QString &attribute_arg, const EditReadOnly read_onl
 }
 
 void StringEdit::load(const QString &dn) {
-    const QString value = AdInterface::instance()->attribute_get(dn, attribute);
+    QString value;
+    if (attribute == ATTRIBUTE_OBJECT_CLASS) {
+        // NOTE: object class is multi-valued so need to get the "primary" class
+        // TODO: not sure how to get the "primary" attribute, for now just getting the last one. I think what I need to do is get the most "derived" class? and that info should be in the scheme.
+        const QList<QString> classes = AdInterface::instance()->attribute_get_multi(dn, attribute);
+        value = classes.last();
+    } else {
+        value = AdInterface::instance()->attribute_get(dn, attribute);
+    }
+
     edit->setText(value);
 }
 

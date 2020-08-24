@@ -99,8 +99,7 @@ void DetailsTab::reload() {
             value = datetime_raw_to_string(attribute, datetime_raw);
         } else if (attribute == ATTRIBUTE_OBJECT_CLASS) {
             // TODO: not sure how to get the "primary" attribute, for now just getting the last one
-            const QList<QString> classes = AdInterface::instance()->attribute_get_multi(target(), attribute);
-            value = classes.last();
+            
         } else {
             value = AdInterface::instance()->attribute_get(target(), attribute);
         }
