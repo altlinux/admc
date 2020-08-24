@@ -128,10 +128,10 @@ AddressTab::AddressTab(DetailsWidget *details_arg)
     }
     country_combo->blockSignals(false);
 
-    connect_edits_to_details(edits, details);
+    connect_edits_to_tab(edits, this);
     connect(
         country_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        details, &DetailsWidget::on_edit_changed);
+        this, &DetailsTab::on_edit_changed);
 }
 
 void AddressTab::apply() {

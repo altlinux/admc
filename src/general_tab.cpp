@@ -66,7 +66,7 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
         edits.append(edit);
     }
 
-    connect_edits_to_details(edits, details);
+    connect_edits_to_tab(edits, this);
 
     QLineEdit *full_name_edit = string_edits[ATTRIBUTE_DISPLAY_NAME]->edit;
     QLineEdit *first_name_edit = string_edits[ATTRIBUTE_FIRST_NAME]->edit;

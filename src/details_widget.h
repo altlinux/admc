@@ -53,9 +53,9 @@ public:
     DetailsWidget(ObjectContextMenu *object_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent);
 
     QString get_target() const;
+    void tab_edited(DetailsTab *tab);
 
 public slots:
-    void on_edit_changed();
     void on_containers_clicked_dn(const QString &dn);
     void on_contents_clicked_dn(const QString &dn);
     void on_context_menu_details(const QString &dn);

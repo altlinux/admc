@@ -28,3 +28,7 @@ DetailsTab::DetailsTab(DetailsWidget *details_arg)
 QString DetailsTab::target() const {
     return details->get_target();
 }
+
+void DetailsTab::on_edit_changed() {
+    details->tab_edited(this);
+}

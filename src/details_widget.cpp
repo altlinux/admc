@@ -95,8 +95,21 @@ QString DetailsWidget::get_target() const {
     return target;
 }
 
-void DetailsWidget::on_edit_changed() {
+void DetailsWidget::tab_edited(DetailsTab *tab) {
+    // Enabled apply/cancel buttons
     button_box->setEnabled(true);
+
+    // Add asterisk to end of tab text to indicate that it was edited
+    const int tab_index = tab_widget->indexOf(tab);
+    if (tab_index != -1) {
+        const QString current_text = tab_widget->tabText(tab_index);
+        const bool no_asterisk = (current_text.indexOf("*") == -1);
+
+        if (no_asterisk) {
+            const QString new_text = current_text + "*";
+            tab_widget->setTabText(tab_index, new_text);
+        }
+    }
 }
 
 void DetailsWidget::reload(const QString &new_target) {
@@ -120,7 +133,7 @@ void DetailsWidget::reload(const QString &new_target) {
         if (accepts_target) {
             tab->reload();
 
-            auto get_tab_label =
+            auto get_tab_text =
             [tab_handle]() -> QString {
                 switch (tab_handle) {
                     case TabHandle_General: return tr("General");
@@ -133,9 +146,9 @@ void DetailsWidget::reload(const QString &new_target) {
                 }
                 return "";
             };
-            const QString tab_label = get_tab_label();
+            const QString tab_text = get_tab_text();
 
-            tab_widget->addTab(tab, tab_label);
+            tab_widget->addTab(tab, tab_text);
         }
     }
 

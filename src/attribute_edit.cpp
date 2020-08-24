@@ -20,7 +20,7 @@
 #include "attribute_edit.h"
 #include "attribute_display_strings.h"
 #include "utils.h"
-#include "details_widget.h"
+#include "details_tab.h"
 
 #include <QCheckBox>
 #include <QLineEdit>
@@ -134,9 +134,9 @@ QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<A
     return edits;
 }
 
-void connect_edits_to_details(QList<AttributeEdit *> edits, DetailsWidget *details) {
+void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab) {
     for (auto edit : edits) {
-        edit->connect_to_details(details);
+        edit->connect_to_tab(tab);
     }
 }
 
@@ -169,10 +169,10 @@ void StringEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label_text , widget);
 }
 
-void StringEdit::connect_to_details(DetailsWidget *details) const {
+void StringEdit::connect_to_tab(DetailsTab *tab) const {
     QObject::connect(
         edit, &QLineEdit::textChanged,
-        details, &DetailsWidget::on_edit_changed);
+        tab, &DetailsTab::on_edit_changed);
 }
 
 bool StringEdit::verify_input(QWidget *parent) {
@@ -221,10 +221,10 @@ void GroupScopeEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label_text , widget);
 }
 
-void GroupScopeEdit::connect_to_details(DetailsWidget *details) const {
+void GroupScopeEdit::connect_to_tab(DetailsTab *tab) const {
     QObject::connect(
         combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        details, &DetailsWidget::on_edit_changed);
+        tab, &DetailsTab::on_edit_changed);
 }
 
 bool GroupScopeEdit::verify_input(QWidget *parent) {
@@ -261,10 +261,10 @@ void GroupTypeEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label_text , widget);
 }
 
-void GroupTypeEdit::connect_to_details(DetailsWidget *details) const {
+void GroupTypeEdit::connect_to_tab(DetailsTab *tab) const {
     QObject::connect(
         combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        details, &DetailsWidget::on_edit_changed);
+        tab, &DetailsTab::on_edit_changed);
 }
 
 bool GroupTypeEdit::verify_input(QWidget *parent) {
@@ -307,10 +307,10 @@ void AccountOptionEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label_text , widget);
 }
 
-void AccountOptionEdit::connect_to_details(DetailsWidget *details) const {
+void AccountOptionEdit::connect_to_tab(DetailsTab *tab) const {
     QObject::connect(
         check, &QCheckBox::stateChanged,
-        details, &DetailsWidget::on_edit_changed);
+        tab, &DetailsTab::on_edit_changed);
 }
 
 bool AccountOptionEdit::verify_input(QWidget *parent) {
@@ -341,7 +341,7 @@ void PasswordEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, QObject::tr("Confirm password") , confirm_edit);
 }
 
-void PasswordEdit::connect_to_details(DetailsWidget *details) const {
+void PasswordEdit::connect_to_tab(DetailsTab *tab) const {
 
 }
 
@@ -387,10 +387,10 @@ void DateTimeEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label_text, edit);
 }
 
-void DateTimeEdit::connect_to_details(DetailsWidget *details) const {
+void DateTimeEdit::connect_to_tab(DetailsTab *tab) const {
     QObject::connect(
         edit, &QDateTimeEdit::dateTimeChanged,
-        details, &DetailsWidget::on_edit_changed);
+        tab, &DetailsTab::on_edit_changed);
 }
 
 bool DateTimeEdit::verify_input(QWidget *parent) {

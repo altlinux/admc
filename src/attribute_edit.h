@@ -35,7 +35,7 @@ class StringEdit;
 class AccountOptionEdit;
 class QCalendarWidget;
 class QDateTimeEdit;
-class DetailsWidget;
+class DetailsTab;
 
 enum EditReadOnly {
     EditReadOnly_Yes,
@@ -48,13 +48,13 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWid
 bool apply_attribute_edit(AttributeEdit *edit, const QString &dn, QWidget *parent);
 void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *edits_out);
 QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<AccountOption> options, QWidget *parent);
-void connect_edits_to_details(QList<AttributeEdit *> edits, DetailsWidget *details);
+void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
 
 class AttributeEdit {
 public:
     virtual void load(const QString &dn) = 0;
     virtual void add_to_layout(QGridLayout *layout) = 0;
-    virtual void connect_to_details(DetailsWidget *details) const = 0;
+    virtual void connect_to_tab(DetailsTab *tab) const = 0;
     virtual bool verify_input(QWidget *parent) = 0;
     virtual AdResult apply(const QString &dn) = 0;
 };
@@ -62,7 +62,7 @@ public:
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
 void load(const QString &dn);\
 void add_to_layout(QGridLayout *layout);\
-void connect_to_details(DetailsWidget *details) const;\
+void connect_to_tab(DetailsTab *tab) const;\
 bool verify_input(QWidget *parent);\
 AdResult apply(const QString &dn);
 

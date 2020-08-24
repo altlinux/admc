@@ -25,11 +25,6 @@
 
 class DetailsWidget;
 
-enum OldAttributeEditType {
-    OldAttributeEditType_ReadOnly,
-    OldAttributeEditType_Editable
-};
-
 class DetailsTab : public QWidget {
 Q_OBJECT
 
@@ -43,6 +38,12 @@ public:
     virtual void apply() = 0;
 
     DetailsWidget *details;
+
+signals:
+    void edited();
+
+public slots:
+    void on_edit_changed();
 };
 
 #define DECL_DETAILS_TAB_VIRTUALS()\

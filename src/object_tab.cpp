@@ -55,7 +55,7 @@ ObjectTab::ObjectTab(DetailsWidget *details_arg)
         edits.append(edit);
     }
 
-    connect_edits_to_details(edits, details);
+    connect_edits_to_tab(edits, this);
 }
 
 void ObjectTab::apply() {
