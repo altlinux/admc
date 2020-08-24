@@ -347,12 +347,14 @@ AdResult AdInterface::attribute_datetime_replace(const QString &dn, const QStrin
 }
 
 AdResult AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value, EmitStatusMessage emit_message) {
+    QString old_value_display_string;
     QString old_value_string;
     if (attribute_is_datetime(attribute)) {
-        const QString old_value_raw = attribute_get(dn, attribute);
-        old_value_string = datetime_raw_to_string(attribute, old_value_raw);
+        old_value_string = attribute_get(dn, attribute);
+        old_value_display_string = datetime_raw_to_string(attribute, old_value_string);
     } else {
         old_value_string = attribute_get(dn, attribute);
+        old_value_display_string = old_value_string;
     }
 
     const QByteArray old_value_array = old_value_string.toLatin1();
@@ -384,13 +386,13 @@ AdResult AdInterface::attribute_replace(const QString &dn, const QString &attrib
     }
 
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_string, new_value_string), emit_message);
+        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display_string, new_value_string), emit_message);
 
         update_cache({dn});
 
         return AdResult(true);
     } else {
-        const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_string, new_value_string);
+        const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display_string, new_value_string);
         const QString error = default_error(result);
 
         error_status_message(context, error, emit_message);
