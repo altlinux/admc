@@ -50,11 +50,7 @@ bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent) {
 }
 
 // NOTE: apply and collect results, THEN show error popups, so that all AD requests are done first and there are no stutters between popups
-bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, ApplyAttributeEditBatch batch, QWidget *parent) {
-    if (batch == ApplyAttributeEditBatch_Yes) {
-        AdInterface::instance()->start_batch();
-    }
-
+bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent) {
     bool success = true;
 
     QList<AdResult> results;
@@ -71,18 +67,12 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, Appl
         }
     }
 
-    if (batch == ApplyAttributeEditBatch_Yes) {
-        AdInterface::instance()->end_batch();
-    }
-
     return success;
 }
 
 bool apply_attribute_edit(AttributeEdit *edit, const QString &dn, QWidget *parent) {
-    QList<AttributeEdit* > edits;
-    edits.append(edit);
-
-    const bool apply_success = apply_attribute_edits(edits, dn, ApplyAttributeEditBatch_No, parent);
+    const QList<AttributeEdit* > edits = { edit };
+    const bool apply_success = apply_attribute_edits(edits, dn, parent);
 
     return apply_success;
 }

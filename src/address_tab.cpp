@@ -137,7 +137,7 @@ AddressTab::AddressTab(DetailsWidget *details_arg)
 }
 
 void AddressTab::apply() {
-    apply_attribute_edits(edits, target(), ApplyAttributeEditBatch_No, this);
+    apply_attribute_edits(edits, target(), this);
 
     // Apply country
     const QVariant item_data = country_combo->currentData();

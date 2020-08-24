@@ -138,7 +138,7 @@ void CreateDialog::accept() {
 
         bool result_apply = false;
         if (result_add.success) {
-            result_apply = apply_attribute_edits(all_edits, dn, ApplyAttributeEditBatch_No, this);
+            result_apply = apply_attribute_edits(all_edits, dn, this);
         }
 
         const QString type_string = create_type_to_string(type);

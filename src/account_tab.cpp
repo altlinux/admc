@@ -99,7 +99,7 @@ AccountTab::AccountTab(DetailsWidget *details_arg)
 }
 
 void AccountTab::apply() {
-    apply_attribute_edits(edits, target(), ApplyAttributeEditBatch_No, this);
+    apply_attribute_edits(edits, target(), this);
 }
 
 void AccountTab::reload_internal() {

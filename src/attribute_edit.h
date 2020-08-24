@@ -37,11 +37,6 @@ class QCalendarWidget;
 class QDateTimeEdit;
 class DetailsWidget;
 
-enum ApplyAttributeEditBatch {
-    ApplyAttributeEditBatch_Yes,
-    ApplyAttributeEditBatch_No
-};
-
 enum EditReadOnly {
     EditReadOnly_Yes,
     EditReadOnly_No
@@ -49,7 +44,7 @@ enum EditReadOnly {
 
 void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout, QWidget *parent);
 bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent);
-bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, ApplyAttributeEditBatch batch, QWidget *parent);
+bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent);
 bool apply_attribute_edit(AttributeEdit *edit, const QString &dn, QWidget *parent);
 void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *edits_out);
 QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<AccountOption> options, QWidget *parent);

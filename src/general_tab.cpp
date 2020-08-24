@@ -77,7 +77,7 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
 }
 
 void GeneralTab::apply() {
-    apply_attribute_edits(edits, target(), ApplyAttributeEditBatch_No, this);
+    apply_attribute_edits(edits, target(), this);
 }
 
 bool GeneralTab::accepts_target() const {
