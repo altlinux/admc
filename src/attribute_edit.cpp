@@ -383,7 +383,7 @@ bool PasswordEdit::verify_input(QWidget *parent) {
 }
 
 bool PasswordEdit::changed(const QString &dn) const {
-    return false;
+    return true;
 }
 
 bool PasswordEdit::apply(const QString &dn) {
