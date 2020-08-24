@@ -107,16 +107,22 @@ void AccountTab::apply() {
     apply_attribute_edits(edits, target(), this);
 
     // TODO: process errors
+    // NOTE: have to operate on raw string datetime values here because (never) value can't be expressed as QDateTime
     AdResult expiry_result(false);
     const bool expiry_never = checkbox_is_checked(expiry_never_check);
+    QString new_expiry_value;
     if (expiry_never) {
-        expiry_result = AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_ACCOUNT_EXPIRES, AD_LARGEINTEGERTIME_NEVER_1);
+        new_expiry_value = AD_LARGEINTEGERTIME_NEVER_1;
     } else {
         const QString new_expiry_date_string = expiry_display->text();
         const QDate new_expiry_date = QDate::fromString(new_expiry_date_string, DATE_FORMAT);
         const QDateTime new_expiry(new_expiry_date, END_OF_DAY);
+        new_expiry_value = datetime_to_string(ATTRIBUTE_ACCOUNT_EXPIRES, new_expiry);
+    }
 
-        expiry_result = AdInterface::instance()->attribute_datetime_replace(target(), ATTRIBUTE_ACCOUNT_EXPIRES, new_expiry);
+    const bool expiry_changed = (new_expiry_value != original_expiry_value);
+    if (expiry_changed) {
+        const AdResult expiry_result = AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_ACCOUNT_EXPIRES, new_expiry_value);
     }
 }
 
@@ -126,6 +132,7 @@ void AccountTab::reload() {
     }
 
     const QString expiry_raw = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_ACCOUNT_EXPIRES);
+    original_expiry_value = expiry_raw;
     const bool expiry_never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, expiry_raw);
 
     // NOTE: need to block signals from checks so that their slots aren't called

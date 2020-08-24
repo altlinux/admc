@@ -52,6 +52,7 @@ private:
     QCheckBox *expiry_set_check;
     QLabel *expiry_display;
     QPushButton *expiry_edit_button;
+    QString original_expiry_value;
 };
 
 #endif /* ACCOUNT_TAB_H */

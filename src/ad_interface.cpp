@@ -320,27 +320,7 @@ QDateTime AdInterface::attribute_datetime_get(const QString &dn, const QString &
 }
 
 AdResult AdInterface::attribute_datetime_replace(const QString &dn, const QString &attribute, const QDateTime &datetime) {
-    const DatetimeFormat format = get_attribute_time_format(attribute);
-
-    QString datetime_string;
-    switch (format) {
-        case DatetimeFormat_LargeInteger: {
-            const QDateTime ntfs_epoch(QDate(1601, 1, 1));
-            const qint64 millis = ntfs_epoch.msecsTo(datetime);
-            const qint64 hundred_nanos = millis * MILLIS_TO_100_NANOS;
-            
-            datetime_string = QString::number(hundred_nanos);
-
-            break;
-        }
-        case DatetimeFormat_ISO8601: {
-            datetime_string = datetime.toString(ISO8601_FORMAT_STRING);
-
-            break;
-        }
-        case DatetimeFormat_None: return AdResult(false);
-    }
-
+    const QString datetime_string = datetime_to_string(attribute, datetime);
     const AdResult result = attribute_replace(dn, attribute, datetime_string);
 
     return result;
@@ -351,7 +331,7 @@ AdResult AdInterface::attribute_replace(const QString &dn, const QString &attrib
     QString old_value_string;
     if (attribute_is_datetime(attribute)) {
         old_value_string = attribute_get(dn, attribute);
-        old_value_display_string = datetime_raw_to_string(attribute, old_value_string);
+        old_value_display_string = datetime_raw_to_display_string(attribute, old_value_string);
     } else {
         old_value_string = attribute_get(dn, attribute);
         old_value_display_string = old_value_string;
@@ -380,7 +360,7 @@ AdResult AdInterface::attribute_replace(const QString &dn, const QString &attrib
 
     QString new_value_string;
     if (attribute_is_datetime(attribute)) {
-        new_value_string = datetime_raw_to_string(attribute, value);
+        new_value_string = datetime_raw_to_display_string(attribute, value);
     } else {
         new_value_string = value;
     }
@@ -1199,7 +1179,31 @@ DatetimeFormat get_attribute_time_format(const QString &attribute) {
     return datetime_formats.value(attribute, DatetimeFormat_None);
 }
 
-QString datetime_raw_to_string(const QString &attribute, const QString &raw_value) {
+QString datetime_to_string(const QString &attribute, const QDateTime &datetime) {
+    const DatetimeFormat format = get_attribute_time_format(attribute);
+
+    switch (format) {
+        case DatetimeFormat_LargeInteger: {
+            const QDateTime ntfs_epoch(QDate(1601, 1, 1));
+            const qint64 millis = ntfs_epoch.msecsTo(datetime);
+            const qint64 hundred_nanos = millis * MILLIS_TO_100_NANOS;
+            
+            return QString::number(hundred_nanos);
+
+            break;
+        }
+        case DatetimeFormat_ISO8601: {
+            return datetime.toString(ISO8601_FORMAT_STRING);
+
+            break;
+        }
+        case DatetimeFormat_None: return "";
+    }
+
+    return "";
+}
+
+QString datetime_raw_to_display_string(const QString &attribute, const QString &raw_value) {
     if (datetime_is_never(attribute, raw_value)) {
         return "(never)";
     }
