@@ -48,10 +48,10 @@ private slots:
 private:
     QList<AttributeEdit *> edits;
 
-    // QCheckBox *expiry_never_check;
-    // QCheckBox *expiry_set_check;
-    // QLabel *expiry_display;
-    // QPushButton *expiry_edit_button;
+    QCheckBox *expiry_never_check;
+    QCheckBox *expiry_set_check;
+    QLabel *expiry_display;
+    QPushButton *expiry_edit_button;
 };
 
 #endif /* ACCOUNT_TAB_H */

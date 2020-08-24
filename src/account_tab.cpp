@@ -66,38 +66,58 @@ AccountTab::AccountTab(DetailsWidget *details_arg)
 
     connect_edits_to_tab(edits, this);
 
-    // expiry_never_check = new QCheckBox(tr("Never"), this);
-    // expiry_set_check = new QCheckBox(tr("End of:"), this);
-    // auto expiry_button_group = new QButtonGroup(this);
-    // expiry_button_group->setExclusive(true);
-    // expiry_button_group->addButton(expiry_never_check);
-    // expiry_button_group->addButton(expiry_set_check);
+    auto expiry_label = new QLabel(tr("Account expiry:"));
+    
+    expiry_never_check = new QCheckBox(tr("Never"));
+    expiry_set_check = new QCheckBox(tr("End of:"));
+    auto expiry_button_group = new QButtonGroup();
+    expiry_button_group->setExclusive(true);
+    expiry_button_group->addButton(expiry_never_check);
+    expiry_button_group->addButton(expiry_set_check);
 
-    // auto expiry_label = new QLabel(tr("Account expires:"), this);
-
-    // expiry_edit_button = new QPushButton(tr("Edit expiry date"), this);
-    // expiry_display = new QLabel(this);
+    expiry_edit_button = new QPushButton(tr("Edit expiry date"));
+    expiry_display = new QLabel();
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addLayout(edits_layout);
 
+    // TODO: layout it out better, probably make a sub-layout so it's compacted
+    top_layout->addWidget(expiry_label);
+    top_layout->addWidget(expiry_never_check);
+    top_layout->addWidget(expiry_set_check);
+    top_layout->addWidget(expiry_display);
+    top_layout->addWidget(expiry_edit_button);
+
     connect(
         unlock_button, &QAbstractButton::clicked,
         this, &AccountTab::on_unlock_button);
-    // connect(
-    //     expiry_never_check, &QCheckBox::stateChanged,
-    //     this, &AccountTab::on_expiry_never_check);
-    // connect(
-    //     expiry_set_check, &QCheckBox::stateChanged,
-    //     this, &AccountTab::on_expiry_set_check);
-    // connect(
-    //     expiry_edit_button, &QAbstractButton::clicked,
-    //     this, &AccountTab::on_expiry_edit_button);
+    connect(
+        expiry_never_check, &QCheckBox::stateChanged,
+        this, &AccountTab::on_expiry_never_check);
+    connect(
+        expiry_set_check, &QCheckBox::stateChanged,
+        this, &AccountTab::on_expiry_set_check);
+    connect(
+        expiry_edit_button, &QAbstractButton::clicked,
+        this, &AccountTab::on_expiry_edit_button);
 }
 
 void AccountTab::apply() {
     apply_attribute_edits(edits, target(), this);
+
+    // TODO: process errors
+    AdResult expiry_result(false);
+    const bool expiry_never = checkbox_is_checked(expiry_never_check);
+    if (expiry_never) {
+        expiry_result = AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_ACCOUNT_EXPIRES, AD_LARGEINTEGERTIME_NEVER_1);
+    } else {
+        const QString new_expiry_date_string = expiry_display->text();
+        const QDate new_expiry_date = QDate::fromString(new_expiry_date_string, DATE_FORMAT);
+        const QDateTime new_expiry(new_expiry_date, END_OF_DAY);
+
+        expiry_result = AdInterface::instance()->attribute_datetime_replace(target(), ATTRIBUTE_ACCOUNT_EXPIRES, new_expiry);
+    }
 }
 
 void AccountTab::reload() {
@@ -105,43 +125,38 @@ void AccountTab::reload() {
         edit->load(target());
     }
 
-    // NOTE: block signals from setChecked() so they are not processed
-    // as inputs
-    // QList<QObject *> block_signals = {
-    //     expiry_never_check, expiry_set_check
-    // };
-    // for (auto e : uac_checks) {
-    //     block_signals.append(e.check);
-    // }
+    const QString expiry_raw = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_ACCOUNT_EXPIRES);
+    const bool expiry_never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, expiry_raw);
 
-    // for (auto e : block_signals) {
-    //     e->blockSignals(true);
-    // }
+    // NOTE: need to block signals from checks so that their slots aren't called
+    QCheckBox *checks[] = {
+        expiry_never_check,
+        expiry_set_check
+    };
+    for (auto check : checks) {
+        check->blockSignals(true);
+    }
+    {
+        expiry_never_check->setChecked(expiry_never);
+        expiry_set_check->setChecked(!expiry_never);
+    }
+    for (auto check : checks) {
+        check->blockSignals(false);
+    }
 
-    // NOTE: since each of the checkboxes makes a server modification, the whole widget is reloaded and what is below will always happen after checkbox state changes
-    // const QString expires_raw = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_ACCOUNT_EXPIRES);
-    // const bool expires_never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, expires_raw);
-    // if (expires_never) {
-    //     expiry_display->setEnabled(false);
-    //     expiry_never_check->setChecked(true);
-    //     expiry_edit_button->setEnabled(false);
+    expiry_display->setEnabled(!expiry_never);
+    expiry_edit_button->setEnabled(!expiry_never);
 
-    //     const QDate default_expiry = QDate::currentDate();
-    //     const QString default_expiry_string = default_expiry.toString(DATE_FORMAT);
-    //     expiry_display->setText(default_expiry_string);
-    // } else {
-    //     expiry_display->setEnabled(true);
-    //     expiry_set_check->setChecked(true);
-    //     expiry_edit_button->setEnabled(true);
-
-    //     const QDateTime current_expiry = AdInterface::instance()->attribute_datetime_get(target(), ATTRIBUTE_ACCOUNT_EXPIRES);
-    //     const QString current_expiry_string = current_expiry.toString(DATE_FORMAT);
-    //     expiry_display->setText(current_expiry_string);
-    // }
-
-    // for (auto e : block_signals) {
-    //     e->blockSignals(false);
-    // }
+    QString expiry_display_text;
+    if (expiry_never) {
+        // Load current date as default value when expiry is never
+        const QDate default_expiry = QDate::currentDate();
+        expiry_display_text = default_expiry.toString(DATE_FORMAT);
+    } else {
+        const QDateTime current_expiry = AdInterface::instance()->attribute_datetime_get(target(), ATTRIBUTE_ACCOUNT_EXPIRES);
+        expiry_display_text = current_expiry.toString(DATE_FORMAT);
+    }
+    expiry_display->setText(expiry_display_text);
 }
 
 bool AccountTab::accepts_target() const {
@@ -155,56 +170,56 @@ void AccountTab::on_unlock_button() {
 }
 
 void AccountTab::on_expiry_never_check() {
-    // if (checkbox_is_checked(expiry_never_check)) {
-    //     AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_ACCOUNT_EXPIRES, AD_LARGEINTEGERTIME_NEVER_1);
-    // }
+    if (checkbox_is_checked(expiry_never_check)) {
+        expiry_display->setEnabled(false);
+        expiry_edit_button->setEnabled(false);
+
+        on_edit_changed();
+    }
 }
 
 // TODO: need time to be "end of" for that day, so 23:59?
 void AccountTab::on_expiry_set_check() {
-    // if (checkbox_is_checked(expiry_set_check)) {
-    //     expiry_display->setEnabled(true);
-    //     expiry_set_check->setChecked(true);
-    //     expiry_edit_button->setEnabled(true);
-    //     const QString expiry_string = expiry_display->text();
-    //     const QDate expires_date = QDate::fromString(expiry_string, DATE_FORMAT);
-    //     const QDateTime expires(expires_date, END_OF_DAY);
-
-    //     // TODO: handle errors
-    //     const AdResult result = AdInterface::instance()->attribute_datetime_replace(target(), ATTRIBUTE_ACCOUNT_EXPIRES, expires);
-    // }
+    if (checkbox_is_checked(expiry_set_check)) {
+        expiry_display->setEnabled(true);
+        expiry_edit_button->setEnabled(true);
+        
+        on_edit_changed();
+    }
 }
 
 void AccountTab::on_expiry_edit_button() {
-    // auto dialog = new QDialog(this);
+    auto dialog = new QDialog(this);
 
-    // auto label = new QLabel(tr("Edit expiry time"), dialog);
-    // auto calendar = new QCalendarWidget(dialog);
-    // const auto ok_button = new QPushButton(tr("OK"), dialog);
-    // const auto cancel_button = new QPushButton(tr("Cancel"), dialog);
+    auto label = new QLabel(tr("Edit expiry time"), dialog);
+    auto calendar = new QCalendarWidget(dialog);
+    const auto ok_button = new QPushButton(tr("OK"), dialog);
+    const auto cancel_button = new QPushButton(tr("Cancel"), dialog);
 
-    // const auto layout = new QGridLayout(dialog);
-    // layout->addWidget(label, 0, 0);
-    // layout->addWidget(calendar, 1, 0);
-    // layout->addWidget(cancel_button, 2, 0, Qt::AlignLeft);
-    // layout->addWidget(ok_button, 2, 2, Qt::AlignRight);
+    const auto layout = new QGridLayout(dialog);
+    layout->addWidget(label, 0, 0);
+    layout->addWidget(calendar, 1, 0);
+    layout->addWidget(cancel_button, 2, 0, Qt::AlignLeft);
+    layout->addWidget(ok_button, 2, 2, Qt::AlignRight);
 
-    // connect(
-    //     ok_button, &QAbstractButton::clicked,
-    //     [this, dialog, calendar]() {
-    //         const QDate date = calendar->selectedDate();
-    //         const QDateTime new_expiry(date, END_OF_DAY);
+    connect(
+        ok_button, &QAbstractButton::clicked,
+        [this, dialog, calendar]() {
+            const QDate new_expiry_date = calendar->selectedDate();
+            const QString new_expiry_date_string = new_expiry_date.toString(DATE_FORMAT);
 
-    //         const AdResult result = AdInterface::instance()->attribute_datetime_replace(target(), ATTRIBUTE_ACCOUNT_EXPIRES, new_expiry);
+            expiry_display->setText(new_expiry_date_string);
 
-    //         dialog->accept();
-    //     });
+            on_edit_changed();
 
-    // connect(
-    //     cancel_button, &QAbstractButton::clicked,
-    //     [dialog]() {
-    //         dialog->reject();
-    //     });
+            dialog->accept();
+        });
 
-    // dialog->open();
+    connect(
+        cancel_button, &QAbstractButton::clicked,
+        [dialog]() {
+            dialog->reject();
+        });
+
+    dialog->open();
 }

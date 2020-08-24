@@ -37,13 +37,14 @@ public:
     virtual void reload() = 0;
     virtual void apply() = 0;
 
-    DetailsWidget *details;
-
 signals:
     void edited();
 
 public slots:
     void on_edit_changed();
+
+private:
+    DetailsWidget *details;
 };
 
 #define DECL_DETAILS_TAB_VIRTUALS()\
