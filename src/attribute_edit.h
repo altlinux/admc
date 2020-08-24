@@ -43,12 +43,16 @@ enum EditReadOnly {
 };
 
 void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout, QWidget *parent);
+void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
+
+QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<AccountOption> options, QWidget *parent);
+void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *edits_out);
+
+// Generally you want to verify + apply
+// In rare cases like CreateDialog, verify and apply need to be done separately
 bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent);
 bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent);
-bool apply_attribute_edit(AttributeEdit *edit, const QString &dn, QWidget *parent);
-void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *edits_out);
-QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<AccountOption> options, QWidget *parent);
-void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
+bool verify_and_apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent);
 
 class AttributeEdit {
 public:

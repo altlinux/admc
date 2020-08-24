@@ -104,7 +104,7 @@ AccountTab::AccountTab(DetailsWidget *details_arg)
 }
 
 void AccountTab::apply() {
-    apply_attribute_edits(edits, target(), this);
+    verify_and_apply_attribute_edits(edits, target(), this);
 
     // TODO: process errors
     // NOTE: have to operate on raw string datetime values here because (never) value can't be expressed as QDateTime
@@ -122,7 +122,7 @@ void AccountTab::apply() {
 
     const bool expiry_changed = (new_expiry_value != original_expiry_value);
     if (expiry_changed) {
-        const AdResult expiry_result = AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_ACCOUNT_EXPIRES, new_expiry_value);
+        AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_ACCOUNT_EXPIRES, new_expiry_value);
     }
 }
 

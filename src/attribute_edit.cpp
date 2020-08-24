@@ -55,7 +55,7 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWid
     for (auto edit : edits) {
         if (edit->changed(dn)) {
             const bool apply_success = edit->apply(dn);
-            if (apply_success) {
+            if (!apply_success) {
                 success = false;
             }
         }
@@ -64,9 +64,13 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWid
     return success;
 }
 
-bool apply_attribute_edit(AttributeEdit *edit, const QString &dn, QWidget *parent) {
-    const QList<AttributeEdit* > edits = { edit };
-    const bool apply_success = apply_attribute_edits(edits, dn, parent);
+bool verify_and_apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent) {
+    const bool verify_success = verify_attribute_edits(edits, parent);
+
+    bool apply_success = false;
+    if (verify_success) {
+        apply_success = apply_attribute_edits(edits, dn, parent);
+    }
 
     return apply_success;
 }
