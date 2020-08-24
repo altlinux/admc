@@ -49,14 +49,13 @@ bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent) {
     return success;
 }
 
-// NOTE: apply and collect results, THEN show error popups, so that all AD requests are done first and there are no stutters between popups
 bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent) {
     bool success = true;
 
     for (auto edit : edits) {
         if (edit->changed(dn)) {
-            const AdResult result = edit->apply(dn);
-            if (!result.success) {
+            const bool apply_success = edit->apply(dn);
+            if (apply_success) {
                 success = false;
             }
         }
@@ -192,11 +191,11 @@ bool StringEdit::changed(const QString &dn) const {
     return (new_value != original_value);
 }
 
-AdResult StringEdit::apply(const QString &dn) {
+bool StringEdit::apply(const QString &dn) {
     const QString new_value = edit->text();
     const AdResult result = AdInterface::instance()->attribute_replace(dn, attribute, new_value);
 
-    return result;
+    return result.success;
 }
 
 GroupScopeEdit::GroupScopeEdit() {
@@ -238,11 +237,11 @@ bool GroupScopeEdit::changed(const QString &dn) const {
     return (new_value != original_value);
 }
 
-AdResult GroupScopeEdit::apply(const QString &dn) {
+bool GroupScopeEdit::apply(const QString &dn) {
     const GroupScope new_value = (GroupScope)combo->currentData().toInt();
     const AdResult result = AdInterface::instance()->group_set_scope(dn, new_value);
 
-    return result;
+    return result.success;
 }
 
 GroupTypeEdit::GroupTypeEdit() {
@@ -284,11 +283,11 @@ bool GroupTypeEdit::changed(const QString &dn) const {
     return (new_value != original_value);
 }
 
-AdResult GroupTypeEdit::apply(const QString &dn) {
+bool GroupTypeEdit::apply(const QString &dn) {
     const GroupType new_value = (GroupType)combo->currentData().toInt();
     const AdResult result = AdInterface::instance()->group_set_type(dn, new_value);
 
-    return result;
+    return result.success;
 }
 
 AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg) {
@@ -337,11 +336,11 @@ bool AccountOptionEdit::changed(const QString &dn) const {
     return (new_value != original_value);
 }
 
-AdResult AccountOptionEdit::apply(const QString &dn) {
+bool AccountOptionEdit::apply(const QString &dn) {
     const bool new_value = checkbox_is_checked(check);
     const AdResult result = AdInterface::instance()->user_set_account_option(dn, option, new_value);
 
-    return result;
+    return result.success;
 }
 
 PasswordEdit::PasswordEdit() {
@@ -383,12 +382,12 @@ bool PasswordEdit::changed(const QString &dn) const {
     return false;
 }
 
-AdResult PasswordEdit::apply(const QString &dn) {
+bool PasswordEdit::apply(const QString &dn) {
     const QString new_value = edit->text();
 
     const AdResult result = AdInterface::instance()->set_pass(dn, new_value);
 
-    return result;
+    return result.success;
 }
 
 DateTimeEdit::DateTimeEdit(const QString &attribute_arg, EditReadOnly read_only) {
@@ -430,10 +429,10 @@ bool DateTimeEdit::changed(const QString &dn) const {
     return (new_value != original_value);
 }
 
-AdResult DateTimeEdit::apply(const QString &dn) {
+bool DateTimeEdit::apply(const QString &dn) {
     const QDateTime new_value = edit->dateTime();
 
     const AdResult result = AdInterface::instance()->attribute_datetime_replace(dn, attribute, new_value);
 
-    return result;
+    return result.success;
 }

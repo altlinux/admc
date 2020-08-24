@@ -57,7 +57,7 @@ public:
     virtual void connect_to_tab(DetailsTab *tab) const = 0;
     virtual bool verify_input(QWidget *parent) = 0;
     virtual bool changed(const QString &dn) const = 0;
-    virtual AdResult apply(const QString &dn) = 0;
+    virtual bool apply(const QString &dn) = 0;
 };
 
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
@@ -66,7 +66,7 @@ void add_to_layout(QGridLayout *layout);\
 void connect_to_tab(DetailsTab *tab) const;\
 bool verify_input(QWidget *parent);\
 bool changed(const QString &dn) const;\
-AdResult apply(const QString &dn);
+bool apply(const QString &dn);
 
 class StringEdit final : public AttributeEdit {
 public:
