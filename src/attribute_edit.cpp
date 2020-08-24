@@ -55,8 +55,10 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWid
 
     QList<AdResult> results;
     for (auto edit : edits) {
-        const AdResult result = edit->apply(dn);
-        results.append(result);
+        if (edit->changed(dn)) {
+            const AdResult result = edit->apply(dn);
+            results.append(result);
+        }
     }
 
     for (auto result : results) {
@@ -161,6 +163,7 @@ void StringEdit::load(const QString &dn) {
     }
 
     edit->setText(value);
+    original_value = value;
 }
 
 void StringEdit::add_to_layout(QGridLayout *layout) {
@@ -191,6 +194,11 @@ bool StringEdit::verify_input(QWidget *parent) {
     return true;
 }
 
+bool StringEdit::changed(const QString &dn) const {
+    const QString new_value = edit->text();
+    return (new_value != original_value);
+}
+
 AdResult StringEdit::apply(const QString &dn) {
     const QString new_value = edit->text();
     const AdResult result = AdInterface::instance()->attribute_replace(dn, attribute, new_value);
@@ -213,6 +221,7 @@ void GroupScopeEdit::load(const QString &dn) {
     const GroupScope scope = AdInterface::instance()->group_get_scope(dn);
     const int scope_int = (int)scope;
     combo->setCurrentIndex(scope_int);
+    original_value = scope_int;
 }
 
 void GroupScopeEdit::add_to_layout(QGridLayout *layout) {
@@ -229,6 +238,11 @@ void GroupScopeEdit::connect_to_tab(DetailsTab *tab) const {
 
 bool GroupScopeEdit::verify_input(QWidget *parent) {
     return true;
+}
+
+bool GroupScopeEdit::changed(const QString &dn) const {
+    const int new_value = combo->currentData().toInt();
+    return (new_value != original_value);
 }
 
 AdResult GroupScopeEdit::apply(const QString &dn) {
@@ -253,6 +267,7 @@ void GroupTypeEdit::load(const QString &dn) {
     const GroupType type = AdInterface::instance()->group_get_type(dn);
     const int type_int = (int)type;
     combo->setCurrentIndex(type_int);
+    original_value = type_int;
 }
 
 void GroupTypeEdit::add_to_layout(QGridLayout *layout) {
@@ -269,6 +284,11 @@ void GroupTypeEdit::connect_to_tab(DetailsTab *tab) const {
 
 bool GroupTypeEdit::verify_input(QWidget *parent) {
     return true;
+}
+
+bool GroupTypeEdit::changed(const QString &dn) const {
+    const int new_value = combo->currentData().toInt();
+    return (new_value != original_value);
 }
 
 AdResult GroupTypeEdit::apply(const QString &dn) {
@@ -299,6 +319,8 @@ void AccountOptionEdit::load(const QString &dn) {
         check->setCheckState(check_state);
     }
     check->blockSignals(false);
+
+    original_value = option_is_set;
 }
 
 void AccountOptionEdit::add_to_layout(QGridLayout *layout) {
@@ -315,6 +337,11 @@ void AccountOptionEdit::connect_to_tab(DetailsTab *tab) const {
 
 bool AccountOptionEdit::verify_input(QWidget *parent) {
     return true;
+}
+
+bool AccountOptionEdit::changed(const QString &dn) const {
+    const bool new_value = checkbox_is_checked(check);
+    return (new_value != original_value);
 }
 
 AdResult AccountOptionEdit::apply(const QString &dn) {
@@ -359,6 +386,10 @@ bool PasswordEdit::verify_input(QWidget *parent) {
     return true;
 }
 
+bool PasswordEdit::changed(const QString &dn) const {
+    return false;
+}
+
 AdResult PasswordEdit::apply(const QString &dn) {
     const QString new_value = edit->text();
 
@@ -380,6 +411,8 @@ void DateTimeEdit::load(const QString &dn) {
     const QDateTime value = AdInterface::instance()->attribute_datetime_get(dn, attribute);
 
     edit->setDateTime(value);
+
+    original_value = value;
 }
 
 void DateTimeEdit::add_to_layout(QGridLayout *layout) {
@@ -397,6 +430,11 @@ bool DateTimeEdit::verify_input(QWidget *parent) {
     // TODO: datetime should fit within bounds of it's format, so greater than start of epoch for NTFS format?
 
     return true;
+}
+
+bool DateTimeEdit::changed(const QString &dn) const {
+    const QDateTime new_value = edit->dateTime();
+    return (new_value != original_value);
 }
 
 AdResult DateTimeEdit::apply(const QString &dn) {

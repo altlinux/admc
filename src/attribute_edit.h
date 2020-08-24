@@ -56,6 +56,7 @@ public:
     virtual void add_to_layout(QGridLayout *layout) = 0;
     virtual void connect_to_tab(DetailsTab *tab) const = 0;
     virtual bool verify_input(QWidget *parent) = 0;
+    virtual bool changed(const QString &dn) const = 0;
     virtual AdResult apply(const QString &dn) = 0;
 };
 
@@ -64,6 +65,7 @@ void load(const QString &dn);\
 void add_to_layout(QGridLayout *layout);\
 void connect_to_tab(DetailsTab *tab) const;\
 bool verify_input(QWidget *parent);\
+bool changed(const QString &dn) const;\
 AdResult apply(const QString &dn);
 
 class StringEdit final : public AttributeEdit {
@@ -75,6 +77,7 @@ public:
 
 private:
     QString attribute;
+    QString original_value;
 };
 
 class GroupScopeEdit final : public AttributeEdit {
@@ -84,6 +87,7 @@ public:
 
 private:
     QComboBox *combo;
+    int original_value;
 };
 
 class GroupTypeEdit final : public AttributeEdit {
@@ -92,18 +96,21 @@ public:
 
     GroupTypeEdit();
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
+
+private:
+    int original_value;
 };
 
 class AccountOptionEdit final : public AttributeEdit {
 public:
     QCheckBox *check;
-    Qt::CheckState original_state;
 
     AccountOptionEdit(const AccountOption option_arg);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
     AccountOption option;
+    bool original_value;
 };
 
 class PasswordEdit final : public AttributeEdit {
@@ -127,6 +134,7 @@ public:
 
 private:
     QString attribute;
+    QDateTime original_value;
 };
 
 #endif /* ATTRIBUTE_EDIT_H */
