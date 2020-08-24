@@ -42,7 +42,7 @@ private:
     int original_country_code;
     QList<AttributeEdit *> edits;
 
-    void reload_internal();
+    void reload();
 };
 
 #endif /* ADDRESS_TAB_H */

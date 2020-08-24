@@ -42,7 +42,7 @@ private:
     MembersModel *model = nullptr;
     QTreeView *view = nullptr;
 
-    void reload_internal();
+    void reload();
 };
 
 class MembersModel final : public ObjectModel {

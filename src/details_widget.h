@@ -21,7 +21,6 @@
 #define DETAILS_WIDGET_H
 
 #include <QWidget>
-#include <QList>
 #include <QString>
 
 class QTreeView;
@@ -33,6 +32,16 @@ class QTabWidget;
 class QLabel;
 class DetailsTab;
 class QDialogButtonBox;
+
+enum TabHandle {
+    TabHandle_General,
+    TabHandle_Object,
+    TabHandle_Attributes,
+    TabHandle_Account,
+    TabHandle_Members,
+    TabHandle_Address,
+    TabHandle_COUNT
+};
 
 // Shows info about object's attributes in multiple tabs
 // Targeted at a particular object
@@ -61,7 +70,7 @@ private:
     QTabWidget *tab_widget = nullptr;
     QLabel *title_label = nullptr;
     QDialogButtonBox *button_box = nullptr;
-    QList<DetailsTab *> tabs;
+    DetailsTab *tabs[TabHandle_COUNT];
     QString target;
 
     void reload(const QString &new_target);

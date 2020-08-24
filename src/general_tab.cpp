@@ -36,8 +36,6 @@
 GeneralTab::GeneralTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
-    title = tr("General");
-
     name_label = new QLabel();
 
     const auto edits_layout = new QGridLayout();
@@ -84,7 +82,7 @@ bool GeneralTab::accepts_target() const {
     return AdInterface::instance()->has_attributes(target());
 }
 
-void GeneralTab::reload_internal() {
+void GeneralTab::reload() {
     const QString name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_NAME);
     name_label->setText(name);
 

@@ -38,7 +38,7 @@ public:
 private:
     QList<AttributeEdit *> edits;
 
-    void reload_internal();
+    void reload();
 };
 
 #endif /* OBJECT_TAB_H */

@@ -44,8 +44,6 @@ QDateTime convert_to_end_of_day(const QDateTime &datetime);
 AccountTab::AccountTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
-    title = tr("Account");
-
     const auto logon_name_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME);
     edits.append(logon_name_edit);
 
@@ -102,7 +100,7 @@ void AccountTab::apply() {
     apply_attribute_edits(edits, target(), this);
 }
 
-void AccountTab::reload_internal() {
+void AccountTab::reload() {
     for (auto edit : edits) {
         edit->load(target());
     }

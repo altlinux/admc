@@ -55,7 +55,7 @@ private:
     // QLabel *expiry_display;
     // QPushButton *expiry_edit_button;
 
-    void reload_internal();
+    void reload();
 };
 
 #endif /* ACCOUNT_TAB_H */

@@ -42,7 +42,7 @@ private:
     QLabel *name_label;
     QList<AttributeEdit *> edits;
 
-    void reload_internal();
+    void reload();
 };
 
 #endif /* GENERAL_TAB_H */

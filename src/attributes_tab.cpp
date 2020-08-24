@@ -32,8 +32,6 @@ enum AttributesColumn {
 AttributesTab::AttributesTab(DetailsWidget *details_widget_arg)
 : DetailsTab(details_widget_arg)
 {
-    title = tr("All Attributes");
-
     model = new AttributesModel(this);
 
     view = new QTreeView(this);
@@ -52,7 +50,7 @@ void AttributesTab::apply() {
 
 }
 
-void AttributesTab::reload_internal() {
+void AttributesTab::reload() {
     model->reload();
 }
 

@@ -44,18 +44,16 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
     title_label = new QLabel(this);
     tab_widget = new QTabWidget(this);
 
-    tabs = {
-        new GeneralTab(this),
-        new ObjectTab(this),
-        new AttributesTab(this),
-        new AccountTab(this),
-        new MembersTab(object_context_menu, this),
-        new AddressTab(this)
-    };
+    tabs[TabHandle_General] = new GeneralTab(this);
+    tabs[TabHandle_Object] = new ObjectTab(this);
+    tabs[TabHandle_Attributes] = new AttributesTab(this);
+    tabs[TabHandle_Account] = new AccountTab(this);
+    tabs[TabHandle_Members] = new MembersTab(object_context_menu, this);
+    tabs[TabHandle_Address] = new AddressTab(this);
 
-    // NOTE: need to hide tabs because they float at the top level  until they are added to tab widget
+    // NOTE: need to add all tabs so that tab widget gains ownership of them
     for (auto tab : tabs) {
-        tab->hide();
+        tab_widget->addTab(tab, "");
     }
 
     button_box = new QDialogButtonBox(QDialogButtonBox::Apply |  QDialogButtonBox::Cancel, this);
@@ -114,12 +112,30 @@ void DetailsWidget::reload(const QString &new_target) {
     // Setup tabs
     tab_widget->clear();
 
-    for (auto tab : tabs) {
+    for (int i = 0; i < TabHandle_COUNT; i++) {
+        const TabHandle tab_handle = (TabHandle) i;
+        DetailsTab *tab = tabs[i];
         const bool accepts_target = tab->accepts_target();
 
         if (accepts_target) {
             tab->reload();
-            tab_widget->addTab(tab, tab->get_title());
+
+            auto get_title =
+            [tab_handle]() -> QString {
+                switch (tab_handle) {
+                    case TabHandle_General: return tr("General");
+                    case TabHandle_Object: return tr("Object");
+                    case TabHandle_Attributes: return tr("Attributes");
+                    case TabHandle_Account: return tr("Account");
+                    case TabHandle_Members: return tr("Members");
+                    case TabHandle_Address: return tr("Address");
+                    case TabHandle_COUNT: return tr("COUNT"); 
+                }
+                return "";
+            };
+            const QString title = get_title();
+
+            tab_widget->addTab(tab, title);
         }
     }
 

@@ -34,8 +34,6 @@ enum MembersColumn {
 MembersTab::MembersTab(ObjectContextMenu *object_context_menu, DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
-    title = tr("Group members");
-
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setAcceptDrops(true);
@@ -59,7 +57,7 @@ void MembersTab::apply() {
 
 }
 
-void MembersTab::reload_internal() {
+void MembersTab::reload() {
     model->change_target(target());
 
     set_root_to_head(view);

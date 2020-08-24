@@ -29,8 +29,6 @@
 ObjectTab::ObjectTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
-    title = tr("Object");
-
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
 
@@ -64,7 +62,7 @@ void ObjectTab::apply() {
 
 }
 
-void ObjectTab::reload_internal() {
+void ObjectTab::reload() {
     for (auto edit : edits) {
         edit->load(target());
     }

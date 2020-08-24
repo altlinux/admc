@@ -43,8 +43,6 @@ QString country_abbreviations[1000];
 AddressTab::AddressTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
-    title = tr("Address");
-
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
 
@@ -158,7 +156,7 @@ void AddressTab::apply() {
     }
 }
 
-void AddressTab::reload_internal() {
+void AddressTab::reload() {
     for (auto edit : edits) {
         edit->load(target());
     }

@@ -39,31 +39,12 @@ public:
     DetailsTab(DetailsWidget *details_arg);
     
     QString target() const;
-    QString get_title() const;
 
-    void reload();
-    virtual void apply() = 0;
     virtual bool accepts_target() const = 0;
+    virtual void reload() = 0;
+    virtual void apply() = 0;
 
     DetailsWidget *details;
-
-protected:
-    QString title;
-
-    // Implement this in subclass to reload member widgets
-
-    void add_attribute_edit(const QString &attribute, const QString &label_text, QLayout *label_layout, QLayout *edit_layout, OldAttributeEditType type);
-
-private:
-    struct OldAttributeEdit {
-        QString attribute;
-        QLineEdit *edit;
-    };
-
-    QList<OldAttributeEdit> attribute_edits;
-
-    virtual void reload_internal() = 0;
-    void reload_attribute_edit(QLineEdit *edit, const QString &attribute);
 };
 
 #endif /* DETAILS_TAB_H */

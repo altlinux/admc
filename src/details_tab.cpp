@@ -35,75 +35,8 @@
 DetailsTab::DetailsTab(DetailsWidget *details_arg)
 : QWidget(details_arg) {
     details = details_arg;
-    title = tr("Default tab title");
 }
 
 QString DetailsTab::target() const {
     return details->get_target();
-}
-
-QString DetailsTab::get_title() const {
-    return title;
-}
-
-void DetailsTab::add_attribute_edit(const QString &attribute, const QString &label_text, QLayout *label_layout, QLayout *edit_layout, OldAttributeEditType type) {
-    auto label = new QLabel(label_text, this);
-    auto edit = new QLineEdit(this);
-
-    label_layout->addWidget(label);
-    edit_layout->addWidget(edit);
-
-    OldAttributeEdit attribute_edit = {
-        QString(attribute),
-        edit
-    };
-    attribute_edits.append(attribute_edit);
-
-    switch (type) {
-        case OldAttributeEditType_ReadOnly: {
-            edit->setReadOnly(true);
-
-            break;
-        }
-        case OldAttributeEditType_Editable: {
-            // Push changes from edit to AD when edit is modified
-            connect(
-                edit, &QLineEdit::editingFinished,
-                [this, edit, attribute]() {
-                    const QString new_value = edit->text();
-                    const QString current_value = AdInterface::instance()->attribute_get(target(), attribute);
-                    edit->text();
-
-                    if (new_value != current_value) {
-                        AdInterface::instance()->attribute_replace(target(), attribute, new_value);
-                    }
-                });
-
-            break;
-        }
-    }
-}
-
-void DetailsTab::reload() {
-    reload_internal();
-
-    // Load values into attribute edits
-    for (auto e : attribute_edits) {
-        const QString attribute = e.attribute;
-        QLineEdit *edit = e.edit;
-
-        QString value;
-
-        if (attribute_is_datetime(attribute)) {
-            const QString datetime_raw = AdInterface::instance()->attribute_get(target(), attribute);
-            value = datetime_raw_to_string(attribute, datetime_raw);
-        } else if (attribute == ATTRIBUTE_OBJECT_CLASS) {
-            // TODO: not sure how to get the "primary" attribute, for now just getting the last one
-            
-        } else {
-            value = AdInterface::instance()->attribute_get(target(), attribute);
-        }
-
-        edit->setText(value);
-    }
 }

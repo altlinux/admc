@@ -43,7 +43,7 @@ private:
     AttributesModel *model = nullptr;
     QTreeView *view = nullptr;
 
-    void reload_internal();
+    void reload();
 };
 
 class AttributesModel final : public QStandardItemModel {
