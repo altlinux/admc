@@ -59,17 +59,19 @@ public:
     virtual AdResult apply(const QString &dn) = 0;
 };
 
+#define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
+void load(const QString &dn);\
+void add_to_layout(QGridLayout *layout);\
+void connect_to_details(DetailsWidget *details) const;\
+bool verify_input(QWidget *parent);\
+AdResult apply(const QString &dn);
+
 class StringEdit final : public AttributeEdit {
 public:
     QLineEdit *edit;
 
     StringEdit(const QString &attribute_arg, const EditReadOnly read_only = EditReadOnly_No);
-
-    void load(const QString &dn);
-    void add_to_layout(QGridLayout *layout);
-    void connect_to_details(DetailsWidget *details) const;
-    bool verify_input(QWidget *parent);
-    AdResult apply(const QString &dn);
+    DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
     QString attribute;
@@ -78,12 +80,7 @@ private:
 class GroupScopeEdit final : public AttributeEdit {
 public:
     GroupScopeEdit();
-
-    void load(const QString &dn);
-    void add_to_layout(QGridLayout *layout);
-    void connect_to_details(DetailsWidget *details) const;
-    bool verify_input(QWidget *parent);
-    AdResult apply(const QString &dn);
+    DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
     QComboBox *combo;
@@ -94,12 +91,7 @@ public:
     QComboBox *combo;
 
     GroupTypeEdit();
-
-    void load(const QString &dn);
-    void add_to_layout(QGridLayout *layout);
-    void connect_to_details(DetailsWidget *details) const;
-    bool verify_input(QWidget *parent);
-    AdResult apply(const QString &dn);
+    DECL_ATTRIBUTE_EDIT_VIRTUALS();
 };
 
 class AccountOptionEdit final : public AttributeEdit {
@@ -108,12 +100,7 @@ public:
     Qt::CheckState original_state;
 
     AccountOptionEdit(const AccountOption option_arg);
-
-    void load(const QString &dn);
-    void add_to_layout(QGridLayout *layout);
-    void connect_to_details(DetailsWidget *details) const;
-    bool verify_input(QWidget *parent);
-    AdResult apply(const QString &dn);
+    DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
     AccountOption option;
@@ -125,12 +112,7 @@ public:
     QLineEdit *confirm_edit;
 
     PasswordEdit();
-
-    void load(const QString &dn);
-    void add_to_layout(QGridLayout *layout);
-    void connect_to_details(DetailsWidget *details) const;
-    bool verify_input(QWidget *parent);
-    AdResult apply(const QString &dn);
+    DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
     AccountOption option;
@@ -141,12 +123,7 @@ public:
     QDateTimeEdit *edit;
 
     DateTimeEdit(const QString &attribute_arg, const EditReadOnly read_only = EditReadOnly_No);
-
-    void load(const QString &dn);
-    void add_to_layout(QGridLayout *layout);
-    void connect_to_details(DetailsWidget *details) const;
-    bool verify_input(QWidget *parent);
-    AdResult apply(const QString &dn);
+    DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
     QString attribute;

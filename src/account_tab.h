@@ -37,9 +37,7 @@ Q_OBJECT
 
 public:
     AccountTab(DetailsWidget *details_arg);
-
-    void apply();
-    bool accepts_target() const;
+    DECL_DETAILS_TAB_VIRTUALS();
 
 private slots:
     void on_unlock_button();
@@ -54,8 +52,6 @@ private:
     // QCheckBox *expiry_set_check;
     // QLabel *expiry_display;
     // QPushButton *expiry_edit_button;
-
-    void reload();
 };
 
 #endif /* ACCOUNT_TAB_H */

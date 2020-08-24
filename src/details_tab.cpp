@@ -19,18 +19,6 @@
 
 #include "details_tab.h"
 #include "details_widget.h"
-#include "ad_interface.h"
-
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLineEdit>
-#include <QLabel>
-#include <QPushButton>
-#include <QCheckBox>
-#include <QDateTime>
-#include <QButtonGroup>
-#include <QCalendarWidget>
-#include <QDialog>
 
 DetailsTab::DetailsTab(DetailsWidget *details_arg)
 : QWidget(details_arg) {

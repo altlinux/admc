@@ -34,15 +34,11 @@ Q_OBJECT
 
 public:
     GeneralTab(DetailsWidget *details_arg);
-
-    void apply();
-    bool accepts_target() const;
+    DECL_DETAILS_TAB_VIRTUALS();
 
 private:
     QLabel *name_label;
     QList<AttributeEdit *> edits;
-
-    void reload();
 };
 
 #endif /* GENERAL_TAB_H */

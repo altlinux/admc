@@ -34,15 +34,11 @@ Q_OBJECT
 
 public:
     MembersTab(ObjectContextMenu *object_context_menu, DetailsWidget *details_arg);
-
-    void apply();
-    bool accepts_target() const;
+    DECL_DETAILS_TAB_VIRTUALS();
 
 private:
     MembersModel *model = nullptr;
     QTreeView *view = nullptr;
-
-    void reload();
 };
 
 class MembersModel final : public ObjectModel {

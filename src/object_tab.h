@@ -31,14 +31,10 @@ Q_OBJECT
 
 public:
     ObjectTab(DetailsWidget *details_arg);
-
-    void apply();
-    bool accepts_target() const;
+    DECL_DETAILS_TAB_VIRTUALS();
 
 private:
     QList<AttributeEdit *> edits;
-
-    void reload();
 };
 
 #endif /* OBJECT_TAB_H */

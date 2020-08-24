@@ -24,8 +24,6 @@
 #include <QString>
 
 class DetailsWidget;
-class QLayout;
-class QLineEdit;
 
 enum OldAttributeEditType {
     OldAttributeEditType_ReadOnly,
@@ -46,5 +44,10 @@ public:
 
     DetailsWidget *details;
 };
+
+#define DECL_DETAILS_TAB_VIRTUALS()\
+bool accepts_target() const;\
+void reload();\
+void apply();
 
 #endif /* DETAILS_TAB_H */

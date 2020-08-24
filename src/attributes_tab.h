@@ -35,15 +35,11 @@ Q_OBJECT
 
 public:
     AttributesTab(DetailsWidget *details_arg);
-
-    void apply();
-    bool accepts_target() const;
+    DECL_DETAILS_TAB_VIRTUALS();
 
 private:
     AttributesModel *model = nullptr;
     QTreeView *view = nullptr;
-
-    void reload();
 };
 
 class AttributesModel final : public QStandardItemModel {

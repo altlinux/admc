@@ -33,16 +33,12 @@ Q_OBJECT
 
 public:
     AddressTab(DetailsWidget *details_arg);
-
-    void apply();
-    bool accepts_target() const;
+    DECL_DETAILS_TAB_VIRTUALS();
 
 private:
     QComboBox *country_combo;
     int original_country_code;
     QList<AttributeEdit *> edits;
-
-    void reload();
 };
 
 #endif /* ADDRESS_TAB_H */

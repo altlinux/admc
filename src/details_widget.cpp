@@ -120,7 +120,7 @@ void DetailsWidget::reload(const QString &new_target) {
         if (accepts_target) {
             tab->reload();
 
-            auto get_title =
+            auto get_tab_label =
             [tab_handle]() -> QString {
                 switch (tab_handle) {
                     case TabHandle_General: return tr("General");
@@ -133,9 +133,9 @@ void DetailsWidget::reload(const QString &new_target) {
                 }
                 return "";
             };
-            const QString title = get_title();
+            const QString tab_label = get_tab_label();
 
-            tab_widget->addTab(tab, title);
+            tab_widget->addTab(tab, tab_label);
         }
     }
 
