@@ -30,6 +30,7 @@
 #include "object_context_menu.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
+#include "status.h"
 
 #include <QAction>
 #include <QTabWidget>
@@ -179,6 +180,8 @@ void DetailsWidget::on_ad_modified() {
 }
 
 void DetailsWidget::on_apply() {
+    const int errors_index = Status::instance()->get_errors_size();
+
     AdInterface::instance()->start_batch();
     for (auto tab : tabs) {
         if (tab->accepts_target()) {
@@ -186,6 +189,8 @@ void DetailsWidget::on_apply() {
         }
     }
     AdInterface::instance()->end_batch();
+
+    Status::instance()->show_errors_popup(errors_index);
 }
 
 void DetailsWidget::on_cancel() {

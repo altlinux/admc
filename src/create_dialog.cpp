@@ -133,7 +133,9 @@ void CreateDialog::accept() {
     const char **classes = get_classes(type);
 
     AdInterface::instance()->start_batch();
-    {
+    {   
+        const int errors_index = Status::instance()->get_errors_size();
+
         const AdResult result_add = AdInterface::instance()->object_add(dn, classes);
 
         bool result_apply = false;
@@ -152,13 +154,13 @@ void CreateDialog::accept() {
         } else {
             if (result_add.success) {
                 AdInterface::instance()->object_delete(dn);
-            } else {
-                QMessageBox::critical(this, QObject::tr("Error"), result_add.error_with_context);
             }
 
             const QString message = QString(CreateDialog::tr("Failed to create %1 - \"%2\"")).arg(type_string, name);
             Status::instance()->message(message, StatusType_Error);
         }
+
+        Status::instance()->show_errors_popup(errors_index);
     }
     AdInterface::instance()->end_batch();
 }

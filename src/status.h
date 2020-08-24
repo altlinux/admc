@@ -44,6 +44,8 @@ public:
     
     void init(QStatusBar *status_bar_arg, QTextEdit *status_log_arg);
     void message(const QString &msg, const StatusType &type);
+    int get_errors_size() const;
+    void show_errors_popup(int starting_index);
 
 private slots:
     void on_toggle_show_status_log();
@@ -52,6 +54,7 @@ private:
     bool initialized = false;
     QStatusBar *status_bar = nullptr;
     QTextEdit* status_log = nullptr;
+    QList<QString> errors;
 
     using QObject::QObject;
 

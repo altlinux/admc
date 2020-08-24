@@ -24,6 +24,10 @@
 #include <QStatusBar>
 #include <QTextEdit>
 #include <QAction>
+#include <QDialog>
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QPushButton>
 
 Status *Status::instance() {
     static Status instance;
@@ -60,6 +64,7 @@ void Status::on_toggle_show_status_log() {
     }
 }
 
+// TODO: probably want to cap total amount of message and delete old ones?
 void Status::message(const QString &msg, const StatusType &type) {
     status_bar->showMessage(msg);
     
@@ -79,5 +84,50 @@ void Status::message(const QString &msg, const StatusType &type) {
     status_log->setTextColor(original_color);
 
     // Scroll text edit to the newest message
-    status_log->ensureCursorVisible();   
+    status_log->ensureCursorVisible();
+
+    if (type == StatusType_Error) {
+        errors.append(msg);
+    }
+}
+
+int Status::get_errors_size() const {
+    return errors.size();
+}
+
+// TODO: make size fit the contents of error log?
+void Status::show_errors_popup(int starting_index) {
+    const bool no_errors = (starting_index >= errors.size());
+    if (no_errors) {
+        return;
+    }
+
+    // NOTE: message box is too small and non-resizable
+    auto dialog = new QDialog();
+    dialog->resize(600, 600);
+
+    auto label = new QLabel(tr("Errors occured:"));
+
+    auto error_log = new QTextEdit();
+    error_log->setReadOnly(true);
+
+    for (int i = starting_index; i < errors.size(); i++) {
+        const QString error = errors[i];
+        error_log->append(error);
+    }
+
+    const auto close_button = new QPushButton(tr("Close"));
+
+    const auto layout = new QVBoxLayout(dialog);
+    layout->addWidget(label);
+    layout->addWidget(error_log);
+    layout->addWidget(close_button);
+
+    connect(
+        close_button, &QAbstractButton::clicked,
+        [dialog]() {
+            dialog->accept();
+        });
+
+    dialog->open();
 }

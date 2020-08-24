@@ -26,8 +26,8 @@
 #include <QLineEdit>
 #include <QComboBox>
 #include <QGridLayout>
-#include <QMessageBox>
 #include <QDateTimeEdit>
+#include <QMessageBox>
 
 void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout, QWidget *parent) {
     for (auto edit : edits) {
@@ -53,19 +53,12 @@ bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent) {
 bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent) {
     bool success = true;
 
-    QList<AdResult> results;
     for (auto edit : edits) {
         if (edit->changed(dn)) {
             const AdResult result = edit->apply(dn);
-            results.append(result);
-        }
-    }
-
-    for (auto result : results) {
-        if (!result.success) {
-            success = false;
-
-            QMessageBox::critical(parent, QObject::tr("Error"), result.error_with_context);
+            if (!result.success) {
+                success = false;
+            }
         }
     }
 
