@@ -30,6 +30,7 @@
 #include <QButtonGroup>
 #include <QCalendarWidget>
 #include <QDialog>
+#include <QDialogButtonBox>
 
 // TODO: logon hours, logon computers, remove crazy spacing
 
@@ -202,17 +203,15 @@ void AccountTab::on_expiry_edit_button() {
 
     auto label = new QLabel(tr("Edit expiry time"), dialog);
     auto calendar = new QCalendarWidget(dialog);
-    const auto ok_button = new QPushButton(tr("OK"), dialog);
-    const auto cancel_button = new QPushButton(tr("Cancel"), dialog);
+    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, dialog);
 
-    const auto layout = new QGridLayout(dialog);
-    layout->addWidget(label, 0, 0);
-    layout->addWidget(calendar, 1, 0);
-    layout->addWidget(cancel_button, 2, 0, Qt::AlignLeft);
-    layout->addWidget(ok_button, 2, 2, Qt::AlignRight);
+    const auto layout = new QVBoxLayout(dialog);
+    layout->addWidget(label);
+    layout->addWidget(calendar);
+    layout->addWidget(button_box);
 
     connect(
-        ok_button, &QAbstractButton::clicked,
+        button_box, &QDialogButtonBox::accepted,
         [this, dialog, calendar]() {
             const QDate new_expiry_date = calendar->selectedDate();
             const QString new_expiry_date_string = new_expiry_date.toString(DATE_FORMAT);
@@ -225,7 +224,7 @@ void AccountTab::on_expiry_edit_button() {
         });
 
     connect(
-        cancel_button, &QAbstractButton::clicked,
+        button_box, &QDialogButtonBox::rejected,
         [dialog]() {
             dialog->reject();
         });
