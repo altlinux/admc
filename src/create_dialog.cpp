@@ -72,7 +72,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QW
         }
     }
 
-    layout_attribute_edits(all_edits, edits_layout, this);
+    layout_attribute_edits(all_edits, edits_layout);
 
     auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
 

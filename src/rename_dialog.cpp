@@ -80,7 +80,7 @@ RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
     for (auto attribute : string_attributes) {
         all_edits.append(string_edits[attribute]);
     }
-    layout_attribute_edits(all_edits, edits_layout, this);
+    layout_attribute_edits(all_edits, edits_layout);
 
     const auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
     connect(

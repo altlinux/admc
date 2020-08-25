@@ -39,7 +39,7 @@ void setup_edit_marker(AttributeEdit *edit, QLabel *label) {
         });
 }
 
-void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout, QWidget *parent) {
+void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout) {
     for (auto edit : edits) {
         edit->add_to_layout(layout);
     }

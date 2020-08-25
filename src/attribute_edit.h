@@ -36,13 +36,15 @@ class AccountOptionEdit;
 class QCalendarWidget;
 class QDateTimeEdit;
 class DetailsTab;
+class QLabel;
 
 enum EditReadOnly {
     EditReadOnly_Yes,
     EditReadOnly_No
 };
 
-void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout, QWidget *parent);
+void setup_edit_marker(AttributeEdit *edit, QLabel *label);
+void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout);
 void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
 bool any_edits_changed(QList<AttributeEdit *> edits);
 

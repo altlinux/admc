@@ -76,6 +76,7 @@ set(ADMC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/create_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/attribute_display_strings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/attribute_edit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/country_edit.cpp
 )
 
 set(TS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)
