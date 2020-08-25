@@ -19,14 +19,17 @@
 
 #include "rename_dialog.h"
 #include "ad_interface.h"
+#include "attribute_edit.h"
 #include "status.h"
+#include "utils.h"
 
 #include <QDialog>
 #include <QLineEdit>
-#include <QGridLayout>
 #include <QLabel>
+#include <QDialogButtonBox>
 #include <QPushButton>
-#include <QList>
+#include <QVBoxLayout>
+#include <QGridLayout>
 
 // TODO: figure out what can and can't be renamed and disable renaming for exceptions (computers can't for example)
 
@@ -41,104 +44,87 @@ RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
     const QString name = AdInterface::instance()->attribute_get(target, ATTRIBUTE_NAME);
     const auto title_label = new QLabel(QString(tr("Renaming \"%1\":")).arg(name), this);
 
-    const auto ok_button = new QPushButton(tr("OK"), this);
-    connect(
-        ok_button, &QAbstractButton::clicked,
-        this, &QDialog::accept);
+    const auto edits_layout = new QGridLayout();
 
-    const auto cancel_button = new QPushButton(tr("Cancel"), this);
-    connect(
-        cancel_button, &QAbstractButton::clicked,
-        this, &QDialog::reject);
+    name_edit = new QLineEdit();
+    append_to_grid_layout_with_label(edits_layout, tr("Name"), name_edit);
 
-    label_layout = new QVBoxLayout();
-    edit_layout = new QVBoxLayout();
-
-    const auto attributes_layout = new QHBoxLayout();
-    attributes_layout->insertLayout(-1, label_layout);
-    attributes_layout->insertLayout(-1, edit_layout);
-
-    const auto top_layout = new QGridLayout(this);
-    top_layout->addWidget(title_label, 0, 0);
-    top_layout->addLayout(attributes_layout, 1, 0);
-    top_layout->addWidget(cancel_button, 2, 0, Qt::AlignLeft);
-    top_layout->addWidget(ok_button, 2, 2, Qt::AlignRight);
-
-    name_edit = {
-        "",
-        nullptr
-    };
-
-    add_attribute_edit(ATTRIBUTE_NAME, tr("Name:"));
-
-    // Add extra name-related attribute edits for users/groups
     const bool is_user = AdInterface::instance()->is_user(target);
     const bool is_group = AdInterface::instance()->is_group(target);
+    QList<QString> string_attributes;
     if (is_user) {
-        add_attribute_edit(ATTRIBUTE_FIRST_NAME, tr("First name:"));
-        add_attribute_edit(ATTRIBUTE_LAST_NAME, tr("Last name:"));
-        add_attribute_edit(ATTRIBUTE_DISPLAY_NAME, tr("Display name:"));
-        add_attribute_edit(ATTRIBUTE_USER_PRINCIPAL_NAME, tr("Logon name:"));
-        add_attribute_edit(ATTRIBUTE_SAMACCOUNT_NAME, tr("Logon name (pre-2000):"));
-    } if (is_group) {
-        add_attribute_edit(ATTRIBUTE_SAMACCOUNT_NAME, tr("Logon name (pre-2000):"));
+        string_attributes = {
+            ATTRIBUTE_FIRST_NAME,
+            ATTRIBUTE_LAST_NAME,
+            ATTRIBUTE_DISPLAY_NAME,
+            ATTRIBUTE_USER_PRINCIPAL_NAME,
+            ATTRIBUTE_SAMACCOUNT_NAME
+        };
+
+    } else if (is_group) {
+        string_attributes = {
+            ATTRIBUTE_SAMACCOUNT_NAME
+        };
     }
 
+    QMap<QString, StringEdit *> string_edits;
+    make_string_edits(string_attributes, &string_edits);
+
+    if (is_user) {
+        autofill_full_name(string_edits);
+    }
+
+    if (string_attributes.contains(ATTRIBUTE_SAMACCOUNT_NAME)) {
+        QLineEdit *sama_name_edit = string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->edit;
+        autofill_edit_from_other_edit(name_edit, sama_name_edit);
+    }
+
+    for (auto attribute : string_attributes) {
+        all_edits.append(string_edits[attribute]);
+    }
+    layout_attribute_edits(all_edits, edits_layout, this);
+
+    const auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
     connect(
-        this, &QDialog::accepted,
-        this, &RenameDialog::on_accepted);
+        button_box->button(QDialogButtonBox::Ok), &QPushButton::clicked,
+        this, &QDialog::accept);
+    connect(
+        button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
+        this, &QDialog::reject);
+
+    const auto top_layout = new QVBoxLayout();
+    setLayout(top_layout);
+    top_layout->addWidget(title_label);
+    top_layout->addLayout(edits_layout);
+    top_layout->addWidget(button_box);
 }
 
-void RenameDialog::on_accepted() {
-    auto push_changes_from_attribute_edit =
-    [this](const AttributeEdit &e) {
-        const QString attribute = e.attribute;
-        const QLineEdit *edit = e.edit;
+void RenameDialog::accept() {
+    const QString new_name = name_edit->text();
 
-        const QString current_value = AdInterface::instance()->attribute_get(target, attribute);
-        const QString new_value = edit->text();
+    const bool verify_success = verify_attribute_edits(all_edits, this);
+    if (!verify_success) {
+        return;
+    }
 
-        const bool changed = (new_value != current_value);
-        if (changed) {
-            if (attribute == ATTRIBUTE_NAME) {
-                AdInterface::instance()->object_rename(target, new_value);
-            } else {
-                AdInterface::instance()->attribute_replace(target, attribute, new_value);
-            }
+    const int errors_index = Status::instance()->get_errors_size();
+    AdInterface::instance()->start_batch();
+    {
+
+        // NOTE: rename last so that other attribute changes can complete on old DN
+        const bool result_apply = apply_attribute_edits(all_edits, target, this);
+        const AdResult result_rename = AdInterface::instance()->object_rename(target, new_name);
+
+        if (result_apply && result_rename.success) {
+            const QString message = QString(tr("Renamed object - \"%1\"")).arg(new_name);
+            Status::instance()->message(message, StatusType_Success);
+
+            QDialog::accept();
+        } else {
+            const QString message = QString(tr("Failed to rename object - \"%1\"")).arg(new_name);
+            Status::instance()->message(message, StatusType_Error);
         }
-    };
-
-    // NOTE: change name last so that other attribute changes can complete on old DN
-    for (auto e : edits) {
-        push_changes_from_attribute_edit(e);
     }
-
-    if (name_edit.edit != nullptr) {
-        push_changes_from_attribute_edit(name_edit);
-    }
-
-    const QString name = AdInterface::instance()->attribute_get(target, ATTRIBUTE_NAME);
-    Status::instance()->message(QString(tr("Renamed object - %1")).arg(name), StatusType_Success);
-}
-
-void RenameDialog::add_attribute_edit(const QString &attribute, const QString &label_text) {
-    const auto label = new QLabel(label_text);
-    auto edit = new QLineEdit();
-
-    label_layout->addWidget(label);
-    edit_layout->addWidget(edit);
-
-    const QString current_value = AdInterface::instance()->attribute_get(target, attribute);
-    edit->setText(current_value);
-
-    AttributeEdit attribute_edit = {
-        QString(attribute),
-        edit
-    };
-
-    if (attribute == ATTRIBUTE_NAME) {
-        name_edit = attribute_edit;
-    } else {
-        edits.append(attribute_edit);
-    }
+    AdInterface::instance()->end_batch();
+    Status::instance()->show_errors_popup(errors_index);
 }

@@ -19,6 +19,7 @@
 
 #include "utils.h"
 #include "ad_interface.h"
+#include "attribute_edit.h"
 
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
@@ -123,20 +124,47 @@ void append_to_grid_layout_with_label(QGridLayout *layout, const QString &label_
     layout->addWidget(widget, row, 1);
 }
 
-void autofill_full_name(QLineEdit *full_name_edit, QLineEdit *first_name_edit, QLineEdit *last_name_edit) {
+void autofill_full_name(QMap<QString, StringEdit *> string_edits) {
+    const char *name_attributes[] = {
+        ATTRIBUTE_FIRST_NAME,
+        ATTRIBUTE_LAST_NAME,
+        ATTRIBUTE_DISPLAY_NAME
+    };
+
+    // Get QLineEdit's out of string edits
+    QMap<QString, QLineEdit *> edits;
+    for (auto attribute : name_attributes) {
+        if (string_edits.contains(attribute)) {
+            edits[attribute] = string_edits[attribute]->edit;
+        } else {
+            printf("Error in autofill_full_name(): first, last or full name is not present in edits list!");
+            return;
+        }
+    }
+
     auto autofill =
     [=]() {
-        const QString first_name = first_name_edit->text(); 
-        const QString last_name = last_name_edit->text();
+        const QString first_name = edits[ATTRIBUTE_FIRST_NAME]->text(); 
+        const QString last_name = edits[ATTRIBUTE_LAST_NAME]->text();
         const QString full_name = first_name + " " + last_name; 
 
-        full_name_edit->setText(full_name);
+        edits[ATTRIBUTE_DISPLAY_NAME]->setText(full_name);
     };
 
     QObject::connect(
-        first_name_edit, &QLineEdit::textChanged,
+        edits[ATTRIBUTE_FIRST_NAME], &QLineEdit::textChanged,
         autofill);
     QObject::connect(
-        last_name_edit, &QLineEdit::textChanged,
+        edits[ATTRIBUTE_LAST_NAME], &QLineEdit::textChanged,
         autofill);
+}
+
+// When "from" edit is edited, the text is copied to "to" edit
+// But "to" can still be edited separately if needed
+void autofill_edit_from_other_edit(QLineEdit *from, QLineEdit *to) {
+    QObject::connect(
+        from, &QLineEdit::textChanged,
+        [=] () {
+            to->setText(from->text());
+        });
 }

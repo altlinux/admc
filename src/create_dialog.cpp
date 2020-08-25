@@ -38,7 +38,6 @@
 
 // TODO: implement cannot change pass
 
-void autofill_edit_from_other_edit(QLineEdit *from, QLineEdit *to);
 QString create_type_to_string(const CreateType &type);
 
 CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QWidget *parent)
@@ -132,9 +131,9 @@ void CreateDialog::accept() {
     };
     const char **classes = get_classes(type);
 
+    const int errors_index = Status::instance()->get_errors_size();
     AdInterface::instance()->start_batch();
     {   
-        const int errors_index = Status::instance()->get_errors_size();
 
         const AdResult result_add = AdInterface::instance()->object_add(dn, classes);
 
@@ -146,7 +145,7 @@ void CreateDialog::accept() {
         const QString type_string = create_type_to_string(type);
 
         if (result_add.success & result_apply) {
-            const QString message = QString(CreateDialog::tr("Created %1 - \"%2\"")).arg(type_string, name);
+            const QString message = QString(tr("Created %1 - \"%2\"")).arg(type_string, name);
 
             Status::instance()->message(message, StatusType_Success);
 
@@ -156,13 +155,12 @@ void CreateDialog::accept() {
                 AdInterface::instance()->object_delete(dn);
             }
 
-            const QString message = QString(CreateDialog::tr("Failed to create %1 - \"%2\"")).arg(type_string, name);
+            const QString message = QString(tr("Failed to create %1 - \"%2\"")).arg(type_string, name);
             Status::instance()->message(message, StatusType_Error);
         }
-
-        Status::instance()->show_errors_popup(errors_index);
     }
     AdInterface::instance()->end_batch();
+    Status::instance()->show_errors_popup(errors_index);
 }
 
 void CreateDialog::make_group_edits() {
@@ -213,20 +211,7 @@ void CreateDialog::make_user_edits() {
     QLineEdit *sama_name_edit = string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->edit;
     autofill_edit_from_other_edit(name_edit, sama_name_edit);
 
-    QLineEdit *full_name_edit = string_edits[ATTRIBUTE_DISPLAY_NAME]->edit;
-    QLineEdit *first_name_edit = string_edits[ATTRIBUTE_FIRST_NAME]->edit;
-    QLineEdit *last_name_edit = string_edits[ATTRIBUTE_LAST_NAME]->edit;
-    autofill_full_name(full_name_edit, first_name_edit, last_name_edit);
-}
-
-// When "from" edit is edited, the text is copied to "to" edit
-// But "to" can still be edited separately if needed
-void autofill_edit_from_other_edit(QLineEdit *from, QLineEdit *to) {
-    QObject::connect(
-        from, &QLineEdit::textChanged,
-        [=] () {
-            to->setText(from->text());
-        });
+    autofill_full_name(string_edits);
 }
 
 QString create_type_to_string(const CreateType &type) {

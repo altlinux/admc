@@ -25,7 +25,7 @@
 #include <QList>
 
 class QLineEdit;
-class QVBoxLayout;
+class AttributeEdit;
 
 class RenameDialog final : public QDialog {
 Q_OBJECT
@@ -34,21 +34,12 @@ public:
     RenameDialog(const QString &target_arg, QWidget *parent);
 
 private slots:
-    void on_accepted();
+    void accept();
 
 private:
-    struct AttributeEdit {
-        QString attribute;
-        QLineEdit *edit;
-    };
-
     QString target;
-    QVBoxLayout *label_layout;
-    QVBoxLayout *edit_layout;
-    AttributeEdit name_edit;
-    QList<AttributeEdit> edits;
-
-    void add_attribute_edit(const QString &attribute, const QString &label_text);
+    QLineEdit *name_edit;
+    QList<AttributeEdit *> all_edits;
 };
 
 #endif /* RENAME_DIALOG_H */
