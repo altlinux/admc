@@ -55,8 +55,8 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QW
     
     edits_layout = new QGridLayout();
 
-    name_edit = new QLineEdit();
-    append_to_grid_layout_with_label(edits_layout, tr("Name"), name_edit);
+    name_edit = new StringEdit(ATTRIBUTE_NAME, EditReadOnly_Yes);
+    all_edits.append(name_edit);
 
     switch (type) {
         case CreateType_User: {
@@ -91,7 +91,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QW
 }
 
 void CreateDialog::accept() {
-    const QString name = name_edit->text();
+    const QString name = name_edit->edit->text();
 
     auto get_suffix =
     [](CreateType type_arg) {
@@ -165,7 +165,7 @@ void CreateDialog::accept() {
 
 void CreateDialog::make_group_edits() {
     const auto sama_name = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME);
-    autofill_edit_from_other_edit(name_edit, sama_name->edit);
+    autofill_edit_from_other_edit(name_edit->edit, sama_name->edit);
 
     const auto group_scope = new GroupScopeEdit();
     const auto group_type = new GroupTypeEdit();
@@ -209,7 +209,7 @@ void CreateDialog::make_user_edits() {
     }
 
     QLineEdit *sama_name_edit = string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->edit;
-    autofill_edit_from_other_edit(name_edit, sama_name_edit);
+    autofill_edit_from_other_edit(name_edit->edit, sama_name_edit);
 
     autofill_full_name(string_edits);
 }

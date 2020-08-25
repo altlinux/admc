@@ -24,8 +24,8 @@
 #include <QDialog>
 #include <QList>
 
-class QLineEdit;
 class AttributeEdit;
+class StringEdit;
 
 class RenameDialog final : public QDialog {
 Q_OBJECT
@@ -38,7 +38,7 @@ private slots:
 
 private:
     QString target;
-    QLineEdit *name_edit;
+    StringEdit *name_edit;
     QList<AttributeEdit *> all_edits;
 };
 

@@ -41,13 +41,12 @@ RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose);
     resize(600, 600);
 
-    const QString name = AdInterface::instance()->attribute_get(target, ATTRIBUTE_NAME);
-    const auto title_label = new QLabel(QString(tr("Renaming \"%1\":")).arg(name), this);
+    name_edit = new StringEdit(ATTRIBUTE_NAME, EditReadOnly_Yes);
+    all_edits.append(name_edit);
+
+    const auto title_label = new QLabel(QString(tr("Rename dialog")), this);
 
     const auto edits_layout = new QGridLayout();
-
-    name_edit = new QLineEdit();
-    append_to_grid_layout_with_label(edits_layout, tr("Name"), name_edit);
 
     const bool is_user = AdInterface::instance()->is_user(target);
     const bool is_group = AdInterface::instance()->is_group(target);
@@ -76,7 +75,7 @@ RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
 
     if (string_attributes.contains(ATTRIBUTE_SAMACCOUNT_NAME)) {
         QLineEdit *sama_name_edit = string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->edit;
-        autofill_edit_from_other_edit(name_edit, sama_name_edit);
+        autofill_edit_from_other_edit(name_edit->edit, sama_name_edit);
     }
 
     for (auto attribute : string_attributes) {
@@ -104,7 +103,7 @@ RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
 }
 
 void RenameDialog::accept() {
-    const QString new_name = name_edit->text();
+    const QString new_name = name_edit->edit->text();
 
     const bool verify_success = verify_attribute_edits(all_edits, this);
     if (!verify_success) {

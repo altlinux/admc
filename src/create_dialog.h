@@ -27,15 +27,9 @@
 #include <QList>
 #include <QMap>
 
-class QLineEdit;
-class QVBoxLayout;
-class QComboBox;
-class QCheckBox;
 class QGridLayout;
 class AttributeEdit;
 class StringEdit;
-class GroupScopeEdit;
-class GroupTypeEdit;
 
 enum CreateType {
     CreateType_User,
@@ -60,7 +54,7 @@ public:
 
 protected:
     QGridLayout *edits_layout;
-    QLineEdit *name_edit;
+    StringEdit *name_edit;
     QList<AttributeEdit *> all_edits;
 
 private slots:
