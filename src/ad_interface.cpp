@@ -553,8 +553,6 @@ AdResult AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
     if (result.success) {
         success_status_message(QString(tr("Set scope for group \"%1\" to \"%2\"")).arg(name, scope_string));
 
-        update_cache({dn});
-
         return AdResult(true);
     } else {
         const QString context = QString(tr("Failed to set scope for group \"%1\" to \"%2\"")).arg(name, scope_string);
@@ -596,8 +594,6 @@ AdResult AdInterface::group_set_type(const QString &dn, GroupType type) {
     const AdResult result = attribute_replace(dn, ATTRIBUTE_GROUP_TYPE, update_group_type, EmitStatusMessage_No);
     if (result.success) {
         success_status_message(QString(tr("Set type for group \"%1\" to \"%2\"")).arg(name, type_string));
-
-        update_cache({dn});
 
         return AdResult(true);
     } else {
@@ -749,8 +745,6 @@ AdResult AdInterface::user_set_account_option(const QString &dn, AccountOption o
         const QString success_context = get_success_context();
         
         success_status_message(success_context);
-
-        update_cache({dn});
 
         return AdResult(true);
     } else {
