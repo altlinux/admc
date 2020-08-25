@@ -204,13 +204,13 @@ StringEdit::StringEdit(const QString &attribute_arg, const EditReadOnly read_onl
 
     if (read_only == EditReadOnly_Yes) {
         edit->setReadOnly(true);
+    } else {
+        QObject::connect(
+            edit, &QLineEdit::textChanged,
+            [this]() {
+                emit edited();
+            });
     }
-
-    QObject::connect(
-        edit, &QLineEdit::textChanged,
-        [this]() {
-            emit edited();
-        });
 }
 
 void StringEdit::load(const QString &dn) {
@@ -489,13 +489,13 @@ DateTimeEdit::DateTimeEdit(const QString &attribute_arg, EditReadOnly read_only)
 
     if (read_only == EditReadOnly_Yes) {
         edit->setReadOnly(true);
+    } else {
+        QObject::connect(
+            edit, &QDateTimeEdit::dateTimeChanged,
+            [this]() {
+                emit edited();
+            });
     }
-
-    QObject::connect(
-        edit, &QDateTimeEdit::dateTimeChanged,
-        [this]() {
-            emit edited();
-        });
 }
 
 void DateTimeEdit::load(const QString &dn) {
