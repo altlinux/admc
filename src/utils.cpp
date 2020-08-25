@@ -114,10 +114,25 @@ bool checkbox_is_checked(const QCheckBox *checkbox) {
     return (checkbox->checkState() == Qt::Checked);
 }
 
-void append_to_grid_layout_with_label(QGridLayout *layout, const QString &label_text, QWidget *widget) {
-    const auto label = new QLabel(label_text);
-
+void append_to_grid_layout_with_label(QGridLayout *layout,QLabel *label, QWidget *widget) {
     const int row = layout->rowCount();
     layout->addWidget(label, row, 0);
     layout->addWidget(widget, row, 1);
+}
+
+// If edited, return text with asterisk at the end
+// If not edited, return text without asterisk
+QString set_edited_marker(const QString &text, bool edited) {
+    const int asterisk_index = text.indexOf("*");
+    const bool has_asterisk = (asterisk_index != -1);
+
+    QString new_text = text;
+    if (edited && !has_asterisk) {
+        new_text = text + "*";
+    } else if (!edited && has_asterisk) {
+        new_text = text;
+        new_text.remove(asterisk_index, 1);
+    }
+
+    return new_text;
 }

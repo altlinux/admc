@@ -31,6 +31,7 @@
 #include "containers_widget.h"
 #include "contents_widget.h"
 #include "status.h"
+#include "utils.h"
 
 #include <QAction>
 #include <QTabWidget>
@@ -104,12 +105,8 @@ void DetailsWidget::tab_edited(DetailsTab *tab) {
     const int tab_index = tab_widget->indexOf(tab);
     if (tab_index != -1) {
         const QString current_text = tab_widget->tabText(tab_index);
-        const bool no_asterisk = (current_text.indexOf("*") == -1);
-
-        if (no_asterisk) {
-            const QString new_text = current_text + "*";
-            tab_widget->setTabText(tab_index, new_text);
-        }
+        const QString new_text = set_edited_marker(current_text, true);
+        tab_widget->setTabText(tab_index, new_text);
     }
 }
 

@@ -57,34 +57,37 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWid
 void autofill_full_name(QMap<QString, StringEdit *> string_edits);
 void autofill_sama_name(StringEdit *sama_edit, StringEdit *name_edit);
 
-class AttributeEdit {
+class AttributeEdit : public QObject {
+Q_OBJECT
 public:
     virtual void add_to_layout(QGridLayout *layout) = 0;
-    virtual void connect_to_tab(DetailsTab *tab) const = 0;
 
     // Load value from server for display
     virtual void load(const QString &dn) = 0;
 
     // Returns whether edit's value has been changed by the user
     // Resets on reload
-    virtual bool changed(const QString &dn) const = 0;
+    virtual bool changed() const = 0;
 
     // Check that current input is valid for conditions that can be checked without contacting the AD server, for example name input not being empty
     virtual bool verify_input(QWidget *parent) = 0;
 
     // Apply current input by making a modification to the AD server
     virtual bool apply(const QString &dn) = 0;
+
+signals:
+    void edited();
 };
 
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
 void add_to_layout(QGridLayout *layout);\
-void connect_to_tab(DetailsTab *tab) const;\
 void load(const QString &dn);\
-bool changed(const QString &dn) const;\
+bool changed() const;\
 bool verify_input(QWidget *parent);\
 bool apply(const QString &dn);
 
 class StringEdit final : public AttributeEdit {
+Q_OBJECT
 public:
     QLineEdit *edit;
 
@@ -97,6 +100,7 @@ private:
 };
 
 class GroupScopeEdit final : public AttributeEdit {
+Q_OBJECT
 public:
     GroupScopeEdit();
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
@@ -107,6 +111,7 @@ private:
 };
 
 class GroupTypeEdit final : public AttributeEdit {
+Q_OBJECT
 public:
     QComboBox *combo;
 
@@ -118,6 +123,7 @@ private:
 };
 
 class AccountOptionEdit final : public AttributeEdit {
+Q_OBJECT
 public:
     QCheckBox *check;
 
@@ -130,6 +136,7 @@ private:
 };
 
 class PasswordEdit final : public AttributeEdit {
+Q_OBJECT
 public:
     QLineEdit *edit;
     QLineEdit *confirm_edit;
@@ -142,6 +149,7 @@ private:
 };
 
 class DateTimeEdit final : public AttributeEdit {
+Q_OBJECT
 public:
     QDateTimeEdit *edit;
 

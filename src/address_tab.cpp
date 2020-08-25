@@ -30,6 +30,7 @@
 #include <QComboBox>
 #include <QHash>
 #include <QFile>
+#include <QLabel>
 #include <algorithm>
 
 // TODO: translate country strings to Russian (qt doesn't have it)
@@ -69,7 +70,7 @@ AddressTab::AddressTab(DetailsWidget *details_arg)
     country_combo = new QComboBox(this);
 
     const QString country_display_string = get_attribute_display_string(ATTRIBUTE_COUNTRY);
-    append_to_grid_layout_with_label(edits_layout, country_display_string, country_combo);
+    append_to_grid_layout_with_label(edits_layout, new QLabel(country_display_string), country_combo);
 
     // Load all country names into combobox
     // NOTE: temp collections to sort items for combo box

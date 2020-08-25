@@ -28,6 +28,16 @@
 #include <QGridLayout>
 #include <QDateTimeEdit>
 #include <QMessageBox>
+#include <QLabel>
+
+void setup_edit_marker(AttributeEdit *edit, QLabel *label) {
+    QObject::connect(edit, &AttributeEdit::edited,
+        [=]() {
+            const QString current_text = label->text();
+            const QString new_text = set_edited_marker(current_text, edit->changed());
+            label->setText(new_text);
+        });
+}
 
 void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout, QWidget *parent) {
     for (auto edit : edits) {
@@ -53,7 +63,7 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWid
     bool success = true;
 
     for (auto edit : edits) {
-        if (edit->changed(dn)) {
+        if (edit->changed()) {
             const bool apply_success = edit->apply(dn);
             if (!apply_success) {
                 success = false;
@@ -129,7 +139,9 @@ QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<A
 
 void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab) {
     for (auto edit : edits) {
-        edit->connect_to_tab(tab);
+        QObject::connect(
+            edit, &AttributeEdit::edited,
+            tab, &DetailsTab::on_edit_changed);
     }
 }
 
@@ -183,6 +195,12 @@ StringEdit::StringEdit(const QString &attribute_arg, const EditReadOnly read_onl
     if (read_only == EditReadOnly_Yes) {
         edit->setReadOnly(true);
     }
+
+    QObject::connect(
+        edit, &QLineEdit::textChanged,
+        [this]() {
+            emit edited();
+        });
 }
 
 void StringEdit::load(const QString &dn) {
@@ -196,20 +214,19 @@ void StringEdit::load(const QString &dn) {
         value = AdInterface::instance()->attribute_get(dn, attribute);
     }
 
+    edit->blockSignals(true);
     edit->setText(value);
+    edit->blockSignals(false);
+
     original_value = value;
 }
 
 void StringEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = get_attribute_display_string(attribute);
-    QWidget *widget = edit;
-    append_to_grid_layout_with_label(layout, label_text , widget);
-}
+    const auto label = new QLabel(label_text);
 
-void StringEdit::connect_to_tab(DetailsTab *tab) const {
-    QObject::connect(
-        edit, &QLineEdit::textChanged,
-        tab, &DetailsTab::on_edit_changed);
+    setup_edit_marker(this, label);
+    append_to_grid_layout_with_label(layout, label, edit);
 }
 
 bool StringEdit::verify_input(QWidget *parent) {
@@ -233,7 +250,7 @@ bool StringEdit::verify_input(QWidget *parent) {
     return true;
 }
 
-bool StringEdit::changed(const QString &dn) const {
+bool StringEdit::changed() const {
     const QString new_value = edit->text();
     return (new_value != original_value);
 }
@@ -259,6 +276,12 @@ GroupScopeEdit::GroupScopeEdit() {
 
         combo->addItem(type_string, (int)type);
     }
+
+    QObject::connect(
+        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        [this]() {
+            emit edited();
+        });
 }
 
 void GroupScopeEdit::load(const QString &dn) {
@@ -270,21 +293,17 @@ void GroupScopeEdit::load(const QString &dn) {
 
 void GroupScopeEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = QObject::tr("Group scope");
-    QWidget *widget = combo;
-    append_to_grid_layout_with_label(layout, label_text , widget);
-}
+    const auto label = new QLabel(label_text);
 
-void GroupScopeEdit::connect_to_tab(DetailsTab *tab) const {
-    QObject::connect(
-        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        tab, &DetailsTab::on_edit_changed);
+    setup_edit_marker(this, label);
+    append_to_grid_layout_with_label(layout, label, combo);
 }
 
 bool GroupScopeEdit::verify_input(QWidget *parent) {
     return true;
 }
 
-bool GroupScopeEdit::changed(const QString &dn) const {
+bool GroupScopeEdit::changed() const {
     const int new_value = combo->currentData().toInt();
     return (new_value != original_value);
 }
@@ -305,6 +324,12 @@ GroupTypeEdit::GroupTypeEdit() {
 
         combo->addItem(type_string, (int)type);
     }
+
+    QObject::connect(
+        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        [this]() {
+            emit edited();
+        });
 }
 
 void GroupTypeEdit::load(const QString &dn) {
@@ -316,21 +341,17 @@ void GroupTypeEdit::load(const QString &dn) {
 
 void GroupTypeEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = QObject::tr("Group type");
-    QWidget *widget = combo;
-    append_to_grid_layout_with_label(layout, label_text , widget);
-}
+    const auto label = new QLabel(label_text);
 
-void GroupTypeEdit::connect_to_tab(DetailsTab *tab) const {
-    QObject::connect(
-        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        tab, &DetailsTab::on_edit_changed);
+    setup_edit_marker(this, label);
+    append_to_grid_layout_with_label(layout, label, combo);
 }
 
 bool GroupTypeEdit::verify_input(QWidget *parent) {
     return true;
 }
 
-bool GroupTypeEdit::changed(const QString &dn) const {
+bool GroupTypeEdit::changed() const {
     const int new_value = combo->currentData().toInt();
     return (new_value != original_value);
 }
@@ -345,6 +366,12 @@ bool GroupTypeEdit::apply(const QString &dn) {
 AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg) {
     option = option_arg;
     check = new QCheckBox();
+
+    QObject::connect(
+        check, &QCheckBox::stateChanged,
+        [this]() {
+            emit edited();
+        });
 }
 
 void AccountOptionEdit::load(const QString &dn) {
@@ -369,21 +396,17 @@ void AccountOptionEdit::load(const QString &dn) {
 
 void AccountOptionEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = get_account_option_description(option);
-    QWidget *widget = check;
-    append_to_grid_layout_with_label(layout, label_text , widget);
-}
+    const auto label = new QLabel(label_text);
 
-void AccountOptionEdit::connect_to_tab(DetailsTab *tab) const {
-    QObject::connect(
-        check, &QCheckBox::stateChanged,
-        tab, &DetailsTab::on_edit_changed);
+    setup_edit_marker(this, label);
+    append_to_grid_layout_with_label(layout, label, check);
 }
 
 bool AccountOptionEdit::verify_input(QWidget *parent) {
     return true;
 }
 
-bool AccountOptionEdit::changed(const QString &dn) const {
+bool AccountOptionEdit::changed() const {
     const bool new_value = checkbox_is_checked(check);
     return (new_value != original_value);
 }
@@ -401,6 +424,12 @@ PasswordEdit::PasswordEdit() {
 
     edit->setEchoMode(QLineEdit::Password);
     confirm_edit->setEchoMode(QLineEdit::Password);
+
+    QObject::connect(
+        edit, &QLineEdit::textChanged,
+        [this]() {
+            emit edited();
+        });
 }
 
 void PasswordEdit::load(const QString &dn) {
@@ -408,12 +437,14 @@ void PasswordEdit::load(const QString &dn) {
 }
 
 void PasswordEdit::add_to_layout(QGridLayout *layout) {
-    append_to_grid_layout_with_label(layout, QObject::tr("Password") , edit);
-    append_to_grid_layout_with_label(layout, QObject::tr("Confirm password") , confirm_edit);
-}
+    const auto password_label = new QLabel(QObject::tr("Password"));
+    const auto confirm_label = new QLabel(QObject::tr("Confirm password"));
 
-void PasswordEdit::connect_to_tab(DetailsTab *tab) const {
+    setup_edit_marker(this, password_label);
+    setup_edit_marker(this, confirm_label);
 
+    append_to_grid_layout_with_label(layout, password_label, edit);
+    append_to_grid_layout_with_label(layout, confirm_label, confirm_edit);
 }
 
 bool PasswordEdit::verify_input(QWidget *parent) {
@@ -430,7 +461,7 @@ bool PasswordEdit::verify_input(QWidget *parent) {
     return true;
 }
 
-bool PasswordEdit::changed(const QString &dn) const {
+bool PasswordEdit::changed() const {
     return true;
 }
 
@@ -449,6 +480,12 @@ DateTimeEdit::DateTimeEdit(const QString &attribute_arg, EditReadOnly read_only)
     if (read_only == EditReadOnly_Yes) {
         edit->setReadOnly(true);
     }
+
+    QObject::connect(
+        edit, &QDateTimeEdit::dateTimeChanged,
+        [this]() {
+            emit edited();
+        });
 }
 
 void DateTimeEdit::load(const QString &dn) {
@@ -461,13 +498,11 @@ void DateTimeEdit::load(const QString &dn) {
 
 void DateTimeEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = get_attribute_display_string(attribute);
-    append_to_grid_layout_with_label(layout, label_text, edit);
-}
+    const auto label = new QLabel(label_text);
 
-void DateTimeEdit::connect_to_tab(DetailsTab *tab) const {
-    QObject::connect(
-        edit, &QDateTimeEdit::dateTimeChanged,
-        tab, &DetailsTab::on_edit_changed);
+    setup_edit_marker(this, label);
+
+    append_to_grid_layout_with_label(layout, label, edit);
 }
 
 bool DateTimeEdit::verify_input(QWidget *parent) {
@@ -476,7 +511,7 @@ bool DateTimeEdit::verify_input(QWidget *parent) {
     return true;
 }
 
-bool DateTimeEdit::changed(const QString &dn) const {
+bool DateTimeEdit::changed() const {
     const QDateTime new_value = edit->dateTime();
     return (new_value != original_value);
 }
