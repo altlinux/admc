@@ -59,7 +59,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 }
 
 void PasswordDialog::accept() {
-    const bool success = verify_and_apply_attribute_edits({password_edit}, target, this);
+    const bool success = apply_attribute_edits({password_edit}, target, this);
 
     if (success) {
         QDialog::accept();

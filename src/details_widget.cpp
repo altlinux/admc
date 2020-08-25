@@ -182,15 +182,27 @@ void DetailsWidget::on_ad_modified() {
 void DetailsWidget::on_apply() {
     const int errors_index = Status::instance()->get_errors_size();
 
-    AdInterface::instance()->start_batch();
+    bool all_verified = true;
     for (auto tab : tabs) {
         if (tab->accepts_target()) {
-            tab->apply();
+            const bool verify_success = tab->verify();
+            if (!verify_success) {
+                all_verified = false;
+            }
         }
     }
-    AdInterface::instance()->end_batch();
 
-    Status::instance()->show_errors_popup(errors_index);
+    if (all_verified) {
+        AdInterface::instance()->start_batch();
+        for (auto tab : tabs) {
+            if (tab->accepts_target()) {
+                tab->apply();
+            }
+        }
+        AdInterface::instance()->end_batch();
+
+        Status::instance()->show_errors_popup(errors_index);
+    }
 }
 
 void DetailsWidget::on_cancel() {

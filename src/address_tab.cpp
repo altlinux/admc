@@ -134,8 +134,12 @@ AddressTab::AddressTab(DetailsWidget *details_arg)
         this, &DetailsTab::on_edit_changed);
 }
 
+bool AddressTab::verify() {
+    return verify_attribute_edits(edits, this);
+}
+
 void AddressTab::apply() {
-    verify_and_apply_attribute_edits(edits, target(), this);
+    apply_attribute_edits(edits, target(), this);
 
     // Apply country
     const QVariant item_data = country_combo->currentData();

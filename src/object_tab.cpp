@@ -58,6 +58,10 @@ ObjectTab::ObjectTab(DetailsWidget *details_arg)
     connect_edits_to_tab(edits, this);
 }
 
+bool ObjectTab::verify() {
+    return true;
+}
+
 void ObjectTab::apply() {
 
 }

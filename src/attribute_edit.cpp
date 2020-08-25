@@ -70,17 +70,6 @@ void load_attribute_edits(QList<AttributeEdit *> edits, const QString &dn) {
     }
 }
 
-bool verify_and_apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent) {
-    const bool verify_success = verify_attribute_edits(edits, parent);
-
-    bool apply_success = false;
-    if (verify_success) {
-        apply_success = apply_attribute_edits(edits, dn, parent);
-    }
-
-    return apply_success;
-}
-
 void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *edits_out) {
     for (auto attribute : attributes) {
         auto edit = new StringEdit(attribute);

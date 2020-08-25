@@ -48,12 +48,11 @@ void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
 QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<AccountOption> options, QWidget *parent);
 void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *edits_out);
 
-// Generally you want to verify + apply
-// In rare cases like CreateDialog, verify and apply need to be done separately
+// Verify attribute edits to confirm that all input values are valid
+// Then apply if verification suceeds
 void load_attribute_edits(QList<AttributeEdit *> edits, const QString &dn);
 bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent);
 bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent);
-bool verify_and_apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent);
 
 void autofill_full_name(QMap<QString, StringEdit *> string_edits);
 void autofill_sama_name(StringEdit *sama_edit, StringEdit *name_edit);

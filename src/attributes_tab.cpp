@@ -46,6 +46,10 @@ AttributesTab::AttributesTab(DetailsWidget *details_widget_arg)
     layout->addWidget(view);
 }
 
+bool AttributesTab::verify() {
+    return true;
+}
+
 void AttributesTab::apply() {
 
 }

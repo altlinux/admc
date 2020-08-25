@@ -103,8 +103,12 @@ AccountTab::AccountTab(DetailsWidget *details_arg)
         this, &AccountTab::on_expiry_edit_button);
 }
 
+bool AccountTab::verify() {
+    return verify_attribute_edits(edits, this);
+}
+
 void AccountTab::apply() {
-    verify_and_apply_attribute_edits(edits, target(), this);
+    apply_attribute_edits(edits, target(), this);
 
     // TODO: process errors
     // NOTE: have to operate on raw string datetime values here because (never) value can't be expressed as QDateTime
