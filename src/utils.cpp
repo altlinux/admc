@@ -159,12 +159,10 @@ void autofill_full_name(QMap<QString, StringEdit *> string_edits) {
         autofill);
 }
 
-// When "from" edit is edited, the text is copied to "to" edit
-// But "to" can still be edited separately if needed
-void autofill_edit_from_other_edit(QLineEdit *from, QLineEdit *to) {
+void autofill_sama_name(StringEdit *sama_edit, StringEdit *name_edit) {
     QObject::connect(
-        from, &QLineEdit::textChanged,
+        sama_edit->edit, &QLineEdit::textChanged,
         [=] () {
-            to->setText(from->text());
+            sama_edit->edit->setText(name_edit->edit->text());
         });
 }

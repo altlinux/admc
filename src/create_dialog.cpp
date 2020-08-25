@@ -164,14 +164,14 @@ void CreateDialog::accept() {
 }
 
 void CreateDialog::make_group_edits() {
-    const auto sama_name = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME);
-    autofill_edit_from_other_edit(name_edit->edit, sama_name->edit);
+    const auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME);
+    autofill_sama_name(sama_edit, name_edit);
 
     const auto group_scope = new GroupScopeEdit();
     const auto group_type = new GroupTypeEdit();
 
     all_edits = {
-        sama_name,
+        sama_edit,
         group_scope,
         group_type
     };
@@ -208,8 +208,7 @@ void CreateDialog::make_user_edits() {
         all_edits.append(option_edits[option]);
     }
 
-    QLineEdit *sama_name_edit = string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->edit;
-    autofill_edit_from_other_edit(name_edit->edit, sama_name_edit);
+    autofill_sama_name(string_edits[ATTRIBUTE_SAMACCOUNT_NAME], name_edit);
 
     autofill_full_name(string_edits);
 }

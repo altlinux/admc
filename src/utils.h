@@ -42,6 +42,6 @@ void setup_model_chain(QAbstractItemView *view, QAbstractItemModel *source_model
 bool checkbox_is_checked(const QCheckBox *checkbox);
 void append_to_grid_layout_with_label(QGridLayout *layout, const QString &label_text, QWidget *widget);
 void autofill_full_name(QMap<QString, StringEdit *> string_edits);
-void autofill_edit_from_other_edit(QLineEdit *from, QLineEdit *to);
+void autofill_sama_name(StringEdit *sama_edit, StringEdit *name_edit);
 
 #endif /* UTILS_H */

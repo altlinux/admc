@@ -74,8 +74,7 @@ RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
     }
 
     if (string_attributes.contains(ATTRIBUTE_SAMACCOUNT_NAME)) {
-        QLineEdit *sama_name_edit = string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->edit;
-        autofill_edit_from_other_edit(name_edit->edit, sama_name_edit);
+        autofill_sama_name(string_edits[ATTRIBUTE_SAMACCOUNT_NAME], name_edit);
     }
 
     for (auto attribute : string_attributes) {
