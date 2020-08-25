@@ -26,6 +26,7 @@
 // NOTE: have to do this like this because for translation to work, the "tr()" calls need to happen after QTranslator is setup
 QString get_attribute_display_string(const QString &attribute) {
     static const QHash<QString, QString> display_strings = {
+        {ATTRIBUTE_NAME, QObject::tr("Name")},
         {ATTRIBUTE_DISPLAY_NAME, QObject::tr("Full name")},
         {ATTRIBUTE_DESCRIPTION, QObject::tr("Description")},
         {ATTRIBUTE_USER_PRINCIPAL_NAME, QObject::tr("Logon name")},
