@@ -213,7 +213,12 @@ void StringEdit::connect_to_tab(DetailsTab *tab) const {
 }
 
 bool StringEdit::verify_input(QWidget *parent) {
-    if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
+    static const QList<QString> cant_be_empty = {
+        ATTRIBUTE_NAME,
+        ATTRIBUTE_SAMACCOUNT_NAME
+    };
+
+    if (cant_be_empty.contains(attribute)) {
         const QString new_value = edit->text();
 
         if (new_value.isEmpty()) {
