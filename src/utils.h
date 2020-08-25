@@ -22,7 +22,6 @@
 
 #include <QModelIndex>
 #include <QIcon>
-#include <QMap>
 
 class QAbstractItemModel;
 class QAbstractItemView;
@@ -30,9 +29,6 @@ class QAbstractProxyModel;
 class QString;
 class QCheckBox;
 class QGridLayout;
-class QLineEdit;
-class AccountOptionEdit;
-class StringEdit;
 
 QModelIndex convert_to_source(const QModelIndex &index);
 QString get_dn_from_index(const QModelIndex &base_row_index, int dn_column);
@@ -41,7 +37,5 @@ void set_root_to_head(QAbstractItemView *view);
 void setup_model_chain(QAbstractItemView *view, QAbstractItemModel *source_model, QList<QAbstractProxyModel *> proxies);
 bool checkbox_is_checked(const QCheckBox *checkbox);
 void append_to_grid_layout_with_label(QGridLayout *layout, const QString &label_text, QWidget *widget);
-void autofill_full_name(QMap<QString, StringEdit *> string_edits);
-void autofill_sama_name(StringEdit *sama_edit, StringEdit *name_edit);
 
 #endif /* UTILS_H */

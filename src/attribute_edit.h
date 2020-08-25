@@ -55,6 +55,9 @@ bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent);
 bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent);
 bool verify_and_apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent);
 
+void autofill_full_name(QMap<QString, StringEdit *> string_edits);
+void autofill_sama_name(StringEdit *sama_edit, StringEdit *name_edit);
+
 class AttributeEdit {
 public:
     virtual void load(const QString &dn) = 0;
