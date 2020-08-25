@@ -144,7 +144,7 @@ void CreateDialog::accept() {
 
         const QString type_string = create_type_to_string(type);
 
-        if (result_add.success & result_apply) {
+        if (result_add.success && result_apply) {
             const QString message = QString(tr("Created %1 - \"%2\"")).arg(type_string, name);
 
             Status::instance()->message(message, StatusType_Success);
