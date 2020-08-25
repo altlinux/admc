@@ -239,6 +239,11 @@ bool StringEdit::changed(const QString &dn) const {
 }
 
 bool StringEdit::apply(const QString &dn) {
+    // NOTE: name can't be replaced regularly so don't apply it. Need to get value from this edit and manually rename/create object
+    if (attribute == ATTRIBUTE_NAME) {
+        return true;
+    }
+
     const QString new_value = edit->text();
     const AdResult result = AdInterface::instance()->attribute_replace(dn, attribute, new_value);
 

@@ -55,7 +55,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QW
     
     const auto edits_layout = new QGridLayout();
 
-    name_edit = new StringEdit(ATTRIBUTE_NAME, EditReadOnly_Yes);
+    name_edit = new StringEdit(ATTRIBUTE_NAME);
     all_edits.append(name_edit);
 
     switch (type) {

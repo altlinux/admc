@@ -41,7 +41,7 @@ RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose);
     resize(600, 600);
 
-    name_edit = new StringEdit(ATTRIBUTE_NAME, EditReadOnly_Yes);
+    name_edit = new StringEdit(ATTRIBUTE_NAME);
     all_edits.append(name_edit);
 
     const auto title_label = new QLabel(QString(tr("Rename dialog")), this);
