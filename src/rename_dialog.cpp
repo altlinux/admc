@@ -97,6 +97,10 @@ RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
     top_layout->addWidget(title_label);
     top_layout->addLayout(edits_layout);
     top_layout->addWidget(button_box);
+
+    for (auto edit : all_edits) {
+        edit->load(target);
+    }
 }
 
 void RenameDialog::accept() {
