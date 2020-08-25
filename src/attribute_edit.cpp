@@ -198,9 +198,10 @@ void autofill_sama_name(StringEdit *sama_edit, StringEdit *name_edit) {
         });
 }
 
-StringEdit::StringEdit(const QString &attribute_arg, const EditReadOnly read_only) {
+StringEdit::StringEdit(const QString &attribute_arg, const EditReadOnly read_only_arg) {
     edit = new QLineEdit();
     attribute = attribute_arg;
+    read_only = read_only_arg;
 
     if (read_only == EditReadOnly_Yes) {
         edit->setReadOnly(true);
@@ -229,6 +230,10 @@ void StringEdit::load(const QString &dn) {
     edit->blockSignals(false);
 
     original_value = value;
+
+    if (!read_only) {
+        emit edited();
+    }
 }
 
 void StringEdit::add_to_layout(QGridLayout *layout) {
@@ -299,6 +304,8 @@ void GroupScopeEdit::load(const QString &dn) {
     const int scope_int = (int)scope;
     combo->setCurrentIndex(scope_int);
     original_value = scope_int;
+
+    emit edited();
 }
 
 void GroupScopeEdit::add_to_layout(QGridLayout *layout) {
@@ -347,6 +354,8 @@ void GroupTypeEdit::load(const QString &dn) {
     const int type_int = (int)type;
     combo->setCurrentIndex(type_int);
     original_value = type_int;
+
+    emit edited();
 }
 
 void GroupTypeEdit::add_to_layout(QGridLayout *layout) {
@@ -402,6 +411,8 @@ void AccountOptionEdit::load(const QString &dn) {
     check->blockSignals(false);
 
     original_value = option_is_set;
+
+    emit edited();
 }
 
 void AccountOptionEdit::add_to_layout(QGridLayout *layout) {
@@ -444,6 +455,7 @@ PasswordEdit::PasswordEdit() {
 
 void PasswordEdit::load(const QString &dn) {
     // NOTE: PasswordEdit does not load current value, it starts out blank
+    emit edited();
 }
 
 void PasswordEdit::add_to_layout(QGridLayout *layout) {
@@ -483,9 +495,10 @@ bool PasswordEdit::apply(const QString &dn) {
     return success;
 }
 
-DateTimeEdit::DateTimeEdit(const QString &attribute_arg, EditReadOnly read_only) {
+DateTimeEdit::DateTimeEdit(const QString &attribute_arg, EditReadOnly read_only_arg) {
     edit = new QDateTimeEdit();
     attribute = attribute_arg;
+    read_only = read_only_arg;
 
     if (read_only == EditReadOnly_Yes) {
         edit->setReadOnly(true);
@@ -504,6 +517,10 @@ void DateTimeEdit::load(const QString &dn) {
     edit->setDateTime(value);
 
     original_value = value;
+
+    if (!read_only) {
+        emit edited();
+    }
 }
 
 void DateTimeEdit::add_to_layout(QGridLayout *layout) {

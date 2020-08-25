@@ -95,12 +95,13 @@ Q_OBJECT
 public:
     QLineEdit *edit;
 
-    StringEdit(const QString &attribute_arg, const EditReadOnly read_only = EditReadOnly_No);
+    StringEdit(const QString &attribute_arg, const EditReadOnly read_only_arg = EditReadOnly_No);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
     QString attribute;
     QString original_value;
+    bool read_only;
 };
 
 class GroupScopeEdit final : public AttributeEdit {
@@ -157,12 +158,13 @@ Q_OBJECT
 public:
     QDateTimeEdit *edit;
 
-    DateTimeEdit(const QString &attribute_arg, const EditReadOnly read_only = EditReadOnly_No);
+    DateTimeEdit(const QString &attribute_arg, const EditReadOnly read_only_arg = EditReadOnly_No);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
     QString attribute;
     QDateTime original_value;
+    bool read_only;
 };
 
 #endif /* ATTRIBUTE_EDIT_H */
