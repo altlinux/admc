@@ -86,7 +86,7 @@ QList<QString> AdInterface::get_domain_hosts(const QString &domain, const QStrin
     }
 }
 
-AdResult AdInterface::login(const QString &host, const QString &domain) {
+bool AdInterface::login(const QString &host, const QString &domain) {
     const QString uri = "ldap://" + host;
     const std::string uri_std = uri.toStdString();
     const std::string domain_std = domain.toStdString();
@@ -98,14 +98,14 @@ AdResult AdInterface::login(const QString &host, const QString &domain) {
 
         emit logged_in();
 
-        return AdResult(true);
+        return true;
     } else {
         const QString context = QString(tr("Failed to login to \"%1\" at \"%2\"")).arg(host, domain);
         const QString error = default_error(result);
 
         error_status_message(context, error);
 
-        return AdResult(false, error);
+        return false;
     }
 }
 
@@ -284,7 +284,7 @@ bool AdInterface::attribute_bool_get(const QString &dn, const QString &attribute
     return value;
 }
 
-AdResult AdInterface::attribute_bool_replace(const QString &dn, const QString &attribute, bool value, EmitStatusMessage emit_message) {
+bool AdInterface::attribute_bool_replace(const QString &dn, const QString &attribute, bool value) {
     QString value_string;
     if (value) {
         value_string = LDAP_BOOL_TRUE;
@@ -292,7 +292,7 @@ AdResult AdInterface::attribute_bool_replace(const QString &dn, const QString &a
         value_string = LDAP_BOOL_FALSE;
     }
 
-    const AdResult result = attribute_replace(dn, attribute, value_string, emit_message);
+    const bool result = attribute_replace(dn, attribute, value_string);
 
     return result;
 }
@@ -304,9 +304,9 @@ int AdInterface::attribute_int_get(const QString &dn, const QString &attribute) 
     return value;
 }
 
-AdResult AdInterface::attribute_int_replace(const QString &dn, const QString &attribute, const int value, EmitStatusMessage emit_message) {
+bool AdInterface::attribute_int_replace(const QString &dn, const QString &attribute, const int value) {
     const QString value_string = QString::number(value);
-    const AdResult result = attribute_replace(dn, attribute, value_string, emit_message);
+    const bool result = attribute_replace(dn, attribute, value_string);
 
     return result;
 }
@@ -318,14 +318,14 @@ QDateTime AdInterface::attribute_datetime_get(const QString &dn, const QString &
     return datetime;
 }
 
-AdResult AdInterface::attribute_datetime_replace(const QString &dn, const QString &attribute, const QDateTime &datetime) {
+bool AdInterface::attribute_datetime_replace(const QString &dn, const QString &attribute, const QDateTime &datetime) {
     const QString datetime_string = datetime_to_string(attribute, datetime);
-    const AdResult result = attribute_replace(dn, attribute, datetime_string);
+    const bool result = attribute_replace(dn, attribute, datetime_string);
 
     return result;
 }
 
-AdResult AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value, EmitStatusMessage emit_message) {
+bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value) {
     QString old_value_display_string;
     QString old_value_string;
     if (attribute_is_datetime(attribute)) {
@@ -365,22 +365,22 @@ AdResult AdInterface::attribute_replace(const QString &dn, const QString &attrib
     }
 
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display_string, new_value_string), emit_message);
+        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display_string, new_value_string));
 
         update_cache({dn});
 
-        return AdResult(true);
+        return true;
     } else {
         const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display_string, new_value_string);
         const QString error = default_error(result);
 
-        error_status_message(context, error, emit_message);
+        error_status_message(context, error);
 
-        return AdResult(false, error);
+        return false;
     }
 }
 
-AdResult AdInterface::object_add(const QString &dn, const char **classes) {
+bool AdInterface::object_add(const QString &dn, const char **classes) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
@@ -390,18 +390,18 @@ AdResult AdInterface::object_add(const QString &dn, const char **classes) {
 
         update_cache({dn});
 
-        return AdResult(true);
+        return true;
     } else {
         const QString context = QString(tr("Failed to create \"%1\"")).arg(dn);
         const QString error = default_error(result);
 
         error_status_message(context, error);
 
-        return AdResult(false, error);
+        return false;
     }
 }
 
-AdResult AdInterface::object_delete(const QString &dn) {
+bool AdInterface::object_delete(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
@@ -414,18 +414,18 @@ AdResult AdInterface::object_delete(const QString &dn) {
 
         update_cache({dn});
 
-        return AdResult(true);
+        return true;
     } else {
         const QString context = QString(tr("Failed to delete object \"%1\"")).arg(name);
         const QString error = default_error(result);
 
         error_status_message(context, error);
 
-        return AdResult(false, error);
+        return false;
     }
 }
 
-AdResult AdInterface::object_move(const QString &dn, const QString &new_container) {
+bool AdInterface::object_move(const QString &dn, const QString &new_container) {
     QList<QString> dn_split = dn.split(',');
     QString new_dn = dn_split[0] + "," + new_container;
 
@@ -448,18 +448,18 @@ AdResult AdInterface::object_move(const QString &dn, const QString &new_containe
 
         update_cache({dn});
 
-        return AdResult(true);
+        return true;
     } else {
         const QString context = QString(tr("Failed to move \"%1\" to \"%2\"")).arg(object_name, container_name);
         const QString error = default_error(result);
 
         error_status_message(context, error);
 
-        return AdResult(false, error);
+        return false;
     }
 }
 
-AdResult AdInterface::group_add_user(const QString &group_dn, const QString &user_dn) {
+bool AdInterface::group_add_user(const QString &group_dn, const QString &user_dn) {
     const QByteArray group_dn_array = group_dn.toLatin1();
     const char *group_dn_cstr = group_dn_array.constData();
 
@@ -476,18 +476,18 @@ AdResult AdInterface::group_add_user(const QString &group_dn, const QString &use
 
         update_cache({group_dn, user_dn});
 
-        return AdResult(true);
+        return true;
     } else {
         const QString context = QString(tr("Failed to add user \"%1\" to group \"%2\"")).arg(user_name, group_name);
         const QString error = default_error(result);
 
         error_status_message(context, error);
 
-        return AdResult(false, error);
+        return false;
     }
 }
 
-AdResult AdInterface::group_remove_user(const QString &group_dn, const QString &user_dn) {
+bool AdInterface::group_remove_user(const QString &group_dn, const QString &user_dn) {
     const QByteArray group_dn_array = group_dn.toLatin1();
     const char *group_dn_cstr = group_dn_array.constData();
 
@@ -504,14 +504,14 @@ AdResult AdInterface::group_remove_user(const QString &group_dn, const QString &
 
         update_cache({group_dn, user_dn});
 
-        return AdResult(true);
+        return true;
     } else {
         const QString context = QString(tr("Failed to remove user \"%1\" from group \"%2\"")).arg(user_name, group_name);
         const QString error = default_error(result);
 
         error_status_message(context, error);
 
-        return AdResult(false, error);
+        return false;
     }
 }
 
@@ -531,7 +531,7 @@ GroupScope AdInterface::group_get_scope(const QString &dn) {
 }
 
 // TODO: are there side-effects on group members from this?...
-AdResult AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
+bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
     int group_type = attribute_int_get(dn, ATTRIBUTE_GROUP_TYPE);
 
     // Unset all scope bits, because scope bits are exclusive
@@ -549,16 +549,16 @@ AdResult AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
     const QString name = extract_name_from_dn(dn);
     const QString scope_string = group_scope_to_string(scope);
     
-    const AdResult result = attribute_int_replace(dn, ATTRIBUTE_GROUP_TYPE, group_type, EmitStatusMessage_No);
-    if (result.success) {
+    const bool result = attribute_int_replace(dn, ATTRIBUTE_GROUP_TYPE, group_type);
+    if (result) {
         success_status_message(QString(tr("Set scope for group \"%1\" to \"%2\"")).arg(name, scope_string));
 
-        return AdResult(true);
+        return true;
     } else {
         const QString context = QString(tr("Failed to set scope for group \"%1\" to \"%2\"")).arg(name, scope_string);
-        error_status_message(context, result.error);
+        error_status_message(context, "");
 
-        return AdResult(false, result.error);
+        return false;
     }
 }
 
@@ -576,7 +576,7 @@ GroupType AdInterface::group_get_type(const QString &dn) {
     }
 }
 
-AdResult AdInterface::group_set_type(const QString &dn, GroupType type) {
+bool AdInterface::group_set_type(const QString &dn, GroupType type) {
     const QString group_type = attribute_get(dn, ATTRIBUTE_GROUP_TYPE);
     int group_type_int = group_type.toInt();
 
@@ -591,20 +591,20 @@ AdResult AdInterface::group_set_type(const QString &dn, GroupType type) {
     const QString name = extract_name_from_dn(dn);
     const QString type_string = group_type_to_string(type);
     
-    const AdResult result = attribute_replace(dn, ATTRIBUTE_GROUP_TYPE, update_group_type, EmitStatusMessage_No);
-    if (result.success) {
+    const bool result = attribute_replace(dn, ATTRIBUTE_GROUP_TYPE, update_group_type);
+    if (result) {
         success_status_message(QString(tr("Set type for group \"%1\" to \"%2\"")).arg(name, type_string));
 
-        return AdResult(true);
+        return true;
     } else {
         const QString context = QString(tr("Failed to set type for group \"%1\" to \"%2\"")).arg(name, type_string);
-        error_status_message(context, result.error);
+        error_status_message(context, "");
 
-        return AdResult(false, result.error);
+        return false;
     }
 }
 
-AdResult AdInterface::object_rename(const QString &dn, const QString &new_name) {
+bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     // Compose new_rdn and new_dn
     const QStringList exploded_dn = dn.split(',');
     const QString old_rdn = exploded_dn[0];
@@ -629,18 +629,18 @@ AdResult AdInterface::object_rename(const QString &dn, const QString &new_name) 
 
         update_cache({dn});
 
-        return AdResult(true);
+        return true;
     } else {
         const QString context = QString(tr("Failed to rename \"%1\" to \"%2\"")).arg(old_name, new_name);
         const QString error = default_error(result);
 
         error_status_message(context, error);
 
-        return AdResult(false, error);
+        return false;
     }
 }
 
-AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
+bool AdInterface::set_pass(const QString &dn, const QString &password) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
     const QByteArray password_array = password.toLatin1();
@@ -655,7 +655,7 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
 
         update_cache({dn});
 
-        return AdResult(true);
+        return true;
     } else {
         const QString context = QString(tr("Failed to set pass of \"%1\"")).arg(name);
 
@@ -669,7 +669,7 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
 
         error_status_message(context, error);
 
-        return AdResult(false, error);
+        return false;
     }
 }
 
@@ -677,12 +677,12 @@ AdResult AdInterface::set_pass(const QString &dn, const QString &password) {
 // "User cannot change password" - CAN'T just set PASSWD_CANT_CHANGE. See: https://docs.microsoft.com/en-us/windows/win32/adsi/modifying-user-cannot-change-password-ldap-provider?redirectedfrom=MSDN
 // "This account supports 128bit encryption" (and for 256bit)
 // "Use Kerberos DES encryption types for this account"
-AdResult AdInterface::user_set_account_option(const QString &dn, AccountOption option, bool set) {
+bool AdInterface::user_set_account_option(const QString &dn, AccountOption option, bool set) {
     if (dn.isEmpty()) {
-        return AdResult(false);
+        return false;
     }
 
-    AdResult result(false);
+    bool result(false);
 
     switch (option) {
         case AccountOption_PasswordExpired: {
@@ -693,7 +693,7 @@ AdResult AdInterface::user_set_account_option(const QString &dn, AccountOption o
                 pwdLastSet_value = AD_PWD_LAST_SET_RESET;
             }
 
-            result = attribute_replace(dn, ATTRIBUTE_PWD_LAST_SET, pwdLastSet_value, EmitStatusMessage_No);
+            result = attribute_replace(dn, ATTRIBUTE_PWD_LAST_SET, pwdLastSet_value);
 
             break;
         }
@@ -714,13 +714,13 @@ AdResult AdInterface::user_set_account_option(const QString &dn, AccountOption o
 
             const QString control_updated = QString::number(control_int);
 
-            result = attribute_replace(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, control_updated, EmitStatusMessage_No);
+            result = attribute_replace(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, control_updated);
         }
     }
 
     const QString name = extract_name_from_dn(dn);
     
-    if (result.success) {
+    if (result) {
         auto get_success_context =
         [option, set, name]() {
             switch (option) {
@@ -746,7 +746,7 @@ AdResult AdInterface::user_set_account_option(const QString &dn, AccountOption o
         
         success_status_message(success_context);
 
-        return AdResult(true);
+        return true;
     } else {
         auto get_context =
         [option, set, name]() {
@@ -771,25 +771,25 @@ AdResult AdInterface::user_set_account_option(const QString &dn, AccountOption o
         };
         const QString context = get_context();
 
-        error_status_message(context, result.error);
+        error_status_message(context, "");
 
-        return AdResult(false, result.error);
+        return false;
     }
 }
 
-AdResult AdInterface::user_unlock(const QString &dn) {
-    const AdResult result = AdInterface::instance()->attribute_replace(dn, ATTRIBUTE_LOCKOUT_TIME, LOCKOUT_UNLOCKED_VALUE, EmitStatusMessage_No);
+bool AdInterface::user_unlock(const QString &dn) {
+    const bool result = AdInterface::instance()->attribute_replace(dn, ATTRIBUTE_LOCKOUT_TIME, LOCKOUT_UNLOCKED_VALUE);
 
     const QString name = extract_name_from_dn(dn);
     
-    if (result.success) {
+    if (result) {
         success_status_message(QString(tr("Unlocked user \"%1\"")).arg(name));
         
-        return AdResult(true);
+        return true;
     } else {
         const QString context = QString(tr("Failed to unlock user \"%1\"")).arg(name);
 
-        error_status_message(context, result.error);
+        error_status_message(context, "");
 
         return result;
     }
@@ -1033,18 +1033,17 @@ bool AdInterface::should_emit_status_message(int result) {
     }
 }
 
-void AdInterface::success_status_message(const QString &msg, EmitStatusMessage emit_message) {
-    if (emit_message == EmitStatusMessage_Yes) {
-        Status::instance()->message(msg, StatusType_Success);
-    }
+void AdInterface::success_status_message(const QString &msg) {
+    Status::instance()->message(msg, StatusType_Success);
 }
 
-void AdInterface::error_status_message(const QString &context, const QString &error, EmitStatusMessage emit_message) {
-    if (emit_message == EmitStatusMessage_Yes) {
-        const QString msg = QString(AdInterface::tr("%1. Error: \"%2\"")).arg(context, error);
-
-        Status::instance()->message(msg, StatusType_Error);
+void AdInterface::error_status_message(const QString &context, const QString &error) {
+    QString msg = context;
+    if (!error.isEmpty()) {
+        msg += QString(tr(". Error: \"%2\"")).arg(error);;
     }
+
+    Status::instance()->message(msg, StatusType_Error);
 }
 
 QString AdInterface::default_error(int ad_result) const {
@@ -1258,16 +1257,6 @@ QString group_type_to_string(GroupType type) {
         case GroupType_COUNT: return "COUNT";
     }
     return "";
-}
-
-AdResult::AdResult(bool success_arg) {
-    success = success_arg;
-    error = "";
-}
-
-AdResult::AdResult(bool success_arg, const QString &error_arg) {
-    success = success_arg;
-    error = error_arg;
 }
 
 int bit_set(int bitmask, int bit, bool set) {

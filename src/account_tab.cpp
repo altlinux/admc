@@ -113,7 +113,6 @@ void AccountTab::apply() {
 
     // TODO: process errors
     // NOTE: have to operate on raw string datetime values here because (never) value can't be expressed as QDateTime
-    AdResult expiry_result(false);
     const bool expiry_never = checkbox_is_checked(expiry_never_check);
     QString new_expiry_value;
     if (expiry_never) {

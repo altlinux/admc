@@ -135,23 +135,23 @@ void CreateDialog::accept() {
     AdInterface::instance()->start_batch();
     {   
 
-        const AdResult result_add = AdInterface::instance()->object_add(dn, classes);
+        const bool add_success = AdInterface::instance()->object_add(dn, classes);
 
-        bool result_apply = false;
-        if (result_add.success) {
-            result_apply = apply_attribute_edits(all_edits, dn, this);
+        bool apply_success = false;
+        if (add_success) {
+            apply_success = apply_attribute_edits(all_edits, dn, this);
         }
 
         const QString type_string = create_type_to_string(type);
 
-        if (result_add.success && result_apply) {
+        if (add_success && apply_success) {
             const QString message = QString(tr("Created %1 - \"%2\"")).arg(type_string, name);
 
             Status::instance()->message(message, StatusType_Success);
 
             QDialog::accept();
         } else {
-            if (result_add.success) {
+            if (add_success) {
                 AdInterface::instance()->object_delete(dn);
             }
 

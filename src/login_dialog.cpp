@@ -155,9 +155,9 @@ void LoginDialog::load_hosts() {
 void LoginDialog::complete(const QString &host) {
     const QString domain = domain_edit->text();
 
-    const AdResult result = AdInterface::instance()->login(host, domain);
+    const bool login_success = AdInterface::instance()->login(host, domain);
 
-    if (result.success) {
+    if (login_success) {
         const bool save_session = save_session_checkbox->isChecked();
         if (save_session) {
             const QString site = site_edit->text();

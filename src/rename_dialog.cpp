@@ -112,12 +112,11 @@ void RenameDialog::accept() {
     const int errors_index = Status::instance()->get_errors_size();
     AdInterface::instance()->start_batch();
     {
-
         // NOTE: rename last so that other attribute changes can complete on old DN
-        const bool result_apply = apply_attribute_edits(all_edits, target, this);
-        const AdResult result_rename = AdInterface::instance()->object_rename(target, new_name);
+        const bool apply_success = apply_attribute_edits(all_edits, target, this);
+        const bool rename_success = AdInterface::instance()->object_rename(target, new_name);
 
-        if (result_apply && result_rename.success) {
+        if (apply_success && rename_success) {
             const QString message = QString(tr("Renamed object - \"%1\"")).arg(new_name);
             Status::instance()->message(message, StatusType_Success);
 
