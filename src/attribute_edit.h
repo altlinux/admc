@@ -48,8 +48,8 @@ void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
 QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<AccountOption> options, QWidget *parent);
 void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *edits_out);
 
-// Verify attribute edits to confirm that all input values are valid
-// Then apply if verification suceeds
+// Helper f-ns that iterate over edit lists for you
+// Verify before applying!
 void load_attribute_edits(QList<AttributeEdit *> edits, const QString &dn);
 bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent);
 bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent);
@@ -59,20 +59,29 @@ void autofill_sama_name(StringEdit *sama_edit, StringEdit *name_edit);
 
 class AttributeEdit {
 public:
-    virtual void load(const QString &dn) = 0;
     virtual void add_to_layout(QGridLayout *layout) = 0;
     virtual void connect_to_tab(DetailsTab *tab) const = 0;
-    virtual bool verify_input(QWidget *parent) = 0;
+
+    // Load value from server for display
+    virtual void load(const QString &dn) = 0;
+
+    // Returns whether edit's value has been changed by the user
+    // Resets on reload
     virtual bool changed(const QString &dn) const = 0;
+
+    // Check that current input is valid for conditions that can be checked without contacting the AD server, for example name input not being empty
+    virtual bool verify_input(QWidget *parent) = 0;
+
+    // Apply current input by making a modification to the AD server
     virtual bool apply(const QString &dn) = 0;
 };
 
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
-void load(const QString &dn);\
 void add_to_layout(QGridLayout *layout);\
 void connect_to_tab(DetailsTab *tab) const;\
-bool verify_input(QWidget *parent);\
+void load(const QString &dn);\
 bool changed(const QString &dn) const;\
+bool verify_input(QWidget *parent);\
 bool apply(const QString &dn);
 
 class StringEdit final : public AttributeEdit {

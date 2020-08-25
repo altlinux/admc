@@ -143,8 +143,9 @@ public:
 
     bool login(const QString &host, const QString &domain);
 
-    // Use this if you are doing a series of AD modifications and want 
-    // to avoid having multiple reloads of widgets
+    // Use this if you are doing a series of AD modifications
+    // During a batch, cache won't update and so UI won't reload
+    // At the end of the batch cache updates once and UI reloads once
     // Each start call must be followed by a matching end call!
     void start_batch();
     void end_batch();
