@@ -45,7 +45,6 @@ DatetimeFormat get_attribute_time_format(const QString &attribute);
 int group_scope_to_bit(GroupScope scope);
 int bit_set(int bitmask, int bit, bool set);
 bool bit_is_set(int bitmask, int bit);
-QString combine_context_and_error(const QString &context, const QString &error);
 
 AdInterface::~AdInterface() {
     delete connection;
@@ -1048,7 +1047,7 @@ void AdInterface::success_status_message(const QString &msg, EmitStatusMessage e
 
 void AdInterface::error_status_message(const QString &context, const QString &error, EmitStatusMessage emit_message) {
     if (emit_message == EmitStatusMessage_Yes) {
-        const QString msg = combine_context_and_error(context, error);
+        const QString msg = QString(AdInterface::tr("%1. Error: \"%2\"")).arg(context, error);
 
         Status::instance()->message(msg, StatusType_Error);
     }
@@ -1287,10 +1286,4 @@ int bit_set(int bitmask, int bit, bool set) {
 
 bool bit_is_set(int bitmask, int bit) {
     return ((bitmask & bit) != 0);
-}
-
-QString combine_context_and_error(const QString &context, const QString &error) {
-    const QString error_with_context = QString(AdInterface::tr("%1. Error: \"%2\"")).arg(context, error);
-
-    return error_with_context;
 }
