@@ -44,12 +44,14 @@ enum EditReadOnly {
 
 void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout, QWidget *parent);
 void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
+bool any_edits_changed(QList<AttributeEdit *> edits);
 
 QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<AccountOption> options, QWidget *parent);
 void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *edits_out);
 
 // Helper f-ns that iterate over edit lists for you
 // Verify before applying!
+void any_(QList<AttributeEdit *> edits, const QString &dn);
 void load_attribute_edits(QList<AttributeEdit *> edits, const QString &dn);
 bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent);
 bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent);

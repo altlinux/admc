@@ -135,6 +135,10 @@ AddressTab::AddressTab(DetailsWidget *details_arg)
         this, &DetailsTab::on_edit_changed);
 }
 
+bool AddressTab::changed() const {
+    return any_edits_changed(edits);
+}
+
 bool AddressTab::verify() {
     return verify_attribute_edits(edits, this);
 }

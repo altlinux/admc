@@ -58,6 +58,10 @@ ObjectTab::ObjectTab(DetailsWidget *details_arg)
     connect_edits_to_tab(edits, this);
 }
 
+bool ObjectTab::changed() const {
+    return any_edits_changed(edits);
+}
+
 bool ObjectTab::verify() {
     return true;
 }

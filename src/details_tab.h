@@ -34,6 +34,7 @@ public:
     QString target() const;
 
     virtual bool accepts_target() const = 0;
+    virtual bool changed() const = 0;
     virtual void reload() = 0;
     virtual bool verify() = 0;
     virtual void apply() = 0;
@@ -50,6 +51,7 @@ private:
 
 #define DECL_DETAILS_TAB_VIRTUALS()\
 bool accepts_target() const;\
+bool changed() const;\
 void reload();\
 bool verify();\
 void apply();

@@ -45,6 +45,16 @@ void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout, Q
     }
 }
 
+bool any_edits_changed(QList<AttributeEdit *> edits) {
+    for (auto edit : edits) {
+        if (edit->changed()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent) {
     bool success = true;
 

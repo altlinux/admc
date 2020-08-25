@@ -104,6 +104,10 @@ AccountTab::AccountTab(DetailsWidget *details_arg)
         this, &AccountTab::on_expiry_edit_button);
 }
 
+bool AccountTab::changed() const {
+    return any_edits_changed(edits);
+}
+
 bool AccountTab::verify() {
     return verify_attribute_edits(edits, this);
 }

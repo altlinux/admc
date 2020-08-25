@@ -53,6 +53,10 @@ MembersTab::MembersTab(ObjectContextMenu *object_context_menu, DetailsWidget *de
     layout->addWidget(view);
 }
 
+bool MembersTab::changed() const {
+    return false;
+}
+
 bool MembersTab::verify() {
     return true;
 }

@@ -71,6 +71,10 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
     autofill_full_name(string_edits);
 }
 
+bool GeneralTab::changed() const {
+    return any_edits_changed(edits);
+}
+
 bool GeneralTab::verify() {
     return verify_attribute_edits(edits, this);
 }

@@ -98,16 +98,23 @@ QString DetailsWidget::get_target() const {
 }
 
 void DetailsWidget::tab_edited(DetailsTab *tab) {
-    // Enabled apply/cancel buttons
-    button_box->setEnabled(true);
-
     // Add asterisk to end of tab text to indicate that it was edited
     const int tab_index = tab_widget->indexOf(tab);
     if (tab_index != -1) {
         const QString current_text = tab_widget->tabText(tab_index);
-        const QString new_text = set_edited_marker(current_text, true);
+        const QString new_text = set_edited_marker(current_text, tab->changed());
         tab_widget->setTabText(tab_index, new_text);
     }
+
+    // Enable/disable apply and cancel depending on changed state
+    bool any_changed = false;
+    for (auto t : tabs) {
+        if (t->accepts_target() && t->changed()) {
+            any_changed = true;
+        }
+    }
+
+    button_box->setEnabled(any_changed);
 }
 
 void DetailsWidget::reload(const QString &new_target) {
