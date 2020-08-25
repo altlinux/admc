@@ -52,17 +52,14 @@ Q_OBJECT
 public:
     CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QWidget *parent);
 
-protected:
-    QGridLayout *edits_layout;
-    StringEdit *name_edit;
-    QList<AttributeEdit *> all_edits;
-
 private slots:
     void accept();
 
 private:
     QString parent_dn;
     CreateType type;
+    StringEdit *name_edit;
+    QList<AttributeEdit *> all_edits;
 
     void make_user_edits();
     void make_group_edits();

@@ -53,7 +53,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QW
     const auto title_text = QString(CreateDialog::tr("Create %1 in \"%2\"")).arg(type_string, parent_dn);
     const auto title_label = new QLabel(title_text);
     
-    edits_layout = new QGridLayout();
+    const auto edits_layout = new QGridLayout();
 
     name_edit = new StringEdit(ATTRIBUTE_NAME, EditReadOnly_Yes);
     all_edits.append(name_edit);
