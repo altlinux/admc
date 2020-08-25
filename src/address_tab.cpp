@@ -157,9 +157,7 @@ void AddressTab::apply() {
 }
 
 void AddressTab::reload() {
-    for (auto edit : edits) {
-        edit->load(target());
-    }
+    load_attribute_edits(edits, target());
 
     // Load country
     QString current_code_string = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_COUNTRY_CODE);

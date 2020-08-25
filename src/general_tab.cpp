@@ -83,7 +83,5 @@ void GeneralTab::reload() {
     const QString name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_NAME);
     name_label->setText(name);
 
-    for (auto edit : edits) {
-        edit->load(target());
-    }
+    load_attribute_edits(edits, target());
 }

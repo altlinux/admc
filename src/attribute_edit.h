@@ -50,6 +50,7 @@ void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit
 
 // Generally you want to verify + apply
 // In rare cases like CreateDialog, verify and apply need to be done separately
+void load_attribute_edits(QList<AttributeEdit *> edits, const QString &dn);
 bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent);
 bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent);
 bool verify_and_apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent);

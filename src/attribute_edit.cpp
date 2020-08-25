@@ -64,6 +64,12 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWid
     return success;
 }
 
+void load_attribute_edits(QList<AttributeEdit *> edits, const QString &dn) {
+    for (auto edit : edits) {
+        edit->load(dn);
+    }
+}
+
 bool verify_and_apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent) {
     const bool verify_success = verify_attribute_edits(edits, parent);
 

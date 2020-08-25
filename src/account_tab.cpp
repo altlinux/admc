@@ -127,9 +127,7 @@ void AccountTab::apply() {
 }
 
 void AccountTab::reload() {
-    for (auto edit : edits) {
-        edit->load(target());
-    }
+    load_attribute_edits(edits, target());
 
     const QString expiry_raw = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_ACCOUNT_EXPIRES);
     original_expiry_value = expiry_raw;
