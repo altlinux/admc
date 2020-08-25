@@ -21,10 +21,10 @@
 #define ADDRESS_TAB_H
 
 #include "details_tab.h"
+
 #include <QList>
 
 class DetailsWidget;
-class QComboBox;
 class AttributeEdit;
 
 // Shows member objects of targeted group
@@ -36,8 +36,6 @@ public:
     DECL_DETAILS_TAB_VIRTUALS();
 
 private:
-    QComboBox *country_combo;
-    int original_country_code;
     QList<AttributeEdit *> edits;
 };
 

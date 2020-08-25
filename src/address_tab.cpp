@@ -18,29 +18,12 @@
  */
 
 #include "address_tab.h"
-#include "ad_interface.h"
-#include "status.h"
 #include "attribute_edit.h"
 #include "country_edit.h"
-#include "attribute_display_strings.h"
-#include "utils.h"
 #include "details_widget.h"
 
 #include <QVBoxLayout>
 #include <QGridLayout>
-#include <QComboBox>
-#include <QHash>
-#include <QFile>
-#include <QLabel>
-#include <algorithm>
-
-// TODO: translate country strings to Russian (qt doesn't have it)
-
-#define COUNTRY_CODE_NONE 0
-
-// NOTE: country codes are 3 digits only, so 0-999 = 1000
-QString country_strings[1000];
-QString country_abbreviations[1000];
 
 AddressTab::AddressTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
@@ -84,15 +67,10 @@ bool AddressTab::verify() {
 
 void AddressTab::apply() {
     apply_attribute_edits(edits, target(), this);
-
-    
 }
 
 void AddressTab::reload() {
     load_attribute_edits(edits, target());
-
-    // Load country
-    
 }
 
 bool AddressTab::accepts_target() const {
