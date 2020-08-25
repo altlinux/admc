@@ -580,11 +580,9 @@ bool AdInterface::group_set_type(const QString &dn, GroupType type) {
     const QString group_type = attribute_get(dn, ATTRIBUTE_GROUP_TYPE);
     int group_type_int = group_type.toInt();
 
-    if (type == GroupType_Security) {
-        group_type_int |= GROUP_TYPE_BIT_SECURITY;
-    } else if (type == GroupType_Distribution) {
-        group_type_int ^= GROUP_TYPE_BIT_SECURITY;
-    }
+    const bool set_security_bit = type == GroupType_Security;
+
+    group_type_int = bit_set(group_type_int, GROUP_TYPE_BIT_SECURITY, set_security_bit);
 
     const QString update_group_type = QString::number(group_type_int);
 
@@ -706,11 +704,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             const int bit = get_account_option_bit(option);
 
             int control_int = control.toInt();
-            if (set) {
-                control_int |= bit;
-            } else {
-                control_int ^= bit;
-            }
+            control_int = bit_set(control_int, bit, set);
 
             const QString control_updated = QString::number(control_int);
 
