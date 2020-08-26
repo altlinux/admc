@@ -17,27 +17,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACCOUNT_TAB_H
-#define ACCOUNT_TAB_H
+#ifndef EXPIRY_EDIT_H
+#define EXPIRY_EDIT_H
 
-#include "details_tab.h"
+#include "attribute_edit.h"
 
-#include <QList>
+#include <QString>
 
-class AttributeEdit;
+class QCheckBox;
+class QLabel;
+class QPushButton;
 
-class AccountTab final : public DetailsTab {
+class ExpiryEdit final : public AttributeEdit {
 Q_OBJECT
-
 public:
-    AccountTab(DetailsWidget *details_arg);
-    DECL_DETAILS_TAB_VIRTUALS();
+    ExpiryEdit();
+    DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private slots:
-    void on_unlock_button();
-    
+    void on_never_check();
+    void on_end_of_check();
+    void on_edit_button();
+
 private:
-    QList<AttributeEdit *> edits;
+    QCheckBox *never_check;
+    QCheckBox *end_of_check;
+    QLabel *display_label;
+    QPushButton *edit_button;
+    QString original_value;
+
+    QString get_value();
 };
 
-#endif /* ACCOUNT_TAB_H */
+#endif /* EXPIRY_EDIT_H */
