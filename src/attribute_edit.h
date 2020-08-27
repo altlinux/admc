@@ -43,7 +43,7 @@ enum EditReadOnly {
     EditReadOnly_No
 };
 
-void setup_edit_marker(AttributeEdit *edit, QLabel *label);
+void connect_changed_marker(AttributeEdit *edit, QLabel *label);
 void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout);
 void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
 bool any_edits_changed(QList<AttributeEdit *> edits);

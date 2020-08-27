@@ -30,7 +30,7 @@
 #include <QMessageBox>
 #include <QLabel>
 
-void setup_edit_marker(AttributeEdit *edit, QLabel *label) {
+void connect_changed_marker(AttributeEdit *edit, QLabel *label) {
     if (edit->read_only == EditReadOnly_Yes) {
         return;
     }
@@ -38,7 +38,7 @@ void setup_edit_marker(AttributeEdit *edit, QLabel *label) {
     QObject::connect(edit, &AttributeEdit::edited,
         [=]() {
             const QString current_text = label->text();
-            const QString new_text = set_edited_marker(current_text, edit->changed());
+            const QString new_text = set_changed_marker(current_text, edit->changed());
             label->setText(new_text);
         });
 }
@@ -251,7 +251,7 @@ void StringEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = get_attribute_display_string(attribute);
     const auto label = new QLabel(label_text);
 
-    setup_edit_marker(this, label);
+    connect_changed_marker(this, label);
     append_to_grid_layout_with_label(layout, label, edit);
 }
 
@@ -323,7 +323,7 @@ void GroupScopeEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = QObject::tr("Group scope");
     const auto label = new QLabel(label_text);
 
-    setup_edit_marker(this, label);
+    connect_changed_marker(this, label);
     append_to_grid_layout_with_label(layout, label, combo);
 }
 
@@ -373,7 +373,7 @@ void GroupTypeEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = QObject::tr("Group type");
     const auto label = new QLabel(label_text);
 
-    setup_edit_marker(this, label);
+    connect_changed_marker(this, label);
     append_to_grid_layout_with_label(layout, label, combo);
 }
 
@@ -430,7 +430,7 @@ void AccountOptionEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = get_account_option_description(option);
     const auto label = new QLabel(label_text);
 
-    setup_edit_marker(this, label);
+    connect_changed_marker(this, label);
     append_to_grid_layout_with_label(layout, label, check);
 }
 
@@ -473,8 +473,8 @@ void PasswordEdit::add_to_layout(QGridLayout *layout) {
     const auto password_label = new QLabel(QObject::tr("Password"));
     const auto confirm_label = new QLabel(QObject::tr("Confirm password"));
 
-    setup_edit_marker(this, password_label);
-    setup_edit_marker(this, confirm_label);
+    connect_changed_marker(this, password_label);
+    connect_changed_marker(this, confirm_label);
 
     append_to_grid_layout_with_label(layout, password_label, edit);
     append_to_grid_layout_with_label(layout, confirm_label, confirm_edit);
@@ -537,7 +537,7 @@ void DateTimeEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = get_attribute_display_string(attribute);
     const auto label = new QLabel(label_text);
 
-    setup_edit_marker(this, label);
+    connect_changed_marker(this, label);
 
     append_to_grid_layout_with_label(layout, label, edit);
 }

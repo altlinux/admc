@@ -102,7 +102,7 @@ void DetailsWidget::tab_edited(DetailsTab *tab) {
     const int tab_index = tab_widget->indexOf(tab);
     if (tab_index != -1) {
         const QString current_text = tab_widget->tabText(tab_index);
-        const QString new_text = set_edited_marker(current_text, tab->changed());
+        const QString new_text = set_changed_marker(current_text, tab->changed());
         tab_widget->setTabText(tab_index, new_text);
     }
 

@@ -120,16 +120,16 @@ void append_to_grid_layout_with_label(QGridLayout *layout,QLabel *label, QWidget
     layout->addWidget(widget, row, 1);
 }
 
-// If edited, return text with asterisk at the end
-// If not edited, return text without asterisk
-QString set_edited_marker(const QString &text, bool edited) {
+// If changed, return text with asterisk at the end
+// If not changed, return text without asterisk
+QString set_changed_marker(const QString &text, bool changed) {
     const int asterisk_index = text.indexOf("*");
     const bool has_asterisk = (asterisk_index != -1);
 
     QString new_text = text;
-    if (edited && !has_asterisk) {
+    if (changed && !has_asterisk) {
         new_text = text + "*";
-    } else if (!edited && has_asterisk) {
+    } else if (!changed && has_asterisk) {
         new_text = text;
         new_text.remove(asterisk_index, 1);
     }

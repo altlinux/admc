@@ -127,7 +127,7 @@ void CountryEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = get_attribute_display_string(ATTRIBUTE_COUNTRY);
     const auto label = new QLabel(label_text);
 
-    setup_edit_marker(this, label);
+    connect_changed_marker(this, label);
     append_to_grid_layout_with_label(layout, label, combo);
 }
 
