@@ -326,6 +326,45 @@ bool AdInterface::attribute_datetime_replace(const QString &dn, const QString &a
     return result;
 }
 
+bool AdInterface::attribute_add(const QString &dn, const QString &attribute, const QString &value) {
+    const QByteArray dn_array = dn.toLatin1();
+    const char *dn_cstr = dn_array.constData();
+
+    const QByteArray attribute_array = attribute.toLatin1();
+    const char *attribute_cstr = attribute_array.constData();
+
+    const QByteArray value_array = value.toLatin1();
+    const char *value_cstr = value_array.constData();
+
+    const int result = connection->attribute_add(dn_cstr, attribute_cstr, value_cstr);
+
+    const QString name = extract_name_from_dn(dn);
+
+    QString new_value_string;
+    if (attribute_is_datetime(attribute)) {
+        new_value_string = datetime_raw_to_display_string(attribute, value);
+    } else {
+        new_value_string = value;
+    }
+
+    if (result == AD_SUCCESS) {
+        const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_string, attribute, name);
+
+        success_status_message(context);
+
+        update_cache({dn});
+
+        return true;
+    } else {
+        const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_string, attribute, name);
+        const QString error = default_error(result);
+
+        error_status_message(context, error);
+
+        return false;
+    }
+}
+
 bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value) {
     QString old_value_display_string;
     QString old_value_string;
@@ -461,18 +500,12 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
 }
 
 bool AdInterface::group_add_user(const QString &group_dn, const QString &user_dn) {
-    const QByteArray group_dn_array = group_dn.toLatin1();
-    const char *group_dn_cstr = group_dn_array.constData();
-
-    const QByteArray user_dn_array = user_dn.toLatin1();
-    const char *user_dn_cstr = user_dn_array.constData();
-
-    int result = connection->group_add_user(group_dn_cstr, user_dn_cstr);
+    const bool success = attribute_add(group_dn, ATTRIBUTE_MEMBER, user_dn);
 
     const QString user_name = extract_name_from_dn(user_dn);
     const QString group_name = extract_name_from_dn(group_dn);
     
-    if (result == AD_SUCCESS) {
+    if (success) {
         success_status_message(QString(tr("Added user \"%1\" to group \"%2\"")).arg(user_name, group_name));
 
         update_cache({group_dn, user_dn});
@@ -480,9 +513,8 @@ bool AdInterface::group_add_user(const QString &group_dn, const QString &user_dn
         return true;
     } else {
         const QString context = QString(tr("Failed to add user \"%1\" to group \"%2\"")).arg(user_name, group_name);
-        const QString error = default_error(result);
 
-        error_status_message(context, error);
+        error_status_message(context, "");
 
         return false;
     }

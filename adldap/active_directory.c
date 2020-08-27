@@ -638,10 +638,6 @@ int ad_move(LDAP *ld, const char *current_dn, const char *new_container) {
     }
 }
 
-int ad_group_add_user(LDAP *ld, const char *group_dn, const char *user_dn) {
-    return ad_attribute_add(ld, group_dn, "member", user_dn);
-}
-
 int ad_group_remove_user(LDAP *ld, const char *group_dn, const char *user_dn) {
     return ad_attribute_delete(ld, group_dn, "member", user_dn);
 }

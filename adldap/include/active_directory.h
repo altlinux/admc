@@ -162,12 +162,6 @@ int ad_rename(LDAP *ld, const char *dn, const char *new_rdn);
 int ad_move(LDAP *ld, const char *current_dn, const char *new_container);
 
 /**
- * Add user to a group
- * Returns AD_SUCCESS, AD_LDAP_ERROR
- */
-int ad_group_add_user(LDAP *ld, const char *group_dn, const char *user_dn);
-
-/**
  * Remove user from a group
  * Returns AD_SUCCESS, AD_LDAP_ERROR
  */

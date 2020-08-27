@@ -170,6 +170,7 @@ public:
     int attribute_int_get(const QString &dn, const QString &attribute);
     bool attribute_int_replace(const QString &dn, const QString &attribute, const int value);
 
+    bool attribute_add(const QString &dn, const QString &attribute, const QString &value);
     bool attribute_replace(const QString &dn, const QString &attribute, const QString &value);
     bool object_add(const QString &dn, const char **classes);
     bool object_delete(const QString &dn);
