@@ -172,6 +172,7 @@ public:
 
     bool attribute_add(const QString &dn, const QString &attribute, const QString &value);
     bool attribute_replace(const QString &dn, const QString &attribute, const QString &value);
+    bool attribute_delete(const QString &dn, const QString &attribute, const QString &value);
     bool object_add(const QString &dn, const char **classes);
     bool object_delete(const QString &dn);
     bool object_move(const QString &dn, const QString &new_container);

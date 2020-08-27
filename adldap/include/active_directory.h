@@ -161,12 +161,6 @@ int ad_rename(LDAP *ld, const char *dn, const char *new_rdn);
  */
 int ad_move(LDAP *ld, const char *current_dn, const char *new_container);
 
-/**
- * Remove user from a group
- * Returns AD_SUCCESS, AD_LDAP_ERROR
- */
-int ad_group_remove_user(LDAP *ld, const char *group_dn, const char *user_dn);
-
 #if defined(__cplusplus)
 }
 #endif /* __cplusplus */

@@ -50,7 +50,6 @@ public:
     int get_all_attributes(const char *dn, char ****attributes);
     int rename(const char *dn, const char *new_name);
     int move(const char *current_dn, const char *new_container);
-    int group_remove_user(const char *group_dn, const char *user_dn);
     int list(const char *dn, char ***dn_list);
 };
 
