@@ -46,7 +46,7 @@ void UnlockEdit::load(const QString &dn) {
 }
 
 void UnlockEdit::add_to_layout(QGridLayout *layout) {
-    const auto label = new QLabel(tr("Unlock account"));
+    const auto label = new QLabel(tr("Unlock account:"));
 
     label->setToolTip(tr("Can only unlock the account, impossible to lock it manually."));
 

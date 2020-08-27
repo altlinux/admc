@@ -99,7 +99,7 @@ void ExpiryEdit::load(const QString &dn) {
 }
 
 void ExpiryEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = get_attribute_display_string(ATTRIBUTE_ACCOUNT_EXPIRES);
+    const QString label_text = get_attribute_display_string(ATTRIBUTE_ACCOUNT_EXPIRES) + ":";
     const auto label = new QLabel(label_text);
 
     layout->addWidget(label, layout->rowCount(), 0);

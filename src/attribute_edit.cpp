@@ -247,7 +247,7 @@ void StringEdit::load(const QString &dn) {
 }
 
 void StringEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = get_attribute_display_string(attribute);
+    const QString label_text = get_attribute_display_string(attribute) + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(this, label);
@@ -329,7 +329,7 @@ void GroupScopeEdit::load(const QString &dn) {
 }
 
 void GroupScopeEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = QObject::tr("Group scope");
+    const QString label_text = QObject::tr("Group scope") + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(this, label);
@@ -389,7 +389,7 @@ void GroupTypeEdit::load(const QString &dn) {
 }
 
 void GroupTypeEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = QObject::tr("Group type");
+    const QString label_text = QObject::tr("Group type") + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(this, label);
@@ -443,7 +443,7 @@ void AccountOptionEdit::load(const QString &dn) {
 }
 
 void AccountOptionEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = get_account_option_description(option);
+    const QString label_text = get_account_option_description(option) + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(this, label);
@@ -486,8 +486,8 @@ void PasswordEdit::load(const QString &dn) {
 }
 
 void PasswordEdit::add_to_layout(QGridLayout *layout) {
-    const auto password_label = new QLabel(QObject::tr("Password"));
-    const auto confirm_label = new QLabel(QObject::tr("Confirm password"));
+    const auto password_label = new QLabel(QObject::tr("Password:"));
+    const auto confirm_label = new QLabel(QObject::tr("Confirm password:"));
 
     connect_changed_marker(this, password_label);
     connect_changed_marker(this, confirm_label);
@@ -552,7 +552,7 @@ void DateTimeEdit::load(const QString &dn) {
 }
 
 void DateTimeEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = get_attribute_display_string(attribute);
+    const QString label_text = get_attribute_display_string(attribute) + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(this, label);
