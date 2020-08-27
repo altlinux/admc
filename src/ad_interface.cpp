@@ -646,7 +646,7 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     }
 }
 
-bool AdInterface::set_pass(const QString &dn, const QString &password) {
+bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 

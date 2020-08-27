@@ -175,7 +175,7 @@ public:
     bool object_delete(const QString &dn);
     bool object_move(const QString &dn, const QString &new_container);
     bool object_rename(const QString &dn, const QString &new_name);
-    bool set_pass(const QString &dn, const QString &password);
+    bool user_set_pass(const QString &dn, const QString &password);
     bool user_set_account_option(const QString &dn, AccountOption option, bool set);
     bool user_unlock(const QString &dn);
     void update_cache(const QList<QString> &changed_dns);
