@@ -803,7 +803,7 @@ bool AdInterface::is_class(const QString &dn, const QString &object_class) {
 }
 
 bool AdInterface::is_user(const QString &dn) {
-    return is_class(dn, CLASS_USER);
+    return is_class(dn, CLASS_USER) && is_class(dn, CLASS_COMPUTER);
 }
 
 bool AdInterface::is_group(const QString &dn) {
@@ -832,6 +832,10 @@ bool AdInterface::is_container_like(const QString &dn) {
     }
 
     return false;
+}
+
+bool AdInterface::is_computer(const QString &dn) {
+    return is_class(dn, CLASS_COMPUTER);
 }
 
 bool AdInterface::user_get_account_option(const QString &dn, AccountOption option) {

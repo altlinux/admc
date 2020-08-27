@@ -51,6 +51,8 @@ QString get_attribute_display_string(const QString &attribute) {
         {ATTRIBUTE_POSTAL_CODE, QObject::tr("Postal code")},
         {ATTRIBUTE_COUNTRY, QObject::tr("Country")},
         {ATTRIBUTE_ACCOUNT_EXPIRES, QObject::tr("Account expires")},
+        {ATTRIBUTE_DNS_HOST_NAME, QObject::tr("DNS host name")},
+        {ATTRIBUTE_INFO, QObject::tr("Info")},
     };
     static const QString default_value = QObject::tr("UNKNOWN ATTRIBUTE NAME");
 

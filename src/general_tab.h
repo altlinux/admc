@@ -27,8 +27,18 @@
 class QLabel;
 class DetailsWidget;
 class AttributeEdit;
+class QStackedWidget;
 
-// Shows member objects of targeted group
+enum GeneralTabType {
+    GeneralTabType_Default,
+    GeneralTabType_User,
+    GeneralTabType_OU,
+    GeneralTabType_Computer,
+    GeneralTabType_Group,
+    GeneralTabType_Container,
+    GeneralTabType_COUNT
+};
+
 class GeneralTab final : public DetailsTab {
 Q_OBJECT
 
@@ -37,8 +47,10 @@ public:
     DECL_DETAILS_TAB_VIRTUALS();
 
 private:
+    GeneralTabType type;
     QLabel *name_label;
-    QList<AttributeEdit *> edits;
+    QList<AttributeEdit *> edits_for_type[GeneralTabType_COUNT];
+    QStackedWidget *stacked_widget;
 };
 
 #endif /* GENERAL_TAB_H */

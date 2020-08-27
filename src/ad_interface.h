@@ -72,6 +72,8 @@
 #define ATTRIBUTE_GROUP_TYPE            "groupType"
 #define ATTRIBUTE_FIRST_NAME            "givenName"
 #define ATTRIBUTE_LAST_NAME             "sn"
+#define ATTRIBUTE_DNS_HOST_NAME         "dNSHostName"
+#define ATTRIBUTE_INFO                  "info"
     
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
@@ -195,6 +197,7 @@ public:
     bool is_ou(const QString &dn);
     bool is_policy(const QString &dn);
     bool is_container_like(const QString &dn);
+    bool is_computer(const QString &dn);
 
     bool user_get_account_option(const QString &dn, AccountOption option);
 
