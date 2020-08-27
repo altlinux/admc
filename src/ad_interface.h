@@ -74,7 +74,8 @@
 #define ATTRIBUTE_LAST_NAME             "sn"
 #define ATTRIBUTE_DNS_HOST_NAME         "dNSHostName"
 #define ATTRIBUTE_INFO                  "info"
-    
+#define ATTRIBUTE_PASSWORD              "unicodePwd"
+
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
 #define CLASS_CONTAINER                 "container"

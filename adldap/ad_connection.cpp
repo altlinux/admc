@@ -76,10 +76,6 @@ int AdConnection::object_delete(const char *dn) {
     return ad_delete(ldap_connection, dn);
 }
 
-int AdConnection::user_set_pass(const char *dn, const char *password) {
-    return ad_user_set_pass(ldap_connection, dn, password);
-}
-
 int AdConnection::search(const char *filter, char ***dn_list) {
     return ad_search(ldap_connection, filter, this->search_base.c_str(), dn_list);
 }

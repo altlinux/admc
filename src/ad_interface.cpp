@@ -649,10 +649,18 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
 bool AdInterface::set_pass(const QString &dn, const QString &password) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
-    const QByteArray password_array = password.toLatin1();
-    const char *password_cstr = password_array.constData();
 
-    int result = connection->user_set_pass(dn_cstr, password_cstr);
+    const QString quoted_password = QString("\"%1\"").arg(password);
+    const QByteArray quoted_password_array = quoted_password.toLatin1();
+    const char *quoted_password_cstr = quoted_password_array.constData();
+    const int unicode_password_length = quoted_password.length() * 2;
+    char unicode_password_cstr[unicode_password_length];
+    memset(unicode_password_cstr, 0, sizeof(unicode_password_cstr));
+    for (int i = 0; i < quoted_password.length(); i++) {
+        unicode_password_cstr[i * 2] = quoted_password_cstr[i];
+    }
+
+    const int result = connection->attribute_replace_binary(dn_cstr, ATTRIBUTE_PASSWORD, unicode_password_cstr, unicode_password_length);
 
     const QString name = extract_name_from_dn(dn);
     

@@ -41,7 +41,6 @@ public:
 
     int add(const char *dn, const char **objectClass);
     int object_delete(const char *dn);
-    int user_set_pass(const char *dn, const char *password);
     int search(const char *filter, char ***dn_list);
     int attribute_add(const char *dn, const char *attribute, const char *value);
     int attribute_add_binary(const char *dn, const char *attribute, const char *data, int data_length);

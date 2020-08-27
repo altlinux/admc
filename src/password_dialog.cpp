@@ -20,6 +20,7 @@
 #include "password_dialog.h"
 #include "ad_interface.h"
 #include "attribute_edit.h"
+#include "status.h"
 
 #include <QGridLayout>
 #include <QLabel>
@@ -59,9 +60,17 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 }
 
 void PasswordDialog::accept() {
-    const bool success = apply_attribute_edits({password_edit}, target, this);
+    const bool verify_success = password_edit->verify_input(this);
 
-    if (success) {
-        QDialog::accept();
+    if (verify_success) {
+        const int errors_index = Status::instance()->get_errors_size();
+
+        const bool success = apply_attribute_edits({password_edit}, target, this);
+
+        if (success) {
+            QDialog::accept();
+        }
+
+        Status::instance()->show_errors_popup(errors_index);
     }
 }

@@ -479,41 +479,6 @@ int ad_delete(LDAP *ld, const char *dn) {
     return result;
 }
 
-int ad_user_set_pass(LDAP *ld, const char *dn, const char *password) {
-    int result = AD_SUCCESS;
-    
-    char quoted_password[MAX_PASSWORD_LENGTH + 2];
-    char unicode_password[(MAX_PASSWORD_LENGTH + 2) * 2];
-
-    // Put quotes around the password
-    snprintf(quoted_password, sizeof(quoted_password), "\"%s\"", password);
-    // Unicode the password
-    memset(unicode_password, 0, sizeof(unicode_password));
-    for (int i = 0; i < strlen(quoted_password); i++) {
-        unicode_password[i * 2] = quoted_password[i];
-    }
-
-    struct berval pw;
-    pw.bv_val = unicode_password;
-    pw.bv_len = strlen(quoted_password) * 2;
-
-    struct berval *bervalues[] = {&pw, NULL};
-
-    LDAPMod attr1;
-    attr1.mod_type = "unicodePwd";
-    attr1.mod_op = LDAP_MOD_REPLACE | LDAP_MOD_BVALUES;
-    attr1.mod_bvalues = bervalues;
-
-    LDAPMod *attrs[] = {&attr1, NULL};
-
-    const int result_modify = ldap_modify_ext_s(ld, dn, attrs, NULL, NULL);
-    if (result_modify != LDAP_SUCCESS) {
-        result = AD_LDAP_ERROR;
-    }
-
-    return result;
-}
-
 int ad_attribute_add(LDAP *ld, const char *dn, const char *attribute, const char *value) {
     int result = AD_SUCCESS;
 
@@ -589,7 +554,8 @@ int ad_attribute_replace(LDAP *ld, const char *dn, const char *attribute, const 
 int ad_attribute_replace_binary(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
     int result = AD_SUCCESS;
 
-    char *data_copy = strdup(data);
+    char *data_copy = (char *) malloc(data_length);
+    memcpy(data_copy, data, data_length);
 
     struct berval ber_data;
     ber_data.bv_val = data_copy;

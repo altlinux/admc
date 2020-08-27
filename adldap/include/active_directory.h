@@ -117,13 +117,6 @@ int ad_add(LDAP *ld, const char *dn, const char **objectClass);
 int ad_delete(LDAP *ld, const char *dn);
 
 /**
- * Set the user's password to the given password string
- * SSL connection is required
- * Returns AD_SUCCESS, AD_LDAP_ERROR
- */
-int ad_user_set_pass(LDAP *ld, const char *dn, const char *password);
-
-/**
  * Adds a value to given attribute
  * This function works only on multi-valued attributes
  * Returns AD_SUCCESS, AD_LDAP_ERROR
