@@ -46,7 +46,7 @@ private:
     QPushButton *edit_button;
     QString original_value;
 
-    QString get_value();
+    QString get_new_value() const;
 };
 
 #endif /* EXPIRY_EDIT_H */

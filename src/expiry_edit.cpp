@@ -44,7 +44,8 @@ ExpiryEdit::ExpiryEdit() {
     auto button_group = new QButtonGroup();
     button_group->setExclusive(true);
     button_group->addButton(never_check);
-    button_group->addButton(end_of_check)edit_button = new QPushButton(tr("Edit expiry date"));
+    button_group->addButton(end_of_check);
+    edit_button = new QPushButton(tr("Edit"));
     display_label = new QLabel();
 
     connect(
@@ -56,16 +57,10 @@ ExpiryEdit::ExpiryEdit() {
     connect(
         edit_button, &QAbstractButton::clicked,
         this, &ExpiryEdit::on_edit_button);
-
-    QObject::connect(
-        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        [this]() {
-            emit edited();
-        });
 }
 
 void ExpiryEdit::load(const QString &dn) {
-    const QString expiry_raw = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_ACCOUNT_EXPIRES);
+    const QString expiry_raw = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_ACCOUNT_EXPIRES);
     original_value = expiry_raw;
 
     const bool never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, expiry_raw);
@@ -95,31 +90,23 @@ void ExpiryEdit::load(const QString &dn) {
         const QDate default_expiry = QDate::currentDate();
         display_label_text = default_expiry.toString(DATE_FORMAT);
     } else {
-        const QDateTime current_expiry = AdInterface::instance()->attribute_datetime_get(target(), ATTRIBUTE_ACCOUNT_EXPIRES);
+        const QDateTime current_expiry = AdInterface::instance()->attribute_datetime_get(dn, ATTRIBUTE_ACCOUNT_EXPIRES);
         display_label_text = current_expiry.toString(DATE_FORMAT);
     }
     display_label->setText(display_label_text);
-
-
-    original_value = current_code;
-
-    const QVariant code_variant(current_code);
-    const int index = combo->findData(code_variant);
-    if (index != -1) {
-        combo->setCurrentIndex(index);
-    }
 
     emit edited();
 }
 
 void ExpiryEdit::add_to_layout(QGridLayout *layout) {
-    const auto label = new QLabel(tr("Account expiry:"));
+    const QString label_text = get_attribute_display_string(ATTRIBUTE_ACCOUNT_EXPIRES);
+    const auto label = new QLabel(label_text);
 
-    layout->addWidget(label, layout->rowCount());
-    layout->addWidget(never_check, layout->rowCount());
-    layout->addWidget(end_of_check, layout->rowCount());
-    layout->addWidget(display_label, layout->rowCount());
-    layout->addWidget(edit_button, layout->rowCount());
+    layout->addWidget(label, layout->rowCount(), 0);
+    layout->addWidget(never_check, layout->rowCount(), 0);
+    layout->addWidget(end_of_check, layout->rowCount(), 0);
+    layout->addWidget(display_label, layout->rowCount(), 0);
+    layout->addWidget(edit_button, layout->rowCount(), 0);
 
     setup_edit_marker(this, label);
 }
@@ -136,11 +123,12 @@ bool ExpiryEdit::changed() const {
 
 bool ExpiryEdit::apply(const QString &dn) {
     const QString new_value = get_new_value();
+    const bool result = AdInterface::instance()->attribute_replace(dn, ATTRIBUTE_ACCOUNT_EXPIRES, new_value);
 
-    AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_ACCOUNT_EXPIRES, new_value);
+    return result;
 }
 
-void AccountTab::on_never_check() {
+void ExpiryEdit::on_never_check() {
     if (checkbox_is_checked(never_check)) {
         display_label->setEnabled(false);
         edit_button->setEnabled(false);
@@ -149,7 +137,7 @@ void AccountTab::on_never_check() {
     }
 }
 
-void AccountTab::on_end_of_check() {
+void ExpiryEdit::on_end_of_check() {
     if (checkbox_is_checked(end_of_check)) {
         display_label->setEnabled(true);
         edit_button->setEnabled(true);
@@ -158,8 +146,8 @@ void AccountTab::on_end_of_check() {
     }
 }
 
-void AccountTab::on_edit_button() {
-    auto dialog = new QDialog(this);
+void ExpiryEdit::on_edit_button() {
+    auto dialog = new QDialog();
 
     auto label = new QLabel(tr("Edit expiry time"), dialog);
     auto calendar = new QCalendarWidget(dialog);
@@ -193,7 +181,7 @@ void AccountTab::on_edit_button() {
 }
 
 // NOTE: have to operate on raw string datetime values here because (never) value can't be expressed as QDateTime
-QString ExpiryEdit::get_new_value() {
+QString ExpiryEdit::get_new_value() const {
     const bool never = checkbox_is_checked(never_check);
 
     if (never) {
@@ -202,7 +190,7 @@ QString ExpiryEdit::get_new_value() {
         const QString new_date_string = display_label->text();
         const QDate new_date = QDate::fromString(new_date_string, DATE_FORMAT);
         const QDateTime new_datetime(new_date, END_OF_DAY);
-        const QString value = datetime_to_string(ATTRIBUTE_ACCOUNT_EXPIRES, new_expiry);
+        const QString value = datetime_to_string(ATTRIBUTE_ACCOUNT_EXPIRES, new_datetime);
 
         return value;
     }
