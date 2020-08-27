@@ -21,6 +21,7 @@
 #include "utils.h"
 #include "attribute_edit.h"
 #include "expiry_edit.h"
+#include "unlock_edit.h"
 #include "ad_interface.h"
 
 #include <QVBoxLayout>
@@ -36,7 +37,7 @@ AccountTab::AccountTab(DetailsWidget *details_arg)
     const auto logon_name_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME);
     edits.append(logon_name_edit);
 
-    const auto unlock_button = new QPushButton(tr("Unlock account"));
+    edits.append(new UnlockEdit());
 
     QList<AccountOption> options;
     for (int i = 0; i < AccountOption_COUNT; i++) {
@@ -60,10 +61,6 @@ AccountTab::AccountTab(DetailsWidget *details_arg)
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addLayout(edits_layout);
-
-    connect(
-        unlock_button, &QAbstractButton::clicked,
-        this, &AccountTab::on_unlock_button);
 }
 
 bool AccountTab::changed() const {
@@ -86,8 +83,4 @@ bool AccountTab::accepts_target() const {
     const bool is_user = AdInterface::instance()->is_user(target());
 
     return is_user;
-}
-
-void AccountTab::on_unlock_button() {
-    AdInterface::instance()->user_unlock(target());
 }

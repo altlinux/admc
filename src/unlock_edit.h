@@ -17,24 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACCOUNT_TAB_H
-#define ACCOUNT_TAB_H
+#ifndef UNLOCK_EDIT_H
+#define UNLOCK_EDIT_H
 
-#include "details_tab.h"
+#include "attribute_edit.h"
 
-#include <QList>
+class QCheckBox;
 
-class AttributeEdit;
-
-class AccountTab final : public DetailsTab {
+class UnlockEdit final : public AttributeEdit {
 Q_OBJECT
-
 public:
-    AccountTab(DetailsWidget *details_arg);
-    DECL_DETAILS_TAB_VIRTUALS();
+    UnlockEdit();
+    DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
-    QList<AttributeEdit *> edits;
+    QCheckBox *check;
 };
 
-#endif /* ACCOUNT_TAB_H */
+#endif /* UNLOCK_EDIT_H */
