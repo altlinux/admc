@@ -31,6 +31,10 @@
 #include <QLabel>
 
 void setup_edit_marker(AttributeEdit *edit, QLabel *label) {
+    if (edit->read_only == EditReadOnly_Yes) {
+        return;
+    }
+
     QObject::connect(edit, &AttributeEdit::edited,
         [=]() {
             const QString current_text = label->text();
@@ -198,20 +202,29 @@ void autofill_sama_name(StringEdit *sama_edit, StringEdit *name_edit) {
         });
 }
 
-StringEdit::StringEdit(const QString &attribute_arg, const EditReadOnly read_only_arg) {
+AttributeEdit::AttributeEdit() {
+    read_only = EditReadOnly_No;
+}
+
+AttributeEdit::AttributeEdit(EditReadOnly read_only_arg) {
+    read_only = read_only_arg;
+}
+
+StringEdit::StringEdit(const QString &attribute_arg, const EditReadOnly read_only_arg)
+: AttributeEdit(read_only_arg)
+{
     edit = new QLineEdit();
     attribute = attribute_arg;
-    read_only = read_only_arg;
 
     if (read_only == EditReadOnly_Yes) {
         edit->setReadOnly(true);
-    } else {
-        QObject::connect(
-            edit, &QLineEdit::textChanged,
-            [this]() {
-                emit edited();
-            });
     }
+
+    QObject::connect(
+        edit, &QLineEdit::textChanged,
+        [this]() {
+            emit edited();
+        });
 }
 
 void StringEdit::load(const QString &dn) {
@@ -231,9 +244,7 @@ void StringEdit::load(const QString &dn) {
 
     original_value = value;
 
-    if (!read_only) {
-        emit edited();
-    }
+    emit edited();
 }
 
 void StringEdit::add_to_layout(QGridLayout *layout) {
@@ -495,20 +506,21 @@ bool PasswordEdit::apply(const QString &dn) {
     return success;
 }
 
-DateTimeEdit::DateTimeEdit(const QString &attribute_arg, EditReadOnly read_only_arg) {
+DateTimeEdit::DateTimeEdit(const QString &attribute_arg, EditReadOnly read_only_arg)
+: AttributeEdit(read_only_arg)
+{
     edit = new QDateTimeEdit();
     attribute = attribute_arg;
-    read_only = read_only_arg;
 
     if (read_only == EditReadOnly_Yes) {
         edit->setReadOnly(true);
-    } else {
-        QObject::connect(
-            edit, &QDateTimeEdit::dateTimeChanged,
-            [this]() {
-                emit edited();
-            });
     }
+
+    QObject::connect(
+        edit, &QDateTimeEdit::dateTimeChanged,
+        [this]() {
+            emit edited();
+        });
 }
 
 void DateTimeEdit::load(const QString &dn) {
@@ -518,9 +530,7 @@ void DateTimeEdit::load(const QString &dn) {
 
     original_value = value;
 
-    if (!read_only) {
-        emit edited();
-    }
+    emit edited();
 }
 
 void DateTimeEdit::add_to_layout(QGridLayout *layout) {

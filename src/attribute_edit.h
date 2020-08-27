@@ -64,6 +64,11 @@ void autofill_sama_name(StringEdit *sama_edit, StringEdit *name_edit);
 class AttributeEdit : public QObject {
 Q_OBJECT
 public:
+    EditReadOnly read_only;
+
+    AttributeEdit();
+    AttributeEdit(EditReadOnly read_only_arg);
+
     virtual void add_to_layout(QGridLayout *layout) = 0;
 
     // Load value from server for display
@@ -101,7 +106,6 @@ public:
 private:
     QString attribute;
     QString original_value;
-    bool read_only;
 };
 
 class GroupScopeEdit final : public AttributeEdit {
@@ -164,7 +168,6 @@ public:
 private:
     QString attribute;
     QDateTime original_value;
-    bool read_only;
 };
 
 #endif /* ATTRIBUTE_EDIT_H */
