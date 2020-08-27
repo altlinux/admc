@@ -37,6 +37,10 @@ void connect_changed_marker(AttributeEdit *edit, QLabel *label) {
 
     QObject::connect(edit, &AttributeEdit::edited,
         [=]() {
+            if (edit->read_only == EditReadOnly_Yes) {
+                return;
+            }
+
             const QString current_text = label->text();
             const QString new_text = set_changed_marker(current_text, edit->changed());
             label->setText(new_text);
@@ -202,29 +206,24 @@ void autofill_sama_name(StringEdit *sama_edit, StringEdit *name_edit) {
         });
 }
 
-AttributeEdit::AttributeEdit() {
-    read_only = EditReadOnly_No;
-}
-
-AttributeEdit::AttributeEdit(EditReadOnly read_only_arg) {
+void AttributeEdit::set_read_only(EditReadOnly read_only_arg) {
     read_only = read_only_arg;
 }
 
-StringEdit::StringEdit(const QString &attribute_arg, const EditReadOnly read_only_arg)
-: AttributeEdit(read_only_arg)
-{
+StringEdit::StringEdit(const QString &attribute_arg) {
     edit = new QLineEdit();
     attribute = attribute_arg;
-
-    if (read_only == EditReadOnly_Yes) {
-        edit->setReadOnly(true);
-    }
 
     QObject::connect(
         edit, &QLineEdit::textChanged,
         [this]() {
             emit edited();
         });
+}
+
+void StringEdit::set_read_only(EditReadOnly read_only_arg) {
+    read_only = read_only_arg;
+    edit->setReadOnly(read_only == EditReadOnly_Yes);
 }
 
 void StringEdit::load(const QString &dn) {
@@ -310,6 +309,12 @@ GroupScopeEdit::GroupScopeEdit() {
         });
 }
 
+void GroupScopeEdit::set_read_only(EditReadOnly read_only_arg) {
+    read_only = read_only_arg;
+
+    combo->setEnabled(read_only == EditReadOnly_No);
+}
+
 void GroupScopeEdit::load(const QString &dn) {
     const GroupScope scope = AdInterface::instance()->group_get_scope(dn);
     const int scope_int = (int)scope;
@@ -362,6 +367,12 @@ GroupTypeEdit::GroupTypeEdit() {
         [this]() {
             emit edited();
         });
+}
+
+void GroupTypeEdit::set_read_only(EditReadOnly read_only_arg) {
+    read_only = read_only_arg;
+
+    combo->setEnabled(read_only == EditReadOnly_No);
 }
 
 void GroupTypeEdit::load(const QString &dn) {
@@ -511,21 +522,21 @@ bool PasswordEdit::apply(const QString &dn) {
     return success;
 }
 
-DateTimeEdit::DateTimeEdit(const QString &attribute_arg, EditReadOnly read_only_arg)
-: AttributeEdit(read_only_arg)
-{
+DateTimeEdit::DateTimeEdit(const QString &attribute_arg) {
     edit = new QDateTimeEdit();
     attribute = attribute_arg;
-
-    if (read_only == EditReadOnly_Yes) {
-        edit->setReadOnly(true);
-    }
 
     QObject::connect(
         edit, &QDateTimeEdit::dateTimeChanged,
         [this]() {
             emit edited();
         });
+}
+
+void DateTimeEdit::set_read_only(EditReadOnly read_only_arg) {
+    read_only = read_only_arg;
+    
+    edit->setReadOnly(read_only == EditReadOnly_Yes);
 }
 
 void DateTimeEdit::load(const QString &dn) {

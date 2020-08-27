@@ -34,6 +34,7 @@
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm"
 
 #define GROUP_TYPE_BIT_SECURITY 0x80000000
+#define GROUP_TYPE_BIT_SYSTEM 0x00000001
 
 enum DatetimeFormat {
     DatetimeFormat_LargeInteger,
@@ -602,6 +603,13 @@ bool AdInterface::group_set_type(const QString &dn, GroupType type) {
     }
 }
 
+bool AdInterface::group_is_system(const QString &dn) {
+    const int group_type_bits = AdInterface::instance()->attribute_int_get(dn, ATTRIBUTE_GROUP_TYPE);
+    const bool is_system = bit_is_set(group_type_bits, GROUP_TYPE_BIT_SYSTEM);
+
+    return is_system;
+}
+
 bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     // Compose new_rdn and new_dn
     const QStringList exploded_dn = dn.split(',');
@@ -803,7 +811,7 @@ bool AdInterface::is_class(const QString &dn, const QString &object_class) {
 }
 
 bool AdInterface::is_user(const QString &dn) {
-    return is_class(dn, CLASS_USER) && is_class(dn, CLASS_COMPUTER);
+    return is_class(dn, CLASS_USER) && !is_class(dn, CLASS_COMPUTER);
 }
 
 bool AdInterface::is_group(const QString &dn) {

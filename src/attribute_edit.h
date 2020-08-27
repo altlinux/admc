@@ -66,8 +66,7 @@ Q_OBJECT
 public:
     EditReadOnly read_only;
 
-    AttributeEdit();
-    AttributeEdit(EditReadOnly read_only_arg);
+    void set_read_only(EditReadOnly read_only_arg);
 
     virtual void add_to_layout(QGridLayout *layout) = 0;
 
@@ -104,8 +103,9 @@ Q_OBJECT
 public:
     QLineEdit *edit;
 
-    StringEdit(const QString &attribute_arg, const EditReadOnly read_only_arg = EditReadOnly_No);
+    StringEdit(const QString &attribute_arg);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    void set_read_only(EditReadOnly read_only_arg);
 
 private:
     QString attribute;
@@ -117,6 +117,7 @@ Q_OBJECT
 public:
     GroupScopeEdit();
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    void set_read_only(EditReadOnly read_only_arg);
 
 private:
     QComboBox *combo;
@@ -130,6 +131,7 @@ public:
 
     GroupTypeEdit();
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    void set_read_only(EditReadOnly read_only_arg);
 
 private:
     int original_value;
@@ -166,8 +168,9 @@ Q_OBJECT
 public:
     QDateTimeEdit *edit;
 
-    DateTimeEdit(const QString &attribute_arg, const EditReadOnly read_only_arg = EditReadOnly_No);
+    DateTimeEdit(const QString &attribute_arg);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    void set_read_only(EditReadOnly read_only_arg);
 
 private:
     QString attribute;

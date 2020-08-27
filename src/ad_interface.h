@@ -188,6 +188,7 @@ public:
     bool group_set_scope(const QString &dn, GroupScope scope);
     GroupType group_get_type(const QString &dn);
     bool group_set_type(const QString &dn, GroupType type);
+    bool group_is_system(const QString &dn);
 
     bool has_attributes(const QString &dn);
     bool is_class(const QString &dn, const QString &object_class);

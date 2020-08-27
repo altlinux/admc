@@ -28,6 +28,7 @@ class QLabel;
 class DetailsWidget;
 class AttributeEdit;
 class QStackedWidget;
+class GroupScopeEdit;
 
 enum GeneralTabType {
     GeneralTabType_Default,
@@ -51,6 +52,8 @@ private:
     QLabel *name_label;
     QList<AttributeEdit *> edits_for_type[GeneralTabType_COUNT];
     QStackedWidget *stacked_widget;
+
+    QList<AttributeEdit *> group_edits_to_disable_if_system;
 };
 
 #endif /* GENERAL_TAB_H */
