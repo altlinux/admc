@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "unlock_edit.h"
+#include "edits/unlock_edit.h"
 #include "ad_interface.h"
 #include "utils.h"
 

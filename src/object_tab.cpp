@@ -19,7 +19,7 @@
 
 #include "object_tab.h"
 #include "ad_interface.h"
-#include "attribute_edit.h"
+#include "edits/attribute_edit.h"
 
 #include <QVBoxLayout>
 #include <QGridLayout>

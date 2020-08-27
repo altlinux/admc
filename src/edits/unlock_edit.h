@@ -17,36 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EXPIRY_EDIT_H
-#define EXPIRY_EDIT_H
+#ifndef UNLOCK_EDIT_H
+#define UNLOCK_EDIT_H
 
-#include "attribute_edit.h"
-
-#include <QString>
+#include "edits/attribute_edit.h"
 
 class QCheckBox;
-class QLabel;
-class QPushButton;
 
-class ExpiryEdit final : public AttributeEdit {
+class UnlockEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    ExpiryEdit();
+    UnlockEdit();
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
-private slots:
-    void on_never_check();
-    void on_end_of_check();
-    void on_edit_button();
-
 private:
-    QCheckBox *never_check;
-    QCheckBox *end_of_check;
-    QLabel *display_label;
-    QPushButton *edit_button;
-    QString original_value;
-
-    QString get_new_value() const;
+    QCheckBox *check;
 };
 
-#endif /* EXPIRY_EDIT_H */
+#endif /* UNLOCK_EDIT_H */

@@ -19,9 +19,9 @@
 
 #include "account_tab.h"
 #include "utils.h"
-#include "attribute_edit.h"
-#include "expiry_edit.h"
-#include "unlock_edit.h"
+#include "edits/attribute_edit.h"
+#include "edits/expiry_edit.h"
+#include "edits/unlock_edit.h"
 #include "ad_interface.h"
 
 #include <QVBoxLayout>

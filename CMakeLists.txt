@@ -75,10 +75,10 @@ set(ADMC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/rename_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/create_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/attribute_display_strings.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/attribute_edit.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/country_edit.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/expiry_edit.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/unlock_edit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/attribute_edit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/country_edit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/expiry_edit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/unlock_edit.cpp
 )
 
 set(TS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)

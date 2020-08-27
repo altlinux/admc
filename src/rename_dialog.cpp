@@ -19,7 +19,7 @@
 
 #include "rename_dialog.h"
 #include "ad_interface.h"
-#include "attribute_edit.h"
+#include "edits/attribute_edit.h"
 #include "status.h"
 #include "utils.h"
 

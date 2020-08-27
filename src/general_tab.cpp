@@ -19,8 +19,8 @@
 
 #include "general_tab.h"
 #include "ad_interface.h"
-#include "attribute_edit.h"
-#include "country_edit.h"
+#include "edits/attribute_edit.h"
+#include "edits/country_edit.h"
 #include "utils.h"
 
 #include <QVBoxLayout>

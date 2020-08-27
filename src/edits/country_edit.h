@@ -17,21 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UNLOCK_EDIT_H
-#define UNLOCK_EDIT_H
+#ifndef COUNTRY_EDIT_H
+#define COUNTRY_EDIT_H
 
-#include "attribute_edit.h"
+#include "edits/attribute_edit.h"
 
-class QCheckBox;
+class QComboBox;
 
-class UnlockEdit final : public AttributeEdit {
+class CountryEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    UnlockEdit();
+    CountryEdit();
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
-    QCheckBox *check;
+    int original_value;
+    QComboBox *combo;
+    
+    // NOTE: country codes are 3 digits only, so 0-999 = 1000
+    QString country_strings[1000];
+    QString country_abbreviations[1000];
 };
 
-#endif /* UNLOCK_EDIT_H */
+#endif /* COUNTRY_EDIT_H */

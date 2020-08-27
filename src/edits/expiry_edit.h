@@ -17,26 +17,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COUNTRY_EDIT_H
-#define COUNTRY_EDIT_H
+#ifndef EXPIRY_EDIT_H
+#define EXPIRY_EDIT_H
 
-#include "attribute_edit.h"
+#include "edits/attribute_edit.h"
 
-class QComboBox;
+#include <QString>
 
-class CountryEdit final : public AttributeEdit {
+class QCheckBox;
+class QLabel;
+class QPushButton;
+
+class ExpiryEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    CountryEdit();
+    ExpiryEdit();
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
+private slots:
+    void on_never_check();
+    void on_end_of_check();
+    void on_edit_button();
+
 private:
-    int original_value;
-    QComboBox *combo;
-    
-    // NOTE: country codes are 3 digits only, so 0-999 = 1000
-    QString country_strings[1000];
-    QString country_abbreviations[1000];
+    QCheckBox *never_check;
+    QCheckBox *end_of_check;
+    QLabel *display_label;
+    QPushButton *edit_button;
+    QString original_value;
+
+    QString get_new_value() const;
 };
 
-#endif /* COUNTRY_EDIT_H */
+#endif /* EXPIRY_EDIT_H */

@@ -20,10 +20,10 @@
 #include "address_tab.h"
 #include "ad_interface.h"
 #include "status.h"
-#include "attribute_edit.h"
+#include "edits/attribute_edit.h"
 #include "attribute_display_strings.h"
 #include "utils.h"
-#include "country_edit.h"
+#include "edits/country_edit.h"
 
 #include <QVBoxLayout>
 #include <QGridLayout>

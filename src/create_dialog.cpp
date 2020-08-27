@@ -21,7 +21,7 @@
 #include "ad_interface.h"
 #include "utils.h"
 #include "status.h"
-#include "attribute_edit.h"
+#include "edits/attribute_edit.h"
 #include "utils.h"
 
 #include <QDialog>

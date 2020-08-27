@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "expiry_edit.h"
+#include "edits/expiry_edit.h"
 #include "ad_interface.h"
 #include "attribute_display_strings.h"
 #include "utils.h"
