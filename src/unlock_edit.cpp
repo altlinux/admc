@@ -38,7 +38,11 @@ UnlockEdit::UnlockEdit() {
 }
 
 void UnlockEdit::load(const QString &dn) {
+    check->blockSignals(true);
     check->setChecked(false);
+    check->blockSignals(false);
+
+    emit edited();
 }
 
 void UnlockEdit::add_to_layout(QGridLayout *layout) {

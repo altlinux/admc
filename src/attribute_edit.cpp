@@ -313,7 +313,11 @@ GroupScopeEdit::GroupScopeEdit() {
 void GroupScopeEdit::load(const QString &dn) {
     const GroupScope scope = AdInterface::instance()->group_get_scope(dn);
     const int scope_int = (int)scope;
+
+    combo->blockSignals(true);
     combo->setCurrentIndex(scope_int);
+    combo->blockSignals(false);
+
     original_value = scope_int;
 
     emit edited();
@@ -363,7 +367,11 @@ GroupTypeEdit::GroupTypeEdit() {
 void GroupTypeEdit::load(const QString &dn) {
     const GroupType type = AdInterface::instance()->group_get_type(dn);
     const int type_int = (int)type;
+
+    combo->blockSignals(true);
     combo->setCurrentIndex(type_int);
+    combo->blockSignals(false);
+
     original_value = type_int;
 
     emit edited();
@@ -407,18 +415,15 @@ AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg) {
 void AccountOptionEdit::load(const QString &dn) {
     const bool option_is_set = AdInterface::instance()->user_get_account_option(dn, option);
 
-    // TODO: block for all? logical i think
-    check->blockSignals(true);
-    {
-        Qt::CheckState check_state;
-        if (option_is_set) {
-            check_state = Qt::Checked;
-        } else {
-            check_state = Qt::Unchecked;
-        }
-
-        check->setCheckState(check_state);
+    Qt::CheckState check_state;
+    if (option_is_set) {
+        check_state = Qt::Checked;
+    } else {
+        check_state = Qt::Unchecked;
     }
+    
+    check->blockSignals(true);
+    check->setCheckState(check_state);
     check->blockSignals(false);
 
     original_value = option_is_set;
@@ -465,7 +470,7 @@ PasswordEdit::PasswordEdit() {
 }
 
 void PasswordEdit::load(const QString &dn) {
-    // NOTE: PasswordEdit does not load current value, it starts out blank
+    // NOTE: PasswordEdit does not load current value, it starts out blank and is not reloaded
     emit edited();
 }
 
@@ -526,7 +531,9 @@ DateTimeEdit::DateTimeEdit(const QString &attribute_arg, EditReadOnly read_only_
 void DateTimeEdit::load(const QString &dn) {
     const QDateTime value = AdInterface::instance()->attribute_datetime_get(dn, attribute);
 
+    edit->blockSignals(true);
     edit->setDateTime(value);
+    edit->blockSignals(false);
 
     original_value = value;
 

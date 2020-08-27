@@ -72,6 +72,7 @@ public:
     virtual void add_to_layout(QGridLayout *layout) = 0;
 
     // Load value from server for display
+    // NOTE: block signals for subwidget(s) when setting values so that any outside connections to those widgets aren't triggered when not inteded
     virtual void load(const QString &dn) = 0;
 
     // Returns whether edit's value has been changed by the user
@@ -85,6 +86,9 @@ public:
     virtual bool apply(const QString &dn) = 0;
 
 signals:
+    // Emit this signal when user edits subwidget(s) (by connecting
+    // to the widget's version of edited signal)
+    // AND at the end of load(), so that changed marker is reset
     void edited();
 };
 
