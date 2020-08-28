@@ -145,14 +145,8 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
         edits->append(new StringEdit(ATTRIBUTE_MAIL));
         edits->append(new StringEdit(ATTRIBUTE_INFO));
 
-        auto group_scope_edit = new GroupScopeEdit();
-        auto group_type_edit = new GroupTypeEdit();
-        group_edits_to_disable_if_system = {
-            group_scope_edit,
-            group_type_edit
-        };
-        edits->append(group_scope_edit);
-        edits->append(group_type_edit);
+        edits->append(new GroupScopeEdit());
+        edits->append(new GroupTypeEdit());
     }
 
     // Container
@@ -204,16 +198,6 @@ void GeneralTab::reload() {
         type = GeneralTabType_OU;
     } else if (is_group) {
         type = GeneralTabType_Group;
-
-        const bool is_system = AdInterface::instance()->group_is_system(target());
-
-        for (auto edit : group_edits_to_disable_if_system) {
-            if (is_system) {
-                edit->set_read_only(EditReadOnly_Yes);
-            } else {
-                edit->set_read_only(EditReadOnly_No);
-            }
-        }
     } else if (is_container) {
         type = GeneralTabType_Container;
     } else {

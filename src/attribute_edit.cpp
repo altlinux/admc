@@ -325,6 +325,13 @@ void GroupScopeEdit::load(const QString &dn) {
 
     original_value = scope_int;
 
+    const bool is_system = AdInterface::instance()->group_is_system(dn);
+    if (is_system) {
+        set_read_only(EditReadOnly_Yes);
+    } else {
+        set_read_only(EditReadOnly_No);
+    }
+
     emit edited();
 }
 
@@ -384,6 +391,13 @@ void GroupTypeEdit::load(const QString &dn) {
     combo->blockSignals(false);
 
     original_value = type_int;
+
+    const bool is_system = AdInterface::instance()->group_is_system(dn);
+    if (is_system) {
+        set_read_only(EditReadOnly_Yes);
+    } else {
+        set_read_only(EditReadOnly_No);
+    }
 
     emit edited();
 }
