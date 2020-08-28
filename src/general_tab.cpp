@@ -20,7 +20,10 @@
 #include "general_tab.h"
 #include "ad_interface.h"
 #include "edits/attribute_edit.h"
+#include "edits/string_edit.h"
 #include "edits/country_edit.h"
+#include "edits/group_scope_edit.h"
+#include "edits/group_type_edit.h"
 #include "utils.h"
 
 #include <QVBoxLayout>

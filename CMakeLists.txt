@@ -76,9 +76,15 @@ set(ADMC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/create_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/attribute_display_strings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/attribute_edit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/string_edit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/country_edit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/expiry_edit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/unlock_edit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/group_scope_edit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/group_type_edit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/account_option_edit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/password_edit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/datetime_edit.cpp
 )
 
 set(TS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)

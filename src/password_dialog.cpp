@@ -19,7 +19,7 @@
 
 #include "password_dialog.h"
 #include "ad_interface.h"
-#include "edits/attribute_edit.h"
+#include "edits/password_edit.h"
 #include "status.h"
 
 #include <QGridLayout>

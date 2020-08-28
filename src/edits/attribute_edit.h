@@ -20,46 +20,18 @@
 #ifndef ATTRIBUTE_EDIT_H
 #define ATTRIBUTE_EDIT_H
 
-#include "ad_interface.h"
-
+#include <QObject>
 #include <QString>
 #include <QList>
-#include <QGridLayout>
-#include <QMap>
 
-class QCheckBox;
-class QLineEdit;
-class QComboBox;
-class AttributeEdit;
-class StringEdit;
-class AccountOptionEdit;
-class QCalendarWidget;
-class QDateTimeEdit;
 class DetailsTab;
 class QLabel;
+class QGridLayout;
 
 enum EditReadOnly {
     EditReadOnly_Yes,
     EditReadOnly_No
 };
-
-void connect_changed_marker(AttributeEdit *edit, QLabel *label);
-void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout);
-void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
-bool any_edits_changed(QList<AttributeEdit *> edits);
-
-QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<AccountOption> options, QWidget *parent);
-void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *edits_out);
-
-// Helper f-ns that iterate over edit lists for you
-// Verify before applying!
-void any_(QList<AttributeEdit *> edits, const QString &dn);
-void load_attribute_edits(QList<AttributeEdit *> edits, const QString &dn);
-bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent);
-bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent);
-
-void autofill_full_name(QMap<QString, StringEdit *> string_edits);
-void autofill_sama_name(StringEdit *sama_edit, StringEdit *name_edit);
 
 class AttributeEdit : public QObject {
 Q_OBJECT
@@ -98,83 +70,16 @@ bool changed() const;\
 bool verify_input(QWidget *parent);\
 bool apply(const QString &dn);
 
-class StringEdit final : public AttributeEdit {
-Q_OBJECT
-public:
-    QLineEdit *edit;
+void connect_changed_marker(AttributeEdit *edit, QLabel *label);
+void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout);
+void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
+bool any_edits_changed(QList<AttributeEdit *> edits);
 
-    StringEdit(const QString &attribute_arg);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
-    void set_read_only(EditReadOnly read_only_arg);
-
-private:
-    QString attribute;
-    QString original_value;
-};
-
-class GroupScopeEdit final : public AttributeEdit {
-Q_OBJECT
-public:
-    GroupScopeEdit();
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
-    void set_read_only(EditReadOnly read_only_arg);
-
-private:
-    QComboBox *combo;
-    int original_value;
-};
-
-class GroupTypeEdit final : public AttributeEdit {
-Q_OBJECT
-public:
-    QComboBox *combo;
-
-    GroupTypeEdit();
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
-    void set_read_only(EditReadOnly read_only_arg);
-
-private:
-    int original_value;
-};
-
-class AccountOptionEdit final : public AttributeEdit {
-Q_OBJECT
-public:
-    QCheckBox *check;
-
-    AccountOptionEdit(const AccountOption option_arg);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
-
-private:
-    AccountOption option;
-    bool original_value;
-};
-
-class PasswordEdit final : public AttributeEdit {
-Q_OBJECT
-public:
-    QLineEdit *edit;
-    QLineEdit *confirm_edit;
-
-    PasswordEdit();
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
-
-private:
-    AccountOption option;
-};
-
-class DateTimeEdit final : public AttributeEdit {
-Q_OBJECT
-public:
-    QDateTimeEdit *edit;
-
-    DateTimeEdit(const QString &attribute_arg);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
-    void set_read_only(EditReadOnly read_only_arg);
-
-private:
-    QString attribute;
-    QDateTime original_value;
-};
+// Helper f-ns that iterate over edit lists for you
+// Verify before applying!
+void any_(QList<AttributeEdit *> edits, const QString &dn);
+void load_attribute_edits(QList<AttributeEdit *> edits, const QString &dn);
+bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent);
+bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent);
 
 #endif /* ATTRIBUTE_EDIT_H */

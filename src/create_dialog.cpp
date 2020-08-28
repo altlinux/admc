@@ -22,6 +22,11 @@
 #include "utils.h"
 #include "status.h"
 #include "edits/attribute_edit.h"
+#include "edits/string_edit.h"
+#include "edits/group_scope_edit.h"
+#include "edits/group_type_edit.h"
+#include "edits/account_option_edit.h"
+#include "edits/password_edit.h"
 #include "utils.h"
 
 #include <QDialog>

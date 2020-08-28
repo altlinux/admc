@@ -20,8 +20,10 @@
 #include "account_tab.h"
 #include "utils.h"
 #include "edits/attribute_edit.h"
+#include "edits/string_edit.h"
 #include "edits/expiry_edit.h"
 #include "edits/unlock_edit.h"
+#include "edits/account_option_edit.h"
 #include "ad_interface.h"
 
 #include <QVBoxLayout>
