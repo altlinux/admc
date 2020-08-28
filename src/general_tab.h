@@ -27,7 +27,7 @@
 class QLabel;
 class DetailsWidget;
 class AttributeEdit;
-class QStackedWidget;
+class QStackedLayout;
 
 enum GeneralTabType {
     GeneralTabType_Default,
@@ -50,7 +50,7 @@ private:
     GeneralTabType type;
     QLabel *name_label;
     QList<AttributeEdit *> edits_for_type[GeneralTabType_COUNT];
-    QStackedWidget *stacked_widget;
+    QStackedLayout *types_stack;
 };
 
 #endif /* GENERAL_TAB_H */

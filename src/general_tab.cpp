@@ -27,29 +27,31 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QMap>
-#include <QStackedWidget>
+#include <QStackedLayout>
 #include <QFrame>
 
-// TODO: disable scope/type edit for system type groups, there are other object specific general tabs, for domain top level object for example
+// TODO: other object types also have special general tab versions, like top level domain object for example. Find out all of them and implement them
 
 GeneralTab::GeneralTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
     name_label = new QLabel();
 
-    stacked_widget = new QStackedWidget();
+    types_stack = new QStackedLayout();
 
     QGridLayout *layout_for_type[GeneralTabType_COUNT];
 
-    // NOTE: only creating widgets to hold the layout, because can't add layouts directly
+    // NOTE: put grid layout in a vbox layout to group subwidgets neatly
     for (int i = 0; i < GeneralTabType_COUNT; i++) {
+        auto grid_layout = new QGridLayout();
+        auto wrapper_layout = new QVBoxLayout();
+        wrapper_layout->addLayout(grid_layout);
         auto widget = new QWidget();
-        auto layout = new QGridLayout();
-        
-        layout_for_type[i] = layout;
+        widget->setLayout(wrapper_layout);
 
-        widget->setLayout(layout);
-        stacked_widget->addWidget(widget);
+        layout_for_type[i] = grid_layout;
+
+        types_stack->addWidget(widget);
     }
 
     auto line = new QFrame();
@@ -60,7 +62,7 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
     setLayout(top_layout);
     top_layout->addWidget(name_label);
     top_layout->addWidget(line);
-    top_layout->addWidget(stacked_widget);
+    top_layout->addLayout(types_stack);
 
     // User
     {
@@ -162,6 +164,14 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
         layout_attribute_edits(edits_for_type[i], layout);
         connect_edits_to_tab(edits_for_type[i], this);  
     }
+
+    // types_stack->widget(2)->show();
+
+    // const auto test_w = new QWidget();
+    // test_w->setLayout(layout_for_type[2]);
+    // top_layout->addWidget(test_w);
+
+    // top_layout->addLayout(layout_for_type[2]);
 }
 
 bool GeneralTab::changed() const {
@@ -206,14 +216,5 @@ void GeneralTab::reload() {
 
     load_attribute_edits(edits_for_type[type], target());
 
-    // Hide all stacked widgets
-    for (int i = 0; i < GeneralTabType_COUNT; i++) {
-        QWidget *widget = stacked_widget->widget(i);
-        widget->hide();
-    }
-
-    // Show current type's widget
-    const int current_widget_index = (int)type;
-    QWidget *current_widget = stacked_widget->widget(current_widget_index);
-    current_widget->show();
+    types_stack->setCurrentIndex((int)type);
 }
