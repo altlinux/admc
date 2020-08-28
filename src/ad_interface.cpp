@@ -1212,7 +1212,7 @@ int get_account_option_bit(const AccountOption &option) {
         case AccountOption_DontExpirePassword: return 0x10000;
         case AccountOption_UseDesKey: return 0x200000;
         case AccountOption_SmartcardRequired: return 0x40000;
-        case AccountOption_DontRequirePreauth: return 0x800000;
+        case AccountOption_DontRequirePreauth: return 0x400000;
         case AccountOption_CantDelegate: return 0x100000;
 
         case AccountOption_PasswordExpired: return 0;
