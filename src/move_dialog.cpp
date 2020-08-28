@@ -56,6 +56,7 @@ MoveDialog::MoveDialog(QWidget *parent)
 
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    view->setSortingEnabled(true);
 
     target_label = new QLabel(tr("TARGET"), this);
 

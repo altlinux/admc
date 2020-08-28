@@ -40,6 +40,7 @@ MembersTab::MembersTab(ObjectContextMenu *object_context_menu, DetailsWidget *de
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
+    view->setSortingEnabled(true);
     object_context_menu->connect_view(view, MembersColumn_DN);
 
     model = new MembersModel(this);
