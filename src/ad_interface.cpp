@@ -1206,14 +1206,20 @@ QString get_account_option_description(const AccountOption &option) {
 }
 
 int get_account_option_bit(const AccountOption &option) {
-    // NOTE: not all account options have bits
+    // NOTE: not all account options can be directly mapped to bits
     switch (option) {
-        case AccountOption_Disabled: return 0x0002;
-        case AccountOption_DontExpirePassword: return 0x10000;
-        case AccountOption_UseDesKey: return 0x200000;
-        case AccountOption_SmartcardRequired: return 0x40000;
-        case AccountOption_DontRequirePreauth: return 0x400000;
-        case AccountOption_CantDelegate: return 0x100000;
+        case AccountOption_Disabled: 
+        return 0x00000002;
+        case AccountOption_DontExpirePassword: 
+        return 0x00010000;
+        case AccountOption_UseDesKey: 
+        return 0x00200000;
+        case AccountOption_SmartcardRequired: 
+        return 0x00040000;
+        case AccountOption_DontRequirePreauth: 
+        return 0x00400000;
+        case AccountOption_CantDelegate: 
+        return 0x00100000;
 
         case AccountOption_PasswordExpired: return 0;
         case AccountOption_COUNT: return 0;
