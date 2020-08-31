@@ -86,7 +86,7 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
         QMap<QString, StringEdit *> string_edits;
         make_string_edits(attributes, &string_edits, edits);
 
-        autofill_full_name(string_edits);
+        setup_string_edit_autofills(string_edits);
     }
 
     // OU

@@ -174,9 +174,7 @@ void CreateDialog::make_group_edits() {
     };
     QMap<QString, StringEdit *> string_edits;
     make_string_edits(string_attributes, &string_edits, &all_edits);
-
-    const auto sama_edit = string_edits[ATTRIBUTE_SAMACCOUNT_NAME];
-    autofill_sama_name(sama_edit, name_edit);
+    setup_string_edit_autofills(string_edits, name_edit);
 
     all_edits.append(new GroupScopeEdit());
     all_edits.append(new GroupTypeEdit());
@@ -205,8 +203,7 @@ void CreateDialog::make_user_edits() {
     QMap<AccountOption, AccountOptionEdit *> option_edits;
     make_account_option_edits(options, &option_edits, &all_edits, this);
 
-    autofill_sama_name(string_edits[ATTRIBUTE_SAMACCOUNT_NAME], name_edit);
-    autofill_full_name(string_edits);
+    setup_string_edit_autofills(string_edits, name_edit);
 }
 
 QString create_type_to_string(const CreateType &type) {

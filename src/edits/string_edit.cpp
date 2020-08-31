@@ -35,47 +35,44 @@ void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit
     }
 }
 
-void autofill_full_name(QMap<QString, StringEdit *> string_edits) {
-    const char *name_attributes[] = {
-        ATTRIBUTE_FIRST_NAME,
-        ATTRIBUTE_LAST_NAME,
-        ATTRIBUTE_DISPLAY_NAME
-    };
-
+void setup_string_edit_autofills(const QMap<QString, StringEdit *> string_edits, const StringEdit *name_edit) {
     // Get QLineEdit's out of string edits
     QMap<QString, QLineEdit *> edits;
-    for (auto attribute : name_attributes) {
-        if (string_edits.contains(attribute)) {
-            edits[attribute] = string_edits[attribute]->edit;
-        } else {
-            printf("Error in autofill_full_name(): first, last or full name is not present in edits list!");
-            return;
-        }
+    for (auto attribute : string_edits.keys()) {
+        edits[attribute] = string_edits[attribute]->edit;
     }
 
-    auto autofill =
-    [=]() {
-        const QString first_name = edits[ATTRIBUTE_FIRST_NAME]->text(); 
-        const QString last_name = edits[ATTRIBUTE_LAST_NAME]->text();
-        const QString full_name = first_name + " " + last_name; 
+    if (name_edit != nullptr) {
+        edits[ATTRIBUTE_NAME] = name_edit->edit;
+    }
 
-        edits[ATTRIBUTE_DISPLAY_NAME]->setText(full_name);
-    };
+    // Autofill (first name + last name) into full name
+    if (edits.contains(ATTRIBUTE_FIRST_NAME) && edits.contains(ATTRIBUTE_LAST_NAME) && edits.contains(ATTRIBUTE_DISPLAY_NAME)) {
+        auto autofill =
+        [=]() {
+            const QString first_name = edits[ATTRIBUTE_FIRST_NAME]->text(); 
+            const QString last_name = edits[ATTRIBUTE_LAST_NAME]->text();
+            const QString full_name = first_name + " " + last_name; 
 
-    QObject::connect(
-        edits[ATTRIBUTE_FIRST_NAME], &QLineEdit::textChanged,
-        autofill);
-    QObject::connect(
-        edits[ATTRIBUTE_LAST_NAME], &QLineEdit::textChanged,
-        autofill);
-}
+            edits[ATTRIBUTE_DISPLAY_NAME]->setText(full_name);
+        };
 
-void autofill_sama_name(StringEdit *sama_edit, StringEdit *name_edit) {
-    QObject::connect(
-        sama_edit->edit, &QLineEdit::textChanged,
-        [=] () {
-            sama_edit->edit->setText(name_edit->edit->text());
-        });
+        QObject::connect(
+            edits[ATTRIBUTE_FIRST_NAME], &QLineEdit::textChanged,
+            autofill);
+        QObject::connect(
+            edits[ATTRIBUTE_LAST_NAME], &QLineEdit::textChanged,
+            autofill);
+    }
+
+    // Autofill name into samaccount name
+    if (edits.contains(ATTRIBUTE_NAME) && edits.contains(ATTRIBUTE_SAMACCOUNT_NAME)) {
+        QObject::connect(
+            edits[ATTRIBUTE_SAMACCOUNT_NAME], &QLineEdit::textChanged,
+            [=] () {
+                edits[ATTRIBUTE_SAMACCOUNT_NAME]->setText(edits[ATTRIBUTE_NAME]->text());
+            });
+    }
 }
 
 StringEdit::StringEdit(const QString &attribute_arg) {
