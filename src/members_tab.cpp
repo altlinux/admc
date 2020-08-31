@@ -21,9 +21,18 @@
 #include "object_context_menu.h"
 #include "utils.h"
 #include "dn_column_proxy.h"
+#include "move_dialog.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
+#include <QStandardItemModel>
+#include <QMenu>
+#include <QPushButton>
+
+// Store members in a set
+// Generate model from current members list
+// Add new members via select dialog
+// Remove through context menu or select+remove button
 
 enum MembersColumn {
     MembersColumn_Name,
@@ -36,40 +45,73 @@ MembersTab::MembersTab(ObjectContextMenu *object_context_menu, DetailsWidget *de
 {   
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setAcceptDrops(true);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
-    view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
-    object_context_menu->connect_view(view, MembersColumn_DN);
 
-    model = new MembersModel(this);
+    model = new QStandardItemModel(0, MembersColumn_COUNT, this);
+    model->setHorizontalHeaderItem(MembersColumn_Name, new QStandardItem(tr("Name")));
+    model->setHorizontalHeaderItem(MembersColumn_DN, new QStandardItem(tr("DN")));
+
     const auto dn_column_proxy = new DnColumnProxy(MembersColumn_DN, this);
 
     setup_model_chain(view, model, {dn_column_proxy});
-    
-    const auto layout = new QVBoxLayout(this);
+
+    auto add_button = new QPushButton(tr("Add"));
+    auto remove_button = new QPushButton(tr("Remove"));
+    auto button_layout = new QHBoxLayout();
+    button_layout->addWidget(add_button);
+    button_layout->addWidget(remove_button);
+
+    const auto layout = new QVBoxLayout();
+    setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(view);
+    layout->addLayout(button_layout);
+
+    connect(
+        remove_button, &QAbstractButton::clicked,
+        this, &MembersTab::on_remove_button);
+    connect(
+        add_button, &QAbstractButton::clicked,
+        this, &MembersTab::on_add_button);
+    QObject::connect(
+        view, &QWidget::customContextMenuRequested,
+        this, &MembersTab::on_context_menu);
 }
 
 bool MembersTab::changed() const {
-    return false;
+    return (current_members != original_members);
 }
 
 bool MembersTab::verify() {
     return true;
 }
 
+// TODO: could do this with less requests by deleting all values of ATTRIBUTE_MEMBER and then setting to the list of values, but need to implement this in adldap
 void MembersTab::apply() {
+    for (auto member : original_members) {
+        const bool removed = !current_members.contains(member);
+        if (removed) {
+            AdInterface::instance()->attribute_delete(target(), ATTRIBUTE_MEMBER, member);
+        }
+    }
 
+    for (auto member : current_members) {
+        const bool added = !original_members.contains(member);
+        if (added) {
+            AdInterface::instance()->attribute_add(target(), ATTRIBUTE_MEMBER, member);
+        }
+    }
 }
 
 void MembersTab::reload() {
-    model->change_target(target());
+    const QList<QString> members = AdInterface::instance()->attribute_get_multi(target(), ATTRIBUTE_MEMBER);
+    original_members = members.toSet();
+    current_members = original_members;
 
-    set_root_to_head(view);
+    load_current_members_into_model();
 }
 
 bool MembersTab::accepts_target() const {
@@ -78,37 +120,84 @@ bool MembersTab::accepts_target() const {
     return is_group;
 }
 
-MembersModel::MembersModel(QObject *parent)
-: ObjectModel(MembersColumn_COUNT, MembersColumn_DN, parent)
-{
-    setHorizontalHeaderItem(MembersColumn_Name, new QStandardItem(tr("Name")));
-    setHorizontalHeaderItem(MembersColumn_DN, new QStandardItem(tr("DN")));
+// TODO: similar to code in ObjectContextMenu
+void MembersTab::on_context_menu(const QPoint pos) {
+    const QModelIndex base_index = view->indexAt(pos);
+    if (!base_index.isValid()) {
+        return;
+    }
+    const QModelIndex index = convert_to_source(base_index);
+    const QString dn = get_dn_from_index(index, MembersColumn_DN);
+
+    const QPoint global_pos = view->mapToGlobal(pos);
+
+    auto menu = new QMenu(this);
+    QAction *remove_action = menu->addAction(tr("Remove from group"));
+    connect(
+        remove_action, &QAction::triggered,
+        [this, dn]() {
+            const QList<QString> removed_members = {dn};
+            remove_members(removed_members);
+        });
+    menu->popup(global_pos);
 }
 
-void MembersModel::change_target(const QString &dn) {
-    removeRows(0, rowCount());
+void MembersTab::on_add_button() {
+    const QList<QString> classes = {CLASS_USER};
+    const QList<QString> selected_objects = MoveDialog::open(classes, MoveDialogMultiSelection_Yes);
 
-    auto create_row = [this](const QString &row_dn) {
+    if (selected_objects.size() > 0) {
+        add_members(selected_objects);
+    }
+}
+
+void MembersTab::on_remove_button() {
+    const QItemSelectionModel *selection_model = view->selectionModel();
+    const QList<QModelIndex> selected = selection_model->selectedIndexes();
+
+    QList<QString> removed_members;
+    for (auto index : selected) {
+        const QModelIndex converted = convert_to_source(index);
+        const QString dn = get_dn_from_index(converted, MembersColumn_DN);
+
+        removed_members.append(dn);
+    }
+
+    remove_members(removed_members);    
+}
+
+void MembersTab::load_current_members_into_model() {
+    model->removeRows(0, model->rowCount());
+
+    for (auto dn : current_members) {
         QList<QStandardItem *> row;
         for (int i = 0; i < MembersColumn_COUNT; i++) {
             row.append(new QStandardItem());
         }
-        const QString name = AdInterface::instance()->attribute_get(row_dn, ATTRIBUTE_NAME);
+        const QString name = extract_name_from_dn(dn);
         row[MembersColumn_Name]->setText(name);
-        row[MembersColumn_DN]->setText(row_dn);
+        row[MembersColumn_DN]->setText(dn);
 
-        return row;
-    };
-
-    // Create root item to represent group itself
-    QList<QStandardItem *> group_row = create_row(dn);
-    appendRow(group_row);
-    QStandardItem *group_item = group_row[0];
-
-    // Populate model with members of new root
-    const QList<QString> members = AdInterface::instance()->attribute_get_multi(dn, ATTRIBUTE_MEMBER);
-    for (auto member_dn : members) {
-        QList<QStandardItem *> member_row = create_row(member_dn);
-        group_item->appendRow(member_row);
+        model->appendRow(row);
     }
+}
+
+void MembersTab::add_members(QList<QString> members) {
+    for (auto member : members) {
+        current_members.insert(member);
+    }
+
+    load_current_members_into_model();
+
+    on_edit_changed();
+}
+
+void MembersTab::remove_members(QList<QString> members) {
+    for (auto member : members) {
+        current_members.remove(member);
+    }
+
+    load_current_members_into_model();
+
+    on_edit_changed();
 }

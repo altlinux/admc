@@ -23,10 +23,16 @@
 #include "details_tab.h"
 #include "object_model.h"
 
+#include <QPoint>
+#include <QSet>
+#include <QString>
+
 class QTreeView;
 class QString;
 class ObjectContextMenu;
 class MembersModel;
+
+class QStandardItemModel;
 
 // Shows member objects of targeted group
 class MembersTab final : public DetailsTab {
@@ -36,18 +42,21 @@ public:
     MembersTab(ObjectContextMenu *object_context_menu, DetailsWidget *details_arg);
     DECL_DETAILS_TAB_VIRTUALS();
 
+private slots:
+    void on_context_menu(const QPoint pos);
+    void on_add_button();
+    void on_remove_button();
+
 private:
-    MembersModel *model = nullptr;
+    // MembersModel *model = nullptr;
+    QStandardItemModel *model = nullptr;
     QTreeView *view = nullptr;
-};
+    QSet<QString> original_members;
+    QSet<QString> current_members;
 
-class MembersModel final : public ObjectModel {
-Q_OBJECT
-
-public:
-    MembersModel(QObject *parent);
-
-    void change_target(const QString &dn);
+    void load_current_members_into_model();
+    void add_members(QList<QString> members);
+    void remove_members(QList<QString> members);
 };
 
 #endif /* MEMBERS_TAB_H */

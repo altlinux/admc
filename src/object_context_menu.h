@@ -39,13 +39,13 @@ public:
 
 signals:
     void details(const QString &dn);
-    
+
 private:
-    MoveDialog *move_dialog = nullptr;
-    
     void open(const QPoint &global_pos, const QString &dn, const QString &parent_dn);
     void delete_object(const QString &dn);
     void edit_policy(const QString &dn);
+    void move(const QString &dn);
+    void add_to_group(const QString &dn);
 
 };
 

@@ -41,8 +41,6 @@ void force_reload_attributes_and_diff(const QString &dn);
 ObjectContextMenu::ObjectContextMenu(QWidget *parent)
 : QMenu(parent)
 {
-    // NOTE: use parent, not context menu itself so dialog is centered
-    move_dialog = new MoveDialog(parent);
 }
 
 // Open this context menu when view requests one
@@ -98,13 +96,16 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
         });
     }
 
-    addAction(tr("Move"), [this, dn]() {
-        move_dialog->open_for_object(dn, MoveDialogType_Move);
-    });
+    QAction *move_action = addAction(tr("Move"));
+    connect(
+        move_action, &QAction::triggered,
+        [this, dn]() {
+            move(dn);
+        });
 
     const bool is_policy = AdInterface::instance()->is_policy(dn); 
     const bool is_user = AdInterface::instance()->is_user(dn); 
-    
+
     if (is_policy) {
         submenu_new->addAction(tr("Edit Policy"), [this, dn]() {
             edit_policy(dn);
@@ -112,9 +113,12 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
     }
 
     if (is_user) {
-        addAction(tr("Add to group"), [this, dn]() {
-            move_dialog->open_for_object(dn, MoveDialogType_AddToGroup);
-        });
+        QAction *add_to_group_action = addAction(tr("Add to group"));
+        connect(
+            add_to_group_action, &QAction::triggered,
+            [this, dn]() {
+                add_to_group(dn);
+            });
 
         addAction(tr("Reset password"), [this, dn]() {
             const auto password_dialog = new PasswordDialog(dn, this);
@@ -185,6 +189,36 @@ void ObjectContextMenu::edit_policy(const QString &dn) {
     printf("execute command: %s %s %s\n", qPrintable(program_name), qPrintable(uri), qPrintable(path));
 
     process->start();
+}
+
+void ObjectContextMenu::move(const QString &dn) {
+    // TODO: somehow formalize "class X can only be moved to X,Y,Z..." better
+    const bool is_container = AdInterface::instance()->is_container(dn);
+    QList<QString> classes;
+    if (is_container) {
+        classes = {CLASS_CONTAINER};
+    } else {
+        classes = {CLASS_CONTAINER, CLASS_OU};
+    }
+
+    const QList<QString> selected_objects = MoveDialog::open(classes);
+
+    if (selected_objects.size() == 1) {
+        const QString container = selected_objects[0];
+
+        AdInterface::instance()->object_move(dn, container);
+    }
+}
+
+void ObjectContextMenu::add_to_group(const QString &dn) {
+    const QList<QString> classes = {CLASS_GROUP};
+    const QList<QString> selected_objects = MoveDialog::open(classes, MoveDialogMultiSelection_Yes);
+
+    if (selected_objects.size() > 0) {
+        for (auto group : selected_objects) {
+            AdInterface::instance()->group_add_user(group, dn);
+        }
+    }
 }
 
 void force_reload_attributes_and_diff(const QString &dn) {

@@ -22,72 +22,29 @@
 
 #include <QDialog>
 #include <QString>
-#include <QStandardItemModel>
 #include <QList>
 
-class QWidget;
-class QLineEdit;
-class QSortFilterProxyModel;
-class QComboBox;
-class MoveDialogModel;
 class QTreeView;
-class QLabel;
-class QAction;
 
-enum MoveDialogType {
-    MoveDialogType_Move,
-    MoveDialogType_AddToGroup
+enum MoveDialogMultiSelection {
+    MoveDialogMultiSelection_Yes,
+    MoveDialogMultiSelection_No
 };
-
-enum ClassFilter {
-    ClassFilter_All,
-    ClassFilter_Containers,
-    ClassFilter_OUs,
-    ClassFilter_Groups,
-    ClassFilter_COUNT
-};
-Q_DECLARE_METATYPE(ClassFilter)
 
 class MoveDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    MoveDialog(QWidget *parent);
-
-    void open_for_object(const QString &dn, MoveDialogType type);
+    static QList<QString> open(QList<QString> classes, MoveDialogMultiSelection multi_selection = MoveDialogMultiSelection_No);
 
 private slots:
-    void on_filter_name_changed(const QString &text);
-    void on_filter_class_changed(int index);
-    void on_select_button(bool checked);
-    void on_cancel_button(bool checked);
-    void on_double_clicked(const QModelIndex &index);
+    void accept();
 
 private:
-    QTreeView *view = nullptr;
-    QLabel *target_label = nullptr;
-    QLabel *filter_class_label = nullptr;
-    QComboBox *filter_class_combo_box = nullptr;
-    QLineEdit *filter_name_line_edit = nullptr;
-    MoveDialogModel *model = nullptr;
-    QSortFilterProxyModel *proxy_name = nullptr;
-    QSortFilterProxyModel *proxy_class = nullptr;
-    QString target_dn = "";
-    MoveDialogType type;
+    QTreeView *view;
+    QList<QString> selected_objects;
 
-    void complete(const QString &move_dn);
-};
-
-class MoveDialogModel final : public QStandardItemModel {
-Q_OBJECT
-
-public:
-    MoveDialogModel(QObject *parent);
-
-    void load(const QString &dn, QList<ClassFilter> classes);
-
-public slots:
-    void on_dialog_finished(int);
+    MoveDialog(QList<QString> classes, MoveDialogMultiSelection multi_selection);
 };
 
 #endif /* MOVE_DIALOG_H */

@@ -39,9 +39,6 @@ public:
     virtual bool verify() = 0;
     virtual void apply() = 0;
 
-signals:
-    void edited();
-
 public slots:
     void on_edit_changed();
 

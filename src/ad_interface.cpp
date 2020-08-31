@@ -1354,3 +1354,17 @@ int bit_set(int bitmask, int bit, bool set) {
 bool bit_is_set(int bitmask, int bit) {
     return ((bitmask & bit) != 0);
 }
+
+QString object_class_display_string(const QString &object_class) {
+    static const QHash<QString, QString> strings = {
+        {CLASS_CONTAINER, QObject::tr("Container")},
+        {CLASS_OU, QObject::tr("OU")},
+        {CLASS_GROUP, QObject::tr("Group")},
+        {CLASS_USER, QObject::tr("User")}
+    };
+    const QString default_value = object_class;
+
+    const QString display_string = strings.value(object_class, default_value);
+
+    return display_string;
+}

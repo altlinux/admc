@@ -75,6 +75,7 @@ set(ADMC_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/rename_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/create_dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/attribute_display_strings.cpp
+    
     ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/attribute_edit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/string_edit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/edits/country_edit.cpp

@@ -20,7 +20,6 @@
 #include "move_dialog.h"
 #include "ad_interface.h"
 #include "settings.h"
-#include "confirmation_dialog.h"
 #include "dn_column_proxy.h"
 #include "utils.h"
 
@@ -30,10 +29,9 @@
 #include <QTreeView>
 #include <QSortFilterProxyModel>
 #include <QComboBox>
-#include <QAction>
 #include <QPushButton>
 #include <QItemSelectionModel>
-#include <QList>
+#include <QStandardItemModel>
 
 enum MoveDialogColumn {
     MoveDialogColumn_Name,
@@ -42,15 +40,15 @@ enum MoveDialogColumn {
     MoveDialogColumn_COUNT
 };
 
-const QMap<ClassFilter, QString> class_filter_string = {
-    {ClassFilter_All, ""},
-    {ClassFilter_Containers, CLASS_CONTAINER},
-    {ClassFilter_OUs, CLASS_OU},
-    {ClassFilter_Groups, CLASS_GROUP},
-};
+QList<QString> MoveDialog::open(QList<QString> classes, MoveDialogMultiSelection multi_selection) {
+    MoveDialog dialog(classes, multi_selection);
+    dialog.exec();
 
-MoveDialog::MoveDialog(QWidget *parent)
-: QDialog(parent)
+    return dialog.selected_objects;
+}
+
+MoveDialog::MoveDialog(QList<QString> classes, MoveDialogMultiSelection multi_selection)
+: QDialog()
 {
     resize(600, 600);
 
@@ -58,13 +56,17 @@ MoveDialog::MoveDialog(QWidget *parent)
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setSortingEnabled(true);
 
-    target_label = new QLabel(tr("TARGET"), this);
+    if (multi_selection == MoveDialogMultiSelection_Yes) {
+        view->setSelectionMode(QAbstractItemView::MultiSelection);
+    }
 
-    filter_class_label = new QLabel(tr("Class: "), this);
-    filter_class_combo_box = new QComboBox(this);
+    auto target_label = new QLabel(tr("Select object"), this);
+
+    auto filter_class_label = new QLabel(tr("Class: "), this);
+    auto filter_class_combo = new QComboBox(this);
 
     const auto filter_name_label = new QLabel(tr("Name: "), this);
-    filter_name_line_edit = new QLineEdit(this);
+    auto filter_name_edit = new QLineEdit(this);
 
     const auto select_button = new QPushButton(tr("Select"), this);
     const auto cancel_button = new QPushButton(tr("Cancel"), this);
@@ -72,199 +74,28 @@ MoveDialog::MoveDialog(QWidget *parent)
     const auto layout = new QGridLayout(this);
     layout->addWidget(target_label, 0, 0);
     layout->addWidget(filter_class_label, 1, 0, Qt::AlignRight);
-    layout->addWidget(filter_class_combo_box, 1, 1, 1, 2);
+    layout->addWidget(filter_class_combo, 1, 1, 1, 2);
     layout->addWidget(filter_name_label, 2, 0, Qt::AlignRight);
-    layout->addWidget(filter_name_line_edit, 2, 1, 1, 2);
+    layout->addWidget(filter_name_edit, 2, 1, 1, 2);
     layout->addWidget(view, 3, 0, 1, 3);
     layout->addWidget(cancel_button, 4, 0, Qt::AlignLeft);
     layout->addWidget(select_button, 4, 2, Qt::AlignRight);
 
-    model = new MoveDialogModel(this);
-
-    proxy_name = new QSortFilterProxyModel(this);
+    auto proxy_name = new QSortFilterProxyModel(this);
     proxy_name->setFilterKeyColumn(MoveDialogColumn_Name);
 
-    proxy_class = new QSortFilterProxyModel(this);
+    auto proxy_class = new QSortFilterProxyModel(this);
     proxy_class->setFilterKeyColumn(MoveDialogColumn_Class);
 
     const auto dn_column_proxy = new DnColumnProxy(MoveDialogColumn_DN, this);
 
-    setup_model_chain(view, model, {proxy_name, proxy_class, dn_column_proxy});
-
-    connect(
-        view, &QAbstractItemView::doubleClicked,
-        this, &MoveDialog::on_double_clicked);
-    connect(
-        filter_name_line_edit, &QLineEdit::textChanged,
-        this, &MoveDialog::on_filter_name_changed);
-    connect(filter_class_combo_box, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        this, &MoveDialog::on_filter_class_changed);
-    connect(
-        select_button, &QAbstractButton::clicked,
-        this, &MoveDialog::on_select_button);
-    connect(
-        cancel_button, &QAbstractButton::clicked,
-        this, &MoveDialog::on_cancel_button);
-    connect(
-        this, &QDialog::finished,
-        model, &MoveDialogModel::on_dialog_finished);
-}
-
-void MoveDialog::open_for_object(const QString &dn, MoveDialogType type_arg) {
-    target_dn = dn;
-    type = type_arg;
-
-    filter_name_line_edit->setText("");
-    on_filter_name_changed("");
-
-    QString target_label_text;
-    switch (type) {
-        case MoveDialogType_Move: {
-            target_label_text = QString(tr("Moving \"%1\"")).arg(target_dn);
-            break;
-        }
-        case MoveDialogType_AddToGroup: {
-            target_label_text = QString(tr("Adding \"%1\" to group")).arg(target_dn);
-            break;
-        }
-    }
-    target_label->setText(target_label_text);
-
-    // Select classes that this object can be moved to
-    // TODO: cover all cases
-    QList<ClassFilter> classes;
-    switch (type) {
-        case MoveDialogType_Move: {
-            const bool is_container = AdInterface::instance()->is_container(dn);
-            if (is_container) {
-                classes = {ClassFilter_Containers};
-            } else {
-                classes = {ClassFilter_Containers, ClassFilter_OUs};
-            }
-            break;
-        }
-        case MoveDialogType_AddToGroup: {
-            classes = {ClassFilter_Groups};
-            break;
-        }
-    }
-
-    // Fill class combo box with possible classes and "All" option
-    filter_class_combo_box->clear();
-    QList<ClassFilter> combo_classes = {ClassFilter_All};
-    combo_classes += classes;
-    for (auto c : combo_classes) {
-        auto filter_display_string =
-        [] (ClassFilter filter) {
-            switch (filter) {
-                case ClassFilter_All: return MoveDialog::tr("All");
-                case ClassFilter_Containers: return MoveDialog::tr("Containers");
-                case ClassFilter_OUs: return MoveDialog::tr("OU's");
-                case ClassFilter_Groups: return MoveDialog::tr("Groups");
-                case ClassFilter_COUNT: return QString("COUNT");
-            }
-            return QString("");
-        };
-
-        const QString display_string = filter_display_string(c);
-
-        filter_class_combo_box->addItem(display_string, c);
-    }
-
-    // Show or hide class-related elements depending on type
-    switch (type) {
-        case MoveDialogType_Move: {
-            filter_class_combo_box->show();
-            filter_class_label->show();
-            view->setColumnHidden(MoveDialogColumn_Class, false);
-
-            break;
-        }
-        case MoveDialogType_AddToGroup: {
-            filter_class_combo_box->hide();
-            filter_class_label->hide();
-            view->setColumnHidden(MoveDialogColumn_Class, true);
-
-            break;
-        }
-    }
-
-    model->load(dn, classes);
-
-    for (int col = 0; col < view->model()->columnCount(); col++) {
-        view->resizeColumnToContents(col);
-    }
-
-    open();
-}
-
-void MoveDialog::on_filter_name_changed(const QString &text) {
-    proxy_name->setFilterRegExp(QRegExp(text, Qt::CaseInsensitive, QRegExp::FixedString));
-}
-
-void MoveDialog::on_filter_class_changed(int index) {
-    const QVariant item_data = filter_class_combo_box->itemData(index);
-    const ClassFilter class_filter = item_data.value<ClassFilter>();
-    const QString regexp = class_filter_string[class_filter];
-
-    proxy_class->setFilterRegExp(QRegExp(regexp, Qt::CaseInsensitive, QRegExp::FixedString));
-}
-
-void MoveDialog::complete(const QString &move_dn) {
-    const QString confirm_text = QString(tr("Move \"%1\" to \"%2\"?")).arg(target_dn, move_dn);
-
-    const bool confirmed = confirmation_dialog(confirm_text, this);
-    if (confirmed) {
-        switch (type) {
-            case MoveDialogType_Move: {
-                AdInterface::instance()->object_move(target_dn, move_dn);
-                break;
-            }
-            case MoveDialogType_AddToGroup: {
-                AdInterface::instance()->group_add_user(move_dn, target_dn);
-                break;
-            }
-        }
-        done(QDialog::Accepted);
-    }
-}
-
-void MoveDialog::on_select_button(bool) {
-    const QItemSelectionModel *selection_model = view->selectionModel();
-    if (!selection_model->hasSelection()) {
-        return;
-    }
-    const QModelIndex selected_index = selection_model->currentIndex();
-    const QString move_dn = get_dn_from_index(selected_index, MoveDialogColumn_DN);
-    
-    complete(move_dn);
-}
-
-void MoveDialog::on_double_clicked(const QModelIndex &index) {
-    const QString move_dn = get_dn_from_index(index, MoveDialogColumn_DN);
-
-    complete(move_dn);
-}
-
-void MoveDialog::on_cancel_button(bool) {
-    done(QDialog::Rejected);
-}
-
-
-
-MoveDialogModel::MoveDialogModel(QObject *parent)
-: QStandardItemModel(0, MoveDialogColumn_COUNT, parent)
-{
-    setHorizontalHeaderItem(MoveDialogColumn_Name, new QStandardItem(tr("Name")));
-    setHorizontalHeaderItem(MoveDialogColumn_Class, new QStandardItem(tr("Class")));
-    setHorizontalHeaderItem(MoveDialogColumn_DN, new QStandardItem(tr("DN")));
-}
-
-void MoveDialogModel::load(const QString &dn, QList<ClassFilter> classes) {
-    for (auto c : classes) {
-        const QString class_string = class_filter_string[c];
-
-        QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, class_string);
+    // Load model
+    auto model = new QStandardItemModel(0, MoveDialogColumn_COUNT, this);
+    model->setHorizontalHeaderItem(MoveDialogColumn_Name, new QStandardItem(tr("Name")));
+    model->setHorizontalHeaderItem(MoveDialogColumn_Class, new QStandardItem(tr("Class")));
+    model->setHorizontalHeaderItem(MoveDialogColumn_DN, new QStandardItem(tr("DN")));
+    for (auto object_class : classes) {
+        QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, object_class);
 
         // Filter out advanced objects if needed
         const bool advanced_view = Settings::instance()->get_bool(BoolSetting_AdvancedView);
@@ -287,14 +118,78 @@ void MoveDialogModel::load(const QString &dn, QList<ClassFilter> classes) {
             const QString name = extract_name_from_dn(e_dn);
 
             row[MoveDialogColumn_Name]->setText(name);
-            row[MoveDialogColumn_Class]->setText(class_string);
+            row[MoveDialogColumn_Class]->setText(object_class);
             row[MoveDialogColumn_DN]->setText(e_dn);
 
-            appendRow(row);
+            model->appendRow(row);
         }
     }
+
+    setup_model_chain(view, model, {proxy_name, proxy_class, dn_column_proxy});
+
+    // Fill class combo box with possible classes
+    filter_class_combo->clear();
+    for (auto object_class : classes) {
+        auto display_string = object_class_display_string(object_class);
+
+        filter_class_combo->addItem(display_string, object_class);
+    }
+
+    // Disable/hide class-related elements if selecting only from one class
+    if (classes.size() == 1) {
+        filter_class_combo->setEnabled(false);
+        view->setColumnHidden(MoveDialogColumn_Class, true);
+    }
+
+    for (int col = 0; col < view->model()->columnCount(); col++) {
+        view->resizeColumnToContents(col);
+    }
+
+    // Disable select button when there's no selection and enable when there is
+    const QItemSelectionModel *selection_model = view->selectionModel();
+    connect(selection_model, &QItemSelectionModel::selectionChanged,
+        [selection_model, select_button]() {
+            const bool enable_select_button = selection_model->hasSelection();
+            select_button->setEnabled(enable_select_button);
+        });
+
+    // Update proxy name when filter name changes
+    connect(
+        filter_name_edit, &QLineEdit::textChanged,
+        [proxy_name](const QString &text) {
+            proxy_name->setFilterRegExp(QRegExp(text, Qt::CaseInsensitive, QRegExp::FixedString));
+        });
+    filter_name_edit->setText("");
+
+    // Update proxy class when filter class changes
+    connect(filter_class_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        [filter_class_combo, proxy_class](const int index) {
+            const QVariant item_data = filter_class_combo->itemData(index);
+            const QString object_class = item_data.toString();
+
+            proxy_class->setFilterRegExp(QRegExp(object_class, Qt::CaseInsensitive, QRegExp::FixedString));
+        });
+
+    connect(
+        select_button, &QAbstractButton::clicked,
+        this, &QDialog::accept);
+    connect(
+        cancel_button, &QAbstractButton::clicked,
+        this, &QDialog::reject);
 }
 
-void MoveDialogModel::on_dialog_finished(int) {
-    removeRows(0, rowCount());
+void MoveDialog::accept() {
+    const QItemSelectionModel *selection_model = view->selectionModel();
+    const QList<QModelIndex> selected_indexes = selection_model->selectedIndexes();
+
+    selected_objects.clear();
+    for (auto index : selected_indexes) {
+        const QString dn = get_dn_from_index(index, MoveDialogColumn_DN);
+
+        if (!selected_objects.contains(dn)) {
+            selected_objects.append(dn);
+        }
+    }
+
+    QDialog::accept();
 }
