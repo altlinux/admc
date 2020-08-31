@@ -46,10 +46,8 @@ AccountTab::AccountTab(DetailsWidget *details_arg)
         const AccountOption option = (AccountOption) i;
         options.append(option);
     }
-    QMap<AccountOption, AccountOptionEdit *> option_edits = make_account_option_edits(options, this);
-    for (auto edit : option_edits) {
-        edits.append(edit);
-    }
+    QMap<AccountOption, AccountOptionEdit *> option_edits;
+    make_account_option_edits(options, &option_edits, &edits, this);
 
     edits.append(new ExpiryEdit());
 

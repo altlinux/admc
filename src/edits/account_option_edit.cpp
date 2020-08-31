@@ -29,12 +29,14 @@
 #include <QMessageBox>
 #include <QLabel>
 
-QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<AccountOption> options, QWidget *parent) {
-    QMap<AccountOption, AccountOptionEdit *> edits;
+void make_account_option_edits(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
+    QMap<AccountOption, AccountOptionEdit *> option_edits;
 
     for (auto option : options) {
         auto edit = new AccountOptionEdit(option);
-        edits.insert(option, edit);
+        option_edits.insert(option, edit);
+        option_edits_out->insert(option, edit);
+        edits_out->append(edit);
     }
 
     // PasswordExpired conflicts with (DontExpirePassword and CantChangePassword)
@@ -43,9 +45,9 @@ QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<A
     // Implement this by connecting to state changes of all options and
     // resetting to previous state if state transition is invalid
     auto setup_conflict =
-    [parent, edits](const AccountOption subject, const AccountOption blocker) {
-        QCheckBox *subject_check = edits[subject]->check;
-        QCheckBox *blocker_check = edits[blocker]->check;
+    [parent, option_edits](const AccountOption subject, const AccountOption blocker) {
+        QCheckBox *subject_check = option_edits[subject]->check;
+        QCheckBox *blocker_check = option_edits[blocker]->check;
 
         QObject::connect(subject_check, &QCheckBox::stateChanged,
             [subject, blocker, subject_check, blocker_check, parent]() {
@@ -75,8 +77,6 @@ QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<A
             }
         }
     }
-
-    return edits;
 }
 
 AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg) {

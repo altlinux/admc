@@ -39,6 +39,6 @@ private:
     bool original_value;
 };
 
-QMap<AccountOption, AccountOptionEdit *> make_account_option_edits(const QList<AccountOption> options, QWidget *parent);
+void make_account_option_edits(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent);
 
 #endif /* ACCOUNT_OPTION_EDIT_H */

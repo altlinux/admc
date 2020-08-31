@@ -202,11 +202,8 @@ void CreateDialog::make_user_edits() {
         AccountOption_Disabled
         // TODO: AccountOption_CannotChangePass
     };
-    QMap<AccountOption, AccountOptionEdit *> option_edits = make_account_option_edits(options, this);
-
-    for (auto option : options) {
-        all_edits.append(option_edits[option]);
-    }
+    QMap<AccountOption, AccountOptionEdit *> option_edits;
+    make_account_option_edits(options, &option_edits, &all_edits, this);
 
     autofill_sama_name(string_edits[ATTRIBUTE_SAMACCOUNT_NAME], name_edit);
     autofill_full_name(string_edits);
