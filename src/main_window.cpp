@@ -54,7 +54,9 @@ MainWindow::MainWindow()
     
     auto containers_widget = new ContainersWidget(object_context_menu, this);
     auto contents_widget = new ContentsWidget(containers_widget, object_context_menu, this);
-    auto details_widget = new DetailsWidget(object_context_menu, containers_widget, contents_widget, this);
+
+    auto details_widget = DetailsWidget::instance();
+    details_widget->connect_clicked_slots(containers_widget, contents_widget);
 
     auto status_log = new QTextEdit(this);
     status_log->setReadOnly(true);

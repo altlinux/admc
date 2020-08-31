@@ -27,7 +27,6 @@
 #include "object_tab.h"
 #include "ad_interface.h"
 #include "settings.h"
-#include "object_context_menu.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
 #include "status.h"
@@ -40,8 +39,13 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 
-DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent)
-: QWidget(parent)
+DetailsWidget *DetailsWidget::instance() {
+    static DetailsWidget instance;
+    return &instance;
+}
+
+DetailsWidget::DetailsWidget()
+: QWidget()
 {
     title_label = new QLabel(this);
     tab_widget = new QTabWidget(this);
@@ -50,7 +54,7 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
     tabs[TabHandle_Object] = new ObjectTab(this);
     tabs[TabHandle_Attributes] = new AttributesTab(this);
     tabs[TabHandle_Account] = new AccountTab(this);
-    tabs[TabHandle_Members] = new MembersTab(object_context_menu, this);
+    tabs[TabHandle_Members] = new MembersTab(this);
     tabs[TabHandle_Address] = new AddressTab(this);
 
     // NOTE: need to add all tabs so that tab widget gains ownership of them
@@ -75,15 +79,6 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
         this, &DetailsWidget::on_ad_modified);
 
     connect(
-        object_context_menu, &ObjectContextMenu::details,
-        this, &DetailsWidget::on_context_menu_details);
-    connect(
-        containers_widget, &ContainersWidget::clicked_dn,
-        this, &DetailsWidget::on_containers_clicked_dn);
-    connect(
-        contents_widget, &ContentsWidget::clicked_dn,
-        this, &DetailsWidget::on_contents_clicked_dn);
-    connect(
         button_box->button(QDialogButtonBox::Apply), &QPushButton::clicked,
         this, &DetailsWidget::on_apply);
     connect(
@@ -91,6 +86,15 @@ DetailsWidget::DetailsWidget(ObjectContextMenu *object_context_menu, ContainersW
         this, &DetailsWidget::on_cancel);
 
     reload("");
+}
+
+void DetailsWidget::connect_clicked_slots(ContainersWidget *containers_widget, ContentsWidget *contents_widget) {
+    connect(
+        containers_widget, &ContainersWidget::clicked_dn,
+        this, &DetailsWidget::on_containers_clicked_dn);
+    connect(
+        contents_widget, &ContentsWidget::clicked_dn,
+        this, &DetailsWidget::on_contents_clicked_dn);
 }
 
 QString DetailsWidget::get_target() const {
@@ -225,8 +229,4 @@ void DetailsWidget::on_contents_clicked_dn(const QString &dn) {
     if (details_from_contents) {
         reload(dn);
     }
-}
-
-void DetailsWidget::on_context_menu_details(const QString &dn) {
-    reload(dn);
 }

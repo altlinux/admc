@@ -40,7 +40,7 @@ enum MembersColumn {
     MembersColumn_COUNT,
 };
 
-MembersTab::MembersTab(ObjectContextMenu *object_context_menu, DetailsWidget *details_arg)
+MembersTab::MembersTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
     view = new QTreeView(this);

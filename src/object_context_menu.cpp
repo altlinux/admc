@@ -26,6 +26,7 @@
 #include "password_dialog.h"
 #include "create_dialog.h"
 #include "settings.h"
+#include "details_widget.h"
 
 #include <QString>
 #include <QMessageBox>
@@ -74,7 +75,7 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
     clear();
 
     QAction *action_to_show_menu_at = addAction(tr("Details"), [this, dn]() {
-        emit details(dn);
+        DetailsWidget::instance()->reload(dn);
     });
 
     addAction(tr("Delete"), [this, dn]() {

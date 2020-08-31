@@ -37,9 +37,6 @@ public:
 
     void connect_view(QAbstractItemView *view, int dn_column);
 
-signals:
-    void details(const QString &dn);
-
 private:
     void open(const QPoint &global_pos, const QString &dn, const QString &parent_dn);
     void delete_object(const QString &dn);

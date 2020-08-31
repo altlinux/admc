@@ -50,15 +50,21 @@ class DetailsWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    DetailsWidget(ObjectContextMenu *object_context_menu, ContainersWidget *containers_widget, ContentsWidget *contents_widget, QWidget *parent);
+    DetailsWidget(const DetailsWidget&) = delete;
+    DetailsWidget& operator=(const DetailsWidget&) = delete;
+    DetailsWidget(DetailsWidget&&) = delete;
+    DetailsWidget& operator=(DetailsWidget&&) = delete;
 
+    static DetailsWidget *instance();
+
+    void connect_clicked_slots(ContainersWidget *containers_widget, ContentsWidget *contents_widget);
     QString get_target() const;
     void tab_edited(DetailsTab *tab);
+    void reload(const QString &new_target);
 
 public slots:
     void on_containers_clicked_dn(const QString &dn);
     void on_contents_clicked_dn(const QString &dn);
-    void on_context_menu_details(const QString &dn);
 
 private slots:
     void on_logged_in();
@@ -73,7 +79,7 @@ private:
     DetailsTab *tabs[TabHandle_COUNT];
     QString target;
 
-    void reload(const QString &new_target);
+    DetailsWidget();
 };
 
 #endif /* DETAILS_WIDGET_H */
