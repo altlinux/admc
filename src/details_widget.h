@@ -23,11 +23,7 @@
 #include <QWidget>
 #include <QString>
 
-class QTreeView;
 class QString;
-class ObjectContextMenu;
-class ContainersWidget;
-class ContentsWidget;
 class QTabWidget;
 class QLabel;
 class DetailsTab;
@@ -57,7 +53,6 @@ public:
 
     static DetailsWidget *instance();
 
-    void connect_clicked_slots(ContainersWidget *containers_widget, ContentsWidget *contents_widget);
     QString get_target() const;
     void tab_edited(DetailsTab *tab);
     void reload(const QString &new_target);

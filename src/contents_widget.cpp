@@ -21,7 +21,9 @@
 #include "containers_widget.h"
 #include "advanced_view_proxy.h"
 #include "object_context_menu.h"
+#include "details_widget.h"
 #include "dn_column_proxy.h"
+#include "settings.h"
 #include "utils.h"
 
 #include <QTreeView>
@@ -36,7 +38,7 @@ enum ContentsColumn {
     ContentsColumn_COUNT,
 };
 
-ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, ObjectContextMenu *object_context_menu, QWidget *parent)
+ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *parent)
 : QWidget(parent)
 {   
     model = new ContentsModel(this);
@@ -54,7 +56,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, ObjectContex
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
-    object_context_menu->connect_view(view, ContentsColumn_DN);
+    open_object_context_menu_from_view(view, ContentsColumn_DN);
 
     setup_model_chain(view, model, {advanced_view_proxy, dn_column_proxy});
 
@@ -76,11 +78,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, ObjectContex
 
     connect(
         view, &QAbstractItemView::clicked,
-        [this] (const QModelIndex &index) {
-            const QString dn = get_dn_from_index(index, ContentsColumn_DN);
-
-            emit clicked_dn(dn);
-        });
+        this, &ContentsWidget::on_view_clicked);
 }
 
 void ContentsWidget::on_containers_selected_changed(const QString &dn) {
@@ -89,6 +87,15 @@ void ContentsWidget::on_containers_selected_changed(const QString &dn) {
 
 void ContentsWidget::on_ad_modified() {
     change_target(target_dn);
+}
+
+void ContentsWidget::on_view_clicked(const QModelIndex &index) {
+    const bool details_from_contents = Settings::instance()->get_bool(BoolSetting_DetailsFromContents);
+
+    if (details_from_contents) {
+        const QString dn = get_dn_from_index(index, ContentsColumn_DN);
+        DetailsWidget::instance()->reload(dn);
+    }
 }
 
 void ContentsWidget::change_target(const QString &dn) {

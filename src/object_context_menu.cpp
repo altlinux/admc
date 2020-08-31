@@ -39,13 +39,8 @@
 
 void force_reload_attributes_and_diff(const QString &dn);
 
-ObjectContextMenu::ObjectContextMenu(QWidget *parent)
-: QMenu(parent)
-{
-}
-
 // Open this context menu when view requests one
-void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
+void open_object_context_menu_from_view(QAbstractItemView *view, int dn_column) {
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         [=]
@@ -61,20 +56,22 @@ void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
             const QModelIndex index = convert_to_source(base_index);
             const QString dn = get_dn_from_index(index, dn_column);
 
-            const QModelIndex parent_index = index.parent();
-            QString parent_dn = "";
-            if (parent_index.isValid()) {
-                parent_dn = get_dn_from_index(parent_index, dn_column);
-            }
-
-            this->open(global_pos, dn, parent_dn);
+            ObjectContextMenu::open(global_pos, dn);
         });
 }
 
-void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const QString &parent_dn) {
-    clear();
+void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn) {
+    auto context_menu = new ObjectContextMenu(dn);
+    context_menu->exec(global_pos);
+}
 
-    QAction *action_to_show_menu_at = addAction(tr("Details"), [this, dn]() {
+ObjectContextMenu::ObjectContextMenu(const QString &dn)
+: QMenu()
+{
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    // TODO: QAction *action_to_show_menu_at = 
+    addAction(tr("Details"), [this, dn]() {
         DetailsWidget::instance()->reload(dn);
     });
 
@@ -138,26 +135,12 @@ void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn, const 
         });
     }
 
-    // Special contextual action
-    // shown if parent is group and object is user
-    if (parent_dn != "") {
-        const bool parent_is_group = AdInterface::instance()->is_group(parent_dn);
-
-        if (is_user && parent_is_group) {
-            addAction(tr("Remove from group"), [this, dn, parent_dn]() {
-                AdInterface::instance()->group_remove_user(parent_dn, dn);
-            });
-        }
-    }
-
     const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
     if (dev_mode) {
         addAction(tr("Force reload attributes and diff"), [dn]() {
             force_reload_attributes_and_diff(dn);
         });
     }
-
-    exec(global_pos, action_to_show_menu_at);
 }
 
 void ObjectContextMenu::delete_object(const QString &dn) {

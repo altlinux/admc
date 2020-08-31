@@ -22,6 +22,8 @@
 #include "object_context_menu.h"
 #include "dn_column_proxy.h"
 #include "utils.h"
+#include "settings.h"
+#include "details_widget.h"
 
 #include <QTreeView>
 #include <QIcon>
@@ -39,7 +41,7 @@ enum ContainersColumn {
 QStandardItem *make_new_row(QStandardItem *parent, const QString &dn);
 void load_row(QList<QStandardItem *> row, const QString &dn);
 
-ContainersWidget::ContainersWidget(ObjectContextMenu *object_context_menu, QWidget *parent)
+ContainersWidget::ContainersWidget(QWidget *parent)
 : QWidget(parent)
 {
     model = new ContainersModel(this);
@@ -55,7 +57,7 @@ ContainersWidget::ContainersWidget(ObjectContextMenu *object_context_menu, QWidg
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
-    object_context_menu->connect_view(view, ContainersColumn_DN);
+    open_object_context_menu_from_view(view, ContainersColumn_DN);
 
     QHeaderView *view_header = view->header();
     view_header->hide();
@@ -77,11 +79,7 @@ ContainersWidget::ContainersWidget(ObjectContextMenu *object_context_menu, QWidg
 
     connect(
         view, &QAbstractItemView::clicked,
-        [this] (const QModelIndex &index) {
-            const QString dn = get_dn_from_index(index, ContainersColumn_DN);
-
-            emit clicked_dn(dn);
-        });
+        this, &ContainersWidget::on_view_clicked);
 };
 
 void ContainersWidget::on_ad_modified() {
@@ -231,6 +229,15 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
     QString dn = dn_index.data().toString();
 
     emit selected_changed(dn);
+}
+
+void ContainersWidget::on_view_clicked(const QModelIndex &index) {
+    const bool details_from_containers = Settings::instance()->get_bool(BoolSetting_DetailsFromContainers);
+
+    if (details_from_containers) {
+        const QString dn = get_dn_from_index(index, ContainersColumn_DN);
+        DetailsWidget::instance()->reload(dn);
+    }
 }
 
 ContainersModel::ContainersModel(QObject *parent)

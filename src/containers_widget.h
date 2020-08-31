@@ -27,7 +27,6 @@
 
 class QItemSelection;
 class AdvancedViewProxy;
-class ObjectContextMenu;
 class QTreeView;
 class ContainersModel;
 class DnColumnProxy;
@@ -36,15 +35,15 @@ class ContainersWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContainersWidget(ObjectContextMenu *object_context_menu, QWidget *parent);
+    ContainersWidget(QWidget *parent);
 
 signals:
     void selected_changed(const QString &dn);
-    void clicked_dn(const QString &dn);
 
 private slots:
     void on_ad_modified();
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
+    void on_view_clicked(const QModelIndex &index);
 
 private:
     ContainersModel *model = nullptr;

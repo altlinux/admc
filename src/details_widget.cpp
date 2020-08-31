@@ -27,8 +27,6 @@
 #include "object_tab.h"
 #include "ad_interface.h"
 #include "settings.h"
-#include "containers_widget.h"
-#include "contents_widget.h"
 #include "status.h"
 #include "utils.h"
 
@@ -86,15 +84,6 @@ DetailsWidget::DetailsWidget()
         this, &DetailsWidget::on_cancel);
 
     reload("");
-}
-
-void DetailsWidget::connect_clicked_slots(ContainersWidget *containers_widget, ContentsWidget *contents_widget) {
-    connect(
-        containers_widget, &ContainersWidget::clicked_dn,
-        this, &DetailsWidget::on_containers_clicked_dn);
-    connect(
-        contents_widget, &ContentsWidget::clicked_dn,
-        this, &DetailsWidget::on_contents_clicked_dn);
 }
 
 QString DetailsWidget::get_target() const {

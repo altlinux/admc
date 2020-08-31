@@ -29,16 +29,16 @@ class QPoint;
 class QAbstractItemView;
 class SelectDialog;
 
+void open_object_context_menu_from_view(QAbstractItemView *view, int dn_column);
+
 class ObjectContextMenu final : public QMenu {
 Q_OBJECT
 
 public:
-    ObjectContextMenu(QWidget *parent);
-
-    void connect_view(QAbstractItemView *view, int dn_column);
+    static void open(const QPoint &global_pos, const QString &dn);
 
 private:
-    void open(const QPoint &global_pos, const QString &dn, const QString &parent_dn);
+    ObjectContextMenu(const QString &dn);
     void delete_object(const QString &dn);
     void edit_policy(const QString &dn);
     void move(const QString &dn);

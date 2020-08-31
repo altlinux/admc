@@ -24,7 +24,6 @@
 #include "details_widget.h"
 #include "status.h"
 #include "settings.h"
-#include "object_context_menu.h"
 #include "confirmation_dialog.h"
 
 #include <QApplication>
@@ -50,13 +49,9 @@ MainWindow::MainWindow()
     auto central_widget = new QWidget(this);
     setCentralWidget(central_widget);
 
-    auto object_context_menu = new ObjectContextMenu(this);
-    
-    auto containers_widget = new ContainersWidget(object_context_menu, this);
-    auto contents_widget = new ContentsWidget(containers_widget, object_context_menu, this);
-
+    auto containers_widget = new ContainersWidget(this);
+    auto contents_widget = new ContentsWidget(containers_widget, this);
     auto details_widget = DetailsWidget::instance();
-    details_widget->connect_clicked_slots(containers_widget, contents_widget);
 
     auto status_log = new QTextEdit(this);
     status_log->setReadOnly(true);

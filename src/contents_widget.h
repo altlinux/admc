@@ -38,14 +38,12 @@ class ContentsWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContentsWidget(ContainersWidget *containers_widget, ObjectContextMenu *object_context_menu, QWidget *parent);
-
-signals:
-    void clicked_dn(const QString &dn);
+    ContentsWidget(ContainersWidget *containers_widget, QWidget *parent);
 
 private slots:
     void on_containers_selected_changed(const QString &dn);
     void on_ad_modified();
+    void on_view_clicked(const QModelIndex &index);
 
 private:
     QString target_dn = "";
