@@ -31,7 +31,7 @@ class PasswordDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    PasswordDialog(const QString &target_arg, QWidget *parent);
+    PasswordDialog(const QString &target_arg);
 
 private slots:
     void accept();

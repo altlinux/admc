@@ -45,8 +45,8 @@
 
 QString create_type_to_string(const CreateType &type);
 
-CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg, QWidget *parent)
-: QDialog(parent)
+CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
+: QDialog()
 {
     parent_dn = parent_dn_arg;
     type = type_arg;

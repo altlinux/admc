@@ -79,7 +79,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
         delete_object(dn);
     });
     addAction(tr("Rename"), [this, dn]() {
-        auto rename_dialog = new RenameDialog(dn, this);
+        auto rename_dialog = new RenameDialog(dn);
         rename_dialog->open();
     });
 
@@ -88,8 +88,8 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
         const CreateType type = (CreateType) i;
         const QString object_string = create_type_to_string(type);
 
-        submenu_new->addAction(object_string, [this, dn, type]() {
-            const auto create_dialog = new CreateDialog(dn, type, this);
+        submenu_new->addAction(object_string, [dn, type]() {
+            const auto create_dialog = new CreateDialog(dn, type);
             create_dialog->open();
         });
     }
@@ -118,8 +118,8 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
                 add_to_group(dn);
             });
 
-        addAction(tr("Reset password"), [this, dn]() {
-            const auto password_dialog = new PasswordDialog(dn, this);
+        addAction(tr("Reset password"), [dn]() {
+            const auto password_dialog = new PasswordDialog(dn);
             password_dialog->open();
         });
 

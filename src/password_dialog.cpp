@@ -29,8 +29,8 @@
 // TODO: find out exact password rules and add them to dialog?
 // or display more info about constraint violations
 
-PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
-: QDialog(parent)
+PasswordDialog::PasswordDialog(const QString &target_arg)
+: QDialog()
 {
     target = target_arg;
 
