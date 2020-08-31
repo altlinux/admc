@@ -169,17 +169,17 @@ void CreateDialog::accept() {
 }
 
 void CreateDialog::make_group_edits() {
-    const auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME);
+    const QList<QString> string_attributes = {
+        ATTRIBUTE_SAMACCOUNT_NAME,
+    };
+    QMap<QString, StringEdit *> string_edits;
+    make_string_edits(string_attributes, &string_edits, &all_edits);
+
+    const auto sama_edit = string_edits[ATTRIBUTE_SAMACCOUNT_NAME];
     autofill_sama_name(sama_edit, name_edit);
 
-    const auto group_scope = new GroupScopeEdit();
-    const auto group_type = new GroupTypeEdit();
-
-    all_edits = {
-        sama_edit,
-        group_scope,
-        group_type
-    };
+    all_edits.append(new GroupScopeEdit());
+    all_edits.append(new GroupTypeEdit());
 }
 
 void CreateDialog::make_user_edits() {
@@ -192,9 +192,9 @@ void CreateDialog::make_user_edits() {
         ATTRIBUTE_SAMACCOUNT_NAME,
     };
     QMap<QString, StringEdit *> string_edits;
-    make_string_edits(string_attributes, &string_edits);
+    make_string_edits(string_attributes, &string_edits, &all_edits);
 
-    auto password_edit = new PasswordEdit();
+    all_edits.append(new PasswordEdit());
 
     const QList<AccountOption> options = {
         AccountOption_PasswordExpired,
@@ -204,17 +204,11 @@ void CreateDialog::make_user_edits() {
     };
     QMap<AccountOption, AccountOptionEdit *> option_edits = make_account_option_edits(options, this);
 
-    // NOTE: use keys from lists to get correct order
-    for (auto attribute : string_attributes) {
-        all_edits.append(string_edits[attribute]);
-    }
-    all_edits.append(password_edit);
     for (auto option : options) {
         all_edits.append(option_edits[option]);
     }
 
     autofill_sama_name(string_edits[ATTRIBUTE_SAMACCOUNT_NAME], name_edit);
-
     autofill_full_name(string_edits);
 }
 

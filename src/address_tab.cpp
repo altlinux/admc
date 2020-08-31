@@ -45,15 +45,9 @@ AddressTab::AddressTab(DetailsWidget *details_arg)
     };
 
     QMap<QString, StringEdit *> string_edits;
-    make_string_edits(attributes, &string_edits);
+    make_string_edits(attributes, &string_edits, &edits);
 
-    for (auto attribute : attributes) {
-        auto edit = string_edits[attribute];
-        edits.append(edit);
-    }
-
-    auto country_edit = new CountryEdit();
-    edits.append(country_edit);
+    edits.append(new CountryEdit());
 
     layout_attribute_edits(edits, edits_layout);
     connect_edits_to_tab(edits, this);

@@ -27,10 +27,11 @@
 #include <QMessageBox>
 #include <QLabel>
 
-void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *edits_out) {
+void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *string_edits_out, QList<AttributeEdit *> *edits_out) {
     for (auto attribute : attributes) {
         auto edit = new StringEdit(attribute);
-        edits_out->insert(attribute, edit);
+        string_edits_out->insert(attribute, edit);
+        edits_out->append((AttributeEdit *)edit);
     }
 }
 

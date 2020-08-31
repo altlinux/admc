@@ -68,7 +68,7 @@ RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
     }
 
     QMap<QString, StringEdit *> string_edits;
-    make_string_edits(string_attributes, &string_edits);
+    make_string_edits(string_attributes, &string_edits, &all_edits);
 
     if (is_user) {
         autofill_full_name(string_edits);
@@ -78,9 +78,6 @@ RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
         autofill_sama_name(string_edits[ATTRIBUTE_SAMACCOUNT_NAME], name_edit);
     }
 
-    for (auto attribute : string_attributes) {
-        all_edits.append(string_edits[attribute]);
-    }
     layout_attribute_edits(all_edits, edits_layout);
 
     const auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);

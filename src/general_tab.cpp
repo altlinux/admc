@@ -84,12 +84,7 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
         };
 
         QMap<QString, StringEdit *> string_edits;
-        make_string_edits(attributes, &string_edits);
-
-        for (auto attribute : attributes) {
-            auto edit = string_edits[attribute];
-            edits->append(edit);
-        }
+        make_string_edits(attributes, &string_edits, edits);
 
         autofill_full_name(string_edits);
     }
@@ -107,12 +102,7 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
         };
 
         QMap<QString, StringEdit *> string_edits;
-        make_string_edits(attributes, &string_edits);
-
-        for (auto attribute : attributes) {
-            auto edit = string_edits[attribute];
-            edits->append(edit);
-        }
+        make_string_edits(attributes, &string_edits, edits);
 
         edits->append(new CountryEdit());
     }
@@ -128,15 +118,10 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
         };
 
         QMap<QString, StringEdit *> string_edits;
-        make_string_edits(attributes, &string_edits);
+        make_string_edits(attributes, &string_edits, edits);
 
         string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->set_read_only(EditReadOnly_Yes);
         string_edits[ATTRIBUTE_DNS_HOST_NAME]->set_read_only(EditReadOnly_Yes);
-
-        for (auto attribute : attributes) {
-            auto edit = string_edits[attribute];
-            edits->append(edit);
-        }
 
         // TODO: more string edits for: site (probably just site?), dc type (no idea)
     }

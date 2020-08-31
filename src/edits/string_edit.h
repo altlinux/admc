@@ -42,7 +42,7 @@ private:
     QString original_value;
 };
 
-void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *edits_out);
+void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *string_edits_out, QList<AttributeEdit *> *edits_out);
 void autofill_full_name(QMap<QString, StringEdit *> string_edits);
 void autofill_sama_name(StringEdit *sama_edit, StringEdit *name_edit);
 
