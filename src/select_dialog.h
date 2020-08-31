@@ -26,16 +26,16 @@
 
 class QTreeView;
 
-enum MoveDialogMultiSelection {
-    MoveDialogMultiSelection_Yes,
-    MoveDialogMultiSelection_No
+enum SelectDialogMultiSelection {
+    SelectDialogMultiSelection_Yes,
+    SelectDialogMultiSelection_No
 };
 
-class MoveDialog final : public QDialog {
+class SelectDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    static QList<QString> open(QList<QString> classes, MoveDialogMultiSelection multi_selection = MoveDialogMultiSelection_No);
+    static QList<QString> open(QList<QString> classes, SelectDialogMultiSelection multi_selection = SelectDialogMultiSelection_No);
 
 private slots:
     void accept();
@@ -44,7 +44,7 @@ private:
     QTreeView *view;
     QList<QString> selected_objects;
 
-    MoveDialog(QList<QString> classes, MoveDialogMultiSelection multi_selection);
+    SelectDialog(QList<QString> classes, SelectDialogMultiSelection multi_selection);
 };
 
 #endif /* MOVE_DIALOG_H */

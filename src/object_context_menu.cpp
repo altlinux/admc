@@ -20,7 +20,7 @@
 #include "object_context_menu.h"
 #include "ad_interface.h"
 #include "confirmation_dialog.h"
-#include "move_dialog.h"
+#include "select_dialog.h"
 #include "rename_dialog.h"
 #include "utils.h"
 #include "password_dialog.h"
@@ -201,7 +201,7 @@ void ObjectContextMenu::move(const QString &dn) {
         classes = {CLASS_CONTAINER, CLASS_OU};
     }
 
-    const QList<QString> selected_objects = MoveDialog::open(classes);
+    const QList<QString> selected_objects = SelectDialog::open(classes);
 
     if (selected_objects.size() == 1) {
         const QString container = selected_objects[0];
@@ -212,7 +212,7 @@ void ObjectContextMenu::move(const QString &dn) {
 
 void ObjectContextMenu::add_to_group(const QString &dn) {
     const QList<QString> classes = {CLASS_GROUP};
-    const QList<QString> selected_objects = MoveDialog::open(classes, MoveDialogMultiSelection_Yes);
+    const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes);
 
     if (selected_objects.size() > 0) {
         for (auto group : selected_objects) {

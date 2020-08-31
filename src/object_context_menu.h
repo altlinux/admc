@@ -27,7 +27,7 @@
 class QString;
 class QPoint;
 class QAbstractItemView;
-class MoveDialog;
+class SelectDialog;
 
 class ObjectContextMenu final : public QMenu {
 Q_OBJECT

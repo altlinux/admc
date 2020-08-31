@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "move_dialog.h"
+#include "select_dialog.h"
 #include "ad_interface.h"
 #include "settings.h"
 #include "dn_column_proxy.h"
@@ -33,21 +33,21 @@
 #include <QItemSelectionModel>
 #include <QStandardItemModel>
 
-enum MoveDialogColumn {
-    MoveDialogColumn_Name,
-    MoveDialogColumn_Class,
-    MoveDialogColumn_DN,
-    MoveDialogColumn_COUNT
+enum SelectDialogColumn {
+    SelectDialogColumn_Name,
+    SelectDialogColumn_Class,
+    SelectDialogColumn_DN,
+    SelectDialogColumn_COUNT
 };
 
-QList<QString> MoveDialog::open(QList<QString> classes, MoveDialogMultiSelection multi_selection) {
-    MoveDialog dialog(classes, multi_selection);
+QList<QString> SelectDialog::open(QList<QString> classes, SelectDialogMultiSelection multi_selection) {
+    SelectDialog dialog(classes, multi_selection);
     dialog.exec();
 
     return dialog.selected_objects;
 }
 
-MoveDialog::MoveDialog(QList<QString> classes, MoveDialogMultiSelection multi_selection)
+SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection multi_selection)
 : QDialog()
 {
     resize(600, 600);
@@ -56,7 +56,7 @@ MoveDialog::MoveDialog(QList<QString> classes, MoveDialogMultiSelection multi_se
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setSortingEnabled(true);
 
-    if (multi_selection == MoveDialogMultiSelection_Yes) {
+    if (multi_selection == SelectDialogMultiSelection_Yes) {
         view->setSelectionMode(QAbstractItemView::MultiSelection);
     }
 
@@ -82,18 +82,18 @@ MoveDialog::MoveDialog(QList<QString> classes, MoveDialogMultiSelection multi_se
     layout->addWidget(select_button, 4, 2, Qt::AlignRight);
 
     auto proxy_name = new QSortFilterProxyModel(this);
-    proxy_name->setFilterKeyColumn(MoveDialogColumn_Name);
+    proxy_name->setFilterKeyColumn(SelectDialogColumn_Name);
 
     auto proxy_class = new QSortFilterProxyModel(this);
-    proxy_class->setFilterKeyColumn(MoveDialogColumn_Class);
+    proxy_class->setFilterKeyColumn(SelectDialogColumn_Class);
 
-    const auto dn_column_proxy = new DnColumnProxy(MoveDialogColumn_DN, this);
+    const auto dn_column_proxy = new DnColumnProxy(SelectDialogColumn_DN, this);
 
     // Load model
-    auto model = new QStandardItemModel(0, MoveDialogColumn_COUNT, this);
-    model->setHorizontalHeaderItem(MoveDialogColumn_Name, new QStandardItem(tr("Name")));
-    model->setHorizontalHeaderItem(MoveDialogColumn_Class, new QStandardItem(tr("Class")));
-    model->setHorizontalHeaderItem(MoveDialogColumn_DN, new QStandardItem(tr("DN")));
+    auto model = new QStandardItemModel(0, SelectDialogColumn_COUNT, this);
+    model->setHorizontalHeaderItem(SelectDialogColumn_Name, new QStandardItem(tr("Name")));
+    model->setHorizontalHeaderItem(SelectDialogColumn_Class, new QStandardItem(tr("Class")));
+    model->setHorizontalHeaderItem(SelectDialogColumn_DN, new QStandardItem(tr("DN")));
     for (auto object_class : classes) {
         QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, object_class);
 
@@ -111,15 +111,15 @@ MoveDialog::MoveDialog(QList<QString> classes, MoveDialogMultiSelection multi_se
 
         for (auto e_dn : objects) {
             auto row = QList<QStandardItem *>();
-            for (int i = 0; i < MoveDialogColumn_COUNT; i++) {
+            for (int i = 0; i < SelectDialogColumn_COUNT; i++) {
                 row.push_back(new QStandardItem());
             }
 
             const QString name = extract_name_from_dn(e_dn);
 
-            row[MoveDialogColumn_Name]->setText(name);
-            row[MoveDialogColumn_Class]->setText(object_class);
-            row[MoveDialogColumn_DN]->setText(e_dn);
+            row[SelectDialogColumn_Name]->setText(name);
+            row[SelectDialogColumn_Class]->setText(object_class);
+            row[SelectDialogColumn_DN]->setText(e_dn);
 
             model->appendRow(row);
         }
@@ -138,7 +138,7 @@ MoveDialog::MoveDialog(QList<QString> classes, MoveDialogMultiSelection multi_se
     // Disable/hide class-related elements if selecting only from one class
     if (classes.size() == 1) {
         filter_class_combo->setEnabled(false);
-        view->setColumnHidden(MoveDialogColumn_Class, true);
+        view->setColumnHidden(SelectDialogColumn_Class, true);
     }
 
     for (int col = 0; col < view->model()->columnCount(); col++) {
@@ -178,13 +178,13 @@ MoveDialog::MoveDialog(QList<QString> classes, MoveDialogMultiSelection multi_se
         this, &QDialog::reject);
 }
 
-void MoveDialog::accept() {
+void SelectDialog::accept() {
     const QItemSelectionModel *selection_model = view->selectionModel();
     const QList<QModelIndex> selected_indexes = selection_model->selectedIndexes();
 
     selected_objects.clear();
     for (auto index : selected_indexes) {
-        const QString dn = get_dn_from_index(index, MoveDialogColumn_DN);
+        const QString dn = get_dn_from_index(index, SelectDialogColumn_DN);
 
         if (!selected_objects.contains(dn)) {
             selected_objects.append(dn);

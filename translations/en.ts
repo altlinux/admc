@@ -374,7 +374,7 @@
     </message>
 </context>
 <context>
-    <name>MoveDialog</name>
+    <name>SelectDialog</name>
     <message>
         <location filename="../src/move_dialog.cpp" line="60"/>
         <source>TARGET</source>
@@ -437,7 +437,7 @@
     </message>
 </context>
 <context>
-    <name>MoveDialogModel</name>
+    <name>SelectDialogModel</name>
     <message>
         <location filename="../src/move_dialog.cpp" line="257"/>
         <source>Name</source>

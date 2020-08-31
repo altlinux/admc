@@ -21,7 +21,7 @@
 #include "object_context_menu.h"
 #include "utils.h"
 #include "dn_column_proxy.h"
-#include "move_dialog.h"
+#include "select_dialog.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -144,7 +144,7 @@ void MembersTab::on_context_menu(const QPoint pos) {
 
 void MembersTab::on_add_button() {
     const QList<QString> classes = {CLASS_USER};
-    const QList<QString> selected_objects = MoveDialog::open(classes, MoveDialogMultiSelection_Yes);
+    const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes);
 
     if (selected_objects.size() > 0) {
         add_members(selected_objects);
