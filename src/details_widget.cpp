@@ -38,8 +38,8 @@
 #include <QPushButton>
 
 DetailsWidget *DetailsWidget::instance() {
-    static DetailsWidget instance;
-    return &instance;
+    static DetailsWidget *instance = new DetailsWidget();
+    return instance;
 }
 
 DetailsWidget::DetailsWidget()
