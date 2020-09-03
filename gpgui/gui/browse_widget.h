@@ -35,7 +35,7 @@ Q_OBJECT
 public:
     BrowseWidget();
 
-    void change_policy_path(const QString &policy_path_arg);
+    void change_target(const QString &policy_path_arg);
 
 private slots:
     void on_context_menu(const QPoint pos);

@@ -45,10 +45,11 @@ private slots:
     void open_preg();
     void save_preg();
     void save_dotreg();
+    void on_open();
+    void on_exit();
 
 private:
     BrowseWidget *browse_widget;
-    QMenu *file_menu;
     QMenu *help_menu;
 
     QFileDialog *preg_open_dialog;

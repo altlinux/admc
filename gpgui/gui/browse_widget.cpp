@@ -48,8 +48,8 @@ BrowseWidget::BrowseWidget()
 : QWidget()
 {   
     model = new QStandardItemModel(0, BrowseColumn_COUNT, this);
-    model->setHorizontalHeaderItem(BrowseColumn_Name, new QStandardItem("Name"));
-    model->setHorizontalHeaderItem(BrowseColumn_Path, new QStandardItem("DN"));
+    model->setHorizontalHeaderItem(BrowseColumn_Name, new QStandardItem(tr("Name")));
+    model->setHorizontalHeaderItem(BrowseColumn_Path, new QStandardItem(tr("DN")));
 
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -61,14 +61,14 @@ BrowseWidget::BrowseWidget()
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(view);
-    layout->addWidget(new QLabel("policy_path=" + policy_path));
+    layout->addWidget(new QLabel(tr("policy_path=") + policy_path));
 
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         this, &BrowseWidget::on_context_menu);
 }
 
-void BrowseWidget::change_policy_path(const QString &policy_path_arg) {
+void BrowseWidget::change_target(const QString &policy_path_arg) {
     policy_path = policy_path_arg;
 
     model->clear();

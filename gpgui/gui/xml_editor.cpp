@@ -31,7 +31,7 @@ XmlEditor::XmlEditor(const QString &path)
     setAttribute(Qt::WA_DeleteOnClose);
     resize(300, 600);
 
-    const QString title_label_text = "Editing xml file:" + path;
+    const QString title_label_text = tr("Editing xml file:") + path;
     auto title_label = new QLabel(title_label_text);
 
     auto button_box = new QDialogButtonBox(QDialogButtonBox::Apply | QDialogButtonBox::Cancel | QDialogButtonBox::Ok);

@@ -25,45 +25,19 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QtWidgets>
-
 #include <QComboBox>
 #include <QHeaderView>
 #include <QTabWidget>
 #include <QTableWidget>
 #include <QTableWidgetItem>
-
-#include <QDir>
+#include <QFileDialog>
+#include <QMenu>
+#include <QApplication>
 #include <QFileDialog>
 
 #include "MainWindow.h"
 
 #include "preg_writer.h"
-
-void MainWindow::create_menu_bar() {
-    file_menu = menuBar()->addMenu(tr("&File"));
-    help_menu = menuBar()->addMenu(tr("&Help"));
-
-    QAction *open_preg_action = file_menu->addAction(
-        tr("&Open PReg file"), this, &MainWindow::open_preg);
-    open_preg_action->setStatusTip(tr("Open PReg file for editing"));
-    QAction *save_preg_action = file_menu->addAction(
-        tr("&Save PReg file"), this, &MainWindow::save_preg);
-    save_preg_action->setStatusTip(tr("Save active PReg file"));
-    QAction *save_reg_action = file_menu->addAction(
-        tr("&Save REG file"), this, &MainWindow::save_dotreg);
-    save_reg_action->setStatusTip(tr("Save active PReg file as REG"));
-    QAction *exit_action =
-    file_menu->addAction(tr("&Exit"), this, &QWidget::close);
-    exit_action->setStatusTip(tr("Exit GPGUI"));
-
-    QAction *about_action =
-    help_menu->addAction(tr("&About"), this, &MainWindow::about);
-    about_action->setStatusTip(tr("About GPGUI"));
-}
-
-void MainWindow::create_status_bar() {
-    this->statusBar()->showMessage(tr("Ready"));
-}
 
 MainWindow::MainWindow(const QString &path)
 : QMainWindow()
@@ -102,27 +76,37 @@ MainWindow::MainWindow(const QString &path)
     // setCentralWidget(frame);
     // this->adjustSize();
 
-    // this->create_menu_bar();
-    // this->create_status_bar();
-
     // /* Create dialog windows */
     // this->reg_dword_dialog = new REG_DWORD_Dialog();
 
     setGeometry(0, 0, 800, 600);
 
-    auto central_widget = new QWidget();
-    setCentralWidget(central_widget);
+    const auto menubar = new QMenuBar();
+    setMenuBar(menubar);
 
-    const auto label = new QLabel(tr("label"));
+    auto file_menu = menubar->addMenu(tr("File"));
+
+    auto open_action = file_menu->addAction(tr("Open"));
+    connect(
+        open_action, &QAction::triggered,
+        this, &MainWindow::on_open);
+    
+    auto exit_action = file_menu->addAction(tr("Exit"));
+    connect(
+        exit_action, &QAction::triggered,
+        this, &MainWindow::on_exit);
 
     browse_widget = new BrowseWidget();
-    browse_widget->change_policy_path("/home/kevl/pol-files/{2BE174FB-22F4-4CD1-BA93-5311F87E80A2}");
+    
+    const auto central_layout = new QVBoxLayout();
+    central_layout->addWidget(browse_widget);
 
-    auto central_layout = new QVBoxLayout();
+    const auto central_widget = new QWidget();
+    setCentralWidget(central_widget);
     central_widget->setLayout(central_layout);
 
-    central_layout->addWidget(label);
-    central_layout->addWidget(browse_widget);
+    // NOTE: default dir for testing
+    browse_widget->change_target("/home/kevl/pol-files/{2BE174FB-22F4-4CD1-BA93-5311F87E80A2}");
 }
 
 void MainWindow::about() {
@@ -228,5 +212,16 @@ void MainWindow::save_preg() {
 void MainWindow::save_dotreg() {}
 
 void MainWindow::edit_reg_dword_dialog() {
+}
+
+void MainWindow::on_open() {
+    const QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), QString(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+    browse_widget->change_target(dir);
+}
+
+void MainWindow::on_exit() {
+    QApplication::closeAllWindows();
+    QApplication::quit();
 }
 
