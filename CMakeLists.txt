@@ -26,7 +26,6 @@ set(CMAKE_MODULE_PATH
 )
 
 find_package(Qt5 COMPONENTS Core Widgets LinguistTools REQUIRED) # GUI
-find_package(Samba REQUIRED) # libsmbclient
 find_package(Doxygen) # Code documentation
     
 # Definitions for configuration file
@@ -39,7 +38,6 @@ configure_file("config.h.in" "config.h")
 
 add_subdirectory(adldap)
 add_subdirectory(gpgui)
-# add_subdirectory(translations)
 
 set(ADMC_HEADER_DIRS
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -124,7 +122,6 @@ target_link_libraries(admc
     Qt5::Core
     Qt5::Widgets
     adldap++
-    ${SAMBA_LIBRARIES}
 )
 target_include_directories(admc
     PUBLIC

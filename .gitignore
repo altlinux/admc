@@ -7,7 +7,6 @@ admc
 build
 obj/*
 moc/*
-Makefile
 .qmake.stash
 *.pro.user
 build
