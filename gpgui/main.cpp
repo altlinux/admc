@@ -18,14 +18,43 @@
  */
 
 #include "config.h"
+#include "MainWindow.h"
 
-#include <memory>
+#include <QApplication>
+#include <QCommandLineParser>
+#include <QStringList>
 
-#include "Runner.h"
+#define CLI_OPTION_PATH "path"
 
 int main(int argc, char **argv) {
-    std::unique_ptr<Runner> runner(new Runner(
-        argc, argv, GPGUI_APPLICATION_DISPLAY_NAME, GPGUI_APPLICATION_NAME,
-        GPGUI_VERSION, GPGUI_ORGANIZATION, GPGUI_ORGANIZATION_DOMAIN));
-    return runner->run();
+    QApplication app(argc, argv);
+    app.setApplicationDisplayName(GPGUI_APPLICATION_DISPLAY_NAME);
+    app.setApplicationName(GPGUI_APPLICATION_NAME);
+    app.setApplicationVersion(GPGUI_VERSION);
+    app.setOrganizationName(GPGUI_ORGANIZATION);
+    app.setOrganizationDomain(GPGUI_ORGANIZATION_DOMAIN);
+
+    QCommandLineParser cli_parser;
+    cli_parser.setApplicationDescription(QCoreApplication::applicationName());
+    cli_parser.addHelpOption();
+
+    cli_parser.addOption({{"p", "path"}, "Policy's share path to use, it's in the gPCFileSysPath attribute of the LDAP object", CLI_OPTION_PATH});
+
+    const QStringList arg_list = qApp->arguments();
+    cli_parser.process(arg_list);
+
+    if (!cli_parser.isSet(CLI_OPTION_PATH)) {
+        printf("ERROR: path option is required");
+
+        return 1;
+    }
+
+    const QString path = cli_parser.value(CLI_OPTION_PATH);
+
+    MainWindow main_window(path);
+    main_window.show();
+
+    const int retval = app.exec();
+
+    return retval;
 }

@@ -104,10 +104,15 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
     const bool is_policy = AdInterface::instance()->is_policy(dn); 
     const bool is_user = AdInterface::instance()->is_user(dn); 
 
+
     if (is_policy) {
-        submenu_new->addAction(tr("Edit Policy"), [this, dn]() {
+    printf("ispol\n");
+        addAction(tr("Edit Policy"), [this, dn]() {
             edit_policy(dn);
         });
+    } else {
+    printf("notspol\n");
+
     }
 
     if (is_user) {
@@ -155,24 +160,21 @@ void ObjectContextMenu::delete_object(const QString &dn) {
 
 void ObjectContextMenu::edit_policy(const QString &dn) {
     // Start policy edit process
-    const auto process = new QProcess(this);
-
-    const QString program_name = "../gpgui";
-    process->setProgram(QDir::currentPath() + program_name);
-
-    const char *uri = "ldap://dc0.domain.alt";
+    const auto process = new QProcess();
 
     const QString path = AdInterface::instance()->attribute_get(dn, "gPCFileSysPath");
 
-    QStringList args;
-    args << uri;
-    args << path;
-    process->setArguments(args);
+    const QString program_name = "/home/kevl/admc/gpgui/gpgui";
 
-    printf("on_action_edit_policy\ndn=%s\npath=%s\n", qPrintable(dn), qPrintable(path));
-    printf("execute command: %s %s %s\n", qPrintable(program_name), qPrintable(uri), qPrintable(path));
+    QStringList args = {"-p", path};
 
-    process->start();
+    qint64 pid;
+    const bool start_success = process->startDetached(program_name, args, QString(), &pid);
+
+    printf("edit_policy\n");
+    printf("path=%s\n", qPrintable(path));
+    printf("pid=%lld\n", pid);
+    printf("start_success=%d\n", start_success);
 }
 
 void ObjectContextMenu::move(const QString &dn) {

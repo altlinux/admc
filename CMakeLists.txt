@@ -26,8 +26,9 @@ set(CMAKE_MODULE_PATH
 )
 
 find_package(Qt5 COMPONENTS Core Widgets LinguistTools REQUIRED) # GUI
+find_package(Samba REQUIRED) # libsmbclient
 find_package(Doxygen) # Code documentation
-
+    
 # Definitions for configuration file
 set(ADMC_APPLICATION_NAME "ADMC")
 set(ADMC_APPLICATION_DISPLAY_NAME "ADMC")
@@ -123,6 +124,7 @@ target_link_libraries(admc
     Qt5::Core
     Qt5::Widgets
     adldap++
+    ${SAMBA_LIBRARIES}
 )
 target_include_directories(admc
     PUBLIC

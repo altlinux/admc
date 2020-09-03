@@ -29,14 +29,19 @@ if(NOT Iconv_IS_BUILT_IN)
 	find_package(Iconv) # For libgptbackend
 endif()
 find_package(Doxygen) # Code documentation
+find_package(Samba REQUIRED) # libsmbclient
 
 set(GPGUI_GUI_HEADER_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/
 	${CMAKE_CURRENT_SOURCE_DIR}/gui/include
 )
 
 set(GPGUI_GUI_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/gui/MainWindow.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/gui/REG_DWORD_Dialog.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/browse_widget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/pol_editor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/xml_editor.cpp
 )
 
 set(GPGUI_HEADER_DIRS
@@ -44,9 +49,7 @@ set(GPGUI_HEADER_DIRS
 )
 
 set(GPGUI_SOURCES
-	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/Runner.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/gpgui.qrc
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 )
 
 # Definitions for configuration file
@@ -60,7 +63,8 @@ configure_file("config.h.in" "config.h")
 add_definitions(${QT5_DEFINITIONS})
 add_executable(gpgui
 	${GPGUI_SOURCES}
-	${GPGUI_GUI_SOURCES}
+    ${GPGUI_GUI_SOURCES}
+	${GPGUI_GUI_HEADER_DIRS}
 )
 
 doxygen_add_docs(gpgui_doc
@@ -80,6 +84,7 @@ target_link_libraries(gpgui
 	Qt5::Core
 	Qt5::Widgets
 	gptbackend
+    ${SAMBA_LIBRARIES}
 )
 
 target_include_directories(gpgui

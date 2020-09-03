@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#if !defined(__GPGUI_MAINWINDOW_H)
-#define __GPGUI_MAINWINDOW_H 1
+#if !defined(MAIN_WINDOW_H)
+#define MAIN_WINDOW_H 1
 
 #include <QMainWindow>
 #include <QtWidgets>
@@ -28,16 +28,26 @@
 
 #include "preg_parser.h"
 
-QT_BEGIN_NAMESPACE
 class QMenu;
 class QFileDialog;
 class QTableWidget;
-QT_END_NAMESPACE
-
-namespace qgui {
+class BrowseWidget;
 
 class MainWindow : public QMainWindow {
-    // Q_OBJECT
+Q_OBJECT
+
+public:
+    MainWindow(const QString &path);
+    void edit_reg_dword_dialog();
+
+private slots:
+    void about();
+    void open_preg();
+    void save_preg();
+    void save_dotreg();
+
+private:
+    BrowseWidget *browse_widget;
     QMenu *file_menu;
     QMenu *help_menu;
 
@@ -46,29 +56,9 @@ class MainWindow : public QMainWindow {
 
     QTableWidget *regpol_table;
 
-    REG_DWORD_Dialog *reg_dword_dialog;
-
     void create_menu_bar();
     void create_status_bar();
-
-  public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
-    void edit_reg_dword_dialog();
-
-  private slots:
-    void about();
-    void open_preg();
-    void save_preg();
-    void save_dotreg();
-
-  protected:
-    void closeEvent(QCloseEvent *event) override;
-
-  private:
     void preg_entry2table(preg::entry &pentry);
-}; /* class MainWindow */
+};
 
-} /* namespace qgui */
-
-#endif /* __GPGUI_MAINWINDOW_H */
+#endif /* MAIN_WINDOW_H */

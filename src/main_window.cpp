@@ -26,12 +26,20 @@
 #include "settings.h"
 #include "confirmation_dialog.h"
 
+#include <libsmbclient.h>
+#include <errno.h>
+
 #include <QApplication>
 #include <QString>
 #include <QSplitter>
 #include <QStatusBar>
 #include <QVBoxLayout>
 #include <QTextEdit>
+
+void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgroup, int maxLenWorkgroup, char * pUsername, int maxLenUsername, char * pPassword, int maxLenPassword) {
+    // NOTE: Using kerberos auth, so just return 
+    return;
+}
 
 MainWindow::MainWindow()
 : QMainWindow()
@@ -97,7 +105,27 @@ MainWindow::MainWindow()
         if (!host.isEmpty()) {
             AdInterface::instance()->login(host, domain);
         }
-    }    
+    }  
+
+// DIR *dir;
+// struct dirent *ent;
+// if ((dir = opendir ("c:\\src\\")) != NULL) {
+//   /* print all the files and directories within directory */
+//   while ((ent = readdir (dir)) != NULL) {
+//     printf ("%s\n", ent->d_name);
+//   }
+//   closedir (dir);
+// } else {
+//   /* could not open directory */
+//   perror ("");
+//   return EXIT_FAILURE;
+// }
+
+// int result = smbc_open(url, flags, mode):
+
+    smbc_init(get_auth_data_fn, 0);
+
+    
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
