@@ -96,13 +96,6 @@
 #define LDAP_BOOL_TRUE  "TRUE"
 #define LDAP_BOOL_FALSE "FALSE"
 
-class AdConnection;
-
-namespace adldap
-{
-    class AdConnection;
-};
-
 enum AccountOption {
     AccountOption_Disabled,
     AccountOption_PasswordExpired,
@@ -128,6 +121,7 @@ enum GroupType {
 };
 
 typedef QMap<QString, QList<QString>> Attributes;
+typedef struct ldap LDAP;
 
 class AdInterface final : public QObject {
 Q_OBJECT
@@ -138,8 +132,6 @@ public:
     AdInterface(AdInterface&&) = delete;
     AdInterface& operator=(AdInterface&&) = delete;
     
-    ~AdInterface();
-
     static AdInterface *instance();
 
     static QList<QString> get_domain_hosts(const QString &domain, const QString &site);
@@ -154,8 +146,7 @@ public:
     void end_batch();
     bool batch_is_in_progress() const;
 
-    QString get_search_base();
-    QString get_uri();
+    QString get_search_base() const;
 
     QList<QString> list(const QString &dn);
     QList<QString> search(const QString &filter);
@@ -215,7 +206,9 @@ signals:
     void logged_in();
 
 private:
-    adldap::AdConnection *connection = nullptr;
+    LDAP *ld;
+    QString search_base;
+
     QHash<QString, Attributes> attributes_cache;
     bool suppress_not_found_error = false;
     QSet<QString> batched_dns;

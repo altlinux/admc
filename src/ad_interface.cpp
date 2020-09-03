@@ -18,10 +18,10 @@
  */
 
 #include "ad_interface.h"
-#include "ad_connection.h"
+#include "active_directory.h"
 #include "status.h"
 
-#include "ldap.h"
+#include <ldap.h>
 
 #include <QSet>
 #include <QMessageBox>
@@ -47,10 +47,6 @@ int group_scope_to_bit(GroupScope scope);
 int bit_set(int bitmask, int bit, bool set);
 bool bit_is_set(int bitmask, int bit);
 
-AdInterface::~AdInterface() {
-    delete connection;
-}
-
 AdInterface *AdInterface::instance() {
     static AdInterface ad_interface;
     return &ad_interface;
@@ -59,7 +55,7 @@ AdInterface *AdInterface::instance() {
 AdInterface::AdInterface()
 : QObject()
 {
-    connection = new adldap::AdConnection();
+
 }
 
 QList<QString> AdInterface::get_domain_hosts(const QString &domain, const QString &site) {
@@ -89,10 +85,18 @@ QList<QString> AdInterface::get_domain_hosts(const QString &domain, const QStrin
 
 bool AdInterface::login(const QString &host, const QString &domain) {
     const QString uri = "ldap://" + host;
-    const std::string uri_std = uri.toStdString();
-    const std::string domain_std = domain.toStdString();
 
-    const int result = connection->connect(uri_std, domain_std);
+    // Transform domain to search base
+    // "DOMAIN.COM" => "DC=domain,DC=com"
+    search_base = domain;
+    search_base = search_base.toLower();
+    search_base = "DC=" + search_base;
+    search_base = search_base.replace(".", ",DC=");
+
+    const QByteArray uri_array = uri.toLatin1();
+    const char *uri_cstr = uri_array.constData();
+
+    const int result = ad_login(uri_cstr, &ld);
 
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Logged in to \"%1\" at \"%2\"")).arg(host, domain));
@@ -135,12 +139,8 @@ bool AdInterface::batch_is_in_progress() const {
     return batch_in_progress;
 }
 
-QString AdInterface::get_search_base() {
-    return QString::fromStdString(connection->get_search_base());
-}
-
-QString AdInterface::get_uri() {
-    return QString::fromStdString(connection->get_uri());
+QString AdInterface::get_search_base() const {
+    return search_base;
 }
 
 QList<QString> AdInterface::list(const QString &dn) {
@@ -148,7 +148,7 @@ QList<QString> AdInterface::list(const QString &dn) {
     const char *dn_cstr = dn_array.constData();
 
     char **children_raw;
-    const int result = connection->list(dn_cstr, &children_raw);
+    const int result = ad_list(ld, dn_cstr, &children_raw);
 
     if (result == AD_SUCCESS) {
         auto children = QList<QString>();
@@ -178,8 +178,11 @@ QList<QString> AdInterface::search(const QString &filter) {
     const QByteArray filter_array = filter.toLatin1();
     const char *filter_cstr = filter_array.constData();
 
+    const QByteArray search_base_array = search_base.toLatin1();
+    const char *search_base_cstr = search_base_array.constData();
+
     char **results_raw;
-    const int result_search = connection->search(filter_cstr, &results_raw);
+    const int result_search = ad_search(ld, filter_cstr, search_base_cstr, &results_raw);
     if (result_search == AD_SUCCESS) {
         auto results = QList<QString>();
 
@@ -216,7 +219,7 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
         const char *dn_cstr = dn_array.constData();
 
         char ***attributes_ad;
-        const int result_attribute_get = connection->get_all_attributes(dn_cstr, &attributes_ad);
+        const int result_attribute_get = ad_get_all_attributes(ld, dn_cstr, &attributes_ad);
 
         if (result_attribute_get == AD_SUCCESS) {
             Attributes attributes;
@@ -336,7 +339,7 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
     const QByteArray value_array = value.toLatin1();
     const char *value_cstr = value_array.constData();
 
-    const int result = connection->attribute_add(dn_cstr, attribute_cstr, value_cstr);
+    const int result = ad_attribute_add(ld, dn_cstr, attribute_cstr, value_cstr);
 
     const QString name = extract_name_from_dn(dn);
 
@@ -390,9 +393,9 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
 
     int result;
     if (value.isEmpty()) {
-        result = connection->attribute_delete(dn_cstr, attribute_cstr, old_value_cstr);
+        result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, old_value_cstr);
     } else {
-        result = connection->attribute_replace(dn_cstr, attribute_cstr, value_cstr);
+        result = ad_attribute_replace(ld, dn_cstr, attribute_cstr, value_cstr);
     }
 
     const QString name = extract_name_from_dn(dn);
@@ -430,7 +433,7 @@ bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, 
     const QByteArray value_array = value.toLatin1();
     const char *value_cstr = value_array.constData();
 
-    const int result = connection->attribute_delete(dn_cstr, attribute_cstr, value_cstr);
+    const int result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, value_cstr);
 
     const QString name = extract_name_from_dn(dn);
 
@@ -463,7 +466,7 @@ bool AdInterface::object_add(const QString &dn, const char **classes) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    const int result = connection->add(dn_cstr, classes);
+    const int result = ad_add(ld, dn_cstr, classes);
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Created \"%1\"")).arg(dn));
 
@@ -484,7 +487,7 @@ bool AdInterface::object_delete(const QString &dn) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    int result = connection->object_delete(dn_cstr);
+    int result = ad_delete(ld, dn_cstr);
 
     const QString name = extract_name_from_dn(dn);
     
@@ -514,7 +517,7 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
     const QByteArray new_container_array = new_container.toLatin1();
     const char *new_container_cstr = new_container_array.constData();
 
-    const int result = connection->move(dn_cstr, new_container_cstr);
+    const int result = ad_move(ld, dn_cstr, new_container_cstr);
 
     // TODO: drag and drop handles checking move compatibility but need
     // to do this here as well for CLI?
@@ -690,7 +693,7 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     const QByteArray new_rdn_array = new_rdn.toLatin1();
     const char *new_rdn_cstr = new_rdn_array.constData();
 
-    int result = connection->rename(dn_cstr, new_rdn_cstr);
+    int result = ad_rename(ld, dn_cstr, new_rdn_cstr);
 
     const QString old_name = extract_name_from_dn(dn);
 
@@ -724,7 +727,7 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
         unicode_password_cstr[i * 2] = quoted_password_cstr[i];
     }
 
-    const int result = connection->attribute_replace_binary(dn_cstr, ATTRIBUTE_PASSWORD, unicode_password_cstr, unicode_password_length);
+    const int result = ad_attribute_replace_binary(ld, dn_cstr, ATTRIBUTE_PASSWORD, unicode_password_cstr, unicode_password_length);
 
     const QString name = extract_name_from_dn(dn);
     
@@ -738,7 +741,7 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
         const QString context = QString(tr("Failed to set pass of \"%1\"")).arg(name);
 
         QString error;
-        const int ldap_result = connection->get_ldap_result();
+        const int ldap_result = ad_get_ldap_result(ld);
         if (result == AD_LDAP_ERROR && ldap_result == LDAP_CONSTRAINT_VIOLATION) {
             error = tr("Password doesn't match rules");
         } else {
@@ -1102,7 +1105,7 @@ void AdInterface::update_cache(const QList<QString> &changed_dns) {
 }
 
 bool AdInterface::should_emit_status_message(int result) {
-    const int ldap_result = connection->get_ldap_result();
+    const int ldap_result = ad_get_ldap_result(ld);
 
     if (suppress_not_found_error && result == AD_LDAP_ERROR && ldap_result == LDAP_NO_SUCH_OBJECT) {
         return false;
@@ -1126,7 +1129,7 @@ void AdInterface::error_status_message(const QString &context, const QString &er
 
 QString AdInterface::default_error(int ad_result) const {
     if (ad_result == AD_LDAP_ERROR) {
-        const int ldap_result = connection->get_ldap_result();
+        const int ldap_result = ad_get_ldap_result(ld);
         switch (ldap_result) {
             case LDAP_NO_SUCH_OBJECT: return tr("No such object");
             case LDAP_CONSTRAINT_VIOLATION: return tr("Constraint violation");

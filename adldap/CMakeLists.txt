@@ -31,7 +31,6 @@ set(ADLDAP_C_SOURCES
 
 set(ADLDAP_CPP_SOURCES
 	${ADLDAP_C_SOURCES}
-	${CMAKE_CURRENT_SOURCE_DIR}/ad_connection.cpp
 )
 
 add_library(adldap SHARED ${ADLDAP_C_SOURCES})
