@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "preg_data.h"
-#include "config.h"
 
 std::string preg::regtype2str(uint32_t &regtype) {
     std::string result = "UNKNOWN";

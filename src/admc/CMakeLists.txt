@@ -7,12 +7,10 @@ find_package(Qt5 REQUIRED COMPONENTS
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-# Definitions for configuration file
 set(ADMC_APPLICATION_NAME "ADMC")
 set(ADMC_APPLICATION_DISPLAY_NAME "ADMC")
 set(ADMC_ORGANIZATION "BaseALT")
 set(ADMC_ORGANIZATION_DOMAIN "basealt.ru")
-
 configure_file("config.h.in" "config.h")
 
 set(TS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)
@@ -87,7 +85,7 @@ target_include_directories(admc
 target_link_libraries(admc
     Qt5::Core
     Qt5::Widgets
-    adldap++
+    adldap
     )
 
 install(TARGETS admc)

@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "iconv_wrapper.h"
-#include "config.h"
 #include <cstring>
 #include <errno.h>
 #include <fstream>

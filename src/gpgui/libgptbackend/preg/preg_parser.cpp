@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "preg_parser.h"
-#include "config.h"
 #include "iconv_wrapper.h"
 
 uint16_t preg::buffer2uint16(const char *type_buffer) {

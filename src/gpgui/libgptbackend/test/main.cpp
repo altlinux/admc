@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #define CATCH_CONFIG_MAIN
-#include "config.h"
 #include <catch2/catch.hpp>
 
 #include "iconv_wrapper.h"

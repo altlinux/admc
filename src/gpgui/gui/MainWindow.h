@@ -24,8 +24,6 @@
 #include <QTableWidget>
 #include <QFileDialog>
 
-#include "REG_DWORD_Dialog.h"
-
 #include "preg_parser.h"
 
 class QMenu;

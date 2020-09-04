@@ -18,7 +18,7 @@
  */
 #include "registry.h"
 
-#include "preg_data.h"
+#include "preg/preg_data.h"
 
 #include <string>
 

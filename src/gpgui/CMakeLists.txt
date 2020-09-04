@@ -1,19 +1,6 @@
-cmake_minimum_required(VERSION 3.0)
-project(gpgui VERSION 0.0.1)
-
-set(CMAKE_BUILD_TYPE Debug)
-
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_C_STANDARD 99)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
-
-# Suppress warnings on FindDoxygen.cmake
-cmake_policy(SET CMP0054 NEW)
 
 add_subdirectory(libgptbackend)
 
@@ -24,45 +11,24 @@ if(SYSTEM_NAME STREQUAL "FreeBSD")
 	set(Iconv_IS_BUILT_IN FALSE)
 endif()
 
-find_package(Qt5 COMPONENTS Core Widgets REQUIRED) # GUI
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
+find_package(Samba REQUIRED)
 if(NOT Iconv_IS_BUILT_IN)
 	find_package(Iconv) # For libgptbackend
 endif()
-find_package(Doxygen) # Code documentation
-find_package(Samba REQUIRED) # libsmbclient
 
-set(GPGUI_GUI_SOURCES
-	${CMAKE_CURRENT_SOURCE_DIR}/gui/MainWindow.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/gui/REG_DWORD_Dialog.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/browse_widget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/pol_editor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/xml_editor.cpp
-)
-
-set(GPGUI_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-)
-
-# Definitions for configuration file
 set(GPGUI_APPLICATION_NAME "GPGUI")
 set(GPGUI_APPLICATION_DISPLAY_NAME "GPGUI")
 set(GPGUI_ORGANIZATION "BaseALT")
 set(GPGUI_ORGANIZATION_DOMAIN "basealt.ru")
-
 configure_file("config.h.in" "config.h")
 
-add_definitions(${QT5_DEFINITIONS})
 add_executable(gpgui
-	${GPGUI_SOURCES}
-    ${GPGUI_GUI_SOURCES}
-	${GPGUI_GUI_HEADER_DIRS}
-)
-
-doxygen_add_docs(gpgui_doc
-	${GPGUI_HEADER_DIRS}
-	${GPGUI_GUI_HEADER_DIRS}
-	COMMENT
-	"Group Policy Editor GUI documentation"
+    main.cpp
+    gui/MainWindow.cpp
+    gui/browse_widget.cpp
+    gui/pol_editor.cpp
+    gui/xml_editor.cpp
 )
 
 if(SYSTEM_NAME STREQUAL "FreeBSD")
@@ -82,11 +48,8 @@ target_include_directories(gpgui
 	PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/libgptbackend/preg/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/libgptbackend/preg
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/include
 )
 
 install(TARGETS gpgui)
-
