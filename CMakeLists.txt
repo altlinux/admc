@@ -10,3 +10,4 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/output)
 set(LIBRARY_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH})
 
 add_subdirectory(src)
+add_subdirectory(translations)

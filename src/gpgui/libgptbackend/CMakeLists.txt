@@ -1,3 +1,8 @@
+
+# TODO: can get rid of this when gpgui structure improves
+set(CMAKE_AUTOMOC OFF)
+set(CMAKE_AUTORCC OFF)
+
 if(SYSTEM_NAME STREQUAL "FreeBSD")
 	link_directories(/usr/local/lib)
 	set(Iconv_IS_BUILT_IN FALSE)

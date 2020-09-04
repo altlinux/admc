@@ -1,7 +1,6 @@
 find_package(Qt5 REQUIRED COMPONENTS
     Core
     Widgets
-    LinguistTools
     )
 
 set(CMAKE_AUTOMOC ON)
@@ -12,24 +11,6 @@ set(ADMC_APPLICATION_DISPLAY_NAME "ADMC")
 set(ADMC_ORGANIZATION "BaseALT")
 set(ADMC_ORGANIZATION_DOMAIN "basealt.ru")
 configure_file("config.h.in" "config.h")
-
-set(TS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)
-
-set(TS_FILES
-    ${TS_DIR}/ru.ts
-    ${TS_DIR}/en.ts
-    )
-
-# Do `make update_admc_translations` to update translation sources (.ts)
-# NOTE: this is in a custom target so that translation sources aren't rebuilt everytime app source changes
-add_custom_target(update_admc_translations
-    DEPENDS ${TS_FILES}
-    COMMAND ${Qt5_LUPDATE_EXECUTABLE} -recursive ${CMAKE_SOURCE_DIR} -ts ${TS_FILES}
-    )
-
-# Generate translation binaries (.qm) from sources (.ts)
-set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION ${TS_DIR})
-qt5_add_translation(QM_FILES ${TS_FILES})
 
 add_executable(admc
     main.cpp
@@ -73,7 +54,7 @@ add_executable(admc
     edits/datetime_edit.cpp
 
     admc.qrc
-    translations/translations.qrc
+    ${PROJECT_SOURCE_DIR}/translations/translations.qrc
     )
 
 target_include_directories(admc
