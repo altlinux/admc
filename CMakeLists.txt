@@ -13,6 +13,4 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules
 )
 
-add_subdirectory(admc)
-add_subdirectory(adldap)
-add_subdirectory(gpgui)
+add_subdirectory(src)
