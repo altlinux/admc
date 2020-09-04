@@ -1,7 +1,6 @@
 obj/*
 moc/*
 Makefile
-admc
 .qmake.stash
 *.pro.user
 build

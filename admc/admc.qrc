@@ -1,5 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-    <file alias="countries.csv">assets/countries.csv</file>
+    <file alias="countries.csv">data/countries.csv</file>
 </qresource>
 </RCC>
