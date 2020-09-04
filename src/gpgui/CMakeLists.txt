@@ -31,21 +31,12 @@ endif()
 find_package(Doxygen) # Code documentation
 find_package(Samba REQUIRED) # libsmbclient
 
-set(GPGUI_GUI_HEADER_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/
-	${CMAKE_CURRENT_SOURCE_DIR}/gui/include
-)
-
 set(GPGUI_GUI_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/gui/MainWindow.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/gui/REG_DWORD_Dialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/browse_widget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/pol_editor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/xml_editor.cpp
-)
-
-set(GPGUI_HEADER_DIRS
-	${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 set(GPGUI_SOURCES
@@ -89,10 +80,12 @@ target_link_libraries(gpgui
 
 target_include_directories(gpgui
 	PUBLIC
-	${CMAKE_CURRENT_BINARY_DIR}
-	${GPGUI_HEADER_DIRS}
-	${GPGUI_GUI_HEADER_DIRS}
-	${CMAKE_CURRENT_SOURCE_DIR}/libgptbackend/preg/include
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/libgptbackend/preg/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/
+    ${CMAKE_CURRENT_SOURCE_DIR}/gui/include
 )
 
 install(TARGETS gpgui)

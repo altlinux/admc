@@ -13,11 +13,6 @@ add_compile_options(-pedantic -g3 -Wall -Wshadow)
 
 option(ENABLE_TESTS "Enable unit tests for libadldap" ON)
 
-set(CMAKE_MODULE_PATH
-    ${CMAKE_MODULE_PATH}
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules
-)
-
 find_package(OpenLDAP REQUIRED)
 find_package(Doxygen) # Code documentation
 

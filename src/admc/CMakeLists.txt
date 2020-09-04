@@ -15,7 +15,7 @@ set(ADMC_ORGANIZATION_DOMAIN "basealt.ru")
 
 configure_file("config.h.in" "config.h")
 
-set(TS_DIR translations)
+set(TS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)
 
 set(TS_FILES
     ${TS_DIR}/ru.ts
@@ -81,6 +81,7 @@ add_executable(admc
 target_include_directories(admc
     PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
 target_link_libraries(admc
