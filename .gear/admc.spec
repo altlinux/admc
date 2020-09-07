@@ -17,14 +17,16 @@ BuildRequires(pre): qt5-tools-devel
 BuildRequires(pre): catch2-devel
 BuildRequires(pre): cmake-modules
 
-BuildRequires: openldap-devel
+BuildRequires: libldap-devel
 BuildRequires: libsasl2-devel
+BuildRequires: libsmbclient-devel
 BuildRequires: libcmocka-devel
 BuildRequires: qt5-base-common
 BuildRequires: doxygen
 
-Requires: openldap
+Requires: libldap
 Requires: libsasl2
+Requires: libsmbclient
 Requires: qt5-base-common
 
 Source0: %name-%version.tar
