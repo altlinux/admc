@@ -1,7 +1,8 @@
-find_package(Qt5 REQUIRED COMPONENTS
-    Core
-    Widgets
-    )
+find_package(Qt5 REQUIRED
+    COMPONENTS
+        Core
+        Widgets
+)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -55,18 +56,18 @@ add_executable(admc
 
     admc.qrc
     ${PROJECT_SOURCE_DIR}/translations/translations.qrc
-    )
+)
 
 target_include_directories(admc
     PRIVATE
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    )
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 target_link_libraries(admc
     Qt5::Core
     Qt5::Widgets
     adldap
-    )
+)
 
 install(TARGETS admc)

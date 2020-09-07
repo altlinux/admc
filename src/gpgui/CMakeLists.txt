@@ -12,7 +12,7 @@ if(SYSTEM_NAME STREQUAL "FreeBSD")
 endif()
 
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
-find_package(Samba REQUIRED)
+find_package(Smbclient REQUIRED)
 if(NOT Iconv_IS_BUILT_IN)
 	find_package(Iconv) # For libgptbackend
 endif()
@@ -38,18 +38,19 @@ if(SYSTEM_NAME STREQUAL "FreeBSD")
 endif()
 
 target_link_libraries(gpgui
-	Qt5::Core
-	Qt5::Widgets
-	gptbackend
-    ${SAMBA_LIBRARIES}
+    PRIVATE
+    	Qt5::Core
+    	Qt5::Widgets
+    	gptbackend
+        Smbclient::Smbclient
 )
 
 target_include_directories(gpgui
-	PUBLIC
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/libgptbackend/preg
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/
+	PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/libgptbackend/preg
+        ${CMAKE_CURRENT_SOURCE_DIR}/gui/
 )
 
 install(TARGETS gpgui)

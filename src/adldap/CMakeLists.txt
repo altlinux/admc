@@ -1,19 +1,20 @@
 option(ENABLE_TESTS "Enable unit tests for libadldap" ON)
 
-find_package(OpenLDAP REQUIRED)
+find_package(Ldap REQUIRED)
 
 add_library(adldap SHARED
     active_directory.c
-    )
+)
 
 target_include_directories(adldap
     PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    )
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 target_link_libraries(adldap
-    ${OPENLDAP_LIBRARIES}
-    )
+    PUBLIC
+        Ldap::Ldap
+)
 
 install(TARGETS adldap)
 
