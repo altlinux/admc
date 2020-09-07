@@ -18,6 +18,7 @@
  */
 #include "config.h"
 #include "browse_widget.h"
+#include "xml_editor.h"
 
 #include <QAction>
 #include <QCloseEvent>
@@ -107,6 +108,8 @@ MainWindow::MainWindow(const QString &path)
 
     // NOTE: default dir for testing
     browse_widget->change_target("/home/kevl/pol-files/{2BE174FB-22F4-4CD1-BA93-5311F87E80A2}");
+
+    XmlEditor::load_schema();
 }
 
 void MainWindow::about() {

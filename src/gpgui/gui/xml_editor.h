@@ -22,12 +22,32 @@
 
 #include <QDialog>
 #include <QString>
+#include <QList>
+
+enum AttributeType {
+    AttributeType_String,
+    AttributeType_Boolean,
+    AttributeType_UnsignedByte,
+    AttributeType_None
+};
+
+class GpoXmlAttribute {
+public:
+    QString name;
+    AttributeType type;
+    bool required;
+    bool properties;
+};
 
 class XmlEditor final : public QDialog {
 Q_OBJECT
 
 public:
+    static QList<GpoXmlAttribute> schema_attributes;
+
     XmlEditor(const QString &path);
+
+    static void load_schema();
 };
 
 #endif /* XML_EDITOR_H */

@@ -11,7 +11,12 @@ if(SYSTEM_NAME STREQUAL "FreeBSD")
 	set(Iconv_IS_BUILT_IN FALSE)
 endif()
 
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt5 REQUIRED
+    COMPONENTS
+        Core
+        Widgets
+        Xml
+)
 find_package(Smbclient REQUIRED)
 if(NOT Iconv_IS_BUILT_IN)
 	find_package(Iconv) # For libgptbackend
@@ -40,7 +45,8 @@ endif()
 target_link_libraries(gpgui
     PRIVATE
     	Qt5::Core
-    	Qt5::Widgets
+        Qt5::Widgets
+    	Qt5::Xml
     	gptbackend
         Smbclient::Smbclient
 )
