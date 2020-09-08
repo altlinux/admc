@@ -41,13 +41,13 @@ public:
     QString name() const;
     XmlAttributeType type() const;
     bool required() const;
-    bool is_property() const;
+    bool hidden() const;
+    QString display_string() const;
 
 private:
     QString m_name;
     XmlAttributeType m_type;
     bool m_required;
-    bool m_is_property;
 };
 
 QString attribute_type_to_string(const XmlAttributeType type);

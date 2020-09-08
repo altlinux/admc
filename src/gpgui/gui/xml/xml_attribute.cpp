@@ -19,6 +19,9 @@
 
 #include "xml_attribute.h"
 
+#include <QSet>
+#include <QHash>
+
 XmlAttribute::XmlAttribute(const QDomNode &node) {
     // NOTE: there are two "attributes", attributes of the object and xml attributes
     const QDomNamedNodeMap attributes = node.attributes();
@@ -31,37 +34,6 @@ XmlAttribute::XmlAttribute(const QDomNode &node) {
 
     const QDomNode attribute_use = attributes.namedItem("use");
     m_required = (attribute_use.nodeValue() == "required");
-
-    // Recurse through all ancestors of node and check if any of them have an attribute "name" set to "Properties"
-    // TODO: might actually not be useful? Delete if not
-    auto get_is_property =
-    [node]() -> bool {
-        QDomNode current = node.parentNode();
-
-        while (!current.isNull()) {
-            const QDomNamedNodeMap current_attributes = current.attributes();
-            const QDomNode name_node = current_attributes.namedItem("name");
-            if (!name_node.isNull()) {
-                const QString this_name = name_node.nodeValue();
-
-                if (this_name == "Properties") {
-                    return true;
-                }
-            }
-
-            const QDomNode new_current = current.parentNode();
-
-            if (new_current == current) {
-                // Reached top node
-                return false;
-            } else {
-                current = new_current;
-            }
-        }
-
-        return false;
-    };
-    m_is_property = get_is_property();
 }
 
 void XmlAttribute::print() const {
@@ -69,7 +41,6 @@ void XmlAttribute::print() const {
     printf("    name=%s\n", qPrintable(m_name));
     printf("    type=%s\n", qPrintable(attribute_type_to_string(m_type)));
     printf("    required=%d\n", m_required);
-    printf("    properties=%d\n", m_is_property);
 }
 
 
@@ -85,8 +56,17 @@ bool XmlAttribute::required() const {
     return m_required;
 }
 
-bool XmlAttribute::is_property() const {
-    return m_is_property;
+bool XmlAttribute::hidden() const {
+    // TODO: there's gotta be some external resource that says which attributes are hidden
+    static const QSet<QString> hidden_attributes = {
+        "clsid",
+        "disabled",
+        "changed",
+        "uid",
+    };
+    const bool is_hidden = hidden_attributes.contains(name());
+
+    return is_hidden;
 }
 
 const QHash<XmlAttributeType, QString> attribute_type_to_string_map = {
@@ -122,4 +102,35 @@ XmlAttributeType string_to_attribute_type(const QString string_raw) {
     const XmlAttributeType type = string_to_attribute_type_map.value(string, XmlAttributeType_None);
 
     return type;
+}
+
+#define DISPLAY_STRING_MACRO(attribute) {attribute, QObject::tr(attribute)},
+#define DISPLAY_STRING_MACRO_2(attribute) attribute "_test"
+
+QString XmlAttribute::display_string() const {
+    static const QHash<QString, QString> display_strings = {
+        {"pidl", QObject::tr("pidl DISPLAY_STRING")},
+        {"name", QObject::tr("name DISPLAY_STRING")},
+        {"image", QObject::tr("image DISPLAY_STRING")},
+        {"targetType", QObject::tr("targetType DISPLAY_STRING")},
+        {"action", QObject::tr("action DISPLAY_STRING")},
+        {"comment", QObject::tr("comment DISPLAY_STRING")},
+        {"shortcutKey", QObject::tr("shortcutKey DISPLAY_STRING")},
+        {"startIn", QObject::tr("startIn DISPLAY_STRING")},
+        {"arguments", QObject::tr("arguments DISPLAY_STRING")},
+        {"iconIndex", QObject::tr("iconIndex DISPLAY_STRING")},
+        {"targetPath", QObject::tr("targetPath DISPLAY_STRING")},
+        {"iconPath", QObject::tr("iconPath DISPLAY_STRING")},
+        {"window", QObject::tr("window DISPLAY_STRING")},
+        {"shortcutPath", QObject::tr("shortcutPath DISPLAY_STRING")},
+        {"desc", QObject::tr("desc DISPLAY_STRING")},
+        {"bypassErrors", QObject::tr("bypassErrors DISPLAY_STRING")},
+        {"userContext", QObject::tr("userContext DISPLAY_STRING")},
+        {"removePolicy", QObject::tr("removePolicy DISPLAY_STRING")},
+    };
+    static const QString default_value = QObject::tr("UNKNOWN XML ATTRIBUTE NAME");
+
+    const QString display_string = display_strings.value(name(), default_value);
+
+    return display_string;
 }

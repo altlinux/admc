@@ -38,6 +38,8 @@ add_executable(gpgui
     gui/xml/xml_attribute.cpp
     gui/xml/xml_edit.cpp
     gui/xml/xml_string_edit.cpp
+
+    ${PROJECT_SOURCE_DIR}/translations/translations.qrc
 )
 
 if(SYSTEM_NAME STREQUAL "FreeBSD")

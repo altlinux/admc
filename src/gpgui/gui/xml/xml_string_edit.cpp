@@ -48,7 +48,7 @@ void XmlStringEdit::load(const QDomDocument &doc) {
 }
 
 void XmlStringEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = attribute.name() + ":";
+    const QString label_text = attribute.display_string() + ":";
     const auto label = new QLabel(label_text);
 
     // TODO: connect_changed_marker(this, label);
@@ -69,16 +69,16 @@ bool XmlStringEdit::changed() const {
 }
 
 bool XmlStringEdit::apply(QDomDocument *doc) {
-    printf("apply %s\n", qPrintable(attribute.name()));
     if (!changed()) {
         printf("   not applying\n");
         return true;
     }
-    printf("!!!!!!!applying\n");
 
     QDomNode attribute_node = find_attribute_node(*doc, attribute.name());
     const QString new_value = edit->text();
     attribute_node.setNodeValue(new_value);
+
+    printf("apply %s: [%s]=>[%s]\n", qPrintable(attribute.name()), qPrintable(original_value), qPrintable(new_value));
 
     return true;
 }

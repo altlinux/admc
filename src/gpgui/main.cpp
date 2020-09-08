@@ -34,6 +34,10 @@ int main(int argc, char **argv) {
     app.setOrganizationName(GPGUI_ORGANIZATION);
     app.setOrganizationDomain(GPGUI_ORGANIZATION_DOMAIN);
 
+    QTranslator translator;
+    translator.load(QLocale(), QString(), QString(), ":/translations");
+    app.installTranslator(&translator);
+
     QCommandLineParser cli_parser;
     cli_parser.setApplicationDescription(QCoreApplication::applicationName());
     cli_parser.addHelpOption();

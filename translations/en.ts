@@ -546,37 +546,41 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/gpgui/gui/MainWindow.cpp" line="87"/>
+        <location filename="../src/gpgui/gui/MainWindow.cpp" line="88"/>
         <source>File</source>
-        <translation type="unfinished"></translation>
+        <translation>File</translation>
     </message>
     <message>
-        <location filename="../src/gpgui/gui/MainWindow.cpp" line="89"/>
+        <source>File untranslated</source>
+        <translation type="obsolete">File</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/MainWindow.cpp" line="90"/>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gpgui/gui/MainWindow.cpp" line="94"/>
+        <location filename="../src/gpgui/gui/MainWindow.cpp" line="95"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gpgui/gui/MainWindow.cpp" line="113"/>
+        <location filename="../src/gpgui/gui/MainWindow.cpp" line="116"/>
         <source>About GPGUI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gpgui/gui/MainWindow.cpp" line="113"/>
+        <location filename="../src/gpgui/gui/MainWindow.cpp" line="116"/>
         <source>GPGUI about</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gpgui/gui/MainWindow.cpp" line="177"/>
+        <location filename="../src/gpgui/gui/MainWindow.cpp" line="180"/>
         <source>Loaded PReg file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gpgui/gui/MainWindow.cpp" line="218"/>
+        <location filename="../src/gpgui/gui/MainWindow.cpp" line="221"/>
         <source>Open Directory</source>
         <translation type="unfinished"></translation>
     </message>
@@ -967,6 +971,101 @@
         <source>Attribute &quot;%1&quot; cannot be empty!</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="112"/>
+        <source>pidl DISPLAY_STRING</source>
+        <translation>PIDL</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="113"/>
+        <source>name DISPLAY_STRING</source>
+        <translation>Name</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="114"/>
+        <source>image DISPLAY_STRING</source>
+        <translation>Image</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="115"/>
+        <source>targetType DISPLAY_STRING</source>
+        <translation>Target type</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="116"/>
+        <source>action DISPLAY_STRING</source>
+        <translation>Action</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="117"/>
+        <source>comment DISPLAY_STRING</source>
+        <translation>Comment</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="118"/>
+        <source>shortcutKey DISPLAY_STRING</source>
+        <translation>Shortcut key</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="119"/>
+        <source>startIn DISPLAY_STRING</source>
+        <translation>Start in</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="120"/>
+        <source>arguments DISPLAY_STRING</source>
+        <translation>Arguments</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="121"/>
+        <source>iconIndex DISPLAY_STRING</source>
+        <translation>Icon index</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="122"/>
+        <source>targetPath DISPLAY_STRING</source>
+        <translation>Target path</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="123"/>
+        <source>iconPath DISPLAY_STRING</source>
+        <translation>Icon path</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="124"/>
+        <source>window DISPLAY_STRING</source>
+        <translation>Window</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="125"/>
+        <source>shortcutPath DISPLAY_STRING</source>
+        <translation>Shortcut path</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="126"/>
+        <source>desc DISPLAY_STRING</source>
+        <translation>Description</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="127"/>
+        <source>bypassErrors DISPLAY_STRING</source>
+        <translation>Bypass errors</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="128"/>
+        <source>userContext DISPLAY_STRING</source>
+        <translation>Apply in security context of user</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="129"/>
+        <source>removePolicy DISPLAY_STRING</source>
+        <translation>Remove policy when it stops being applied</translation>
+    </message>
+    <message>
+        <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="131"/>
+        <source>UNKNOWN XML ATTRIBUTE NAME</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RenameDialog</name>
@@ -1063,7 +1162,7 @@
 <context>
     <name>XmlEditor</name>
     <message>
-        <location filename="../src/gpgui/gui/xml_editor.cpp" line="34"/>
+        <location filename="../src/gpgui/gui/xml/xml_editor.cpp" line="78"/>
         <source>Editing xml file:</source>
         <translation type="unfinished"></translation>
     </message>

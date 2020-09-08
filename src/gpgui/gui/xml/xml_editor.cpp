@@ -102,6 +102,10 @@ XmlEditor::XmlEditor(const QString &path_arg)
     auto edits_layout = new QGridLayout();
 
     for (auto attribute : schema_attributes) {
+        if (attribute.hidden()) {
+            continue;
+        }
+
         auto edit = new XmlStringEdit(attribute);
         edit->add_to_layout(edits_layout);
         edit->load(doc);
