@@ -20,34 +20,30 @@
 #ifndef XML_EDITOR_H
 #define XML_EDITOR_H
 
+#include "xml_attribute.h"
+
 #include <QDialog>
 #include <QString>
 #include <QList>
-
-enum AttributeType {
-    AttributeType_String,
-    AttributeType_Boolean,
-    AttributeType_UnsignedByte,
-    AttributeType_None
-};
-
-class GpoXmlAttribute {
-public:
-    QString name;
-    AttributeType type;
-    bool required;
-    bool properties;
-};
+#include <QHash>
+#include <QDomDocument>
 
 class XmlEditor final : public QDialog {
 Q_OBJECT
 
 public:
-    static QList<GpoXmlAttribute> schema_attributes;
+    static QList<XmlAttribute> schema_attributes;
+    static QHash<QString, XmlAttribute> schema_attributes_by_name;
 
-    XmlEditor(const QString &path);
+    XmlEditor(const QString &path_arg);
 
     static void load_schema();
+
+private slots:
+    void on_ok();
+
+private:
+    QString path;
 };
 
 #endif /* XML_EDITOR_H */

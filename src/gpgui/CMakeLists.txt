@@ -33,7 +33,11 @@ add_executable(gpgui
     gui/MainWindow.cpp
     gui/browse_widget.cpp
     gui/pol_editor.cpp
-    gui/xml_editor.cpp
+    
+    gui/xml/xml_editor.cpp
+    gui/xml/xml_attribute.cpp
+    gui/xml/xml_edit.cpp
+    gui/xml/xml_string_edit.cpp
 )
 
 if(SYSTEM_NAME STREQUAL "FreeBSD")
@@ -57,6 +61,7 @@ target_include_directories(gpgui
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/libgptbackend/preg
         ${CMAKE_CURRENT_SOURCE_DIR}/gui/
+        ${CMAKE_CURRENT_SOURCE_DIR}/gui/xml
 )
 
 install(TARGETS gpgui)
