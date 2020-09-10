@@ -21,7 +21,6 @@
 #include "utils.h"
 
 #include <QLineEdit>
-#include <QGridLayout>
 #include <QMessageBox>
 #include <QLabel>
 
@@ -37,10 +36,7 @@ XmlStringEdit::XmlStringEdit(const XmlAttribute &attribute_arg)
 }
 
 void XmlStringEdit::load(const QDomDocument &doc) {
-    const QDomElement parent_element = get_element_by_tag_name(doc, attribute.parent_name());
-    const QString value = parent_element.attribute(attribute.name(), QString());
-
-    original_value = value;
+    original_value = get_xml_attribute(doc, attribute);
 
     edit->blockSignals(true);
     edit->setText(original_value);

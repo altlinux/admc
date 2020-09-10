@@ -39,3 +39,10 @@ void set_xml_attribute(QDomDocument *doc, const XmlAttribute &attribute, const Q
     QDomElement parent_element = get_element_by_tag_name(*doc, attribute.parent_name());
     parent_element.setAttribute(attribute.name(), value);
 }
+
+QString get_xml_attribute(const QDomDocument &doc, const XmlAttribute &attribute) {
+    const QDomElement parent_element = get_element_by_tag_name(doc, attribute.parent_name());
+    const QString value = parent_element.attribute(attribute.name(), QString());
+
+    return value;
+}

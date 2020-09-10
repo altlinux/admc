@@ -52,5 +52,6 @@ void apply(QDomDocument *doc);
 
 QDomElement get_element_by_tag_name(const QDomDocument &doc, const QString &tag_name);
 void set_xml_attribute(QDomDocument *doc, const XmlAttribute &attribute, const QString &value);
+QString get_xml_attribute(const QDomDocument &doc, const XmlAttribute &attribute);
 
 #endif /* XML_EDIT_H */

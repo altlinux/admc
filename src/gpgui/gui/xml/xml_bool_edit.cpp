@@ -20,7 +20,6 @@
 #include "xml_bool_edit.h"
 #include "utils.h"
 
-#include <QGridLayout>
 #include <QMessageBox>
 #include <QLabel>
 #include <QCheckBox>
@@ -37,14 +36,11 @@ XmlBoolEdit::XmlBoolEdit(const XmlAttribute &attribute_arg)
 }
 
 void XmlBoolEdit::load(const QDomDocument &doc) {
-    const QDomElement parent_element = get_element_by_tag_name(doc, attribute.parent_name());
-    const QString value_string = parent_element.attribute(attribute.name(), QString());
-    const bool value = (value_string == "1");
-
-    original_value = value;
+    const QString value_string = get_xml_attribute(doc, attribute);
+    original_value = (value_string == "1");
 
     check->blockSignals(true);
-    checkbox_set_checked(check, value);
+    checkbox_set_checked(check, original_value);
     check->blockSignals(false);
 
     emit edited();
