@@ -27,10 +27,6 @@
 #include <QLabel>
 
 void connect_changed_marker(AttributeEdit *edit, QLabel *label) {
-    if (edit->read_only == EditReadOnly_Yes) {
-        return;
-    }
-
     QObject::connect(edit, &AttributeEdit::edited,
         [=]() {
             if (edit->read_only == EditReadOnly_Yes) {
