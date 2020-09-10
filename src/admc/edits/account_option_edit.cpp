@@ -92,16 +92,9 @@ AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg) {
 
 void AccountOptionEdit::load(const QString &dn) {
     const bool option_is_set = AdInterface::instance()->user_get_account_option(dn, option);
-
-    Qt::CheckState check_state;
-    if (option_is_set) {
-        check_state = Qt::Checked;
-    } else {
-        check_state = Qt::Unchecked;
-    }
     
     check->blockSignals(true);
-    check->setCheckState(check_state);
+    checkbox_set_checked(check, option_is_set);
     check->blockSignals(false);
 
     original_value = option_is_set;

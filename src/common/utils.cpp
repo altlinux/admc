@@ -89,6 +89,17 @@ bool checkbox_is_checked(const QCheckBox *checkbox) {
     return (checkbox->checkState() == Qt::Checked);
 }
 
+bool checkbox_set_checked(QCheckBox *checkbox, bool checked) {
+    Qt::CheckState check_state;
+    if (checked) {
+        check_state = Qt::Checked;
+    } else {
+        check_state = Qt::Unchecked;
+    }
+    
+    checkbox->setCheckState(check_state);
+}
+
 void append_to_grid_layout_with_label(QGridLayout *layout,QLabel *label, QWidget *widget) {
     const int row = layout->rowCount();
     layout->addWidget(label, row, 0);

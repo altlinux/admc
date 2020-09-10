@@ -41,6 +41,8 @@ add_executable(gpgui
     gui/xml/xml_bool_edit.cpp
     gui/xml/xml_ubyte_edit.cpp
 
+    ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
+
     gpgui.qrc
     ${PROJECT_SOURCE_DIR}/translations/translations.qrc
 )
@@ -67,6 +69,7 @@ target_include_directories(gpgui
         ${CMAKE_CURRENT_SOURCE_DIR}/libgptbackend/preg
         ${CMAKE_CURRENT_SOURCE_DIR}/gui/
         ${CMAKE_CURRENT_SOURCE_DIR}/gui/xml
+        ${PROJECT_SOURCE_DIR}/src/common
 )
 
 install(TARGETS gpgui)

@@ -42,15 +42,8 @@ void XmlBoolEdit::load(const QDomDocument &doc) {
 
     original_value = value;
 
-    Qt::CheckState check_state;
-    if (value) {
-        check_state = Qt::Checked;
-    } else {
-        check_state = Qt::Unchecked;
-    }
-
     check->blockSignals(true);
-    check->setCheckState(check_state);
+    checkbox_set_checked(check, value);
     check->blockSignals(false);
 
     emit edited();
@@ -70,13 +63,12 @@ bool XmlBoolEdit::verify_input(QWidget *parent) {
 }
 
 bool XmlBoolEdit::changed() const {
-    // TODO: use checkbox_is_checked()
-    const bool new_value = (check->checkState() == Qt::Checked);
+    const bool new_value = checkbox_is_checked(check);
     return (new_value != original_value);
 }
 
 void XmlBoolEdit::apply(QDomDocument *doc) {
-    const bool new_value_bool = (check->checkState() == Qt::Checked);
+    const bool new_value_bool = checkbox_is_checked(check);
     const QString new_value = (new_value_bool ? "1" : "0");
 
     QDomElement parent_element = get_element_by_tag_name(*doc, attribute.parent_name());
