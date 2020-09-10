@@ -34,7 +34,7 @@ public:
     virtual void load(const QDomDocument &doc) = 0;
     virtual bool changed() const = 0;
     virtual bool verify_input(QWidget *parent) = 0;
-    virtual bool apply(QDomDocument *doc) = 0;
+    virtual void apply(QDomDocument *doc) = 0;
 
 signals:
     void edited();
@@ -45,7 +45,7 @@ void add_to_layout(QGridLayout *layout);\
 void load(const QDomDocument &doc);\
 bool changed() const;\
 bool verify_input(QWidget *parent);\
-bool apply(QDomDocument *doc);
+void apply(QDomDocument *doc);
 
 QDomElement get_element_by_tag_name(const QDomDocument &doc, const QString &tag_name);
 

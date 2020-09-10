@@ -83,11 +83,9 @@ bool XmlUByteEdit::changed() const {
     return (new_value != original_value);
 }
 
-bool XmlUByteEdit::apply(QDomDocument *doc) {
+void XmlUByteEdit::apply(QDomDocument *doc) {
     const QString new_value = edit->text();
 
     QDomElement parent_element = get_element_by_tag_name(*doc, attribute.parent_name());
     parent_element.setAttribute(attribute.name(), new_value);
-
-    return true;
 }

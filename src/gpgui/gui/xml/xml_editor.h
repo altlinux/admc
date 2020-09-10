@@ -41,11 +41,14 @@ public:
 
     static void load_schema();
 
+public slots:
+    void accept();
+
 private:
     QString path;
     QList<XmlEdit *> edits;
 
-    void apply();
+    bool verify_and_apply();
 };
 
 #endif /* XML_EDITOR_H */

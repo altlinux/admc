@@ -136,16 +136,23 @@ XmlEditor::XmlEditor(const QString &path_arg)
     top_layout->addWidget(button_box);
 
     button_box->button(QDialogButtonBox::Ok)->setAutoDefault(false);
+    button_box->button(QDialogButtonBox::Ok)->setDefault(false);
 
-    connect(
-        button_box->button(QDialogButtonBox::Ok), &QPushButton::clicked,
-        this, &XmlEditor::apply);
     connect(
         button_box->button(QDialogButtonBox::Apply), &QPushButton::clicked,
-        this, &XmlEditor::apply);
+        this, &XmlEditor::verify_and_apply);
 }
 
-void XmlEditor::apply() {
+void XmlEditor::accept() {
+    // NOTE: called by Ok button
+    const bool success = verify_and_apply();
+
+    if (success) {
+        QDialog::accept();
+    }
+}
+
+bool XmlEditor::verify_and_apply() {
     bool all_verified = true;
     for (auto edit : edits) {
         const bool verified = edit->verify_input(this);
@@ -156,7 +163,7 @@ void XmlEditor::apply() {
     }
 
     if (!all_verified) {
-        return;
+        return false;
     }
 
     // Read doc into memory
@@ -164,7 +171,7 @@ void XmlEditor::apply() {
     const bool opened_read_file = read_file.open(QIODevice::ReadOnly | QIODevice::Text);
     if (!opened_read_file) {
         printf("Failed to open xml file for reading\n");
-        return;
+        return false;
     }
     QDomDocument doc;
     doc.setContent(&read_file);
@@ -182,10 +189,12 @@ void XmlEditor::apply() {
     const bool opened_write_file = write_file.open(QIODevice::QIODevice::WriteOnly | QIODevice::Truncate);
     if (!opened_write_file) {
         printf("Failed to open xml file for writing\n");
-        return;
+        return false;
     }
     const QByteArray doc_bytes = doc.toByteArray(4);
     const char *doc_cstr = doc_bytes.constData();
     write_file.write(doc_cstr);
     write_file.close();
+
+    return true;
 }

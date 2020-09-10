@@ -75,12 +75,10 @@ bool XmlBoolEdit::changed() const {
     return (new_value != original_value);
 }
 
-bool XmlBoolEdit::apply(QDomDocument *doc) {
+void XmlBoolEdit::apply(QDomDocument *doc) {
     const bool new_value_bool = (check->checkState() == Qt::Checked);
     const QString new_value = (new_value_bool ? "1" : "0");
 
     QDomElement parent_element = get_element_by_tag_name(*doc, attribute.parent_name());
     parent_element.setAttribute(attribute.name(), new_value);
-
-    return true;
 }
