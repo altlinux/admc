@@ -89,7 +89,7 @@ bool checkbox_is_checked(const QCheckBox *checkbox) {
     return (checkbox->checkState() == Qt::Checked);
 }
 
-bool checkbox_set_checked(QCheckBox *checkbox, bool checked) {
+void checkbox_set_checked(QCheckBox *checkbox, bool checked) {
     Qt::CheckState check_state;
     if (checked) {
         check_state = Qt::Checked;

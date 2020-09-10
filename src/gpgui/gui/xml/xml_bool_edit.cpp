@@ -18,6 +18,7 @@
  */
 
 #include "xml_bool_edit.h"
+#include "utils.h"
 
 #include <QGridLayout>
 #include <QMessageBox>
@@ -53,9 +54,7 @@ void XmlBoolEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = attribute.display_string() + ":";
     const auto label = new QLabel(label_text);
 
-    const int row = layout->rowCount();
-    layout->addWidget(label, row, 0);
-    layout->addWidget(check, row, 1);
+    append_to_grid_layout_with_label(layout, label, check);
 }
 
 bool XmlBoolEdit::verify_input(QWidget *parent) {

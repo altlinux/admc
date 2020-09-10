@@ -18,6 +18,7 @@
  */
 
 #include "xml_string_edit.h"
+#include "utils.h"
 
 #include <QLineEdit>
 #include <QGridLayout>
@@ -54,10 +55,7 @@ void XmlStringEdit::add_to_layout(QGridLayout *layout) {
 
     // TODO: connect_changed_marker(this, label);
     
-    // TODO: shared usage via append_to_grid_layout_with_label(layout, label, edit);
-    const int row = layout->rowCount();
-    layout->addWidget(label, row, 0);
-    layout->addWidget(edit, row, 1);
+    append_to_grid_layout_with_label(layout, label, edit);
 }
 
 bool XmlStringEdit::verify_input(QWidget *parent) {
