@@ -43,11 +43,13 @@ public:
     bool required() const;
     bool hidden() const;
     QString display_string() const;
+    QString parent_name() const;
 
 private:
     QString m_name;
     XmlAttributeType m_type;
     bool m_required;
+    QString m_parent_name;
 };
 
 QString attribute_type_to_string(const XmlAttributeType type);

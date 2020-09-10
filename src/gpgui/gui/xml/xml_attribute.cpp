@@ -34,6 +34,31 @@ XmlAttribute::XmlAttribute(const QDomNode &node) {
 
     const QDomNode attribute_use = attributes.namedItem("use");
     m_required = (attribute_use.nodeValue() == "required");
+
+    auto get_parent_name =
+    [node]() -> QString {
+        QDomNode current = node.parentNode();
+        while (!current.isNull()) {
+            const bool is_element = (current.nodeName() == "xs:element");
+
+            if (is_element) {
+                const QDomNamedNodeMap current_attributes = current.attributes();
+                const QDomNode name_node = current_attributes.namedItem("name");
+                const QString name = name_node.nodeValue();
+
+                return name;
+            }
+
+            current = current.parentNode();
+        }
+
+        return QString();
+    };
+    m_parent_name = get_parent_name();
+
+    if (m_parent_name.isEmpty()) {
+        printf("Failed to find parent name for attribute %s!\n", qPrintable(name()));
+    }
 }
 
 void XmlAttribute::print() const {
@@ -67,6 +92,10 @@ bool XmlAttribute::hidden() const {
     const bool is_hidden = hidden_attributes.contains(name());
 
     return is_hidden;
+}
+
+QString XmlAttribute::parent_name() const {
+    return m_parent_name;
 }
 
 const QHash<XmlAttributeType, QString> attribute_type_to_string_map = {
