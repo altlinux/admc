@@ -39,6 +39,7 @@ add_executable(gpgui
     gui/xml/xml_edit.cpp
     gui/xml/xml_string_edit.cpp
     gui/xml/xml_bool_edit.cpp
+    gui/xml/xml_ubyte_edit.cpp
 
     gpgui.qrc
     ${PROJECT_SOURCE_DIR}/translations/translations.qrc

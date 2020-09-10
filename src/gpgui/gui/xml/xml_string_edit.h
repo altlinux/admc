@@ -27,7 +27,7 @@
 
 class QLineEdit;
 
-class XmlStringEdit final : public XmlEdit {
+class XmlStringEdit : public XmlEdit {
 Q_OBJECT
 public:
     QLineEdit *edit;

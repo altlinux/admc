@@ -17,35 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef XML_EDITOR_H
-#define XML_EDITOR_H
+#ifndef XML_UBYTE_EDIT_H
+#define XML_UBYTE_EDIT_H
 
+#include "xml_edit.h"
 #include "xml_attribute.h"
 
-#include <QDialog>
 #include <QString>
-#include <QList>
-#include <QHash>
-#include <QDomDocument>
 
-class XmlEdit;
+class QLineEdit;
 
-class XmlEditor final : public QDialog {
+class XmlUByteEdit : public XmlEdit {
 Q_OBJECT
-
 public:
-    static QList<XmlAttribute> schema_attributes;
-    static QHash<QString, XmlAttribute> schema_attributes_by_name;
+    QLineEdit *edit;
 
-    XmlEditor(const QString &path_arg);
-
-    static void load_schema();
+    XmlUByteEdit(const XmlAttribute &attribute_arg);
+    DECL_XML_EDIT_VIRTUALS();
 
 private:
-    QString path;
-    QList<XmlEdit *> edits;
-
-    void apply();
+    XmlAttribute attribute;
+    QString original_value;
 };
 
-#endif /* XML_EDITOR_H */
+#endif /* XML_UBYTE_EDIT_H */

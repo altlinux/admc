@@ -21,6 +21,7 @@
 #include "xml_edit.h"
 #include "xml_string_edit.h"
 #include "xml_bool_edit.h"
+#include "xml_ubyte_edit.h"
 #include "xml_attribute.h"
 
 #include <QDialogButtonBox>
@@ -113,7 +114,7 @@ XmlEditor::XmlEditor(const QString &path_arg)
                 return new XmlBoolEdit(attribute);
 
                 case XmlAttributeType_UnsignedByte:
-                return new XmlStringEdit(attribute);
+                return new XmlUByteEdit(attribute);
 
                 case XmlAttributeType_None:
                 return nullptr;
@@ -134,12 +135,30 @@ XmlEditor::XmlEditor(const QString &path_arg)
     top_layout->addLayout(edits_layout);
     top_layout->addWidget(button_box);
 
+    button_box->button(QDialogButtonBox::Ok)->setAutoDefault(false);
+
     connect(
         button_box->button(QDialogButtonBox::Ok), &QPushButton::clicked,
-        this, &XmlEditor::on_ok);
+        this, &XmlEditor::apply);
+    connect(
+        button_box->button(QDialogButtonBox::Apply), &QPushButton::clicked,
+        this, &XmlEditor::apply);
 }
 
-void XmlEditor::on_ok() {
+void XmlEditor::apply() {
+    bool all_verified = true;
+    for (auto edit : edits) {
+        const bool verified = edit->verify_input(this);
+        if (!verified) {
+            all_verified = false;
+            break;
+        }
+    }
+
+    if (!all_verified) {
+        return;
+    }
+
     // Read doc into memory
     QFile read_file(path);
     const bool opened_read_file = read_file.open(QIODevice::ReadOnly | QIODevice::Text);
