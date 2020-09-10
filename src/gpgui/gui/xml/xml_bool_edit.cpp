@@ -47,10 +47,7 @@ void XmlBoolEdit::load(const QDomDocument &doc) {
 }
 
 void XmlBoolEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = attribute.display_string() + ":";
-    const auto label = new QLabel(label_text);
-
-    append_to_grid_layout_with_label(layout, label, check);
+    add_xml_edit_to_layout(layout, attribute, check);
 }
 
 bool XmlBoolEdit::verify_input(QWidget *parent) {

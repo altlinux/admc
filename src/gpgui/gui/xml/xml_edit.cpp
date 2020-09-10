@@ -18,8 +18,17 @@
  */
 
 #include "xml_edit.h"
+#include "utils.h"
 
 #include <QDomDocument>
+#include <QLabel>
+
+void add_xml_edit_to_layout(QGridLayout *layout, const XmlAttribute &attribute, QWidget *widget) {
+    const QString label_text = attribute.display_string() + ":";
+    const auto label = new QLabel(label_text);
+
+    append_to_grid_layout_with_label(layout, label, widget);
+}
 
 // TODO: there's probably a better place for this
 QDomElement get_element_by_tag_name(const QDomDocument &doc, const QString &tag_name) {

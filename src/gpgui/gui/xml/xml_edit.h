@@ -50,6 +50,7 @@ bool changed() const;\
 bool verify_input(QWidget *parent);\
 void apply(QDomDocument *doc);
 
+void add_xml_edit_to_layout(QGridLayout *layout, const XmlAttribute &attribute, QWidget *widget);
 QDomElement get_element_by_tag_name(const QDomDocument &doc, const QString &tag_name);
 void set_xml_attribute(QDomDocument *doc, const XmlAttribute &attribute, const QString &value);
 QString get_xml_attribute(const QDomDocument &doc, const XmlAttribute &attribute);

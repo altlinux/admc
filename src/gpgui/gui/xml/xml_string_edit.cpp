@@ -46,12 +46,7 @@ void XmlStringEdit::load(const QDomDocument &doc) {
 }
 
 void XmlStringEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = attribute.display_string() + ":";
-    const auto label = new QLabel(label_text);
-
-    // TODO: connect_changed_marker(this, label);
-    
-    append_to_grid_layout_with_label(layout, label, edit);
+    add_xml_edit_to_layout(layout, attribute, edit);
 }
 
 bool XmlStringEdit::verify_input(QWidget *parent) {
