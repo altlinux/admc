@@ -24,6 +24,19 @@
 #include <QMessageBox>
 #include <QLabel>
 
+QDomElement get_element_by_tag_name(const QDomDocument &doc, const QString &tag_name) {
+    const QDomNodeList parents = doc.elementsByTagName(tag_name);
+    const QDomNode parent_node = parents.at(0);
+    const QDomElement parent_element = parent_node.toElement();
+
+    // NOTE: should never happen? as long as xml files are validated on load at least
+    if (parent_element.isNull()) {
+        printf("get_element_by_tag_name() failed to find element \"%s\"\n", qPrintable(tag_name));
+    }
+
+    return parent_element;
+}
+
 XmlStringEdit::XmlStringEdit(const XmlAttribute &attribute_arg)
 : attribute(attribute_arg) {
     edit = new QLineEdit();
@@ -36,9 +49,10 @@ XmlStringEdit::XmlStringEdit(const XmlAttribute &attribute_arg)
 }
 
 void XmlStringEdit::load(const QDomDocument &doc) {
-    const QDomNode attribute_node = find_attribute_node(doc, attribute.name());
+    const QDomElement parent_element = get_element_by_tag_name(doc, attribute.parent_name());
+    const QString value = parent_element.attribute(attribute.name(), QString());
 
-    original_value = attribute_node.nodeValue();
+    original_value = value;
 
     edit->blockSignals(true);
     edit->setText(original_value);
@@ -74,9 +88,10 @@ bool XmlStringEdit::apply(QDomDocument *doc) {
         return true;
     }
 
-    QDomNode attribute_node = find_attribute_node(*doc, attribute.name());
     const QString new_value = edit->text();
-    attribute_node.setNodeValue(new_value);
+
+    QDomElement parent_element = get_element_by_tag_name(*doc, attribute.parent_name());
+    parent_element.setAttribute(attribute.name(), new_value);
 
     printf("apply %s: [%s]=>[%s]\n", qPrintable(attribute.name()), qPrintable(original_value), qPrintable(new_value));
 

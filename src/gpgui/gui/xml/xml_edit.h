@@ -46,6 +46,4 @@ bool changed() const;\
 bool verify_input(QWidget *parent);\
 bool apply(QDomDocument *doc);
 
-QDomNode find_attribute_node(const QDomDocument &doc, const QString &attribute_name);
-
 #endif /* XML_EDIT_H */

@@ -18,38 +18,3 @@
  */
 
 #include "xml_edit.h"
-
-#include <QStack>
-
-// Look for attribute's node in the document by iterating
-// through all nodes and looking for and attribute with same name
-QDomNode find_attribute_node(const QDomDocument &doc, const QString &attribute_name) {
-    QStack<QDomElement> elements_to_explore;
-    const QDomElement top_element = doc.documentElement();
-    elements_to_explore.push(top_element);
-
-    while (!elements_to_explore.isEmpty()) {
-        const QDomElement element = elements_to_explore.pop();
-
-        QDomNode child = element.firstChild();
-        while (!child.isNull()) {
-            QDomElement child_as_element = child.toElement();
-            const bool is_element = !child_as_element.isNull();
-
-            if (is_element) {
-                elements_to_explore.push(child_as_element);
-            }
-
-                // Check node's attributes
-            const QDomNamedNodeMap attributes = child.attributes();
-            const QDomNode attribute_node = attributes.namedItem(attribute_name);
-            if (!attribute_node.isNull()) {
-                return attribute_node;
-            }
-
-            child = child.nextSibling();
-        }
-    }
-
-    return QDomNode();
-}
