@@ -27,6 +27,7 @@
 #include <QHash>
 #include <QDateTime>
 #include <QSet>
+#include <QIcon>
 
 // Interface between the GUI and AdConnection
 // Stores attributes cache of objects
@@ -238,5 +239,6 @@ QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_
 QString group_scope_to_string(GroupScope scope);
 QString group_type_to_string(GroupType type);
 QString object_class_display_string(const QString &c);
+QIcon get_object_icon(const QString &dn);
 
 #endif /* AD_INTERFACE_H */

@@ -18,7 +18,6 @@
  */
 
 #include "utils.h"
-#include "ad_interface.h"
 
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
@@ -57,30 +56,6 @@ QString get_dn_from_index(const QModelIndex &base_row_index, int dn_column) {
     const QString dn = dn_index.data().toString();
 
     return dn;
-}
-
-QIcon get_object_icon(const QString &dn) {
-    // TODO: change to custom, good icons, add those icons to installation?
-    // TODO: are there cases where an object can have multiple icons due to multiple objectClasses and one of them needs to be prioritized?
-    QMap<QString, QString> class_to_icon = {
-        {CLASS_GP_CONTAINER, "x-office-address-book"},
-        {CLASS_CONTAINER, "folder"},
-        {CLASS_OU, "network-workgroup"},
-        {CLASS_PERSON, "avatar-default"},
-        {CLASS_GROUP, "application-x-smb-workgroup"},
-        {CLASS_BUILTIN_DOMAIN, "emblem-system"},
-    };
-    QString icon_name = "dialog-question";
-    for (auto c : class_to_icon.keys()) {
-        if (AdInterface::instance()->is_class(dn, c)) {
-            icon_name = class_to_icon[c];
-            break;  
-        }
-    }
-
-    QIcon icon = QIcon::fromTheme(icon_name);
-
-    return icon;
 }
 
 // Set root index of view to head index of current model

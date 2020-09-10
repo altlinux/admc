@@ -31,7 +31,6 @@ add_executable(admc
     confirmation_dialog.cpp
     advanced_view_proxy.cpp
     dn_column_proxy.cpp
-    utils.cpp
     login_dialog.cpp
     password_dialog.cpp
     menubar.cpp
@@ -54,6 +53,8 @@ add_executable(admc
     edits/password_edit.cpp
     edits/datetime_edit.cpp
 
+    ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
+
     admc.qrc
     ${PROJECT_SOURCE_DIR}/translations/translations.qrc
 )
@@ -62,6 +63,7 @@ target_include_directories(admc
     PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
+        ${PROJECT_SOURCE_DIR}/src/common
 )
 
 target_link_libraries(admc
