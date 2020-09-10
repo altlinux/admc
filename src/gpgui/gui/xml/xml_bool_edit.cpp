@@ -17,60 +17,67 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "xml_string_edit.h"
+#include "xml_bool_edit.h"
 
-#include <QLineEdit>
 #include <QGridLayout>
 #include <QMessageBox>
 #include <QLabel>
+#include <QCheckBox>
 
-XmlStringEdit::XmlStringEdit(const XmlAttribute &attribute_arg)
+XmlBoolEdit::XmlBoolEdit(const XmlAttribute &attribute_arg)
 : attribute(attribute_arg) {
-    edit = new QLineEdit();
+    check = new QCheckBox();
 
     QObject::connect(
-        edit, &QLineEdit::textChanged,
+        check, &QCheckBox::stateChanged,
         [this]() {
             emit edited();
         });
 }
 
-void XmlStringEdit::load(const QDomDocument &doc) {
+void XmlBoolEdit::load(const QDomDocument &doc) {
     const QDomElement parent_element = get_element_by_tag_name(doc, attribute.parent_name());
-    const QString value = parent_element.attribute(attribute.name(), QString());
+    const QString value_string = parent_element.attribute(attribute.name(), QString());
+    const bool value = (value_string == "1");
 
     original_value = value;
 
-    edit->blockSignals(true);
-    edit->setText(original_value);
-    edit->blockSignals(false);
+    Qt::CheckState check_state;
+    if (value) {
+        check_state = Qt::Checked;
+    } else {
+        check_state = Qt::Unchecked;
+    }
+
+    check->blockSignals(true);
+    check->setCheckState(check_state);
+    check->blockSignals(false);
 
     emit edited();
 }
 
-void XmlStringEdit::add_to_layout(QGridLayout *layout) {
+void XmlBoolEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = attribute.display_string() + ":";
     const auto label = new QLabel(label_text);
 
-    // TODO: connect_changed_marker(this, label);
-    
-    // TODO: shared usage via append_to_grid_layout_with_label(layout, label, edit);
     const int row = layout->rowCount();
     layout->addWidget(label, row, 0);
-    layout->addWidget(edit, row, 1);
+    layout->addWidget(check, row, 1);
 }
 
-bool XmlStringEdit::verify_input(QWidget *parent) {
+bool XmlBoolEdit::verify_input(QWidget *parent) {
     return true;
 }
 
-bool XmlStringEdit::changed() const {
-    const QString new_value = edit->text();
+bool XmlBoolEdit::changed() const {
+    // TODO: use checkbox_is_checked()
+    const bool new_value = (check->checkState() == Qt::Checked);
     return (new_value != original_value);
 }
 
-bool XmlStringEdit::apply(QDomDocument *doc) {
-    const QString new_value = edit->text();
+bool XmlBoolEdit::apply(QDomDocument *doc) {
+    const bool new_value_bool = (check->checkState() == Qt::Checked);
+    const QString new_value = (new_value_bool ? "1" : "0");
 
     QDomElement parent_element = get_element_by_tag_name(*doc, attribute.parent_name());
     parent_element.setAttribute(attribute.name(), new_value);

@@ -18,3 +18,17 @@
  */
 
 #include "xml_edit.h"
+
+// TODO: there's probably a better place for this
+QDomElement get_element_by_tag_name(const QDomDocument &doc, const QString &tag_name) {
+    const QDomNodeList parents = doc.elementsByTagName(tag_name);
+    const QDomNode parent_node = parents.at(0);
+    const QDomElement parent_element = parent_node.toElement();
+
+    // NOTE: should never happen? as long as xml files are validated on load at least
+    if (parent_element.isNull()) {
+        printf("get_element_by_tag_name() failed to find element \"%s\"\n", qPrintable(tag_name));
+    }
+
+    return parent_element;
+}

@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QDomDocument>
+#include <QString>
 
 class QGridLayout;
 class QWidget;
@@ -45,5 +46,7 @@ void load(const QDomDocument &doc);\
 bool changed() const;\
 bool verify_input(QWidget *parent);\
 bool apply(QDomDocument *doc);
+
+QDomElement get_element_by_tag_name(const QDomDocument &doc, const QString &tag_name);
 
 #endif /* XML_EDIT_H */

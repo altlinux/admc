@@ -20,6 +20,7 @@
 #include "xml_editor.h"
 #include "xml_edit.h"
 #include "xml_string_edit.h"
+#include "xml_bool_edit.h"
 #include "xml_attribute.h"
 
 #include <QDialogButtonBox>
@@ -32,8 +33,6 @@
 
 QList<XmlAttribute> XmlEditor::schema_attributes;
 QHash<QString, XmlAttribute> XmlEditor::schema_attributes_by_name;
-
-QList<XmlStringEdit *> edits;
 
 void XmlEditor::load_schema() {
     static bool loaded = false;
@@ -49,10 +48,8 @@ void XmlEditor::load_schema() {
         printf("Failed to open xml file\n");
         return;
     }
-
-    QDomDocument doc("schema");
+    QDomDocument doc;
     doc.setContent(&file);
-
     file.close();
 
     const QDomNodeList attributes = doc.elementsByTagName("xs:attribute");
@@ -94,7 +91,7 @@ XmlEditor::XmlEditor(const QString &path_arg)
         return;
     }
 
-    QDomDocument doc("file");
+    QDomDocument doc;
     doc.setContent(&file);
 
     file.close();
@@ -106,7 +103,25 @@ XmlEditor::XmlEditor(const QString &path_arg)
             continue;
         }
 
-        auto edit = new XmlStringEdit(attribute);
+        auto make_edit =
+        [attribute]() -> XmlEdit * {
+            switch (attribute.type()) {
+                case XmlAttributeType_String:
+                return new XmlStringEdit(attribute);
+
+                case XmlAttributeType_Boolean:
+                return new XmlBoolEdit(attribute);
+
+                case XmlAttributeType_UnsignedByte:
+                return new XmlStringEdit(attribute);
+
+                case XmlAttributeType_None:
+                return nullptr;
+            }
+
+            return nullptr;
+        };
+        XmlEdit *edit = make_edit();
         edit->add_to_layout(edits_layout);
         edit->load(doc);
 
@@ -125,34 +140,33 @@ XmlEditor::XmlEditor(const QString &path_arg)
 }
 
 void XmlEditor::on_ok() {
+    // Read doc into memory
     QFile read_file(path);
     const bool opened_read_file = read_file.open(QIODevice::ReadOnly | QIODevice::Text);
     if (!opened_read_file) {
         printf("Failed to open xml file for reading\n");
         return;
     }
-    QDomDocument doc("read_file");
+    QDomDocument doc;
     doc.setContent(&read_file);
-
     read_file.close();
 
+    // Apply changes to doc in memory
     for (auto edit : edits) {
-        edit->apply(&doc);
+        if (edit->changed()) {
+            edit->apply(&doc);
+        }
     }
 
-    printf("changed doc=%s\n", qPrintable(doc.toString()));
-
-    // Save changes to file
+    // Save updated doc to file
     QFile write_file(path);
     const bool opened_write_file = write_file.open(QIODevice::QIODevice::WriteOnly | QIODevice::Truncate);
     if (!opened_write_file) {
         printf("Failed to open xml file for writing\n");
         return;
     }
-
     const QByteArray doc_bytes = doc.toByteArray(4);
     const char *doc_cstr = doc_bytes.constData();
     write_file.write(doc_cstr);
-
     write_file.close();
 }
