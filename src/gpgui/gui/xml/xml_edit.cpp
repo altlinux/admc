@@ -19,6 +19,8 @@
 
 #include "xml_edit.h"
 
+#include <QDomDocument>
+
 // TODO: there's probably a better place for this
 QDomElement get_element_by_tag_name(const QDomDocument &doc, const QString &tag_name) {
     const QDomNodeList parents = doc.elementsByTagName(tag_name);
@@ -31,4 +33,9 @@ QDomElement get_element_by_tag_name(const QDomDocument &doc, const QString &tag_
     }
 
     return parent_element;
+}
+
+void set_xml_attribute(QDomDocument *doc, const XmlAttribute &attribute, const QString &value) {
+    QDomElement parent_element = get_element_by_tag_name(*doc, attribute.parent_name());
+    parent_element.setAttribute(attribute.name(), value);
 }

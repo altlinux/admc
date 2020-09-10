@@ -20,12 +20,15 @@
 #ifndef XML_EDIT_H
 #define XML_EDIT_H
 
+#include "xml_attribute.h"
+
 #include <QObject>
 #include <QDomDocument>
 #include <QString>
 
 class QGridLayout;
 class QWidget;
+class QDomDocument;
 
 class XmlEdit : public QObject {
 Q_OBJECT
@@ -48,5 +51,6 @@ bool verify_input(QWidget *parent);\
 void apply(QDomDocument *doc);
 
 QDomElement get_element_by_tag_name(const QDomDocument &doc, const QString &tag_name);
+void set_xml_attribute(QDomDocument *doc, const XmlAttribute &attribute, const QString &value);
 
 #endif /* XML_EDIT_H */

@@ -70,6 +70,5 @@ void XmlBoolEdit::apply(QDomDocument *doc) {
     const bool new_value_bool = checkbox_is_checked(check);
     const QString new_value = (new_value_bool ? "1" : "0");
 
-    QDomElement parent_element = get_element_by_tag_name(*doc, attribute.parent_name());
-    parent_element.setAttribute(attribute.name(), new_value);
+    set_xml_attribute(doc, attribute, new_value);
 }

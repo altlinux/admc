@@ -35,8 +35,10 @@ public:
     XmlStringEdit(const XmlAttribute &attribute_arg);
     DECL_XML_EDIT_VIRTUALS();
 
-private:
+protected:
     XmlAttribute attribute;
+
+private:
     QString original_value;
 };
 
