@@ -42,7 +42,7 @@ void XmlEditor::load_schema() {
         loaded = true;
     }
 
-    QFile file("../shortcuts_xml_schema.xml");
+    QFile file(":/shortcuts_xml_schema.xml");
     const bool open_success = file.open(QIODevice::ReadOnly | QIODevice::Text);
     if (!open_success) {
         printf("Failed to open xml file\n");
