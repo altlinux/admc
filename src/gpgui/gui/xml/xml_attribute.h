@@ -40,7 +40,6 @@ public:
 
     QString name() const;
     XmlAttributeType type() const;
-    bool required() const;
     bool hidden() const;
     QString display_string() const;
     QString parent_name() const;
@@ -48,7 +47,6 @@ public:
 private:
     QString m_name;
     XmlAttributeType m_type;
-    bool m_required;
     QString m_parent_name;
 };
 

@@ -23,28 +23,22 @@
 #include <QHash>
 
 XmlAttribute::XmlAttribute(const QDomNode &node) {
-    // NOTE: there are two "attributes", attributes of the object and xml attributes
-    const QDomNamedNodeMap attributes = node.attributes();
+    const QDomElement element = node.toElement();
 
-    const QDomNode attribute_name = attributes.namedItem("name");
-    m_name = attribute_name.nodeValue();
+    m_name = element.attribute("name");
 
-    const QDomNode attribute_type = attributes.namedItem("type");
-    m_type = string_to_attribute_type(attribute_type.nodeValue());
-
-    const QDomNode attribute_use = attributes.namedItem("use");
-    m_required = (attribute_use.nodeValue() == "required");
+    const QString type_string = element.attribute("type");
+    m_type = string_to_attribute_type(type_string);
 
     auto get_parent_name =
     [node]() -> QString {
         QDomNode current = node.parentNode();
         while (!current.isNull()) {
-            const bool is_element = (current.nodeName() == "xs:element");
+            const bool is_schema_element = (current.nodeName() == "xs:element");
 
-            if (is_element) {
-                const QDomNamedNodeMap current_attributes = current.attributes();
-                const QDomNode name_node = current_attributes.namedItem("name");
-                const QString name = name_node.nodeValue();
+            if (is_schema_element) {
+                const QDomElement current_element = current.toElement();
+                const QString name = current_element.attribute("name");
 
                 return name;
             }
@@ -65,7 +59,6 @@ void XmlAttribute::print() const {
     printf("attribute\n");
     printf("    name=%s\n", qPrintable(m_name));
     printf("    type=%s\n", qPrintable(attribute_type_to_string(m_type)));
-    printf("    required=%d\n", m_required);
 }
 
 
@@ -75,10 +68,6 @@ QString XmlAttribute::name() const {
 
 XmlAttributeType XmlAttribute::type() const {
     return m_type;
-}
-
-bool XmlAttribute::required() const {
-    return m_required;
 }
 
 bool XmlAttribute::hidden() const {
