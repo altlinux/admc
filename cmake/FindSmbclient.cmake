@@ -46,7 +46,8 @@ if(Smbclient_FOUND AND NOT TARGET Smbclient::Smbclient)
             smbclient
     )
 
-    set_target_properties(Smbclient::Smbclient PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${Smbclient_INCLUDE_DIRS}"
+    target_include_directories(Smbclient::Smbclient
+        INTERFACE
+            ${Smbclient_INCLUDE_DIRS}
     )
 endif()

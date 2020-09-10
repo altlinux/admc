@@ -56,7 +56,8 @@ if(Ldap_FOUND AND NOT TARGET Ldap::Ldap)
             lber
     )
 
-    set_target_properties(Ldap::Ldap PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${Ldap_INCLUDE_DIRS}"
+    target_include_directories(Ldap::Ldap
+        INTERFACE
+            ${Ldap_INCLUDE_DIRS}
     )
 endif()
