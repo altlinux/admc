@@ -18,46 +18,13 @@
  */
 
 #include "xml_ubyte_edit.h"
-#include "utils.h"
 
-#include <QLineEdit>
-#include <QGridLayout>
 #include <QMessageBox>
-#include <QLabel>
+#include <QLineEdit>
 
 XmlUByteEdit::XmlUByteEdit(const XmlAttribute &attribute_arg)
-: attribute(attribute_arg) {
-    edit = new QLineEdit();
-
-    // edit->setInputMask("000");
-
-    QObject::connect(
-        edit, &QLineEdit::textChanged,
-        [this]() {
-            emit edited();
-        });
-}
-
-void XmlUByteEdit::load(const QDomDocument &doc) {
-    const QDomElement parent_element = get_element_by_tag_name(doc, attribute.parent_name());
-    const QString value = parent_element.attribute(attribute.name(), QString());
-
-    original_value = value;
-
-    edit->blockSignals(true);
-    edit->setText(original_value);
-    edit->blockSignals(false);
-
-    emit edited();
-}
-
-void XmlUByteEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = attribute.display_string() + ":";
-    const auto label = new QLabel(label_text);
-
-    // TODO: connect_changed_marker(this, label);
-    
-    append_to_grid_layout_with_label(layout, label, edit);
+: XmlStringEdit(attribute_arg) {
+    edit->setInputMask("000");
 }
 
 bool XmlUByteEdit::verify_input(QWidget *parent) {
@@ -74,15 +41,4 @@ bool XmlUByteEdit::verify_input(QWidget *parent) {
     }
 
     return verified;
-}
-
-bool XmlUByteEdit::changed() const {
-    const QString new_value = edit->text();
-    return (new_value != original_value);
-}
-
-void XmlUByteEdit::apply(QDomDocument *doc) {
-    const QString new_value = edit->text();
-
-    set_xml_attribute(doc, attribute, new_value);
 }

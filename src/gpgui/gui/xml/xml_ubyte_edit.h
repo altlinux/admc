@@ -20,24 +20,13 @@
 #ifndef XML_UBYTE_EDIT_H
 #define XML_UBYTE_EDIT_H
 
-#include "xml_edit.h"
-#include "xml_attribute.h"
+#include "xml_string_edit.h"
 
-#include <QString>
-
-class QLineEdit;
-
-class XmlUByteEdit : public XmlEdit {
+class XmlUByteEdit : public XmlStringEdit {
 Q_OBJECT
 public:
-    QLineEdit *edit;
-
     XmlUByteEdit(const XmlAttribute &attribute_arg);
-    DECL_XML_EDIT_VIRTUALS();
-
-private:
-    XmlAttribute attribute;
-    QString original_value;
+    bool verify_input(QWidget *parent);
 };
 
 #endif /* XML_UBYTE_EDIT_H */
