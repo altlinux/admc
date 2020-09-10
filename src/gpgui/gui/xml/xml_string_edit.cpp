@@ -46,7 +46,7 @@ void XmlStringEdit::load(const QDomDocument &doc) {
 }
 
 void XmlStringEdit::add_to_layout(QGridLayout *layout) {
-    add_xml_edit_to_layout(layout, attribute, edit);
+    add_xml_edit_to_layout(layout, attribute, edit, this);
 }
 
 bool XmlStringEdit::verify_input(QWidget *parent) {

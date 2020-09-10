@@ -47,7 +47,7 @@ void XmlBoolEdit::load(const QDomDocument &doc) {
 }
 
 void XmlBoolEdit::add_to_layout(QGridLayout *layout) {
-    add_xml_edit_to_layout(layout, attribute, check);
+    add_xml_edit_to_layout(layout, attribute, check, this);
 }
 
 bool XmlBoolEdit::verify_input(QWidget *parent) {

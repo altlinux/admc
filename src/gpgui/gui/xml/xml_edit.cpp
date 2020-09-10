@@ -23,11 +23,18 @@
 #include <QDomDocument>
 #include <QLabel>
 
-void add_xml_edit_to_layout(QGridLayout *layout, const XmlAttribute &attribute, QWidget *widget) {
+void add_xml_edit_to_layout(QGridLayout *layout, const XmlAttribute &attribute, QWidget *widget, XmlEdit *edit) {
     const QString label_text = attribute.display_string() + ":";
     const auto label = new QLabel(label_text);
 
     append_to_grid_layout_with_label(layout, label, widget);
+
+    QObject::connect(edit, &XmlEdit::edited,
+        [=]() {
+            const QString current_text = label->text();
+            const QString new_text = set_changed_marker(current_text, edit->changed());
+            label->setText(new_text);
+        });
 }
 
 // TODO: there's probably a better place for this

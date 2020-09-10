@@ -29,6 +29,7 @@
 #include <QDomDocument>
 
 class XmlEdit;
+class QPushButton;
 
 class XmlEditor final : public QDialog {
 Q_OBJECT
@@ -44,11 +45,16 @@ public:
 public slots:
     void accept();
 
+private slots:
+    void on_edit_edited();
+
 private:
     QString path;
     QList<XmlEdit *> edits;
+    QPushButton *apply_button;
 
     bool verify_and_apply();
+    bool any_edits_changed();
 };
 
 #endif /* XML_EDITOR_H */

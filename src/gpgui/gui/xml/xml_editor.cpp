@@ -77,6 +77,7 @@ XmlEditor::XmlEditor(const QString &path_arg)
     auto title_label = new QLabel(title_label_text);
 
     auto button_box = new QDialogButtonBox(QDialogButtonBox::Apply | QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
+    apply_button = button_box->button(QDialogButtonBox::Apply);
 
     connect(
         button_box, &QDialogButtonBox::accepted,
@@ -127,6 +128,9 @@ XmlEditor::XmlEditor(const QString &path_arg)
         edit->load(doc);
 
         edits.append(edit);
+
+        connect(edit, &XmlEdit::edited,
+            this, &XmlEditor::on_edit_edited);
     }
 
     const auto top_layout = new QVBoxLayout();
@@ -135,16 +139,15 @@ XmlEditor::XmlEditor(const QString &path_arg)
     top_layout->addLayout(edits_layout);
     top_layout->addWidget(button_box);
 
-    button_box->button(QDialogButtonBox::Ok)->setAutoDefault(false);
-    button_box->button(QDialogButtonBox::Ok)->setDefault(false);
-
     connect(
         button_box->button(QDialogButtonBox::Apply), &QPushButton::clicked,
         this, &XmlEditor::verify_and_apply);
+
+    apply_button->setEnabled(false);
 }
 
+// NOTE: called by Ok button
 void XmlEditor::accept() {
-    // NOTE: called by Ok button
     const bool success = verify_and_apply();
 
     if (success) {
@@ -152,7 +155,19 @@ void XmlEditor::accept() {
     }
 }
 
+void XmlEditor::on_edit_edited() {
+    // Enable/disable apply and cancel depending on changed state
+    const bool any_changed = any_edits_changed();
+    apply_button->setEnabled(any_changed);
+}
+
 bool XmlEditor::verify_and_apply() {
+    // TODO: this is a mess, the way it's implied in accept() (ok button slot)
+    const bool any_changed = any_edits_changed();
+    if (!any_changed) {
+        return true;
+    }
+
     bool all_verified = true;
     for (auto edit : edits) {
         const bool verified = edit->verify_input(this);
@@ -197,4 +212,15 @@ bool XmlEditor::verify_and_apply() {
     write_file.close();
 
     return true;
+}
+
+bool XmlEditor::any_edits_changed() {
+    bool any_changed = false;
+    for (auto edit : edits) {
+        if (edit->changed()) {
+            any_changed = true;
+        }
+    }
+
+    return any_changed;
 }
