@@ -42,19 +42,17 @@ public:
 
     static void load_schema();
 
-public slots:
-    void accept();
-
 private slots:
-    void on_edit_edited();
+    void enable_buttons_if_changed();
 
 private:
     QString path;
     QList<XmlEdit *> edits;
     QPushButton *apply_button;
+    QPushButton *reset_button;
 
-    bool verify_and_apply();
-    bool any_edits_changed();
+    void reload();
+    bool apply();
 };
 
 #endif /* XML_EDITOR_H */

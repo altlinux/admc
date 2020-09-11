@@ -76,27 +76,9 @@ XmlEditor::XmlEditor(const QString &path_arg)
     const QString title_label_text = tr("Editing xml file:") + path;
     auto title_label = new QLabel(title_label_text);
 
-    auto button_box = new QDialogButtonBox(QDialogButtonBox::Apply | QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
+    auto button_box = new QDialogButtonBox(QDialogButtonBox::Apply | QDialogButtonBox::Reset | QDialogButtonBox::Close);
     apply_button = button_box->button(QDialogButtonBox::Apply);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
-    
-    QFile file(path);
-    const bool open_success = file.open(QIODevice::ReadOnly | QIODevice::Text);
-    if (!open_success) {
-        printf("Failed to open xml file\n");
-        return;
-    }
-
-    QDomDocument doc;
-    doc.setContent(&file);
-
-    file.close();
+    reset_button = button_box->button(QDialogButtonBox::Reset);
 
     auto edits_layout = new QGridLayout();
 
@@ -125,13 +107,14 @@ XmlEditor::XmlEditor(const QString &path_arg)
         };
         XmlEdit *edit = make_edit();
         edit->add_to_layout(edits_layout);
-        edit->load(doc);
 
         edits.append(edit);
 
         connect(edit, &XmlEdit::edited,
-            this, &XmlEditor::on_edit_edited);
+            this, &XmlEditor::enable_buttons_if_changed);
     }
+
+    reload();
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
@@ -141,33 +124,53 @@ XmlEditor::XmlEditor(const QString &path_arg)
 
     connect(
         button_box->button(QDialogButtonBox::Apply), &QPushButton::clicked,
-        this, &XmlEditor::verify_and_apply);
+        this, &XmlEditor::apply);
+    connect(
+        button_box->button(QDialogButtonBox::Reset), &QPushButton::clicked,
+        this, &XmlEditor::reload);
+    connect(
+        button_box->button(QDialogButtonBox::Close), &QPushButton::clicked,
+        this, &QDialog::reject);
 
-    apply_button->setEnabled(false);
+    // Disable apply/reset buttons
+    enable_buttons_if_changed();
 }
 
-// NOTE: called by Ok button
-void XmlEditor::accept() {
-    const bool success = verify_and_apply();
+void XmlEditor::enable_buttons_if_changed() {
+    auto get_changed =
+    [this]() -> bool {
+        for (auto edit : edits) {
+            if (edit->changed()) {
+                return true;
+            }
+        }
 
-    if (success) {
-        QDialog::accept();
+        return false;
+    };
+    const bool changed = get_changed();
+
+    apply_button->setEnabled(changed);
+    reset_button->setEnabled(changed);
+}
+
+void XmlEditor::reload() {
+    QFile file(path);
+    const bool open_success = file.open(QIODevice::ReadOnly | QIODevice::Text);
+    if (!open_success) {
+        printf("Failed to open xml file\n");
+        return;
+    }
+
+    QDomDocument doc;
+    doc.setContent(&file);
+    file.close();
+    
+    for (auto edit : edits) {
+        edit->load(doc);
     }
 }
 
-void XmlEditor::on_edit_edited() {
-    // Enable/disable apply and cancel depending on changed state
-    const bool any_changed = any_edits_changed();
-    apply_button->setEnabled(any_changed);
-}
-
-bool XmlEditor::verify_and_apply() {
-    // TODO: this is a mess, the way it's implied in accept() (ok button slot)
-    const bool any_changed = any_edits_changed();
-    if (!any_changed) {
-        return true;
-    }
-
+bool XmlEditor::apply() {
     bool all_verified = true;
     for (auto edit : edits) {
         const bool verified = edit->verify_input(this);
@@ -212,15 +215,4 @@ bool XmlEditor::verify_and_apply() {
     write_file.close();
 
     return true;
-}
-
-bool XmlEditor::any_edits_changed() {
-    bool any_changed = false;
-    for (auto edit : edits) {
-        if (edit->changed()) {
-            any_changed = true;
-        }
-    }
-
-    return any_changed;
 }
