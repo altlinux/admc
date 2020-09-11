@@ -87,11 +87,27 @@ MainWindow::MainWindow(const QString &path)
 
     auto file_menu = menubar->addMenu(tr("File"));
 
-    auto open_action = file_menu->addAction(tr("Open"));
+    auto open_local_dir = file_menu->addAction(tr("Open local GPO directory"));
     connect(
-        open_action, &QAction::triggered,
-        this, &MainWindow::on_open);
-    
+        open_local_dir, &QAction::triggered,
+        this, &MainWindow::on_open_local_dir);
+
+    auto open_local_xml = file_menu->addAction(tr("Open local xml file"));
+    connect(
+        open_local_xml, &QAction::triggered,
+        this, &MainWindow::on_open_local_xml);
+
+    auto open_local_pol = file_menu->addAction(tr("Open local pol file"));
+    connect(
+        open_local_pol, &QAction::triggered,
+        this, &MainWindow::on_open_local_pol);
+    open_local_pol->setEnabled(false);
+
+    auto open_path = file_menu->addAction(tr("Open path"));
+    connect(
+        open_path, &QAction::triggered,
+        this, &MainWindow::on_open_path);
+
     auto exit_action = file_menu->addAction(tr("Exit"));
     connect(
         exit_action, &QAction::triggered,
@@ -110,10 +126,8 @@ MainWindow::MainWindow(const QString &path)
     browse_widget->change_target("/home/kevl/pol-files/{2BE174FB-22F4-4CD1-BA93-5311F87E80A2}");
 
     XmlEditor::load_schema();
-}
 
-void MainWindow::about() {
-    QMessageBox::about(this, tr("About GPGUI"), tr("GPGUI about"));
+    open_generic_path(path);
 }
 
 void MainWindow::preg_entry2table(preg::entry &pentry) {
@@ -217,14 +231,46 @@ void MainWindow::save_dotreg() {}
 void MainWindow::edit_reg_dword_dialog() {
 }
 
-void MainWindow::on_open() {
-    const QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), QString(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-
-    browse_widget->change_target(dir);
-}
-
 void MainWindow::on_exit() {
     QApplication::closeAllWindows();
     QApplication::quit();
 }
 
+void MainWindow::on_open_local_dir() {
+    const QString path = QFileDialog::getExistingDirectory(this, tr("Open directory"), "home/", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    open_generic_path(path);
+}
+
+void MainWindow::on_open_local_xml() {
+    const QString path = QFileDialog::getOpenFileName(this, tr("Open XML file"), "/home", tr("XML files (*.xml)"));
+    open_generic_path(path);
+}
+
+void MainWindow::on_open_local_pol() {
+    const QString path = QFileDialog::getOpenFileName(this, tr("Open POL file"), "/home", tr("POL files (*.pol)"));
+    open_generic_path(path);
+}
+
+void MainWindow::on_open_path() {
+    bool ok;
+    const QString path = QInputDialog::getText(this, tr("Open path"), tr("Path:"), QLineEdit::Normal, QString(), &ok);
+
+    if (ok && !path.isEmpty()) {
+        open_generic_path(path);
+    }
+}
+
+void MainWindow::open_generic_path(const QString &path) {
+    if (path.isEmpty()) {
+        return;
+    } else if (path.endsWith(".xml")) {
+        auto xml_editor = new XmlEditor(path);
+        xml_editor->open();
+    } else if (path.endsWith(".xml")) {
+        // auto pol_editor = new PolEditor(path);
+        // pol_editor->open();
+    } else {
+        // TODO: this could be a non xml/pol file
+        browse_widget->change_target(path);
+    }
+}

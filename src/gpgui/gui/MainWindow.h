@@ -39,12 +39,15 @@ public:
     void edit_reg_dword_dialog();
 
 private slots:
-    void about();
     void open_preg();
     void save_preg();
     void save_dotreg();
-    void on_open();
     void on_exit();
+
+    void on_open_local_dir();
+    void on_open_local_xml();
+    void on_open_local_pol();
+    void on_open_path();
 
 private:
     BrowseWidget *browse_widget;
@@ -58,6 +61,7 @@ private:
     void create_menu_bar();
     void create_status_bar();
     void preg_entry2table(preg::entry &pentry);
+    void open_generic_path(const QString &path);
 };
 
 #endif /* MAIN_WINDOW_H */

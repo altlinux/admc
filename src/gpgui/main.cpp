@@ -47,12 +47,6 @@ int main(int argc, char **argv) {
     const QStringList arg_list = qApp->arguments();
     cli_parser.process(arg_list);
 
-    if (!cli_parser.isSet(CLI_OPTION_PATH)) {
-        printf("ERROR: path option is required");
-
-        return 1;
-    }
-
     const QString path = cli_parser.value(CLI_OPTION_PATH);
 
     MainWindow main_window(path);

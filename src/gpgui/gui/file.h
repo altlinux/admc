@@ -24,6 +24,9 @@
 #include <QString>
 #include <QList>
 
+// File f-ns that can operate on local or SMB files
+// File paths that start with "smb:" are assumed to be SMB
+
 QList<QString> file_get_children(const QString &path);
 QByteArray file_read(const QString &path);
 void file_write(const QString &path, const QByteArray &bytes);
