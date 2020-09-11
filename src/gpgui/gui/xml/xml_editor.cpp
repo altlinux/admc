@@ -23,6 +23,7 @@
 #include "xml_bool_edit.h"
 #include "xml_ubyte_edit.h"
 #include "xml_attribute.h"
+#include "file.h"
 
 #include <QDialogButtonBox>
 #include <QLabel>
@@ -154,16 +155,9 @@ void XmlEditor::enable_buttons_if_changed() {
 }
 
 void XmlEditor::reload() {
-    QFile file(path);
-    const bool open_success = file.open(QIODevice::ReadOnly | QIODevice::Text);
-    if (!open_success) {
-        printf("Failed to open xml file\n");
-        return;
-    }
-
+    const QByteArray original_content = file_read(path);
     QDomDocument doc;
-    doc.setContent(&file);
-    file.close();
+    doc.setContent(original_content);
     
     for (auto edit : edits) {
         edit->load(doc);
@@ -184,35 +178,18 @@ bool XmlEditor::apply() {
         return false;
     }
 
-    // Read doc into memory
-    QFile read_file(path);
-    const bool opened_read_file = read_file.open(QIODevice::ReadOnly | QIODevice::Text);
-    if (!opened_read_file) {
-        printf("Failed to open xml file for reading\n");
-        return false;
-    }
+    const QByteArray original_content = file_read(path);
     QDomDocument doc;
-    doc.setContent(&read_file);
-    read_file.close();
+    doc.setContent(original_content);
 
-    // Apply changes to doc in memory
     for (auto edit : edits) {
         if (edit->changed()) {
             edit->apply(&doc);
         }
     }
 
-    // Save updated doc to file
-    QFile write_file(path);
-    const bool opened_write_file = write_file.open(QIODevice::QIODevice::WriteOnly | QIODevice::Truncate);
-    if (!opened_write_file) {
-        printf("Failed to open xml file for writing\n");
-        return false;
-    }
-    const QByteArray doc_bytes = doc.toByteArray(4);
-    const char *doc_cstr = doc_bytes.constData();
-    write_file.write(doc_cstr);
-    write_file.close();
+    const QByteArray edited_content = doc.toByteArray(4);
+    file_write(path, edited_content);
 
     return true;
 }

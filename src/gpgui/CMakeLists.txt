@@ -33,6 +33,7 @@ add_executable(gpgui
     gui/MainWindow.cpp
     gui/browse_widget.cpp
     gui/pol_editor.cpp
+    gui/file.cpp
     
     gui/xml/xml_editor.cpp
     gui/xml/xml_attribute.cpp

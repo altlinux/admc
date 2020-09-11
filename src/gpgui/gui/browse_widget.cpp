@@ -20,12 +20,7 @@
 #include "browse_widget.h"
 #include "pol_editor.h"
 #include "xml_editor.h"
-
-// #include <libsmbclient.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
+#include "file.h"
 
 #include <QTreeView>
 #include <QString>
@@ -80,15 +75,16 @@ void BrowseWidget::change_target(const QString &policy_path_arg) {
 }
 
 void BrowseWidget::add_entry_recursively(const QString &path, QStandardItem *parent) {
-    const QByteArray path_array = path.toLatin1();
-    const char *path_cstr = path_array.constData();
-
     QList<QStandardItem *> row;
     for (int i = 0; i < BrowseColumn_COUNT; i++) {
         row.append(new QStandardItem());
     }
 
+    // TODO: ok to use system f-n basename for smp url?
+    const QByteArray path_array = path.toLatin1();
+    const char *path_cstr = path_array.constData();
     const QString name = basename(path_cstr);
+
     row[BrowseColumn_Name]->setText(name);
     row[BrowseColumn_Path]->setText(path);
 
@@ -98,27 +94,9 @@ void BrowseWidget::add_entry_recursively(const QString &path, QStandardItem *par
         parent->appendRow(row);
     }
 
-    struct stat filestat;
-    stat(path_cstr, &filestat);
-
-    const bool is_dir = S_ISDIR(filestat.st_mode);
-    if (is_dir) {
-        DIR *dirp = opendir(path_cstr);
-
-        struct dirent *entry;
-        while ((entry = readdir(dirp)) != NULL) {
-            const QString entry_name(entry->d_name);
-            
-            const bool is_dot_path = (entry_name == "." || entry_name == "..");
-            if (is_dot_path) {
-                continue;
-            }
-
-            const QString entry_path = path + "/" + entry_name;
-            add_entry_recursively(entry_path, row[0]);
-        }
-
-        closedir(dirp);
+    const QList<QString> children = file_get_children(path);
+    for (auto child : children) {
+        add_entry_recursively(child, row[0]);
     }
 }
 
