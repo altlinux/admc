@@ -22,8 +22,8 @@
 #include <QMessageBox>
 #include <QLineEdit>
 
-XmlUByteEdit::XmlUByteEdit(const XmlAttribute &attribute_arg)
-: XmlStringEdit(attribute_arg) {
+XmlUByteEdit::XmlUByteEdit(const XmlAttribute &attribute_arg, QObject *parent)
+: XmlStringEdit(attribute_arg, parent) {
     edit->setInputMask("000");
 }
 

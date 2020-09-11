@@ -25,7 +25,7 @@
 class XmlUByteEdit : public XmlStringEdit {
 Q_OBJECT
 public:
-    XmlUByteEdit(const XmlAttribute &attribute_arg);
+    XmlUByteEdit(const XmlAttribute &attribute_arg, QObject *parent);
     bool verify_input(QWidget *parent);
 };
 

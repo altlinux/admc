@@ -32,7 +32,7 @@ Q_OBJECT
 public:
     QLineEdit *edit;
 
-    XmlStringEdit(const XmlAttribute &attribute_arg);
+    XmlStringEdit(const XmlAttribute &attribute_arg, QObject *parent);
     DECL_XML_EDIT_VIRTUALS();
 
 protected:

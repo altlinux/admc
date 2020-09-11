@@ -32,7 +32,7 @@ Q_OBJECT
 public:
     QCheckBox *check;
 
-    XmlBoolEdit(const XmlAttribute &attribute_arg);
+    XmlBoolEdit(const XmlAttribute &attribute_arg, QObject *parent);
     DECL_XML_EDIT_VIRTUALS();
 
 private:

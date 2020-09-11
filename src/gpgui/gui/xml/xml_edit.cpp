@@ -23,6 +23,12 @@
 #include <QDomDocument>
 #include <QLabel>
 
+XmlEdit::XmlEdit(QObject *parent)
+: QObject(parent)
+{
+
+}
+
 void add_xml_edit_to_layout(QGridLayout *layout, const XmlAttribute &attribute, QWidget *widget, XmlEdit *edit) {
     const QString label_text = attribute.display_string() + ":";
     const auto label = new QLabel(label_text);

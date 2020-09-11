@@ -88,16 +88,16 @@ XmlEditor::XmlEditor(const QString &path_arg)
         }
 
         auto make_edit =
-        [attribute]() -> XmlEdit * {
+        [this, attribute]() -> XmlEdit * {
             switch (attribute.type()) {
                 case XmlAttributeType_String:
-                return new XmlStringEdit(attribute);
+                return new XmlStringEdit(attribute, this);
 
                 case XmlAttributeType_Boolean:
-                return new XmlBoolEdit(attribute);
+                return new XmlBoolEdit(attribute, this);
 
                 case XmlAttributeType_UnsignedByte:
-                return new XmlUByteEdit(attribute);
+                return new XmlUByteEdit(attribute, this);
 
                 case XmlAttributeType_None:
                 return nullptr;

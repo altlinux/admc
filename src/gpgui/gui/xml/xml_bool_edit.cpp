@@ -24,8 +24,10 @@
 #include <QLabel>
 #include <QCheckBox>
 
-XmlBoolEdit::XmlBoolEdit(const XmlAttribute &attribute_arg)
-: attribute(attribute_arg) {
+XmlBoolEdit::XmlBoolEdit(const XmlAttribute &attribute_arg, QObject *parent)
+: XmlEdit(parent)
+, attribute(attribute_arg)
+{
     check = new QCheckBox();
 
     QObject::connect(

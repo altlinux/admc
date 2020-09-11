@@ -24,8 +24,10 @@
 #include <QMessageBox>
 #include <QLabel>
 
-XmlStringEdit::XmlStringEdit(const XmlAttribute &attribute_arg)
-: attribute(attribute_arg) {
+XmlStringEdit::XmlStringEdit(const XmlAttribute &attribute_arg, QObject *parent)
+: XmlEdit(parent)
+, attribute(attribute_arg)
+{
     edit = new QLineEdit();
 
     QObject::connect(
