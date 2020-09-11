@@ -24,67 +24,213 @@
 #include <dirent.h>
 #include <QFile>
 
-// TODO: display errors in GUI?
+#include <libsmbclient.h>
+
+// TODO: display errors in GUI? lots of errors to handle...
+// TODO: also test
+
+enum FileLocation {
+    FileLocation_Local,
+    FileLocation_Smb
+};
+
+void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgroup, int maxLenWorkgroup, char * pUsername, int maxLenUsername, char * pPassword, int maxLenPassword) {
+
+}
+
+SMBCCTX *make_smbc_context() {
+    static bool smbc_init_called = false;
+    if (!smbc_init_called) {
+        smbc_init_called = true;
+
+        smbc_init(get_auth_data_fn, 0);
+    }
+
+    SMBCCTX *context = smbc_new_context();
+    smbc_setOptionUseKerberos(context, true);
+    smbc_setOptionFallbackAfterKerberos(context, true);
+    if (!smbc_init_context(context)) {
+        smbc_free_context(context, 0);
+        printf("Could not initialize smbc context\n");
+
+        return nullptr;
+    }
+    smbc_set_context(context);
+
+    return context;
+}
+
+FileLocation get_file_location(const QString &path) {
+    if (path.startsWith("smb:")) {
+        return FileLocation_Smb;
+    } else {
+        return FileLocation_Local;
+    }
+}
 
 QList<QString> file_get_children(const QString &path) {
     QList<QString> children;
 
+    const FileLocation location = get_file_location(path);
+
     const QByteArray path_array = path.toLatin1();
     const char *path_cstr = path_array.constData();
 
-    struct stat filestat;
-    stat(path_cstr, &filestat);
+    auto add_child =
+    [path, &children](const char *child_name_cstr) {
+        const QString child_name(child_name_cstr);
 
-    const bool is_dir = S_ISDIR(filestat.st_mode);
-    if (is_dir) {
-        DIR *dirp = opendir(path_cstr);
-
-        struct dirent *child;
-        while ((child = readdir(dirp)) != NULL) {
-            const char *child_name_cstr = child->d_name;
-            const QString child_name(child_name_cstr);
-
-
-            const bool is_dot_path = (child_name == "." || child_name == "..");
-            if (is_dot_path) {
-                continue;
-            }
-
+        const bool is_dot_path = (child_name == "." || child_name == "..");
+        if (is_dot_path) {
+            return;
+        } else {
             const QString child_path = path + "/" + child_name;
-
             children.append(child_path);
         }
+    };
 
-        closedir(dirp);
+    switch (location) {
+        case FileLocation_Local: {
+            struct stat filestat;
+            stat(path_cstr, &filestat);
+
+            const bool is_dir = S_ISDIR(filestat.st_mode);
+            if (is_dir) {
+                DIR *dirp = opendir(path_cstr);
+
+                struct dirent *child;
+                while ((child = readdir(dirp)) != NULL) {
+                    add_child(child->d_name);
+                }
+
+                closedir(dirp);
+            }
+
+            break;
+        }
+        case FileLocation_Smb: {
+            SMBCCTX *context = make_smbc_context();
+
+            struct stat filestat;
+            smbc_stat(path_cstr, &filestat);
+
+            const bool is_dir = S_ISDIR(filestat.st_mode);
+            if (is_dir) {
+                const int dirp = smbc_opendir(path_cstr);
+
+                struct smbc_dirent *child;
+                while ((child = smbc_readdir(dirp)) != NULL) {
+                    add_child(child->name);
+                }
+
+                smbc_closedir(dirp);
+            }
+
+            smbc_free_context(context, 1);
+
+            break;
+        }
     }
 
     return children;
 }
 
 QByteArray file_read(const QString &path) {
-    QFile file(path);
-    const bool open_success = file.open(QIODevice::ReadOnly | QIODevice::Text);
+    const FileLocation location = get_file_location(path);
 
-    if (open_success) {
-        const QByteArray bytes = file.readAll();
-        file.close();
+    switch (location) {
+        case FileLocation_Local: {
+            QFile file(path);
+            const bool open_success = file.open(QIODevice::ReadOnly | QIODevice::Text);
 
-        return bytes;
-    } else  {
-        printf("Error: read_file failed to open %s\n", qPrintable(path));
+            if (open_success) {
+                const QByteArray bytes = file.readAll();
+                file.close();
 
-        return QByteArray();
+                return bytes;
+            } else  {
+                printf("Error: file_read failed to open %s\n", qPrintable(path));
+
+                return QByteArray();
+            }
+
+            break;
+        }
+        case FileLocation_Smb: {
+            SMBCCTX *context = make_smbc_context();
+
+            const QByteArray path_array = path.toLatin1();
+            const char *path_cstr = path_array.constData();
+
+            const int file = smbc_open(path_cstr, O_RDONLY, 0);
+
+            const bool open_success = (file > 0);
+            if (open_success) {
+                // TODO: max size???
+                const size_t buffer_size = 100000;
+                char buffer[buffer_size];
+
+                smbc_ftruncate(file, 0);
+                const ssize_t bytes_read = smbc_read(file, (void *)buffer, buffer_size);
+
+                smbc_close(file);
+
+                const QByteArray bytes(buffer, bytes_read);
+
+                return bytes;
+            } else {
+                printf("Error: file_write failed to open file\n");
+            }
+
+            smbc_free_context(context, 1);
+
+            break;
+        }
     }
+
+    return QByteArray();
 }
 
 void file_write(const QString &path, const QByteArray &bytes) {
-    QFile file(path);
-    const bool open_success = file.open(QIODevice::QIODevice::WriteOnly | QIODevice::Truncate);
+    const FileLocation location = get_file_location(path);
 
-    if (open_success) {
-        file.write(bytes);
-        file.close();
-    } else  {
-        printf("Error: write_file failed to open %s\n", qPrintable(path));
+    switch (location) {
+        case FileLocation_Local: {
+            QFile file(path);
+            const bool open_success = file.open(QIODevice::QIODevice::WriteOnly | QIODevice::Truncate);
+
+            if (open_success) {
+                file.write(bytes);
+                file.close();
+            } else  {
+                printf("Error: file_write failed to open file\n");
+            }
+
+            break;
+        }
+        case FileLocation_Smb: {
+            SMBCCTX *context = make_smbc_context();
+
+            const QByteArray path_array = path.toLatin1();
+            const char *path_cstr = path_array.constData();
+
+            const int file = smbc_open(path_cstr, O_WRONLY, 0);
+
+            const bool open_success = (file > 0);
+            if (open_success) {
+                const char *new_contents = bytes.constData();
+
+                smbc_ftruncate(file, 0);
+                smbc_write(file, (void *)new_contents, bytes.size());
+
+                smbc_close(file);
+            } else {
+                printf("Error: file_write failed to open file\n");
+            }
+
+            smbc_free_context(context, 1);
+
+            break;
+        }
     }
 }
