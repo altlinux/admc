@@ -20,11 +20,13 @@
 #include "ad_interface.h"
 #include "active_directory.h"
 #include "status.h"
+#include "utils.h"
 
 #include <ldap.h>
 
 #include <QSet>
 #include <QMessageBox>
+#include <QTextCodec>
 
 #define MILLIS_TO_100_NANOS 10000
 
@@ -46,6 +48,11 @@ DatetimeFormat get_attribute_time_format(const QString &attribute);
 int group_scope_to_bit(GroupScope scope);
 int bit_set(int bitmask, int bit, bool set);
 bool bit_is_set(int bitmask, int bit);
+
+// ALWAYS PUT QByteArray ON THE STACK FIRST!
+// THIS IS BAD:
+// const char *unicode_str = qstring_to_local_unicode(str).constData();
+QByteArray qstring_to_unicode_bytes(const QString &string);
 
 AdInterface *AdInterface::instance() {
     static AdInterface ad_interface;
@@ -717,17 +724,13 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
+    // NOTE: AD requires that password is surrounded with quotes
     const QString quoted_password = QString("\"%1\"").arg(password);
-    const QByteArray quoted_password_array = quoted_password.toLatin1();
-    const char *quoted_password_cstr = quoted_password_array.constData();
-    const int unicode_password_length = quoted_password.length() * 2;
-    char unicode_password_cstr[unicode_password_length];
-    memset(unicode_password_cstr, 0, sizeof(unicode_password_cstr));
-    for (int i = 0; i < quoted_password.length(); i++) {
-        unicode_password_cstr[i * 2] = quoted_password_cstr[i];
-    }
+    const QByteArray password_bytes = qstring_to_unicode_bytes(quoted_password);
+    const char *password_cstr = password_bytes.constData();
+    const int password_cstr_size = password_bytes.size();
 
-    const int result = ad_attribute_replace_binary(ld, dn_cstr, ATTRIBUTE_PASSWORD, unicode_password_cstr, unicode_password_length);
+    const int result = ad_attribute_replace_binary(ld, dn_cstr, ATTRIBUTE_PASSWORD, password_cstr, password_cstr_size);
 
     const QString name = extract_name_from_dn(dn);
     
@@ -1394,4 +1397,16 @@ QIcon get_object_icon(const QString &dn) {
     QIcon icon = QIcon::fromTheme(icon_name);
 
     return icon;
+}
+
+QByteArray qstring_to_unicode_bytes(const QString &string) {
+    const QChar *string_unicode = string.unicode();
+    QByteArray bytes;
+    for (int i = 0; i < string.size(); i++) {
+        // NOTE: using LE byte order because that's what AD expects
+        bytes.append(string_unicode[i].cell());
+        bytes.append(string_unicode[i].row());
+    }
+
+    return bytes;
 }

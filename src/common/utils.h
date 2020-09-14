@@ -29,6 +29,7 @@ class QString;
 class QCheckBox;
 class QGridLayout;
 class QLabel;
+class QByteArray;
 
 QModelIndex convert_to_source(const QModelIndex &index);
 QString get_dn_from_index(const QModelIndex &base_row_index, int dn_column);
