@@ -49,9 +49,6 @@ void PasswordEdit::add_to_layout(QGridLayout *layout) {
     const auto password_label = new QLabel(QObject::tr("Password:"));
     const auto confirm_label = new QLabel(QObject::tr("Confirm password:"));
 
-    connect_changed_marker(this, password_label);
-    connect_changed_marker(this, confirm_label);
-
     append_to_grid_layout_with_label(layout, password_label, edit);
     append_to_grid_layout_with_label(layout, confirm_label, confirm_edit);
 }

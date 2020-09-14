@@ -106,13 +106,9 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
 
 
     if (is_policy) {
-    printf("ispol\n");
         addAction(tr("Edit Policy"), [this, dn]() {
             edit_policy(dn);
         });
-    } else {
-    printf("notspol\n");
-
     }
 
     if (is_user) {

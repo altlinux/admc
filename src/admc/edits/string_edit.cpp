@@ -68,7 +68,7 @@ void setup_string_edit_autofills(const QMap<QString, StringEdit *> string_edits,
     // Autofill name into samaccount name
     if (edits.contains(ATTRIBUTE_NAME) && edits.contains(ATTRIBUTE_SAMACCOUNT_NAME)) {
         QObject::connect(
-            edits[ATTRIBUTE_SAMACCOUNT_NAME], &QLineEdit::textChanged,
+            edits[ATTRIBUTE_NAME], &QLineEdit::textChanged,
             [=] () {
                 edits[ATTRIBUTE_SAMACCOUNT_NAME]->setText(edits[ATTRIBUTE_NAME]->text());
             });
