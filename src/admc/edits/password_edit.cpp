@@ -25,6 +25,7 @@
 #include <QGridLayout>
 #include <QMessageBox>
 #include <QLabel>
+#include <QTextCodec>
 
 PasswordEdit::PasswordEdit() {
     edit = new QLineEdit();
@@ -56,9 +57,17 @@ void PasswordEdit::add_to_layout(QGridLayout *layout) {
 bool PasswordEdit::verify_input(QWidget *parent) {
     const QString pass = edit->text();
     const QString confirm_pass = confirm_edit->text();
-
     if (pass != confirm_pass) {
         const QString error_text = QString(QObject::tr("Passwords don't match!"));
+        QMessageBox::warning(parent, QObject::tr("Error"), error_text);
+
+        return false;
+    }
+
+    const auto codec = QTextCodec::codecForName("UTF-16LE");
+    const bool can_encode = codec->canEncode(pass);
+    if (!can_encode) {
+        const QString error_text = QString(QObject::tr("Password contains invalid characters"));
         QMessageBox::warning(parent, QObject::tr("Error"), error_text);
 
         return false;

@@ -49,11 +49,6 @@ int group_scope_to_bit(GroupScope scope);
 int bit_set(int bitmask, int bit, bool set);
 bool bit_is_set(int bitmask, int bit);
 
-// ALWAYS PUT QByteArray ON THE STACK FIRST!
-// THIS IS BAD:
-// const char *unicode_str = qstring_to_local_unicode(str).constData();
-QByteArray qstring_to_unicode_bytes(const QString &string);
-
 AdInterface *AdInterface::instance() {
     static AdInterface ad_interface;
     return &ad_interface;
@@ -724,9 +719,18 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
     const QByteArray dn_array = dn.toLatin1();
     const char *dn_cstr = dn_array.constData();
 
-    // NOTE: AD requires that password is surrounded with quotes
+    // NOTE: AD requires that the password:
+    // 1. is surrounded by quotes
+    // 2. is encoded as UTF16-LE
+    // 3. has no Byte Order Mark
     const QString quoted_password = QString("\"%1\"").arg(password);
-    const QByteArray password_bytes = qstring_to_unicode_bytes(quoted_password);
+    const auto codec = QTextCodec::codecForName("UTF-16LE");
+    QByteArray password_bytes = codec->fromUnicode(quoted_password);
+    // Remove BOM
+    // TODO: gotta be away to tell codec not to add BOM, but couldn't find it, only QTextStream has setGenerateBOM
+    if (password_bytes[0] != '\"') {
+        password_bytes.remove(0, 2);
+    }
     const char *password_cstr = password_bytes.constData();
     const int password_cstr_size = password_bytes.size();
 
@@ -1397,16 +1401,4 @@ QIcon get_object_icon(const QString &dn) {
     QIcon icon = QIcon::fromTheme(icon_name);
 
     return icon;
-}
-
-QByteArray qstring_to_unicode_bytes(const QString &string) {
-    const QChar *string_unicode = string.unicode();
-    QByteArray bytes;
-    for (int i = 0; i < string.size(); i++) {
-        // NOTE: using LE byte order because that's what AD expects
-        bytes.append(string_unicode[i].cell());
-        bytes.append(string_unicode[i].row());
-    }
-
-    return bytes;
 }
