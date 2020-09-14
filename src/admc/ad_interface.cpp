@@ -61,10 +61,10 @@ AdInterface::AdInterface()
 }
 
 QList<QString> AdInterface::get_domain_hosts(const QString &domain, const QString &site) {
-    const QByteArray domain_array = domain.toLatin1();
+    const QByteArray domain_array = domain.toUtf8();
     const char *domain_cstr = domain_array.constData();
 
-    const QByteArray site_array = site.toLatin1();
+    const QByteArray site_array = site.toUtf8();
     const char *site_cstr = site_array.constData();
 
     char **hosts_raw = NULL;
@@ -95,7 +95,7 @@ bool AdInterface::login(const QString &host, const QString &domain) {
     search_base = "DC=" + search_base;
     search_base = search_base.replace(".", ",DC=");
 
-    const QByteArray uri_array = uri.toLatin1();
+    const QByteArray uri_array = uri.toUtf8();
     const char *uri_cstr = uri_array.constData();
 
     const int result = ad_login(uri_cstr, &ld);
@@ -146,7 +146,7 @@ QString AdInterface::get_search_base() const {
 }
 
 QList<QString> AdInterface::list(const QString &dn) {
-    const QByteArray dn_array = dn.toLatin1();
+    const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
 
     char **children_raw;
@@ -177,10 +177,10 @@ QList<QString> AdInterface::list(const QString &dn) {
 }
 
 QList<QString> AdInterface::search(const QString &filter) {
-    const QByteArray filter_array = filter.toLatin1();
+    const QByteArray filter_array = filter.toUtf8();
     const char *filter_cstr = filter_array.constData();
 
-    const QByteArray search_base_array = search_base.toLatin1();
+    const QByteArray search_base_array = search_base.toUtf8();
     const char *search_base_cstr = search_base_array.constData();
 
     char **results_raw;
@@ -217,7 +217,7 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
     if (attributes_cache.contains(dn)) {
         return attributes_cache[dn];
     } else {
-        const QByteArray dn_array = dn.toLatin1();
+        const QByteArray dn_array = dn.toUtf8();
         const char *dn_cstr = dn_array.constData();
 
         char ***attributes_ad;
@@ -332,13 +332,13 @@ bool AdInterface::attribute_datetime_replace(const QString &dn, const QString &a
 }
 
 bool AdInterface::attribute_add(const QString &dn, const QString &attribute, const QString &value) {
-    const QByteArray dn_array = dn.toLatin1();
+    const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
 
-    const QByteArray attribute_array = attribute.toLatin1();
+    const QByteArray attribute_array = attribute.toUtf8();
     const char *attribute_cstr = attribute_array.constData();
 
-    const QByteArray value_array = value.toLatin1();
+    const QByteArray value_array = value.toUtf8();
     const char *value_cstr = value_array.constData();
 
     const int result = ad_attribute_add(ld, dn_cstr, attribute_cstr, value_cstr);
@@ -381,16 +381,16 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
         old_value_display_string = old_value_string;
     }
 
-    const QByteArray old_value_array = old_value_string.toLatin1();
+    const QByteArray old_value_array = old_value_string.toUtf8();
     const char *old_value_cstr = old_value_array.constData();
     
-    const QByteArray dn_array = dn.toLatin1();
+    const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
 
-    const QByteArray attribute_array = attribute.toLatin1();
+    const QByteArray attribute_array = attribute.toUtf8();
     const char *attribute_cstr = attribute_array.constData();
 
-    const QByteArray value_array = value.toLatin1();
+    const QByteArray value_array = value.toUtf8();
     const char *value_cstr = value_array.constData();
 
     int result;
@@ -426,13 +426,13 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
 }
 
 bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, const QString &value) {
-    const QByteArray dn_array = dn.toLatin1();
+    const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
 
-    const QByteArray attribute_array = attribute.toLatin1();
+    const QByteArray attribute_array = attribute.toUtf8();
     const char *attribute_cstr = attribute_array.constData();
 
-    const QByteArray value_array = value.toLatin1();
+    const QByteArray value_array = value.toUtf8();
     const char *value_cstr = value_array.constData();
 
     const int result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, value_cstr);
@@ -465,7 +465,7 @@ bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, 
 }
 
 bool AdInterface::object_add(const QString &dn, const char **classes) {
-    const QByteArray dn_array = dn.toLatin1();
+    const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
 
     const int result = ad_add(ld, dn_cstr, classes);
@@ -486,7 +486,7 @@ bool AdInterface::object_add(const QString &dn, const char **classes) {
 }
 
 bool AdInterface::object_delete(const QString &dn) {
-    const QByteArray dn_array = dn.toLatin1();
+    const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
 
     int result = ad_delete(ld, dn_cstr);
@@ -513,10 +513,10 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
     QList<QString> dn_split = dn.split(',');
     QString new_dn = dn_split[0] + "," + new_container;
 
-    const QByteArray dn_array = dn.toLatin1();
+    const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
 
-    const QByteArray new_container_array = new_container.toLatin1();
+    const QByteArray new_container_array = new_container.toUtf8();
     const char *new_container_cstr = new_container_array.constData();
 
     const int result = ad_move(ld, dn_cstr, new_container_cstr);
@@ -690,9 +690,9 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     new_exploded_dn.replace(0, new_rdn);
     const QString new_dn = new_exploded_dn.join(',');
 
-    const QByteArray dn_array = dn.toLatin1();
+    const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
-    const QByteArray new_rdn_array = new_rdn.toLatin1();
+    const QByteArray new_rdn_array = new_rdn.toUtf8();
     const char *new_rdn_cstr = new_rdn_array.constData();
 
     int result = ad_rename(ld, dn_cstr, new_rdn_cstr);
@@ -716,7 +716,7 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
 }
 
 bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
-    const QByteArray dn_array = dn.toLatin1();
+    const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
 
     // NOTE: AD requires that the password:
