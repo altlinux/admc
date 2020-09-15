@@ -51,7 +51,7 @@ MainWindow::MainWindow()
 
     auto containers_widget = new ContainersWidget(this);
     auto contents_widget = new ContentsWidget(containers_widget, this);
-    auto details_widget = DetailsWidget::instance();
+    auto details_widget = DetailsWidget::docked_instance();
 
     auto status_log = new QTextEdit(this);
     status_log->setReadOnly(true);

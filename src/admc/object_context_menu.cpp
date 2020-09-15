@@ -72,7 +72,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
 
     // TODO: QAction *action_to_show_menu_at = 
     addAction(tr("Details"), [this, dn]() {
-        DetailsWidget::instance()->reload(dn);
+        DetailsWidget::change_target(dn);
     });
 
     addAction(tr("Delete"), [this, dn]() {

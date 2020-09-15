@@ -20,7 +20,7 @@
 #ifndef DETAILS_WIDGET_H
 #define DETAILS_WIDGET_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QString>
 
 class QString;
@@ -42,7 +42,7 @@ enum TabHandle {
 // Shows info about object's attributes in multiple tabs
 // Targeted at a particular object
 // Updates targets of all tabs when target changes
-class DetailsWidget final : public QWidget {
+class DetailsWidget final : public QDialog {
 Q_OBJECT
 
 public:
@@ -51,30 +51,29 @@ public:
     DetailsWidget(DetailsWidget&&) = delete;
     DetailsWidget& operator=(DetailsWidget&&) = delete;
 
-    static DetailsWidget *instance();
+    static DetailsWidget *docked_instance();
+    static void change_target(const QString &new_target);
 
     QString get_target() const;
     void tab_edited(DetailsTab *tab);
     void reload(const QString &new_target);
-
-public slots:
-    void on_containers_clicked_dn(const QString &dn);
-    void on_contents_clicked_dn(const QString &dn);
 
 private slots:
     void on_logged_in();
     void on_ad_modified();
     void on_apply();
     void on_cancel();
+    void on_docked_setting_changed();
 
 private:
+    bool is_floating_instance;
     QTabWidget *tab_widget = nullptr;
     QLabel *title_label = nullptr;
     QDialogButtonBox *button_box = nullptr;
     DetailsTab *tabs[TabHandle_COUNT];
     QString target;
 
-    DetailsWidget();
+    DetailsWidget(bool is_floating_instance_arg);
 };
 
 #endif /* DETAILS_WIDGET_H */

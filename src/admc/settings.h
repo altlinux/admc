@@ -52,6 +52,7 @@ enum BoolSetting {
     BoolSetting_ShowStatusLog,
     BoolSetting_AutoLogin,
     BoolSetting_DevMode,
+    BoolSetting_DetailsIsDocked,
     BoolSetting_COUNT,
 };
 

@@ -54,6 +54,7 @@ MenuBar::MenuBar(QWidget* parent)
     add_bool_setting_action(menubar_view, tr("Advanced view"), BoolSetting_AdvancedView);
     add_bool_setting_action(menubar_view, tr("Show DN column"), BoolSetting_DnColumn);
     add_bool_setting_action(menubar_view, tr("Show status log"), BoolSetting_ShowStatusLog);
+    add_bool_setting_action(menubar_view, tr("Always show Details"), BoolSetting_DetailsIsDocked);
 
     QMenu *menubar_preferences = addMenu(tr("Preferences"));
     add_bool_setting_action(menubar_preferences, tr("Open attributes on left click in Containers window"), BoolSetting_DetailsFromContainers);

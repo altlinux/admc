@@ -37,14 +37,33 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 
-DetailsWidget *DetailsWidget::instance() {
-    static DetailsWidget *instance = new DetailsWidget();
-    return instance;
+DetailsWidget *DetailsWidget::docked_instance() {
+    static DetailsWidget *docked = new DetailsWidget(false);
+    return docked;
 }
 
-DetailsWidget::DetailsWidget()
-: QWidget()
+void DetailsWidget::change_target(const QString &new_target) {
+    const bool is_docked = Settings::instance()->get_bool(BoolSetting_DetailsIsDocked);
+
+    if (is_docked) {
+        auto docked = docked_instance();
+        docked->reload(new_target);
+    } else {
+        static auto floating_instance = new DetailsWidget(true);
+        floating_instance->reload(new_target);
+        floating_instance->open();
+    }
+}
+
+DetailsWidget::DetailsWidget(const bool is_floating_instance_arg)
+: QDialog()
 {
+    is_floating_instance = is_floating_instance_arg;
+
+    if (is_floating_instance) {
+        resize(400, 700);
+    }
+
     title_label = new QLabel(this);
     tab_widget = new QTabWidget(this);
 
@@ -63,7 +82,6 @@ DetailsWidget::DetailsWidget()
     button_box = new QDialogButtonBox(QDialogButtonBox::Apply |  QDialogButtonBox::Cancel, this);
 
     const auto layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(title_label);
     layout->addWidget(tab_widget);
@@ -83,7 +101,28 @@ DetailsWidget::DetailsWidget()
         button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
         this, &DetailsWidget::on_cancel);
 
+    const BoolSettingSignal *docked_setting = Settings::instance()->get_bool_signal(BoolSetting_DetailsIsDocked);
+    connect(
+        docked_setting, &BoolSettingSignal::changed,
+        this, &DetailsWidget::on_docked_setting_changed);
+    on_docked_setting_changed();
+
     reload("");
+}
+
+void DetailsWidget::on_docked_setting_changed() {
+    const bool is_docked = Settings::instance()->get_bool(BoolSetting_DetailsIsDocked);
+
+    if (is_floating_instance) {
+        // Hide floating instance when switching to docked one
+        // NOTE: floating instance is NOT shown when switching to non-docked view
+        if (is_docked) {
+            QDialog::reject();
+        }
+    } else {
+        // Hide/show docked instance depending on docked setting
+        setVisible(is_docked);
+    }
 }
 
 QString DetailsWidget::get_target() const {
@@ -200,22 +239,12 @@ void DetailsWidget::on_apply() {
 
         Status::instance()->show_errors_popup(errors_index);
     }
+
+    if (is_floating_instance) {
+        QDialog::accept();
+    }
 }
 
 void DetailsWidget::on_cancel() {
     reload(target);
-}
-
-void DetailsWidget::on_containers_clicked_dn(const QString &dn) {
-    const bool details_from_containers = Settings::instance()->get_bool(BoolSetting_DetailsFromContainers);
-    if (details_from_containers) {
-        reload(dn);
-    }
-}
-
-void DetailsWidget::on_contents_clicked_dn(const QString &dn) {
-    const bool details_from_contents = Settings::instance()->get_bool(BoolSetting_DetailsFromContents);
-    if (details_from_contents) {
-        reload(dn);
-    }
 }

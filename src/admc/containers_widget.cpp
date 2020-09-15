@@ -236,7 +236,7 @@ void ContainersWidget::on_view_clicked(const QModelIndex &index) {
 
     if (details_from_containers) {
         const QString dn = get_dn_from_index(index, ContainersColumn_DN);
-        DetailsWidget::instance()->reload(dn);
+        DetailsWidget::change_target(dn);
     }
 }
 
