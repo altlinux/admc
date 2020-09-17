@@ -38,6 +38,8 @@ Q_OBJECT
 public:
     EditReadOnly read_only;
 
+    using QObject::QObject;
+
     void set_read_only(EditReadOnly read_only_arg);
 
     virtual void add_to_layout(QGridLayout *layout) = 0;
@@ -80,6 +82,6 @@ bool any_edits_changed(QList<AttributeEdit *> edits);
 void any_(QList<AttributeEdit *> edits, const QString &dn);
 void load_attribute_edits(QList<AttributeEdit *> edits, const QString &dn);
 bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent);
-bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent);
+bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QObject *parent);
 
 #endif /* ATTRIBUTE_EDIT_H */

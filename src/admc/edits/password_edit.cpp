@@ -27,7 +27,9 @@
 #include <QLabel>
 #include <QTextCodec>
 
-PasswordEdit::PasswordEdit() {
+PasswordEdit::PasswordEdit(QObject *parent)
+: AttributeEdit(parent)
+{
     edit = new QLineEdit();
     confirm_edit = new QLineEdit();
 

@@ -33,7 +33,7 @@ void make_account_option_edits(const QList<AccountOption> options, QMap<AccountO
     QMap<AccountOption, AccountOptionEdit *> option_edits;
 
     for (auto option : options) {
-        auto edit = new AccountOptionEdit(option);
+        auto edit = new AccountOptionEdit(option, parent);
         option_edits.insert(option, edit);
         option_edits_out->insert(option, edit);
         edits_out->append(edit);
@@ -79,7 +79,9 @@ void make_account_option_edits(const QList<AccountOption> options, QMap<AccountO
     }
 }
 
-AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg) {
+AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *parent)
+: AttributeEdit(parent)
+{
     option = option_arg;
     check = new QCheckBox();
 

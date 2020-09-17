@@ -48,9 +48,9 @@ ObjectTab::ObjectTab(DetailsWidget *details_arg)
     for (auto attribute : attributes) {
         AttributeEdit *edit;
         if (attribute_is_datetime(attribute)) {
-            edit = new DateTimeEdit(attribute);
+            edit = new DateTimeEdit(attribute, this);
         } else {
-            edit = new StringEdit(attribute);
+            edit = new StringEdit(attribute, this);
         }
         edit->set_read_only(EditReadOnly_Yes);
         edit->add_to_layout(edits_layout);

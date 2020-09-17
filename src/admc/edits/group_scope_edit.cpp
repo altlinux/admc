@@ -27,7 +27,9 @@
 #include <QMessageBox>
 #include <QLabel>
 
-GroupScopeEdit::GroupScopeEdit() {
+GroupScopeEdit::GroupScopeEdit(QObject *parent)
+: AttributeEdit(parent)
+{
     combo = new QComboBox();
 
     for (int i = 0; i < GroupScope_COUNT; i++) {

@@ -26,7 +26,9 @@
 #include <QDateTimeEdit>
 #include <QLabel>
 
-DateTimeEdit::DateTimeEdit(const QString &attribute_arg) {
+DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QObject *parent)
+: AttributeEdit(parent)
+{
     edit = new QDateTimeEdit();
     attribute = attribute_arg;
 

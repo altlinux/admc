@@ -84,7 +84,7 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
         };
 
         QMap<QString, StringEdit *> string_edits;
-        make_string_edits(attributes, &string_edits, edits);
+        make_string_edits(attributes, &string_edits, edits, this);
 
         setup_string_edit_autofills(string_edits);
     }
@@ -102,9 +102,9 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
         };
 
         QMap<QString, StringEdit *> string_edits;
-        make_string_edits(attributes, &string_edits, edits);
+        make_string_edits(attributes, &string_edits, edits, this);
 
-        edits->append(new CountryEdit());
+        edits->append(new CountryEdit(this));
     }
 
     // Computer
@@ -118,7 +118,7 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
         };
 
         QMap<QString, StringEdit *> string_edits;
-        make_string_edits(attributes, &string_edits, edits);
+        make_string_edits(attributes, &string_edits, edits, this);
 
         string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->set_read_only(EditReadOnly_Yes);
         string_edits[ATTRIBUTE_DNS_HOST_NAME]->set_read_only(EditReadOnly_Yes);
@@ -130,20 +130,20 @@ GeneralTab::GeneralTab(DetailsWidget *details_arg)
     {
         QList<AttributeEdit *> *edits = &(edits_for_type[GeneralTabType_Group]);
 
-        edits->append(new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME));
-        edits->append(new StringEdit(ATTRIBUTE_DESCRIPTION));
-        edits->append(new StringEdit(ATTRIBUTE_MAIL));
-        edits->append(new StringEdit(ATTRIBUTE_INFO));
+        edits->append(new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, this));
+        edits->append(new StringEdit(ATTRIBUTE_DESCRIPTION, this));
+        edits->append(new StringEdit(ATTRIBUTE_MAIL, this));
+        edits->append(new StringEdit(ATTRIBUTE_INFO, this));
 
-        edits->append(new GroupScopeEdit());
-        edits->append(new GroupTypeEdit());
+        edits->append(new GroupScopeEdit(this));
+        edits->append(new GroupTypeEdit(this));
     }
 
     // Container
     {
         QList<AttributeEdit *> *edits = &(edits_for_type[GeneralTabType_Container]);
 
-        edits->append(new StringEdit(ATTRIBUTE_DESCRIPTION));
+        edits->append(new StringEdit(ATTRIBUTE_DESCRIPTION, this));
     }
 
     for (int i = 0; i < GeneralTabType_COUNT; i++) {

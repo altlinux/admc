@@ -26,7 +26,9 @@
 #include <QGridLayout>
 #include <QLabel>
 
-GroupTypeEdit::GroupTypeEdit() {
+GroupTypeEdit::GroupTypeEdit(QObject *parent)
+: AttributeEdit(parent)
+{
     combo = new QComboBox();
 
     for (int i = 0; i < GroupType_COUNT; i++) {

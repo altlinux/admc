@@ -27,7 +27,8 @@
 
 // This edit works differently from other account option edits. The checkbox starts out as unchecked, if it's checked, then applying will unlock the user. Unchecking only disables the unlock action, it DOES NOT lock the user. Can't lock the account manually. Also finding out whether user is locked is convoluted, so can't show any status about that.
 
-UnlockEdit::UnlockEdit() {
+UnlockEdit::UnlockEdit(QObject *parent)
+: AttributeEdit(parent) {
     check = new QCheckBox();
 
     connect(

@@ -36,10 +36,10 @@
 AccountTab::AccountTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
-    const auto logon_name_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME);
+    const auto logon_name_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, this);
     edits.append(logon_name_edit);
 
-    edits.append(new UnlockEdit());
+    edits.append(new UnlockEdit(this));
 
     QList<AccountOption> options;
     for (int i = 0; i < AccountOption_COUNT; i++) {
@@ -49,7 +49,7 @@ AccountTab::AccountTab(DetailsWidget *details_arg)
     QMap<AccountOption, AccountOptionEdit *> option_edits;
     make_account_option_edits(options, &option_edits, &edits, this);
 
-    edits.append(new ExpiryEdit());
+    edits.append(new ExpiryEdit(this));
 
     auto edits_layout = new QGridLayout();
     for (auto edit : edits) {

@@ -33,7 +33,7 @@ class QDomDocument;
 class XmlEdit : public QObject {
 Q_OBJECT
 public:
-    XmlEdit(QObject *parent);
+    using QObject::QObject;
     virtual void add_to_layout(QGridLayout *layout) = 0;
     virtual void load(const QDomDocument &doc) = 0;
     virtual bool changed() const = 0;

@@ -42,7 +42,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
     setAttribute(Qt::WA_DeleteOnClose);
     resize(600, 600);
 
-    name_edit = new StringEdit(ATTRIBUTE_NAME);
+    name_edit = new StringEdit(ATTRIBUTE_NAME, this);
     all_edits.append(name_edit);
 
     const auto title_label = new QLabel(QString(tr("Rename dialog")), this);
@@ -68,7 +68,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
     }
 
     QMap<QString, StringEdit *> string_edits;
-    make_string_edits(string_attributes, &string_edits, &all_edits);
+    make_string_edits(string_attributes, &string_edits, &all_edits, this);
     setup_string_edit_autofills(string_edits, name_edit);
 
     layout_attribute_edits(all_edits, edits_layout);

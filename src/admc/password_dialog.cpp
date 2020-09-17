@@ -40,7 +40,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
 
     auto edits_layout = new QGridLayout();
 
-    password_edit = new PasswordEdit();
+    password_edit = new PasswordEdit(this);
     password_edit->add_to_layout(edits_layout);
 
     auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);

@@ -27,9 +27,9 @@
 #include <QMessageBox>
 #include <QLabel>
 
-void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *string_edits_out, QList<AttributeEdit *> *edits_out) {
+void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *string_edits_out, QList<AttributeEdit *> *edits_out, QObject *parent) {
     for (auto attribute : attributes) {
-        auto edit = new StringEdit(attribute);
+        auto edit = new StringEdit(attribute, parent);
         string_edits_out->insert(attribute, edit);
         edits_out->append((AttributeEdit *)edit);
     }
@@ -75,7 +75,9 @@ void setup_string_edit_autofills(const QMap<QString, StringEdit *> string_edits,
     }
 }
 
-StringEdit::StringEdit(const QString &attribute_arg) {
+StringEdit::StringEdit(const QString &attribute_arg, QObject *parent)
+: AttributeEdit(parent)
+{
     edit = new QLineEdit();
     attribute = attribute_arg;
 

@@ -37,7 +37,9 @@
 
 #define COUNTRY_CODE_NONE 0
 
-CountryEdit::CountryEdit() {
+CountryEdit::CountryEdit(QObject *parent)
+: AttributeEdit(parent)
+{
     combo = new QComboBox();
 
     QObject::connect(

@@ -37,7 +37,9 @@
 
 const QTime END_OF_DAY(23, 59);
 
-ExpiryEdit::ExpiryEdit() {
+ExpiryEdit::ExpiryEdit(QObject *parent)
+: AttributeEdit(parent)
+{
     never_check = new QCheckBox(tr("Never"));
     end_of_check = new QCheckBox(tr("End of:"));
 

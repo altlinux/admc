@@ -31,7 +31,7 @@ Q_OBJECT
 public:
     QCheckBox *check;
 
-    AccountOptionEdit(const AccountOption option_arg);
+    AccountOptionEdit(const AccountOption option_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

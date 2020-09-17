@@ -60,7 +60,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
     
     const auto edits_layout = new QGridLayout();
 
-    name_edit = new StringEdit(ATTRIBUTE_NAME);
+    name_edit = new StringEdit(ATTRIBUTE_NAME, this);
     all_edits.append(name_edit);
 
     switch (type) {
@@ -173,11 +173,11 @@ void CreateDialog::make_group_edits() {
         ATTRIBUTE_SAMACCOUNT_NAME,
     };
     QMap<QString, StringEdit *> string_edits;
-    make_string_edits(string_attributes, &string_edits, &all_edits);
+    make_string_edits(string_attributes, &string_edits, &all_edits, this);
     setup_string_edit_autofills(string_edits, name_edit);
 
-    all_edits.append(new GroupScopeEdit());
-    all_edits.append(new GroupTypeEdit());
+    all_edits.append(new GroupScopeEdit(this));
+    all_edits.append(new GroupTypeEdit(this));
 }
 
 void CreateDialog::make_user_edits() {
@@ -190,9 +190,9 @@ void CreateDialog::make_user_edits() {
         ATTRIBUTE_SAMACCOUNT_NAME,
     };
     QMap<QString, StringEdit *> string_edits;
-    make_string_edits(string_attributes, &string_edits, &all_edits);
+    make_string_edits(string_attributes, &string_edits, &all_edits, this);
 
-    all_edits.append(new PasswordEdit());
+    all_edits.append(new PasswordEdit(this));
 
     const QList<AccountOption> options = {
         AccountOption_PasswordExpired,

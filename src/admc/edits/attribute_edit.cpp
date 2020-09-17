@@ -69,7 +69,7 @@ bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent) {
     return success;
 }
 
-bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QWidget *parent) {
+bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QObject *parent) {
     bool success = true;
 
     for (auto edit : edits) {

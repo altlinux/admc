@@ -30,7 +30,7 @@ public:
     QLineEdit *edit;
     QLineEdit *confirm_edit;
 
-    PasswordEdit();
+    PasswordEdit(QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 };
 
