@@ -805,7 +805,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
     const QString name = extract_name_from_dn(dn);
     
     if (result) {
-        auto get_success_context =
+        const QString success_context =
         [option, set, name]() {
             switch (option) {
                 case AccountOption_Disabled: {
@@ -825,14 +825,13 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
                     }
                 }
             }
-        };
-        const QString success_context = get_success_context();
+        }();
         
         success_status_message(success_context);
 
         return true;
     } else {
-        auto get_context =
+        const QString context =
         [option, set, name]() {
             switch (option) {
                 case AccountOption_Disabled: {
@@ -852,8 +851,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
                     }
                 }
             }
-        };
-        const QString context = get_context();
+        }();
 
         error_status_message(context, "");
 

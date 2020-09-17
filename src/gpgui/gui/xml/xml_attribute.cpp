@@ -30,8 +30,8 @@ XmlAttribute::XmlAttribute(const QDomNode &node) {
     const QString type_string = element.attribute("type");
     m_type = string_to_attribute_type(type_string);
 
-    auto get_parent_name =
-    [node]() -> QString {
+    m_parent_name =
+    [node]() {
         QDomNode current = node.parentNode();
         while (!current.isNull()) {
             const bool is_schema_element = (current.nodeName() == "xs:element");
@@ -47,8 +47,7 @@ XmlAttribute::XmlAttribute(const QDomNode &node) {
         }
 
         return QString();
-    };
-    m_parent_name = get_parent_name();
+    }();
 
     if (m_parent_name.isEmpty()) {
         printf("Failed to find parent name for attribute %s!\n", qPrintable(name()));
@@ -99,8 +98,8 @@ QString attribute_type_to_string(const XmlAttributeType type) {
 }
 
 XmlAttributeType string_to_attribute_type(const QString string_raw) {
-    auto generate_string_to_attribute_type_map =
-    []() -> QHash<QString, XmlAttributeType> {
+    static const QHash<QString, XmlAttributeType> string_to_attribute_type_map =
+    []() {
         QHash<QString, XmlAttributeType> result;
 
         for (auto type : attribute_type_to_string_map.keys()) {
@@ -109,8 +108,7 @@ XmlAttributeType string_to_attribute_type(const QString string_raw) {
         }
 
         return result;
-    };
-    static QHash<QString, XmlAttributeType> string_to_attribute_type_map = generate_string_to_attribute_type_map();
+    }();
 
     QString string = string_raw;
     if (string.contains("xs:")) {

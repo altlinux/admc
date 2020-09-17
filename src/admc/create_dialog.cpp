@@ -98,9 +98,9 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
 void CreateDialog::accept() {
     const QString name = name_edit->edit->text();
 
-    auto get_suffix =
-    [](CreateType type_arg) {
-        switch (type_arg) {
+    const QString suffix =
+    [this]() {
+        switch (type) {
             case CreateType_User: return "CN";
             case CreateType_Computer: return "CN";
             case CreateType_OU: return "OU";
@@ -108,8 +108,7 @@ void CreateDialog::accept() {
             case CreateType_COUNT: return "COUNT";
         }
         return "";
-    };
-    const QString suffix = get_suffix(type);
+    }();
 
     const QString dn = suffix + "=" + name + "," + parent_dn;
 
@@ -118,14 +117,14 @@ void CreateDialog::accept() {
         return;
     }
 
-    auto get_classes =
-    [](CreateType type_arg) {
+    const char **classes =
+    [this]() {
         static const char *classes_user[] = {CLASS_USER, NULL};
         static const char *classes_group[] = {CLASS_GROUP, NULL};
         static const char *classes_ou[] = {CLASS_OU, NULL};
         static const char *classes_computer[] = {CLASS_TOP, CLASS_PERSON, CLASS_ORG_PERSON, CLASS_USER, CLASS_COMPUTER, NULL};
 
-        switch (type_arg) {
+        switch (type) {
             case CreateType_User: return classes_user;
             case CreateType_Computer: return classes_computer;
             case CreateType_OU: return classes_ou;
@@ -133,8 +132,7 @@ void CreateDialog::accept() {
             case CreateType_COUNT: return classes_user;
         }
         return classes_user;
-    };
-    const char **classes = get_classes(type);
+    }();
 
     const int errors_index = Status::instance()->get_errors_size();
     AdInterface::instance()->start_batch();

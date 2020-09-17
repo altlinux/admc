@@ -68,15 +68,14 @@ void Status::on_toggle_show_status_log() {
 void Status::message(const QString &msg, const StatusType &type) {
     status_bar->showMessage(msg);
     
-    auto get_color =
+    const QColor color =
     [type]() {
         switch (type) {
             case StatusType_Success: return Qt::darkGreen;
             case StatusType_Error: return Qt::red;
         }
         return Qt::black;
-    };
-    QColor color = get_color();
+    }();
 
     const QColor original_color = status_log->textColor();
     status_log->setTextColor(color);

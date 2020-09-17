@@ -88,7 +88,7 @@ XmlEditor::XmlEditor(const QString &path_arg)
             continue;
         }
 
-        auto make_edit =
+        XmlEdit *edit =
         [this, attribute]() -> XmlEdit * {
             switch (attribute.type()) {
                 case XmlAttributeType_String:
@@ -105,8 +105,7 @@ XmlEditor::XmlEditor(const QString &path_arg)
             }
 
             return nullptr;
-        };
-        XmlEdit *edit = make_edit();
+        }();
         edit->add_to_layout(edits_layout);
 
         edits.append(edit);
@@ -138,8 +137,8 @@ XmlEditor::XmlEditor(const QString &path_arg)
 }
 
 void XmlEditor::enable_buttons_if_changed() {
-    auto get_changed =
-    [this]() -> bool {
+    const bool changed =
+    [this]() {
         for (auto edit : edits) {
             if (edit->changed()) {
                 return true;
@@ -147,8 +146,7 @@ void XmlEditor::enable_buttons_if_changed() {
         }
 
         return false;
-    };
-    const bool changed = get_changed();
+    }();
 
     apply_button->setEnabled(changed);
     reset_button->setEnabled(changed);
