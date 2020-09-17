@@ -1019,6 +1019,15 @@ void AdInterface::object_drop(const QString &dn, const QString &target_dn) {
     }
 }
 
+QList<QString> AdInterface::list_all_gpos() {
+    // TODO: search from base and only one level down. Need search function to accept search base to implement. It's unlikely that there are random GPO's lying around the domain, but just in case.
+    // const QString gpos_base = "CN=Policies,CN=System" + AdInterface::instance()->get_search_base();
+    const QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
+    const QList<QString> gpos = search(filter);
+
+    return gpos;
+}
+
 void AdInterface::command(QStringList args) {
     QString command = args[0];
 

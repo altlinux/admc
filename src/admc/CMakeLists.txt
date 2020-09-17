@@ -41,6 +41,7 @@ add_executable(admc
     rename_dialog.cpp
     create_dialog.cpp
     attribute_display_strings.cpp
+    policies_widget.cpp
     
     edits/attribute_edit.cpp
     edits/string_edit.cpp

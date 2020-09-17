@@ -25,6 +25,7 @@
 #include "status.h"
 #include "settings.h"
 #include "confirmation_dialog.h"
+#include "policies_widget.h"
 
 #include <QApplication>
 #include <QString>
@@ -52,6 +53,7 @@ MainWindow::MainWindow()
     auto containers_widget = new ContainersWidget(this);
     auto contents_widget = new ContentsWidget(containers_widget, this);
     auto details_widget = DetailsWidget::docked_instance();
+    auto policies_widget = new PoliciesWidget();
 
     auto status_log = new QTextEdit(this);
     status_log->setReadOnly(true);
@@ -60,8 +62,14 @@ MainWindow::MainWindow()
     Status::instance()->init(status_bar, status_log);
 
     // Layout
+    const auto containers_policies_splitter = new QSplitter(Qt::Vertical);
+    containers_policies_splitter->addWidget(containers_widget);
+    containers_policies_splitter->addWidget(policies_widget);
+    containers_policies_splitter->setStretchFactor(0, 2);
+    containers_policies_splitter->setStretchFactor(1, 1);
+
     auto horiz_splitter = new QSplitter(Qt::Horizontal);
-    horiz_splitter->addWidget(containers_widget);
+    horiz_splitter->addWidget(containers_policies_splitter);
     horiz_splitter->addWidget(contents_widget);
     horiz_splitter->addWidget(details_widget);
     horiz_splitter->setStretchFactor(0, 1);
