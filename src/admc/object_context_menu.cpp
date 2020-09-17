@@ -40,7 +40,7 @@
 void force_reload_attributes_and_diff(const QString &dn);
 
 // Open this context menu when view requests one
-void open_object_context_menu_from_view(QAbstractItemView *view, int dn_column) {
+void object_context_menu_connect(QAbstractItemView *view, int dn_column) {
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         [=]
@@ -75,72 +75,71 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
         DetailsWidget::change_target(dn);
     });
 
-    addAction(tr("Delete"), [this, dn]() {
-        delete_object(dn);
-    });
-    addAction(tr("Rename"), [this, dn]() {
-        auto rename_dialog = new RenameDialog(dn);
-        rename_dialog->open();
-    });
-
-    QMenu *submenu_new = addMenu("New");
-    for (int i = 0; i < CreateType_COUNT; i++) {
-        const CreateType type = (CreateType) i;
-        const QString object_string = create_type_to_string(type);
-
-        submenu_new->addAction(object_string, [dn, type]() {
-            const auto create_dialog = new CreateDialog(dn, type);
-            create_dialog->open();
-        });
-    }
-
-    QAction *move_action = addAction(tr("Move"));
-    connect(
-        move_action, &QAction::triggered,
-        [this, dn]() {
-            move(dn);
-        });
-
     const bool is_policy = AdInterface::instance()->is_policy(dn); 
-    const bool is_user = AdInterface::instance()->is_user(dn); 
-
-
     if (is_policy) {
         addAction(tr("Edit Policy"), [this, dn]() {
             edit_policy(dn);
         });
-    }
+    } else {
+        addAction(tr("Delete"), [this, dn]() {
+            delete_object(dn);
+        });
+        addAction(tr("Rename"), [this, dn]() {
+            auto rename_dialog = new RenameDialog(dn);
+            rename_dialog->open();
+        });
 
-    if (is_user) {
-        QAction *add_to_group_action = addAction(tr("Add to group"));
+        QMenu *submenu_new = addMenu("New");
+        for (int i = 0; i < CreateType_COUNT; i++) {
+            const CreateType type = (CreateType) i;
+            const QString object_string = create_type_to_string(type);
+
+            submenu_new->addAction(object_string, [dn, type]() {
+                const auto create_dialog = new CreateDialog(dn, type);
+                create_dialog->open();
+            });
+        }
+
+        QAction *move_action = addAction(tr("Move"));
         connect(
-            add_to_group_action, &QAction::triggered,
+            move_action, &QAction::triggered,
             [this, dn]() {
-                add_to_group(dn);
+                move(dn);
             });
 
-        addAction(tr("Reset password"), [dn]() {
-            const auto password_dialog = new PasswordDialog(dn);
-            password_dialog->open();
-        });
+        const bool is_user = AdInterface::instance()->is_user(dn); 
 
-        const bool disabled = AdInterface::instance()->user_get_account_option(dn, AccountOption_Disabled);
-        QString disable_text;
-        if (disabled) {
-            disable_text = tr("Enable account");
-        } else {
-            disable_text = tr("Disable account");
+        if (is_user) {
+            QAction *add_to_group_action = addAction(tr("Add to group"));
+            connect(
+                add_to_group_action, &QAction::triggered,
+                [this, dn]() {
+                    add_to_group(dn);
+                });
+
+            addAction(tr("Reset password"), [dn]() {
+                const auto password_dialog = new PasswordDialog(dn);
+                password_dialog->open();
+            });
+
+            const bool disabled = AdInterface::instance()->user_get_account_option(dn, AccountOption_Disabled);
+            QString disable_text;
+            if (disabled) {
+                disable_text = tr("Enable account");
+            } else {
+                disable_text = tr("Disable account");
+            }
+            addAction(disable_text, [this, dn, disabled]() {
+                AdInterface::instance()->user_set_account_option(dn, AccountOption_Disabled, !disabled);
+            });
         }
-        addAction(disable_text, [this, dn, disabled]() {
-            AdInterface::instance()->user_set_account_option(dn, AccountOption_Disabled, !disabled);
-        });
-    }
 
-    const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
-    if (dev_mode) {
-        addAction(tr("Force reload attributes and diff"), [dn]() {
-            force_reload_attributes_and_diff(dn);
-        });
+        const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
+        if (dev_mode) {
+            addAction(tr("Force reload attributes and diff"), [dn]() {
+                force_reload_attributes_and_diff(dn);
+            });
+        }
     }
 }
 

@@ -61,6 +61,8 @@ PoliciesWidget::PoliciesWidget()
     connect(
         AdInterface::instance(), &AdInterface::logged_in,
         this, &PoliciesWidget::on_logged_in);
+
+    object_context_menu_connect(view, PoliciesColumn_DN);
 }
 
 void PoliciesWidget::on_logged_in() {

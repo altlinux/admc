@@ -29,7 +29,7 @@ class QPoint;
 class QAbstractItemView;
 class SelectDialog;
 
-void open_object_context_menu_from_view(QAbstractItemView *view, int dn_column);
+void object_context_menu_connect(QAbstractItemView *view, int dn_column);
 
 class ObjectContextMenu final : public QMenu {
 Q_OBJECT

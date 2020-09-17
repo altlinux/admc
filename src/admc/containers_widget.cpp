@@ -57,7 +57,7 @@ ContainersWidget::ContainersWidget(QWidget *parent)
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
-    open_object_context_menu_from_view(view, ContainersColumn_DN);
+    object_context_menu_connect(view, ContainersColumn_DN);
 
     QHeaderView *view_header = view->header();
     view_header->hide();

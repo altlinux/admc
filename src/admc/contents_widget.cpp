@@ -56,7 +56,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
-    open_object_context_menu_from_view(view, ContentsColumn_DN);
+    object_context_menu_connect(view, ContentsColumn_DN);
 
     setup_model_chain(view, model, {advanced_view_proxy, dn_column_proxy});
 
