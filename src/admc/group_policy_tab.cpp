@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "gplink_tab.h"
+#include "group_policy_tab.h"
 #include "object_context_menu.h"
 #include "utils.h"
 #include "dn_column_proxy.h"
@@ -159,7 +159,7 @@ void Gplink::move_down(const QString &gpo) {
     }
 }
 
-GplinkTab::GplinkTab(DetailsWidget *details_arg)
+GroupPolicyTab::GroupPolicyTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
     view = new QTreeView(this);
@@ -199,31 +199,31 @@ GplinkTab::GplinkTab(DetailsWidget *details_arg)
 
     connect(
         remove_button, &QAbstractButton::clicked,
-        this, &GplinkTab::on_remove_button);
+        this, &GroupPolicyTab::on_remove_button);
     connect(
         add_button, &QAbstractButton::clicked,
-        this, &GplinkTab::on_add_button);
+        this, &GroupPolicyTab::on_add_button);
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
-        this, &GplinkTab::on_context_menu);
+        this, &GroupPolicyTab::on_context_menu);
 }
 
-bool GplinkTab::changed() const {
+bool GroupPolicyTab::changed() const {
     return any_edits_changed(edits) || !current_gplink.equals(original_gplink);
 }
 
-bool GplinkTab::verify() {
+bool GroupPolicyTab::verify() {
     return verify_attribute_edits(edits, this);
 }
 
-void GplinkTab::apply() {
+void GroupPolicyTab::apply() {
     const QString gplink_string = current_gplink.to_string();
     AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_GPLINK, gplink_string);
 
     apply_attribute_edits(edits, target(), this);
 }
 
-void GplinkTab::reload() {
+void GroupPolicyTab::reload() {
     const QString gplink_string = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_GPLINK);
     original_gplink = Gplink(gplink_string);
     current_gplink = original_gplink;
@@ -234,14 +234,14 @@ void GplinkTab::reload() {
 }
 
 // TODO: not sure which object classes can have gplink, for now only know of OU's.
-bool GplinkTab::accepts_target() const {
+bool GroupPolicyTab::accepts_target() const {
     const bool is_ou = AdInterface::instance()->is_ou(target());
 
     return is_ou;
 }
 
 // TODO: similar to code in ObjectContextMenu
-void GplinkTab::on_context_menu(const QPoint pos) {
+void GroupPolicyTab::on_context_menu(const QPoint pos) {
     const QModelIndex base_index = view->indexAt(pos);
     if (!base_index.isValid()) {
         return;
@@ -279,7 +279,7 @@ void GplinkTab::on_context_menu(const QPoint pos) {
     menu->popup(global_pos);
 }
 
-void GplinkTab::on_add_button() {
+void GroupPolicyTab::on_add_button() {
     const QList<QString> classes = {CLASS_GP_CONTAINER};
     const QList<QString> selected = SelectDialog::open(classes, SelectDialogMultiSelection_Yes);
 
@@ -288,7 +288,7 @@ void GplinkTab::on_add_button() {
     }
 }
 
-void GplinkTab::on_remove_button() {
+void GroupPolicyTab::on_remove_button() {
     const QItemSelectionModel *selection_model = view->selectionModel();
     const QList<QModelIndex> selected_raw = selection_model->selectedIndexes();
 
@@ -303,7 +303,7 @@ void GplinkTab::on_remove_button() {
     remove(selected);    
 }
 
-void GplinkTab::add(QList<QString> gps) {
+void GroupPolicyTab::add(QList<QString> gps) {
     for (auto gp : gps) {
         current_gplink.add(gp);
     }
@@ -311,7 +311,7 @@ void GplinkTab::add(QList<QString> gps) {
     edited();
 }
 
-void GplinkTab::remove(QList<QString> gps) {
+void GroupPolicyTab::remove(QList<QString> gps) {
     for (auto gp : gps) {
         current_gplink.remove(gp);
     }
@@ -320,7 +320,7 @@ void GplinkTab::remove(QList<QString> gps) {
 }
 
 // TODO: members tab needs this as well. DetailsTab::on_edit_changed() slot is weird in general. Also, idk if "edited" is a good name, sounds like a getter for a bool.
-void GplinkTab::edited() {
+void GroupPolicyTab::edited() {
     model->removeRows(0, model->rowCount());
 
     for (auto gpo : current_gplink.gpos_in_order) {

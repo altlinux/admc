@@ -36,8 +36,8 @@ enum TabHandle {
     TabHandle_Account,
     TabHandle_Members,
     TabHandle_Address,
-    TabHandle_Gplink,
-    TabHandle_GplinkInverse,
+    TabHandle_GroupPolicy,
+    TabHandle_GroupPolicyInverse,
     TabHandle_COUNT
 };
 

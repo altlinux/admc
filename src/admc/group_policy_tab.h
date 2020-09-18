@@ -56,11 +56,11 @@ public:
     void move_down(const QString &gpo);
 };
 
-class GplinkTab final : public DetailsTab {
+class GroupPolicyTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    GplinkTab(DetailsWidget *details_arg);
+    GroupPolicyTab(DetailsWidget *details_arg);
     DECL_DETAILS_TAB_VIRTUALS();
 
 private slots:
