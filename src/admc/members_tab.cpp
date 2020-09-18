@@ -170,11 +170,9 @@ void MembersTab::load_current_members_into_model() {
     model->removeRows(0, model->rowCount());
 
     for (auto dn : current_members) {
-        QList<QStandardItem *> row;
-        for (int i = 0; i < MembersColumn_COUNT; i++) {
-            row.append(new QStandardItem());
-        }
         const QString name = AdInterface::instance()->get_name_for_display(dn);
+        
+        const QList<QStandardItem *> row = make_item_row(MembersColumn_COUNT);
         row[MembersColumn_Name]->setText(name);
         row[MembersColumn_DN]->setText(dn);
 

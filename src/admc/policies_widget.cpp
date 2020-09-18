@@ -71,14 +71,10 @@ void PoliciesWidget::on_logged_in() {
     const QList<QString> gpos = AdInterface::instance()->list_all_gpos();
 
     for (auto gpo : gpos) {
-        QList<QStandardItem *> row;
-        for (int i = 0; i < PoliciesColumn_COUNT; i++) {
-            row.append(new QStandardItem());
-        }
-
         const QString name = AdInterface::instance()->get_name_for_display(gpo);
+        
+        const QList<QStandardItem *> row = make_item_row(PoliciesColumn_COUNT);
         row[PoliciesColumn_Name]->setText(name);
-
         row[PoliciesColumn_DN]->setText(gpo);
 
         model->appendRow(row);

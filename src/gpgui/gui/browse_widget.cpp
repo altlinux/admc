@@ -21,6 +21,7 @@
 #include "pol_editor.h"
 #include "xml_editor.h"
 #include "file.h"
+#include "utils.h"
 
 #include <QTreeView>
 #include <QString>
@@ -75,16 +76,12 @@ void BrowseWidget::change_target(const QString &policy_path_arg) {
 }
 
 void BrowseWidget::add_entry_recursively(const QString &path, QStandardItem *parent) {
-    QList<QStandardItem *> row;
-    for (int i = 0; i < BrowseColumn_COUNT; i++) {
-        row.append(new QStandardItem());
-    }
-
     // TODO: ok to use system f-n basename for smp url?
     const QByteArray path_array = path.toLatin1();
     const char *path_cstr = path_array.constData();
     const QString name = basename(path_cstr);
 
+    const QList<QStandardItem *> row = make_item_row(BrowseColumn_COUNT);
     row[BrowseColumn_Name]->setText(name);
     row[BrowseColumn_Path]->setText(path);
 

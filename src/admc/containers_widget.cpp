@@ -306,7 +306,7 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
         return nullptr;
     }
 
-    QList<QStandardItem *> row = make_empty_item_row(ContainersColumn_COUNT);
+    const QList<QStandardItem *> row = make_item_row(ContainersColumn_COUNT);
     
     const QString name = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_NAME);
     row[ContainersColumn_Name]->setText(name);

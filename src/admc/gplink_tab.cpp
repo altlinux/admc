@@ -247,13 +247,9 @@ void GplinkTab::load_current_into_model() {
     for (auto gpo : current_gplink.gpos_in_order) {
         const int option = current_gplink.options[gpo];
         const QString option_string = QString::number(option);
-
         const QString name = AdInterface::instance()->get_name_for_display(gpo);
 
-        QList<QStandardItem *> row;
-        for (int i = 0; i < GplinkColumn_COUNT; i++) {
-            row.append(new QStandardItem());
-        }
+        const QList<QStandardItem *> row = make_item_row(GplinkColumn_COUNT);
         row[GplinkColumn_Name]->setText(name);
         row[GplinkColumn_Option]->setText(option_string);
         row[GplinkColumn_DN]->setText(gpo);

@@ -124,7 +124,7 @@ QString set_changed_marker(const QString &text, bool changed) {
     return new_text;
 }
 
-QList<QStandardItem *> make_empty_item_row(const int count) {
+QList<QStandardItem *> make_item_row(const int count) {
     QList<QStandardItem *> row;
 
     for (int i = 0; i < count; i++) {

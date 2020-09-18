@@ -163,7 +163,7 @@ void ContentsModel::change_target(const QString &target_dn) {
 }
 
 void ContentsModel::make_row(QStandardItem *parent, const QString &dn) {
-    QList<QStandardItem *> row = make_empty_item_row(ContentsColumn_COUNT);
+    const QList<QStandardItem *> row = make_item_row(ContentsColumn_COUNT);
 
     const QString name = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_NAME);
 
