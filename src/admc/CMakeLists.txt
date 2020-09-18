@@ -39,6 +39,7 @@ add_executable(admc
     address_tab.cpp
     object_tab.cpp
     gplink_tab.cpp
+    gplink_inverse_tab.cpp
     rename_dialog.cpp
     create_dialog.cpp
     attribute_display_strings.cpp

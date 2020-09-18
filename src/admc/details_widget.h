@@ -37,6 +37,7 @@ enum TabHandle {
     TabHandle_Members,
     TabHandle_Address,
     TabHandle_Gplink,
+    TabHandle_GplinkInverse,
     TabHandle_COUNT
 };
 

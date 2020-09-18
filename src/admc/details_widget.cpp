@@ -26,6 +26,7 @@
 #include "address_tab.h"
 #include "object_tab.h"
 #include "gplink_tab.h"
+#include "gplink_inverse_tab.h"
 #include "ad_interface.h"
 #include "settings.h"
 #include "status.h"
@@ -75,6 +76,7 @@ DetailsWidget::DetailsWidget(const bool is_floating_instance_arg)
     tabs[TabHandle_Members] = new MembersTab(this);
     tabs[TabHandle_Address] = new AddressTab(this);
     tabs[TabHandle_Gplink] = new GplinkTab(this);
+    tabs[TabHandle_GplinkInverse] = new GplinkInverseTab(this);
 
     // NOTE: need to add all tabs so that tab widget gains ownership of them
     for (auto tab : tabs) {
@@ -181,7 +183,8 @@ void DetailsWidget::reload(const QString &new_target) {
                     case TabHandle_Account: return tr("Account");
                     case TabHandle_Members: return tr("Members");
                     case TabHandle_Address: return tr("Address");
-                    case TabHandle_Gplink: return tr("gPLink");
+                    case TabHandle_Gplink: return tr("Group policy");
+                    case TabHandle_GplinkInverse: return tr("Links to");
                     case TabHandle_COUNT: return tr("COUNT"); 
                 }
                 return QString();
