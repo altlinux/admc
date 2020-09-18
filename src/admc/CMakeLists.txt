@@ -55,6 +55,7 @@ add_executable(admc
     edits/account_option_edit.cpp
     edits/password_edit.cpp
     edits/datetime_edit.cpp
+    edits/gpoptions_edit.cpp
 
     ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
 

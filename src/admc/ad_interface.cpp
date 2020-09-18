@@ -926,6 +926,28 @@ bool AdInterface::is_computer(const QString &dn) {
     return is_class(dn, CLASS_COMPUTER);
 }
 
+GpoptionsValue AdInterface::gpoptions_get(const QString &dn) {
+    const QString gpoptions_string = attribute_get(dn, ATTRIBUTE_GPOPTIONS);
+
+    if (gpoptions_string.isEmpty()) {
+        return GpoptionsValue_Unset;
+    } else {
+        const int gpoptions_int = gpoptions_string.toInt();
+        const GpoptionsValue value = (GpoptionsValue) gpoptions_int;
+
+        return value;
+    }
+}
+
+bool AdInterface::gpoptions_set(const QString &dn, const GpoptionsValue value) {
+    const int gpoptions_int = (int) value;
+    const QString gpoptions_string = QString::number(gpoptions_int);
+
+    const bool replace_success = attribute_replace(dn, ATTRIBUTE_GPOPTIONS, gpoptions_string);
+
+    return replace_success;
+}
+
 bool AdInterface::user_get_account_option(const QString &dn, AccountOption option) {
     switch (option) {
         case AccountOption_PasswordExpired: {

@@ -24,7 +24,7 @@
 
 #include <QHash>
 #include <QPoint>
-#include <QSet>
+#include <QList>
 #include <QString>
 
 class QTreeView;
@@ -32,6 +32,7 @@ class QString;
 class ObjectContextMenu;
 class MembersModel;
 class QStandardItemModel;
+class AttributeEdit;
 
 enum GplinkOption {
     GplinkOption_None,
@@ -72,6 +73,8 @@ private:
     QTreeView *view = nullptr;
     Gplink original_gplink;
     Gplink current_gplink;
+
+    QList<AttributeEdit *> edits;
 
     void add(QList<QString> gpos);
     void remove(QList<QString> gpos);

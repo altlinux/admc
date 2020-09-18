@@ -22,6 +22,7 @@
 #include "utils.h"
 #include "dn_column_proxy.h"
 #include "select_dialog.h"
+#include "edits/gpoptions_edit.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -175,6 +176,13 @@ GplinkTab::GplinkTab(DetailsWidget *details_arg)
 
     setup_model_chain(view, model, {dn_column_proxy});
 
+    const auto edits_layout = new QGridLayout();
+
+    auto gpoptions_edit = new GpoptionsEdit(this);
+    edits.append(gpoptions_edit);
+    layout_attribute_edits(edits, edits_layout);
+    connect_edits_to_tab(edits, this);
+
     auto add_button = new QPushButton(tr("Add"));
     auto remove_button = new QPushButton(tr("Remove"));
     auto button_layout = new QHBoxLayout();
@@ -187,6 +195,7 @@ GplinkTab::GplinkTab(DetailsWidget *details_arg)
     layout->setSpacing(0);
     layout->addWidget(view);
     layout->addLayout(button_layout);
+    layout->addLayout(edits_layout);
 
     connect(
         remove_button, &QAbstractButton::clicked,
@@ -200,22 +209,26 @@ GplinkTab::GplinkTab(DetailsWidget *details_arg)
 }
 
 bool GplinkTab::changed() const {
-    return !current_gplink.equals(original_gplink);
+    return any_edits_changed(edits) || !current_gplink.equals(original_gplink);
 }
 
 bool GplinkTab::verify() {
-    return true;
+    return verify_attribute_edits(edits, this);
 }
 
 void GplinkTab::apply() {
     const QString gplink_string = current_gplink.to_string();
     AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_GPLINK, gplink_string);
+
+    apply_attribute_edits(edits, target(), this);
 }
 
 void GplinkTab::reload() {
     const QString gplink_string = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_GPLINK);
     original_gplink = Gplink(gplink_string);
     current_gplink = original_gplink;
+
+    load_attribute_edits(edits, target());
 
     edited();
 }

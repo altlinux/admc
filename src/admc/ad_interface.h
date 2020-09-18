@@ -77,6 +77,7 @@
 #define ATTRIBUTE_INFO                  "info"
 #define ATTRIBUTE_PASSWORD              "unicodePwd"
 #define ATTRIBUTE_GPLINK                "gPLink"
+#define ATTRIBUTE_GPOPTIONS             "gPOptions"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
@@ -120,6 +121,13 @@ enum GroupType {
     GroupType_Security,
     GroupType_Distribution,
     GroupType_COUNT
+};
+
+// NOTE: GpoptionsValue_Unset is a necessary hack because Gpoptions might be absent. It's not a real value.
+enum GpoptionsValue {
+    GpoptionsValue_Inherit = 0,
+    GpoptionsValue_BlockInheritance = 1,
+    GpoptionsValue_Unset = 2
 };
 
 typedef QMap<QString, QList<QString>> Attributes;
@@ -195,6 +203,9 @@ public:
     bool is_policy(const QString &dn);
     bool is_container_like(const QString &dn);
     bool is_computer(const QString &dn);
+
+    GpoptionsValue gpoptions_get(const QString &dn);
+    bool gpoptions_set(const QString &dn, GpoptionsValue value);
 
     bool user_get_account_option(const QString &dn, AccountOption option);
 
