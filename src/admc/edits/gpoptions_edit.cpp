@@ -44,7 +44,6 @@ void GpoptionsEdit::load(const QString &dn) {
         switch (value) {
             case GpoptionsValue_Inherit: return false;
             case GpoptionsValue_BlockInheritance: return true;   
-            case GpoptionsValue_Unset: return false;   
         }
         return false;
     }();
@@ -53,7 +52,7 @@ void GpoptionsEdit::load(const QString &dn) {
     checkbox_set_checked(check, checked);
     check->blockSignals(false);
 
-    original_value = value;
+    original_checked_value = checked;
 
     emit edited();
 }
@@ -71,27 +70,21 @@ bool GpoptionsEdit::verify_input(QWidget *parent) {
 }
 
 bool GpoptionsEdit::changed() const {
-    const GpoptionsValue new_value = get_new_value();
-    return (new_value != original_value);
+    const bool new_checked_value = checkbox_is_checked(check);
+    return (new_checked_value != original_checked_value);
 }
 
 bool GpoptionsEdit::apply(const QString &dn) {
-    const GpoptionsValue new_value = get_new_value();
-    const bool success = AdInterface::instance()->gpoptions_set(dn, new_value);
-
-    return success;
-}
-
-// TODO: bad
-GpoptionsValue GpoptionsEdit::get_new_value() const {
-    const bool checked = checkbox_is_checked(check);
-    if (checked) {
-        return GpoptionsValue_BlockInheritance;
-    } else {
-        if (original_value == GpoptionsValue_Unset) {
-            return GpoptionsValue_Unset;
+    const GpoptionsValue new_value =
+    [this]() {
+        const bool checked = checkbox_is_checked(check);
+        if (checked) {
+            return GpoptionsValue_BlockInheritance;
         } else {
             return GpoptionsValue_Inherit;
         }
-    }
+    }();
+    const bool success = AdInterface::instance()->gpoptions_set(dn, new_value);
+
+    return success;
 }

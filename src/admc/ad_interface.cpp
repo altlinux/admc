@@ -930,7 +930,7 @@ GpoptionsValue AdInterface::gpoptions_get(const QString &dn) {
     const QString gpoptions_string = attribute_get(dn, ATTRIBUTE_GPOPTIONS);
 
     if (gpoptions_string.isEmpty()) {
-        return GpoptionsValue_Unset;
+        return GpoptionsValue_Inherit;
     } else {
         const int gpoptions_int = gpoptions_string.toInt();
         const GpoptionsValue value = (GpoptionsValue) gpoptions_int;

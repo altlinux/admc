@@ -123,11 +123,9 @@ enum GroupType {
     GroupType_COUNT
 };
 
-// NOTE: GpoptionsValue_Unset is a necessary hack because Gpoptions might be absent. It's not a real value.
 enum GpoptionsValue {
     GpoptionsValue_Inherit = 0,
-    GpoptionsValue_BlockInheritance = 1,
-    GpoptionsValue_Unset = 2
+    GpoptionsValue_BlockInheritance = 1
 };
 
 typedef QMap<QString, QList<QString>> Attributes;

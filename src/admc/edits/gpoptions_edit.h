@@ -33,9 +33,7 @@ public:
 
 private:
     QCheckBox *check;
-    GpoptionsValue original_value;
-
-    GpoptionsValue get_new_value() const;
+    bool original_checked_value;
 };
 
 #endif /* GPOPTIONS_EDIT_H */
