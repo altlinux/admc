@@ -38,8 +38,7 @@ enum ContainersColumn {
     ContainersColumn_COUNT,
 };
 
-QStandardItem *make_new_row(QStandardItem *parent, const QString &dn);
-void load_row(QList<QStandardItem *> row, const QString &dn);
+QStandardItem *make_row(QStandardItem *parent, const QString &dn);
 
 ContainersWidget::ContainersWidget(QWidget *parent)
 : QWidget(parent)
@@ -156,7 +155,7 @@ void ContainersWidget::on_ad_modified() {
         QStack<QModelIndex> stack;
 
         QStandardItem *invis_root = model->invisibleRootItem();
-        const QStandardItem *head_item = make_new_row(invis_root, head_dn);
+        const QStandardItem *head_item = make_row(invis_root, head_dn);
         stack.push(head_item->index());
 
         while (!stack.isEmpty()) {
@@ -271,7 +270,7 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
     QList<QString> children = AdInterface::instance()->list(dn);
 
     for (auto child : children) {
-        make_new_row(parent_item, child);
+        make_row(parent_item, child);
     }
 
     // Unset CanFetch flag
@@ -294,24 +293,11 @@ void ContainersModel::on_logged_in() {
     // Load head
     const QString head_dn = AdInterface::instance()->get_search_base();
     QStandardItem *invis_root = invisibleRootItem();
-    make_new_row(invis_root, head_dn);
+    make_row(invis_root, head_dn);
 }
 
-void load_row(QList<QStandardItem *> row, const QString &dn) {
-    QString name = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_NAME);
-
-    row[ContainersColumn_Name]->setText(name);
-    row[ContainersColumn_DN]->setText(dn);
-
-    QIcon icon = get_object_icon(dn);
-    row[0]->setIcon(icon);
-
-    // Set fetch flag because row is new and can be fetched
-    row[0]->setData(true, ContainersModel::Roles::CanFetch);
-}
-
-// Make new row in model at given parent based on object with given dn
-QStandardItem *make_new_row(QStandardItem *parent, const QString &dn) {
+// Make row in model at given parent based on object with given dn
+QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
     const bool is_container = AdInterface::instance()->is_container(dn);
     const bool is_container_like = AdInterface::instance()->is_container_like(dn);
     const bool should_be_loaded = is_container || is_container_like;
@@ -321,7 +307,16 @@ QStandardItem *make_new_row(QStandardItem *parent, const QString &dn) {
     }
 
     QList<QStandardItem *> row = make_empty_item_row(ContainersColumn_COUNT);
-    load_row(row, dn);
+    
+    const QString name = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_NAME);
+    row[ContainersColumn_Name]->setText(name);
+    row[ContainersColumn_DN]->setText(dn);
+
+    const QIcon icon = get_object_icon(dn);
+    row[0]->setIcon(icon);
+
+    // Set fetch flag because row is new and can be fetched
+    row[0]->setData(true, ContainersModel::Roles::CanFetch);
 
     parent->appendRow(row);
 
