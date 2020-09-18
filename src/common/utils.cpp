@@ -26,6 +26,7 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QGridLayout>
+#include <QStandardItem>
 
 // Converts index all the way down to source index, going through whatever chain of proxies is present
 QModelIndex convert_to_source(const QModelIndex &index) {
@@ -121,4 +122,15 @@ QString set_changed_marker(const QString &text, bool changed) {
     }
 
     return new_text;
+}
+
+QList<QStandardItem *> make_empty_item_row(const int count) {
+    QList<QStandardItem *> row;
+
+    for (int i = 0; i < count; i++) {
+        const auto item = new QStandardItem();
+        row.push_back(item);
+    }
+
+    return row;
 }

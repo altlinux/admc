@@ -320,11 +320,7 @@ QStandardItem *make_new_row(QStandardItem *parent, const QString &dn) {
         return nullptr;
     }
 
-    auto row = QList<QStandardItem *>();
-    for (int i = 0; i < ContainersColumn_COUNT; i++) {
-        row.push_back(new QStandardItem());
-    }
-
+    QList<QStandardItem *> row = make_empty_item_row(ContainersColumn_COUNT);
     load_row(row, dn);
 
     parent->appendRow(row);

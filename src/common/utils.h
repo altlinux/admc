@@ -21,6 +21,7 @@
 #define UTILS_H
 
 #include <QModelIndex>
+#include <QList>
 
 class QAbstractItemModel;
 class QAbstractItemView;
@@ -30,6 +31,7 @@ class QCheckBox;
 class QGridLayout;
 class QLabel;
 class QByteArray;
+class QStandardItem;
 
 QModelIndex convert_to_source(const QModelIndex &index);
 QString get_dn_from_index(const QModelIndex &base_row_index, int dn_column);
@@ -39,5 +41,6 @@ bool checkbox_is_checked(const QCheckBox *checkbox);
 void checkbox_set_checked(QCheckBox *checkbox, bool checked);
 void append_to_grid_layout_with_label(QGridLayout *layout, QLabel *label, QWidget *widget);
 QString set_changed_marker(const QString &text, bool changed);
+QList<QStandardItem *> make_empty_item_row(const int count);
 
 #endif /* UTILS_H */

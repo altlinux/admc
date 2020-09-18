@@ -110,13 +110,9 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         const QList<QString> objects = AdInterface::instance()->search(filter);
 
         for (auto e_dn : objects) {
-            auto row = QList<QStandardItem *>();
-            for (int i = 0; i < SelectDialogColumn_COUNT; i++) {
-                row.push_back(new QStandardItem());
-            }
-
             const QString name = AdInterface::instance()->get_name_for_display(e_dn);
-
+            
+            QList<QStandardItem *> row = make_empty_item_row(SelectDialogColumn_COUNT);
             row[SelectDialogColumn_Name]->setText(name);
             row[SelectDialogColumn_Class]->setText(object_class);
             row[SelectDialogColumn_DN]->setText(e_dn);
