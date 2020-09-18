@@ -76,6 +76,7 @@
 #define ATTRIBUTE_DNS_HOST_NAME         "dNSHostName"
 #define ATTRIBUTE_INFO                  "info"
 #define ATTRIBUTE_PASSWORD              "unicodePwd"
+#define ATTRIBUTE_GPLINK                "gPLink"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
