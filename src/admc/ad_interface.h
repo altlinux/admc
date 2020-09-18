@@ -201,6 +201,8 @@ public:
     bool object_can_drop(const QString &dn, const QString &target_dn);
     void object_drop(const QString &dn, const QString &target_dn);
 
+    QString get_name_for_display(const QString &dn);
+
     QList<QString> list_all_gpos();
 
     void command(QStringList args);

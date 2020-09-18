@@ -76,7 +76,7 @@ void PoliciesWidget::on_logged_in() {
             row.append(new QStandardItem());
         }
 
-        const QString name = AdInterface::instance()->attribute_get(gpo, ATTRIBUTE_DISPLAY_NAME);
+        const QString name = AdInterface::instance()->get_name_for_display(gpo);
         row[PoliciesColumn_Name]->setText(name);
 
         row[PoliciesColumn_DN]->setText(gpo);

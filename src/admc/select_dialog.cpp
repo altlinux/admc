@@ -115,7 +115,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
                 row.push_back(new QStandardItem());
             }
 
-            const QString name = extract_name_from_dn(e_dn);
+            const QString name = AdInterface::instance()->get_name_for_display(e_dn);
 
             row[SelectDialogColumn_Name]->setText(name);
             row[SelectDialogColumn_Class]->setText(object_class);

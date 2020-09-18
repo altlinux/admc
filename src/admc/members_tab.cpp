@@ -174,7 +174,7 @@ void MembersTab::load_current_members_into_model() {
         for (int i = 0; i < MembersColumn_COUNT; i++) {
             row.append(new QStandardItem());
         }
-        const QString name = extract_name_from_dn(dn);
+        const QString name = AdInterface::instance()->get_name_for_display(dn);
         row[MembersColumn_Name]->setText(name);
         row[MembersColumn_DN]->setText(dn);
 
