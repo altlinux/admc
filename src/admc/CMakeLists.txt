@@ -39,7 +39,7 @@ add_executable(admc
     address_tab.cpp
     object_tab.cpp
     group_policy_tab.cpp
-    gplink_inverse_tab.cpp
+    gpo_links_tab.cpp
     rename_dialog.cpp
     create_dialog.cpp
     attribute_display_strings.cpp

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "gplink_inverse_tab.h"
+#include "gpo_links_tab.h"
 #include "details_widget.h"
 #include "utils.h"
 #include "dn_column_proxy.h"
@@ -36,7 +36,7 @@ enum GplinkInverseColumn {
     GplinkInverseColumn_COUNT
 };
 
-GplinkInverseTab::GplinkInverseTab(DetailsWidget *details_arg)
+GpoLinksTab::GpoLinksTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
     view = new QTreeView(this);
@@ -58,22 +58,22 @@ GplinkInverseTab::GplinkInverseTab(DetailsWidget *details_arg)
 
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
-        this, &GplinkInverseTab::on_context_menu);
+        this, &GpoLinksTab::on_context_menu);
 }
 
-bool GplinkInverseTab::changed() const {
+bool GpoLinksTab::changed() const {
     return false;
 }
 
-bool GplinkInverseTab::verify() {
+bool GpoLinksTab::verify() {
     return true;
 }
 
-void GplinkInverseTab::apply() {
+void GpoLinksTab::apply() {
 
 }
 
-void GplinkInverseTab::reload() {
+void GpoLinksTab::reload() {
     model->removeRows(0, model->rowCount());
 
     const QString filter = filter_EQUALS(ATTRIBUTE_GPLINK, "*");
@@ -95,14 +95,14 @@ void GplinkInverseTab::reload() {
     }
 }
 
-bool GplinkInverseTab::accepts_target() const {
+bool GpoLinksTab::accepts_target() const {
     const bool is_policy = AdInterface::instance()->is_policy(target());
 
     return is_policy;
 }
 
 // TODO: similar to code in ObjectContextMenu
-void GplinkInverseTab::on_context_menu(const QPoint pos) {
+void GpoLinksTab::on_context_menu(const QPoint pos) {
     const QModelIndex base_index = view->indexAt(pos);
     if (!base_index.isValid()) {
         return;

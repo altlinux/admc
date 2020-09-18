@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GPLINK_INVERSE_TAB_H
-#define GPLINK_INVERSE_TAB_H
+#ifndef GPO_LINKS_TAB_H
+#define GPO_LINKS_TAB_H
 
 #include "details_tab.h"
 
@@ -27,17 +27,19 @@
 #include <QSet>
 #include <QString>
 
+// List objects that this GPO links to.
+
 class QTreeView;
 class QString;
 class ObjectContextMenu;
 class MembersModel;
 class QStandardItemModel;
 
-class GplinkInverseTab final : public DetailsTab {
+class GpoLinksTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    GplinkInverseTab(DetailsWidget *details_arg);
+    GpoLinksTab(DetailsWidget *details_arg);
     DECL_DETAILS_TAB_VIRTUALS();
 
 private slots:
@@ -48,4 +50,4 @@ private:
     QTreeView *view = nullptr;
 };
 
-#endif /* GPLINK_INVERSE_TAB_H */
+#endif /* GPO_LINKS_TAB_H */

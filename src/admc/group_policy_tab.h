@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GPLINK_TAB_H
-#define GPLINK_TAB_H
+#ifndef GROUP_POLICY_TAB_H
+#define GROUP_POLICY_TAB_H
 
 #include "details_tab.h"
 
@@ -33,6 +33,8 @@ class ObjectContextMenu;
 class MembersModel;
 class QStandardItemModel;
 class AttributeEdit;
+
+// Tab for displaying, modifying group policy related attributes of an object(not a gpo!), such as gplink and gpoptions
 
 enum GplinkOption {
     GplinkOption_None,
@@ -81,4 +83,4 @@ private:
     void edited();
 };
 
-#endif /* GPLINK_TAB_H */
+#endif /* GROUP_POLICY_TAB_H */

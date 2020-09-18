@@ -26,7 +26,7 @@
 #include "address_tab.h"
 #include "object_tab.h"
 #include "group_policy_tab.h"
-#include "gplink_inverse_tab.h"
+#include "gpo_links_tab.h"
 #include "ad_interface.h"
 #include "settings.h"
 #include "status.h"
@@ -76,7 +76,7 @@ DetailsWidget::DetailsWidget(const bool is_floating_instance_arg)
     tabs[TabHandle_Members] = new MembersTab(this);
     tabs[TabHandle_Address] = new AddressTab(this);
     tabs[TabHandle_GroupPolicy] = new GroupPolicyTab(this);
-    tabs[TabHandle_GroupPolicyInverse] = new GplinkInverseTab(this);
+    tabs[TabHandle_GroupPolicyInverse] = new GpoLinksTab(this);
 
     // NOTE: need to add all tabs so that tab widget gains ownership of them
     for (auto tab : tabs) {
