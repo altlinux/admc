@@ -31,13 +31,19 @@ class QTreeView;
 class QString;
 class ObjectContextMenu;
 class MembersModel;
-
 class QStandardItemModel;
+
+enum GplinkOption {
+    GplinkOption_None,
+    GplinkOption_Disable,
+    GplinkOption_Enforce,
+    GplinkOption_COUNT
+};
 
 class Gplink {
 public:
     QList<QString> gpos_in_order;
-    QHash<QString, int> options;
+    QHash<QString, GplinkOption> options;
 
     Gplink();
     Gplink(const QString &gplink_string);
@@ -67,9 +73,9 @@ private:
     Gplink original_gplink;
     Gplink current_gplink;
 
-    void load_current_into_model();
     void add(QList<QString> gpos);
     void remove(QList<QString> gpos);
+    void edited();
 };
 
 #endif /* GPLINK_TAB_H */

@@ -28,14 +28,48 @@
 #include <QStandardItemModel>
 #include <QMenu>
 #include <QPushButton>
+#include <QDebug>
 
 #define LDAP_PREFIX "LDAP://"
+
+const QHash<GplinkOption, int> gplink_option_to_int_map = {
+    {GplinkOption_None,     0},
+    {GplinkOption_Disable,  1},
+    {GplinkOption_Enforce,  2},
+    {GplinkOption_COUNT,    -1},
+};
 
 enum GplinkColumn {
     GplinkColumn_Name,
     GplinkColumn_Option,
     GplinkColumn_DN,
-    GplinkColumn_COUNT,
+    GplinkColumn_COUNT
+};
+
+GplinkOption gplink_option_from_string(const QString &option_string) {
+    const int option_int = option_string.toInt();
+    const QList<GplinkOption> keys = gplink_option_to_int_map.keys(option_int);
+    const GplinkOption option = keys[0];
+
+    return option;
+};
+
+QString gplink_option_to_string(const GplinkOption option) {
+    const int option_int = gplink_option_to_int_map[option];
+    const QString option_string = QString::number(option_int);
+
+    return option_string;
+}
+
+QString gplink_option_to_display_string(const GplinkOption option) {
+    switch (option) {
+        case GplinkOption_None: return QObject::tr("None");
+        case GplinkOption_Disable: return QObject::tr("Disable");
+        case GplinkOption_Enforce: return QObject::tr("Enforce");
+        case GplinkOption_COUNT: {};
+    }
+
+    return QObject::tr("UNKNOWN OPTION");
 };
 
 // NOTE: DN == GPO. But sticking to GPO terminology in this case
@@ -70,7 +104,7 @@ Gplink::Gplink(const QString &gplink_string) {
         QString gpo = part_split[0];
         gpo.replace(LDAP_PREFIX, "", Qt::CaseSensitive);
         const QString option_string = part_split[1];
-        const int option = option_string.toInt();
+        const GplinkOption option = gplink_option_from_string(option_string);
 
         gpos_in_order.append(gpo);
         options[gpo] = option;
@@ -81,8 +115,11 @@ QString Gplink::to_string() const {
     QString gplink_string;
 
     for (auto gpo : gpos_in_order) {
-        const int option = options[gpo];
-        const QString part = QString("[%1%2;%3]").arg(LDAP_PREFIX, gpo, QString::number(option));
+        const GplinkOption option = options[gpo];
+        const QString option_string = gplink_option_to_string(option);
+
+        const QString part = QString("[%1%2;%3]").arg(LDAP_PREFIX, gpo, option_string);
+        
         gplink_string += part;
     }
 
@@ -95,7 +132,7 @@ bool Gplink::equals(const Gplink &other) const {
 
 void Gplink::add(const QString &gpo) {
     gpos_in_order.append(gpo);
-    options[gpo] = 0;
+    options[gpo] = GplinkOption_None;
 }
 
 void Gplink::remove(const QString &gpo) {
@@ -180,7 +217,7 @@ void GplinkTab::reload() {
     original_gplink = Gplink(gplink_string);
     current_gplink = original_gplink;
 
-    load_current_into_model();
+    edited();
 }
 
 // TODO: not sure which object classes can have gplink, for now only know of OU's.
@@ -205,15 +242,27 @@ void GplinkTab::on_context_menu(const QPoint pos) {
     menu->addAction(tr("Remove link"), [this, gpo]() {
         const QList<QString> removed = {gpo};
         remove(removed);
+        edited();
     });
     menu->addAction(tr("Move up"), [this, gpo]() {
         current_gplink.move_up(gpo);
-        load_current_into_model();
+        edited();
     });
     menu->addAction(tr("Move down"), [this, gpo]() {
         current_gplink.move_down(gpo);
-        load_current_into_model();
+        edited();
     });
+
+    auto option_submenu = menu->addMenu(tr("Set option"));
+    for (int i = 0; i < GplinkOption_COUNT; i++) {
+        const GplinkOption option = (GplinkOption) i;
+        const QString option_display_string = gplink_option_to_display_string(option);
+        option_submenu->addAction(option_display_string, [this, gpo, option]() {
+            current_gplink.options[gpo] = option;
+            edited();
+        });
+    }
+    
     menu->popup(global_pos);
 }
 
@@ -241,31 +290,12 @@ void GplinkTab::on_remove_button() {
     remove(selected);    
 }
 
-void GplinkTab::load_current_into_model() {
-    model->removeRows(0, model->rowCount());
-
-    for (auto gpo : current_gplink.gpos_in_order) {
-        const int option = current_gplink.options[gpo];
-        const QString option_string = QString::number(option);
-        const QString name = AdInterface::instance()->get_name_for_display(gpo);
-
-        const QList<QStandardItem *> row = make_item_row(GplinkColumn_COUNT);
-        row[GplinkColumn_Name]->setText(name);
-        row[GplinkColumn_Option]->setText(option_string);
-        row[GplinkColumn_DN]->setText(gpo);
-
-        model->appendRow(row);
-    }
-}
-
 void GplinkTab::add(QList<QString> gps) {
     for (auto gp : gps) {
         current_gplink.add(gp);
     }
 
-    load_current_into_model();
-
-    on_edit_changed();
+    edited();
 }
 
 void GplinkTab::remove(QList<QString> gps) {
@@ -273,7 +303,25 @@ void GplinkTab::remove(QList<QString> gps) {
         current_gplink.remove(gp);
     }
 
-    load_current_into_model();
+    edited();
+}
+
+// TODO: members tab needs this as well. DetailsTab::on_edit_changed() slot is weird in general. Also, idk if "edited" is a good name, sounds like a getter for a bool.
+void GplinkTab::edited() {
+    model->removeRows(0, model->rowCount());
+
+    for (auto gpo : current_gplink.gpos_in_order) {
+        const GplinkOption option = current_gplink.options[gpo];
+        const QString option_display_string = gplink_option_to_display_string(option);
+        const QString name = AdInterface::instance()->get_name_for_display(gpo);
+
+        const QList<QStandardItem *> row = make_item_row(GplinkColumn_COUNT);
+        row[GplinkColumn_Name]->setText(name);
+        row[GplinkColumn_Option]->setText(option_display_string);
+        row[GplinkColumn_DN]->setText(gpo);
+
+        model->appendRow(row);
+    }
 
     on_edit_changed();
 }
