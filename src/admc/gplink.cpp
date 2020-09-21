@@ -5,13 +5,6 @@
 
 #define LDAP_PREFIX "LDAP://"
 
-const QHash<GplinkOption, int> gplink_option_to_int_map = {
-    {GplinkOption_None,     0},
-    {GplinkOption_Disable,  1},
-    {GplinkOption_Enforce,  2},
-    {GplinkOption_COUNT,    -1},
-};
-
 // NOTE: DN == GPO. But sticking to GPO terminology in this case
 
 // TODO: confirm that input gplink is valid. Do sanity checks?
@@ -43,8 +36,7 @@ Gplink::Gplink(const QString &gplink_string) {
         const QList<QString> part_split = part.split(';');
         QString gpo = part_split[0];
         gpo.replace(LDAP_PREFIX, "", Qt::CaseSensitive);
-        const QString option_string = part_split[1];
-        const GplinkOption option = gplink_option_from_string(option_string);
+        const QString option = part_split[1];
 
         gpos_in_order.append(gpo);
         options[gpo] = option;
@@ -55,10 +47,9 @@ QString Gplink::to_string() const {
     QString gplink_string;
 
     for (auto gpo : gpos_in_order) {
-        const GplinkOption option = options[gpo];
-        const QString option_string = gplink_option_to_string(option);
+        const QString option = options[gpo];
 
-        const QString part = QString("[%1%2;%3]").arg(LDAP_PREFIX, gpo, option_string);
+        const QString part = QString("[%1%2;%3]").arg(LDAP_PREFIX, gpo, option);
         
         gplink_string += part;
     }
@@ -70,17 +61,18 @@ QList<QString> Gplink::get_gpos() const {
     return gpos_in_order;
 }
 
-GplinkOption Gplink::get_option(const QString &gpo) const {
+QString Gplink::get_option(const QString &gpo) const {
     if (options.contains(gpo)) {
         return options[gpo];
     } else {
-        return GplinkOption_COUNT;
+        printf("WARNING: Gplink::get_option() given unknown gpo");
+        return "-1";
     }
 }
 
 void Gplink::add(const QString &gpo) {
     gpos_in_order.append(gpo);
-    options[gpo] = GplinkOption_None;
+    options[gpo] = GPLINK_OPTION_NONE;
 }
 
 void Gplink::remove(const QString &gpo) {
@@ -106,34 +98,8 @@ void Gplink::move_down(const QString &gpo) {
     }
 }
 
-void Gplink::set_option(const QString &gpo, const GplinkOption option) {
+void Gplink::set_option(const QString &gpo, const QString &option) {
     if (options.contains(gpo)) {
         options[gpo] = option;
     }
 }
-
-GplinkOption gplink_option_from_string(const QString &option_string) {
-    const int option_int = option_string.toInt();
-    const QList<GplinkOption> keys = gplink_option_to_int_map.keys(option_int);
-    const GplinkOption option = keys[0];
-
-    return option;
-};
-
-QString gplink_option_to_string(const GplinkOption option) {
-    const int option_int = gplink_option_to_int_map[option];
-    const QString option_string = QString::number(option_int);
-
-    return option_string;
-}
-
-QString gplink_option_to_display_string(const GplinkOption option) {
-    switch (option) {
-        case GplinkOption_None: return QObject::tr("None");
-        case GplinkOption_Disable: return QObject::tr("Disable");
-        case GplinkOption_Enforce: return QObject::tr("Enforce");
-        case GplinkOption_COUNT: {};
-    }
-
-    return QObject::tr("UNKNOWN OPTION");
-};

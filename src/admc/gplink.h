@@ -24,12 +24,15 @@
 #include <QList>
 #include <QString>
 
-enum GplinkOption {
-    GplinkOption_None,
-    GplinkOption_Disable,
-    GplinkOption_Enforce,
-    GplinkOption_COUNT
-};
+#define GPLINK_OPTION_NONE      "0"
+#define GPLINK_OPTION_DISABLE   "1"
+#define GPLINK_OPTION_ENFORCE   "2"
+
+// Class to store a gplink attribute for easy manipulation.
+// Gplink attribute primer: an ordered list of GPO container DN's
+// with each GPO being assigned an "option" value.
+// Options specify whether to ignore, disable or enforce the GPO
+// on a given object.
 
 class Gplink {
 public:
@@ -38,21 +41,17 @@ public:
 
     QString to_string() const;
     QList<QString> get_gpos() const;
-    GplinkOption get_option(const QString &gpo) const;
+    QString get_option(const QString &gpo) const;
 
     void add(const QString &gpo);
     void remove(const QString &gpo);
     void move_up(const QString &gpo);
     void move_down(const QString &gpo);
-    void set_option(const QString &gpo, const GplinkOption option);
+    void set_option(const QString &gpo, const QString &option);
 
 private:
     QList<QString> gpos_in_order;
-    QHash<QString, GplinkOption> options;
+    QHash<QString, QString> options;
 };
-
-GplinkOption gplink_option_from_string(const QString &option_string);
-QString gplink_option_to_string(const GplinkOption option);
-QString gplink_option_to_display_string(const GplinkOption option);
 
 #endif /* GPLINK_H */

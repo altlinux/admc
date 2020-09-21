@@ -38,6 +38,8 @@ enum GplinkColumn {
     GplinkColumn_COUNT
 };
 
+QString gplink_option_to_display_string(const QString &option);
+
 GroupPolicyTab::GroupPolicyTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
@@ -149,9 +151,13 @@ void GroupPolicyTab::on_context_menu(const QPoint pos) {
         edited();
     });
 
+    static const QSet<QString> options = {
+        GPLINK_OPTION_NONE,
+        GPLINK_OPTION_DISABLE,
+        GPLINK_OPTION_ENFORCE
+    };
     auto option_submenu = menu->addMenu(tr("Set option"));
-    for (int i = 0; i < GplinkOption_COUNT; i++) {
-        const GplinkOption option = (GplinkOption) i;
+    for (const auto option : options) {
         const QString option_display_string = gplink_option_to_display_string(option);
         option_submenu->addAction(option_display_string, [this, gpo, option]() {
             current_gplink.set_option(gpo, option);
@@ -207,7 +213,7 @@ void GroupPolicyTab::edited() {
     model->removeRows(0, model->rowCount());
 
     for (auto gpo : current_gplink.get_gpos()) {
-        const GplinkOption option = current_gplink.get_option(gpo);
+        const QString option = current_gplink.get_option(gpo);
         const QString option_display_string = gplink_option_to_display_string(option);
         const QString name = AdInterface::instance()->get_name_for_display(gpo);
 
@@ -220,4 +226,18 @@ void GroupPolicyTab::edited() {
     }
 
     on_edit_changed();
+}
+
+QString gplink_option_to_display_string(const QString &option) {
+    static const QHash<QString, QString> display_strings = {
+        {GPLINK_OPTION_NONE, QObject::tr("None")},
+        {GPLINK_OPTION_DISABLE, QObject::tr("Disable")},
+        {GPLINK_OPTION_ENFORCE, QObject::tr("Enforce")}
+    };
+    if (display_strings.contains(option)) {
+        const QString display_string = display_strings[option];
+        return display_string;
+    } else {
+        return QObject::tr("UNKNOWN OPTION");
+    }
 }
