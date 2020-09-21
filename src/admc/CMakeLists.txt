@@ -25,7 +25,6 @@ add_executable(admc
     status.cpp
     members_tab.cpp
     object_model.cpp
-    settings.cpp
     select_dialog.cpp
     object_context_menu.cpp
     confirmation_dialog.cpp
@@ -59,6 +58,7 @@ add_executable(admc
     edits/gpoptions_edit.cpp
 
     ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
+    ${PROJECT_SOURCE_DIR}/src/common/settings.cpp
 
     admc.qrc
     ${PROJECT_SOURCE_DIR}/translations/translations.qrc

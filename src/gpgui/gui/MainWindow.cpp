@@ -19,6 +19,7 @@
 #include "config.h"
 #include "browse_widget.h"
 #include "xml_editor.h"
+#include "settings.h"
 
 #include <QAction>
 #include <QCloseEvent>
@@ -43,6 +44,8 @@
 MainWindow::MainWindow(const QString &path)
 : QMainWindow()
 {
+    Settings::instance()->restore_geometry(this, VariantSetting_MainWindowGeometry);
+
     // this->preg_open_dialog = new QFileDialog(
     //     this, tr("Select PReg file to edit"), QDir::currentPath(),
     //     "PReg files (*.pol);;All files (*.*)");
@@ -79,8 +82,6 @@ MainWindow::MainWindow(const QString &path)
 
     // /* Create dialog windows */
     // this->reg_dword_dialog = new REG_DWORD_Dialog();
-
-    setGeometry(0, 0, 800, 600);
 
     const auto menubar = new QMenuBar();
     setMenuBar(menubar);
@@ -273,4 +274,8 @@ void MainWindow::open_generic_path(const QString &path) {
         // TODO: this could be a non xml/pol file
         browse_widget->change_target(path);
     }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    Settings::instance()->save_geometry(this, VariantSetting_MainWindowGeometry);
 }

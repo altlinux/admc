@@ -26,6 +26,11 @@
  * destructed.
  * Settings of boolean type have BoolSettingSignal objects which emit
  * changed() signal when setting is changed
+ *
+ * NOTE: admc and gpgui share settings keys BUT
+ * the settings files are separate
+ *
+ * NOTE: MUST BE used AFTER app's organization and applications names are set (in main)
  */
 
 #include <QObject>
@@ -33,17 +38,25 @@
 class QAction;
 class QSettings;
 class QVariant;
+class QWidget;
 
 enum VariantSetting {
+    // ADMC
     VariantSetting_Domain,    
     VariantSetting_Site,    
     VariantSetting_Host,    
-    VariantSetting_MainWindowGeometry,
     VariantSetting_Locale,
+
+    // GPGUI
+
+    // Shared
+    VariantSetting_MainWindowGeometry,
+
     VariantSetting_COUNT,    
 };
 
 enum BoolSetting {
+    // ADMC
     BoolSetting_AdvancedView,
     BoolSetting_DnColumn,
     BoolSetting_DetailsFromContainers,
@@ -53,6 +66,9 @@ enum BoolSetting {
     BoolSetting_AutoLogin,
     BoolSetting_DevMode,
     BoolSetting_DetailsIsDocked,
+
+    // GPGUI
+
     BoolSetting_COUNT,
 };
 
@@ -85,6 +101,9 @@ public:
      * Action becomes checkable
      */ 
     void connect_action_to_get_bool_signal(QAction *action, BoolSetting type);
+
+    void restore_geometry(QWidget *widget, const VariantSetting geometry_setting);
+    void save_geometry(QWidget *widget, const VariantSetting geometry_setting);
 
 private:
     QSettings *qsettings = nullptr;

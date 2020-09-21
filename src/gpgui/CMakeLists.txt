@@ -43,6 +43,7 @@ add_executable(gpgui
     gui/xml/xml_ubyte_edit.cpp
 
     ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
+    ${PROJECT_SOURCE_DIR}/src/common/settings.cpp
 
     gpgui.qrc
     ${PROJECT_SOURCE_DIR}/translations/translations.qrc

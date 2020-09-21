@@ -37,11 +37,7 @@
 MainWindow::MainWindow()
 : QMainWindow()
 {
-    // Restore last geometry
-    const QByteArray geometry = Settings::instance()->get_variant(VariantSetting_MainWindowGeometry).toByteArray();
-    if (!geometry.isEmpty()) {
-        restoreGeometry(geometry);
-    }
+    Settings::instance()->restore_geometry(this, VariantSetting_MainWindowGeometry);
 
     auto menubar = new MenuBar(this);
     setMenuBar(menubar);
@@ -109,6 +105,5 @@ MainWindow::MainWindow()
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-    const QByteArray geometry = saveGeometry();
-    Settings::instance()->set_variant(VariantSetting_MainWindowGeometry, QVariant(geometry));
+    Settings::instance()->save_geometry(this, VariantSetting_MainWindowGeometry);
 }

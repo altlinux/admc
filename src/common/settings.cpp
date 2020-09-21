@@ -18,9 +18,9 @@
  */
 
 #include "settings.h"
-#include "config.h"
 
 #include <QAction>
+#include <QWidget>
 #include <QSettings>
 
 QString bool_to_string(BoolSetting type);
@@ -55,7 +55,7 @@ void Settings::set_variant(VariantSetting type, const QVariant &value) {
 }
 
 Settings::Settings() {
-    qsettings = new QSettings(ADMC_ORGANIZATION, ADMC_APPLICATION_NAME, this);
+    qsettings = new QSettings(this);
 }
 
 void Settings::connect_action_to_get_bool_signal(QAction *action, BoolSetting type) {
@@ -75,6 +75,18 @@ void Settings::connect_action_to_get_bool_signal(QAction *action, BoolSetting ty
 
             emit bools[type].changed();
         });
+}
+
+void Settings::restore_geometry(QWidget *widget, const VariantSetting geometry_setting) {
+    const QByteArray geometry = get_variant(VariantSetting_MainWindowGeometry).toByteArray();
+    if (!geometry.isEmpty()) {
+        widget->restoreGeometry(geometry);
+    }
+}
+
+void Settings::save_geometry(QWidget *widget, const VariantSetting geometry_setting) {
+    const QByteArray geometry = widget->saveGeometry();
+    set_variant(VariantSetting_MainWindowGeometry, QVariant(geometry));
 }
 
 #define CASE_ENUM_TO_STRING(ENUM) case ENUM: return #ENUM

@@ -31,7 +31,7 @@ class QFileDialog;
 class QTableWidget;
 class BrowseWidget;
 
-class MainWindow : public QMainWindow {
+class MainWindow final : public QMainWindow {
 Q_OBJECT
 
 public:
@@ -48,6 +48,9 @@ private slots:
     void on_open_local_xml();
     void on_open_local_pol();
     void on_open_path();
+
+protected:
+    void closeEvent(QCloseEvent *event);
 
 private:
     BrowseWidget *browse_widget;
