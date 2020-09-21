@@ -99,6 +99,9 @@
 #define LDAP_BOOL_TRUE  "TRUE"
 #define LDAP_BOOL_FALSE "FALSE"
 
+#define GPOPTIONS_INHERIT           "0"
+#define GPOPTIONS_BLOCK_INHERITANCE "1"
+
 enum AccountOption {
     AccountOption_Disabled,
     AccountOption_PasswordExpired,
@@ -121,11 +124,6 @@ enum GroupType {
     GroupType_Security,
     GroupType_Distribution,
     GroupType_COUNT
-};
-
-enum GpoptionsValue {
-    GpoptionsValue_Inherit = 0,
-    GpoptionsValue_BlockInheritance = 1
 };
 
 typedef QMap<QString, QList<QString>> Attributes;
@@ -201,9 +199,6 @@ public:
     bool is_policy(const QString &dn);
     bool is_container_like(const QString &dn);
     bool is_computer(const QString &dn);
-
-    GpoptionsValue gpoptions_get(const QString &dn);
-    bool gpoptions_set(const QString &dn, GpoptionsValue value);
 
     bool user_get_account_option(const QString &dn, AccountOption option);
 

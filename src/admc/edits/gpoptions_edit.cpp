@@ -25,12 +25,6 @@
 #include <QLabel>
 #include <QHash>
 
-// TODO: use a real bidirectional map
-const QHash<GpoptionsValue, bool> gpoptions_to_checked = {
-    {GpoptionsValue_Inherit, false},
-    {GpoptionsValue_BlockInheritance, true}
-};
-
 GpoptionsEdit::GpoptionsEdit(QObject *parent)
 : AttributeEdit(parent)
 {
@@ -44,10 +38,9 @@ GpoptionsEdit::GpoptionsEdit(QObject *parent)
 }
 
 void GpoptionsEdit::load(const QString &dn) {
-    const GpoptionsValue value = AdInterface::instance()->gpoptions_get(dn);
+    const QString value = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_GPOPTIONS);
+    const bool checked = (value == GPOPTIONS_BLOCK_INHERITANCE);
 
-    const bool checked = gpoptions_to_checked[value];
-    
     check->blockSignals(true);
     checkbox_set_checked(check, checked);
     check->blockSignals(false);
@@ -75,9 +68,16 @@ bool GpoptionsEdit::changed() const {
 }
 
 bool GpoptionsEdit::apply(const QString &dn) {
-    const bool checked = checkbox_is_checked(check);
-    const GpoptionsValue new_value = gpoptions_to_checked.keys(checked)[0];
-    const bool success = AdInterface::instance()->gpoptions_set(dn, new_value);
+    const QString new_value =
+    [this]() {
+        const bool checked = checkbox_is_checked(check);
+        if (checked) {
+            return GPOPTIONS_BLOCK_INHERITANCE;
+        } else {
+            return GPOPTIONS_INHERIT;
+        }
+    }();
+    const bool success = AdInterface::instance()->attribute_replace(dn, ATTRIBUTE_GPOPTIONS, new_value);
 
     return success;
 }
