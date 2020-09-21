@@ -12,32 +12,6 @@ const QHash<GplinkOption, int> gplink_option_to_int_map = {
     {GplinkOption_COUNT,    -1},
 };
 
-GplinkOption gplink_option_from_string(const QString &option_string) {
-    const int option_int = option_string.toInt();
-    const QList<GplinkOption> keys = gplink_option_to_int_map.keys(option_int);
-    const GplinkOption option = keys[0];
-
-    return option;
-};
-
-QString gplink_option_to_string(const GplinkOption option) {
-    const int option_int = gplink_option_to_int_map[option];
-    const QString option_string = QString::number(option_int);
-
-    return option_string;
-}
-
-QString gplink_option_to_display_string(const GplinkOption option) {
-    switch (option) {
-        case GplinkOption_None: return QObject::tr("None");
-        case GplinkOption_Disable: return QObject::tr("Disable");
-        case GplinkOption_Enforce: return QObject::tr("Enforce");
-        case GplinkOption_COUNT: {};
-    }
-
-    return QObject::tr("UNKNOWN OPTION");
-};
-
 // NOTE: DN == GPO. But sticking to GPO terminology in this case
 
 // TODO: confirm that input gplink is valid. Do sanity checks?
@@ -92,6 +66,18 @@ QString Gplink::to_string() const {
     return gplink_string;
 }
 
+QList<QString> Gplink::get_gpos() const {
+    return gpos_in_order;
+}
+
+GplinkOption Gplink::get_option(const QString &gpo) const {
+    if (options.contains(gpo)) {
+        return options[gpo];
+    } else {
+        return GplinkOption_COUNT;
+    }
+}
+
 void Gplink::add(const QString &gpo) {
     gpos_in_order.append(gpo);
     options[gpo] = GplinkOption_None;
@@ -119,3 +105,35 @@ void Gplink::move_down(const QString &gpo) {
         gpos_in_order.move(current_index, new_index);
     }
 }
+
+void Gplink::set_option(const QString &gpo, const GplinkOption option) {
+    if (options.contains(gpo)) {
+        options[gpo] = option;
+    }
+}
+
+GplinkOption gplink_option_from_string(const QString &option_string) {
+    const int option_int = option_string.toInt();
+    const QList<GplinkOption> keys = gplink_option_to_int_map.keys(option_int);
+    const GplinkOption option = keys[0];
+
+    return option;
+};
+
+QString gplink_option_to_string(const GplinkOption option) {
+    const int option_int = gplink_option_to_int_map[option];
+    const QString option_string = QString::number(option_int);
+
+    return option_string;
+}
+
+QString gplink_option_to_display_string(const GplinkOption option) {
+    switch (option) {
+        case GplinkOption_None: return QObject::tr("None");
+        case GplinkOption_Disable: return QObject::tr("Disable");
+        case GplinkOption_Enforce: return QObject::tr("Enforce");
+        case GplinkOption_COUNT: {};
+    }
+
+    return QObject::tr("UNKNOWN OPTION");
+};

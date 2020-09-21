@@ -33,16 +33,22 @@ enum GplinkOption {
 
 class Gplink {
 public:
-    QList<QString> gpos_in_order;
-    QHash<QString, GplinkOption> options;
-
     Gplink();
     Gplink(const QString &gplink_string);
+
     QString to_string() const;
+    QList<QString> get_gpos() const;
+    GplinkOption get_option(const QString &gpo) const;
+
     void add(const QString &gpo);
     void remove(const QString &gpo);
     void move_up(const QString &gpo);
     void move_down(const QString &gpo);
+    void set_option(const QString &gpo, const GplinkOption option);
+
+private:
+    QList<QString> gpos_in_order;
+    QHash<QString, GplinkOption> options;
 };
 
 GplinkOption gplink_option_from_string(const QString &option_string);

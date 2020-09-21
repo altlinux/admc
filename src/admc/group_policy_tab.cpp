@@ -154,7 +154,7 @@ void GroupPolicyTab::on_context_menu(const QPoint pos) {
         const GplinkOption option = (GplinkOption) i;
         const QString option_display_string = gplink_option_to_display_string(option);
         option_submenu->addAction(option_display_string, [this, gpo, option]() {
-            current_gplink.options[gpo] = option;
+            current_gplink.set_option(gpo, option);
             edited();
         });
     }
@@ -206,8 +206,8 @@ void GroupPolicyTab::remove(QList<QString> gps) {
 void GroupPolicyTab::edited() {
     model->removeRows(0, model->rowCount());
 
-    for (auto gpo : current_gplink.gpos_in_order) {
-        const GplinkOption option = current_gplink.options[gpo];
+    for (auto gpo : current_gplink.get_gpos()) {
+        const GplinkOption option = current_gplink.get_option(gpo);
         const QString option_display_string = gplink_option_to_display_string(option);
         const QString name = AdInterface::instance()->get_name_for_display(gpo);
 
