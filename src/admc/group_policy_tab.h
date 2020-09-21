@@ -21,11 +21,10 @@
 #define GROUP_POLICY_TAB_H
 
 #include "details_tab.h"
+#include "gplink.h"
 
-#include <QHash>
 #include <QPoint>
 #include <QList>
-#include <QString>
 
 class QTreeView;
 class QString;
@@ -33,30 +32,9 @@ class ObjectContextMenu;
 class MembersModel;
 class QStandardItemModel;
 class AttributeEdit;
+class Gplink;
 
 // Tab for displaying, modifying group policy related attributes of an object(not a gpo!), such as gplink and gpoptions
-
-enum GplinkOption {
-    GplinkOption_None,
-    GplinkOption_Disable,
-    GplinkOption_Enforce,
-    GplinkOption_COUNT
-};
-
-class Gplink {
-public:
-    QList<QString> gpos_in_order;
-    QHash<QString, GplinkOption> options;
-
-    Gplink();
-    Gplink(const QString &gplink_string);
-    QString to_string() const;
-    bool equals(const Gplink &other) const;
-    void add(const QString &gpo);
-    void remove(const QString &gpo);
-    void move_up(const QString &gpo);
-    void move_down(const QString &gpo);
-};
 
 class GroupPolicyTab final : public DetailsTab {
 Q_OBJECT
