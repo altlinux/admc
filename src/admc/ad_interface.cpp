@@ -46,8 +46,6 @@ enum DatetimeFormat {
 
 DatetimeFormat get_attribute_time_format(const QString &attribute);
 int group_scope_to_bit(GroupScope scope);
-int bit_set(int bitmask, int bit, bool set);
-bool bit_is_set(int bitmask, int bit);
 
 AdInterface *AdInterface::instance() {
     static AdInterface ad_interface;
@@ -1372,18 +1370,6 @@ QString group_type_to_string(GroupType type) {
         case GroupType_COUNT: return "COUNT";
     }
     return "";
-}
-
-int bit_set(int bitmask, int bit, bool set) {
-    if (set) {
-        return bitmask | bit;
-    } else {
-        return bitmask & ~bit;
-    }
-}
-
-bool bit_is_set(int bitmask, int bit) {
-    return ((bitmask & bit) != 0);
 }
 
 QString object_class_display_string(const QString &object_class) {

@@ -33,10 +33,11 @@
 
 enum GplinkColumn {
     GplinkColumn_Name,
-    GplinkColumn_Option,
     GplinkColumn_DN,
     GplinkColumn_COUNT
 };
+
+// TODO: add columns for gplink options and implement editing through view cell
 
 QString gplink_option_to_display_string(const QString &option);
 
@@ -50,7 +51,6 @@ GroupPolicyTab::GroupPolicyTab(DetailsWidget *details_arg)
 
     model = new QStandardItemModel(0, GplinkColumn_COUNT, this);
     model->setHorizontalHeaderItem(GplinkColumn_Name, new QStandardItem(tr("Name")));
-    model->setHorizontalHeaderItem(GplinkColumn_Option, new QStandardItem(tr("Option")));
     model->setHorizontalHeaderItem(GplinkColumn_DN, new QStandardItem(tr("DN")));
 
     const auto dn_column_proxy = new DnColumnProxy(GplinkColumn_DN, this);
@@ -151,20 +151,37 @@ void GroupPolicyTab::on_context_menu(const QPoint pos) {
         edited();
     });
 
-    static const QSet<QString> options = {
-        GPLINK_OPTION_NONE,
-        GPLINK_OPTION_DISABLE,
-        GPLINK_OPTION_ENFORCE
+    auto add_options_action =
+    [this, menu, gpo](const GplinkOption option) {
+        const QString option_display_string =
+        [option]() {
+            switch (option) {
+                case GplinkOption_Disabled: return tr("Disabled");
+                case GplinkOption_Enforced: return tr("Enforced");
+            }
+            return QString("unknown option");
+        }();
+
+        const auto action = new QAction(option_display_string, this);
+        action->setCheckable(true);
+
+        const bool currently_is_set = current_gplink.get_option(gpo, option);
+        action->setChecked(currently_is_set);
+
+        connect(action, &QAction::triggered,
+            [this, gpo, option, action]() {
+                const bool is_set = action->isChecked();
+                current_gplink.set_option(gpo, option, is_set);
+
+                edited();
+            });
+
+        menu->addAction(action);
     };
-    auto option_submenu = menu->addMenu(tr("Set option"));
-    for (const auto option : options) {
-        const QString option_display_string = gplink_option_to_display_string(option);
-        option_submenu->addAction(option_display_string, [this, gpo, option]() {
-            current_gplink.set_option(gpo, option);
-            edited();
-        });
-    }
     
+    add_options_action(GplinkOption_Disabled);
+    add_options_action(GplinkOption_Enforced);
+
     menu->popup(global_pos);
 }
 
@@ -213,31 +230,14 @@ void GroupPolicyTab::edited() {
     model->removeRows(0, model->rowCount());
 
     for (auto gpo : current_gplink.get_gpos()) {
-        const QString option = current_gplink.get_option(gpo);
-        const QString option_display_string = gplink_option_to_display_string(option);
         const QString name = AdInterface::instance()->get_name_for_display(gpo);
 
         const QList<QStandardItem *> row = make_item_row(GplinkColumn_COUNT);
         row[GplinkColumn_Name]->setText(name);
-        row[GplinkColumn_Option]->setText(option_display_string);
         row[GplinkColumn_DN]->setText(gpo);
 
         model->appendRow(row);
     }
 
     on_edit_changed();
-}
-
-QString gplink_option_to_display_string(const QString &option) {
-    static const QHash<QString, QString> display_strings = {
-        {GPLINK_OPTION_NONE, QObject::tr("None")},
-        {GPLINK_OPTION_DISABLE, QObject::tr("Disable")},
-        {GPLINK_OPTION_ENFORCE, QObject::tr("Enforce")}
-    };
-    if (display_strings.contains(option)) {
-        const QString display_string = display_strings[option];
-        return display_string;
-    } else {
-        return QObject::tr("UNKNOWN OPTION");
-    }
 }

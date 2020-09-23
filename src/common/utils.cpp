@@ -134,3 +134,15 @@ QList<QStandardItem *> make_item_row(const int count) {
 
     return row;
 }
+
+int bit_set(int bitmask, int bit, bool set) {
+    if (set) {
+        return bitmask | bit;
+    } else {
+        return bitmask & ~bit;
+    }
+}
+
+bool bit_is_set(int bitmask, int bit) {
+    return ((bitmask & bit) != 0);
+}

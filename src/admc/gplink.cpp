@@ -1,5 +1,6 @@
 
 #include "gplink.h"
+#include "utils.h"
 
 #include <QObject>
 
@@ -8,6 +9,8 @@
 // NOTE: DN == GPO. But sticking to GPO terminology in this case
 
 // TODO: confirm that input gplink is valid. Do sanity checks?
+
+// TODO: not sure what to do about all the checking if given gpo is valid
 
 Gplink::Gplink() {
 
@@ -36,7 +39,9 @@ Gplink::Gplink(const QString &gplink_string) {
         const QList<QString> part_split = part.split(';');
         QString gpo = part_split[0];
         gpo.replace(LDAP_PREFIX, "", Qt::CaseSensitive);
-        const QString option = part_split[1];
+
+        const QString option_string = part_split[1];
+        const int option = option_string.toInt();
 
         gpos_in_order.append(gpo);
         options[gpo] = option;
@@ -47,9 +52,10 @@ QString Gplink::to_string() const {
     QString gplink_string;
 
     for (auto gpo : gpos_in_order) {
-        const QString option = options[gpo];
+        const int option = options[gpo];
+        const QString option_string = QString::number(option);
 
-        const QString part = QString("[%1%2;%3]").arg(LDAP_PREFIX, gpo, option);
+        const QString part = QString("[%1%2;%3]").arg(LDAP_PREFIX, gpo, option_string);
         
         gplink_string += part;
     }
@@ -61,18 +67,9 @@ QList<QString> Gplink::get_gpos() const {
     return gpos_in_order;
 }
 
-QString Gplink::get_option(const QString &gpo) const {
-    if (options.contains(gpo)) {
-        return options[gpo];
-    } else {
-        printf("WARNING: Gplink::get_option() given unknown gpo");
-        return "-1";
-    }
-}
-
 void Gplink::add(const QString &gpo) {
     gpos_in_order.append(gpo);
-    options[gpo] = GPLINK_OPTION_NONE;
+    options[gpo] = 0;
 }
 
 void Gplink::remove(const QString &gpo) {
@@ -98,8 +95,24 @@ void Gplink::move_down(const QString &gpo) {
     }
 }
 
-void Gplink::set_option(const QString &gpo, const QString &option) {
+bool Gplink::get_option(const QString &gpo, const GplinkOption option) const {
     if (options.contains(gpo)) {
-        options[gpo] = option;
+        const int option_bits = options[gpo];
+        const bool is_set = bit_is_set(option_bits, (int) option);
+
+        return is_set;
+    } else {
+        printf("WARNING: Gplink::set_option() given unknown gpo");
+        return false;
+    }
+}
+
+void Gplink::set_option(const QString &gpo, const GplinkOption option, const bool value) {
+    if (options.contains(gpo)) {
+        const int option_bits = options[gpo];
+        const int option_bits_new = bit_set(option_bits, (int) option, value);
+        options[gpo] = option_bits_new;
+    } else {
+        printf("WARNING: Gplink::set_option() given unknown gpo");
     }
 }

@@ -43,4 +43,7 @@ void append_to_grid_layout_with_label(QGridLayout *layout, QLabel *label, QWidge
 QString set_changed_marker(const QString &text, bool changed);
 QList<QStandardItem *> make_item_row(const int count);
 
+int bit_set(int bitmask, int bit, bool set);
+bool bit_is_set(int bitmask, int bit);
+
 #endif /* UTILS_H */
