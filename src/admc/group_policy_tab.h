@@ -58,9 +58,12 @@ private:
 
     QList<AttributeEdit *> edits;
 
-    void add(QList<QString> gpos);
-    void remove(QList<QString> gpos);
-    void edited();
+    void add_link(QList<QString> gpos);
+    void remove_link(QList<QString> gpos);
+    void move_link_up(const QString &gpo);
+    void move_link_down(const QString &gpo);
+
+    void reload_current_gplink_into_model();
 };
 
 #endif /* GROUP_POLICY_TAB_H */

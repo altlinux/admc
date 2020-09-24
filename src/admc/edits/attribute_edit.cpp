@@ -94,7 +94,7 @@ void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab) {
     for (auto edit : edits) {
         QObject::connect(
             edit, &AttributeEdit::edited,
-            tab, &DetailsTab::on_edit_changed);
+            tab, &DetailsTab::on_edit_edited);
     }
 }
 

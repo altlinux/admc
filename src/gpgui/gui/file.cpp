@@ -29,6 +29,11 @@
 // TODO: display errors in GUI? lots of errors to handle...
 // TODO: also test
 
+// TODO: not checking returns of some f-ns like stat()
+// they can contain important errors
+
+// TODO: maybe can use 1 smbc context for the whole tree of file_get_children() calls? not sure have to test
+
 enum FileLocation {
     FileLocation_Local,
     FileLocation_Smb

@@ -130,7 +130,7 @@ void GroupPolicyTab::reload() {
 
     load_attribute_edits(edits, target());
 
-    edited();
+    reload_current_gplink_into_model();
 }
 
 // TODO: not sure which object classes can have gplink, for now only know of OU's.
@@ -154,16 +154,13 @@ void GroupPolicyTab::on_context_menu(const QPoint pos) {
     auto menu = new QMenu(this);
     menu->addAction(tr("Remove link"), [this, gpo]() {
         const QList<QString> removed = {gpo};
-        remove(removed);
-        edited();
+        remove_link(removed);
     });
     menu->addAction(tr("Move up"), [this, gpo]() {
-        current_gplink.move_up(gpo);
-        edited();
+        move_link_up(gpo);
     });
     menu->addAction(tr("Move down"), [this, gpo]() {
-        current_gplink.move_down(gpo);
-        edited();
+        move_link_down(gpo);
     });
 
     menu->popup(global_pos);
@@ -174,7 +171,7 @@ void GroupPolicyTab::on_add_button() {
     const QList<QString> selected = SelectDialog::open(classes, SelectDialogMultiSelection_Yes);
 
     if (selected.size() > 0) {
-        add(selected);
+        add_link(selected);
     }
 }
 
@@ -190,27 +187,38 @@ void GroupPolicyTab::on_remove_button() {
         selected.append(gpo);
     }
 
-    remove(selected);    
+    remove_link(selected);    
 }
 
-void GroupPolicyTab::add(QList<QString> gps) {
+void GroupPolicyTab::add_link(QList<QString> gps) {
     for (auto gp : gps) {
         current_gplink.add(gp);
     }
 
-    edited();
+    reload_current_gplink_into_model();
 }
 
-void GroupPolicyTab::remove(QList<QString> gps) {
+void GroupPolicyTab::remove_link(QList<QString> gps) {
     for (auto gp : gps) {
         current_gplink.remove(gp);
     }
 
-    edited();
+    reload_current_gplink_into_model();
 }
 
-// TODO: members tab needs this as well. DetailsTab::on_edit_changed() slot is weird in general. Also, idk if "edited()" is a good name, sounds like a getter for a bool rather than "I have been edited and am now notifying everything connected to me about this fact".
-void GroupPolicyTab::edited() {
+void GroupPolicyTab::move_link_up(const QString &gpo) {
+    current_gplink.move_up(gpo);
+
+    reload_current_gplink_into_model();
+}
+
+void GroupPolicyTab::move_link_down(const QString &gpo) {
+    current_gplink.move_down(gpo);
+
+    reload_current_gplink_into_model();
+}
+
+void GroupPolicyTab::reload_current_gplink_into_model() {
     model->removeRows(0, model->rowCount());
 
     for (auto gpo : current_gplink.get_gpos()) {
@@ -231,8 +239,6 @@ void GroupPolicyTab::edited() {
 
         model->appendRow(row);
     }
-
-    on_edit_changed();
 }
 
 void GroupPolicyTab::on_item_changed(QStandardItem *item) {
@@ -246,6 +252,6 @@ void GroupPolicyTab::on_item_changed(QStandardItem *item) {
 
         current_gplink.set_option(gpo, option, is_checked);
 
-        edited();
+        reload_current_gplink_into_model();
     }
 }

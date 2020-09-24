@@ -54,7 +54,7 @@ private:
     QSet<QString> original_members;
     QSet<QString> current_members;
 
-    void load_current_members_into_model();
+    void reload_current_members_into_model();
     void add_members(QList<QString> members);
     void remove_members(QList<QString> members);
 };

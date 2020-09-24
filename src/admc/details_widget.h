@@ -57,7 +57,6 @@ public:
     static void change_target(const QString &new_target);
 
     QString get_target() const;
-    void tab_edited(DetailsTab *tab);
     void reload(const QString &new_target);
 
 private slots:
@@ -66,6 +65,7 @@ private slots:
     void on_apply();
     void on_cancel();
     void on_docked_setting_changed();
+    void on_tab_edited();
 
 private:
     bool is_floating_instance;

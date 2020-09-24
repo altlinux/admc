@@ -111,7 +111,7 @@ void MembersTab::reload() {
     original_members = members.toSet();
     current_members = original_members;
 
-    load_current_members_into_model();
+    reload_current_members_into_model();
 }
 
 bool MembersTab::accepts_target() const {
@@ -166,7 +166,7 @@ void MembersTab::on_remove_button() {
     remove_members(removed_members);    
 }
 
-void MembersTab::load_current_members_into_model() {
+void MembersTab::reload_current_members_into_model() {
     model->removeRows(0, model->rowCount());
 
     for (auto dn : current_members) {
@@ -185,9 +185,9 @@ void MembersTab::add_members(QList<QString> members) {
         current_members.insert(member);
     }
 
-    load_current_members_into_model();
+    reload_current_members_into_model();
 
-    on_edit_changed();
+    emit edited();
 }
 
 void MembersTab::remove_members(QList<QString> members) {
@@ -195,7 +195,7 @@ void MembersTab::remove_members(QList<QString> members) {
         current_members.remove(member);
     }
 
-    load_current_members_into_model();
+    reload_current_members_into_model();
 
-    on_edit_changed();
+    emit edited();
 }
