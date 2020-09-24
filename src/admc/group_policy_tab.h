@@ -33,6 +33,7 @@ class MembersModel;
 class QStandardItemModel;
 class AttributeEdit;
 class Gplink;
+class QStandardItem;
 
 // Tab for displaying, modifying group policy related attributes of an object(not a gpo!), such as gplink and gpoptions
 
@@ -47,6 +48,7 @@ private slots:
     void on_context_menu(const QPoint pos);
     void on_add_button();
     void on_remove_button();
+    void on_item_changed(QStandardItem *item);
 
 private:
     QStandardItemModel *model = nullptr;

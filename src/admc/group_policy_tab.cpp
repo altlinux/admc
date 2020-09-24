@@ -33,11 +33,21 @@
 
 enum GplinkColumn {
     GplinkColumn_Name,
+    GplinkColumn_Disabled,
+    GplinkColumn_Enforced,
     GplinkColumn_DN,
     GplinkColumn_COUNT
 };
 
-// TODO: add columns for gplink options and implement editing through view cell
+const QSet<GplinkColumn> option_columns = {
+    GplinkColumn_Disabled,
+    GplinkColumn_Enforced
+};
+
+const QHash<GplinkColumn, GplinkOption> column_to_option = {
+    {GplinkColumn_Disabled, GplinkOption_Disabled},
+    {GplinkColumn_Enforced, GplinkOption_Enforced}
+};
 
 QString gplink_option_to_display_string(const QString &option);
 
@@ -51,6 +61,8 @@ GroupPolicyTab::GroupPolicyTab(DetailsWidget *details_arg)
 
     model = new QStandardItemModel(0, GplinkColumn_COUNT, this);
     model->setHorizontalHeaderItem(GplinkColumn_Name, new QStandardItem(tr("Name")));
+    model->setHorizontalHeaderItem(GplinkColumn_Disabled, new QStandardItem(tr("Disabled")));
+    model->setHorizontalHeaderItem(GplinkColumn_Enforced, new QStandardItem(tr("Enforced")));
     model->setHorizontalHeaderItem(GplinkColumn_DN, new QStandardItem(tr("DN")));
 
     const auto dn_column_proxy = new DnColumnProxy(GplinkColumn_DN, this);
@@ -87,6 +99,9 @@ GroupPolicyTab::GroupPolicyTab(DetailsWidget *details_arg)
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         this, &GroupPolicyTab::on_context_menu);
+    connect(
+        model, &QStandardItemModel::itemChanged,
+        this, &GroupPolicyTab::on_item_changed);
 }
 
 bool GroupPolicyTab::changed() const {
@@ -151,37 +166,6 @@ void GroupPolicyTab::on_context_menu(const QPoint pos) {
         edited();
     });
 
-    auto add_options_action =
-    [this, menu, gpo](const GplinkOption option) {
-        const QString option_display_string =
-        [option]() {
-            switch (option) {
-                case GplinkOption_Disabled: return tr("Disabled");
-                case GplinkOption_Enforced: return tr("Enforced");
-            }
-            return QString("unknown option");
-        }();
-
-        const auto action = new QAction(option_display_string, this);
-        action->setCheckable(true);
-
-        const bool currently_is_set = current_gplink.get_option(gpo, option);
-        action->setChecked(currently_is_set);
-
-        connect(action, &QAction::triggered,
-            [this, gpo, option, action]() {
-                const bool is_set = action->isChecked();
-                current_gplink.set_option(gpo, option, is_set);
-
-                edited();
-            });
-
-        menu->addAction(action);
-    };
-    
-    add_options_action(GplinkOption_Disabled);
-    add_options_action(GplinkOption_Enforced);
-
     menu->popup(global_pos);
 }
 
@@ -225,7 +209,7 @@ void GroupPolicyTab::remove(QList<QString> gps) {
     edited();
 }
 
-// TODO: members tab needs this as well. DetailsTab::on_edit_changed() slot is weird in general. Also, idk if "edited" is a good name, sounds like a getter for a bool.
+// TODO: members tab needs this as well. DetailsTab::on_edit_changed() slot is weird in general. Also, idk if "edited()" is a good name, sounds like a getter for a bool rather than "I have been edited and am now notifying everything connected to me about this fact".
 void GroupPolicyTab::edited() {
     model->removeRows(0, model->rowCount());
 
@@ -236,8 +220,32 @@ void GroupPolicyTab::edited() {
         row[GplinkColumn_Name]->setText(name);
         row[GplinkColumn_DN]->setText(gpo);
 
+        for (const auto column : option_columns) {
+            QStandardItem *item = row[column];
+            item->setCheckable(true);
+
+            const GplinkOption option = column_to_option[column];
+            const bool option_is_set = current_gplink.get_option(gpo, option);
+            check_item_set_checked(item, option_is_set);
+        }
+
         model->appendRow(row);
     }
 
     on_edit_changed();
+}
+
+void GroupPolicyTab::on_item_changed(QStandardItem *item) {
+    const GplinkColumn column = (GplinkColumn) item->column();
+
+    if (option_columns.contains(column)) {
+        const QModelIndex index = item->index();
+        const QString gpo = get_dn_from_index(index, GplinkColumn_DN);
+        const GplinkOption option = column_to_option[column];
+        const bool is_checked = check_item_is_checked(item);
+
+        current_gplink.set_option(gpo, option, is_checked);
+
+        edited();
+    }
 }

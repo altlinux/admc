@@ -39,6 +39,8 @@ void set_root_to_head(QAbstractItemView *view);
 void setup_model_chain(QAbstractItemView *view, QAbstractItemModel *source_model, QList<QAbstractProxyModel *> proxies);
 bool checkbox_is_checked(const QCheckBox *checkbox);
 void checkbox_set_checked(QCheckBox *checkbox, bool checked);
+bool check_item_is_checked(const QStandardItem *check_item);
+void check_item_set_checked(QStandardItem *checkbox, bool checked);
 void append_to_grid_layout_with_label(QGridLayout *layout, QLabel *label, QWidget *widget);
 QString set_changed_marker(const QString &text, bool changed);
 QList<QStandardItem *> make_item_row(const int count);

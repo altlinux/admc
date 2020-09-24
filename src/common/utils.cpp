@@ -91,14 +91,33 @@ bool checkbox_is_checked(const QCheckBox *checkbox) {
 }
 
 void checkbox_set_checked(QCheckBox *checkbox, bool checked) {
-    Qt::CheckState check_state;
-    if (checked) {
-        check_state = Qt::Checked;
-    } else {
-        check_state = Qt::Unchecked;
-    }
+    const Qt::CheckState check_state =
+    [checked]() {
+        if (checked) {
+            return Qt::Checked;
+        } else {
+            return Qt::Unchecked;
+        }
+    }();
     
     checkbox->setCheckState(check_state);
+}
+
+bool check_item_is_checked(const QStandardItem *item) {
+    return (item->checkState() == Qt::Checked);
+}
+
+void check_item_set_checked(QStandardItem *item, bool checked) {
+    const Qt::CheckState check_state =
+    [checked]() {
+        if (checked) {
+            return Qt::Checked;
+        } else {
+            return Qt::Unchecked;
+        }
+    }();
+    
+    item->setCheckState(check_state);
 }
 
 void append_to_grid_layout_with_label(QGridLayout *layout,QLabel *label, QWidget *widget) {
