@@ -124,7 +124,9 @@ MainWindow::MainWindow(const QString &path)
     central_widget->setLayout(central_layout);
 
     // NOTE: default dir for testing
-    browse_widget->change_target("/home/kevl/pol-files/{2BE174FB-22F4-4CD1-BA93-5311F87E80A2}");
+    if (path.isEmpty()) {
+        browse_widget->change_target("/home/kevl/pol-files/{2BE174FB-22F4-4CD1-BA93-5311F87E80A2}");
+    }
 
     XmlEditor::load_schema();
 

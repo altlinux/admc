@@ -142,7 +142,7 @@ public:
 
     static QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 
-    bool login(const QString &host, const QString &domain);
+    bool login(const QString &host_arg, const QString &domain);
 
     // Use this if you are doing a series of AD modifications
     // During a batch, cache won't update and so UI won't reload
@@ -153,6 +153,7 @@ public:
     bool batch_is_in_progress() const;
 
     QString get_search_base() const;
+    QString get_host() const;
 
     QList<QString> list(const QString &dn);
     QList<QString> search(const QString &filter);
@@ -218,6 +219,7 @@ signals:
 private:
     LDAP *ld;
     QString search_base;
+    QString host;
 
     QHash<QString, Attributes> attributes_cache;
     bool suppress_not_found_error = false;

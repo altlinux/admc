@@ -83,7 +83,9 @@ QList<QString> AdInterface::get_domain_hosts(const QString &domain, const QStrin
     }
 }
 
-bool AdInterface::login(const QString &host, const QString &domain) {
+bool AdInterface::login(const QString &host_arg, const QString &domain) {
+    host = host_arg;
+
     const QString uri = "ldap://" + host;
 
     // Transform domain to search base
@@ -141,6 +143,10 @@ bool AdInterface::batch_is_in_progress() const {
 
 QString AdInterface::get_search_base() const {
     return search_base;
+}
+
+QString AdInterface::get_host() const {
+    return host;
 }
 
 QList<QString> AdInterface::list(const QString &dn) {

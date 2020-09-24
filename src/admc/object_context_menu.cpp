@@ -161,9 +161,28 @@ void ObjectContextMenu::edit_policy(const QString &dn) {
     // Start policy edit process
     const auto process = new QProcess();
 
-    const QString path = AdInterface::instance()->attribute_get(dn, "gPCFileSysPath");
+    const QString path =
+    [dn]() {
+        QString path_tmp = AdInterface::instance()->attribute_get(dn, "gPCFileSysPath");
+        path_tmp.replace("\\", "/");
 
-    const QString program_name = "/home/kevl/admc/gpgui/gpgui";
+        // TODO: file sys path as it is, is like this:
+        // "smb://domain.alt/sysvol/domain.alt/Policies/{D7E75BC7-138D-4EE1-8974-105E4A2DE560}"
+        // But that fails to load the whole directory sometimes
+        // Replacing domain at the start with current host fixes it
+        // "smb://dc0.domain.alt/sysvol/domain.alt/Policies/{D7E75BC7-138D-4EE1-8974-105E4A2DE560}"
+        // not sure if this is required and which host/DC is the correct one
+        const QString host = AdInterface::instance()->get_host();
+
+        const int sysvol_i = path_tmp.indexOf("sysvol");
+        path_tmp.remove(0, sysvol_i);
+
+        path_tmp = QString("smb://%1/%2").arg(host, path_tmp);
+
+        return path_tmp;
+    }();
+
+    const QString program_name = "/home/kevl/admc/build/gpgui";
 
     QStringList args = {"-p", path};
 
