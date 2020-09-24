@@ -101,7 +101,6 @@ bool GpoLinksTab::accepts_target() const {
     return is_policy;
 }
 
-// TODO: similar to code in ObjectContextMenu
 void GpoLinksTab::on_context_menu(const QPoint pos) {
     const QString dn = get_dn_from_pos(pos, view, GplinkInverseColumn_DN);
 

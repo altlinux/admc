@@ -120,7 +120,6 @@ bool MembersTab::accepts_target() const {
     return is_group;
 }
 
-// TODO: similar to code in ObjectContextMenu
 void MembersTab::on_context_menu(const QPoint pos) {
     const QString dn = get_dn_from_pos(pos, view, MembersColumn_DN);
 

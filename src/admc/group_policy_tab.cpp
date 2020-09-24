@@ -140,7 +140,6 @@ bool GroupPolicyTab::accepts_target() const {
     return is_ou;
 }
 
-// TODO: similar to code in ObjectContextMenu
 void GroupPolicyTab::on_context_menu(const QPoint pos) {
     const QString gpo = get_dn_from_pos(pos, view, GplinkColumn_DN);
 
