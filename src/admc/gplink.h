@@ -41,6 +41,9 @@ public:
 
     QString to_string() const;
     QList<QString> get_gpos() const;
+    
+    // Call this before calling modify f-ns unless you're 100% sure gpo is there
+    bool contains(const QString &gpo) const;
 
     void add(const QString &gpo);
     void remove(const QString &gpo);

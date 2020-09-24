@@ -67,6 +67,10 @@ QList<QString> Gplink::get_gpos() const {
     return gpos_in_order;
 }
 
+bool Gplink::contains(const QString &gpo) const {
+    return gpos_in_order.contains(gpo);
+}
+
 void Gplink::add(const QString &gpo) {
     gpos_in_order.append(gpo);
     options[gpo] = 0;
@@ -88,6 +92,7 @@ void Gplink::move_up(const QString &gpo) {
 
 void Gplink::move_down(const QString &gpo) {
     const int current_index = gpos_in_order.indexOf(gpo);
+    
     if (current_index < gpos_in_order.size() - 1) {
         const int new_index = current_index + 1;
 
@@ -96,23 +101,14 @@ void Gplink::move_down(const QString &gpo) {
 }
 
 bool Gplink::get_option(const QString &gpo, const GplinkOption option) const {
-    if (options.contains(gpo)) {
-        const int option_bits = options[gpo];
-        const bool is_set = bit_is_set(option_bits, (int) option);
+    const int option_bits = options[gpo];
+    const bool is_set = bit_is_set(option_bits, (int) option);
 
-        return is_set;
-    } else {
-        printf("WARNING: Gplink::set_option() given unknown gpo");
-        return false;
-    }
+    return is_set;
 }
 
 void Gplink::set_option(const QString &gpo, const GplinkOption option, const bool value) {
-    if (options.contains(gpo)) {
-        const int option_bits = options[gpo];
-        const int option_bits_new = bit_set(option_bits, (int) option, value);
-        options[gpo] = option_bits_new;
-    } else {
-        printf("WARNING: Gplink::set_option() given unknown gpo");
-    }
+    const int option_bits = options[gpo];
+    const int option_bits_new = bit_set(option_bits, (int) option, value);
+    options[gpo] = option_bits_new;
 }
