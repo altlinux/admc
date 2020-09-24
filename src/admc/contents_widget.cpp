@@ -103,9 +103,10 @@ void ContentsWidget::change_target(const QString &dn) {
 
     model->change_target(target_dn);
     
+    const QAbstractItemModel *view_model = view->model();
+    
     // Set root to head
     // NOTE: need this to hide head while retaining it in model for drag and drop purposes
-    const QAbstractItemModel *view_model = view->model();
     const QModelIndex head_index = view_model->index(0, 0);
     view->setRootIndex(head_index);
 
@@ -117,7 +118,6 @@ void ContentsWidget::change_target(const QString &dn) {
     if (target_name.isEmpty()) {
         label_text = "";
     } else {
-        const QAbstractItemModel *view_model = view->model();
         const QModelIndex view_head = view_model->index(0, 0);
         const int object_count = view_model->rowCount(view_head);
 

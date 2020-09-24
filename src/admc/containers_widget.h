@@ -41,13 +41,14 @@ signals:
     void selected_changed(const QString &dn);
 
 private slots:
-    void on_ad_modified();
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
     void on_view_clicked(const QModelIndex &index);
 
 private:
     ContainersModel *model = nullptr;
     QTreeView *view = nullptr;
+
+    void reload();
 };
 
 class ContainersModel final : public ObjectModel {

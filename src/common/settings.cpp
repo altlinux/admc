@@ -58,7 +58,7 @@ Settings::Settings() {
     qsettings = new QSettings(this);
 }
 
-void Settings::connect_action_to_get_bool_signal(QAction *action, BoolSetting type) {
+void Settings::connect_action_to_bool_setting(QAction *action, const BoolSetting type) {
     action->setCheckable(true);
 
     const QString setting_str = bool_to_string(type);
@@ -104,6 +104,7 @@ QString bool_to_string(BoolSetting type) {
         CASE_ENUM_TO_STRING(BoolSetting_AutoLogin);
         CASE_ENUM_TO_STRING(BoolSetting_DevMode);
         CASE_ENUM_TO_STRING(BoolSetting_DetailsIsDocked);
+        CASE_ENUM_TO_STRING(BoolSetting_ShowNonContainersInContainersTree);
         CASE_ENUM_TO_STRING(BoolSetting_COUNT);
     }
     return "";

@@ -47,7 +47,7 @@ MenuBar::MenuBar(QWidget* parent)
     auto add_bool_setting_action = 
     [](QMenu *menu, QString display_text, BoolSetting type) {
         QAction *action = menu->addAction(display_text);
-        Settings::instance()->connect_action_to_get_bool_signal(action, type);
+        Settings::instance()->connect_action_to_bool_setting(action, type);
     };
 
     QMenu *menubar_view = addMenu(tr("View"));
@@ -62,6 +62,7 @@ MenuBar::MenuBar(QWidget* parent)
     add_bool_setting_action(menubar_preferences, tr("Confirm actions"), BoolSetting_ConfirmActions);
     add_bool_setting_action(menubar_preferences, tr("Login using saved session at startup"), BoolSetting_AutoLogin);
     add_bool_setting_action(menubar_preferences, tr("Dev mode"), BoolSetting_DevMode);
+    add_bool_setting_action(menubar_preferences, tr("Show non-container objects in Containers tree"), BoolSetting_ShowNonContainersInContainersTree);
 
     QMenu *language_menu = menubar_preferences->addMenu(tr("Language"));
     auto language_group = new QActionGroup(language_menu);

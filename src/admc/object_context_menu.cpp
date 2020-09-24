@@ -55,7 +55,6 @@ void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
 ObjectContextMenu::ObjectContextMenu(const QString &dn)
 : QMenu()
 {
-    // TODO: QAction *action_to_show_menu_at = 
     addAction(tr("Details"), [this, dn]() {
         DetailsWidget::change_target(dn);
     });

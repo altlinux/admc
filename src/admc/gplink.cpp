@@ -6,11 +6,7 @@
 
 #define LDAP_PREFIX "LDAP://"
 
-// NOTE: DN == GPO. But sticking to GPO terminology in this case
-
 // TODO: confirm that input gplink is valid. Do sanity checks?
-
-// TODO: not sure what to do about all the checking if given gpo is valid
 
 Gplink::Gplink() {
 

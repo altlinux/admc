@@ -66,6 +66,7 @@ enum BoolSetting {
     BoolSetting_AutoLogin,
     BoolSetting_DevMode,
     BoolSetting_DetailsIsDocked,
+    BoolSetting_ShowNonContainersInContainersTree,
 
     // GPGUI
 
@@ -96,11 +97,11 @@ public:
     bool get_bool(BoolSetting type) const;
 
     /** 
-     * Connect action and bool setting so that toggling the action
-     * updates setting value as well
+     * Connect action and bool setting so that toggling
+     * the action updates the setting value
      * Action becomes checkable
      */ 
-    void connect_action_to_get_bool_signal(QAction *action, BoolSetting type);
+    void connect_action_to_bool_setting(QAction *action, const BoolSetting type);
 
     void restore_geometry(QWidget *widget, const VariantSetting geometry_setting);
     void save_geometry(QWidget *widget, const VariantSetting geometry_setting);

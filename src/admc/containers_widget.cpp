@@ -71,7 +71,7 @@ ContainersWidget::ContainersWidget(QWidget *parent)
 
     connect(
         AdInterface::instance(), &AdInterface::modified,
-        this, &ContainersWidget::on_ad_modified);
+        this, &ContainersWidget::reload);
     connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,
         this, &ContainersWidget::on_selection_changed);
@@ -79,9 +79,14 @@ ContainersWidget::ContainersWidget(QWidget *parent)
     connect(
         view, &QAbstractItemView::clicked,
         this, &ContainersWidget::on_view_clicked);
+
+    const BoolSettingSignal *show_non_containers_signal = Settings::instance()->get_bool_signal(BoolSetting_ShowNonContainersInContainersTree);
+    connect(
+        show_non_containers_signal, &BoolSettingSignal::changed,
+        this, &ContainersWidget::reload);
 };
 
-void ContainersWidget::on_ad_modified() {
+void ContainersWidget::reload() {
     const QString head_dn = AdInterface::instance()->get_search_base();
     QAbstractItemModel *view_model = view->model();
 
@@ -161,9 +166,9 @@ void ContainersWidget::on_ad_modified() {
         while (!stack.isEmpty()) {
             const QModelIndex index = stack.pop();
             const QString dn = get_dn_from_index(index, ContainersColumn_DN);
-            const bool fetch_index = fetched.contains(dn);
+            const bool was_fetched = fetched.contains(dn);
 
-            if (fetch_index) {
+            if (was_fetched) {
                 model->fetchMore(index);
 
                 int row = 0;
@@ -294,11 +299,12 @@ void ContainersModel::on_logged_in() {
 
 // Make row in model at given parent based on object with given dn
 QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
-    const bool is_container = AdInterface::instance()->is_container(dn);
+    const bool is_container_exactly = AdInterface::instance()->is_container(dn);
     const bool is_container_like = AdInterface::instance()->is_container_like(dn);
-    const bool should_be_loaded = is_container || is_container_like;
+    const bool is_container = is_container_exactly || is_container_like;
 
-    if (!should_be_loaded) {
+    const bool load_non_containers = Settings::instance()->get_bool(BoolSetting_ShowNonContainersInContainersTree);
+    if (!load_non_containers && !is_container) {
         return nullptr;
     }
 
@@ -311,8 +317,8 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
     const QIcon icon = get_object_icon(dn);
     row[0]->setIcon(icon);
 
-    // Set fetch flag because row is new and can be fetched
-    row[0]->setData(true, ContainersModel::Roles::CanFetch);
+    // Can fetch(expand) object if it's a container
+    row[0]->setData(is_container, ContainersModel::Roles::CanFetch);
 
     parent->appendRow(row);
 
