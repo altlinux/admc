@@ -60,12 +60,15 @@ PoliciesWidget::PoliciesWidget()
 
     connect(
         AdInterface::instance(), &AdInterface::logged_in,
-        this, &PoliciesWidget::on_logged_in);
+        this, &PoliciesWidget::on_ad_modified);
+    connect(
+        AdInterface::instance(), &AdInterface::modified,
+        this, &PoliciesWidget::on_ad_modified);
 
     object_context_menu_connect(view, PoliciesColumn_DN);
 }
 
-void PoliciesWidget::on_logged_in() {
+void PoliciesWidget::on_ad_modified() {
     model->removeRows(0, model->rowCount());
 
     const QList<QString> gpos = AdInterface::instance()->list_all_gpos();
