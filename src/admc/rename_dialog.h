@@ -23,6 +23,7 @@
 #include <QString>
 #include <QDialog>
 #include <QList>
+#include <QMap>
 
 class AttributeEdit;
 class StringEdit;
@@ -38,8 +39,8 @@ private slots:
 
 private:
     QString target;
-    StringEdit *name_edit;
     QList<AttributeEdit *> all_edits;
+    QMap<QString, StringEdit *> string_edits;
 };
 
 #endif /* RENAME_DIALOG_H */

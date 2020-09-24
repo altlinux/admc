@@ -80,6 +80,10 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
         addAction(tr("Edit Policy"), [this, dn]() {
             edit_policy(dn);
         });
+        addAction(tr("Rename"), [this, dn]() {
+            auto rename_dialog = new RenameDialog(dn);
+            rename_dialog->open();
+        });
     } else {
         addAction(tr("Delete"), [this, dn]() {
             delete_object(dn);

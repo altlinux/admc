@@ -42,34 +42,36 @@ RenameDialog::RenameDialog(const QString &target_arg)
     setAttribute(Qt::WA_DeleteOnClose);
     resize(600, 600);
 
-    name_edit = new StringEdit(ATTRIBUTE_NAME, this);
-    all_edits.append(name_edit);
-
     const auto title_label = new QLabel(QString(tr("Rename dialog")), this);
 
     const auto edits_layout = new QGridLayout();
 
     const bool is_user = AdInterface::instance()->is_user(target);
     const bool is_group = AdInterface::instance()->is_group(target);
+    const bool is_policy = AdInterface::instance()->is_policy(target);
     QList<QString> string_attributes;
     if (is_user) {
         string_attributes = {
+            ATTRIBUTE_NAME,
             ATTRIBUTE_FIRST_NAME,
             ATTRIBUTE_LAST_NAME,
             ATTRIBUTE_DISPLAY_NAME,
             ATTRIBUTE_USER_PRINCIPAL_NAME,
             ATTRIBUTE_SAMACCOUNT_NAME
         };
-
     } else if (is_group) {
         string_attributes = {
+            ATTRIBUTE_NAME,
             ATTRIBUTE_SAMACCOUNT_NAME
+        };
+    } else if (is_policy) {
+        string_attributes = {
+            ATTRIBUTE_DISPLAY_NAME
         };
     }
 
-    QMap<QString, StringEdit *> string_edits;
     make_string_edits(string_attributes, &string_edits, &all_edits, this);
-    setup_string_edit_autofills(string_edits, name_edit);
+    setup_string_edit_autofills(string_edits);
 
     layout_attribute_edits(all_edits, edits_layout);
 
@@ -93,8 +95,6 @@ RenameDialog::RenameDialog(const QString &target_arg)
 }
 
 void RenameDialog::accept() {
-    const QString new_name = name_edit->edit->text();
-
     const bool verify_success = verify_attribute_edits(all_edits, this);
     if (!verify_success) {
         return;
@@ -103,17 +103,45 @@ void RenameDialog::accept() {
     const int errors_index = Status::instance()->get_errors_size();
     AdInterface::instance()->start_batch();
     {
-        // NOTE: rename last so that other attribute changes can complete on old DN
+        // NOTE: apply attribute changes before renaming so that attribute changes can complete on old DN
         const bool apply_success = apply_attribute_edits(all_edits, target, this);
-        const bool rename_success = AdInterface::instance()->object_rename(target, new_name);
+
+        auto get_attribute_from_edit =
+        [this](const QString &attribute) -> QString {
+            const StringEdit *edit = string_edits[attribute];
+            const QString value = edit->edit->text();
+
+            return value;
+        };
+
+        const bool rename_success =
+        [this, get_attribute_from_edit]() {
+            if (string_edits.contains(ATTRIBUTE_NAME)) {
+                const QString new_name = get_attribute_from_edit(ATTRIBUTE_NAME);
+
+                return AdInterface::instance()->object_rename(target, new_name);
+            } else {
+                // NOTE: for policies, object is never actually renamed, only the display name changes
+                return true;
+            }
+        }();
+
+        const QString name_for_message =
+        [this, get_attribute_from_edit]() {
+            if (string_edits.contains(ATTRIBUTE_NAME)) {
+                return get_attribute_from_edit(ATTRIBUTE_NAME);
+            } else {
+                return get_attribute_from_edit(ATTRIBUTE_DISPLAY_NAME);
+            }
+        }();
 
         if (apply_success && rename_success) {
-            const QString message = QString(tr("Renamed object - \"%1\"")).arg(new_name);
+            const QString message = QString(tr("Renamed object - \"%1\"")).arg(name_for_message);
             Status::instance()->message(message, StatusType_Success);
 
             QDialog::accept();
         } else {
-            const QString message = QString(tr("Failed to rename object - \"%1\"")).arg(new_name);
+            const QString message = QString(tr("Failed to rename object - \"%1\"")).arg(name_for_message);
             Status::instance()->message(message, StatusType_Error);
         }
     }
