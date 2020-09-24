@@ -29,13 +29,11 @@ class QPoint;
 class QAbstractItemView;
 class SelectDialog;
 
-void object_context_menu_connect(QAbstractItemView *view, int dn_column);
-
 class ObjectContextMenu final : public QMenu {
 Q_OBJECT
 
 public:
-    static void open(const QPoint &global_pos, const QString &dn);
+    static void connect_view(QAbstractItemView *view, int dn_column);
 
 private:
     ObjectContextMenu(const QString &dn);

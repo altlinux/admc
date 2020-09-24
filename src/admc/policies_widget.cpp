@@ -65,7 +65,7 @@ PoliciesWidget::PoliciesWidget()
         AdInterface::instance(), &AdInterface::modified,
         this, &PoliciesWidget::on_ad_modified);
 
-    object_context_menu_connect(view, PoliciesColumn_DN);
+    ObjectContextMenu::connect_view(view, PoliciesColumn_DN);
 }
 
 void PoliciesWidget::on_ad_modified() {

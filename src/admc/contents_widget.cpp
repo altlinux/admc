@@ -56,7 +56,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
-    object_context_menu_connect(view, ContentsColumn_DN);
+    ObjectContextMenu::connect_view(view, ContentsColumn_DN);
 
     setup_model_chain(view, model, {advanced_view_proxy, dn_column_proxy});
 
@@ -103,7 +103,12 @@ void ContentsWidget::change_target(const QString &dn) {
 
     model->change_target(target_dn);
     
-    set_root_to_head(view);
+    // Set root to head
+    // NOTE: need this to hide head while retaining it in model for drag and drop purposes
+    const QAbstractItemModel *view_model = view->model();
+    const QModelIndex head_index = view_model->index(0, 0);
+    view->setRootIndex(head_index);
+
     resize_columns();
 
     const QString target_name = AdInterface::instance()->attribute_get(target_dn, ATTRIBUTE_NAME);

@@ -27,45 +27,43 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QStandardItem>
+#include <QMenu>
 
-// Converts index all the way down to source index, going through whatever chain of proxies is present
-QModelIndex convert_to_source(const QModelIndex &index) {
+// Index can be an index of any column in target row and of any proxy in the proxy chain
+QString get_dn_from_index(const QModelIndex &index, int dn_column) {
     if (!index.isValid()) {
-        return index;
+        return QString();
     }
 
-    const QAbstractItemModel *current_model = index.model();
-    QModelIndex current_index = index;
+    // Convert to source index
+    const QModelIndex source_index =
+    [index]() {
+        const QAbstractItemModel *current_model = index.model();
+        QModelIndex current_index = index;
+        while (true) {
+            const QSortFilterProxyModel *current_model_as_proxy = qobject_cast<const QSortFilterProxyModel *>(current_model);
 
-    while (true) {
-        const QSortFilterProxyModel *proxy = qobject_cast<const QSortFilterProxyModel *>(current_model);
+            if (current_model_as_proxy != nullptr) {
+                current_index = current_model_as_proxy->mapToSource(current_index);
 
-        if (proxy != nullptr) {
-            current_index = proxy->mapToSource(current_index);
-
-            current_model = proxy->sourceModel();
-        } else {
-            return current_index;
+                current_model = current_model_as_proxy->sourceModel();
+            } else {
+                return current_index;
+            }
         }
-    }
-}
-
-// Row index can be an index of any column in target row and of any proxy in the proxy chain
-QString get_dn_from_index(const QModelIndex &base_row_index, int dn_column) {
-    const QModelIndex row_index = convert_to_source(base_row_index);
-    const QModelIndex dn_index = row_index.siblingAtColumn(dn_column);
+    }();
+    
+    const QModelIndex dn_index = source_index.siblingAtColumn(dn_column);
     const QString dn = dn_index.data().toString();
 
     return dn;
 }
 
-// Set root index of view to head index of current model
-// Do this to hide a head node in view while retaining it in model
-// for drag and drop purposes
-void set_root_to_head(QAbstractItemView *view) {
-    const QAbstractItemModel *view_model = view->model();
-    const QModelIndex head_index = view_model->index(0, 0);
-    view->setRootIndex(head_index);
+QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn_column) {
+    const QModelIndex base_index = view->indexAt(pos);
+    const QString dn = get_dn_from_index(base_index, dn_column);
+
+    return dn;
 }
 
 // Setup proxy chain down to source model
@@ -164,4 +162,9 @@ int bit_set(int bitmask, int bit, bool set) {
 
 bool bit_is_set(int bitmask, int bit) {
     return ((bitmask & bit) != 0);
+}
+
+void exec_menu_from_view(QMenu *menu, const QAbstractItemView *view, const QPoint &pos) {
+    const QPoint global_pos = view->mapToGlobal(pos);
+    menu->exec(global_pos);
 }

@@ -56,7 +56,7 @@ ContainersWidget::ContainersWidget(QWidget *parent)
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
-    object_context_menu_connect(view, ContainersColumn_DN);
+    ObjectContextMenu::connect_view(view, ContainersColumn_DN);
 
     QHeaderView *view_header = view->header();
     view_header->hide();
@@ -217,15 +217,11 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
     // Transform selected index into source index and pass it on
     // to selected_container_changed() signal
     const QList<QModelIndex> indexes = selected.indexes();
-
     if (indexes.isEmpty()) {
         return;
     }
 
-    const QModelIndex index = convert_to_source(indexes[0]);
-
-    QModelIndex dn_index = index.siblingAtColumn(ContainersColumn_DN);
-    QString dn = dn_index.data().toString();
+    const QString dn = get_dn_from_index(indexes[0], ContainersColumn_DN);
 
     emit selected_changed(dn);
 }

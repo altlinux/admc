@@ -103,18 +103,12 @@ bool GpoLinksTab::accepts_target() const {
 
 // TODO: similar to code in ObjectContextMenu
 void GpoLinksTab::on_context_menu(const QPoint pos) {
-    const QModelIndex base_index = view->indexAt(pos);
-    if (!base_index.isValid()) {
-        return;
-    }
-    const QModelIndex index = convert_to_source(base_index);
-    const QString dn = get_dn_from_index(index, GplinkInverseColumn_DN);
+    const QString dn = get_dn_from_pos(pos, view, GplinkInverseColumn_DN);
 
-    const QPoint global_pos = view->mapToGlobal(pos);
-
-    auto menu = new QMenu(this);
-    menu->addAction(tr("Details"), [dn]() {
+    QMenu menu(this);
+    menu.addAction(tr("Details"), [dn]() {
         DetailsWidget::change_target(dn);
     });
-    menu->popup(global_pos);
+
+    exec_menu_from_view(&menu, view, pos);
 }

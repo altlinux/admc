@@ -22,6 +22,7 @@
 
 #include <QModelIndex>
 #include <QList>
+#include <QPoint>
 
 class QAbstractItemModel;
 class QAbstractItemView;
@@ -30,12 +31,11 @@ class QString;
 class QCheckBox;
 class QGridLayout;
 class QLabel;
-class QByteArray;
 class QStandardItem;
+class QMenu;
 
-QModelIndex convert_to_source(const QModelIndex &index);
-QString get_dn_from_index(const QModelIndex &base_row_index, int dn_column);
-void set_root_to_head(QAbstractItemView *view);
+QString get_dn_from_index(const QModelIndex &index, int dn_column);
+QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn_column);
 void setup_model_chain(QAbstractItemView *view, QAbstractItemModel *source_model, QList<QAbstractProxyModel *> proxies);
 bool checkbox_is_checked(const QCheckBox *checkbox);
 void checkbox_set_checked(QCheckBox *checkbox, bool checked);
@@ -47,5 +47,7 @@ QList<QStandardItem *> make_item_row(const int count);
 
 int bit_set(int bitmask, int bit, bool set);
 bool bit_is_set(int bitmask, int bit);
+
+void exec_menu_from_view(QMenu *menu, const QAbstractItemView *view, const QPoint &pos);
 
 #endif /* UTILS_H */

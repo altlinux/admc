@@ -142,28 +142,21 @@ bool GroupPolicyTab::accepts_target() const {
 
 // TODO: similar to code in ObjectContextMenu
 void GroupPolicyTab::on_context_menu(const QPoint pos) {
-    const QModelIndex base_index = view->indexAt(pos);
-    if (!base_index.isValid()) {
-        return;
-    }
-    const QModelIndex index = convert_to_source(base_index);
-    const QString gpo = get_dn_from_index(index, GplinkColumn_DN);
+    const QString gpo = get_dn_from_pos(pos, view, GplinkColumn_DN);
 
-    const QPoint global_pos = view->mapToGlobal(pos);
-
-    auto menu = new QMenu(this);
-    menu->addAction(tr("Remove link"), [this, gpo]() {
+    QMenu menu(this);
+    menu.addAction(tr("Remove link"), [this, gpo]() {
         const QList<QString> removed = {gpo};
         remove_link(removed);
     });
-    menu->addAction(tr("Move up"), [this, gpo]() {
+    menu.addAction(tr("Move up"), [this, gpo]() {
         move_link_up(gpo);
     });
-    menu->addAction(tr("Move down"), [this, gpo]() {
+    menu.addAction(tr("Move down"), [this, gpo]() {
         move_link_down(gpo);
     });
 
-    menu->popup(global_pos);
+    exec_menu_from_view(&menu, view, pos);
 }
 
 void GroupPolicyTab::on_add_button() {
@@ -181,8 +174,7 @@ void GroupPolicyTab::on_remove_button() {
 
     QList<QString> selected;
     for (auto index : selected_raw) {
-        const QModelIndex converted = convert_to_source(index);
-        const QString gpo = get_dn_from_index(converted, GplinkColumn_DN);
+        const QString gpo = get_dn_from_index(index, GplinkColumn_DN);
 
         selected.append(gpo);
     }

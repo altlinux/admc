@@ -40,36 +40,21 @@
 void force_reload_attributes_and_diff(const QString &dn);
 
 // Open this context menu when view requests one
-void object_context_menu_connect(QAbstractItemView *view, int dn_column) {
+void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         [=]
         (const QPoint pos) {
-            const QModelIndex base_index = view->indexAt(pos);
+            const QString dn = get_dn_from_pos(pos, view, dn_column);
 
-            if (!base_index.isValid()) {
-                return;
-            }
-
-            const QPoint global_pos = view->mapToGlobal(pos);
-
-            const QModelIndex index = convert_to_source(base_index);
-            const QString dn = get_dn_from_index(index, dn_column);
-
-            ObjectContextMenu::open(global_pos, dn);
+            ObjectContextMenu context_menu(dn);
+            exec_menu_from_view(&context_menu, view, pos);
         });
-}
-
-void ObjectContextMenu::open(const QPoint &global_pos, const QString &dn) {
-    auto context_menu = new ObjectContextMenu(dn);
-    context_menu->exec(global_pos);
 }
 
 ObjectContextMenu::ObjectContextMenu(const QString &dn)
 : QMenu()
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     // TODO: QAction *action_to_show_menu_at = 
     addAction(tr("Details"), [this, dn]() {
         DetailsWidget::change_target(dn);

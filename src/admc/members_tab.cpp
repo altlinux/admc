@@ -122,24 +122,16 @@ bool MembersTab::accepts_target() const {
 
 // TODO: similar to code in ObjectContextMenu
 void MembersTab::on_context_menu(const QPoint pos) {
-    const QModelIndex base_index = view->indexAt(pos);
-    if (!base_index.isValid()) {
-        return;
-    }
-    const QModelIndex index = convert_to_source(base_index);
-    const QString dn = get_dn_from_index(index, MembersColumn_DN);
+    const QString dn = get_dn_from_pos(pos, view, MembersColumn_DN);
 
-    const QPoint global_pos = view->mapToGlobal(pos);
-
-    auto menu = new QMenu(this);
-    QAction *remove_action = menu->addAction(tr("Remove from group"));
-    connect(
-        remove_action, &QAction::triggered,
+    QMenu menu(this);
+    menu.addAction(tr("Remove from group"),
         [this, dn]() {
             const QList<QString> removed_members = {dn};
             remove_members(removed_members);
         });
-    menu->popup(global_pos);
+
+    exec_menu_from_view(&menu, view, pos);
 }
 
 void MembersTab::on_add_button() {
@@ -157,8 +149,7 @@ void MembersTab::on_remove_button() {
 
     QList<QString> removed_members;
     for (auto index : selected) {
-        const QModelIndex converted = convert_to_source(index);
-        const QString dn = get_dn_from_index(converted, MembersColumn_DN);
+        const QString dn = get_dn_from_index(index, MembersColumn_DN);
 
         removed_members.append(dn);
     }
