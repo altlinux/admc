@@ -20,7 +20,6 @@
 #include "select_dialog.h"
 #include "ad_interface.h"
 #include "settings.h"
-#include "dn_column_proxy.h"
 #include "utils.h"
 
 #include <QLineEdit>
@@ -87,8 +86,6 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     auto proxy_class = new QSortFilterProxyModel(this);
     proxy_class->setFilterKeyColumn(SelectDialogColumn_Class);
 
-    const auto dn_column_proxy = new DnColumnProxy(SelectDialogColumn_DN, this);
-
     // Load model
     auto model = new QStandardItemModel(0, SelectDialogColumn_COUNT, this);
     model->setHorizontalHeaderItem(SelectDialogColumn_Name, new QStandardItem(tr("Name")));
@@ -121,7 +118,9 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         }
     }
 
-    setup_model_chain(view, model, {proxy_name, proxy_class, dn_column_proxy});
+    setup_model_chain(view, model, {proxy_name, proxy_class});
+
+    setup_column_toggle_menu(view, model, {SelectDialogColumn_Name});
 
     // Fill class combo box with possible classes
     filter_class_combo->clear();

@@ -29,7 +29,6 @@ add_executable(admc
     object_context_menu.cpp
     confirmation_dialog.cpp
     advanced_view_proxy.cpp
-    dn_column_proxy.cpp
     login_dialog.cpp
     password_dialog.cpp
     menubar.cpp

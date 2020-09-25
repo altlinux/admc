@@ -20,7 +20,6 @@
 #include "gpo_links_tab.h"
 #include "details_widget.h"
 #include "utils.h"
-#include "dn_column_proxy.h"
 #include "ad_interface.h"
 
 #include <QTreeView>
@@ -48,9 +47,9 @@ GpoLinksTab::GpoLinksTab(DetailsWidget *details_arg)
     model->setHorizontalHeaderItem(GplinkInverseColumn_Name, new QStandardItem(tr("Name")));
     model->setHorizontalHeaderItem(GplinkInverseColumn_DN, new QStandardItem(tr("DN")));
 
-    const auto dn_column_proxy = new DnColumnProxy(GplinkInverseColumn_DN, this);
+    view->setModel(model);
 
-    setup_model_chain(view, model, {dn_column_proxy});
+    setup_column_toggle_menu(view, model, {GplinkInverseColumn_Name});
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);

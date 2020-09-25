@@ -19,7 +19,6 @@
 
 #include "policies_widget.h"
 #include "ad_interface.h"
-#include "dn_column_proxy.h"
 #include "details_widget.h"
 #include "object_context_menu.h"
 #include "utils.h"
@@ -47,9 +46,9 @@ PoliciesWidget::PoliciesWidget()
     model->setHorizontalHeaderItem(PoliciesColumn_Name, new QStandardItem(tr("Name")));
     model->setHorizontalHeaderItem(PoliciesColumn_DN, new QStandardItem(tr("DN")));
 
-    const auto dn_column_proxy = new DnColumnProxy(PoliciesColumn_DN, this);
+    view->setModel(model);
 
-    setup_model_chain(view, model, {dn_column_proxy});
+    setup_column_toggle_menu(view, model, {PoliciesColumn_Name});
 
     const auto label = new QLabel(tr("Policies"), this);
 

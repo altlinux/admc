@@ -22,7 +22,6 @@
 #include "advanced_view_proxy.h"
 #include "object_context_menu.h"
 #include "details_widget.h"
-#include "dn_column_proxy.h"
 #include "settings.h"
 #include "utils.h"
 
@@ -43,7 +42,6 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
 {   
     model = new ContentsModel(this);
     const auto advanced_view_proxy = new AdvancedViewProxy(ContentsColumn_DN, this);
-    const auto dn_column_proxy = new DnColumnProxy(ContentsColumn_DN, this);
 
     view = new QTreeView(this);
     view->setAcceptDrops(true);
@@ -58,7 +56,9 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
     view->setSortingEnabled(true);
     ObjectContextMenu::connect_view(view, ContentsColumn_DN);
 
-    setup_model_chain(view, model, {advanced_view_proxy, dn_column_proxy});
+    setup_model_chain(view, model, {advanced_view_proxy});
+
+    setup_column_toggle_menu(view, model, {ContentsColumn_Name, ContentsColumn_Category, ContentsColumn_Description});
 
     label = new QLabel(this);
 
@@ -95,6 +95,7 @@ void ContentsWidget::on_view_clicked(const QModelIndex &index) {
     if (details_from_contents) {
         const QString dn = get_dn_from_index(index, ContentsColumn_DN);
         DetailsWidget::change_target(dn);
+        printf("dn=%s\n", qPrintable(dn));
     }
 }
 

@@ -32,7 +32,9 @@ class QCheckBox;
 class QGridLayout;
 class QLabel;
 class QStandardItem;
+class QStandardItemModel;
 class QMenu;
+class QTreeView;
 
 QString get_dn_from_index(const QModelIndex &index, int dn_column);
 QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn_column);
@@ -49,5 +51,7 @@ int bit_set(int bitmask, int bit, bool set);
 bool bit_is_set(int bitmask, int bit);
 
 void exec_menu_from_view(QMenu *menu, const QAbstractItemView *view, const QPoint &pos);
+// NOTE: view must have header items and model before this is called
+void setup_column_toggle_menu(const QTreeView *view, const QStandardItemModel *model, const QList<int> &initially_visible_columns);
 
 #endif /* UTILS_H */

@@ -20,7 +20,6 @@
 #include "group_policy_tab.h"
 #include "object_context_menu.h"
 #include "utils.h"
-#include "dn_column_proxy.h"
 #include "select_dialog.h"
 #include "edits/gpoptions_edit.h"
 
@@ -65,9 +64,9 @@ GroupPolicyTab::GroupPolicyTab(DetailsWidget *details_arg)
     model->setHorizontalHeaderItem(GplinkColumn_Enforced, new QStandardItem(tr("Enforced")));
     model->setHorizontalHeaderItem(GplinkColumn_DN, new QStandardItem(tr("DN")));
 
-    const auto dn_column_proxy = new DnColumnProxy(GplinkColumn_DN, this);
+    view->setModel(model);
 
-    setup_model_chain(view, model, {dn_column_proxy});
+    setup_column_toggle_menu(view, model, {GplinkColumn_Name, GplinkColumn_Disabled, GplinkColumn_Enforced});
 
     const auto edits_layout = new QGridLayout();
 

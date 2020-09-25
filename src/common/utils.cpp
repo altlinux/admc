@@ -28,6 +28,10 @@
 #include <QGridLayout>
 #include <QStandardItem>
 #include <QMenu>
+#include <QTreeView>
+#include <QHeaderView>
+#include <QtGlobal>
+#include <QStandardItemModel>
 
 // Index can be an index of any column in target row and of any proxy in the proxy chain
 QString get_dn_from_index(const QModelIndex &index, int dn_column) {
@@ -167,4 +171,44 @@ bool bit_is_set(int bitmask, int bit) {
 void exec_menu_from_view(QMenu *menu, const QAbstractItemView *view, const QPoint &pos) {
     const QPoint global_pos = view->mapToGlobal(pos);
     menu->exec(global_pos);
+}
+
+void setup_column_toggle_menu(const QTreeView *view, const QStandardItemModel *model, const QList<int> &initially_visible_columns) {
+    Q_CHECK_PTR(view);
+    Q_CHECK_PTR(model);
+    Q_CHECK_PTR(view->header());
+
+    QHeaderView *header = view->header();
+    header->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    // Hide all columns except the ones that are supposed to be
+    // visible
+    for (int i = 0; i < header->count(); i++) {
+        const bool hidden = !initially_visible_columns.contains(i);
+        header->setSectionHidden(i, hidden);
+    }
+
+    QObject::connect(
+        header, &QHeaderView::customContextMenuRequested,
+        [view, header, model](const QPoint pos) {
+            QMenu menu;
+            for (int i = 0; i < header->count(); i++) {
+                const auto header_item = model->horizontalHeaderItem(i);
+                const QString section_name = header_item->text();
+
+                QAction *action = menu.addAction(section_name);
+                action->setCheckable(true);
+                const bool currently_hidden = header->isSectionHidden(i);
+                action->setChecked(!currently_hidden);
+
+                QObject::connect(action, &QAction::triggered,
+                    [header, i, action]() {
+                        const bool was_hidden = header->isSectionHidden(i);
+                        const bool hidden = !was_hidden;
+
+                        header->setSectionHidden(i, hidden);
+                    });
+            }
+            exec_menu_from_view(&menu, header, pos);
+        });
 }

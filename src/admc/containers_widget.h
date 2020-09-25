@@ -29,7 +29,6 @@ class QItemSelection;
 class AdvancedViewProxy;
 class QTreeView;
 class ContainersModel;
-class DnColumnProxy;
 
 class ContainersWidget final : public QWidget {
 Q_OBJECT
