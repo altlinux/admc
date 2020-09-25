@@ -96,9 +96,11 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
 
     auto proxy_name = new QSortFilterProxyModel(this);
     proxy_name->setFilterKeyColumn(SelectDialogColumn_Name);
-
+    proxy_name->setRecursiveFilteringEnabled(true);
+    
     auto proxy_class = new QSortFilterProxyModel(this);
     proxy_class->setFilterKeyColumn(SelectDialogColumn_Class);
+    proxy_class->setRecursiveFilteringEnabled(true);
 
     // Load model
     auto model = new QStandardItemModel(0, SelectDialogColumn_COUNT, this);
@@ -178,6 +180,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         filter_class_combo->addItem(display_string, object_class);
     }
     filter_class_combo->addItem(tr("All"), "");
+    filter_class_combo->setCurrentIndex(filter_class_combo->count() - 1);
 
     // Disable/hide class-related elements if selecting only from one class
     if (classes.size() == 1) {
