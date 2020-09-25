@@ -34,31 +34,31 @@
 
 // NOTE: not using enums for columns here, because each column maps directly to an attribute
 const QList<QString> columns = {
-   ATTRIBUTE_NAME,
-   ATTRIBUTE_OBJECT_CATEGORY,
-   ATTRIBUTE_DESCRIPTION,
-   ATTRIBUTE_DISTINGUISHED_NAME,
+    ATTRIBUTE_NAME,
+    ATTRIBUTE_OBJECT_CATEGORY,
+    ATTRIBUTE_DESCRIPTION,
+    ATTRIBUTE_DISTINGUISHED_NAME,
 
-   ATTRIBUTE_DISPLAY_NAME,
-   ATTRIBUTE_FIRST_NAME,
-   ATTRIBUTE_LAST_NAME,
-   ATTRIBUTE_SAMACCOUNT_NAME,
-   ATTRIBUTE_USER_PRINCIPAL_NAME,
+    ATTRIBUTE_DISPLAY_NAME,
+    ATTRIBUTE_FIRST_NAME,
+    ATTRIBUTE_LAST_NAME,
+    ATTRIBUTE_SAMACCOUNT_NAME,
+    ATTRIBUTE_USER_PRINCIPAL_NAME,
 
-   ATTRIBUTE_CITY,
-   ATTRIBUTE_STATE,
-   ATTRIBUTE_COUNTRY,
-   ATTRIBUTE_PO_BOX,
+    ATTRIBUTE_CITY,
+    ATTRIBUTE_STATE,
+    ATTRIBUTE_COUNTRY,
+    ATTRIBUTE_PO_BOX,
 
-   ATTRIBUTE_OFFICE,
-   ATTRIBUTE_DEPARTMENT,
-   ATTRIBUTE_COMPANY,
-   ATTRIBUTE_TITLE,
+    ATTRIBUTE_OFFICE,
+    ATTRIBUTE_DEPARTMENT,
+    ATTRIBUTE_COMPANY,
+    ATTRIBUTE_TITLE,
 
-   ATTRIBUTE_TELEPHONE_NUMBER,
-   ATTRIBUTE_MAIL,
+    ATTRIBUTE_TELEPHONE_NUMBER,
+    ATTRIBUTE_MAIL,
 
-   ATTRIBUTE_WHEN_CHANGED
+    ATTRIBUTE_WHEN_CHANGED
 };
 
 int column_index(const QString &attribute) {
@@ -93,11 +93,11 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
     setup_model_chain(view, model, {advanced_view_proxy});
 
     setup_column_toggle_menu(view, model, 
-        {
-            column_index(ATTRIBUTE_NAME),
-            column_index(ATTRIBUTE_OBJECT_CATEGORY),
-            column_index(ATTRIBUTE_DESCRIPTION)
-        });
+    {
+        column_index(ATTRIBUTE_NAME),
+        column_index(ATTRIBUTE_OBJECT_CATEGORY),
+        column_index(ATTRIBUTE_DESCRIPTION)
+    });
 
     label = new QLabel(this);
 
