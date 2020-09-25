@@ -24,24 +24,56 @@
 #include "details_widget.h"
 #include "settings.h"
 #include "utils.h"
+#include "ad_interface.h"
+#include "attribute_display_strings.h"
 
 #include <QTreeView>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QHeaderView>
 
-enum ContentsColumn {
-    ContentsColumn_Name,
-    ContentsColumn_Category,
-    ContentsColumn_Description,
-    ContentsColumn_DN,
-    ContentsColumn_COUNT,
+// NOTE: not using enums for columns here, because each column maps directly to an attribute
+const QList<QString> columns = {
+   ATTRIBUTE_NAME,
+   ATTRIBUTE_OBJECT_CATEGORY,
+   ATTRIBUTE_DESCRIPTION,
+   ATTRIBUTE_DISTINGUISHED_NAME,
+
+   ATTRIBUTE_DISPLAY_NAME,
+   ATTRIBUTE_FIRST_NAME,
+   ATTRIBUTE_LAST_NAME,
+   ATTRIBUTE_SAMACCOUNT_NAME,
+   ATTRIBUTE_USER_PRINCIPAL_NAME,
+
+   ATTRIBUTE_CITY,
+   ATTRIBUTE_STATE,
+   ATTRIBUTE_COUNTRY,
+   ATTRIBUTE_PO_BOX,
+
+   ATTRIBUTE_OFFICE,
+   ATTRIBUTE_DEPARTMENT,
+   ATTRIBUTE_COMPANY,
+   ATTRIBUTE_TITLE,
+
+   ATTRIBUTE_TELEPHONE_NUMBER,
+   ATTRIBUTE_MAIL,
+
+   ATTRIBUTE_WHEN_CHANGED
 };
+
+int column_index(const QString &attribute) {
+    if (!columns.contains(attribute)) {
+        printf("ContentsWidget is missing column for %s\n", qPrintable(attribute));
+    }
+
+    return columns.indexOf(attribute);
+}
 
 ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *parent)
 : QWidget(parent)
 {   
     model = new ContentsModel(this);
-    const auto advanced_view_proxy = new AdvancedViewProxy(ContentsColumn_DN, this);
+    const auto advanced_view_proxy = new AdvancedViewProxy(column_index(ATTRIBUTE_DISTINGUISHED_NAME), this);
 
     view = new QTreeView(this);
     view->setAcceptDrops(true);
@@ -54,11 +86,18 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
-    ObjectContextMenu::connect_view(view, ContentsColumn_DN);
+    view->header()->setSectionsMovable(true);
+    view->sortByColumn(column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
+    ObjectContextMenu::connect_view(view, column_index(ATTRIBUTE_DISTINGUISHED_NAME));
 
     setup_model_chain(view, model, {advanced_view_proxy});
 
-    setup_column_toggle_menu(view, model, {ContentsColumn_Name, ContentsColumn_Category, ContentsColumn_Description});
+    setup_column_toggle_menu(view, model, 
+        {
+            column_index(ATTRIBUTE_NAME),
+            column_index(ATTRIBUTE_OBJECT_CATEGORY),
+            column_index(ATTRIBUTE_DESCRIPTION)
+        });
 
     label = new QLabel(this);
 
@@ -93,9 +132,8 @@ void ContentsWidget::on_view_clicked(const QModelIndex &index) {
     const bool details_from_contents = Settings::instance()->get_bool(BoolSetting_DetailsFromContents);
 
     if (details_from_contents) {
-        const QString dn = get_dn_from_index(index, ContentsColumn_DN);
+        const QString dn = get_dn_from_index(index, column_index(ATTRIBUTE_DISTINGUISHED_NAME));
         DetailsWidget::change_target(dn);
-        printf("dn=%s\n", qPrintable(dn));
     }
 }
 
@@ -132,8 +170,9 @@ void ContentsWidget::resize_columns() {
     const int view_width = view->width();
     const int name_width = (int) (view_width * 0.4);
     const int category_width = (int) (view_width * 0.15);
-    view->setColumnWidth(ContentsColumn_Name, name_width);
-    view->setColumnWidth(ContentsColumn_Category, category_width);
+
+    view->setColumnWidth(column_index(ATTRIBUTE_NAME), name_width);
+    view->setColumnWidth(column_index(ATTRIBUTE_OBJECT_CATEGORY), category_width);
 }
 
 void ContentsWidget::showEvent(QShowEvent *event) {
@@ -141,14 +180,16 @@ void ContentsWidget::showEvent(QShowEvent *event) {
 }
 
 ContentsModel::ContentsModel(QObject *parent)
-: ObjectModel(ContentsColumn_COUNT, ContentsColumn_DN, parent)
+: ObjectModel(columns.count(), column_index(ATTRIBUTE_DISTINGUISHED_NAME), parent)
 {
-    set_horizontal_header_labels_from_map(this, {
-        {ContentsColumn_Name, tr("Name")},
-        {ContentsColumn_Category, tr("Category")},
-        {ContentsColumn_Description, tr("Description")},
-        {ContentsColumn_DN, tr("DN")}
-    });
+    QList<QString> labels;
+    for (const QString attribute : columns) {
+        const QString attribute_display_string = get_attribute_display_string(attribute);
+
+        labels.append(attribute_display_string);
+    }
+
+    setHorizontalHeaderLabels(labels);
 }
 
 void ContentsModel::change_target(const QString &target_dn) {
@@ -171,22 +212,24 @@ void ContentsModel::change_target(const QString &target_dn) {
 }
 
 void ContentsModel::make_row(QStandardItem *parent, const QString &dn) {
-    const QList<QStandardItem *> row = make_item_row(ContentsColumn_COUNT);
+    const QList<QStandardItem *> row = make_item_row(columns.count());
 
-    const QString name = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_NAME);
+    for (int i = 0; i < columns.count(); i++) {
+        const QString attribute = columns[i];
 
-    // NOTE: this is given as raw DN and contains '-' where it should
-    // have spaces, so convert it
-    QString category = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_OBJECT_CATEGORY);
-    category = extract_name_from_dn(category);
-    category = category.replace('-', ' ');
+        QString value = AdInterface::instance()->attribute_get(dn, attribute);
 
-    const QString description = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_DESCRIPTION);
+        // NOTE: this is given as raw DN and contains '-' where it should have spaces, so convert it
+        if (attribute == ATTRIBUTE_OBJECT_CATEGORY) {
+            value = extract_name_from_dn(value);
+            value = value.replace('-', ' ');
+        } else if (attribute == ATTRIBUTE_WHEN_CHANGED) {
+            // TODO: apply this to all datetime attributes in general
+            value = datetime_raw_to_display_string(attribute, value);
+        }
 
-    row[ContentsColumn_Name]->setText(name);
-    row[ContentsColumn_Category]->setText(category);
-    row[ContentsColumn_Description]->setText(description);
-    row[ContentsColumn_DN]->setText(dn);
+        row[i]->setText(value);
+    }
 
     const QIcon icon = get_object_icon(dn);
     row[0]->setIcon(icon);

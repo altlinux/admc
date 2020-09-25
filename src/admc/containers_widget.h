@@ -20,7 +20,6 @@
 #ifndef CONTAINERS_WIDGET_H
 #define CONTAINERS_WIDGET_H
 
-#include "ad_interface.h"
 #include "object_model.h"
 
 #include <QWidget>

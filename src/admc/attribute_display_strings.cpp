@@ -34,7 +34,7 @@ QString get_attribute_display_string(const QString &attribute) {
         {ATTRIBUTE_FIRST_NAME, QObject::tr("First name")},
         {ATTRIBUTE_LAST_NAME, QObject::tr("Last name")},
         {ATTRIBUTE_INITIALS, QObject::tr("Initials")},
-        {ATTRIBUTE_DISTINGUISHED_NAME, QObject::tr("Canonical name")},
+        {ATTRIBUTE_DISTINGUISHED_NAME, QObject::tr("DN")},
         {ATTRIBUTE_OBJECT_CLASS, QObject::tr("Object class")},
         {ATTRIBUTE_WHEN_CREATED, QObject::tr("Created")},
         {ATTRIBUTE_WHEN_CHANGED, QObject::tr("Changed")},
@@ -53,6 +53,10 @@ QString get_attribute_display_string(const QString &attribute) {
         {ATTRIBUTE_ACCOUNT_EXPIRES, QObject::tr("Account expires")},
         {ATTRIBUTE_DNS_HOST_NAME, QObject::tr("DNS host name")},
         {ATTRIBUTE_INFO, QObject::tr("Info")},
+        {ATTRIBUTE_DEPARTMENT, QObject::tr("Department")},
+        {ATTRIBUTE_COMPANY, QObject::tr("Company")},
+        {ATTRIBUTE_TITLE, QObject::tr("Title")},
+        {ATTRIBUTE_OBJECT_CATEGORY, QObject::tr("Category")},
     };
     static const QString default_value = QObject::tr("UNKNOWN ATTRIBUTE NAME");
 
