@@ -20,6 +20,7 @@
 #include "select_dialog.h"
 #include "ad_interface.h"
 #include "settings.h"
+#include "containers_widget.h"
 #include "utils.h"
 
 #include <QLineEdit>
@@ -31,6 +32,7 @@
 #include <QPushButton>
 #include <QItemSelectionModel>
 #include <QStandardItemModel>
+#include <algorithm>
 
 enum SelectDialogColumn {
     SelectDialogColumn_Name,
@@ -70,6 +72,18 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     const auto select_button = new QPushButton(tr("Select"), this);
     const auto cancel_button = new QPushButton(tr("Cancel"), this);
 
+    const bool setup_as_tree =
+    [classes]() {
+        QSet<QString> classes_copy = classes.toSet();
+
+        classes_copy.remove(CLASS_CONTAINER);
+        classes_copy.remove(CLASS_OU);
+
+        const bool only_container_and_ou = classes_copy.isEmpty();
+
+        return only_container_and_ou;
+    }();
+
     const auto layout = new QGridLayout(this);
     layout->addWidget(target_label, 0, 0);
     layout->addWidget(filter_class_label, 1, 0, Qt::AlignRight);
@@ -93,6 +107,9 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         {SelectDialogColumn_Class, tr("Class")},
         {SelectDialogColumn_DN, tr("DN")}
     });
+
+    QList<QString> objects;
+    QHash<QString, QString> object_classes;
     for (auto object_class : classes) {
         QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, object_class);
 
@@ -106,16 +123,45 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
             filter = filter_AND(filter, NOT_is_advanced);
         }
 
-        const QList<QString> objects = AdInterface::instance()->search(filter);
+        const QList<QString> objects_of_class = AdInterface::instance()->search(filter);
 
-        for (auto e_dn : objects) {
-            const QString name = AdInterface::instance()->get_name_for_display(e_dn);
-            
-            const QList<QStandardItem *> row = make_item_row(SelectDialogColumn_COUNT);
-            row[SelectDialogColumn_Name]->setText(name);
-            row[SelectDialogColumn_Class]->setText(object_class);
-            row[SelectDialogColumn_DN]->setText(e_dn);
+        objects.append(objects_of_class);
 
+        for (const QString dn : objects_of_class) {
+            object_classes[dn] = object_class;
+        }
+    }
+
+    // Sort objects by length of DN, so that parents are first
+    std::sort(objects.begin(), objects.end(), [](const QString &a, const QString &b) {
+        return a.length() < b.length();   
+    });
+
+    QHash<QString, QStandardItem *> parents;
+
+    for (auto dn : objects) {
+        const QString name = AdInterface::instance()->get_name_for_display(dn);
+        const QString object_class = object_classes[dn];
+
+        const QList<QStandardItem *> row = make_item_row(SelectDialogColumn_COUNT);
+        row[SelectDialogColumn_Name]->setText(name);
+        row[SelectDialogColumn_Class]->setText(object_class);
+        row[SelectDialogColumn_DN]->setText(dn);
+
+        const QIcon icon = get_object_icon(dn);
+        row[0]->setIcon(icon);
+
+        if (setup_as_tree) {
+            const QString parent_dn = extract_parent_dn_from_dn(dn);
+            if (parents.contains(parent_dn)) {
+                QStandardItem *parent = parents[parent_dn];
+                parent->appendRow(row);
+            } else {
+                model->appendRow(row);
+            }
+
+            parents[dn] = row[0];
+        } else {
             model->appendRow(row);
         }
     }

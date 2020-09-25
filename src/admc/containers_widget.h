@@ -34,6 +34,7 @@ Q_OBJECT
 
 public:
     ContainersWidget(QWidget *parent);
+    ContainersModel *model = nullptr;
 
 signals:
     void selected_changed(const QString &dn);
@@ -43,7 +44,6 @@ private slots:
     void on_view_clicked(const QModelIndex &index);
 
 private:
-    ContainersModel *model = nullptr;
     QTreeView *view = nullptr;
 
     void reload();
@@ -62,9 +62,9 @@ public:
     bool canFetchMore(const QModelIndex &parent) const;
     void fetchMore(const QModelIndex &parent);
     bool hasChildren(const QModelIndex &parent) const override;
+    void on_logged_in();
 
 private slots:
-    void on_logged_in();
 };
 
 #endif /* CONTAINERS_WIDGET_H */
