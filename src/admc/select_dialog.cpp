@@ -177,6 +177,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
 
         filter_class_combo->addItem(display_string, object_class);
     }
+    filter_class_combo->addItem(tr("All"), "");
 
     // Disable/hide class-related elements if selecting only from one class
     if (classes.size() == 1) {
