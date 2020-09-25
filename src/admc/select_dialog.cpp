@@ -88,9 +88,11 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
 
     // Load model
     auto model = new QStandardItemModel(0, SelectDialogColumn_COUNT, this);
-    model->setHorizontalHeaderItem(SelectDialogColumn_Name, new QStandardItem(tr("Name")));
-    model->setHorizontalHeaderItem(SelectDialogColumn_Class, new QStandardItem(tr("Class")));
-    model->setHorizontalHeaderItem(SelectDialogColumn_DN, new QStandardItem(tr("DN")));
+    set_horizontal_header_labels_from_map(model, {
+        {SelectDialogColumn_Name, tr("Name")},
+        {SelectDialogColumn_Class, tr("Class")},
+        {SelectDialogColumn_DN, tr("DN")}
+    });
     for (auto object_class : classes) {
         QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, object_class);
 

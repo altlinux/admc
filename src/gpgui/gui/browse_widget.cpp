@@ -44,15 +44,20 @@ BrowseWidget::BrowseWidget()
 : QWidget()
 {   
     model = new QStandardItemModel(0, BrowseColumn_COUNT, this);
-    model->setHorizontalHeaderItem(BrowseColumn_Name, new QStandardItem(tr("Name")));
-    model->setHorizontalHeaderItem(BrowseColumn_Path, new QStandardItem(tr("DN")));
+    set_horizontal_header_labels_from_map(model, {
+        {BrowseColumn_Name, tr("Name")},
+        {BrowseColumn_Path, tr("Path")}
+    });
 
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
+
     view->setModel(model);
+
+    setup_column_toggle_menu(view, model, {BrowseColumn_Name});
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);

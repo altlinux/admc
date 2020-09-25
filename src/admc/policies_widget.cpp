@@ -43,8 +43,10 @@ PoliciesWidget::PoliciesWidget()
     view->setContextMenuPolicy(Qt::CustomContextMenu);
 
     model = new QStandardItemModel(0, PoliciesColumn_COUNT, this);
-    model->setHorizontalHeaderItem(PoliciesColumn_Name, new QStandardItem(tr("Name")));
-    model->setHorizontalHeaderItem(PoliciesColumn_DN, new QStandardItem(tr("DN")));
+    set_horizontal_header_labels_from_map(model, {
+        {PoliciesColumn_Name, tr("Name")},
+        {PoliciesColumn_DN, tr("DN")}
+    });
 
     view->setModel(model);
 

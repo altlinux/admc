@@ -59,10 +59,12 @@ GroupPolicyTab::GroupPolicyTab(DetailsWidget *details_arg)
     view->setAllColumnsShowFocus(true);
 
     model = new QStandardItemModel(0, GplinkColumn_COUNT, this);
-    model->setHorizontalHeaderItem(GplinkColumn_Name, new QStandardItem(tr("Name")));
-    model->setHorizontalHeaderItem(GplinkColumn_Disabled, new QStandardItem(tr("Disabled")));
-    model->setHorizontalHeaderItem(GplinkColumn_Enforced, new QStandardItem(tr("Enforced")));
-    model->setHorizontalHeaderItem(GplinkColumn_DN, new QStandardItem(tr("DN")));
+    set_horizontal_header_labels_from_map(model, {
+        {GplinkColumn_Name, tr("Name")},
+        {GplinkColumn_Disabled, tr("Disabled")},
+        {GplinkColumn_Enforced, tr("Enforced")},
+        {GplinkColumn_DN, tr("DN")}
+    });
 
     view->setModel(model);
 

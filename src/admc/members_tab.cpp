@@ -49,8 +49,10 @@ MembersTab::MembersTab(DetailsWidget *details_arg)
     view->setSortingEnabled(true);
 
     model = new QStandardItemModel(0, MembersColumn_COUNT, this);
-    model->setHorizontalHeaderItem(MembersColumn_Name, new QStandardItem(tr("Name")));
-    model->setHorizontalHeaderItem(MembersColumn_DN, new QStandardItem(tr("DN")));
+    set_horizontal_header_labels_from_map(model, {
+        {MembersColumn_Name, tr("Name")},
+        {MembersColumn_DN, tr("DN")}
+    });
 
     view->setModel(model);
 

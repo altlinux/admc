@@ -240,8 +240,10 @@ void ContainersWidget::on_view_clicked(const QModelIndex &index) {
 ContainersModel::ContainersModel(QObject *parent)
 : ObjectModel(ContainersColumn_COUNT, ContainersColumn_DN, parent)
 {
-    setHorizontalHeaderItem(ContainersColumn_Name, new QStandardItem("Name"));
-    setHorizontalHeaderItem(ContainersColumn_DN, new QStandardItem("DN"));
+    set_horizontal_header_labels_from_map(this, {
+        {ContainersColumn_Name, tr("Name")},
+        {ContainersColumn_DN, tr("DN")}
+    });
 
     connect(
         AdInterface::instance(), &AdInterface::logged_in,

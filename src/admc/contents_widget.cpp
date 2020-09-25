@@ -143,10 +143,12 @@ void ContentsWidget::showEvent(QShowEvent *event) {
 ContentsModel::ContentsModel(QObject *parent)
 : ObjectModel(ContentsColumn_COUNT, ContentsColumn_DN, parent)
 {
-    setHorizontalHeaderItem(ContentsColumn_Name, new QStandardItem("Name"));
-    setHorizontalHeaderItem(ContentsColumn_Category, new QStandardItem("Category"));
-    setHorizontalHeaderItem(ContentsColumn_Description, new QStandardItem("Description"));
-    setHorizontalHeaderItem(ContentsColumn_DN, new QStandardItem("DN"));
+    set_horizontal_header_labels_from_map(this, {
+        {ContentsColumn_Name, tr("Name")},
+        {ContentsColumn_Category, tr("Category")},
+        {ContentsColumn_Description, tr("Description")},
+        {ContentsColumn_DN, tr("DN")}
+    });
 }
 
 void ContentsModel::change_target(const QString &target_dn) {

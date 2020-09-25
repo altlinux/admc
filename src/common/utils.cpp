@@ -212,3 +212,18 @@ void setup_column_toggle_menu(const QTreeView *view, const QStandardItemModel *m
             exec_menu_from_view(&menu, header, pos);
         });
 }
+
+void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap<int, QString> &labels_map) {
+    for (int col = 0; col < model->columnCount(); col++) {
+        const QString label =
+        [=]() {
+            if (labels_map.contains(col)) {
+                return labels_map[col];
+            } else {
+                return QString();
+            }
+        }();
+
+        model->setHorizontalHeaderItem(col, new QStandardItem(label));
+    }
+}

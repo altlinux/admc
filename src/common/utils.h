@@ -54,4 +54,9 @@ void exec_menu_from_view(QMenu *menu, const QAbstractItemView *view, const QPoin
 // NOTE: view must have header items and model before this is called
 void setup_column_toggle_menu(const QTreeView *view, const QStandardItemModel *model, const QList<int> &initially_visible_columns);
 
+// Convenience f-n so that you can pass a mapping of
+// column => label
+// Columns not in the map get empty labels
+void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap<int, QString> &labels_map);
+
 #endif /* UTILS_H */
