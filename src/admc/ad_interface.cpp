@@ -1098,32 +1098,31 @@ void AdInterface::update_cache(const QList<QString> &changed_dns) {
         
         return;
     }
+    
+    const auto attributes_contain_changed_dn =
+    [this](const QString &dn, const QString &changed_dn) -> bool {
+        for (auto &values : attributes_cache[dn]) {
+            for (auto &value : values) {
+                if (value.contains(changed_dn)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    };
 
     // Remove objects that are affected by DN changes from cache
     // Next time the app requests info about these objects, they
     // will be reloaded into cache
     QSet<QString> removed_dns;
-    for (auto changed_dn : changed_dns) {
-        for (const QString &dn : attributes_cache.keys()) {
-            // Remove if dn contains changed dn (is it's descendant)
-            if (dn.contains(changed_dn)) {
+    for (const QString &dn : attributes_cache.keys()) {
+        for (const QString &changed_dn : changed_dns) {
+            if (dn.contains(changed_dn) || attributes_contain_changed_dn(dn, changed_dn)) {
                 removed_dns.insert(dn);
-
+                
                 continue;
             }
-
-            // Remove if object's attributes contain changed dn
-            for (auto &values : attributes_cache[dn]) {
-                for (auto &value : values) {
-                    if (value.contains(changed_dn)) {
-                        removed_dns.insert(dn);
-
-                        goto break_outer;
-                    }
-                }
-            }
-
-            break_outer:;
         }
     }
 
