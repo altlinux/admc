@@ -187,7 +187,14 @@ QString ExpiryEdit::get_new_value() const {
     const bool never = checkbox_is_checked(never_check);
 
     if (never) {
-        return AD_LARGEINTEGERTIME_NEVER_1;
+        const bool original_value_is_never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, original_value);
+
+        // NOTE: there are two valid NEVER values so need to match original if it was "never" to avoid changing to different NEVER value and entering into "changed" state when nothing was actually changed
+        if (original_value_is_never) {
+            return original_value;
+        } else {
+            return AD_LARGEINTEGERTIME_NEVER_1;
+        }
     } else {
         const QString new_date_string = display_label->text();
         const QDate new_date = QDate::fromString(new_date_string, DATE_FORMAT);
