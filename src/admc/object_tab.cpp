@@ -80,5 +80,5 @@ void ObjectTab::reload() {
 }
 
 bool ObjectTab::accepts_target() const {
-    return AdInterface::instance()->has_attributes(target());
+    return true;
 }
