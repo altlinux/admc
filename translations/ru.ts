@@ -340,22 +340,22 @@
     <message>
         <location filename="../src/gpgui/gui/browse_widget.cpp" line="51"/>
         <source>Name</source>
-        <translation type="unfinished">Имя</translation>
+        <translation>Имя</translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/browse_widget.cpp" line="52"/>
         <source>DN</source>
-        <translation type="unfinished">ДН</translation>
+        <translation>DN</translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/browse_widget.cpp" line="64"/>
         <source>policy_path=</source>
-        <translation type="unfinished"></translation>
+        <translation>policy_path=</translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/browse_widget.cpp" line="142"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Править</translation>
     </message>
 </context>
 <context>
@@ -379,7 +379,7 @@
     <message>
         <location filename="../src/admc/edits/country_edit.cpp" line="92"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>None</translation>
     </message>
 </context>
 <context>
@@ -402,22 +402,22 @@
     <message>
         <location filename="../src/admc/create_dialog.cpp" line="211"/>
         <source>User</source>
-        <translation type="unfinished">Пользователь</translation>
+        <translation>Пользователь</translation>
     </message>
     <message>
         <location filename="../src/admc/create_dialog.cpp" line="212"/>
         <source>Computer</source>
-        <translation type="unfinished">Компьютер</translation>
+        <translation>Компьютер</translation>
     </message>
     <message>
         <location filename="../src/admc/create_dialog.cpp" line="213"/>
         <source>Organization Unit</source>
-        <translation type="unfinished">Организация</translation>
+        <translation>Организация</translation>
     </message>
     <message>
         <location filename="../src/admc/create_dialog.cpp" line="214"/>
         <source>Group</source>
-        <translation type="unfinished">Группа</translation>
+        <translation>Группа</translation>
     </message>
 </context>
 <context>
@@ -435,22 +435,22 @@
     <message>
         <location filename="../src/admc/details_widget.cpp" line="137"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>Общее</translation>
     </message>
     <message>
         <location filename="../src/admc/details_widget.cpp" line="138"/>
         <source>Object</source>
-        <translation type="unfinished"></translation>
+        <translation>Объект</translation>
     </message>
     <message>
         <location filename="../src/admc/details_widget.cpp" line="139"/>
         <source>Attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Атрибуты</translation>
     </message>
     <message>
         <location filename="../src/admc/details_widget.cpp" line="140"/>
         <source>Account</source>
-        <translation type="unfinished"></translation>
+        <translation>Учётная запись</translation>
     </message>
     <message>
         <location filename="../src/admc/details_widget.cpp" line="141"/>
@@ -460,7 +460,7 @@
     <message>
         <location filename="../src/admc/details_widget.cpp" line="142"/>
         <source>Address</source>
-        <translation type="unfinished"></translation>
+        <translation>Адрес</translation>
     </message>
     <message>
         <location filename="../src/admc/details_widget.cpp" line="143"/>
@@ -481,7 +481,7 @@
     <message>
         <location filename="../src/admc/edits/expiry_edit.cpp" line="41"/>
         <source>Never</source>
-        <translation type="unfinished"></translation>
+        <translation>Никогда</translation>
     </message>
     <message>
         <location filename="../src/admc/edits/expiry_edit.cpp" line="42"/>
@@ -491,7 +491,7 @@
     <message>
         <location filename="../src/admc/edits/expiry_edit.cpp" line="48"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Редактировать</translation>
     </message>
     <message>
         <location filename="../src/admc/edits/expiry_edit.cpp" line="152"/>
@@ -509,7 +509,7 @@
     <message>
         <location filename="../src/admc/login_dialog.cpp" line="41"/>
         <source>Domain: </source>
-        <translation>Домэйн: </translation>
+        <translation>Домен: </translation>
     </message>
     <message>
         <location filename="../src/admc/login_dialog.cpp" line="44"/>
@@ -568,22 +568,22 @@
     <message>
         <location filename="../src/gpgui/gui/MainWindow.cpp" line="88"/>
         <source>File</source>
-        <translation type="unfinished">Файл</translation>
+        <translation>Файл</translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/MainWindow.cpp" line="90"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть</translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/MainWindow.cpp" line="95"/>
         <source>Exit</source>
-        <translation type="unfinished">Выход</translation>
+        <translation>Выход</translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/MainWindow.cpp" line="116"/>
         <source>About GPGUI</source>
-        <translation type="unfinished"></translation>
+        <translation>О GPGUI</translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/MainWindow.cpp" line="116"/>
@@ -593,12 +593,12 @@
     <message>
         <location filename="../src/gpgui/gui/MainWindow.cpp" line="180"/>
         <source>Loaded PReg file</source>
-        <translation type="unfinished"></translation>
+        <translation>Загружен файл PReg</translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/MainWindow.cpp" line="221"/>
         <source>Open Directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть директорию</translation>
     </message>
 </context>
 <context>
@@ -617,27 +617,27 @@
     <message>
         <location filename="../src/admc/members_tab.cpp" line="53"/>
         <source>Name</source>
-        <translation type="unfinished">Имя</translation>
+        <translation>Имя</translation>
     </message>
     <message>
         <location filename="../src/admc/members_tab.cpp" line="54"/>
         <source>DN</source>
-        <translation type="unfinished">ДН</translation>
+        <translation>DN</translation>
     </message>
     <message>
         <location filename="../src/admc/members_tab.cpp" line="60"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить</translation>
     </message>
     <message>
         <location filename="../src/admc/members_tab.cpp" line="61"/>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить</translation>
     </message>
     <message>
         <location filename="../src/admc/members_tab.cpp" line="135"/>
         <source>Remove from group</source>
-        <translation type="unfinished">Убрать из группы</translation>
+        <translation>Убрать из группы</translation>
     </message>
 </context>
 <context>
@@ -670,7 +670,7 @@
     <message>
         <location filename="../src/admc/menubar.cpp" line="55"/>
         <source>Show DN column</source>
-        <translation>Показывать ДНы</translation>
+        <translation>Показывать колонку DN</translation>
     </message>
     <message>
         <location filename="../src/admc/menubar.cpp" line="56"/>
@@ -695,7 +695,7 @@
     <message>
         <location filename="../src/admc/menubar.cpp" line="61"/>
         <source>Confirm actions</source>
-        <translation>Потверждать действия</translation>
+        <translation>Подтверждать действия</translation>
     </message>
     <message>
         <location filename="../src/admc/menubar.cpp" line="62"/>
@@ -705,7 +705,7 @@
     <message>
         <location filename="../src/admc/menubar.cpp" line="63"/>
         <source>Dev mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим разработчика</translation>
     </message>
     <message>
         <location filename="../src/admc/menubar.cpp" line="65"/>
@@ -715,12 +715,12 @@
     <message>
         <location filename="../src/admc/menubar.cpp" line="90"/>
         <source>Info</source>
-        <translation>Инфо</translation>
+        <translation>Информация</translation>
     </message>
     <message>
         <location filename="../src/admc/menubar.cpp" line="90"/>
         <source>App needs to be restarted for the language option to take effect.</source>
-        <translation>Язык поменяется на следуешем запуске приложения.</translation>
+        <translation>Язык поменяется при следующем запуске приложения.</translation>
     </message>
     <message>
         <location filename="../src/admc/menubar.cpp" line="105"/>
@@ -768,12 +768,12 @@
     <message>
         <location filename="../src/admc/object_context_menu.cpp" line="134"/>
         <source>Enable account</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить учётную запись</translation>
     </message>
     <message>
         <location filename="../src/admc/object_context_menu.cpp" line="136"/>
         <source>Disable account</source>
-        <translation type="unfinished"></translation>
+        <translation>Выключить учётную запись</translation>
     </message>
     <message>
         <location filename="../src/admc/object_context_menu.cpp" line="145"/>
@@ -864,57 +864,57 @@
     <message>
         <location filename="../src/admc/ad_interface.cpp" line="1364"/>
         <source>OU</source>
-        <translation type="unfinished"></translation>
+        <translation>OU</translation>
     </message>
     <message>
         <location filename="../src/admc/ad_interface.cpp" line="1365"/>
         <source>Group</source>
-        <translation type="unfinished">Группа</translation>
+        <translation>Группа</translation>
     </message>
     <message>
         <location filename="../src/admc/ad_interface.cpp" line="1366"/>
         <source>User</source>
-        <translation type="unfinished">Пользователь</translation>
+        <translation>Пользователь</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="29"/>
         <source>Name</source>
-        <translation type="unfinished">Имя</translation>
+        <translation>Имя</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="30"/>
         <source>Full name</source>
-        <translation type="unfinished"></translation>
+        <translation>Полное имя</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="31"/>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Описание</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="32"/>
         <source>Logon name</source>
-        <translation type="unfinished"></translation>
+        <translation>Логин</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="33"/>
         <source>Logon name (pre-2000)</source>
-        <translation type="unfinished"></translation>
+        <translation>Логин (pre-2000)</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="34"/>
         <source>First name</source>
-        <translation type="unfinished"></translation>
+        <translation>Личное имя</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="35"/>
         <source>Last name</source>
-        <translation type="unfinished"></translation>
+        <translation>Фамилия</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="36"/>
         <source>Initials</source>
-        <translation type="unfinished"></translation>
+        <translation>Инициалы</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="37"/>
@@ -924,17 +924,17 @@
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="38"/>
         <source>Object class</source>
-        <translation type="unfinished"></translation>
+        <translation>Класс объекта</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="39"/>
         <source>Created</source>
-        <translation type="unfinished"></translation>
+        <translation>Создан</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="40"/>
         <source>Changed</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменён</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="41"/>
@@ -949,27 +949,27 @@
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="43"/>
         <source>Email</source>
-        <translation type="unfinished"></translation>
+        <translation>E-mail</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="44"/>
         <source>Office</source>
-        <translation type="unfinished"></translation>
+        <translation>Офис</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="45"/>
         <source>Phone</source>
-        <translation type="unfinished"></translation>
+        <translation>Телефон</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="46"/>
         <source>Homepage</source>
-        <translation type="unfinished"></translation>
+        <translation>Домашняя страница</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="47"/>
         <source>Street</source>
-        <translation type="unfinished"></translation>
+        <translation>Улица</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="48"/>
@@ -979,22 +979,22 @@
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="49"/>
         <source>City</source>
-        <translation type="unfinished"></translation>
+        <translation>Город</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="50"/>
         <source>State/province</source>
-        <translation type="unfinished"></translation>
+	<translation>Регион/область</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="51"/>
         <source>Postal code</source>
-        <translation type="unfinished"></translation>
+        <translation>Почтовый индекс</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="52"/>
         <source>Country</source>
-        <translation type="unfinished"></translation>
+        <translation>Страна</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="53"/>
@@ -1004,12 +1004,12 @@
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="54"/>
         <source>DNS host name</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя DNS</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="55"/>
         <source>Info</source>
-        <translation type="unfinished">Инфо</translation>
+        <translation>Информация</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="57"/>
@@ -1026,7 +1026,7 @@
         <location filename="../src/admc/edits/password_edit.cpp" line="65"/>
         <location filename="../src/admc/edits/string_edit.cpp" line="134"/>
         <source>Error</source>
-        <translation type="unfinished">Ошибка</translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <location filename="../src/admc/edits/group_scope_edit.cpp" line="67"/>
@@ -1041,17 +1041,17 @@
     <message>
         <location filename="../src/admc/edits/password_edit.cpp" line="49"/>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Пароль:</translation>
     </message>
     <message>
         <location filename="../src/admc/edits/password_edit.cpp" line="50"/>
         <source>Confirm password:</source>
-        <translation type="unfinished">Потвердите пароль:</translation>
+        <translation>Потвердите пароль:</translation>
     </message>
     <message>
         <location filename="../src/admc/edits/password_edit.cpp" line="64"/>
         <source>Passwords don&apos;t match!</source>
-        <translation type="unfinished">Пароли не совпадают!</translation>
+        <translation>Пароли не совпадают!</translation>
     </message>
     <message>
         <location filename="../src/admc/edits/string_edit.cpp" line="133"/>
@@ -1177,7 +1177,7 @@
     <message>
         <location filename="../src/admc/select_dialog.cpp" line="63"/>
         <source>Select object</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбор объекта</translation>
     </message>
     <message>
         <location filename="../src/admc/select_dialog.cpp" line="65"/>
@@ -1202,17 +1202,17 @@
     <message>
         <location filename="../src/admc/select_dialog.cpp" line="94"/>
         <source>Name</source>
-        <translation type="unfinished">Имя</translation>
+        <translation>Имя</translation>
     </message>
     <message>
         <location filename="../src/admc/select_dialog.cpp" line="95"/>
         <source>Class</source>
-        <translation type="unfinished">Класс</translation>
+        <translation>Класс</translation>
     </message>
     <message>
         <location filename="../src/admc/select_dialog.cpp" line="96"/>
         <source>DN</source>
-        <translation type="unfinished">ДН</translation>
+        <translation>DN</translation>
     </message>
     <message>
         <source>Moving &quot;%1&quot;</source>
@@ -1255,7 +1255,7 @@
     </message>
     <message>
         <source>DN</source>
-        <translation type="vanished">ДН</translation>
+        <translation type="vanished">DN</translation>
     </message>
 </context>
 <context>
@@ -1273,7 +1273,7 @@
     <message>
         <location filename="../src/admc/status.cpp" line="119"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть</translation>
     </message>
 </context>
 <context>
@@ -1281,7 +1281,7 @@
     <message>
         <location filename="../src/admc/edits/unlock_edit.cpp" line="49"/>
         <source>Unlock account:</source>
-        <translation type="unfinished"></translation>
+        <translation>Разблокировать аккаунт:</translation>
     </message>
     <message>
         <location filename="../src/admc/edits/unlock_edit.cpp" line="51"/>
