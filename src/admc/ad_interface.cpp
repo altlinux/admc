@@ -259,9 +259,12 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
                 const QString error = default_error(result_attribute_get);
 
                 error_status_message(context, error);
+            } else {
+                // Set cache for object to empty to indicate that it doesn't exist
+                attributes_cache[dn] = Attributes();
             }
 
-            return Attributes();
+            return attributes_cache[dn];
         }
     }
 }
@@ -530,11 +533,11 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
     
     const QString object_name = extract_name_from_dn(dn);
     const QString container_name = extract_name_from_dn(new_container);
-    
+
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Moved \"%1\" to \"%2\"")).arg(object_name, container_name));
 
-        update_cache({dn});
+        update_cache({dn, new_dn});
 
         return true;
     } else {
@@ -706,7 +709,7 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Renamed \"%1\" to \"%2\"")).arg(old_name, new_name));
 
-        update_cache({dn});
+        update_cache({dn, new_dn});
 
         return true;
     } else {
