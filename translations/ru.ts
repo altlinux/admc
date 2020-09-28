@@ -768,12 +768,12 @@
     <message>
         <location filename="../src/admc/object_context_menu.cpp" line="134"/>
         <source>Enable account</source>
-        <translation>Разблокировать учётную запись</translation>
+        <translation>Включить учётную запись</translation>
     </message>
     <message>
         <location filename="../src/admc/object_context_menu.cpp" line="136"/>
         <source>Disable account</source>
-        <translation>Заблокировать учётную запись</translation>
+        <translation>Выключить учётную запись</translation>
     </message>
     <message>
         <location filename="../src/admc/object_context_menu.cpp" line="145"/>
@@ -904,7 +904,7 @@
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="34"/>
         <source>First name</source>
-        <translation>Имя</translation>
+        <translation>Личное имя</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display_strings.cpp" line="35"/>
