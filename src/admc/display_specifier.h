@@ -17,23 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef DISPLAY_SPEC_H
+#define DISPLAY_SPEC_H
 
-#include <QMainWindow>
+#include <QString>
 
-class MainWindow final : public QMainWindow {
-Q_OBJECT
+QString get_attribute_display_string(const QString &attribute, const QString &objectClass);
 
-public:
-    explicit MainWindow();
 
-protected:
-    void closeEvent(QCloseEvent *event);
-
-private:
-    void finish();
-
-};
-
-#endif /* MAIN_WINDOW_H */
+#endif /* DISPLAY_SPEC_H */

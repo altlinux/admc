@@ -33,16 +33,17 @@ Q_OBJECT
 public:
     QLineEdit *edit;
 
-    StringEdit(const QString &attribute_arg, QObject *parent);
+    StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
     void set_read_only(EditReadOnly read_only_arg) override;
 
 private:
     QString attribute;
+    QString objectClass;
     QString original_value;
 };
 
-void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *string_edits_out, QList<AttributeEdit *> *edits_out, QObject *parent);
+void make_string_edits(const QList<QString> attributes, const QString &objectClass, QMap<QString, StringEdit *> *string_edits_out, QList<AttributeEdit *> *edits_out, QObject *parent);
 void setup_string_edit_autofills(const QMap<QString, StringEdit *> string_edits, const StringEdit *name_edit = nullptr);
 
 #endif /* STRING_EDIT_H */

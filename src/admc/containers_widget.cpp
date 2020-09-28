@@ -248,6 +248,11 @@ ContainersModel::ContainersModel(QObject *parent)
     connect(
         AdInterface::instance(), &AdInterface::logged_in,
         this, &ContainersModel::on_logged_in);
+
+    // Load head
+    const QString head_dn = AdInterface::instance()->get_search_base();
+    QStandardItem *invis_root = invisibleRootItem();
+    make_row(invis_root, head_dn);
 }
 
 bool ContainersModel::canFetchMore(const QModelIndex &parent) const {
@@ -291,12 +296,7 @@ bool ContainersModel::hasChildren(const QModelIndex &parent = QModelIndex()) con
 }
 
 void ContainersModel::on_logged_in() {
-    removeRows(0, rowCount());
-
-    // Load head
-    const QString head_dn = AdInterface::instance()->get_search_base();
-    QStandardItem *invis_root = invisibleRootItem();
-    make_row(invis_root, head_dn);
+    
 }
 
 // Make row in model at given parent based on object with given dn
@@ -312,7 +312,7 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
 
     const QList<QStandardItem *> row = make_item_row(ContainersColumn_COUNT);
     
-    const QString name = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_NAME);
+    const QString name = AdInterface::instance()->attribute_get(dn, "name");
     row[ContainersColumn_Name]->setText(name);
     row[ContainersColumn_DN]->setText(dn);
 

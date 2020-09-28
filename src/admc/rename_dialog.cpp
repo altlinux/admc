@@ -46,10 +46,12 @@ RenameDialog::RenameDialog(const QString &target_arg)
 
     const auto edits_layout = new QGridLayout();
 
+    // TODO: can switch on type better?
     const bool is_user = AdInterface::instance()->is_user(target);
     const bool is_group = AdInterface::instance()->is_group(target);
     const bool is_policy = AdInterface::instance()->is_policy(target);
     QList<QString> string_attributes;
+    QString objectClass;
     if (is_user) {
         string_attributes = {
             ATTRIBUTE_NAME,
@@ -59,18 +61,22 @@ RenameDialog::RenameDialog(const QString &target_arg)
             ATTRIBUTE_USER_PRINCIPAL_NAME,
             ATTRIBUTE_SAMACCOUNT_NAME
         };
+        objectClass = CLASS_USER;
     } else if (is_group) {
         string_attributes = {
             ATTRIBUTE_NAME,
             ATTRIBUTE_SAMACCOUNT_NAME
         };
+        objectClass = CLASS_GROUP;
     } else if (is_policy) {
         string_attributes = {
             ATTRIBUTE_DISPLAY_NAME
         };
+        // TODO: there's no display has no display name for displayName(heh). No group policy display specifier either.
+        objectClass = CLASS_CONTAINER;
     }
 
-    make_string_edits(string_attributes, &string_edits, &all_edits, this);
+    make_string_edits(string_attributes, objectClass, &string_edits, &all_edits, this);
     setup_string_edit_autofills(string_edits);
 
     layout_attribute_edits(all_edits, edits_layout);

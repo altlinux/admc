@@ -101,7 +101,7 @@ bool AdInterface::login(const QString &host_arg, const QString &domain) {
     const int result = ad_login(uri_cstr, &ld);
 
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Logged in to \"%1\" at \"%2\"")).arg(host, domain));
+        // success_status_message(QString(tr("Logged in to \"%1\" at \"%2\"")).arg(host, domain));
 
         emit logged_in();
 
@@ -110,7 +110,7 @@ bool AdInterface::login(const QString &host_arg, const QString &domain) {
         const QString context = QString(tr("Failed to login to \"%1\" at \"%2\"")).arg(host, domain);
         const QString error = default_error(result);
 
-        error_status_message(context, error);
+        // error_status_message(context, error);
 
         return false;
     }

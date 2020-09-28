@@ -26,6 +26,7 @@
 #include "settings.h"
 #include "confirmation_dialog.h"
 #include "policies_widget.h"
+#include "login_dialog.h"
 
 #include <QApplication>
 #include <QString>
@@ -39,6 +40,34 @@ MainWindow::MainWindow()
 {
     Settings::instance()->restore_geometry(this, VariantSetting_MainWindowGeometry);
 
+    auto login_dialog = new LoginDialog(this);
+    login_dialog->open();
+
+    // const bool auto_login = Settings::instance()->get_bool(BoolSetting_AutoLogin);
+    // if (auto_login) {
+    //     const QString host = Settings::instance()->get_variant(VariantSetting_Host).toString();
+    //     const QString domain = Settings::instance()->get_variant(VariantSetting_Domain).toString();
+
+    //     if (!host.isEmpty()) {
+    //         AdInterface::instance()->login(host, domain);
+    //     }
+    // }
+
+   
+    QObject::connect(
+        AdInterface::instance(), &AdInterface::logged_in,
+        [this] () {
+            finish();
+            // central_widget->setEnabled(true);
+        });
+}
+
+void MainWindow::finish() {
+    auto status_log = new QTextEdit(this);
+    status_log->setReadOnly(true);
+    QStatusBar *status_bar = statusBar();
+    Status::instance()->init(status_bar, status_log);
+
     auto menubar = new MenuBar(this);
     setMenuBar(menubar);
 
@@ -50,12 +79,6 @@ MainWindow::MainWindow()
     auto contents_widget = new ContentsWidget(containers_widget, this);
     auto details_widget = DetailsWidget::docked_instance();
     auto policies_widget = new PoliciesWidget();
-
-    auto status_log = new QTextEdit(this);
-    status_log->setReadOnly(true);
-
-    QStatusBar *status_bar = statusBar();
-    Status::instance()->init(status_bar, status_log);
 
     // Layout
     const auto containers_policies_splitter = new QSplitter(Qt::Vertical);
@@ -84,24 +107,6 @@ MainWindow::MainWindow()
     central_layout->setSpacing(0);
 
     central_widget->setLayout(central_layout);
-
-    // Enable central widget on login
-    central_widget->setEnabled(false);
-    QObject::connect(
-        AdInterface::instance(), &AdInterface::logged_in,
-        [central_widget] () {
-            central_widget->setEnabled(true);
-        });
-
-    const bool auto_login = Settings::instance()->get_bool(BoolSetting_AutoLogin);
-    if (auto_login) {
-        const QString host = Settings::instance()->get_variant(VariantSetting_Host).toString();
-        const QString domain = Settings::instance()->get_variant(VariantSetting_Domain).toString();
-
-        if (!host.isEmpty()) {
-            AdInterface::instance()->login(host, domain);
-        }
-    }  
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

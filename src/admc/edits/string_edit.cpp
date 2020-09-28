@@ -18,18 +18,18 @@
  */
 
 #include "edits/string_edit.h"
-#include "attribute_display_strings.h"
 #include "utils.h"
 #include "ad_interface.h"
+#include "display_specifier.h"
 
 #include <QLineEdit>
 #include <QGridLayout>
 #include <QMessageBox>
 #include <QLabel>
 
-void make_string_edits(const QList<QString> attributes, QMap<QString, StringEdit *> *string_edits_out, QList<AttributeEdit *> *edits_out, QObject *parent) {
+void make_string_edits(const QList<QString> attributes, const QString &objectClass, QMap<QString, StringEdit *> *string_edits_out, QList<AttributeEdit *> *edits_out, QObject *parent) {
     for (auto attribute : attributes) {
-        auto edit = new StringEdit(attribute, parent);
+        auto edit = new StringEdit(attribute, objectClass, parent);
         string_edits_out->insert(attribute, edit);
         edits_out->append((AttributeEdit *)edit);
     }
@@ -75,11 +75,12 @@ void setup_string_edit_autofills(const QMap<QString, StringEdit *> string_edits,
     }
 }
 
-StringEdit::StringEdit(const QString &attribute_arg, QObject *parent)
+StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent)
 : AttributeEdit(parent)
 {
     edit = new QLineEdit();
     attribute = attribute_arg;
+    objectClass = objectClass_arg;
 
     QObject::connect(
         edit, &QLineEdit::textChanged,
@@ -114,7 +115,7 @@ void StringEdit::load(const QString &dn) {
 }
 
 void StringEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = get_attribute_display_string(attribute) + ":";
+    const QString label_text = get_attribute_display_string(attribute, objectClass) + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(this, label);
@@ -131,7 +132,7 @@ bool StringEdit::verify_input(QWidget *parent) {
         const QString new_value = edit->text();
 
         if (new_value.isEmpty()) {
-            const QString attribute_string = get_attribute_display_string(attribute);
+            const QString attribute_string = get_attribute_display_string(attribute, objectClass);
             const QString error_text = QString(QObject::tr("Attribute \"%1\" cannot be empty!").arg(attribute_string));
             QMessageBox::warning(parent, QObject::tr("Error"), error_text);
 
