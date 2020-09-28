@@ -29,7 +29,7 @@ Q_OBJECT
 public:
     GroupScopeEdit(QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
-    void set_read_only(EditReadOnly read_only_arg);
+    void set_read_only(EditReadOnly read_only_arg) override;
 
 private:
     QComboBox *combo;

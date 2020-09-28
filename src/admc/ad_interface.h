@@ -78,6 +78,9 @@
 #define ATTRIBUTE_PASSWORD              "unicodePwd"
 #define ATTRIBUTE_GPLINK                "gPLink"
 #define ATTRIBUTE_GPOPTIONS             "gPOptions"
+#define ATTRIBUTE_DEPARTMENT            "department"
+#define ATTRIBUTE_COMPANY               "company"
+#define ATTRIBUTE_TITLE                 "title"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"

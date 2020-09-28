@@ -20,7 +20,6 @@
 #include "containers_widget.h"
 #include "advanced_view_proxy.h"
 #include "object_context_menu.h"
-#include "dn_column_proxy.h"
 #include "utils.h"
 #include "settings.h"
 #include "details_widget.h"
@@ -45,7 +44,6 @@ ContainersWidget::ContainersWidget(QWidget *parent)
 {
     model = new ContainersModel(this);
     const auto advanced_view_proxy = new AdvancedViewProxy(ContainersColumn_DN, this);
-    const auto dn_column_proxy = new DnColumnProxy(ContainersColumn_DN, this);
 
     view = new QTreeView(this);
     view->setAcceptDrops(true);
@@ -58,10 +56,9 @@ ContainersWidget::ContainersWidget(QWidget *parent)
     view->setAllColumnsShowFocus(true);
     ObjectContextMenu::connect_view(view, ContainersColumn_DN);
 
-    QHeaderView *view_header = view->header();
-    view_header->hide();
-
-    setup_model_chain(view, model, {advanced_view_proxy, dn_column_proxy});
+    setup_model_chain(view, model, {advanced_view_proxy});
+    
+    setup_column_toggle_menu(view, model, {ContainersColumn_Name});
 
     // Insert label into layout
     const auto layout = new QVBoxLayout(this);
@@ -243,6 +240,11 @@ void ContainersWidget::on_view_clicked(const QModelIndex &index) {
 ContainersModel::ContainersModel(QObject *parent)
 : ObjectModel(ContainersColumn_COUNT, ContainersColumn_DN, parent)
 {
+    set_horizontal_header_labels_from_map(this, {
+        {ContainersColumn_Name, tr("Name")},
+        {ContainersColumn_DN, tr("DN")}
+    });
+
     connect(
         AdInterface::instance(), &AdInterface::logged_in,
         this, &ContainersModel::on_logged_in);

@@ -96,7 +96,6 @@ void Settings::save_geometry(QWidget *widget, const VariantSetting geometry_sett
 QString bool_to_string(BoolSetting type) {
     switch (type) {
         CASE_ENUM_TO_STRING(BoolSetting_AdvancedView);
-        CASE_ENUM_TO_STRING(BoolSetting_DnColumn);
         CASE_ENUM_TO_STRING(BoolSetting_DetailsFromContainers);
         CASE_ENUM_TO_STRING(BoolSetting_DetailsFromContents);
         CASE_ENUM_TO_STRING(BoolSetting_ConfirmActions);

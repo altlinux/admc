@@ -19,7 +19,6 @@
 
 #include "policies_widget.h"
 #include "ad_interface.h"
-#include "dn_column_proxy.h"
 #include "details_widget.h"
 #include "object_context_menu.h"
 #include "utils.h"
@@ -44,12 +43,14 @@ PoliciesWidget::PoliciesWidget()
     view->setContextMenuPolicy(Qt::CustomContextMenu);
 
     model = new QStandardItemModel(0, PoliciesColumn_COUNT, this);
-    model->setHorizontalHeaderItem(PoliciesColumn_Name, new QStandardItem(tr("Name")));
-    model->setHorizontalHeaderItem(PoliciesColumn_DN, new QStandardItem(tr("DN")));
+    set_horizontal_header_labels_from_map(model, {
+        {PoliciesColumn_Name, tr("Name")},
+        {PoliciesColumn_DN, tr("DN")}
+    });
 
-    const auto dn_column_proxy = new DnColumnProxy(PoliciesColumn_DN, this);
+    view->setModel(model);
 
-    setup_model_chain(view, model, {dn_column_proxy});
+    setup_column_toggle_menu(view, model, {PoliciesColumn_Name});
 
     const auto label = new QLabel(tr("Policies"), this);
 

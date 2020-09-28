@@ -19,6 +19,7 @@
 
 #include "attributes_tab.h"
 #include "ad_interface.h"
+#include "utils.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -63,7 +64,7 @@ void AttributesTab::reload() {
 }
 
 bool AttributesTab::accepts_target() const {
-    return AdInterface::instance()->has_attributes(target());
+    return true;
 }
 
 AttributesModel::AttributesModel(AttributesTab *attributes_tab_arg)
@@ -71,8 +72,10 @@ AttributesModel::AttributesModel(AttributesTab *attributes_tab_arg)
 {
     attributes_tab = attributes_tab_arg;
 
-    setHorizontalHeaderItem(AttributesColumn_Name, new QStandardItem(tr("Name")));
-    setHorizontalHeaderItem(AttributesColumn_Value, new QStandardItem(tr("Value")));
+    set_horizontal_header_labels_from_map(this, {
+        {AttributesColumn_Name, tr("Name")},
+        {AttributesColumn_Value, tr("Value")}
+    });
 }
 
 // This will be called when an attribute value is edited

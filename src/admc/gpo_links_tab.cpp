@@ -20,7 +20,6 @@
 #include "gpo_links_tab.h"
 #include "details_widget.h"
 #include "utils.h"
-#include "dn_column_proxy.h"
 #include "ad_interface.h"
 
 #include <QTreeView>
@@ -30,10 +29,10 @@
 
 // TODO: giving up on providing a way to edit from here, too complicated. Instead user needs to go to one of the object's details and edit from there. Complicated because adding/removing modifies attribute of *object* NOT of the *gpo*. Also no way to see or modify order, etc.
 
-enum GplinkInverseColumn {
-    GplinkInverseColumn_Name,
-    GplinkInverseColumn_DN,
-    GplinkInverseColumn_COUNT
+enum GpoLinksColumn {
+    GpoLinksColumn_Name,
+    GpoLinksColumn_DN,
+    GpoLinksColumn_COUNT
 };
 
 GpoLinksTab::GpoLinksTab(DetailsWidget *details_arg)
@@ -44,13 +43,15 @@ GpoLinksTab::GpoLinksTab(DetailsWidget *details_arg)
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setAllColumnsShowFocus(true);
 
-    model = new QStandardItemModel(0, GplinkInverseColumn_COUNT, this);
-    model->setHorizontalHeaderItem(GplinkInverseColumn_Name, new QStandardItem(tr("Name")));
-    model->setHorizontalHeaderItem(GplinkInverseColumn_DN, new QStandardItem(tr("DN")));
+    model = new QStandardItemModel(0, GpoLinksColumn_COUNT, this);
+    set_horizontal_header_labels_from_map(model, {
+        {GpoLinksColumn_Name, tr("Name")},
+        {GpoLinksColumn_DN, tr("DN")}
+    });
 
-    const auto dn_column_proxy = new DnColumnProxy(GplinkInverseColumn_DN, this);
+    view->setModel(model);
 
-    setup_model_chain(view, model, {dn_column_proxy});
+    setup_column_toggle_menu(view, model, {GpoLinksColumn_Name});
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
@@ -86,9 +87,9 @@ void GpoLinksTab::reload() {
         if (linked_to_this) {
             const QString name = AdInterface::instance()->get_name_for_display(dn);
 
-            const QList<QStandardItem *> row = make_item_row(GplinkInverseColumn_COUNT);
-            row[GplinkInverseColumn_Name]->setText(name);
-            row[GplinkInverseColumn_DN]->setText(dn);
+            const QList<QStandardItem *> row = make_item_row(GpoLinksColumn_COUNT);
+            row[GpoLinksColumn_Name]->setText(name);
+            row[GpoLinksColumn_DN]->setText(dn);
 
             model->appendRow(row);
         }
@@ -102,7 +103,7 @@ bool GpoLinksTab::accepts_target() const {
 }
 
 void GpoLinksTab::on_context_menu(const QPoint pos) {
-    const QString dn = get_dn_from_pos(pos, view, GplinkInverseColumn_DN);
+    const QString dn = get_dn_from_pos(pos, view, GpoLinksColumn_DN);
 
     QMenu menu(this);
     menu.addAction(tr("Details"), [dn]() {

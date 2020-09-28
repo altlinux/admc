@@ -20,7 +20,7 @@
 #include "select_dialog.h"
 #include "ad_interface.h"
 #include "settings.h"
-#include "dn_column_proxy.h"
+#include "containers_widget.h"
 #include "utils.h"
 
 #include <QLineEdit>
@@ -32,6 +32,7 @@
 #include <QPushButton>
 #include <QItemSelectionModel>
 #include <QStandardItemModel>
+#include <algorithm>
 
 enum SelectDialogColumn {
     SelectDialogColumn_Name,
@@ -71,6 +72,18 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     const auto select_button = new QPushButton(tr("Select"), this);
     const auto cancel_button = new QPushButton(tr("Cancel"), this);
 
+    const bool setup_as_tree =
+    [classes]() {
+        QSet<QString> classes_copy = classes.toSet();
+
+        classes_copy.remove(CLASS_CONTAINER);
+        classes_copy.remove(CLASS_OU);
+
+        const bool only_container_and_ou = classes_copy.isEmpty();
+
+        return only_container_and_ou;
+    }();
+
     const auto layout = new QGridLayout(this);
     layout->addWidget(target_label, 0, 0);
     layout->addWidget(filter_class_label, 1, 0, Qt::AlignRight);
@@ -83,17 +96,22 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
 
     auto proxy_name = new QSortFilterProxyModel(this);
     proxy_name->setFilterKeyColumn(SelectDialogColumn_Name);
-
+    proxy_name->setRecursiveFilteringEnabled(true);
+    
     auto proxy_class = new QSortFilterProxyModel(this);
     proxy_class->setFilterKeyColumn(SelectDialogColumn_Class);
-
-    const auto dn_column_proxy = new DnColumnProxy(SelectDialogColumn_DN, this);
+    proxy_class->setRecursiveFilteringEnabled(true);
 
     // Load model
     auto model = new QStandardItemModel(0, SelectDialogColumn_COUNT, this);
-    model->setHorizontalHeaderItem(SelectDialogColumn_Name, new QStandardItem(tr("Name")));
-    model->setHorizontalHeaderItem(SelectDialogColumn_Class, new QStandardItem(tr("Class")));
-    model->setHorizontalHeaderItem(SelectDialogColumn_DN, new QStandardItem(tr("DN")));
+    set_horizontal_header_labels_from_map(model, {
+        {SelectDialogColumn_Name, tr("Name")},
+        {SelectDialogColumn_Class, tr("Class")},
+        {SelectDialogColumn_DN, tr("DN")}
+    });
+
+    QList<QString> objects;
+    QHash<QString, QString> object_classes;
     for (auto object_class : classes) {
         QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, object_class);
 
@@ -107,21 +125,52 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
             filter = filter_AND(filter, NOT_is_advanced);
         }
 
-        const QList<QString> objects = AdInterface::instance()->search(filter);
+        const QList<QString> objects_of_class = AdInterface::instance()->search(filter);
 
-        for (auto e_dn : objects) {
-            const QString name = AdInterface::instance()->get_name_for_display(e_dn);
-            
-            const QList<QStandardItem *> row = make_item_row(SelectDialogColumn_COUNT);
-            row[SelectDialogColumn_Name]->setText(name);
-            row[SelectDialogColumn_Class]->setText(object_class);
-            row[SelectDialogColumn_DN]->setText(e_dn);
+        objects.append(objects_of_class);
 
+        for (const QString dn : objects_of_class) {
+            object_classes[dn] = object_class;
+        }
+    }
+
+    // Sort objects by length of DN, so that parents are first
+    std::sort(objects.begin(), objects.end(), [](const QString &a, const QString &b) {
+        return a.length() < b.length();   
+    });
+
+    QHash<QString, QStandardItem *> parents;
+
+    for (auto dn : objects) {
+        const QString name = AdInterface::instance()->get_name_for_display(dn);
+        const QString object_class = object_classes[dn];
+
+        const QList<QStandardItem *> row = make_item_row(SelectDialogColumn_COUNT);
+        row[SelectDialogColumn_Name]->setText(name);
+        row[SelectDialogColumn_Class]->setText(object_class);
+        row[SelectDialogColumn_DN]->setText(dn);
+
+        const QIcon icon = get_object_icon(dn);
+        row[0]->setIcon(icon);
+
+        if (setup_as_tree) {
+            const QString parent_dn = extract_parent_dn_from_dn(dn);
+            if (parents.contains(parent_dn)) {
+                QStandardItem *parent = parents[parent_dn];
+                parent->appendRow(row);
+            } else {
+                model->appendRow(row);
+            }
+
+            parents[dn] = row[0];
+        } else {
             model->appendRow(row);
         }
     }
 
-    setup_model_chain(view, model, {proxy_name, proxy_class, dn_column_proxy});
+    setup_model_chain(view, model, {proxy_name, proxy_class});
+
+    setup_column_toggle_menu(view, model, {SelectDialogColumn_Name});
 
     // Fill class combo box with possible classes
     filter_class_combo->clear();
@@ -130,6 +179,8 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
 
         filter_class_combo->addItem(display_string, object_class);
     }
+    filter_class_combo->addItem(tr("All"), "");
+    filter_class_combo->setCurrentIndex(filter_class_combo->count() - 1);
 
     // Disable/hide class-related elements if selecting only from one class
     if (classes.size() == 1) {

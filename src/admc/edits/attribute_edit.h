@@ -40,7 +40,7 @@ public:
 
     using QObject::QObject;
 
-    void set_read_only(EditReadOnly read_only_arg);
+    virtual void set_read_only(EditReadOnly read_only_arg);
 
     virtual void add_to_layout(QGridLayout *layout) = 0;
 

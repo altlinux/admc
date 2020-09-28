@@ -175,7 +175,7 @@ void GeneralTab::apply() {
 }
 
 bool GeneralTab::accepts_target() const {
-    return AdInterface::instance()->has_attributes(target());
+    return true;
 }
 
 void GeneralTab::reload() {

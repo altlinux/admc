@@ -20,7 +20,6 @@
 #include "group_policy_tab.h"
 #include "object_context_menu.h"
 #include "utils.h"
-#include "dn_column_proxy.h"
 #include "select_dialog.h"
 #include "edits/gpoptions_edit.h"
 
@@ -60,14 +59,16 @@ GroupPolicyTab::GroupPolicyTab(DetailsWidget *details_arg)
     view->setAllColumnsShowFocus(true);
 
     model = new QStandardItemModel(0, GplinkColumn_COUNT, this);
-    model->setHorizontalHeaderItem(GplinkColumn_Name, new QStandardItem(tr("Name")));
-    model->setHorizontalHeaderItem(GplinkColumn_Disabled, new QStandardItem(tr("Disabled")));
-    model->setHorizontalHeaderItem(GplinkColumn_Enforced, new QStandardItem(tr("Enforced")));
-    model->setHorizontalHeaderItem(GplinkColumn_DN, new QStandardItem(tr("DN")));
+    set_horizontal_header_labels_from_map(model, {
+        {GplinkColumn_Name, tr("Name")},
+        {GplinkColumn_Disabled, tr("Disabled")},
+        {GplinkColumn_Enforced, tr("Enforced")},
+        {GplinkColumn_DN, tr("DN")}
+    });
 
-    const auto dn_column_proxy = new DnColumnProxy(GplinkColumn_DN, this);
+    view->setModel(model);
 
-    setup_model_chain(view, model, {dn_column_proxy});
+    setup_column_toggle_menu(view, model, {GplinkColumn_Name, GplinkColumn_Disabled, GplinkColumn_Enforced});
 
     const auto edits_layout = new QGridLayout();
 

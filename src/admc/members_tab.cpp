@@ -20,7 +20,6 @@
 #include "members_tab.h"
 #include "object_context_menu.h"
 #include "utils.h"
-#include "dn_column_proxy.h"
 #include "select_dialog.h"
 
 #include <QTreeView>
@@ -50,12 +49,14 @@ MembersTab::MembersTab(DetailsWidget *details_arg)
     view->setSortingEnabled(true);
 
     model = new QStandardItemModel(0, MembersColumn_COUNT, this);
-    model->setHorizontalHeaderItem(MembersColumn_Name, new QStandardItem(tr("Name")));
-    model->setHorizontalHeaderItem(MembersColumn_DN, new QStandardItem(tr("DN")));
+    set_horizontal_header_labels_from_map(model, {
+        {MembersColumn_Name, tr("Name")},
+        {MembersColumn_DN, tr("DN")}
+    });
 
-    const auto dn_column_proxy = new DnColumnProxy(MembersColumn_DN, this);
+    view->setModel(model);
 
-    setup_model_chain(view, model, {dn_column_proxy});
+    setup_column_toggle_menu(view, model, {MembersColumn_Name});
 
     auto add_button = new QPushButton(tr("Add"));
     auto remove_button = new QPushButton(tr("Remove"));

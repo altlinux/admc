@@ -142,22 +142,30 @@ QString DetailsWidget::get_target() const {
 void DetailsWidget::reload(const QString &new_target) {
     target = new_target;
     
-    const QString name = AdInterface::instance()->attribute_get(target, ATTRIBUTE_NAME);
+    const QString name = AdInterface::instance()->get_name_for_display(target);
     const QString title_text = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
     title_label->setText(title_text);
 
-    // Save current tab/index to restore later
-    QWidget *old_tab = tab_widget->widget(tab_widget->currentIndex());
-
-    // Setup tabs
     tab_widget->clear();
 
-    for (int i = 0; i < TabHandle_COUNT; i++) {
-        const TabHandle tab_handle = (TabHandle) i;
-        DetailsTab *tab = tabs[i];
-        const bool accepts_target = tab->accepts_target();
+    const bool has_attributes = AdInterface::instance()->has_attributes(target);
+    if (has_attributes) {
+        // Disable apply/cancel since this is a fresh reload and there are no changes
+        button_box->show();
+        button_box->setEnabled(false);
 
-        if (accepts_target) {
+        // Save old tab to restore it after reload
+        QWidget *old_tab = tab_widget->widget(tab_widget->currentIndex());
+
+        for (int i = 0; i < TabHandle_COUNT; i++) {
+            const TabHandle tab_handle = (TabHandle) i;
+            DetailsTab *tab = tabs[i];
+
+            const bool accepts_target = tab->accepts_target();
+            if (!accepts_target) {
+                continue;
+            }
+
             tab->reload();
 
             const QString tab_text =
@@ -178,23 +186,21 @@ void DetailsWidget::reload(const QString &new_target) {
 
             tab_widget->addTab(tab, tab_text);
         }
-    }
 
-    // Restore current index if it is still shown
-    // Otherwise current index is set to first tab by default
-    const int old_tab_index_in_new_tabs = tab_widget->indexOf(old_tab);
-    if (old_tab_index_in_new_tabs != -1) {
-        tab_widget->setCurrentIndex(old_tab_index_in_new_tabs);
-    }
-
-    if (tab_widget->count() > 0) {
-        button_box->show();
+        // Restore old if it is still active
+        const int old_tab_is_active = (tab_widget->indexOf(old_tab) != -1);
+        if (old_tab_is_active) {
+            tab_widget->setCurrentIndex(tab_widget->indexOf(old_tab));
+        }
     } else {
-        button_box->hide();
+        if (is_floating_instance) {
+            close();
+        } else {
+            // Docked details widget can't be closed so it
+            // becomes blank
+            button_box->hide();
+        }
     }
-
-    // Disable apply/cancel since this is a fresh reload and there are no changes
-    button_box->setEnabled(false);
 }
 
 void DetailsWidget::on_logged_in() {
@@ -246,8 +252,9 @@ void DetailsWidget::on_tab_edited() {
     bool any_changed = false;
     for (auto tab : tabs) {
         const int tab_index = tab_widget->indexOf(tab);
+        const bool tab_is_active = (tab_index != -1);
 
-        if (tab_index != -1) {
+        if (tab_is_active) {
             const bool tab_changed = tab->changed();
 
             if (tab_changed) {
