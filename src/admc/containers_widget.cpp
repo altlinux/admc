@@ -62,8 +62,6 @@ ContainersWidget::ContainersWidget(QWidget *parent)
     
     setup_column_toggle_menu(view, model, {ContainersColumn_Name});
 
-    get_containers_filter_classes();
-    
     // Insert label into layout
     const auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);

@@ -26,12 +26,13 @@
 #include <QDebug>
 #include <algorithm>
 
-#define ATTRIBUTE_DISPLAY_NAMES     "attributeDisplayNames"
-#define ATTRIBUTE_EXTRA_COLUMNS     "extraColumns"
-#define ATTRIBUTE_FILTER_CONTAINERS "msDS-FilterContainers"
-#define ATTRIBUTE_LDAP_DISPLAY_NAME "lDAPDisplayName"
-#define CLASS_DISPLAY_NAME          "classDisplayName"
-#define TREAT_AS_LEAF               "treatAsLeaf"
+#define ATTRIBUTE_DISPLAY_NAMES         "attributeDisplayNames"
+#define ATTRIBUTE_EXTRA_COLUMNS         "extraColumns"
+#define ATTRIBUTE_FILTER_CONTAINERS     "msDS-FilterContainers"
+#define ATTRIBUTE_LDAP_DISPLAY_NAME     "lDAPDisplayName"
+#define ATTRIBUTE_POSSIBLE_SUPERIORS    "systemPossSuperiors"
+#define CLASS_DISPLAY_NAME              "classDisplayName"
+#define TREAT_AS_LEAF                   "treatAsLeaf"
 
 QString get_locale_dir() {
     static QString locale_dir =
@@ -187,4 +188,11 @@ QList<QString> get_containers_filter_classes() {
     }();
 
     return classes;
+}
+
+QList<QString> get_possible_superiors(const QString &dn) {
+    const QString category = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_OBJECT_CATEGORY);
+    const QList<QString> possible_superiors = AdInterface::instance()->attribute_get_multi(category, ATTRIBUTE_POSSIBLE_SUPERIORS);
+    
+    return possible_superiors;
 }

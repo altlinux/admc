@@ -27,6 +27,7 @@
 #include "create_dialog.h"
 #include "settings.h"
 #include "details_widget.h"
+#include "display_specifier.h"
 
 #include <QString>
 #include <QMessageBox>
@@ -180,16 +181,9 @@ void ObjectContextMenu::edit_policy(const QString &dn) {
 }
 
 void ObjectContextMenu::move(const QString &dn) {
-    // TODO: somehow formalize "class X can only be moved to X,Y,Z..." better
-    const bool is_container = AdInterface::instance()->is_container(dn);
-    QList<QString> classes;
-    if (is_container) {
-        classes = {CLASS_CONTAINER};
-    } else {
-        classes = {CLASS_CONTAINER, CLASS_OU};
-    }
+    const QList<QString> possible_superiors = get_possible_superiors(dn);
 
-    const QList<QString> selected_objects = SelectDialog::open(classes);
+    const QList<QString> selected_objects = SelectDialog::open(possible_superiors);
 
     if (selected_objects.size() == 1) {
         const QString container = selected_objects[0];
