@@ -27,6 +27,7 @@
 // so data is loaded once and is then reused after that
 
 QString get_attribute_display_string(const QString &attribute, const QString &objectClass);
+QString get_class_display_string(const QString &objectClass);
 QList<QString> get_extra_contents_columns();
 QList<QString> get_containers_filter_classes();
 QList<QString> get_possible_superiors(const QString &dn);

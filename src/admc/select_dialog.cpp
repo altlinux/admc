@@ -21,6 +21,7 @@
 #include "ad_interface.h"
 #include "settings.h"
 #include "containers_widget.h"
+#include "display_specifier.h"
 #include "utils.h"
 
 #include <QLineEdit>
@@ -175,7 +176,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     // Fill class combo box with possible classes
     filter_class_combo->clear();
     for (auto object_class : classes) {
-        auto display_string = object_class_display_string(object_class);
+        auto display_string = get_class_display_string(object_class);
 
         filter_class_combo->addItem(display_string, object_class);
     }

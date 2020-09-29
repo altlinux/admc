@@ -1359,20 +1359,6 @@ QString group_type_to_string(GroupType type) {
     return "";
 }
 
-QString object_class_display_string(const QString &object_class) {
-    static const QHash<QString, QString> strings = {
-        {CLASS_CONTAINER, QObject::tr("Container")},
-        {CLASS_OU, QObject::tr("OU")},
-        {CLASS_GROUP, QObject::tr("Group")},
-        {CLASS_USER, QObject::tr("User")}
-    };
-    const QString default_value = object_class;
-
-    const QString display_string = strings.value(object_class, default_value);
-
-    return display_string;
-}
-
 QIcon get_object_icon(const QString &dn) {
     // TODO: change to custom, good icons, add those icons to installation?
     // TODO: are there cases where an object can have multiple icons due to multiple objectClasses and one of them needs to be prioritized?

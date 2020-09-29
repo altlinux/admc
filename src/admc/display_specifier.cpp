@@ -135,6 +135,41 @@ QString get_attribute_display_string(const QString &attribute, const QString &ob
     }
 }
 
+QString get_class_display_string(const QString &objectClass) {
+    static QHash<QString, QString> class_display_names =
+    []() {
+        QHash<QString, QString> out;
+
+        const QString locale_dir = get_locale_dir();
+
+        const QList<QString> display_specifiers = AdInterface::instance()->list(locale_dir);
+
+        for (const auto display_specifier : display_specifiers) {
+            // TODO: duplicated code. Probably load this together with other display specifier info.
+            const QString specifier_class =
+            [display_specifier]() {
+                const QString rdn = display_specifier.split(",")[0];
+                const QString removed_cn = QString(rdn).remove("CN=", Qt::CaseInsensitive);
+                const QString class_out = removed_cn.split('-')[0];
+
+                return class_out;
+            }();
+
+            const QString class_display_name = AdInterface::instance()->attribute_get(display_specifier, CLASS_DISPLAY_NAME);
+
+            out[specifier_class] = class_display_name;
+        }
+
+        return out;
+    }();
+
+    if (class_display_names.contains(objectClass)) {
+        return class_display_names[objectClass];
+    } else {
+        return objectClass;
+    }
+}
+
 QList<QString> get_extra_contents_columns() {
     static const QList<QString> columns =
     []() {
@@ -193,6 +228,6 @@ QList<QString> get_containers_filter_classes() {
 QList<QString> get_possible_superiors(const QString &dn) {
     const QString category = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_OBJECT_CATEGORY);
     const QList<QString> possible_superiors = AdInterface::instance()->attribute_get_multi(category, ATTRIBUTE_POSSIBLE_SUPERIORS);
-    
+
     return possible_superiors;
 }
