@@ -34,6 +34,9 @@
 #define CLASS_DISPLAY_NAME              "classDisplayName"
 #define TREAT_AS_LEAF                   "treatAsLeaf"
 
+QString get_display_specifier_class(const QString &display_specifier);
+QList<QString> get_all_display_specifiers();
+
 QString get_locale_dir() {
     static QString locale_dir =
     []() {
@@ -63,9 +66,7 @@ QString get_attribute_display_string(const QString &attribute, const QString &ob
     []() {
         QHash<QString, QHash<QString, QString>> attribute_display_names_out;
 
-        const QString locale_dir = get_locale_dir();
-
-        const QList<QString> display_specifiers = AdInterface::instance()->list(locale_dir);
+        const QList<QString> display_specifiers = get_all_display_specifiers();
 
         for (const auto display_specifier : display_specifiers) {
             const QList<QString> display_names =
@@ -82,16 +83,7 @@ QString get_attribute_display_string(const QString &attribute, const QString &ob
                 return out;
             }();
 
-            // Display specifier DN is "CN=class-Display,CN=..."
-            // Get "class" from that
-            const QString specifier_class =
-            [display_specifier]() {
-                const QString rdn = display_specifier.split(",")[0];
-                const QString removed_cn = QString(rdn).remove("CN=", Qt::CaseInsensitive);
-                const QString class_out = removed_cn.split('-')[0];
-
-                return class_out;
-            }();
+            const QString specifier_class = get_display_specifier_class(display_specifier);
 
             for (const auto display_name : display_names) {
                 const QList<QString> display_name_split = display_name.split(",");
@@ -140,20 +132,11 @@ QString get_class_display_string(const QString &objectClass) {
     []() {
         QHash<QString, QString> out;
 
-        const QString locale_dir = get_locale_dir();
-
-        const QList<QString> display_specifiers = AdInterface::instance()->list(locale_dir);
+        const QList<QString> display_specifiers = get_all_display_specifiers();
 
         for (const auto display_specifier : display_specifiers) {
             // TODO: duplicated code. Probably load this together with other display specifier info.
-            const QString specifier_class =
-            [display_specifier]() {
-                const QString rdn = display_specifier.split(",")[0];
-                const QString removed_cn = QString(rdn).remove("CN=", Qt::CaseInsensitive);
-                const QString class_out = removed_cn.split('-')[0];
-
-                return class_out;
-            }();
+            const QString specifier_class = get_display_specifier_class(display_specifier);
 
             const QString class_display_name = AdInterface::instance()->attribute_get(display_specifier, CLASS_DISPLAY_NAME);
 
@@ -230,4 +213,21 @@ QList<QString> get_possible_superiors(const QString &dn) {
     const QList<QString> possible_superiors = AdInterface::instance()->attribute_get_multi(category, ATTRIBUTE_POSSIBLE_SUPERIORS);
 
     return possible_superiors;
+}
+
+// Display specifier DN is "CN=class-Display,CN=..."
+// Get "class" from that
+QString get_display_specifier_class(const QString &display_specifier) {
+    const QString rdn = display_specifier.split(",")[0];
+    const QString removed_cn = QString(rdn).remove("CN=", Qt::CaseInsensitive);
+    const QString specifier_class = removed_cn.split('-')[0];
+
+    return specifier_class;
+}
+
+QList<QString> get_all_display_specifiers() {
+    const QString locale_dir = get_locale_dir();
+    const QList<QString> display_specifiers = AdInterface::instance()->list(locale_dir);
+
+    return display_specifiers;
 }
