@@ -19,7 +19,7 @@
 
 #include "edits/expiry_edit.h"
 #include "ad_interface.h"
-#include "display_specifier.h"
+#include "server_configuration.h"
 #include "utils.h"
 
 #include <QVBoxLayout>

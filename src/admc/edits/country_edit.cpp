@@ -21,7 +21,7 @@
 #include "ad_interface.h"
 #include "status.h"
 #include "edits/attribute_edit.h"
-#include "display_specifier.h"
+#include "server_configuration.h"
 #include "utils.h"
 #include "edits/country_edit.h"
 

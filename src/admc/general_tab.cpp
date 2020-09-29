@@ -25,7 +25,7 @@
 #include "edits/group_scope_edit.h"
 #include "edits/group_type_edit.h"
 #include "utils.h"
-#include "display_specifier.h"
+#include "server_configuration.h"
 
 #include <QVBoxLayout>
 #include <QLabel>

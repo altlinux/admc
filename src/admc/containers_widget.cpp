@@ -23,7 +23,7 @@
 #include "utils.h"
 #include "settings.h"
 #include "details_widget.h"
-#include "display_specifier.h"
+#include "server_configuration.h"
 
 #include <QTreeView>
 #include <QIcon>

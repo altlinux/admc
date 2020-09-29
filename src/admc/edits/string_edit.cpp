@@ -20,7 +20,7 @@
 #include "edits/string_edit.h"
 #include "utils.h"
 #include "ad_interface.h"
-#include "display_specifier.h"
+#include "server_configuration.h"
 
 #include <QLineEdit>
 #include <QGridLayout>

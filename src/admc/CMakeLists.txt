@@ -42,7 +42,7 @@ add_executable(admc
     create_dialog.cpp
     policies_widget.cpp
     gplink.cpp
-    display_specifier.cpp
+    server_configuration.cpp
     
     edits/attribute_edit.cpp
     edits/string_edit.cpp

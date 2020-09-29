@@ -21,7 +21,7 @@
 #include "ad_interface.h"
 #include "settings.h"
 #include "containers_widget.h"
-#include "display_specifier.h"
+#include "server_configuration.h"
 #include "utils.h"
 
 #include <QLineEdit>

@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DISPLAY_SPEC_H
-#define DISPLAY_SPEC_H
+#ifndef SERVER_CONFIGURATION_H
+#define SERVER_CONFIGURATION_H
 
 #include <QString>
 
-// Provides access to some DisplaySpecifier data
+// Provides access to some server configuration data
 // NOTE: it is assumed that a language change requires a restart
-// so data is loaded once and is then reused after that
+// so localized data is loaded once and is then reused after that
 
 QString get_attribute_display_string(const QString &attribute, const QString &objectClass);
 QString get_class_display_string(const QString &objectClass);
@@ -32,4 +32,4 @@ QList<QString> get_extra_contents_columns();
 QList<QString> get_containers_filter_classes();
 QList<QString> get_possible_superiors(const QString &dn);
 
-#endif /* DISPLAY_SPEC_H */
+#endif /* SERVER_CONFIGURATION_H */
