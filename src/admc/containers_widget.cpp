@@ -277,12 +277,6 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
     // Add children
     QList<QString> children = AdInterface::instance()->list(dn);
 
-    // TODO: remove this
-    if (dn == "DC=domain,DC=alt") {
-        QList<QString> config = AdInterface::instance()->list("CN=Configuration,DC=domain,DC=alt");
-        children.append(config);
-    }
-
     for (auto child : children) {
         make_row(parent_item, child);
     }

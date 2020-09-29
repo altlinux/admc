@@ -18,7 +18,6 @@
  */
 
 #include "edits/account_option_edit.h"
-#include "attribute_display_strings.h"
 #include "utils.h"
 
 #include <QCheckBox>

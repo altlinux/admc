@@ -40,7 +40,6 @@ add_executable(admc
     gpo_links_tab.cpp
     rename_dialog.cpp
     create_dialog.cpp
-    attribute_display_strings.cpp
     policies_widget.cpp
     gplink.cpp
     display_specifier.cpp

@@ -19,7 +19,7 @@
 
 #include "edits/expiry_edit.h"
 #include "ad_interface.h"
-#include "attribute_display_strings.h"
+#include "display_specifier.h"
 #include "utils.h"
 
 #include <QVBoxLayout>
@@ -101,7 +101,7 @@ void ExpiryEdit::load(const QString &dn) {
 }
 
 void ExpiryEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = get_attribute_display_string(ATTRIBUTE_ACCOUNT_EXPIRES) + ":";
+    const QString label_text = get_attribute_display_string(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
     const auto label = new QLabel(label_text);
 
     layout->addWidget(label, layout->rowCount(), 0);

@@ -70,9 +70,6 @@ QString get_attribute_display_string(const QString &attribute, const QString &ob
         const QList<QString> display_specifiers = AdInterface::instance()->list(locale_dir);
 
         for (const auto display_specifier : display_specifiers) {
-            const auto all = AdInterface::instance()->get_all_attributes(display_specifier);
-            qInfo() << all;
-
             const QList<QString> display_names =
             [display_specifier]() {
                 QList<QString> out = AdInterface::instance()->attribute_get_multi(display_specifier, ATTRIBUTE_DISPLAY_NAMES);
