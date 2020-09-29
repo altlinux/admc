@@ -25,6 +25,8 @@
 
 #include <QWidget>
 #include <QString>
+#include <QList>
+#include <QHash>
 
 class ContainersWidget;
 class QStandardItem;

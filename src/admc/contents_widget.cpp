@@ -25,41 +25,16 @@
 #include "settings.h"
 #include "utils.h"
 #include "ad_interface.h"
-#include "attribute_display_strings.h"
+#include "display_specifier.h"
 
 #include <QTreeView>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHeaderView>
+#include <QDebug>
 
 // NOTE: not using enums for columns here, because each column maps directly to an attribute
-const QList<QString> columns = {
-    ATTRIBUTE_NAME,
-    ATTRIBUTE_OBJECT_CATEGORY,
-    ATTRIBUTE_DESCRIPTION,
-    ATTRIBUTE_DISTINGUISHED_NAME,
-
-    ATTRIBUTE_DISPLAY_NAME,
-    ATTRIBUTE_FIRST_NAME,
-    ATTRIBUTE_LAST_NAME,
-    ATTRIBUTE_SAMACCOUNT_NAME,
-    ATTRIBUTE_USER_PRINCIPAL_NAME,
-
-    ATTRIBUTE_CITY,
-    ATTRIBUTE_STATE,
-    ATTRIBUTE_COUNTRY,
-    ATTRIBUTE_PO_BOX,
-
-    ATTRIBUTE_OFFICE,
-    ATTRIBUTE_DEPARTMENT,
-    ATTRIBUTE_COMPANY,
-    ATTRIBUTE_TITLE,
-
-    ATTRIBUTE_TELEPHONE_NUMBER,
-    ATTRIBUTE_MAIL,
-
-    ATTRIBUTE_WHEN_CHANGED
-};
+QList<QString> columns;
 
 int column_index(const QString &attribute) {
     if (!columns.contains(attribute)) {
@@ -72,6 +47,18 @@ int column_index(const QString &attribute) {
 ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *parent)
 : QWidget(parent)
 {   
+    if (columns.isEmpty()) {
+        columns = {
+            ATTRIBUTE_NAME,
+            ATTRIBUTE_OBJECT_CATEGORY,
+            ATTRIBUTE_DESCRIPTION
+        };
+        // NOTE: dn is not one of ADUC's columns, but adding it here for convenience
+        columns.append(ATTRIBUTE_DISTINGUISHED_NAME);
+        const QList<QString> extra_columns =get_extra_contents_columns();
+        columns.append(extra_columns);
+    }
+
     model = new ContentsModel(this);
     const auto advanced_view_proxy = new AdvancedViewProxy(column_index(ATTRIBUTE_DISTINGUISHED_NAME), this);
 
@@ -182,9 +169,19 @@ void ContentsWidget::showEvent(QShowEvent *event) {
 ContentsModel::ContentsModel(QObject *parent)
 : ObjectModel(columns.count(), column_index(ATTRIBUTE_DISTINGUISHED_NAME), parent)
 {
+    // TODO: not sure what to do about these exceptions for attributes which don't have ez display names. DN for example is not in default but is in user and group specifiers and equal values at that.
     QList<QString> labels;
     for (const QString attribute : columns) {
-        const QString attribute_display_string = get_attribute_display_string(attribute);
+        const QString attribute_display_string =
+        [attribute]() {
+            if (attribute == ATTRIBUTE_DISTINGUISHED_NAME) {
+                return tr("DN");
+            } else if (attribute == ATTRIBUTE_OBJECT_CATEGORY) {
+                return tr("Type");
+            } else {
+                return get_attribute_display_string(attribute, CLASS_DEFAULT);
+            }
+        }();
 
         labels.append(attribute_display_string);
     }

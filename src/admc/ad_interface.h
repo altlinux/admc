@@ -93,6 +93,7 @@
 #define CLASS_TOP                       "top"
 #define CLASS_COMPUTER                  "computer"
 #define CLASS_ORG_PERSON                "organizationalPerson"
+#define CLASS_DEFAULT                   "default"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 

@@ -23,6 +23,7 @@
 #include <QString>
 
 QString get_attribute_display_string(const QString &attribute, const QString &objectClass);
+QList<QString> get_extra_contents_columns();
 
 
 #endif /* DISPLAY_SPEC_H */
