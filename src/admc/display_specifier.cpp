@@ -33,9 +33,6 @@
 #define CLASS_DISPLAY_NAME          "classDisplayName"
 #define TREAT_AS_LEAF               "treatAsLeaf"
 
-// NOTE: it is assumed that a language change requires a restart
-// so display specifiers are loaded once and are permanent
-
 QString get_locale_dir() {
     static QString locale_dir =
     []() {
@@ -138,36 +135,40 @@ QString get_attribute_display_string(const QString &attribute, const QString &ob
 }
 
 QList<QString> get_extra_contents_columns() {
-    const QList<QString> columns_values =
+    static const QList<QString> columns =
     []() {
-        const QString locale_dir = get_locale_dir();
-        const QString default_display_specifier = QString("CN=default-Display,%1").arg(locale_dir);
-        QList<QString> columns_out = AdInterface::instance()->attribute_get_multi(default_display_specifier, ATTRIBUTE_EXTRA_COLUMNS);
-        std::reverse(columns_out.begin(), columns_out.end());
+        const QList<QString> columns_values =
+        []() {
+            const QString locale_dir = get_locale_dir();
+            const QString default_display_specifier = QString("CN=default-Display,%1").arg(locale_dir);
+            QList<QString> columns_out = AdInterface::instance()->attribute_get_multi(default_display_specifier, ATTRIBUTE_EXTRA_COLUMNS);
+            std::reverse(columns_out.begin(), columns_out.end());
 
-        return columns_out;
+            return columns_out;
+        }();
+
+        QList<QString> out;
+        for (const QString &value : columns_values) {
+            const QList<QString> column_split = value.split(',');
+            const QString attribute = column_split[0];
+
+            out.append(attribute);
+        }
+
+        return out;
     }();
-
-    QList<QString> columns;
-
-    for (const QString &value : columns_values) {
-        const QList<QString> column_split = value.split(',');
-        const QString attribute = column_split[0];
-
-        columns.append(attribute);
-    }
 
     return columns;
 }
 
 QList<QString> get_containers_filter_classes() {
-    const QString locale_dir = get_locale_dir();
-    const QString display_specifier = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
-    const QList<QString> ms_classes = AdInterface::instance()->attribute_get_multi(display_specifier, ATTRIBUTE_FILTER_CONTAINERS);
+    static const QList<QString> classes =
+    []() {
+        const QString locale_dir = get_locale_dir();
+        const QString display_specifier = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
+        const QList<QString> ms_classes = AdInterface::instance()->attribute_get_multi(display_specifier, ATTRIBUTE_FILTER_CONTAINERS);
 
-    // NOTE: ATTRIBUTE_FILTER_CONTAINERS contains classes in non-LDAP format ("Organizational-Unit" vs "organizationalUnit"). Convert to LDAP format by getting ATTRIBUTE_LDAP_DISPLAY_NAME from class' schema.
-    const QList<QString> classes =
-    [ms_classes]() {
+        // NOTE: ATTRIBUTE_FILTER_CONTAINERS contains classes in non-LDAP format ("Organizational-Unit" vs "organizationalUnit"). Convert to LDAP format by getting ATTRIBUTE_LDAP_DISPLAY_NAME from class' schema.
         const QString search_base = AdInterface::instance()->get_search_base();
         const QString schema_dn = QString("CN=Schema,CN=Configuration,%2").arg(search_base);
 

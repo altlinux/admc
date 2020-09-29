@@ -22,6 +22,10 @@
 
 #include <QString>
 
+// Provides access to some DisplaySpecifier data
+// NOTE: it is assumed that a language change requires a restart
+// so data is loaded once and is then reused after that
+
 QString get_attribute_display_string(const QString &attribute, const QString &objectClass);
 QList<QString> get_extra_contents_columns();
 QList<QString> get_containers_filter_classes();
