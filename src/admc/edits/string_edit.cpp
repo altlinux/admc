@@ -115,7 +115,7 @@ void StringEdit::load(const QString &dn) {
 }
 
 void StringEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = get_attribute_display_string(attribute, objectClass) + ":";
+    const QString label_text = get_attribute_display_name(attribute, objectClass) + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(this, label);
@@ -132,8 +132,8 @@ bool StringEdit::verify_input(QWidget *parent) {
         const QString new_value = edit->text();
 
         if (new_value.isEmpty()) {
-            const QString attribute_string = get_attribute_display_string(attribute, objectClass);
-            const QString error_text = QString(QObject::tr("Attribute \"%1\" cannot be empty!").arg(attribute_string));
+            const QString attribute_name = get_attribute_display_name(attribute, objectClass);
+            const QString error_text = QString(QObject::tr("Attribute \"%1\" cannot be empty!").arg(attribute_name));
             QMessageBox::warning(parent, QObject::tr("Error"), error_text);
 
             return false;

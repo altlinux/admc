@@ -171,9 +171,9 @@ ContentsModel::ContentsModel(QObject *parent)
 {
     QList<QString> labels;
     for (const QString attribute : columns) {
-        const QString attribute_display_string = get_attribute_display_string(attribute, CLASS_DEFAULT);
+        const QString attribute_name = get_attribute_display_name(attribute, CLASS_DEFAULT);
 
-        labels.append(attribute_display_string);
+        labels.append(attribute_name);
     }
 
     setHorizontalHeaderLabels(labels);

@@ -176,9 +176,9 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     // Fill class combo box with possible classes
     filter_class_combo->clear();
     for (auto object_class : classes) {
-        auto display_string = get_class_display_string(object_class);
+        auto class_name = get_class_display_name(object_class);
 
-        filter_class_combo->addItem(display_string, object_class);
+        filter_class_combo->addItem(class_name, object_class);
     }
     filter_class_combo->addItem(tr("All"), "");
     filter_class_combo->setCurrentIndex(filter_class_combo->count() - 1);

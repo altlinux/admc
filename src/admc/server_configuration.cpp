@@ -60,7 +60,7 @@ QString get_locale_dir() {
     return locale_dir;
 }
 
-QString get_attribute_display_string(const QString &attribute, const QString &objectClass) {
+QString get_attribute_display_name(const QString &attribute, const QString &objectClass) {
     // { objectClass => { attribute => display_name } }
     static QHash<QString, QHash<QString, QString>> attribute_display_names =
     []() {
@@ -127,7 +127,7 @@ QString get_attribute_display_string(const QString &attribute, const QString &ob
     }
 }
 
-QString get_class_display_string(const QString &objectClass) {
+QString get_class_display_name(const QString &objectClass) {
     static QHash<QString, QString> class_display_names =
     []() {
         QHash<QString, QString> out;
