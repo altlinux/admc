@@ -24,6 +24,6 @@
 
 QString get_attribute_display_string(const QString &attribute, const QString &objectClass);
 QList<QString> get_extra_contents_columns();
-
+QList<QString> get_containers_filter_classes();
 
 #endif /* DISPLAY_SPEC_H */

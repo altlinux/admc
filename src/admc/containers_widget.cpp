@@ -23,6 +23,7 @@
 #include "utils.h"
 #include "settings.h"
 #include "details_widget.h"
+#include "display_specifier.h"
 
 #include <QTreeView>
 #include <QIcon>
@@ -30,6 +31,7 @@
 #include <QStack>
 #include <QHeaderView>
 #include <QVBoxLayout>
+#include <QDebug>
 
 enum ContainersColumn {
     ContainersColumn_Name,
@@ -60,6 +62,8 @@ ContainersWidget::ContainersWidget(QWidget *parent)
     
     setup_column_toggle_menu(view, model, {ContainersColumn_Name});
 
+    get_containers_filter_classes();
+    
     // Insert label into layout
     const auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -273,6 +277,7 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
     // Add children
     QList<QString> children = AdInterface::instance()->list(dn);
 
+    // TODO: remove this
     if (dn == "DC=domain,DC=alt") {
         QList<QString> config = AdInterface::instance()->list("CN=Configuration,DC=domain,DC=alt");
         children.append(config);
@@ -298,12 +303,25 @@ bool ContainersModel::hasChildren(const QModelIndex &parent = QModelIndex()) con
 
 // Make row in model at given parent based on object with given dn
 QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
-    const bool is_container_exactly = AdInterface::instance()->is_container(dn);
-    const bool is_container_like = AdInterface::instance()->is_container_like(dn);
-    const bool is_container = is_container_exactly || is_container_like;
+    const bool passes_filter =
+    [dn]() {
+        static const QList<QString> filter_classes = get_containers_filter_classes();
 
-    const bool load_non_containers = Settings::instance()->get_bool(BoolSetting_ShowNonContainersInContainersTree);
-    if (!load_non_containers && !is_container) {
+        for (const auto acceptable_class : filter_classes) {
+            const bool is_class = AdInterface::instance()->is_class(dn, acceptable_class);
+
+            if (is_class) {
+                return true;
+            }
+        }
+
+        return false;
+    }();
+
+    const auto classes = AdInterface::instance()->attribute_get_multi(dn, ATTRIBUTE_OBJECT_CLASS);
+
+    const bool ignore_filter = Settings::instance()->get_bool(BoolSetting_ShowNonContainersInContainersTree);
+    if (!passes_filter && !ignore_filter) {
         return nullptr;
     }
 
@@ -317,7 +335,7 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
     row[0]->setIcon(icon);
 
     // Can fetch(expand) object if it's a container
-    row[0]->setData(is_container, ContainersModel::Roles::CanFetch);
+    row[0]->setData(passes_filter, ContainersModel::Roles::CanFetch);
 
     parent->appendRow(row);
 

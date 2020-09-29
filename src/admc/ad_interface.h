@@ -202,7 +202,6 @@ public:
     bool is_container(const QString &dn);
     bool is_ou(const QString &dn);
     bool is_policy(const QString &dn);
-    bool is_container_like(const QString &dn);
     bool is_computer(const QString &dn);
 
     bool user_get_account_option(const QString &dn, AccountOption option);

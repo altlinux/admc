@@ -908,18 +908,6 @@ bool AdInterface::is_policy(const QString &dn) {
     return is_class(dn, CLASS_GP_CONTAINER);
 }
 
-bool AdInterface::is_container_like(const QString &dn) {
-    // TODO: check that this includes all fitting objectClasses
-    const QList<QString> containerlike_objectClasses = {CLASS_OU, CLASS_BUILTIN_DOMAIN, CLASS_DOMAIN};
-    for (auto c : containerlike_objectClasses) {
-        if (is_class(dn, c)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 bool AdInterface::is_computer(const QString &dn) {
     return is_class(dn, CLASS_COMPUTER);
 }

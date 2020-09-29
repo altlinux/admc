@@ -26,10 +26,12 @@
 #include <QDebug>
 #include <algorithm>
 
-#define ATTRIBUTE_DISPLAY_NAMES "attributeDisplayNames"
-#define ATTRIBUTE_EXTRA_COLUMNS "extraColumns"
-#define CLASS_DISPLAY_NAME      "classDisplayName"
-#define TREAT_AS_LEAF           "treatAsLeaf"
+#define ATTRIBUTE_DISPLAY_NAMES     "attributeDisplayNames"
+#define ATTRIBUTE_EXTRA_COLUMNS     "extraColumns"
+#define ATTRIBUTE_FILTER_CONTAINERS "msDS-FilterContainers"
+#define ATTRIBUTE_LDAP_DISPLAY_NAME "lDAPDisplayName"
+#define CLASS_DISPLAY_NAME          "classDisplayName"
+#define TREAT_AS_LEAF               "treatAsLeaf"
 
 // NOTE: it is assumed that a language change requires a restart
 // so display specifiers are loaded once and are permanent
@@ -140,4 +142,32 @@ QList<QString> get_extra_contents_columns() {
     }
 
     return columns;
+}
+
+QList<QString> get_containers_filter_classes() {
+    const QString locale_dir = get_locale_dir();
+    const QString display_specifier = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
+    const QList<QString> ms_classes = AdInterface::instance()->attribute_get_multi(display_specifier, ATTRIBUTE_FILTER_CONTAINERS);
+
+    // NOTE: ATTRIBUTE_FILTER_CONTAINERS contains classes in non-LDAP format ("Organizational-Unit" vs "organizationalUnit"). Convert to LDAP format by getting ATTRIBUTE_LDAP_DISPLAY_NAME from class' schema.
+    const QList<QString> classes =
+    [ms_classes]() {
+        const QString search_base = AdInterface::instance()->get_search_base();
+        const QString schema_dn = QString("CN=Schema,CN=Configuration,%2").arg(search_base);
+
+        QList<QString> out;
+        for (const auto ms_class : ms_classes) {
+            const QString class_schema = QString("CN=%1,%2").arg(ms_class, schema_dn);
+            const QString ldap_class = AdInterface::instance()->attribute_get(class_schema, ATTRIBUTE_LDAP_DISPLAY_NAME);
+
+            out.append(ldap_class);
+        }
+
+        // TODO: why is this not included???
+        out.append(CLASS_DOMAIN);
+
+        return out;
+    }();
+
+    return classes;
 }
