@@ -217,7 +217,6 @@ public:
 
 signals:
     void modified();
-    void logged_in();
 
 private:
     LDAP *ld;

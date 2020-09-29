@@ -98,9 +98,6 @@ DetailsWidget::DetailsWidget(const bool is_floating_instance_arg)
     layout->addWidget(button_box);
 
     connect(
-        AdInterface::instance(), &AdInterface::logged_in,
-        this, &DetailsWidget::on_logged_in);
-    connect(
         AdInterface::instance(), &AdInterface::modified,
         this, &DetailsWidget::on_ad_modified);
 
@@ -201,11 +198,6 @@ void DetailsWidget::reload(const QString &new_target) {
             button_box->hide();
         }
     }
-}
-
-void DetailsWidget::on_logged_in() {
-    // Clear data on new login
-    reload("");
 }
 
 void DetailsWidget::on_ad_modified() {

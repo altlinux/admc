@@ -245,10 +245,6 @@ ContainersModel::ContainersModel(QObject *parent)
         {ContainersColumn_DN, tr("DN")}
     });
 
-    connect(
-        AdInterface::instance(), &AdInterface::logged_in,
-        this, &ContainersModel::on_logged_in);
-
     // Load head
     const QString head_dn = AdInterface::instance()->get_search_base();
     QStandardItem *invis_root = invisibleRootItem();
@@ -293,10 +289,6 @@ bool ContainersModel::hasChildren(const QModelIndex &parent = QModelIndex()) con
     } else {
         return QStandardItemModel::hasChildren(parent);
     }
-}
-
-void ContainersModel::on_logged_in() {
-    
 }
 
 // Make row in model at given parent based on object with given dn

@@ -62,7 +62,6 @@ public:
     bool canFetchMore(const QModelIndex &parent) const;
     void fetchMore(const QModelIndex &parent);
     bool hasChildren(const QModelIndex &parent) const override;
-    void on_logged_in();
 
 private slots:
 };

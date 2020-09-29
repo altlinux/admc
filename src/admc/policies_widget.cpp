@@ -60,9 +60,6 @@ PoliciesWidget::PoliciesWidget()
     layout->addWidget(view);
 
     connect(
-        AdInterface::instance(), &AdInterface::logged_in,
-        this, &PoliciesWidget::on_ad_modified);
-    connect(
         AdInterface::instance(), &AdInterface::modified,
         this, &PoliciesWidget::on_ad_modified);
 
