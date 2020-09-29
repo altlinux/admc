@@ -319,7 +319,7 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
 
     const QList<QStandardItem *> row = make_item_row(ContainersColumn_COUNT);
     
-    const QString name = AdInterface::instance()->attribute_get(dn, "name");
+    const QString name = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_NAME);
     row[ContainersColumn_Name]->setText(name);
     row[ContainersColumn_DN]->setText(dn);
 

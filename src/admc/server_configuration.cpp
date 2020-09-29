@@ -97,6 +97,11 @@ QString get_attribute_display_name(const QString &attribute, const QString &obje
         return attribute_display_names_out;
     }();
 
+    // TODO: all objects have name attribute, but not all have cn. There is no display name for name though, only for cn.
+    if (attribute == ATTRIBUTE_NAME) {
+        return get_attribute_display_name(ATTRIBUTE_CN, objectClass);
+    }
+
     // NOTE: try to find display name in default display specifier last
     const QList<QString> objectClasses = {objectClass, CLASS_DEFAULT};
 
