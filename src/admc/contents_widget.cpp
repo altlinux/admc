@@ -169,19 +169,9 @@ void ContentsWidget::showEvent(QShowEvent *event) {
 ContentsModel::ContentsModel(QObject *parent)
 : ObjectModel(columns.count(), column_index(ATTRIBUTE_DISTINGUISHED_NAME), parent)
 {
-    // TODO: not sure what to do about these exceptions for attributes which don't have ez display names. DN for example is not in default but is in user and group specifiers and equal values at that.
     QList<QString> labels;
     for (const QString attribute : columns) {
-        const QString attribute_display_string =
-        [attribute]() {
-            if (attribute == ATTRIBUTE_DISTINGUISHED_NAME) {
-                return tr("DN");
-            } else if (attribute == ATTRIBUTE_OBJECT_CATEGORY) {
-                return tr("Type");
-            } else {
-                return get_attribute_display_string(attribute, CLASS_DEFAULT);
-            }
-        }();
+        const QString attribute_display_string = get_attribute_display_string(attribute, CLASS_DEFAULT);
 
         labels.append(attribute_display_string);
     }

@@ -70,6 +70,9 @@ QString get_attribute_display_string(const QString &attribute, const QString &ob
         const QList<QString> display_specifiers = AdInterface::instance()->list(locale_dir);
 
         for (const auto display_specifier : display_specifiers) {
+            const auto all = AdInterface::instance()->get_all_attributes(display_specifier);
+            qInfo() << all;
+
             const QList<QString> display_names =
             [display_specifier]() {
                 QList<QString> out = AdInterface::instance()->attribute_get_multi(display_specifier, ATTRIBUTE_DISPLAY_NAMES);
@@ -118,7 +121,23 @@ QString get_attribute_display_string(const QString &attribute, const QString &ob
         }
     }
 
-    return attribute;
+    // NOTE: display specifier doesn't contain all display names, so need to hardcode some of them here
+    static const QHash<QString, QString> fallback_strings = {
+        {ATTRIBUTE_DISTINGUISHED_NAME, QObject::tr("DN")},
+        {ATTRIBUTE_OBJECT_CLASS, QObject::tr("Object class")},
+        {ATTRIBUTE_WHEN_CREATED, QObject::tr("Created")},
+        {ATTRIBUTE_WHEN_CHANGED, QObject::tr("Changed")},
+        {ATTRIBUTE_USN_CREATED, QObject::tr("USN created")},
+        {ATTRIBUTE_USN_CHANGED, QObject::tr("USN changed")},
+        {ATTRIBUTE_ACCOUNT_EXPIRES, QObject::tr("Account expires")},
+        {ATTRIBUTE_OBJECT_CATEGORY, QObject::tr("Type")},
+    };
+
+    if (fallback_strings.contains(attribute)) {
+        return fallback_strings[attribute];
+    } else {
+        return attribute;
+    }
 }
 
 QList<QString> get_extra_contents_columns() {

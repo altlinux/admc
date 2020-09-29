@@ -60,7 +60,6 @@
 #define ATTRIBUTE_POSTAL_CODE           "postalCode"
 #define ATTRIBUTE_STATE                 "st"
 #define ATTRIBUTE_STREET                "streetAddress"
-// TODO: not sure what to do with this #define ATTRIBUTE_NAME_NAME                    "name"
 #define ATTRIBUTE_DISTINGUISHED_NAME    "distinguishedName"
 #define ATTRIBUTE_OBJECT_CLASS          "objectClass"
 #define ATTRIBUTE_WHEN_CREATED          "whenCreated"
