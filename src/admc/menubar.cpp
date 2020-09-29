@@ -19,7 +19,6 @@
 
 #include "menubar.h"
 #include "settings.h"
-#include "login_dialog.h"
 #include "confirmation_dialog.h"
 
 #include <QMenu>
@@ -30,14 +29,7 @@
 
 MenuBar::MenuBar(QWidget* parent)
 : QMenuBar(parent) {
-    login_dialog = new LoginDialog(this);
-
     QMenu *menubar_file = addMenu(tr("File"));
-
-    QAction *login_action = menubar_file->addAction(tr("Login"));
-    connect(
-        login_action, &QAction::triggered,
-        this, &MenuBar::on_login_action);
 
     QAction *exit_action = menubar_file->addAction(tr("Exit"));
     connect(
@@ -96,10 +88,6 @@ MenuBar::MenuBar(QWidget* parent)
 
     add_language_action(QLocale::English);
     add_language_action(QLocale::Russian);
-}
-
-void MenuBar::on_login_action() {
-    login_dialog->open();
 }
 
 void MenuBar::on_exit_action() {

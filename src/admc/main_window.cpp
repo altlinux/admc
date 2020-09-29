@@ -34,32 +34,42 @@
 #include <QStatusBar>
 #include <QVBoxLayout>
 #include <QTextEdit>
+#include <QMessageBox>
 
 MainWindow::MainWindow()
 : QMainWindow()
 {
     Settings::instance()->restore_geometry(this, VariantSetting_MainWindowGeometry);
 
-    auto login_dialog = new LoginDialog(this);
-    login_dialog->open();
+    const auto open_login_dialog =
+    [this]() {
+        const auto login_dialog = new LoginDialog(this);
+        login_dialog->open();
 
-    // const bool auto_login = Settings::instance()->get_bool(BoolSetting_AutoLogin);
-    // if (auto_login) {
-    //     const QString host = Settings::instance()->get_variant(VariantSetting_Host).toString();
-    //     const QString domain = Settings::instance()->get_variant(VariantSetting_Domain).toString();
+        QObject::connect(
+            login_dialog, &QDialog::accepted,
+            [this] () {
+                finish();
+            });
+    };
 
-    //     if (!host.isEmpty()) {
-    //         AdInterface::instance()->login(host, domain);
-    //     }
-    // }
+    const bool auto_login = Settings::instance()->get_bool(BoolSetting_AutoLogin);
+    if (auto_login) {
+        const QString host = Settings::instance()->get_variant(VariantSetting_Host).toString();
+        const QString domain = Settings::instance()->get_variant(VariantSetting_Domain).toString();
 
-   
-    QObject::connect(
-        AdInterface::instance(), &AdInterface::logged_in,
-        [this] () {
+        const bool login_success = AdInterface::instance()->login(host, domain);
+
+        if (login_success) {
             finish();
-            // central_widget->setEnabled(true);
-        });
+        } else {
+            QMessageBox::warning(this, tr("Warning"), tr("Failed to login using saved login info"));
+
+            open_login_dialog();
+        }
+    } else {
+        open_login_dialog();
+    }
 }
 
 void MainWindow::finish() {

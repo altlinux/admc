@@ -20,7 +20,6 @@ class QWidget;
 class QLineEdit;
 class QListWidget;
 class QListWidgetItem;
-class QCheckBox;
 class QString;
 
 class LoginDialog final : public QDialog {
@@ -41,7 +40,6 @@ private:
     QListWidget *hosts_list = nullptr;
     QLineEdit *domain_edit = nullptr;
     QLineEdit *site_edit = nullptr;
-    QCheckBox *save_session_checkbox = nullptr;
 
     void complete(const QString &host);
     void load_hosts();

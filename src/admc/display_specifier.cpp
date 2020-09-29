@@ -58,8 +58,6 @@ QString get_attribute_display_string(const QString &attribute, const QString &ob
 
         const QList<QString> display_specifiers = AdInterface::instance()->list(locale_dir);
 
-        printf("=%s\n", qPrintable(locale_dir));
-
         for (const auto display_specifier : display_specifiers) {
             const QList<QString> display_names = AdInterface::instance()->attribute_get_multi(display_specifier, ATTRIBUTE_DISPLAY_NAMES);
 
