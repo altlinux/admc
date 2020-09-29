@@ -32,7 +32,7 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private:
-    void finish();
+    void finish_init();
 
 };
 

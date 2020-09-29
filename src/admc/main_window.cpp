@@ -49,7 +49,7 @@ MainWindow::MainWindow()
         QObject::connect(
             login_dialog, &QDialog::accepted,
             [this] () {
-                finish();
+                finish_init();
             });
     };
 
@@ -61,7 +61,7 @@ MainWindow::MainWindow()
         const bool login_success = AdInterface::instance()->login(host, domain);
 
         if (login_success) {
-            finish();
+            finish_init();
         } else {
             QMessageBox::warning(this, tr("Warning"), tr("Failed to login using saved login info"));
 
@@ -72,7 +72,7 @@ MainWindow::MainWindow()
     }
 }
 
-void MainWindow::finish() {
+void MainWindow::finish_init() {
     auto status_log = new QTextEdit(this);
     status_log->setReadOnly(true);
     QStatusBar *status_bar = statusBar();
