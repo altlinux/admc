@@ -378,17 +378,23 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 }
 
 bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value) {
-    QString old_value_display_string;
-    QString old_value_string;
-    if (attribute_is_datetime(attribute)) {
-        old_value_string = attribute_get(dn, attribute);
-        old_value_display_string = datetime_raw_to_display_string(attribute, old_value_string);
-    } else {
-        old_value_string = attribute_get(dn, attribute);
-        old_value_display_string = old_value_string;
+    const QString old_value = attribute_get(dn, attribute);
+
+    if (old_value.isEmpty() && value.isEmpty()) {
+        // do nothing
+        return true;
     }
 
-    const QByteArray old_value_array = old_value_string.toUtf8();
+    const QString old_value_display_string =
+    [=]() {
+        if (attribute_is_datetime(attribute)) {
+            return datetime_raw_to_display_string(attribute, old_value);
+        } else {
+            return old_value;
+        }
+    }();
+
+    const QByteArray old_value_array = old_value.toUtf8();
     const char *old_value_cstr = old_value_array.constData();
     
     const QByteArray dn_array = dn.toUtf8();
