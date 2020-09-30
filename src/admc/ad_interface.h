@@ -94,6 +94,9 @@
 #define CLASS_COMPUTER                  "computer"
 #define CLASS_ORG_PERSON                "organizationalPerson"
 #define CLASS_DEFAULT                   "default"
+#define CLASS_CONFIGURATION             "configuration"
+// NOTE: for schema object
+#define CLASS_dMD                       "dMD"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 
@@ -158,6 +161,8 @@ public:
 
     QString get_search_base() const;
     QString get_host() const;
+    QString get_configuration_dn() const;
+    QString get_schema_dn() const;
 
     QList<QString> list(const QString &dn);
     QList<QString> search(const QString &filter, const QString &custom_search_base = QString());
@@ -221,6 +226,8 @@ signals:
 private:
     LDAP *ld;
     QString search_base;
+    QString configuration_dn;
+    QString schema_dn;
     QString host;
 
     QHash<QString, Attributes> attributes_cache;

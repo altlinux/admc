@@ -55,9 +55,9 @@ QString get_locale_dir() {
             }
         }();
 
-        const QString search_base = AdInterface::instance()->get_search_base();
+        const QString configuration_dn = AdInterface::instance()->get_configuration_dn();
 
-        return QString("CN=%1,CN=DisplaySpecifiers,CN=Configuration,%2").arg(locale_code, search_base);
+        return QString("CN=%1,CN=DisplaySpecifiers,%2").arg(locale_code, configuration_dn);
     }();
 
     return locale_dir;
@@ -196,8 +196,7 @@ QList<QString> get_containers_filter_classes() {
         const QList<QString> ms_classes = AdInterface::instance()->attribute_get_multi(display_specifier, ATTRIBUTE_FILTER_CONTAINERS);
 
         // NOTE: ATTRIBUTE_FILTER_CONTAINERS contains classes in non-LDAP format ("Organizational-Unit" vs "organizationalUnit"). Convert to LDAP format by getting ATTRIBUTE_LDAP_DISPLAY_NAME from class' schema.
-        const QString search_base = AdInterface::instance()->get_search_base();
-        const QString schema_dn = QString("CN=Schema,CN=Configuration,%2").arg(search_base);
+        const QString schema_dn = AdInterface::instance()->get_schema_dn();
 
         QList<QString> out;
         for (const auto ms_class : ms_classes) {
@@ -244,11 +243,10 @@ QString get_ad_class_name(const QString &ldap_class_name) {
     static QHash<QString, QString> ldap_to_ad;
 
     if (!ldap_to_ad.contains(ldap_class_name)) {
-        const QString search_base = AdInterface::instance()->get_search_base();
-        const QString schema = QString("CN=Schema,CN=Configuration,%1").arg(search_base);
+        const QString schema_dn = AdInterface::instance()->get_schema_dn();
 
         const QString filter = filter_EQUALS(ATTRIBUTE_LDAP_DISPLAY_NAME, ldap_class_name);
-        const QList<QString> search_results = AdInterface::instance()->search(filter, schema);
+        const QList<QString> search_results = AdInterface::instance()->search(filter, schema_dn);
 
         if (!search_results.isEmpty()) {
             const QString class_object = search_results[0];
@@ -274,8 +272,8 @@ QList<QString> get_possible_attributes(const QString &dn) {
         if (!class_possible_attributes.contains(object_class)) {
             // Load possible attributes from schema
             const QString ad_class_name = get_ad_class_name(object_class);
-            const QString search_base = AdInterface::instance()->get_search_base();
-            const QString class_schema = QString("CN=%1,CN=Schema,CN=Configuration,%2").arg(ad_class_name, search_base);
+            const QString schema_dn = AdInterface::instance()->get_schema_dn();
+            const QString class_schema = QString("CN=%1,").arg(ad_class_name, schema_dn);
 
             const QList<QString> may_contain = AdInterface::instance()->attribute_get_multi(class_schema, ATTRIBUTE_MAY_CONTAIN);
             const QList<QString> system_may_contain = AdInterface::instance()->attribute_get_multi(class_schema, ATTRIBUTE_SYSTEM_MAY_CONTAIN);

@@ -83,6 +83,11 @@ ContainersWidget::ContainersWidget(QWidget *parent)
     connect(
         show_non_containers_signal, &BoolSettingSignal::changed,
         this, &ContainersWidget::reload);
+
+    const BoolSettingSignal *dev_mode_signal = Settings::instance()->get_bool_signal(BoolSetting_DevMode);
+    connect(
+        dev_mode_signal, &BoolSettingSignal::changed,
+        this, &ContainersWidget::reload);
 };
 
 void ContainersWidget::reload() {
@@ -275,6 +280,21 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
     // Add children
     QList<QString> children = AdInterface::instance()->list(dn);
 
+    // In dev mode, load configuration and schema objects
+    // NOTE: have to manually add configuration and schema objects because they don't appear in list() results
+    const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
+    if (dev_mode) {
+        const QString search_base = AdInterface::instance()->get_search_base();
+        const QString configuration_dn = AdInterface::instance()->get_configuration_dn();
+        const QString schema_dn = AdInterface::instance()->get_schema_dn();
+
+        if (dn == search_base) {
+            children.append(configuration_dn);
+        } else if (dn == configuration_dn) {
+            children.append(schema_dn);
+        }
+    }
+
     for (auto child : children) {
         make_row(parent_item, child);
     }
@@ -297,7 +317,18 @@ bool ContainersModel::hasChildren(const QModelIndex &parent = QModelIndex()) con
 QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
     const bool passes_filter =
     [dn]() {
-        static const QList<QString> filter_classes = get_containers_filter_classes();
+        static const QList<QString> filter_classes =
+        []() {
+            QList<QString> out = get_containers_filter_classes();
+
+            // Make configuration and schema pass filter in dev mode so they are visible and can be fetched
+            const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
+            if (dev_mode) {
+                out.append({CLASS_CONFIGURATION, CLASS_dMD});
+            }
+            
+            return out;
+        }();
 
         for (const auto acceptable_class : filter_classes) {
             const bool is_class = AdInterface::instance()->is_class(dn, acceptable_class);

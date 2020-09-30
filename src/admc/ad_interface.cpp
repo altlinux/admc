@@ -95,6 +95,9 @@ bool AdInterface::login(const QString &host_arg, const QString &domain) {
     search_base = "DC=" + search_base;
     search_base = search_base.replace(".", ",DC=");
 
+    configuration_dn = "CN=Configuration," + search_base;
+    schema_dn = "CN=Schema," + configuration_dn;
+
     const QByteArray uri_array = uri.toUtf8();
     const char *uri_cstr = uri_array.constData();
 
@@ -134,6 +137,14 @@ bool AdInterface::batch_is_in_progress() const {
 
 QString AdInterface::get_search_base() const {
     return search_base;
+}
+
+QString AdInterface::get_configuration_dn() const {
+    return configuration_dn;
+}
+
+QString AdInterface::get_schema_dn() const {
+    return schema_dn;
 }
 
 QString AdInterface::get_host() const {
