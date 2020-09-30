@@ -21,6 +21,7 @@
 #include "active_directory.h"
 #include "status.h"
 #include "utils.h"
+#include "server_configuration.h"
 
 #include <ldap.h>
 
@@ -38,13 +39,6 @@
 #define GROUP_TYPE_BIT_SECURITY 0x80000000
 #define GROUP_TYPE_BIT_SYSTEM 0x00000001
 
-enum DatetimeFormat {
-    DatetimeFormat_LargeInteger,
-    DatetimeFormat_ISO8601,
-    DatetimeFormat_None
-};
-
-DatetimeFormat get_attribute_time_format(const QString &attribute);
 int group_scope_to_bit(GroupScope scope);
 
 AdInterface *AdInterface::instance() {
@@ -1265,9 +1259,9 @@ int get_account_option_bit(const AccountOption &option) {
 }
 
 bool datetime_is_never(const QString &attribute, const QString &value) {
-    const DatetimeFormat format = get_attribute_time_format(attribute);
+    const AttributeType type = get_attribute_type(attribute);
 
-    if (format == DatetimeFormat_LargeInteger) {
+    if (type == AttributeType_LargeIntegerDatetime) {
         const bool is_never = (value == AD_LARGEINTEGERTIME_NEVER_1 || value == AD_LARGEINTEGERTIME_NEVER_2);
         
         return is_never;
@@ -1277,25 +1271,22 @@ bool datetime_is_never(const QString &attribute, const QString &value) {
 }
 
 bool attribute_is_datetime(const QString &attribute) {
-    const DatetimeFormat format = get_attribute_time_format(attribute);
-    return format != DatetimeFormat_None;
-}
-
-DatetimeFormat get_attribute_time_format(const QString &attribute) {
-    static const QHash<QString, DatetimeFormat> datetime_formats = {
-        {ATTRIBUTE_ACCOUNT_EXPIRES, DatetimeFormat_LargeInteger},
-        {ATTRIBUTE_WHEN_CREATED, DatetimeFormat_ISO8601},
-        {ATTRIBUTE_WHEN_CHANGED, DatetimeFormat_ISO8601},
+    static const QList<AttributeType> datetime_types = {
+        AttributeType_LargeIntegerDatetime,
+        AttributeType_UTCTime,
+        AttributeType_GeneralizedTime
     };
+    
+    const AttributeType type = get_attribute_type(attribute);
 
-    return datetime_formats.value(attribute, DatetimeFormat_None);
+    return datetime_types.contains(type);
 }
 
 QString datetime_to_string(const QString &attribute, const QDateTime &datetime) {
-    const DatetimeFormat format = get_attribute_time_format(attribute);
+    const AttributeType type = get_attribute_type(attribute);
 
-    switch (format) {
-        case DatetimeFormat_LargeInteger: {
+    switch (type) {
+        case AttributeType_LargeIntegerDatetime: {
             const QDateTime ntfs_epoch(QDate(1601, 1, 1));
             const qint64 millis = ntfs_epoch.msecsTo(datetime);
             const qint64 hundred_nanos = millis * MILLIS_TO_100_NANOS;
@@ -1304,12 +1295,18 @@ QString datetime_to_string(const QString &attribute, const QDateTime &datetime) 
 
             break;
         }
-        case DatetimeFormat_ISO8601: {
+        case AttributeType_UTCTime: {
+            // TODO: i think this uses 2 digits for year and needs a different format
             return datetime.toString(ISO8601_FORMAT_STRING);
 
             break;
         }
-        case DatetimeFormat_None: return "";
+        case AttributeType_GeneralizedTime: {
+            return datetime.toString(ISO8601_FORMAT_STRING);
+
+            break;
+        }
+        default: return "";
     }
 
     return "";
@@ -1327,10 +1324,10 @@ QString datetime_raw_to_display_string(const QString &attribute, const QString &
 }
 
 QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_value) {
-    const DatetimeFormat format = get_attribute_time_format(attribute);
+    const AttributeType type = get_attribute_type(attribute);
 
-    switch (format) {
-        case DatetimeFormat_LargeInteger: {
+    switch (type) {
+        case AttributeType_LargeIntegerDatetime: {
             // TODO: couldn't find epoch in qt, but maybe its hidden somewhere
             QDateTime datetime(QDate(1601, 1, 1));
             const qint64 hundred_nanos = raw_value.toLongLong();
@@ -1339,10 +1336,13 @@ QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_
 
             return datetime;
         }
-        case DatetimeFormat_ISO8601: {
+        case AttributeType_GeneralizedTime: {
             return QDateTime::fromString(raw_value, ISO8601_FORMAT_STRING);
         }
-        case DatetimeFormat_None: {
+        case AttributeType_UTCTime: {
+            return QDateTime::fromString(raw_value, ISO8601_FORMAT_STRING);
+        }
+        default: {
             return QDateTime();
         }
     }
