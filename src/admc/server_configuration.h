@@ -32,5 +32,6 @@ QList<QString> get_extra_contents_columns();
 QList<QString> get_containers_filter_classes();
 QList<QString> get_possible_superiors(const QString &dn);
 QString get_ad_class_name(const QString &ldap_class_name);
+QList<QString> get_possible_attributes(const QString &dn);
 
 #endif /* SERVER_CONFIGURATION_H */

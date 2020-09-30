@@ -34,6 +34,8 @@
 #define ATTRIBUTE_POSSIBLE_SUPERIORS    "systemPossSuperiors"
 #define CLASS_DISPLAY_NAME              "classDisplayName"
 #define TREAT_AS_LEAF                   "treatAsLeaf"
+#define ATTRIBUTE_MAY_CONTAIN           "mayContain"
+#define ATTRIBUTE_SYSTEM_MAY_CONTAIN    "systemMayContain"
 
 QString get_display_specifier_class(const QString &display_specifier);
 QList<QString> get_all_display_specifiers();
@@ -239,7 +241,6 @@ QList<QString> get_all_display_specifiers() {
 }
 
 QString get_ad_class_name(const QString &ldap_class_name) {
-    // NOTE: fill out this map incrementally, would take too long to load all of attributes on startup
     static QHash<QString, QString> ldap_to_ad;
 
     if (!ldap_to_ad.contains(ldap_class_name)) {
@@ -260,4 +261,34 @@ QString get_ad_class_name(const QString &ldap_class_name) {
     }
 
     return ldap_to_ad[ldap_class_name];
+}
+
+QList<QString> get_possible_attributes(const QString &dn) {
+    static QHash<QString, QList<QString>> class_possible_attributes;
+
+    const QList<QString> object_classes = AdInterface::instance()->attribute_get_multi(dn, ATTRIBUTE_OBJECT_CLASS);
+
+    QList<QString> possible_attributes;
+    for (const QString object_class : object_classes) {
+        if (!class_possible_attributes.contains(object_class)) {
+            // Load possible attributes from schema
+            const QString ad_class_name = get_ad_class_name(object_class);
+            const QString search_base = AdInterface::instance()->get_search_base();
+            const QString class_schema = QString("CN=%1,CN=Schema,CN=Configuration,%2").arg(ad_class_name, search_base);
+            
+            const QList<QString> may_contain = AdInterface::instance()->attribute_get_multi(class_schema, ATTRIBUTE_MAY_CONTAIN);
+            const QList<QString> system_may_contain = AdInterface::instance()->attribute_get_multi(class_schema, ATTRIBUTE_SYSTEM_MAY_CONTAIN);
+
+            QList<QString> total_contain;
+            total_contain.append(may_contain);
+            total_contain.append(system_may_contain);
+
+            class_possible_attributes[object_class] = total_contain;
+        }
+
+        const QList<QString> for_this_class = class_possible_attributes[object_class];
+        possible_attributes.append(for_this_class);
+    }
+
+    return possible_attributes;
 }
