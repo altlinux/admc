@@ -160,7 +160,7 @@ public:
     QString get_host() const;
 
     QList<QString> list(const QString &dn);
-    QList<QString> search(const QString &filter);
+    QList<QString> search(const QString &filter, const QString &custom_search_base = QString());
     
     Attributes get_all_attributes(const QString &dn);
     QList<QString> attribute_get_multi(const QString &dn, const QString &attribute);

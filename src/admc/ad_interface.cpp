@@ -171,15 +171,24 @@ QList<QString> AdInterface::list(const QString &dn) {
     }
 }
 
-QList<QString> AdInterface::search(const QString &filter) {
+QList<QString> AdInterface::search(const QString &filter, const QString &custom_search_base) {
+    const QString base =
+    [this, custom_search_base]() {
+        if (custom_search_base.isEmpty()) {
+            return search_base;
+        } else {
+            return custom_search_base;
+        }
+    }();
+
     const QByteArray filter_array = filter.toUtf8();
     const char *filter_cstr = filter_array.constData();
 
-    const QByteArray search_base_array = search_base.toUtf8();
-    const char *search_base_cstr = search_base_array.constData();
+    const QByteArray base_array = base.toUtf8();
+    const char *base_cstr = base_array.constData();
 
     char **results_raw;
-    const int result_search = ad_search(ld, filter_cstr, search_base_cstr, &results_raw);
+    const int result_search = ad_search(ld, filter_cstr, base_cstr, &results_raw);
     if (result_search == AD_SUCCESS) {
         auto results = QList<QString>();
 

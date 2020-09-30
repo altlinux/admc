@@ -30,6 +30,7 @@
 #define ATTRIBUTE_EXTRA_COLUMNS         "extraColumns"
 #define ATTRIBUTE_FILTER_CONTAINERS     "msDS-FilterContainers"
 #define ATTRIBUTE_LDAP_DISPLAY_NAME     "lDAPDisplayName"
+#define ATTRIBUTE_ADMIN_DISPLAY_NAME    "adminDisplayName"
 #define ATTRIBUTE_POSSIBLE_SUPERIORS    "systemPossSuperiors"
 #define CLASS_DISPLAY_NAME              "classDisplayName"
 #define TREAT_AS_LEAF                   "treatAsLeaf"
@@ -235,4 +236,28 @@ QList<QString> get_all_display_specifiers() {
     const QList<QString> display_specifiers = AdInterface::instance()->list(locale_dir);
 
     return display_specifiers;
+}
+
+QString get_ad_class_name(const QString &ldap_class_name) {
+    // NOTE: fill out this map incrementally, would take too long to load all of attributes on startup
+    static QHash<QString, QString> ldap_to_ad;
+
+    if (!ldap_to_ad.contains(ldap_class_name)) {
+        const QString search_base = AdInterface::instance()->get_search_base();
+        const QString schema = QString("CN=Schema,CN=Configuration,%1").arg(search_base);
+
+        const QString filter = filter_EQUALS(ATTRIBUTE_LDAP_DISPLAY_NAME, ldap_class_name);
+        const QList<QString> search_results = AdInterface::instance()->search(filter, schema);
+
+        if (!search_results.isEmpty()) {
+            const QString class_object = search_results[0];
+            const QString ad_class_name = AdInterface::instance()->attribute_get(class_object, ATTRIBUTE_ADMIN_DISPLAY_NAME);
+
+            ldap_to_ad[ldap_class_name] = ad_class_name;
+        } else {
+            ldap_to_ad[ldap_class_name] = "";
+        }
+    }
+
+    return ldap_to_ad[ldap_class_name];
 }
