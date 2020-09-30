@@ -67,6 +67,8 @@ PoliciesWidget::PoliciesWidget()
         this, &PoliciesWidget::on_ad_modified);
 
     ObjectContextMenu::connect_view(view, PoliciesColumn_DN);
+
+    show_only_in_dev_mode(this);
 }
 
 void PoliciesWidget::on_ad_modified() {

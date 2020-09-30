@@ -18,6 +18,7 @@
  */
 
 #include "utils.h"
+#include "settings.h"
 
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
@@ -226,4 +227,21 @@ void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap
 
         model->setHorizontalHeaderItem(col, new QStandardItem(label));
     }
+}
+
+void show_only_in_dev_mode(QWidget *widget) {
+    const BoolSettingSignal *dev_mode_signal = Settings::instance()->get_bool_signal(BoolSetting_DevMode);
+
+    const auto do_it =
+    [widget]() {
+        const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
+        widget->setVisible(dev_mode);
+    };
+    do_it();
+
+    QObject::connect(
+        dev_mode_signal, &BoolSettingSignal::changed,
+        [do_it]() {
+            do_it();
+        });
 }
