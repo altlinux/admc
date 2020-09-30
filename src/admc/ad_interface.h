@@ -81,6 +81,11 @@
 #define ATTRIBUTE_DEPARTMENT            "department"
 #define ATTRIBUTE_COMPANY               "company"
 #define ATTRIBUTE_TITLE                 "title"
+#define ATTRIBUTE_LAST_LOGON            "lastLogon"
+#define ATTRIBUTE_LAST_LOGON_TIMESTAMP  "lastLogonTimestamp"
+#define ATTRIBUTE_PWD_LAST_SET          "pwdLastSet"
+#define ATTRIBUTE_LOCKOUT_TIME          "lockoutTime"
+#define ATTRIBUTE_BAD_PWD_TIME          "badPasswordTime"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"

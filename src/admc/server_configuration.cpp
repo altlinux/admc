@@ -32,6 +32,8 @@
 #define ATTRIBUTE_LDAP_DISPLAY_NAME     "lDAPDisplayName"
 #define ATTRIBUTE_ADMIN_DISPLAY_NAME    "adminDisplayName"
 #define ATTRIBUTE_POSSIBLE_SUPERIORS    "systemPossSuperiors"
+#define ATTRIBUTE_ATTRIBUTE_SYNTAX      "attributeSyntax"
+#define ATTRIBUTE_OM_SYNTAX             "oMSyntax"
 #define CLASS_DISPLAY_NAME              "classDisplayName"
 #define TREAT_AS_LEAF                   "treatAsLeaf"
 #define ATTRIBUTE_MAY_CONTAIN           "mayContain"
@@ -291,4 +293,79 @@ QList<QString> get_possible_attributes(const QString &dn) {
     }
 
     return possible_attributes;
+}
+
+AttributeType get_attribute_type(const QString &attribute) {
+    static QHash<QString, AttributeType> attribute_type_map;
+
+    if (!attribute_type_map.contains(attribute)) {
+        const QString attribute_ad_name = ldap_name_to_ad_name(attribute);
+        const QString schema_dn = AdInterface::instance()->get_schema_dn();
+        const QString class_schema = QString("CN=%1,%2").arg(attribute_ad_name, schema_dn);
+
+        const QString attribute_syntax = AdInterface::instance()->attribute_get(class_schema, ATTRIBUTE_ATTRIBUTE_SYNTAX);
+        const QString om_syntax = AdInterface::instance()->attribute_get(class_schema, ATTRIBUTE_OM_SYNTAX);
+
+        // printf("%s=%s\n", qPrintable(attribute_syntax), qPrintable(om_syntax));
+
+        // NOTE: replica of: https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/7cda533e-d7a4-4aec-a517-91d02ff4a1aa
+        // attribute_syntax -> om syntax list -> type
+        // TODO: is there a lib for this?
+        // TODO: there are Object(x) types, not sure if need those
+        static QHash<QString, QHash<QString, AttributeType>> type_mapping = {
+            {"2.5.5.8", {{"1", AttributeType_Boolean}}},
+            {
+                "2.5.5.9",
+                {
+                    {"10", AttributeType_Enumeration},
+                    {"2", AttributeType_Integer}
+                }
+            },
+            {"2.5.5.9", {{"65", AttributeType_LargeInteger}}},
+            {"2.5.5.3", {{"27", AttributeType_StringCase}}},
+            {"2.5.5.3", {{"22", AttributeType_IA5}}},
+            {"2.5.5.15", {{"66", AttributeType_NTSecDesc}}},
+            {"2.5.5.6", {{"18", AttributeType_Numeric}}},
+            {"2.5.5.2", {{"6", AttributeType_ObjectIdentifier}}},
+            {"2.5.5.10", {{"4", AttributeType_Octet}}},
+            {"2.5.5.5", {{"19", AttributeType_Printable}}},
+            {"2.5.5.17", {{"4", AttributeType_Sid}}},
+            {"2.5.5.12", {{"20", AttributeType_Teletex}}},
+            {"2.5.5.12", {{"64", AttributeType_Unicode}}},
+            {"2.5.5.17", {{"23", AttributeType_UTCTime}}},
+            {"2.5.5.11", {{"24", AttributeType_GeneralizedTime}}},
+        };
+
+        // TODO: handle schema updates...?
+        const AttributeType type =
+        [=]() {
+            const bool unknown_type = !type_mapping.contains(attribute_syntax) || !type_mapping[attribute_syntax].contains(om_syntax);
+            if (unknown_type) {
+                return AttributeType_StringCase;
+            }
+
+            // NOTE: large integers can be both numbers and datetimes and there appears to be no way to distinguish them so have to manually remap here
+            AttributeType out = type_mapping[attribute_syntax][om_syntax];
+            const QList<QString> datetimes = {
+                ATTRIBUTE_ACCOUNT_EXPIRES,
+                ATTRIBUTE_LAST_LOGON,
+                ATTRIBUTE_LAST_LOGON_TIMESTAMP,
+                ATTRIBUTE_PWD_LAST_SET,
+                ATTRIBUTE_LOCKOUT_TIME,
+                ATTRIBUTE_BAD_PWD_TIME
+                // TODO:...
+            };
+            if (out == AttributeType_LargeInteger && datetimes.contains(attribute)) {
+                out = AttributeType_LargeIntegerDatetime; 
+            }
+
+            return out;
+        }();
+
+        attribute_type_map[attribute] = type;
+    }
+
+    const AttributeType type = attribute_type_map[attribute];
+
+    return type;
 }
