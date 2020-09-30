@@ -125,8 +125,10 @@ void AttributesModel::reload() {
             appendRow({name_item, value_item});
         } else {
             for (auto value : values) {
+                const QString value_display = attribute_value_to_display_value(attribute, value);
+
                 auto name_item = new QStandardItem(attribute);
-                auto value_item = new QStandardItem(value);
+                auto value_item = new QStandardItem(value_display);
 
                 name_item->setEditable(false);
 

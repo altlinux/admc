@@ -28,6 +28,7 @@
 #include <QSet>
 #include <QMessageBox>
 #include <QTextCodec>
+#include <QDebug>
 
 #define MILLIS_TO_100_NANOS 10000
 
@@ -37,7 +38,7 @@
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm"
 
 // TODO: confirm these are fine. I think need to make seconds option for UTC? Don't know if QDatetime can handle that.
-#define GENERALIZED_TIME_FORMAT_STRING "yyMMddhhmmss.zZ"
+#define GENERALIZED_TIME_FORMAT_STRING "yyyyMMddhhmmss.zZ"
 #define UTC_TIME_FORMAT_STRING "yyMMddhhmmss.zZ"
 
 #define GROUP_TYPE_BIT_SECURITY 0x80000000
@@ -299,6 +300,13 @@ QString AdInterface::attribute_get(const QString &dn, const QString &attribute) 
     }
 }
 
+QString AdInterface::attribute_get_display(const QString &dn, const QString &attribute) {
+    const QString value = AdInterface::instance()->attribute_get(dn, attribute);
+    const QString display_string = attribute_value_to_display_value(attribute, value);
+
+    return display_string;
+}
+
 bool AdInterface::attribute_bool_get(const QString &dn, const QString &attribute) {
     const QString value_string = attribute_get(dn, attribute);
     const bool value = (value_string == LDAP_BOOL_TRUE);
@@ -361,15 +369,11 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 
     const QString name = extract_name_from_dn(dn);
 
-    QString new_value_string;
-    if (attribute_is_datetime(attribute)) {
-        new_value_string = datetime_raw_to_display_string(attribute, value);
-    } else {
-        new_value_string = value;
-    }
+    const QString new_value_display = attribute_value_to_display_value(attribute, value);
+    ;
 
     if (result == AD_SUCCESS) {
-        const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_string, attribute, name);
+        const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_display, attribute, name);
 
         success_status_message(context);
 
@@ -377,7 +381,7 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_string, attribute, name);
+        const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_display, attribute, name);
         const QString error = default_error(result);
 
         error_status_message(context, error);
@@ -387,17 +391,9 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 }
 
 bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value) {
-    QString old_value_display_string;
-    QString old_value_string;
-    if (attribute_is_datetime(attribute)) {
-        old_value_string = attribute_get(dn, attribute);
-        old_value_display_string = datetime_raw_to_display_string(attribute, old_value_string);
-    } else {
-        old_value_string = attribute_get(dn, attribute);
-        old_value_display_string = old_value_string;
-    }
+    const QString old_value = attribute_get(dn, attribute);
 
-    const QByteArray old_value_array = old_value_string.toUtf8();
+    const QByteArray old_value_array = old_value.toUtf8();
     const char *old_value_cstr = old_value_array.constData();
     
     const QByteArray dn_array = dn.toUtf8();
@@ -418,21 +414,17 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
 
     const QString name = extract_name_from_dn(dn);
 
-    QString new_value_string;
-    if (attribute_is_datetime(attribute)) {
-        new_value_string = datetime_raw_to_display_string(attribute, value);
-    } else {
-        new_value_string = value;
-    }
+    const QString old_value_display = attribute_value_to_display_value(attribute, old_value);
+    const QString new_value_display = attribute_value_to_display_value(attribute, value);
 
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display_string, new_value_string));
+        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display, new_value_display));
 
         update_cache({dn});
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display_string, new_value_string);
+        const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display, new_value_display);
         const QString error = default_error(result);
 
         error_status_message(context, error);
@@ -455,15 +447,10 @@ bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, 
 
     const QString name = extract_name_from_dn(dn);
 
-    QString value_string;
-    if (attribute_is_datetime(attribute)) {
-        value_string = datetime_raw_to_display_string(attribute, value);
-    } else {
-        value_string = value;
-    }
+    const QString value_display = attribute_value_to_display_value(attribute, value);
 
     if (result == AD_SUCCESS) {
-        const QString context = QString(tr("Deleted value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_string, attribute, name);
+        const QString context = QString(tr("Deleted value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
 
         success_status_message(context);
 
@@ -471,7 +458,7 @@ bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, 
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to delete value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_string, attribute, name);
+        const QString context = QString(tr("Failed to delete value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
         const QString error = default_error(result);
 
         error_status_message(context, error);
@@ -1316,17 +1303,6 @@ QString datetime_to_string(const QString &attribute, const QDateTime &datetime) 
     return "";
 }
 
-QString datetime_raw_to_display_string(const QString &attribute, const QString &raw_value) {
-    if (datetime_is_never(attribute, raw_value)) {
-        return "(never)";
-    }
-
-    const QDateTime datetime = datetime_raw_to_datetime(attribute, raw_value);
-    const QString string = datetime.toString(DATETIME_DISPLAY_FORMAT);
-
-    return string;
-}
-
 QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_value) {
     const AttributeType type = get_attribute_type(attribute);
 
@@ -1337,7 +1313,6 @@ QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_
             const qint64 hundred_nanos = raw_value.toLongLong();
             const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
             datetime = datetime.addMSecs(millis);
-
             return datetime;
         }
         case AttributeType_GeneralizedTime: {
@@ -1405,4 +1380,24 @@ QIcon get_object_icon(const QString &dn) {
     QIcon icon = QIcon::fromTheme(icon_name);
 
     return icon;
+}
+
+// TODO: flesh this out
+QString attribute_value_to_display_value(const QString &attribute, const QString &value) {
+    const AttributeType attribute_type = get_attribute_type(attribute);
+
+    if (attribute_is_datetime(attribute)) {
+        if (datetime_is_never(attribute, value)) {
+            return "(never)";
+        }
+        const QDateTime datetime = datetime_raw_to_datetime(attribute, value);
+        const QString display = datetime.toString(DATETIME_DISPLAY_FORMAT);
+
+        return display;
+    } else if (attribute_type == AttributeType_Sid) {
+        // TODO: convert to sid here
+        return value;
+    } else {
+        return value;
+    }
 }

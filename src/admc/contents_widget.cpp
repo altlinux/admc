@@ -204,18 +204,20 @@ void ContentsModel::make_row(QStandardItem *parent, const QString &dn) {
     for (int i = 0; i < columns.count(); i++) {
         const QString attribute = columns[i];
 
-        QString value = AdInterface::instance()->attribute_get(dn, attribute);
+        const QString value_display =
+        [dn, attribute]() {
+            QString out = AdInterface::instance()->attribute_get_display(dn, attribute);
 
-        // NOTE: this is given as raw DN and contains '-' where it should have spaces, so convert it
-        if (attribute == ATTRIBUTE_OBJECT_CATEGORY) {
-            value = extract_name_from_dn(value);
-            value = value.replace('-', ' ');
-        } else if (attribute == ATTRIBUTE_WHEN_CHANGED) {
-            // TODO: apply this to all datetime attributes in general
-            value = datetime_raw_to_display_string(attribute, value);
-        }
+            // NOTE: category is given as raw DN and contains '-' where it should have spaces, so convert it
+            if (attribute == ATTRIBUTE_OBJECT_CATEGORY) {
+                out = extract_name_from_dn(out);
+                out = out.replace('-', ' ');
+            }
 
-        row[i]->setText(value);
+            return out;
+        }();
+
+        row[i]->setText(value_display);
     }
 
     const QIcon icon = get_object_icon(dn);

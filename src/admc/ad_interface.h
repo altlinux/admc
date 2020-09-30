@@ -173,6 +173,8 @@ public:
     QList<QString> attribute_get_multi(const QString &dn, const QString &attribute);
     QString attribute_get(const QString &dn, const QString &attribute);
 
+    QString attribute_get_display(const QString &dn, const QString &attribute);
+
     bool attribute_bool_get(const QString &dn, const QString &attribute);
     bool attribute_bool_replace(const QString &dn, const QString &attribute, bool value);
 
@@ -256,10 +258,10 @@ int get_account_option_bit(const AccountOption &option);
 bool attribute_is_datetime(const QString &attribute);
 bool datetime_is_never(const QString &attribute, const QString &value);
 QString datetime_to_string(const QString &attribute, const QDateTime &datetime);
-QString datetime_raw_to_display_string(const QString &attribute, const QString &raw_value);
 QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_value);
 QString group_scope_to_string(GroupScope scope);
 QString group_type_to_string(GroupType type);
 QIcon get_object_icon(const QString &dn);
+QString attribute_value_to_display_value(const QString &attribute, const QString &value);
 
 #endif /* AD_INTERFACE_H */
