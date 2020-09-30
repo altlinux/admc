@@ -273,7 +273,7 @@ QList<QString> get_possible_attributes(const QString &dn) {
             // Load possible attributes from schema
             const QString ad_class_name = get_ad_class_name(object_class);
             const QString schema_dn = AdInterface::instance()->get_schema_dn();
-            const QString class_schema = QString("CN=%1,").arg(ad_class_name, schema_dn);
+            const QString class_schema = QString("CN=%1,%2").arg(ad_class_name, schema_dn);
 
             const QList<QString> may_contain = AdInterface::instance()->attribute_get_multi(class_schema, ATTRIBUTE_MAY_CONTAIN);
             const QList<QString> system_may_contain = AdInterface::instance()->attribute_get_multi(class_schema, ATTRIBUTE_SYSTEM_MAY_CONTAIN);
