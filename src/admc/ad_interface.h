@@ -83,6 +83,7 @@
 #define ATTRIBUTE_COMPANY               "company"
 #define ATTRIBUTE_TITLE                 "title"
 #define ATTRIBUTE_OBJECT_SID            "objectSid"
+#define ATTRIBUTE_SYSTEM_FLAGS          "systemFlags"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
@@ -129,6 +130,12 @@ enum GroupType {
     GroupType_Security,
     GroupType_Distribution,
     GroupType_COUNT
+};
+
+enum SystemFlagsBit {
+    SystemFlagsBit_CannotMove = 0x04000000,
+    SystemFlagsBit_CannotRename = 0x08000000,
+    SystemFlagsBit_CannotDelete = 0x80000000
 };
 
 typedef QMap<QString, QList<QString>> Attributes;
@@ -197,6 +204,8 @@ public:
     bool group_set_type(const QString &dn, GroupType type);
     bool group_is_system(const QString &dn);
 
+    bool system_flag_get(const QString &dn, const SystemFlagsBit bit);
+
     bool has_attributes(const QString &dn);
     bool is_class(const QString &dn, const QString &object_class);
     bool is_user(const QString &dn);
@@ -206,6 +215,10 @@ public:
     bool is_policy(const QString &dn);
     bool is_container_like(const QString &dn);
     bool is_computer(const QString &dn);
+
+    bool can_move(const QString &dn);
+    bool can_delete(const QString &dn);
+    bool can_rename(const QString &dn);
 
     bool user_get_account_option(const QString &dn, AccountOption option);
 
@@ -241,6 +254,8 @@ private:
     QString default_error(int ad_result) const;
 
     void load_attributes_into_cache(const QString &dn);
+
+    bool get_systemflags_bit(const SystemFlagsBit bit);
 }; 
 
 QString extract_name_from_dn(const QString &dn);

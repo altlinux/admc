@@ -659,6 +659,13 @@ bool AdInterface::group_is_system(const QString &dn) {
     return is_system;
 }
 
+bool AdInterface::system_flag_get(const QString &dn, const SystemFlagsBit bit) {
+    const int system_flags_bits = attribute_int_get(dn, ATTRIBUTE_SYSTEM_FLAGS);
+    const bool is_set = bit_is_set(system_flags_bits, bit);
+
+    return is_set;
+}
+
 bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     // Compose new_rdn and new_dn
     const QStringList exploded_dn = dn.split(',');

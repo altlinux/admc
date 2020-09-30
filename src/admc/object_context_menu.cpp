@@ -59,8 +59,9 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
         DetailsWidget::change_target(dn);
     });
 
-    const bool is_policy = AdInterface::instance()->is_policy(dn); 
+    const bool is_policy = AdInterface::instance()->is_policy(dn);
     if (is_policy) {
+        // TODO: policy version seems to be too disconnected from general object context menu, maybe just move it to policies widget?
         addAction(tr("Edit Policy"), [this, dn]() {
             edit_policy(dn);
         });
@@ -69,13 +70,24 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
             rename_dialog->open();
         });
     } else {
-        addAction(tr("Delete"), [this, dn]() {
+        const bool cannot_move = AdInterface::instance()->system_flag_get(dn, SystemFlagsBit_CannotMove);
+        const bool cannot_rename = AdInterface::instance()->system_flag_get(dn, SystemFlagsBit_CannotRename);
+        const bool cannot_delete = AdInterface::instance()->system_flag_get(dn, SystemFlagsBit_CannotDelete);
+
+        auto delete_action = addAction(tr("Delete"), [this, dn]() {
             delete_object(dn);
         });
-        addAction(tr("Rename"), [this, dn]() {
+        if (cannot_delete) {
+            delete_action->setEnabled(false);
+        }
+
+        auto rename_action = addAction(tr("Rename"), [this, dn]() {
             auto rename_dialog = new RenameDialog(dn);
             rename_dialog->open();
         });
+        if (cannot_rename) {
+            rename_action->setEnabled(false);
+        }
 
         QMenu *submenu_new = addMenu("New");
         for (int i = 0; i < CreateType_COUNT; i++) {
@@ -88,12 +100,15 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
             });
         }
 
-        QAction *move_action = addAction(tr("Move"));
+        auto move_action = addAction(tr("Move"));
         connect(
             move_action, &QAction::triggered,
             [this, dn]() {
                 move(dn);
             });
+        if (cannot_move) {
+            move_action->setEnabled(false);
+        }
 
         const bool is_user = AdInterface::instance()->is_user(dn); 
 
