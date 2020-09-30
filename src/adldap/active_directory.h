@@ -94,15 +94,6 @@ int ad_list(LDAP *ld, const char *dn, char ***list_out);
 int ad_get_attribute(LDAP *ld, const char *dn, const char *attribute, char ***values_out);
 
 /**
- * Output a 2d NULL terminated array of attribute values for given
- * object
- * Each sub-array contains an attribute name followed by it's values
- * Output should be freed by the caller using ad_2d_array_free()
- * Returns AD_SUCCESS, AD_LDAP_ERROR
- */
-int ad_get_all_attributes(LDAP *ld, const char *dn, char ****attributes_out);
-
-/**
  * Adds an object with given DN and objectClass
  * objectClass is a NULL terminated array of objectClass values
  * All ancestors of object must already exist
@@ -160,6 +151,8 @@ int ad_rename(LDAP *ld, const char *dn, const char *new_rdn);
  * Returns AD_SUCCESS, AD_LDAP_ERROR
  */
 int ad_move(LDAP *ld, const char *current_dn, const char *new_container);
+
+int ad_get_all_attributes_internal(LDAP *ld, const char *dn, const char *attribute, LDAPMessage **res_out);
 
 #if defined(__cplusplus)
 }

@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QList>
 #include <QString>
+#include <QByteArray>
 #include <QMap>
 #include <QHash>
 #include <QDateTime>
@@ -81,6 +82,7 @@
 #define ATTRIBUTE_DEPARTMENT            "department"
 #define ATTRIBUTE_COMPANY               "company"
 #define ATTRIBUTE_TITLE                 "title"
+#define ATTRIBUTE_OBJECT_SID            "objectSid"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
@@ -164,6 +166,7 @@ public:
     Attributes get_all_attributes(const QString &dn);
     QList<QString> attribute_get_multi(const QString &dn, const QString &attribute);
     QString attribute_get(const QString &dn, const QString &attribute);
+    QByteArray attribute_get_binary(const QString &dn, const QString &attribute);
 
     bool attribute_bool_get(const QString &dn, const QString &attribute);
     bool attribute_bool_replace(const QString &dn, const QString &attribute, bool value);
@@ -225,6 +228,7 @@ private:
     QString host;
 
     QHash<QString, Attributes> attributes_cache;
+    QHash<QString, QHash<QString, QList<QByteArray>>> attributes_cache_binary;
     bool suppress_not_found_error = false;
     QSet<QString> batched_dns;
     bool batch_in_progress = false;
@@ -235,6 +239,8 @@ private:
     void success_status_message(const QString &msg);
     void error_status_message(const QString &context, const QString &error);
     QString default_error(int ad_result) const;
+
+    void load_attributes_into_cache(const QString &dn);
 }; 
 
 QString extract_name_from_dn(const QString &dn);
@@ -254,5 +260,6 @@ QString group_scope_to_string(GroupScope scope);
 QString group_type_to_string(GroupType type);
 QString object_class_display_string(const QString &c);
 QIcon get_object_icon(const QString &dn);
+QString object_sid_to_display_string(const QByteArray &bytes);
 
 #endif /* AD_INTERFACE_H */

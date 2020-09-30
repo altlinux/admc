@@ -108,8 +108,18 @@ void AttributesModel::reload() {
         QList<QString> values = attributes[attribute];
 
         for (auto value : values) {
+            const QString value_display =
+            [target, attribute, value]() {
+                if (attribute == ATTRIBUTE_OBJECT_SID) {
+                    const QByteArray bytes = AdInterface::instance()->attribute_get_binary(target, attribute);
+                    return object_sid_to_display_string(bytes);
+                } else {
+                    return value;
+                }
+            }();
+
             auto name_item = new QStandardItem(attribute);
-            auto value_item = new QStandardItem(value);
+            auto value_item = new QStandardItem(value_display);
 
             name_item->setEditable(false);
 
