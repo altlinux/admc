@@ -35,9 +35,6 @@
 // is updated on object changes
 // Emits various signals for AD operation successes/failures
 
-// TODO: not sure if AD datetime fromat is always this one, LDAP allows multiple alternatives: https://ldapwiki.com/wiki/DateTime
-#define ISO8601_FORMAT_STRING "yyyyMMddhhmmss.zZ"
-
 #define ATTRIBUTE_USER_ACCOUNT_CONTROL  "userAccountControl"
 #define ATTRIBUTE_LOCKOUT_TIME          "lockoutTime"
 #define ATTRIBUTE_ACCOUNT_EXPIRES       "accountExpires"

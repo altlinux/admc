@@ -36,6 +36,10 @@
 
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm"
 
+// TODO: confirm these are fine. I think need to make seconds option for UTC? Don't know if QDatetime can handle that.
+#define GENERALIZED_TIME_FORMAT_STRING "yyMMddhhmmss.zZ"
+#define UTC_TIME_FORMAT_STRING "yyMMddhhmmss.zZ"
+
 #define GROUP_TYPE_BIT_SECURITY 0x80000000
 #define GROUP_TYPE_BIT_SYSTEM 0x00000001
 
@@ -1297,12 +1301,12 @@ QString datetime_to_string(const QString &attribute, const QDateTime &datetime) 
         }
         case AttributeType_UTCTime: {
             // TODO: i think this uses 2 digits for year and needs a different format
-            return datetime.toString(ISO8601_FORMAT_STRING);
+            return datetime.toString(UTC_TIME_FORMAT_STRING);
 
             break;
         }
         case AttributeType_GeneralizedTime: {
-            return datetime.toString(ISO8601_FORMAT_STRING);
+            return datetime.toString(GENERALIZED_TIME_FORMAT_STRING);
 
             break;
         }
@@ -1337,10 +1341,10 @@ QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_
             return datetime;
         }
         case AttributeType_GeneralizedTime: {
-            return QDateTime::fromString(raw_value, ISO8601_FORMAT_STRING);
+            return QDateTime::fromString(raw_value, GENERALIZED_TIME_FORMAT_STRING);
         }
         case AttributeType_UTCTime: {
-            return QDateTime::fromString(raw_value, ISO8601_FORMAT_STRING);
+            return QDateTime::fromString(raw_value, UTC_TIME_FORMAT_STRING);
         }
         default: {
             return QDateTime();
