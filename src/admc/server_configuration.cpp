@@ -39,6 +39,7 @@
 
 QString get_display_specifier_class(const QString &display_specifier);
 QList<QString> get_all_display_specifiers();
+QString ldap_name_to_ad_name(const QString &ldap_class_name);
 
 QString get_locale_dir() {
     static QString locale_dir =
@@ -239,26 +240,26 @@ QList<QString> get_all_display_specifiers() {
     return display_specifiers;
 }
 
-QString get_ad_class_name(const QString &ldap_class_name) {
+QString ldap_name_to_ad_name(const QString &ldap_name) {
     static QHash<QString, QString> ldap_to_ad;
 
-    if (!ldap_to_ad.contains(ldap_class_name)) {
+    if (!ldap_to_ad.contains(ldap_name)) {
         const QString schema_dn = AdInterface::instance()->get_schema_dn();
 
-        const QString filter = filter_EQUALS(ATTRIBUTE_LDAP_DISPLAY_NAME, ldap_class_name);
+        const QString filter = filter_EQUALS(ATTRIBUTE_LDAP_DISPLAY_NAME, ldap_name);
         const QList<QString> search_results = AdInterface::instance()->search(filter, schema_dn);
 
         if (!search_results.isEmpty()) {
-            const QString class_object = search_results[0];
-            const QString ad_class_name = AdInterface::instance()->attribute_get(class_object, ATTRIBUTE_ADMIN_DISPLAY_NAME);
+            const QString schema_object = search_results[0];
+            const QString ad_class_name = AdInterface::instance()->attribute_get(schema_object, ATTRIBUTE_ADMIN_DISPLAY_NAME);
 
-            ldap_to_ad[ldap_class_name] = ad_class_name;
+            ldap_to_ad[ldap_name] = ad_class_name;
         } else {
-            ldap_to_ad[ldap_class_name] = "";
+            ldap_to_ad[ldap_name] = "";
         }
     }
 
-    return ldap_to_ad[ldap_class_name];
+    return ldap_to_ad[ldap_name];
 }
 
 // TODO: Object's objectClass list appears to already contain the full inheritance chain. Confirm that this applies to all objects, because otherwise would need to manually go down the inheritance chain to get all possible attributes.
@@ -271,7 +272,7 @@ QList<QString> get_possible_attributes(const QString &dn) {
     for (const QString object_class : object_classes) {
         if (!class_possible_attributes.contains(object_class)) {
             // Load possible attributes from schema
-            const QString ad_class_name = get_ad_class_name(object_class);
+            const QString ad_class_name = ldap_name_to_ad_name(object_class);
             const QString schema_dn = AdInterface::instance()->get_schema_dn();
             const QString class_schema = QString("CN=%1,%2").arg(ad_class_name, schema_dn);
 
