@@ -263,6 +263,7 @@ QString get_ad_class_name(const QString &ldap_class_name) {
     return ldap_to_ad[ldap_class_name];
 }
 
+// TODO: Object's objectClass list appears to already contain the full inheritance chain. Confirm that this applies to all objects, because otherwise would need to manually go down the inheritance chain to get all possible attributes.
 QList<QString> get_possible_attributes(const QString &dn) {
     static QHash<QString, QList<QString>> class_possible_attributes;
 
@@ -275,7 +276,7 @@ QList<QString> get_possible_attributes(const QString &dn) {
             const QString ad_class_name = get_ad_class_name(object_class);
             const QString search_base = AdInterface::instance()->get_search_base();
             const QString class_schema = QString("CN=%1,CN=Schema,CN=Configuration,%2").arg(ad_class_name, search_base);
-            
+
             const QList<QString> may_contain = AdInterface::instance()->attribute_get_multi(class_schema, ATTRIBUTE_MAY_CONTAIN);
             const QList<QString> system_may_contain = AdInterface::instance()->attribute_get_multi(class_schema, ATTRIBUTE_SYSTEM_MAY_CONTAIN);
 

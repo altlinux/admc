@@ -20,6 +20,7 @@
 #include "attributes_tab.h"
 #include "ad_interface.h"
 #include "utils.h"
+#include "server_configuration.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -39,6 +40,7 @@ AttributesTab::AttributesTab(DetailsWidget *details_widget_arg)
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setSelectionMode(QAbstractItemView::NoSelection);
     view->setSelectionBehavior(QAbstractItemView::SelectRows);
+    view->setSortingEnabled(true);
     view->setModel(model);
 
     const auto layout = new QVBoxLayout(this);
@@ -104,16 +106,32 @@ void AttributesModel::reload() {
     // Populate model with attributes of new root
     const QString target = attributes_tab->target();
     QMap<QString, QList<QString>> attributes = AdInterface::instance()->get_all_attributes(target);
+
+    // Add attributes without values
+    const QList<QString> possible_attributes = get_possible_attributes(attributes_tab->target());
+    for (const QString attribute : possible_attributes) {
+        if (!attributes.contains(attribute)) {
+            attributes[attribute] = QList<QString>();
+        }
+    }
+
     for (auto attribute : attributes.keys()) {
         QList<QString> values = attributes[attribute];
 
-        for (auto value : values) {
+        if (values.isEmpty()) {
             auto name_item = new QStandardItem(attribute);
-            auto value_item = new QStandardItem(value);
-
-            name_item->setEditable(false);
-
+            auto value_item = new QStandardItem("<unset>");
+            
             appendRow({name_item, value_item});
+        } else {
+            for (auto value : values) {
+                auto name_item = new QStandardItem(attribute);
+                auto value_item = new QStandardItem(value);
+
+                name_item->setEditable(false);
+
+                appendRow({name_item, value_item});
+            }
         }
     }
 }
