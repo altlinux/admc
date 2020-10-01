@@ -228,120 +228,21 @@ QString AdInterface::attribute_get_value(const QString &dn, const QString &attri
 }
 
 bool AdInterface::attribute_add(const QString &dn, const QString &attribute, const QString &value) {
-    const QByteArray dn_array = dn.toUtf8();
-    const char *dn_cstr = dn_array.constData();
-
-    const QByteArray attribute_array = attribute.toUtf8();
-    const char *attribute_cstr = attribute_array.constData();
-
-    const QByteArray value_array = value.toUtf8();
-    const char *value_cstr = value_array.constData();
-
-    const int result = ad_attribute_add(ld, dn_cstr, attribute_cstr, value_cstr);
-
-    const QString name = extract_name_from_dn(dn);
-
-    const QString new_value_display = attribute_value_to_display_value(attribute, value);
-    ;
-
-    if (result == AD_SUCCESS) {
-        const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_display, attribute, name);
-
-        success_status_message(context);
-
-        update_cache({dn});
-
-        return true;
-    } else {
-        const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_display, attribute, name);
-        const QString error = default_error(result);
-
-        error_status_message(context, error);
-
-        return false;
-    }
+    const QByteArray value_bytes = value.toUtf8();
+    
+    return attribute_binary_add(dn, attribute, value_bytes);
 }
 
 bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value) {
-    const QString old_value = attribute_get_value(dn, attribute);
+    const QByteArray value_bytes = value.toUtf8();
 
-    if (old_value.isEmpty() && value.isEmpty()) {
-        // do nothing
-        return true;
-    }
-
-    const QByteArray old_value_array = old_value.toUtf8();
-    const char *old_value_cstr = old_value_array.constData();
-    
-    const QByteArray dn_array = dn.toUtf8();
-    const char *dn_cstr = dn_array.constData();
-
-    const QByteArray attribute_array = attribute.toUtf8();
-    const char *attribute_cstr = attribute_array.constData();
-
-    const QByteArray value_array = value.toUtf8();
-    const char *value_cstr = value_array.constData();
-
-    int result;
-    if (value.isEmpty()) {
-        result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, old_value_cstr);
-    } else {
-        result = ad_attribute_replace(ld, dn_cstr, attribute_cstr, value_cstr);
-    }
-
-    const QString name = extract_name_from_dn(dn);
-
-    const QString old_value_display = attribute_value_to_display_value(attribute, old_value);
-    const QString new_value_display = attribute_value_to_display_value(attribute, value);
-
-    if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display, new_value_display));
-
-        update_cache({dn});
-
-        return true;
-    } else {
-        const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display, new_value_display);
-        const QString error = default_error(result);
-
-        error_status_message(context, error);
-
-        return false;
-    }
+    return attribute_binary_replace(dn, attribute, value_bytes);
 }
 
 bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, const QString &value) {
-    const QByteArray dn_array = dn.toUtf8();
-    const char *dn_cstr = dn_array.constData();
-
-    const QByteArray attribute_array = attribute.toUtf8();
-    const char *attribute_cstr = attribute_array.constData();
-
-    const QByteArray value_array = value.toUtf8();
-    const char *value_cstr = value_array.constData();
-
-    const int result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, value_cstr);
-
-    const QString name = extract_name_from_dn(dn);
-
-    const QString value_display = attribute_value_to_display_value(attribute, value);
-
-    if (result == AD_SUCCESS) {
-        const QString context = QString(tr("Deleted value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
-
-        success_status_message(context);
-
-        update_cache({dn});
-
-        return true;
-    } else {
-        const QString context = QString(tr("Failed to delete value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
-        const QString error = default_error(result);
-
-        error_status_message(context, error);
-
-        return false;
-    }
+    const QByteArray value_bytes = value.toUtf8();
+    
+    return attribute_binary_delete(dn, attribute, value_bytes);
 }
 
 AttributesBinary AdInterface::attribute_binary_get_all(const QString &dn) {
@@ -380,7 +281,7 @@ bool AdInterface::attribute_binary_add(const QString &dn, const QString &attribu
 
     const char *value_cstr = value.constData();
 
-    const int result = ad_attribute_add_binary(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+    const int result = ad_attribute_add(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
 
     const QString name = extract_name_from_dn(dn);
 
@@ -425,9 +326,9 @@ bool AdInterface::attribute_binary_replace(const QString &dn, const QString &att
 
     int result;
     if (value.isEmpty()) {
-        result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, old_value_cstr);
+        result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, old_value_cstr, old_value.size());
     } else {
-        result = ad_attribute_replace_binary(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+        result = ad_attribute_replace(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
     }
 
     const QString name = extract_name_from_dn(dn);
@@ -460,7 +361,7 @@ bool AdInterface::attribute_binary_delete(const QString &dn, const QString &attr
 
     const char *value_cstr = value.constData();
 
-    const int result = ad_attribute_delete_binary(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+    const int result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
 
     const QString name = extract_name_from_dn(dn);
 
@@ -816,7 +717,7 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
     const char *password_cstr = password_bytes.constData();
     const int password_cstr_size = password_bytes.size();
 
-    const int result = ad_attribute_replace_binary(ld, dn_cstr, ATTRIBUTE_PASSWORD, password_cstr, password_cstr_size);
+    const int result = ad_attribute_replace(ld, dn_cstr, ATTRIBUTE_PASSWORD, password_cstr, password_cstr_size);
 
     const QString name = extract_name_from_dn(dn);
     

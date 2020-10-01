@@ -404,26 +404,7 @@ int ad_delete(LDAP *ld, const char *dn) {
     return result;
 }
 
-int ad_attribute_add(LDAP *ld, const char *dn, const char *attribute, const char *value) {
-    int result = AD_SUCCESS;
-
-    LDAPMod attr;
-    const char *values[] = {value, NULL};
-    attr.mod_op = LDAP_MOD_ADD;
-    attr.mod_type = (char *)attribute;
-    attr.mod_values = (char **)values;
-    
-    LDAPMod *attrs[] = {&attr, NULL};
-
-    const int result_modify = ldap_modify_ext_s(ld, dn, attrs, NULL, NULL);
-    if (result_modify != LDAP_SUCCESS) {
-        result = AD_LDAP_ERROR;
-    }
-
-    return result;
-}
-
-int ad_attribute_add_binary(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
+int ad_attribute_add(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
     int result = AD_SUCCESS;
 
     char *data_copy = strdup(data);
@@ -457,26 +438,7 @@ int ad_attribute_add_binary(LDAP *ld, const char *dn, const char *attribute, con
     }
 }
 
-int ad_attribute_replace(LDAP *ld, const char *dn, const char *attribute, const char *value) {
-    int result = AD_SUCCESS;
-    
-    LDAPMod attr;
-    const char *values[] = {value, NULL};
-    attr.mod_op = LDAP_MOD_REPLACE;
-    attr.mod_type = (char *)attribute;
-    attr.mod_values = (char **)values;
-    
-    LDAPMod *attrs[] = {&attr, NULL};
-
-    const int result_modify = ldap_modify_ext_s(ld, dn, attrs, NULL, NULL);
-    if (result_modify != LDAP_SUCCESS) {
-        result = AD_LDAP_ERROR;
-    }
-
-    return result;
-}
-
-int ad_attribute_replace_binary(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
+int ad_attribute_replace(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
     int result = AD_SUCCESS;
 
     char *data_copy = (char *) malloc(data_length);
@@ -504,26 +466,7 @@ int ad_attribute_replace_binary(LDAP *ld, const char *dn, const char *attribute,
     return result;
 }
 
-int ad_attribute_delete(LDAP *ld, const char *dn, const char *attribute, const char *value) {
-    int result = AD_SUCCESS;
-    
-    LDAPMod attr;
-    const char *values[] = {value, NULL};
-    attr.mod_op = LDAP_MOD_DELETE;
-    attr.mod_type = (char *)attribute;
-    attr.mod_values = (char **)values;
-    
-    LDAPMod *attrs[] = {&attr, NULL};
-
-    const int result_modify = ldap_modify_ext_s(ld, dn, attrs, NULL, NULL);
-    if (result_modify != LDAP_SUCCESS) {
-        result = AD_LDAP_ERROR;
-    }
-
-    return result;
-}
-
-int ad_attribute_delete_binary(LDAP *ld, const char *dn, const char *attribute, const char *data, const int data_length) {
+int ad_attribute_delete(LDAP *ld, const char *dn, const char *attribute, const char *data, const int data_length) {
     int result = AD_SUCCESS;
 
     char *data_copy = (char *) malloc(data_length);
