@@ -152,14 +152,7 @@ class AdInterface final : public QObject {
 Q_OBJECT
 
 public:
-    AdInterface(const AdInterface&) = delete;
-    AdInterface& operator=(const AdInterface&) = delete;
-    AdInterface(AdInterface&&) = delete;
-    AdInterface& operator=(AdInterface&&) = delete;
-    
     static AdInterface *instance();
-
-    static QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 
     bool login(const QString &host_arg, const QString &domain);
 
@@ -269,8 +262,14 @@ private:
     void update_cache_if_needed(const QString &dn);
 
     bool get_systemflags_bit(const SystemFlagsBit bit);
+
+    AdInterface(const AdInterface&) = delete;
+    AdInterface& operator=(const AdInterface&) = delete;
+    AdInterface(AdInterface&&) = delete;
+    AdInterface& operator=(AdInterface&&) = delete;
 }; 
 
+QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 QString extract_name_from_dn(const QString &dn);
 QString extract_parent_dn_from_dn(const QString &dn);
 QString filter_EQUALS(const QString &attribute, const QString &value);

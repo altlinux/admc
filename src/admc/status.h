@@ -35,11 +35,6 @@ class Status final : public QObject {
 Q_OBJECT
 
 public:
-    Status(const Status&) = delete;
-    Status& operator=(const Status&) = delete;
-    Status(Status&&) = delete;
-    Status& operator=(Status&&) = delete;
-
     static Status *instance();
     
     void init(QStatusBar *status_bar_arg, QTextEdit *status_log_arg);
@@ -58,6 +53,10 @@ private:
 
     using QObject::QObject;
 
+    Status(const Status&) = delete;
+    Status& operator=(const Status&) = delete;
+    Status(Status&&) = delete;
+    Status& operator=(Status&&) = delete;
 };
 
 #endif /* STATUS_BAR_H */

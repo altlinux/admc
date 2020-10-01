@@ -140,7 +140,7 @@ void LoginDialog::load_hosts() {
     const QString domain = domain_edit->text();
     const QString site = site_edit->text();
 
-    QList<QString> hosts = AdInterface::get_domain_hosts(domain, site);
+    QList<QString> hosts = get_domain_hosts(domain, site);
 
     hosts_list->clear();
     for (auto h : hosts) {

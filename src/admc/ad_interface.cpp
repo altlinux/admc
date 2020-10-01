@@ -58,31 +58,6 @@ AdInterface::AdInterface()
 
 }
 
-QList<QString> AdInterface::get_domain_hosts(const QString &domain, const QString &site) {
-    const QByteArray domain_array = domain.toUtf8();
-    const char *domain_cstr = domain_array.constData();
-
-    const QByteArray site_array = site.toUtf8();
-    const char *site_cstr = site_array.constData();
-
-    char **hosts_raw = NULL;
-    int hosts_result = ad_get_domain_hosts(domain_cstr, site_cstr, &hosts_raw);
-
-    if (hosts_result == AD_SUCCESS) {
-        auto hosts = QList<QString>();
-
-        for (int i = 0; hosts_raw[i] != NULL; i++) {
-            auto host = QString(hosts_raw[i]);
-            hosts.push_back(host);
-        }
-        ad_array_free(hosts_raw);
-
-        return hosts;
-    } else {
-        return QList<QString>();
-    }
-}
-
 bool AdInterface::login(const QString &host_arg, const QString &domain) {
     host = host_arg;
 
@@ -1238,6 +1213,31 @@ void AdInterface::update_cache_if_needed(const QString &dn) {
 
     end: {
         ldap_msgfree(res);
+    }
+}
+
+QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
+    const QByteArray domain_array = domain.toUtf8();
+    const char *domain_cstr = domain_array.constData();
+
+    const QByteArray site_array = site.toUtf8();
+    const char *site_cstr = site_array.constData();
+
+    char **hosts_raw = NULL;
+    int hosts_result = ad_get_domain_hosts(domain_cstr, site_cstr, &hosts_raw);
+
+    if (hosts_result == AD_SUCCESS) {
+        auto hosts = QList<QString>();
+
+        for (int i = 0; hosts_raw[i] != NULL; i++) {
+            auto host = QString(hosts_raw[i]);
+            hosts.push_back(host);
+        }
+        ad_array_free(hosts_raw);
+
+        return hosts;
+    } else {
+        return QList<QString>();
     }
 }
 

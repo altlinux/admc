@@ -38,8 +38,6 @@
 #include <QModelIndex>
 #include <QAbstractItemView>
 
-void force_reload_attributes_and_diff(const QString &dn);
-
 // Open this context menu when view requests one
 void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
     QObject::connect(
@@ -137,13 +135,6 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
                 AdInterface::instance()->user_set_account_option(dn, AccountOption_Disabled, !disabled);
             });
         }
-
-        const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
-        if (dev_mode) {
-            addAction(tr("Force reload attributes and diff"), [dn]() {
-                force_reload_attributes_and_diff(dn);
-            });
-        }
     }
 }
 
@@ -214,48 +205,6 @@ void ObjectContextMenu::add_to_group(const QString &dn) {
     if (selected_objects.size() > 0) {
         for (auto group : selected_objects) {
             AdInterface::instance()->group_add_user(group, dn);
-        }
-    }
-}
-
-void force_reload_attributes_and_diff(const QString &dn) {
-
-    Attributes old_attributes = AdInterface::instance()->attribute_get_all(dn);
-
-    AdInterface::instance()->update_cache({dn});
-
-    QList<QString> changes;
-
-    Attributes new_attributes = AdInterface::instance()->attribute_get_all(dn);
-
-    for (auto &attribute : old_attributes.keys()) {
-        const QString old_value = old_attributes[attribute][0];
-
-        if (new_attributes.contains(attribute)) {
-            const QString new_value = new_attributes[attribute][0];
-            
-            if (new_value != old_value) {
-                changes.append(QString("\"%1\": \"%2\"->\"%3\"").arg(attribute, old_value, new_value));
-            }
-        } else {
-            changes.append(QString("\"%1\": \"%2\"->\"unset\"").arg(attribute, old_value));
-        }
-    }
-
-    for (auto &attribute : old_attributes.keys()) {
-        if (!old_attributes.contains(attribute)) {
-            const QString new_value = new_attributes[attribute][0];
-            changes.append(QString("\"%1\": \"unset\"->\"%2\"").arg(attribute, new_value));
-        }
-    }
-
-    if (!changes.isEmpty()) {
-        const QString name = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_NAME);
-
-        printf("Attributes of object \"%s\" changed:\n", qPrintable(name));
-
-        for (auto change : changes) {
-            printf("%s\n", qPrintable(change));
         }
     }
 }

@@ -48,11 +48,6 @@ class DetailsWidget final : public QDialog {
 Q_OBJECT
 
 public:
-    DetailsWidget(const DetailsWidget&) = delete;
-    DetailsWidget& operator=(const DetailsWidget&) = delete;
-    DetailsWidget(DetailsWidget&&) = delete;
-    DetailsWidget& operator=(DetailsWidget&&) = delete;
-
     static DetailsWidget *docked_instance();
     static void change_target(const QString &new_target);
 
@@ -75,6 +70,11 @@ private:
     QString target;
 
     DetailsWidget(bool is_floating_instance_arg);
+    
+    DetailsWidget(const DetailsWidget&) = delete;
+    DetailsWidget& operator=(const DetailsWidget&) = delete;
+    DetailsWidget(DetailsWidget&&) = delete;
+    DetailsWidget& operator=(DetailsWidget&&) = delete;
 };
 
 #endif /* DETAILS_WIDGET_H */

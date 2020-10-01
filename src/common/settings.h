@@ -82,11 +82,6 @@ class Settings final : public QObject {
 Q_OBJECT
 
 public:
-    Settings(const Settings&) = delete;
-    Settings& operator=(const Settings&) = delete;
-    Settings(Settings&&) = delete;
-    Settings& operator=(Settings&&) = delete;
-
     static Settings *instance();
 
     QVariant get_variant(VariantSetting type) const;
@@ -110,6 +105,11 @@ private:
     BoolSettingSignal bools[BoolSetting_COUNT];
 
     Settings();
+
+    Settings(const Settings&) = delete;
+    Settings& operator=(const Settings&) = delete;
+    Settings(Settings&&) = delete;
+    Settings& operator=(Settings&&) = delete;
 };
 
 #endif /* SETTINGS_H */
