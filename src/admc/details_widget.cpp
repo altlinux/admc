@@ -145,7 +145,7 @@ void DetailsWidget::reload(const QString &new_target) {
 
     tab_widget->clear();
 
-    const bool has_attributes = AdInterface::instance()->has_attributes(target);
+    const bool has_attributes = AdInterface::instance()->exists(target);
     if (has_attributes) {
         // Disable apply/cancel since this is a fresh reload and there are no changes
         button_box->show();

@@ -216,7 +216,7 @@ public:
 
     bool system_flag_get(const QString &dn, const SystemFlagsBit bit);
 
-    bool has_attributes(const QString &dn);
+    bool exists(const QString &dn);
     bool is_class(const QString &dn, const QString &object_class);
     bool is_user(const QString &dn);
     bool is_group(const QString &dn);

@@ -863,7 +863,7 @@ bool AdInterface::user_unlock(const QString &dn) {
     }
 }
 
-bool AdInterface::has_attributes(const QString &dn) {
+bool AdInterface::exists(const QString &dn) {
     const Attributes attributes = get_all_attributes(dn);
 
     return !attributes.isEmpty();
@@ -1221,17 +1221,9 @@ void AdInterface::load_attributes_into_cache(const QString &dn) {
         ldap_msgfree(res);
 
         if (result != AD_SUCCESS) {
-            if (should_emit_status_message(result)) {
-                const QString name = extract_name_from_dn(dn);
-                const QString context = QString(tr("Failed to get attributes of \"%1\"")).arg(name);
-                const QString error = default_error(result);
-
-                error_status_message(context, error);
-            } else {
-                // Set cache for object to empty to indicate that it doesn't exist
-                attributes_cache[dn] = Attributes();
-                attributes_cache_binary[dn] = QHash<QString, QList<QByteArray>>();
-            }
+            // Set cache for object to empty to indicate that it doesn't exist
+            attributes_cache[dn] = Attributes();
+            attributes_cache_binary[dn] = QHash<QString, QList<QByteArray>>();
         }
     }
 }

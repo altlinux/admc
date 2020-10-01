@@ -278,7 +278,7 @@ QList<QString> get_possible_attributes(const QString &dn) {
             const QString schema_dn = AdInterface::instance()->get_schema_dn();
             const QString class_schema = QString("CN=%1,%2").arg(ad_class_name, schema_dn);
 
-            const bool schema_exists = AdInterface::instance()->has_attributes(class_schema);
+            const bool schema_exists = AdInterface::instance()->exists(class_schema);
             if (!schema_exists) {
                 continue;
             }
@@ -308,7 +308,7 @@ AttributeType get_attribute_type(const QString &attribute) {
         const QString schema_dn = AdInterface::instance()->get_schema_dn();
         const QString class_schema = QString("CN=%1,%2").arg(attribute_ad_name, schema_dn);
 
-        const bool schema_exists = AdInterface::instance()->has_attributes(class_schema);
+        const bool schema_exists = AdInterface::instance()->exists(class_schema);
         if (schema_exists) {
             const QString attribute_syntax = AdInterface::instance()->attribute_get(class_schema, ATTRIBUTE_ATTRIBUTE_SYNTAX);
             const QString om_syntax = AdInterface::instance()->attribute_get(class_schema, ATTRIBUTE_OM_SYNTAX);
