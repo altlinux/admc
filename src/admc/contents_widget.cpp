@@ -138,7 +138,7 @@ void ContentsWidget::change_target(const QString &dn) {
 
     resize_columns();
 
-    const QString target_name = AdInterface::instance()->attribute_get(target_dn, ATTRIBUTE_NAME);
+    const QString target_name = AdInterface::instance()->attribute_get_value(target_dn, ATTRIBUTE_NAME);
 
     QString label_text;
     if (target_name.isEmpty()) {
@@ -206,7 +206,7 @@ void ContentsModel::make_row(QStandardItem *parent, const QString &dn) {
 
         const QString value_display =
         [dn, attribute]() {
-            QString out = AdInterface::instance()->attribute_get_display(dn, attribute);
+            QString out = AdInterface::instance()->attribute_get_display_value(dn, attribute);
 
             // NOTE: category is given as raw DN and contains '-' where it should have spaces, so convert it
             if (attribute == ATTRIBUTE_OBJECT_CATEGORY) {

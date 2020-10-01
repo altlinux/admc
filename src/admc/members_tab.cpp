@@ -108,7 +108,7 @@ void MembersTab::apply() {
 }
 
 void MembersTab::reload() {
-    const QList<QString> members = AdInterface::instance()->attribute_get_multi(target(), ATTRIBUTE_MEMBER);
+    const QList<QString> members = AdInterface::instance()->attribute_get_value_values(target(), ATTRIBUTE_MEMBER);
     original_members = members.toSet();
     current_members = original_members;
 

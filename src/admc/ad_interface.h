@@ -144,7 +144,8 @@ enum SystemFlagsBit {
     SystemFlagsBit_CannotDelete = 0x80000000
 };
 
-typedef QMap<QString, QList<QString>> Attributes;
+typedef QHash<QString, QList<QString>> Attributes;
+typedef QHash<QString, QList<QByteArray>> AttributesBinary;
 typedef struct ldap LDAP;
 
 class AdInterface final : public QObject {
@@ -178,12 +179,15 @@ public:
     QList<QString> list(const QString &dn);
     QList<QString> search(const QString &filter, const QString &custom_search_base = QString());
     
-    Attributes get_all_attributes(const QString &dn);
-    QList<QString> attribute_get_multi(const QString &dn, const QString &attribute);
-    QString attribute_get(const QString &dn, const QString &attribute);
-    QByteArray attribute_get_binary(const QString &dn, const QString &attribute);
+    Attributes attribute_get_all(const QString &dn);
+    QList<QString> attribute_get_value_values(const QString &dn, const QString &attribute);
+    QString attribute_get_value(const QString &dn, const QString &attribute);
 
-    QString attribute_get_display(const QString &dn, const QString &attribute);
+    AttributesBinary attribute_binary_get_all(const QString &dn);
+    QList<QByteArray> attribute_binary_get_values(const QString &dn, const QString &attribute);
+    QByteArray attribute_binary_get_value(const QString &dn, const QString &attribute);
+
+    QString attribute_get_display_value(const QString &dn, const QString &attribute);
 
     bool attribute_bool_get(const QString &dn, const QString &attribute);
     bool attribute_bool_replace(const QString &dn, const QString &attribute, bool value);
@@ -250,8 +254,8 @@ private:
     QString schema_dn;
     QString host;
 
-    QHash<QString, Attributes> attributes_cache;
-    QHash<QString, QHash<QString, QList<QByteArray>>> attributes_cache_binary;
+    QHash<QString, Attributes> cache;
+    QHash<QString, AttributesBinary> cache_binary;
     bool suppress_not_found_error = false;
     QSet<QString> batched_dns;
     bool batch_in_progress = false;
@@ -263,7 +267,7 @@ private:
     void error_status_message(const QString &context, const QString &error);
     QString default_error(int ad_result) const;
 
-    void load_attributes_into_cache(const QString &dn);
+    void update_cache_if_needed(const QString &dn);
 
     bool get_systemflags_bit(const SystemFlagsBit bit);
 }; 

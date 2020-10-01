@@ -105,18 +105,18 @@ void AttributesModel::reload() {
 
     // Populate model with attributes of new root
     const QString target = attributes_tab->target();
-    QMap<QString, QList<QString>> attributes = AdInterface::instance()->get_all_attributes(target);
+    AttributesBinary attributes = AdInterface::instance()->attribute_binary_get_all(target);
 
     // Add attributes without values
     const QList<QString> possible_attributes = get_possible_attributes(attributes_tab->target());
     for (const QString attribute : possible_attributes) {
         if (!attributes.contains(attribute)) {
-            attributes[attribute] = QList<QString>();
+            attributes[attribute] = QList<QByteArray>();
         }
     }
 
     for (auto attribute : attributes.keys()) {
-        QList<QString> values = attributes[attribute];
+        const QList<QByteArray> values = attributes[attribute];
 
         if (values.isEmpty()) {
             auto name_item = new QStandardItem(attribute);
@@ -125,10 +125,10 @@ void AttributesModel::reload() {
             appendRow({name_item, value_item});
         } else {
             for (auto value : values) {
-                const QString value_display = attribute_value_to_display_value(attribute, value);
+                const QString display_value = attribute_binary_value_to_display_value(attribute, value);
 
                 auto name_item = new QStandardItem(attribute);
-                auto value_item = new QStandardItem(value_display);
+                auto value_item = new QStandardItem(display_value);
 
                 name_item->setEditable(false);
 

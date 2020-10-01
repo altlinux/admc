@@ -77,11 +77,11 @@ QString get_attribute_display_name(const QString &attribute, const QString &obje
         for (const auto display_specifier : display_specifiers) {
             const QList<QString> display_names =
             [display_specifier]() {
-                QList<QString> out = AdInterface::instance()->attribute_get_multi(display_specifier, ATTRIBUTE_DISPLAY_NAMES);
+                QList<QString> out = AdInterface::instance()->attribute_get_value_values(display_specifier, ATTRIBUTE_DISPLAY_NAMES);
 
                 // NOTE: default display specifier contains some extra display names that are used for contents columns
                 if (display_specifier.contains("default-Display")) {
-                    const QList<QString> extra_display_names = AdInterface::instance()->attribute_get_multi(display_specifier, ATTRIBUTE_EXTRA_COLUMNS);
+                    const QList<QString> extra_display_names = AdInterface::instance()->attribute_get_value_values(display_specifier, ATTRIBUTE_EXTRA_COLUMNS);
 
                     out.append(extra_display_names);
                 }
@@ -149,7 +149,7 @@ QString get_class_display_name(const QString &objectClass) {
             // TODO: duplicated code. Probably load this together with other display specifier info.
             const QString specifier_class = get_display_specifier_class(display_specifier);
 
-            const QString class_display_name = AdInterface::instance()->attribute_get(display_specifier, CLASS_DISPLAY_NAME);
+            const QString class_display_name = AdInterface::instance()->attribute_get_value(display_specifier, CLASS_DISPLAY_NAME);
 
             out[specifier_class] = class_display_name;
         }
@@ -171,7 +171,7 @@ QList<QString> get_extra_contents_columns() {
         []() {
             const QString locale_dir = get_locale_dir();
             const QString default_display_specifier = QString("CN=default-Display,%1").arg(locale_dir);
-            QList<QString> columns_out = AdInterface::instance()->attribute_get_multi(default_display_specifier, ATTRIBUTE_EXTRA_COLUMNS);
+            QList<QString> columns_out = AdInterface::instance()->attribute_get_value_values(default_display_specifier, ATTRIBUTE_EXTRA_COLUMNS);
             std::reverse(columns_out.begin(), columns_out.end());
 
             return columns_out;
@@ -196,7 +196,7 @@ QList<QString> get_containers_filter_classes() {
     []() {
         const QString locale_dir = get_locale_dir();
         const QString display_specifier = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
-        const QList<QString> ms_classes = AdInterface::instance()->attribute_get_multi(display_specifier, ATTRIBUTE_FILTER_CONTAINERS);
+        const QList<QString> ms_classes = AdInterface::instance()->attribute_get_value_values(display_specifier, ATTRIBUTE_FILTER_CONTAINERS);
 
         // NOTE: ATTRIBUTE_FILTER_CONTAINERS contains classes in non-LDAP format ("Organizational-Unit" vs "organizationalUnit"). Convert to LDAP format by getting ATTRIBUTE_LDAP_DISPLAY_NAME from class' schema.
         const QString schema_dn = AdInterface::instance()->get_schema_dn();
@@ -204,7 +204,7 @@ QList<QString> get_containers_filter_classes() {
         QList<QString> out;
         for (const auto ms_class : ms_classes) {
             const QString class_schema = QString("CN=%1,%2").arg(ms_class, schema_dn);
-            const QString ldap_class = AdInterface::instance()->attribute_get(class_schema, ATTRIBUTE_LDAP_DISPLAY_NAME);
+            const QString ldap_class = AdInterface::instance()->attribute_get_value(class_schema, ATTRIBUTE_LDAP_DISPLAY_NAME);
 
             out.append(ldap_class);
         }
@@ -219,8 +219,8 @@ QList<QString> get_containers_filter_classes() {
 }
 
 QList<QString> get_possible_superiors(const QString &dn) {
-    const QString category = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_OBJECT_CATEGORY);
-    const QList<QString> possible_superiors = AdInterface::instance()->attribute_get_multi(category, ATTRIBUTE_POSSIBLE_SUPERIORS);
+    const QString category = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_OBJECT_CATEGORY);
+    const QList<QString> possible_superiors = AdInterface::instance()->attribute_get_value_values(category, ATTRIBUTE_POSSIBLE_SUPERIORS);
 
     return possible_superiors;
 }
@@ -253,7 +253,7 @@ QString ldap_name_to_ad_name(const QString &ldap_name) {
 
         if (!search_results.isEmpty()) {
             const QString schema_object = search_results[0];
-            const QString ad_class_name = AdInterface::instance()->attribute_get(schema_object, ATTRIBUTE_ADMIN_DISPLAY_NAME);
+            const QString ad_class_name = AdInterface::instance()->attribute_get_value(schema_object, ATTRIBUTE_ADMIN_DISPLAY_NAME);
 
             ldap_to_ad[ldap_name] = ad_class_name;
         } else {
@@ -268,7 +268,7 @@ QString ldap_name_to_ad_name(const QString &ldap_name) {
 QList<QString> get_possible_attributes(const QString &dn) {
     static QHash<QString, QList<QString>> class_possible_attributes;
 
-    const QList<QString> object_classes = AdInterface::instance()->attribute_get_multi(dn, ATTRIBUTE_OBJECT_CLASS);
+    const QList<QString> object_classes = AdInterface::instance()->attribute_get_value_values(dn, ATTRIBUTE_OBJECT_CLASS);
 
     QList<QString> possible_attributes;
     for (const QString object_class : object_classes) {
@@ -283,8 +283,8 @@ QList<QString> get_possible_attributes(const QString &dn) {
                 continue;
             }
 
-            const QList<QString> may_contain = AdInterface::instance()->attribute_get_multi(class_schema, ATTRIBUTE_MAY_CONTAIN);
-            const QList<QString> system_may_contain = AdInterface::instance()->attribute_get_multi(class_schema, ATTRIBUTE_SYSTEM_MAY_CONTAIN);
+            const QList<QString> may_contain = AdInterface::instance()->attribute_get_value_values(class_schema, ATTRIBUTE_MAY_CONTAIN);
+            const QList<QString> system_may_contain = AdInterface::instance()->attribute_get_value_values(class_schema, ATTRIBUTE_SYSTEM_MAY_CONTAIN);
 
             QList<QString> total_contain;
             total_contain.append(may_contain);
@@ -310,8 +310,8 @@ AttributeType get_attribute_type(const QString &attribute) {
 
         const bool schema_exists = AdInterface::instance()->exists(class_schema);
         if (schema_exists) {
-            const QString attribute_syntax = AdInterface::instance()->attribute_get(class_schema, ATTRIBUTE_ATTRIBUTE_SYNTAX);
-            const QString om_syntax = AdInterface::instance()->attribute_get(class_schema, ATTRIBUTE_OM_SYNTAX);
+            const QString attribute_syntax = AdInterface::instance()->attribute_get_value(class_schema, ATTRIBUTE_ATTRIBUTE_SYNTAX);
+            const QString om_syntax = AdInterface::instance()->attribute_get_value(class_schema, ATTRIBUTE_OM_SYNTAX);
 
             // printf("%s=%s\n", qPrintable(attribute_syntax), qPrintable(om_syntax));
 

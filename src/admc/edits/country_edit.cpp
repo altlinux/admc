@@ -107,7 +107,7 @@ CountryEdit::CountryEdit(QObject *parent)
 }
 
 void CountryEdit::load(const QString &dn) {
-    const QString current_code_string = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_COUNTRY_CODE);
+    const QString current_code_string = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_COUNTRY_CODE);
     int current_code = current_code_string.toInt();
     if (current_code_string == "") {
         current_code = COUNTRY_CODE_NONE;

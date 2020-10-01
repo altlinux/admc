@@ -181,7 +181,7 @@ bool GeneralTab::accepts_target() const {
 }
 
 void GeneralTab::reload() {
-    const QString name = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_NAME);
+    const QString name = AdInterface::instance()->attribute_get_value(target(), ATTRIBUTE_NAME);
     name_label->setText(name);
 
     const bool is_user = AdInterface::instance()->is_user(target());

@@ -148,7 +148,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
 }
 
 void ObjectContextMenu::delete_object(const QString &dn) {
-    const QString name = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_NAME);
+    const QString name = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_NAME);
     const QString text = QString(tr("Are you sure you want to delete \"%1\"?")).arg(name);
     const bool confirmed = confirmation_dialog(text, this);
 
@@ -163,7 +163,7 @@ void ObjectContextMenu::edit_policy(const QString &dn) {
 
     const QString path =
     [dn]() {
-        QString path_tmp = AdInterface::instance()->attribute_get(dn, "gPCFileSysPath");
+        QString path_tmp = AdInterface::instance()->attribute_get_value(dn, "gPCFileSysPath");
         path_tmp.replace("\\", "/");
 
         // TODO: file sys path as it is, is like this:
@@ -220,13 +220,13 @@ void ObjectContextMenu::add_to_group(const QString &dn) {
 
 void force_reload_attributes_and_diff(const QString &dn) {
 
-    QMap<QString, QList<QString>> old_attributes = AdInterface::instance()->get_all_attributes(dn);
+    Attributes old_attributes = AdInterface::instance()->attribute_get_all(dn);
 
     AdInterface::instance()->update_cache({dn});
 
     QList<QString> changes;
 
-    QMap<QString, QList<QString>> new_attributes = AdInterface::instance()->get_all_attributes(dn);
+    Attributes new_attributes = AdInterface::instance()->attribute_get_all(dn);
 
     for (auto &attribute : old_attributes.keys()) {
         const QString old_value = old_attributes[attribute][0];
@@ -250,7 +250,7 @@ void force_reload_attributes_and_diff(const QString &dn) {
     }
 
     if (!changes.isEmpty()) {
-        const QString name = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_NAME);
+        const QString name = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_NAME);
 
         printf("Attributes of object \"%s\" changed:\n", qPrintable(name));
 

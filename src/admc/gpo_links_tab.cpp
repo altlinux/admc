@@ -81,7 +81,7 @@ void GpoLinksTab::reload() {
     const QList<QString> all_linked_objects = AdInterface::instance()->search(filter);
 
     for (auto dn : all_linked_objects) {
-        const QString gplink = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_GPLINK);
+        const QString gplink = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_GPLINK);
         const bool linked_to_this = gplink.contains(target());
 
         if (linked_to_this) {

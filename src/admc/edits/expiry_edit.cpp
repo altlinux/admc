@@ -62,7 +62,7 @@ ExpiryEdit::ExpiryEdit(QObject *parent)
 }
 
 void ExpiryEdit::load(const QString &dn) {
-    const QString expiry_raw = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_ACCOUNT_EXPIRES);
+    const QString expiry_raw = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_ACCOUNT_EXPIRES);
     original_value = expiry_raw;
 
     const bool never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, expiry_raw);

@@ -341,7 +341,7 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
         return false;
     }();
 
-    const auto classes = AdInterface::instance()->attribute_get_multi(dn, ATTRIBUTE_OBJECT_CLASS);
+    const auto classes = AdInterface::instance()->attribute_get_value_values(dn, ATTRIBUTE_OBJECT_CLASS);
 
     const bool ignore_filter = Settings::instance()->get_bool(BoolSetting_ShowNonContainersInContainersTree);
     if (!passes_filter && !ignore_filter) {
@@ -350,7 +350,7 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
 
     const QList<QStandardItem *> row = make_item_row(ContainersColumn_COUNT);
     
-    const QString name = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_NAME);
+    const QString name = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_NAME);
     row[ContainersColumn_Name]->setText(name);
     row[ContainersColumn_DN]->setText(dn);
 
