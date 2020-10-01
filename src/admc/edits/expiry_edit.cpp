@@ -19,7 +19,7 @@
 
 #include "edits/expiry_edit.h"
 #include "ad_interface.h"
-#include "attribute_display_strings.h"
+#include "server_configuration.h"
 #include "utils.h"
 
 #include <QVBoxLayout>
@@ -62,7 +62,7 @@ ExpiryEdit::ExpiryEdit(QObject *parent)
 }
 
 void ExpiryEdit::load(const QString &dn) {
-    const QString expiry_raw = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_ACCOUNT_EXPIRES);
+    const QString expiry_raw = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_ACCOUNT_EXPIRES);
     original_value = expiry_raw;
 
     const bool never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, expiry_raw);
@@ -101,7 +101,7 @@ void ExpiryEdit::load(const QString &dn) {
 }
 
 void ExpiryEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = get_attribute_display_string(ATTRIBUTE_ACCOUNT_EXPIRES) + ":";
+    const QString label_text = get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
     const auto label = new QLabel(label_text);
 
     layout->addWidget(label, layout->rowCount(), 0);

@@ -21,7 +21,7 @@
 #include "ad_interface.h"
 #include "status.h"
 #include "edits/attribute_edit.h"
-#include "attribute_display_strings.h"
+#include "server_configuration.h"
 #include "utils.h"
 #include "edits/country_edit.h"
 
@@ -107,7 +107,7 @@ CountryEdit::CountryEdit(QObject *parent)
 }
 
 void CountryEdit::load(const QString &dn) {
-    const QString current_code_string = AdInterface::instance()->attribute_get(dn, ATTRIBUTE_COUNTRY_CODE);
+    const QString current_code_string = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_COUNTRY_CODE);
     int current_code = current_code_string.toInt();
     if (current_code_string == "") {
         current_code = COUNTRY_CODE_NONE;
@@ -125,7 +125,7 @@ void CountryEdit::load(const QString &dn) {
 }
 
 void CountryEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = get_attribute_display_string(ATTRIBUTE_COUNTRY) + ":";
+    const QString label_text = get_attribute_display_name(ATTRIBUTE_COUNTRY, CLASS_USER) + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(this, label);

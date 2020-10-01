@@ -18,7 +18,6 @@
  */
 
 #include "edits/group_type_edit.h"
-#include "attribute_display_strings.h"
 #include "utils.h"
 #include "ad_interface.h"
 

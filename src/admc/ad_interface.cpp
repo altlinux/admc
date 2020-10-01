@@ -21,6 +21,7 @@
 #include "active_directory.h"
 #include "status.h"
 #include "utils.h"
+#include "server_configuration.h"
 
 #include <ldap.h>
 #include <lber.h>
@@ -28,6 +29,7 @@
 #include <QSet>
 #include <QMessageBox>
 #include <QTextCodec>
+#include <QDebug>
 
 #define MILLIS_TO_100_NANOS 10000
 
@@ -36,16 +38,13 @@
 
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm"
 
+// TODO: confirm these are fine. I think need to make seconds option for UTC? Don't know if QDatetime can handle that.
+#define GENERALIZED_TIME_FORMAT_STRING "yyyyMMddhhmmss.zZ"
+#define UTC_TIME_FORMAT_STRING "yyMMddhhmmss.zZ"
+
 #define GROUP_TYPE_BIT_SECURITY 0x80000000
 #define GROUP_TYPE_BIT_SYSTEM 0x00000001
 
-enum DatetimeFormat {
-    DatetimeFormat_LargeInteger,
-    DatetimeFormat_ISO8601,
-    DatetimeFormat_None
-};
-
-DatetimeFormat get_attribute_time_format(const QString &attribute);
 int group_scope_to_bit(GroupScope scope);
 
 AdInterface *AdInterface::instance() {
@@ -96,23 +95,17 @@ bool AdInterface::login(const QString &host_arg, const QString &domain) {
     search_base = "DC=" + search_base;
     search_base = search_base.replace(".", ",DC=");
 
+    configuration_dn = "CN=Configuration," + search_base;
+    schema_dn = "CN=Schema," + configuration_dn;
+
     const QByteArray uri_array = uri.toUtf8();
     const char *uri_cstr = uri_array.constData();
 
     const int result = ad_login(uri_cstr, &ld);
 
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Logged in to \"%1\" at \"%2\"")).arg(host, domain));
-
-        emit logged_in();
-
         return true;
     } else {
-        const QString context = QString(tr("Failed to login to \"%1\" at \"%2\"")).arg(host, domain);
-        const QString error = default_error(result);
-
-        error_status_message(context, error);
-
         return false;
     }
 }
@@ -144,6 +137,14 @@ bool AdInterface::batch_is_in_progress() const {
 
 QString AdInterface::get_search_base() const {
     return search_base;
+}
+
+QString AdInterface::get_configuration_dn() const {
+    return configuration_dn;
+}
+
+QString AdInterface::get_schema_dn() const {
+    return schema_dn;
 }
 
 QString AdInterface::get_host() const {
@@ -181,15 +182,24 @@ QList<QString> AdInterface::list(const QString &dn) {
     }
 }
 
-QList<QString> AdInterface::search(const QString &filter) {
+QList<QString> AdInterface::search(const QString &filter, const QString &custom_search_base) {
+    const QString base =
+    [this, custom_search_base]() {
+        if (custom_search_base.isEmpty()) {
+            return search_base;
+        } else {
+            return custom_search_base;
+        }
+    }();
+
     const QByteArray filter_array = filter.toUtf8();
     const char *filter_cstr = filter_array.constData();
 
-    const QByteArray search_base_array = search_base.toUtf8();
-    const char *search_base_cstr = search_base_array.constData();
+    const QByteArray base_array = base.toUtf8();
+    const char *base_cstr = base_array.constData();
 
     char **results_raw;
-    const int result_search = ad_search(ld, filter_cstr, search_base_cstr, &results_raw);
+    const int result_search = ad_search(ld, filter_cstr, base_cstr, &results_raw);
     if (result_search == AD_SUCCESS) {
         auto results = QList<QString>();
 
@@ -213,20 +223,16 @@ QList<QString> AdInterface::search(const QString &filter) {
     }
 }
 
-Attributes AdInterface::get_all_attributes(const QString &dn) {
-    if (dn == "") {
-        return Attributes();
-    }
+Attributes AdInterface::attribute_get_all(const QString &dn) {
+    update_cache_if_needed(dn);
 
-    if (!attributes_cache.contains(dn)) {
-        load_attributes_into_cache(dn);
-    }
-
-    return attributes_cache[dn];
+    return cache[dn];
 }
 
-QList<QString> AdInterface::attribute_get_multi(const QString &dn, const QString &attribute) {
-    QMap<QString, QList<QString>> attributes = get_all_attributes(dn);
+QList<QString> AdInterface::attribute_get_value_values(const QString &dn, const QString &attribute) {
+    update_cache_if_needed(dn);
+    
+    const Attributes attributes = attribute_get_all(dn);
 
     if (attributes.contains(attribute)) {
         return attributes[attribute];
@@ -235,19 +241,35 @@ QList<QString> AdInterface::attribute_get_multi(const QString &dn, const QString
     }
 }
 
-QString AdInterface::attribute_get(const QString &dn, const QString &attribute) {
-    QList<QString> values = attribute_get_multi(dn, attribute);
+QString AdInterface::attribute_get_value(const QString &dn, const QString &attribute) {
+    QList<QString> values = attribute_get_value_values(dn, attribute);
 
     if (values.size() > 0) {
         // Return first value only
         return values[0];
     } else {
-        return "";
+        return QString();
     }
 }
 
-QByteArray AdInterface::attribute_get_binary(const QString &dn, const QString &attribute) {
-    const QList<QByteArray> values = attributes_cache_binary[dn][attribute];
+AttributesBinary AdInterface::attribute_binary_get_all(const QString &dn) {
+    update_cache_if_needed(dn);
+
+    return cache_binary[dn];
+}
+
+QList<QByteArray> AdInterface::attribute_binary_get_values(const QString &dn, const QString &attribute) {
+    const AttributesBinary attributes = attribute_binary_get_all(dn);
+
+    if (attributes.contains(attribute)) {
+        return attributes[attribute];
+    } else {
+        return QList<QByteArray>();
+    }
+}
+
+QByteArray AdInterface::attribute_binary_get_value(const QString &dn, const QString &attribute) {
+    const QList<QByteArray> values = attribute_binary_get_values(dn, attribute);
 
     if (values.size() > 0) {
         // Return first value only
@@ -257,8 +279,15 @@ QByteArray AdInterface::attribute_get_binary(const QString &dn, const QString &a
     }
 }
 
+QString AdInterface::attribute_get_display_value(const QString &dn, const QString &attribute) {
+    const QByteArray value_bytes = AdInterface::instance()->attribute_binary_get_value(dn, attribute);
+    const QString display_string = attribute_binary_value_to_display_value(attribute, value_bytes);
+
+    return display_string;
+}
+
 bool AdInterface::attribute_bool_get(const QString &dn, const QString &attribute) {
-    const QString value_string = attribute_get(dn, attribute);
+    const QString value_string = attribute_get_value(dn, attribute);
     const bool value = (value_string == LDAP_BOOL_TRUE);
 
     return value;
@@ -278,7 +307,7 @@ bool AdInterface::attribute_bool_replace(const QString &dn, const QString &attri
 }
 
 int AdInterface::attribute_int_get(const QString &dn, const QString &attribute) {
-    const QString value_raw = attribute_get(dn, attribute);
+    const QString value_raw = attribute_get_value(dn, attribute);
     const int value = value_raw.toInt();
 
     return value;
@@ -292,7 +321,7 @@ bool AdInterface::attribute_int_replace(const QString &dn, const QString &attrib
 }
 
 QDateTime AdInterface::attribute_datetime_get(const QString &dn, const QString &attribute) {
-    const QString raw_value = attribute_get(dn, attribute);
+    const QString raw_value = attribute_get_value(dn, attribute);
     const QDateTime datetime = datetime_raw_to_datetime(attribute, raw_value);
 
     return datetime;
@@ -319,15 +348,11 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 
     const QString name = extract_name_from_dn(dn);
 
-    QString new_value_string;
-    if (attribute_is_datetime(attribute)) {
-        new_value_string = datetime_raw_to_display_string(attribute, value);
-    } else {
-        new_value_string = value;
-    }
+    const QString new_value_display = attribute_value_to_display_value(attribute, value);
+    ;
 
     if (result == AD_SUCCESS) {
-        const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_string, attribute, name);
+        const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_display, attribute, name);
 
         success_status_message(context);
 
@@ -335,7 +360,7 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_string, attribute, name);
+        const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_display, attribute, name);
         const QString error = default_error(result);
 
         error_status_message(context, error);
@@ -345,21 +370,12 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 }
 
 bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value) {
-    const QString old_value = attribute_get(dn, attribute);
+    const QString old_value = attribute_get_value(dn, attribute);
 
     if (old_value.isEmpty() && value.isEmpty()) {
         // do nothing
         return true;
     }
-
-    const QString old_value_display_string =
-    [=]() {
-        if (attribute_is_datetime(attribute)) {
-            return datetime_raw_to_display_string(attribute, old_value);
-        } else {
-            return old_value;
-        }
-    }();
 
     const QByteArray old_value_array = old_value.toUtf8();
     const char *old_value_cstr = old_value_array.constData();
@@ -382,21 +398,17 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
 
     const QString name = extract_name_from_dn(dn);
 
-    QString new_value_string;
-    if (attribute_is_datetime(attribute)) {
-        new_value_string = datetime_raw_to_display_string(attribute, value);
-    } else {
-        new_value_string = value;
-    }
+    const QString old_value_display = attribute_value_to_display_value(attribute, old_value);
+    const QString new_value_display = attribute_value_to_display_value(attribute, value);
 
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display_string, new_value_string));
+        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display, new_value_display));
 
         update_cache({dn});
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display_string, new_value_string);
+        const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display, new_value_display);
         const QString error = default_error(result);
 
         error_status_message(context, error);
@@ -419,15 +431,10 @@ bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, 
 
     const QString name = extract_name_from_dn(dn);
 
-    QString value_string;
-    if (attribute_is_datetime(attribute)) {
-        value_string = datetime_raw_to_display_string(attribute, value);
-    } else {
-        value_string = value;
-    }
+    const QString value_display = attribute_value_to_display_value(attribute, value);
 
     if (result == AD_SUCCESS) {
-        const QString context = QString(tr("Deleted value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_string, attribute, name);
+        const QString context = QString(tr("Deleted value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
 
         success_status_message(context);
 
@@ -435,7 +442,7 @@ bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, 
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to delete value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_string, attribute, name);
+        const QString context = QString(tr("Failed to delete value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
         const QString error = default_error(result);
 
         error_status_message(context, error);
@@ -614,7 +621,7 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
 
 // NOTE: "group type" is really only the last bit of the groupType attribute, yeah it's confusing
 GroupType AdInterface::group_get_type(const QString &dn) {
-    const QString group_type = attribute_get(dn, ATTRIBUTE_GROUP_TYPE);
+    const QString group_type = attribute_get_value(dn, ATTRIBUTE_GROUP_TYPE);
     const int group_type_int = group_type.toInt();
 
     const bool security_bit_set = ((group_type_int & GROUP_TYPE_BIT_SECURITY) != 0);
@@ -627,7 +634,7 @@ GroupType AdInterface::group_get_type(const QString &dn) {
 }
 
 bool AdInterface::group_set_type(const QString &dn, GroupType type) {
-    const QString group_type = attribute_get(dn, ATTRIBUTE_GROUP_TYPE);
+    const QString group_type = attribute_get_value(dn, ATTRIBUTE_GROUP_TYPE);
     int group_type_int = group_type.toInt();
 
     const bool set_security_bit = type == GroupType_Security;
@@ -773,7 +780,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             break;
         }
         default: {
-            QString control = attribute_get(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
+            QString control = attribute_get_value(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
             if (control.isEmpty()) {
                 control = "0";
             }
@@ -864,14 +871,14 @@ bool AdInterface::user_unlock(const QString &dn) {
     }
 }
 
-bool AdInterface::has_attributes(const QString &dn) {
-    const Attributes attributes = get_all_attributes(dn);
+bool AdInterface::exists(const QString &dn) {
+    const Attributes attributes = attribute_get_all(dn);
 
-    return !attributes.isEmpty();
+    return !attributes[dn].isEmpty();
 }
 
 bool AdInterface::is_class(const QString &dn, const QString &object_class) {
-    const QList<QString> classes = attribute_get_multi(dn, ATTRIBUTE_OBJECT_CLASS);
+    const QList<QString> classes = attribute_get_value_values(dn, ATTRIBUTE_OBJECT_CLASS);
     const bool is_class = classes.contains(object_class);
 
     return is_class;
@@ -897,18 +904,6 @@ bool AdInterface::is_policy(const QString &dn) {
     return is_class(dn, CLASS_GP_CONTAINER);
 }
 
-bool AdInterface::is_container_like(const QString &dn) {
-    // TODO: check that this includes all fitting objectClasses
-    const QList<QString> containerlike_objectClasses = {CLASS_OU, CLASS_BUILTIN_DOMAIN, CLASS_DOMAIN};
-    for (auto c : containerlike_objectClasses) {
-        if (is_class(dn, c)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 bool AdInterface::is_computer(const QString &dn) {
     return is_class(dn, CLASS_COMPUTER);
 }
@@ -916,14 +911,14 @@ bool AdInterface::is_computer(const QString &dn) {
 bool AdInterface::user_get_account_option(const QString &dn, AccountOption option) {
     switch (option) {
         case AccountOption_PasswordExpired: {
-            const QString pwdLastSet_value = attribute_get(dn, ATTRIBUTE_PWD_LAST_SET);
+            const QString pwdLastSet_value = attribute_get_value(dn, ATTRIBUTE_PWD_LAST_SET);
             const bool expired = (pwdLastSet_value == AD_PWD_LAST_SET_EXPIRED);
 
             return expired;
         }
         default: {
             // Account option is a UAC bit
-            const QString control = attribute_get(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
+            const QString control = attribute_get_value(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
             if (control.isEmpty()) {
                 return false;
             }
@@ -1005,12 +1000,12 @@ void AdInterface::object_drop(const QString &dn, const QString &target_dn) {
 }
 
 QString AdInterface::get_name_for_display(const QString &dn) {
-    const QString display_name = attribute_get(dn, ATTRIBUTE_DISPLAY_NAME);
+    const QString display_name = attribute_get_value(dn, ATTRIBUTE_DISPLAY_NAME);
     if (!display_name.isEmpty()) {
         return display_name;
     }
 
-    const QString name = attribute_get(dn, ATTRIBUTE_NAME);
+    const QString name = attribute_get_value(dn, ATTRIBUTE_NAME);
     if (!name.isEmpty()) {
         return name;
     }
@@ -1055,14 +1050,14 @@ void AdInterface::command(QStringList args) {
         QString dn = args[1];
         QString attribute = args[2];
 
-        QString value = attribute_get(dn, attribute);
+        QString value = attribute_get_value(dn, attribute);
 
         printf("%s\n", qPrintable(value));
     } else if (command == "get-attribute-multi") {
         QString dn = args[1];
         QString attribute = args[2];
 
-        QList<QString> values = attribute_get_multi(dn, attribute);
+        QList<QString> values = attribute_get_value_values(dn, attribute);
 
         for (auto e : values) {
             printf("%s\n", qPrintable(e));
@@ -1081,7 +1076,7 @@ void AdInterface::update_cache(const QList<QString> &changed_dns) {
     
     const auto attributes_contain_changed_dn =
     [this](const QString &dn, const QString &changed_dn) -> bool {
-        for (auto &values : attributes_cache[dn]) {
+        for (auto &values : cache[dn]) {
             for (auto &value : values) {
                 if (value.contains(changed_dn)) {
                     return true;
@@ -1096,7 +1091,7 @@ void AdInterface::update_cache(const QList<QString> &changed_dns) {
     // Next time the app requests info about these objects, they
     // will be reloaded into cache
     QSet<QString> removed_dns;
-    for (const QString &dn : attributes_cache.keys()) {
+    for (const QString &dn : cache.keys()) {
         for (const QString &changed_dn : changed_dns) {
             if (dn.contains(changed_dn) || attributes_contain_changed_dn(dn, changed_dn)) {
                 removed_dns.insert(dn);
@@ -1107,7 +1102,8 @@ void AdInterface::update_cache(const QList<QString> &changed_dns) {
     }
 
     for (auto removed_dn : removed_dns) {
-        attributes_cache.remove(removed_dn);
+        cache.remove(removed_dn);
+        cache_binary.remove(removed_dn);
     }
 
     // NOTE: Suppress "not found" errors because after modifications
@@ -1165,7 +1161,18 @@ QString AdInterface::default_error(int ad_result) const {
     }
 }
 
-void AdInterface::load_attributes_into_cache(const QString &dn) {
+void AdInterface::update_cache_if_needed(const QString &dn) {
+    if (cache.contains(dn)) {
+        return;
+    }
+
+    cache[dn] = Attributes();
+    cache_binary[dn] = QHash<QString, QList<QByteArray>>();
+
+    if (dn.isEmpty()) {
+        return;
+    }
+
     int result = AD_SUCCESS;
 
     LDAPMessage *res;
@@ -1221,8 +1228,8 @@ void AdInterface::load_attributes_into_cache(const QString &dn) {
             return values_strings_out;
         }();
 
-        attributes_cache[dn][QString(attr)] = values_strings;
-        attributes_cache_binary[dn][QString(attr)] = values_bytes;
+        cache[dn][QString(attr)] = values_strings;
+        cache_binary[dn][QString(attr)] = values_bytes;
 
         ldap_value_free_len(values_ldap);
         ldap_memfree(attr);
@@ -1231,19 +1238,6 @@ void AdInterface::load_attributes_into_cache(const QString &dn) {
 
     end: {
         ldap_msgfree(res);
-
-        if (result != AD_SUCCESS) {
-            if (should_emit_status_message(result)) {
-                const QString name = extract_name_from_dn(dn);
-                const QString context = QString(tr("Failed to get attributes of \"%1\"")).arg(name);
-                const QString error = default_error(result);
-
-                error_status_message(context, error);
-            } else {
-            // Set cache for object to empty to indicate that it doesn't exist
-                attributes_cache[dn] = Attributes();
-            }
-        }
     }
 }
 
@@ -1328,9 +1322,9 @@ int get_account_option_bit(const AccountOption &option) {
 }
 
 bool datetime_is_never(const QString &attribute, const QString &value) {
-    const DatetimeFormat format = get_attribute_time_format(attribute);
+    const AttributeType type = get_attribute_type(attribute);
 
-    if (format == DatetimeFormat_LargeInteger) {
+    if (type == AttributeType_LargeIntegerDatetime) {
         const bool is_never = (value == AD_LARGEINTEGERTIME_NEVER_1 || value == AD_LARGEINTEGERTIME_NEVER_2);
         
         return is_never;
@@ -1340,25 +1334,22 @@ bool datetime_is_never(const QString &attribute, const QString &value) {
 }
 
 bool attribute_is_datetime(const QString &attribute) {
-    const DatetimeFormat format = get_attribute_time_format(attribute);
-    return format != DatetimeFormat_None;
-}
-
-DatetimeFormat get_attribute_time_format(const QString &attribute) {
-    static const QHash<QString, DatetimeFormat> datetime_formats = {
-        {ATTRIBUTE_ACCOUNT_EXPIRES, DatetimeFormat_LargeInteger},
-        {ATTRIBUTE_WHEN_CREATED, DatetimeFormat_ISO8601},
-        {ATTRIBUTE_WHEN_CHANGED, DatetimeFormat_ISO8601},
+    static const QList<AttributeType> datetime_types = {
+        AttributeType_LargeIntegerDatetime,
+        AttributeType_UTCTime,
+        AttributeType_GeneralizedTime
     };
+    
+    const AttributeType type = get_attribute_type(attribute);
 
-    return datetime_formats.value(attribute, DatetimeFormat_None);
+    return datetime_types.contains(type);
 }
 
 QString datetime_to_string(const QString &attribute, const QDateTime &datetime) {
-    const DatetimeFormat format = get_attribute_time_format(attribute);
+    const AttributeType type = get_attribute_type(attribute);
 
-    switch (format) {
-        case DatetimeFormat_LargeInteger: {
+    switch (type) {
+        case AttributeType_LargeIntegerDatetime: {
             const QDateTime ntfs_epoch(QDate(1601, 1, 1));
             const qint64 millis = ntfs_epoch.msecsTo(datetime);
             const qint64 hundred_nanos = millis * MILLIS_TO_100_NANOS;
@@ -1367,45 +1358,42 @@ QString datetime_to_string(const QString &attribute, const QDateTime &datetime) 
 
             break;
         }
-        case DatetimeFormat_ISO8601: {
-            return datetime.toString(ISO8601_FORMAT_STRING);
+        case AttributeType_UTCTime: {
+            // TODO: i think this uses 2 digits for year and needs a different format
+            return datetime.toString(UTC_TIME_FORMAT_STRING);
 
             break;
         }
-        case DatetimeFormat_None: return "";
+        case AttributeType_GeneralizedTime: {
+            return datetime.toString(GENERALIZED_TIME_FORMAT_STRING);
+
+            break;
+        }
+        default: return "";
     }
 
     return "";
 }
 
-QString datetime_raw_to_display_string(const QString &attribute, const QString &raw_value) {
-    if (datetime_is_never(attribute, raw_value)) {
-        return "(never)";
-    }
-
-    const QDateTime datetime = datetime_raw_to_datetime(attribute, raw_value);
-    const QString string = datetime.toString(DATETIME_DISPLAY_FORMAT);
-
-    return string;
-}
-
 QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_value) {
-    const DatetimeFormat format = get_attribute_time_format(attribute);
+    const AttributeType type = get_attribute_type(attribute);
 
-    switch (format) {
-        case DatetimeFormat_LargeInteger: {
+    switch (type) {
+        case AttributeType_LargeIntegerDatetime: {
             // TODO: couldn't find epoch in qt, but maybe its hidden somewhere
             QDateTime datetime(QDate(1601, 1, 1));
             const qint64 hundred_nanos = raw_value.toLongLong();
             const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
             datetime = datetime.addMSecs(millis);
-
             return datetime;
         }
-        case DatetimeFormat_ISO8601: {
-            return QDateTime::fromString(raw_value, ISO8601_FORMAT_STRING);
+        case AttributeType_GeneralizedTime: {
+            return QDateTime::fromString(raw_value, GENERALIZED_TIME_FORMAT_STRING);
         }
-        case DatetimeFormat_None: {
+        case AttributeType_UTCTime: {
+            return QDateTime::fromString(raw_value, UTC_TIME_FORMAT_STRING);
+        }
+        default: {
             return QDateTime();
         }
     }
@@ -1442,20 +1430,6 @@ QString group_type_to_string(GroupType type) {
     return "";
 }
 
-QString object_class_display_string(const QString &object_class) {
-    static const QHash<QString, QString> strings = {
-        {CLASS_CONTAINER, QObject::tr("Container")},
-        {CLASS_OU, QObject::tr("OU")},
-        {CLASS_GROUP, QObject::tr("Group")},
-        {CLASS_USER, QObject::tr("User")}
-    };
-    const QString default_value = object_class;
-
-    const QString display_string = strings.value(object_class, default_value);
-
-    return display_string;
-}
-
 QIcon get_object_icon(const QString &dn) {
     // TODO: change to custom, good icons, add those icons to installation?
     // TODO: are there cases where an object can have multiple icons due to multiple objectClasses and one of them needs to be prioritized?
@@ -1478,6 +1452,34 @@ QIcon get_object_icon(const QString &dn) {
     QIcon icon = QIcon::fromTheme(icon_name);
 
     return icon;
+}
+
+// TODO: flesh this out
+QString attribute_binary_value_to_display_value(const QString &attribute, const QByteArray &value_bytes) {
+    const AttributeType attribute_type = get_attribute_type(attribute);
+
+    const QString value_string(value_bytes);
+
+    if (attribute_is_datetime(attribute)) {
+        if (datetime_is_never(attribute, value_string)) {
+            return "(never)";
+        }
+        const QDateTime datetime = datetime_raw_to_datetime(attribute, value_string);
+        const QString display = datetime.toString(DATETIME_DISPLAY_FORMAT);
+
+        return display;
+    } else if (attribute_type == AttributeType_Sid) {
+        // TODO: convert to sid here
+        return object_sid_to_display_string(value_bytes);
+    } else {
+        return value_string;
+    }
+}
+
+QString attribute_value_to_display_value(const QString &attribute, const QString &value) {
+    const QByteArray bytes = value.toUtf8();
+
+    return attribute_binary_value_to_display_value(attribute, bytes);
 }
 
 // TODO: replace with some library if possible. Maybe one of samba's libs has this.

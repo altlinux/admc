@@ -31,6 +31,9 @@ public:
 protected:
     void closeEvent(QCloseEvent *event);
 
+private:
+    void finish_init();
+
 };
 
 #endif /* MAIN_WINDOW_H */

@@ -25,41 +25,16 @@
 #include "settings.h"
 #include "utils.h"
 #include "ad_interface.h"
-#include "attribute_display_strings.h"
+#include "server_configuration.h"
 
 #include <QTreeView>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHeaderView>
+#include <QDebug>
 
 // NOTE: not using enums for columns here, because each column maps directly to an attribute
-const QList<QString> columns = {
-    ATTRIBUTE_NAME,
-    ATTRIBUTE_OBJECT_CATEGORY,
-    ATTRIBUTE_DESCRIPTION,
-    ATTRIBUTE_DISTINGUISHED_NAME,
-
-    ATTRIBUTE_DISPLAY_NAME,
-    ATTRIBUTE_FIRST_NAME,
-    ATTRIBUTE_LAST_NAME,
-    ATTRIBUTE_SAMACCOUNT_NAME,
-    ATTRIBUTE_USER_PRINCIPAL_NAME,
-
-    ATTRIBUTE_CITY,
-    ATTRIBUTE_STATE,
-    ATTRIBUTE_COUNTRY,
-    ATTRIBUTE_PO_BOX,
-
-    ATTRIBUTE_OFFICE,
-    ATTRIBUTE_DEPARTMENT,
-    ATTRIBUTE_COMPANY,
-    ATTRIBUTE_TITLE,
-
-    ATTRIBUTE_TELEPHONE_NUMBER,
-    ATTRIBUTE_MAIL,
-
-    ATTRIBUTE_WHEN_CHANGED
-};
+QList<QString> columns;
 
 int column_index(const QString &attribute) {
     if (!columns.contains(attribute)) {
@@ -72,6 +47,18 @@ int column_index(const QString &attribute) {
 ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *parent)
 : QWidget(parent)
 {   
+    if (columns.isEmpty()) {
+        columns = {
+            ATTRIBUTE_NAME,
+            ATTRIBUTE_OBJECT_CATEGORY,
+            ATTRIBUTE_DESCRIPTION
+        };
+        // NOTE: dn is not one of ADUC's columns, but adding it here for convenience
+        columns.append(ATTRIBUTE_DISTINGUISHED_NAME);
+        const QList<QString> extra_columns =get_extra_contents_columns();
+        columns.append(extra_columns);
+    }
+
     model = new ContentsModel(this);
     const auto advanced_view_proxy = new AdvancedViewProxy(column_index(ATTRIBUTE_DISTINGUISHED_NAME), this);
 
@@ -151,7 +138,7 @@ void ContentsWidget::change_target(const QString &dn) {
 
     resize_columns();
 
-    const QString target_name = AdInterface::instance()->attribute_get(target_dn, ATTRIBUTE_NAME);
+    const QString target_name = AdInterface::instance()->attribute_get_value(target_dn, ATTRIBUTE_NAME);
 
     QString label_text;
     if (target_name.isEmpty()) {
@@ -184,9 +171,9 @@ ContentsModel::ContentsModel(QObject *parent)
 {
     QList<QString> labels;
     for (const QString attribute : columns) {
-        const QString attribute_display_string = get_attribute_display_string(attribute);
+        const QString attribute_name = get_attribute_display_name(attribute, CLASS_DEFAULT);
 
-        labels.append(attribute_display_string);
+        labels.append(attribute_name);
     }
 
     setHorizontalHeaderLabels(labels);
@@ -217,18 +204,20 @@ void ContentsModel::make_row(QStandardItem *parent, const QString &dn) {
     for (int i = 0; i < columns.count(); i++) {
         const QString attribute = columns[i];
 
-        QString value = AdInterface::instance()->attribute_get(dn, attribute);
+        const QString value_display =
+        [dn, attribute]() {
+            QString out = AdInterface::instance()->attribute_get_display_value(dn, attribute);
 
-        // NOTE: this is given as raw DN and contains '-' where it should have spaces, so convert it
-        if (attribute == ATTRIBUTE_OBJECT_CATEGORY) {
-            value = extract_name_from_dn(value);
-            value = value.replace('-', ' ');
-        } else if (attribute == ATTRIBUTE_WHEN_CHANGED) {
-            // TODO: apply this to all datetime attributes in general
-            value = datetime_raw_to_display_string(attribute, value);
-        }
+            // NOTE: category is given as raw DN and contains '-' where it should have spaces, so convert it
+            if (attribute == ATTRIBUTE_OBJECT_CATEGORY) {
+                out = extract_name_from_dn(out);
+                out = out.replace('-', ' ');
+            }
 
-        row[i]->setText(value);
+            return out;
+        }();
+
+        row[i]->setText(value_display);
     }
 
     const QIcon icon = get_object_icon(dn);

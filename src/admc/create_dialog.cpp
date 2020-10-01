@@ -44,6 +44,7 @@
 // TODO: implement cannot change pass
 
 QString create_type_to_string(const CreateType &type);
+QString create_type_to_class(const CreateType &type);
 
 CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
 : QDialog()
@@ -60,7 +61,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
     
     const auto edits_layout = new QGridLayout();
 
-    name_edit = new StringEdit(ATTRIBUTE_NAME, this);
+    name_edit = new StringEdit(ATTRIBUTE_NAME, create_type_to_class(type), this);
     all_edits.append(name_edit);
 
     switch (type) {
@@ -171,7 +172,7 @@ void CreateDialog::make_group_edits() {
         ATTRIBUTE_SAMACCOUNT_NAME,
     };
     QMap<QString, StringEdit *> string_edits;
-    make_string_edits(string_attributes, &string_edits, &all_edits, this);
+    make_string_edits(string_attributes, create_type_to_class(type), &string_edits, &all_edits, this);
     setup_string_edit_autofills(string_edits, name_edit);
 
     all_edits.append(new GroupScopeEdit(this));
@@ -188,7 +189,7 @@ void CreateDialog::make_user_edits() {
         ATTRIBUTE_SAMACCOUNT_NAME,
     };
     QMap<QString, StringEdit *> string_edits;
-    make_string_edits(string_attributes, &string_edits, &all_edits, this);
+    make_string_edits(string_attributes, create_type_to_class(type), &string_edits, &all_edits, this);
 
     all_edits.append(new PasswordEdit(this));
 
@@ -211,6 +212,17 @@ QString create_type_to_string(const CreateType &type) {
         case CreateType_OU: return CreateDialog::tr("Organization Unit");
         case CreateType_Group: return CreateDialog::tr("Group");
         case CreateType_COUNT: return "COUNT";
+    }
+    return "";
+}
+
+QString create_type_to_class(const CreateType &type) {
+    switch (type) {
+        case CreateType_User: return CLASS_USER;
+        case CreateType_Computer: return CLASS_COMPUTER;
+        case CreateType_OU: return CLASS_OU;
+        case CreateType_Group: return CLASS_GROUP;
+        case CreateType_COUNT: return "";
     }
     return "";
 }

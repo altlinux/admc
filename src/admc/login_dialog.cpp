@@ -27,7 +27,6 @@
 #include <QListWidget>
 #include <QPushButton>
 #include <QMessageBox>
-#include <QCheckBox>
 #include <QString>
 #include <QGridLayout>
 
@@ -53,8 +52,6 @@ LoginDialog::LoginDialog(QWidget *parent)
     hosts_list = new QListWidget(this);
     hosts_list->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    save_session_checkbox = new QCheckBox(tr("Save this session"), this);
-
     const auto layout = new QGridLayout(this);
     layout->addWidget(label, 0, 0);
     layout->addWidget(domain_edit_label, 1, 0);
@@ -63,9 +60,8 @@ LoginDialog::LoginDialog(QWidget *parent)
     layout->addWidget(site_edit, 1, 4);
     layout->addWidget(hosts_list_label, 3, 0);
     layout->addWidget(hosts_list, 4, 0, 1, 5);
-    layout->addWidget(save_session_checkbox, 5, 4, Qt::AlignRight);
-    layout->addWidget(cancel_button, 6, 0, Qt::AlignLeft);
-    layout->addWidget(login_button, 6, 4, Qt::AlignRight);
+    layout->addWidget(cancel_button, 5, 0, Qt::AlignLeft);
+    layout->addWidget(login_button, 5, 4, Qt::AlignRight);
 
     connect(
         domain_edit, &QLineEdit::editingFinished,
@@ -158,15 +154,12 @@ void LoginDialog::complete(const QString &host) {
     const bool login_success = AdInterface::instance()->login(host, domain);
 
     if (login_success) {
-        const bool save_session = save_session_checkbox->isChecked();
-        if (save_session) {
-            const QString site = site_edit->text();
-            Settings::instance()->set_variant(VariantSetting_Domain, domain);
-            Settings::instance()->set_variant(VariantSetting_Site, site);
-            Settings::instance()->set_variant(VariantSetting_Host, host);
-        }
+        const QString site = site_edit->text();
+        Settings::instance()->set_variant(VariantSetting_Domain, domain);
+        Settings::instance()->set_variant(VariantSetting_Site, site);
+        Settings::instance()->set_variant(VariantSetting_Host, host);
 
-        done(QDialog::Accepted);
+        accept();
     } else {
         QMessageBox::critical(this, tr("Error"), tr("Failed to login!"));
     }

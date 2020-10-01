@@ -31,11 +31,7 @@ public:
     explicit MenuBar(QWidget* parent);
 
 private slots:
-    void on_login_action();
     void on_exit_action();
-
-private:
-    LoginDialog *login_dialog = nullptr;
 
 };
 

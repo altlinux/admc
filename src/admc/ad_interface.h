@@ -36,14 +36,12 @@
 // is updated on object changes
 // Emits various signals for AD operation successes/failures
 
-// TODO: not sure if AD datetime fromat is always this one, LDAP allows multiple alternatives: https://ldapwiki.com/wiki/DateTime
-#define ISO8601_FORMAT_STRING "yyyyMMddhhmmss.zZ"
-
 #define ATTRIBUTE_USER_ACCOUNT_CONTROL  "userAccountControl"
 #define ATTRIBUTE_LOCKOUT_TIME          "lockoutTime"
 #define ATTRIBUTE_ACCOUNT_EXPIRES       "accountExpires"
 #define ATTRIBUTE_PWD_LAST_SET          "pwdLastSet"
 #define ATTRIBUTE_NAME                  "name"
+#define ATTRIBUTE_CN                    "cn"
 #define ATTRIBUTE_INITIALS              "initials"
 #define ATTRIBUTE_SAMACCOUNT_NAME       "sAMAccountName"
 #define ATTRIBUTE_DISPLAY_NAME          "displayName"
@@ -61,7 +59,6 @@
 #define ATTRIBUTE_POSTAL_CODE           "postalCode"
 #define ATTRIBUTE_STATE                 "st"
 #define ATTRIBUTE_STREET                "streetAddress"
-#define ATTRIBUTE_CN                    "cn"
 #define ATTRIBUTE_DISTINGUISHED_NAME    "distinguishedName"
 #define ATTRIBUTE_OBJECT_CLASS          "objectClass"
 #define ATTRIBUTE_WHEN_CREATED          "whenCreated"
@@ -82,6 +79,11 @@
 #define ATTRIBUTE_DEPARTMENT            "department"
 #define ATTRIBUTE_COMPANY               "company"
 #define ATTRIBUTE_TITLE                 "title"
+#define ATTRIBUTE_LAST_LOGON            "lastLogon"
+#define ATTRIBUTE_LAST_LOGON_TIMESTAMP  "lastLogonTimestamp"
+#define ATTRIBUTE_PWD_LAST_SET          "pwdLastSet"
+#define ATTRIBUTE_LOCKOUT_TIME          "lockoutTime"
+#define ATTRIBUTE_BAD_PWD_TIME          "badPasswordTime"
 #define ATTRIBUTE_OBJECT_SID            "objectSid"
 #define ATTRIBUTE_SYSTEM_FLAGS          "systemFlags"
 
@@ -96,6 +98,10 @@
 #define CLASS_TOP                       "top"
 #define CLASS_COMPUTER                  "computer"
 #define CLASS_ORG_PERSON                "organizationalPerson"
+#define CLASS_DEFAULT                   "default"
+#define CLASS_CONFIGURATION             "configuration"
+// NOTE: for schema object
+#define CLASS_dMD                       "dMD"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 
@@ -138,7 +144,8 @@ enum SystemFlagsBit {
     SystemFlagsBit_CannotDelete = 0x80000000
 };
 
-typedef QMap<QString, QList<QString>> Attributes;
+typedef QHash<QString, QList<QString>> Attributes;
+typedef QHash<QString, QList<QByteArray>> AttributesBinary;
 typedef struct ldap LDAP;
 
 class AdInterface final : public QObject {
@@ -166,14 +173,21 @@ public:
 
     QString get_search_base() const;
     QString get_host() const;
+    QString get_configuration_dn() const;
+    QString get_schema_dn() const;
 
     QList<QString> list(const QString &dn);
-    QList<QString> search(const QString &filter);
+    QList<QString> search(const QString &filter, const QString &custom_search_base = QString());
     
-    Attributes get_all_attributes(const QString &dn);
-    QList<QString> attribute_get_multi(const QString &dn, const QString &attribute);
-    QString attribute_get(const QString &dn, const QString &attribute);
-    QByteArray attribute_get_binary(const QString &dn, const QString &attribute);
+    Attributes attribute_get_all(const QString &dn);
+    QList<QString> attribute_get_value_values(const QString &dn, const QString &attribute);
+    QString attribute_get_value(const QString &dn, const QString &attribute);
+
+    AttributesBinary attribute_binary_get_all(const QString &dn);
+    QList<QByteArray> attribute_binary_get_values(const QString &dn, const QString &attribute);
+    QByteArray attribute_binary_get_value(const QString &dn, const QString &attribute);
+
+    QString attribute_get_display_value(const QString &dn, const QString &attribute);
 
     bool attribute_bool_get(const QString &dn, const QString &attribute);
     bool attribute_bool_replace(const QString &dn, const QString &attribute, bool value);
@@ -190,8 +204,8 @@ public:
     bool object_rename(const QString &dn, const QString &new_name);
     bool user_set_pass(const QString &dn, const QString &password);
     bool user_set_account_option(const QString &dn, AccountOption option, bool set);
+    bool user_get_account_option(const QString &dn, AccountOption option);
     bool user_unlock(const QString &dn);
-    void update_cache(const QList<QString> &changed_dns);
     
     QDateTime attribute_datetime_get(const QString &dn, const QString &attribute);
     bool attribute_datetime_replace(const QString &dn, const QString &attribute, const QDateTime &datetime);
@@ -206,21 +220,18 @@ public:
 
     bool system_flag_get(const QString &dn, const SystemFlagsBit bit);
 
-    bool has_attributes(const QString &dn);
+    bool exists(const QString &dn);
     bool is_class(const QString &dn, const QString &object_class);
     bool is_user(const QString &dn);
     bool is_group(const QString &dn);
     bool is_container(const QString &dn);
     bool is_ou(const QString &dn);
     bool is_policy(const QString &dn);
-    bool is_container_like(const QString &dn);
     bool is_computer(const QString &dn);
 
     bool can_move(const QString &dn);
     bool can_delete(const QString &dn);
     bool can_rename(const QString &dn);
-
-    bool user_get_account_option(const QString &dn, AccountOption option);
 
     bool object_can_drop(const QString &dn, const QString &target_dn);
     void object_drop(const QString &dn, const QString &target_dn);
@@ -233,27 +244,29 @@ public:
 
 signals:
     void modified();
-    void logged_in();
 
 private:
     LDAP *ld;
     QString search_base;
+    QString configuration_dn;
+    QString schema_dn;
     QString host;
 
-    QHash<QString, Attributes> attributes_cache;
-    QHash<QString, QHash<QString, QList<QByteArray>>> attributes_cache_binary;
+    QHash<QString, Attributes> cache;
+    QHash<QString, AttributesBinary> cache_binary;
     bool suppress_not_found_error = false;
     QSet<QString> batched_dns;
     bool batch_in_progress = false;
         
     AdInterface();
 
+    void update_cache(const QList<QString> &changed_dns);
     bool should_emit_status_message(int result);
     void success_status_message(const QString &msg);
     void error_status_message(const QString &context, const QString &error);
     QString default_error(int ad_result) const;
 
-    void load_attributes_into_cache(const QString &dn);
+    void update_cache_if_needed(const QString &dn);
 
     bool get_systemflags_bit(const SystemFlagsBit bit);
 }; 
@@ -269,12 +282,12 @@ int get_account_option_bit(const AccountOption &option);
 bool attribute_is_datetime(const QString &attribute);
 bool datetime_is_never(const QString &attribute, const QString &value);
 QString datetime_to_string(const QString &attribute, const QDateTime &datetime);
-QString datetime_raw_to_display_string(const QString &attribute, const QString &raw_value);
 QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_value);
 QString group_scope_to_string(GroupScope scope);
 QString group_type_to_string(GroupType type);
-QString object_class_display_string(const QString &c);
 QIcon get_object_icon(const QString &dn);
+QString attribute_binary_value_to_display_value(const QString &attribute, const QByteArray &value_bytes);
+QString attribute_value_to_display_value(const QString &attribute, const QString &value);
 QString object_sid_to_display_string(const QByteArray &bytes);
 
 #endif /* AD_INTERFACE_H */

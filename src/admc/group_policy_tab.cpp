@@ -125,7 +125,7 @@ void GroupPolicyTab::apply() {
 }
 
 void GroupPolicyTab::reload() {
-    const QString gplink_string = AdInterface::instance()->attribute_get(target(), ATTRIBUTE_GPLINK);
+    const QString gplink_string = AdInterface::instance()->attribute_get_value(target(), ATTRIBUTE_GPLINK);
     original_gplink = Gplink(gplink_string);
     current_gplink = original_gplink;
 

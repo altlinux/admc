@@ -18,7 +18,7 @@
  */
 
 #include "edits/datetime_edit.h"
-#include "attribute_display_strings.h"
+#include "server_configuration.h"
 #include "utils.h"
 #include "ad_interface.h"
 
@@ -58,7 +58,7 @@ void DateTimeEdit::load(const QString &dn) {
 }
 
 void DateTimeEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = get_attribute_display_string(attribute) + ":";
+    const QString label_text = get_attribute_display_name(attribute, "") + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(this, label);

@@ -36,7 +36,7 @@
 AccountTab::AccountTab(DetailsWidget *details_arg)
 : DetailsTab(details_arg)
 {   
-    const auto logon_name_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, this);
+    const auto logon_name_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER, this);
     edits.append(logon_name_edit);
 
     edits.append(new UnlockEdit(this));

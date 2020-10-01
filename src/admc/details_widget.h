@@ -60,7 +60,6 @@ public:
     void reload(const QString &new_target);
 
 private slots:
-    void on_logged_in();
     void on_ad_modified();
     void on_apply();
     void on_cancel();
