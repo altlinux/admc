@@ -24,6 +24,7 @@
 #include "server_configuration.h"
 
 #include <ldap.h>
+#include <lber.h>
 
 #include <QSet>
 #include <QMessageBox>
@@ -227,56 +228,11 @@ Attributes AdInterface::get_all_attributes(const QString &dn) {
         return Attributes();
     }
 
-    // Load attributes if it's not in cache
-    if (attributes_cache.contains(dn)) {
-        return attributes_cache[dn];
-    } else {
-        const QByteArray dn_array = dn.toUtf8();
-        const char *dn_cstr = dn_array.constData();
-
-        char ***attributes_ad;
-        const int result_attribute_get = ad_get_all_attributes(ld, dn_cstr, &attributes_ad);
-
-        if (result_attribute_get == AD_SUCCESS) {
-            Attributes attributes;
-            // attributes_ad is in the form of:
-            // char** array of {{keyA, value1, value2, ...},
-            // {keyB, value1, value2, ...}, ...}
-            // transform it into:
-            // map of {key => {value, value ...}, key => {value, value ...} ...}
-            for (int i = 0; attributes_ad[i] != NULL; i++) {
-                char **attributes_and_values = attributes_ad[i];
-
-                char *attribute_cstr = attributes_and_values[0];
-                auto attribute = QString(attribute_cstr);
-                attributes[attribute] = QList<QString>();
-
-                for (int j = 1; attributes_and_values[j] != NULL; j++) {
-                    char *value_cstr = attributes_and_values[j];
-                    auto value = QString(value_cstr);
-                    attributes[attribute].push_back(value);
-                }
-            }
-
-            ad_2d_array_free(attributes_ad);
-
-            attributes_cache[dn] = attributes;
-            return attributes_cache[dn];
-        } else {
-            if (should_emit_status_message(result_attribute_get)) {
-                const QString name = extract_name_from_dn(dn);
-                const QString context = QString(tr("Failed to get attributes of \"%1\"")).arg(name);
-                const QString error = default_error(result_attribute_get);
-
-                error_status_message(context, error);
-            } else {
-                // Set cache for object to empty to indicate that it doesn't exist
-                attributes_cache[dn] = Attributes();
-            }
-
-            return attributes_cache[dn];
-        }
+    if (!attributes_cache.contains(dn)) {
+        load_attributes_into_cache(dn);
     }
+
+    return attributes_cache[dn];
 }
 
 QList<QString> AdInterface::attribute_get_multi(const QString &dn, const QString &attribute) {
@@ -301,10 +257,21 @@ QString AdInterface::attribute_get(const QString &dn, const QString &attribute) 
 }
 
 QString AdInterface::attribute_get_display(const QString &dn, const QString &attribute) {
-    const QString value = AdInterface::instance()->attribute_get(dn, attribute);
-    const QString display_string = attribute_value_to_display_value(attribute, value);
+    const QByteArray value_bytes = AdInterface::instance()->attribute_get_binary(dn, attribute);
+    const QString display_string = attribute_binary_value_to_display_value(attribute, value_bytes);
 
     return display_string;
+}
+
+QByteArray AdInterface::attribute_get_binary(const QString &dn, const QString &attribute) {
+    const QList<QByteArray> values = attributes_cache_binary[dn][attribute];
+
+    if (values.size() > 0) {
+        // Return first value only
+        return values[0];
+    } else {
+        return QByteArray();
+    }
 }
 
 bool AdInterface::attribute_bool_get(const QString &dn, const QString &attribute) {
@@ -392,6 +359,11 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 
 bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value) {
     const QString old_value = attribute_get(dn, attribute);
+
+    if (old_value.isEmpty() && value.isEmpty()) {
+        // do nothing
+        return true;
+    }
 
     const QByteArray old_value_array = old_value.toUtf8();
     const char *old_value_cstr = old_value_array.constData();
@@ -680,6 +652,13 @@ bool AdInterface::group_is_system(const QString &dn) {
     const bool is_system = bit_is_set(group_type_bits, GROUP_TYPE_BIT_SYSTEM);
 
     return is_system;
+}
+
+bool AdInterface::system_flag_get(const QString &dn, const SystemFlagsBit bit) {
+    const int system_flags_bits = attribute_int_get(dn, ATTRIBUTE_SYSTEM_FLAGS);
+    const bool is_set = bit_is_set(system_flags_bits, bit);
+
+    return is_set;
 }
 
 bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
@@ -1169,6 +1148,88 @@ QString AdInterface::default_error(int ad_result) const {
     }
 }
 
+void AdInterface::load_attributes_into_cache(const QString &dn) {
+    int result = AD_SUCCESS;
+
+    LDAPMessage *res;
+    LDAPMessage *entry;
+
+    const QByteArray dn_bytes = dn.toUtf8();
+    const char *dn_cstr = dn_bytes.constData();
+
+    const int result_get = ad_get_all_attributes_internal(ld, dn_cstr, "*", &res);
+    if (result_get != AD_SUCCESS) {
+        result = result_get;
+
+        goto end;
+    }
+
+    entry = ldap_first_entry(ld, res);
+
+    BerElement *berptr;
+    for (char *attr = ldap_first_attribute(ld, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ld, entry, berptr)) {
+        struct berval **values_ldap = ldap_get_values_len(ld, entry, attr);
+        if (values_ldap == NULL) {
+            result = AD_LDAP_ERROR;
+
+            ldap_value_free_len(values_ldap);
+
+            break;
+        }
+
+        const QList<QByteArray> values_bytes =
+        [=]() {
+            QList<QByteArray> values_bytes_out;
+
+            const int values_count = ldap_count_values_len(values_ldap);
+            for (int i = 0; i < values_count; i++) {
+                struct berval value_berval = *values_ldap[i];
+                const QByteArray value_bytes(value_berval.bv_val, value_berval.bv_len);
+
+                values_bytes_out.append(value_bytes);
+            }
+
+            return values_bytes_out;
+        }();
+
+        const QList<QString> values_strings =
+        [=]() {
+            QList<QString> values_strings_out;
+
+            for (const QByteArray bytes : values_bytes) {
+                const QString value_string(bytes);
+                values_strings_out.append(value_string);
+            }
+
+            return values_strings_out;
+        }();
+
+        attributes_cache[dn][QString(attr)] = values_strings;
+        attributes_cache_binary[dn][QString(attr)] = values_bytes;
+
+        ldap_value_free_len(values_ldap);
+        ldap_memfree(attr);
+    }
+    ber_free(berptr, 0);
+
+    end: {
+        ldap_msgfree(res);
+
+        if (result != AD_SUCCESS) {
+            if (should_emit_status_message(result)) {
+                const QString name = extract_name_from_dn(dn);
+                const QString context = QString(tr("Failed to get attributes of \"%1\"")).arg(name);
+                const QString error = default_error(result);
+
+                error_status_message(context, error);
+            } else {
+            // Set cache for object to empty to indicate that it doesn't exist
+                attributes_cache[dn] = Attributes();
+            }
+        }
+    }
+}
+
 // "CN=foo,CN=bar,DC=domain,DC=com"
 // =>
 // "foo"
@@ -1383,21 +1444,67 @@ QIcon get_object_icon(const QString &dn) {
 }
 
 // TODO: flesh this out
-QString attribute_value_to_display_value(const QString &attribute, const QString &value) {
+QString attribute_binary_value_to_display_value(const QString &attribute, const QByteArray &value_bytes) {
     const AttributeType attribute_type = get_attribute_type(attribute);
 
+    const QString value_string(value_bytes);
+
     if (attribute_is_datetime(attribute)) {
-        if (datetime_is_never(attribute, value)) {
+        if (datetime_is_never(attribute, value_string)) {
             return "(never)";
         }
-        const QDateTime datetime = datetime_raw_to_datetime(attribute, value);
+        const QDateTime datetime = datetime_raw_to_datetime(attribute, value_string);
         const QString display = datetime.toString(DATETIME_DISPLAY_FORMAT);
 
         return display;
     } else if (attribute_type == AttributeType_Sid) {
         // TODO: convert to sid here
-        return value;
+        return object_sid_to_display_string(value_bytes);
     } else {
-        return value;
+        return value_string;
     }
+}
+
+QString attribute_value_to_display_value(const QString &attribute, const QString &value) {
+    const QByteArray bytes = value.toUtf8();
+
+    return attribute_binary_value_to_display_value(attribute, bytes);
+}
+
+// TODO: replace with some library if possible. Maybe one of samba's libs has this.
+// NOTE: https://ldapwiki.com/wiki/ObjectSID
+QString object_sid_to_display_string(const QByteArray &sid) {
+    QString string = "S-";
+    
+    // byte[0] - revision level
+    const int revision = sid[0];
+    string += QString::number(revision);
+    
+    // byte[1] - count of sub-authorities
+    const int sub_authority_count = sid[1] & 0xFF;
+    
+    // byte(2-7) - authority 48 bit Big-Endian
+    long authority = 0;
+    for (int i = 2; i <= 7; i++) {
+        authority |= ((long)sid[i]) << (8 * (5 - (i - 2)));
+    }
+    string += "-" + QString::number(authority);
+    // TODO: not sure if authority is supposed to be formatted as hex or not. Currently it matches how ADUC displays it.
+    
+    // byte(8-...)
+    // sub-authorities 32 bit Little-Endian
+    int offset = 8;
+    const int bytes = 4;
+    for (int i = 0; i < sub_authority_count; i++) {
+        long sub_authority = 0;
+        for (int j = 0; j < bytes; j++) {
+            sub_authority |= (long)(sid[offset + j] & 0xFF) << (8 * j);
+        }
+
+        string += "-" + QString::number(sub_authority);
+
+        offset += bytes;
+    }
+
+    return string;
 }

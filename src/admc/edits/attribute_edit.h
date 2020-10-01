@@ -77,11 +77,17 @@ void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout);
 void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
 bool any_edits_changed(QList<AttributeEdit *> edits);
 
+enum ApplyOnlyIfChanged {
+    ApplyOnlyIfChanged_Yes,
+    ApplyOnlyIfChanged_No
+};
+
 // Helper f-ns that iterate over edit lists for you
 // Verify before applying!
 void any_(QList<AttributeEdit *> edits, const QString &dn);
 void load_attribute_edits(QList<AttributeEdit *> edits, const QString &dn);
 bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent);
-bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QObject *parent);
+bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QObject *parent, const ApplyOnlyIfChanged apply_only_if_changed = ApplyOnlyIfChanged_Yes);
+bool apply_attribute_edits_unconditionally(QList<AttributeEdit *> edits, const QString &dn, QObject *parent);
 
 #endif /* ATTRIBUTE_EDIT_H */

@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QList>
 #include <QString>
+#include <QByteArray>
 #include <QMap>
 #include <QHash>
 #include <QDateTime>
@@ -83,6 +84,8 @@
 #define ATTRIBUTE_PWD_LAST_SET          "pwdLastSet"
 #define ATTRIBUTE_LOCKOUT_TIME          "lockoutTime"
 #define ATTRIBUTE_BAD_PWD_TIME          "badPasswordTime"
+#define ATTRIBUTE_OBJECT_SID            "objectSid"
+#define ATTRIBUTE_SYSTEM_FLAGS          "systemFlags"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
@@ -135,6 +138,12 @@ enum GroupType {
     GroupType_COUNT
 };
 
+enum SystemFlagsBit {
+    SystemFlagsBit_CannotMove = 0x04000000,
+    SystemFlagsBit_CannotRename = 0x08000000,
+    SystemFlagsBit_CannotDelete = 0x80000000
+};
+
 typedef QMap<QString, QList<QString>> Attributes;
 typedef struct ldap LDAP;
 
@@ -172,6 +181,7 @@ public:
     Attributes get_all_attributes(const QString &dn);
     QList<QString> attribute_get_multi(const QString &dn, const QString &attribute);
     QString attribute_get(const QString &dn, const QString &attribute);
+    QByteArray attribute_get_binary(const QString &dn, const QString &attribute);
 
     QString attribute_get_display(const QString &dn, const QString &attribute);
 
@@ -204,6 +214,8 @@ public:
     bool group_set_type(const QString &dn, GroupType type);
     bool group_is_system(const QString &dn);
 
+    bool system_flag_get(const QString &dn, const SystemFlagsBit bit);
+
     bool has_attributes(const QString &dn);
     bool is_class(const QString &dn, const QString &object_class);
     bool is_user(const QString &dn);
@@ -212,6 +224,10 @@ public:
     bool is_ou(const QString &dn);
     bool is_policy(const QString &dn);
     bool is_computer(const QString &dn);
+
+    bool can_move(const QString &dn);
+    bool can_delete(const QString &dn);
+    bool can_rename(const QString &dn);
 
     bool user_get_account_option(const QString &dn, AccountOption option);
 
@@ -235,6 +251,7 @@ private:
     QString host;
 
     QHash<QString, Attributes> attributes_cache;
+    QHash<QString, QHash<QString, QList<QByteArray>>> attributes_cache_binary;
     bool suppress_not_found_error = false;
     QSet<QString> batched_dns;
     bool batch_in_progress = false;
@@ -245,6 +262,10 @@ private:
     void success_status_message(const QString &msg);
     void error_status_message(const QString &context, const QString &error);
     QString default_error(int ad_result) const;
+
+    void load_attributes_into_cache(const QString &dn);
+
+    bool get_systemflags_bit(const SystemFlagsBit bit);
 }; 
 
 QString extract_name_from_dn(const QString &dn);
@@ -262,6 +283,8 @@ QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_
 QString group_scope_to_string(GroupScope scope);
 QString group_type_to_string(GroupType type);
 QIcon get_object_icon(const QString &dn);
+QString attribute_binary_value_to_display_value(const QString &attribute, const QByteArray &value_bytes);
 QString attribute_value_to_display_value(const QString &attribute, const QString &value);
+QString object_sid_to_display_string(const QByteArray &bytes);
 
 #endif /* AD_INTERFACE_H */

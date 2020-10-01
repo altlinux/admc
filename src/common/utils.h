@@ -59,4 +59,6 @@ void setup_column_toggle_menu(const QTreeView *view, const QStandardItemModel *m
 // Columns not in the map get empty labels
 void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap<int, QString> &labels_map);
 
+void show_only_in_dev_mode(QWidget *widget);
+
 #endif /* UTILS_H */
