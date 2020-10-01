@@ -91,7 +91,7 @@ ContainersWidget::ContainersWidget(QWidget *parent)
 };
 
 void ContainersWidget::reload() {
-    const QString head_dn = AdInterface::instance()->get_search_base();
+    const QString head_dn = AdInterface::instance()->search_base();
     QAbstractItemModel *view_model = view->model();
 
     // Save DN's that were fetched
@@ -253,7 +253,7 @@ ContainersModel::ContainersModel(QObject *parent)
     });
 
     // Load head
-    const QString head_dn = AdInterface::instance()->get_search_base();
+    const QString head_dn = AdInterface::instance()->search_base();
     QStandardItem *invis_root = invisibleRootItem();
     make_row(invis_root, head_dn);
 }
@@ -284,9 +284,9 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
     // NOTE: have to manually add configuration and schema objects because they don't appear in list() results
     const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
     if (dev_mode) {
-        const QString search_base = AdInterface::instance()->get_search_base();
-        const QString configuration_dn = AdInterface::instance()->get_configuration_dn();
-        const QString schema_dn = AdInterface::instance()->get_schema_dn();
+        const QString search_base = AdInterface::instance()->search_base();
+        const QString configuration_dn = AdInterface::instance()->configuration_dn();
+        const QString schema_dn = AdInterface::instance()->schema_dn();
 
         if (dn == search_base) {
             children.append(configuration_dn);

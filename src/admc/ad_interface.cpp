@@ -59,19 +59,19 @@ AdInterface::AdInterface()
 }
 
 bool AdInterface::login(const QString &host_arg, const QString &domain) {
-    host = host_arg;
+    m_host = host_arg;
 
-    const QString uri = "ldap://" + host;
+    const QString uri = "ldap://" + m_host;
 
     // Transform domain to search base
     // "DOMAIN.COM" => "DC=domain,DC=com"
-    search_base = domain;
-    search_base = search_base.toLower();
-    search_base = "DC=" + search_base;
-    search_base = search_base.replace(".", ",DC=");
+    m_search_base = domain;
+    m_search_base = m_search_base.toLower();
+    m_search_base = "DC=" + m_search_base;
+    m_search_base = m_search_base.replace(".", ",DC=");
 
-    configuration_dn = "CN=Configuration," + search_base;
-    schema_dn = "CN=Schema," + configuration_dn;
+    m_configuration_dn = "CN=Configuration," + m_search_base;
+    m_schema_dn = "CN=Schema," + m_configuration_dn;
 
     const QByteArray uri_array = uri.toUtf8();
     const char *uri_cstr = uri_array.constData();
@@ -110,20 +110,20 @@ bool AdInterface::batch_is_in_progress() const {
     return batch_in_progress;
 }
 
-QString AdInterface::get_search_base() const {
-    return search_base;
+QString AdInterface::search_base() const {
+    return m_search_base;
 }
 
-QString AdInterface::get_configuration_dn() const {
-    return configuration_dn;
+QString AdInterface::configuration_dn() const {
+    return m_configuration_dn;
 }
 
-QString AdInterface::get_schema_dn() const {
-    return schema_dn;
+QString AdInterface::schema_dn() const {
+    return m_schema_dn;
 }
 
-QString AdInterface::get_host() const {
-    return host;
+QString AdInterface::host() const {
+    return m_host;
 }
 
 QList<QString> AdInterface::list(const QString &dn) {
@@ -161,7 +161,7 @@ QList<QString> AdInterface::search(const QString &filter, const QString &custom_
     const QString base =
     [this, custom_search_base]() {
         if (custom_search_base.isEmpty()) {
-            return search_base;
+            return m_search_base;
         } else {
             return custom_search_base;
         }
@@ -990,7 +990,7 @@ QString AdInterface::get_name_for_display(const QString &dn) {
 
 QList<QString> AdInterface::list_all_gpos() {
     // TODO: search from base and only one level down. Need search function to accept search base to implement. It's unlikely that there are random GPO's lying around the domain, but just in case.
-    // const QString gpos_base = "CN=Policies,CN=System" + AdInterface::instance()->get_search_base();
+    // const QString gpos_base = "CN=Policies,CN=System" + AdInterface::instance()->search_base();
     const QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
     const QList<QString> gpos = search(filter);
 

@@ -164,10 +164,10 @@ public:
     void end_batch();
     bool batch_is_in_progress() const;
 
-    QString get_search_base() const;
-    QString get_host() const;
-    QString get_configuration_dn() const;
-    QString get_schema_dn() const;
+    QString search_base() const;
+    QString host() const;
+    QString configuration_dn() const;
+    QString schema_dn() const;
 
     QList<QString> list(const QString &dn);
     QList<QString> search(const QString &filter, const QString &custom_search_base = QString());
@@ -240,10 +240,10 @@ signals:
 
 private:
     LDAP *ld;
-    QString search_base;
-    QString configuration_dn;
-    QString schema_dn;
-    QString host;
+    QString m_search_base;
+    QString m_configuration_dn;
+    QString m_schema_dn;
+    QString m_host;
 
     QHash<QString, Attributes> cache;
     QHash<QString, AttributesBinary> cache_binary;

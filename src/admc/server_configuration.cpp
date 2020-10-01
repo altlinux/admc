@@ -58,7 +58,7 @@ QString get_locale_dir() {
             }
         }();
 
-        const QString configuration_dn = AdInterface::instance()->get_configuration_dn();
+        const QString configuration_dn = AdInterface::instance()->configuration_dn();
 
         return QString("CN=%1,CN=DisplaySpecifiers,%2").arg(locale_code, configuration_dn);
     }();
@@ -199,7 +199,7 @@ QList<QString> get_containers_filter_classes() {
         const QList<QString> ms_classes = AdInterface::instance()->attribute_get_value_values(display_specifier, ATTRIBUTE_FILTER_CONTAINERS);
 
         // NOTE: ATTRIBUTE_FILTER_CONTAINERS contains classes in non-LDAP format ("Organizational-Unit" vs "organizationalUnit"). Convert to LDAP format by getting ATTRIBUTE_LDAP_DISPLAY_NAME from class' schema.
-        const QString schema_dn = AdInterface::instance()->get_schema_dn();
+        const QString schema_dn = AdInterface::instance()->schema_dn();
 
         QList<QString> out;
         for (const auto ms_class : ms_classes) {
@@ -246,7 +246,7 @@ QString ldap_name_to_ad_name(const QString &ldap_name) {
     static QHash<QString, QString> ldap_to_ad;
 
     if (!ldap_to_ad.contains(ldap_name)) {
-        const QString schema_dn = AdInterface::instance()->get_schema_dn();
+        const QString schema_dn = AdInterface::instance()->schema_dn();
 
         const QString filter = filter_EQUALS(ATTRIBUTE_LDAP_DISPLAY_NAME, ldap_name);
         const QList<QString> search_results = AdInterface::instance()->search(filter, schema_dn);
@@ -275,7 +275,7 @@ QList<QString> get_possible_attributes(const QString &dn) {
         if (!class_possible_attributes.contains(object_class)) {
             // Load possible attributes from schema
             const QString ad_class_name = ldap_name_to_ad_name(object_class);
-            const QString schema_dn = AdInterface::instance()->get_schema_dn();
+            const QString schema_dn = AdInterface::instance()->schema_dn();
             const QString class_schema = QString("CN=%1,%2").arg(ad_class_name, schema_dn);
 
             const bool schema_exists = AdInterface::instance()->exists(class_schema);
@@ -305,7 +305,7 @@ AttributeType get_attribute_type(const QString &attribute) {
 
     if (!attribute_type_map.contains(attribute)) {
         const QString attribute_ad_name = ldap_name_to_ad_name(attribute);
-        const QString schema_dn = AdInterface::instance()->get_schema_dn();
+        const QString schema_dn = AdInterface::instance()->schema_dn();
         const QString class_schema = QString("CN=%1,%2").arg(attribute_ad_name, schema_dn);
 
         const bool schema_exists = AdInterface::instance()->exists(class_schema);
