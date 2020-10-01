@@ -204,8 +204,8 @@ public:
     bool object_rename(const QString &dn, const QString &new_name);
     bool user_set_pass(const QString &dn, const QString &password);
     bool user_set_account_option(const QString &dn, AccountOption option, bool set);
+    bool user_get_account_option(const QString &dn, AccountOption option);
     bool user_unlock(const QString &dn);
-    void update_cache(const QList<QString> &changed_dns);
     
     QDateTime attribute_datetime_get(const QString &dn, const QString &attribute);
     bool attribute_datetime_replace(const QString &dn, const QString &attribute, const QDateTime &datetime);
@@ -232,8 +232,6 @@ public:
     bool can_move(const QString &dn);
     bool can_delete(const QString &dn);
     bool can_rename(const QString &dn);
-
-    bool user_get_account_option(const QString &dn, AccountOption option);
 
     bool object_can_drop(const QString &dn, const QString &target_dn);
     void object_drop(const QString &dn, const QString &target_dn);
@@ -262,6 +260,7 @@ private:
         
     AdInterface();
 
+    void update_cache(const QList<QString> &changed_dns);
     bool should_emit_status_message(int result);
     void success_status_message(const QString &msg);
     void error_status_message(const QString &context, const QString &error);
