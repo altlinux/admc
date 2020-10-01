@@ -962,7 +962,7 @@ bool AdInterface::user_unlock(const QString &dn) {
 bool AdInterface::exists(const QString &dn) {
     const Attributes attributes = attribute_get_all(dn);
 
-    return !attributes[dn].isEmpty();
+    return !attributes.isEmpty();
 }
 
 bool AdInterface::is_class(const QString &dn, const QString &object_class) {
