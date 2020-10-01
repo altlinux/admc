@@ -264,6 +264,10 @@ QString AdInterface::attribute_get_display(const QString &dn, const QString &att
 }
 
 QByteArray AdInterface::attribute_get_binary(const QString &dn, const QString &attribute) {
+    if (!attributes_cache_binary.contains(dn)) {
+        load_attributes_into_cache(dn);
+    }
+
     const QList<QByteArray> values = attributes_cache_binary[dn][attribute];
 
     if (values.size() > 0) {
@@ -1091,6 +1095,7 @@ void AdInterface::update_cache(const QList<QString> &changed_dns) {
 
     for (auto removed_dn : removed_dns) {
         attributes_cache.remove(removed_dn);
+        attributes_cache_binary.remove(removed_dn);
     }
 
     // NOTE: Suppress "not found" errors because after modifications
@@ -1223,8 +1228,9 @@ void AdInterface::load_attributes_into_cache(const QString &dn) {
 
                 error_status_message(context, error);
             } else {
-            // Set cache for object to empty to indicate that it doesn't exist
+                // Set cache for object to empty to indicate that it doesn't exist
                 attributes_cache[dn] = Attributes();
+                attributes_cache_binary[dn] = QHash<QString, QList<QByteArray>>();
             }
         }
     }
