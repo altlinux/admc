@@ -143,7 +143,8 @@ void CreateDialog::accept() {
 
         bool apply_success = false;
         if (add_success) {
-            apply_success = apply_attribute_edits(all_edits, dn, this, ApplyOnlyIfChanged_No);
+            // NOTE: need to apply if not changed because this is a new object and edits have no initial values so they can't be in changed state
+            apply_success = apply_attribute_edits(all_edits, dn, this, ApplyIfNotChanged_Yes);
         }
 
         const QString type_string = create_type_to_string(type);
