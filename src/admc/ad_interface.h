@@ -175,10 +175,16 @@ public:
     Attributes attribute_get_all(const QString &dn);
     QList<QString> attribute_get_value_values(const QString &dn, const QString &attribute);
     QString attribute_get_value(const QString &dn, const QString &attribute);
+    bool attribute_add(const QString &dn, const QString &attribute, const QString &value);
+    bool attribute_replace(const QString &dn, const QString &attribute, const QString &value);
+    bool attribute_delete(const QString &dn, const QString &attribute, const QString &value);
 
     AttributesBinary attribute_binary_get_all(const QString &dn);
     QList<QByteArray> attribute_binary_get_values(const QString &dn, const QString &attribute);
     QByteArray attribute_binary_get_value(const QString &dn, const QString &attribute);
+    bool attribute_binary_add(const QString &dn, const QString &attribute, const QByteArray &value);
+    bool attribute_binary_replace(const QString &dn, const QString &attribute, const QByteArray &value);
+    bool attribute_binary_delete(const QString &dn, const QString &attribute, const QByteArray &value);
 
     QString attribute_get_display_value(const QString &dn, const QString &attribute);
 
@@ -188,9 +194,6 @@ public:
     int attribute_int_get(const QString &dn, const QString &attribute);
     bool attribute_int_replace(const QString &dn, const QString &attribute, const int value);
 
-    bool attribute_add(const QString &dn, const QString &attribute, const QString &value);
-    bool attribute_replace(const QString &dn, const QString &attribute, const QString &value);
-    bool attribute_delete(const QString &dn, const QString &attribute, const QString &value);
     bool object_add(const QString &dn, const char **classes);
     bool object_delete(const QString &dn);
     bool object_move(const QString &dn, const QString &new_container);

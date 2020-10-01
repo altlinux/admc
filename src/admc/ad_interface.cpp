@@ -227,88 +227,6 @@ QString AdInterface::attribute_get_value(const QString &dn, const QString &attri
     }
 }
 
-AttributesBinary AdInterface::attribute_binary_get_all(const QString &dn) {
-    update_cache_if_needed(dn);
-
-    return cache_binary[dn];
-}
-
-QList<QByteArray> AdInterface::attribute_binary_get_values(const QString &dn, const QString &attribute) {
-    const AttributesBinary attributes = attribute_binary_get_all(dn);
-
-    if (attributes.contains(attribute)) {
-        return attributes[attribute];
-    } else {
-        return QList<QByteArray>();
-    }
-}
-
-QByteArray AdInterface::attribute_binary_get_value(const QString &dn, const QString &attribute) {
-    const QList<QByteArray> values = attribute_binary_get_values(dn, attribute);
-
-    if (values.size() > 0) {
-        // Return first value only
-        return values[0];
-    } else {
-        return QByteArray();
-    }
-}
-
-QString AdInterface::attribute_get_display_value(const QString &dn, const QString &attribute) {
-    const QByteArray value_bytes = AdInterface::instance()->attribute_binary_get_value(dn, attribute);
-    const QString display_string = attribute_binary_value_to_display_value(attribute, value_bytes);
-
-    return display_string;
-}
-
-bool AdInterface::attribute_bool_get(const QString &dn, const QString &attribute) {
-    const QString value_string = attribute_get_value(dn, attribute);
-    const bool value = (value_string == LDAP_BOOL_TRUE);
-
-    return value;
-}
-
-bool AdInterface::attribute_bool_replace(const QString &dn, const QString &attribute, bool value) {
-    QString value_string;
-    if (value) {
-        value_string = LDAP_BOOL_TRUE;
-    } else {
-        value_string = LDAP_BOOL_FALSE;
-    }
-
-    const bool result = attribute_replace(dn, attribute, value_string);
-
-    return result;
-}
-
-int AdInterface::attribute_int_get(const QString &dn, const QString &attribute) {
-    const QString value_raw = attribute_get_value(dn, attribute);
-    const int value = value_raw.toInt();
-
-    return value;
-}
-
-bool AdInterface::attribute_int_replace(const QString &dn, const QString &attribute, const int value) {
-    const QString value_string = QString::number(value);
-    const bool result = attribute_replace(dn, attribute, value_string);
-
-    return result;
-}
-
-QDateTime AdInterface::attribute_datetime_get(const QString &dn, const QString &attribute) {
-    const QString raw_value = attribute_get_value(dn, attribute);
-    const QDateTime datetime = datetime_raw_to_datetime(attribute, raw_value);
-
-    return datetime;
-}
-
-bool AdInterface::attribute_datetime_replace(const QString &dn, const QString &attribute, const QDateTime &datetime) {
-    const QString datetime_string = datetime_to_string(attribute, datetime);
-    const bool result = attribute_replace(dn, attribute, datetime_string);
-
-    return result;
-}
-
 bool AdInterface::attribute_add(const QString &dn, const QString &attribute, const QString &value) {
     const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
@@ -424,6 +342,201 @@ bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, 
 
         return false;
     }
+}
+
+AttributesBinary AdInterface::attribute_binary_get_all(const QString &dn) {
+    update_cache_if_needed(dn);
+
+    return cache_binary[dn];
+}
+
+QList<QByteArray> AdInterface::attribute_binary_get_values(const QString &dn, const QString &attribute) {
+    const AttributesBinary attributes = attribute_binary_get_all(dn);
+
+    if (attributes.contains(attribute)) {
+        return attributes[attribute];
+    } else {
+        return QList<QByteArray>();
+    }
+}
+
+QByteArray AdInterface::attribute_binary_get_value(const QString &dn, const QString &attribute) {
+    const QList<QByteArray> values = attribute_binary_get_values(dn, attribute);
+
+    if (values.size() > 0) {
+        // Return first value only
+        return values[0];
+    } else {
+        return QByteArray();
+    }
+}
+
+bool AdInterface::attribute_binary_add(const QString &dn, const QString &attribute, const QByteArray &value) {
+    const QByteArray dn_array = dn.toUtf8();
+    const char *dn_cstr = dn_array.constData();
+
+    const QByteArray attribute_array = attribute.toUtf8();
+    const char *attribute_cstr = attribute_array.constData();
+
+    const char *value_cstr = value.constData();
+
+    const int result = ad_attribute_add_binary(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+
+    const QString name = extract_name_from_dn(dn);
+
+    const QString new_value_display = attribute_binary_value_to_display_value(attribute, value);
+    ;
+
+    if (result == AD_SUCCESS) {
+        const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_display, attribute, name);
+
+        success_status_message(context);
+
+        update_cache({dn});
+
+        return true;
+    } else {
+        const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_display, attribute, name);
+        const QString error = default_error(result);
+
+        error_status_message(context, error);
+
+        return false;
+    }
+}
+
+bool AdInterface::attribute_binary_replace(const QString &dn, const QString &attribute, const QByteArray &value) {
+    const QByteArray old_value = attribute_binary_get_value(dn, attribute);
+
+    if (old_value.isEmpty() && value.isEmpty()) {
+        // do nothing
+        return true;
+    }
+
+    const char *old_value_cstr = old_value.constData();
+    
+    const QByteArray dn_array = dn.toUtf8();
+    const char *dn_cstr = dn_array.constData();
+
+    const QByteArray attribute_array = attribute.toUtf8();
+    const char *attribute_cstr = attribute_array.constData();
+
+    const char *value_cstr = value.constData();
+
+    int result;
+    if (value.isEmpty()) {
+        result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, old_value_cstr);
+    } else {
+        result = ad_attribute_replace_binary(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+    }
+
+    const QString name = extract_name_from_dn(dn);
+
+    const QString old_value_display = attribute_binary_value_to_display_value(attribute, old_value);
+    const QString new_value_display = attribute_binary_value_to_display_value(attribute, value);
+
+    if (result == AD_SUCCESS) {
+        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display, new_value_display));
+
+        update_cache({dn});
+
+        return true;
+    } else {
+        const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display, new_value_display);
+        const QString error = default_error(result);
+
+        error_status_message(context, error);
+
+        return false;
+    }
+}
+
+bool AdInterface::attribute_binary_delete(const QString &dn, const QString &attribute, const QByteArray &value) {
+    const QByteArray dn_array = dn.toUtf8();
+    const char *dn_cstr = dn_array.constData();
+
+    const QByteArray attribute_array = attribute.toUtf8();
+    const char *attribute_cstr = attribute_array.constData();
+
+    const char *value_cstr = value.constData();
+
+    const int result = ad_attribute_delete_binary(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+
+    const QString name = extract_name_from_dn(dn);
+
+    const QString value_display = attribute_value_to_display_value(attribute, value);
+
+    if (result == AD_SUCCESS) {
+        const QString context = QString(tr("Deleted value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
+
+        success_status_message(context);
+
+        update_cache({dn});
+
+        return true;
+    } else {
+        const QString context = QString(tr("Failed to delete value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
+        const QString error = default_error(result);
+
+        error_status_message(context, error);
+
+        return false;
+    }
+}
+
+QString AdInterface::attribute_get_display_value(const QString &dn, const QString &attribute) {
+    const QByteArray value_bytes = AdInterface::instance()->attribute_binary_get_value(dn, attribute);
+    const QString display_string = attribute_binary_value_to_display_value(attribute, value_bytes);
+
+    return display_string;
+}
+
+bool AdInterface::attribute_bool_get(const QString &dn, const QString &attribute) {
+    const QString value_string = attribute_get_value(dn, attribute);
+    const bool value = (value_string == LDAP_BOOL_TRUE);
+
+    return value;
+}
+
+bool AdInterface::attribute_bool_replace(const QString &dn, const QString &attribute, bool value) {
+    QString value_string;
+    if (value) {
+        value_string = LDAP_BOOL_TRUE;
+    } else {
+        value_string = LDAP_BOOL_FALSE;
+    }
+
+    const bool result = attribute_replace(dn, attribute, value_string);
+
+    return result;
+}
+
+int AdInterface::attribute_int_get(const QString &dn, const QString &attribute) {
+    const QString value_raw = attribute_get_value(dn, attribute);
+    const int value = value_raw.toInt();
+
+    return value;
+}
+
+bool AdInterface::attribute_int_replace(const QString &dn, const QString &attribute, const int value) {
+    const QString value_string = QString::number(value);
+    const bool result = attribute_replace(dn, attribute, value_string);
+
+    return result;
+}
+
+QDateTime AdInterface::attribute_datetime_get(const QString &dn, const QString &attribute) {
+    const QString raw_value = attribute_get_value(dn, attribute);
+    const QDateTime datetime = datetime_raw_to_datetime(attribute, raw_value);
+
+    return datetime;
+}
+
+bool AdInterface::attribute_datetime_replace(const QString &dn, const QString &attribute, const QDateTime &datetime) {
+    const QString datetime_string = datetime_to_string(attribute, datetime);
+    const bool result = attribute_replace(dn, attribute, datetime_string);
+
+    return result;
 }
 
 bool AdInterface::object_add(const QString &dn, const char **classes) {
@@ -1148,8 +1261,6 @@ void AdInterface::update_cache_if_needed(const QString &dn) {
         return;
     }
 
-    int result = AD_SUCCESS;
-
     LDAPMessage *res;
     LDAPMessage *entry;
 
@@ -1158,8 +1269,6 @@ void AdInterface::update_cache_if_needed(const QString &dn) {
 
     const int result_get = ad_get_all_attributes_internal(ld, dn_cstr, "*", &res);
     if (result_get != AD_SUCCESS) {
-        result = result_get;
-
         goto end;
     }
 
@@ -1169,8 +1278,6 @@ void AdInterface::update_cache_if_needed(const QString &dn) {
     for (char *attr = ldap_first_attribute(ld, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ld, entry, berptr)) {
         struct berval **values_ldap = ldap_get_values_len(ld, entry, attr);
         if (values_ldap == NULL) {
-            result = AD_LDAP_ERROR;
-
             ldap_value_free_len(values_ldap);
 
             break;

@@ -140,6 +140,8 @@ int ad_attribute_replace_binary(LDAP *ld, const char *dn, const char *attribute,
  */
 int ad_attribute_delete(LDAP *ld, const char *dn, const char *attribute, const char *value);
 
+int ad_attribute_delete_binary(LDAP *ld, const char *dn, const char *attribute, const char *data, const int data_length);
+
 /**
  * Rename object
  * Returns AD_SUCCESS, AD_LDAP_ERROR
