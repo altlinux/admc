@@ -148,7 +148,7 @@ QList<QString> AdInterface::list(const QString &dn) {
         if (should_emit_status_message(result)) {
             const QString name = extract_name_from_dn(dn);
             const QString context = QString(tr("Failed to load children of \"%1\"")).arg(name);
-            const QString error = default_error(result);
+            const QString error = default_error();
 
             error_status_message(context, error);
         }
@@ -189,7 +189,7 @@ QList<QString> AdInterface::search(const QString &filter, const QString &custom_
     } else {
         if (should_emit_status_message(result_search)) {
             const QString context = QString(tr("Failed to search for \"%1\"")).arg(filter);
-            const QString error = default_error(result_search);
+            const QString error = default_error();
 
             error_status_message(context, error);
         }
@@ -227,22 +227,22 @@ QString AdInterface::attribute_get_value(const QString &dn, const QString &attri
     }
 }
 
-bool AdInterface::attribute_add(const QString &dn, const QString &attribute, const QString &value) {
+bool AdInterface::attribute_add(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
     const QByteArray value_bytes = value.toUtf8();
     
-    return attribute_binary_add(dn, attribute, value_bytes);
+    return attribute_binary_add(dn, attribute, value_bytes, do_msg);
 }
 
-bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value) {
+bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
     const QByteArray value_bytes = value.toUtf8();
 
-    return attribute_binary_replace(dn, attribute, value_bytes);
+    return attribute_binary_replace(dn, attribute, value_bytes, do_msg);
 }
 
-bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, const QString &value) {
+bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
     const QByteArray value_bytes = value.toUtf8();
     
-    return attribute_binary_delete(dn, attribute, value_bytes);
+    return attribute_binary_delete(dn, attribute, value_bytes, do_msg);
 }
 
 AttributesBinary AdInterface::attribute_binary_get_all(const QString &dn) {
@@ -272,7 +272,7 @@ QByteArray AdInterface::attribute_binary_get_value(const QString &dn, const QStr
     }
 }
 
-bool AdInterface::attribute_binary_add(const QString &dn, const QString &attribute, const QByteArray &value) {
+bool AdInterface::attribute_binary_add(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
     const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
 
@@ -291,23 +291,25 @@ bool AdInterface::attribute_binary_add(const QString &dn, const QString &attribu
     if (result == AD_SUCCESS) {
         const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_display, attribute, name);
 
-        success_status_message(context);
+        success_status_message(context, do_msg);
 
         update_cache({dn});
 
         return true;
     } else {
         const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_display, attribute, name);
-        const QString error = default_error(result);
+        const QString error = default_error();
 
-        error_status_message(context, error);
+        error_status_message(context, error, do_msg);
 
         return false;
     }
 }
 
-bool AdInterface::attribute_binary_replace(const QString &dn, const QString &attribute, const QByteArray &value) {
+bool AdInterface::attribute_binary_replace(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
     const QByteArray old_value = attribute_binary_get_value(dn, attribute);
+
+    const QString string(value);
 
     if (old_value.isEmpty() && value.isEmpty()) {
         // do nothing
@@ -337,22 +339,22 @@ bool AdInterface::attribute_binary_replace(const QString &dn, const QString &att
     const QString new_value_display = attribute_binary_value_to_display_value(attribute, value);
 
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display, new_value_display));
+        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display, new_value_display), do_msg);
 
         update_cache({dn});
 
         return true;
     } else {
         const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display, new_value_display);
-        const QString error = default_error(result);
+        const QString error = default_error();
 
-        error_status_message(context, error);
+        error_status_message(context, error, do_msg);
 
         return false;
     }
 }
 
-bool AdInterface::attribute_binary_delete(const QString &dn, const QString &attribute, const QByteArray &value) {
+bool AdInterface::attribute_binary_delete(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
     const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
 
@@ -370,16 +372,16 @@ bool AdInterface::attribute_binary_delete(const QString &dn, const QString &attr
     if (result == AD_SUCCESS) {
         const QString context = QString(tr("Deleted value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
 
-        success_status_message(context);
+        success_status_message(context, do_msg);
 
         update_cache({dn});
 
         return true;
     } else {
         const QString context = QString(tr("Failed to delete value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
-        const QString error = default_error(result);
+        const QString error = default_error();
 
-        error_status_message(context, error);
+        error_status_message(context, error, do_msg);
 
         return false;
     }
@@ -453,7 +455,7 @@ bool AdInterface::object_add(const QString &dn, const char **classes) {
         return true;
     } else {
         const QString context = QString(tr("Failed to create \"%1\"")).arg(dn);
-        const QString error = default_error(result);
+        const QString error = default_error();
 
         error_status_message(context, error);
 
@@ -477,7 +479,7 @@ bool AdInterface::object_delete(const QString &dn) {
         return true;
     } else {
         const QString context = QString(tr("Failed to delete object \"%1\"")).arg(name);
-        const QString error = default_error(result);
+        const QString error = default_error();
 
         error_status_message(context, error);
 
@@ -511,7 +513,7 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
         return true;
     } else {
         const QString context = QString(tr("Failed to move \"%1\" to \"%2\"")).arg(object_name, container_name);
-        const QString error = default_error(result);
+        const QString error = default_error();
 
         error_status_message(context, error);
 
@@ -690,7 +692,7 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
         return true;
     } else {
         const QString context = QString(tr("Failed to rename \"%1\" to \"%2\"")).arg(old_name, new_name);
-        const QString error = default_error(result);
+        const QString error = default_error();
 
         error_status_message(context, error);
 
@@ -699,9 +701,6 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
 }
 
 bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
-    const QByteArray dn_array = dn.toUtf8();
-    const char *dn_cstr = dn_array.constData();
-
     // NOTE: AD requires that the password:
     // 1. is surrounded by quotes
     // 2. is encoded as UTF16-LE
@@ -710,18 +709,16 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
     const auto codec = QTextCodec::codecForName("UTF-16LE");
     QByteArray password_bytes = codec->fromUnicode(quoted_password);
     // Remove BOM
-    // TODO: gotta be away to tell codec not to add BOM, but couldn't find it, only QTextStream has setGenerateBOM
+    // TODO: gotta be a way to tell codec not to add BOM, but couldn't find it, only QTextStream has setGenerateBOM
     if (password_bytes[0] != '\"') {
         password_bytes.remove(0, 2);
     }
-    const char *password_cstr = password_bytes.constData();
-    const int password_cstr_size = password_bytes.size();
 
-    const int result = ad_attribute_replace(ld, dn_cstr, ATTRIBUTE_PASSWORD, password_cstr, password_cstr_size);
+    const bool success = attribute_binary_replace(dn, ATTRIBUTE_PASSWORD, password_bytes, DoStatusMsg_No);
 
     const QString name = extract_name_from_dn(dn);
     
-    if (result == AD_SUCCESS) {
+    if (success) {
         success_status_message(QString(tr("Set pass of \"%1\"")).arg(name));
 
         update_cache({dn});
@@ -730,13 +727,15 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
     } else {
         const QString context = QString(tr("Failed to set pass of \"%1\"")).arg(name);
 
-        QString error;
-        const int ldap_result = ad_get_ldap_result(ld);
-        if (result == AD_LDAP_ERROR && ldap_result == LDAP_CONSTRAINT_VIOLATION) {
-            error = tr("Password doesn't match rules");
-        } else {
-            error = default_error(result);
-        }
+        const QString error =
+        [this]() {
+            const int ldap_result = ad_get_ldap_result(ld);
+            if (ldap_result == LDAP_CONSTRAINT_VIOLATION) {
+                return tr("Password doesn't match rules");
+            } else {
+                return default_error();
+            }
+        }();
 
         error_status_message(context, error);
 
@@ -753,7 +752,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
         return false;
     }
 
-    bool result(false);
+    bool success = false;
 
     switch (option) {
         case AccountOption_PasswordExpired: {
@@ -764,7 +763,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
                 pwdLastSet_value = AD_PWD_LAST_SET_RESET;
             }
 
-            result = attribute_replace(dn, ATTRIBUTE_PWD_LAST_SET, pwdLastSet_value);
+            success = attribute_replace(dn, ATTRIBUTE_PWD_LAST_SET, pwdLastSet_value, DoStatusMsg_No);
 
             break;
         }
@@ -781,13 +780,13 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
 
             const QString control_updated = QString::number(control_int);
 
-            result = attribute_replace(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, control_updated);
+            success = attribute_replace(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, control_updated, DoStatusMsg_No);
         }
     }
 
     const QString name = extract_name_from_dn(dn);
     
-    if (result) {
+    if (success) {
         const QString success_context =
         [option, set, name]() {
             switch (option) {
@@ -1113,11 +1112,19 @@ bool AdInterface::should_emit_status_message(int result) {
     }
 }
 
-void AdInterface::success_status_message(const QString &msg) {
+void AdInterface::success_status_message(const QString &msg, const DoStatusMsg do_msg) {
+    if (do_msg == DoStatusMsg_No) {
+        return;
+    }
+
     Status::instance()->message(msg, StatusType_Success);
 }
 
-void AdInterface::error_status_message(const QString &context, const QString &error) {
+void AdInterface::error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg) {
+    if (do_msg == DoStatusMsg_No) {
+        return;
+    }
+
     QString msg = context;
     if (!error.isEmpty()) {
         msg += QString(tr(". Error: \"%2\"")).arg(error);;
@@ -1126,26 +1133,17 @@ void AdInterface::error_status_message(const QString &context, const QString &er
     Status::instance()->message(msg, StatusType_Error);
 }
 
-QString AdInterface::default_error(int ad_result) const {
-    if (ad_result == AD_LDAP_ERROR) {
-        const int ldap_result = ad_get_ldap_result(ld);
-        switch (ldap_result) {
-            case LDAP_NO_SUCH_OBJECT: return tr("No such object");
-            case LDAP_CONSTRAINT_VIOLATION: return tr("Constraint violation");
-            case LDAP_UNWILLING_TO_PERFORM: return tr("Server is unwilling to perform");
-            case LDAP_ALREADY_EXISTS: return tr("Already exists");
-            default: {
-                char *ldap_err = ldap_err2string(ldap_result);
-                const QString ldap_err_qstr(ldap_err);
-                return QString(tr("LDAP error: %1")).arg(ldap_err_qstr);
-            }
-        }
-    } else {
-        switch (ad_result) {
-            case AD_SUCCESS: return tr("AD success");
-            case AD_ERROR: return tr("Generic AD error");
-            case AD_INVALID_DN: return tr("Invalid DN");
-            default: return tr("Unknown AD error");
+QString AdInterface::default_error() const {
+    const int ldap_result = ad_get_ldap_result(ld);
+    switch (ldap_result) {
+        case LDAP_NO_SUCH_OBJECT: return tr("No such object");
+        case LDAP_CONSTRAINT_VIOLATION: return tr("Constraint violation");
+        case LDAP_UNWILLING_TO_PERFORM: return tr("Server is unwilling to perform");
+        case LDAP_ALREADY_EXISTS: return tr("Already exists");
+        default: {
+            char *ldap_err = ldap_err2string(ldap_result);
+            const QString ldap_err_qstr(ldap_err);
+            return QString(tr("LDAP error: %1")).arg(ldap_err_qstr);
         }
     }
 }

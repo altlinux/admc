@@ -148,6 +148,11 @@ typedef QHash<QString, QList<QString>> Attributes;
 typedef QHash<QString, QList<QByteArray>> AttributesBinary;
 typedef struct ldap LDAP;
 
+enum DoStatusMsg {
+    DoStatusMsg_Yes,
+    DoStatusMsg_No
+};
+
 class AdInterface final : public QObject {
 Q_OBJECT
 
@@ -175,16 +180,16 @@ public:
     Attributes attribute_get_all(const QString &dn);
     QList<QString> attribute_get_value_values(const QString &dn, const QString &attribute);
     QString attribute_get_value(const QString &dn, const QString &attribute);
-    bool attribute_add(const QString &dn, const QString &attribute, const QString &value);
-    bool attribute_replace(const QString &dn, const QString &attribute, const QString &value);
-    bool attribute_delete(const QString &dn, const QString &attribute, const QString &value);
+    bool attribute_add(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
+    bool attribute_replace(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
+    bool attribute_delete(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
 
     AttributesBinary attribute_binary_get_all(const QString &dn);
     QList<QByteArray> attribute_binary_get_values(const QString &dn, const QString &attribute);
     QByteArray attribute_binary_get_value(const QString &dn, const QString &attribute);
-    bool attribute_binary_add(const QString &dn, const QString &attribute, const QByteArray &value);
-    bool attribute_binary_replace(const QString &dn, const QString &attribute, const QByteArray &value);
-    bool attribute_binary_delete(const QString &dn, const QString &attribute, const QByteArray &value);
+    bool attribute_binary_add(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
+    bool attribute_binary_replace(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
+    bool attribute_binary_delete(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
 
     QString attribute_get_display_value(const QString &dn, const QString &attribute);
 
@@ -258,9 +263,9 @@ private:
 
     void update_cache(const QList<QString> &changed_dns);
     bool should_emit_status_message(int result);
-    void success_status_message(const QString &msg);
-    void error_status_message(const QString &context, const QString &error);
-    QString default_error(int ad_result) const;
+    void success_status_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);
+    void error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg = DoStatusMsg_Yes);
+    QString default_error() const;
 
     void update_cache_if_needed(const QString &dn);
 
