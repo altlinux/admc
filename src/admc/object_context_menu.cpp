@@ -126,7 +126,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
                 password_dialog->open();
             });
 
-            const bool disabled = user_get_account_option(attributes, AccountOption_Disabled);
+            const bool disabled = attribute_get_account_option(attributes, AccountOption_Disabled);
             QString disable_text;
             if (disabled) {
                 disable_text = tr("Enable account");

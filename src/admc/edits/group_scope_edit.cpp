@@ -52,7 +52,7 @@ void GroupScopeEdit::set_read_only(EditReadOnly read_only_arg) {
 }
 
 void GroupScopeEdit::load(const Attributes &attributes) {
-    const GroupScope scope = group_get_scope(attributes);
+    const GroupScope scope = attribute_get_group_scope(attributes);
     const int scope_int = (int)scope;
 
     combo->blockSignals(true);

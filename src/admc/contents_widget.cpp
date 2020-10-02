@@ -221,7 +221,7 @@ void ContentsModel::make_row(QStandardItem *parent, const Attributes &attributes
 
         const QString value_display =
         [attribute, value]() {
-            QString out = attribute_binary_value_to_display_value(attribute, value);
+            QString out = attribute_get_display_value(attribute, value);
 
             // NOTE: category is given as raw DN and contains '-' where it should have spaces, so convert it
             if (attribute == ATTRIBUTE_OBJECT_CATEGORY) {

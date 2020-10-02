@@ -50,6 +50,8 @@
 #define LDAP_SEARCH_NO_ATTRIBUTES "1.1"
 
 int group_scope_to_bit(GroupScope scope);
+int account_option_to_bit(const AccountOption &option);
+QString object_sid_to_display_string(const QByteArray &bytes);
 
 AdInterface *AdInterface::instance() {
     static AdInterface ad_interface;
@@ -324,7 +326,7 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 
     const QString name = extract_name_from_dn(dn);
 
-    const QString new_value_display = attribute_binary_value_to_display_value(attribute, value);
+    const QString new_value_display = attribute_get_display_value(attribute, value);
     ;
 
     if (result == AD_SUCCESS) {
@@ -374,8 +376,8 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
 
     const QString name = extract_name_from_dn(dn);
 
-    const QString old_value_display = attribute_binary_value_to_display_value(attribute, old_value);
-    const QString new_value_display = attribute_binary_value_to_display_value(attribute, value);
+    const QString old_value_display = attribute_get_display_value(attribute, old_value);
+    const QString new_value_display = attribute_get_display_value(attribute, value);
 
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display, new_value_display), do_msg);
@@ -406,7 +408,7 @@ bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, 
 
     const QString name = extract_name_from_dn(dn);
 
-    const QString value_display = attribute_value_to_display_value(attribute, value);
+    const QString value_display = attribute_get_display_value(attribute, value);
 
     if (result == AD_SUCCESS) {
         const QString context = QString(tr("Deleted value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
@@ -568,7 +570,7 @@ bool AdInterface::group_remove_user(const QString &group_dn, const QString &user
     }
 }
 
-GroupScope group_get_scope(const Attributes &attributes) {
+GroupScope attribute_get_group_scope(const Attributes &attributes) {
     const QString value_raw(attributes[ATTRIBUTE_GROUP_TYPE][0]);
     const int group_type = value_raw.toInt();
 
@@ -618,7 +620,7 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
 }
 
 // NOTE: "group type" is really only the last bit of the groupType attribute, yeah it's confusing
-GroupType group_get_type(const Attributes &attributes) {
+GroupType attribute_get_group_type(const Attributes &attributes) {
     const QString group_type(attributes[ATTRIBUTE_GROUP_TYPE][0]);
     const int group_type_int = group_type.toInt();
 
@@ -768,7 +770,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
                 control = "0";
             }
 
-            const int bit = get_account_option_bit(option);
+            const int bit = account_option_to_bit(option);
 
             int control_int = control.toInt();
             control_int = bit_set(control_int, bit, set);
@@ -885,7 +887,7 @@ bool object_is_computer(const Attributes &attributes) {
     return object_is_class(attributes, CLASS_COMPUTER);
 }
 
-bool user_get_account_option(const Attributes &attributes, AccountOption option) {
+bool attribute_get_account_option(const Attributes &attributes, AccountOption option) {
     switch (option) {
         case AccountOption_PasswordExpired: {
             const QString pwdLastSet_value(attributes[ATTRIBUTE_PWD_LAST_SET][0]);
@@ -900,7 +902,7 @@ bool user_get_account_option(const Attributes &attributes, AccountOption option)
                 return false;
             }
 
-            const int bit = get_account_option_bit(option);
+            const int bit = account_option_to_bit(option);
 
             const int control_int = control.toInt();
             const bool set = ((control_int & bit) != 0);
@@ -1124,7 +1126,7 @@ QString get_account_option_description(const AccountOption &option) {
     return "";
 }
 
-int get_account_option_bit(const AccountOption &option) {
+int account_option_to_bit(const AccountOption &option) {
     // NOTE: not all account options can be directly mapped to bits
     switch (option) {
         case AccountOption_Disabled: 
@@ -1286,7 +1288,7 @@ QIcon get_object_icon(const Attributes &attributes) {
 }
 
 // TODO: flesh this out
-QString attribute_binary_value_to_display_value(const QString &attribute, const QByteArray &value_bytes) {
+QString attribute_get_display_value(const QString &attribute, const QByteArray &value_bytes) {
     const AttributeType attribute_type = get_attribute_type(attribute);
 
     const QString value_string(value_bytes);
@@ -1310,7 +1312,7 @@ QString attribute_binary_value_to_display_value(const QString &attribute, const 
 QString attribute_value_to_display_value(const QString &attribute, const QString &value) {
     const QByteArray bytes = value.toUtf8();
 
-    return attribute_binary_value_to_display_value(attribute, bytes);
+    return attribute_get_display_value(attribute, bytes);
 }
 
 // TODO: replace with some library if possible. Maybe one of samba's libs has this.

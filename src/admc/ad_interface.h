@@ -239,23 +239,23 @@ private:
     void error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     QString default_error() const;
 
-    bool get_systemflags_bit(const SystemFlagsBit bit);
-
     AdInterface(const AdInterface&) = delete;
     AdInterface& operator=(const AdInterface&) = delete;
     AdInterface(AdInterface&&) = delete;
     AdInterface& operator=(AdInterface&&) = delete;
 }; 
 
-QList<QString> get_domain_hosts(const QString &domain, const QString &site);
-QString extract_name_from_dn(const QString &dn);
-QString extract_parent_dn_from_dn(const QString &dn);
 QString filter_EQUALS(const QString &attribute, const QString &value);
 QString filter_AND(const QString &a, const QString &b);
 QString filter_OR(const QString &a, const QString &b);
 QString filter_NOT(const QString &a);
+
+QList<QString> get_domain_hosts(const QString &domain, const QString &site);
+
+QString extract_name_from_dn(const QString &dn);
+QString extract_parent_dn_from_dn(const QString &dn);
+
 QString get_account_option_description(const AccountOption &option);
-int get_account_option_bit(const AccountOption &option);
 bool attribute_is_datetime(const QString &attribute);
 bool datetime_is_never(const QString &attribute, const QString &value);
 QString datetime_to_string(const QString &attribute, const QDateTime &datetime);
@@ -263,13 +263,6 @@ QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_
 QString group_scope_to_string(GroupScope scope);
 QString group_type_to_string(GroupType type);
 QIcon get_object_icon(const Attributes &attributes);
-QString attribute_binary_value_to_display_value(const QString &attribute, const QByteArray &value_bytes);
-QString attribute_value_to_display_value(const QString &attribute, const QString &value);
-QString object_sid_to_display_string(const QByteArray &bytes);
-
-bool user_get_account_option(const Attributes &attributes, AccountOption option);
-GroupScope group_get_scope(const Attributes &attributes);
-GroupType group_get_type(const Attributes &attributes);
 
 bool object_is_class(const Attributes &attributes, const QString &object_class);
 bool object_is_user(const Attributes &attributes);
@@ -284,5 +277,10 @@ QByteArray attribute_get_value(const Attributes &attributes, const QString &attr
 QList<QString> attribute_get_strings(const Attributes &attributes, const QString &attribute);
 bool attribute_get_system_flag(const Attributes &attributes, const SystemFlagsBit bit);
 int attribute_get_int(const Attributes &attributes, const QString &attribute);
+bool attribute_get_account_option(const Attributes &attributes, AccountOption option);
+QString attribute_get_display_value(const QString &attribute, const QByteArray &value_bytes);
+GroupScope attribute_get_group_scope(const Attributes &attributes);
+GroupType attribute_get_group_type(const Attributes &attributes);
+
 
 #endif /* AD_INTERFACE_H */

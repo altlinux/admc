@@ -51,7 +51,7 @@ void GroupTypeEdit::set_read_only(EditReadOnly read_only_arg) {
 }
 
 void GroupTypeEdit::load(const Attributes &attributes) {
-    const GroupType type = group_get_type(attributes);
+    const GroupType type = attribute_get_group_type(attributes);
     const int type_int = (int)type;
 
     combo->blockSignals(true);
