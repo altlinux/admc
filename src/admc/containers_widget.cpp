@@ -39,7 +39,7 @@ enum ContainersColumn {
     ContainersColumn_COUNT,
 };
 
-QStandardItem *make_row(QStandardItem *parent, const QString &dn);
+QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AttributesBinary &attributes);
 
 ContainersWidget::ContainersWidget(QWidget *parent)
 : QWidget(parent)
@@ -164,7 +164,7 @@ void ContainersWidget::reload() {
         QStack<QModelIndex> stack;
 
         QStandardItem *invis_root = model->invisibleRootItem();
-        const QStandardItem *head_item = make_row(invis_root, head_dn);
+        const QStandardItem *head_item = make_row(invis_root, head_dn, AdInterface::instance()->get_attributes(head_dn));
         stack.push(head_item->index());
 
         while (!stack.isEmpty()) {
@@ -255,7 +255,7 @@ ContainersModel::ContainersModel(QObject *parent)
     // Load head
     const QString head_dn = AdInterface::instance()->search_base();
     QStandardItem *invis_root = invisibleRootItem();
-    make_row(invis_root, head_dn);
+    make_row(invis_root, head_dn, AdInterface::instance()->get_attributes(head_dn));
 }
 
 bool ContainersModel::canFetchMore(const QModelIndex &parent) const {
@@ -278,25 +278,30 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
     QStandardItem *parent_item = itemFromIndex(parent);
 
     // Add children
+    const QList<QString> search_attributes = {ATTRIBUTE_NAME, ATTRIBUTE_DISTINGUISHED_NAME, ATTRIBUTE_OBJECT_CLASS};
+    const QHash<QString, AttributesBinary> search_results = AdInterface::instance()->search("", search_attributes, SearchScope_Children, dn);
+
     QList<QString> children = AdInterface::instance()->list(dn);
 
+    // TODO: dont use cache
     // In dev mode, load configuration and schema objects
     // NOTE: have to manually add configuration and schema objects because they don't appear in list() results
-    const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
-    if (dev_mode) {
-        const QString search_base = AdInterface::instance()->search_base();
-        const QString configuration_dn = AdInterface::instance()->configuration_dn();
-        const QString schema_dn = AdInterface::instance()->schema_dn();
+    // const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
+    // if (dev_mode) {
+    //     const QString search_base = AdInterface::instance()->search_base();
+    //     const QString configuration_dn = AdInterface::instance()->configuration_dn();
+    //     const QString schema_dn = AdInterface::instance()->schema_dn();
 
-        if (dn == search_base) {
-            children.append(configuration_dn);
-        } else if (dn == configuration_dn) {
-            children.append(schema_dn);
-        }
-    }
+    //     if (dn == search_base) {
+    //         children.append(configuration_dn);
+    //     } else if (dn == configuration_dn) {
+    //         children.append(schema_dn);
+    //     }
+    // }
 
-    for (auto child : children) {
-        make_row(parent_item, child);
+    for (auto child : search_results.keys()) {
+        const AttributesBinary attributes = search_results[child];
+        make_row(parent_item, child, attributes);
     }
 
     // Unset CanFetch flag
@@ -314,9 +319,9 @@ bool ContainersModel::hasChildren(const QModelIndex &parent = QModelIndex()) con
 }
 
 // Make row in model at given parent based on object with given dn
-QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
+QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AttributesBinary &attributes) {
     const bool passes_filter =
-    [dn]() {
+    [dn, attributes]() {
         static const QList<QString> filter_classes =
         []() {
             QList<QString> out = get_containers_filter_classes();
@@ -331,7 +336,7 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
         }();
 
         for (const auto acceptable_class : filter_classes) {
-            const bool is_class = AdInterface::instance()->is_class(dn, acceptable_class);
+            const bool is_class = is_class2(attributes, acceptable_class);
 
             if (is_class) {
                 return true;
@@ -341,8 +346,6 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
         return false;
     }();
 
-    const auto classes = AdInterface::instance()->attribute_get_value_values(dn, ATTRIBUTE_OBJECT_CLASS);
-
     const bool ignore_filter = Settings::instance()->get_bool(BoolSetting_ShowNonContainersInContainersTree);
     if (!passes_filter && !ignore_filter) {
         return nullptr;
@@ -350,12 +353,12 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
 
     const QList<QStandardItem *> row = make_item_row(ContainersColumn_COUNT);
     
-    const QString name = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_NAME);
+    const QString name = attributes[ATTRIBUTE_NAME][0];
     row[ContainersColumn_Name]->setText(name);
     row[ContainersColumn_DN]->setText(dn);
 
-    // const QIcon icon = get_object_icon(dn);
-    // row[0]->setIcon(icon);
+    const QIcon icon = get_object_icon(attributes);
+    row[0]->setIcon(icon);
 
     // Can fetch(expand) object if it's a container
     row[0]->setData(passes_filter, ContainersModel::Roles::CanFetch);
