@@ -37,7 +37,7 @@ GpoptionsEdit::GpoptionsEdit(QObject *parent)
         });
 }
 
-void GpoptionsEdit::load(const AttributesBinary &attributes) {
+void GpoptionsEdit::load(const Attributes &attributes) {
     const QString value(attributes[ATTRIBUTE_GPOPTIONS][0]);
     const bool checked = (value == GPOPTIONS_BLOCK_INHERITANCE);
 

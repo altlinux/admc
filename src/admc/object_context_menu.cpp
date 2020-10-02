@@ -54,13 +54,13 @@ void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
 ObjectContextMenu::ObjectContextMenu(const QString &dn)
 : QMenu()
 {
-    const AttributesBinary attributes = AdInterface::instance()->get_attributes(dn);
+    const Attributes attributes = AdInterface::instance()->request_all_attributes(dn);
 
     addAction(tr("Details"), [this, dn]() {
         DetailsWidget::change_target(dn);
     });
 
-    const bool is_policy = is_policy2(attributes);
+    const bool is_policy = object_is_policy(attributes);
     if (is_policy) {
         // TODO: policy version seems to be too disconnected from general object context menu, maybe just move it to policies widget?
         addAction(tr("Edit Policy"), [this, dn, attributes]() {
@@ -111,7 +111,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
             move_action->setEnabled(false);
         }
 
-        const bool is_user = is_user2(attributes); 
+        const bool is_user = object_is_user(attributes); 
 
         if (is_user) {
             QAction *add_to_group_action = addAction(tr("Add to group"));
@@ -140,7 +140,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
     }
 }
 
-void ObjectContextMenu::delete_object(const QString &dn, const AttributesBinary &attributes) {
+void ObjectContextMenu::delete_object(const QString &dn, const Attributes &attributes) {
     const QString name(attributes[ATTRIBUTE_NAME][0]);
     const QString text = QString(tr("Are you sure you want to delete \"%1\"?")).arg(name);
     const bool confirmed = confirmation_dialog(text, this);
@@ -150,7 +150,7 @@ void ObjectContextMenu::delete_object(const QString &dn, const AttributesBinary 
     }    
 }
 
-void ObjectContextMenu::edit_policy(const QString &dn, const AttributesBinary &attributes) {
+void ObjectContextMenu::edit_policy(const QString &dn, const Attributes &attributes) {
     // Start policy edit process
     const auto process = new QProcess();
 
@@ -188,7 +188,7 @@ void ObjectContextMenu::edit_policy(const QString &dn, const AttributesBinary &a
     printf("start_success=%d\n", start_success);
 }
 
-void ObjectContextMenu::move(const QString &dn, const AttributesBinary &attributes) {
+void ObjectContextMenu::move(const QString &dn, const Attributes &attributes) {
     const QList<QString> possible_superiors = get_possible_superiors(attributes);
 
     const QList<QString> selected_objects = SelectDialog::open(possible_superiors);

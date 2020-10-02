@@ -24,6 +24,7 @@
 #include "settings.h"
 #include "details_widget.h"
 #include "server_configuration.h"
+#include "ad_interface.h"
 
 #include <QTreeView>
 #include <QIcon>
@@ -39,7 +40,7 @@ enum ContainersColumn {
     ContainersColumn_COUNT,
 };
 
-QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AttributesBinary &attributes);
+QStandardItem *make_row(QStandardItem *parent, const QString &dn, const Attributes &attributes);
 
 ContainersWidget::ContainersWidget(QWidget *parent)
 : QWidget(parent)
@@ -166,7 +167,7 @@ void ContainersWidget::reload() {
         QStack<QModelIndex> stack;
 
         QStandardItem *invis_root = model->invisibleRootItem();
-        const AttributesBinary head_attributes = AdInterface::instance()->get_attributes(head_dn);
+        const Attributes head_attributes = AdInterface::instance()->request_all_attributes(head_dn);
         const QStandardItem *head_item = make_row(invis_root, head_dn, head_attributes);
         stack.push(head_item->index());
 
@@ -277,10 +278,10 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
 
     // Add children
     const QList<QString> search_attributes = {ATTRIBUTE_NAME, ATTRIBUTE_DISTINGUISHED_NAME, ATTRIBUTE_OBJECT_CLASS};
-    const QHash<QString, AttributesBinary> search_results = AdInterface::instance()->search("", search_attributes, SearchScope_Children, dn);
+    const QHash<QString, Attributes> search_results = AdInterface::instance()->search("", search_attributes, SearchScope_Children, dn);
 
     for (auto child : search_results.keys()) {
-        const AttributesBinary attributes = search_results[child];
+        const Attributes attributes = search_results[child];
         make_row(parent_item, child, attributes);
     }
 
@@ -297,7 +298,7 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
 
         const auto load_manually =
         [parent_item](const QString &child) {
-            const AttributesBinary attributes = AdInterface::instance()->get_attributes(child);
+            const Attributes attributes = AdInterface::instance()->request_all_attributes(child);
             make_row(parent_item, child, attributes);
         };
 
@@ -320,7 +321,7 @@ bool ContainersModel::hasChildren(const QModelIndex &parent = QModelIndex()) con
 }
 
 // Make row in model at given parent based on object with given dn
-QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AttributesBinary &attributes) {
+QStandardItem *make_row(QStandardItem *parent, const QString &dn, const Attributes &attributes) {
     const bool passes_filter =
     [dn, attributes]() {
         static const QList<QString> filter_classes =
@@ -337,7 +338,7 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn, const Attribut
         }();
 
         for (const auto acceptable_class : filter_classes) {
-            const bool is_class = is_class2(attributes, acceptable_class);
+            const bool is_class = object_is_class(attributes, acceptable_class);
 
             if (is_class) {
                 return true;

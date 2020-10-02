@@ -94,7 +94,7 @@ void StringEdit::set_read_only(EditReadOnly read_only_arg) {
     edit->setReadOnly(read_only == EditReadOnly_Yes);
 }
 
-void StringEdit::load(const AttributesBinary &attributes) {
+void StringEdit::load(const Attributes &attributes) {
     QString value;
     if (attribute == ATTRIBUTE_OBJECT_CLASS) {
         // NOTE: object class is multi-valued so need to get the "primary" class

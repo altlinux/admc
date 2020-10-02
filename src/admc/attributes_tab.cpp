@@ -61,11 +61,11 @@ void AttributesTab::apply() {
 
 }
 
-void AttributesTab::reload(const AttributesBinary &attributes) {
+void AttributesTab::reload(const Attributes &attributes) {
     model->reload(attributes);
 }
 
-bool AttributesTab::accepts_target(const AttributesBinary &attributes) const {
+bool AttributesTab::accepts_target(const Attributes &attributes) const {
     return true;
 }
 
@@ -100,7 +100,7 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     }
 }
 
-void AttributesModel::reload(const AttributesBinary &attributes) {
+void AttributesModel::reload(const Attributes &attributes) {
     removeRows(0, rowCount());
 
     // Populate model with attributes of new root

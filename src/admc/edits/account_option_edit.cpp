@@ -91,7 +91,7 @@ AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *pa
         });
 }
 
-void AccountOptionEdit::load(const AttributesBinary &attributes) {
+void AccountOptionEdit::load(const Attributes &attributes) {
     const bool option_is_set = user_get_account_option(attributes, option);
     
     check->blockSignals(true);

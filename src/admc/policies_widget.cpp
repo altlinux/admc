@@ -59,26 +59,30 @@ PoliciesWidget::PoliciesWidget()
     layout->addWidget(label);
     layout->addWidget(view);
 
-    connect(
-        AdInterface::instance(), &AdInterface::modified,
-        this, &PoliciesWidget::on_ad_modified);
-
     ObjectContextMenu::connect_view(view, PoliciesColumn_DN);
 
     show_only_in_dev_mode(this);
+
+    connect(
+        AdInterface::instance(), &AdInterface::modified,
+        this, &PoliciesWidget::reload);
+    reload();
 }
 
-void PoliciesWidget::on_ad_modified() {
+void PoliciesWidget::reload() {
     model->removeRows(0, model->rowCount());
 
-    const QList<QString> gpos = AdInterface::instance()->list_all_gpos();
+    const QList<QString> search_attributes = {ATTRIBUTE_DISPLAY_NAME};
+    const QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
+    const QHash<QString, Attributes> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_All);
 
-    for (auto gpo : gpos) {
-        const QString name = AdInterface::instance()->get_name_for_display(gpo);
+    for (auto dn : search_results.keys()) {
+        const Attributes attributes = search_results[dn];
+        const QString display_name = attribute_get_value(attributes, ATTRIBUTE_DISPLAY_NAME);
         
         const QList<QStandardItem *> row = make_item_row(PoliciesColumn_COUNT);
-        row[PoliciesColumn_Name]->setText(name);
-        row[PoliciesColumn_DN]->setText(gpo);
+        row[PoliciesColumn_Name]->setText(display_name);
+        row[PoliciesColumn_DN]->setText(dn);
 
         model->appendRow(row);
     }

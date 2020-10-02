@@ -61,7 +61,7 @@ ExpiryEdit::ExpiryEdit(QObject *parent)
         this, &ExpiryEdit::on_edit_button);
 }
 
-void ExpiryEdit::load(const AttributesBinary &attributes) {
+void ExpiryEdit::load(const Attributes &attributes) {
     const QString expiry_raw(attributes[ATTRIBUTE_ACCOUNT_EXPIRES][0]);
 
     original_value = expiry_raw;

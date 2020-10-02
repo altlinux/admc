@@ -176,19 +176,19 @@ void GeneralTab::apply() {
     apply_attribute_edits(edits_for_type[type], target(), this);
 }
 
-bool GeneralTab::accepts_target(const AttributesBinary &) const {
+bool GeneralTab::accepts_target(const Attributes &) const {
     return true;
 }
 
-void GeneralTab::reload(const AttributesBinary &attributes) {
+void GeneralTab::reload(const Attributes &attributes) {
     const QString name(attributes[ATTRIBUTE_NAME][0]);
     name_label->setText(name);
 
-    const bool is_user = is_user2(attributes);
-    const bool is_ou = is_ou2(attributes);
-    const bool is_computer = is_computer2(attributes);
-    const bool is_group = is_group2(attributes);
-    const bool is_container = is_container2(attributes);
+    const bool is_user = object_is_user(attributes);
+    const bool is_ou = object_is_ou(attributes);
+    const bool is_computer = object_is_computer(attributes);
+    const bool is_group = object_is_group(attributes);
+    const bool is_container = object_is_container(attributes);
 
     if (is_computer) {
         type = GeneralTabType_Computer;

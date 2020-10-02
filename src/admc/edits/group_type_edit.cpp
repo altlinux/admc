@@ -50,7 +50,7 @@ void GroupTypeEdit::set_read_only(EditReadOnly read_only_arg) {
     combo->setEnabled(read_only == EditReadOnly_No);
 }
 
-void GroupTypeEdit::load(const AttributesBinary &attributes) {
+void GroupTypeEdit::load(const Attributes &attributes) {
     const GroupType type = group_get_type(attributes);
     const int type_int = (int)type;
 

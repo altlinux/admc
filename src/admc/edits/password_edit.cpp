@@ -43,7 +43,7 @@ PasswordEdit::PasswordEdit(QObject *parent)
         });
 }
 
-void PasswordEdit::load(const AttributesBinary &) {
+void PasswordEdit::load(const Attributes &) {
     // NOTE: PasswordEdit does not load current value, it starts out blank and is not reloaded
     emit edited();
 }

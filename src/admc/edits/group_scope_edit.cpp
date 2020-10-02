@@ -51,7 +51,7 @@ void GroupScopeEdit::set_read_only(EditReadOnly read_only_arg) {
     combo->setEnabled(read_only == EditReadOnly_No);
 }
 
-void GroupScopeEdit::load(const AttributesBinary &attributes) {
+void GroupScopeEdit::load(const Attributes &attributes) {
     const GroupScope scope = group_get_scope(attributes);
     const int scope_int = (int)scope;
 

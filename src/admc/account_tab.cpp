@@ -75,12 +75,12 @@ void AccountTab::apply() {
     apply_attribute_edits(edits, target(), this);
 }
 
-void AccountTab::reload(const AttributesBinary &attributes) {
+void AccountTab::reload(const Attributes &attributes) {
     load_attribute_edits(edits, attributes);
 }
 
-bool AccountTab::accepts_target(const AttributesBinary &attributes) const {
-    const bool is_user = is_user2(attributes);
+bool AccountTab::accepts_target(const Attributes &attributes) const {
+    const bool is_user = object_is_user(attributes);
 
     return is_user;
 }

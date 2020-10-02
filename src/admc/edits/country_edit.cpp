@@ -106,7 +106,7 @@ CountryEdit::CountryEdit(QObject *parent)
     combo->blockSignals(false);
 }
 
-void CountryEdit::load(const AttributesBinary &attributes) {
+void CountryEdit::load(const Attributes &attributes) {
     const QString current_code_string(attributes[ ATTRIBUTE_COUNTRY_CODE][0]);
     int current_code = current_code_string.toInt();
     if (current_code_string == "") {

@@ -49,7 +49,7 @@ public:
     explicit AttributesModel(AttributesTab *attributes_tab_arg);
 
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-    void reload(const AttributesBinary &attributes);
+    void reload(const Attributes &attributes);
 
 private:
     AttributesTab *attributes_tab;

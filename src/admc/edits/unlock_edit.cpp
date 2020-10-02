@@ -38,7 +38,7 @@ UnlockEdit::UnlockEdit(QObject *parent)
         });
 }
 
-void UnlockEdit::load(const AttributesBinary &) {
+void UnlockEdit::load(const Attributes &) {
     check->blockSignals(true);
     check->setChecked(false);
     check->blockSignals(false);

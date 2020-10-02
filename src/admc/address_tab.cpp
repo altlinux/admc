@@ -65,10 +65,10 @@ void AddressTab::apply() {
     apply_attribute_edits(edits, target(), this);
 }
 
-void AddressTab::reload(const AttributesBinary &attributes) {
+void AddressTab::reload(const Attributes &attributes) {
     load_attribute_edits(edits, attributes);
 }
 
-bool AddressTab::accepts_target(const AttributesBinary &attributes) const {
-    return is_user2(attributes);
+bool AddressTab::accepts_target(const Attributes &attributes) const {
+    return object_is_user(attributes);
 }

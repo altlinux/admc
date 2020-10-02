@@ -74,7 +74,7 @@ void GpoLinksTab::apply() {
 
 }
 
-void GpoLinksTab::reload(const AttributesBinary &attributes) {
+void GpoLinksTab::reload(const Attributes &attributes) {
     model->removeRows(0, model->rowCount());
 
     // TODO: do this with search
@@ -82,7 +82,7 @@ void GpoLinksTab::reload(const AttributesBinary &attributes) {
     // NOTE: *target* means searching for gplink containing target
     const QList<QString> search_attributes = {ATTRIBUTE_NAME};
     const QString filter = filter_EQUALS(ATTRIBUTE_GPLINK, "*" + target() + "*");
-    const QHash<QString, AttributesBinary> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_All);
+    const QHash<QString, Attributes> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_All);
 
     for (auto dn : search_results.keys()) {
         const QString name = attributes[ATTRIBUTE_NAME][0];
@@ -95,8 +95,8 @@ void GpoLinksTab::reload(const AttributesBinary &attributes) {
     }
 }
 
-bool GpoLinksTab::accepts_target(const AttributesBinary &attributes) const {
-    const bool is_policy = is_policy2(attributes);
+bool GpoLinksTab::accepts_target(const Attributes &attributes) const {
+    const bool is_policy = object_is_policy(attributes);
 
     return is_policy;
 }

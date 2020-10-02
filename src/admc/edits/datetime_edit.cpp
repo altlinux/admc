@@ -45,7 +45,7 @@ void DateTimeEdit::set_read_only(EditReadOnly read_only_arg) {
     edit->setReadOnly(read_only == EditReadOnly_Yes);
 }
 
-void DateTimeEdit::load(const AttributesBinary &attributes) {
+void DateTimeEdit::load(const Attributes &attributes) {
     const QString datetime_string(attributes[attribute][0]);
     const QDateTime value = datetime_raw_to_datetime(attribute, datetime_string);
 

@@ -34,7 +34,7 @@ public:
     PoliciesWidget();
 
 private slots:
-    void on_ad_modified();
+    void reload();
 
 private:
     QStandardItemModel *model;

@@ -107,7 +107,7 @@ void MembersTab::apply() {
     }
 }
 
-void MembersTab::reload(const AttributesBinary &attributes) {
+void MembersTab::reload(const Attributes &attributes) {
     const QList<QByteArray> members_bytes = attributes[ATTRIBUTE_MEMBER];
     const QList<QString> members = byte_arrays_to_strings(members_bytes);
 
@@ -117,8 +117,8 @@ void MembersTab::reload(const AttributesBinary &attributes) {
     reload_current_members_into_model();
 }
 
-bool MembersTab::accepts_target(const AttributesBinary &attributes) const {
-    bool is_group = is_group2(attributes);
+bool MembersTab::accepts_target(const Attributes &attributes) const {
+    bool is_group = object_is_group(attributes);
 
     return is_group;
 }
@@ -164,10 +164,10 @@ void MembersTab::reload_current_members_into_model() {
 
     const QString filter = filter_EQUALS(ATTRIBUTE_MEMBER_OF, target());
     const QList<QString> search_attributes = {ATTRIBUTE_NAME, ATTRIBUTE_DISTINGUISHED_NAME};
-    const QHash<QString, AttributesBinary> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_All);
+    const QHash<QString, Attributes> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_All);
 
     for (auto dn : search_results.keys()) {
-        const AttributesBinary attributes = search_results[dn];
+        const Attributes attributes = search_results[dn];
         const QString name = attributes[ATTRIBUTE_NAME][0];
         
         const QList<QStandardItem *> row = make_item_row(MembersColumn_COUNT);

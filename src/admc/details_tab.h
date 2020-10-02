@@ -35,9 +35,9 @@ public:
     
     QString target() const;
 
-    virtual bool accepts_target(const AttributesBinary &attributes) const = 0;
+    virtual bool accepts_target(const Attributes &attributes) const = 0;
     virtual bool changed() const = 0;
-    virtual void reload(const AttributesBinary &attributes) = 0;
+    virtual void reload(const Attributes &attributes) = 0;
     virtual bool verify() = 0;
     virtual void apply() = 0;
 
@@ -52,9 +52,9 @@ private:
 };
 
 #define DECL_DETAILS_TAB_VIRTUALS()\
-bool accepts_target(const AttributesBinary &attributes) const;\
+bool accepts_target(const Attributes &attributes) const;\
 bool changed() const;\
-void reload(const AttributesBinary &attributes);\
+void reload(const Attributes &attributes);\
 bool verify();\
 void apply();
 

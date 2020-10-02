@@ -68,7 +68,7 @@ public:
     void change_target(const QString &dn);
 
 private:
-    void make_row(QStandardItem *parent, const AttributesBinary &attributes);
+    void make_row(QStandardItem *parent, const Attributes &attributes);
 };
 
 #endif /* CONTENTS_WIDGET_H */

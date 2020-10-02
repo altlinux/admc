@@ -143,7 +143,8 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     QHash<QString, QStandardItem *> parents;
 
     for (auto dn : objects) {
-        const QString name = AdInterface::instance()->get_name_for_display(dn);
+        // TODO: get name from attribute
+        const QString name = extract_name_from_dn(dn);
         const QString object_class = object_classes[dn];
 
         const QList<QStandardItem *> row = make_item_row(SelectDialogColumn_COUNT);

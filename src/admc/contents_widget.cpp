@@ -138,7 +138,7 @@ void ContentsWidget::change_target(const QString &dn) {
 
     resize_columns();
 
-    const QString target_name = AdInterface::instance()->get_attribute_value(target_dn, ATTRIBUTE_NAME);
+    const QString target_name = AdInterface::instance()->request_attribute_value(target_dn, ATTRIBUTE_NAME);
 
     QString label_text;
     if (target_name.isEmpty()) {
@@ -188,7 +188,7 @@ void ContentsModel::change_target(const QString &target_dn) {
 
     // Load head
     QStandardItem *root = invisibleRootItem();
-    const AttributesBinary head_attributes = AdInterface::instance()->get_attributes(target_dn);
+    const Attributes head_attributes = AdInterface::instance()->request_all_attributes(target_dn);
     make_row(root, head_attributes);
     QStandardItem *head = item(0, 0);
 
@@ -196,18 +196,18 @@ void ContentsModel::change_target(const QString &target_dn) {
     QList<QString> search_attributes = columns;
     search_attributes.append(ATTRIBUTE_OBJECT_CLASS);
 
-    const QHash<QString, AttributesBinary> search_results = AdInterface::instance()->search("", search_attributes, SearchScope_Children, target_dn);
+    const QHash<QString, Attributes> search_results = AdInterface::instance()->search("", search_attributes, SearchScope_Children, target_dn);
 
     // Load children
     for (auto child_dn : search_results.keys()) {
         if (search_results.contains(child_dn)) {
-            const AttributesBinary attributes = search_results[child_dn];
+            const Attributes attributes = search_results[child_dn];
             make_row(head, attributes);
         }
     }
 }
 
-void ContentsModel::make_row(QStandardItem *parent, const AttributesBinary &attributes) {
+void ContentsModel::make_row(QStandardItem *parent, const Attributes &attributes) {
     const QList<QStandardItem *> row = make_item_row(columns.count());
 
     for (int i = 0; i < columns.count(); i++) {
