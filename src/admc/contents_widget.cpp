@@ -191,7 +191,11 @@ void ContentsModel::change_target(const QString &target_dn) {
     make_row(root, target_dn);
     QStandardItem *head = item(0, 0);
 
-    const QHash<QString, AttributesBinary> search_results = AdInterface::instance()->search("", columns, SearchScope_Children, target_dn);
+    // NOTE: get object class as well to get icon
+    QList<QString> search_attributes = columns;
+    search_attributes.append(ATTRIBUTE_OBJECT_CLASS);
+
+    const QHash<QString, AttributesBinary> search_results = AdInterface::instance()->search("", search_attributes, SearchScope_Children, target_dn);
 
     // Load children
     for (auto child_dn : search_results.keys()) {
@@ -223,8 +227,7 @@ void ContentsModel::change_target(const QString &target_dn) {
             row[i]->setText(value_display);
         }
 
-        QIcon icon = QIcon::fromTheme("dialog-question");
-        // const QIcon icon = get_object_icon(dn);
+        const QIcon icon = get_object_icon(attributes);
         row[0]->setIcon(icon);
 
         head->appendRow(row);
@@ -253,8 +256,8 @@ void ContentsModel::make_row(QStandardItem *parent, const QString &dn) {
         row[i]->setText(value_display);
     }
 
-    const QIcon icon = get_object_icon(dn);
-    row[0]->setIcon(icon);
+    // const QIcon icon = get_object_icon(dn);
+    // row[0]->setIcon(icon);
 
     parent->appendRow(row);
 }

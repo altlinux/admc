@@ -354,8 +354,8 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn) {
     row[ContainersColumn_Name]->setText(name);
     row[ContainersColumn_DN]->setText(dn);
 
-    const QIcon icon = get_object_icon(dn);
-    row[0]->setIcon(icon);
+    // const QIcon icon = get_object_icon(dn);
+    // row[0]->setIcon(icon);
 
     // Can fetch(expand) object if it's a container
     row[0]->setData(passes_filter, ContainersModel::Roles::CanFetch);

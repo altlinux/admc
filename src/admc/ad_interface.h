@@ -300,7 +300,7 @@ QString datetime_to_string(const QString &attribute, const QDateTime &datetime);
 QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_value);
 QString group_scope_to_string(GroupScope scope);
 QString group_type_to_string(GroupType type);
-QIcon get_object_icon(const QString &dn);
+QIcon get_object_icon(const AttributesBinary &attributes);
 QString attribute_binary_value_to_display_value(const QString &attribute, const QByteArray &value_bytes);
 QString attribute_value_to_display_value(const QString &attribute, const QString &value);
 QString object_sid_to_display_string(const QByteArray &bytes);
