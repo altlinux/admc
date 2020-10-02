@@ -249,7 +249,7 @@ QString ldap_name_to_ad_name(const QString &ldap_name) {
         const QString schema_dn = AdInterface::instance()->schema_dn();
 
         const QString filter = filter_EQUALS(ATTRIBUTE_LDAP_DISPLAY_NAME, ldap_name);
-        const QList<QString> search_results = AdInterface::instance()->search(filter, schema_dn);
+        const QList<QString> search_results = AdInterface::instance()->search_dns(filter, schema_dn);
 
         if (!search_results.isEmpty()) {
             const QString schema_object = search_results[0];

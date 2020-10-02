@@ -144,6 +144,13 @@ enum SystemFlagsBit {
     SystemFlagsBit_CannotDelete = 0x80000000
 };
 
+enum SearchScope {
+    SearchScope_Object,
+    SearchScope_Children,
+    SearchScope_ObjectAndDescendants,
+    SearchScope_Descendants,
+};
+
 typedef QHash<QString, QList<QString>> Attributes;
 typedef QHash<QString, QList<QByteArray>> AttributesBinary;
 typedef struct ldap LDAP;
@@ -175,7 +182,8 @@ public:
     QString schema_dn() const;
 
     QList<QString> list(const QString &dn);
-    QList<QString> search(const QString &filter, const QString &custom_search_base = QString());
+    QList<QString> search_dns(const QString &filter, const QString &custom_search_base = QString());
+    QHash<QString, AttributesBinary> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &custom_search_base = QString());
     
     Attributes attribute_get_all(const QString &dn);
     QList<QString> attribute_get_value_values(const QString &dn, const QString &attribute);

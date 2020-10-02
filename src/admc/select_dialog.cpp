@@ -126,7 +126,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
             filter = filter_AND(filter, NOT_is_advanced);
         }
 
-        const QList<QString> objects_of_class = AdInterface::instance()->search(filter);
+        const QList<QString> objects_of_class = AdInterface::instance()->search_dns(filter);
 
         objects.append(objects_of_class);
 

@@ -191,10 +191,43 @@ void ContentsModel::change_target(const QString &target_dn) {
     make_row(root, target_dn);
     QStandardItem *head = item(0, 0);
 
+    const QHash<QString, AttributesBinary> search_results = AdInterface::instance()->search("", columns, SearchScope_Children, target_dn);
+
     // Load children
-    QList<QString> children = AdInterface::instance()->list(target_dn);
-    for (auto child_dn : children) {
-        make_row(head, child_dn);
+    for (auto child_dn : search_results.keys()) {
+        const QList<QStandardItem *> row = make_item_row(columns.count());
+
+        const AttributesBinary attributes = search_results[child_dn];
+        for (int i = 0; i < columns.count(); i++) {
+            const QString attribute = columns[i];
+            
+            if (!attributes.contains(attribute)) {
+                continue;
+            }
+            const QList<QByteArray> values = attributes[attribute];
+            const QByteArray value = values[0];
+
+            const QString value_display =
+            [attribute, value]() {
+                QString out = attribute_binary_value_to_display_value(attribute, value);
+
+                // NOTE: category is given as raw DN and contains '-' where it should have spaces, so convert it
+                if (attribute == ATTRIBUTE_OBJECT_CATEGORY) {
+                    out = extract_name_from_dn(out);
+                    out = out.replace('-', ' ');
+                }
+
+                return out;
+            }();
+
+            row[i]->setText(value_display);
+        }
+
+        QIcon icon = QIcon::fromTheme("dialog-question");
+        // const QIcon icon = get_object_icon(dn);
+        row[0]->setIcon(icon);
+
+        head->appendRow(row);
     }
 }
 

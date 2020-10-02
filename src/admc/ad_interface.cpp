@@ -45,6 +45,8 @@
 #define GROUP_TYPE_BIT_SECURITY 0x80000000
 #define GROUP_TYPE_BIT_SYSTEM 0x00000001
 
+#define LDAP_SEARCH_NO_ATTRIBUTES "1.1"
+
 int group_scope_to_bit(GroupScope scope);
 
 AdInterface *AdInterface::instance() {
@@ -126,38 +128,14 @@ QString AdInterface::host() const {
     return m_host;
 }
 
-QList<QString> AdInterface::list(const QString &dn) {
-    const QByteArray dn_array = dn.toUtf8();
-    const char *dn_cstr = dn_array.constData();
+QHash<QString, AttributesBinary> AdInterface::search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &custom_search_base) {
+    int result = AD_SUCCESS;
+    QHash<QString, AttributesBinary> out;
 
-    char **children_raw;
-    const int result = ad_list(ld, dn_cstr, &children_raw);
+    LDAPMessage *res;
+    char **attrs;
 
-    if (result == AD_SUCCESS) {
-        auto children = QList<QString>();
 
-        for (int i = 0; children_raw[i] != NULL; i++) {
-            auto child = QString(children_raw[i]);
-            children.push_back(child);
-        }
-
-        ad_array_free(children_raw);
-
-        return children;
-    } else {
-        if (should_emit_status_message(result)) {
-            const QString name = extract_name_from_dn(dn);
-            const QString context = QString(tr("Failed to load children of \"%1\"")).arg(name);
-            const QString error = default_error();
-
-            error_status_message(context, error);
-        }
-
-        return QList<QString>();
-    }
-}
-
-QList<QString> AdInterface::search(const QString &filter, const QString &custom_search_base) {
     const QString base =
     [this, custom_search_base]() {
         if (custom_search_base.isEmpty()) {
@@ -168,34 +146,122 @@ QList<QString> AdInterface::search(const QString &filter, const QString &custom_
     }();
 
     const QByteArray filter_array = filter.toUtf8();
-    const char *filter_cstr = filter_array.constData();
+    const char *filter_cstr =
+    [filter_array]() {
+        if (filter_array.isEmpty()) {
+            return (const char *) NULL;
+        } else {
+            return filter_array.constData();
+        }
+    }();
+
+    const int scope =
+    [scope_enum]() {
+        switch (scope_enum) {
+            case SearchScope_Object: return LDAP_SCOPE_BASE;
+            case SearchScope_Children: return LDAP_SCOPE_ONELEVEL;
+            case SearchScope_ObjectAndDescendants: return LDAP_SCOPE_SUBTREE;
+            case SearchScope_Descendants: return LDAP_SCOPE_CHILDREN;
+        }
+        return 0;
+    }();
 
     const QByteArray base_array = base.toUtf8();
     const char *base_cstr = base_array.constData();
 
-    char **results_raw;
-    const int result_search = ad_search(ld, filter_cstr, base_cstr, &results_raw);
-    if (result_search == AD_SUCCESS) {
-        auto results = QList<QString>();
-
-        for (int i = 0; results_raw[i] != NULL; i++) {
-            auto result = QString(results_raw[i]);
-            results.push_back(result);
+    // Convert attributes list to NULL-terminated array
+    attrs =
+    [attributes]() {
+        char **attrs_out;
+        if (attributes.isEmpty()) {
+            attrs_out = (char **) malloc(2 * sizeof(char *));
+            attrs_out[0] = strdup(LDAP_SEARCH_NO_ATTRIBUTES);
+            attrs_out[1] = NULL;
+        } else {
+            attrs_out = (char **) malloc((attributes.size() + 1) * sizeof(char *));
+            for (int i = 0; i < attributes.size(); i++) {
+                const QString attribute = attributes[i];
+                const QByteArray attribute_array = attribute.toUtf8();
+                const char *attribute_cstr = attribute_array.constData();
+                attrs_out[i] = strdup(attribute_cstr);
+            }
+            attrs_out[attributes.size()] = NULL;
         }
 
-        ad_array_free(results_raw);
+        return attrs_out;
+    }();
 
-        return results;
-    } else {
-        if (should_emit_status_message(result_search)) {
-            const QString context = QString(tr("Failed to search for \"%1\"")).arg(filter);
-            const QString error = default_error();
+    const int result_search = ldap_search_ext_s(ld, base_cstr, scope, filter_cstr, attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
+    if (result_search != LDAP_SUCCESS) {
+        result = result_search;
 
-            error_status_message(context, error);
-        }
-
-        return QList<QString>();
+        goto end;
     }
+
+    for (LDAPMessage *entry = ldap_first_entry(ld, res); entry != NULL; entry = ldap_next_entry(ld, entry)) {
+        char *dn_cstr = ldap_get_dn(ld, entry);
+        const QString dn(dn_cstr);
+        ldap_memfree(dn_cstr);
+
+        // NOTE: insert empty attributes even if there's none requested so that map contains DN's
+        out.insert(dn, AttributesBinary());
+        
+        BerElement *berptr;
+        for (char *attr = ldap_first_attribute(ld, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ld, entry, berptr)) {
+            struct berval **values_ldap = ldap_get_values_len(ld, entry, attr);
+            if (values_ldap == NULL) {
+                ldap_value_free_len(values_ldap);
+
+                continue;
+            }
+
+            const QList<QByteArray> values_bytes =
+            [=]() {
+                QList<QByteArray> values_bytes_out;
+
+                const int values_count = ldap_count_values_len(values_ldap);
+                for (int i = 0; i < values_count; i++) {
+                    struct berval value_berval = *values_ldap[i];
+                    const QByteArray value_bytes(value_berval.bv_val, value_berval.bv_len);
+
+                    values_bytes_out.append(value_bytes);
+                }
+
+                return values_bytes_out;
+            }();
+
+            const QString attribute(attr);
+
+            out[dn][attribute] = values_bytes;
+
+            ldap_value_free_len(values_ldap);
+            ldap_memfree(attr);
+        }
+        ber_free(berptr, 0);
+    }
+
+    // TODO: need error messsages? i don't even know? so many widgets will be using this and erros won't make any sense to the user. DEFINITELY don't want success messages.
+    end: {
+        ldap_msgfree(res);
+        ad_array_free(attrs);
+
+        return out;
+    }
+}
+
+QList<QString> AdInterface::list(const QString &dn) {
+    const QHash<QString, AttributesBinary> search_results = search("", QList<QString>(), SearchScope_Children, dn);
+    const QList<QString> children = search_results.keys();
+
+    return children;
+}
+
+QList<QString> AdInterface::search_dns(const QString &filter, const QString &custom_search_base) {
+    const QHash<QString, AttributesBinary> search_results = search(filter, QList<QString>(), SearchScope_ObjectAndDescendants, custom_search_base);
+    const QList<QString> dns = search_results.keys();
+
+
+    return dns;
 }
 
 Attributes AdInterface::attribute_get_all(const QString &dn) {
@@ -1005,7 +1071,7 @@ QList<QString> AdInterface::list_all_gpos() {
     // TODO: search from base and only one level down. Need search function to accept search base to implement. It's unlikely that there are random GPO's lying around the domain, but just in case.
     // const QString gpos_base = "CN=Policies,CN=System" + AdInterface::instance()->search_base();
     const QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
-    const QList<QString> gpos = search(filter);
+    const QList<QString> gpos = search_dns(filter);
 
     return gpos;
 }

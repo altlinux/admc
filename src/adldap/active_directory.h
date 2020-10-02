@@ -69,31 +69,6 @@ void ad_array_free(char **array);
 void ad_2d_array_free(char ***array);
 
 /**
- * Output a list of DN's which match the given filter and are
- * below the given search base
- * list is NULL terminated
- * list should be freed by the caller using ad_array_free()
- * Returns AD_SUCCESS, AD_LDAP_ERROR
- */
-int ad_search(LDAP *ld, const char *filter, const char* search_base, char ***list_out);
-
-/** 
- * Output a list of DN's that are one level below the given object
- * If none are found, list is allocated and is empty
- * list is NULL terminated
- * list should be freed by the caller using ad_array_free()
- * Returns AD_SUCCESS, AD_LDAP_ERROR
- */
-int ad_list(LDAP *ld, const char *dn, char ***list_out);
-
-/**
- * Output a NULL terminated array of values for the given attribute
- * Array should be freed by the caller using ad_array_free()
- * Returns AD_SUCCESS, AD_LDAP_ERROR
- */
-int ad_get_attribute(LDAP *ld, const char *dn, const char *attribute, char ***values_out);
-
-/**
  * Adds an object with given DN and objectClass
  * objectClass is a NULL terminated array of objectClass values
  * All ancestors of object must already exist

@@ -78,7 +78,7 @@ void GpoLinksTab::reload() {
     model->removeRows(0, model->rowCount());
 
     const QString filter = filter_EQUALS(ATTRIBUTE_GPLINK, "*");
-    const QList<QString> all_linked_objects = AdInterface::instance()->search(filter);
+    const QList<QString> all_linked_objects = AdInterface::instance()->search_dns(filter);
 
     for (auto dn : all_linked_objects) {
         const QString gplink = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_GPLINK);
