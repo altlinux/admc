@@ -149,9 +149,9 @@ bool CountryEdit::apply(const QString &dn) {
     const QString abbreviation = country_abbreviations[code];
 
     bool success = true;
-    success = success && AdInterface::instance()->attribute_replace(dn, ATTRIBUTE_COUNTRY_CODE, code_string);
-    success = success && AdInterface::instance()->attribute_replace(dn, ATTRIBUTE_COUNTRY_ABBREVIATION, abbreviation);
-    success = success && AdInterface::instance()->attribute_replace(dn, ATTRIBUTE_COUNTRY, country_string);
+    success = success && AdInterface::instance()->attribute_replace_string(dn, ATTRIBUTE_COUNTRY_CODE, code_string);
+    success = success && AdInterface::instance()->attribute_replace_string(dn, ATTRIBUTE_COUNTRY_ABBREVIATION, abbreviation);
+    success = success && AdInterface::instance()->attribute_replace_string(dn, ATTRIBUTE_COUNTRY, country_string);
 
     return success;
 }

@@ -81,7 +81,7 @@ bool DateTimeEdit::changed() const {
 bool DateTimeEdit::apply(const QString &dn) {
     const QDateTime new_value = edit->dateTime();
 
-    const bool success = AdInterface::instance()->attribute_datetime_replace(dn, attribute, new_value);
+    const bool success = AdInterface::instance()->attribute_replace_datetime(dn, attribute, new_value);
 
     return success;
 }

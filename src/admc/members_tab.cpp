@@ -95,14 +95,14 @@ void MembersTab::apply() {
     for (auto member : original_members) {
         const bool removed = !current_members.contains(member);
         if (removed) {
-            AdInterface::instance()->attribute_delete(target(), ATTRIBUTE_MEMBER, member);
+            AdInterface::instance()->attribute_delete_string(target(), ATTRIBUTE_MEMBER, member);
         }
     }
 
     for (auto member : current_members) {
         const bool added = !original_members.contains(member);
         if (added) {
-            AdInterface::instance()->attribute_add(target(), ATTRIBUTE_MEMBER, member);
+            AdInterface::instance()->attribute_add_string(target(), ATTRIBUTE_MEMBER, member);
         }
     }
 }

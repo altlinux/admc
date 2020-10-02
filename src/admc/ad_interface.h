@@ -187,17 +187,17 @@ public:
     Attributes request_all_attributes(const QString &dn);
     QList<QByteArray> request_attribute(const QString &dn, const QString &attribute);
     QByteArray request_attribute_value(const QString &dn, const QString &attribute);
+
+    bool attribute_add(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
+    bool attribute_replace(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
+    bool attribute_delete(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     
-    bool attribute_add(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
-    bool attribute_replace(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
-    bool attribute_delete(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
+    bool attribute_add_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
+    bool attribute_replace_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
+    bool attribute_delete_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
 
-    bool attribute_binary_add(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
-    bool attribute_binary_replace(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
-    bool attribute_binary_delete(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
-
-    bool attribute_int_replace(const QString &dn, const QString &attribute, const int value);
-    bool attribute_datetime_replace(const QString &dn, const QString &attribute, const QDateTime &datetime);
+    bool attribute_replace_int(const QString &dn, const QString &attribute, const int value);
+    bool attribute_replace_datetime(const QString &dn, const QString &attribute, const QDateTime &datetime);
 
     bool object_add(const QString &dn, const char **classes);
     bool object_delete(const QString &dn);

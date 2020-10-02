@@ -279,7 +279,7 @@ int ad_delete(LDAP *ld, const char *dn) {
     return result;
 }
 
-int ad_attribute_add(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
+int ad_attribute_add_string(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
     int result = AD_SUCCESS;
 
     char *data_copy = strdup(data);
@@ -313,7 +313,7 @@ int ad_attribute_add(LDAP *ld, const char *dn, const char *attribute, const char
     }
 }
 
-int ad_attribute_replace(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
+int ad_attribute_replace_string(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
     int result = AD_SUCCESS;
 
     char *data_copy = (char *) malloc(data_length);
@@ -341,7 +341,7 @@ int ad_attribute_replace(LDAP *ld, const char *dn, const char *attribute, const 
     return result;
 }
 
-int ad_attribute_delete(LDAP *ld, const char *dn, const char *attribute, const char *data, const int data_length) {
+int ad_attribute_delete_string(LDAP *ld, const char *dn, const char *attribute, const char *data, const int data_length) {
     int result = AD_SUCCESS;
 
     char *data_copy = (char *) malloc(data_length);

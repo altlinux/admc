@@ -286,25 +286,25 @@ QByteArray AdInterface::request_attribute_value(const QString &dn, const QString
     }
 }
 
-bool AdInterface::attribute_add(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
+bool AdInterface::attribute_add_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
     const QByteArray value_bytes = value.toUtf8();
     
-    return attribute_binary_add(dn, attribute, value_bytes, do_msg);
+    return attribute_add(dn, attribute, value_bytes, do_msg);
 }
 
-bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
+bool AdInterface::attribute_replace_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
     const QByteArray value_bytes = value.toUtf8();
 
-    return attribute_binary_replace(dn, attribute, value_bytes, do_msg);
+    return attribute_replace(dn, attribute, value_bytes, do_msg);
 }
 
-bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
+bool AdInterface::attribute_delete_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
     const QByteArray value_bytes = value.toUtf8();
     
-    return attribute_binary_delete(dn, attribute, value_bytes, do_msg);
+    return attribute_delete(dn, attribute, value_bytes, do_msg);
 }
 
-bool AdInterface::attribute_binary_add(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
+bool AdInterface::attribute_add(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
     const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
 
@@ -313,7 +313,7 @@ bool AdInterface::attribute_binary_add(const QString &dn, const QString &attribu
 
     const char *value_cstr = value.constData();
 
-    const int result = ad_attribute_add(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+    const int result = ad_attribute_add_string(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
 
     const QString name = extract_name_from_dn(dn);
 
@@ -338,7 +338,7 @@ bool AdInterface::attribute_binary_add(const QString &dn, const QString &attribu
     }
 }
 
-bool AdInterface::attribute_binary_replace(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
+bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
     const QByteArray old_value = request_attribute_value(dn, attribute);
 
     const QString string(value);
@@ -360,9 +360,9 @@ bool AdInterface::attribute_binary_replace(const QString &dn, const QString &att
 
     int result;
     if (value.isEmpty()) {
-        result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, old_value_cstr, old_value.size());
+        result = ad_attribute_delete_string(ld, dn_cstr, attribute_cstr, old_value_cstr, old_value.size());
     } else {
-        result = ad_attribute_replace(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+        result = ad_attribute_replace_string(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
     }
 
     const QString name = extract_name_from_dn(dn);
@@ -386,7 +386,7 @@ bool AdInterface::attribute_binary_replace(const QString &dn, const QString &att
     }
 }
 
-bool AdInterface::attribute_binary_delete(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
+bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
     const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
 
@@ -395,7 +395,7 @@ bool AdInterface::attribute_binary_delete(const QString &dn, const QString &attr
 
     const char *value_cstr = value.constData();
 
-    const int result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+    const int result = ad_attribute_delete_string(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
 
     const QString name = extract_name_from_dn(dn);
 
@@ -426,16 +426,16 @@ int attribute_int_get(const Attributes &attributes, const QString &attribute) {
     return value;
 }
 
-bool AdInterface::attribute_int_replace(const QString &dn, const QString &attribute, const int value) {
+bool AdInterface::attribute_replace_int(const QString &dn, const QString &attribute, const int value) {
     const QString value_string = QString::number(value);
-    const bool result = attribute_replace(dn, attribute, value_string);
+    const bool result = attribute_replace_string(dn, attribute, value_string);
 
     return result;
 }
 
-bool AdInterface::attribute_datetime_replace(const QString &dn, const QString &attribute, const QDateTime &datetime) {
+bool AdInterface::attribute_replace_datetime(const QString &dn, const QString &attribute, const QDateTime &datetime) {
     const QString datetime_string = datetime_to_string(attribute, datetime);
-    const bool result = attribute_replace(dn, attribute, datetime_string);
+    const bool result = attribute_replace_string(dn, attribute, datetime_string);
 
     return result;
 }
@@ -520,7 +520,7 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
 }
 
 bool AdInterface::group_add_user(const QString &group_dn, const QString &user_dn) {
-    const bool success = attribute_add(group_dn, ATTRIBUTE_MEMBER, user_dn);
+    const bool success = attribute_add_string(group_dn, ATTRIBUTE_MEMBER, user_dn);
 
     const QString user_name = extract_name_from_dn(user_dn);
     const QString group_name = extract_name_from_dn(group_dn);
@@ -541,7 +541,7 @@ bool AdInterface::group_add_user(const QString &group_dn, const QString &user_dn
 }
 
 bool AdInterface::group_remove_user(const QString &group_dn, const QString &user_dn) {
-    const bool success = attribute_delete(group_dn, ATTRIBUTE_MEMBER, user_dn);
+    const bool success = attribute_delete_string(group_dn, ATTRIBUTE_MEMBER, user_dn);
 
     const QString user_name = extract_name_from_dn(user_dn);
     const QString group_name = extract_name_from_dn(group_dn);
@@ -597,7 +597,7 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
     const QString name = extract_name_from_dn(dn);
     const QString scope_string = group_scope_to_string(scope);
     
-    const bool result = attribute_int_replace(dn, ATTRIBUTE_GROUP_TYPE, group_type);
+    const bool result = attribute_replace_int(dn, ATTRIBUTE_GROUP_TYPE, group_type);
     if (result) {
         success_status_message(QString(tr("Set scope for group \"%1\" to \"%2\"")).arg(name, scope_string));
 
@@ -638,7 +638,7 @@ bool AdInterface::group_set_type(const QString &dn, GroupType type) {
     const QString name = extract_name_from_dn(dn);
     const QString type_string = group_type_to_string(type);
     
-    const bool result = attribute_replace(dn, ATTRIBUTE_GROUP_TYPE, update_group_type);
+    const bool result = attribute_replace_string(dn, ATTRIBUTE_GROUP_TYPE, update_group_type);
     if (result) {
         success_status_message(QString(tr("Set type for group \"%1\" to \"%2\"")).arg(name, type_string));
 
@@ -701,7 +701,7 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
         password_bytes.remove(0, 2);
     }
 
-    const bool success = attribute_binary_replace(dn, ATTRIBUTE_PASSWORD, password_bytes, DoStatusMsg_No);
+    const bool success = attribute_replace(dn, ATTRIBUTE_PASSWORD, password_bytes, DoStatusMsg_No);
 
     const QString name = extract_name_from_dn(dn);
     
@@ -750,7 +750,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
                 pwdLastSet_value = AD_PWD_LAST_SET_RESET;
             }
 
-            success = attribute_replace(dn, ATTRIBUTE_PWD_LAST_SET, pwdLastSet_value, DoStatusMsg_No);
+            success = attribute_replace_string(dn, ATTRIBUTE_PWD_LAST_SET, pwdLastSet_value, DoStatusMsg_No);
 
             break;
         }
@@ -768,7 +768,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
 
             const QString control_updated = QString::number(control_int);
 
-            success = attribute_replace(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, control_updated, DoStatusMsg_No);
+            success = attribute_replace_string(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, control_updated, DoStatusMsg_No);
         }
     }
 
@@ -830,7 +830,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
 }
 
 bool AdInterface::user_unlock(const QString &dn) {
-    const bool result = AdInterface::instance()->attribute_replace(dn, ATTRIBUTE_LOCKOUT_TIME, LOCKOUT_UNLOCKED_VALUE);
+    const bool result = AdInterface::instance()->attribute_replace_string(dn, ATTRIBUTE_LOCKOUT_TIME, LOCKOUT_UNLOCKED_VALUE);
 
     const QString name = extract_name_from_dn(dn);
     

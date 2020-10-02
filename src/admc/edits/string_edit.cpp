@@ -156,7 +156,7 @@ bool StringEdit::apply(const QString &dn) {
     }
 
     const QString new_value = edit->text();
-    const bool success = AdInterface::instance()->attribute_replace(dn, attribute, new_value);
+    const bool success = AdInterface::instance()->attribute_replace_string(dn, attribute, new_value);
 
     return success;
 }

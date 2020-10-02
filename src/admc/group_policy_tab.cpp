@@ -119,7 +119,7 @@ bool GroupPolicyTab::verify() {
 
 void GroupPolicyTab::apply() {
     const QString gplink_string = current_gplink.to_string();
-    AdInterface::instance()->attribute_replace(target(), ATTRIBUTE_GPLINK, gplink_string);
+    AdInterface::instance()->attribute_replace_string(target(), ATTRIBUTE_GPLINK, gplink_string);
 
     apply_attribute_edits(edits, target(), this);
 }
