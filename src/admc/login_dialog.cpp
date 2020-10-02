@@ -35,7 +35,7 @@ LoginDialog::LoginDialog(QWidget *parent)
 {
     resize(500, 300);
 
-    const auto label = new QLabel(tr("Login dialog"), this);
+    this->setWindowTitle(tr("Login"));
 
     const auto domain_edit_label = new QLabel(tr("Domain: "), this);
     domain_edit = new QLineEdit(this);
@@ -53,7 +53,6 @@ LoginDialog::LoginDialog(QWidget *parent)
     hosts_list->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     const auto layout = new QGridLayout(this);
-    layout->addWidget(label, 0, 0);
     layout->addWidget(domain_edit_label, 1, 0);
     layout->addWidget(domain_edit, 1, 1);
     layout->addWidget(site_edit_label, 1, 3);

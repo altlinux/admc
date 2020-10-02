@@ -483,7 +483,7 @@
     <name>LoginDialog</name>
     <message>
         <location filename="../src/admc/login_dialog.cpp" line="39"/>
-        <source>Login dialog</source>
+        <source>Login</source>
         <translation></translation>
     </message>
     <message>
