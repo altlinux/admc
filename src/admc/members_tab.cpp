@@ -108,8 +108,7 @@ void MembersTab::apply() {
 }
 
 void MembersTab::reload(const Attributes &attributes) {
-    const QList<QByteArray> members_bytes = attributes[ATTRIBUTE_MEMBER];
-    const QList<QString> members = byte_arrays_to_strings(members_bytes);
+    const QList<QString> members = attribute_get_strings(attributes, ATTRIBUTE_MEMBER);
 
     original_members = members.toSet();
     current_members = original_members;

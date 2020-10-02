@@ -184,9 +184,11 @@ public:
     QList<QString> search_dns(const QString &filter, const QString &custom_search_base = QString());
 
     // NOTE: all request f-ns make an LDAP request, avoid using them unless it's an infrequent call 
-    Attributes request_all_attributes(const QString &dn);
-    QList<QByteArray> request_attribute(const QString &dn, const QString &attribute);
-    QByteArray request_attribute_value(const QString &dn, const QString &attribute);
+    Attributes attribute_request_all(const QString &dn);
+    QList<QByteArray> attribute_request_values(const QString &dn, const QString &attribute);
+    QByteArray attribute_request_value(const QString &dn, const QString &attribute);
+
+    QList<QString> attribute_request_strings(const QString &dn, const QString &attribute);
 
     bool attribute_add(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
@@ -280,7 +282,8 @@ bool object_is_computer(const Attributes &attributes);
 
 QList<QByteArray> attribute_get_values(const Attributes &attributes, const QString &attribute);
 QByteArray attribute_get_value(const Attributes &attributes, const QString &attribute);
-bool system_flag_get(const Attributes &attributes, const SystemFlagsBit bit);
-int attribute_int_get(const Attributes &attributes, const QString &attribute);
+QList<QString> attribute_get_strings(const Attributes &attributes, const QString &attribute);
+bool attribute_get_system_flag(const Attributes &attributes, const SystemFlagsBit bit);
+int attribute_get_int(const Attributes &attributes, const QString &attribute);
 
 #endif /* AD_INTERFACE_H */

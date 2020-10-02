@@ -54,7 +54,7 @@ void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
 ObjectContextMenu::ObjectContextMenu(const QString &dn)
 : QMenu()
 {
-    const Attributes attributes = AdInterface::instance()->request_all_attributes(dn);
+    const Attributes attributes = AdInterface::instance()->attribute_request_all(dn);
 
     addAction(tr("Details"), [this, dn]() {
         DetailsWidget::change_target(dn);
@@ -71,9 +71,9 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
             rename_dialog->open();
         });
     } else {
-        const bool cannot_move = system_flag_get(attributes, SystemFlagsBit_CannotMove);
-        const bool cannot_rename = system_flag_get(attributes, SystemFlagsBit_CannotRename);
-        const bool cannot_delete = system_flag_get(attributes, SystemFlagsBit_CannotDelete);
+        const bool cannot_move = attribute_get_system_flag(attributes, SystemFlagsBit_CannotMove);
+        const bool cannot_rename = attribute_get_system_flag(attributes, SystemFlagsBit_CannotRename);
+        const bool cannot_delete = attribute_get_system_flag(attributes, SystemFlagsBit_CannotDelete);
 
         auto delete_action = addAction(tr("Delete"), [this, dn, attributes]() {
             delete_object(dn, attributes);

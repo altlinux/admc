@@ -257,14 +257,14 @@ QList<QString> AdInterface::search_dns(const QString &filter, const QString &cus
     return dns;
 }
 
-Attributes AdInterface::request_all_attributes(const QString &dn) {
+Attributes AdInterface::attribute_request_all(const QString &dn) {
     const QHash<QString, Attributes> search_results = search("", {SEARCH_ALL_ATTRIBUTES}, SearchScope_Object, dn);
     const Attributes attributes = search_results[dn];
 
     return attributes;
 }
 
-QList<QByteArray> AdInterface::request_attribute(const QString &dn, const QString &attribute) {
+QList<QByteArray> AdInterface::attribute_request_values(const QString &dn, const QString &attribute) {
     const QHash<QString, Attributes> search_results = search("", {attribute}, SearchScope_Object, dn);
 
     if (search_results.contains(dn) && search_results[dn].contains(attribute)) {
@@ -276,14 +276,21 @@ QList<QByteArray> AdInterface::request_attribute(const QString &dn, const QStrin
     }
 }
 
-QByteArray AdInterface::request_attribute_value(const QString &dn, const QString &attribute) {
-    const QList<QByteArray> values = request_attribute(dn, attribute);
+QByteArray AdInterface::attribute_request_value(const QString &dn, const QString &attribute) {
+    const QList<QByteArray> values = attribute_request_values(dn, attribute);
 
     if (!values.isEmpty()) {
         return values[0];
     } else {
         return QByteArray();
     }
+}
+
+QList<QString> AdInterface::attribute_request_strings(const QString &dn, const QString &attribute) {
+    const QList<QByteArray> values = attribute_request_values(dn, attribute);
+    const QList<QString> strings = byte_arrays_to_strings(values);
+
+    return strings;
 }
 
 bool AdInterface::attribute_add_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
@@ -339,7 +346,7 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 }
 
 bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
-    const QByteArray old_value = request_attribute_value(dn, attribute);
+    const QByteArray old_value = attribute_request_value(dn, attribute);
 
     const QString string(value);
 
@@ -419,7 +426,7 @@ bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, 
     }
 }
 
-int attribute_int_get(const Attributes &attributes, const QString &attribute) {
+int attribute_get_int(const Attributes &attributes, const QString &attribute) {
     const QString value_raw = attribute_get_value(attributes, attribute);
     const int value = value_raw.toInt();
 
@@ -579,8 +586,8 @@ GroupScope group_get_scope(const Attributes &attributes) {
 
 // TODO: are there side-effects on group members from this?...
 bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
-    const Attributes attributes = request_all_attributes(dn);
-    int group_type = attribute_int_get(attributes, ATTRIBUTE_GROUP_TYPE);
+    const Attributes attributes = attribute_request_all(dn);
+    int group_type = attribute_get_int(attributes, ATTRIBUTE_GROUP_TYPE);
 
     // Unset all scope bits, because scope bits are exclusive
     for (int i = 0; i < GroupScope_COUNT; i++) {
@@ -625,7 +632,7 @@ GroupType group_get_type(const Attributes &attributes) {
 }
 
 bool AdInterface::group_set_type(const QString &dn, GroupType type) {
-    const Attributes attributes = request_all_attributes(dn);
+    const Attributes attributes = attribute_request_all(dn);
     const QString group_type = attribute_get_value(attributes, ATTRIBUTE_GROUP_TYPE);
     int group_type_int = group_type.toInt();
 
@@ -755,7 +762,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             break;
         }
         default: {
-            const Attributes attributes = AdInterface::instance()->request_all_attributes(dn);
+            const Attributes attributes = AdInterface::instance()->attribute_request_all(dn);
             QString control = attribute_get_value(attributes, ATTRIBUTE_USER_ACCOUNT_CONTROL);
             if (control.isEmpty()) {
                 control = "0";
@@ -916,13 +923,13 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
         return DropType_None;
     }
 
-    const Attributes attributes = AdInterface::instance()->request_all_attributes(dn);
+    const Attributes attributes = AdInterface::instance()->attribute_request_all(dn);
 
     const bool dropped_is_user = object_is_user(attributes);
     const bool dropped_is_group = object_is_group(attributes);
     const bool dropped_is_ou = object_is_ou(attributes);
 
-    const Attributes target_attributes = AdInterface::instance()->request_all_attributes(target_dn);
+    const Attributes target_attributes = AdInterface::instance()->attribute_request_all(target_dn);
 
     const bool target_is_user = object_is_user(target_attributes);
     const bool target_is_group = object_is_group(target_attributes);
@@ -1362,8 +1369,15 @@ QByteArray attribute_get_value(const Attributes &attributes, const QString &attr
     }
 }
 
-bool system_flag_get(const Attributes &attributes, const SystemFlagsBit bit) {
-    const int system_flags_bits = attribute_int_get(attributes, ATTRIBUTE_SYSTEM_FLAGS);
+QList<QString> attribute_get_strings(const Attributes &attributes, const QString &attribute) {
+    const QList<QByteArray> values = attribute_get_values(attributes, attribute);
+    const QList<QString> strings = byte_arrays_to_strings(values);
+
+    return strings;
+}
+
+bool attribute_get_system_flag(const Attributes &attributes, const SystemFlagsBit bit) {
+    const int system_flags_bits = attribute_get_int(attributes, ATTRIBUTE_SYSTEM_FLAGS);
     const bool is_set = bit_is_set(system_flags_bits, bit);
 
     return is_set;

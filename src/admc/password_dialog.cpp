@@ -36,7 +36,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
 {
     target = target_arg;
 
-    const QString name = AdInterface::instance()->request_attribute_value(target, ATTRIBUTE_NAME);
+    const QString name = AdInterface::instance()->attribute_request_value(target, ATTRIBUTE_NAME);
     const QString title_label_text = QString(tr("Resetting password of \"%1\"")).arg(name);
     const auto title_label = new QLabel(title_label_text, this);
 

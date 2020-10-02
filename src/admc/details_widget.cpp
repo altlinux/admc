@@ -139,7 +139,7 @@ QString DetailsWidget::get_target() const {
 void DetailsWidget::reload(const QString &new_target) {
     target = new_target;
 
-    const Attributes attributes = AdInterface::instance()->request_all_attributes(target);
+    const Attributes attributes = AdInterface::instance()->attribute_request_all(target);
 
     if (attributes.isEmpty()) {
         if (is_floating_instance) {

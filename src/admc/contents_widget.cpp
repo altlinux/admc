@@ -138,7 +138,7 @@ void ContentsWidget::change_target(const QString &dn) {
 
     resize_columns();
 
-    const QString target_name = AdInterface::instance()->request_attribute_value(target_dn, ATTRIBUTE_NAME);
+    const QString target_name = AdInterface::instance()->attribute_request_value(target_dn, ATTRIBUTE_NAME);
 
     QString label_text;
     if (target_name.isEmpty()) {
@@ -188,7 +188,7 @@ void ContentsModel::change_target(const QString &target_dn) {
 
     // Load head
     QStandardItem *root = invisibleRootItem();
-    const Attributes head_attributes = AdInterface::instance()->request_all_attributes(target_dn);
+    const Attributes head_attributes = AdInterface::instance()->attribute_request_all(target_dn);
     make_row(root, head_attributes);
     QStandardItem *head = item(0, 0);
 

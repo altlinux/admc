@@ -167,7 +167,7 @@ void ContainersWidget::reload() {
         QStack<QModelIndex> stack;
 
         QStandardItem *invis_root = model->invisibleRootItem();
-        const Attributes head_attributes = AdInterface::instance()->request_all_attributes(head_dn);
+        const Attributes head_attributes = AdInterface::instance()->attribute_request_all(head_dn);
         const QStandardItem *head_item = make_row(invis_root, head_dn, head_attributes);
         stack.push(head_item->index());
 
@@ -298,7 +298,7 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
 
         const auto load_manually =
         [parent_item](const QString &child) {
-            const Attributes attributes = AdInterface::instance()->request_all_attributes(child);
+            const Attributes attributes = AdInterface::instance()->attribute_request_all(child);
             make_row(parent_item, child, attributes);
         };
 

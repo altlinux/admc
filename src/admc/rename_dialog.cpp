@@ -38,7 +38,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
 : QDialog()
 {
     target = target_arg;
-    const Attributes attributes = AdInterface::instance()->request_all_attributes(target);
+    const Attributes attributes = AdInterface::instance()->attribute_request_all(target);
 
     setAttribute(Qt::WA_DeleteOnClose);
     resize(600, 600);
