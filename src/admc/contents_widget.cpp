@@ -256,8 +256,5 @@ void ContentsModel::make_row(QStandardItem *parent, const QString &dn) {
         row[i]->setText(value_display);
     }
 
-    // const QIcon icon = get_object_icon(dn);
-    // row[0]->setIcon(icon);
-
     parent->appendRow(row);
 }

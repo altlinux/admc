@@ -88,6 +88,8 @@ ContainersWidget::ContainersWidget(QWidget *parent)
     connect(
         dev_mode_signal, &BoolSettingSignal::changed,
         this, &ContainersWidget::reload);
+
+    reload();
 };
 
 void ContainersWidget::reload() {
@@ -164,7 +166,8 @@ void ContainersWidget::reload() {
         QStack<QModelIndex> stack;
 
         QStandardItem *invis_root = model->invisibleRootItem();
-        const QStandardItem *head_item = make_row(invis_root, head_dn, AdInterface::instance()->get_attributes(head_dn));
+        const AttributesBinary head_attributes = AdInterface::instance()->get_attributes(head_dn);
+        const QStandardItem *head_item = make_row(invis_root, head_dn, head_attributes);
         stack.push(head_item->index());
 
         while (!stack.isEmpty()) {
@@ -251,11 +254,6 @@ ContainersModel::ContainersModel(QObject *parent)
         {ContainersColumn_Name, tr("Name")},
         {ContainersColumn_DN, tr("DN")}
     });
-
-    // Load head
-    const QString head_dn = AdInterface::instance()->search_base();
-    QStandardItem *invis_root = invisibleRootItem();
-    make_row(invis_root, head_dn, AdInterface::instance()->get_attributes(head_dn));
 }
 
 bool ContainersModel::canFetchMore(const QModelIndex &parent) const {
@@ -273,31 +271,13 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
         return;
     }
 
-    QString dn = get_dn_from_index(parent, ContainersColumn_DN);
+    const QString dn = get_dn_from_index(parent, ContainersColumn_DN);
 
     QStandardItem *parent_item = itemFromIndex(parent);
 
     // Add children
     const QList<QString> search_attributes = {ATTRIBUTE_NAME, ATTRIBUTE_DISTINGUISHED_NAME, ATTRIBUTE_OBJECT_CLASS};
     const QHash<QString, AttributesBinary> search_results = AdInterface::instance()->search("", search_attributes, SearchScope_Children, dn);
-
-    QList<QString> children = AdInterface::instance()->list(dn);
-
-    // TODO: dont use cache
-    // In dev mode, load configuration and schema objects
-    // NOTE: have to manually add configuration and schema objects because they don't appear in list() results
-    // const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
-    // if (dev_mode) {
-    //     const QString search_base = AdInterface::instance()->search_base();
-    //     const QString configuration_dn = AdInterface::instance()->configuration_dn();
-    //     const QString schema_dn = AdInterface::instance()->schema_dn();
-
-    //     if (dn == search_base) {
-    //         children.append(configuration_dn);
-    //     } else if (dn == configuration_dn) {
-    //         children.append(schema_dn);
-    //     }
-    // }
 
     for (auto child : search_results.keys()) {
         const AttributesBinary attributes = search_results[child];
@@ -306,6 +286,27 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
 
     // Unset CanFetch flag
     parent_item->setData(false, ContainersModel::Roles::CanFetch);
+
+    // In dev mode, load configuration and schema objects
+    // NOTE: have to manually add configuration and schema objects because they don't appear in list() results
+    const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
+    if (dev_mode) {
+        const QString search_base = AdInterface::instance()->search_base();
+        const QString configuration_dn = AdInterface::instance()->configuration_dn();
+        const QString schema_dn = AdInterface::instance()->schema_dn();
+
+        const auto load_manually =
+        [parent_item](const QString &child) {
+            const AttributesBinary attributes = AdInterface::instance()->get_attributes(child);
+            make_row(parent_item, child, attributes);
+        };
+
+        if (dn == search_base) {
+            load_manually(configuration_dn);
+        } else if (dn == configuration_dn) {
+            load_manually(schema_dn);
+        }
+    }
 }
 
 // Override this so that unexpanded and unfetched items show the expander even though they technically don't have any children loaded
