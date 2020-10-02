@@ -38,6 +38,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
 : QDialog()
 {
     target = target_arg;
+    const AttributesBinary attributes = AdInterface::instance()->get_attributes(target);
 
     setAttribute(Qt::WA_DeleteOnClose);
     resize(600, 600);
@@ -47,9 +48,9 @@ RenameDialog::RenameDialog(const QString &target_arg)
     const auto edits_layout = new QGridLayout();
 
     // TODO: can switch on type better?
-    const bool is_user = AdInterface::instance()->is_user(target);
-    const bool is_group = AdInterface::instance()->is_group(target);
-    const bool is_policy = AdInterface::instance()->is_policy(target);
+    const bool is_user = is_user2(attributes);
+    const bool is_group = is_group2(attributes);
+    const bool is_policy = is_policy2(attributes);
     QList<QString> string_attributes;
     QString objectClass;
     if (is_user) {
@@ -95,7 +96,6 @@ RenameDialog::RenameDialog(const QString &target_arg)
     top_layout->addLayout(edits_layout);
     top_layout->addWidget(button_box);
 
-    const AttributesBinary attributes = AdInterface::instance()->get_attributes(target);
     load_attribute_edits(all_edits, attributes);
 }
 

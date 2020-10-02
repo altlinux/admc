@@ -27,6 +27,7 @@
 #include "confirmation_dialog.h"
 #include "policies_widget.h"
 #include "login_dialog.h"
+#include "ad_interface.h"
 
 #include <QApplication>
 #include <QString>

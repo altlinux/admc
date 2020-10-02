@@ -282,14 +282,14 @@ QList<QString> get_possible_attributes(const AttributesBinary &attributes) {
             const QString ad_class_name = ldap_name_to_ad_name(object_class);
             const QString schema_dn = AdInterface::instance()->schema_dn();
             const QString class_schema = QString("CN=%1,%2").arg(ad_class_name, schema_dn);
+            const AttributesBinary schema_attributes = AdInterface::instance()->get_attributes(schema_dn);
 
-            const bool schema_exists = AdInterface::instance()->exists(class_schema);
-            if (!schema_exists) {
+            if (schema_attributes.isEmpty()) {
                 continue;
             }
 
-            const QList<QString> may_contain = AdInterface::instance()->attribute_get_value_values(class_schema, ATTRIBUTE_MAY_CONTAIN);
-            const QList<QString> system_may_contain = AdInterface::instance()->attribute_get_value_values(class_schema, ATTRIBUTE_SYSTEM_MAY_CONTAIN);
+            const QList<QString> may_contain = byte_arrays_to_strings(attribute_get_values(schema_attributes, ATTRIBUTE_MAY_CONTAIN));
+            const QList<QString> system_may_contain = byte_arrays_to_strings(attribute_get_values(schema_attributes, ATTRIBUTE_SYSTEM_MAY_CONTAIN));
 
             QList<QString> total_contain;
             total_contain.append(may_contain);
@@ -312,11 +312,11 @@ AttributeType get_attribute_type(const QString &attribute) {
         const QString attribute_ad_name = ldap_name_to_ad_name(attribute);
         const QString schema_dn = AdInterface::instance()->schema_dn();
         const QString class_schema = QString("CN=%1,%2").arg(attribute_ad_name, schema_dn);
+        const AttributesBinary schema_attributes = AdInterface::instance()->get_attributes(schema_dn);
 
-        const bool schema_exists = AdInterface::instance()->exists(class_schema);
-        if (schema_exists) {
-            const QString attribute_syntax = AdInterface::instance()->attribute_get_value(class_schema, ATTRIBUTE_ATTRIBUTE_SYNTAX);
-            const QString om_syntax = AdInterface::instance()->attribute_get_value(class_schema, ATTRIBUTE_OM_SYNTAX);
+        if (schema_attributes.isEmpty()) {
+            const QString attribute_syntax = attribute_get_value(schema_attributes, ATTRIBUTE_ATTRIBUTE_SYNTAX);
+            const QString om_syntax = attribute_get_value(schema_attributes, ATTRIBUTE_OM_SYNTAX);
 
             // printf("%s=%s\n", qPrintable(attribute_syntax), qPrintable(om_syntax));
 

@@ -138,7 +138,7 @@ void ContentsWidget::change_target(const QString &dn) {
 
     resize_columns();
 
-    const QString target_name = AdInterface::instance()->attribute_get_value(target_dn, ATTRIBUTE_NAME);
+    const QString target_name = AdInterface::instance()->get_attribute_value(target_dn, ATTRIBUTE_NAME);
 
     QString label_text;
     if (target_name.isEmpty()) {
@@ -187,8 +187,9 @@ void ContentsModel::change_target(const QString &target_dn) {
     }
 
     // Load head
-    QStandardItem *root = invisibleRootItem();    
-    make_row(root, target_dn);
+    QStandardItem *root = invisibleRootItem();
+    const AttributesBinary head_attributes = AdInterface::instance()->get_attributes(target_dn);
+    make_row(root, head_attributes);
     QStandardItem *head = item(0, 0);
 
     // NOTE: get object class as well to get icon
@@ -199,50 +200,28 @@ void ContentsModel::change_target(const QString &target_dn) {
 
     // Load children
     for (auto child_dn : search_results.keys()) {
-        const QList<QStandardItem *> row = make_item_row(columns.count());
-
-        const AttributesBinary attributes = search_results[child_dn];
-        for (int i = 0; i < columns.count(); i++) {
-            const QString attribute = columns[i];
-            
-            if (!attributes.contains(attribute)) {
-                continue;
-            }
-            const QList<QByteArray> values = attributes[attribute];
-            const QByteArray value = values[0];
-
-            const QString value_display =
-            [attribute, value]() {
-                QString out = attribute_binary_value_to_display_value(attribute, value);
-
-                // NOTE: category is given as raw DN and contains '-' where it should have spaces, so convert it
-                if (attribute == ATTRIBUTE_OBJECT_CATEGORY) {
-                    out = extract_name_from_dn(out);
-                    out = out.replace('-', ' ');
-                }
-
-                return out;
-            }();
-
-            row[i]->setText(value_display);
+        if (search_results.contains(child_dn)) {
+            const AttributesBinary attributes = search_results[child_dn];
+            make_row(head, attributes);
         }
-
-        const QIcon icon = get_object_icon(attributes);
-        row[0]->setIcon(icon);
-
-        head->appendRow(row);
     }
 }
 
-void ContentsModel::make_row(QStandardItem *parent, const QString &dn) {
+void ContentsModel::make_row(QStandardItem *parent, const AttributesBinary &attributes) {
     const QList<QStandardItem *> row = make_item_row(columns.count());
 
     for (int i = 0; i < columns.count(); i++) {
         const QString attribute = columns[i];
+        
+        if (!attributes.contains(attribute)) {
+            continue;
+        }
+        const QList<QByteArray> values = attributes[attribute];
+        const QByteArray value = values[0];
 
         const QString value_display =
-        [dn, attribute]() {
-            QString out = AdInterface::instance()->attribute_get_display_value(dn, attribute);
+        [attribute, value]() {
+            QString out = attribute_binary_value_to_display_value(attribute, value);
 
             // NOTE: category is given as raw DN and contains '-' where it should have spaces, so convert it
             if (attribute == ATTRIBUTE_OBJECT_CATEGORY) {
@@ -255,6 +234,9 @@ void ContentsModel::make_row(QStandardItem *parent, const QString &dn) {
 
         row[i]->setText(value_display);
     }
+
+    const QIcon icon = get_object_icon(attributes);
+    row[0]->setIcon(icon);
 
     parent->appendRow(row);
 }

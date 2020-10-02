@@ -106,12 +106,7 @@ void AdInterface::end_batch() {
 
     batch_in_progress = false;
 
-    update_cache(batched_dns.toList());
-    batched_dns.clear();
-}
-
-bool AdInterface::batch_is_in_progress() const {
-    return batch_in_progress;
+    emit_modified();
 }
 
 QString AdInterface::search_base() const {
@@ -291,35 +286,6 @@ QByteArray AdInterface::get_attribute_value(const QString &dn, const QString &at
     }
 }
 
-Attributes AdInterface::attribute_get_all(const QString &dn) {
-    update_cache_if_needed(dn);
-
-    return cache[dn];
-}
-
-QList<QString> AdInterface::attribute_get_value_values(const QString &dn, const QString &attribute) {
-    update_cache_if_needed(dn);
-    
-    const Attributes attributes = attribute_get_all(dn);
-
-    if (attributes.contains(attribute)) {
-        return attributes[attribute];
-    } else {
-        return QList<QString>();
-    }
-}
-
-QString AdInterface::attribute_get_value(const QString &dn, const QString &attribute) {
-    QList<QString> values = attribute_get_value_values(dn, attribute);
-
-    if (values.size() > 0) {
-        // Return first value only
-        return values[0];
-    } else {
-        return QString();
-    }
-}
-
 bool AdInterface::attribute_add(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
     const QByteArray value_bytes = value.toUtf8();
     
@@ -336,33 +302,6 @@ bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, 
     const QByteArray value_bytes = value.toUtf8();
     
     return attribute_binary_delete(dn, attribute, value_bytes, do_msg);
-}
-
-AttributesBinary AdInterface::attribute_binary_get_all(const QString &dn) {
-    update_cache_if_needed(dn);
-
-    return cache_binary[dn];
-}
-
-QList<QByteArray> AdInterface::attribute_binary_get_values(const QString &dn, const QString &attribute) {
-    const AttributesBinary attributes = attribute_binary_get_all(dn);
-
-    if (attributes.contains(attribute)) {
-        return attributes[attribute];
-    } else {
-        return QList<QByteArray>();
-    }
-}
-
-QByteArray AdInterface::attribute_binary_get_value(const QString &dn, const QString &attribute) {
-    const QList<QByteArray> values = attribute_binary_get_values(dn, attribute);
-
-    if (values.size() > 0) {
-        // Return first value only
-        return values[0];
-    } else {
-        return QByteArray();
-    }
 }
 
 bool AdInterface::attribute_binary_add(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
@@ -386,7 +325,7 @@ bool AdInterface::attribute_binary_add(const QString &dn, const QString &attribu
 
         success_status_message(context, do_msg);
 
-        update_cache({dn});
+        emit_modified();
 
         return true;
     } else {
@@ -400,7 +339,7 @@ bool AdInterface::attribute_binary_add(const QString &dn, const QString &attribu
 }
 
 bool AdInterface::attribute_binary_replace(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
-    const QByteArray old_value = attribute_binary_get_value(dn, attribute);
+    const QByteArray old_value = get_attribute_value(dn, attribute);
 
     const QString string(value);
 
@@ -434,7 +373,7 @@ bool AdInterface::attribute_binary_replace(const QString &dn, const QString &att
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display, new_value_display), do_msg);
 
-        update_cache({dn});
+        emit_modified();
 
         return true;
     } else {
@@ -467,7 +406,7 @@ bool AdInterface::attribute_binary_delete(const QString &dn, const QString &attr
 
         success_status_message(context, do_msg);
 
-        update_cache({dn});
+        emit_modified();
 
         return true;
     } else {
@@ -480,18 +419,11 @@ bool AdInterface::attribute_binary_delete(const QString &dn, const QString &attr
     }
 }
 
-QString AdInterface::attribute_get_display_value(const QString &dn, const QString &attribute) {
-    const QByteArray value_bytes = AdInterface::instance()->attribute_binary_get_value(dn, attribute);
+QString attribute_get_display_value(const AttributesBinary &attributes, const QString &attribute) {
+    const QByteArray value_bytes = attribute_get_value(attributes, attribute);
     const QString display_string = attribute_binary_value_to_display_value(attribute, value_bytes);
 
     return display_string;
-}
-
-bool AdInterface::attribute_bool_get(const QString &dn, const QString &attribute) {
-    const QString value_string = attribute_get_value(dn, attribute);
-    const bool value = (value_string == LDAP_BOOL_TRUE);
-
-    return value;
 }
 
 bool AdInterface::attribute_bool_replace(const QString &dn, const QString &attribute, bool value) {
@@ -507,8 +439,8 @@ bool AdInterface::attribute_bool_replace(const QString &dn, const QString &attri
     return result;
 }
 
-int AdInterface::attribute_int_get(const QString &dn, const QString &attribute) {
-    const QString value_raw = attribute_get_value(dn, attribute);
+int attribute_int_get(const AttributesBinary &attributes, const QString &attribute) {
+    const QString value_raw = attribute_get_value(attributes, attribute);
     const int value = value_raw.toInt();
 
     return value;
@@ -519,13 +451,6 @@ bool AdInterface::attribute_int_replace(const QString &dn, const QString &attrib
     const bool result = attribute_replace(dn, attribute, value_string);
 
     return result;
-}
-
-QDateTime AdInterface::attribute_datetime_get(const QString &dn, const QString &attribute) {
-    const QString raw_value = attribute_get_value(dn, attribute);
-    const QDateTime datetime = datetime_raw_to_datetime(attribute, raw_value);
-
-    return datetime;
 }
 
 bool AdInterface::attribute_datetime_replace(const QString &dn, const QString &attribute, const QDateTime &datetime) {
@@ -543,7 +468,7 @@ bool AdInterface::object_add(const QString &dn, const char **classes) {
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Created \"%1\"")).arg(dn));
 
-        update_cache({dn});
+        emit_modified();
 
         return true;
     } else {
@@ -567,7 +492,7 @@ bool AdInterface::object_delete(const QString &dn) {
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Deleted object \"%1\"")).arg(name));
 
-        update_cache({dn});
+        emit_modified();
 
         return true;
     } else {
@@ -601,7 +526,7 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Moved \"%1\" to \"%2\"")).arg(object_name, container_name));
 
-        update_cache({dn, new_dn});
+        emit_modified();
 
         return true;
     } else {
@@ -623,7 +548,7 @@ bool AdInterface::group_add_user(const QString &group_dn, const QString &user_dn
     if (success) {
         success_status_message(QString(tr("Added user \"%1\" to group \"%2\"")).arg(user_name, group_name));
 
-        update_cache({group_dn, user_dn});
+        emit_modified();
 
         return true;
     } else {
@@ -644,7 +569,7 @@ bool AdInterface::group_remove_user(const QString &group_dn, const QString &user
     if (success) {
         success_status_message(QString(tr("Removed user \"%1\" from group \"%2\"")).arg(user_name, group_name));
 
-        update_cache({group_dn, user_dn});
+        emit_modified();
 
         return true;
     } else {
@@ -674,7 +599,8 @@ GroupScope group_get_scope(const AttributesBinary &attributes) {
 
 // TODO: are there side-effects on group members from this?...
 bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
-    int group_type = attribute_int_get(dn, ATTRIBUTE_GROUP_TYPE);
+    const AttributesBinary attributes = get_attributes(dn);
+    int group_type = attribute_int_get(attributes, ATTRIBUTE_GROUP_TYPE);
 
     // Unset all scope bits, because scope bits are exclusive
     for (int i = 0; i < GroupScope_COUNT; i++) {
@@ -719,7 +645,8 @@ GroupType group_get_type(const AttributesBinary &attributes) {
 }
 
 bool AdInterface::group_set_type(const QString &dn, GroupType type) {
-    const QString group_type = attribute_get_value(dn, ATTRIBUTE_GROUP_TYPE);
+    const AttributesBinary attributes = get_attributes(dn);
+    const QString group_type = attribute_get_value(attributes, ATTRIBUTE_GROUP_TYPE);
     int group_type_int = group_type.toInt();
 
     const bool set_security_bit = type == GroupType_Security;
@@ -742,20 +669,6 @@ bool AdInterface::group_set_type(const QString &dn, GroupType type) {
 
         return false;
     }
-}
-
-bool AdInterface::group_is_system(const QString &dn) {
-    const int group_type_bits = AdInterface::instance()->attribute_int_get(dn, ATTRIBUTE_GROUP_TYPE);
-    const bool is_system = bit_is_set(group_type_bits, GROUP_TYPE_BIT_SYSTEM);
-
-    return is_system;
-}
-
-bool AdInterface::system_flag_get(const QString &dn, const SystemFlagsBit bit) {
-    const int system_flags_bits = attribute_int_get(dn, ATTRIBUTE_SYSTEM_FLAGS);
-    const bool is_set = bit_is_set(system_flags_bits, bit);
-
-    return is_set;
 }
 
 bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
@@ -781,7 +694,7 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Renamed \"%1\" to \"%2\"")).arg(old_name, new_name));
 
-        update_cache({dn, new_dn});
+        emit_modified();
 
         return true;
     } else {
@@ -815,7 +728,7 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
     if (success) {
         success_status_message(QString(tr("Set pass of \"%1\"")).arg(name));
 
-        update_cache({dn});
+        emit_modified();
 
         return true;
     } else {
@@ -862,7 +775,8 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             break;
         }
         default: {
-            QString control = attribute_get_value(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
+            const AttributesBinary attributes = AdInterface::instance()->get_attributes(dn);
+            QString control = attribute_get_value(attributes, ATTRIBUTE_USER_ACCOUNT_CONTROL);
             if (control.isEmpty()) {
                 control = "0";
             }
@@ -953,43 +867,6 @@ bool AdInterface::user_unlock(const QString &dn) {
     }
 }
 
-bool AdInterface::exists(const QString &dn) {
-    const Attributes attributes = attribute_get_all(dn);
-
-    return !attributes.isEmpty();
-}
-
-bool AdInterface::is_class(const QString &dn, const QString &object_class) {
-    const QList<QString> classes = attribute_get_value_values(dn, ATTRIBUTE_OBJECT_CLASS);
-    const bool is_class = classes.contains(object_class);
-
-    return is_class;
-}
-
-bool AdInterface::is_user(const QString &dn) {
-    return is_class(dn, CLASS_USER) && !is_class(dn, CLASS_COMPUTER);
-}
-
-bool AdInterface::is_group(const QString &dn) {
-    return is_class(dn, CLASS_GROUP);
-}
-
-bool AdInterface::is_container(const QString &dn) {
-    return is_class(dn, CLASS_CONTAINER);
-}
-
-bool AdInterface::is_ou(const QString &dn) {
-    return is_class(dn, CLASS_OU);
-}
-
-bool AdInterface::is_policy(const QString &dn) {
-    return is_class(dn, CLASS_GP_CONTAINER);
-}
-
-bool AdInterface::is_computer(const QString &dn) {
-    return is_class(dn, CLASS_COMPUTER);
-}
-
 bool is_class2(const AttributesBinary &attributes, const QString &object_class) {
     const QList<QByteArray> object_classes = attributes[ATTRIBUTE_OBJECT_CLASS];
     const bool is_class = object_classes.contains(object_class.toUtf8());
@@ -1059,14 +936,18 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
         return DropType_None;
     }
 
-    const bool dropped_is_user = AdInterface::instance()->is_user(dn);
-    const bool dropped_is_group = AdInterface::instance()->is_group(dn);
-    const bool dropped_is_ou = AdInterface::instance()->is_ou(dn);
+    const AttributesBinary attributes = AdInterface::instance()->get_attributes(dn);
 
-    const bool target_is_user = AdInterface::instance()->is_user(target_dn);
-    const bool target_is_group = AdInterface::instance()->is_group(target_dn);
-    const bool target_is_ou = AdInterface::instance()->is_ou(target_dn);
-    const bool target_is_container = AdInterface::instance()->is_container(target_dn);
+    const bool dropped_is_user = is_user2(attributes);
+    const bool dropped_is_group = is_group2(attributes);
+    const bool dropped_is_ou = is_ou2(attributes);
+
+    const AttributesBinary target_attributes = AdInterface::instance()->get_attributes(target_dn);
+
+    const bool target_is_user = is_user2(target_attributes);
+    const bool target_is_group = is_group2(target_attributes);
+    const bool target_is_ou = is_ou2(target_attributes);
+    const bool target_is_container = is_container2(target_attributes);
 
     if (dropped_is_user) {
         if (target_is_ou || target_is_container) {
@@ -1113,16 +994,7 @@ void AdInterface::object_drop(const QString &dn, const QString &target_dn) {
 }
 
 QString AdInterface::get_name_for_display(const QString &dn) {
-    const QString display_name = attribute_get_value(dn, ATTRIBUTE_DISPLAY_NAME);
-    if (!display_name.isEmpty()) {
-        return display_name;
-    }
-
-    const QString name = attribute_get_value(dn, ATTRIBUTE_NAME);
-    if (!name.isEmpty()) {
-        return name;
-    }
-
+    // TODO: needed?
     return dn;
 }
 
@@ -1149,73 +1021,16 @@ void AdInterface::command(QStringList args) {
 
         return;
     }
-
-    if (command == "get-attribute") {
-        QString dn = args[1];
-        QString attribute = args[2];
-
-        QString value = attribute_get_value(dn, attribute);
-
-        printf("%s\n", qPrintable(value));
-    } else if (command == "get-attribute-multi") {
-        QString dn = args[1];
-        QString attribute = args[2];
-
-        QList<QString> values = attribute_get_value_values(dn, attribute);
-
-        for (auto e : values) {
-            printf("%s\n", qPrintable(e));
-        }
-    }
 }
 
-void AdInterface::update_cache(const QList<QString> &changed_dns) {
+void AdInterface::emit_modified() {
     if (batch_in_progress) {
-        for (auto dn : changed_dns) {
-            batched_dns.insert(dn);
-        }
-        
         return;
+    } else {
+        suppress_not_found_error = true;
+        emit modified();
+        suppress_not_found_error = false;
     }
-    
-    const auto attributes_contain_changed_dn =
-    [this](const QString &dn, const QString &changed_dn) -> bool {
-        for (auto &values : cache[dn]) {
-            for (auto &value : values) {
-                if (value.contains(changed_dn)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    };
-
-    // Remove objects that are affected by DN changes from cache
-    // Next time the app requests info about these objects, they
-    // will be reloaded into cache
-    QSet<QString> removed_dns;
-    for (const QString &dn : cache.keys()) {
-        for (const QString &changed_dn : changed_dns) {
-            if (dn.contains(changed_dn) || attributes_contain_changed_dn(dn, changed_dn)) {
-                removed_dns.insert(dn);
-                
-                continue;
-            }
-        }
-    }
-
-    for (auto removed_dn : removed_dns) {
-        cache.remove(removed_dn);
-        cache_binary.remove(removed_dn);
-    }
-
-    // NOTE: Suppress "not found" errors because after modifications
-    // widgets might attempt to use outdated DN's which will cause
-    // such errors but there is no point in showing those errors
-    suppress_not_found_error = true;
-    emit modified();
-    suppress_not_found_error = false;
 }
 
 bool AdInterface::should_emit_status_message(int result) {
@@ -1261,80 +1076,6 @@ QString AdInterface::default_error() const {
             const QString ldap_err_qstr(ldap_err);
             return QString(tr("LDAP error: %1")).arg(ldap_err_qstr);
         }
-    }
-}
-
-void AdInterface::update_cache_if_needed(const QString &dn) {
-    if (cache.contains(dn)) {
-        return;
-    }
-
-    cache[dn] = Attributes();
-    cache_binary[dn] = QHash<QString, QList<QByteArray>>();
-
-    if (dn.isEmpty()) {
-        return;
-    }
-
-    LDAPMessage *res;
-    LDAPMessage *entry;
-
-    const QByteArray dn_bytes = dn.toUtf8();
-    const char *dn_cstr = dn_bytes.constData();
-
-    const int result_get = ad_get_all_attributes_internal(ld, dn_cstr, "*", &res);
-    if (result_get != AD_SUCCESS) {
-        goto end;
-    }
-
-    entry = ldap_first_entry(ld, res);
-
-    BerElement *berptr;
-    for (char *attr = ldap_first_attribute(ld, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ld, entry, berptr)) {
-        struct berval **values_ldap = ldap_get_values_len(ld, entry, attr);
-        if (values_ldap == NULL) {
-            ldap_value_free_len(values_ldap);
-
-            break;
-        }
-
-        const QList<QByteArray> values_bytes =
-        [=]() {
-            QList<QByteArray> values_bytes_out;
-
-            const int values_count = ldap_count_values_len(values_ldap);
-            for (int i = 0; i < values_count; i++) {
-                struct berval value_berval = *values_ldap[i];
-                const QByteArray value_bytes(value_berval.bv_val, value_berval.bv_len);
-
-                values_bytes_out.append(value_bytes);
-            }
-
-            return values_bytes_out;
-        }();
-
-        const QList<QString> values_strings =
-        [=]() {
-            QList<QString> values_strings_out;
-
-            for (const QByteArray bytes : values_bytes) {
-                const QString value_string(bytes);
-                values_strings_out.append(value_string);
-            }
-
-            return values_strings_out;
-        }();
-
-        cache[dn][QString(attr)] = values_strings;
-        cache_binary[dn][QString(attr)] = values_bytes;
-
-        ldap_value_free_len(values_ldap);
-        ldap_memfree(attr);
-    }
-    ber_free(berptr, 0);
-
-    end: {
-        ldap_msgfree(res);
     }
 }
 
@@ -1663,4 +1404,11 @@ QByteArray attribute_get_value(const AttributesBinary &attributes, const QString
     } else {
         return QByteArray();
     }
+}
+
+bool system_flag_get(const AttributesBinary &attributes, const SystemFlagsBit bit) {
+    const int system_flags_bits = attribute_int_get(attributes, ATTRIBUTE_SYSTEM_FLAGS);
+    const bool is_set = bit_is_set(system_flags_bits, bit);
+
+    return is_set;
 }

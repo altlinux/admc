@@ -63,17 +63,17 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
     const bool is_policy = is_policy2(attributes);
     if (is_policy) {
         // TODO: policy version seems to be too disconnected from general object context menu, maybe just move it to policies widget?
-        addAction(tr("Edit Policy"), [this, dn]() {
-            edit_policy(dn);
+        addAction(tr("Edit Policy"), [this, dn, attributes]() {
+            edit_policy(dn, attributes);
         });
         addAction(tr("Rename"), [this, dn]() {
             auto rename_dialog = new RenameDialog(dn);
             rename_dialog->open();
         });
     } else {
-        const bool cannot_move = AdInterface::instance()->system_flag_get(dn, SystemFlagsBit_CannotMove);
-        const bool cannot_rename = AdInterface::instance()->system_flag_get(dn, SystemFlagsBit_CannotRename);
-        const bool cannot_delete = AdInterface::instance()->system_flag_get(dn, SystemFlagsBit_CannotDelete);
+        const bool cannot_move = system_flag_get(attributes, SystemFlagsBit_CannotMove);
+        const bool cannot_rename = system_flag_get(attributes, SystemFlagsBit_CannotRename);
+        const bool cannot_delete = system_flag_get(attributes, SystemFlagsBit_CannotDelete);
 
         auto delete_action = addAction(tr("Delete"), [this, dn, attributes]() {
             delete_object(dn, attributes);
@@ -150,13 +150,13 @@ void ObjectContextMenu::delete_object(const QString &dn, const AttributesBinary 
     }    
 }
 
-void ObjectContextMenu::edit_policy(const QString &dn) {
+void ObjectContextMenu::edit_policy(const QString &dn, const AttributesBinary &attributes) {
     // Start policy edit process
     const auto process = new QProcess();
 
     const QString path =
-    [dn]() {
-        QString path_tmp = AdInterface::instance()->attribute_get_value(dn, "gPCFileSysPath");
+    [dn, attributes]() {
+        QString path_tmp = attribute_get_value(attributes, "gPCFileSysPath");
         path_tmp.replace("\\", "/");
 
         // TODO: file sys path as it is, is like this:

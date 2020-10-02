@@ -168,13 +168,12 @@ public:
 
     bool login(const QString &host_arg, const QString &domain);
 
-    // Use this if you are doing a series of AD modifications
-    // During a batch, cache won't update and so UI won't reload
-    // At the end of the batch cache updates once and UI reloads once
-    // Each start call must be followed by a matching end call!
+    // Use this if you are doing a series of AD modifications.
+    // During the batch, modified() signals won't be emitted.
+    // Once the batch is complete one modified() signal
+    // is emitted, so that GUI is reloaded only once.
     void start_batch();
     void end_batch();
-    bool batch_is_in_progress() const;
 
     QString search_base() const;
     QString host() const;
@@ -188,8 +187,6 @@ public:
     QByteArray get_attribute_value(const QString &dn, const QString &attribute);
     
     Attributes attribute_get_all(const QString &dn);
-    QList<QString> attribute_get_value_values(const QString &dn, const QString &attribute);
-    QString attribute_get_value(const QString &dn, const QString &attribute);
     bool attribute_add(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_delete(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
@@ -203,10 +200,8 @@ public:
 
     QString attribute_get_display_value(const QString &dn, const QString &attribute);
 
-    bool attribute_bool_get(const QString &dn, const QString &attribute);
     bool attribute_bool_replace(const QString &dn, const QString &attribute, bool value);
 
-    int attribute_int_get(const QString &dn, const QString &attribute);
     bool attribute_int_replace(const QString &dn, const QString &attribute, const int value);
 
     bool object_add(const QString &dn, const char **classes);
@@ -217,25 +212,12 @@ public:
     bool user_set_account_option(const QString &dn, AccountOption option, bool set);
     bool user_unlock(const QString &dn);
     
-    QDateTime attribute_datetime_get(const QString &dn, const QString &attribute);
     bool attribute_datetime_replace(const QString &dn, const QString &attribute, const QDateTime &datetime);
 
     bool group_add_user(const QString &group_dn, const QString &user_dn);
     bool group_remove_user(const QString &group_dn, const QString &user_dn);
     bool group_set_scope(const QString &dn, GroupScope scope);
     bool group_set_type(const QString &dn, GroupType type);
-    bool group_is_system(const QString &dn);
-
-    bool system_flag_get(const QString &dn, const SystemFlagsBit bit);
-
-    bool exists(const QString &dn);
-    bool is_class(const QString &dn, const QString &object_class);
-    bool is_user(const QString &dn);
-    bool is_group(const QString &dn);
-    bool is_container(const QString &dn);
-    bool is_ou(const QString &dn);
-    bool is_policy(const QString &dn);
-    bool is_computer(const QString &dn);
 
     bool can_move(const QString &dn);
     bool can_delete(const QString &dn);
@@ -260,21 +242,16 @@ private:
     QString m_schema_dn;
     QString m_host;
 
-    QHash<QString, Attributes> cache;
-    QHash<QString, AttributesBinary> cache_binary;
     bool suppress_not_found_error = false;
-    QSet<QString> batched_dns;
     bool batch_in_progress = false;
         
     AdInterface();
 
-    void update_cache(const QList<QString> &changed_dns);
+    void emit_modified();
     bool should_emit_status_message(int result);
     void success_status_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     void error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     QString default_error() const;
-
-    void update_cache_if_needed(const QString &dn);
 
     bool get_systemflags_bit(const SystemFlagsBit bit);
 
@@ -319,5 +296,7 @@ bool is_computer2(const AttributesBinary &attributes);
 
 QList<QByteArray> attribute_get_values(const AttributesBinary &attributes, const QString &attribute);
 QByteArray attribute_get_value(const AttributesBinary &attributes, const QString &attribute);
+bool system_flag_get(const AttributesBinary &attributes, const SystemFlagsBit bit);
+int attribute_int_get(const AttributesBinary &attributes, const QString &attribute);
 
 #endif /* AD_INTERFACE_H */

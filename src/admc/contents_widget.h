@@ -20,7 +20,7 @@
 #ifndef CONTENTS_WIDGET_H
 #define CONTENTS_WIDGET_H
 
-#include "ad_interface.h"
+#include "ad_interface_defines.h"
 #include "object_model.h"
 
 #include <QWidget>
@@ -68,7 +68,7 @@ public:
     void change_target(const QString &dn);
 
 private:
-    void make_row(QStandardItem *parent, const QString &dn);
+    void make_row(QStandardItem *parent, const AttributesBinary &attributes);
 };
 
 #endif /* CONTENTS_WIDGET_H */
