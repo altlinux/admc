@@ -254,13 +254,6 @@ QHash<QString, AttributesBinary> AdInterface::search(const QString &filter, cons
     }
 }
 
-QList<QString> AdInterface::list(const QString &dn) {
-    const QHash<QString, AttributesBinary> search_results = search("", QList<QString>(), SearchScope_Children, dn);
-    const QList<QString> children = search_results.keys();
-
-    return children;
-}
-
 QList<QString> AdInterface::search_dns(const QString &filter, const QString &custom_search_base) {
     const QHash<QString, AttributesBinary> search_results = search(filter, QList<QString>(), SearchScope_All, custom_search_base);
     const QList<QString> dns = search_results.keys();
@@ -274,6 +267,28 @@ AttributesBinary AdInterface::get_attributes(const QString &dn) {
     const AttributesBinary attributes = search_results[dn];
 
     return attributes;
+}
+
+QList<QByteArray> AdInterface::get_attribute(const QString &dn, const QString &attribute) {
+    const QHash<QString, AttributesBinary> search_results = search("", {attribute}, SearchScope_Object, dn);
+
+    if (search_results.contains(dn) && search_results[dn].contains(attribute)) {
+        const QList<QByteArray> values = search_results[dn][attribute];
+        
+        return values;
+    } else {
+        return QList<QByteArray>();
+    }
+}
+
+QByteArray AdInterface::get_attribute_value(const QString &dn, const QString &attribute) {
+    const QList<QByteArray> values = get_attribute(dn, attribute);
+
+    if (!values.isEmpty()) {
+        return values[0];
+    } else {
+        return QByteArray();
+    }
 }
 
 Attributes AdInterface::attribute_get_all(const QString &dn) {
@@ -1124,7 +1139,6 @@ void AdInterface::command(QStringList args) {
     QString command = args[0];
 
     QMap<QString, int> arg_count_map = {
-        {"list", 1},
         {"get-attribute", 2},
         {"get-attribute-multi", 2},
     };
@@ -1136,15 +1150,7 @@ void AdInterface::command(QStringList args) {
         return;
     }
 
-    if (command == "list") {
-        QString dn = args[1];
-
-        QList<QString> children = list(dn);
-
-        for (auto e : children) {
-            printf("%s\n", qPrintable(e));
-        }
-    } else if (command == "get-attribute") {
+    if (command == "get-attribute") {
         QString dn = args[1];
         QString attribute = args[2];
 
@@ -1639,4 +1645,22 @@ QString object_sid_to_display_string(const QByteArray &sid) {
     }
 
     return string;
+}
+
+QList<QByteArray> attribute_get_values(const AttributesBinary &attributes, const QString &attribute) {
+    if (attributes.contains(attribute)) {
+        return attributes[attribute];
+    } else {
+        return QList<QByteArray>();
+    }
+}
+
+QByteArray attribute_get_value(const AttributesBinary &attributes, const QString &attribute) {
+    const QList<QByteArray> values = attribute_get_values(attributes, attribute);
+
+    if (!values.isEmpty()) {
+        return values[0];
+    } else {
+        return QByteArray();
+    }
 }

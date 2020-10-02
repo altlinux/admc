@@ -104,8 +104,8 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
         auto move_action = addAction(tr("Move"));
         connect(
             move_action, &QAction::triggered,
-            [this, dn]() {
-                move(dn);
+            [this, dn, attributes]() {
+                move(dn, attributes);
             });
         if (cannot_move) {
             move_action->setEnabled(false);
@@ -188,8 +188,8 @@ void ObjectContextMenu::edit_policy(const QString &dn) {
     printf("start_success=%d\n", start_success);
 }
 
-void ObjectContextMenu::move(const QString &dn) {
-    const QList<QString> possible_superiors = get_possible_superiors(dn);
+void ObjectContextMenu::move(const QString &dn, const AttributesBinary &attributes) {
+    const QList<QString> possible_superiors = get_possible_superiors(attributes);
 
     const QList<QString> selected_objects = SelectDialog::open(possible_superiors);
 

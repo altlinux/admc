@@ -288,7 +288,7 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
     parent_item->setData(false, ContainersModel::Roles::CanFetch);
 
     // In dev mode, load configuration and schema objects
-    // NOTE: have to manually add configuration and schema objects because they don't appear in list() results
+    // NOTE: have to manually add configuration and schema objects because they aren't searchable
     const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
     if (dev_mode) {
         const QString search_base = AdInterface::instance()->search_base();

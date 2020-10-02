@@ -121,7 +121,7 @@ void AttributesModel::reload(const AttributesBinary &attributes) {
 
     // Add attributes without values
     const QString target = attributes_tab->target();
-    const QList<QString> possible_attributes = get_possible_attributes(attributes_tab->target());
+    const QList<QString> possible_attributes = get_possible_attributes(attributes);
     for (const QString attribute : possible_attributes) {
         if (!attributes.contains(attribute)) {
             auto name_item = new QStandardItem(attribute);

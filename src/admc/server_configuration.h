@@ -20,6 +20,8 @@
 #ifndef SERVER_CONFIGURATION_H
 #define SERVER_CONFIGURATION_H
 
+#include "ad_interface_defines.h"
+
 #include <QString>
 
 enum AttributeType {
@@ -52,8 +54,8 @@ QString get_attribute_display_name(const QString &attribute, const QString &obje
 QString get_class_display_name(const QString &objectClass);
 QList<QString> get_extra_contents_columns();
 QList<QString> get_containers_filter_classes();
-QList<QString> get_possible_superiors(const QString &dn);
-QList<QString> get_possible_attributes(const QString &dn);
+QList<QString> get_possible_superiors(const AttributesBinary &attributes);
+QList<QString> get_possible_attributes(const AttributesBinary &attributes);
 AttributeType get_attribute_type(const QString &attribute);
 
 #endif /* SERVER_CONFIGURATION_H */

@@ -20,6 +20,7 @@
 #include "server_configuration.h"
 #include "ad_interface.h"
 #include "settings.h"
+#include "utils.h"
 
 #include <QHash>
 #include <QLocale>
@@ -40,7 +41,6 @@
 #define ATTRIBUTE_SYSTEM_MAY_CONTAIN    "systemMayContain"
 
 QString get_display_specifier_class(const QString &display_specifier);
-QList<QString> get_all_display_specifiers();
 QString ldap_name_to_ad_name(const QString &ldap_class_name);
 
 QString get_locale_dir() {
@@ -72,16 +72,20 @@ QString get_attribute_display_name(const QString &attribute, const QString &obje
     []() {
         QHash<QString, QHash<QString, QString>> attribute_display_names_out;
 
-        const QList<QString> display_specifiers = get_all_display_specifiers();
+        const QString locale_dir = get_locale_dir();
+        const QList<QString> search_attributes = {ATTRIBUTE_DISPLAY_NAMES, ATTRIBUTE_EXTRA_COLUMNS};
+        const QHash<QString, AttributesBinary> search_results = AdInterface::instance()->search("", search_attributes, SearchScope_Children, locale_dir);
 
-        for (const auto display_specifier : display_specifiers) {
+        for (const QString &dn : search_results.keys()) {
+            const AttributesBinary attributes = search_results[dn];
+
             const QList<QString> display_names =
-            [display_specifier]() {
-                QList<QString> out = AdInterface::instance()->attribute_get_value_values(display_specifier, ATTRIBUTE_DISPLAY_NAMES);
+            [dn, attributes]() {
+                QList<QString> out = byte_arrays_to_strings(attributes[ATTRIBUTE_DISPLAY_NAMES]);
 
                 // NOTE: default display specifier contains some extra display names that are used for contents columns
-                if (display_specifier.contains("default-Display")) {
-                    const QList<QString> extra_display_names = AdInterface::instance()->attribute_get_value_values(display_specifier, ATTRIBUTE_EXTRA_COLUMNS);
+                if (dn.contains("default-Display")) {
+                    const QList<QString> extra_display_names = byte_arrays_to_strings(attributes[ATTRIBUTE_EXTRA_COLUMNS]);
 
                     out.append(extra_display_names);
                 }
@@ -89,7 +93,7 @@ QString get_attribute_display_name(const QString &attribute, const QString &obje
                 return out;
             }();
 
-            const QString specifier_class = get_display_specifier_class(display_specifier);
+            const QString specifier_class = get_display_specifier_class(dn);
 
             for (const auto display_name : display_names) {
                 const QList<QString> display_name_split = display_name.split(",");
@@ -143,13 +147,16 @@ QString get_class_display_name(const QString &objectClass) {
     []() {
         QHash<QString, QString> out;
 
-        const QList<QString> display_specifiers = get_all_display_specifiers();
+        const QString locale_dir = get_locale_dir();
+        const QList<QString> search_attributes = {CLASS_DISPLAY_NAME};
+        const QHash<QString, AttributesBinary> search_results = AdInterface::instance()->search("", search_attributes, SearchScope_Children, locale_dir);
 
-        for (const auto display_specifier : display_specifiers) {
+        for (const QString &dn : search_results.keys()) {
             // TODO: duplicated code. Probably load this together with other display specifier info.
-            const QString specifier_class = get_display_specifier_class(display_specifier);
+            const QString specifier_class = get_display_specifier_class(dn);
 
-            const QString class_display_name = AdInterface::instance()->attribute_get_value(display_specifier, CLASS_DISPLAY_NAME);
+            const AttributesBinary attributes = search_results[dn];
+            const QString class_display_name = attributes[CLASS_DISPLAY_NAME][0];
 
             out[specifier_class] = class_display_name;
         }
@@ -171,7 +178,8 @@ QList<QString> get_extra_contents_columns() {
         []() {
             const QString locale_dir = get_locale_dir();
             const QString default_display_specifier = QString("CN=default-Display,%1").arg(locale_dir);
-            QList<QString> columns_out = AdInterface::instance()->attribute_get_value_values(default_display_specifier, ATTRIBUTE_EXTRA_COLUMNS);
+            const QList<QByteArray> attributes_binary = AdInterface::instance()->get_attribute(default_display_specifier, ATTRIBUTE_EXTRA_COLUMNS);
+            QList<QString> columns_out = byte_arrays_to_strings(attributes_binary);
             std::reverse(columns_out.begin(), columns_out.end());
 
             return columns_out;
@@ -196,7 +204,8 @@ QList<QString> get_containers_filter_classes() {
     []() {
         const QString locale_dir = get_locale_dir();
         const QString display_specifier = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
-        const QList<QString> ms_classes = AdInterface::instance()->attribute_get_value_values(display_specifier, ATTRIBUTE_FILTER_CONTAINERS);
+        const QList<QByteArray> values_binary = AdInterface::instance()->get_attribute(display_specifier, ATTRIBUTE_FILTER_CONTAINERS);
+        QList<QString> ms_classes = byte_arrays_to_strings(values_binary);
 
         // NOTE: ATTRIBUTE_FILTER_CONTAINERS contains classes in non-LDAP format ("Organizational-Unit" vs "organizationalUnit"). Convert to LDAP format by getting ATTRIBUTE_LDAP_DISPLAY_NAME from class' schema.
         const QString schema_dn = AdInterface::instance()->schema_dn();
@@ -204,9 +213,12 @@ QList<QString> get_containers_filter_classes() {
         QList<QString> out;
         for (const auto ms_class : ms_classes) {
             const QString class_schema = QString("CN=%1,%2").arg(ms_class, schema_dn);
-            const QString ldap_class = AdInterface::instance()->attribute_get_value(class_schema, ATTRIBUTE_LDAP_DISPLAY_NAME);
+            const QList<QByteArray> ldap_classes_bytes = AdInterface::instance()->get_attribute(class_schema, ATTRIBUTE_LDAP_DISPLAY_NAME);
 
-            out.append(ldap_class);
+            if (!ldap_classes_bytes.isEmpty()) {
+                const QString ldap_class = QString(ldap_classes_bytes[0]);
+                out.append(ldap_class);
+            }
         }
 
         // TODO: why is this not included???
@@ -218,9 +230,9 @@ QList<QString> get_containers_filter_classes() {
     return classes;
 }
 
-QList<QString> get_possible_superiors(const QString &dn) {
-    const QString category = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_OBJECT_CATEGORY);
-    const QList<QString> possible_superiors = AdInterface::instance()->attribute_get_value_values(category, ATTRIBUTE_POSSIBLE_SUPERIORS);
+QList<QString> get_possible_superiors(const AttributesBinary &attributes) {
+    const QString category = attribute_get_value(attributes, ATTRIBUTE_OBJECT_CATEGORY);
+    const QList<QString> possible_superiors = byte_arrays_to_strings(AdInterface::instance()->get_attribute(category, ATTRIBUTE_POSSIBLE_SUPERIORS));
 
     return possible_superiors;
 }
@@ -235,13 +247,6 @@ QString get_display_specifier_class(const QString &display_specifier) {
     return specifier_class;
 }
 
-QList<QString> get_all_display_specifiers() {
-    const QString locale_dir = get_locale_dir();
-    const QList<QString> display_specifiers = AdInterface::instance()->list(locale_dir);
-
-    return display_specifiers;
-}
-
 QString ldap_name_to_ad_name(const QString &ldap_name) {
     static QHash<QString, QString> ldap_to_ad;
 
@@ -253,7 +258,7 @@ QString ldap_name_to_ad_name(const QString &ldap_name) {
 
         if (!search_results.isEmpty()) {
             const QString schema_object = search_results[0];
-            const QString ad_class_name = AdInterface::instance()->attribute_get_value(schema_object, ATTRIBUTE_ADMIN_DISPLAY_NAME);
+            const QString ad_class_name = AdInterface::instance()->get_attribute_value(schema_object, ATTRIBUTE_ADMIN_DISPLAY_NAME);
 
             ldap_to_ad[ldap_name] = ad_class_name;
         } else {
@@ -265,10 +270,10 @@ QString ldap_name_to_ad_name(const QString &ldap_name) {
 }
 
 // TODO: Object's objectClass list appears to already contain the full inheritance chain. Confirm that this applies to all objects, because otherwise would need to manually go down the inheritance chain to get all possible attributes.
-QList<QString> get_possible_attributes(const QString &dn) {
+QList<QString> get_possible_attributes(const AttributesBinary &attributes) {
     static QHash<QString, QList<QString>> class_possible_attributes;
 
-    const QList<QString> object_classes = AdInterface::instance()->attribute_get_value_values(dn, ATTRIBUTE_OBJECT_CLASS);
+    const QList<QString> object_classes = byte_arrays_to_strings(attribute_get_values(attributes, ATTRIBUTE_OBJECT_CLASS));
 
     QList<QString> possible_attributes;
     for (const QString object_class : object_classes) {

@@ -181,10 +181,11 @@ public:
     QString configuration_dn() const;
     QString schema_dn() const;
 
-    QList<QString> list(const QString &dn);
     QList<QString> search_dns(const QString &filter, const QString &custom_search_base = QString());
     QHash<QString, AttributesBinary> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &custom_search_base = QString());
     AttributesBinary get_attributes(const QString &dn);
+    QList<QByteArray> get_attribute(const QString &dn, const QString &attribute);
+    QByteArray get_attribute_value(const QString &dn, const QString &attribute);
     
     Attributes attribute_get_all(const QString &dn);
     QList<QString> attribute_get_value_values(const QString &dn, const QString &attribute);
@@ -314,5 +315,9 @@ bool is_container2(const AttributesBinary &attributes);
 bool is_ou2(const AttributesBinary &attributes);
 bool is_policy2(const AttributesBinary &attributes);
 bool is_computer2(const AttributesBinary &attributes);
-    
+
+
+QList<QByteArray> attribute_get_values(const AttributesBinary &attributes, const QString &attribute);
+QByteArray attribute_get_value(const AttributesBinary &attributes, const QString &attribute);
+
 #endif /* AD_INTERFACE_H */

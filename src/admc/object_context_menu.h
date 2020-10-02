@@ -39,7 +39,7 @@ private:
     ObjectContextMenu(const QString &dn);
     void delete_object(const QString &dn, const AttributesBinary &attributes);
     void edit_policy(const QString &dn);
-    void move(const QString &dn);
+    void move(const QString &dn, const AttributesBinary &attributes);
     void add_to_group(const QString &dn);
 
 };
