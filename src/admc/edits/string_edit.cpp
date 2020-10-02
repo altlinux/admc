@@ -102,7 +102,7 @@ void StringEdit::load(const AttributesBinary &attributes) {
         const QList<QByteArray> classes_bytes = attributes[attribute];
         const QList<QString> classes = byte_arrays_to_strings(classes_bytes);
         value = classes.last();
-    } else {
+    } else if (attributes.contains(attribute)) {
         value = QString(attributes[attribute][0]);
     }
 

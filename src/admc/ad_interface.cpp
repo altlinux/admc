@@ -162,7 +162,7 @@ QHash<QString, AttributesBinary> AdInterface::search(const QString &filter, cons
         switch (scope_enum) {
             case SearchScope_Object: return LDAP_SCOPE_BASE;
             case SearchScope_Children: return LDAP_SCOPE_ONELEVEL;
-            case SearchScope_ObjectAndDescendants: return LDAP_SCOPE_SUBTREE;
+            case SearchScope_All: return LDAP_SCOPE_SUBTREE;
             case SearchScope_Descendants: return LDAP_SCOPE_CHILDREN;
         }
         return 0;
@@ -262,7 +262,7 @@ QList<QString> AdInterface::list(const QString &dn) {
 }
 
 QList<QString> AdInterface::search_dns(const QString &filter, const QString &custom_search_base) {
-    const QHash<QString, AttributesBinary> search_results = search(filter, QList<QString>(), SearchScope_ObjectAndDescendants, custom_search_base);
+    const QHash<QString, AttributesBinary> search_results = search(filter, QList<QString>(), SearchScope_All, custom_search_base);
     const QList<QString> dns = search_results.keys();
 
 

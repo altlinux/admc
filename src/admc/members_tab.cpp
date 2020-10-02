@@ -164,7 +164,7 @@ void MembersTab::reload_current_members_into_model() {
 
     const QString filter = filter_EQUALS(ATTRIBUTE_MEMBER_OF, target());
     const QList<QString> search_attributes = {ATTRIBUTE_NAME, ATTRIBUTE_DISTINGUISHED_NAME};
-    const QHash<QString, AttributesBinary> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_ObjectAndDescendants);
+    const QHash<QString, AttributesBinary> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_All);
 
     for (auto dn : search_results.keys()) {
         const AttributesBinary attributes = search_results[dn];

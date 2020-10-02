@@ -149,8 +149,8 @@ enum SystemFlagsBit {
 enum SearchScope {
     SearchScope_Object,
     SearchScope_Children,
-    SearchScope_ObjectAndDescendants,
     SearchScope_Descendants,
+    SearchScope_All,
 };
 
 typedef struct ldap LDAP;

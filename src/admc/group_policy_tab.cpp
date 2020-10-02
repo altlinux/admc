@@ -213,27 +213,37 @@ void GroupPolicyTab::move_link_down(const QString &gpo) {
 void GroupPolicyTab::reload_current_gplink_into_model() {
     model->removeRows(0, model->rowCount());
 
-    // TODO: think i have to search filtering for all dn's?
-    // "dn=d1 OR dn=d2 OR ..."
+    // TODO: use filter to search only for needed gpo's, not all of them (dn=dn1 or dn=dn2 or ...)
+    const QList<QString> search_attributes = {ATTRIBUTE_DISPLAY_NAME};
+    const QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
+    const QHash<QString, AttributesBinary> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_All);
 
-    // for (auto gpo : current_gplink.get_gpos()) {
-    //     const QString name = AdInterface::instance()->get_name_for_display(gpo);
+    const QList<QString> gpos = current_gplink.get_gpos();
 
-    //     const QList<QStandardItem *> row = make_item_row(GplinkColumn_COUNT);
-    //     row[GplinkColumn_Name]->setText(name);
-    //     row[GplinkColumn_DN]->setText(gpo);
+    for (auto dn : search_results.keys()) {
+        if (!gpos.contains(dn)) {
+            continue;
+        }
 
-    //     for (const auto column : option_columns) {
-    //         QStandardItem *item = row[column];
-    //         item->setCheckable(true);
+        const AttributesBinary attributes = search_results[dn];
 
-    //         const GplinkOption option = column_to_option[column];
-    //         const bool option_is_set = current_gplink.get_option(gpo, option);
-    //         check_item_set_checked(item, option_is_set);
-    //     }
+        const QString display_name = attributes[ATTRIBUTE_DISPLAY_NAME][0];
 
-    //     model->appendRow(row);
-    // }
+        const QList<QStandardItem *> row = make_item_row(GplinkColumn_COUNT);
+        row[GplinkColumn_Name]->setText(display_name);
+        row[GplinkColumn_DN]->setText(dn);
+
+        for (const auto column : option_columns) {
+            QStandardItem *item = row[column];
+            item->setCheckable(true);
+
+            const GplinkOption option = column_to_option[column];
+            const bool option_is_set = current_gplink.get_option(dn, option);
+            check_item_set_checked(item, option_is_set);
+        }
+
+        model->appendRow(row);
+    }
 }
 
 void GroupPolicyTab::on_item_changed(QStandardItem *item) {
