@@ -20,12 +20,13 @@
 #ifndef AD_INTERFACE_H
 #define AD_INTERFACE_H
 
+#include "ad_interface_defines.h"
+
 #include <QObject>
 #include <QList>
 #include <QString>
 #include <QByteArray>
 #include <QMap>
-#include <QHash>
 #include <QDateTime>
 #include <QSet>
 #include <QIcon>
@@ -67,6 +68,7 @@
 #define ATTRIBUTE_USN_CREATED           "uSNCreated"
 #define ATTRIBUTE_OBJECT_CATEGORY       "objectCategory"
 #define ATTRIBUTE_MEMBER                "member"
+#define ATTRIBUTE_MEMBER_OF             "memberOf"
 #define ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY "showInAdvancedViewOnly"
 #define ATTRIBUTE_GROUP_TYPE            "groupType"
 #define ATTRIBUTE_FIRST_NAME            "givenName"
@@ -151,8 +153,6 @@ enum SearchScope {
     SearchScope_Descendants,
 };
 
-typedef QHash<QString, QList<QString>> Attributes;
-typedef QHash<QString, QList<QByteArray>> AttributesBinary;
 typedef struct ldap LDAP;
 
 enum DoStatusMsg {
@@ -184,6 +184,7 @@ public:
     QList<QString> list(const QString &dn);
     QList<QString> search_dns(const QString &filter, const QString &custom_search_base = QString());
     QHash<QString, AttributesBinary> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &custom_search_base = QString());
+    AttributesBinary get_attributes(const QString &dn);
     
     Attributes attribute_get_all(const QString &dn);
     QList<QString> attribute_get_value_values(const QString &dn, const QString &attribute);
@@ -213,7 +214,6 @@ public:
     bool object_rename(const QString &dn, const QString &new_name);
     bool user_set_pass(const QString &dn, const QString &password);
     bool user_set_account_option(const QString &dn, AccountOption option, bool set);
-    bool user_get_account_option(const QString &dn, AccountOption option);
     bool user_unlock(const QString &dn);
     
     QDateTime attribute_datetime_get(const QString &dn, const QString &attribute);
@@ -221,9 +221,7 @@ public:
 
     bool group_add_user(const QString &group_dn, const QString &user_dn);
     bool group_remove_user(const QString &group_dn, const QString &user_dn);
-    GroupScope group_get_scope(const QString &dn);
     bool group_set_scope(const QString &dn, GroupScope scope);
-    GroupType group_get_type(const QString &dn);
     bool group_set_type(const QString &dn, GroupType type);
     bool group_is_system(const QString &dn);
 
@@ -305,4 +303,16 @@ QString attribute_binary_value_to_display_value(const QString &attribute, const 
 QString attribute_value_to_display_value(const QString &attribute, const QString &value);
 QString object_sid_to_display_string(const QByteArray &bytes);
 
+bool user_get_account_option(const AttributesBinary &attributes, AccountOption option);
+GroupScope group_get_scope(const AttributesBinary &attributes);
+GroupType group_get_type(const AttributesBinary &attributes);
+
+bool is_class2(const AttributesBinary &attributes, const QString &object_class);
+bool is_user2(const AttributesBinary &attributes);
+bool is_group2(const AttributesBinary &attributes);
+bool is_container2(const AttributesBinary &attributes);
+bool is_ou2(const AttributesBinary &attributes);
+bool is_policy2(const AttributesBinary &attributes);
+bool is_computer2(const AttributesBinary &attributes);
+    
 #endif /* AD_INTERFACE_H */

@@ -107,16 +107,18 @@ void MembersTab::apply() {
     }
 }
 
-void MembersTab::reload() {
-    const QList<QString> members = AdInterface::instance()->attribute_get_value_values(target(), ATTRIBUTE_MEMBER);
+void MembersTab::reload(const AttributesBinary &attributes) {
+    const QList<QByteArray> members_bytes = attributes[ATTRIBUTE_MEMBER];
+    const QList<QString> members = byte_arrays_to_strings(members_bytes);
+
     original_members = members.toSet();
     current_members = original_members;
 
     reload_current_members_into_model();
 }
 
-bool MembersTab::accepts_target() const {
-    bool is_group = AdInterface::instance()->is_group(target());
+bool MembersTab::accepts_target(const AttributesBinary &attributes) const {
+    bool is_group = is_group2(attributes);
 
     return is_group;
 }
@@ -160,8 +162,13 @@ void MembersTab::on_remove_button() {
 void MembersTab::reload_current_members_into_model() {
     model->removeRows(0, model->rowCount());
 
-    for (auto dn : current_members) {
-        const QString name = AdInterface::instance()->get_name_for_display(dn);
+    const QString filter = filter_EQUALS(ATTRIBUTE_MEMBER_OF, target());
+    const QList<QString> search_attributes = {ATTRIBUTE_NAME, ATTRIBUTE_DISTINGUISHED_NAME};
+    const QHash<QString, AttributesBinary> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_ObjectAndDescendants);
+
+    for (auto dn : search_results.keys()) {
+        const AttributesBinary attributes = search_results[dn];
+        const QString name = attributes[ATTRIBUTE_NAME][0];
         
         const QList<QStandardItem *> row = make_item_row(MembersColumn_COUNT);
         row[MembersColumn_Name]->setText(name);

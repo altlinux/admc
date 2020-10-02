@@ -73,12 +73,10 @@ void ObjectTab::apply() {
 
 }
 
-void ObjectTab::reload() {
-    for (auto edit : edits) {
-        edit->load(target());
-    }
+void ObjectTab::reload(const AttributesBinary &attributes) {
+    load_attribute_edits(edits, attributes);
 }
 
-bool ObjectTab::accepts_target() const {
+bool ObjectTab::accepts_target(const AttributesBinary &attributes) const {
     return true;
 }

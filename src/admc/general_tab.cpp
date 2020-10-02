@@ -176,19 +176,19 @@ void GeneralTab::apply() {
     apply_attribute_edits(edits_for_type[type], target(), this);
 }
 
-bool GeneralTab::accepts_target() const {
+bool GeneralTab::accepts_target(const AttributesBinary &) const {
     return true;
 }
 
-void GeneralTab::reload() {
-    const QString name = AdInterface::instance()->attribute_get_value(target(), ATTRIBUTE_NAME);
+void GeneralTab::reload(const AttributesBinary &attributes) {
+    const QString name(attributes[ATTRIBUTE_NAME][0]);
     name_label->setText(name);
 
-    const bool is_user = AdInterface::instance()->is_user(target());
-    const bool is_ou = AdInterface::instance()->is_ou(target());
-    const bool is_computer = AdInterface::instance()->is_computer(target());
-    const bool is_group = AdInterface::instance()->is_group(target());
-    const bool is_container = AdInterface::instance()->is_container(target());
+    const bool is_user = is_user2(attributes);
+    const bool is_ou = is_ou2(attributes);
+    const bool is_computer = is_computer2(attributes);
+    const bool is_group = is_group2(attributes);
+    const bool is_container = is_container2(attributes);
 
     if (is_computer) {
         type = GeneralTabType_Computer;
@@ -204,7 +204,7 @@ void GeneralTab::reload() {
         type = GeneralTabType_Default;
     }
 
-    load_attribute_edits(edits_for_type[type], target());
+    load_attribute_edits(edits_for_type[type], attributes);
 
     types_stack->setCurrentIndex((int)type);
 }

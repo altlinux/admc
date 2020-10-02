@@ -20,6 +20,8 @@
 #ifndef ATTRIBUTE_EDIT_H
 #define ATTRIBUTE_EDIT_H
 
+#include "ad_interface_defines.h"
+
 #include <QObject>
 #include <QString>
 #include <QList>
@@ -46,7 +48,7 @@ public:
 
     // Load value from server for display
     // NOTE: block signals for subwidget(s) when setting values so that any outside connections to those widgets aren't triggered when not inteded
-    virtual void load(const QString &dn) = 0;
+    virtual void load(const AttributesBinary &attributes) = 0;
 
     // Returns whether edit's value has been changed by the user
     // Resets on reload
@@ -67,7 +69,7 @@ signals:
 
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
 void add_to_layout(QGridLayout *layout);\
-void load(const QString &dn);\
+void load(const AttributesBinary &attributes);\
 bool changed() const;\
 bool verify_input(QWidget *parent);\
 bool apply(const QString &dn);
@@ -85,7 +87,7 @@ enum ApplyIfNotChanged {
 // Helper f-ns that iterate over edit lists for you
 // Verify before applying!
 void any_(QList<AttributeEdit *> edits, const QString &dn);
-void load_attribute_edits(QList<AttributeEdit *> edits, const QString &dn);
+void load_attribute_edits(QList<AttributeEdit *> edits, const AttributesBinary &attributes);
 bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent);
 bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QObject *parent, const ApplyIfNotChanged apply_if_not_changed = ApplyIfNotChanged_No);
 

@@ -38,6 +38,8 @@
 
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm"
 
+#define SEARCH_ALL_ATTRIBUTES "SEARCH_ALL_ATTRIBUTES"
+
 // TODO: confirm these are fine. I think need to make seconds option for UTC? Don't know if QDatetime can handle that.
 #define GENERALIZED_TIME_FORMAT_STRING "yyyyMMddhhmmss.zZ"
 #define UTC_TIME_FORMAT_STRING "yyMMddhhmmss.zZ"
@@ -129,7 +131,7 @@ QString AdInterface::host() const {
 }
 
 QHash<QString, AttributesBinary> AdInterface::search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &custom_search_base) {
-    int result = AD_SUCCESS;
+    // int result = AD_SUCCESS;
     QHash<QString, AttributesBinary> out;
 
     LDAPMessage *res;
@@ -173,7 +175,10 @@ QHash<QString, AttributesBinary> AdInterface::search(const QString &filter, cons
     attrs =
     [attributes]() {
         char **attrs_out;
-        if (attributes.isEmpty()) {
+        if (attributes.contains(SEARCH_ALL_ATTRIBUTES)) {
+            // TODO: should do this better but kinda hard but not sure how to do this with as little details leaking out, like making caller put in LDAP_SEARCH_NO_ATTRIBUTES into QList is no good.
+            attrs_out = NULL;
+        } else if (attributes.isEmpty()) {
             attrs_out = (char **) malloc(2 * sizeof(char *));
             attrs_out[0] = strdup(LDAP_SEARCH_NO_ATTRIBUTES);
             attrs_out[1] = NULL;
@@ -193,7 +198,7 @@ QHash<QString, AttributesBinary> AdInterface::search(const QString &filter, cons
 
     const int result_search = ldap_search_ext_s(ld, base_cstr, scope, filter_cstr, attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
     if (result_search != LDAP_SUCCESS) {
-        result = result_search;
+        // result = result_search;
 
         goto end;
     }
@@ -262,6 +267,13 @@ QList<QString> AdInterface::search_dns(const QString &filter, const QString &cus
 
 
     return dns;
+}
+
+AttributesBinary AdInterface::get_attributes(const QString &dn) {
+    const QHash<QString, AttributesBinary> search_results = search("", {SEARCH_ALL_ATTRIBUTES}, SearchScope_Object, dn);
+    const AttributesBinary attributes = search_results[dn];
+
+    return attributes;
 }
 
 Attributes AdInterface::attribute_get_all(const QString &dn) {
@@ -629,8 +641,9 @@ bool AdInterface::group_remove_user(const QString &group_dn, const QString &user
     }
 }
 
-GroupScope AdInterface::group_get_scope(const QString &dn) {
-    const int group_type = attribute_int_get(dn, ATTRIBUTE_GROUP_TYPE);
+GroupScope group_get_scope(const AttributesBinary &attributes) {
+    const QString value_raw(attributes[ATTRIBUTE_GROUP_TYPE][0]);
+    const int group_type = value_raw.toInt();
 
     for (int i = 0; i < GroupScope_COUNT; i++) {
         const GroupScope this_scope = (GroupScope) i;
@@ -677,8 +690,8 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
 }
 
 // NOTE: "group type" is really only the last bit of the groupType attribute, yeah it's confusing
-GroupType AdInterface::group_get_type(const QString &dn) {
-    const QString group_type = attribute_get_value(dn, ATTRIBUTE_GROUP_TYPE);
+GroupType group_get_type(const AttributesBinary &attributes) {
+    const QString group_type(attributes[ATTRIBUTE_GROUP_TYPE][0]);
     const int group_type_int = group_type.toInt();
 
     const bool security_bit_set = ((group_type_int & GROUP_TYPE_BIT_SECURITY) != 0);
@@ -962,17 +975,48 @@ bool AdInterface::is_computer(const QString &dn) {
     return is_class(dn, CLASS_COMPUTER);
 }
 
-bool AdInterface::user_get_account_option(const QString &dn, AccountOption option) {
+bool is_class2(const AttributesBinary &attributes, const QString &object_class) {
+    const QList<QByteArray> object_classes = attributes[ATTRIBUTE_OBJECT_CLASS];
+    const bool is_class = object_classes.contains(object_class.toUtf8());
+
+    return is_class;
+}
+
+bool is_user2(const AttributesBinary &attributes) {
+    return is_class2(attributes, CLASS_USER) && !is_class2(attributes, CLASS_COMPUTER);
+}
+
+bool is_group2(const AttributesBinary &attributes) {
+    return is_class2(attributes, CLASS_GROUP);
+}
+
+bool is_container2(const AttributesBinary &attributes) {
+    return is_class2(attributes, CLASS_CONTAINER);
+}
+
+bool is_ou2(const AttributesBinary &attributes) {
+    return is_class2(attributes, CLASS_OU);
+}
+
+bool is_policy2(const AttributesBinary &attributes) {
+    return is_class2(attributes, CLASS_GP_CONTAINER);
+}
+
+bool is_computer2(const AttributesBinary &attributes) {
+    return is_class2(attributes, CLASS_COMPUTER);
+}
+
+bool user_get_account_option(const AttributesBinary &attributes, AccountOption option) {
     switch (option) {
         case AccountOption_PasswordExpired: {
-            const QString pwdLastSet_value = attribute_get_value(dn, ATTRIBUTE_PWD_LAST_SET);
+            const QString pwdLastSet_value(attributes[ATTRIBUTE_PWD_LAST_SET][0]);
             const bool expired = (pwdLastSet_value == AD_PWD_LAST_SET_EXPIRED);
 
             return expired;
         }
         default: {
             // Account option is a UAC bit
-            const QString control = attribute_get_value(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
+            const QString control(attributes[ATTRIBUTE_USER_ACCOUNT_CONTROL][0]);
             if (control.isEmpty()) {
                 return false;
             }

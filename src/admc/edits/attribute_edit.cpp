@@ -84,9 +84,9 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QObj
     return success;
 }
 
-void load_attribute_edits(QList<AttributeEdit *> edits, const QString &dn) {
+void load_attribute_edits(QList<AttributeEdit *> edits, const AttributesBinary &attributes) {
     for (auto edit : edits) {
-        edit->load(dn);
+        edit->load(attributes);
     }
 }
 

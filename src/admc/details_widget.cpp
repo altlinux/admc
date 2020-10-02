@@ -138,15 +138,25 @@ QString DetailsWidget::get_target() const {
 
 void DetailsWidget::reload(const QString &new_target) {
     target = new_target;
-    
-    const QString name = AdInterface::instance()->get_name_for_display(target);
-    const QString title_text = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
-    title_label->setText(title_text);
 
-    tab_widget->clear();
+    const AttributesBinary attributes = AdInterface::instance()->get_attributes(target);
 
-    const bool exists = AdInterface::instance()->exists(target);
-    if (exists) {
+    if (attributes.isEmpty()) {
+        if (is_floating_instance) {
+            close();
+        } else {
+            // Docked details widget can't be closed so it
+            // becomes blank
+            title_label->setText("");
+            button_box->hide();
+        }
+    } else {
+        const QString name(attributes[ATTRIBUTE_NAME][0]);
+        const QString title_text = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
+        title_label->setText(title_text);
+
+        tab_widget->clear();
+
         // Disable apply/cancel since this is a fresh reload and there are no changes
         button_box->show();
         button_box->setEnabled(false);
@@ -158,12 +168,12 @@ void DetailsWidget::reload(const QString &new_target) {
             const TabHandle tab_handle = (TabHandle) i;
             DetailsTab *tab = tabs[i];
 
-            const bool accepts_target = tab->accepts_target();
+            const bool accepts_target = tab->accepts_target(attributes);
             if (!accepts_target) {
                 continue;
             }
 
-            tab->reload();
+            tab->reload(attributes);
 
             const QString tab_text =
             [tab_handle]() {
@@ -189,14 +199,6 @@ void DetailsWidget::reload(const QString &new_target) {
         if (old_tab_is_active) {
             tab_widget->setCurrentIndex(tab_widget->indexOf(old_tab));
         }
-    } else {
-        if (is_floating_instance) {
-            close();
-        } else {
-            // Docked details widget can't be closed so it
-            // becomes blank
-            button_box->hide();
-        }
     }
 }
 
@@ -209,7 +211,7 @@ void DetailsWidget::on_apply() {
 
     bool all_verified = true;
     for (auto tab : tabs) {
-        if (tab->accepts_target()) {
+        if (tab_widget->indexOf(tab) != -1) {
             const bool verify_success = tab->verify();
             if (!verify_success) {
                 all_verified = false;
@@ -220,7 +222,7 @@ void DetailsWidget::on_apply() {
     if (all_verified) {
         AdInterface::instance()->start_batch();
         for (auto tab : tabs) {
-            if (tab->accepts_target()) {
+            if (tab_widget->indexOf(tab) != -1) {
                 tab->apply();
             }
         }

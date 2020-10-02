@@ -245,3 +245,14 @@ void show_only_in_dev_mode(QWidget *widget) {
             do_it();
         });
 }
+
+QList<QString> byte_arrays_to_strings(const QList<QByteArray> &byte_arrays) {
+    QList<QString> strings;
+
+    for (const auto bytes : byte_arrays) {
+        const QString string(bytes);
+        strings.append(string);
+    }
+
+    return strings;
+}

@@ -61,8 +61,9 @@ ExpiryEdit::ExpiryEdit(QObject *parent)
         this, &ExpiryEdit::on_edit_button);
 }
 
-void ExpiryEdit::load(const QString &dn) {
-    const QString expiry_raw = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_ACCOUNT_EXPIRES);
+void ExpiryEdit::load(const AttributesBinary &attributes) {
+    const QString expiry_raw(attributes[ATTRIBUTE_ACCOUNT_EXPIRES][0]);
+
     original_value = expiry_raw;
 
     const bool never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, expiry_raw);
@@ -92,7 +93,7 @@ void ExpiryEdit::load(const QString &dn) {
         const QDate default_expiry = QDate::currentDate();
         display_label_text = default_expiry.toString(DATE_FORMAT);
     } else {
-        const QDateTime current_expiry = AdInterface::instance()->attribute_datetime_get(dn, ATTRIBUTE_ACCOUNT_EXPIRES);
+        const QDateTime current_expiry = datetime_raw_to_datetime(ATTRIBUTE_ACCOUNT_EXPIRES, expiry_raw);
         display_label_text = current_expiry.toString(DATE_FORMAT);
     }
     display_label->setText(display_label_text);

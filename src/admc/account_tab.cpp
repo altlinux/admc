@@ -75,12 +75,12 @@ void AccountTab::apply() {
     apply_attribute_edits(edits, target(), this);
 }
 
-void AccountTab::reload() {
-    load_attribute_edits(edits, target());
+void AccountTab::reload(const AttributesBinary &attributes) {
+    load_attribute_edits(edits, attributes);
 }
 
-bool AccountTab::accepts_target() const {
-    const bool is_user = AdInterface::instance()->is_user(target());
+bool AccountTab::accepts_target(const AttributesBinary &attributes) const {
+    const bool is_user = is_user2(attributes);
 
     return is_user;
 }

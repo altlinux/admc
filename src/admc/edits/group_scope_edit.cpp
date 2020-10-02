@@ -51,8 +51,8 @@ void GroupScopeEdit::set_read_only(EditReadOnly read_only_arg) {
     combo->setEnabled(read_only == EditReadOnly_No);
 }
 
-void GroupScopeEdit::load(const QString &dn) {
-    const GroupScope scope = AdInterface::instance()->group_get_scope(dn);
+void GroupScopeEdit::load(const AttributesBinary &attributes) {
+    const GroupScope scope = group_get_scope(attributes);
     const int scope_int = (int)scope;
 
     combo->blockSignals(true);

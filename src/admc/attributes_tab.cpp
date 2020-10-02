@@ -61,11 +61,11 @@ void AttributesTab::apply() {
 
 }
 
-void AttributesTab::reload() {
-    model->reload();
+void AttributesTab::reload(const AttributesBinary &attributes) {
+    model->reload(attributes);
 }
 
-bool AttributesTab::accepts_target() const {
+bool AttributesTab::accepts_target(const AttributesBinary &attributes) const {
     return true;
 }
 
@@ -100,40 +100,34 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     }
 }
 
-void AttributesModel::reload() {
+void AttributesModel::reload(const AttributesBinary &attributes) {
     removeRows(0, rowCount());
 
     // Populate model with attributes of new root
-    const QString target = attributes_tab->target();
-    AttributesBinary attributes = AdInterface::instance()->attribute_binary_get_all(target);
-
-    // Add attributes without values
-    const QList<QString> possible_attributes = get_possible_attributes(attributes_tab->target());
-    for (const QString attribute : possible_attributes) {
-        if (!attributes.contains(attribute)) {
-            attributes[attribute] = QList<QByteArray>();
-        }
-    }
-
     for (auto attribute : attributes.keys()) {
         const QList<QByteArray> values = attributes[attribute];
 
-        if (values.isEmpty()) {
+        for (auto value : values) {
+            const QString display_value = attribute_binary_value_to_display_value(attribute, value);
+
+            auto name_item = new QStandardItem(attribute);
+            auto value_item = new QStandardItem(display_value);
+
+            name_item->setEditable(false);
+
+            appendRow({name_item, value_item});
+        }
+    }
+
+    // Add attributes without values
+    const QString target = attributes_tab->target();
+    const QList<QString> possible_attributes = get_possible_attributes(attributes_tab->target());
+    for (const QString attribute : possible_attributes) {
+        if (!attributes.contains(attribute)) {
             auto name_item = new QStandardItem(attribute);
             auto value_item = new QStandardItem("<unset>");
             
             appendRow({name_item, value_item});
-        } else {
-            for (auto value : values) {
-                const QString display_value = attribute_binary_value_to_display_value(attribute, value);
-
-                auto name_item = new QStandardItem(attribute);
-                auto value_item = new QStandardItem(display_value);
-
-                name_item->setEditable(false);
-
-                appendRow({name_item, value_item});
-            }
         }
     }
 }

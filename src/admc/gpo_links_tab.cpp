@@ -74,30 +74,32 @@ void GpoLinksTab::apply() {
 
 }
 
-void GpoLinksTab::reload() {
+void GpoLinksTab::reload(const AttributesBinary &attributes) {
     model->removeRows(0, model->rowCount());
 
-    const QString filter = filter_EQUALS(ATTRIBUTE_GPLINK, "*");
-    const QList<QString> all_linked_objects = AdInterface::instance()->search_dns(filter);
+    // TODO: do this with search
+    
+    // const QString filter = filter_EQUALS(ATTRIBUTE_GPLINK, "*");
+    // const QList<QString> all_linked_objects = AdInterface::instance()->search_dns(filter);
 
-    for (auto dn : all_linked_objects) {
-        const QString gplink = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_GPLINK);
-        const bool linked_to_this = gplink.contains(target());
+    // for (auto dn : all_linked_objects) {
+    //     const QString gplink = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_GPLINK);
+    //     const bool linked_to_this = gplink.contains(target());
 
-        if (linked_to_this) {
-            const QString name = AdInterface::instance()->get_name_for_display(dn);
+    //     if (linked_to_this) {
+    //         const QString name = AdInterface::instance()->get_name_for_display(dn);
 
-            const QList<QStandardItem *> row = make_item_row(GpoLinksColumn_COUNT);
-            row[GpoLinksColumn_Name]->setText(name);
-            row[GpoLinksColumn_DN]->setText(dn);
+    //         const QList<QStandardItem *> row = make_item_row(GpoLinksColumn_COUNT);
+    //         row[GpoLinksColumn_Name]->setText(name);
+    //         row[GpoLinksColumn_DN]->setText(dn);
 
-            model->appendRow(row);
-        }
-    }
+    //         model->appendRow(row);
+    //     }
+    // }
 }
 
-bool GpoLinksTab::accepts_target() const {
-    const bool is_policy = AdInterface::instance()->is_policy(target());
+bool GpoLinksTab::accepts_target(const AttributesBinary &attributes) const {
+    const bool is_policy = is_policy2(attributes);
 
     return is_policy;
 }

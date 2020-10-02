@@ -50,8 +50,8 @@ void GroupTypeEdit::set_read_only(EditReadOnly read_only_arg) {
     combo->setEnabled(read_only == EditReadOnly_No);
 }
 
-void GroupTypeEdit::load(const QString &dn) {
-    const GroupType type = AdInterface::instance()->group_get_type(dn);
+void GroupTypeEdit::load(const AttributesBinary &attributes) {
+    const GroupType type = group_get_type(attributes);
     const int type_int = (int)type;
 
     combo->blockSignals(true);

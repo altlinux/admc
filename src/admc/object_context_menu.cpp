@@ -54,11 +54,13 @@ void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
 ObjectContextMenu::ObjectContextMenu(const QString &dn)
 : QMenu()
 {
+    const AttributesBinary attributes = AdInterface::instance()->get_attributes(dn);
+
     addAction(tr("Details"), [this, dn]() {
         DetailsWidget::change_target(dn);
     });
 
-    const bool is_policy = AdInterface::instance()->is_policy(dn);
+    const bool is_policy = is_policy2(attributes);
     if (is_policy) {
         // TODO: policy version seems to be too disconnected from general object context menu, maybe just move it to policies widget?
         addAction(tr("Edit Policy"), [this, dn]() {
@@ -73,8 +75,8 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
         const bool cannot_rename = AdInterface::instance()->system_flag_get(dn, SystemFlagsBit_CannotRename);
         const bool cannot_delete = AdInterface::instance()->system_flag_get(dn, SystemFlagsBit_CannotDelete);
 
-        auto delete_action = addAction(tr("Delete"), [this, dn]() {
-            delete_object(dn);
+        auto delete_action = addAction(tr("Delete"), [this, dn, attributes]() {
+            delete_object(dn, attributes);
         });
         if (cannot_delete) {
             delete_action->setEnabled(false);
@@ -109,7 +111,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
             move_action->setEnabled(false);
         }
 
-        const bool is_user = AdInterface::instance()->is_user(dn); 
+        const bool is_user = is_user2(attributes); 
 
         if (is_user) {
             QAction *add_to_group_action = addAction(tr("Add to group"));
@@ -124,7 +126,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
                 password_dialog->open();
             });
 
-            const bool disabled = AdInterface::instance()->user_get_account_option(dn, AccountOption_Disabled);
+            const bool disabled = user_get_account_option(attributes, AccountOption_Disabled);
             QString disable_text;
             if (disabled) {
                 disable_text = tr("Enable account");
@@ -138,8 +140,8 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
     }
 }
 
-void ObjectContextMenu::delete_object(const QString &dn) {
-    const QString name = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_NAME);
+void ObjectContextMenu::delete_object(const QString &dn, const AttributesBinary &attributes) {
+    const QString name(attributes[ATTRIBUTE_NAME][0]);
     const QString text = QString(tr("Are you sure you want to delete \"%1\"?")).arg(name);
     const bool confirmed = confirmation_dialog(text, this);
 

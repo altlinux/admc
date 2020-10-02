@@ -95,9 +95,8 @@ RenameDialog::RenameDialog(const QString &target_arg)
     top_layout->addLayout(edits_layout);
     top_layout->addWidget(button_box);
 
-    for (auto edit : all_edits) {
-        edit->load(target);
-    }
+    const AttributesBinary attributes = AdInterface::instance()->get_attributes(target);
+    load_attribute_edits(all_edits, attributes);
 }
 
 void RenameDialog::accept() {

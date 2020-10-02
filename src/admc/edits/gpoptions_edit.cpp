@@ -37,8 +37,8 @@ GpoptionsEdit::GpoptionsEdit(QObject *parent)
         });
 }
 
-void GpoptionsEdit::load(const QString &dn) {
-    const QString value = AdInterface::instance()->attribute_get_value(dn, ATTRIBUTE_GPOPTIONS);
+void GpoptionsEdit::load(const AttributesBinary &attributes) {
+    const QString value(attributes[ATTRIBUTE_GPOPTIONS][0]);
     const bool checked = (value == GPOPTIONS_BLOCK_INHERITANCE);
 
     check->blockSignals(true);
