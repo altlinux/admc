@@ -320,7 +320,7 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 
     const char *value_cstr = value.constData();
 
-    const int result = ad_attribute_add_string(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+    const int result = ad_attribute_add(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
 
     const QString name = extract_name_from_dn(dn);
 
@@ -367,9 +367,9 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
 
     int result;
     if (value.isEmpty()) {
-        result = ad_attribute_delete_string(ld, dn_cstr, attribute_cstr, old_value_cstr, old_value.size());
+        result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, old_value_cstr, old_value.size());
     } else {
-        result = ad_attribute_replace_string(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+        result = ad_attribute_replace(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
     }
 
     const QString name = extract_name_from_dn(dn);
@@ -402,7 +402,7 @@ bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, 
 
     const char *value_cstr = value.constData();
 
-    const int result = ad_attribute_delete_string(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+    const int result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
 
     const QString name = extract_name_from_dn(dn);
 

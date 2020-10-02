@@ -31,11 +31,10 @@
 #include <QSet>
 #include <QIcon>
 
-// Interface between the GUI and AdConnection
-// Stores attributes cache of objects
-// Attributes cache is expanded as more objects are loaded and
-// is updated on object changes
-// Emits various signals for AD operation successes/failures
+// Interface to AD/LDAP
+// Emits modified() signal after performing an action that
+// modifies data on the AD server
+// Reload GUI state when that signal is emitted
 
 #define ATTRIBUTE_USER_ACCOUNT_CONTROL  "userAccountControl"
 #define ATTRIBUTE_LOCKOUT_TIME          "lockoutTime"

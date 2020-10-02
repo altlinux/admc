@@ -48,7 +48,6 @@ typedef struct sasl_defaults_gssapi {
 
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 int query_server_for_hosts(const char *dname, char ***hosts_out);
-int ad_get_all_attributes_internal(LDAP *ld, const char *dn, const char *attribute, LDAPMessage **res_out);
 
 int ad_get_ldap_result(LDAP *ld) {
     int result;
@@ -242,16 +241,6 @@ void ad_array_free(char **array) {
     }
 }
 
-void ad_2d_array_free(char ***array) {
-    if (array != NULL) {
-        for (int i = 0; array[i] != NULL; i++) {
-            ad_array_free(array[i]);
-        }
-
-        free(array);
-    }
-}
-
 int ad_add(LDAP *ld, const char *dn, const char **objectClass) {
     LDAPMod attr;
     attr.mod_op = LDAP_MOD_ADD;
@@ -279,7 +268,7 @@ int ad_delete(LDAP *ld, const char *dn) {
     return result;
 }
 
-int ad_attribute_add_string(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
+int ad_attribute_add(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
     int result = AD_SUCCESS;
 
     char *data_copy = strdup(data);
@@ -313,7 +302,7 @@ int ad_attribute_add_string(LDAP *ld, const char *dn, const char *attribute, con
     }
 }
 
-int ad_attribute_replace_string(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
+int ad_attribute_replace(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
     int result = AD_SUCCESS;
 
     char *data_copy = (char *) malloc(data_length);
@@ -341,7 +330,7 @@ int ad_attribute_replace_string(LDAP *ld, const char *dn, const char *attribute,
     return result;
 }
 
-int ad_attribute_delete_string(LDAP *ld, const char *dn, const char *attribute, const char *data, const int data_length) {
+int ad_attribute_delete(LDAP *ld, const char *dn, const char *attribute, const char *data, const int data_length) {
     int result = AD_SUCCESS;
 
     char *data_copy = (char *) malloc(data_length);
@@ -576,51 +565,6 @@ int query_server_for_hosts(const char *dname, char ***hosts_out) {
         } else {
             *hosts_out = NULL;
             ad_array_free(hosts);
-        }
-
-        return result;
-    }
-}
-
-/**
- * Perform an attribute search on object
- * Outputs LDAPMessage res which contains results of the search
- * res should bbe freed by the caller using ldap_msgfree()
- */
-int ad_get_all_attributes_internal(LDAP *ld, const char *dn, const char *attribute, LDAPMessage **res_out) {
-    int result = AD_SUCCESS;
-
-    LDAPMessage *res;
-
-    // TODO: use paged search
-    char *attrs[] = {(char *)attribute, NULL};
-    const int result_search = ldap_search_ext_s(ld, dn, LDAP_SCOPE_BASE, "(objectclass=*)", attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
-    if (result_search != LDAP_SUCCESS) {
-        result = AD_LDAP_ERROR;
-        
-        goto end;
-    }
-
-    const int entries_count = ldap_count_entries(ld, res);
-    if (entries_count == 0) {
-        // No attribute entries found
-        result = AD_ERROR;
-        
-        goto end;
-    } else if (entries_count > 1) {
-        // Multiple attribute entries found
-        result = AD_ERROR;
-        
-        goto end;
-    }
-
-    end:
-    {
-        if (result == AD_SUCCESS) {
-            *res_out = res;
-        } else {
-            *res_out = NULL;
-            ldap_msgfree(res);
         }
 
         return result;

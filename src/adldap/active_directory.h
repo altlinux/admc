@@ -62,13 +62,6 @@ size_t ad_array_size(char **array);
 void ad_array_free(char **array);
 
 /**
- * Free a null-terminated array that was returned by one of
- * the functions in this library
- * If array is NULL, nothing is done
- */
-void ad_2d_array_free(char ***array);
-
-/**
  * Adds an object with given DN and objectClass
  * objectClass is a NULL terminated array of objectClass values
  * All ancestors of object must already exist
@@ -87,21 +80,21 @@ int ad_delete(LDAP *ld, const char *dn);
  * This function works only on multi-valued attributes
  * Returns AD_SUCCESS, AD_LDAP_ERROR
  */
-int ad_attribute_add_string(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length);
+int ad_attribute_add(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length);
 
 /**
  * Replaces the value of given attribute with new value
  * If attributes has multiple values, all of them are replaced
  * Returns AD_SUCCESS, AD_LDAP_ERROR
  */
-int ad_attribute_replace_string(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length);
+int ad_attribute_replace(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length);
 
 /**
  * Remove (attribute, value) mapping from object
  * If given value is NULL, remove all values of this attributes
  * Returns AD_SUCCESS, AD_LDAP_ERROR
  */
-int ad_attribute_delete_string(LDAP *ld, const char *dn, const char *attribute, const char *data, const int data_length);
+int ad_attribute_delete(LDAP *ld, const char *dn, const char *attribute, const char *data, const int data_length);
 
 /**
  * Rename object
@@ -114,8 +107,6 @@ int ad_rename(LDAP *ld, const char *dn, const char *new_rdn);
  * Returns AD_SUCCESS, AD_LDAP_ERROR
  */
 int ad_move(LDAP *ld, const char *current_dn, const char *new_container);
-
-int ad_get_all_attributes_internal(LDAP *ld, const char *dn, const char *attribute, LDAPMessage **res_out);
 
 #if defined(__cplusplus)
 }
