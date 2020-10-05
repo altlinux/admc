@@ -82,7 +82,7 @@ DetailsWidget::DetailsWidget(const bool is_floating_instance_arg)
     layout->addWidget(button_box);
 
     connect(
-        AdInterface::instance(), &AdInterface::modified,
+        AD(), &AdInterface::modified,
         this, &DetailsWidget::on_ad_modified);
 
     connect(
@@ -123,7 +123,7 @@ QString DetailsWidget::get_target() const {
 void DetailsWidget::reload(const QString &new_target) {
     target = new_target;
 
-    const AdObject object  = AdInterface::instance()->request_all(target);
+    const AdObject object  = AD()->request_all(target);
 
     if (object.is_empty()) {
         if (is_floating_instance) {
@@ -244,13 +244,13 @@ void DetailsWidget::on_apply() {
     }
 
     if (all_verified) {
-        AdInterface::instance()->start_batch();
+        AD()->start_batch();
         for (auto tab : tabs) {
             if (tab_widget->indexOf(tab) != -1) {
                 tab->apply(target);
             }
         }
-        AdInterface::instance()->end_batch();
+        AD()->end_batch();
 
         Status::instance()->show_errors_popup(errors_index);
     }

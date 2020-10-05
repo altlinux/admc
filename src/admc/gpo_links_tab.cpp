@@ -82,7 +82,7 @@ void GpoLinksTab::load(const AdObject &object) {
     // NOTE: *target* means searching for gplink containing target
     const QList<QString> search_attributes = {ATTRIBUTE_NAME};
     const QString filter = filter_EQUALS(ATTRIBUTE_GPLINK, "*" + object.get_dn() + "*");
-    const QHash<QString, AdObject> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_All);
+    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_All);
 
     for (auto dn : search_results.keys()) {
         const QString name = object.get_string(ATTRIBUTE_NAME);

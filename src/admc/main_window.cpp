@@ -59,7 +59,7 @@ MainWindow::MainWindow()
         const QString host = Settings::instance()->get_variant(VariantSetting_Host).toString();
         const QString domain = Settings::instance()->get_variant(VariantSetting_Domain).toString();
 
-        const bool login_success = AdInterface::instance()->login(host, domain);
+        const bool login_success = AD()->login(host, domain);
 
         if (login_success) {
             finish_init();

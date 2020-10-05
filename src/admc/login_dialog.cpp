@@ -150,7 +150,7 @@ void LoginDialog::load_hosts() {
 void LoginDialog::complete(const QString &host) {
     const QString domain = domain_edit->text();
 
-    const bool login_success = AdInterface::instance()->login(host, domain);
+    const bool login_success = AD()->login(host, domain);
 
     if (login_success) {
         const QString site = site_edit->text();

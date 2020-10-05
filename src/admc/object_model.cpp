@@ -48,7 +48,7 @@ bool ObjectModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, in
     const QString dn = data->text();
     const QString target_dn = get_dn_from_index(parent, dn_column);
 
-    const bool can_drop = AdInterface::instance()->object_can_drop(dn, target_dn);
+    const bool can_drop = AD()->object_can_drop(dn, target_dn);
 
     return can_drop;
 }
@@ -65,7 +65,7 @@ bool ObjectModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int
     const QString dn = data->text();
     const QString target_dn = get_dn_from_index(parent, dn_column);
 
-    AdInterface::instance()->object_drop(dn, target_dn);
+    AD()->object_drop(dn, target_dn);
 
     return true;
 }

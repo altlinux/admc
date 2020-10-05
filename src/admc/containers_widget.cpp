@@ -70,7 +70,7 @@ ContainersWidget::ContainersWidget(QWidget *parent)
     layout->addWidget(view);
 
     connect(
-        AdInterface::instance(), &AdInterface::modified,
+        AD(), &AdInterface::modified,
         this, &ContainersWidget::reload);
     connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,
@@ -94,7 +94,7 @@ ContainersWidget::ContainersWidget(QWidget *parent)
 };
 
 void ContainersWidget::reload() {
-    const QString head_dn = AdInterface::instance()->search_base();
+    const QString head_dn = AD()->search_base();
     QAbstractItemModel *view_model = view->model();
 
     // Save DN's that were fetched
@@ -167,7 +167,7 @@ void ContainersWidget::reload() {
         QStack<QModelIndex> stack;
 
         QStandardItem *invis_root = model->invisibleRootItem();
-        const AdObject head_object = AdInterface::instance()->request_all(head_dn);
+        const AdObject head_object = AD()->request_all(head_dn);
         const QStandardItem *head_item = make_row(invis_root, head_dn, head_object);
         stack.push(head_item->index());
 
@@ -278,7 +278,7 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
 
     // Add children
     const QList<QString> search_attributes = {ATTRIBUTE_NAME, ATTRIBUTE_DISTINGUISHED_NAME, ATTRIBUTE_OBJECT_CLASS};
-    const QHash<QString, AdObject> search_results = AdInterface::instance()->search("", search_attributes, SearchScope_Children, dn);
+    const QHash<QString, AdObject> search_results = AD()->search("", search_attributes, SearchScope_Children, dn);
 
     for (auto child : search_results.keys()) {
         const AdObject object  = search_results[child];
@@ -292,13 +292,13 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
     // NOTE: have to manually add configuration and schema objects because they aren't searchable
     const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
     if (dev_mode) {
-        const QString search_base = AdInterface::instance()->search_base();
-        const QString configuration_dn = AdInterface::instance()->configuration_dn();
-        const QString schema_dn = AdInterface::instance()->schema_dn();
+        const QString search_base = AD()->search_base();
+        const QString configuration_dn = AD()->configuration_dn();
+        const QString schema_dn = AD()->schema_dn();
 
         const auto load_manually =
         [parent_item](const QString &child) {
-            const AdObject object  = AdInterface::instance()->request_all(child);
+            const AdObject object  = AD()->request_all(child);
             make_row(parent_item, child, object);
         };
 

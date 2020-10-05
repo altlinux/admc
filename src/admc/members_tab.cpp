@@ -95,14 +95,14 @@ void MembersTab::apply(const QString &target) {
     for (auto member : original_members) {
         const bool removed = !current_members.contains(member);
         if (removed) {
-            AdInterface::instance()->attribute_delete_string(target, ATTRIBUTE_MEMBER, member);
+            AD()->attribute_delete_string(target, ATTRIBUTE_MEMBER, member);
         }
     }
 
     for (auto member : current_members) {
         const bool added = !original_members.contains(member);
         if (added) {
-            AdInterface::instance()->attribute_add_string(target, ATTRIBUTE_MEMBER, member);
+            AD()->attribute_add_string(target, ATTRIBUTE_MEMBER, member);
         }
     }
 }

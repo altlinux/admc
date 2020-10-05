@@ -126,7 +126,7 @@ bool ExpiryEdit::changed() const {
 
 bool ExpiryEdit::apply(const QString &dn) {
     const QString new_value = get_new_value();
-    const bool result = AdInterface::instance()->attribute_replace_string(dn, ATTRIBUTE_ACCOUNT_EXPIRES, new_value);
+    const bool result = AD()->attribute_replace_string(dn, ATTRIBUTE_ACCOUNT_EXPIRES, new_value);
 
     return result;
 }

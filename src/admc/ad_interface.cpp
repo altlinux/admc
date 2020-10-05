@@ -866,8 +866,8 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
         return DropType_None;
     }
 
-    const AdObject dropped = AdInterface::instance()->request_attributes(dn, {ATTRIBUTE_OBJECT_CLASS});
-    const AdObject target = AdInterface::instance()->request_attributes(target_dn, {ATTRIBUTE_OBJECT_CLASS});
+    const AdObject dropped = AD()->request_attributes(dn, {ATTRIBUTE_OBJECT_CLASS});
+    const AdObject target = AD()->request_attributes(target_dn, {ATTRIBUTE_OBJECT_CLASS});
 
     const bool dropped_is_user = dropped.is_user();
     const bool target_is_group = target.is_user();
@@ -912,11 +912,11 @@ void AdInterface::object_drop(const QString &dn, const QString &target_dn) {
 
     switch (drop_type) {
         case DropType_Move: {
-            AdInterface::instance()->object_move(dn, target_dn);
+            AD()->object_move(dn, target_dn);
             break;
         }
         case DropType_AddToGroup: {
-            AdInterface::instance()->group_add_user(target_dn, dn);
+            AD()->group_add_user(target_dn, dn);
             break;
         }
         case DropType_None: {
@@ -1034,6 +1034,10 @@ QString extract_parent_dn_from_dn(const QString &dn) {
     QString parent_dn = dn.mid(comma_i + 1);
 
     return parent_dn;
+}
+
+AdInterface *AD() {
+    return AdInterface::instance();
 }
 
 QString filter_EQUALS(const QString &attribute, const QString &value) {

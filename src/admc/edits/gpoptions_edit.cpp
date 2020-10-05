@@ -77,7 +77,7 @@ bool GpoptionsEdit::apply(const QString &dn) {
             return GPOPTIONS_INHERIT;
         }
     }();
-    const bool success = AdInterface::instance()->attribute_replace_string(dn, ATTRIBUTE_GPOPTIONS, new_value);
+    const bool success = AD()->attribute_replace_string(dn, ATTRIBUTE_GPOPTIONS, new_value);
 
     return success;
 }

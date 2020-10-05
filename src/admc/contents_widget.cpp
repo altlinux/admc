@@ -99,7 +99,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
         this, &ContentsWidget::on_containers_selected_changed);
 
     connect(
-        AdInterface::instance(), &AdInterface::modified,
+        AD(), &AdInterface::modified,
         this, &ContentsWidget::on_ad_modified);
 
     connect(
@@ -138,7 +138,7 @@ void ContentsWidget::change_target(const QString &dn) {
 
     resize_columns();
 
-    const QString target_name = AdInterface::instance()->request_value(target_dn, ATTRIBUTE_NAME);
+    const QString target_name = AD()->request_value(target_dn, ATTRIBUTE_NAME);
 
     QString label_text;
     if (target_name.isEmpty()) {
@@ -188,7 +188,7 @@ void ContentsModel::change_target(const QString &target_dn) {
 
     // Load head
     QStandardItem *root = invisibleRootItem();
-    const AdObject head_object = AdInterface::instance()->request_all(target_dn);
+    const AdObject head_object = AD()->request_all(target_dn);
     make_row(root, head_object);
     QStandardItem *head = item(0, 0);
 
@@ -196,7 +196,7 @@ void ContentsModel::change_target(const QString &target_dn) {
     QList<QString> search_attributes = columns;
     search_attributes.append(ATTRIBUTE_OBJECT_CLASS);
 
-    const QHash<QString, AdObject> search_results = AdInterface::instance()->search("", search_attributes, SearchScope_Children, target_dn);
+    const QHash<QString, AdObject> search_results = AD()->search("", search_attributes, SearchScope_Children, target_dn);
 
     // Load children
     for (auto child_dn : search_results.keys()) {

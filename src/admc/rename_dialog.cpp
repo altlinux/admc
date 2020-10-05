@@ -38,7 +38,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
 : QDialog()
 {
     target = target_arg;
-    const AdObject object  = AdInterface::instance()->request_all(target);
+    const AdObject object  = AD()->request_all(target);
 
     setAttribute(Qt::WA_DeleteOnClose);
     resize(600, 600);
@@ -102,7 +102,7 @@ void RenameDialog::accept() {
     }
 
     const int errors_index = Status::instance()->get_errors_size();
-    AdInterface::instance()->start_batch();
+    AD()->start_batch();
     {
         // NOTE: apply attribute changes before renaming so that attribute changes can complete on old DN
         const bool apply_success = apply_attribute_edits(all_edits, target, this);
@@ -120,7 +120,7 @@ void RenameDialog::accept() {
             if (string_edits.contains(ATTRIBUTE_NAME)) {
                 const QString new_name = get_attribute_from_edit(ATTRIBUTE_NAME);
 
-                return AdInterface::instance()->object_rename(target, new_name);
+                return AD()->object_rename(target, new_name);
             } else {
                 // NOTE: for policies, object is never actually renamed, only the display name changes
                 return true;
@@ -146,6 +146,6 @@ void RenameDialog::accept() {
             Status::instance()->message(message, StatusType_Error);
         }
     }
-    AdInterface::instance()->end_batch();
+    AD()->end_batch();
     Status::instance()->show_errors_popup(errors_index);
 }

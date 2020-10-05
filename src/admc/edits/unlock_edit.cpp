@@ -65,7 +65,7 @@ bool UnlockEdit::changed() const {
 
 bool UnlockEdit::apply(const QString &dn) {
     if (checkbox_is_checked(check)) {
-        const bool result = AdInterface::instance()->user_unlock(dn);
+        const bool result = AD()->user_unlock(dn);
         return result;
     } else {
         return true;

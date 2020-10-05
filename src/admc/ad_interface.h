@@ -226,7 +226,9 @@ private:
     AdInterface& operator=(const AdInterface&) = delete;
     AdInterface(AdInterface&&) = delete;
     AdInterface& operator=(AdInterface&&) = delete;
-}; 
+};
+
+AdInterface *AD();
 
 QString filter_EQUALS(const QString &attribute, const QString &value);
 QString filter_AND(const QString &a, const QString &b);

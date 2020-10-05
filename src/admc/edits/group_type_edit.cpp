@@ -82,7 +82,7 @@ bool GroupTypeEdit::changed() const {
 
 bool GroupTypeEdit::apply(const QString &dn) {
     const GroupType new_value = (GroupType)combo->currentData().toInt();
-    const bool success = AdInterface::instance()->group_set_type(dn, new_value);
+    const bool success = AD()->group_set_type(dn, new_value);
 
     return success;
 }

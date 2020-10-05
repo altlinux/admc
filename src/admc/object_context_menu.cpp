@@ -54,7 +54,7 @@ void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
 ObjectContextMenu::ObjectContextMenu(const QString &dn)
 : QMenu()
 {
-    const AdObject object  = AdInterface::instance()->request_all(dn);
+    const AdObject object  = AD()->request_all(dn);
 
     addAction(tr("Details"), [this, dn]() {
         DetailsWidget::change_target(dn);
@@ -131,7 +131,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
                 disable_text = tr("Disable account");
             }
             addAction(disable_text, [this, dn, disabled]() {
-                AdInterface::instance()->user_set_account_option(dn, AccountOption_Disabled, !disabled);
+                AD()->user_set_account_option(dn, AccountOption_Disabled, !disabled);
             });
         }
     }
@@ -143,7 +143,7 @@ void ObjectContextMenu::delete_object(const QString &dn, const AdObject &object)
     const bool confirmed = confirmation_dialog(text, this);
 
     if (confirmed) {
-        AdInterface::instance()->object_delete(dn);
+        AD()->object_delete(dn);
     }    
 }
 
@@ -162,7 +162,7 @@ void ObjectContextMenu::edit_policy(const QString &dn, const AdObject &object) {
         // Replacing domain at the start with current host fixes it
         // "smb://dc0.domain.alt/sysvol/domain.alt/Policies/{D7E75BC7-138D-4EE1-8974-105E4A2DE560}"
         // not sure if this is required and which host/DC is the correct one
-        const QString host = AdInterface::instance()->host();
+        const QString host = AD()->host();
 
         const int sysvol_i = path_tmp.indexOf("sysvol");
         path_tmp.remove(0, sysvol_i);
@@ -193,7 +193,7 @@ void ObjectContextMenu::move(const QString &dn, const AdObject &object) {
     if (selected_objects.size() == 1) {
         const QString container = selected_objects[0];
 
-        AdInterface::instance()->object_move(dn, container);
+        AD()->object_move(dn, container);
     }
 }
 
@@ -203,7 +203,7 @@ void ObjectContextMenu::add_to_group(const QString &dn) {
 
     if (selected_objects.size() > 0) {
         for (auto group : selected_objects) {
-            AdInterface::instance()->group_add_user(group, dn);
+            AD()->group_add_user(group, dn);
         }
     }
 }

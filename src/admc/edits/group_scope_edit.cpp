@@ -83,7 +83,7 @@ bool GroupScopeEdit::changed() const {
 
 bool GroupScopeEdit::apply(const QString &dn) {
     const GroupScope new_value = (GroupScope)combo->currentData().toInt();
-    const bool success = AdInterface::instance()->group_set_scope(dn, new_value);
+    const bool success = AD()->group_set_scope(dn, new_value);
 
     return success;
 }

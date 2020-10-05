@@ -122,7 +122,7 @@ bool AccountOptionEdit::changed() const {
 
 bool AccountOptionEdit::apply(const QString &dn) {
     const bool new_value = checkbox_is_checked(check);
-    const bool success = AdInterface::instance()->user_set_account_option(dn, option, new_value);
+    const bool success = AD()->user_set_account_option(dn, option, new_value);
 
     return success;
 }
