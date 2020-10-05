@@ -41,7 +41,7 @@ class GroupPolicyTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    GroupPolicyTab(DetailsWidget *details_arg);
+    GroupPolicyTab();
     DECL_DETAILS_TAB_VIRTUALS();
 
 private slots:

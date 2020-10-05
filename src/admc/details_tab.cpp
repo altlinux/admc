@@ -18,15 +18,11 @@
  */
 
 #include "details_tab.h"
-#include "details_widget.h"
 
-DetailsTab::DetailsTab(DetailsWidget *details_arg)
-: QWidget(details_arg) {
-    details = details_arg;
-}
+DetailsTab::DetailsTab()
+: QWidget()
+{
 
-QString DetailsTab::target() const {
-    return details->get_target();
 }
 
 void DetailsTab::on_edit_edited() {

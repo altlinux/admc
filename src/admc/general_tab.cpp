@@ -36,8 +36,8 @@
 
 // TODO: other object types also have special general tab versions, like top level domain object for example. Find out all of them and implement them
 
-GeneralTab::GeneralTab(DetailsWidget *details_arg)
-: DetailsTab(details_arg)
+GeneralTab::GeneralTab()
+: DetailsTab()
 {   
     name_label = new QLabel();
 
@@ -172,15 +172,15 @@ bool GeneralTab::verify() {
     return verify_attribute_edits(edits_for_type[type], this);
 }
 
-void GeneralTab::apply() {
-    apply_attribute_edits(edits_for_type[type], target(), this);
+void GeneralTab::apply(const QString &target) {
+    apply_attribute_edits(edits_for_type[type], target, this);
 }
 
 bool GeneralTab::accepts_target(const Attributes &) const {
     return true;
 }
 
-void GeneralTab::reload(const Attributes &attributes) {
+void GeneralTab::load(const QString &target, const Attributes &attributes) {
     const QString name(attributes[ATTRIBUTE_NAME][0]);
     name_label->setText(name);
 

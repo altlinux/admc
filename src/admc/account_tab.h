@@ -30,7 +30,7 @@ class AccountTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    AccountTab(DetailsWidget *details_arg);
+    AccountTab();
     DECL_DETAILS_TAB_VIRTUALS();
 
 private:

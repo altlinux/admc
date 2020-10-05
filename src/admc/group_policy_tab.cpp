@@ -50,8 +50,8 @@ const QHash<GplinkColumn, GplinkOption> column_to_option = {
 
 QString gplink_option_to_display_string(const QString &option);
 
-GroupPolicyTab::GroupPolicyTab(DetailsWidget *details_arg)
-: DetailsTab(details_arg)
+GroupPolicyTab::GroupPolicyTab()
+: DetailsTab()
 {   
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -117,14 +117,14 @@ bool GroupPolicyTab::verify() {
     return verify_attribute_edits(edits, this);
 }
 
-void GroupPolicyTab::apply() {
+void GroupPolicyTab::apply(const QString &target) {
     const QString gplink_string = current_gplink.to_string();
-    AdInterface::instance()->attribute_replace_string(target(), ATTRIBUTE_GPLINK, gplink_string);
+    AdInterface::instance()->attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
 
-    apply_attribute_edits(edits, target(), this);
+    apply_attribute_edits(edits, target, this);
 }
 
-void GroupPolicyTab::reload(const Attributes &attributes) {
+void GroupPolicyTab::load(const QString &target, const Attributes &attributes) {
     const QString gplink_string(attributes[ATTRIBUTE_GPLINK][0]);
     original_gplink = Gplink(gplink_string);
     current_gplink = original_gplink;

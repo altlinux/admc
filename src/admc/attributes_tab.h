@@ -34,7 +34,7 @@ class AttributesTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    AttributesTab(DetailsWidget *details_arg);
+    AttributesTab();
     DECL_DETAILS_TAB_VIRTUALS();
 
 private:
@@ -49,7 +49,7 @@ public:
     explicit AttributesModel(AttributesTab *attributes_tab_arg);
 
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-    void reload(const Attributes &attributes);
+    void reload(const QString &target, const Attributes &attributes);
 
 private:
     AttributesTab *attributes_tab;

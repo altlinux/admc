@@ -31,8 +31,8 @@ enum AttributesColumn {
     AttributesColumn_COUNT,
 };
 
-AttributesTab::AttributesTab(DetailsWidget *details_widget_arg)
-: DetailsTab(details_widget_arg)
+AttributesTab::AttributesTab()
+: DetailsTab()
 {
     model = new AttributesModel(this);
 
@@ -57,12 +57,12 @@ bool AttributesTab::verify() {
     return true;
 }
 
-void AttributesTab::apply() {
+void AttributesTab::apply(const QString &target) {
 
 }
 
-void AttributesTab::reload(const Attributes &attributes) {
-    model->reload(attributes);
+void AttributesTab::load(const QString &target, const Attributes &attributes) {
+    model->reload(target, attributes);
 }
 
 bool AttributesTab::accepts_target(const Attributes &attributes) const {
@@ -82,25 +82,11 @@ AttributesModel::AttributesModel(AttributesTab *attributes_tab_arg)
 
 // This will be called when an attribute value is edited
 bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, int role) {
-    QModelIndex value_index = index;
-    QModelIndex name_index = value_index.siblingAtColumn(AttributesColumn_Name);
-
-    const QString target = attributes_tab->target();
-    const QString attribute = name_index.data().toString();
-    const QString value_str = value.toString();
-
-    const bool replace_success = AdInterface::instance()->attribute_replace_string(target, attribute, value_str);
-
-    if (replace_success) {
-        QStandardItemModel::setData(index, value, role);
-
-        return true;
-    } else {
-        return false;
-    }
+    // TODO: need to store changes to be apply when apply() is called
+    return true;
 }
 
-void AttributesModel::reload(const Attributes &attributes) {
+void AttributesModel::reload(const QString &target, const Attributes &attributes) {
     removeRows(0, rowCount());
 
     // Populate model with attributes of new root
@@ -120,7 +106,6 @@ void AttributesModel::reload(const Attributes &attributes) {
     }
 
     // Add attributes without values
-    const QString target = attributes_tab->target();
     const QList<QString> possible_attributes = get_possible_attributes(attributes);
     for (const QString attribute : possible_attributes) {
         if (!attributes.contains(attribute)) {

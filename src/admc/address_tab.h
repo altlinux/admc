@@ -24,7 +24,6 @@
 
 #include <QList>
 
-class DetailsWidget;
 class AttributeEdit;
 
 // Shows member objects of targeted group
@@ -32,7 +31,7 @@ class AddressTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    AddressTab(DetailsWidget *details_arg);
+    AddressTab();
     DECL_DETAILS_TAB_VIRTUALS();
 
 private:

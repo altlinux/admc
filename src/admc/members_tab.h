@@ -39,7 +39,7 @@ class MembersTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    MembersTab(DetailsWidget *details_arg);
+    MembersTab();
     DECL_DETAILS_TAB_VIRTUALS();
 
 private slots:

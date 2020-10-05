@@ -69,24 +69,8 @@ DetailsWidget::DetailsWidget(const bool is_floating_instance_arg)
     title_label = new QLabel(this);
     tab_widget = new QTabWidget(this);
 
-    tabs[TabHandle_General] = new GeneralTab(this);
-    tabs[TabHandle_Object] = new ObjectTab(this);
-    tabs[TabHandle_Attributes] = new AttributesTab(this);
-    tabs[TabHandle_Account] = new AccountTab(this);
-    tabs[TabHandle_Members] = new MembersTab(this);
-    tabs[TabHandle_Address] = new AddressTab(this);
-    tabs[TabHandle_GroupPolicy] = new GroupPolicyTab(this);
-    tabs[TabHandle_GroupPolicyInverse] = new GpoLinksTab(this);
-
-    for (auto tab : tabs) {
-        connect(
-            tab, &DetailsTab::edited,
-            this, &DetailsWidget::on_tab_edited);
-    }
-
-    // NOTE: need to add all tabs so that tab widget gains ownership of them
-    for (auto tab : tabs) {
-        tab_widget->addTab(tab, "");
+    for (int i = 0; i < TabHandle_COUNT; i++) {
+        tabs[i] = nullptr;
     }
 
     button_box = new QDialogButtonBox(QDialogButtonBox::Apply |  QDialogButtonBox::Cancel, this);
@@ -155,14 +139,49 @@ void DetailsWidget::reload(const QString &new_target) {
         const QString title_text = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
         title_label->setText(title_text);
 
+        // Save old selected tab(if there is one) to restore it after recreating tabs
+        const TabHandle selected_tab_handle =
+        [this]() {
+            const int current_index = tab_widget->currentIndex();
+
+            for (int i = 0; i < TabHandle_COUNT; i++) {
+                QWidget *tab = tabs[i];
+
+                if (tab_widget->indexOf(tab) == current_index) {
+                    return (TabHandle) i;
+                }
+            }
+
+            return TabHandle_General;
+        }();
+
         tab_widget->clear();
+        for (auto tab : tabs) {
+            if (tab != nullptr) {
+                delete tab;
+            }
+        }
 
-        // Disable apply/cancel since this is a fresh reload and there are no changes
-        button_box->show();
-        button_box->setEnabled(false);
+        tabs[TabHandle_General] = new GeneralTab();
+        tabs[TabHandle_Object] = new ObjectTab();
+        tabs[TabHandle_Attributes] = new AttributesTab();
+        tabs[TabHandle_Account] = new AccountTab();
+        tabs[TabHandle_Members] = new MembersTab();
+        tabs[TabHandle_Address] = new AddressTab();
+        tabs[TabHandle_GroupPolicy] = new GroupPolicyTab();
+        tabs[TabHandle_GroupPolicyInverse] = new GpoLinksTab();
 
-        // Save old tab to restore it after reload
-        QWidget *old_tab = tab_widget->widget(tab_widget->currentIndex());
+        for (auto tab : tabs) {
+            connect(
+                tab, &DetailsTab::edited,
+                this, &DetailsWidget::on_tab_edited);
+        }
+
+        // NOTE: need to add all tabs so that tab widget gains ownership of them
+        for (auto tab : tabs) {
+            tab_widget->addTab(tab, "");
+        }
+        tab_widget->clear();
 
         for (int i = 0; i < TabHandle_COUNT; i++) {
             const TabHandle tab_handle = (TabHandle) i;
@@ -173,7 +192,7 @@ void DetailsWidget::reload(const QString &new_target) {
                 continue;
             }
 
-            tab->reload(attributes);
+            tab->load(target, attributes);
 
             const QString tab_text =
             [tab_handle]() {
@@ -194,11 +213,16 @@ void DetailsWidget::reload(const QString &new_target) {
             tab_widget->addTab(tab, tab_text);
         }
 
-        // Restore old if it is still active
-        const int old_tab_is_active = (tab_widget->indexOf(old_tab) != -1);
-        if (old_tab_is_active) {
-            tab_widget->setCurrentIndex(tab_widget->indexOf(old_tab));
+        // Restore old selected tab if it is still active
+        QWidget *selected_tab = tabs[selected_tab_handle];
+        const int selected_tab_new_index = tab_widget->indexOf(selected_tab);
+        if (selected_tab_new_index != -1) {
+            tab_widget->setCurrentIndex(selected_tab_new_index);
         }
+
+        // Disable apply/cancel since this is a fresh reload and there are no changes
+        button_box->show();
+        button_box->setEnabled(false);
     }
 }
 
@@ -223,7 +247,7 @@ void DetailsWidget::on_apply() {
         AdInterface::instance()->start_batch();
         for (auto tab : tabs) {
             if (tab_widget->indexOf(tab) != -1) {
-                tab->apply();
+                tab->apply(target);
             }
         }
         AdInterface::instance()->end_batch();

@@ -25,7 +25,6 @@
 #include <QList>
 
 class QLabel;
-class DetailsWidget;
 class AttributeEdit;
 class QStackedLayout;
 
@@ -43,7 +42,7 @@ class GeneralTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    GeneralTab(DetailsWidget *details_arg);
+    GeneralTab();
     DECL_DETAILS_TAB_VIRTUALS();
 
 private:

@@ -33,8 +33,8 @@
 
 // NOTE: https://ldapwiki.com/wiki/MMC%20Account%20Tab
 
-AccountTab::AccountTab(DetailsWidget *details_arg)
-: DetailsTab(details_arg)
+AccountTab::AccountTab()
+: DetailsTab()
 {   
     const auto logon_name_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER, this);
     edits.append(logon_name_edit);
@@ -71,11 +71,11 @@ bool AccountTab::verify() {
     return verify_attribute_edits(edits, this);
 }
 
-void AccountTab::apply() {
-    apply_attribute_edits(edits, target(), this);
+void AccountTab::apply(const QString &target) {
+    apply_attribute_edits(edits, target, this);
 }
 
-void AccountTab::reload(const Attributes &attributes) {
+void AccountTab::load(const QString &target, const Attributes &attributes) {
     load_attribute_edits(edits, attributes);
 }
 

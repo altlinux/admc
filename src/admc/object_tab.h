@@ -22,7 +22,6 @@
 
 #include "details_tab.h"
 
-class DetailsWidget;
 class AttributeEdit;
 
 // Shows member objects of targeted group
@@ -30,7 +29,7 @@ class ObjectTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    ObjectTab(DetailsWidget *details_arg);
+    ObjectTab();
     DECL_DETAILS_TAB_VIRTUALS();
 
 private:

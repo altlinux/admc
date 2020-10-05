@@ -35,8 +35,8 @@ enum GpoLinksColumn {
     GpoLinksColumn_COUNT
 };
 
-GpoLinksTab::GpoLinksTab(DetailsWidget *details_arg)
-: DetailsTab(details_arg)
+GpoLinksTab::GpoLinksTab()
+: DetailsTab()
 {   
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -70,18 +70,18 @@ bool GpoLinksTab::verify() {
     return true;
 }
 
-void GpoLinksTab::apply() {
+void GpoLinksTab::apply(const QString &target) {
 
 }
 
-void GpoLinksTab::reload(const Attributes &attributes) {
+void GpoLinksTab::load(const QString &target, const Attributes &attributes) {
     model->removeRows(0, model->rowCount());
 
     // TODO: do this with search
     
     // NOTE: *target* means searching for gplink containing target
     const QList<QString> search_attributes = {ATTRIBUTE_NAME};
-    const QString filter = filter_EQUALS(ATTRIBUTE_GPLINK, "*" + target() + "*");
+    const QString filter = filter_EQUALS(ATTRIBUTE_GPLINK, "*" + target + "*");
     const QHash<QString, Attributes> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_All);
 
     for (auto dn : search_results.keys()) {

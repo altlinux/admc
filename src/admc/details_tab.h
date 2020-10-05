@@ -25,37 +25,30 @@
 #include <QWidget>
 #include <QString>
 
-class DetailsWidget;
-
 class DetailsTab : public QWidget {
 Q_OBJECT
 
 public:
-    DetailsTab(DetailsWidget *details_arg);
+    DetailsTab();
     
-    QString target() const;
-
     virtual bool accepts_target(const Attributes &attributes) const = 0;
     virtual bool changed() const = 0;
-    virtual void reload(const Attributes &attributes) = 0;
+    virtual void load(const QString &target, const Attributes &attributes) = 0;
     virtual bool verify() = 0;
-    virtual void apply() = 0;
+    virtual void apply(const QString &target) = 0;
 
 signals:
     void edited();
     
 public slots:
     void on_edit_edited();
-
-private:
-    DetailsWidget *details;
 };
 
 #define DECL_DETAILS_TAB_VIRTUALS()\
 bool accepts_target(const Attributes &attributes) const;\
 bool changed() const;\
-void reload(const Attributes &attributes);\
+void load(const QString &target, const Attributes &attributes);\
 bool verify();\
-void apply();
+void apply(const QString &target);
 
 #endif /* DETAILS_TAB_H */

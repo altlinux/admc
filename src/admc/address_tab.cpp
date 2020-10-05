@@ -22,13 +22,12 @@
 #include "edits/attribute_edit.h"
 #include "edits/string_edit.h"
 #include "edits/country_edit.h"
-#include "details_widget.h"
 
 #include <QVBoxLayout>
 #include <QGridLayout>
 
-AddressTab::AddressTab(DetailsWidget *details_arg)
-: DetailsTab(details_arg)
+AddressTab::AddressTab()
+: DetailsTab()
 {   
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
@@ -61,11 +60,11 @@ bool AddressTab::verify() {
     return verify_attribute_edits(edits, this);
 }
 
-void AddressTab::apply() {
-    apply_attribute_edits(edits, target(), this);
+void AddressTab::apply(const QString &target) {
+    apply_attribute_edits(edits, target, this);
 }
 
-void AddressTab::reload(const Attributes &attributes) {
+void AddressTab::load(const QString &target, const Attributes &attributes) {
     load_attribute_edits(edits, attributes);
 }
 

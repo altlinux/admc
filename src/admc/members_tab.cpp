@@ -39,8 +39,8 @@ enum MembersColumn {
     MembersColumn_COUNT,
 };
 
-MembersTab::MembersTab(DetailsWidget *details_arg)
-: DetailsTab(details_arg)
+MembersTab::MembersTab()
+: DetailsTab()
 {   
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -91,23 +91,23 @@ bool MembersTab::verify() {
 }
 
 // TODO: could do this with less requests by deleting all values of ATTRIBUTE_MEMBER and then setting to the list of values, but need to implement this in adldap
-void MembersTab::apply() {
+void MembersTab::apply(const QString &target) {
     for (auto member : original_members) {
         const bool removed = !current_members.contains(member);
         if (removed) {
-            AdInterface::instance()->attribute_delete_string(target(), ATTRIBUTE_MEMBER, member);
+            AdInterface::instance()->attribute_delete_string(target, ATTRIBUTE_MEMBER, member);
         }
     }
 
     for (auto member : current_members) {
         const bool added = !original_members.contains(member);
         if (added) {
-            AdInterface::instance()->attribute_add_string(target(), ATTRIBUTE_MEMBER, member);
+            AdInterface::instance()->attribute_add_string(target, ATTRIBUTE_MEMBER, member);
         }
     }
 }
 
-void MembersTab::reload(const Attributes &attributes) {
+void MembersTab::load(const QString &target, const Attributes &attributes) {
     const QList<QString> members = attribute_get_strings(attributes, ATTRIBUTE_MEMBER);
 
     original_members = members.toSet();
@@ -161,13 +161,8 @@ void MembersTab::on_remove_button() {
 void MembersTab::reload_current_members_into_model() {
     model->removeRows(0, model->rowCount());
 
-    const QString filter = filter_EQUALS(ATTRIBUTE_MEMBER_OF, target());
-    const QList<QString> search_attributes = {ATTRIBUTE_NAME, ATTRIBUTE_DISTINGUISHED_NAME};
-    const QHash<QString, Attributes> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_All);
-
-    for (auto dn : search_results.keys()) {
-        const Attributes attributes = search_results[dn];
-        const QString name = attributes[ATTRIBUTE_NAME][0];
+    for (auto dn : current_members) {
+        const QString name = extract_name_from_dn(dn);
         
         const QList<QStandardItem *> row = make_item_row(MembersColumn_COUNT);
         row[MembersColumn_Name]->setText(name);
