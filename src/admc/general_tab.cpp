@@ -27,153 +27,51 @@
 #include "utils.h"
 #include "server_configuration.h"
 
-#include <QVBoxLayout>
 #include <QLabel>
 #include <QGridLayout>
 #include <QMap>
-#include <QStackedLayout>
 #include <QFrame>
 
 // TODO: other object types also have special general tab versions, like top level domain object for example. Find out all of them and implement them
+
+enum GeneralTabType {
+    GeneralTabType_Default,
+    GeneralTabType_User,
+    GeneralTabType_OU,
+    GeneralTabType_Computer,
+    GeneralTabType_Group,
+    GeneralTabType_Container,
+    GeneralTabType_COUNT
+};
 
 GeneralTab::GeneralTab()
 : DetailsTab()
 {   
     name_label = new QLabel();
 
-    types_stack = new QStackedLayout();
-
-    QGridLayout *layout_for_type[GeneralTabType_COUNT];
-
-    // NOTE: put grid layout in a vbox layout to group subwidgets neatly
-    for (int i = 0; i < GeneralTabType_COUNT; i++) {
-        auto grid_layout = new QGridLayout();
-        auto wrapper_layout = new QVBoxLayout();
-        wrapper_layout->addLayout(grid_layout);
-        auto widget = new QWidget();
-        widget->setLayout(wrapper_layout);
-
-        layout_for_type[i] = grid_layout;
-
-        types_stack->addWidget(widget);
-    }
-
     auto line = new QFrame();
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Sunken);
+
+    edits_layout = new QGridLayout();
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addWidget(name_label);
     top_layout->addWidget(line);
-    top_layout->addLayout(types_stack);
-
-    // User
-    {
-        QList<AttributeEdit *> *edits = &(edits_for_type[GeneralTabType_User]);
-
-        const QList<QString> attributes = {
-            ATTRIBUTE_DESCRIPTION,
-            ATTRIBUTE_FIRST_NAME,
-            ATTRIBUTE_LAST_NAME,
-            ATTRIBUTE_DISPLAY_NAME,
-            ATTRIBUTE_INITIALS,
-            ATTRIBUTE_MAIL,
-            ATTRIBUTE_OFFICE,
-            ATTRIBUTE_TELEPHONE_NUMBER,
-            ATTRIBUTE_WWW_HOMEPAGE
-        };
-
-        QMap<QString, StringEdit *> string_edits;
-        make_string_edits(attributes, CLASS_USER, &string_edits, edits, this);
-
-        setup_string_edit_autofills(string_edits);
-    }
-
-    // OU
-    {
-        QList<AttributeEdit *> *edits = &(edits_for_type[GeneralTabType_OU]);
-
-        const QList<QString> attributes = {
-            ATTRIBUTE_DESCRIPTION,
-            ATTRIBUTE_STREET,
-            ATTRIBUTE_CITY,
-            ATTRIBUTE_STATE,
-            ATTRIBUTE_POSTAL_CODE,
-        };
-
-        QMap<QString, StringEdit *> string_edits;
-        make_string_edits(attributes, CLASS_OU, &string_edits, edits, this);
-
-        edits->append(new CountryEdit(this));
-    }
-
-    // Computer
-    {
-        QList<AttributeEdit *> *edits = &(edits_for_type[GeneralTabType_Computer]);
-
-        const QList<QString> attributes = {
-            ATTRIBUTE_SAMACCOUNT_NAME,
-            ATTRIBUTE_DNS_HOST_NAME,
-            ATTRIBUTE_DESCRIPTION,
-        };
-
-        QMap<QString, StringEdit *> string_edits;
-        make_string_edits(attributes, CLASS_COMPUTER, &string_edits, edits, this);
-
-        string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->set_read_only(EditReadOnly_Yes);
-        string_edits[ATTRIBUTE_DNS_HOST_NAME]->set_read_only(EditReadOnly_Yes);
-
-        // TODO: more string edits for: site (probably just site?), dc type (no idea)
-    }
-
-    // Group
-    {
-        QList<AttributeEdit *> *edits = &(edits_for_type[GeneralTabType_Group]);
-
-        // TODO: use make_string_edits()
-        edits->append(new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, CLASS_GROUP, this));
-        edits->append(new StringEdit(ATTRIBUTE_DESCRIPTION, CLASS_GROUP, this));
-        edits->append(new StringEdit(ATTRIBUTE_MAIL, CLASS_GROUP, this));
-        edits->append(new StringEdit(ATTRIBUTE_INFO, CLASS_GROUP, this));
-
-        edits->append(new GroupScopeEdit(this));
-        edits->append(new GroupTypeEdit(this));
-    }
-
-    // Container
-    {
-        QList<AttributeEdit *> *edits = &(edits_for_type[GeneralTabType_Container]);
-
-        edits->append(new StringEdit(ATTRIBUTE_DESCRIPTION, CLASS_CONTAINER, this));
-    }
-
-    for (int i = 0; i < GeneralTabType_COUNT; i++) {
-        QGridLayout *layout = layout_for_type[i];
-
-        layout_attribute_edits(edits_for_type[i], layout);
-        connect_edits_to_tab(edits_for_type[i], this);  
-    }
-
-    // types_stack->widget(2)->show();
-
-    // const auto test_w = new QWidget();
-    // test_w->setLayout(layout_for_type[2]);
-    // top_layout->addWidget(test_w);
-
-    // top_layout->addLayout(layout_for_type[2]);
+    top_layout->addLayout(edits_layout);
 }
 
 bool GeneralTab::changed() const {
-    return any_edits_changed(edits_for_type[type]);
+    return any_edits_changed(edits);
 }
 
 bool GeneralTab::verify() {
-    return verify_attribute_edits(edits_for_type[type], this);
+    return verify_attribute_edits(edits, this);
 }
 
 void GeneralTab::apply(const QString &target) {
-    apply_attribute_edits(edits_for_type[type], target, this);
+    apply_attribute_edits(edits, target, this);
 }
 
 bool GeneralTab::accepts_target(const Attributes &) const {
@@ -184,27 +82,107 @@ void GeneralTab::load(const QString &target, const Attributes &attributes) {
     const QString name(attributes[ATTRIBUTE_NAME][0]);
     name_label->setText(name);
 
-    const bool is_user = object_is_user(attributes);
-    const bool is_ou = object_is_ou(attributes);
-    const bool is_computer = object_is_computer(attributes);
-    const bool is_group = object_is_group(attributes);
-    const bool is_container = object_is_container(attributes);
+    const GeneralTabType type =
+    [attributes]() {
+        const bool is_user = object_is_user(attributes);
+        const bool is_ou = object_is_ou(attributes);
+        const bool is_computer = object_is_computer(attributes);
+        const bool is_group = object_is_group(attributes);
+        const bool is_container = object_is_container(attributes);
 
-    if (is_computer) {
-        type = GeneralTabType_Computer;
-    } else if (is_user) {
-        type = GeneralTabType_User;
-    } else if (is_ou) {
-        type = GeneralTabType_OU;
-    } else if (is_group) {
-        type = GeneralTabType_Group;
-    } else if (is_container) {
-        type = GeneralTabType_Container;
-    } else {
-        type = GeneralTabType_Default;
+        if (is_computer) {
+            return GeneralTabType_Computer;
+        } else if (is_user) {
+            return GeneralTabType_User;
+        } else if (is_ou) {
+            return GeneralTabType_OU;
+        } else if (is_group) {
+            return GeneralTabType_Group;
+        } else if (is_container) {
+            return GeneralTabType_Container;
+        } else {
+            return GeneralTabType_Default;
+        }
+    }();
+
+    switch (type) {
+        case GeneralTabType_User: {
+            const QList<QString> string_attributes = {
+                ATTRIBUTE_DESCRIPTION,
+                ATTRIBUTE_FIRST_NAME,
+                ATTRIBUTE_LAST_NAME,
+                ATTRIBUTE_DISPLAY_NAME,
+                ATTRIBUTE_INITIALS,
+                ATTRIBUTE_MAIL,
+                ATTRIBUTE_OFFICE,
+                ATTRIBUTE_TELEPHONE_NUMBER,
+                ATTRIBUTE_WWW_HOMEPAGE
+            };
+
+            QMap<QString, StringEdit *> string_edits;
+            make_string_edits(string_attributes, CLASS_USER, &string_edits, &edits, this);
+
+            setup_string_edit_autofills(string_edits);
+
+            break;
+        }
+        case GeneralTabType_OU: {
+            const QList<QString> string_attributes = {
+                ATTRIBUTE_DESCRIPTION,
+                ATTRIBUTE_STREET,
+                ATTRIBUTE_CITY,
+                ATTRIBUTE_STATE,
+                ATTRIBUTE_POSTAL_CODE,
+            };
+
+            QMap<QString, StringEdit *> string_edits;
+            make_string_edits(string_attributes, CLASS_OU, &string_edits, &edits, this);
+
+            edits.append(new CountryEdit(this));
+
+            break;
+        }
+        case GeneralTabType_Computer: {
+            const QList<QString> string_attributes = {
+                ATTRIBUTE_SAMACCOUNT_NAME,
+                ATTRIBUTE_DNS_HOST_NAME,
+                ATTRIBUTE_DESCRIPTION,
+            };
+
+            QMap<QString, StringEdit *> string_edits;
+            make_string_edits(string_attributes, CLASS_COMPUTER, &string_edits, &edits, this);
+
+            string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->set_read_only(EditReadOnly_Yes);
+            string_edits[ATTRIBUTE_DNS_HOST_NAME]->set_read_only(EditReadOnly_Yes);
+
+            // TODO: more string edits for: site (probably just site?), dc type (no idea)
+
+            break;
+        }
+        case GeneralTabType_Group: {
+            // TODO: use make_string_edits()
+            edits.append(new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, CLASS_GROUP, this));
+            edits.append(new StringEdit(ATTRIBUTE_DESCRIPTION, CLASS_GROUP, this));
+            edits.append(new StringEdit(ATTRIBUTE_MAIL, CLASS_GROUP, this));
+            edits.append(new StringEdit(ATTRIBUTE_INFO, CLASS_GROUP, this));
+
+            edits.append(new GroupScopeEdit(this));
+            edits.append(new GroupTypeEdit(this));
+        
+            break;
+        }
+        case GeneralTabType_Container: {
+            edits.append(new StringEdit(ATTRIBUTE_DESCRIPTION, CLASS_CONTAINER, this));
+
+            break;
+        }
+        default: {
+            break;
+        }
     }
 
-    load_attribute_edits(edits_for_type[type], attributes);
+    layout_attribute_edits(edits, edits_layout);
+    connect_edits_to_tab(edits, this);  
 
-    types_stack->setCurrentIndex((int)type);
+    load_attribute_edits(edits, attributes);
 }
