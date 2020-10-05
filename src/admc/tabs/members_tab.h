@@ -17,25 +17,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADDRESS_TAB_H
-#define ADDRESS_TAB_H
+#ifndef MEMBERS_TAB_H
+#define MEMBERS_TAB_H
 
-#include "details_tab.h"
+#include "tabs/details_tab.h"
+#include "object_model.h"
 
-#include <QList>
+#include <QPoint>
+#include <QSet>
+#include <QString>
 
-class AttributeEdit;
+class QTreeView;
+class QString;
+class ObjectContextMenu;
+class MembersModel;
+
+class QStandardItemModel;
 
 // Shows member objects of targeted group
-class AddressTab final : public DetailsTab {
+class MembersTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    AddressTab();
+    MembersTab();
     DECL_DETAILS_TAB_VIRTUALS();
 
+private slots:
+    void on_context_menu(const QPoint pos);
+    void on_add_button();
+    void on_remove_button();
+
 private:
-    QList<AttributeEdit *> edits;
+    // MembersModel *model = nullptr;
+    QStandardItemModel *model = nullptr;
+    QTreeView *view = nullptr;
+    QSet<QString> original_members;
+    QSet<QString> current_members;
+
+    void reload_current_members_into_model();
+    void add_members(QList<QString> members);
+    void remove_members(QList<QString> members);
 };
 
-#endif /* ADDRESS_TAB_H */
+#endif /* MEMBERS_TAB_H */

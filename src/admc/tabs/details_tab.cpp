@@ -17,24 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACCOUNT_TAB_H
-#define ACCOUNT_TAB_H
+#include "tabs/details_tab.h"
 
-#include "details_tab.h"
+DetailsTab::DetailsTab()
+: QWidget()
+{
 
-#include <QList>
+}
 
-class AttributeEdit;
-
-class AccountTab final : public DetailsTab {
-Q_OBJECT
-
-public:
-    AccountTab();
-    DECL_DETAILS_TAB_VIRTUALS();
-
-private:
-    QList<AttributeEdit *> edits;
-};
-
-#endif /* ACCOUNT_TAB_H */
+void DetailsTab::on_edit_edited() {
+    emit edited();
+}

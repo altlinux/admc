@@ -20,7 +20,7 @@
 #ifndef GENERAL_TAB_H
 #define GENERAL_TAB_H
 
-#include "details_tab.h"
+#include "tabs/details_tab.h"
 
 #include <QList>
 

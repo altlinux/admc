@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attributes_tab.h"
+#include "tabs/attributes_tab.h"
 #include "ad_interface.h"
 #include "utils.h"
 #include "server_configuration.h"

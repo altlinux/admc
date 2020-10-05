@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "general_tab.h"
+#include "tabs/general_tab.h"
 #include "ad_interface.h"
 #include "edits/attribute_edit.h"
 #include "edits/string_edit.h"

@@ -19,7 +19,7 @@
 
 #include "edits/attribute_edit.h"
 #include "utils.h"
-#include "details_tab.h"
+#include "tabs/details_tab.h"
 
 #include "ad_interface.h"
 

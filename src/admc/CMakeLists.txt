@@ -17,13 +17,10 @@ add_executable(admc
     main.cpp
     ad_interface.cpp
     details_widget.cpp
-    details_tab.cpp
-    attributes_tab.cpp
     containers_widget.cpp
     contents_widget.cpp
     main_window.cpp
     status.cpp
-    members_tab.cpp
     object_model.cpp
     select_dialog.cpp
     object_context_menu.cpp
@@ -32,12 +29,7 @@ add_executable(admc
     login_dialog.cpp
     password_dialog.cpp
     menubar.cpp
-    account_tab.cpp
-    general_tab.cpp
-    address_tab.cpp
-    object_tab.cpp
-    group_policy_tab.cpp
-    gpo_links_tab.cpp
+    
     rename_dialog.cpp
     create_dialog.cpp
     policies_widget.cpp
@@ -45,6 +37,16 @@ add_executable(admc
     server_configuration.cpp
     ad_object.cpp
     
+    tabs/details_tab.cpp
+    tabs/general_tab.cpp
+    tabs/object_tab.cpp
+    tabs/attributes_tab.cpp
+    tabs/account_tab.cpp
+    tabs/members_tab.cpp
+    tabs/address_tab.cpp
+    tabs/group_policy_tab.cpp
+    tabs/gpo_links_tab.cpp
+
     edits/attribute_edit.cpp
     edits/string_edit.cpp
     edits/country_edit.cpp

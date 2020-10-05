@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "account_tab.h"
+#include "tabs/account_tab.h"
 #include "utils.h"
 #include "edits/attribute_edit.h"
 #include "edits/string_edit.h"

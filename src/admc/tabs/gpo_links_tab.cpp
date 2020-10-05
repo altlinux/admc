@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "gpo_links_tab.h"
+#include "tabs/gpo_links_tab.h"
 #include "details_widget.h"
 #include "utils.h"
 #include "ad_interface.h"

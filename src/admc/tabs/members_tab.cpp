@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "members_tab.h"
+#include "tabs/members_tab.h"
 #include "object_context_menu.h"
 #include "utils.h"
 #include "select_dialog.h"

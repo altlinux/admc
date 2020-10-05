@@ -18,15 +18,15 @@
  */
 
 #include "details_widget.h"
-#include "details_tab.h"
-#include "attributes_tab.h"
-#include "members_tab.h"
-#include "account_tab.h"
-#include "general_tab.h"
-#include "address_tab.h"
-#include "object_tab.h"
-#include "group_policy_tab.h"
-#include "gpo_links_tab.h"
+#include "tabs/details_tab.h"
+#include "tabs/attributes_tab.h"
+#include "tabs/members_tab.h"
+#include "tabs/account_tab.h"
+#include "tabs/general_tab.h"
+#include "tabs/address_tab.h"
+#include "tabs/object_tab.h"
+#include "tabs/group_policy_tab.h"
+#include "tabs/gpo_links_tab.h"
 #include "ad_interface.h"
 #include "settings.h"
 #include "status.h"
@@ -164,12 +164,12 @@ void DetailsWidget::reload(const QString &new_target) {
 
         tabs[TabHandle_General] = new GeneralTab();
         tabs[TabHandle_Object] = new ObjectTab();
-        tabs[TabHandle_AdObject] = new AttributesTab();
+        tabs[TabHandle_Attributes] = new AttributesTab();
         tabs[TabHandle_Account] = new AccountTab();
         tabs[TabHandle_Members] = new MembersTab();
         tabs[TabHandle_Address] = new AddressTab();
         tabs[TabHandle_GroupPolicy] = new GroupPolicyTab();
-        tabs[TabHandle_GroupPolicyInverse] = new GpoLinksTab();
+        tabs[TabHandle_GPOLinks] = new GpoLinksTab();
 
         for (auto tab : tabs) {
             connect(
@@ -203,12 +203,12 @@ void DetailsWidget::reload(const QString &new_target) {
                 switch (tab_handle) {
                     case TabHandle_General: return tr("General");
                     case TabHandle_Object: return tr("Object");
-                    case TabHandle_AdObject: return tr("AdObject");
+                    case TabHandle_Attributes: return tr("Attributes");
                     case TabHandle_Account: return tr("Account");
                     case TabHandle_Members: return tr("Members");
                     case TabHandle_Address: return tr("Address");
                     case TabHandle_GroupPolicy: return tr("Group policy");
-                    case TabHandle_GroupPolicyInverse: return tr("Links to");
+                    case TabHandle_GPOLinks: return tr("Links to");
                     case TabHandle_COUNT: return tr("COUNT"); 
                 }
                 return QString();

@@ -17,46 +17,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MEMBERS_TAB_H
-#define MEMBERS_TAB_H
+#ifndef GPO_LINKS_TAB_H
+#define GPO_LINKS_TAB_H
 
-#include "details_tab.h"
-#include "object_model.h"
+#include "tabs/details_tab.h"
 
+#include <QHash>
 #include <QPoint>
 #include <QSet>
 #include <QString>
+
+// List objects that this GPO links to.
 
 class QTreeView;
 class QString;
 class ObjectContextMenu;
 class MembersModel;
-
 class QStandardItemModel;
 
-// Shows member objects of targeted group
-class MembersTab final : public DetailsTab {
+class GpoLinksTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    MembersTab();
+    GpoLinksTab();
     DECL_DETAILS_TAB_VIRTUALS();
 
 private slots:
     void on_context_menu(const QPoint pos);
-    void on_add_button();
-    void on_remove_button();
 
 private:
-    // MembersModel *model = nullptr;
     QStandardItemModel *model = nullptr;
     QTreeView *view = nullptr;
-    QSet<QString> original_members;
-    QSet<QString> current_members;
-
-    void reload_current_members_into_model();
-    void add_members(QList<QString> members);
-    void remove_members(QList<QString> members);
 };
 
-#endif /* MEMBERS_TAB_H */
+#endif /* GPO_LINKS_TAB_H */

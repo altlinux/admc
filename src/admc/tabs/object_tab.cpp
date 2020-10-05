@@ -17,16 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "address_tab.h"
+#include "tabs/object_tab.h"
 #include "ad_interface.h"
 #include "edits/attribute_edit.h"
 #include "edits/string_edit.h"
-#include "edits/country_edit.h"
+#include "edits/datetime_edit.h"
 
 #include <QVBoxLayout>
 #include <QGridLayout>
 
-AddressTab::AddressTab()
+// TODO: canonical name in ADUC replaces "CN=" with "/" making it look like a directory path
+
+ObjectTab::ObjectTab()
 : DetailsTab()
 {   
     const auto top_layout = new QVBoxLayout();
@@ -34,40 +36,47 @@ AddressTab::AddressTab()
 
     const auto edits_layout = new QGridLayout();
     top_layout->addLayout(edits_layout);
-    
+
     const QList<QString> attributes = {
-        ATTRIBUTE_STREET,
-        ATTRIBUTE_PO_BOX,
-        ATTRIBUTE_CITY,
-        ATTRIBUTE_STATE,
-        ATTRIBUTE_POSTAL_CODE
+        ATTRIBUTE_DISTINGUISHED_NAME,
+        ATTRIBUTE_OBJECT_CLASS,
+        ATTRIBUTE_WHEN_CREATED,
+        ATTRIBUTE_WHEN_CHANGED,
+        ATTRIBUTE_USN_CREATED,
+        ATTRIBUTE_USN_CHANGED
     };
+    for (auto attribute : attributes) {
+        AttributeEdit *edit;
+        if (attribute_is_datetime(attribute)) {
+            edit = new DateTimeEdit(attribute, this);
+        } else {
+            edit = new StringEdit(attribute, "", this);
+        }
+        edit->set_read_only(EditReadOnly_Yes);
+        edit->add_to_layout(edits_layout);
 
-    QMap<QString, StringEdit *> string_edits;
-    make_string_edits(attributes, CLASS_USER, &string_edits, &edits, this);
+        edits.append(edit);
+    }
 
-    edits.append(new CountryEdit(this));
-
-    layout_attribute_edits(edits, edits_layout);
     connect_edits_to_tab(edits, this);
 }
 
-bool AddressTab::changed() const {
+bool ObjectTab::changed() const {
     return any_edits_changed(edits);
 }
 
-bool AddressTab::verify() {
-    return verify_attribute_edits(edits, this);
+bool ObjectTab::verify() {
+    return true;
 }
 
-void AddressTab::apply(const QString &target) {
-    apply_attribute_edits(edits, target, this);
+void ObjectTab::apply(const QString &target) {
+
 }
 
-void AddressTab::load(const AdObject &object) {
+void ObjectTab::load(const AdObject &object) {
     load_attribute_edits(edits, object);
 }
 
-bool AddressTab::accepts_target(const AdObject &object) const {
-    return object.is_user();
+bool ObjectTab::accepts_target(const AdObject &object) const {
+    return true;
 }

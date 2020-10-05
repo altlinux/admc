@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "address_tab.h"
+#include "tabs/address_tab.h"
 #include "ad_interface.h"
 #include "status.h"
 #include "edits/attribute_edit.h"

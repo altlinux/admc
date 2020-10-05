@@ -17,42 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_TAB_H
-#define ATTRIBUTES_TAB_H
+#ifndef ADDRESS_TAB_H
+#define ADDRESS_TAB_H
 
-#include "details_tab.h"
+#include "tabs/details_tab.h"
 
-#include <QStandardItemModel>
-#include <QString>
+#include <QList>
 
-class AttributesModel;
-class QTreeView;
+class AttributeEdit;
 
-// Show attributes of target as a list of attribute names and values
-// Values are editable
-class AttributesTab final : public DetailsTab {
+// Shows member objects of targeted group
+class AddressTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    AttributesTab();
+    AddressTab();
     DECL_DETAILS_TAB_VIRTUALS();
 
 private:
-    AttributesModel *model = nullptr;
-    QTreeView *view = nullptr;
+    QList<AttributeEdit *> edits;
 };
 
-class AttributesModel final : public QStandardItemModel {
-Q_OBJECT
-
-public:
-    explicit AttributesModel(AttributesTab *attributes_tab_arg);
-
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-    void reload(const AdObject &object);
-
-private:
-    AttributesTab *attributes_tab;
-};
-
-#endif /* ATTRIBUTES_TAB_H */
+#endif /* ADDRESS_TAB_H */

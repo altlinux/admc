@@ -32,12 +32,12 @@ class QDialogButtonBox;
 enum TabHandle {
     TabHandle_General,
     TabHandle_Object,
-    TabHandle_AdObject,
+    TabHandle_Attributes,
     TabHandle_Account,
     TabHandle_Members,
     TabHandle_Address,
     TabHandle_GroupPolicy,
-    TabHandle_GroupPolicyInverse,
+    TabHandle_GPOLinks,
     TabHandle_COUNT
 };
 

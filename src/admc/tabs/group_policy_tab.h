@@ -20,7 +20,7 @@
 #ifndef GROUP_POLICY_TAB_H
 #define GROUP_POLICY_TAB_H
 
-#include "details_tab.h"
+#include "tabs/details_tab.h"
 #include "gplink.h"
 
 #include <QPoint>

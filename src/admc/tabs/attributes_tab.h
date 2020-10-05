@@ -17,37 +17,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GPO_LINKS_TAB_H
-#define GPO_LINKS_TAB_H
+#ifndef ATTRIBUTES_TAB_H
+#define ATTRIBUTES_TAB_H
 
-#include "details_tab.h"
+#include "tabs/details_tab.h"
 
-#include <QHash>
-#include <QPoint>
-#include <QSet>
+#include <QStandardItemModel>
 #include <QString>
 
-// List objects that this GPO links to.
-
+class AttributesModel;
 class QTreeView;
-class QString;
-class ObjectContextMenu;
-class MembersModel;
-class QStandardItemModel;
 
-class GpoLinksTab final : public DetailsTab {
+// Show attributes of target as a list of attribute names and values
+// Values are editable
+class AttributesTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    GpoLinksTab();
+    AttributesTab();
     DECL_DETAILS_TAB_VIRTUALS();
 
-private slots:
-    void on_context_menu(const QPoint pos);
-
 private:
-    QStandardItemModel *model = nullptr;
+    AttributesModel *model = nullptr;
     QTreeView *view = nullptr;
 };
 
-#endif /* GPO_LINKS_TAB_H */
+class AttributesModel final : public QStandardItemModel {
+Q_OBJECT
+
+public:
+    explicit AttributesModel(AttributesTab *attributes_tab_arg);
+
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    void reload(const AdObject &object);
+
+private:
+    AttributesTab *attributes_tab;
+};
+
+#endif /* ATTRIBUTES_TAB_H */

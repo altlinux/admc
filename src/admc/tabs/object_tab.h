@@ -20,7 +20,7 @@
 #ifndef OBJECT_TAB_H
 #define OBJECT_TAB_H
 
-#include "details_tab.h"
+#include "tabs/details_tab.h"
 
 class AttributeEdit;
 
