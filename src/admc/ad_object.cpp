@@ -93,6 +93,12 @@ QList<int> AdObject::get_ints(const QString &attribute) const {
     return ints;
 }
 
+QDateTime AdObject::get_datetime(const QString &attribute) const {
+    const QString datetime_string = get_value(attribute);
+
+    return datetime_string_to_qdatetime(attribute, datetime_string);
+}
+
 int AdObject::get_int(const QString &attribute) const {
     const QString value_raw = get_value(attribute);
     const int value = value_raw.toInt();
@@ -121,7 +127,7 @@ bool AdObject::get_account_option(AccountOption option) const {
                 return false;
             } else {
                 const int control = get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
-                const int bit = account_option_to_bit(option);
+                const int bit = account_option_bit(option);
 
                 const bool set = ((control & bit) != 0);
 
@@ -149,7 +155,7 @@ GroupScope AdObject::get_group_scope() const {
 
     for (int i = 0; i < GroupScope_COUNT; i++) {
         const GroupScope this_scope = (GroupScope) i;
-        const int scope_bit = group_scope_to_bit(this_scope);
+        const int scope_bit = group_scope_bit(this_scope);
 
         if (bit_is_set(group_type, scope_bit)) {
             return this_scope;

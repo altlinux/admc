@@ -53,8 +53,8 @@ void make_account_option_edits(const QList<AccountOption> options, QMap<AccountO
                 if (checkbox_is_checked(subject_check) && checkbox_is_checked(blocker_check)) {
                     subject_check->setCheckState(Qt::Unchecked);
 
-                    const QString subject_name = get_account_option_description(subject);
-                    const QString blocker_name = get_account_option_description(blocker);
+                    const QString subject_name = account_option_string(subject);
+                    const QString blocker_name = account_option_string(blocker);
                     const QString error = QString(QObject::tr("Can't set \"%1\" when \"%2\" is set.")).arg(blocker_name, subject_name);
                     QMessageBox::warning(parent, QObject::tr("Error"), error);
                 }
@@ -104,7 +104,7 @@ void AccountOptionEdit::load(const AdObject &object) {
 }
 
 void AccountOptionEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = get_account_option_description(option) + ":";
+    const QString label_text = account_option_string(option) + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(this, label);

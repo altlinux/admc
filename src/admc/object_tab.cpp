@@ -41,9 +41,9 @@ ObjectTab::ObjectTab()
         ATTRIBUTE_DISTINGUISHED_NAME,
         ATTRIBUTE_OBJECT_CLASS,
         ATTRIBUTE_WHEN_CREATED,
-        // ATTRIBUTE_WHEN_CHANGED,
-        // ATTRIBUTE_USN_CREATED,
-        // ATTRIBUTE_USN_CHANGED
+        ATTRIBUTE_WHEN_CHANGED,
+        ATTRIBUTE_USN_CREATED,
+        ATTRIBUTE_USN_CHANGED
     };
     for (auto attribute : attributes) {
         AttributeEdit *edit;

@@ -47,7 +47,7 @@ void DateTimeEdit::set_read_only(EditReadOnly read_only_arg) {
 
 void DateTimeEdit::load(const AdObject &object) {
     const QString datetime_string = object.get_string(attribute);
-    const QDateTime value = datetime_raw_to_datetime(attribute, datetime_string);
+    const QDateTime value = datetime_string_to_qdatetime(attribute, datetime_string);
 
     edit->blockSignals(true);
     edit->setDateTime(value);

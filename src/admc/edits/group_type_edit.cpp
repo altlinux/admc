@@ -32,7 +32,7 @@ GroupTypeEdit::GroupTypeEdit(QObject *parent)
 
     for (int i = 0; i < GroupType_COUNT; i++) {
         const GroupType type = (GroupType) i;
-        const QString type_string = group_type_to_string(type);
+        const QString type_string = group_type_string(type);
 
         combo->addItem(type_string, (int)type);
     }

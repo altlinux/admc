@@ -218,9 +218,9 @@ void ContentsModel::make_row(QStandardItem *parent, const AdObject &object) {
         }
         const QByteArray value = object.get_value(attribute);
 
-        const QString value_display =
+        const QString display_value =
         [attribute, value]() {
-            QString out = attribute_get_display_value(attribute, value);
+            QString out = attribute_value_to_display_value(attribute, value);
 
             // NOTE: category is given as raw DN and contains '-' where it should have spaces, so convert it
             if (attribute == ATTRIBUTE_OBJECT_CATEGORY) {
@@ -231,7 +231,7 @@ void ContentsModel::make_row(QStandardItem *parent, const AdObject &object) {
             return out;
         }();
 
-        row[i]->setText(value_display);
+        row[i]->setText(display_value);
     }
 
     const QIcon icon = object.get_icon();

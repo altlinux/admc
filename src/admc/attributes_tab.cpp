@@ -94,7 +94,7 @@ void AttributesModel::reload(const AdObject &object) {
         const QList<QByteArray> values = object.get_values(attribute);
 
         for (auto value : values) {
-            const QString display_value = attribute_get_display_value(attribute, value);
+            const QString display_value = attribute_value_to_display_value(attribute, value);
 
             auto name_item = new QStandardItem(attribute);
             auto value_item = new QStandardItem(display_value);

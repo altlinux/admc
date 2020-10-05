@@ -44,17 +44,11 @@
 
 #define LDAP_SEARCH_NO_ATTRIBUTES "1.1"
 
-QString object_sid_to_display_string(const QByteArray &bytes);
+QString object_sid_to_display_value(const QByteArray &bytes);
 
 AdInterface *AdInterface::instance() {
     static AdInterface ad_interface;
     return &ad_interface;
-}
-
-AdInterface::AdInterface()
-: QObject()
-{
-
 }
 
 bool AdInterface::login(const QString &host_arg, const QString &domain) {
@@ -336,11 +330,11 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 
     const QString name = extract_name_from_dn(dn);
 
-    const QString new_value_display = attribute_get_display_value(attribute, value);
+    const QString new_display_value = attribute_value_to_display_value(attribute, value);
     ;
 
     if (result == AD_SUCCESS) {
-        const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_display, attribute, name);
+        const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_display_value, attribute, name);
 
         success_status_message(context, do_msg);
 
@@ -348,7 +342,7 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_value_display, attribute, name);
+        const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_display_value, attribute, name);
         const QString error = default_error();
 
         error_status_message(context, error, do_msg);
@@ -386,17 +380,17 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
 
     const QString name = extract_name_from_dn(dn);
 
-    const QString old_value_display = attribute_get_display_value(attribute, old_value);
-    const QString new_value_display = attribute_get_display_value(attribute, value);
+    const QString old_display_value = attribute_value_to_display_value(attribute, old_value);
+    const QString new_display_value = attribute_value_to_display_value(attribute, value);
 
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display, new_value_display), do_msg);
+        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_display_value, new_display_value), do_msg);
 
         emit_modified();
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_value_display, new_value_display);
+        const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_display_value, new_display_value);
         const QString error = default_error();
 
         error_status_message(context, error, do_msg);
@@ -418,7 +412,7 @@ bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, 
 
     const QString name = extract_name_from_dn(dn);
 
-    const QString value_display = attribute_get_display_value(attribute, value);
+    const QString value_display = attribute_value_to_display_value(attribute, value);
 
     if (result == AD_SUCCESS) {
         const QString context = QString(tr("Deleted value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
@@ -446,7 +440,7 @@ bool AdInterface::attribute_replace_int(const QString &dn, const QString &attrib
 }
 
 bool AdInterface::attribute_replace_datetime(const QString &dn, const QString &attribute, const QDateTime &datetime) {
-    const QString datetime_string = datetime_to_string(attribute, datetime);
+    const QString datetime_string = datetime_qdatetime_to_string(attribute, datetime);
     const bool result = attribute_replace_string(dn, attribute, datetime_string);
 
     return result;
@@ -531,6 +525,42 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
     }
 }
 
+bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
+    // Compose new_rdn and new_dn
+    const QStringList exploded_dn = dn.split(',');
+    const QString old_rdn = exploded_dn[0];
+    const int prefix_i = old_rdn.indexOf('=') + 1;
+    const QString prefix = old_rdn.left(prefix_i);
+    const QString new_rdn = prefix + new_name;
+    QStringList new_exploded_dn(exploded_dn);
+    new_exploded_dn.replace(0, new_rdn);
+    const QString new_dn = new_exploded_dn.join(',');
+
+    const QByteArray dn_array = dn.toUtf8();
+    const char *dn_cstr = dn_array.constData();
+    const QByteArray new_rdn_array = new_rdn.toUtf8();
+    const char *new_rdn_cstr = new_rdn_array.constData();
+
+    int result = ad_rename(ld, dn_cstr, new_rdn_cstr);
+
+    const QString old_name = extract_name_from_dn(dn);
+
+    if (result == AD_SUCCESS) {
+        success_status_message(QString(tr("Renamed \"%1\" to \"%2\"")).arg(old_name, new_name));
+
+        emit_modified();
+
+        return true;
+    } else {
+        const QString context = QString(tr("Failed to rename \"%1\" to \"%2\"")).arg(old_name, new_name);
+        const QString error = default_error();
+
+        error_status_message(context, error);
+
+        return false;
+    }
+}
+
 bool AdInterface::group_add_user(const QString &group_dn, const QString &user_dn) {
     const bool success = attribute_add_string(group_dn, ATTRIBUTE_MEMBER, user_dn);
 
@@ -580,17 +610,17 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
     // Unset all scope bits, because scope bits are exclusive
     for (int i = 0; i < GroupScope_COUNT; i++) {
         const GroupScope this_scope = (GroupScope) i;
-        const int this_scope_bit = group_scope_to_bit(this_scope);
+        const int this_scope_bit = group_scope_bit(this_scope);
 
         group_type = bit_set(group_type, this_scope_bit, false);
     }
 
     // Set given scope bit
-    const int scope_bit = group_scope_to_bit(scope);
+    const int scope_bit = group_scope_bit(scope);
     group_type = bit_set(group_type, scope_bit, true);
 
     const QString name = extract_name_from_dn(dn);
-    const QString scope_string = group_scope_to_string(scope);
+    const QString scope_string = group_scope_string(scope);
     
     const bool result = attribute_replace_int(dn, ATTRIBUTE_GROUP_TYPE, group_type);
     if (result) {
@@ -614,7 +644,7 @@ bool AdInterface::group_set_type(const QString &dn, GroupType type) {
     const QString update_group_type_string = QString::number(update_group_type);
 
     const QString name = extract_name_from_dn(dn);
-    const QString type_string = group_type_to_string(type);
+    const QString type_string = group_type_string(type);
     
     const bool result = attribute_replace_string(dn, ATTRIBUTE_GROUP_TYPE, update_group_type_string);
     if (result) {
@@ -624,42 +654,6 @@ bool AdInterface::group_set_type(const QString &dn, GroupType type) {
     } else {
         const QString context = QString(tr("Failed to set type for group \"%1\" to \"%2\"")).arg(name, type_string);
         error_status_message(context, "");
-
-        return false;
-    }
-}
-
-bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
-    // Compose new_rdn and new_dn
-    const QStringList exploded_dn = dn.split(',');
-    const QString old_rdn = exploded_dn[0];
-    const int prefix_i = old_rdn.indexOf('=') + 1;
-    const QString prefix = old_rdn.left(prefix_i);
-    const QString new_rdn = prefix + new_name;
-    QStringList new_exploded_dn(exploded_dn);
-    new_exploded_dn.replace(0, new_rdn);
-    const QString new_dn = new_exploded_dn.join(',');
-
-    const QByteArray dn_array = dn.toUtf8();
-    const char *dn_cstr = dn_array.constData();
-    const QByteArray new_rdn_array = new_rdn.toUtf8();
-    const char *new_rdn_cstr = new_rdn_array.constData();
-
-    int result = ad_rename(ld, dn_cstr, new_rdn_cstr);
-
-    const QString old_name = extract_name_from_dn(dn);
-
-    if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Renamed \"%1\" to \"%2\"")).arg(old_name, new_name));
-
-        emit_modified();
-
-        return true;
-    } else {
-        const QString context = QString(tr("Failed to rename \"%1\" to \"%2\"")).arg(old_name, new_name);
-        const QString error = default_error();
-
-        error_status_message(context, error);
 
         return false;
     }
@@ -743,7 +737,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
                 return out;
             }();
 
-            const int bit = account_option_to_bit(option);
+            const int bit = account_option_bit(option);
 
             int control_int = control.toInt();
             control_int = bit_set(control_int, bit, set);
@@ -768,7 +762,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
                     }
                 }
                 default: {
-                    const QString description = get_account_option_description(option);
+                    const QString description = account_option_string(option);
 
                     if (set) {
                         return QString(tr("Turned ON account option \"%1\" of user \"%2\"")).arg(description, name);
@@ -794,7 +788,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
                     }
                 }
                 default: {
-                    const QString description = get_account_option_description(option);
+                    const QString description = account_option_string(option);
 
                     if (set) {
                         return QString(tr("Failed to turn ON account option \"%1\" of user \"%2\"")).arg(description, name);
@@ -826,30 +820,6 @@ bool AdInterface::user_unlock(const QString &dn) {
         error_status_message(context, "");
 
         return result;
-    }
-}
-
-bool attribute_get_account_option(const AdObject &object  , AccountOption option) {
-    switch (option) {
-        case AccountOption_PasswordExpired: {
-            const QString pwdLastSet_value = object.get_string(ATTRIBUTE_PWD_LAST_SET);
-            const bool expired = (pwdLastSet_value == AD_PWD_LAST_SET_EXPIRED);
-
-            return expired;
-        }
-        default: {
-            // Account option is a UAC bit
-            if (object.contains(ATTRIBUTE_USER_ACCOUNT_CONTROL)) {
-                return false;
-            } else {
-                const int control = object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
-                const int bit = account_option_to_bit(option);
-
-                const bool set = ((control & bit) != 0);
-
-                return set;
-            }
-        }
     }
 }
 
@@ -941,6 +911,12 @@ void AdInterface::command(QStringList args) {
     }
 }
 
+AdInterface::AdInterface()
+: QObject()
+{
+
+}
+
 void AdInterface::emit_modified() {
     if (batch_in_progress) {
         return;
@@ -985,6 +961,10 @@ QString AdInterface::default_error() const {
             return QString(tr("LDAP error: %1")).arg(ldap_err_qstr);
         }
     }
+}
+
+AdInterface *AD() {
+    return AdInterface::instance();
 }
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
@@ -1036,64 +1016,16 @@ QString extract_parent_dn_from_dn(const QString &dn) {
     return parent_dn;
 }
 
-AdInterface *AD() {
-    return AdInterface::instance();
-}
+bool attribute_is_datetime(const QString &attribute) {
+    static const QList<AttributeType> datetime_types = {
+        AttributeType_LargeIntegerDatetime,
+        AttributeType_UTCTime,
+        AttributeType_GeneralizedTime
+    };
+    
+    const AttributeType type = get_attribute_type(attribute);
 
-QString filter_EQUALS(const QString &attribute, const QString &value) {
-    auto filter = QString("(%1=%2)").arg(attribute, value);
-    return filter;
-}
-
-QString filter_AND(const QString &a, const QString &b) {
-    auto filter = QString("(&%1%2)").arg(a, b);
-    return filter;
-}
-QString filter_OR(const QString &a, const QString &b) {
-    auto filter = QString("(|%1%2)").arg(a, b);
-    return filter;
-}
-QString filter_NOT(const QString &a) {
-    auto filter = QString("(!%1)").arg(a);
-    return filter;
-}
-
-QString get_account_option_description(const AccountOption &option) {
-    switch (option) {
-        case AccountOption_Disabled: return AdInterface::tr("Account disabled");
-        case AccountOption_PasswordExpired: return AdInterface::tr("User must change password on next logon");
-        case AccountOption_DontExpirePassword: return AdInterface::tr("Don't expire password");
-        case AccountOption_UseDesKey: return AdInterface::tr("Store password using reversible encryption");
-        case AccountOption_SmartcardRequired: return AdInterface::tr("Smartcard is required for interactive logon");
-        case AccountOption_CantDelegate: return AdInterface::tr("Account is sensitive and cannot be delegated");
-        case AccountOption_DontRequirePreauth: return AdInterface::tr("Don't require Kerberos preauthentication");
-        case AccountOption_COUNT: return QString("AccountOption_COUNT");
-    }
-
-    return "";
-}
-
-int account_option_to_bit(const AccountOption &option) {
-    // NOTE: not all account options can be directly mapped to bits
-    switch (option) {
-        case AccountOption_Disabled: 
-        return 0x00000002;
-        case AccountOption_DontExpirePassword: 
-        return 0x00010000;
-        case AccountOption_UseDesKey: 
-        return 0x00200000;
-        case AccountOption_SmartcardRequired: 
-        return 0x00040000;
-        case AccountOption_DontRequirePreauth: 
-        return 0x00400000;
-        case AccountOption_CantDelegate: 
-        return 0x00100000;
-
-        case AccountOption_PasswordExpired: return 0;
-        case AccountOption_COUNT: return 0;
-    }
-
-    return 0;
+    return datetime_types.contains(type);
 }
 
 bool datetime_is_never(const QString &attribute, const QString &value) {
@@ -1108,19 +1040,7 @@ bool datetime_is_never(const QString &attribute, const QString &value) {
     }
 }
 
-bool attribute_is_datetime(const QString &attribute) {
-    static const QList<AttributeType> datetime_types = {
-        AttributeType_LargeIntegerDatetime,
-        AttributeType_UTCTime,
-        AttributeType_GeneralizedTime
-    };
-    
-    const AttributeType type = get_attribute_type(attribute);
-
-    return datetime_types.contains(type);
-}
-
-QString datetime_to_string(const QString &attribute, const QDateTime &datetime) {
+QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime) {
     const AttributeType type = get_attribute_type(attribute);
 
     switch (type) {
@@ -1150,7 +1070,7 @@ QString datetime_to_string(const QString &attribute, const QDateTime &datetime) 
     return "";
 }
 
-QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_value) {
+QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &raw_value) {
     const AttributeType type = get_attribute_type(attribute);
 
     switch (type) {
@@ -1176,7 +1096,45 @@ QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_
     return QDateTime();
 }
 
-int group_scope_to_bit(GroupScope scope) {
+QString account_option_string(const AccountOption &option) {
+    switch (option) {
+        case AccountOption_Disabled: return AdInterface::tr("Account disabled");
+        case AccountOption_PasswordExpired: return AdInterface::tr("User must change password on next logon");
+        case AccountOption_DontExpirePassword: return AdInterface::tr("Don't expire password");
+        case AccountOption_UseDesKey: return AdInterface::tr("Store password using reversible encryption");
+        case AccountOption_SmartcardRequired: return AdInterface::tr("Smartcard is required for interactive logon");
+        case AccountOption_CantDelegate: return AdInterface::tr("Account is sensitive and cannot be delegated");
+        case AccountOption_DontRequirePreauth: return AdInterface::tr("Don't require Kerberos preauthentication");
+        case AccountOption_COUNT: return QString("AccountOption_COUNT");
+    }
+
+    return "";
+}
+
+int account_option_bit(const AccountOption &option) {
+    // NOTE: not all account options can be directly mapped to bits
+    switch (option) {
+        case AccountOption_Disabled: 
+        return 0x00000002;
+        case AccountOption_DontExpirePassword: 
+        return 0x00010000;
+        case AccountOption_UseDesKey: 
+        return 0x00200000;
+        case AccountOption_SmartcardRequired: 
+        return 0x00040000;
+        case AccountOption_DontRequirePreauth: 
+        return 0x00400000;
+        case AccountOption_CantDelegate: 
+        return 0x00100000;
+
+        case AccountOption_PasswordExpired: return 0;
+        case AccountOption_COUNT: return 0;
+    }
+
+    return 0;
+}
+
+int group_scope_bit(GroupScope scope) {
     switch (scope) {
         case GroupScope_Global: return 0x00000002;
         case GroupScope_DomainLocal: return 0x00000004;
@@ -1186,7 +1144,7 @@ int group_scope_to_bit(GroupScope scope) {
     return 0;
 }
 
-QString group_scope_to_string(GroupScope scope) {
+QString group_scope_string(GroupScope scope) {
     switch (scope) {
         case GroupScope_Global: return AdInterface::tr("Global");
         case GroupScope_DomainLocal: return AdInterface::tr("DomainLocal");
@@ -1196,7 +1154,7 @@ QString group_scope_to_string(GroupScope scope) {
     return "";
 }
 
-QString group_type_to_string(GroupType type) {
+QString group_type_string(GroupType type) {
     switch (type) {
         case GroupType_Security: return AdInterface::tr("Security");
         case GroupType_Distribution: return AdInterface::tr("Distribution");
@@ -1206,22 +1164,22 @@ QString group_type_to_string(GroupType type) {
 }
 
 // TODO: flesh this out
-QString attribute_get_display_value(const QString &attribute, const QByteArray &value_bytes) {
+QString attribute_value_to_display_value(const QString &attribute, const QByteArray &value_bytes) {
     const AttributeType attribute_type = get_attribute_type(attribute);
 
-    const QString value_string(value_bytes);
+    const QString value_string = QString::fromUtf8(value_bytes);
 
     if (attribute_is_datetime(attribute)) {
         if (datetime_is_never(attribute, value_string)) {
             return "(never)";
         }
-        const QDateTime datetime = datetime_raw_to_datetime(attribute, value_string);
+        const QDateTime datetime = datetime_string_to_qdatetime(attribute, value_string);
         const QString display = datetime.toString(DATETIME_DISPLAY_FORMAT);
 
         return display;
     } else if (attribute_type == AttributeType_Sid) {
         // TODO: convert to sid here
-        return object_sid_to_display_string(value_bytes);
+        return object_sid_to_display_value(value_bytes);
     } else {
         return value_string;
     }
@@ -1230,12 +1188,12 @@ QString attribute_get_display_value(const QString &attribute, const QByteArray &
 QString attribute_value_to_display_value(const QString &attribute, const QString &value) {
     const QByteArray bytes = value.toUtf8();
 
-    return attribute_get_display_value(attribute, bytes);
+    return attribute_value_to_display_value(attribute, bytes);
 }
 
 // TODO: replace with some library if possible. Maybe one of samba's libs has this.
 // NOTE: https://ldapwiki.com/wiki/ObjectSID
-QString object_sid_to_display_string(const QByteArray &sid) {
+QString object_sid_to_display_value(const QByteArray &sid) {
     QString string = "S-";
     
     // byte[0] - revision level
@@ -1269,4 +1227,22 @@ QString object_sid_to_display_string(const QByteArray &sid) {
     }
 
     return string;
+}
+
+QString filter_EQUALS(const QString &attribute, const QString &value) {
+    auto filter = QString("(%1=%2)").arg(attribute, value);
+    return filter;
+}
+
+QString filter_AND(const QString &a, const QString &b) {
+    auto filter = QString("(&%1%2)").arg(a, b);
+    return filter;
+}
+QString filter_OR(const QString &a, const QString &b) {
+    auto filter = QString("(|%1%2)").arg(a, b);
+    return filter;
+}
+QString filter_NOT(const QString &a) {
+    auto filter = QString("(!%1)").arg(a);
+    return filter;
 }

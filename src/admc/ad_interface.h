@@ -131,13 +131,14 @@ enum SearchScope {
 
 typedef struct ldap LDAP;
 
-enum DoStatusMsg {
-    DoStatusMsg_Yes,
-    DoStatusMsg_No
-};
-
 class AdInterface final : public QObject {
 Q_OBJECT
+
+private:
+    enum DoStatusMsg {
+        DoStatusMsg_Yes,
+        DoStatusMsg_No
+    };
 
 public:
     static AdInterface *instance();
@@ -145,8 +146,8 @@ public:
     bool login(const QString &host_arg, const QString &domain);
 
     // Use this if you are doing a series of AD modifications.
-    // During the batch, modified() signals won't be emitted.
-    // Once the batch is complete one modified() signal
+    // During the batch, modified() signals won't be emitted
+    // and once the batch is complete one modified() signal
     // is emitted, so that GUI is reloaded only once.
     void start_batch();
     void end_batch();
@@ -156,10 +157,15 @@ public:
     QString configuration_dn() const;
     QString schema_dn() const;
 
+    // NOTE: all request and search f-ns need to communicate
+    // with the AD server, so use them only for infrequent calls.
     QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &custom_search_base = QString());
     QList<QString> search_dns(const QString &filter, const QString &custom_search_base = QString());
-
-    // NOTE: all request f-ns make an LDAP request, use them only for infrequent calls
+    
+    // Try to limit request size by asking only for attributes
+    // you need, though request count is still higher priority.
+    // One small request is better than one big request.
+    // One big request is better than two small requests/
     AdObject request_attributes(const QString &dn, const QList<QString> &attributes);
     AdObject request_all(const QString &dn);
 
@@ -188,14 +194,14 @@ public:
     bool object_move(const QString &dn, const QString &new_container);
     bool object_rename(const QString &dn, const QString &new_name);
 
-    bool user_set_pass(const QString &dn, const QString &password);
-    bool user_set_account_option(const QString &dn, AccountOption option, bool set);
-    bool user_unlock(const QString &dn);
-    
     bool group_add_user(const QString &group_dn, const QString &user_dn);
     bool group_remove_user(const QString &group_dn, const QString &user_dn);
     bool group_set_scope(const QString &dn, GroupScope scope);
     bool group_set_type(const QString &dn, GroupType type);
+
+    bool user_set_pass(const QString &dn, const QString &password);
+    bool user_set_account_option(const QString &dn, AccountOption option, bool set);
+    bool user_unlock(const QString &dn);
 
     bool object_can_drop(const QString &dn, const QString &target_dn);
     void object_drop(const QString &dn, const QString &target_dn);
@@ -230,27 +236,29 @@ private:
 
 AdInterface *AD();
 
-QString filter_EQUALS(const QString &attribute, const QString &value);
-QString filter_AND(const QString &a, const QString &b);
-QString filter_OR(const QString &a, const QString &b);
-QString filter_NOT(const QString &a);
-
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 
 QString extract_name_from_dn(const QString &dn);
 QString extract_parent_dn_from_dn(const QString &dn);
 
-QString get_account_option_description(const AccountOption &option);
 bool attribute_is_datetime(const QString &attribute);
 bool datetime_is_never(const QString &attribute, const QString &value);
-QString datetime_to_string(const QString &attribute, const QDateTime &datetime);
-QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_value);
-QString group_scope_to_string(GroupScope scope);
-QString group_type_to_string(GroupType type);
+QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime);
+QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &raw_value);
 
-QString attribute_get_display_value(const QString &attribute, const QByteArray &value_bytes);
+QString account_option_string(const AccountOption &option);
+int account_option_bit(const AccountOption &option);
 
-int account_option_to_bit(const AccountOption &option);
-int group_scope_to_bit(GroupScope scope);
+int group_scope_bit(GroupScope scope);
+QString group_scope_string(GroupScope scope);
+
+QString group_type_string(GroupType type);
+
+QString attribute_value_to_display_value(const QString &attribute, const QByteArray &value_bytes);
+
+QString filter_EQUALS(const QString &attribute, const QString &value);
+QString filter_AND(const QString &a, const QString &b);
+QString filter_OR(const QString &a, const QString &b);
+QString filter_NOT(const QString &a);
 
 #endif /* AD_INTERFACE_H */

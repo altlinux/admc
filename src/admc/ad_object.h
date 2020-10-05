@@ -27,6 +27,15 @@
 #include <QList>
 #include <QByteArray>
 #include <QIcon>
+#include <QDateTime>
+
+// This object is returned as a result of some AdInterface
+// functions. It stores AD object's attributes and provides
+// read-only access to them. Modifying attributes can be done
+// through AdInterface.
+// Note that this object is loaded with data once and not updated
+// afterwards so it WILL become out of date after any
+// AD modification. Therefore, do not keep it around for too long.
 
 typedef QHash<QString, QList<QByteArray>> AdObjectAttributes;
 
@@ -50,8 +59,12 @@ public:
     int get_int(const QString &attribute) const;
     QList<int> get_ints(const QString &attribute) const;
 
+    QDateTime get_datetime(const QString &attribute) const;
+
     bool get_system_flag(const SystemFlagsBit bit) const;
+
     bool get_account_option(AccountOption option) const;
+
     GroupScope get_group_scope() const;
     GroupType get_group_type() const;
 

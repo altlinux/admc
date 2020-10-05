@@ -33,7 +33,7 @@ GroupScopeEdit::GroupScopeEdit(QObject *parent)
 
     for (int i = 0; i < GroupScope_COUNT; i++) {
         const GroupScope type = (GroupScope) i;
-        const QString type_string = group_scope_to_string(type);
+        const QString type_string = group_scope_string(type);
 
         combo->addItem(type_string, (int)type);
     }
