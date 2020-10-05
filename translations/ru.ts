@@ -503,8 +503,8 @@
     <name>LoginDialog</name>
     <message>
         <location filename="../src/admc/login_dialog.cpp" line="39"/>
-        <source>Login dialog</source>
-        <translation>Логин диалог</translation>
+        <source>Login</source>
+        <translation>Авторизация</translation>
     </message>
     <message>
         <location filename="../src/admc/login_dialog.cpp" line="41"/>
