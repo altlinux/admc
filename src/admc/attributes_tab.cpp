@@ -91,7 +91,7 @@ void AttributesModel::reload(const QString &target, const Attributes &attributes
 
     // Populate model with attributes of new root
     for (auto attribute : attributes.keys()) {
-        const QList<QByteArray> values = attributes[attribute];
+        const QList<QByteArray> values = attribute_get_values(attributes, attribute);
 
         for (auto value : values) {
             const QString display_value = attribute_get_display_value(attribute, value);

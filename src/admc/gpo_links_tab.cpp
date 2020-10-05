@@ -85,7 +85,7 @@ void GpoLinksTab::load(const QString &target, const Attributes &attributes) {
     const QHash<QString, Attributes> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_All);
 
     for (auto dn : search_results.keys()) {
-        const QString name = attributes[ATTRIBUTE_NAME][0];
+        const QString name = attribute_get_string(attributes, ATTRIBUTE_NAME);
 
         const QList<QStandardItem *> row = make_item_row(GpoLinksColumn_COUNT);
         row[GpoLinksColumn_Name]->setText(name);

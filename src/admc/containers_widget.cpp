@@ -355,7 +355,7 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn, const Attribut
 
     const QList<QStandardItem *> row = make_item_row(ContainersColumn_COUNT);
     
-    const QString name = attributes[ATTRIBUTE_NAME][0];
+    const QString name = attribute_get_string(attributes, ATTRIBUTE_NAME);
     row[ContainersColumn_Name]->setText(name);
     row[ContainersColumn_DN]->setText(dn);
 

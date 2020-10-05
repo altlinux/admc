@@ -183,6 +183,7 @@ public:
     QList<QString> search_dns(const QString &filter, const QString &custom_search_base = QString());
 
     // NOTE: all request f-ns make an LDAP request, avoid using them unless it's an infrequent call 
+    Attributes attribute_request(const QString &dn, const QList<QString> &attributes);
     Attributes attribute_request_all(const QString &dn);
     QList<QByteArray> attribute_request_values(const QString &dn, const QString &attribute);
     QByteArray attribute_request_value(const QString &dn, const QString &attribute);
@@ -275,6 +276,7 @@ bool object_is_computer(const Attributes &attributes);
 QList<QByteArray> attribute_get_values(const Attributes &attributes, const QString &attribute);
 QByteArray attribute_get_value(const Attributes &attributes, const QString &attribute);
 QList<QString> attribute_get_strings(const Attributes &attributes, const QString &attribute);
+QString attribute_get_string(const Attributes &attributes, const QString &attribute);
 bool attribute_get_system_flag(const Attributes &attributes, const SystemFlagsBit bit);
 int attribute_get_int(const Attributes &attributes, const QString &attribute);
 bool attribute_get_account_option(const Attributes &attributes, AccountOption option);

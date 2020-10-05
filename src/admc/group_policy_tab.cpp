@@ -125,7 +125,7 @@ void GroupPolicyTab::apply(const QString &target) {
 }
 
 void GroupPolicyTab::load(const QString &target, const Attributes &attributes) {
-    const QString gplink_string(attributes[ATTRIBUTE_GPLINK][0]);
+    const QString gplink_string = attribute_get_string(attributes, ATTRIBUTE_GPLINK);
     original_gplink = Gplink(gplink_string);
     current_gplink = original_gplink;
 
@@ -227,7 +227,7 @@ void GroupPolicyTab::reload_current_gplink_into_model() {
 
         const Attributes attributes = search_results[dn];
 
-        const QString display_name = attributes[ATTRIBUTE_DISPLAY_NAME][0];
+        const QString display_name = attribute_get_string(attributes, ATTRIBUTE_DISPLAY_NAME);
 
         const QList<QStandardItem *> row = make_item_row(GplinkColumn_COUNT);
         row[GplinkColumn_Name]->setText(display_name);

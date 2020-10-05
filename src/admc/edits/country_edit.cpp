@@ -107,11 +107,14 @@ CountryEdit::CountryEdit(QObject *parent)
 }
 
 void CountryEdit::load(const Attributes &attributes) {
-    const QString current_code_string(attributes[ ATTRIBUTE_COUNTRY_CODE][0]);
-    int current_code = current_code_string.toInt();
-    if (current_code_string == "") {
-        current_code = COUNTRY_CODE_NONE;
-    }
+    const int current_code =
+    [attributes]() {
+        if (attributes.contains(ATTRIBUTE_COUNTRY)) {
+            return attribute_get_int(attributes, ATTRIBUTE_COUNTRY);
+        } else {
+            return COUNTRY_CODE_NONE;
+        }
+    }();
 
     original_value = current_code;
 

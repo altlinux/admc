@@ -216,8 +216,7 @@ void ContentsModel::make_row(QStandardItem *parent, const Attributes &attributes
         if (!attributes.contains(attribute)) {
             continue;
         }
-        const QList<QByteArray> values = attributes[attribute];
-        const QByteArray value = values[0];
+        const QByteArray value = attribute_get_value(attributes, attribute);
 
         const QString value_display =
         [attribute, value]() {

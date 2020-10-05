@@ -79,7 +79,7 @@ bool GeneralTab::accepts_target(const Attributes &) const {
 }
 
 void GeneralTab::load(const QString &target, const Attributes &attributes) {
-    const QString name(attributes[ATTRIBUTE_NAME][0]);
+    const QString name = attribute_get_string(attributes, ATTRIBUTE_NAME);
     name_label->setText(name);
 
     const GeneralTabType type =

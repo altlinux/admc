@@ -102,7 +102,7 @@ void StringEdit::load(const Attributes &attributes) {
         const QList<QString> classes = attribute_get_strings(attributes, ATTRIBUTE_OBJECT_CLASS);
         value = classes.last();
     } else if (attributes.contains(attribute)) {
-        value = QString(attributes[attribute][0]);
+        value = attribute_get_string(attributes, attribute);
     }
 
     edit->blockSignals(true);

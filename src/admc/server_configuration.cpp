@@ -156,7 +156,7 @@ QString get_class_display_name(const QString &objectClass) {
             const QString specifier_class = get_display_specifier_class(dn);
 
             const Attributes attributes = search_results[dn];
-            const QString class_display_name = attributes[CLASS_DISPLAY_NAME][0];
+            const QString class_display_name = attribute_get_string(attributes, CLASS_DISPLAY_NAME);
 
             out[specifier_class] = class_display_name;
         }
@@ -210,11 +210,11 @@ QList<QString> get_containers_filter_classes() {
 
         QList<QString> out;
         for (const auto ms_class : ms_classes) {
-            const QString class_attributes = QString("CN=%1,%2").arg(ms_class, schema_dn);
-            const QList<QByteArray> ldap_classes_bytes = AdInterface::instance()->attribute_request_values(class_attributes, ATTRIBUTE_LDAP_DISPLAY_NAME);
+            const QString class_dn = QString("CN=%1,%2").arg(ms_class, schema_dn);
+            const Attributes attributes = AdInterface::instance()->attribute_request(class_dn, {ATTRIBUTE_LDAP_DISPLAY_NAME});
+            const QString ldap_class = attribute_get_string(attributes, ATTRIBUTE_LDAP_DISPLAY_NAME);
 
-            if (!ldap_classes_bytes.isEmpty()) {
-                const QString ldap_class = QString(ldap_classes_bytes[0]);
+            if (!ldap_class.isEmpty()) {
                 out.append(ldap_class);
             }
         }

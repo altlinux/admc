@@ -250,7 +250,7 @@ QList<QString> byte_arrays_to_strings(const QList<QByteArray> &byte_arrays) {
     QList<QString> strings;
 
     for (const auto byte_array : byte_arrays) {
-        const QString string(byte_array);
+        const QString string = QString::fromUtf8(byte_array);
         strings.append(string);
     }
 

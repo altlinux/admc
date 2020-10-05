@@ -135,7 +135,7 @@ void DetailsWidget::reload(const QString &new_target) {
             button_box->hide();
         }
     } else {
-        const QString name(attributes[ATTRIBUTE_NAME][0]);
+        const QString name = attribute_get_string(attributes, ATTRIBUTE_NAME);
         const QString title_text = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
         title_label->setText(title_text);
 

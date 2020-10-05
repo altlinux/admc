@@ -141,7 +141,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
 }
 
 void ObjectContextMenu::delete_object(const QString &dn, const Attributes &attributes) {
-    const QString name(attributes[ATTRIBUTE_NAME][0]);
+    const QString name = attribute_get_string(attributes, ATTRIBUTE_NAME);
     const QString text = QString(tr("Are you sure you want to delete \"%1\"?")).arg(name);
     const bool confirmed = confirmation_dialog(text, this);
 

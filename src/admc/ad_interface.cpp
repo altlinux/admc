@@ -259,11 +259,20 @@ QList<QString> AdInterface::search_dns(const QString &filter, const QString &cus
     return dns;
 }
 
-Attributes AdInterface::attribute_request_all(const QString &dn) {
-    const QHash<QString, Attributes> search_results = search("", {SEARCH_ALL_ATTRIBUTES}, SearchScope_Object, dn);
-    const Attributes attributes = search_results[dn];
+Attributes AdInterface::attribute_request(const QString &dn, const QList<QString> &attributes) {
+    const QHash<QString, Attributes> search_results = search("", attributes, SearchScope_Object, dn);
 
-    return attributes;
+    if (search_results.contains(dn)) {
+        return search_results[dn];
+    } else {
+        return Attributes();
+    }
+}
+
+Attributes AdInterface::attribute_request_all(const QString &dn) {
+    const Attributes result = attribute_request(dn, {SEARCH_ALL_ATTRIBUTES});
+
+    return result;
 }
 
 QList<QByteArray> AdInterface::attribute_request_values(const QString &dn, const QString &attribute) {
@@ -571,8 +580,7 @@ bool AdInterface::group_remove_user(const QString &group_dn, const QString &user
 }
 
 GroupScope attribute_get_group_scope(const Attributes &attributes) {
-    const QString value_raw(attributes[ATTRIBUTE_GROUP_TYPE][0]);
-    const int group_type = value_raw.toInt();
+    const int group_type = attribute_get_int(attributes, ATTRIBUTE_GROUP_TYPE);
 
     for (int i = 0; i < GroupScope_COUNT; i++) {
         const GroupScope this_scope = (GroupScope) i;
@@ -621,10 +629,9 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
 
 // NOTE: "group type" is really only the last bit of the groupType attribute, yeah it's confusing
 GroupType attribute_get_group_type(const Attributes &attributes) {
-    const QString group_type(attributes[ATTRIBUTE_GROUP_TYPE][0]);
-    const int group_type_int = group_type.toInt();
+    const int group_type = attribute_get_int(attributes, ATTRIBUTE_GROUP_TYPE);
 
-    const bool security_bit_set = ((group_type_int & GROUP_TYPE_BIT_SECURITY) != 0);
+    const bool security_bit_set = ((group_type & GROUP_TYPE_BIT_SECURITY) != 0);
 
     if (security_bit_set) {
         return GroupType_Security;
@@ -635,19 +642,17 @@ GroupType attribute_get_group_type(const Attributes &attributes) {
 
 bool AdInterface::group_set_type(const QString &dn, GroupType type) {
     const Attributes attributes = attribute_request_all(dn);
-    const QString group_type = attribute_get_value(attributes, ATTRIBUTE_GROUP_TYPE);
-    int group_type_int = group_type.toInt();
+    const int group_type = attribute_get_int(attributes, ATTRIBUTE_GROUP_TYPE);
 
     const bool set_security_bit = type == GroupType_Security;
 
-    group_type_int = bit_set(group_type_int, GROUP_TYPE_BIT_SECURITY, set_security_bit);
-
-    const QString update_group_type = QString::number(group_type_int);
+    const int update_group_type = bit_set(group_type, GROUP_TYPE_BIT_SECURITY, set_security_bit);
+    const QString update_group_type_string = QString::number(update_group_type);
 
     const QString name = extract_name_from_dn(dn);
     const QString type_string = group_type_to_string(type);
     
-    const bool result = attribute_replace_string(dn, ATTRIBUTE_GROUP_TYPE, update_group_type);
+    const bool result = attribute_replace_string(dn, ATTRIBUTE_GROUP_TYPE, update_group_type_string);
     if (result) {
         success_status_message(QString(tr("Set type for group \"%1\" to \"%2\"")).arg(name, type_string));
 
@@ -890,24 +895,23 @@ bool object_is_computer(const Attributes &attributes) {
 bool attribute_get_account_option(const Attributes &attributes, AccountOption option) {
     switch (option) {
         case AccountOption_PasswordExpired: {
-            const QString pwdLastSet_value(attributes[ATTRIBUTE_PWD_LAST_SET][0]);
+            const QString pwdLastSet_value = attribute_get_string(attributes, ATTRIBUTE_PWD_LAST_SET);
             const bool expired = (pwdLastSet_value == AD_PWD_LAST_SET_EXPIRED);
 
             return expired;
         }
         default: {
             // Account option is a UAC bit
-            const QString control(attributes[ATTRIBUTE_USER_ACCOUNT_CONTROL][0]);
-            if (control.isEmpty()) {
+            if (attributes.contains(ATTRIBUTE_USER_ACCOUNT_CONTROL)) {
                 return false;
+            } else {
+                const int control = attribute_get_int(attributes, ATTRIBUTE_USER_ACCOUNT_CONTROL);
+                const int bit = account_option_to_bit(option);
+
+                const bool set = ((control & bit) != 0);
+
+                return set;
             }
-
-            const int bit = account_option_to_bit(option);
-
-            const int control_int = control.toInt();
-            const bool set = ((control_int & bit) != 0);
-
-            return set;
         }
     }
 }
@@ -1378,6 +1382,13 @@ QList<QString> attribute_get_strings(const Attributes &attributes, const QString
     const QList<QString> strings = byte_arrays_to_strings(values);
 
     return strings;
+}
+
+QString attribute_get_string(const Attributes &attributes, const QString &attribute) {
+    const QByteArray bytes = attribute_get_value(attributes, attribute);
+    const QString string = QString::fromUtf8(bytes);
+
+    return string;
 }
 
 bool attribute_get_system_flag(const Attributes &attributes, const SystemFlagsBit bit) {
