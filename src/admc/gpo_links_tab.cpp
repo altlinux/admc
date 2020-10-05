@@ -74,18 +74,18 @@ void GpoLinksTab::apply(const QString &target) {
 
 }
 
-void GpoLinksTab::load(const QString &target, const AdObject &attributes) {
+void GpoLinksTab::load(const AdObject &object) {
     model->removeRows(0, model->rowCount());
 
     // TODO: do this with search
     
     // NOTE: *target* means searching for gplink containing target
     const QList<QString> search_attributes = {ATTRIBUTE_NAME};
-    const QString filter = filter_EQUALS(ATTRIBUTE_GPLINK, "*" + target + "*");
+    const QString filter = filter_EQUALS(ATTRIBUTE_GPLINK, "*" + object.get_dn() + "*");
     const QHash<QString, AdObject> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_All);
 
     for (auto dn : search_results.keys()) {
-        const QString name = attributes.get_string(ATTRIBUTE_NAME);
+        const QString name = object.get_string(ATTRIBUTE_NAME);
 
         const QList<QStandardItem *> row = make_item_row(GpoLinksColumn_COUNT);
         row[GpoLinksColumn_Name]->setText(name);
@@ -95,8 +95,8 @@ void GpoLinksTab::load(const QString &target, const AdObject &attributes) {
     }
 }
 
-bool GpoLinksTab::accepts_target(const AdObject &attributes) const {
-    return attributes.is_policy();
+bool GpoLinksTab::accepts_target(const AdObject &object) const {
+    return object.is_policy();
 }
 
 void GpoLinksTab::on_context_menu(const QPoint pos) {

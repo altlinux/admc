@@ -40,7 +40,7 @@ enum ContainersColumn {
     ContainersColumn_COUNT,
 };
 
-QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AdObject &attributes);
+QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AdObject &object);
 
 ContainersWidget::ContainersWidget(QWidget *parent)
 : QWidget(parent)
@@ -167,8 +167,8 @@ void ContainersWidget::reload() {
         QStack<QModelIndex> stack;
 
         QStandardItem *invis_root = model->invisibleRootItem();
-        const AdObject head_attributes = AdInterface::instance()->attribute_request_all(head_dn);
-        const QStandardItem *head_item = make_row(invis_root, head_dn, head_attributes);
+        const AdObject head_object = AdInterface::instance()->request_all(head_dn);
+        const QStandardItem *head_item = make_row(invis_root, head_dn, head_object);
         stack.push(head_item->index());
 
         while (!stack.isEmpty()) {
@@ -281,8 +281,8 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
     const QHash<QString, AdObject> search_results = AdInterface::instance()->search("", search_attributes, SearchScope_Children, dn);
 
     for (auto child : search_results.keys()) {
-        const AdObject attributes = search_results[child];
-        make_row(parent_item, child, attributes);
+        const AdObject object  = search_results[child];
+        make_row(parent_item, child, object);
     }
 
     // Unset CanFetch flag
@@ -298,8 +298,8 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
 
         const auto load_manually =
         [parent_item](const QString &child) {
-            const AdObject attributes = AdInterface::instance()->attribute_request_all(child);
-            make_row(parent_item, child, attributes);
+            const AdObject object  = AdInterface::instance()->request_all(child);
+            make_row(parent_item, child, object);
         };
 
         if (dn == search_base) {
@@ -321,9 +321,9 @@ bool ContainersModel::hasChildren(const QModelIndex &parent = QModelIndex()) con
 }
 
 // Make row in model at given parent based on object with given dn
-QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AdObject &attributes) {
+QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AdObject &object) {
     const bool passes_filter =
-    [dn, attributes]() {
+    [dn, object]() {
         static const QList<QString> filter_classes =
         []() {
             QList<QString> out = get_containers_filter_classes();
@@ -338,7 +338,7 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AdObject
         }();
 
         for (const auto acceptable_class : filter_classes) {
-            const bool is_class = attributes.is_class(acceptable_class);
+            const bool is_class = object.is_class(acceptable_class);
 
             if (is_class) {
                 return true;
@@ -355,11 +355,11 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AdObject
 
     const QList<QStandardItem *> row = make_item_row(ContainersColumn_COUNT);
     
-    const QString name = attributes.get_string(ATTRIBUTE_NAME);
+    const QString name = object.get_string(ATTRIBUTE_NAME);
     row[ContainersColumn_Name]->setText(name);
     row[ContainersColumn_DN]->setText(dn);
 
-    const QIcon icon = attributes.get_icon();
+    const QIcon icon = object.get_icon();
     row[0]->setIcon(icon);
 
     // Can fetch(expand) object if it's a container

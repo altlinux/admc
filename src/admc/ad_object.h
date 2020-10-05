@@ -28,17 +28,18 @@
 #include <QByteArray>
 #include <QIcon>
 
-typedef QHash<QString, QList<QByteArray>> AdObjectData;
+typedef QHash<QString, QList<QByteArray>> AdObjectAttributes;
 
 class AdObject {
 
 public:
     AdObject();
-    AdObject(const AdObjectData &data_arg);
+    AdObject(const QString &dn_arg, const AdObjectAttributes &attributes_data_arg);
 
+    QString get_dn() const;
     bool is_empty() const;
     bool contains(const QString &attribute) const;
-    QList<QString> keys() const;
+    QList<QString> attributes() const;
 
     QList<QByteArray> get_values(const QString &attribute) const;
     QByteArray get_value(const QString &attribute) const;
@@ -47,6 +48,8 @@ public:
     QString get_string(const QString &attribute) const;
 
     int get_int(const QString &attribute) const;
+    QList<int> get_ints(const QString &attribute) const;
+
     bool get_system_flag(const SystemFlagsBit bit) const;
     bool get_account_option(AccountOption option) const;
     GroupScope get_group_scope() const;
@@ -63,7 +66,8 @@ public:
     QIcon get_icon() const;
 
 private:
-    AdObjectData data;
+    QString dn;
+    AdObjectAttributes attributes_data;
 };
 
 #endif /* ATTRIBUTES_H */

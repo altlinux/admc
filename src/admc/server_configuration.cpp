@@ -77,15 +77,15 @@ QString get_attribute_display_name(const QString &attribute, const QString &obje
         const QHash<QString, AdObject> search_results = AdInterface::instance()->search("", search_attributes, SearchScope_Children, locale_dir);
 
         for (const QString &dn : search_results.keys()) {
-            const AdObject attributes = search_results[dn];
+            const AdObject object  = search_results[dn];
 
             const QList<QString> display_names =
-            [dn, attributes]() {
-                QList<QString> out = attributes.get_strings(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES);
+            [dn, object]() {
+                QList<QString> out = object.get_strings(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES);
 
                 // NOTE: default display specifier contains some extra display names that are used for contents columns
                 if (dn.contains("default-Display")) {
-                    const QList<QString> extra_display_names = attributes.get_strings(ATTRIBUTE_EXTRA_COLUMNS);
+                    const QList<QString> extra_display_names = object.get_strings(ATTRIBUTE_EXTRA_COLUMNS);
 
                     out.append(extra_display_names);
                 }
@@ -155,8 +155,8 @@ QString get_class_display_name(const QString &objectClass) {
             // TODO: duplicated code. Probably load this together with other display specifier info.
             const QString specifier_class = get_display_specifier_class(dn);
 
-            const AdObject attributes = search_results[dn];
-            const QString class_display_name = attributes.get_string(CLASS_DISPLAY_NAME);
+            const AdObject object  = search_results[dn];
+            const QString class_display_name = object.get_string(CLASS_DISPLAY_NAME);
 
             out[specifier_class] = class_display_name;
         }
@@ -178,7 +178,7 @@ QList<QString> get_extra_contents_columns() {
         []() {
             const QString locale_dir = get_locale_dir();
             const QString default_display_specifier = QString("CN=default-Display,%1").arg(locale_dir);
-            QList<QString> columns_out = AdInterface::instance()->attribute_request_strings(default_display_specifier, ATTRIBUTE_EXTRA_COLUMNS);
+            QList<QString> columns_out = AdInterface::instance()->request_strings(default_display_specifier, ATTRIBUTE_EXTRA_COLUMNS);
             std::reverse(columns_out.begin(), columns_out.end());
 
             return columns_out;
@@ -203,7 +203,7 @@ QList<QString> get_containers_filter_classes() {
     []() {
         const QString locale_dir = get_locale_dir();
         const QString display_specifier = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
-        QList<QString> ms_classes = AdInterface::instance()->attribute_request_strings(display_specifier, ATTRIBUTE_FILTER_CONTAINERS);
+        QList<QString> ms_classes = AdInterface::instance()->request_strings(display_specifier, ATTRIBUTE_FILTER_CONTAINERS);
 
         // NOTE: ATTRIBUTE_FILTER_CONTAINERS contains classes in non-LDAP format ("Organizational-Unit" vs "organizationalUnit"). Convert to LDAP format by getting ATTRIBUTE_LDAP_DISPLAY_NAME from class' schema.
         const QString schema_dn = AdInterface::instance()->schema_dn();
@@ -211,8 +211,7 @@ QList<QString> get_containers_filter_classes() {
         QList<QString> out;
         for (const auto ms_class : ms_classes) {
             const QString class_dn = QString("CN=%1,%2").arg(ms_class, schema_dn);
-            const AdObject attributes = AdInterface::instance()->attribute_request(class_dn, {ATTRIBUTE_LDAP_DISPLAY_NAME});
-            const QString ldap_class = attributes.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
+            const QString ldap_class  = AdInterface::instance()->request_string(class_dn, ATTRIBUTE_LDAP_DISPLAY_NAME);
 
             if (!ldap_class.isEmpty()) {
                 out.append(ldap_class);
@@ -228,13 +227,13 @@ QList<QString> get_containers_filter_classes() {
     return classes;
 }
 
-QList<QString> get_possible_superiors(const AdObject &attributes) {
-    const QString category = attributes.get_value(ATTRIBUTE_OBJECT_CATEGORY);
+QList<QString> get_possible_superiors(const AdObject &object) {
+    const QString category = object.get_value(ATTRIBUTE_OBJECT_CATEGORY);
 
     static QHash<QString, QList<QString>> possible_superiors_map;
 
     if (!possible_superiors_map.contains(category)) {
-        const QList<QString> possible_superiors = AdInterface::instance()->attribute_request_strings(category, ATTRIBUTE_POSSIBLE_SUPERIORS);
+        const QList<QString> possible_superiors = AdInterface::instance()->request_strings(category, ATTRIBUTE_POSSIBLE_SUPERIORS);
 
         possible_superiors_map[category] = possible_superiors;
     }
@@ -263,7 +262,7 @@ QString ldap_name_to_ad_name(const QString &ldap_name) {
 
         if (!search_results.isEmpty()) {
             const QString schema_object = search_results[0];
-            const QString ad_class_name = AdInterface::instance()->attribute_request_value(schema_object, ATTRIBUTE_ADMIN_DISPLAY_NAME);
+            const QString ad_class_name = AdInterface::instance()->request_value(schema_object, ATTRIBUTE_ADMIN_DISPLAY_NAME);
 
             ldap_to_ad[ldap_name] = ad_class_name;
         } else {
@@ -275,10 +274,10 @@ QString ldap_name_to_ad_name(const QString &ldap_name) {
 }
 
 // TODO: Object's objectClass list appears to already contain the full inheritance chain. Confirm that this applies to all objects, because otherwise would need to manually go down the inheritance chain to get all possible attributes.
-QList<QString> get_possible_attributes(const AdObject &attributes) {
+QList<QString> get_possible_attributes(const AdObject &object) {
     static QHash<QString, QList<QString>> class_possible_attributes;
 
-    const QList<QString> object_classes = attributes.get_strings(ATTRIBUTE_OBJECT_CLASS);
+    const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
 
     QList<QString> possible_attributes;
     for (const QString object_class : object_classes) {
@@ -287,14 +286,14 @@ QList<QString> get_possible_attributes(const AdObject &attributes) {
             const QString ad_class_name = ldap_name_to_ad_name(object_class);
             const QString schema_dn = AdInterface::instance()->schema_dn();
             const QString class_dn = QString("CN=%1,%2").arg(ad_class_name, schema_dn);
-            const AdObject class_attributes = AdInterface::instance()->attribute_request_all(class_dn);
+            const AdObject class_schema = AdInterface::instance()->request_all(class_dn);
 
-            if (class_attributes.is_empty()) {
+            if (class_schema.is_empty()) {
                 continue;
             }
 
-            const QList<QString> may_contain = class_attributes.get_strings(ATTRIBUTE_MAY_CONTAIN);
-            const QList<QString> system_may_contain = class_attributes.get_strings(ATTRIBUTE_SYSTEM_MAY_CONTAIN);
+            const QList<QString> may_contain = class_schema.get_strings(ATTRIBUTE_MAY_CONTAIN);
+            const QList<QString> system_may_contain = class_schema.get_strings(ATTRIBUTE_SYSTEM_MAY_CONTAIN);
 
             QList<QString> total_contain;
             total_contain.append(may_contain);
@@ -317,11 +316,11 @@ AttributeType get_attribute_type(const QString &attribute) {
         const QString attribute_ad_name = ldap_name_to_ad_name(attribute);
         const QString schema_dn = AdInterface::instance()->schema_dn();
         const QString class_dn = QString("CN=%1,%2").arg(attribute_ad_name, schema_dn);
-        const AdObject class_attributes = AdInterface::instance()->attribute_request_all(class_dn);
+        const AdObject class_schema = AdInterface::instance()->request_all(class_dn);
 
-        if (!class_attributes.is_empty()) {
-            const QString attribute_syntax = class_attributes.get_value(ATTRIBUTE_ATTRIBUTE_SYNTAX);
-            const QString om_syntax = class_attributes.get_value(ATTRIBUTE_OM_SYNTAX);
+        if (!class_schema.is_empty()) {
+            const QString attribute_syntax = class_schema.get_value(ATTRIBUTE_ATTRIBUTE_SYNTAX);
+            const QString om_syntax = class_schema.get_value(ATTRIBUTE_OM_SYNTAX);
 
             // NOTE: replica of: https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/7cda533e-d7a4-4aec-a517-91d02ff4a1aa
             // attribute_syntax -> om syntax list -> type

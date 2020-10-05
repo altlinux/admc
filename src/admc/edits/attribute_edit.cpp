@@ -84,9 +84,9 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QObj
     return success;
 }
 
-void load_attribute_edits(QList<AttributeEdit *> edits, const AdObject &attributes) {
+void load_attribute_edits(QList<AttributeEdit *> edits, const AdObject &object) {
     for (auto edit : edits) {
-        edit->load(attributes);
+        edit->load(object);
     }
 }
 

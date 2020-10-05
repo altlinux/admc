@@ -77,8 +77,8 @@ void PoliciesWidget::reload() {
     const QHash<QString, AdObject> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_All);
 
     for (auto dn : search_results.keys()) {
-        const AdObject attributes = search_results[dn];
-        const QString display_name = attributes.get_value(ATTRIBUTE_DISPLAY_NAME);
+        const AdObject object  = search_results[dn];
+        const QString display_name = object.get_value(ATTRIBUTE_DISPLAY_NAME);
         
         const QList<QStandardItem *> row = make_item_row(PoliciesColumn_COUNT);
         row[PoliciesColumn_Name]->setText(display_name);

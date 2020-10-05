@@ -54,8 +54,8 @@ QString get_attribute_display_name(const QString &attribute, const QString &obje
 QString get_class_display_name(const QString &objectClass);
 QList<QString> get_extra_contents_columns();
 QList<QString> get_containers_filter_classes();
-QList<QString> get_possible_superiors(const AdObject &attributes);
-QList<QString> get_possible_attributes(const AdObject &attributes);
+QList<QString> get_possible_superiors(const AdObject &object);
+QList<QString> get_possible_attributes(const AdObject &object);
 AttributeType get_attribute_type(const QString &attribute);
 
 #endif /* SERVER_CONFIGURATION_H */

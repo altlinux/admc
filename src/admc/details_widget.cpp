@@ -123,9 +123,9 @@ QString DetailsWidget::get_target() const {
 void DetailsWidget::reload(const QString &new_target) {
     target = new_target;
 
-    const AdObject attributes = AdInterface::instance()->attribute_request_all(target);
+    const AdObject object  = AdInterface::instance()->request_all(target);
 
-    if (attributes.is_empty()) {
+    if (object.is_empty()) {
         if (is_floating_instance) {
             close();
         } else {
@@ -135,7 +135,7 @@ void DetailsWidget::reload(const QString &new_target) {
             button_box->hide();
         }
     } else {
-        const QString name = attributes.get_string(ATTRIBUTE_NAME);
+        const QString name = object.get_string(ATTRIBUTE_NAME);
         const QString title_text = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
         title_label->setText(title_text);
 
@@ -187,12 +187,12 @@ void DetailsWidget::reload(const QString &new_target) {
             const TabHandle tab_handle = (TabHandle) i;
             DetailsTab *tab = tabs[i];
 
-            const bool accepts_target = tab->accepts_target(attributes);
+            const bool accepts_target = tab->accepts_target(object);
             if (!accepts_target) {
                 continue;
             }
 
-            tab->load(target, attributes);
+            tab->load(object);
 
             const QString tab_text =
             [tab_handle]() {

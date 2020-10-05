@@ -78,21 +78,21 @@ bool GeneralTab::accepts_target(const AdObject &) const {
     return true;
 }
 
-void GeneralTab::load(const QString &target, const AdObject &attributes) {
-    const QString name = attributes.get_string(ATTRIBUTE_NAME);
+void GeneralTab::load(const AdObject &object) {
+    const QString name = object.get_string(ATTRIBUTE_NAME);
     name_label->setText(name);
 
     const GeneralTabType type =
-    [attributes]() {
-        if (attributes.is_computer()) {
+    [object]() {
+        if (object.is_computer()) {
             return GeneralTabType_Computer;
-        } else if (attributes.is_user()) {
+        } else if (object.is_user()) {
             return GeneralTabType_User;
-        } else if (attributes.is_ou()) {
+        } else if (object.is_ou()) {
             return GeneralTabType_OU;
-        } else if (attributes.is_group()) {
+        } else if (object.is_group()) {
             return GeneralTabType_Group;
-        } else if (attributes.is_container()) {
+        } else if (object.is_container()) {
             return GeneralTabType_Container;
         } else {
             return GeneralTabType_Default;
@@ -178,5 +178,5 @@ void GeneralTab::load(const QString &target, const AdObject &attributes) {
     layout_attribute_edits(edits, edits_layout);
     connect_edits_to_tab(edits, this);  
 
-    load_attribute_edits(edits, attributes);
+    load_attribute_edits(edits, object);
 }

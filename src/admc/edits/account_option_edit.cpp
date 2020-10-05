@@ -91,8 +91,8 @@ AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *pa
         });
 }
 
-void AccountOptionEdit::load(const AdObject &attributes) {
-    const bool option_is_set = attributes.get_account_option(option);
+void AccountOptionEdit::load(const AdObject &object) {
+    const bool option_is_set = object.get_account_option(option);
     
     check->blockSignals(true);
     checkbox_set_checked(check, option_is_set);

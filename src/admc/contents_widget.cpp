@@ -138,7 +138,7 @@ void ContentsWidget::change_target(const QString &dn) {
 
     resize_columns();
 
-    const QString target_name = AdInterface::instance()->attribute_request_value(target_dn, ATTRIBUTE_NAME);
+    const QString target_name = AdInterface::instance()->request_value(target_dn, ATTRIBUTE_NAME);
 
     QString label_text;
     if (target_name.isEmpty()) {
@@ -188,8 +188,8 @@ void ContentsModel::change_target(const QString &target_dn) {
 
     // Load head
     QStandardItem *root = invisibleRootItem();
-    const AdObject head_attributes = AdInterface::instance()->attribute_request_all(target_dn);
-    make_row(root, head_attributes);
+    const AdObject head_object = AdInterface::instance()->request_all(target_dn);
+    make_row(root, head_object);
     QStandardItem *head = item(0, 0);
 
     // NOTE: get object class as well to get icon
@@ -201,22 +201,22 @@ void ContentsModel::change_target(const QString &target_dn) {
     // Load children
     for (auto child_dn : search_results.keys()) {
         if (search_results.contains(child_dn)) {
-            const AdObject attributes = search_results[child_dn];
-            make_row(head, attributes);
+            const AdObject object  = search_results[child_dn];
+            make_row(head, object);
         }
     }
 }
 
-void ContentsModel::make_row(QStandardItem *parent, const AdObject &attributes) {
+void ContentsModel::make_row(QStandardItem *parent, const AdObject &object) {
     const QList<QStandardItem *> row = make_item_row(columns.count());
 
     for (int i = 0; i < columns.count(); i++) {
         const QString attribute = columns[i];
         
-        if (!attributes.contains(attribute)) {
+        if (!object.contains(attribute)) {
             continue;
         }
-        const QByteArray value = attributes.get_value(attribute);
+        const QByteArray value = object.get_value(attribute);
 
         const QString value_display =
         [attribute, value]() {
@@ -234,7 +234,7 @@ void ContentsModel::make_row(QStandardItem *parent, const AdObject &attributes) 
         row[i]->setText(value_display);
     }
 
-    const QIcon icon = attributes.get_icon();
+    const QIcon icon = object.get_icon();
     row[0]->setIcon(icon);
 
     parent->appendRow(row);

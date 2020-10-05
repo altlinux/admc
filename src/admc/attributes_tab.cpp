@@ -61,11 +61,11 @@ void AttributesTab::apply(const QString &target) {
 
 }
 
-void AttributesTab::load(const QString &target, const AdObject &attributes) {
-    model->reload(target, attributes);
+void AttributesTab::load(const AdObject &object) {
+    model->reload(object);
 }
 
-bool AttributesTab::accepts_target(const AdObject &attributes) const {
+bool AttributesTab::accepts_target(const AdObject &object) const {
     return true;
 }
 
@@ -86,12 +86,12 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     return true;
 }
 
-void AttributesModel::reload(const QString &target, const AdObject &attributes) {
+void AttributesModel::reload(const AdObject &object) {
     removeRows(0, rowCount());
 
     // Populate model with attributes of new root
-    for (auto attribute : attributes.keys()) {
-        const QList<QByteArray> values = attributes.get_values(attribute);
+    for (auto attribute : object.attributes()) {
+        const QList<QByteArray> values = object.get_values(attribute);
 
         for (auto value : values) {
             const QString display_value = attribute_get_display_value(attribute, value);
@@ -106,9 +106,9 @@ void AttributesModel::reload(const QString &target, const AdObject &attributes) 
     }
 
     // Add attributes without values
-    const QList<QString> possible_attributes = get_possible_attributes(attributes);
+    const QList<QString> possible_attributes = get_possible_attributes(object);
     for (const QString attribute : possible_attributes) {
-        if (!attributes.contains(attribute)) {
+        if (!object.contains(attribute)) {
             auto name_item = new QStandardItem(attribute);
             auto value_item = new QStandardItem("<unset>");
             

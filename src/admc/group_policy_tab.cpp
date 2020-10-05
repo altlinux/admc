@@ -124,19 +124,19 @@ void GroupPolicyTab::apply(const QString &target) {
     apply_attribute_edits(edits, target, this);
 }
 
-void GroupPolicyTab::load(const QString &target, const AdObject &attributes) {
-    const QString gplink_string = attributes.get_string(ATTRIBUTE_GPLINK);
+void GroupPolicyTab::load(const AdObject &object) {
+    const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
     original_gplink = Gplink(gplink_string);
     current_gplink = original_gplink;
 
-    load_attribute_edits(edits, attributes);
+    load_attribute_edits(edits, object);
 
     reload_current_gplink_into_model();
 }
 
 // TODO: not sure which object classes can have gplink, for now only know of OU's.
-bool GroupPolicyTab::accepts_target(const AdObject &attributes) const {
-    return attributes.is_ou();
+bool GroupPolicyTab::accepts_target(const AdObject &object) const {
+    return object.is_ou();
 }
 
 void GroupPolicyTab::on_context_menu(const QPoint pos) {
@@ -223,9 +223,9 @@ void GroupPolicyTab::reload_current_gplink_into_model() {
             continue;
         }
 
-        const AdObject attributes = search_results[dn];
+        const AdObject object  = search_results[dn];
 
-        const QString display_name = attributes.get_string(ATTRIBUTE_DISPLAY_NAME);
+        const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
 
         const QList<QStandardItem *> row = make_item_row(GplinkColumn_COUNT);
         row[GplinkColumn_Name]->setText(display_name);

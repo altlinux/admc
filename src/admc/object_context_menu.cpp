@@ -54,28 +54,28 @@ void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
 ObjectContextMenu::ObjectContextMenu(const QString &dn)
 : QMenu()
 {
-    const AdObject attributes = AdInterface::instance()->attribute_request_all(dn);
+    const AdObject object  = AdInterface::instance()->request_all(dn);
 
     addAction(tr("Details"), [this, dn]() {
         DetailsWidget::change_target(dn);
     });
 
-    if (attributes.is_policy()) {
+    if (object.is_policy()) {
         // TODO: policy version seems to be too disconnected from general object context menu, maybe just move it to policies widget?
-        addAction(tr("Edit Policy"), [this, dn, attributes]() {
-            edit_policy(dn, attributes);
+        addAction(tr("Edit Policy"), [this, dn, object]() {
+            edit_policy(dn, object);
         });
         addAction(tr("Rename"), [this, dn]() {
             auto rename_dialog = new RenameDialog(dn);
             rename_dialog->open();
         });
     } else {
-        const bool cannot_move = attributes.get_system_flag(SystemFlagsBit_CannotMove);
-        const bool cannot_rename = attributes.get_system_flag(SystemFlagsBit_CannotRename);
-        const bool cannot_delete = attributes.get_system_flag(SystemFlagsBit_CannotDelete);
+        const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
+        const bool cannot_rename = object.get_system_flag(SystemFlagsBit_CannotRename);
+        const bool cannot_delete = object.get_system_flag(SystemFlagsBit_CannotDelete);
 
-        auto delete_action = addAction(tr("Delete"), [this, dn, attributes]() {
-            delete_object(dn, attributes);
+        auto delete_action = addAction(tr("Delete"), [this, dn, object]() {
+            delete_object(dn, object);
         });
         if (cannot_delete) {
             delete_action->setEnabled(false);
@@ -103,14 +103,14 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
         auto move_action = addAction(tr("Move"));
         connect(
             move_action, &QAction::triggered,
-            [this, dn, attributes]() {
-                move(dn, attributes);
+            [this, dn, object]() {
+                move(dn, object);
             });
         if (cannot_move) {
             move_action->setEnabled(false);
         }
 
-        if (attributes.is_user()) {
+        if (object.is_user()) {
             QAction *add_to_group_action = addAction(tr("Add to group"));
             connect(
                 add_to_group_action, &QAction::triggered,
@@ -123,7 +123,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
                 password_dialog->open();
             });
 
-            const bool disabled = attributes.get_account_option(AccountOption_Disabled);
+            const bool disabled = object.get_account_option(AccountOption_Disabled);
             QString disable_text;
             if (disabled) {
                 disable_text = tr("Enable account");
@@ -137,8 +137,8 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
     }
 }
 
-void ObjectContextMenu::delete_object(const QString &dn, const AdObject &attributes) {
-    const QString name = attributes.get_string(ATTRIBUTE_NAME);
+void ObjectContextMenu::delete_object(const QString &dn, const AdObject &object) {
+    const QString name = object.get_string(ATTRIBUTE_NAME);
     const QString text = QString(tr("Are you sure you want to delete \"%1\"?")).arg(name);
     const bool confirmed = confirmation_dialog(text, this);
 
@@ -147,13 +147,13 @@ void ObjectContextMenu::delete_object(const QString &dn, const AdObject &attribu
     }    
 }
 
-void ObjectContextMenu::edit_policy(const QString &dn, const AdObject &attributes) {
+void ObjectContextMenu::edit_policy(const QString &dn, const AdObject &object) {
     // Start policy edit process
     const auto process = new QProcess();
 
     const QString path =
-    [dn, attributes]() {
-        QString path_tmp = attributes.get_value("gPCFileSysPath");
+    [dn, object]() {
+        QString path_tmp = object.get_value("gPCFileSysPath");
         path_tmp.replace("\\", "/");
 
         // TODO: file sys path as it is, is like this:
@@ -185,8 +185,8 @@ void ObjectContextMenu::edit_policy(const QString &dn, const AdObject &attribute
     printf("start_success=%d\n", start_success);
 }
 
-void ObjectContextMenu::move(const QString &dn, const AdObject &attributes) {
-    const QList<QString> possible_superiors = get_possible_superiors(attributes);
+void ObjectContextMenu::move(const QString &dn, const AdObject &object) {
+    const QList<QString> possible_superiors = get_possible_superiors(object);
 
     const QList<QString> selected_objects = SelectDialog::open(possible_superiors);
 

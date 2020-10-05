@@ -159,13 +159,18 @@ public:
     QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &custom_search_base = QString());
     QList<QString> search_dns(const QString &filter, const QString &custom_search_base = QString());
 
-    // NOTE: all request f-ns make an LDAP request, avoid using them unless it's an infrequent call 
-    AdObject attribute_request(const QString &dn, const QList<QString> &attributes);
-    AdObject attribute_request_all(const QString &dn);
-    QList<QByteArray> attribute_request_values(const QString &dn, const QString &attribute);
-    QByteArray attribute_request_value(const QString &dn, const QString &attribute);
+    // NOTE: all request f-ns make an LDAP request, use them only for infrequent calls
+    AdObject request_attributes(const QString &dn, const QList<QString> &attributes);
+    AdObject request_all(const QString &dn);
 
-    QList<QString> attribute_request_strings(const QString &dn, const QString &attribute);
+    QList<QByteArray> request_values(const QString &dn, const QString &attribute);
+    QByteArray request_value(const QString &dn, const QString &attribute);
+
+    QList<QString> request_strings(const QString &dn, const QString &attribute);
+    QString request_string(const QString &dn, const QString &attribute);
+
+    QList<int> request_ints(const QString &dn, const QString &attribute);
+    int request_int(const QString &dn, const QString &attribute);
 
     bool attribute_add(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);

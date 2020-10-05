@@ -26,27 +26,32 @@ AdObject::AdObject()
 
 }
 
-AdObject::AdObject(const AdObjectData &data_arg)
-: data(data_arg)
+AdObject::AdObject(const QString &dn_arg, const AdObjectAttributes &attributes_data_arg)
+: dn(dn_arg)
+, attributes_data(attributes_data_arg)
 {
 
 }
 
+QString AdObject::get_dn() const {
+    return dn;
+}
+
 bool AdObject::is_empty() const {
-    return data.isEmpty();
+    return attributes_data.isEmpty();
 }
 
 bool AdObject::contains(const QString &attribute) const {
-    return data.contains(attribute);
+    return attributes_data.contains(attribute);
 }
 
-QList<QString> AdObject::keys() const {
-    return data.keys();
+QList<QString> AdObject::attributes() const {
+    return attributes_data.keys();
 }
 
 QList<QByteArray> AdObject::get_values(const QString &attribute) const {
     if (contains(attribute)) {
-        return data[attribute];
+        return attributes_data[attribute];
     } else {
         return QList<QByteArray>();
     }
@@ -74,6 +79,18 @@ QString AdObject::get_string(const QString &attribute) const {
     const QString string = QString::fromUtf8(bytes);
 
     return string;
+}
+
+QList<int> AdObject::get_ints(const QString &attribute) const {
+    const QList<QString> strings = get_strings(attribute);
+
+    QList<int> ints;
+    for (const auto string : strings) {
+        const int value_int = string.toInt();
+        ints.append(value_int);
+    }
+
+    return ints;
 }
 
 int AdObject::get_int(const QString &attribute) const {
@@ -143,7 +160,7 @@ GroupScope AdObject::get_group_scope() const {
 }
 
 bool AdObject::is_class(const QString &object_class) const {
-    const QList<QByteArray> object_classes = data[ATTRIBUTE_OBJECT_CLASS];
+    const QList<QByteArray> object_classes = attributes_data[ATTRIBUTE_OBJECT_CLASS];
     const bool is_class = object_classes.contains(object_class.toUtf8());
 
     return is_class;
@@ -185,7 +202,7 @@ QIcon AdObject::get_icon() const {
         {QByteArray(CLASS_BUILTIN_DOMAIN), "emblem-system"},
     };
 
-    const QList<QByteArray> object_classes = data[ATTRIBUTE_OBJECT_CLASS];
+    const QList<QByteArray> object_classes = attributes_data[ATTRIBUTE_OBJECT_CLASS];
     const QString icon_name =
     [object_classes]() {
         for (auto c : class_to_icon.keys()) {

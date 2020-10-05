@@ -198,7 +198,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
         const QString dn(dn_cstr);
         ldap_memfree(dn_cstr);
 
-        AdObjectData attributes_data;
+        AdObjectAttributes object_attributes;
         
         BerElement *berptr;
         for (char *attr = ldap_first_attribute(ld, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ld, entry, berptr)) {
@@ -226,14 +226,14 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
 
             const QString attribute(attr);
 
-            attributes_data[attribute] = values_bytes;
+            object_attributes[attribute] = values_bytes;
 
             ldap_value_free_len(values_ldap);
             ldap_memfree(attr);
         }
         ber_free(berptr, 0);
 
-        out[dn] = AdObject(attributes_data);
+        out[dn] = AdObject(dn, object_attributes);
     }
 
     end: {
@@ -253,7 +253,7 @@ QList<QString> AdInterface::search_dns(const QString &filter, const QString &cus
     return dns;
 }
 
-AdObject AdInterface::attribute_request(const QString &dn, const QList<QString> &attributes) {
+AdObject AdInterface::request_attributes(const QString &dn, const QList<QString> &attributes) {
     const QHash<QString, AdObject> search_results = search("", attributes, SearchScope_Object, dn);
 
     if (search_results.contains(dn)) {
@@ -263,40 +263,46 @@ AdObject AdInterface::attribute_request(const QString &dn, const QList<QString> 
     }
 }
 
-AdObject AdInterface::attribute_request_all(const QString &dn) {
-    const AdObject result = attribute_request(dn, {SEARCH_ALL_ATTRIBUTES});
+AdObject AdInterface::request_all(const QString &dn) {
+    const AdObject result = request_attributes(dn, {SEARCH_ALL_ATTRIBUTES});
 
     return result;
 }
 
-QList<QByteArray> AdInterface::attribute_request_values(const QString &dn, const QString &attribute) {
-    const QHash<QString, AdObject> search_results = search("", {attribute}, SearchScope_Object, dn);
-
-    if (search_results.contains(dn) && search_results[dn].contains(attribute)) {
-        const AdObject attributes = search_results[dn];
-        const QList<QByteArray> values = attributes.get_values(attribute);
-
-        return values;
-    } else {
-        return QList<QByteArray>();
-    }
+QList<QByteArray> AdInterface::request_values(const QString &dn, const QString &attribute) {
+    const AdObject object = request_attributes(dn, {attribute});
+    
+    return object.get_values(attribute);
 }
 
-QByteArray AdInterface::attribute_request_value(const QString &dn, const QString &attribute) {
-    const QList<QByteArray> values = attribute_request_values(dn, attribute);
-
-    if (!values.isEmpty()) {
-        return values[0];
-    } else {
-        return QByteArray();
-    }
+QByteArray AdInterface::request_value(const QString &dn, const QString &attribute) {
+    const AdObject object = request_attributes(dn, {attribute});
+    
+    return object.get_value(attribute);
 }
 
-QList<QString> AdInterface::attribute_request_strings(const QString &dn, const QString &attribute) {
-    const QList<QByteArray> values = attribute_request_values(dn, attribute);
-    const QList<QString> strings = byte_arrays_to_strings(values);
+QList<QString> AdInterface::request_strings(const QString &dn, const QString &attribute) {
+    const AdObject object = request_attributes(dn, {attribute});
 
-    return strings;
+    return object.get_strings(attribute);
+}
+
+QString AdInterface::request_string(const QString &dn, const QString &attribute) {
+    const AdObject object = request_attributes(dn, {attribute});
+    
+    return object.get_string(attribute);
+}
+
+QList<int> AdInterface::request_ints(const QString &dn, const QString &attribute) {
+    const AdObject object = request_attributes(dn, {attribute});
+
+    return object.get_ints(attribute);
+}
+
+int AdInterface::request_int(const QString &dn, const QString &attribute) {
+    const AdObject object = request_attributes(dn, {attribute});
+    
+    return object.get_int(attribute);
 }
 
 bool AdInterface::attribute_add_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
@@ -352,7 +358,7 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 }
 
 bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
-    const QByteArray old_value = attribute_request_value(dn, attribute);
+    const QByteArray old_value = request_value(dn, attribute);
 
     const QString string(value);
 
@@ -569,8 +575,7 @@ bool AdInterface::group_remove_user(const QString &group_dn, const QString &user
 
 // TODO: are there side-effects on group members from this?...
 bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
-    const AdObject attributes = attribute_request_all(dn);
-    int group_type = attributes.get_int(ATTRIBUTE_GROUP_TYPE);
+    int group_type = request_int(dn, ATTRIBUTE_GROUP_TYPE);
 
     // Unset all scope bits, because scope bits are exclusive
     for (int i = 0; i < GroupScope_COUNT; i++) {
@@ -601,8 +606,7 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
 }
 
 bool AdInterface::group_set_type(const QString &dn, GroupType type) {
-    const AdObject attributes = attribute_request_all(dn);
-    const int group_type = attributes.get_int(ATTRIBUTE_GROUP_TYPE);
+    const int group_type = request_int(dn, ATTRIBUTE_GROUP_TYPE);
 
     const bool set_security_bit = type == GroupType_Security;
 
@@ -729,11 +733,15 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             break;
         }
         default: {
-            const AdObject attributes = AdInterface::instance()->attribute_request_all(dn);
-            QString control = attributes.get_value(ATTRIBUTE_USER_ACCOUNT_CONTROL);
-            if (control.isEmpty()) {
-                control = "0";
-            }
+            const QString control =
+            [this, dn]() {
+                QString out = request_string(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
+                if (out.isEmpty()) {
+                    out = "0";
+                }
+
+                return out;
+            }();
 
             const int bit = account_option_to_bit(option);
 
@@ -804,7 +812,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
 }
 
 bool AdInterface::user_unlock(const QString &dn) {
-    const bool result = AdInterface::instance()->attribute_replace_string(dn, ATTRIBUTE_LOCKOUT_TIME, LOCKOUT_UNLOCKED_VALUE);
+    const bool result = attribute_replace_string(dn, ATTRIBUTE_LOCKOUT_TIME, LOCKOUT_UNLOCKED_VALUE);
 
     const QString name = extract_name_from_dn(dn);
     
@@ -821,20 +829,20 @@ bool AdInterface::user_unlock(const QString &dn) {
     }
 }
 
-bool attribute_get_account_option(const AdObject &attributes, AccountOption option) {
+bool attribute_get_account_option(const AdObject &object  , AccountOption option) {
     switch (option) {
         case AccountOption_PasswordExpired: {
-            const QString pwdLastSet_value = attributes.get_string(ATTRIBUTE_PWD_LAST_SET);
+            const QString pwdLastSet_value = object.get_string(ATTRIBUTE_PWD_LAST_SET);
             const bool expired = (pwdLastSet_value == AD_PWD_LAST_SET_EXPIRED);
 
             return expired;
         }
         default: {
             // Account option is a UAC bit
-            if (attributes.contains(ATTRIBUTE_USER_ACCOUNT_CONTROL)) {
+            if (object.contains(ATTRIBUTE_USER_ACCOUNT_CONTROL)) {
                 return false;
             } else {
-                const int control = attributes.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
+                const int control = object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
                 const int bit = account_option_to_bit(option);
 
                 const bool set = ((control & bit) != 0);
@@ -858,21 +866,21 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
         return DropType_None;
     }
 
-    const AdObject dropped_attributes = AdInterface::instance()->attribute_request_all(dn);
-    const AdObject target_attributes = AdInterface::instance()->attribute_request_all(target_dn);
+    const AdObject dropped = AdInterface::instance()->request_attributes(dn, {ATTRIBUTE_OBJECT_CLASS});
+    const AdObject target = AdInterface::instance()->request_attributes(target_dn, {ATTRIBUTE_OBJECT_CLASS});
 
-    const bool dropped_is_user = dropped_attributes.is_user();
-    const bool target_is_group = target_attributes.is_user();
+    const bool dropped_is_user = dropped.is_user();
+    const bool target_is_group = target.is_user();
 
     if (dropped_is_user && target_is_group) {
         return DropType_AddToGroup;
     } else {
-        const QList<QString> possible_superiors = get_possible_superiors(dropped_attributes);
+        const QList<QString> possible_superiors = get_possible_superiors(dropped);
 
         const bool can_move =
-        [target_attributes, possible_superiors]() {
+        [target, possible_superiors]() {
             for (const auto object_class : possible_superiors) {
-                if (target_attributes.is_class(object_class)) {
+                if (target.is_class(object_class)) {
                     return true;
                 }
             }

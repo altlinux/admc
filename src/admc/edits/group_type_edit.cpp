@@ -50,8 +50,8 @@ void GroupTypeEdit::set_read_only(EditReadOnly read_only_arg) {
     combo->setEnabled(read_only == EditReadOnly_No);
 }
 
-void GroupTypeEdit::load(const AdObject &attributes) {
-    const GroupType type = attributes.get_group_type();
+void GroupTypeEdit::load(const AdObject &object) {
+    const GroupType type = object.get_group_type();
     const int type_int = (int)type;
 
     combo->blockSignals(true);

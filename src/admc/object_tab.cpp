@@ -73,10 +73,10 @@ void ObjectTab::apply(const QString &target) {
 
 }
 
-void ObjectTab::load(const QString &target, const AdObject &attributes) {
-    load_attribute_edits(edits, attributes);
+void ObjectTab::load(const AdObject &object) {
+    load_attribute_edits(edits, object);
 }
 
-bool ObjectTab::accepts_target(const AdObject &attributes) const {
+bool ObjectTab::accepts_target(const AdObject &object) const {
     return true;
 }

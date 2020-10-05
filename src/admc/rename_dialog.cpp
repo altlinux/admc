@@ -38,7 +38,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
 : QDialog()
 {
     target = target_arg;
-    const AdObject attributes = AdInterface::instance()->attribute_request_all(target);
+    const AdObject object  = AdInterface::instance()->request_all(target);
 
     setAttribute(Qt::WA_DeleteOnClose);
     resize(600, 600);
@@ -49,7 +49,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
 
     QList<QString> string_attributes;
     QString objectClass;
-    if (attributes.is_user()) {
+    if (object.is_user()) {
         string_attributes = {
             ATTRIBUTE_NAME,
             ATTRIBUTE_FIRST_NAME,
@@ -59,13 +59,13 @@ RenameDialog::RenameDialog(const QString &target_arg)
             ATTRIBUTE_SAMACCOUNT_NAME
         };
         objectClass = CLASS_USER;
-    } else if (attributes.is_group()) {
+    } else if (object.is_group()) {
         string_attributes = {
             ATTRIBUTE_NAME,
             ATTRIBUTE_SAMACCOUNT_NAME
         };
         objectClass = CLASS_GROUP;
-    } else if (attributes.is_policy()) {
+    } else if (object.is_policy()) {
         string_attributes = {
             ATTRIBUTE_DISPLAY_NAME
         };
@@ -92,7 +92,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
     top_layout->addLayout(edits_layout);
     top_layout->addWidget(button_box);
 
-    load_attribute_edits(all_edits, attributes);
+    load_attribute_edits(all_edits, object);
 }
 
 void RenameDialog::accept() {
