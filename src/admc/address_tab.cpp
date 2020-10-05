@@ -64,10 +64,10 @@ void AddressTab::apply(const QString &target) {
     apply_attribute_edits(edits, target, this);
 }
 
-void AddressTab::load(const QString &target, const Attributes &attributes) {
+void AddressTab::load(const QString &target, const AdObject &attributes) {
     load_attribute_edits(edits, attributes);
 }
 
-bool AddressTab::accepts_target(const Attributes &attributes) const {
-    return object_is_user(attributes);
+bool AddressTab::accepts_target(const AdObject &attributes) const {
+    return attributes.is_user();
 }

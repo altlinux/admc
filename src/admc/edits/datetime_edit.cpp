@@ -45,8 +45,8 @@ void DateTimeEdit::set_read_only(EditReadOnly read_only_arg) {
     edit->setReadOnly(read_only == EditReadOnly_Yes);
 }
 
-void DateTimeEdit::load(const Attributes &attributes) {
-    const QString datetime_string = attribute_get_string(attributes, ATTRIBUTE_ACCOUNT_EXPIRES);
+void DateTimeEdit::load(const AdObject &attributes) {
+    const QString datetime_string = attributes.get_string(attribute);
     const QDateTime value = datetime_raw_to_datetime(attribute, datetime_string);
 
     edit->blockSignals(true);

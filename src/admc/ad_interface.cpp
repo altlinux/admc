@@ -22,6 +22,7 @@
 #include "status.h"
 #include "utils.h"
 #include "server_configuration.h"
+#include "ad_object.h"
 
 #include <ldap.h>
 #include <lber.h>
@@ -33,9 +34,6 @@
 
 #define MILLIS_TO_100_NANOS 10000
 
-#define AD_PWD_LAST_SET_EXPIRED "0"
-#define AD_PWD_LAST_SET_RESET   "-1"
-
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm"
 
 #define SEARCH_ALL_ATTRIBUTES "SEARCH_ALL_ATTRIBUTES"
@@ -44,13 +42,8 @@
 #define GENERALIZED_TIME_FORMAT_STRING "yyyyMMddhhmmss.zZ"
 #define UTC_TIME_FORMAT_STRING "yyMMddhhmmss.zZ"
 
-#define GROUP_TYPE_BIT_SECURITY 0x80000000
-#define GROUP_TYPE_BIT_SYSTEM 0x00000001
-
 #define LDAP_SEARCH_NO_ATTRIBUTES "1.1"
 
-int group_scope_to_bit(GroupScope scope);
-int account_option_to_bit(const AccountOption &option);
 QString object_sid_to_display_string(const QByteArray &bytes);
 
 AdInterface *AdInterface::instance() {
@@ -127,9 +120,9 @@ QString AdInterface::host() const {
     return m_host;
 }
 
-QHash<QString, Attributes> AdInterface::search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &custom_search_base) {
+QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &custom_search_base) {
     // int result = AD_SUCCESS;
-    QHash<QString, Attributes> out;
+    QHash<QString, AdObject> out;
 
     LDAPMessage *res;
     char **attrs;
@@ -205,8 +198,7 @@ QHash<QString, Attributes> AdInterface::search(const QString &filter, const QLis
         const QString dn(dn_cstr);
         ldap_memfree(dn_cstr);
 
-        // NOTE: insert empty attributes even if there's none requested so that map contains DN's
-        out.insert(dn, Attributes());
+        AdObjectData attributes_data;
         
         BerElement *berptr;
         for (char *attr = ldap_first_attribute(ld, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ld, entry, berptr)) {
@@ -234,53 +226,56 @@ QHash<QString, Attributes> AdInterface::search(const QString &filter, const QLis
 
             const QString attribute(attr);
 
-            out[dn][attribute] = values_bytes;
+            attributes_data[attribute] = values_bytes;
 
             ldap_value_free_len(values_ldap);
             ldap_memfree(attr);
         }
         ber_free(berptr, 0);
+
+        out[dn] = AdObject(attributes_data);
     }
 
-    // TODO: need error messsages? i don't even know? so many widgets will be using this and erros won't make any sense to the user. DEFINITELY don't want success messages.
     end: {
         ldap_msgfree(res);
         ad_array_free(attrs);
+
 
         return out;
     }
 }
 
 QList<QString> AdInterface::search_dns(const QString &filter, const QString &custom_search_base) {
-    const QHash<QString, Attributes> search_results = search(filter, QList<QString>(), SearchScope_All, custom_search_base);
+    const QHash<QString, AdObject> search_results = search(filter, QList<QString>(), SearchScope_All, custom_search_base);
     const QList<QString> dns = search_results.keys();
 
 
     return dns;
 }
 
-Attributes AdInterface::attribute_request(const QString &dn, const QList<QString> &attributes) {
-    const QHash<QString, Attributes> search_results = search("", attributes, SearchScope_Object, dn);
+AdObject AdInterface::attribute_request(const QString &dn, const QList<QString> &attributes) {
+    const QHash<QString, AdObject> search_results = search("", attributes, SearchScope_Object, dn);
 
     if (search_results.contains(dn)) {
         return search_results[dn];
     } else {
-        return Attributes();
+        return AdObject();
     }
 }
 
-Attributes AdInterface::attribute_request_all(const QString &dn) {
-    const Attributes result = attribute_request(dn, {SEARCH_ALL_ATTRIBUTES});
+AdObject AdInterface::attribute_request_all(const QString &dn) {
+    const AdObject result = attribute_request(dn, {SEARCH_ALL_ATTRIBUTES});
 
     return result;
 }
 
 QList<QByteArray> AdInterface::attribute_request_values(const QString &dn, const QString &attribute) {
-    const QHash<QString, Attributes> search_results = search("", {attribute}, SearchScope_Object, dn);
+    const QHash<QString, AdObject> search_results = search("", {attribute}, SearchScope_Object, dn);
 
     if (search_results.contains(dn) && search_results[dn].contains(attribute)) {
-        const QList<QByteArray> values = search_results[dn][attribute];
-        
+        const AdObject attributes = search_results[dn];
+        const QList<QByteArray> values = attributes.get_values(attribute);
+
         return values;
     } else {
         return QList<QByteArray>();
@@ -437,13 +432,6 @@ bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, 
     }
 }
 
-int attribute_get_int(const Attributes &attributes, const QString &attribute) {
-    const QString value_raw = attribute_get_value(attributes, attribute);
-    const int value = value_raw.toInt();
-
-    return value;
-}
-
 bool AdInterface::attribute_replace_int(const QString &dn, const QString &attribute, const int value) {
     const QString value_string = QString::number(value);
     const bool result = attribute_replace_string(dn, attribute, value_string);
@@ -579,25 +567,10 @@ bool AdInterface::group_remove_user(const QString &group_dn, const QString &user
     }
 }
 
-GroupScope attribute_get_group_scope(const Attributes &attributes) {
-    const int group_type = attribute_get_int(attributes, ATTRIBUTE_GROUP_TYPE);
-
-    for (int i = 0; i < GroupScope_COUNT; i++) {
-        const GroupScope this_scope = (GroupScope) i;
-        const int scope_bit = group_scope_to_bit(this_scope);
-
-        if (bit_is_set(group_type, scope_bit)) {
-            return this_scope;
-        }
-    }
-
-    return GroupScope_Global;
-}
-
 // TODO: are there side-effects on group members from this?...
 bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
-    const Attributes attributes = attribute_request_all(dn);
-    int group_type = attribute_get_int(attributes, ATTRIBUTE_GROUP_TYPE);
+    const AdObject attributes = attribute_request_all(dn);
+    int group_type = attributes.get_int(ATTRIBUTE_GROUP_TYPE);
 
     // Unset all scope bits, because scope bits are exclusive
     for (int i = 0; i < GroupScope_COUNT; i++) {
@@ -627,22 +600,9 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
     }
 }
 
-// NOTE: "group type" is really only the last bit of the groupType attribute, yeah it's confusing
-GroupType attribute_get_group_type(const Attributes &attributes) {
-    const int group_type = attribute_get_int(attributes, ATTRIBUTE_GROUP_TYPE);
-
-    const bool security_bit_set = ((group_type & GROUP_TYPE_BIT_SECURITY) != 0);
-
-    if (security_bit_set) {
-        return GroupType_Security;
-    } else {
-        return GroupType_Distribution;
-    }
-}
-
 bool AdInterface::group_set_type(const QString &dn, GroupType type) {
-    const Attributes attributes = attribute_request_all(dn);
-    const int group_type = attribute_get_int(attributes, ATTRIBUTE_GROUP_TYPE);
+    const AdObject attributes = attribute_request_all(dn);
+    const int group_type = attributes.get_int(ATTRIBUTE_GROUP_TYPE);
 
     const bool set_security_bit = type == GroupType_Security;
 
@@ -769,8 +729,8 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             break;
         }
         default: {
-            const Attributes attributes = AdInterface::instance()->attribute_request_all(dn);
-            QString control = attribute_get_value(attributes, ATTRIBUTE_USER_ACCOUNT_CONTROL);
+            const AdObject attributes = AdInterface::instance()->attribute_request_all(dn);
+            QString control = attributes.get_value(ATTRIBUTE_USER_ACCOUNT_CONTROL);
             if (control.isEmpty()) {
                 control = "0";
             }
@@ -861,41 +821,10 @@ bool AdInterface::user_unlock(const QString &dn) {
     }
 }
 
-bool object_is_class(const Attributes &attributes, const QString &object_class) {
-    const QList<QByteArray> object_classes = attributes[ATTRIBUTE_OBJECT_CLASS];
-    const bool is_class = object_classes.contains(object_class.toUtf8());
-
-    return is_class;
-}
-
-bool object_is_user(const Attributes &attributes) {
-    return object_is_class(attributes, CLASS_USER) && !object_is_class(attributes, CLASS_COMPUTER);
-}
-
-bool object_is_group(const Attributes &attributes) {
-    return object_is_class(attributes, CLASS_GROUP);
-}
-
-bool object_is_container(const Attributes &attributes) {
-    return object_is_class(attributes, CLASS_CONTAINER);
-}
-
-bool object_is_ou(const Attributes &attributes) {
-    return object_is_class(attributes, CLASS_OU);
-}
-
-bool object_is_policy(const Attributes &attributes) {
-    return object_is_class(attributes, CLASS_GP_CONTAINER);
-}
-
-bool object_is_computer(const Attributes &attributes) {
-    return object_is_class(attributes, CLASS_COMPUTER);
-}
-
-bool attribute_get_account_option(const Attributes &attributes, AccountOption option) {
+bool attribute_get_account_option(const AdObject &attributes, AccountOption option) {
     switch (option) {
         case AccountOption_PasswordExpired: {
-            const QString pwdLastSet_value = attribute_get_string(attributes, ATTRIBUTE_PWD_LAST_SET);
+            const QString pwdLastSet_value = attributes.get_string(ATTRIBUTE_PWD_LAST_SET);
             const bool expired = (pwdLastSet_value == AD_PWD_LAST_SET_EXPIRED);
 
             return expired;
@@ -905,7 +834,7 @@ bool attribute_get_account_option(const Attributes &attributes, AccountOption op
             if (attributes.contains(ATTRIBUTE_USER_ACCOUNT_CONTROL)) {
                 return false;
             } else {
-                const int control = attribute_get_int(attributes, ATTRIBUTE_USER_ACCOUNT_CONTROL);
+                const int control = attributes.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
                 const int bit = account_option_to_bit(option);
 
                 const bool set = ((control & bit) != 0);
@@ -929,11 +858,11 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
         return DropType_None;
     }
 
-    const Attributes dropped_attributes = AdInterface::instance()->attribute_request_all(dn);
-    const Attributes target_attributes = AdInterface::instance()->attribute_request_all(target_dn);
+    const AdObject dropped_attributes = AdInterface::instance()->attribute_request_all(dn);
+    const AdObject target_attributes = AdInterface::instance()->attribute_request_all(target_dn);
 
-    const bool dropped_is_user = object_is_user(dropped_attributes);
-    const bool target_is_group = object_is_group(target_attributes);
+    const bool dropped_is_user = dropped_attributes.is_user();
+    const bool target_is_group = target_attributes.is_user();
 
     if (dropped_is_user && target_is_group) {
         return DropType_AddToGroup;
@@ -943,7 +872,7 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
         const bool can_move =
         [target_attributes, possible_superiors]() {
             for (const auto object_class : possible_superiors) {
-                if (object_is_class(target_attributes, object_class)) {
+                if (target_attributes.is_class(object_class)) {
                     return true;
                 }
             }
@@ -1264,35 +1193,6 @@ QString group_type_to_string(GroupType type) {
     return "";
 }
 
-QIcon get_object_icon(const Attributes &attributes) {
-    // TODO: change to custom, good icons, add those icons to installation?
-    // TODO: are there cases where an object can have multiple icons due to multiple objectClasses and one of them needs to be prioritized?
-    static const QMap<QByteArray, QString> class_to_icon = {
-        {QByteArray(CLASS_GP_CONTAINER), "x-office-address-book"},
-        {QByteArray(CLASS_CONTAINER), "folder"},
-        {QByteArray(CLASS_OU), "network-workgroup"},
-        {QByteArray(CLASS_PERSON), "avatar-default"},
-        {QByteArray(CLASS_GROUP), "application-x-smb-workgroup"},
-        {QByteArray(CLASS_BUILTIN_DOMAIN), "emblem-system"},
-    };
-
-    const QList<QByteArray> object_classes = attributes[ATTRIBUTE_OBJECT_CLASS];
-    const QString icon_name =
-    [object_classes]() {
-        for (auto c : class_to_icon.keys()) {
-            if (object_classes.contains(c)) {
-                return class_to_icon[c];
-            }
-        }
-
-        return QString("dialog-question");
-    }();
-
-    const QIcon icon = QIcon::fromTheme(icon_name);
-
-    return icon;
-}
-
 // TODO: flesh this out
 QString attribute_get_display_value(const QString &attribute, const QByteArray &value_bytes) {
     const AttributeType attribute_type = get_attribute_type(attribute);
@@ -1357,43 +1257,4 @@ QString object_sid_to_display_string(const QByteArray &sid) {
     }
 
     return string;
-}
-
-QList<QByteArray> attribute_get_values(const Attributes &attributes, const QString &attribute) {
-    if (attributes.contains(attribute)) {
-        return attributes[attribute];
-    } else {
-        return QList<QByteArray>();
-    }
-}
-
-QByteArray attribute_get_value(const Attributes &attributes, const QString &attribute) {
-    const QList<QByteArray> values = attribute_get_values(attributes, attribute);
-
-    if (!values.isEmpty()) {
-        return values[0];
-    } else {
-        return QByteArray();
-    }
-}
-
-QList<QString> attribute_get_strings(const Attributes &attributes, const QString &attribute) {
-    const QList<QByteArray> values = attribute_get_values(attributes, attribute);
-    const QList<QString> strings = byte_arrays_to_strings(values);
-
-    return strings;
-}
-
-QString attribute_get_string(const Attributes &attributes, const QString &attribute) {
-    const QByteArray bytes = attribute_get_value(attributes, attribute);
-    const QString string = QString::fromUtf8(bytes);
-
-    return string;
-}
-
-bool attribute_get_system_flag(const Attributes &attributes, const SystemFlagsBit bit) {
-    const int system_flags_bits = attribute_get_int(attributes, ATTRIBUTE_SYSTEM_FLAGS);
-    const bool is_set = bit_is_set(system_flags_bits, bit);
-
-    return is_set;
 }

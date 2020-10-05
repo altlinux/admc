@@ -152,7 +152,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         row[SelectDialogColumn_Class]->setText(object_class);
         row[SelectDialogColumn_DN]->setText(dn);
 
-        // const QIcon icon = get_object_icon(dn);
+        // const QIcon icon = get_icon(dn);
         // row[0]->setIcon(icon);
 
         if (setup_as_tree) {

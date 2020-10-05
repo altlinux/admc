@@ -75,12 +75,10 @@ void AccountTab::apply(const QString &target) {
     apply_attribute_edits(edits, target, this);
 }
 
-void AccountTab::load(const QString &target, const Attributes &attributes) {
+void AccountTab::load(const QString &target, const AdObject &attributes) {
     load_attribute_edits(edits, attributes);
 }
 
-bool AccountTab::accepts_target(const Attributes &attributes) const {
-    const bool is_user = object_is_user(attributes);
-
-    return is_user;
+bool AccountTab::accepts_target(const AdObject &attributes) const {
+    return attributes.is_user();
 }

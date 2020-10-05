@@ -43,6 +43,7 @@ add_executable(admc
     policies_widget.cpp
     gplink.cpp
     server_configuration.cpp
+    ad_object.cpp
     
     edits/attribute_edit.cpp
     edits/string_edit.cpp

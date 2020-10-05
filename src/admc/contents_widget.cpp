@@ -188,7 +188,7 @@ void ContentsModel::change_target(const QString &target_dn) {
 
     // Load head
     QStandardItem *root = invisibleRootItem();
-    const Attributes head_attributes = AdInterface::instance()->attribute_request_all(target_dn);
+    const AdObject head_attributes = AdInterface::instance()->attribute_request_all(target_dn);
     make_row(root, head_attributes);
     QStandardItem *head = item(0, 0);
 
@@ -196,18 +196,18 @@ void ContentsModel::change_target(const QString &target_dn) {
     QList<QString> search_attributes = columns;
     search_attributes.append(ATTRIBUTE_OBJECT_CLASS);
 
-    const QHash<QString, Attributes> search_results = AdInterface::instance()->search("", search_attributes, SearchScope_Children, target_dn);
+    const QHash<QString, AdObject> search_results = AdInterface::instance()->search("", search_attributes, SearchScope_Children, target_dn);
 
     // Load children
     for (auto child_dn : search_results.keys()) {
         if (search_results.contains(child_dn)) {
-            const Attributes attributes = search_results[child_dn];
+            const AdObject attributes = search_results[child_dn];
             make_row(head, attributes);
         }
     }
 }
 
-void ContentsModel::make_row(QStandardItem *parent, const Attributes &attributes) {
+void ContentsModel::make_row(QStandardItem *parent, const AdObject &attributes) {
     const QList<QStandardItem *> row = make_item_row(columns.count());
 
     for (int i = 0; i < columns.count(); i++) {
@@ -216,7 +216,7 @@ void ContentsModel::make_row(QStandardItem *parent, const Attributes &attributes
         if (!attributes.contains(attribute)) {
             continue;
         }
-        const QByteArray value = attribute_get_value(attributes, attribute);
+        const QByteArray value = attributes.get_value(attribute);
 
         const QString value_display =
         [attribute, value]() {
@@ -234,7 +234,7 @@ void ContentsModel::make_row(QStandardItem *parent, const Attributes &attributes
         row[i]->setText(value_display);
     }
 
-    const QIcon icon = get_object_icon(attributes);
+    const QIcon icon = attributes.get_icon();
     row[0]->setIcon(icon);
 
     parent->appendRow(row);

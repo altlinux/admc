@@ -17,14 +17,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef AD_INTERFACE_DEFINES_H
-#define AD_INTERFACE_DEFINES_H
+#ifndef AD_ENUMS_H
+#define AD_ENUMS_H
 
-#include <QHash>
-#include <QList>
-#include <QString>
-#include <QByteArray>
+enum AccountOption {
+    AccountOption_Disabled,
+    AccountOption_PasswordExpired,
+    AccountOption_DontExpirePassword,
+    AccountOption_UseDesKey,
+    AccountOption_SmartcardRequired,
+    AccountOption_CantDelegate,
+    AccountOption_DontRequirePreauth,
+    AccountOption_COUNT
+};
 
-typedef QHash<QString, QList<QByteArray>> Attributes;
+enum GroupScope {
+    GroupScope_Global,
+    GroupScope_DomainLocal,
+    GroupScope_Universal,
+    GroupScope_COUNT
+};
 
-#endif /* AD_INTERFACE_DEFINES_H */
+enum GroupType {
+    GroupType_Security,
+    GroupType_Distribution,
+    GroupType_COUNT
+};
+
+enum SystemFlagsBit {
+    SystemFlagsBit_CannotMove = 0x04000000,
+    SystemFlagsBit_CannotRename = 0x08000000,
+    SystemFlagsBit_CannotDelete = 0x80000000
+};
+
+#endif /* AD_ENUMS_H */

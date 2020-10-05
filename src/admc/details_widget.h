@@ -32,7 +32,7 @@ class QDialogButtonBox;
 enum TabHandle {
     TabHandle_General,
     TabHandle_Object,
-    TabHandle_Attributes,
+    TabHandle_AdObject,
     TabHandle_Account,
     TabHandle_Members,
     TabHandle_Address,

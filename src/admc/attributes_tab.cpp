@@ -25,10 +25,10 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
-enum AttributesColumn {
-    AttributesColumn_Name,
-    AttributesColumn_Value,
-    AttributesColumn_COUNT,
+enum AdObjectColumn {
+    AdObjectColumn_Name,
+    AdObjectColumn_Value,
+    AdObjectColumn_COUNT,
 };
 
 AttributesTab::AttributesTab()
@@ -61,22 +61,22 @@ void AttributesTab::apply(const QString &target) {
 
 }
 
-void AttributesTab::load(const QString &target, const Attributes &attributes) {
+void AttributesTab::load(const QString &target, const AdObject &attributes) {
     model->reload(target, attributes);
 }
 
-bool AttributesTab::accepts_target(const Attributes &attributes) const {
+bool AttributesTab::accepts_target(const AdObject &attributes) const {
     return true;
 }
 
 AttributesModel::AttributesModel(AttributesTab *attributes_tab_arg)
-: QStandardItemModel(0, AttributesColumn_COUNT, attributes_tab_arg)
+: QStandardItemModel(0, AdObjectColumn_COUNT, attributes_tab_arg)
 {
     attributes_tab = attributes_tab_arg;
 
     set_horizontal_header_labels_from_map(this, {
-        {AttributesColumn_Name, tr("Name")},
-        {AttributesColumn_Value, tr("Value")}
+        {AdObjectColumn_Name, tr("Name")},
+        {AdObjectColumn_Value, tr("Value")}
     });
 }
 
@@ -86,12 +86,12 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     return true;
 }
 
-void AttributesModel::reload(const QString &target, const Attributes &attributes) {
+void AttributesModel::reload(const QString &target, const AdObject &attributes) {
     removeRows(0, rowCount());
 
     // Populate model with attributes of new root
     for (auto attribute : attributes.keys()) {
-        const QList<QByteArray> values = attribute_get_values(attributes, attribute);
+        const QList<QByteArray> values = attributes.get_values(attribute);
 
         for (auto value : values) {
             const QString display_value = attribute_get_display_value(attribute, value);

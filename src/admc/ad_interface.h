@@ -20,7 +20,8 @@
 #ifndef AD_INTERFACE_H
 #define AD_INTERFACE_H
 
-#include "ad_interface_defines.h"
+#include "ad_enums.h"
+#include "ad_object.h"
 
 #include <QObject>
 #include <QList>
@@ -109,41 +110,17 @@
 #define AD_LARGEINTEGERTIME_NEVER_1 "0"
 #define AD_LARGEINTEGERTIME_NEVER_2 "9223372036854775807"
 
+#define AD_PWD_LAST_SET_EXPIRED "0"
+#define AD_PWD_LAST_SET_RESET   "-1"
+
 #define LDAP_BOOL_TRUE  "TRUE"
 #define LDAP_BOOL_FALSE "FALSE"
 
 #define GPOPTIONS_INHERIT           "0"
 #define GPOPTIONS_BLOCK_INHERITANCE "1"
 
-enum AccountOption {
-    AccountOption_Disabled,
-    AccountOption_PasswordExpired,
-    AccountOption_DontExpirePassword,
-    AccountOption_UseDesKey,
-    AccountOption_SmartcardRequired,
-    AccountOption_CantDelegate,
-    AccountOption_DontRequirePreauth,
-    AccountOption_COUNT
-};
-
-enum GroupScope {
-    GroupScope_Global,
-    GroupScope_DomainLocal,
-    GroupScope_Universal,
-    GroupScope_COUNT
-};
-
-enum GroupType {
-    GroupType_Security,
-    GroupType_Distribution,
-    GroupType_COUNT
-};
-
-enum SystemFlagsBit {
-    SystemFlagsBit_CannotMove = 0x04000000,
-    SystemFlagsBit_CannotRename = 0x08000000,
-    SystemFlagsBit_CannotDelete = 0x80000000
-};
+#define GROUP_TYPE_BIT_SECURITY 0x80000000
+#define GROUP_TYPE_BIT_SYSTEM 0x00000001
 
 enum SearchScope {
     SearchScope_Object,
@@ -179,12 +156,12 @@ public:
     QString configuration_dn() const;
     QString schema_dn() const;
 
-    QHash<QString, Attributes> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &custom_search_base = QString());
+    QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &custom_search_base = QString());
     QList<QString> search_dns(const QString &filter, const QString &custom_search_base = QString());
 
     // NOTE: all request f-ns make an LDAP request, avoid using them unless it's an infrequent call 
-    Attributes attribute_request(const QString &dn, const QList<QString> &attributes);
-    Attributes attribute_request_all(const QString &dn);
+    AdObject attribute_request(const QString &dn, const QList<QString> &attributes);
+    AdObject attribute_request_all(const QString &dn);
     QList<QByteArray> attribute_request_values(const QString &dn, const QString &attribute);
     QByteArray attribute_request_value(const QString &dn, const QString &attribute);
 
@@ -263,26 +240,10 @@ QString datetime_to_string(const QString &attribute, const QDateTime &datetime);
 QDateTime datetime_raw_to_datetime(const QString &attribute, const QString &raw_value);
 QString group_scope_to_string(GroupScope scope);
 QString group_type_to_string(GroupType type);
-QIcon get_object_icon(const Attributes &attributes);
 
-bool object_is_class(const Attributes &attributes, const QString &object_class);
-bool object_is_user(const Attributes &attributes);
-bool object_is_group(const Attributes &attributes);
-bool object_is_container(const Attributes &attributes);
-bool object_is_ou(const Attributes &attributes);
-bool object_is_policy(const Attributes &attributes);
-bool object_is_computer(const Attributes &attributes);
-
-QList<QByteArray> attribute_get_values(const Attributes &attributes, const QString &attribute);
-QByteArray attribute_get_value(const Attributes &attributes, const QString &attribute);
-QList<QString> attribute_get_strings(const Attributes &attributes, const QString &attribute);
-QString attribute_get_string(const Attributes &attributes, const QString &attribute);
-bool attribute_get_system_flag(const Attributes &attributes, const SystemFlagsBit bit);
-int attribute_get_int(const Attributes &attributes, const QString &attribute);
-bool attribute_get_account_option(const Attributes &attributes, AccountOption option);
 QString attribute_get_display_value(const QString &attribute, const QByteArray &value_bytes);
-GroupScope attribute_get_group_scope(const Attributes &attributes);
-GroupType attribute_get_group_type(const Attributes &attributes);
 
+int account_option_to_bit(const AccountOption &option);
+int group_scope_to_bit(GroupScope scope);
 
 #endif /* AD_INTERFACE_H */

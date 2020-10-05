@@ -94,15 +94,15 @@ void StringEdit::set_read_only(EditReadOnly read_only_arg) {
     edit->setReadOnly(read_only == EditReadOnly_Yes);
 }
 
-void StringEdit::load(const Attributes &attributes) {
+void StringEdit::load(const AdObject &attributes) {
     QString value;
     if (attribute == ATTRIBUTE_OBJECT_CLASS) {
         // NOTE: object class is multi-valued so need to get the "primary" class
         // TODO: not sure how to get the "primary" attribute, for now just getting the last one. I think what I need to do is get the most "derived" class? and that info should be in the scheme.
-        const QList<QString> classes = attribute_get_strings(attributes, ATTRIBUTE_OBJECT_CLASS);
+        const QList<QString> classes = attributes.get_strings(ATTRIBUTE_OBJECT_CLASS);
         value = classes.last();
     } else if (attributes.contains(attribute)) {
-        value = attribute_get_string(attributes, attribute);
+        value = attributes.get_string(attribute);
     }
 
     edit->blockSignals(true);

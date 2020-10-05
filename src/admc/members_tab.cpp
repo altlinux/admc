@@ -107,8 +107,8 @@ void MembersTab::apply(const QString &target) {
     }
 }
 
-void MembersTab::load(const QString &target, const Attributes &attributes) {
-    const QList<QString> members = attribute_get_strings(attributes, ATTRIBUTE_MEMBER);
+void MembersTab::load(const QString &target, const AdObject &attributes) {
+    const QList<QString> members = attributes.get_strings(ATTRIBUTE_MEMBER);
 
     original_members = members.toSet();
     current_members = original_members;
@@ -116,8 +116,8 @@ void MembersTab::load(const QString &target, const Attributes &attributes) {
     reload_current_members_into_model();
 }
 
-bool MembersTab::accepts_target(const Attributes &attributes) const {
-    bool is_group = object_is_group(attributes);
+bool MembersTab::accepts_target(const AdObject &attributes) const {
+    bool is_group = attributes.is_group();
 
     return is_group;
 }

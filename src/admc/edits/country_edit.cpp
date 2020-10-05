@@ -106,11 +106,11 @@ CountryEdit::CountryEdit(QObject *parent)
     combo->blockSignals(false);
 }
 
-void CountryEdit::load(const Attributes &attributes) {
+void CountryEdit::load(const AdObject &attributes) {
     const int current_code =
     [attributes]() {
         if (attributes.contains(ATTRIBUTE_COUNTRY)) {
-            return attribute_get_int(attributes, ATTRIBUTE_COUNTRY);
+            return attributes.get_int(ATTRIBUTE_COUNTRY);
         } else {
             return COUNTRY_CODE_NONE;
         }

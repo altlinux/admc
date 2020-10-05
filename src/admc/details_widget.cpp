@@ -123,9 +123,9 @@ QString DetailsWidget::get_target() const {
 void DetailsWidget::reload(const QString &new_target) {
     target = new_target;
 
-    const Attributes attributes = AdInterface::instance()->attribute_request_all(target);
+    const AdObject attributes = AdInterface::instance()->attribute_request_all(target);
 
-    if (attributes.isEmpty()) {
+    if (attributes.is_empty()) {
         if (is_floating_instance) {
             close();
         } else {
@@ -135,7 +135,7 @@ void DetailsWidget::reload(const QString &new_target) {
             button_box->hide();
         }
     } else {
-        const QString name = attribute_get_string(attributes, ATTRIBUTE_NAME);
+        const QString name = attributes.get_string(ATTRIBUTE_NAME);
         const QString title_text = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
         title_label->setText(title_text);
 
@@ -164,7 +164,7 @@ void DetailsWidget::reload(const QString &new_target) {
 
         tabs[TabHandle_General] = new GeneralTab();
         tabs[TabHandle_Object] = new ObjectTab();
-        tabs[TabHandle_Attributes] = new AttributesTab();
+        tabs[TabHandle_AdObject] = new AttributesTab();
         tabs[TabHandle_Account] = new AccountTab();
         tabs[TabHandle_Members] = new MembersTab();
         tabs[TabHandle_Address] = new AddressTab();
@@ -199,7 +199,7 @@ void DetailsWidget::reload(const QString &new_target) {
                 switch (tab_handle) {
                     case TabHandle_General: return tr("General");
                     case TabHandle_Object: return tr("Object");
-                    case TabHandle_Attributes: return tr("Attributes");
+                    case TabHandle_AdObject: return tr("AdObject");
                     case TabHandle_Account: return tr("Account");
                     case TabHandle_Members: return tr("Members");
                     case TabHandle_Address: return tr("Address");

@@ -124,8 +124,8 @@ void GroupPolicyTab::apply(const QString &target) {
     apply_attribute_edits(edits, target, this);
 }
 
-void GroupPolicyTab::load(const QString &target, const Attributes &attributes) {
-    const QString gplink_string = attribute_get_string(attributes, ATTRIBUTE_GPLINK);
+void GroupPolicyTab::load(const QString &target, const AdObject &attributes) {
+    const QString gplink_string = attributes.get_string(ATTRIBUTE_GPLINK);
     original_gplink = Gplink(gplink_string);
     current_gplink = original_gplink;
 
@@ -135,10 +135,8 @@ void GroupPolicyTab::load(const QString &target, const Attributes &attributes) {
 }
 
 // TODO: not sure which object classes can have gplink, for now only know of OU's.
-bool GroupPolicyTab::accepts_target(const Attributes &attributes) const {
-    const bool is_ou = object_is_ou(attributes);
-
-    return is_ou;
+bool GroupPolicyTab::accepts_target(const AdObject &attributes) const {
+    return attributes.is_ou();
 }
 
 void GroupPolicyTab::on_context_menu(const QPoint pos) {
@@ -216,7 +214,7 @@ void GroupPolicyTab::reload_current_gplink_into_model() {
     // TODO: use filter to search only for needed gpo's, not all of them (dn=dn1 or dn=dn2 or ...)
     const QList<QString> search_attributes = {ATTRIBUTE_DISPLAY_NAME};
     const QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
-    const QHash<QString, Attributes> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_All);
+    const QHash<QString, AdObject> search_results = AdInterface::instance()->search(filter, search_attributes, SearchScope_All);
 
     const QList<QString> gpos = current_gplink.get_gpos();
 
@@ -225,9 +223,9 @@ void GroupPolicyTab::reload_current_gplink_into_model() {
             continue;
         }
 
-        const Attributes attributes = search_results[dn];
+        const AdObject attributes = search_results[dn];
 
-        const QString display_name = attribute_get_string(attributes, ATTRIBUTE_DISPLAY_NAME);
+        const QString display_name = attributes.get_string(ATTRIBUTE_DISPLAY_NAME);
 
         const QList<QStandardItem *> row = make_item_row(GplinkColumn_COUNT);
         row[GplinkColumn_Name]->setText(display_name);

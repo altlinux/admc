@@ -20,7 +20,7 @@
 #ifndef DETAILS_TAB_H
 #define DETAILS_TAB_H
 
-#include "ad_interface_defines.h"
+#include "ad_object.h"
 
 #include <QWidget>
 #include <QString>
@@ -31,9 +31,9 @@ Q_OBJECT
 public:
     DetailsTab();
     
-    virtual bool accepts_target(const Attributes &attributes) const = 0;
+    virtual bool accepts_target(const AdObject &attributes) const = 0;
     virtual bool changed() const = 0;
-    virtual void load(const QString &target, const Attributes &attributes) = 0;
+    virtual void load(const QString &target, const AdObject &attributes) = 0;
     virtual bool verify() = 0;
     virtual void apply(const QString &target) = 0;
 
@@ -45,9 +45,9 @@ public slots:
 };
 
 #define DECL_DETAILS_TAB_VIRTUALS()\
-bool accepts_target(const Attributes &attributes) const;\
+bool accepts_target(const AdObject &attributes) const;\
 bool changed() const;\
-void load(const QString &target, const Attributes &attributes);\
+void load(const QString &target, const AdObject &attributes);\
 bool verify();\
 void apply(const QString &target);
 

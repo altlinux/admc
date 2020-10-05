@@ -54,14 +54,13 @@ void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
 ObjectContextMenu::ObjectContextMenu(const QString &dn)
 : QMenu()
 {
-    const Attributes attributes = AdInterface::instance()->attribute_request_all(dn);
+    const AdObject attributes = AdInterface::instance()->attribute_request_all(dn);
 
     addAction(tr("Details"), [this, dn]() {
         DetailsWidget::change_target(dn);
     });
 
-    const bool is_policy = object_is_policy(attributes);
-    if (is_policy) {
+    if (attributes.is_policy()) {
         // TODO: policy version seems to be too disconnected from general object context menu, maybe just move it to policies widget?
         addAction(tr("Edit Policy"), [this, dn, attributes]() {
             edit_policy(dn, attributes);
@@ -71,9 +70,9 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
             rename_dialog->open();
         });
     } else {
-        const bool cannot_move = attribute_get_system_flag(attributes, SystemFlagsBit_CannotMove);
-        const bool cannot_rename = attribute_get_system_flag(attributes, SystemFlagsBit_CannotRename);
-        const bool cannot_delete = attribute_get_system_flag(attributes, SystemFlagsBit_CannotDelete);
+        const bool cannot_move = attributes.get_system_flag(SystemFlagsBit_CannotMove);
+        const bool cannot_rename = attributes.get_system_flag(SystemFlagsBit_CannotRename);
+        const bool cannot_delete = attributes.get_system_flag(SystemFlagsBit_CannotDelete);
 
         auto delete_action = addAction(tr("Delete"), [this, dn, attributes]() {
             delete_object(dn, attributes);
@@ -111,9 +110,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
             move_action->setEnabled(false);
         }
 
-        const bool is_user = object_is_user(attributes); 
-
-        if (is_user) {
+        if (attributes.is_user()) {
             QAction *add_to_group_action = addAction(tr("Add to group"));
             connect(
                 add_to_group_action, &QAction::triggered,
@@ -126,7 +123,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
                 password_dialog->open();
             });
 
-            const bool disabled = attribute_get_account_option(attributes, AccountOption_Disabled);
+            const bool disabled = attributes.get_account_option(AccountOption_Disabled);
             QString disable_text;
             if (disabled) {
                 disable_text = tr("Enable account");
@@ -140,8 +137,8 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
     }
 }
 
-void ObjectContextMenu::delete_object(const QString &dn, const Attributes &attributes) {
-    const QString name = attribute_get_string(attributes, ATTRIBUTE_NAME);
+void ObjectContextMenu::delete_object(const QString &dn, const AdObject &attributes) {
+    const QString name = attributes.get_string(ATTRIBUTE_NAME);
     const QString text = QString(tr("Are you sure you want to delete \"%1\"?")).arg(name);
     const bool confirmed = confirmation_dialog(text, this);
 
@@ -150,13 +147,13 @@ void ObjectContextMenu::delete_object(const QString &dn, const Attributes &attri
     }    
 }
 
-void ObjectContextMenu::edit_policy(const QString &dn, const Attributes &attributes) {
+void ObjectContextMenu::edit_policy(const QString &dn, const AdObject &attributes) {
     // Start policy edit process
     const auto process = new QProcess();
 
     const QString path =
     [dn, attributes]() {
-        QString path_tmp = attribute_get_value(attributes, "gPCFileSysPath");
+        QString path_tmp = attributes.get_value("gPCFileSysPath");
         path_tmp.replace("\\", "/");
 
         // TODO: file sys path as it is, is like this:
@@ -188,7 +185,7 @@ void ObjectContextMenu::edit_policy(const QString &dn, const Attributes &attribu
     printf("start_success=%d\n", start_success);
 }
 
-void ObjectContextMenu::move(const QString &dn, const Attributes &attributes) {
+void ObjectContextMenu::move(const QString &dn, const AdObject &attributes) {
     const QList<QString> possible_superiors = get_possible_superiors(attributes);
 
     const QList<QString> selected_objects = SelectDialog::open(possible_superiors);
