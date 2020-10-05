@@ -63,7 +63,7 @@ void GroupScopeEdit::load(const AdObject &object) {
 }
 
 void GroupScopeEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = QObject::tr("Group scope") + ":";
+    const QString label_text = tr("Group scope") + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(this, label);

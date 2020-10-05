@@ -48,8 +48,8 @@ void PasswordEdit::load(const AdObject &) {
 }
 
 void PasswordEdit::add_to_layout(QGridLayout *layout) {
-    const auto password_label = new QLabel(QObject::tr("Password:"));
-    const auto confirm_label = new QLabel(QObject::tr("Confirm password:"));
+    const auto password_label = new QLabel(tr("Password:"));
+    const auto confirm_label = new QLabel(tr("Confirm password:"));
 
     append_to_grid_layout_with_label(layout, password_label, edit);
     append_to_grid_layout_with_label(layout, confirm_label, confirm_edit);
@@ -59,8 +59,8 @@ bool PasswordEdit::verify_input(QWidget *parent) {
     const QString pass = edit->text();
     const QString confirm_pass = confirm_edit->text();
     if (pass != confirm_pass) {
-        const QString error_text = QString(QObject::tr("Passwords don't match!"));
-        QMessageBox::warning(parent, QObject::tr("Error"), error_text);
+        const QString error_text = QString(tr("Passwords don't match!"));
+        QMessageBox::warning(parent, tr("Error"), error_text);
 
         return false;
     }
@@ -68,8 +68,8 @@ bool PasswordEdit::verify_input(QWidget *parent) {
     const auto codec = QTextCodec::codecForName("UTF-16LE");
     const bool can_encode = codec->canEncode(pass);
     if (!can_encode) {
-        const QString error_text = QString(QObject::tr("Password contains invalid characters"));
-        QMessageBox::warning(parent, QObject::tr("Error"), error_text);
+        const QString error_text = QString(tr("Password contains invalid characters"));
+        QMessageBox::warning(parent, tr("Error"), error_text);
 
         return false;
     }

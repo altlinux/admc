@@ -62,7 +62,7 @@ void GroupTypeEdit::load(const AdObject &object) {
 }
 
 void GroupTypeEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = QObject::tr("Group type") + ":";
+    const QString label_text = tr("Group type") + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(this, label);

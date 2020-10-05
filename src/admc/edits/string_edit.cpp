@@ -131,8 +131,8 @@ bool StringEdit::verify_input(QWidget *parent) {
 
         if (new_value.isEmpty()) {
             const QString attribute_name = get_attribute_display_name(attribute, objectClass);
-            const QString error_text = QString(QObject::tr("Attribute \"%1\" cannot be empty!").arg(attribute_name));
-            QMessageBox::warning(parent, QObject::tr("Error"), error_text);
+            const QString error_text = QString(tr("Attribute \"%1\" cannot be empty!").arg(attribute_name));
+            QMessageBox::warning(parent, tr("Error"), error_text);
 
             return false;
         }
