@@ -59,8 +59,6 @@ void GroupTypeEdit::load(const AdObject &object) {
     combo->blockSignals(false);
 
     original_value = type_int;
-
-    emit edited();
 }
 
 void GroupTypeEdit::add_to_layout(QGridLayout *layout) {

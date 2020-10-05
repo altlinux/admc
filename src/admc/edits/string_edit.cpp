@@ -110,8 +110,6 @@ void StringEdit::load(const AdObject &object) {
     edit->blockSignals(false);
 
     original_value = value;
-
-    emit edited();
 }
 
 void StringEdit::add_to_layout(QGridLayout *layout) {

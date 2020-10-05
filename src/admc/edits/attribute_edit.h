@@ -61,9 +61,8 @@ public:
     virtual bool apply(const QString &dn) = 0;
 
 signals:
-    // Emit this signal when user edits subwidget(s) (by connecting
-    // to the widget's version of edited signal)
-    // AND at the end of load(), so that changed marker is reset
+    // Emit this signal when user edits subwidget(s)
+    // (by connecting to the widget's version of edited signal)
     void edited();
 };
 

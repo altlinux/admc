@@ -123,8 +123,6 @@ void CountryEdit::load(const AdObject &object) {
     if (index != -1) {
         combo->setCurrentIndex(index);
     }
-
-    emit edited();
 }
 
 void CountryEdit::add_to_layout(QGridLayout *layout) {

@@ -99,8 +99,6 @@ void AccountOptionEdit::load(const AdObject &object) {
     check->blockSignals(false);
 
     original_value = option_is_set;
-
-    emit edited();
 }
 
 void AccountOptionEdit::add_to_layout(QGridLayout *layout) {

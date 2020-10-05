@@ -194,6 +194,10 @@ void DetailsWidget::reload(const QString &new_target) {
 
             tab->load(object);
 
+            if (tab->changed()) {
+                printf("ERROR: tab is changed() after initial load.");
+            }
+
             const QString tab_text =
             [tab_handle]() {
                 switch (tab_handle) {

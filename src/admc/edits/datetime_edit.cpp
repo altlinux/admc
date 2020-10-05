@@ -54,8 +54,6 @@ void DateTimeEdit::load(const AdObject &object) {
     edit->blockSignals(false);
 
     original_value = value;
-
-    emit edited();
 }
 
 void DateTimeEdit::add_to_layout(QGridLayout *layout) {

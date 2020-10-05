@@ -46,8 +46,6 @@ void GpoptionsEdit::load(const AdObject &object) {
     check->blockSignals(false);
 
     original_checked_value = checked;
-
-    emit edited();
 }
 
 void GpoptionsEdit::add_to_layout(QGridLayout *layout) {

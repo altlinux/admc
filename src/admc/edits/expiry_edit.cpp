@@ -97,8 +97,6 @@ void ExpiryEdit::load(const AdObject &object) {
         display_label_text = current_expiry.toString(DATE_FORMAT);
     }
     display_label->setText(display_label_text);
-
-    emit edited();
 }
 
 void ExpiryEdit::add_to_layout(QGridLayout *layout) {

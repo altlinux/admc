@@ -60,8 +60,6 @@ void GroupScopeEdit::load(const AdObject &object) {
     combo->blockSignals(false);
 
     original_value = scope_int;
-
-    emit edited();
 }
 
 void GroupScopeEdit::add_to_layout(QGridLayout *layout) {
