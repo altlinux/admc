@@ -230,9 +230,16 @@ QList<QString> get_containers_filter_classes() {
 
 QList<QString> get_possible_superiors(const Attributes &attributes) {
     const QString category = attribute_get_value(attributes, ATTRIBUTE_OBJECT_CATEGORY);
-    const QList<QString> possible_superiors = AdInterface::instance()->attribute_request_strings(category, ATTRIBUTE_POSSIBLE_SUPERIORS);
 
-    return possible_superiors;
+    static QHash<QString, QList<QString>> possible_superiors_map;
+
+    if (!possible_superiors_map.contains(category)) {
+        const QList<QString> possible_superiors = AdInterface::instance()->attribute_request_strings(category, ATTRIBUTE_POSSIBLE_SUPERIORS);
+
+        possible_superiors_map[category] = possible_superiors;
+    }
+
+    return possible_superiors_map[category];
 }
 
 // Display specifier DN is "CN=class-Display,CN=..."

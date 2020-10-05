@@ -925,36 +925,38 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
         return DropType_None;
     }
 
-    const Attributes attributes = AdInterface::instance()->attribute_request_all(dn);
-
-    const bool dropped_is_user = object_is_user(attributes);
-    const bool dropped_is_group = object_is_group(attributes);
-    const bool dropped_is_ou = object_is_ou(attributes);
-
+    const Attributes dropped_attributes = AdInterface::instance()->attribute_request_all(dn);
     const Attributes target_attributes = AdInterface::instance()->attribute_request_all(target_dn);
 
-    const bool target_is_user = object_is_user(target_attributes);
+    const bool dropped_is_user = object_is_user(dropped_attributes);
     const bool target_is_group = object_is_group(target_attributes);
-    const bool target_is_ou = object_is_ou(target_attributes);
-    const bool target_is_container = object_is_container(target_attributes);
 
-    if (dropped_is_user) {
-        if (target_is_ou || target_is_container) {
+    if (dropped_is_user && target_is_group) {
+        return DropType_AddToGroup;
+    } else {
+        const QList<QString> possible_superiors = get_possible_superiors(dropped_attributes);
+
+        const bool can_move =
+        [target_attributes, possible_superiors]() {
+            for (const auto object_class : possible_superiors) {
+                if (object_is_class(target_attributes, object_class)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }();
+
+        if (can_move) {
             return DropType_Move;
-        } else if (target_is_group) {
-            return DropType_AddToGroup;
-        }
-    } else if (dropped_is_group || dropped_is_ou) {
-        if (!target_is_user && !target_is_group) {
-            return DropType_Move;
+        } else {
+            return DropType_None;
         }
     }
-
-    return DropType_None;
 }
 
 bool AdInterface::object_can_drop(const QString &dn, const QString &target_dn) {
-    DropType drop_type = get_drop_type(dn, target_dn);
+    const DropType drop_type = get_drop_type(dn, target_dn);
 
     if (drop_type == DropType_None) {
         return false;
