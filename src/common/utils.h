@@ -38,7 +38,6 @@ class QTreeView;
 
 QString get_dn_from_index(const QModelIndex &index, int dn_column);
 QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn_column);
-void setup_model_chain(QAbstractItemView *view, QAbstractItemModel *source_model, QList<QAbstractProxyModel *> proxies);
 bool checkbox_is_checked(const QCheckBox *checkbox);
 void checkbox_set_checked(QCheckBox *checkbox, bool checked);
 bool check_item_is_checked(const QStandardItem *check_item);

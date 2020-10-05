@@ -171,7 +171,9 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         }
     }
 
-    setup_model_chain(view, model, {proxy_name, proxy_class});
+    proxy_name->setSourceModel(model);
+    proxy_class->setSourceModel(proxy_name);
+    view->setModel(proxy_class);
 
     setup_column_toggle_menu(view, model, {SelectDialogColumn_Name});
 

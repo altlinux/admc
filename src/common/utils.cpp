@@ -71,24 +71,6 @@ QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn
     return dn;
 }
 
-// Setup proxy chain down to source model
-// And set view model to top proxy
-void setup_model_chain(QAbstractItemView *view, QAbstractItemModel *source_model, QList<QAbstractProxyModel *> proxies) {
-    for (int i = 0; i < proxies.size(); i++) {
-        QAbstractItemModel *source;
-        if (i == 0) {
-            source = source_model;
-        } else {
-            source = proxies[i - 1];
-        }
-
-        QAbstractProxyModel *proxy = proxies[i];
-        proxy->setSourceModel(source);
-    }
-
-    view->setModel(proxies.last());
-}
-
 bool checkbox_is_checked(const QCheckBox *checkbox) {
     return (checkbox->checkState() == Qt::Checked);
 }
