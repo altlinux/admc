@@ -210,8 +210,8 @@ QList<QString> get_containers_filter_classes() {
 
         QList<QString> out;
         for (const auto ms_class : ms_classes) {
-            const QString class_schema = QString("CN=%1,%2").arg(ms_class, schema_dn);
-            const QList<QByteArray> ldap_classes_bytes = AdInterface::instance()->attribute_request_values(class_schema, ATTRIBUTE_LDAP_DISPLAY_NAME);
+            const QString class_attributes = QString("CN=%1,%2").arg(ms_class, schema_dn);
+            const QList<QByteArray> ldap_classes_bytes = AdInterface::instance()->attribute_request_values(class_attributes, ATTRIBUTE_LDAP_DISPLAY_NAME);
 
             if (!ldap_classes_bytes.isEmpty()) {
                 const QString ldap_class = QString(ldap_classes_bytes[0]);
@@ -286,15 +286,15 @@ QList<QString> get_possible_attributes(const Attributes &attributes) {
             // Load possible attributes from schema
             const QString ad_class_name = ldap_name_to_ad_name(object_class);
             const QString schema_dn = AdInterface::instance()->schema_dn();
-            const QString class_schema = QString("CN=%1,%2").arg(ad_class_name, schema_dn);
-            const Attributes schema_attributes = AdInterface::instance()->attribute_request_all(schema_dn);
+            const QString class_dn = QString("CN=%1,%2").arg(ad_class_name, schema_dn);
+            const Attributes class_attributes = AdInterface::instance()->attribute_request_all(class_dn);
 
-            if (schema_attributes.isEmpty()) {
+            if (class_attributes.isEmpty()) {
                 continue;
             }
 
-            const QList<QString> may_contain = attribute_get_strings(schema_attributes, ATTRIBUTE_MAY_CONTAIN);
-            const QList<QString> system_may_contain = attribute_get_strings(schema_attributes, ATTRIBUTE_SYSTEM_MAY_CONTAIN);
+            const QList<QString> may_contain = attribute_get_strings(class_attributes, ATTRIBUTE_MAY_CONTAIN);
+            const QList<QString> system_may_contain = attribute_get_strings(class_attributes, ATTRIBUTE_SYSTEM_MAY_CONTAIN);
 
             QList<QString> total_contain;
             total_contain.append(may_contain);
@@ -316,14 +316,12 @@ AttributeType get_attribute_type(const QString &attribute) {
     if (!attribute_type_map.contains(attribute)) {
         const QString attribute_ad_name = ldap_name_to_ad_name(attribute);
         const QString schema_dn = AdInterface::instance()->schema_dn();
-        const QString class_schema = QString("CN=%1,%2").arg(attribute_ad_name, schema_dn);
-        const Attributes schema_attributes = AdInterface::instance()->attribute_request_all(schema_dn);
+        const QString class_dn = QString("CN=%1,%2").arg(attribute_ad_name, schema_dn);
+        const Attributes class_attributes = AdInterface::instance()->attribute_request_all(class_dn);
 
-        if (schema_attributes.isEmpty()) {
-            const QString attribute_syntax = attribute_get_value(schema_attributes, ATTRIBUTE_ATTRIBUTE_SYNTAX);
-            const QString om_syntax = attribute_get_value(schema_attributes, ATTRIBUTE_OM_SYNTAX);
-
-            // printf("%s=%s\n", qPrintable(attribute_syntax), qPrintable(om_syntax));
+        if (!class_attributes.isEmpty()) {
+            const QString attribute_syntax = attribute_get_value(class_attributes, ATTRIBUTE_ATTRIBUTE_SYNTAX);
+            const QString om_syntax = attribute_get_value(class_attributes, ATTRIBUTE_OM_SYNTAX);
 
             // NOTE: replica of: https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/7cda533e-d7a4-4aec-a517-91d02ff4a1aa
             // attribute_syntax -> om syntax list -> type
