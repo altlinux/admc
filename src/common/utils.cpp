@@ -230,11 +230,11 @@ void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap
 }
 
 void show_only_in_dev_mode(QWidget *widget) {
-    const BoolSettingSignal *dev_mode_signal = Settings::instance()->get_bool_signal(BoolSetting_DevMode);
+    const BoolSettingSignal *dev_mode_signal = SETTINGS()->get_bool_signal(BoolSetting_DevMode);
 
     const auto do_it =
     [widget]() {
-        const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
+        const bool dev_mode = SETTINGS()->get_bool(BoolSetting_DevMode);
         widget->setVisible(dev_mode);
     };
     do_it();

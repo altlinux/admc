@@ -112,4 +112,6 @@ private:
     Settings& operator=(Settings&&) = delete;
 };
 
+Settings *SETTINGS();
+
 #endif /* SETTINGS_H */

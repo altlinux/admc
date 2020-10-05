@@ -84,9 +84,9 @@ LoginDialog::LoginDialog(QWidget *parent)
 
 void LoginDialog::open() {
     // Load session values from settings
-    const QString domain = Settings::instance()->get_variant(VariantSetting_Domain).toString();
-    const QString site = Settings::instance()->get_variant(VariantSetting_Site).toString();
-    const QString host = Settings::instance()->get_variant(VariantSetting_Host).toString();
+    const QString domain = SETTINGS()->get_variant(VariantSetting_Domain).toString();
+    const QString site = SETTINGS()->get_variant(VariantSetting_Site).toString();
+    const QString host = SETTINGS()->get_variant(VariantSetting_Host).toString();
     
     domain_edit->setText(domain);
     site_edit->setText(site);
@@ -154,9 +154,9 @@ void LoginDialog::complete(const QString &host) {
 
     if (login_success) {
         const QString site = site_edit->text();
-        Settings::instance()->set_variant(VariantSetting_Domain, domain);
-        Settings::instance()->set_variant(VariantSetting_Site, site);
-        Settings::instance()->set_variant(VariantSetting_Host, host);
+        SETTINGS()->set_variant(VariantSetting_Domain, domain);
+        SETTINGS()->set_variant(VariantSetting_Site, site);
+        SETTINGS()->set_variant(VariantSetting_Host, host);
 
         accept();
     } else {

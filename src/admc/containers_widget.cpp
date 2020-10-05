@@ -18,13 +18,13 @@
  */
 
 #include "containers_widget.h"
-#include "advanced_view_proxy.h"
 #include "object_context_menu.h"
 #include "utils.h"
 #include "settings.h"
 #include "details_widget.h"
 #include "server_configuration.h"
 #include "ad_interface.h"
+#include "filter.h"
 
 #include <QTreeView>
 #include <QIcon>
@@ -46,7 +46,6 @@ ContainersWidget::ContainersWidget(QWidget *parent)
 : QWidget(parent)
 {
     model = new ContainersModel(this);
-    const auto advanced_view_proxy = new AdvancedViewProxy(ContainersColumn_DN, this);
 
     view = new QTreeView(this);
     view->setAcceptDrops(true);
@@ -59,8 +58,8 @@ ContainersWidget::ContainersWidget(QWidget *parent)
     view->setAllColumnsShowFocus(true);
     ObjectContextMenu::connect_view(view, ContainersColumn_DN);
 
-    setup_model_chain(view, model, {advanced_view_proxy});
-    
+    view->setModel(model);
+
     setup_column_toggle_menu(view, model, {ContainersColumn_Name});
 
     // Insert label into layout
@@ -80,14 +79,19 @@ ContainersWidget::ContainersWidget(QWidget *parent)
         view, &QAbstractItemView::clicked,
         this, &ContainersWidget::on_view_clicked);
 
-    const BoolSettingSignal *show_non_containers_signal = Settings::instance()->get_bool_signal(BoolSetting_ShowNonContainersInContainersTree);
+    const BoolSettingSignal *show_non_containers_signal = SETTINGS()->get_bool_signal(BoolSetting_ShowNonContainersInContainersTree);
     connect(
         show_non_containers_signal, &BoolSettingSignal::changed,
         this, &ContainersWidget::reload);
 
-    const BoolSettingSignal *dev_mode_signal = Settings::instance()->get_bool_signal(BoolSetting_DevMode);
+    const BoolSettingSignal *dev_mode_signal = SETTINGS()->get_bool_signal(BoolSetting_DevMode);
     connect(
         dev_mode_signal, &BoolSettingSignal::changed,
+        this, &ContainersWidget::reload);
+
+    const BoolSettingSignal *advanced_view_setting = SETTINGS()->get_bool_signal(BoolSetting_AdvancedView);
+    connect(
+        advanced_view_setting, &BoolSettingSignal::changed,
         this, &ContainersWidget::reload);
 
     reload();
@@ -240,7 +244,7 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
 }
 
 void ContainersWidget::on_view_clicked(const QModelIndex &index) {
-    const bool details_from_containers = Settings::instance()->get_bool(BoolSetting_DetailsFromContainers);
+    const bool details_from_containers = SETTINGS()->get_bool(BoolSetting_DetailsFromContainers);
 
     if (details_from_containers) {
         const QString dn = get_dn_from_index(index, ContainersColumn_DN);
@@ -278,7 +282,8 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
 
     // Add children
     const QList<QString> search_attributes = {ATTRIBUTE_NAME, ATTRIBUTE_DISTINGUISHED_NAME, ATTRIBUTE_OBJECT_CLASS};
-    const QHash<QString, AdObject> search_results = AD()->search("", search_attributes, SearchScope_Children, dn);
+    const QString filter = current_advanced_view_filter();
+    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, dn);
 
     for (auto child : search_results.keys()) {
         const AdObject object  = search_results[child];
@@ -290,7 +295,7 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
 
     // In dev mode, load configuration and schema objects
     // NOTE: have to manually add configuration and schema objects because they aren't searchable
-    const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
+    const bool dev_mode = SETTINGS()->get_bool(BoolSetting_DevMode);
     if (dev_mode) {
         const QString search_base = AD()->search_base();
         const QString configuration_dn = AD()->configuration_dn();
@@ -329,7 +334,7 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AdObject
             QList<QString> out = get_containers_filter_classes();
 
             // Make configuration and schema pass filter in dev mode so they are visible and can be fetched
-            const bool dev_mode = Settings::instance()->get_bool(BoolSetting_DevMode);
+            const bool dev_mode = SETTINGS()->get_bool(BoolSetting_DevMode);
             if (dev_mode) {
                 out.append({CLASS_CONFIGURATION, CLASS_dMD});
             }
@@ -348,7 +353,7 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AdObject
         return false;
     }();
 
-    const bool ignore_filter = Settings::instance()->get_bool(BoolSetting_ShowNonContainersInContainersTree);
+    const bool ignore_filter = SETTINGS()->get_bool(BoolSetting_ShowNonContainersInContainersTree);
     if (!passes_filter && !ignore_filter) {
         return nullptr;
     }

@@ -40,7 +40,7 @@
 MainWindow::MainWindow()
 : QMainWindow()
 {
-    Settings::instance()->restore_geometry(this, VariantSetting_MainWindowGeometry);
+    SETTINGS()->restore_geometry(this, VariantSetting_MainWindowGeometry);
 
     const auto open_login_dialog =
     [this]() {
@@ -54,10 +54,10 @@ MainWindow::MainWindow()
             });
     };
 
-    const bool auto_login = Settings::instance()->get_bool(BoolSetting_AutoLogin);
+    const bool auto_login = SETTINGS()->get_bool(BoolSetting_AutoLogin);
     if (auto_login) {
-        const QString host = Settings::instance()->get_variant(VariantSetting_Host).toString();
-        const QString domain = Settings::instance()->get_variant(VariantSetting_Domain).toString();
+        const QString host = SETTINGS()->get_variant(VariantSetting_Host).toString();
+        const QString domain = SETTINGS()->get_variant(VariantSetting_Domain).toString();
 
         const bool login_success = AD()->login(host, domain);
 
@@ -121,5 +121,5 @@ void MainWindow::finish_init() {
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-    Settings::instance()->save_geometry(this, VariantSetting_MainWindowGeometry);
+    SETTINGS()->save_geometry(this, VariantSetting_MainWindowGeometry);
 }

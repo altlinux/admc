@@ -39,7 +39,7 @@ MenuBar::MenuBar(QWidget* parent)
     auto add_bool_setting_action = 
     [](QMenu *menu, QString display_text, BoolSetting type) {
         QAction *action = menu->addAction(display_text);
-        Settings::instance()->connect_action_to_bool_setting(action, type);
+        SETTINGS()->connect_action_to_bool_setting(action, type);
     };
 
     QMenu *menubar_view = addMenu(tr("View"));
@@ -68,7 +68,7 @@ MenuBar::MenuBar(QWidget* parent)
         language_group->addAction(action);
         language_menu->addAction(action);
 
-        const QLocale saved_locale = Settings::instance()->get_variant(VariantSetting_Locale).toLocale();
+        const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
         const QLocale::Language saved_language = saved_locale.language();
         if (language == saved_language) {
             action->setChecked(true);
@@ -78,7 +78,7 @@ MenuBar::MenuBar(QWidget* parent)
             action, &QAction::toggled,
             [this, locale](bool checked) {
                 if (checked) {
-                    Settings::instance()->set_variant(VariantSetting_Locale, locale);
+                    SETTINGS()->set_variant(VariantSetting_Locale, locale);
 
                     QMessageBox::information(this, tr("Info"), tr("App needs to be restarted for the language option to take effect."));
                 }

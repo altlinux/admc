@@ -21,6 +21,7 @@
 #include "details_widget.h"
 #include "utils.h"
 #include "ad_interface.h"
+#include "filter.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>

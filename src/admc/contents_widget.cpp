@@ -19,13 +19,14 @@
 
 #include "contents_widget.h"
 #include "containers_widget.h"
-#include "advanced_view_proxy.h"
 #include "object_context_menu.h"
 #include "details_widget.h"
 #include "settings.h"
 #include "utils.h"
 #include "ad_interface.h"
 #include "server_configuration.h"
+#include "settings.h"
+#include "filter.h"
 
 #include <QTreeView>
 #include <QLabel>
@@ -60,7 +61,6 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
     }
 
     model = new ContentsModel(this);
-    const auto advanced_view_proxy = new AdvancedViewProxy(column_index(ATTRIBUTE_DISTINGUISHED_NAME), this);
 
     view = new QTreeView(this);
     view->setAcceptDrops(true);
@@ -77,7 +77,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
     view->sortByColumn(column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
     ObjectContextMenu::connect_view(view, column_index(ATTRIBUTE_DISTINGUISHED_NAME));
 
-    setup_model_chain(view, model, {advanced_view_proxy});
+    view->setModel(model);
 
     setup_column_toggle_menu(view, model, 
     {
@@ -97,14 +97,19 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
     connect(
         containers_widget, &ContainersWidget::selected_changed,
         this, &ContentsWidget::on_containers_selected_changed);
-
     connect(
         AD(), &AdInterface::modified,
         this, &ContentsWidget::on_ad_modified);
-
     connect(
         view, &QAbstractItemView::clicked,
         this, &ContentsWidget::on_view_clicked);
+
+    const BoolSettingSignal *advanced_view_setting = SETTINGS()->get_bool_signal(BoolSetting_AdvancedView);
+    connect(
+        advanced_view_setting, &BoolSettingSignal::changed,
+        [this]() {
+            change_target(target_dn);
+        });
 }
 
 void ContentsWidget::on_containers_selected_changed(const QString &dn) {
@@ -116,7 +121,7 @@ void ContentsWidget::on_ad_modified() {
 }
 
 void ContentsWidget::on_view_clicked(const QModelIndex &index) {
-    const bool details_from_contents = Settings::instance()->get_bool(BoolSetting_DetailsFromContents);
+    const bool details_from_contents = SETTINGS()->get_bool(BoolSetting_DetailsFromContents);
 
     if (details_from_contents) {
         const QString dn = get_dn_from_index(index, column_index(ATTRIBUTE_DISTINGUISHED_NAME));
@@ -196,7 +201,9 @@ void ContentsModel::change_target(const QString &target_dn) {
     QList<QString> search_attributes = columns;
     search_attributes.append(ATTRIBUTE_OBJECT_CLASS);
 
-    const QHash<QString, AdObject> search_results = AD()->search("", search_attributes, SearchScope_Children, target_dn);
+    const QString filter = current_advanced_view_filter();
+
+    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, target_dn);
 
     // Load children
     for (auto child_dn : search_results.keys()) {

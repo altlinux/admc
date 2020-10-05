@@ -45,7 +45,7 @@ DetailsWidget *DetailsWidget::docked_instance() {
 }
 
 void DetailsWidget::change_target(const QString &new_target) {
-    const bool is_docked = Settings::instance()->get_bool(BoolSetting_DetailsIsDocked);
+    const bool is_docked = SETTINGS()->get_bool(BoolSetting_DetailsIsDocked);
 
     if (is_docked) {
         auto docked = docked_instance();
@@ -92,7 +92,7 @@ DetailsWidget::DetailsWidget(const bool is_floating_instance_arg)
         button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
         this, &DetailsWidget::on_cancel);
 
-    const BoolSettingSignal *docked_setting = Settings::instance()->get_bool_signal(BoolSetting_DetailsIsDocked);
+    const BoolSettingSignal *docked_setting = SETTINGS()->get_bool_signal(BoolSetting_DetailsIsDocked);
     connect(
         docked_setting, &BoolSettingSignal::changed,
         this, &DetailsWidget::on_docked_setting_changed);
@@ -102,7 +102,7 @@ DetailsWidget::DetailsWidget(const bool is_floating_instance_arg)
 }
 
 void DetailsWidget::on_docked_setting_changed() {
-    const bool is_docked = Settings::instance()->get_bool(BoolSetting_DetailsIsDocked);
+    const bool is_docked = SETTINGS()->get_bool(BoolSetting_DetailsIsDocked);
 
     if (is_floating_instance) {
         // Hide floating instance when switching to docked one

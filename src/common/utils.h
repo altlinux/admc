@@ -63,4 +63,6 @@ void show_only_in_dev_mode(QWidget *widget);
 
 QList<QString> byte_arrays_to_strings(const QList<QByteArray> &byte_arrays);
 
+QString current_advanced_view_filter();
+
 #endif /* UTILS_H */

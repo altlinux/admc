@@ -256,9 +256,6 @@ QString group_type_string(GroupType type);
 
 QString attribute_value_to_display_value(const QString &attribute, const QByteArray &value_bytes);
 
-QString filter_EQUALS(const QString &attribute, const QString &value);
-QString filter_AND(const QString &a, const QString &b);
-QString filter_OR(const QString &a, const QString &b);
-QString filter_NOT(const QString &a);
+
 
 #endif /* AD_INTERFACE_H */

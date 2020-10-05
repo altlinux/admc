@@ -22,6 +22,7 @@
 #include "details_widget.h"
 #include "object_context_menu.h"
 #include "utils.h"
+#include "filter.h"
 
 #include <QTreeView>
 #include <QLabel>

@@ -23,6 +23,7 @@
 #include "containers_widget.h"
 #include "server_configuration.h"
 #include "utils.h"
+#include "filter.h"
 
 #include <QLineEdit>
 #include <QGridLayout>
@@ -117,7 +118,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, object_class);
 
         // Filter out advanced objects if needed
-        const bool advanced_view = Settings::instance()->get_bool(BoolSetting_AdvancedView);
+        const bool advanced_view = SETTINGS()->get_bool(BoolSetting_AdvancedView);
 
         if (!advanced_view) {
             const QString is_advanced = filter_EQUALS(ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, LDAP_BOOL_TRUE);

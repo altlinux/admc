@@ -21,13 +21,14 @@
 #include "ad_interface.h"
 #include "settings.h"
 #include "utils.h"
+#include "filter.h"
 
 #include <QHash>
 #include <QLocale>
 #include <QDebug>
 #include <algorithm>
 
-#define ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES         "attributeDisplayNames"
+#define ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES "attributeDisplayNames"
 #define ATTRIBUTE_EXTRA_COLUMNS         "extraColumns"
 #define ATTRIBUTE_FILTER_CONTAINERS     "msDS-FilterContainers"
 #define ATTRIBUTE_LDAP_DISPLAY_NAME     "lDAPDisplayName"
@@ -35,7 +36,7 @@
 #define ATTRIBUTE_POSSIBLE_SUPERIORS    "systemPossSuperiors"
 #define ATTRIBUTE_ATTRIBUTE_SYNTAX      "attributeSyntax"
 #define ATTRIBUTE_OM_SYNTAX             "oMSyntax"
-#define CLASS_DISPLAY_NAME              "classDisplayName"
+#define ATTRIBUTE_CLASS_DISPLAY_NAME    "classDisplayName"
 #define TREAT_AS_LEAF                   "treatAsLeaf"
 #define ATTRIBUTE_MAY_CONTAIN           "mayContain"
 #define ATTRIBUTE_SYSTEM_MAY_CONTAIN    "systemMayContain"
@@ -48,7 +49,7 @@ QString get_locale_dir() {
     []() {
         const QString locale_code =
         []() {
-            const QLocale saved_locale = Settings::instance()->get_variant(VariantSetting_Locale).toLocale();
+            const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
 
             if (saved_locale.language() == QLocale::Russian) {
                 return "419";
@@ -148,7 +149,7 @@ QString get_class_display_name(const QString &objectClass) {
         QHash<QString, QString> out;
 
         const QString locale_dir = get_locale_dir();
-        const QList<QString> search_attributes = {CLASS_DISPLAY_NAME};
+        const QList<QString> search_attributes = {ATTRIBUTE_CLASS_DISPLAY_NAME};
         const QHash<QString, AdObject> search_results = AD()->search("", search_attributes, SearchScope_Children, locale_dir);
 
         for (const QString &dn : search_results.keys()) {
@@ -156,7 +157,7 @@ QString get_class_display_name(const QString &objectClass) {
             const QString specifier_class = get_display_specifier_class(dn);
 
             const AdObject object  = search_results[dn];
-            const QString class_display_name = object.get_string(CLASS_DISPLAY_NAME);
+            const QString class_display_name = object.get_string(ATTRIBUTE_CLASS_DISPLAY_NAME);
 
             out[specifier_class] = class_display_name;
         }

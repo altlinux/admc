@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     app.setOrganizationName(ADMC_ORGANIZATION);
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
 
-    const QLocale saved_locale = Settings::instance()->get_variant(VariantSetting_Locale).toLocale();
+    const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
 
     QTranslator translator;
     translator.load(saved_locale, QString(), QString(), ":/translations");

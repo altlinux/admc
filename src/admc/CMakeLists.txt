@@ -25,7 +25,6 @@ add_executable(admc
     select_dialog.cpp
     object_context_menu.cpp
     confirmation_dialog.cpp
-    advanced_view_proxy.cpp
     login_dialog.cpp
     password_dialog.cpp
     menubar.cpp
@@ -61,6 +60,7 @@ add_executable(admc
 
     ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/common/settings.cpp
+    ${PROJECT_SOURCE_DIR}/src/common/filter.cpp
 
     admc.qrc
     ${PROJECT_SOURCE_DIR}/translations/translations.qrc

@@ -17,26 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef AD_PROXY_MODEL_H
-#define AD_PROXY_MODEL_H
+#ifndef FILTER_H
+#define FILTER_H
 
-#include <QSortFilterProxyModel>
+#include <QString>
 
-class QModelIndex;
+QString filter_EQUALS(const QString &attribute, const QString &value);
+QString filter_AND(const QString &a, const QString &b);
+QString filter_OR(const QString &a, const QString &b);
+QString filter_NOT(const QString &a);
 
-// Show/hide advanced objects depending on whether advanced view is on
-class AdvancedViewProxy final : public QSortFilterProxyModel {
-public:
-    explicit AdvancedViewProxy(int dn_column_arg, QObject *parent);
+QString current_advanced_view_filter();
 
-private slots:
-    void on_advanced_view_toggled();
-
-private:
-    int dn_column;
-    bool advanced_view_is_on;
-
-    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
-};
-
-#endif /* AD_PROXY_MODEL_H */
+#endif /* FILTER_H */

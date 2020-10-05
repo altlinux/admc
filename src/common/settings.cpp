@@ -120,3 +120,7 @@ QString variant_to_string(VariantSetting type) {
     }
     return "";
 }
+
+Settings *SETTINGS() {
+    return Settings::instance();
+}

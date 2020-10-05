@@ -24,7 +24,7 @@
 #include <QAction>
 
 bool confirmation_dialog(const QString &text, QWidget *parent) {
-    const bool confirm_actions = Settings::instance()->get_bool(BoolSetting_ConfirmActions);
+    const bool confirm_actions = SETTINGS()->get_bool(BoolSetting_ConfirmActions);
     if (!confirm_actions) {
         return true;
     }
