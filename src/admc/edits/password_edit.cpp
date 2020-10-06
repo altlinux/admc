@@ -48,10 +48,6 @@ void PasswordEdit::set_read_only(const bool read_only) {
     confirm_edit->setReadOnly(read_only);
 }
 
-void PasswordEdit::load(const AdObject &) {
-    // NOTE: PasswordEdit does not load current value, it starts out blank and is not reloaded
-}
-
 void PasswordEdit::add_to_layout(QGridLayout *layout) {
     const auto password_label = new QLabel(tr("Password:"));
     const auto confirm_label = new QLabel(tr("Confirm password:"));

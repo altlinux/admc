@@ -25,7 +25,7 @@
 #include <QGridLayout>
 #include <QLabel>
 
-GroupTypeEdit::GroupTypeEdit(QObject *parent)
+GroupTypeEdit::GroupTypeEdit(const AdObject &object, QObject *parent)
 : AttributeEdit(parent)
 {
     combo = new QComboBox();
@@ -37,6 +37,9 @@ GroupTypeEdit::GroupTypeEdit(QObject *parent)
         combo->addItem(type_string, (int)type);
     }
 
+    original_value = object.get_group_type();
+    combo->setCurrentIndex((int) original_value);
+
     QObject::connect(
         combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         [this]() {
@@ -46,17 +49,6 @@ GroupTypeEdit::GroupTypeEdit(QObject *parent)
 
 void GroupTypeEdit::set_read_only(const bool read_only) {
     combo->setDisabled(read_only);
-}
-
-void GroupTypeEdit::load(const AdObject &object) {
-    const GroupType type = object.get_group_type();
-    const int type_int = (int)type;
-
-    combo->blockSignals(true);
-    combo->setCurrentIndex(type_int);
-    combo->blockSignals(false);
-
-    original_value = type_int;
 }
 
 void GroupTypeEdit::add_to_layout(QGridLayout *layout) {

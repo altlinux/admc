@@ -38,7 +38,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
 : QDialog()
 {
     target = target_arg;
-    const AdObject object  = AD()->request_all(target);
+    const AdObject object = AD()->request_all(target);
 
     setAttribute(Qt::WA_DeleteOnClose);
     resize(600, 600);
@@ -73,7 +73,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
         objectClass = CLASS_CONTAINER;
     }
 
-    make_string_edits(string_attributes, objectClass, &string_edits, &all_edits, this);
+    make_string_edits(object, string_attributes, objectClass, &string_edits, &all_edits, this);
     setup_string_edit_autofills(string_edits);
 
     layout_attribute_edits(all_edits, edits_layout);
@@ -91,8 +91,6 @@ RenameDialog::RenameDialog(const QString &target_arg)
     top_layout->addWidget(title_label);
     top_layout->addLayout(edits_layout);
     top_layout->addWidget(button_box);
-
-    load_attribute_edits(all_edits, object);
 }
 
 void RenameDialog::accept() {

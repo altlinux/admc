@@ -34,7 +34,7 @@
 // NOTE: https://ldapwiki.com/wiki/MMC%20Account%20Tab
 
 AccountTab::AccountTab(const AdObject &object) {   
-    const auto logon_name_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER, this);
+    const auto logon_name_edit = new StringEdit(object, ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER, this);
     edits.append(logon_name_edit);
 
     edits.append(new UnlockEdit(this));
@@ -45,9 +45,9 @@ AccountTab::AccountTab(const AdObject &object) {
         options.append(option);
     }
     QMap<AccountOption, AccountOptionEdit *> option_edits;
-    make_account_option_edits(options, &option_edits, &edits, this);
+    make_account_option_edits(object, options, &option_edits, &edits, this);
 
-    edits.append(new ExpiryEdit(this));
+    edits.append(new ExpiryEdit(object, this));
 
     auto edits_layout = new QGridLayout();
     for (auto edit : edits) {
@@ -55,7 +55,6 @@ AccountTab::AccountTab(const AdObject &object) {
     }
 
     connect_edits_to_tab(edits, this);
-    load_attribute_edits(edits, object);
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);

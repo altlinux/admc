@@ -71,7 +71,7 @@ GroupPolicyTab::GroupPolicyTab(const AdObject &object) {
 
     const auto edits_layout = new QGridLayout();
 
-    auto gpoptions_edit = new GpoptionsEdit(this);
+    auto gpoptions_edit = new GpoptionsEdit(object, this);
     edits.append(gpoptions_edit);
     layout_attribute_edits(edits, edits_layout);
     connect_edits_to_tab(edits, this);
@@ -93,8 +93,6 @@ GroupPolicyTab::GroupPolicyTab(const AdObject &object) {
     const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
     original_gplink = Gplink(gplink_string);
     current_gplink = original_gplink;
-
-    load_attribute_edits(edits, object);
 
     reload_current_gplink_into_model();
 

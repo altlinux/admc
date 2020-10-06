@@ -42,13 +42,12 @@ AddressTab::AddressTab(const AdObject &object) {
     };
 
     QMap<QString, StringEdit *> string_edits;
-    make_string_edits(attributes, CLASS_USER, &string_edits, &edits, this);
+    make_string_edits(object, attributes, CLASS_USER, &string_edits, &edits, this);
 
-    edits.append(new CountryEdit(this));
+    edits.append(new CountryEdit(object, this));
 
     layout_attribute_edits(edits, edits_layout);
     connect_edits_to_tab(edits, this);
-    load_attribute_edits(edits, object);
 }
 
 bool AddressTab::changed() const {

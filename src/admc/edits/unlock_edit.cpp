@@ -31,6 +31,8 @@ UnlockEdit::UnlockEdit(QObject *parent)
 : AttributeEdit(parent) {
     check = new QCheckBox();
 
+    check->setChecked(false);
+
     connect(
         check, &QCheckBox::stateChanged,
         [this]() {
@@ -40,12 +42,6 @@ UnlockEdit::UnlockEdit(QObject *parent)
 
 void UnlockEdit::set_read_only(const bool read_only) {
     check->setDisabled(read_only);
-}
-
-void UnlockEdit::load(const AdObject &) {
-    check->blockSignals(true);
-    check->setChecked(false);
-    check->blockSignals(false);
 }
 
 void UnlockEdit::add_to_layout(QGridLayout *layout) {

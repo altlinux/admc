@@ -26,7 +26,7 @@
 #include <QMessageBox>
 #include <QLabel>
 
-GroupScopeEdit::GroupScopeEdit(QObject *parent)
+GroupScopeEdit::GroupScopeEdit(const AdObject &object, QObject *parent)
 : AttributeEdit(parent)
 {
     combo = new QComboBox();
@@ -38,6 +38,9 @@ GroupScopeEdit::GroupScopeEdit(QObject *parent)
         combo->addItem(type_string, (int)type);
     }
 
+    original_value = object.get_group_scope();
+    combo->setCurrentIndex((int) original_value);
+
     QObject::connect(
         combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         [this]() {
@@ -47,17 +50,6 @@ GroupScopeEdit::GroupScopeEdit(QObject *parent)
 
 void GroupScopeEdit::set_read_only(const bool read_only) {
     combo->setDisabled(read_only);
-}
-
-void GroupScopeEdit::load(const AdObject &object) {
-    const GroupScope scope = object.get_group_scope();
-    const int scope_int = (int)scope;
-
-    combo->blockSignals(true);
-    combo->setCurrentIndex(scope_int);
-    combo->blockSignals(false);
-
-    original_value = scope_int;
 }
 
 void GroupScopeEdit::add_to_layout(QGridLayout *layout) {

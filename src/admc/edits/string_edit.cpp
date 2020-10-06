@@ -27,9 +27,9 @@
 #include <QMessageBox>
 #include <QLabel>
 
-void make_string_edits(const QList<QString> attributes, const QString &objectClass, QMap<QString, StringEdit *> *string_edits_out, QList<AttributeEdit *> *edits_out, QObject *parent) {
+void make_string_edits(const AdObject &object, const QList<QString> attributes, const QString &objectClass, QMap<QString, StringEdit *> *string_edits_out, QList<AttributeEdit *> *edits_out, QObject *parent) {
     for (auto attribute : attributes) {
-        auto edit = new StringEdit(attribute, objectClass, parent);
+        auto edit = new StringEdit(object, attribute, objectClass, parent);
         string_edits_out->insert(attribute, edit);
         edits_out->append((AttributeEdit *)edit);
     }
@@ -75,12 +75,25 @@ void setup_string_edit_autofills(const QMap<QString, StringEdit *> string_edits,
     }
 }
 
-StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent)
+StringEdit::StringEdit(const AdObject &object, const QString &attribute_arg, const QString &objectClass_arg, QObject *parent)
 : AttributeEdit(parent)
 {
     edit = new QLineEdit();
     attribute = attribute_arg;
     objectClass = objectClass_arg;
+
+    original_value =
+    [this, object]() {
+        if (attribute == ATTRIBUTE_OBJECT_CLASS) {
+            // NOTE: object class is multi-valued so need to get the "primary" class
+            // TODO: not sure how to get the "primary" attribute, for now just getting the last one. I think what I need to do is get the most "derived" class? and that info should be in the scheme.
+            const QList<QString> classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
+            return classes.last();
+        } else {
+            return object.get_string(attribute);
+        }
+    }();
+    edit->setText(original_value);
 
     QObject::connect(
         edit, &QLineEdit::textChanged,
@@ -91,24 +104,6 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
 
 void StringEdit::set_read_only(const bool read_only) {
     edit->setReadOnly(read_only);
-}
-
-void StringEdit::load(const AdObject &object) {
-    QString value;
-    if (attribute == ATTRIBUTE_OBJECT_CLASS) {
-        // NOTE: object class is multi-valued so need to get the "primary" class
-        // TODO: not sure how to get the "primary" attribute, for now just getting the last one. I think what I need to do is get the most "derived" class? and that info should be in the scheme.
-        const QList<QString> classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-        value = classes.last();
-    } else if (object.contains(attribute)) {
-        value = object.get_string(attribute);
-    }
-
-    edit->blockSignals(true);
-    edit->setText(value);
-    edit->blockSignals(false);
-
-    original_value = value;
 }
 
 void StringEdit::add_to_layout(QGridLayout *layout) {

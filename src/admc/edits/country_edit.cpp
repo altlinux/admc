@@ -37,22 +37,17 @@
 
 #define COUNTRY_CODE_NONE 0
 
-CountryEdit::CountryEdit(QObject *parent)
+CountryEdit::CountryEdit(const AdObject &object, QObject *parent)
 : AttributeEdit(parent)
 {
     combo = new QComboBox();
-
-    QObject::connect(
-        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        [this]() {
-            emit edited();
-        });
 
     // Load all country names into combobox
     // NOTE: temp collections to sort items for combo box
     QList<QString> all_countries;
     QHash<QString, int> string_to_code;
 
+    // TODO: cache this
     QFile file(":/countries.csv");
     if (!file.open(QIODevice::ReadOnly)) {
         printf("ERROR: Failed to load countries file!\n");
@@ -97,21 +92,13 @@ CountryEdit::CountryEdit(QObject *parent)
     country_strings[COUNTRY_CODE_NONE] = "";
     country_abbreviations[COUNTRY_CODE_NONE] = "";
 
-    combo->blockSignals(true);
     for (auto country_string : all_countries) {
         const int code = string_to_code[country_string];
 
         combo->addItem(country_string, code);
     }
-    combo->blockSignals(false);
-}
 
-void CountryEdit::set_read_only(const bool read_only) {
-    combo->setDisabled(read_only);
-}
-
-void CountryEdit::load(const AdObject &object) {
-    const int current_code =
+    original_value =
     [object]() {
         if (object.contains(ATTRIBUTE_COUNTRY)) {
             return object.get_int(ATTRIBUTE_COUNTRY);
@@ -119,14 +106,20 @@ void CountryEdit::load(const AdObject &object) {
             return COUNTRY_CODE_NONE;
         }
     }();
-
-    original_value = current_code;
-
-    const QVariant code_variant(current_code);
-    const int index = combo->findData(code_variant);
+    const int index = combo->findData(QVariant(original_value));
     if (index != -1) {
         combo->setCurrentIndex(index);
     }
+
+    QObject::connect(
+    combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+    [this]() {
+        emit edited();
+    });
+}
+
+void CountryEdit::set_read_only(const bool read_only) {
+    combo->setDisabled(read_only);
 }
 
 void CountryEdit::add_to_layout(QGridLayout *layout) {

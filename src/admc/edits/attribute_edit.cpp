@@ -80,12 +80,6 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QObj
     return success;
 }
 
-void load_attribute_edits(QList<AttributeEdit *> edits, const AdObject &object) {
-    for (auto edit : edits) {
-        edit->load(object);
-    }
-}
-
 void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab) {
     for (auto edit : edits) {
         QObject::connect(

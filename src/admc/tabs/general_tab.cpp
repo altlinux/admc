@@ -94,7 +94,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
             };
 
             QMap<QString, StringEdit *> string_edits;
-            make_string_edits(string_attributes, CLASS_USER, &string_edits, &edits, this);
+            make_string_edits(object, string_attributes, CLASS_USER, &string_edits, &edits, this);
 
             setup_string_edit_autofills(string_edits);
 
@@ -110,9 +110,9 @@ GeneralTab::GeneralTab(const AdObject &object) {
             };
 
             QMap<QString, StringEdit *> string_edits;
-            make_string_edits(string_attributes, CLASS_OU, &string_edits, &edits, this);
+            make_string_edits(object, string_attributes, CLASS_OU, &string_edits, &edits, this);
 
-            edits.append(new CountryEdit(this));
+            edits.append(new CountryEdit(object, this));
 
             break;
         }
@@ -124,7 +124,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
             };
 
             QMap<QString, StringEdit *> string_edits;
-            make_string_edits(string_attributes, CLASS_COMPUTER, &string_edits, &edits, this);
+            make_string_edits(object, string_attributes, CLASS_COMPUTER, &string_edits, &edits, this);
 
             string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->set_read_only(true);
             string_edits[ATTRIBUTE_DNS_HOST_NAME]->set_read_only(true);
@@ -134,19 +134,22 @@ GeneralTab::GeneralTab(const AdObject &object) {
             break;
         }
         case GeneralTabType_Group: {
-            // TODO: use make_string_edits()
-            edits.append(new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, CLASS_GROUP, this));
-            edits.append(new StringEdit(ATTRIBUTE_DESCRIPTION, CLASS_GROUP, this));
-            edits.append(new StringEdit(ATTRIBUTE_MAIL, CLASS_GROUP, this));
-            edits.append(new StringEdit(ATTRIBUTE_INFO, CLASS_GROUP, this));
+            const QList<QString> string_attributes = {
+                ATTRIBUTE_SAMACCOUNT_NAME,
+                ATTRIBUTE_DESCRIPTION,
+                ATTRIBUTE_MAIL,
+                ATTRIBUTE_INFO,
+            };
+            QMap<QString, StringEdit *> string_edits;
+            make_string_edits(object, string_attributes, CLASS_GROUP, &string_edits, &edits, this);
 
-            edits.append(new GroupScopeEdit(this));
-            edits.append(new GroupTypeEdit(this));
+            edits.append(new GroupScopeEdit(object, this));
+            edits.append(new GroupTypeEdit(object, this));
         
             break;
         }
         case GeneralTabType_Container: {
-            edits.append(new StringEdit(ATTRIBUTE_DESCRIPTION, CLASS_CONTAINER, this));
+            edits.append(new StringEdit(object, ATTRIBUTE_DESCRIPTION, CLASS_CONTAINER, this));
 
             break;
         }
@@ -157,8 +160,6 @@ GeneralTab::GeneralTab(const AdObject &object) {
 
     layout_attribute_edits(edits, edits_layout);
     connect_edits_to_tab(edits, this);  
-
-    load_attribute_edits(edits, object);
 }
 
 bool GeneralTab::changed() const {

@@ -28,11 +28,11 @@
 #include <QMessageBox>
 #include <QLabel>
 
-void make_account_option_edits(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
+void make_account_option_edits(const AdObject &object, const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
     QMap<AccountOption, AccountOptionEdit *> option_edits;
 
     for (auto option : options) {
-        auto edit = new AccountOptionEdit(option, parent);
+        auto edit = new AccountOptionEdit(object, option, parent);
         option_edits.insert(option, edit);
         option_edits_out->insert(option, edit);
         edits_out->append(edit);
@@ -78,11 +78,14 @@ void make_account_option_edits(const QList<AccountOption> options, QMap<AccountO
     }
 }
 
-AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *parent)
+AccountOptionEdit::AccountOptionEdit(const AdObject &object, const AccountOption option_arg, QObject *parent)
 : AttributeEdit(parent)
 {
     option = option_arg;
     check = new QCheckBox();
+
+    original_value = object.get_account_option(option);
+    checkbox_set_checked(check, original_value);
 
     QObject::connect(
         check, &QCheckBox::stateChanged,
@@ -93,16 +96,6 @@ AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *pa
 
 void AccountOptionEdit::set_read_only(const bool read_only) {
     check->setDisabled(read_only);
-}
-
-void AccountOptionEdit::load(const AdObject &object) {
-    const bool option_is_set = object.get_account_option(option);
-    
-    check->blockSignals(true);
-    checkbox_set_checked(check, option_is_set);
-    check->blockSignals(false);
-
-    original_value = option_is_set;
 }
 
 void AccountOptionEdit::add_to_layout(QGridLayout *layout) {

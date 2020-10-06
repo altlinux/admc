@@ -25,10 +25,14 @@
 #include <QLabel>
 #include <QHash>
 
-GpoptionsEdit::GpoptionsEdit(QObject *parent)
+GpoptionsEdit::GpoptionsEdit(const AdObject &object, QObject *parent)
 : AttributeEdit(parent)
 {
     check = new QCheckBox();
+
+    const QString value = object.get_string(ATTRIBUTE_GPOPTIONS);
+    original_checked_value = (value == GPOPTIONS_BLOCK_INHERITANCE);
+    checkbox_set_checked(check, original_checked_value);
 
     QObject::connect(
         check, &QCheckBox::stateChanged,
@@ -39,17 +43,6 @@ GpoptionsEdit::GpoptionsEdit(QObject *parent)
 
 void GpoptionsEdit::set_read_only(const bool read_only) {
     check->setDisabled(read_only);
-}
-
-void GpoptionsEdit::load(const AdObject &object) {
-    const QString value = object.get_string(ATTRIBUTE_GPOPTIONS);
-    const bool checked = (value == GPOPTIONS_BLOCK_INHERITANCE);
-
-    check->blockSignals(true);
-    checkbox_set_checked(check, checked);
-    check->blockSignals(false);
-
-    original_checked_value = checked;
 }
 
 void GpoptionsEdit::add_to_layout(QGridLayout *layout) {

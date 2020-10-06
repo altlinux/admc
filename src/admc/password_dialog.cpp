@@ -35,6 +35,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
 : QDialog()
 {
     target = target_arg;
+    const AdObject object = AD()->request_all(target);
 
     const QString name = AD()->request_value(target, ATTRIBUTE_NAME);
     const QString title_label_text = QString(tr("Resetting password of \"%1\"")).arg(name);
@@ -43,7 +44,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
     auto edits_layout = new QGridLayout();
 
     edits.append(new PasswordEdit(this));
-    edits.append(new AccountOptionEdit(AccountOption_PasswordExpired, this));
+    edits.append(new AccountOptionEdit(object, AccountOption_PasswordExpired, this));
     edits.append(new UnlockEdit(this));
 
     layout_attribute_edits(edits, edits_layout);

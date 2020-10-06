@@ -61,7 +61,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
     
     const auto edits_layout = new QGridLayout();
 
-    name_edit = new StringEdit(ATTRIBUTE_NAME, create_type_to_class(type), this);
+    name_edit = new StringEdit(AdObject(), ATTRIBUTE_NAME, create_type_to_class(type), this);
     all_edits.append(name_edit);
 
     switch (type) {
@@ -173,11 +173,11 @@ void CreateDialog::make_group_edits() {
         ATTRIBUTE_SAMACCOUNT_NAME,
     };
     QMap<QString, StringEdit *> string_edits;
-    make_string_edits(string_attributes, create_type_to_class(type), &string_edits, &all_edits, this);
+    make_string_edits(AdObject(), string_attributes, create_type_to_class(type), &string_edits, &all_edits, this);
     setup_string_edit_autofills(string_edits, name_edit);
 
-    all_edits.append(new GroupScopeEdit(this));
-    all_edits.append(new GroupTypeEdit(this));
+    all_edits.append(new GroupScopeEdit(AdObject(), this));
+    all_edits.append(new GroupTypeEdit(AdObject(), this));
 }
 
 void CreateDialog::make_user_edits() {
@@ -190,7 +190,7 @@ void CreateDialog::make_user_edits() {
         ATTRIBUTE_SAMACCOUNT_NAME,
     };
     QMap<QString, StringEdit *> string_edits;
-    make_string_edits(string_attributes, create_type_to_class(type), &string_edits, &all_edits, this);
+    make_string_edits(AdObject(), string_attributes, create_type_to_class(type), &string_edits, &all_edits, this);
 
     all_edits.append(new PasswordEdit(this));
 
@@ -201,7 +201,7 @@ void CreateDialog::make_user_edits() {
         // TODO: AccountOption_CannotChangePass
     };
     QMap<AccountOption, AccountOptionEdit *> option_edits;
-    make_account_option_edits(options, &option_edits, &all_edits, this);
+    make_account_option_edits(AdObject(), options, &option_edits, &all_edits, this);
 
     setup_string_edit_autofills(string_edits, name_edit);
 }

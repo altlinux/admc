@@ -46,9 +46,9 @@ ObjectTab::ObjectTab(const AdObject &object) {
     for (auto attribute : attributes) {
         AttributeEdit *edit;
         if (attribute_is_datetime(attribute)) {
-            edit = new DateTimeEdit(attribute, this);
+            edit = new DateTimeEdit(object, attribute, this);
         } else {
-            edit = new StringEdit(attribute, "", this);
+            edit = new StringEdit(object, attribute, "", this);
         }
         edit->set_read_only(true);
         edit->add_to_layout(edits_layout);
@@ -57,7 +57,6 @@ ObjectTab::ObjectTab(const AdObject &object) {
     }
 
     connect_edits_to_tab(edits, this);
-    load_attribute_edits(edits, object);
 }
 
 bool ObjectTab::changed() const {

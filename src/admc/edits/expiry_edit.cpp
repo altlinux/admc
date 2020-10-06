@@ -37,7 +37,7 @@
 
 const QTime END_OF_DAY(23, 59);
 
-ExpiryEdit::ExpiryEdit(QObject *parent)
+ExpiryEdit::ExpiryEdit(const AdObject &object, QObject *parent)
 : AttributeEdit(parent)
 {
     never_check = new QCheckBox(tr("Never"));
@@ -49,6 +49,26 @@ ExpiryEdit::ExpiryEdit(QObject *parent)
     button_group->addButton(end_of_check);
     edit_button = new QPushButton(tr("Edit"));
     display_label = new QLabel();
+
+    original_value = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);
+    const bool never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, original_value);
+
+    never_check->setChecked(never);
+    end_of_check->setChecked(!never);
+
+    display_label->setEnabled(!never);
+    edit_button->setEnabled(!never);
+
+    QString display_label_text;
+    if (never) {
+        // Load current date as default value when expiry is never
+        const QDate default_expiry = QDate::currentDate();
+        display_label_text = default_expiry.toString(DATE_FORMAT);
+    } else {
+        const QDateTime current_expiry = object.get_datetime(ATTRIBUTE_ACCOUNT_EXPIRES);
+        display_label_text = current_expiry.toString(DATE_FORMAT);
+    }
+    display_label->setText(display_label_text);
 
     connect(
         never_check, &QCheckBox::stateChanged,
@@ -65,44 +85,6 @@ void ExpiryEdit::set_read_only(const bool read_only) {
     never_check->setDisabled(read_only);
     end_of_check->setDisabled(read_only);
     edit_button->setDisabled(read_only);
-}
-
-void ExpiryEdit::load(const AdObject &object) {
-    const QString expiry_raw = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);
-
-    original_value = expiry_raw;
-
-    const bool never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, expiry_raw);
-
-    // NOTE: prevent setChecked() from emitting signals
-    QCheckBox *checks[] = {
-        never_check,
-        end_of_check
-    };
-    for (auto check : checks) {
-        check->blockSignals(true);
-    }
-    {
-        never_check->setChecked(never);
-        end_of_check->setChecked(!never);
-    }
-    for (auto check : checks) {
-        check->blockSignals(false);
-    }
-
-    display_label->setEnabled(!never);
-    edit_button->setEnabled(!never);
-
-    QString display_label_text;
-    if (never) {
-        // Load current date as default value when expiry is never
-        const QDate default_expiry = QDate::currentDate();
-        display_label_text = default_expiry.toString(DATE_FORMAT);
-    } else {
-        const QDateTime current_expiry = object.get_datetime(ATTRIBUTE_ACCOUNT_EXPIRES);
-        display_label_text = current_expiry.toString(DATE_FORMAT);
-    }
-    display_label->setText(display_label_text);
 }
 
 void ExpiryEdit::add_to_layout(QGridLayout *layout) {

@@ -26,11 +26,14 @@
 #include <QDateTimeEdit>
 #include <QLabel>
 
-DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QObject *parent)
+DateTimeEdit::DateTimeEdit(const AdObject &object, const QString &attribute_arg, QObject *parent)
 : AttributeEdit(parent)
 {
     edit = new QDateTimeEdit();
     attribute = attribute_arg;
+
+    original_value = object.get_datetime(attribute);
+    edit->setDateTime(original_value);
 
     QObject::connect(
         edit, &QDateTimeEdit::dateTimeChanged,
@@ -41,17 +44,6 @@ DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QObject *parent)
 
 void DateTimeEdit::set_read_only(const bool read_only) {
     edit->setReadOnly(read_only);
-}
-
-void DateTimeEdit::load(const AdObject &object) {
-    const QString datetime_string = object.get_string(attribute);
-    const QDateTime value = datetime_string_to_qdatetime(attribute, datetime_string);
-
-    edit->blockSignals(true);
-    edit->setDateTime(value);
-    edit->blockSignals(false);
-
-    original_value = value;
 }
 
 void DateTimeEdit::add_to_layout(QGridLayout *layout) {
