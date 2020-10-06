@@ -89,9 +89,8 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
         });
 }
 
-void StringEdit::set_read_only(EditReadOnly read_only_arg) {
-    read_only = read_only_arg;
-    edit->setReadOnly(read_only == EditReadOnly_Yes);
+void StringEdit::set_read_only(const bool read_only) {
+    edit->setReadOnly(read_only);
 }
 
 void StringEdit::load(const AdObject &object) {

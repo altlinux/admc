@@ -39,10 +39,8 @@ DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QObject *parent)
         });
 }
 
-void DateTimeEdit::set_read_only(EditReadOnly read_only_arg) {
-    read_only = read_only_arg;
-    
-    edit->setReadOnly(read_only == EditReadOnly_Yes);
+void DateTimeEdit::set_read_only(const bool read_only) {
+    edit->setReadOnly(read_only);
 }
 
 void DateTimeEdit::load(const AdObject &object) {

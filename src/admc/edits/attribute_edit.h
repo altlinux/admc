@@ -30,19 +30,12 @@ class DetailsTab;
 class QLabel;
 class QGridLayout;
 
-enum EditReadOnly {
-    EditReadOnly_Yes,
-    EditReadOnly_No
-};
-
 class AttributeEdit : public QObject {
 Q_OBJECT
 public:
-    EditReadOnly read_only;
-
     using QObject::QObject;
 
-    virtual void set_read_only(EditReadOnly read_only_arg);
+    virtual void set_read_only(const bool read_only) = 0;
 
     virtual void add_to_layout(QGridLayout *layout) = 0;
 
@@ -67,6 +60,7 @@ signals:
 };
 
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
+void set_read_only(const bool read_only);\
 void add_to_layout(QGridLayout *layout);\
 void load(const AdObject &object);\
 bool changed() const;\

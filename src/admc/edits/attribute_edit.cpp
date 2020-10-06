@@ -29,10 +29,6 @@
 void connect_changed_marker(AttributeEdit *edit, QLabel *label) {
     QObject::connect(edit, &AttributeEdit::edited,
         [=]() {
-            if (edit->read_only == EditReadOnly_Yes) {
-                return;
-            }
-
             const QString current_text = label->text();
             const QString new_text = set_changed_marker(current_text, edit->changed());
             label->setText(new_text);
@@ -96,8 +92,4 @@ void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab) {
             edit, &AttributeEdit::edited,
             tab, &DetailsTab::on_edit_edited);
     }
-}
-
-void AttributeEdit::set_read_only(EditReadOnly read_only_arg) {
-    read_only = read_only_arg;
 }

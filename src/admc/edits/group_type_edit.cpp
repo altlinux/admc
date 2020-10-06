@@ -44,10 +44,8 @@ GroupTypeEdit::GroupTypeEdit(QObject *parent)
         });
 }
 
-void GroupTypeEdit::set_read_only(EditReadOnly read_only_arg) {
-    read_only = read_only_arg;
-
-    combo->setEnabled(read_only == EditReadOnly_No);
+void GroupTypeEdit::set_read_only(const bool read_only) {
+    combo->setDisabled(read_only);
 }
 
 void GroupTypeEdit::load(const AdObject &object) {

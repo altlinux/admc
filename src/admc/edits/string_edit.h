@@ -35,7 +35,6 @@ public:
 
     StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
-    void set_read_only(EditReadOnly read_only_arg) override;
 
 private:
     QString attribute;

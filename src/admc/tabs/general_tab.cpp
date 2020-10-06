@@ -146,8 +146,8 @@ void GeneralTab::load(const AdObject &object) {
             QMap<QString, StringEdit *> string_edits;
             make_string_edits(string_attributes, CLASS_COMPUTER, &string_edits, &edits, this);
 
-            string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->set_read_only(EditReadOnly_Yes);
-            string_edits[ATTRIBUTE_DNS_HOST_NAME]->set_read_only(EditReadOnly_Yes);
+            string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->set_read_only(true);
+            string_edits[ATTRIBUTE_DNS_HOST_NAME]->set_read_only(true);
 
             // TODO: more string edits for: site (probably just site?), dc type (no idea)
 

@@ -52,7 +52,7 @@ ObjectTab::ObjectTab()
         } else {
             edit = new StringEdit(attribute, "", this);
         }
-        edit->set_read_only(EditReadOnly_Yes);
+        edit->set_read_only(true);
         edit->add_to_layout(edits_layout);
 
         edits.append(edit);

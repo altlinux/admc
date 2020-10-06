@@ -91,6 +91,10 @@ AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *pa
         });
 }
 
+void AccountOptionEdit::set_read_only(const bool read_only) {
+    check->setDisabled(read_only);
+}
+
 void AccountOptionEdit::load(const AdObject &object) {
     const bool option_is_set = object.get_account_option(option);
     

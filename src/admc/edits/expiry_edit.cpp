@@ -61,6 +61,12 @@ ExpiryEdit::ExpiryEdit(QObject *parent)
         this, &ExpiryEdit::on_edit_button);
 }
 
+void ExpiryEdit::set_read_only(const bool read_only) {
+    never_check->setDisabled(read_only);
+    end_of_check->setDisabled(read_only);
+    edit_button->setDisabled(read_only);
+}
+
 void ExpiryEdit::load(const AdObject &object) {
     const QString expiry_raw = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);
 

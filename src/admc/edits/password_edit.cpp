@@ -43,6 +43,11 @@ PasswordEdit::PasswordEdit(QObject *parent)
         });
 }
 
+void PasswordEdit::set_read_only(const bool read_only) {
+    edit->setReadOnly(read_only);
+    confirm_edit->setReadOnly(read_only);
+}
+
 void PasswordEdit::load(const AdObject &) {
     // NOTE: PasswordEdit does not load current value, it starts out blank and is not reloaded
 }

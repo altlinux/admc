@@ -38,6 +38,10 @@ UnlockEdit::UnlockEdit(QObject *parent)
         });
 }
 
+void UnlockEdit::set_read_only(const bool read_only) {
+    check->setDisabled(read_only);
+}
+
 void UnlockEdit::load(const AdObject &) {
     check->blockSignals(true);
     check->setChecked(false);

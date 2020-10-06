@@ -37,6 +37,10 @@ GpoptionsEdit::GpoptionsEdit(QObject *parent)
         });
 }
 
+void GpoptionsEdit::set_read_only(const bool read_only) {
+    check->setDisabled(read_only);
+}
+
 void GpoptionsEdit::load(const AdObject &object) {
     const QString value = object.get_string(ATTRIBUTE_GPOPTIONS);
     const bool checked = (value == GPOPTIONS_BLOCK_INHERITANCE);

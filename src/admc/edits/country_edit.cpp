@@ -106,6 +106,10 @@ CountryEdit::CountryEdit(QObject *parent)
     combo->blockSignals(false);
 }
 
+void CountryEdit::set_read_only(const bool read_only) {
+    combo->setDisabled(read_only);
+}
+
 void CountryEdit::load(const AdObject &object) {
     const int current_code =
     [object]() {
