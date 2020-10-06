@@ -115,17 +115,13 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     QList<QString> objects;
     QHash<QString, QString> object_classes;
     for (auto object_class : classes) {
-        QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, object_class);
-
-        // Filter out advanced objects if needed
-        const bool advanced_view = SETTINGS()->get_bool(BoolSetting_AdvancedView);
-
-        if (!advanced_view) {
-            const QString is_advanced = filter_EQUALS(ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, LDAP_BOOL_TRUE);
-            const QString NOT_is_advanced = filter_NOT(is_advanced);
+        const QString filter =
+        [object_class]() {
+            const QString class_filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, object_class);
+            const QString advanced_view_filter = current_advanced_view_filter();
             
-            filter = filter_AND(filter, NOT_is_advanced);
-        }
+            return filter_AND(class_filter, advanced_view_filter);
+        }();
 
         const QList<QString> objects_of_class = AD()->search_dns(filter);
 
