@@ -42,8 +42,11 @@ enum AttributeType {
     AttributeType_UTCTime,
     AttributeType_GeneralizedTime,
 
-    // NOTE: in AD this is same as large integer but we make it custom here for convenience
+    // NOTE: large integer type has sub types but AD schema
+    // doesn't distinguish between them (from what I've seen).
+    // Create enums for subtypes for easier processing.
     AttributeType_LargeIntegerDatetime,
+    AttributeType_LargeIntegerTimespan,
 };
 
 // Provides access to some server configuration data

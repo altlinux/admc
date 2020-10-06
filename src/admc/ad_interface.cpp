@@ -32,7 +32,11 @@
 #include <QTextCodec>
 #include <QDebug>
 
-#define MILLIS_TO_100_NANOS 10000
+const qint64 MILLIS_TO_100_NANOS = 10000LL;
+const qint64 SECONDS_TO_MILLIS   = 1000LL;
+const qint64 MINUTES_TO_SECONDS  = 60LL;
+const qint64 HOURS_TO_SECONDS    = MINUTES_TO_SECONDS * 60LL;
+const qint64 DAYS_TO_SECONDS     = HOURS_TO_SECONDS * 24LL;
 
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm"
 
@@ -45,6 +49,8 @@
 #define LDAP_SEARCH_NO_ATTRIBUTES "1.1"
 
 QString object_sid_to_display_value(const QByteArray &bytes);
+QString datetime_to_display_value(const QString &attribute, const QByteArray &bytes);
+QString timespan_to_display_value(const QByteArray &bytes);
 
 AdInterface *AdInterface::instance() {
     static AdInterface ad_interface;
@@ -1016,18 +1022,6 @@ QString extract_parent_dn_from_dn(const QString &dn) {
     return parent_dn;
 }
 
-bool attribute_is_datetime(const QString &attribute) {
-    static const QList<AttributeType> datetime_types = {
-        AttributeType_LargeIntegerDatetime,
-        AttributeType_UTCTime,
-        AttributeType_GeneralizedTime
-    };
-    
-    const AttributeType type = get_attribute_type(attribute);
-
-    return datetime_types.contains(type);
-}
-
 bool datetime_is_never(const QString &attribute, const QString &value) {
     const AttributeType type = get_attribute_type(attribute);
 
@@ -1164,24 +1158,21 @@ QString group_type_string(GroupType type) {
 }
 
 // TODO: flesh this out
-QString attribute_value_to_display_value(const QString &attribute, const QByteArray &value_bytes) {
-    const AttributeType attribute_type = get_attribute_type(attribute);
+QString attribute_value_to_display_value(const QString &attribute, const QByteArray &value) {
+    const AttributeType type = get_attribute_type(attribute);
 
-    const QString value_string = QString::fromUtf8(value_bytes);
+    switch (type) {
+        case AttributeType_LargeIntegerDatetime: return datetime_to_display_value(attribute, value);
+        case AttributeType_UTCTime: return datetime_to_display_value(attribute, value);
+        case AttributeType_GeneralizedTime: return datetime_to_display_value(attribute, value);
+        case AttributeType_Sid: return object_sid_to_display_value(value);
+        case AttributeType_LargeIntegerTimespan: return timespan_to_display_value(value);
 
-    if (attribute_is_datetime(attribute)) {
-        if (datetime_is_never(attribute, value_string)) {
-            return "(never)";
+        default: {
+            const QString value_string = QString::fromUtf8(value);
+
+            return value_string;
         }
-        const QDateTime datetime = datetime_string_to_qdatetime(attribute, value_string);
-        const QString display = datetime.toString(DATETIME_DISPLAY_FORMAT);
-
-        return display;
-    } else if (attribute_type == AttributeType_Sid) {
-        // TODO: convert to sid here
-        return object_sid_to_display_value(value_bytes);
-    } else {
-        return value_string;
     }
 }
 
@@ -1227,4 +1218,76 @@ QString object_sid_to_display_value(const QByteArray &sid) {
     }
 
     return string;
+}
+
+QString datetime_to_display_value(const QString &attribute, const QByteArray &bytes) {
+    const QString value_string = QString::fromUtf8(bytes);
+
+    if (datetime_is_never(attribute, value_string)) {
+        return "(never)";
+    }
+    const QDateTime datetime = datetime_string_to_qdatetime(attribute, value_string);
+    const QString display = datetime.toString(DATETIME_DISPLAY_FORMAT);
+
+    return display;
+}
+
+QString timespan_to_display_value(const QByteArray &bytes) {
+    // Timespan = integer value of hundred nanosecond quantities
+    // (also negated)
+    // Convert to dd:hh:mm:ss
+    const QString value_string = QString::fromUtf8(bytes);
+    const qint64 hundred_nanos_negative = value_string.toLongLong();
+
+    if (hundred_nanos_negative == LLONG_MIN) {
+        return "(never)";
+    }
+
+    qint64 seconds_total =
+    [hundred_nanos_negative]() {
+        const qint64 hundred_nanos = -hundred_nanos_negative;
+        const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
+        const qint64 seconds = millis / SECONDS_TO_MILLIS;
+
+        return seconds;
+    }();
+
+    const qint64 days = seconds_total / DAYS_TO_SECONDS;
+    seconds_total = days % DAYS_TO_SECONDS;
+
+    const qint64 hours = seconds_total / HOURS_TO_SECONDS; 
+    seconds_total = hours % HOURS_TO_SECONDS;
+
+    const qint64 minutes = seconds_total / MINUTES_TO_SECONDS; 
+    seconds_total = minutes % MINUTES_TO_SECONDS;
+
+    const qint64 seconds = seconds_total;
+
+    // Convert arbitrary time unit value to string with format
+    // "00-99" with leading zero if needed
+    const auto time_unit_to_string =
+    [](qint64 time) -> QString {
+        if (time > 99) {
+            time = 99;
+        }
+
+        const QString time_string = QString::number(time);
+
+        if (time == 0) {
+            return "00";
+        } else if (time < 10) {
+            return "0" + time_string;
+        } else {
+            return time_string;
+        }
+    };
+
+    const QString days_string = time_unit_to_string(days);
+    const QString hours_string = time_unit_to_string(hours);
+    const QString minutes_string = time_unit_to_string(minutes);
+    const QString seconds_string = time_unit_to_string(seconds);
+
+    const QString display = QString("%1:%2:%3:%4").arg(days_string, hours_string, minutes_string, seconds_string);
+
+    return display;
 }

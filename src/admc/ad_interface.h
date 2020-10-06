@@ -88,6 +88,9 @@
 #define ATTRIBUTE_BAD_PWD_TIME          "badPasswordTime"
 #define ATTRIBUTE_OBJECT_SID            "objectSid"
 #define ATTRIBUTE_SYSTEM_FLAGS          "systemFlags"
+#define ATTRIBUTE_MAX_PWD_AGE           "maxPwdAge"
+#define ATTRIBUTE_MIN_PWD_AGE           "minPwdAge"
+#define ATTRIBUTE_LOCKOUT_DURATION      "lockoutDuration"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
@@ -241,7 +244,6 @@ QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 QString extract_name_from_dn(const QString &dn);
 QString extract_parent_dn_from_dn(const QString &dn);
 
-bool attribute_is_datetime(const QString &attribute);
 bool datetime_is_never(const QString &attribute, const QString &value);
 QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime);
 QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &raw_value);
@@ -254,7 +256,7 @@ QString group_scope_string(GroupScope scope);
 
 QString group_type_string(GroupType type);
 
-QString attribute_value_to_display_value(const QString &attribute, const QByteArray &value_bytes);
+QString attribute_value_to_display_value(const QString &attribute, const QByteArray &value);
 
 
 

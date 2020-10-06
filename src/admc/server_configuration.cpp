@@ -358,20 +358,29 @@ AttributeType get_attribute_type(const QString &attribute) {
                 if (unknown_type) {
                     return AttributeType_StringCase;
                 }
-
-                // NOTE: large integers can be both numbers and datetimes and there appears to be no way to distinguish them so have to manually remap here
                 AttributeType out = type_mapping[attribute_syntax][om_syntax];
-                const QList<QString> datetimes = {
-                    ATTRIBUTE_ACCOUNT_EXPIRES,
-                    ATTRIBUTE_LAST_LOGON,
-                    ATTRIBUTE_LAST_LOGON_TIMESTAMP,
-                    ATTRIBUTE_PWD_LAST_SET,
-                    ATTRIBUTE_LOCKOUT_TIME,
-                    ATTRIBUTE_BAD_PWD_TIME
-                    // TODO:...
-                };
-                if (out == AttributeType_LargeInteger && datetimes.contains(attribute)) {
-                    out = AttributeType_LargeIntegerDatetime; 
+
+                if (out == AttributeType_LargeInteger) {
+                    // TODO: add all fitting attributes? Or try to find this data externally.
+                    static const QList<QString> datetimes = {
+                        ATTRIBUTE_ACCOUNT_EXPIRES,
+                        ATTRIBUTE_LAST_LOGON,
+                        ATTRIBUTE_LAST_LOGON_TIMESTAMP,
+                        ATTRIBUTE_PWD_LAST_SET,
+                        ATTRIBUTE_LOCKOUT_TIME,
+                        ATTRIBUTE_BAD_PWD_TIME
+                    };
+                    static const QList<QString> timespans = {
+                        ATTRIBUTE_MAX_PWD_AGE,
+                        ATTRIBUTE_MIN_PWD_AGE,
+                        ATTRIBUTE_LOCKOUT_DURATION,
+                    };
+
+                    if (datetimes.contains(attribute)) {
+                        return AttributeType_LargeIntegerDatetime;
+                    } else if (timespans.contains(attribute)) {
+                        return AttributeType_LargeIntegerTimespan;
+                    } 
                 }
 
                 return out;

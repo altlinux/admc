@@ -43,22 +43,19 @@ ObjectTab::ObjectTab(const AdObject &object) {
         ATTRIBUTE_USN_CREATED,
         ATTRIBUTE_USN_CHANGED
     };
-    for (auto attribute : attributes) {
-        AttributeEdit *edit =
-        [=]() -> AttributeEdit * {
-            if (attribute_is_datetime(attribute)) {
-                return new DateTimeEdit(object, attribute, this);
-            } else {
-                return new StringEdit(object, attribute, "", this);
-            }
-        }();
-        edit->set_read_only(true);
+    edits.append(new StringEdit(object, ATTRIBUTE_DISTINGUISHED_NAME, "", this));
+    edits.append(new StringEdit(object, ATTRIBUTE_OBJECT_CLASS, "", this));
+    
+    edits.append(new DateTimeEdit(object, ATTRIBUTE_WHEN_CREATED, this));
+    edits.append(new DateTimeEdit(object, ATTRIBUTE_WHEN_CHANGED, this));
+    edits.append(new DateTimeEdit(object, ATTRIBUTE_USN_CREATED, this));
+    edits.append(new DateTimeEdit(object, ATTRIBUTE_USN_CHANGED, this));
 
-        edits.append(edit);
+    for (auto edit : edits) {
+        edit->set_read_only(true);
     }
 
     edits_add_to_layout(edits, edits_layout);
-
     edits_connect_to_tab(edits, this);
 }
 
