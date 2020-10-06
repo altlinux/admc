@@ -65,11 +65,11 @@ bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent) {
     return success;
 }
 
-bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QObject *parent, const ApplyIfNotChanged apply_if_not_changed) {
+bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn) {
     bool success = true;
 
     for (auto edit : edits) {
-        if (edit->changed() || (apply_if_not_changed == ApplyIfNotChanged_Yes)) {
+        if (edit->changed()) {
             const bool apply_success = edit->apply(dn);
             if (!apply_success) {
                 success = false;

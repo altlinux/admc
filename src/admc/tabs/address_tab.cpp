@@ -59,5 +59,5 @@ bool AddressTab::verify() {
 }
 
 void AddressTab::apply(const QString &target) {
-    apply_attribute_edits(edits, target, this);
+    apply_attribute_edits(edits, target);
 }

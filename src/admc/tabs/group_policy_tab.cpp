@@ -126,7 +126,7 @@ void GroupPolicyTab::apply(const QString &target) {
     const QString gplink_string = current_gplink.to_string();
     AD()->attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
 
-    apply_attribute_edits(edits, target, this);
+    apply_attribute_edits(edits, target);
 }
 
 void GroupPolicyTab::on_context_menu(const QPoint pos) {

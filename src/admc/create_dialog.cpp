@@ -143,8 +143,13 @@ void CreateDialog::accept() {
 
         bool apply_success = false;
         if (add_success) {
-            // NOTE: need to apply if not changed because this is a new object and edits have no initial values so they can't be in changed state
-            apply_success = apply_attribute_edits(all_edits, dn, this, ApplyIfNotChanged_Yes);
+            // NOTE: need to apply even if edits aren't changed because this is a new object and so edits have no initial attribute values to load. So things like AccountOptionEdit checkboxes need to apply whether they are checked or unchecked.
+            for (auto edit : all_edits) {
+                const bool this_success = edit->apply(dn);
+                if (!this_success) {
+                    apply_success = false;
+                }
+            }
         }
 
         const QString type_string = create_type_to_string(type);

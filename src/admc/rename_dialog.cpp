@@ -103,7 +103,7 @@ void RenameDialog::accept() {
     AD()->start_batch();
     {
         // NOTE: apply attribute changes before renaming so that attribute changes can complete on old DN
-        const bool apply_success = apply_attribute_edits(all_edits, target, this);
+        const bool apply_success = apply_attribute_edits(all_edits, target);
 
         auto get_attribute_from_edit =
         [this](const QString &attribute) -> QString {

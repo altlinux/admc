@@ -39,7 +39,7 @@ public:
     virtual void add_to_layout(QGridLayout *layout) = 0;
 
     // Returns whether edit's value has been changed by the user
-    // Resets on reload
+    // Edit should be applied only if it changed() 
     virtual bool changed() const = 0;
 
     // Check that current input is valid for conditions that can be checked without contacting the AD server, for example name input not being empty
@@ -66,14 +66,9 @@ void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout);
 void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
 bool any_edits_changed(QList<AttributeEdit *> edits);
 
-enum ApplyIfNotChanged {
-    ApplyIfNotChanged_Yes,
-    ApplyIfNotChanged_No
-};
-
 // Helper f-ns that iterate over edit lists for you
 // Verify before applying!
 bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent);
-bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn, QObject *parent, const ApplyIfNotChanged apply_if_not_changed = ApplyIfNotChanged_No);
+bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn);
 
 #endif /* ATTRIBUTE_EDIT_H */

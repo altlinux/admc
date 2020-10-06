@@ -79,7 +79,7 @@ bool PasswordEdit::verify_input(QWidget *parent) {
 }
 
 bool PasswordEdit::changed() const {
-    return true;
+    return (!edit->text().isEmpty() || !confirm_edit->text().isEmpty());
 }
 
 bool PasswordEdit::apply(const QString &dn) {

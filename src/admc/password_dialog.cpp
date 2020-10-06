@@ -71,7 +71,7 @@ void PasswordDialog::accept() {
     if (verify_success) {
         const int errors_index = Status::instance()->get_errors_size();
 
-        const bool success = apply_attribute_edits(edits, target, this);
+        const bool success = apply_attribute_edits(edits, target);
 
         if (success) {
             QDialog::accept();

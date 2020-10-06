@@ -70,5 +70,5 @@ bool AccountTab::verify() {
 }
 
 void AccountTab::apply(const QString &target) {
-    apply_attribute_edits(edits, target, this);
+    apply_attribute_edits(edits, target);
 }
