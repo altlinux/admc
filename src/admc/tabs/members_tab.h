@@ -39,7 +39,7 @@ class MembersTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    MembersTab();
+    MembersTab(const AdObject &object);
     DECL_DETAILS_TAB_VIRTUALS();
 
 private slots:

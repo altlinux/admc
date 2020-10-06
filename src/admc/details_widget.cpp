@@ -69,10 +69,6 @@ DetailsWidget::DetailsWidget(const bool is_floating_instance_arg)
     title_label = new QLabel(this);
     tab_widget = new QTabWidget(this);
 
-    for (int i = 0; i < TabHandle_COUNT; i++) {
-        tabs[i] = nullptr;
-    }
-
     button_box = new QDialogButtonBox(QDialogButtonBox::Apply |  QDialogButtonBox::Cancel, this);
 
     const auto layout = new QVBoxLayout(this);
@@ -123,7 +119,7 @@ QString DetailsWidget::get_target() const {
 void DetailsWidget::reload(const QString &new_target) {
     target = new_target;
 
-    const AdObject object  = AD()->request_all(target);
+    const AdObject object = AD()->request_all(target);
 
     if (object.is_empty()) {
         if (is_floating_instance) {
@@ -139,37 +135,45 @@ void DetailsWidget::reload(const QString &new_target) {
         const QString title_text = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
         title_label->setText(title_text);
 
-        // Save old selected tab(if there is one) to restore it after recreating tabs
-        const TabHandle selected_tab_handle =
-        [this]() {
-            const int current_index = tab_widget->currentIndex();
+        // Save old tab to restore it after recreating tabs
+        const int old_tab_index = tab_widget->currentIndex();
 
-            for (int i = 0; i < TabHandle_COUNT; i++) {
-                QWidget *tab = tabs[i];
-
-                if (tab_widget->indexOf(tab) == current_index) {
-                    return (TabHandle) i;
-                }
-            }
-
-            return TabHandle_General;
-        }();
-
+        // Clear old tabs
         tab_widget->clear();
-        for (auto tab : tabs) {
-            if (tab != nullptr) {
-                delete tab;
-            }
-        }
 
-        tabs[TabHandle_General] = new GeneralTab();
-        tabs[TabHandle_Object] = new ObjectTab();
-        tabs[TabHandle_Attributes] = new AttributesTab();
-        tabs[TabHandle_Account] = new AccountTab();
-        tabs[TabHandle_Members] = new MembersTab();
-        tabs[TabHandle_Address] = new AddressTab();
-        tabs[TabHandle_GroupPolicy] = new GroupPolicyTab();
-        tabs[TabHandle_GPOLinks] = new GpoLinksTab();
+        for (auto tab : tabs) {
+            delete tab;
+        }
+        tabs.clear();
+
+        // Create new tabs
+        const auto add_tab =
+        [this](DetailsTab *tab, const QString &title) {
+            tabs.append(tab);
+            tab_widget->addTab(tab, title);
+
+            if (tab->changed()) {
+                printf("ERROR: a newly created tab %s is in changed() state! Something must be wrong with edits.", qPrintable(title));
+            }
+        };
+
+        add_tab(new GeneralTab(object), tr("General"));
+        add_tab(new ObjectTab(object), tr("Object"));
+        add_tab(new AttributesTab(object), tr("Attributes"));
+        if (object.is_user()) {
+            add_tab(new AccountTab(object), tr("Account"));
+            add_tab(new AddressTab(object), tr("Address"));
+        }
+        if (object.is_group()) {
+            add_tab(new MembersTab(object), tr("Members"));
+        }
+        if (object.is_ou()) {
+            // TODO: not sure which object classes can have gplink, for now only know of OU's.
+            add_tab(new GroupPolicyTab(object), tr("Group policy"));
+        }
+        if (object.is_policy()) {
+            add_tab(new GpoLinksTab(object), tr("Links to"));
+        }
 
         for (auto tab : tabs) {
             connect(
@@ -177,51 +181,9 @@ void DetailsWidget::reload(const QString &new_target) {
                 this, &DetailsWidget::on_tab_edited);
         }
 
-        // NOTE: need to add all tabs so that tab widget gains ownership of them
-        for (auto tab : tabs) {
-            tab_widget->addTab(tab, "");
-        }
-        tab_widget->clear();
-
-        for (int i = 0; i < TabHandle_COUNT; i++) {
-            const TabHandle tab_handle = (TabHandle) i;
-            DetailsTab *tab = tabs[i];
-
-            const bool accepts_target = tab->accepts_target(object);
-            if (!accepts_target) {
-                continue;
-            }
-
-            tab->load(object);
-
-            if (tab->changed()) {
-                printf("ERROR: tab is changed() after initial load.");
-            }
-
-            const QString tab_text =
-            [tab_handle]() {
-                switch (tab_handle) {
-                    case TabHandle_General: return tr("General");
-                    case TabHandle_Object: return tr("Object");
-                    case TabHandle_Attributes: return tr("Attributes");
-                    case TabHandle_Account: return tr("Account");
-                    case TabHandle_Members: return tr("Members");
-                    case TabHandle_Address: return tr("Address");
-                    case TabHandle_GroupPolicy: return tr("Group policy");
-                    case TabHandle_GPOLinks: return tr("Links to");
-                    case TabHandle_COUNT: return tr("COUNT"); 
-                }
-                return QString();
-            }();
-
-            tab_widget->addTab(tab, tab_text);
-        }
-
-        // Restore old selected tab if it is still active
-        QWidget *selected_tab = tabs[selected_tab_handle];
-        const int selected_tab_new_index = tab_widget->indexOf(selected_tab);
-        if (selected_tab_new_index != -1) {
-            tab_widget->setCurrentIndex(selected_tab_new_index);
+        // Restore old tab
+        if (old_tab_index != -1) {
+            tab_widget->setCurrentIndex(old_tab_index);
         }
 
         // Disable apply/cancel since this is a fresh reload and there are no changes

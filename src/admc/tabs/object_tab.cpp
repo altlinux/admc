@@ -28,9 +28,7 @@
 
 // TODO: canonical name in ADUC replaces "CN=" with "/" making it look like a directory path
 
-ObjectTab::ObjectTab()
-: DetailsTab()
-{   
+ObjectTab::ObjectTab(const AdObject &object) {   
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
 
@@ -59,6 +57,7 @@ ObjectTab::ObjectTab()
     }
 
     connect_edits_to_tab(edits, this);
+    load_attribute_edits(edits, object);
 }
 
 bool ObjectTab::changed() const {
@@ -71,12 +70,4 @@ bool ObjectTab::verify() {
 
 void ObjectTab::apply(const QString &target) {
 
-}
-
-void ObjectTab::load(const AdObject &object) {
-    load_attribute_edits(edits, object);
-}
-
-bool ObjectTab::accepts_target(const AdObject &object) const {
-    return true;
 }

@@ -30,7 +30,7 @@ class AccountTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    AccountTab();
+    AccountTab(const AdObject &object);
     DECL_DETAILS_TAB_VIRTUALS();
 
 private:

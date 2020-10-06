@@ -34,7 +34,7 @@ class AttributesTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    AttributesTab();
+    AttributesTab(const AdObject &object);
     DECL_DETAILS_TAB_VIRTUALS();
 
 private:

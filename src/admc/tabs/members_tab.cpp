@@ -39,9 +39,7 @@ enum MembersColumn {
     MembersColumn_COUNT,
 };
 
-MembersTab::MembersTab()
-: DetailsTab()
-{   
+MembersTab::MembersTab(const AdObject &object) {   
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -70,6 +68,13 @@ MembersTab::MembersTab()
     layout->setSpacing(0);
     layout->addWidget(view);
     layout->addLayout(button_layout);
+
+    const QList<QString> members = object.get_strings(ATTRIBUTE_MEMBER);
+
+    original_members = members.toSet();
+    current_members = original_members;
+
+    reload_current_members_into_model();
 
     connect(
         remove_button, &QAbstractButton::clicked,
@@ -105,21 +110,6 @@ void MembersTab::apply(const QString &target) {
             AD()->attribute_add_string(target, ATTRIBUTE_MEMBER, member);
         }
     }
-}
-
-void MembersTab::load(const AdObject &object) {
-    const QList<QString> members = object.get_strings(ATTRIBUTE_MEMBER);
-
-    original_members = members.toSet();
-    current_members = original_members;
-
-    reload_current_members_into_model();
-}
-
-bool MembersTab::accepts_target(const AdObject &object) const {
-    bool is_group = object.is_group();
-
-    return is_group;
 }
 
 void MembersTab::on_context_menu(const QPoint pos) {

@@ -31,7 +31,7 @@ class AddressTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    AddressTab();
+    AddressTab(const AdObject &object);
     DECL_DETAILS_TAB_VIRTUALS();
 
 private:

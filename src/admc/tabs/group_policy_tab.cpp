@@ -51,9 +51,7 @@ const QHash<GplinkColumn, GplinkOption> column_to_option = {
 
 QString gplink_option_to_display_string(const QString &option);
 
-GroupPolicyTab::GroupPolicyTab()
-: DetailsTab()
-{   
+GroupPolicyTab::GroupPolicyTab(const AdObject &object) {   
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -92,6 +90,14 @@ GroupPolicyTab::GroupPolicyTab()
     layout->addLayout(button_layout);
     layout->addLayout(edits_layout);
 
+    const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
+    original_gplink = Gplink(gplink_string);
+    current_gplink = original_gplink;
+
+    load_attribute_edits(edits, object);
+
+    reload_current_gplink_into_model();
+
     connect(
         remove_button, &QAbstractButton::clicked,
         this, &GroupPolicyTab::on_remove_button);
@@ -123,21 +129,6 @@ void GroupPolicyTab::apply(const QString &target) {
     AD()->attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
 
     apply_attribute_edits(edits, target, this);
-}
-
-void GroupPolicyTab::load(const AdObject &object) {
-    const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
-    original_gplink = Gplink(gplink_string);
-    current_gplink = original_gplink;
-
-    load_attribute_edits(edits, object);
-
-    reload_current_gplink_into_model();
-}
-
-// TODO: not sure which object classes can have gplink, for now only know of OU's.
-bool GroupPolicyTab::accepts_target(const AdObject &object) const {
-    return object.is_ou();
 }
 
 void GroupPolicyTab::on_context_menu(const QPoint pos) {

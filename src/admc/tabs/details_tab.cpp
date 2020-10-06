@@ -19,12 +19,6 @@
 
 #include "tabs/details_tab.h"
 
-DetailsTab::DetailsTab()
-: QWidget()
-{
-
-}
-
 void DetailsTab::on_edit_edited() {
     emit edited();
 }

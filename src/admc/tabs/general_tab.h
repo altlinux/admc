@@ -32,7 +32,7 @@ class GeneralTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    GeneralTab();
+    GeneralTab(const AdObject &object);
     DECL_DETAILS_TAB_VIRTUALS();
 
 private:

@@ -39,7 +39,7 @@ class GpoLinksTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    GpoLinksTab();
+    GpoLinksTab(const AdObject &object);
     DECL_DETAILS_TAB_VIRTUALS();
 
 private slots:

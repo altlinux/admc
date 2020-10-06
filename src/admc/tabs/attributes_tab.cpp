@@ -31,9 +31,7 @@ enum AdObjectColumn {
     AdObjectColumn_COUNT,
 };
 
-AttributesTab::AttributesTab()
-: DetailsTab()
-{
+AttributesTab::AttributesTab(const AdObject &object) {
     model = new AttributesModel(this);
 
     view = new QTreeView(this);
@@ -47,6 +45,8 @@ AttributesTab::AttributesTab()
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(view);
+
+    model->reload(object);
 }
 
 bool AttributesTab::changed() const {
@@ -59,14 +59,6 @@ bool AttributesTab::verify() {
 
 void AttributesTab::apply(const QString &target) {
 
-}
-
-void AttributesTab::load(const AdObject &object) {
-    model->reload(object);
-}
-
-bool AttributesTab::accepts_target(const AdObject &object) const {
-    return true;
 }
 
 AttributesModel::AttributesModel(AttributesTab *attributes_tab_arg)

@@ -36,9 +36,7 @@ enum GpoLinksColumn {
     GpoLinksColumn_COUNT
 };
 
-GpoLinksTab::GpoLinksTab()
-: DetailsTab()
-{   
+GpoLinksTab::GpoLinksTab(const AdObject &object) {   
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -61,21 +59,7 @@ GpoLinksTab::GpoLinksTab()
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         this, &GpoLinksTab::on_context_menu);
-}
 
-bool GpoLinksTab::changed() const {
-    return false;
-}
-
-bool GpoLinksTab::verify() {
-    return true;
-}
-
-void GpoLinksTab::apply(const QString &target) {
-
-}
-
-void GpoLinksTab::load(const AdObject &object) {
     model->removeRows(0, model->rowCount());
 
     // TODO: do this with search
@@ -96,8 +80,16 @@ void GpoLinksTab::load(const AdObject &object) {
     }
 }
 
-bool GpoLinksTab::accepts_target(const AdObject &object) const {
-    return object.is_policy();
+bool GpoLinksTab::changed() const {
+    return false;
+}
+
+bool GpoLinksTab::verify() {
+    return true;
+}
+
+void GpoLinksTab::apply(const QString &target) {
+
 }
 
 void GpoLinksTab::on_context_menu(const QPoint pos) {

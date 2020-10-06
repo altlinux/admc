@@ -44,9 +44,7 @@ enum GeneralTabType {
     GeneralTabType_COUNT
 };
 
-GeneralTab::GeneralTab()
-: DetailsTab()
-{   
+GeneralTab::GeneralTab(const AdObject &object) {   
     name_label = new QLabel();
 
     auto line = new QFrame();
@@ -60,25 +58,7 @@ GeneralTab::GeneralTab()
     top_layout->addWidget(name_label);
     top_layout->addWidget(line);
     top_layout->addLayout(edits_layout);
-}
 
-bool GeneralTab::changed() const {
-    return any_edits_changed(edits);
-}
-
-bool GeneralTab::verify() {
-    return verify_attribute_edits(edits, this);
-}
-
-void GeneralTab::apply(const QString &target) {
-    apply_attribute_edits(edits, target, this);
-}
-
-bool GeneralTab::accepts_target(const AdObject &) const {
-    return true;
-}
-
-void GeneralTab::load(const AdObject &object) {
     const QString name = object.get_string(ATTRIBUTE_NAME);
     name_label->setText(name);
 
@@ -179,4 +159,16 @@ void GeneralTab::load(const AdObject &object) {
     connect_edits_to_tab(edits, this);  
 
     load_attribute_edits(edits, object);
+}
+
+bool GeneralTab::changed() const {
+    return any_edits_changed(edits);
+}
+
+bool GeneralTab::verify() {
+    return verify_attribute_edits(edits, this);
+}
+
+void GeneralTab::apply(const QString &target) {
+    apply_attribute_edits(edits, target, this);
 }

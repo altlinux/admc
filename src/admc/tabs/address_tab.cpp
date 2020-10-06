@@ -26,9 +26,7 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 
-AddressTab::AddressTab()
-: DetailsTab()
-{   
+AddressTab::AddressTab(const AdObject &object) {   
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
 
@@ -50,6 +48,7 @@ AddressTab::AddressTab()
 
     layout_attribute_edits(edits, edits_layout);
     connect_edits_to_tab(edits, this);
+    load_attribute_edits(edits, object);
 }
 
 bool AddressTab::changed() const {
@@ -62,12 +61,4 @@ bool AddressTab::verify() {
 
 void AddressTab::apply(const QString &target) {
     apply_attribute_edits(edits, target, this);
-}
-
-void AddressTab::load(const AdObject &object) {
-    load_attribute_edits(edits, object);
-}
-
-bool AddressTab::accepts_target(const AdObject &object) const {
-    return object.is_user();
 }

@@ -22,24 +22,13 @@
 
 #include <QDialog>
 #include <QString>
+#include <QList>
 
 class QString;
 class QTabWidget;
 class QLabel;
 class DetailsTab;
 class QDialogButtonBox;
-
-enum TabHandle {
-    TabHandle_General,
-    TabHandle_Object,
-    TabHandle_Attributes,
-    TabHandle_Account,
-    TabHandle_Members,
-    TabHandle_Address,
-    TabHandle_GroupPolicy,
-    TabHandle_GPOLinks,
-    TabHandle_COUNT
-};
 
 // Shows info about object's attributes in multiple tabs
 // Targeted at a particular object
@@ -66,7 +55,7 @@ private:
     QTabWidget *tab_widget = nullptr;
     QLabel *title_label = nullptr;
     QDialogButtonBox *button_box = nullptr;
-    DetailsTab *tabs[TabHandle_COUNT];
+    QList<DetailsTab *> tabs;
     QString target;
 
     DetailsWidget(bool is_floating_instance_arg);

@@ -33,9 +33,7 @@
 
 // NOTE: https://ldapwiki.com/wiki/MMC%20Account%20Tab
 
-AccountTab::AccountTab()
-: DetailsTab()
-{   
+AccountTab::AccountTab(const AdObject &object) {   
     const auto logon_name_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER, this);
     edits.append(logon_name_edit);
 
@@ -57,6 +55,7 @@ AccountTab::AccountTab()
     }
 
     connect_edits_to_tab(edits, this);
+    load_attribute_edits(edits, object);
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
@@ -73,12 +72,4 @@ bool AccountTab::verify() {
 
 void AccountTab::apply(const QString &target) {
     apply_attribute_edits(edits, target, this);
-}
-
-void AccountTab::load(const AdObject &object) {
-    load_attribute_edits(edits, object);
-}
-
-bool AccountTab::accepts_target(const AdObject &object) const {
-    return object.is_user();
 }
