@@ -64,4 +64,7 @@ QList<QString> byte_arrays_to_strings(const QList<QByteArray> &byte_arrays);
 
 QString current_advanced_view_filter();
 
+QString dn_get_rdn(const QString &dn);
+QString dn_get_parent(const QString &dn);
+
 #endif /* UTILS_H */

@@ -35,6 +35,7 @@
 
 enum MembersColumn {
     MembersColumn_Name,
+    MembersColumn_Parent,
     MembersColumn_DN,
     MembersColumn_COUNT,
 };
@@ -49,12 +50,13 @@ MembersTab::MembersTab(const AdObject &object) {
     model = new QStandardItemModel(0, MembersColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model, {
         {MembersColumn_Name, tr("Name")},
+        {MembersColumn_Parent, tr("Folder")},
         {MembersColumn_DN, tr("DN")}
     });
 
     view->setModel(model);
 
-    setup_column_toggle_menu(view, model, {MembersColumn_Name});
+    setup_column_toggle_menu(view, model, {MembersColumn_Name, MembersColumn_Parent});
 
     auto add_button = new QPushButton(tr("Add"));
     auto remove_button = new QPushButton(tr("Remove"));
@@ -152,10 +154,12 @@ void MembersTab::reload_current_members_into_model() {
     model->removeRows(0, model->rowCount());
 
     for (auto dn : current_members) {
-        const QString name = extract_name_from_dn(dn);
+        const QString name = dn_get_rdn(dn);
+        const QString parent = dn_get_parent(dn);
         
         const QList<QStandardItem *> row = make_item_row(MembersColumn_COUNT);
         row[MembersColumn_Name]->setText(name);
+        row[MembersColumn_Parent]->setText(parent);
         row[MembersColumn_DN]->setText(dn);
 
         model->appendRow(row);

@@ -238,3 +238,27 @@ QList<QString> byte_arrays_to_strings(const QList<QByteArray> &byte_arrays) {
 
     return strings;
 }
+
+// "CN=foo,CN=bar,DC=domain,DC=com"
+// =>
+// "foo"
+QString dn_get_rdn(const QString &dn) {
+    int equals_i = dn.indexOf('=') + 1;
+    int comma_i = dn.indexOf(',');
+    int segment_length = comma_i - equals_i;
+
+    QString name = dn.mid(equals_i, segment_length);
+
+    return name;
+}
+
+// "CN=foo,CN=bar,DC=domain,DC=com"
+// =>
+// "CN=bar,DC=domain,DC=com"
+QString dn_get_parent(const QString &dn) {
+    int comma_i = dn.indexOf(',');
+
+    QString parent_dn = dn.mid(comma_i + 1);
+
+    return parent_dn;
+}

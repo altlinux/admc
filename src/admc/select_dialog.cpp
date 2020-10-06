@@ -141,7 +141,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
 
     for (auto dn : objects) {
         // TODO: get name from attribute
-        const QString name = extract_name_from_dn(dn);
+        const QString name = dn_get_rdn(dn);
         const QString object_class = object_classes[dn];
 
         const QList<QStandardItem *> row = make_item_row(SelectDialogColumn_COUNT);
@@ -153,7 +153,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         // row[0]->setIcon(icon);
 
         if (setup_as_tree) {
-            const QString parent_dn = extract_parent_dn_from_dn(dn);
+            const QString parent_dn = dn_get_parent(dn);
             if (parents.contains(parent_dn)) {
                 QStandardItem *parent = parents[parent_dn];
                 parent->appendRow(row);

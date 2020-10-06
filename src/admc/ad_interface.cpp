@@ -323,7 +323,7 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 
     const int result = ad_attribute_add(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
 
-    const QString name = extract_name_from_dn(dn);
+    const QString name = dn_get_rdn(dn);
 
     const QString new_display_value = attribute_display_value(attribute, value);
     ;
@@ -373,7 +373,7 @@ bool AdInterface::attribute_replace(const QString &dn, const QString &attribute,
         result = ad_attribute_replace(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
     }
 
-    const QString name = extract_name_from_dn(dn);
+    const QString name = dn_get_rdn(dn);
 
     const QString old_display_value = attribute_display_value(attribute, old_value);
     const QString new_display_value = attribute_display_value(attribute, value);
@@ -405,7 +405,7 @@ bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, 
 
     const int result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
 
-    const QString name = extract_name_from_dn(dn);
+    const QString name = dn_get_rdn(dn);
 
     const QString value_display = attribute_display_value(attribute, value);
 
@@ -468,7 +468,7 @@ bool AdInterface::object_delete(const QString &dn) {
 
     int result = ad_delete(ld, dn_cstr);
 
-    const QString name = extract_name_from_dn(dn);
+    const QString name = dn_get_rdn(dn);
     
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Deleted object \"%1\"")).arg(name));
@@ -501,8 +501,8 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
     // TODO: drag and drop handles checking move compatibility but need
     // to do this here as well for CLI?
     
-    const QString object_name = extract_name_from_dn(dn);
-    const QString container_name = extract_name_from_dn(new_container);
+    const QString object_name = dn_get_rdn(dn);
+    const QString container_name = dn_get_rdn(new_container);
 
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Moved \"%1\" to \"%2\"")).arg(object_name, container_name));
@@ -538,7 +538,7 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
 
     int result = ad_rename(ld, dn_cstr, new_rdn_cstr);
 
-    const QString old_name = extract_name_from_dn(dn);
+    const QString old_name = dn_get_rdn(dn);
 
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Renamed \"%1\" to \"%2\"")).arg(old_name, new_name));
@@ -559,8 +559,8 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
 bool AdInterface::group_add_user(const QString &group_dn, const QString &user_dn) {
     const bool success = attribute_add_string(group_dn, ATTRIBUTE_MEMBER, user_dn);
 
-    const QString user_name = extract_name_from_dn(user_dn);
-    const QString group_name = extract_name_from_dn(group_dn);
+    const QString user_name = dn_get_rdn(user_dn);
+    const QString group_name = dn_get_rdn(group_dn);
     
     if (success) {
         success_status_message(QString(tr("Added user \"%1\" to group \"%2\"")).arg(user_name, group_name));
@@ -580,8 +580,8 @@ bool AdInterface::group_add_user(const QString &group_dn, const QString &user_dn
 bool AdInterface::group_remove_user(const QString &group_dn, const QString &user_dn) {
     const bool success = attribute_delete_string(group_dn, ATTRIBUTE_MEMBER, user_dn);
 
-    const QString user_name = extract_name_from_dn(user_dn);
-    const QString group_name = extract_name_from_dn(group_dn);
+    const QString user_name = dn_get_rdn(user_dn);
+    const QString group_name = dn_get_rdn(group_dn);
 
     if (success) {
         success_status_message(QString(tr("Removed user \"%1\" from group \"%2\"")).arg(user_name, group_name));
@@ -614,7 +614,7 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
     const int scope_bit = group_scope_bit(scope);
     group_type = bit_set(group_type, scope_bit, true);
 
-    const QString name = extract_name_from_dn(dn);
+    const QString name = dn_get_rdn(dn);
     const QString scope_string = group_scope_string(scope);
     
     const bool result = attribute_replace_int(dn, ATTRIBUTE_GROUP_TYPE, group_type);
@@ -638,7 +638,7 @@ bool AdInterface::group_set_type(const QString &dn, GroupType type) {
     const int update_group_type = bit_set(group_type, GROUP_TYPE_BIT_SECURITY, set_security_bit);
     const QString update_group_type_string = QString::number(update_group_type);
 
-    const QString name = extract_name_from_dn(dn);
+    const QString name = dn_get_rdn(dn);
     const QString type_string = group_type_string(type);
     
     const bool result = attribute_replace_string(dn, ATTRIBUTE_GROUP_TYPE, update_group_type_string);
@@ -670,7 +670,7 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
 
     const bool success = attribute_replace(dn, ATTRIBUTE_PASSWORD, password_bytes, DoStatusMsg_No);
 
-    const QString name = extract_name_from_dn(dn);
+    const QString name = dn_get_rdn(dn);
     
     if (success) {
         success_status_message(QString(tr("Set pass of \"%1\"")).arg(name));
@@ -743,7 +743,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
         }
     }
 
-    const QString name = extract_name_from_dn(dn);
+    const QString name = dn_get_rdn(dn);
     
     if (success) {
         const QString success_context =
@@ -803,7 +803,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
 bool AdInterface::user_unlock(const QString &dn) {
     const bool result = attribute_replace_string(dn, ATTRIBUTE_LOCKOUT_TIME, LOCKOUT_UNLOCKED_VALUE);
 
-    const QString name = extract_name_from_dn(dn);
+    const QString name = dn_get_rdn(dn);
     
     if (result) {
         success_status_message(QString(tr("Unlocked user \"%1\"")).arg(name));
@@ -985,30 +985,6 @@ QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
     } else {
         return QList<QString>();
     }
-}
-
-// "CN=foo,CN=bar,DC=domain,DC=com"
-// =>
-// "foo"
-QString extract_name_from_dn(const QString &dn) {
-    int equals_i = dn.indexOf('=') + 1;
-    int comma_i = dn.indexOf(',');
-    int segment_length = comma_i - equals_i;
-
-    QString name = dn.mid(equals_i, segment_length);
-
-    return name;
-}
-
-// "CN=foo,CN=bar,DC=domain,DC=com"
-// =>
-// "CN=bar,DC=domain,DC=com"
-QString extract_parent_dn_from_dn(const QString &dn) {
-    int comma_i = dn.indexOf(',');
-
-    QString parent_dn = dn.mid(comma_i + 1);
-
-    return parent_dn;
 }
 
 bool datetime_is_never(const QString &attribute, const QString &value) {

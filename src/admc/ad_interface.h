@@ -247,9 +247,6 @@ AdInterface *AD();
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 
-QString extract_name_from_dn(const QString &dn);
-QString extract_parent_dn_from_dn(const QString &dn);
-
 bool datetime_is_never(const QString &attribute, const QString &value);
 QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime);
 QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &raw_value);

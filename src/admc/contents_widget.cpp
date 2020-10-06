@@ -233,7 +233,7 @@ void ContentsModel::make_row(QStandardItem *parent, const AdObject &object) {
 
             // NOTE: category is given as raw DN and contains '-' where it should have spaces, so convert it
             if (attribute == ATTRIBUTE_OBJECT_CATEGORY) {
-                out = extract_name_from_dn(out);
+                out = dn_get_rdn(out);
                 out = out.replace('-', ' ');
             }
 
