@@ -9,5 +9,5 @@ set(CMAKE_MODULE_PATH
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH})
 
-add_subdirectory(src)
 add_subdirectory(translations)
+add_subdirectory(src)

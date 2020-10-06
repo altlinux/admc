@@ -1,5 +1,7 @@
 find_package(Qt5 REQUIRED
-    COMPONENTS LinguistTools
+    COMPONENTS 
+        Core # needed for some cmake macros
+        LinguistTools
 )
 
 set(TS_DIR ${PROJECT_SOURCE_DIR}/translations)
@@ -23,7 +25,6 @@ qt5_add_translation(QM_FILES ${TS_FILES})
 add_custom_target(update_translations
     DEPENDS ${TS_FILES}
     COMMAND ${Qt5_LUPDATE_EXECUTABLE} -recursive ${PROJECT_SOURCE_DIR} -ts ${TS_FILES}
-    BYPRODUCTS ${PROJECT_SOURCE_DIR}/translations/translations.qrc
 )
 
 add_custom_target(translations
