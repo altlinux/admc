@@ -261,13 +261,13 @@ AdObject AdInterface::request_all(const QString &dn) {
 QList<QByteArray> AdInterface::request_values(const QString &dn, const QString &attribute) {
     const AdObject object = request_attributes(dn, {attribute});
     
-    return object.get_values(attribute);
+    return object.get_bytes_list(attribute);
 }
 
 QByteArray AdInterface::request_value(const QString &dn, const QString &attribute) {
     const AdObject object = request_attributes(dn, {attribute});
     
-    return object.get_value(attribute);
+    return object.get_bytes(attribute);
 }
 
 QList<QString> AdInterface::request_strings(const QString &dn, const QString &attribute) {

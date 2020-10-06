@@ -153,7 +153,7 @@ void ObjectContextMenu::edit_policy(const QString &dn, const AdObject &object) {
 
     const QString path =
     [dn, object]() {
-        QString path_tmp = object.get_value("gPCFileSysPath");
+        QString path_tmp = object.get_string("gPCFileSysPath");
         path_tmp.replace("\\", "/");
 
         // TODO: file sys path as it is, is like this:

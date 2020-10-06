@@ -229,7 +229,7 @@ QList<QString> get_containers_filter_classes() {
 }
 
 QList<QString> get_possible_superiors(const AdObject &object) {
-    const QString category = object.get_value(ATTRIBUTE_OBJECT_CATEGORY);
+    const QString category = object.get_string(ATTRIBUTE_OBJECT_CATEGORY);
 
     static QHash<QString, QList<QString>> possible_superiors_map;
 
@@ -320,8 +320,8 @@ AttributeType get_attribute_type(const QString &attribute) {
         const AdObject class_schema = AD()->request_all(class_dn);
 
         if (!class_schema.is_empty()) {
-            const QString attribute_syntax = class_schema.get_value(ATTRIBUTE_ATTRIBUTE_SYNTAX);
-            const QString om_syntax = class_schema.get_value(ATTRIBUTE_OM_SYNTAX);
+            const QString attribute_syntax = class_schema.get_string(ATTRIBUTE_ATTRIBUTE_SYNTAX);
+            const QString om_syntax = class_schema.get_string(ATTRIBUTE_OM_SYNTAX);
 
             // NOTE: replica of: https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/7cda533e-d7a4-4aec-a517-91d02ff4a1aa
             // attribute_syntax -> om syntax list -> type

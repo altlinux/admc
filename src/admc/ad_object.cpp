@@ -49,7 +49,7 @@ QList<QString> AdObject::attributes() const {
     return attributes_data.keys();
 }
 
-QList<QByteArray> AdObject::get_values(const QString &attribute) const {
+QList<QByteArray> AdObject::get_bytes_list(const QString &attribute) const {
     if (contains(attribute)) {
         return attributes_data[attribute];
     } else {
@@ -57,25 +57,25 @@ QList<QByteArray> AdObject::get_values(const QString &attribute) const {
     }
 }
 
-QByteArray AdObject::get_value(const QString &attribute) const {
-    const QList<QByteArray> values = get_values(attribute);
+QByteArray AdObject::get_bytes(const QString &attribute) const {
+    const QList<QByteArray> values = get_bytes_list(attribute);
 
     if (!values.isEmpty()) {
-        return values[0];
+        return values.first();
     } else {
         return QByteArray();
     }
 }
 
 QList<QString> AdObject::get_strings(const QString &attribute) const {
-    const QList<QByteArray> values = get_values(attribute);
+    const QList<QByteArray> values = get_bytes_list(attribute);
     const QList<QString> strings = byte_arrays_to_strings(values);
 
     return strings;
 }
 
 QString AdObject::get_string(const QString &attribute) const {
-    const QByteArray bytes = get_value(attribute);
+    const QByteArray bytes = get_bytes(attribute);
     const QString string = QString::fromUtf8(bytes);
 
     return string;
@@ -94,13 +94,13 @@ QList<int> AdObject::get_ints(const QString &attribute) const {
 }
 
 QDateTime AdObject::get_datetime(const QString &attribute) const {
-    const QString datetime_string = get_value(attribute);
+    const QString datetime_string = get_string(attribute);
 
     return datetime_string_to_qdatetime(attribute, datetime_string);
 }
 
 int AdObject::get_int(const QString &attribute) const {
-    const QString value_raw = get_value(attribute);
+    const QString value_raw = get_string(attribute);
     const int value = value_raw.toInt();
 
     return value;

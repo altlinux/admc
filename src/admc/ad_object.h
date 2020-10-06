@@ -50,8 +50,8 @@ public:
     bool contains(const QString &attribute) const;
     QList<QString> attributes() const;
 
-    QList<QByteArray> get_values(const QString &attribute) const;
-    QByteArray get_value(const QString &attribute) const;
+    QList<QByteArray> get_bytes_list(const QString &attribute) const;
+    QByteArray get_bytes(const QString &attribute) const;
 
     QList<QString> get_strings(const QString &attribute) const;
     QString get_string(const QString &attribute) const;

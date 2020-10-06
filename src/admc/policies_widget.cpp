@@ -79,7 +79,7 @@ void PoliciesWidget::reload() {
 
     for (auto dn : search_results.keys()) {
         const AdObject object  = search_results[dn];
-        const QString display_name = object.get_value(ATTRIBUTE_DISPLAY_NAME);
+        const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
         
         const QList<QStandardItem *> row = make_item_row(PoliciesColumn_COUNT);
         row[PoliciesColumn_Name]->setText(display_name);

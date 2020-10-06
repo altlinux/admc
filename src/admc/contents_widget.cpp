@@ -224,7 +224,7 @@ void ContentsModel::make_row(QStandardItem *parent, const AdObject &object) {
         if (!object.contains(attribute)) {
             continue;
         }
-        const QByteArray value = object.get_value(attribute);
+        const QByteArray value = object.get_bytes(attribute);
 
         const QString display_value =
         [attribute, value]() {
