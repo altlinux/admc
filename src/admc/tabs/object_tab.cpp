@@ -35,21 +35,15 @@ ObjectTab::ObjectTab(const AdObject &object) {
     const auto edits_layout = new QGridLayout();
     top_layout->addLayout(edits_layout);
 
-    const QList<QString> attributes = {
-        ATTRIBUTE_DISTINGUISHED_NAME,
-        ATTRIBUTE_OBJECT_CLASS,
-        ATTRIBUTE_WHEN_CREATED,
-        ATTRIBUTE_WHEN_CHANGED,
-        ATTRIBUTE_USN_CREATED,
-        ATTRIBUTE_USN_CHANGED
-    };
     edits.append(new StringEdit(object, ATTRIBUTE_DISTINGUISHED_NAME, "", this));
     edits.append(new StringEdit(object, ATTRIBUTE_OBJECT_CLASS, "", this));
     
     edits.append(new DateTimeEdit(object, ATTRIBUTE_WHEN_CREATED, this));
     edits.append(new DateTimeEdit(object, ATTRIBUTE_WHEN_CHANGED, this));
-    edits.append(new DateTimeEdit(object, ATTRIBUTE_USN_CREATED, this));
-    edits.append(new DateTimeEdit(object, ATTRIBUTE_USN_CHANGED, this));
+
+    // TODO: use int edit for this when/if it gets added, though these attributes aren't supposed to be editable anyway?
+    edits.append(new StringEdit(object, ATTRIBUTE_USN_CREATED, "",  this));
+    edits.append(new StringEdit(object, ATTRIBUTE_USN_CHANGED, "",  this));
 
     for (auto edit : edits) {
         edit->set_read_only(true);

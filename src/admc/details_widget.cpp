@@ -153,7 +153,7 @@ void DetailsWidget::reload(const QString &new_target) {
             tab_widget->addTab(tab, title);
 
             if (tab->changed()) {
-                printf("ERROR: a newly created tab %s is in changed() state! Something must be wrong with edits.", qPrintable(title));
+                printf("ERROR: a newly created tab %s is in changed() state! Something must be wrong with edits.\n", qPrintable(title));
             }
         };
 
