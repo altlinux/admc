@@ -78,7 +78,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
         }
     }
 
-    layout_attribute_edits(all_edits, edits_layout);
+    edits_add_to_layout(all_edits, edits_layout);
 
     auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
 
@@ -113,7 +113,7 @@ void CreateDialog::accept() {
 
     const QString dn = suffix + "=" + name + "," + parent_dn;
 
-    const bool verify_success = verify_attribute_edits(all_edits, this);
+    const bool verify_success = edits_verify(all_edits, this);
     if (!verify_success) {
         return;
     }

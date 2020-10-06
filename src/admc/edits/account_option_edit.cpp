@@ -102,11 +102,11 @@ void AccountOptionEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = account_option_string(option) + ":";
     const auto label = new QLabel(label_text);
 
-    connect_changed_marker(this, label);
+    connect_changed_marker(label);
     append_to_grid_layout_with_label(layout, label, check);
 }
 
-bool AccountOptionEdit::verify_input(QWidget *parent) {
+bool AccountOptionEdit::verify(QWidget *parent) {
     return true;
 }
 

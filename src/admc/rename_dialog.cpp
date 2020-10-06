@@ -76,7 +76,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
     make_string_edits(object, string_attributes, objectClass, &string_edits, &all_edits, this);
     setup_string_edit_autofills(string_edits);
 
-    layout_attribute_edits(all_edits, edits_layout);
+    edits_add_to_layout(all_edits, edits_layout);
 
     const auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
     connect(
@@ -94,7 +94,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
 }
 
 void RenameDialog::accept() {
-    const bool verify_success = verify_attribute_edits(all_edits, this);
+    const bool verify_success = edits_verify(all_edits, this);
     if (!verify_success) {
         return;
     }
@@ -103,7 +103,7 @@ void RenameDialog::accept() {
     AD()->start_batch();
     {
         // NOTE: apply attribute changes before renaming so that attribute changes can complete on old DN
-        const bool apply_success = apply_attribute_edits(all_edits, target);
+        const bool apply_success = edits_apply(all_edits, target);
 
         auto get_attribute_from_edit =
         [this](const QString &attribute) -> QString {

@@ -50,11 +50,9 @@ AccountTab::AccountTab(const AdObject &object) {
     edits.append(new ExpiryEdit(object, this));
 
     auto edits_layout = new QGridLayout();
-    for (auto edit : edits) {
-        edit->add_to_layout(edits_layout);
-    }
 
-    connect_edits_to_tab(edits, this);
+    edits_add_to_layout(edits, edits_layout);
+    edits_connect_to_tab(edits, this);
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
@@ -62,13 +60,13 @@ AccountTab::AccountTab(const AdObject &object) {
 }
 
 bool AccountTab::changed() const {
-    return any_edits_changed(edits);
+    return edits_changed(edits);
 }
 
 bool AccountTab::verify() {
-    return verify_attribute_edits(edits, this);
+    return edits_verify(edits, this);
 }
 
 void AccountTab::apply(const QString &target) {
-    apply_attribute_edits(edits, target);
+    edits_apply(edits, target);
 }

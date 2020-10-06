@@ -26,22 +26,22 @@
 #include <QGridLayout>
 #include <QLabel>
 
-void connect_changed_marker(AttributeEdit *edit, QLabel *label) {
-    QObject::connect(edit, &AttributeEdit::edited,
+void AttributeEdit::connect_changed_marker(QLabel *label) {
+    connect(this, &AttributeEdit::edited,
         [=]() {
             const QString current_text = label->text();
-            const QString new_text = set_changed_marker(current_text, edit->changed());
+            const QString new_text = set_changed_marker(current_text, changed());
             label->setText(new_text);
         });
 }
 
-void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout) {
+void edits_add_to_layout(QList<AttributeEdit *> edits, QGridLayout *layout) {
     for (auto edit : edits) {
         edit->add_to_layout(layout);
     }
 }
 
-bool any_edits_changed(QList<AttributeEdit *> edits) {
+bool edits_changed(QList<AttributeEdit *> edits) {
     for (auto edit : edits) {
         if (edit->changed()) {
             return true;
@@ -51,11 +51,11 @@ bool any_edits_changed(QList<AttributeEdit *> edits) {
     return false;
 }
 
-bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent) {
+bool edits_verify(QList<AttributeEdit *> edits, QWidget *parent) {
     bool success = true;
 
     for (auto edit : edits) {
-        const bool verify_success = edit->verify_input(parent);
+        const bool verify_success = edit->verify(parent);
 
         if (!verify_success) {
             success = false;
@@ -65,7 +65,7 @@ bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent) {
     return success;
 }
 
-bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn) {
+bool edits_apply(QList<AttributeEdit *> edits, const QString &dn) {
     bool success = true;
 
     for (auto edit : edits) {
@@ -80,7 +80,7 @@ bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn) {
     return success;
 }
 
-void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab) {
+void edits_connect_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab) {
     for (auto edit : edits) {
         QObject::connect(
             edit, &AttributeEdit::edited,

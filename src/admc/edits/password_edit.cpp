@@ -56,7 +56,7 @@ void PasswordEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, confirm_label, confirm_edit);
 }
 
-bool PasswordEdit::verify_input(QWidget *parent) {
+bool PasswordEdit::verify(QWidget *parent) {
     const QString pass = edit->text();
     const QString confirm_pass = confirm_edit->text();
     if (pass != confirm_pass) {

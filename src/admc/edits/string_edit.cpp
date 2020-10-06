@@ -110,11 +110,11 @@ void StringEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = get_attribute_display_name(attribute, objectClass) + ":";
     const auto label = new QLabel(label_text);
 
-    connect_changed_marker(this, label);
+    connect_changed_marker(label);
     append_to_grid_layout_with_label(layout, label, edit);
 }
 
-bool StringEdit::verify_input(QWidget *parent) {
+bool StringEdit::verify(QWidget *parent) {
     static const QList<QString> cant_be_empty = {
         ATTRIBUTE_NAME,
         ATTRIBUTE_SAMACCOUNT_NAME

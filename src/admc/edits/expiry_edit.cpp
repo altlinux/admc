@@ -97,11 +97,11 @@ void ExpiryEdit::add_to_layout(QGridLayout *layout) {
     layout->addWidget(display_label, layout->rowCount(), 0);
     layout->addWidget(edit_button, layout->rowCount(), 0);
 
-    connect_changed_marker(this, label);
+    connect_changed_marker(label);
 }
 
 // TODO: limit date to the format's date range, make a f-n in adinterface that checks if format in limit
-bool ExpiryEdit::verify_input(QWidget *parent) {
+bool ExpiryEdit::verify(QWidget *parent) {
     return true;
 }
 

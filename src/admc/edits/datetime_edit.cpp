@@ -50,12 +50,12 @@ void DateTimeEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = get_attribute_display_name(attribute, "") + ":";
     const auto label = new QLabel(label_text);
 
-    connect_changed_marker(this, label);
+    connect_changed_marker(label);
 
     append_to_grid_layout_with_label(layout, label, edit);
 }
 
-bool DateTimeEdit::verify_input(QWidget *parent) {
+bool DateTimeEdit::verify(QWidget *parent) {
     // TODO: datetime should fit within bounds of it's format, so greater than start of epoch for NTFS format?
 
     return true;

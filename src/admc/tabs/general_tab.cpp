@@ -158,18 +158,18 @@ GeneralTab::GeneralTab(const AdObject &object) {
         }
     }
 
-    layout_attribute_edits(edits, edits_layout);
-    connect_edits_to_tab(edits, this);  
+    edits_add_to_layout(edits, edits_layout);
+    edits_connect_to_tab(edits, this);  
 }
 
 bool GeneralTab::changed() const {
-    return any_edits_changed(edits);
+    return edits_changed(edits);
 }
 
 bool GeneralTab::verify() {
-    return verify_attribute_edits(edits, this);
+    return edits_verify(edits, this);
 }
 
 void GeneralTab::apply(const QString &target) {
-    apply_attribute_edits(edits, target);
+    edits_apply(edits, target);
 }

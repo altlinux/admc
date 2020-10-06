@@ -49,11 +49,11 @@ void UnlockEdit::add_to_layout(QGridLayout *layout) {
 
     label->setToolTip(tr("Can only unlock the account, impossible to lock it manually."));
 
-    connect_changed_marker(this, label);
+    connect_changed_marker(label);
     append_to_grid_layout_with_label(layout, label, check);
 }
 
-bool UnlockEdit::verify_input(QWidget *parent) {
+bool UnlockEdit::verify(QWidget *parent) {
     return true;
 }
 

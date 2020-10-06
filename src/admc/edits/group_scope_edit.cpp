@@ -56,11 +56,11 @@ void GroupScopeEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = tr("Group scope") + ":";
     const auto label = new QLabel(label_text);
 
-    connect_changed_marker(this, label);
+    connect_changed_marker(label);
     append_to_grid_layout_with_label(layout, label, combo);
 }
 
-bool GroupScopeEdit::verify_input(QWidget *parent) {
+bool GroupScopeEdit::verify(QWidget *parent) {
     return true;
 }
 

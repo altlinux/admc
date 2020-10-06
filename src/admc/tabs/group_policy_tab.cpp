@@ -73,8 +73,8 @@ GroupPolicyTab::GroupPolicyTab(const AdObject &object) {
 
     auto gpoptions_edit = new GpoptionsEdit(object, this);
     edits.append(gpoptions_edit);
-    layout_attribute_edits(edits, edits_layout);
-    connect_edits_to_tab(edits, this);
+    edits_add_to_layout(edits, edits_layout);
+    edits_connect_to_tab(edits, this);
 
     auto add_button = new QPushButton(tr("Add"));
     auto remove_button = new QPushButton(tr("Remove"));
@@ -115,18 +115,18 @@ bool GroupPolicyTab::changed() const {
     const QString current_gplink_string = current_gplink.to_string();
     const bool gplink_changed = (current_gplink_string != original_gplink_string);
 
-    return any_edits_changed(edits) || gplink_changed;
+    return edits_changed(edits) || gplink_changed;
 }
 
 bool GroupPolicyTab::verify() {
-    return verify_attribute_edits(edits, this);
+    return edits_verify(edits, this);
 }
 
 void GroupPolicyTab::apply(const QString &target) {
     const QString gplink_string = current_gplink.to_string();
     AD()->attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
 
-    apply_attribute_edits(edits, target);
+    edits_apply(edits, target);
 }
 
 void GroupPolicyTab::on_context_menu(const QPoint pos) {

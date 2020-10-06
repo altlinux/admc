@@ -47,7 +47,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
     edits.append(new AccountOptionEdit(object, AccountOption_PasswordExpired, this));
     edits.append(new UnlockEdit(this));
 
-    layout_attribute_edits(edits, edits_layout);
+    edits_add_to_layout(edits, edits_layout);
 
     auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
 
@@ -66,12 +66,12 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
 }
 
 void PasswordDialog::accept() {
-    const bool verify_success = verify_attribute_edits(edits, this);
+    const bool verify_success = edits_verify(edits, this);
 
     if (verify_success) {
         const int errors_index = Status::instance()->get_errors_size();
 
-        const bool success = apply_attribute_edits(edits, target);
+        const bool success = edits_apply(edits, target);
 
         if (success) {
             QDialog::accept();

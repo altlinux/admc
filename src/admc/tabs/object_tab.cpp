@@ -44,23 +44,26 @@ ObjectTab::ObjectTab(const AdObject &object) {
         ATTRIBUTE_USN_CHANGED
     };
     for (auto attribute : attributes) {
-        AttributeEdit *edit;
-        if (attribute_is_datetime(attribute)) {
-            edit = new DateTimeEdit(object, attribute, this);
-        } else {
-            edit = new StringEdit(object, attribute, "", this);
-        }
+        AttributeEdit *edit =
+        [=]() -> AttributeEdit * {
+            if (attribute_is_datetime(attribute)) {
+                return new DateTimeEdit(object, attribute, this);
+            } else {
+                return new StringEdit(object, attribute, "", this);
+            }
+        }();
         edit->set_read_only(true);
-        edit->add_to_layout(edits_layout);
 
         edits.append(edit);
     }
 
-    connect_edits_to_tab(edits, this);
+    edits_add_to_layout(edits, edits_layout);
+
+    edits_connect_to_tab(edits, this);
 }
 
 bool ObjectTab::changed() const {
-    return any_edits_changed(edits);
+    return edits_changed(edits);
 }
 
 bool ObjectTab::verify() {

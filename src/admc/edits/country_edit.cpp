@@ -126,11 +126,11 @@ void CountryEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = get_attribute_display_name(ATTRIBUTE_COUNTRY, CLASS_USER) + ":";
     const auto label = new QLabel(label_text);
 
-    connect_changed_marker(this, label);
+    connect_changed_marker(label);
     append_to_grid_layout_with_label(layout, label, combo);
 }
 
-bool CountryEdit::verify_input(QWidget *parent) {
+bool CountryEdit::verify(QWidget *parent) {
     return true;
 }
 

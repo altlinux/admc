@@ -55,11 +55,11 @@ void GroupTypeEdit::add_to_layout(QGridLayout *layout) {
     const QString label_text = tr("Group type") + ":";
     const auto label = new QLabel(label_text);
 
-    connect_changed_marker(this, label);
+    connect_changed_marker(label);
     append_to_grid_layout_with_label(layout, label, combo);
 }
 
-bool GroupTypeEdit::verify_input(QWidget *parent) {
+bool GroupTypeEdit::verify(QWidget *parent) {
     return true;
 }
 

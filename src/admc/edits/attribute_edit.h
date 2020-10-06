@@ -42,8 +42,9 @@ public:
     // Edit should be applied only if it changed() 
     virtual bool changed() const = 0;
 
-    // Check that current input is valid for conditions that can be checked without contacting the AD server, for example name input not being empty
-    virtual bool verify_input(QWidget *parent) = 0;
+    // Check that current input is valid and show errors
+    // to user in a warning message
+    virtual bool verify(QWidget *parent) = 0;
 
     // Apply current input by making a modification to the AD server
     virtual bool apply(const QString &dn) = 0;
@@ -52,23 +53,26 @@ signals:
     // Emit this signal when user edits subwidget(s)
     // (by connecting to the widget's version of edited signal)
     void edited();
+
+protected:
+    void connect_changed_marker(QLabel *label);
+
 };
 
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
 void set_read_only(const bool read_only);\
 void add_to_layout(QGridLayout *layout);\
 bool changed() const;\
-bool verify_input(QWidget *parent);\
+bool verify(QWidget *parent);\
 bool apply(const QString &dn);
 
-void connect_changed_marker(AttributeEdit *edit, QLabel *label);
-void layout_attribute_edits(QList<AttributeEdit *> edits, QGridLayout *layout);
-void connect_edits_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
-bool any_edits_changed(QList<AttributeEdit *> edits);
 
 // Helper f-ns that iterate over edit lists for you
-// Verify before applying!
-bool verify_attribute_edits(QList<AttributeEdit *> edits, QWidget *parent);
-bool apply_attribute_edits(QList<AttributeEdit *> edits, const QString &dn);
+void edits_connect_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
+void edits_connect_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
+void edits_add_to_layout(QList<AttributeEdit *> edits, QGridLayout *layout);
+bool edits_changed(QList<AttributeEdit *> edits);
+bool edits_verify(QList<AttributeEdit *> edits, QWidget *parent);
+bool edits_apply(QList<AttributeEdit *> edits, const QString &dn);
 
 #endif /* ATTRIBUTE_EDIT_H */
