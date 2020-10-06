@@ -56,6 +56,7 @@ ContainersWidget::ContainersWidget(QWidget *parent)
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
+    view->setSortingEnabled(true);
     ObjectContextMenu::connect_view(view, ContainersColumn_DN);
 
     view->setModel(model);
@@ -313,6 +314,8 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
             load_manually(schema_dn);
         }
     }
+
+    sort(ContainersColumn_Name);
 }
 
 // Override this so that unexpanded and unfetched items show the expander even though they technically don't have any children loaded

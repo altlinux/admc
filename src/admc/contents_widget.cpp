@@ -75,7 +75,6 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
     view->header()->setSectionsMovable(true);
-    view->sortByColumn(column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
     ObjectContextMenu::connect_view(view, column_index(ATTRIBUTE_DISTINGUISHED_NAME));
 
     view->setModel(model);
@@ -134,7 +133,7 @@ void ContentsWidget::change_target(const QString &dn) {
     target_dn = dn;
 
     model->change_target(target_dn);
-    
+
     const QAbstractItemModel *view_model = view->model();
     
     // Set root to head
@@ -213,6 +212,8 @@ void ContentsModel::change_target(const QString &target_dn) {
             make_row(head, object);
         }
     }
+
+    sort(column_index(ATTRIBUTE_NAME));
 }
 
 void ContentsModel::make_row(QStandardItem *parent, const AdObject &object) {

@@ -56,6 +56,7 @@ GroupPolicyTab::GroupPolicyTab(const AdObject &object) {
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setAllColumnsShowFocus(true);
+    view->setSortingEnabled(true);
 
     model = new QStandardItemModel(0, GplinkColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model, {
@@ -232,6 +233,8 @@ void GroupPolicyTab::reload_current_gplink_into_model() {
 
         model->appendRow(row);
     }
+
+    model->sort(GplinkColumn_Name);
 }
 
 void GroupPolicyTab::on_item_changed(QStandardItem *item) {

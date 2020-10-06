@@ -171,6 +171,8 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         }
     }
 
+    model->sort(SelectDialogColumn_Name);
+
     proxy_name->setSourceModel(model);
     proxy_class->setSourceModel(proxy_name);
     view->setModel(proxy_class);

@@ -42,6 +42,7 @@ PoliciesWidget::PoliciesWidget()
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
+    view->setSortingEnabled(true);
 
     model = new QStandardItemModel(0, PoliciesColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model, {
@@ -87,4 +88,6 @@ void PoliciesWidget::reload() {
 
         model->appendRow(row);
     }
+
+    model->sort(PoliciesColumn_Name);
 }

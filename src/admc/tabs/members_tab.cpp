@@ -160,6 +160,8 @@ void MembersTab::reload_current_members_into_model() {
 
         model->appendRow(row);
     }
+
+    model->sort(MembersColumn_Name);
 }
 
 void MembersTab::add_members(QList<QString> members) {

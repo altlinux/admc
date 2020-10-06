@@ -41,6 +41,7 @@ GpoLinksTab::GpoLinksTab(const AdObject &object) {
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setAllColumnsShowFocus(true);
+    view->setSortingEnabled(true);
 
     model = new QStandardItemModel(0, GpoLinksColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model, {
@@ -78,6 +79,8 @@ GpoLinksTab::GpoLinksTab(const AdObject &object) {
 
         model->appendRow(row);
     }
+
+    model->sort(GpoLinksColumn_Name);
 }
 
 bool GpoLinksTab::changed() const {

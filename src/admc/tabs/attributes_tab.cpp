@@ -26,10 +26,10 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
-enum AdObjectColumn {
-    AdObjectColumn_Name,
-    AdObjectColumn_Value,
-    AdObjectColumn_COUNT,
+enum AttributesColumn {
+    AttributesColumn_Name,
+    AttributesColumn_Value,
+    AttributesColumn_COUNT,
 };
 
 AttributesTab::AttributesTab(const AdObject &object) {
@@ -48,6 +48,7 @@ AttributesTab::AttributesTab(const AdObject &object) {
     layout->addWidget(view);
 
     model->reload(object);
+    view->sortByColumn(AttributesColumn_Name, Qt::AscendingOrder);
 }
 
 bool AttributesTab::changed() const {
@@ -63,13 +64,13 @@ void AttributesTab::apply(const QString &target) {
 }
 
 AttributesModel::AttributesModel(AttributesTab *attributes_tab_arg)
-: QStandardItemModel(0, AdObjectColumn_COUNT, attributes_tab_arg)
+: QStandardItemModel(0, AttributesColumn_COUNT, attributes_tab_arg)
 {
     attributes_tab = attributes_tab_arg;
 
     set_horizontal_header_labels_from_map(this, {
-        {AdObjectColumn_Name, tr("Name")},
-        {AdObjectColumn_Value, tr("Value")}
+        {AttributesColumn_Name, tr("Name")},
+        {AttributesColumn_Value, tr("Value")}
     });
 }
 
@@ -108,4 +109,6 @@ void AttributesModel::reload(const AdObject &object) {
             appendRow({name_item, value_item});
         }
     }
+
+    sort(AttributesColumn_Name);
 }
