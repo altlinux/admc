@@ -28,6 +28,7 @@ add_executable(admc
     login_dialog.cpp
     password_dialog.cpp
     menubar.cpp
+    attribute_display.cpp
     
     rename_dialog.cpp
     create_dialog.cpp

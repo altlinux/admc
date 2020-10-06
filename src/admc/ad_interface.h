@@ -132,6 +132,12 @@ enum SearchScope {
     SearchScope_All,
 };
 
+const qint64 MILLIS_TO_100_NANOS = 10000LL;
+const qint64 SECONDS_TO_MILLIS   = 1000LL;
+const qint64 MINUTES_TO_SECONDS  = 60LL;
+const qint64 HOURS_TO_SECONDS    = MINUTES_TO_SECONDS * 60LL;
+const qint64 DAYS_TO_SECONDS     = HOURS_TO_SECONDS * 24LL;
+
 typedef struct ldap LDAP;
 
 class AdInterface final : public QObject {
@@ -256,7 +262,7 @@ QString group_scope_string(GroupScope scope);
 
 QString group_type_string(GroupType type);
 
-QString attribute_value_to_display_value(const QString &attribute, const QByteArray &value);
+QString attribute_display_value(const QString &attribute, const QByteArray &value);
 
 
 
