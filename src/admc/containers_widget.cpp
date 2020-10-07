@@ -22,7 +22,7 @@
 #include "utils.h"
 #include "settings.h"
 #include "details_widget.h"
-#include "server_configuration.h"
+#include "ad_config.h"
 #include "ad_interface.h"
 #include "filter.h"
 

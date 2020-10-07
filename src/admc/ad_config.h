@@ -55,11 +55,11 @@ enum AttributeType {
 // NOTE: it is assumed that a language change requires a restart
 // so localized data is loaded once and is then reused after that
 
-class ServerConfig final : public QObject {
+class AdConfig final : public QObject {
 Q_OBJECT
 
 public:
-    ServerConfig(QObject *parent);
+    AdConfig(QObject *parent);
 
     QString get_attribute_display_name(const QString &attribute, const QString &objectClass) const;
     QString get_class_display_name(const QString &objectClass) const;
@@ -92,6 +92,6 @@ private:
     QString get_ldap_to_ad_name(const QString &ldap_name) const;
 };
 
-ServerConfig *ADCONFIG();
+AdConfig *ADCONFIG();
 
 #endif /* SERVER_CONFIGURATION_H */

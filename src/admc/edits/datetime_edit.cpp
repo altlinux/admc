@@ -18,7 +18,7 @@
  */
 
 #include "edits/datetime_edit.h"
-#include "server_configuration.h"
+#include "ad_config.h"
 #include "utils.h"
 #include "ad_interface.h"
 

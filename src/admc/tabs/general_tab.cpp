@@ -25,7 +25,7 @@
 #include "edits/group_scope_edit.h"
 #include "edits/group_type_edit.h"
 #include "utils.h"
-#include "server_configuration.h"
+#include "ad_config.h"
 
 #include <QLabel>
 #include <QGridLayout>

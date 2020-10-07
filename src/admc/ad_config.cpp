@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "server_configuration.h"
+#include "ad_config.h"
 #include "ad_interface.h"
 #include "settings.h"
 #include "utils.h"
@@ -43,7 +43,7 @@
 QString get_display_specifier_class(const QString &display_specifier);
 QString get_locale_dir();
 
-ServerConfig::ServerConfig(QObject *parent)
+AdConfig::AdConfig(QObject *parent)
 : QObject(parent)
 {
     ldap_to_ad_names =
@@ -286,11 +286,11 @@ ServerConfig::ServerConfig(QObject *parent)
     }();
 }
 
-ServerConfig *ADCONFIG() {
+AdConfig *ADCONFIG() {
     return AdInterface::instance()->config();
 }
 
-QString ServerConfig::get_attribute_display_name(const QString &attribute, const QString &objectClass) const {
+QString AdConfig::get_attribute_display_name(const QString &attribute, const QString &objectClass) const {
     // TODO: all objects have name attribute, but not all have cn. There is no display name for name though, only for cn.
     if (attribute == ATTRIBUTE_NAME) {
         return get_attribute_display_name(ATTRIBUTE_CN, objectClass);
@@ -326,7 +326,7 @@ QString ServerConfig::get_attribute_display_name(const QString &attribute, const
     }
 }
 
-QString ServerConfig::get_class_display_name(const QString &objectClass) const {
+QString AdConfig::get_class_display_name(const QString &objectClass) const {
     if (class_display_names.contains(objectClass)) {
         return class_display_names[objectClass];
     } else {
@@ -334,15 +334,15 @@ QString ServerConfig::get_class_display_name(const QString &objectClass) const {
     }
 }
 
-QList<QString> ServerConfig::get_extra_columns() const {
+QList<QString> AdConfig::get_extra_columns() const {
     return extra_columns;
 }
 
-QList<QString> ServerConfig::get_filter_containers() const {
+QList<QString> AdConfig::get_filter_containers() const {
     return filter_containers;
 }
 
-QList<QString> ServerConfig::get_possible_superiors(const AdObject &object) const {
+QList<QString> AdConfig::get_possible_superiors(const AdObject &object) const {
     const QString category = object.get_string(ATTRIBUTE_OBJECT_CATEGORY);
 
     if (possible_superiors.contains(category)) {
@@ -352,7 +352,7 @@ QList<QString> ServerConfig::get_possible_superiors(const AdObject &object) cons
     }
 }
 
-QString ServerConfig::get_ldap_to_ad_name(const QString &ldap_name) const {
+QString AdConfig::get_ldap_to_ad_name(const QString &ldap_name) const {
     if (ldap_to_ad_names.contains(ldap_name)) {
         return ldap_to_ad_names[ldap_name];
     } else {
@@ -361,7 +361,7 @@ QString ServerConfig::get_ldap_to_ad_name(const QString &ldap_name) const {
 }
 
 // TODO: Object's objectClass list appears to already contain the full inheritance chain. Confirm that this applies to all objects, because otherwise would need to manually go down the inheritance chain to get all possible attributes.
-QList<QString> ServerConfig::get_possible_attributes(const AdObject &object) const {
+QList<QString> AdConfig::get_possible_attributes(const AdObject &object) const {
     static QHash<QString, QList<QString>> class_possible_attributes;
 
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
@@ -396,7 +396,7 @@ QList<QString> ServerConfig::get_possible_attributes(const AdObject &object) con
     return possible_attributes;
 }
 
-AttributeType ServerConfig::get_attribute_type(const QString &attribute) const {
+AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
     if (attribute_types.contains(attribute)) {
         return attribute_types[attribute];
     } else {

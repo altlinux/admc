@@ -20,7 +20,7 @@
 #include "tabs/attributes_tab.h"
 #include "ad_interface.h"
 #include "utils.h"
-#include "server_configuration.h"
+#include "ad_config.h"
 #include "attribute_display.h"
 
 #include <QTreeView>

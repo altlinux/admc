@@ -27,7 +27,7 @@
 #include "create_dialog.h"
 #include "settings.h"
 #include "details_widget.h"
-#include "server_configuration.h"
+#include "ad_config.h"
 
 #include <QString>
 #include <QMessageBox>

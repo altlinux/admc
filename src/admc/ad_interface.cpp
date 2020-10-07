@@ -21,7 +21,7 @@
 #include "active_directory.h"
 #include "status.h"
 #include "utils.h"
-#include "server_configuration.h"
+#include "ad_config.h"
 #include "ad_object.h"
 #include "attribute_display.h"
 
@@ -67,7 +67,7 @@ bool AdInterface::login(const QString &host_arg, const QString &domain) {
     const int result = ad_login(uri_cstr, &ld);
 
     if (result == AD_SUCCESS) {
-        m_config = new ServerConfig(this);
+        m_config = new AdConfig(this);
 
         return true;
     } else {
@@ -95,7 +95,7 @@ void AdInterface::end_batch() {
     emit_modified();
 }
 
-ServerConfig *AdInterface::config() const {
+AdConfig *AdInterface::config() const {
     return m_config;
 }
 

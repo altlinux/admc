@@ -24,7 +24,7 @@
 #include "settings.h"
 #include "utils.h"
 #include "ad_interface.h"
-#include "server_configuration.h"
+#include "ad_config.h"
 #include "settings.h"
 #include "filter.h"
 #include "attribute_display.h"

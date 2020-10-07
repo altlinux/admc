@@ -16,6 +16,7 @@ configure_file("config.h.in" "config.h")
 add_executable(admc
     main.cpp
     ad_interface.cpp
+    ad_config.cpp
     details_widget.cpp
     containers_widget.cpp
     contents_widget.cpp
@@ -34,7 +35,6 @@ add_executable(admc
     create_dialog.cpp
     policies_widget.cpp
     gplink.cpp
-    server_configuration.cpp
     ad_object.cpp
     
     tabs/details_tab.cpp
