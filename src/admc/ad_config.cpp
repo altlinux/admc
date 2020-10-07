@@ -47,10 +47,7 @@ QString get_locale_dir();
 AdConfig::AdConfig(QObject *parent)
 : QObject(parent)
 {
-    ldap_to_ad_names =
-    []() {
-        QHash<QString, QString> out;
-
+    {
         const QString schema_dn = AD()->schema_dn();
 
         const QList<QString> attributes = {ATTRIBUTE_LDAP_DISPLAY_NAME, ATTRIBUTE_ADMIN_DISPLAY_NAME};
@@ -61,12 +58,11 @@ AdConfig::AdConfig(QObject *parent)
             const QString ldap_name = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
 
             if (!ad_name.isEmpty() && !ldap_name.isEmpty()) {
-                out[ldap_name] = ad_name;
+                ldap_to_ad_names[ldap_name] = ad_name;
+                ad_to_ldap_names[ad_name] = ldap_name;
             }
         }
-
-        return out;
-    }();
+    }
 
     attribute_display_names =
     []() {
@@ -162,10 +158,10 @@ AdConfig::AdConfig(QObject *parent)
         const QString display_specifier = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
         QList<QString> filter_containers_ad = AD()->request_strings(display_specifier, ATTRIBUTE_FILTER_CONTAINERS);
 
-        // ATTRIBUTE_FILTER_CONTAINERS contains class names
-        // in ad format
+        // ATTRIBUTE_FILTER_CONTAINERS contains ad class names
+        // so convert to ldap class names
         for (const auto class_ad : filter_containers_ad) {
-            const QString class_ldap  = get_ldap_to_ad_name(class_ad);
+            const QString class_ldap = get_ad_to_ldap_name(class_ad);
             out.append(class_ldap);
         }
 
@@ -383,6 +379,14 @@ QString AdConfig::get_ldap_to_ad_name(const QString &ldap_name) const {
         return ldap_to_ad_names[ldap_name];
     } else {
         return ldap_name;
+    }
+}
+
+QString AdConfig::get_ad_to_ldap_name(const QString &ad_name) const {
+    if (ad_to_ldap_names.contains(ad_name)) {
+        return ad_to_ldap_names[ad_name];
+    } else {
+        return ad_name;
     }
 }
 

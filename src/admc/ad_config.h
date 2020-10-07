@@ -71,6 +71,7 @@ public:
 private:
     // ldap name => ad name
     QHash<QString, QString> ldap_to_ad_names;
+    QHash<QString, QString> ad_to_ldap_names;
 
     // object class => attribute => display name
     QHash<QString, QHash<QString, QString>> attribute_display_names;
@@ -92,6 +93,7 @@ private:
 
 
     QString get_ldap_to_ad_name(const QString &ldap_name) const;
+    QString get_ad_to_ldap_name(const QString &ad_name) const;
 };
 
 AdConfig *ADCONFIG();
