@@ -44,7 +44,7 @@ public:
 
     // Check that current input is valid and show errors
     // to user in a warning message
-    virtual bool verify(QWidget *parent) = 0;
+    virtual bool verify() = 0;
 
     // Apply current input by making a modification to the AD server
     virtual bool apply(const QString &dn) = 0;
@@ -63,7 +63,7 @@ protected:
 void set_read_only(const bool read_only);\
 void add_to_layout(QGridLayout *layout);\
 bool changed() const;\
-bool verify(QWidget *parent);\
+bool verify();\
 bool apply(const QString &dn);
 
 
@@ -72,7 +72,7 @@ void edits_connect_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
 void edits_connect_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
 void edits_add_to_layout(QList<AttributeEdit *> edits, QGridLayout *layout);
 bool edits_changed(QList<AttributeEdit *> edits);
-bool edits_verify(QList<AttributeEdit *> edits, QWidget *parent);
+bool edits_verify(QList<AttributeEdit *> edits);
 bool edits_apply(QList<AttributeEdit *> edits, const QString &dn);
 
 #endif /* ATTRIBUTE_EDIT_H */

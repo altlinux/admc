@@ -114,7 +114,7 @@ void StringEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, edit);
 }
 
-bool StringEdit::verify(QWidget *parent) {
+bool StringEdit::verify() {
     static const QList<QString> cant_be_empty = {
         ATTRIBUTE_NAME,
         ATTRIBUTE_SAMACCOUNT_NAME
@@ -126,7 +126,7 @@ bool StringEdit::verify(QWidget *parent) {
         if (new_value.isEmpty()) {
             const QString attribute_name = ADCONFIG()->get_attribute_display_name(attribute, objectClass);
             const QString error_text = QString(tr("Attribute \"%1\" cannot be empty!").arg(attribute_name));
-            QMessageBox::warning(parent, tr("Error"), error_text);
+            QMessageBox::warning(nullptr, tr("Error"), error_text);
 
             return false;
         }

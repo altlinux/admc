@@ -55,7 +55,7 @@ void DateTimeEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, edit);
 }
 
-bool DateTimeEdit::verify(QWidget *parent) {
+bool DateTimeEdit::verify() {
     // TODO: datetime should fit within bounds of it's format, so greater than start of epoch for NTFS format?
 
     return true;

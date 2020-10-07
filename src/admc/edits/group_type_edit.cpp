@@ -59,7 +59,7 @@ void GroupTypeEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, combo);
 }
 
-bool GroupTypeEdit::verify(QWidget *parent) {
+bool GroupTypeEdit::verify() {
     return true;
 }
 

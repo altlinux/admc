@@ -44,7 +44,6 @@ Q_OBJECT
 
 public:
     bool changed() const override;
-    bool verify() override;
     void apply(const QString &target) const override;
 
 private slots:

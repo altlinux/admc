@@ -130,7 +130,7 @@ void CountryEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, combo);
 }
 
-bool CountryEdit::verify(QWidget *parent) {
+bool CountryEdit::verify() {
     return true;
 }
 

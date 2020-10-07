@@ -53,7 +53,7 @@ void GpoptionsEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, check);
 }
 
-bool GpoptionsEdit::verify(QWidget *parent) {
+bool GpoptionsEdit::verify() {
     return true;
 }
 

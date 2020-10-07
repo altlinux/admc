@@ -53,7 +53,7 @@ void UnlockEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, check);
 }
 
-bool UnlockEdit::verify(QWidget *parent) {
+bool UnlockEdit::verify() {
     return true;
 }
 

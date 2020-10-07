@@ -60,7 +60,7 @@ void GroupScopeEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, combo);
 }
 
-bool GroupScopeEdit::verify(QWidget *parent) {
+bool GroupScopeEdit::verify() {
     return true;
 }
 

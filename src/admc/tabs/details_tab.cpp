@@ -24,8 +24,8 @@ bool DetailsTab::changed() const {
     return edits_changed(edits);
 }
 
-bool DetailsTab::verify() {
-    return edits_verify(edits, this);
+bool DetailsTab::verify() const {
+    return edits_verify(edits);
 }
 
 void DetailsTab::apply(const QString &target) const {

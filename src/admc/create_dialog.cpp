@@ -113,7 +113,7 @@ void CreateDialog::accept() {
 
     const QString dn = suffix + "=" + name + "," + parent_dn;
 
-    const bool verify_success = edits_verify(all_edits, this);
+    const bool verify_success = edits_verify(all_edits);
     if (!verify_success) {
         return;
     }

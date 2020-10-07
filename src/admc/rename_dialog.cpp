@@ -94,7 +94,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
 }
 
 void RenameDialog::accept() {
-    const bool verify_success = edits_verify(all_edits, this);
+    const bool verify_success = edits_verify(all_edits);
     if (!verify_success) {
         return;
     }

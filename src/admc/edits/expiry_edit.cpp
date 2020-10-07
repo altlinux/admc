@@ -101,7 +101,7 @@ void ExpiryEdit::add_to_layout(QGridLayout *layout) {
 }
 
 // TODO: limit date to the format's date range, make a f-n in adinterface that checks if format in limit
-bool ExpiryEdit::verify(QWidget *parent) {
+bool ExpiryEdit::verify() {
     return true;
 }
 

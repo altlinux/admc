@@ -51,11 +51,11 @@ bool edits_changed(QList<AttributeEdit *> edits) {
     return false;
 }
 
-bool edits_verify(QList<AttributeEdit *> edits, QWidget *parent) {
+bool edits_verify(QList<AttributeEdit *> edits) {
     bool success = true;
 
     for (auto edit : edits) {
-        const bool verify_success = edit->verify(parent);
+        const bool verify_success = edit->verify();
 
         if (!verify_success) {
             success = false;

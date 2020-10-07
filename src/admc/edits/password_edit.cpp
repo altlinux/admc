@@ -56,12 +56,12 @@ void PasswordEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, confirm_label, confirm_edit);
 }
 
-bool PasswordEdit::verify(QWidget *parent) {
+bool PasswordEdit::verify() {
     const QString pass = edit->text();
     const QString confirm_pass = confirm_edit->text();
     if (pass != confirm_pass) {
         const QString error_text = QString(tr("Passwords don't match!"));
-        QMessageBox::warning(parent, tr("Error"), error_text);
+        QMessageBox::warning(nullptr, tr("Error"), error_text);
 
         return false;
     }
@@ -70,7 +70,7 @@ bool PasswordEdit::verify(QWidget *parent) {
     const bool can_encode = codec->canEncode(pass);
     if (!can_encode) {
         const QString error_text = QString(tr("Password contains invalid characters"));
-        QMessageBox::warning(parent, tr("Error"), error_text);
+        QMessageBox::warning(nullptr, tr("Error"), error_text);
 
         return false;
     }

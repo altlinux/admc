@@ -56,7 +56,7 @@ void make_account_option_edits(const AdObject &object, const QList<AccountOption
                     const QString subject_name = account_option_string(subject);
                     const QString blocker_name = account_option_string(blocker);
                     const QString error = QString(QObject::tr("Can't set \"%1\" when \"%2\" is set.")).arg(blocker_name, subject_name);
-                    QMessageBox::warning(parent, QObject::tr("Error"), error);
+                    QMessageBox::warning(nullptr, QObject::tr("Error"), error);
                 }
             }
             );
@@ -106,7 +106,7 @@ void AccountOptionEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, check);
 }
 
-bool AccountOptionEdit::verify(QWidget *parent) {
+bool AccountOptionEdit::verify() {
     return true;
 }
 

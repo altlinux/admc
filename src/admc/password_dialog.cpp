@@ -66,7 +66,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
 }
 
 void PasswordDialog::accept() {
-    const bool verify_success = edits_verify(edits, this);
+    const bool verify_success = edits_verify(edits);
 
     if (verify_success) {
         const int errors_index = Status::instance()->get_errors_size();

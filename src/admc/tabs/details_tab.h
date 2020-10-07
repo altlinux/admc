@@ -33,7 +33,7 @@ Q_OBJECT
 
 public:
     virtual bool changed() const;
-    virtual bool verify();
+    virtual bool verify() const;
     virtual void apply(const QString &target) const;
 
 protected:
