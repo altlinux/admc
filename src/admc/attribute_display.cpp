@@ -21,11 +21,14 @@
 #include "ad_interface.h"
 #include "ad_config.h"
 
+#include <uuid/uuid.h>
+
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm"
 
 QString object_sid_to_display_value(const QByteArray &bytes);
 QString datetime_to_display_value(const QString &attribute, const QByteArray &bytes);
 QString timespan_to_display_value(const QByteArray &bytes);
+QString octet_to_display_value(const QByteArray &bytes);
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value) {
     const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
@@ -36,6 +39,7 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
         case AttributeType_GeneralizedTime: return datetime_to_display_value(attribute, value);
         case AttributeType_Sid: return object_sid_to_display_value(value);
         case AttributeType_LargeIntegerTimespan: return timespan_to_display_value(value);
+        case AttributeType_Octet: return octet_to_display_value(value);
 
         default: {
             const QString value_string = QString::fromUtf8(value);
@@ -153,4 +157,49 @@ QString timespan_to_display_value(const QByteArray &bytes) {
     const QString display = QString("%1:%2:%3:%4").arg(days_string, hours_string, minutes_string, seconds_string);
 
     return display;
+}
+
+// TODO: this is only for octet uuid's. What about other type of octets?
+QString octet_to_display_value(const QByteArray &bytes_arg) {
+    // Need to swap some bytes, to match how ADUC displays it
+    // TODO: no idea what the logic behind these byte swaps is, maybe some kind of encoding?
+    const QByteArray bytes =
+    [bytes_arg]() {
+        QByteArray out = bytes_arg;
+
+        const auto swap_bytes =
+        [&out, bytes_arg](const int a, const int b) {
+            out[a] = bytes_arg[b];
+            out[b] = bytes_arg[a];
+        };
+
+        swap_bytes(0, 3);
+        swap_bytes(1, 2);
+        swap_bytes(4, 5);
+        swap_bytes(6, 7);
+
+        return out;
+    }();
+
+    // TODO: can length even be different from UUID_STR_LEN?
+    const size_t cpy_length =
+    [bytes]() {
+        if (bytes.size() > UUID_STR_LEN) {
+            return UUID_STR_LEN;
+        } else {
+            return bytes.size();
+        }
+        return 0;
+    }();
+
+    uuid_t uuid;
+    memcpy(uuid, bytes.constData(), cpy_length);
+
+    char uuid_cstr[UUID_STR_LEN];
+    uuid_unparse(uuid, uuid_cstr);
+
+    const QByteArray display_bytes(uuid_cstr, UUID_STR_LEN);
+    const QString display_value(display_bytes);
+
+    return display_value;
 }

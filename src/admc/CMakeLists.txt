@@ -4,6 +4,8 @@ find_package(Qt5 REQUIRED
         Widgets
 )
 
+find_package(Uuid REQUIRED)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
@@ -78,6 +80,7 @@ target_link_libraries(admc
     Qt5::Core
     Qt5::Widgets
     adldap
+    Uuid::Uuid
 )
 
 install(TARGETS admc)
