@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QHash>
 
 enum AttributeType {
     AttributeType_Boolean,
@@ -62,14 +63,33 @@ public:
 
     QString get_attribute_display_name(const QString &attribute, const QString &objectClass) const;
     QString get_class_display_name(const QString &objectClass) const;
-    QList<QString> get_extra_contents_columns() const;
-    QList<QString> get_containers_filter_classes() const;
+    QList<QString> get_extra_columns() const;
+    QList<QString> get_filter_containers() const;
     QList<QString> get_possible_superiors(const AdObject &object) const;
     QList<QString> get_possible_attributes(const AdObject &object) const;
     AttributeType get_attribute_type(const QString &attribute) const;
 
 private:
-    QString ldap_name_to_ad_name(const QString &ldap_name) const;
+    // ldap name => ad name
+    QHash<QString, QString> ldap_to_ad_names;
+
+    // object class => attribute => display name
+    QHash<QString, QHash<QString, QString>> attribute_display_names;
+
+    // object class => display name
+    QHash<QString, QString> class_display_names;
+
+    QList<QString> extra_columns;
+    QList<QString> filter_containers;
+
+    // object category => superiors
+    QHash<QString, QList<QString>> possible_superiors;
+
+    // attribute name => type
+    QHash<QString, AttributeType> attribute_types;
+
+
+    QString get_ldap_to_ad_name(const QString &ldap_name) const;
 };
 
 ServerConfig *ADCONFIG();

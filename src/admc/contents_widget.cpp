@@ -57,7 +57,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
         };
         // NOTE: dn is not one of ADUC's columns, but adding it here for convenience
         columns.append(ATTRIBUTE_DISTINGUISHED_NAME);
-        const QList<QString> extra_columns =ADCONFIG()->get_extra_contents_columns();
+        const QList<QString> extra_columns =ADCONFIG()->get_extra_columns();
         columns.append(extra_columns);
     }
 
