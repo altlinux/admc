@@ -20,10 +20,9 @@
 #ifndef SERVER_CONFIGURATION_H
 #define SERVER_CONFIGURATION_H
 
-#include "ad_object.h"
-
 #include <QObject>
 #include <QString>
+#include <QList>
 #include <QHash>
 
 enum AttributeType {
@@ -65,8 +64,8 @@ public:
     QString get_class_display_name(const QString &objectClass) const;
     QList<QString> get_extra_columns() const;
     QList<QString> get_filter_containers() const;
-    QList<QString> get_possible_superiors(const AdObject &object) const;
-    QList<QString> get_possible_attributes(const AdObject &object) const;
+    QList<QString> get_possible_superiors(const QString &object_category) const;
+    QList<QString> get_possible_attributes(const QList<QString> &object_classes) const;
     AttributeType get_attribute_type(const QString &attribute) const;
 
 private:

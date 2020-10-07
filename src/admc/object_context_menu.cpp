@@ -54,7 +54,7 @@ void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
 ObjectContextMenu::ObjectContextMenu(const QString &dn)
 : QMenu()
 {
-    const AdObject object  = AD()->request_all(dn);
+    const AdObject object = AD()->request_all(dn);
 
     addAction(tr("Details"), [this, dn]() {
         DetailsWidget::change_target(dn);
@@ -186,7 +186,8 @@ void ObjectContextMenu::edit_policy(const QString &dn, const AdObject &object) {
 }
 
 void ObjectContextMenu::move(const QString &dn, const AdObject &object) {
-    const QList<QString> possible_superiors = ADCONFIG()->get_possible_superiors(object);
+    const QString object_category = object.get_string(ATTRIBUTE_OBJECT_CATEGORY);
+    const QList<QString> possible_superiors = ADCONFIG()->get_possible_superiors(object_category);
 
     const QList<QString> selected_objects = SelectDialog::open(possible_superiors);
 

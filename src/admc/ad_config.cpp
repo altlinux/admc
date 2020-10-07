@@ -19,6 +19,7 @@
 
 #include "ad_config.h"
 #include "ad_interface.h"
+#include "ad_object.h"
 #include "settings.h"
 #include "utils.h"
 #include "filter.h"
@@ -342,11 +343,9 @@ QList<QString> AdConfig::get_filter_containers() const {
     return filter_containers;
 }
 
-QList<QString> AdConfig::get_possible_superiors(const AdObject &object) const {
-    const QString category = object.get_string(ATTRIBUTE_OBJECT_CATEGORY);
-
-    if (possible_superiors.contains(category)) {
-        return possible_superiors[category];
+QList<QString> AdConfig::get_possible_superiors(const QString &object_category) const {
+    if (possible_superiors.contains(object_category)) {
+        return possible_superiors[object_category];
     } else {
         return QList<QString>();
     }
@@ -361,10 +360,8 @@ QString AdConfig::get_ldap_to_ad_name(const QString &ldap_name) const {
 }
 
 // TODO: Object's objectClass list appears to already contain the full inheritance chain. Confirm that this applies to all objects, because otherwise would need to manually go down the inheritance chain to get all possible attributes.
-QList<QString> AdConfig::get_possible_attributes(const AdObject &object) const {
+QList<QString> AdConfig::get_possible_attributes(const QList<QString> &object_classes) const {
     static QHash<QString, QList<QString>> class_possible_attributes;
-
-    const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
 
     QList<QString> possible_attributes;
     for (const QString object_class : object_classes) {
