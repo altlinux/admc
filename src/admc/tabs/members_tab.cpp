@@ -40,7 +40,19 @@ enum MembersColumn {
     MembersColumn_COUNT,
 };
 
-MembersTab::MembersTab(const AdObject &object) {   
+MembersTab::MembersTab(const AdObject &object)
+: MembershipTab(object, MembershipTabType_Members) {
+
+}
+
+MemberOfTab::MemberOfTab(const AdObject &object)
+: MembershipTab(object, MembershipTabType_MemberOf) {
+
+}
+
+MembershipTab::MembershipTab(const AdObject &object, const MembershipTabType type_arg) {
+    type = type_arg;
+
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -71,89 +83,123 @@ MembersTab::MembersTab(const AdObject &object) {
     layout->addWidget(view);
     layout->addLayout(button_layout);
 
-    const QList<QString> members = object.get_strings(ATTRIBUTE_MEMBER);
+    const QList<QString> values = object.get_strings(get_membership_attribute());
+    original_values = values.toSet();
+    current_values = original_values;
 
-    original_members = members.toSet();
-    current_members = original_members;
-
-    reload_current_members_into_model();
+    reload_current_values_into_model();
 
     connect(
         remove_button, &QAbstractButton::clicked,
-        this, &MembersTab::on_remove_button);
+        this, &MembershipTab::on_remove_button);
     connect(
         add_button, &QAbstractButton::clicked,
-        this, &MembersTab::on_add_button);
+        this, &MembershipTab::on_add_button);
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
-        this, &MembersTab::on_context_menu);
+        this, &MembershipTab::on_context_menu);
 }
 
-bool MembersTab::changed() const {
-    return (current_members != original_members);
+bool MembershipTab::changed() const {
+    return (current_values != original_values);
 }
 
-bool MembersTab::verify() {
+bool MembershipTab::verify() {
     return true;
 }
 
-// TODO: could do this with less requests by deleting all values of ATTRIBUTE_MEMBER and then setting to the list of values, but need to implement this in adldap
-void MembersTab::apply(const QString &target) {
-    for (auto member : original_members) {
-        const bool removed = !current_members.contains(member);
-        if (removed) {
-            AD()->attribute_delete_string(target, ATTRIBUTE_MEMBER, member);
-        }
-    }
+void MembershipTab::apply(const QString &target) {
+    // NOTE: logic is kinda duplicated but switching on behavior within iterations would be very confusing
+    switch (type) {
+        case MembershipTabType_Members: {
+            const QString group = target;
 
-    for (auto member : current_members) {
-        const bool added = !original_members.contains(member);
-        if (added) {
-            AD()->attribute_add_string(target, ATTRIBUTE_MEMBER, member);
+            for (auto user : original_values) {
+                const bool removed = !current_values.contains(user);
+                if (removed) {
+                    AD()->group_remove_user(group, user);
+                }
+            }
+
+            for (auto user : current_values) {
+                const bool added = !original_values.contains(user);
+                if (added) {
+                    AD()->group_add_user(group, user);
+                }
+            }
+
+            break;
         }
-    }
+        case MembershipTabType_MemberOf: {
+            const QString user = target;
+
+            for (auto group : original_values) {
+                const bool removed = !current_values.contains(group);
+                if (removed) {
+                    AD()->group_remove_user(group, user);
+                }
+            }
+
+            for (auto group : current_values) {
+                const bool added = !original_values.contains(group);
+                if (added) {
+                    AD()->group_add_user(group, user);
+                }
+            }
+
+            break;
+        }
+    } 
 }
 
-void MembersTab::on_context_menu(const QPoint pos) {
+void MembershipTab::on_context_menu(const QPoint pos) {
     const QString dn = get_dn_from_pos(pos, view, MembersColumn_DN);
 
     QMenu menu(this);
-    menu.addAction(tr("Remove from group"),
+    menu.addAction(tr("Remove"),
         [this, dn]() {
-            const QList<QString> removed_members = {dn};
-            remove_members(removed_members);
+            const QList<QString> removed_values = {dn};
+            remove_values(removed_values);
         });
 
     exec_menu_from_view(&menu, view, pos);
 }
 
-void MembersTab::on_add_button() {
-    const QList<QString> classes = {CLASS_USER};
+void MembershipTab::on_add_button() {
+    const QList<QString> classes =
+    [this]() -> QList<QString> {
+        switch (type) {
+            case MembershipTabType_Members: return {CLASS_USER};
+            case MembershipTabType_MemberOf: return {CLASS_GROUP};
+        }
+        return QList<QString>();
+    }();
+    ;
     const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes);
 
     if (selected_objects.size() > 0) {
-        add_members(selected_objects);
+        add_values(selected_objects);
     }
 }
 
-void MembersTab::on_remove_button() {
+void MembershipTab::on_remove_button() {
     const QItemSelectionModel *selection_model = view->selectionModel();
     const QList<QModelIndex> selected = selection_model->selectedIndexes();
 
-    QList<QString> removed_members;
+    QList<QString> removed_values;
     for (auto index : selected) {
         const QString dn = get_dn_from_index(index, MembersColumn_DN);
 
-        removed_members.append(dn);
+        removed_values.append(dn);
     }
 
-    remove_members(removed_members);    
+    remove_values(removed_values);    
 }
 
-void MembersTab::reload_current_members_into_model() {
+void MembershipTab::reload_current_values_into_model() {
     model->removeRows(0, model->rowCount());
 
-    for (auto dn : current_members) {
+    for (auto dn : current_values) {
         const QString name = dn_get_rdn(dn);
         const QString parent = dn_get_parent(dn);
         
@@ -168,22 +214,30 @@ void MembersTab::reload_current_members_into_model() {
     model->sort(MembersColumn_Name);
 }
 
-void MembersTab::add_members(QList<QString> members) {
-    for (auto member : members) {
-        current_members.insert(member);
+void MembershipTab::add_values(QList<QString> values) {
+    for (auto value : values) {
+        current_values.insert(value);
     }
 
-    reload_current_members_into_model();
+    reload_current_values_into_model();
 
     emit edited();
 }
 
-void MembersTab::remove_members(QList<QString> members) {
-    for (auto member : members) {
-        current_members.remove(member);
+void MembershipTab::remove_values(QList<QString> values) {
+    for (auto value : values) {
+        current_values.remove(value);
     }
 
-    reload_current_members_into_model();
+    reload_current_values_into_model();
 
     emit edited();
+}
+
+QString MembershipTab::get_membership_attribute() {
+    switch (type) {
+        case MembershipTabType_Members: return ATTRIBUTE_MEMBER;
+        case MembershipTabType_MemberOf: return ATTRIBUTE_MEMBER_OF;
+    }
+    return "";
 }

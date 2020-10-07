@@ -34,12 +34,15 @@ class MembersModel;
 
 class QStandardItemModel;
 
-// Shows member objects of targeted group
-class MembersTab final : public DetailsTab {
+// Displays and edits membership info which can go both ways
+// 1. users that are members of group
+// 2. groups of user is member of
+// MembersTab and MemberOfTab implement both of those
+
+class MembershipTab : public DetailsTab {
 Q_OBJECT
 
 public:
-    MembersTab(const AdObject &object);
     DECL_DETAILS_TAB_VIRTUALS();
 
 private slots:
@@ -47,16 +50,35 @@ private slots:
     void on_add_button();
     void on_remove_button();
 
+protected:
+    enum MembershipTabType {
+        MembershipTabType_Members,
+        MembershipTabType_MemberOf
+    };
+
+    MembershipTab(const AdObject &object, const MembershipTabType type_arg);
+
 private:
-    // MembersModel *model = nullptr;
+    MembershipTabType type;
     QStandardItemModel *model = nullptr;
     QTreeView *view = nullptr;
-    QSet<QString> original_members;
-    QSet<QString> current_members;
+    QSet<QString> original_values;
+    QSet<QString> current_values;
 
-    void reload_current_members_into_model();
-    void add_members(QList<QString> members);
-    void remove_members(QList<QString> members);
+    void reload_current_values_into_model();
+    void add_values(QList<QString> values);
+    void remove_values(QList<QString> values);
+    QString get_membership_attribute();
+};
+
+class MembersTab final : public MembershipTab {
+public:
+    MembersTab(const AdObject &object);
+};
+
+class MemberOfTab final : public MembershipTab {
+public:
+    MemberOfTab(const AdObject &object);
 };
 
 #endif /* MEMBERS_TAB_H */

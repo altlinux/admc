@@ -28,6 +28,7 @@
 #include "tabs/group_policy_tab.h"
 #include "tabs/gpo_links_tab.h"
 #include "ad_interface.h"
+#include "ad_config.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
@@ -38,6 +39,7 @@
 #include <QVBoxLayout>
 #include <QDialogButtonBox>
 #include <QPushButton>
+#include <QDebug>
 
 DetailsWidget *DetailsWidget::docked_instance() {
     static DetailsWidget *docked = new DetailsWidget(false);
@@ -166,6 +168,16 @@ void DetailsWidget::reload(const QString &new_target) {
         }
         if (object.is_group()) {
             add_tab(new MembersTab(object), tr("Members"));
+        }
+        const bool has_member_of_attribute =
+        [object]() {
+            const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
+            const QList<QString> possible_attributes = ADCONFIG()->get_possible_attributes(object_classes);
+
+            return possible_attributes.contains(ATTRIBUTE_MEMBER_OF);
+        }();
+        if (has_member_of_attribute) {
+            add_tab(new MemberOfTab(object), tr("Member of"));
         }
         if (object.is_ou()) {
             // TODO: not sure which object classes can have gplink, for now only know of OU's.
