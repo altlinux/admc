@@ -28,9 +28,6 @@
 #include <QString>
 
 class QTreeView;
-class QString;
-class ObjectContextMenu;
-class MembersModel;
 
 class QStandardItemModel;
 

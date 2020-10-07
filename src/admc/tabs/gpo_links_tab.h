@@ -22,18 +22,11 @@
 
 #include "tabs/details_tab.h"
 
-#include <QHash>
 #include <QPoint>
-#include <QSet>
-#include <QString>
-
-// List objects that this GPO links to.
 
 class QTreeView;
-class QString;
-class ObjectContextMenu;
-class MembersModel;
-class QStandardItemModel;
+
+// List objects that this GPO links to
 
 class GpoLinksTab final : public DetailsTab {
 Q_OBJECT
@@ -45,8 +38,7 @@ private slots:
     void on_context_menu(const QPoint pos);
 
 private:
-    QStandardItemModel *model = nullptr;
-    QTreeView *view = nullptr;
+    QTreeView *view;
 };
 
 #endif /* GPO_LINKS_TAB_H */

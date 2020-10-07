@@ -27,10 +27,7 @@
 
 class QTreeView;
 class QString;
-class ObjectContextMenu;
-class MembersModel;
 class QStandardItemModel;
-class Gplink;
 class QStandardItem;
 
 // Tab for displaying, modifying group policy related attributes of an object(not a gpo!), such as gplink and gpoptions

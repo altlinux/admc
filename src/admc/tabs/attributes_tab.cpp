@@ -33,9 +33,9 @@ enum AttributesColumn {
 };
 
 AttributesTab::AttributesTab(const AdObject &object) {
-    model = new AttributesModel(this);
+    auto model = new AttributesModel(this);
 
-    view = new QTreeView(this);
+    auto view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setSelectionMode(QAbstractItemView::NoSelection);
     view->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -51,11 +51,9 @@ AttributesTab::AttributesTab(const AdObject &object) {
     view->sortByColumn(AttributesColumn_Name, Qt::AscendingOrder);
 }
 
-AttributesModel::AttributesModel(AttributesTab *attributes_tab_arg)
-: QStandardItemModel(0, AttributesColumn_COUNT, attributes_tab_arg)
+AttributesModel::AttributesModel(QObject *parent)
+: QStandardItemModel(0, AttributesColumn_COUNT, parent)
 {
-    attributes_tab = attributes_tab_arg;
-
     set_horizontal_header_labels_from_map(this, {
         {AttributesColumn_Name, tr("Name")},
         {AttributesColumn_Value, tr("Value")}

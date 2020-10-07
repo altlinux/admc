@@ -23,10 +23,6 @@
 #include "tabs/details_tab.h"
 
 #include <QStandardItemModel>
-#include <QString>
-
-class AttributesModel;
-class QTreeView;
 
 // Show attributes of target as a list of attribute names and values
 // Values are editable
@@ -35,23 +31,16 @@ Q_OBJECT
 
 public:
     AttributesTab(const AdObject &object);
-    
-private:
-    AttributesModel *model = nullptr;
-    QTreeView *view = nullptr;
 };
 
 class AttributesModel final : public QStandardItemModel {
 Q_OBJECT
 
 public:
-    explicit AttributesModel(AttributesTab *attributes_tab_arg);
+    explicit AttributesModel(QObject *parent);
 
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
     void reload(const AdObject &object);
-
-private:
-    AttributesTab *attributes_tab;
 };
 
 #endif /* ATTRIBUTES_TAB_H */
