@@ -114,7 +114,7 @@ void StringEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, edit);
 }
 
-bool StringEdit::verify() {
+bool StringEdit::verify() const {
     static const QList<QString> cant_be_empty = {
         ATTRIBUTE_NAME,
         ATTRIBUTE_SAMACCOUNT_NAME
@@ -140,7 +140,7 @@ bool StringEdit::changed() const {
     return (new_value != original_value);
 }
 
-bool StringEdit::apply(const QString &dn) {
+bool StringEdit::apply(const QString &dn) const {
     // NOTE: name can't be replaced regularly so don't apply it. Need to get value from this edit and manually rename/create object
     if (attribute == ATTRIBUTE_NAME) {
         return true;

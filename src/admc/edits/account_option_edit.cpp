@@ -106,7 +106,7 @@ void AccountOptionEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, check);
 }
 
-bool AccountOptionEdit::verify() {
+bool AccountOptionEdit::verify() const {
     return true;
 }
 
@@ -115,7 +115,7 @@ bool AccountOptionEdit::changed() const {
     return (new_value != original_value);
 }
 
-bool AccountOptionEdit::apply(const QString &dn) {
+bool AccountOptionEdit::apply(const QString &dn) const {
     const bool new_value = checkbox_is_checked(check);
     const bool success = AD()->user_set_account_option(dn, option, new_value);
 

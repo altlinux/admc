@@ -55,7 +55,7 @@ void DateTimeEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, edit);
 }
 
-bool DateTimeEdit::verify() {
+bool DateTimeEdit::verify() const {
     // TODO: datetime should fit within bounds of it's format, so greater than start of epoch for NTFS format?
 
     return true;
@@ -66,7 +66,7 @@ bool DateTimeEdit::changed() const {
     return (new_value != original_value);
 }
 
-bool DateTimeEdit::apply(const QString &dn) {
+bool DateTimeEdit::apply(const QString &dn) const {
     const QDateTime new_value = edit->dateTime();
 
     const bool success = AD()->attribute_replace_datetime(dn, attribute, new_value);

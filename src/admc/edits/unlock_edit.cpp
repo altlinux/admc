@@ -53,7 +53,7 @@ void UnlockEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, check);
 }
 
-bool UnlockEdit::verify() {
+bool UnlockEdit::verify() const {
     return true;
 }
 
@@ -61,7 +61,7 @@ bool UnlockEdit::changed() const {
     return checkbox_is_checked(check);
 }
 
-bool UnlockEdit::apply(const QString &dn) {
+bool UnlockEdit::apply(const QString &dn) const {
     if (checkbox_is_checked(check)) {
         const bool result = AD()->user_unlock(dn);
         return result;

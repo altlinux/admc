@@ -53,7 +53,7 @@ void GpoptionsEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, check);
 }
 
-bool GpoptionsEdit::verify() {
+bool GpoptionsEdit::verify() const {
     return true;
 }
 
@@ -62,7 +62,7 @@ bool GpoptionsEdit::changed() const {
     return (new_checked_value != original_checked_value);
 }
 
-bool GpoptionsEdit::apply(const QString &dn) {
+bool GpoptionsEdit::apply(const QString &dn) const {
     const QString new_value =
     [this]() {
         const bool checked = checkbox_is_checked(check);

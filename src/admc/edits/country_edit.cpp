@@ -130,7 +130,7 @@ void CountryEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, combo);
 }
 
-bool CountryEdit::verify() {
+bool CountryEdit::verify() const {
     return true;
 }
 
@@ -139,7 +139,7 @@ bool CountryEdit::changed() const {
     return (new_value != original_value);
 }
 
-bool CountryEdit::apply(const QString &dn) {
+bool CountryEdit::apply(const QString &dn) const {
     const int code = combo->currentData().toInt();
 
     const QString code_string = QString::number(code);

@@ -44,10 +44,10 @@ public:
 
     // Check that current input is valid and show errors
     // to user in a warning message
-    virtual bool verify() = 0;
+    virtual bool verify() const = 0;
 
     // Apply current input by making a modification to the AD server
-    virtual bool apply(const QString &dn) = 0;
+    virtual bool apply(const QString &dn) const = 0;
 
 signals:
     // Emit this signal when user edits subwidget(s)
@@ -63,8 +63,8 @@ protected:
 void set_read_only(const bool read_only);\
 void add_to_layout(QGridLayout *layout);\
 bool changed() const;\
-bool verify();\
-bool apply(const QString &dn);
+bool verify() const;\
+bool apply(const QString &dn) const;
 
 
 // Helper f-ns that iterate over edit lists for you

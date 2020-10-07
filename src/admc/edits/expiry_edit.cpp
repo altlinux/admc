@@ -101,7 +101,7 @@ void ExpiryEdit::add_to_layout(QGridLayout *layout) {
 }
 
 // TODO: limit date to the format's date range, make a f-n in adinterface that checks if format in limit
-bool ExpiryEdit::verify() {
+bool ExpiryEdit::verify() const {
     return true;
 }
 
@@ -110,7 +110,7 @@ bool ExpiryEdit::changed() const {
     return (new_value != original_value);
 }
 
-bool ExpiryEdit::apply(const QString &dn) {
+bool ExpiryEdit::apply(const QString &dn) const {
     const QString new_value = get_new_value();
     const bool result = AD()->attribute_replace_string(dn, ATTRIBUTE_ACCOUNT_EXPIRES, new_value);
 

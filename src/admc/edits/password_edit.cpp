@@ -56,7 +56,7 @@ void PasswordEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, confirm_label, confirm_edit);
 }
 
-bool PasswordEdit::verify() {
+bool PasswordEdit::verify() const {
     const QString pass = edit->text();
     const QString confirm_pass = confirm_edit->text();
     if (pass != confirm_pass) {
@@ -82,7 +82,7 @@ bool PasswordEdit::changed() const {
     return (!edit->text().isEmpty() || !confirm_edit->text().isEmpty());
 }
 
-bool PasswordEdit::apply(const QString &dn) {
+bool PasswordEdit::apply(const QString &dn) const {
     const QString new_value = edit->text();
 
     const bool success = AD()->user_set_pass(dn, new_value);

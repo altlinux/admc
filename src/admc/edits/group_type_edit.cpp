@@ -59,7 +59,7 @@ void GroupTypeEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, combo);
 }
 
-bool GroupTypeEdit::verify() {
+bool GroupTypeEdit::verify() const {
     return true;
 }
 
@@ -68,7 +68,7 @@ bool GroupTypeEdit::changed() const {
     return (new_value != original_value);
 }
 
-bool GroupTypeEdit::apply(const QString &dn) {
+bool GroupTypeEdit::apply(const QString &dn) const {
     const GroupType new_value = (GroupType)combo->currentData().toInt();
     const bool success = AD()->group_set_type(dn, new_value);
 

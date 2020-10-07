@@ -60,7 +60,7 @@ void GroupScopeEdit::add_to_layout(QGridLayout *layout) {
     append_to_grid_layout_with_label(layout, label, combo);
 }
 
-bool GroupScopeEdit::verify() {
+bool GroupScopeEdit::verify() const {
     return true;
 }
 
@@ -69,7 +69,7 @@ bool GroupScopeEdit::changed() const {
     return (new_value != original_value);
 }
 
-bool GroupScopeEdit::apply(const QString &dn) {
+bool GroupScopeEdit::apply(const QString &dn) const {
     const GroupScope new_value = (GroupScope)combo->currentData().toInt();
     const bool success = AD()->group_set_scope(dn, new_value);
 
