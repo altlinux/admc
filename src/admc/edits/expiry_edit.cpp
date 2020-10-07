@@ -88,7 +88,7 @@ void ExpiryEdit::set_read_only(const bool read_only) {
 }
 
 void ExpiryEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
+    const QString label_text = ADCONFIG()->get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
     const auto label = new QLabel(label_text);
 
     layout->addWidget(label, layout->rowCount(), 0);

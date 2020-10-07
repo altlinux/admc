@@ -47,7 +47,7 @@ void DateTimeEdit::set_read_only(const bool read_only) {
 }
 
 void DateTimeEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = get_attribute_display_name(attribute, "") + ":";
+    const QString label_text = ADCONFIG()->get_attribute_display_name(attribute, "") + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(label);

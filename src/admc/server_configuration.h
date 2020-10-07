@@ -22,6 +22,7 @@
 
 #include "ad_object.h"
 
+#include <QObject>
 #include <QString>
 
 enum AttributeType {
@@ -53,12 +54,24 @@ enum AttributeType {
 // NOTE: it is assumed that a language change requires a restart
 // so localized data is loaded once and is then reused after that
 
-QString get_attribute_display_name(const QString &attribute, const QString &objectClass);
-QString get_class_display_name(const QString &objectClass);
-QList<QString> get_extra_contents_columns();
-QList<QString> get_containers_filter_classes();
-QList<QString> get_possible_superiors(const AdObject &object);
-QList<QString> get_possible_attributes(const AdObject &object);
-AttributeType get_attribute_type(const QString &attribute);
+class ServerConfig final : public QObject {
+Q_OBJECT
+
+public:
+    ServerConfig(QObject *parent);
+
+    QString get_attribute_display_name(const QString &attribute, const QString &objectClass) const;
+    QString get_class_display_name(const QString &objectClass) const;
+    QList<QString> get_extra_contents_columns() const;
+    QList<QString> get_containers_filter_classes() const;
+    QList<QString> get_possible_superiors(const AdObject &object) const;
+    QList<QString> get_possible_attributes(const AdObject &object) const;
+    AttributeType get_attribute_type(const QString &attribute) const;
+
+private:
+    QString ldap_name_to_ad_name(const QString &ldap_name) const;
+};
+
+ServerConfig *ADCONFIG();
 
 #endif /* SERVER_CONFIGURATION_H */

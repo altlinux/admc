@@ -186,7 +186,7 @@ void ObjectContextMenu::edit_policy(const QString &dn, const AdObject &object) {
 }
 
 void ObjectContextMenu::move(const QString &dn, const AdObject &object) {
-    const QList<QString> possible_superiors = get_possible_superiors(object);
+    const QList<QString> possible_superiors = ADCONFIG()->get_possible_superiors(object);
 
     const QList<QString> selected_objects = SelectDialog::open(possible_superiors);
 

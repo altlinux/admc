@@ -42,32 +42,19 @@
 #define ATTRIBUTE_SYSTEM_MAY_CONTAIN    "systemMayContain"
 
 QString get_display_specifier_class(const QString &display_specifier);
-QString ldap_name_to_ad_name(const QString &ldap_class_name);
+QString get_locale_dir();
 
-QString get_locale_dir() {
-    static QString locale_dir =
-    []() {
-        const QString locale_code =
-        []() {
-            const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
+ServerConfig::ServerConfig(QObject *parent)
+: QObject(parent)
+{
 
-            if (saved_locale.language() == QLocale::Russian) {
-                return "419";
-            } else {
-                    // English
-                return "409";
-            }
-        }();
-
-        const QString configuration_dn = AD()->configuration_dn();
-
-        return QString("CN=%1,CN=DisplaySpecifiers,%2").arg(locale_code, configuration_dn);
-    }();
-
-    return locale_dir;
 }
 
-QString get_attribute_display_name(const QString &attribute, const QString &objectClass) {
+ServerConfig *ADCONFIG() {
+    return AdInterface::instance()->config();
+}
+
+QString ServerConfig::get_attribute_display_name(const QString &attribute, const QString &objectClass) const {
     // { objectClass => { attribute => display_name } }
     static QHash<QString, QHash<QString, QString>> attribute_display_names =
     []() {
@@ -143,7 +130,7 @@ QString get_attribute_display_name(const QString &attribute, const QString &obje
     }
 }
 
-QString get_class_display_name(const QString &objectClass) {
+QString ServerConfig::get_class_display_name(const QString &objectClass) const {
     static QHash<QString, QString> class_display_names =
     []() {
         QHash<QString, QString> out;
@@ -172,7 +159,7 @@ QString get_class_display_name(const QString &objectClass) {
     }
 }
 
-QList<QString> get_extra_contents_columns() {
+QList<QString> ServerConfig::get_extra_contents_columns() const {
     static const QList<QString> columns =
     []() {
         const QList<QString> columns_values =
@@ -199,7 +186,7 @@ QList<QString> get_extra_contents_columns() {
     return columns;
 }
 
-QList<QString> get_containers_filter_classes() {
+QList<QString> ServerConfig::get_containers_filter_classes() const {
     static const QList<QString> classes =
     []() {
         const QString locale_dir = get_locale_dir();
@@ -228,7 +215,7 @@ QList<QString> get_containers_filter_classes() {
     return classes;
 }
 
-QList<QString> get_possible_superiors(const AdObject &object) {
+QList<QString> ServerConfig::get_possible_superiors(const AdObject &object) const {
     const QString category = object.get_string(ATTRIBUTE_OBJECT_CATEGORY);
 
     static QHash<QString, QList<QString>> possible_superiors_map;
@@ -242,17 +229,7 @@ QList<QString> get_possible_superiors(const AdObject &object) {
     return possible_superiors_map[category];
 }
 
-// Display specifier DN is "CN=class-Display,CN=..."
-// Get "class" from that
-QString get_display_specifier_class(const QString &display_specifier) {
-    const QString rdn = display_specifier.split(",")[0];
-    const QString removed_cn = QString(rdn).remove("CN=", Qt::CaseInsensitive);
-    const QString specifier_class = removed_cn.split('-')[0];
-
-    return specifier_class;
-}
-
-QString ldap_name_to_ad_name(const QString &ldap_name) {
+QString ServerConfig::ldap_name_to_ad_name(const QString &ldap_name) const {
     static QHash<QString, QString> ldap_to_ad;
 
     if (!ldap_to_ad.contains(ldap_name)) {
@@ -275,7 +252,7 @@ QString ldap_name_to_ad_name(const QString &ldap_name) {
 }
 
 // TODO: Object's objectClass list appears to already contain the full inheritance chain. Confirm that this applies to all objects, because otherwise would need to manually go down the inheritance chain to get all possible attributes.
-QList<QString> get_possible_attributes(const AdObject &object) {
+QList<QString> ServerConfig::get_possible_attributes(const AdObject &object) const {
     static QHash<QString, QList<QString>> class_possible_attributes;
 
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
@@ -310,7 +287,7 @@ QList<QString> get_possible_attributes(const AdObject &object) {
     return possible_attributes;
 }
 
-AttributeType get_attribute_type(const QString &attribute) {
+AttributeType ServerConfig::get_attribute_type(const QString &attribute) const {
     static QHash<QString, AttributeType> attribute_type_map;
 
     if (!attribute_type_map.contains(attribute)) {
@@ -395,4 +372,37 @@ AttributeType get_attribute_type(const QString &attribute) {
     const AttributeType type = attribute_type_map[attribute];
 
     return type;
+}
+
+// Display specifier DN is "CN=class-Display,CN=..."
+// Get "class" from that
+QString get_display_specifier_class(const QString &display_specifier) {
+    const QString rdn = display_specifier.split(",")[0];
+    const QString removed_cn = QString(rdn).remove("CN=", Qt::CaseInsensitive);
+    const QString specifier_class = removed_cn.split('-')[0];
+
+    return specifier_class;
+}
+
+QString get_locale_dir() {
+    static QString locale_dir =
+    []() {
+        const QString locale_code =
+        []() {
+            const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
+
+            if (saved_locale.language() == QLocale::Russian) {
+                return "419";
+            } else {
+                    // English
+                return "409";
+            }
+        }();
+
+        const QString configuration_dn = AD()->configuration_dn();
+
+        return QString("CN=%1,CN=DisplaySpecifiers,%2").arg(locale_code, configuration_dn);
+    }();
+
+    return locale_dir;
 }

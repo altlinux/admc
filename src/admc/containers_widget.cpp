@@ -334,7 +334,7 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AdObject
     [dn, object]() {
         static const QList<QString> filter_classes =
         []() {
-            QList<QString> out = get_containers_filter_classes();
+            QList<QString> out = ADCONFIG()->get_containers_filter_classes();
 
             // Make configuration and schema pass filter in dev mode so they are visible and can be fetched
             const bool dev_mode = SETTINGS()->get_bool(BoolSetting_DevMode);

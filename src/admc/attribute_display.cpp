@@ -28,7 +28,7 @@ QString datetime_to_display_value(const QString &attribute, const QByteArray &by
 QString timespan_to_display_value(const QByteArray &bytes);
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value) {
-    const AttributeType type = get_attribute_type(attribute);
+    const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
     switch (type) {
         case AttributeType_LargeIntegerDatetime: return datetime_to_display_value(attribute, value);

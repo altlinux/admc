@@ -139,6 +139,7 @@ const qint64 HOURS_TO_SECONDS    = MINUTES_TO_SECONDS * 60LL;
 const qint64 DAYS_TO_SECONDS     = HOURS_TO_SECONDS * 24LL;
 
 typedef struct ldap LDAP;
+class ServerConfig;
 
 class AdInterface final : public QObject {
 Q_OBJECT
@@ -161,6 +162,7 @@ public:
     void start_batch();
     void end_batch();
 
+    ServerConfig *config() const;
     QString search_base() const;
     QString host() const;
     QString configuration_dn() const;
@@ -222,6 +224,7 @@ signals:
 
 private:
     LDAP *ld;
+    ServerConfig *m_config;
     QString m_search_base;
     QString m_configuration_dn;
     QString m_schema_dn;

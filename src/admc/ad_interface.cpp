@@ -67,6 +67,8 @@ bool AdInterface::login(const QString &host_arg, const QString &domain) {
     const int result = ad_login(uri_cstr, &ld);
 
     if (result == AD_SUCCESS) {
+        m_config = new ServerConfig(this);
+
         return true;
     } else {
         return false;
@@ -91,6 +93,10 @@ void AdInterface::end_batch() {
     batch_in_progress = false;
 
     emit_modified();
+}
+
+ServerConfig *AdInterface::config() const {
+    return m_config;
 }
 
 QString AdInterface::search_base() const {
@@ -840,7 +846,7 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
     if (dropped_is_user && target_is_group) {
         return DropType_AddToGroup;
     } else {
-        const QList<QString> possible_superiors = get_possible_superiors(dropped);
+        const QList<QString> possible_superiors = ADCONFIG()->get_possible_superiors(dropped);
 
         const bool can_move =
         [target, possible_superiors]() {
@@ -988,7 +994,7 @@ QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
 }
 
 bool datetime_is_never(const QString &attribute, const QString &value) {
-    const AttributeType type = get_attribute_type(attribute);
+    const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
     if (type == AttributeType_LargeIntegerDatetime) {
         const bool is_never = (value == AD_LARGEINTEGERTIME_NEVER_1 || value == AD_LARGEINTEGERTIME_NEVER_2);
@@ -1000,7 +1006,7 @@ bool datetime_is_never(const QString &attribute, const QString &value) {
 }
 
 QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime) {
-    const AttributeType type = get_attribute_type(attribute);
+    const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
     switch (type) {
         case AttributeType_LargeIntegerDatetime: {
@@ -1030,7 +1036,7 @@ QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &
 }
 
 QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &raw_value) {
-    const AttributeType type = get_attribute_type(attribute);
+    const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
     switch (type) {
         case AttributeType_LargeIntegerDatetime: {

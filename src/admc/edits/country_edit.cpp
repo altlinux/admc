@@ -123,7 +123,7 @@ void CountryEdit::set_read_only(const bool read_only) {
 }
 
 void CountryEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = get_attribute_display_name(ATTRIBUTE_COUNTRY, CLASS_USER) + ":";
+    const QString label_text = ADCONFIG()->get_attribute_display_name(ATTRIBUTE_COUNTRY, CLASS_USER) + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(label);

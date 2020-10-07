@@ -100,7 +100,7 @@ void AttributesModel::reload(const AdObject &object) {
     }
 
     // Add attributes without values
-    const QList<QString> possible_attributes = get_possible_attributes(object);
+    const QList<QString> possible_attributes = ADCONFIG()->get_possible_attributes(object);
     for (const QString attribute : possible_attributes) {
         if (!object.contains(attribute)) {
             auto name_item = new QStandardItem(attribute);
