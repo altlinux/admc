@@ -84,6 +84,9 @@ private:
     // object category => superiors
     QHash<QString, QList<QString>> possible_superiors;
 
+    // object class => attributes
+    QHash<QString, QList<QString>> possible_attributes;
+
     // attribute name => type
     QHash<QString, AttributeType> attribute_types;
 

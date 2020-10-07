@@ -194,6 +194,33 @@ AdConfig::AdConfig(QObject *parent)
         return out;
     }();
 
+    possible_attributes =
+    []() {
+        QHash<QString, QList<QString>> out;
+
+        const QString schema_dn = AD()->schema_dn();
+        const QList<QString> attributes = {
+            ATTRIBUTE_MAY_CONTAIN,
+            ATTRIBUTE_SYSTEM_MAY_CONTAIN,
+            ATTRIBUTE_LDAP_DISPLAY_NAME
+        };
+        const QHash<QString, AdObject> search_results = AD()->search("", attributes, SearchScope_Children, schema_dn);
+
+        for (const AdObject &schema : search_results.values()) {
+            const QString object_class = schema.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
+            const QList<QString> may_contain = schema.get_strings(ATTRIBUTE_MAY_CONTAIN);
+            const QList<QString> system_may_contain = schema.get_strings(ATTRIBUTE_SYSTEM_MAY_CONTAIN);
+
+            QList<QString> total_contain;
+            total_contain.append(may_contain);
+            total_contain.append(system_may_contain);
+
+            out[object_class] = total_contain;
+        }
+
+        return out;
+    }();
+
     attribute_types =
     [this]() {
         QHash<QString, AttributeType> out;
@@ -361,36 +388,17 @@ QString AdConfig::get_ldap_to_ad_name(const QString &ldap_name) const {
 
 // TODO: Object's objectClass list appears to already contain the full inheritance chain. Confirm that this applies to all objects, because otherwise would need to manually go down the inheritance chain to get all possible attributes.
 QList<QString> AdConfig::get_possible_attributes(const QList<QString> &object_classes) const {
-    static QHash<QString, QList<QString>> class_possible_attributes;
+    QList<QString> attributes;
 
-    QList<QString> possible_attributes;
-    for (const QString object_class : object_classes) {
-        if (!class_possible_attributes.contains(object_class)) {
-            // Load possible attributes from schema
-            const QString ad_class_name = get_ldap_to_ad_name(object_class);
-            const QString schema_dn = AD()->schema_dn();
-            const QString class_dn = QString("CN=%1,%2").arg(ad_class_name, schema_dn);
-            const AdObject class_schema = AD()->request_all(class_dn);
+    for (const auto object_class : object_classes) {
+        if (possible_attributes.contains(object_class)) {
+            const QList<QString> class_attributes = possible_attributes[object_class];
 
-            if (class_schema.is_empty()) {
-                continue;
-            }
-
-            const QList<QString> may_contain = class_schema.get_strings(ATTRIBUTE_MAY_CONTAIN);
-            const QList<QString> system_may_contain = class_schema.get_strings(ATTRIBUTE_SYSTEM_MAY_CONTAIN);
-
-            QList<QString> total_contain;
-            total_contain.append(may_contain);
-            total_contain.append(system_may_contain);
-
-            class_possible_attributes[object_class] = total_contain;
+            attributes.append(class_attributes);
         }
-
-        const QList<QString> for_this_class = class_possible_attributes[object_class];
-        possible_attributes.append(for_this_class);
     }
 
-    return possible_attributes;
+    return attributes;
 }
 
 AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
