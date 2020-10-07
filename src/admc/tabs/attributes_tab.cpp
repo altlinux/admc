@@ -51,18 +51,6 @@ AttributesTab::AttributesTab(const AdObject &object) {
     view->sortByColumn(AttributesColumn_Name, Qt::AscendingOrder);
 }
 
-bool AttributesTab::changed() const {
-    return false;
-}
-
-bool AttributesTab::verify() {
-    return true;
-}
-
-void AttributesTab::apply(const QString &target) {
-
-}
-
 AttributesModel::AttributesModel(AttributesTab *attributes_tab_arg)
 : QStandardItemModel(0, AttributesColumn_COUNT, attributes_tab_arg)
 {

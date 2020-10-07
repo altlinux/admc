@@ -108,7 +108,7 @@ bool MembershipTab::verify() {
     return true;
 }
 
-void MembershipTab::apply(const QString &target) {
+void MembershipTab::apply(const QString &target) const {
     // NOTE: logic is kinda duplicated but switching on behavior within iterations would be very confusing
     switch (type) {
         case MembershipTabType_Members: {

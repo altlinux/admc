@@ -18,6 +18,19 @@
  */
 
 #include "tabs/details_tab.h"
+#include "edits/attribute_edit.h"
+
+bool DetailsTab::changed() const {
+    return edits_changed(edits);
+}
+
+bool DetailsTab::verify() {
+    return edits_verify(edits, this);
+}
+
+void DetailsTab::apply(const QString &target) const {
+    edits_apply(edits, target);
+}
 
 void DetailsTab::on_edit_edited() {
     emit edited();

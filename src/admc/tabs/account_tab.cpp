@@ -58,15 +58,3 @@ AccountTab::AccountTab(const AdObject &object) {
     setLayout(top_layout);
     top_layout->addLayout(edits_layout);
 }
-
-bool AccountTab::changed() const {
-    return edits_changed(edits);
-}
-
-bool AccountTab::verify() {
-    return edits_verify(edits, this);
-}
-
-void AccountTab::apply(const QString &target) {
-    edits_apply(edits, target);
-}

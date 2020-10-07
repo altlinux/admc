@@ -22,18 +22,12 @@
 
 #include "tabs/details_tab.h"
 
-class AttributeEdit;
-
-// Shows member objects of targeted group
+// Object attributes, same for all types
 class ObjectTab final : public DetailsTab {
 Q_OBJECT
 
 public:
     ObjectTab(const AdObject &object);
-    DECL_DETAILS_TAB_VIRTUALS();
-
-private:
-    QList<AttributeEdit *> edits;
 };
 
 #endif /* OBJECT_TAB_H */

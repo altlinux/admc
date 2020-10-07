@@ -24,14 +24,12 @@
 #include "gplink.h"
 
 #include <QPoint>
-#include <QList>
 
 class QTreeView;
 class QString;
 class ObjectContextMenu;
 class MembersModel;
 class QStandardItemModel;
-class AttributeEdit;
 class Gplink;
 class QStandardItem;
 
@@ -42,7 +40,9 @@ Q_OBJECT
 
 public:
     GroupPolicyTab(const AdObject &object);
-    DECL_DETAILS_TAB_VIRTUALS();
+
+    bool changed() const override;
+    void apply(const QString &target) const override;
 
 private slots:
     void on_context_menu(const QPoint pos);
@@ -55,8 +55,6 @@ private:
     QTreeView *view = nullptr;
     Gplink original_gplink;
     Gplink current_gplink;
-
-    QList<AttributeEdit *> edits;
 
     void add_link(QList<QString> gpos);
     void remove_link(QList<QString> gpos);

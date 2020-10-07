@@ -49,15 +49,3 @@ AddressTab::AddressTab(const AdObject &object) {
     edits_add_to_layout(edits, edits_layout);
     edits_connect_to_tab(edits, this);
 }
-
-bool AddressTab::changed() const {
-    return edits_changed(edits);
-}
-
-bool AddressTab::verify() {
-    return edits_verify(edits, this);
-}
-
-void AddressTab::apply(const QString &target) {
-    edits_apply(edits, target);
-}

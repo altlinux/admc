@@ -22,19 +22,11 @@
 
 #include "tabs/details_tab.h"
 
-#include <QList>
-
-class AttributeEdit;
-
 class AccountTab final : public DetailsTab {
 Q_OBJECT
 
 public:
     AccountTab(const AdObject &object);
-    DECL_DETAILS_TAB_VIRTUALS();
-
-private:
-    QList<AttributeEdit *> edits;
 };
 
 #endif /* ACCOUNT_TAB_H */

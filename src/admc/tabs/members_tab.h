@@ -43,7 +43,9 @@ class MembershipTab : public DetailsTab {
 Q_OBJECT
 
 public:
-    DECL_DETAILS_TAB_VIRTUALS();
+    bool changed() const override;
+    bool verify() override;
+    void apply(const QString &target) const override;
 
 private slots:
     void on_context_menu(const QPoint pos);

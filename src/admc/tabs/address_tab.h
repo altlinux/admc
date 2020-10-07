@@ -22,20 +22,12 @@
 
 #include "tabs/details_tab.h"
 
-#include <QList>
-
-class AttributeEdit;
-
-// Shows member objects of targeted group
+// Address related attributes
 class AddressTab final : public DetailsTab {
 Q_OBJECT
 
 public:
     AddressTab(const AdObject &object);
-    DECL_DETAILS_TAB_VIRTUALS();
-
-private:
-    QList<AttributeEdit *> edits;
 };
 
 #endif /* ADDRESS_TAB_H */

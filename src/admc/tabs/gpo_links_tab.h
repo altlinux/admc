@@ -40,7 +40,6 @@ Q_OBJECT
 
 public:
     GpoLinksTab(const AdObject &object);
-    DECL_DETAILS_TAB_VIRTUALS();
 
 private slots:
     void on_context_menu(const QPoint pos);

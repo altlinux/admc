@@ -35,8 +35,7 @@ Q_OBJECT
 
 public:
     AttributesTab(const AdObject &object);
-    DECL_DETAILS_TAB_VIRTUALS();
-
+    
 private:
     AttributesModel *model = nullptr;
     QTreeView *view = nullptr;

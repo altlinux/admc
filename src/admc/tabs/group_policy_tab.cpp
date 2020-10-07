@@ -116,18 +116,14 @@ bool GroupPolicyTab::changed() const {
     const QString current_gplink_string = current_gplink.to_string();
     const bool gplink_changed = (current_gplink_string != original_gplink_string);
 
-    return edits_changed(edits) || gplink_changed;
+    return DetailsTab::changed() || gplink_changed;
 }
 
-bool GroupPolicyTab::verify() {
-    return edits_verify(edits, this);
-}
-
-void GroupPolicyTab::apply(const QString &target) {
+void GroupPolicyTab::apply(const QString &target) const {
     const QString gplink_string = current_gplink.to_string();
     AD()->attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
 
-    edits_apply(edits, target);
+    DetailsTab::apply(target);
 }
 
 void GroupPolicyTab::on_context_menu(const QPoint pos) {

@@ -83,18 +83,6 @@ GpoLinksTab::GpoLinksTab(const AdObject &object) {
     model->sort(GpoLinksColumn_Name);
 }
 
-bool GpoLinksTab::changed() const {
-    return false;
-}
-
-bool GpoLinksTab::verify() {
-    return true;
-}
-
-void GpoLinksTab::apply(const QString &target) {
-
-}
-
 void GpoLinksTab::on_context_menu(const QPoint pos) {
     const QString dn = get_dn_from_pos(pos, view, GpoLinksColumn_DN);
 

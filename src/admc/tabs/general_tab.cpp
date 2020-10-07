@@ -45,13 +45,13 @@ enum GeneralTabType {
 };
 
 GeneralTab::GeneralTab(const AdObject &object) {   
-    name_label = new QLabel();
+    auto name_label = new QLabel();
 
     auto line = new QFrame();
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Sunken);
 
-    edits_layout = new QGridLayout();
+    auto edits_layout = new QGridLayout();
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
@@ -160,16 +160,4 @@ GeneralTab::GeneralTab(const AdObject &object) {
 
     edits_add_to_layout(edits, edits_layout);
     edits_connect_to_tab(edits, this);  
-}
-
-bool GeneralTab::changed() const {
-    return edits_changed(edits);
-}
-
-bool GeneralTab::verify() {
-    return edits_verify(edits, this);
-}
-
-void GeneralTab::apply(const QString &target) {
-    edits_apply(edits, target);
 }

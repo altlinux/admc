@@ -24,14 +24,20 @@
 
 #include <QWidget>
 #include <QString>
+#include <QList>
+
+class AttributeEdit;
 
 class DetailsTab : public QWidget {
 Q_OBJECT
 
 public:
-    virtual bool changed() const = 0;
-    virtual bool verify() = 0;
-    virtual void apply(const QString &target) = 0;
+    virtual bool changed() const;
+    virtual bool verify();
+    virtual void apply(const QString &target) const;
+
+protected:
+    QList<AttributeEdit *> edits;
 
 signals:
     void edited();
@@ -39,10 +45,5 @@ signals:
 public slots:
     void on_edit_edited();
 };
-
-#define DECL_DETAILS_TAB_VIRTUALS()\
-bool changed() const;\
-bool verify();\
-void apply(const QString &target);
 
 #endif /* DETAILS_TAB_H */

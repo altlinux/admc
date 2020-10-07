@@ -52,15 +52,3 @@ ObjectTab::ObjectTab(const AdObject &object) {
     edits_add_to_layout(edits, edits_layout);
     edits_connect_to_tab(edits, this);
 }
-
-bool ObjectTab::changed() const {
-    return edits_changed(edits);
-}
-
-bool ObjectTab::verify() {
-    return true;
-}
-
-void ObjectTab::apply(const QString &target) {
-
-}
