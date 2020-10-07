@@ -24,7 +24,7 @@ qt5_add_translation(QM_FILES ${TS_FILES})
 
 add_custom_target(update_translations
     DEPENDS ${TS_FILES}
-    COMMAND ${Qt5_LUPDATE_EXECUTABLE} -recursive ${PROJECT_SOURCE_DIR} -ts ${TS_FILES}
+    COMMAND ${Qt5_LUPDATE_EXECUTABLE} -recursive ${PROJECT_SOURCE_DIR} -ts ${TS_FILES} -noobsolete
 )
 
 add_custom_target(translations
