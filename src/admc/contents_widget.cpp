@@ -52,7 +52,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
     if (columns.isEmpty()) {
         columns = {
             ATTRIBUTE_NAME,
-            ATTRIBUTE_OBJECT_CATEGORY,
+            ATTRIBUTE_OBJECT_CLASS,
             ATTRIBUTE_DESCRIPTION
         };
         // NOTE: dn is not one of ADUC's columns, but adding it here for convenience
@@ -82,7 +82,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
     setup_column_toggle_menu(view, model, 
     {
         column_index(ATTRIBUTE_NAME),
-        column_index(ATTRIBUTE_OBJECT_CATEGORY),
+        column_index(ATTRIBUTE_OBJECT_CLASS),
         column_index(ATTRIBUTE_DESCRIPTION)
     });
 
@@ -164,7 +164,7 @@ void ContentsWidget::resize_columns() {
     const int category_width = (int) (view_width * 0.15);
 
     view->setColumnWidth(column_index(ATTRIBUTE_NAME), name_width);
-    view->setColumnWidth(column_index(ATTRIBUTE_OBJECT_CATEGORY), category_width);
+    view->setColumnWidth(column_index(ATTRIBUTE_OBJECT_CLASS), category_width);
 }
 
 void ContentsWidget::showEvent(QShowEvent *event) {
@@ -225,19 +225,18 @@ void ContentsModel::make_row(QStandardItem *parent, const AdObject &object) {
         if (!object.contains(attribute)) {
             continue;
         }
-        const QByteArray value = object.get_bytes(attribute);
 
         const QString display_value =
-        [attribute, value]() {
-            QString out = attribute_display_value(attribute, value);
-
-            // NOTE: category is given as raw DN and contains '-' where it should have spaces, so convert it
-            if (attribute == ATTRIBUTE_OBJECT_CATEGORY) {
-                out = dn_get_rdn(out);
-                out = out.replace('-', ' ');
+        [attribute, object]() {
+            if (attribute == ATTRIBUTE_OBJECT_CLASS) {
+                // NOTE: last class in the list is the furthest by inheritance so display that one
+                const QList<QString> object_classes = object.get_strings(attribute);
+                const QString object_class = object_classes.last();
+                return ADCONFIG()->get_class_display_name(object_class);
+            } else {
+                const QByteArray value = object.get_bytes(attribute);
+                return attribute_display_value(attribute, value);
             }
-
-            return out;
         }();
 
         row[i]->setText(display_value);
