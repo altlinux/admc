@@ -86,7 +86,7 @@ void GpoLinksTab::on_context_menu(const QPoint pos) {
 
     QMenu menu(this);
     menu.addAction(tr("Details"), [dn]() {
-        DetailsWidget::change_target(dn);
+        DetailsWidget::open_for_target(dn);
     });
 
     exec_menu_from_view(&menu, view, pos);

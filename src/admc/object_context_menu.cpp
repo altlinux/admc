@@ -57,7 +57,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
     const AdObject object = AD()->request_all(dn);
 
     addAction(tr("Details"), [this, dn]() {
-        DetailsWidget::change_target(dn);
+        DetailsWidget::open_for_target(dn);
     });
 
     if (object.is_policy()) {

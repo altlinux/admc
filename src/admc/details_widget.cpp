@@ -41,31 +41,53 @@
 #include <QPushButton>
 #include <QDebug>
 
-DetailsWidget *DetailsWidget::docked_instance() {
-    static DetailsWidget *docked = new DetailsWidget(false);
-    return docked;
+QWidget *DetailsWidget::get_docked_container() {
+    static QWidget *docked_container =
+    []() {
+        auto out = new QWidget();
+
+        auto layout = new QVBoxLayout();
+        out->setLayout(layout);
+        layout->setContentsMargins(0, 0, 0, 0);
+        layout->setSpacing(0);
+
+        return out;
+    }();
+
+    return docked_container;
 }
 
-void DetailsWidget::change_target(const QString &new_target) {
+void DetailsWidget::open_for_target(const QString &target) {
     const bool is_docked = SETTINGS()->get_bool(BoolSetting_DetailsIsDocked);
 
     if (is_docked) {
-        auto docked = docked_instance();
-        docked->reload(new_target);
+        QWidget *docked_container = get_docked_container();
+        QLayout *docked_layout = docked_container->layout();
+
+        // Remove previous instance from layout
+        static DetailsWidget *prev_docked = nullptr;
+        if (prev_docked != nullptr) {
+            docked_layout->removeWidget(prev_docked);
+            delete prev_docked;
+        }
+
+        prev_docked = new DetailsWidget(target, false);
+        docked_layout->addWidget(prev_docked);
     } else {
-        static auto floating_instance = new DetailsWidget(true);
-        floating_instance->reload(new_target);
-        floating_instance->open();
+        auto dialog = new DetailsWidget(target, true);
+        dialog->open();
     }
 }
 
-DetailsWidget::DetailsWidget(const bool is_floating_instance_arg)
+DetailsWidget::DetailsWidget(const QString &target_arg, const bool is_floating_instance_arg)
 : QDialog()
 {
+    target = target_arg;
     is_floating_instance = is_floating_instance_arg;
 
     if (is_floating_instance) {
-        resize(400, 700);
+        setAttribute(Qt::WA_DeleteOnClose);
+        resize(600, 700);
     }
 
     title_label = new QLabel(this);
@@ -90,111 +112,93 @@ DetailsWidget::DetailsWidget(const bool is_floating_instance_arg)
     connect(
         docked_setting, &BoolSettingSignal::changed,
         this, &DetailsWidget::on_docked_setting_changed);
-    on_docked_setting_changed();
 
-    reload("");
+    const AdObject object = AD()->request_all(target);
+
+    // TODO: is this actually possible and what should happen, currently leaving the dialog blank which might be enough.
+    if (object.is_empty()) {
+        return;
+    }
+
+    const QString name = object.get_string(ATTRIBUTE_NAME);
+    const QString title_text = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
+    title_label->setText(title_text);
+
+    QList<QString> titles;
+
+    // Create new tabs
+    const auto add_tab =
+    [this, &titles](DetailsTab *tab, const QString &title) {
+        tabs.append(tab);
+        tab_widget->addTab(tab, title);
+        titles.append(title);
+    };
+
+    add_tab(new GeneralTab(), tr("General"));
+    add_tab(new ObjectTab(), tr("Object"));
+    add_tab(new AttributesTab(), tr("Attributes"));
+    if (object.is_user()) {
+        add_tab(new AccountTab(), tr("Account"));
+        add_tab(new AddressTab(), tr("Address"));
+    }
+    if (object.is_group()) {
+        add_tab(new MembersTab(), tr("Members"));
+    }
+    const bool has_member_of_attribute =
+    [object]() {
+        const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
+        const QList<QString> possible_attributes = ADCONFIG()->get_possible_attributes(object_classes);
+
+        return possible_attributes.contains(ATTRIBUTE_MEMBER_OF);
+    }();
+    if (has_member_of_attribute) {
+        add_tab(new MemberOfTab(), tr("Member of"));
+    }
+    if (object.is_ou()) {
+        // TODO: not sure which object classes can have gplink, for now only know of OU's.
+        add_tab(new GroupPolicyTab(), tr("Group policy"));
+    }
+    if (object.is_policy()) {
+        add_tab(new GpoLinksTab(), tr("Links to"));
+    }
+
+    for (auto tab : tabs) {
+        connect(
+            tab, &DetailsTab::edited,
+            this, &DetailsWidget::on_tab_edited);
+    }
+
+    for (auto tab : tabs) {
+        tab->load(object);
+        tab->reset();
+    }
+
+    for (auto tab : tabs) {
+        if (tab->changed()) {
+            const QString title = titles[tabs.indexOf(tab)];
+            printf("ERROR: a newly created tab %s is in changed() state! Something must be wrong with edits.\n", qPrintable(title));
+        }
+    }
+
+    on_docked_setting_changed();
 }
 
 void DetailsWidget::on_docked_setting_changed() {
     const bool is_docked = SETTINGS()->get_bool(BoolSetting_DetailsIsDocked);
 
     if (is_floating_instance) {
-        // Hide floating instance when switching to docked one
-        // NOTE: floating instance is NOT shown when switching to non-docked view
+        // Close dialog if changed to docked
         if (is_docked) {
             QDialog::reject();
         }
     } else {
         // Hide/show docked instance depending on docked setting
-        setVisible(is_docked);
+        get_docked_container()->setVisible(is_docked);
     }
 }
 
 QString DetailsWidget::get_target() const {
     return target;
-}
-
-void DetailsWidget::reload(const QString &new_target) {
-    target = new_target;
-
-    const AdObject object = AD()->request_all(target);
-
-    if (object.is_empty()) {
-        if (is_floating_instance) {
-            close();
-        } else {
-            // Docked details widget can't be closed so it
-            // becomes blank
-            title_label->setText("");
-            button_box->hide();
-        }
-    } else {
-        const QString name = object.get_string(ATTRIBUTE_NAME);
-        const QString title_text = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
-        title_label->setText(title_text);
-
-        // Clear old tabs
-        tab_widget->clear();
-
-        for (auto tab : tabs) {
-            delete tab;
-        }
-        tabs.clear();
-
-        // Create new tabs
-        const auto add_tab =
-        [this](DetailsTab *tab, const QString &title) {
-            tabs.append(tab);
-            tab_widget->addTab(tab, title);
-
-            if (tab->changed()) {
-                printf("ERROR: a newly created tab %s is in changed() state! Something must be wrong with edits.\n", qPrintable(title));
-            }
-        };
-
-        add_tab(new GeneralTab(), tr("General"));
-        add_tab(new ObjectTab(), tr("Object"));
-        add_tab(new AttributesTab(), tr("Attributes"));
-        if (object.is_user()) {
-            add_tab(new AccountTab(), tr("Account"));
-            add_tab(new AddressTab(), tr("Address"));
-        }
-        if (object.is_group()) {
-            add_tab(new MembersTab(), tr("Members"));
-        }
-        const bool has_member_of_attribute =
-        [object]() {
-            const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-            const QList<QString> possible_attributes = ADCONFIG()->get_possible_attributes(object_classes);
-
-            return possible_attributes.contains(ATTRIBUTE_MEMBER_OF);
-        }();
-        if (has_member_of_attribute) {
-            add_tab(new MemberOfTab(), tr("Member of"));
-        }
-        if (object.is_ou()) {
-            // TODO: not sure which object classes can have gplink, for now only know of OU's.
-            add_tab(new GroupPolicyTab(), tr("Group policy"));
-        }
-        if (object.is_policy()) {
-            add_tab(new GpoLinksTab(), tr("Links to"));
-        }
-
-        for (auto tab : tabs) {
-            connect(
-                tab, &DetailsTab::edited,
-                this, &DetailsWidget::on_tab_edited);
-        }
-
-        for (auto tab : tabs) {
-            tab->load(object);
-            tab->reset();
-        }
-
-        // Disable apply/cancel since this is a fresh reload and there are no changes
-        button_box->show();
-        button_box->setEnabled(false);
-    }
 }
 
 void DetailsWidget::on_apply() {

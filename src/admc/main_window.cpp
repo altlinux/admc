@@ -88,7 +88,7 @@ void MainWindow::finish_init() {
 
     auto containers_widget = new ContainersWidget(this);
     auto contents_widget = new ContentsWidget(containers_widget, this);
-    auto details_widget = DetailsWidget::docked_instance();
+    auto details_widget_docked_container = DetailsWidget::get_docked_container();
     auto policies_widget = new PoliciesWidget();
 
     // Layout
@@ -101,7 +101,7 @@ void MainWindow::finish_init() {
     auto horiz_splitter = new QSplitter(Qt::Horizontal);
     horiz_splitter->addWidget(containers_policies_splitter);
     horiz_splitter->addWidget(contents_widget);
-    horiz_splitter->addWidget(details_widget);
+    horiz_splitter->addWidget(details_widget_docked_container);
     horiz_splitter->setStretchFactor(0, 1);
     horiz_splitter->setStretchFactor(1, 2);
     horiz_splitter->setStretchFactor(2, 2);

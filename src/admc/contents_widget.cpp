@@ -125,7 +125,7 @@ void ContentsWidget::on_view_clicked(const QModelIndex &index) {
 
     if (details_from_contents) {
         const QString dn = get_dn_from_index(index, column_index(ATTRIBUTE_DISTINGUISHED_NAME));
-        DetailsWidget::change_target(dn);
+        DetailsWidget::open_for_target(dn);
     }
 }
 

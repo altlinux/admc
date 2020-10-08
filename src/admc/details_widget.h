@@ -37,11 +37,14 @@ class DetailsWidget final : public QDialog {
 Q_OBJECT
 
 public:
-    static DetailsWidget *docked_instance();
-    static void change_target(const QString &new_target);
+    static QWidget *get_docked_container();
+
+    // Either opens a new floating instance or changes
+    // target of docked instance, depending on current docked
+    // setting
+    static void open_for_target(const QString &target);
 
     QString get_target() const;
-    void reload(const QString &new_target);
 
 private slots:
     void on_apply();
@@ -57,7 +60,7 @@ private:
     QList<DetailsTab *> tabs;
     QString target;
 
-    DetailsWidget(bool is_floating_instance_arg);
+    DetailsWidget(const QString &target_arg, bool is_floating_instance_arg);
     
     DetailsWidget(const DetailsWidget&) = delete;
     DetailsWidget& operator=(const DetailsWidget&) = delete;
