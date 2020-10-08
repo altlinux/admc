@@ -26,7 +26,7 @@
 #include "password_dialog.h"
 #include "create_dialog.h"
 #include "settings.h"
-#include "details_widget.h"
+#include "details_dialog.h"
 #include "ad_config.h"
 
 #include <QString>
@@ -57,7 +57,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
     const AdObject object = AD()->request_all(dn);
 
     addAction(tr("Details"), [this, dn]() {
-        DetailsWidget::open_for_target(dn);
+        DetailsDialog::open_for_target(dn);
     });
 
     if (object.is_policy()) {

@@ -21,7 +21,7 @@
 #include "object_context_menu.h"
 #include "utils.h"
 #include "settings.h"
-#include "details_widget.h"
+#include "details_dialog.h"
 #include "ad_config.h"
 #include "ad_interface.h"
 #include "filter.h"
@@ -249,7 +249,7 @@ void ContainersWidget::on_view_clicked(const QModelIndex &index) {
 
     if (details_from_containers) {
         const QString dn = get_dn_from_index(index, ContainersColumn_DN);
-        DetailsWidget::open_for_target(dn);
+        DetailsDialog::open_for_target(dn);
     }
 }
 

@@ -19,7 +19,7 @@
 
 #include "policies_widget.h"
 #include "ad_interface.h"
-#include "details_widget.h"
+#include "details_dialog.h"
 #include "object_context_menu.h"
 #include "utils.h"
 #include "filter.h"

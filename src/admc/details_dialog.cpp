@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "details_widget.h"
+#include "details_dialog.h"
 #include "tabs/details_tab.h"
 #include "tabs/attributes_tab.h"
 #include "tabs/members_tab.h"
@@ -41,7 +41,7 @@
 #include <QPushButton>
 #include <QDebug>
 
-QWidget *DetailsWidget::get_docked_container() {
+QWidget *DetailsDialog::get_docked_container() {
     static QWidget *docked_container =
     []() {
         auto out = new QWidget();
@@ -57,7 +57,7 @@ QWidget *DetailsWidget::get_docked_container() {
     return docked_container;
 }
 
-void DetailsWidget::open_for_target(const QString &target) {
+void DetailsDialog::open_for_target(const QString &target) {
     const bool is_docked = SETTINGS()->get_bool(BoolSetting_DetailsIsDocked);
 
     if (is_docked) {
@@ -65,21 +65,21 @@ void DetailsWidget::open_for_target(const QString &target) {
         QLayout *docked_layout = docked_container->layout();
 
         // Remove previous instance from layout
-        static DetailsWidget *prev_docked = nullptr;
+        static DetailsDialog *prev_docked = nullptr;
         if (prev_docked != nullptr) {
             docked_layout->removeWidget(prev_docked);
             delete prev_docked;
         }
 
-        prev_docked = new DetailsWidget(target, false);
+        prev_docked = new DetailsDialog(target, false);
         docked_layout->addWidget(prev_docked);
     } else {
-        auto dialog = new DetailsWidget(target, true);
+        auto dialog = new DetailsDialog(target, true);
         dialog->open();
     }
 }
 
-DetailsWidget::DetailsWidget(const QString &target_arg, const bool is_floating_instance_arg)
+DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_instance_arg)
 : QDialog()
 {
     target = target_arg;
@@ -103,15 +103,15 @@ DetailsWidget::DetailsWidget(const QString &target_arg, const bool is_floating_i
 
     connect(
         button_box->button(QDialogButtonBox::Apply), &QPushButton::clicked,
-        this, &DetailsWidget::on_apply);
+        this, &DetailsDialog::on_apply);
     connect(
         button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
-        this, &DetailsWidget::on_cancel);
+        this, &DetailsDialog::on_cancel);
 
     const BoolSettingSignal *docked_setting = SETTINGS()->get_bool_signal(BoolSetting_DetailsIsDocked);
     connect(
         docked_setting, &BoolSettingSignal::changed,
-        this, &DetailsWidget::on_docked_setting_changed);
+        this, &DetailsDialog::on_docked_setting_changed);
 
     const AdObject object = AD()->request_all(target);
 
@@ -165,7 +165,7 @@ DetailsWidget::DetailsWidget(const QString &target_arg, const bool is_floating_i
     for (auto tab : tabs) {
         connect(
             tab, &DetailsTab::edited,
-            this, &DetailsWidget::on_tab_edited);
+            this, &DetailsDialog::on_tab_edited);
     }
 
     for (auto tab : tabs) {
@@ -183,7 +183,7 @@ DetailsWidget::DetailsWidget(const QString &target_arg, const bool is_floating_i
     on_docked_setting_changed();
 }
 
-void DetailsWidget::on_docked_setting_changed() {
+void DetailsDialog::on_docked_setting_changed() {
     const bool is_docked = SETTINGS()->get_bool(BoolSetting_DetailsIsDocked);
 
     if (is_floating_instance) {
@@ -197,11 +197,11 @@ void DetailsWidget::on_docked_setting_changed() {
     }
 }
 
-QString DetailsWidget::get_target() const {
+QString DetailsDialog::get_target() const {
     return target;
 }
 
-void DetailsWidget::on_apply() {
+void DetailsDialog::on_apply() {
     const int errors_index = Status::instance()->get_errors_size();
 
     bool all_verified = true;
@@ -232,7 +232,7 @@ void DetailsWidget::on_apply() {
     }
 }
 
-void DetailsWidget::on_cancel() {
+void DetailsDialog::on_cancel() {
     for (auto tab : tabs) {
         tab->reset();
     }
@@ -241,7 +241,7 @@ void DetailsWidget::on_cancel() {
     on_tab_edited();
 }
 
-void DetailsWidget::on_tab_edited() {
+void DetailsDialog::on_tab_edited() {
     // Enable/disable apply and cancel depending on if there are
     // any changes in tabs
     bool any_changed = false;

@@ -20,7 +20,7 @@
 #include "contents_widget.h"
 #include "containers_widget.h"
 #include "object_context_menu.h"
-#include "details_widget.h"
+#include "details_dialog.h"
 #include "settings.h"
 #include "utils.h"
 #include "ad_interface.h"
@@ -125,7 +125,7 @@ void ContentsWidget::on_view_clicked(const QModelIndex &index) {
 
     if (details_from_contents) {
         const QString dn = get_dn_from_index(index, column_index(ATTRIBUTE_DISTINGUISHED_NAME));
-        DetailsWidget::open_for_target(dn);
+        DetailsDialog::open_for_target(dn);
     }
 }
 

@@ -18,7 +18,7 @@
  */
 
 #include "tabs/gpo_links_tab.h"
-#include "details_widget.h"
+#include "details_dialog.h"
 #include "utils.h"
 #include "ad_interface.h"
 #include "filter.h"
@@ -86,7 +86,7 @@ void GpoLinksTab::on_context_menu(const QPoint pos) {
 
     QMenu menu(this);
     menu.addAction(tr("Details"), [dn]() {
-        DetailsWidget::open_for_target(dn);
+        DetailsDialog::open_for_target(dn);
     });
 
     exec_menu_from_view(&menu, view, pos);

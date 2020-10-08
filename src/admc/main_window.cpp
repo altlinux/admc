@@ -21,7 +21,7 @@
 #include "menubar.h"
 #include "containers_widget.h"
 #include "contents_widget.h"
-#include "details_widget.h"
+#include "details_dialog.h"
 #include "status.h"
 #include "settings.h"
 #include "confirmation_dialog.h"
@@ -88,7 +88,7 @@ void MainWindow::finish_init() {
 
     auto containers_widget = new ContainersWidget(this);
     auto contents_widget = new ContentsWidget(containers_widget, this);
-    auto details_widget_docked_container = DetailsWidget::get_docked_container();
+    auto details_widget_docked_container = DetailsDialog::get_docked_container();
     auto policies_widget = new PoliciesWidget();
 
     // Layout

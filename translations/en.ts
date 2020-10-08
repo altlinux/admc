@@ -377,7 +377,7 @@
     </message>
 </context>
 <context>
-    <name>DetailsWidget</name>
+    <name>DetailsDialog</name>
     <message>
         <location filename="../src/admc/details_widget.cpp" line="135"/>
         <source>Details</source>

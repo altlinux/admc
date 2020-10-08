@@ -19,7 +19,7 @@ add_executable(admc
     main.cpp
     ad_interface.cpp
     ad_config.cpp
-    details_widget.cpp
+    details_dialog.cpp
     containers_widget.cpp
     contents_widget.cpp
     main_window.cpp

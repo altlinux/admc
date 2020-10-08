@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DETAILS_WIDGET_H
-#define DETAILS_WIDGET_H
+#ifndef DETAILS_DIALOG_H
+#define DETAILS_DIALOG_H
 
 #include <QDialog>
 #include <QString>
@@ -32,16 +32,15 @@ class QDialogButtonBox;
 
 // Shows info about object's attributes in multiple tabs
 // Targeted at a particular object
-// Updates targets of all tabs when target changes
-class DetailsWidget final : public QDialog {
+class DetailsDialog final : public QDialog {
 Q_OBJECT
 
 public:
     static QWidget *get_docked_container();
 
-    // Either opens a new floating instance or changes
-    // target of docked instance, depending on current docked
-    // setting
+    // Depends on whether docked setting is on or not
+    // If NOT docked: open new instance for target
+    // If docked: change target of docked instance (by remaking it)
     static void open_for_target(const QString &target);
 
     QString get_target() const;
@@ -60,12 +59,12 @@ private:
     QList<DetailsTab *> tabs;
     QString target;
 
-    DetailsWidget(const QString &target_arg, bool is_floating_instance_arg);
+    DetailsDialog(const QString &target_arg, bool is_floating_instance_arg);
     
-    DetailsWidget(const DetailsWidget&) = delete;
-    DetailsWidget& operator=(const DetailsWidget&) = delete;
-    DetailsWidget(DetailsWidget&&) = delete;
-    DetailsWidget& operator=(DetailsWidget&&) = delete;
+    DetailsDialog(const DetailsDialog&) = delete;
+    DetailsDialog& operator=(const DetailsDialog&) = delete;
+    DetailsDialog(DetailsDialog&&) = delete;
+    DetailsDialog& operator=(DetailsDialog&&) = delete;
 };
 
-#endif /* DETAILS_WIDGET_H */
+#endif /* DETAILS_DIALOG_H */
