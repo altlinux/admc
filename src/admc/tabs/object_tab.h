@@ -27,7 +27,7 @@ class ObjectTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    ObjectTab(const AdObject &object);
+    ObjectTab();
 };
 
 #endif /* OBJECT_TAB_H */

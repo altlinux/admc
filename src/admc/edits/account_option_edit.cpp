@@ -28,11 +28,11 @@
 #include <QMessageBox>
 #include <QLabel>
 
-void make_account_option_edits(const AdObject &object, const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
+void make_account_option_edits(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
     QMap<AccountOption, AccountOptionEdit *> option_edits;
 
     for (auto option : options) {
-        auto edit = new AccountOptionEdit(object, option, parent);
+        auto edit = new AccountOptionEdit(option, parent);
         option_edits.insert(option, edit);
         option_edits_out->insert(option, edit);
         edits_out->append(edit);
@@ -78,21 +78,21 @@ void make_account_option_edits(const AdObject &object, const QList<AccountOption
     }
 }
 
-AccountOptionEdit::AccountOptionEdit(const AdObject &object, const AccountOption option_arg, QObject *parent)
+AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *parent)
 : AttributeEdit(parent)
 {
     option = option_arg;
     check = new QCheckBox();
-
-    original_value = object.get_account_option(option);
 
     QObject::connect(
         check, &QCheckBox::stateChanged,
         [this]() {
             emit edited();
         });
+}
 
-    reset();
+void AccountOptionEdit::load(const AdObject &object) {
+    original_value = object.get_account_option(option);
 }
 
 void AccountOptionEdit::reset() {

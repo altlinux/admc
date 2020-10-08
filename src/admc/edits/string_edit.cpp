@@ -27,9 +27,9 @@
 #include <QMessageBox>
 #include <QLabel>
 
-void make_string_edits(const AdObject &object, const QList<QString> attributes, const QString &objectClass, QMap<QString, StringEdit *> *string_edits_out, QList<AttributeEdit *> *edits_out, QObject *parent) {
+void make_string_edits(const QList<QString> attributes, const QString &objectClass, QMap<QString, StringEdit *> *string_edits_out, QList<AttributeEdit *> *edits_out, QObject *parent) {
     for (auto attribute : attributes) {
-        auto edit = new StringEdit(object, attribute, objectClass, parent);
+        auto edit = new StringEdit(attribute, objectClass, parent);
         string_edits_out->insert(attribute, edit);
         edits_out->append((AttributeEdit *)edit);
     }
@@ -75,13 +75,21 @@ void setup_string_edit_autofills(const QMap<QString, StringEdit *> string_edits,
     }
 }
 
-StringEdit::StringEdit(const AdObject &object, const QString &attribute_arg, const QString &objectClass_arg, QObject *parent)
+StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent)
 : AttributeEdit(parent)
 {
     edit = new QLineEdit();
     attribute = attribute_arg;
     objectClass = objectClass_arg;
 
+    QObject::connect(
+        edit, &QLineEdit::textChanged,
+        [this]() {
+            emit edited();
+        });
+}
+
+void StringEdit::load(const AdObject &object) {
     original_value =
     [this, object]() {
         if (attribute == ATTRIBUTE_OBJECT_CLASS) {
@@ -93,14 +101,6 @@ StringEdit::StringEdit(const AdObject &object, const QString &attribute_arg, con
             return object.get_string(attribute);
         }
     }();
-
-    QObject::connect(
-        edit, &QLineEdit::textChanged,
-        [this]() {
-            emit edited();
-        });
-
-    reset();
 }
 
 void StringEdit::reset() {

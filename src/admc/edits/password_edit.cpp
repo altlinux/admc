@@ -41,8 +41,10 @@ PasswordEdit::PasswordEdit(QObject *parent)
         [this]() {
             emit edited();
         });
+}
 
-    reset();
+void PasswordEdit::load(const AdObject &object) {
+
 }
 
 void PasswordEdit::reset() {

@@ -26,21 +26,21 @@
 #include <QDateTimeEdit>
 #include <QLabel>
 
-DateTimeEdit::DateTimeEdit(const AdObject &object, const QString &attribute_arg, QObject *parent)
+DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QObject *parent)
 : AttributeEdit(parent)
 {
     edit = new QDateTimeEdit();
     attribute = attribute_arg;
-
-    original_value = object.get_datetime(attribute);
 
     QObject::connect(
         edit, &QDateTimeEdit::dateTimeChanged,
         [this]() {
             emit edited();
         });
+}
 
-    reset();
+void DateTimeEdit::load(const AdObject &object) {
+    original_value = object.get_datetime(attribute);
 }
 
 void DateTimeEdit::reset() {

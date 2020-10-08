@@ -25,21 +25,21 @@
 #include <QLabel>
 #include <QHash>
 
-GpoptionsEdit::GpoptionsEdit(const AdObject &object, QObject *parent)
+GpoptionsEdit::GpoptionsEdit(QObject *parent)
 : AttributeEdit(parent)
 {
     check = new QCheckBox();
-
-    const QString value = object.get_string(ATTRIBUTE_GPOPTIONS);
-    original_checked_value = (value == GPOPTIONS_BLOCK_INHERITANCE);
 
     QObject::connect(
         check, &QCheckBox::stateChanged,
         [this]() {
             emit edited();
         });
+}
 
-    reset();
+void GpoptionsEdit::load(const AdObject &object) {
+    const QString value = object.get_string(ATTRIBUTE_GPOPTIONS);
+    original_checked_value = (value == GPOPTIONS_BLOCK_INHERITANCE);
 }
 
 void GpoptionsEdit::reset() {

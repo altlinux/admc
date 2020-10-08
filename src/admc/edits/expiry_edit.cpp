@@ -37,7 +37,7 @@
 
 const QTime END_OF_DAY(23, 59);
 
-ExpiryEdit::ExpiryEdit(const AdObject &object, QObject *parent)
+ExpiryEdit::ExpiryEdit(QObject *parent)
 : AttributeEdit(parent)
 {
     never_check = new QCheckBox(tr("Never"));
@@ -50,8 +50,6 @@ ExpiryEdit::ExpiryEdit(const AdObject &object, QObject *parent)
     edit_button = new QPushButton(tr("Edit"));
     display_label = new QLabel();
 
-    original_value = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);
-
     connect(
         never_check, &QCheckBox::stateChanged,
         this, &ExpiryEdit::on_never_check);
@@ -61,8 +59,10 @@ ExpiryEdit::ExpiryEdit(const AdObject &object, QObject *parent)
     connect(
         edit_button, &QAbstractButton::clicked,
         this, &ExpiryEdit::on_edit_button);
+}
 
-    reset();
+void ExpiryEdit::load(const AdObject &object) {
+    original_value = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);
 }
 
 void ExpiryEdit::reset() {

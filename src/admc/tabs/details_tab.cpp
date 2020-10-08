@@ -20,6 +20,10 @@
 #include "tabs/details_tab.h"
 #include "edits/attribute_edit.h"
 
+void DetailsTab::load(const AdObject &object) {
+    edits_load(edits, object);
+}
+
 bool DetailsTab::changed() const {
     return edits_changed(edits);
 }

@@ -27,7 +27,7 @@ class AddressTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    AddressTab(const AdObject &object);
+    AddressTab();
 };
 
 #endif /* ADDRESS_TAB_H */

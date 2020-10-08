@@ -40,6 +40,7 @@ class MembershipTab : public DetailsTab {
 Q_OBJECT
 
 public:
+    void load(const AdObject &object) override;
     void reset() override;
     bool changed() const override;
     void apply(const QString &target) const override;
@@ -55,7 +56,7 @@ protected:
         MembershipTabType_MemberOf
     };
 
-    MembershipTab(const AdObject &object, const MembershipTabType type_arg);
+    MembershipTab(const MembershipTabType type_arg);
 
 private:
     MembershipTabType type;
@@ -72,12 +73,12 @@ private:
 
 class MembersTab final : public MembershipTab {
 public:
-    MembersTab(const AdObject &object);
+    MembersTab();
 };
 
 class MemberOfTab final : public MembershipTab {
 public:
-    MemberOfTab(const AdObject &object);
+    MemberOfTab();
 };
 
 #endif /* MEMBERS_TAB_H */

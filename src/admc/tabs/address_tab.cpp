@@ -26,7 +26,7 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 
-AddressTab::AddressTab(const AdObject &object) {   
+AddressTab::AddressTab() {   
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
 
@@ -42,9 +42,9 @@ AddressTab::AddressTab(const AdObject &object) {
     };
 
     QMap<QString, StringEdit *> string_edits;
-    make_string_edits(object, attributes, CLASS_USER, &string_edits, &edits, this);
+    make_string_edits(attributes, CLASS_USER, &string_edits, &edits, this);
 
-    edits.append(new CountryEdit(object, this));
+    edits.append(new CountryEdit(this));
 
     edits_add_to_layout(edits, edits_layout);
     edits_connect_to_tab(edits, this);

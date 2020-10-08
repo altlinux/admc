@@ -51,7 +51,7 @@ const QHash<GplinkColumn, GplinkOption> column_to_option = {
 
 QString gplink_option_to_display_string(const QString &option);
 
-GroupPolicyTab::GroupPolicyTab(const AdObject &object) {   
+GroupPolicyTab::GroupPolicyTab() {   
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -72,7 +72,7 @@ GroupPolicyTab::GroupPolicyTab(const AdObject &object) {
 
     const auto edits_layout = new QGridLayout();
 
-    auto gpoptions_edit = new GpoptionsEdit(object, this);
+    auto gpoptions_edit = new GpoptionsEdit(this);
     edits.append(gpoptions_edit);
     edits_add_to_layout(edits, edits_layout);
     edits_connect_to_tab(edits, this);
@@ -91,10 +91,6 @@ GroupPolicyTab::GroupPolicyTab(const AdObject &object) {
     layout->addLayout(button_layout);
     layout->addLayout(edits_layout);
 
-    const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
-    original_gplink = Gplink(gplink_string);
-    current_gplink = original_gplink;
-
     connect(
         remove_button, &QAbstractButton::clicked,
         this, &GroupPolicyTab::on_remove_button);
@@ -107,8 +103,12 @@ GroupPolicyTab::GroupPolicyTab(const AdObject &object) {
     connect(
         model, &QStandardItemModel::itemChanged,
         this, &GroupPolicyTab::on_item_changed);
+}
 
-    reset();
+void GroupPolicyTab::load(const AdObject &object) {
+    const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
+    original_gplink = Gplink(gplink_string);
+    current_gplink = original_gplink;
 }
 
 void GroupPolicyTab::reset() {

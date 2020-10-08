@@ -36,8 +36,10 @@ UnlockEdit::UnlockEdit(QObject *parent)
         [this]() {
             emit edited();
         });
+}
 
-    reset();
+void UnlockEdit::load(const AdObject &object) {
+    
 }
 
 void UnlockEdit::reset() {
@@ -68,6 +70,7 @@ bool UnlockEdit::changed() const {
 bool UnlockEdit::apply(const QString &dn) const {
     if (checkbox_is_checked(check)) {
         const bool result = AD()->user_unlock(dn);
+        
         return result;
     } else {
         return true;

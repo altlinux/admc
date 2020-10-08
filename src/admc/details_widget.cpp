@@ -80,22 +80,11 @@ DetailsWidget::DetailsWidget(const bool is_floating_instance_arg)
     layout->addWidget(button_box);
 
     connect(
-        AD(), &AdInterface::modified,
-        this, &DetailsWidget::on_ad_modified);
-
-    connect(
         button_box->button(QDialogButtonBox::Apply), &QPushButton::clicked,
         this, &DetailsWidget::on_apply);
     connect(
         button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
-        [this]() {
-            for (auto tab : tabs) {
-                tab->reset();
-            }
-
-            // Call slot to reset to unchanged state
-            on_tab_edited();
-        });
+        this, &DetailsWidget::on_cancel);
 
     const BoolSettingSignal *docked_setting = SETTINGS()->get_bool_signal(BoolSetting_DetailsIsDocked);
     connect(
@@ -163,15 +152,15 @@ void DetailsWidget::reload(const QString &new_target) {
             }
         };
 
-        add_tab(new GeneralTab(object), tr("General"));
-        add_tab(new ObjectTab(object), tr("Object"));
-        add_tab(new AttributesTab(object), tr("Attributes"));
+        add_tab(new GeneralTab(), tr("General"));
+        add_tab(new ObjectTab(), tr("Object"));
+        add_tab(new AttributesTab(), tr("Attributes"));
         if (object.is_user()) {
-            add_tab(new AccountTab(object), tr("Account"));
-            add_tab(new AddressTab(object), tr("Address"));
+            add_tab(new AccountTab(), tr("Account"));
+            add_tab(new AddressTab(), tr("Address"));
         }
         if (object.is_group()) {
-            add_tab(new MembersTab(object), tr("Members"));
+            add_tab(new MembersTab(), tr("Members"));
         }
         const bool has_member_of_attribute =
         [object]() {
@@ -181,14 +170,14 @@ void DetailsWidget::reload(const QString &new_target) {
             return possible_attributes.contains(ATTRIBUTE_MEMBER_OF);
         }();
         if (has_member_of_attribute) {
-            add_tab(new MemberOfTab(object), tr("Member of"));
+            add_tab(new MemberOfTab(), tr("Member of"));
         }
         if (object.is_ou()) {
             // TODO: not sure which object classes can have gplink, for now only know of OU's.
-            add_tab(new GroupPolicyTab(object), tr("Group policy"));
+            add_tab(new GroupPolicyTab(), tr("Group policy"));
         }
         if (object.is_policy()) {
-            add_tab(new GpoLinksTab(object), tr("Links to"));
+            add_tab(new GpoLinksTab(), tr("Links to"));
         }
 
         for (auto tab : tabs) {
@@ -197,14 +186,15 @@ void DetailsWidget::reload(const QString &new_target) {
                 this, &DetailsWidget::on_tab_edited);
         }
 
+        for (auto tab : tabs) {
+            tab->load(object);
+            tab->reset();
+        }
+
         // Disable apply/cancel since this is a fresh reload and there are no changes
         button_box->show();
         button_box->setEnabled(false);
     }
-}
-
-void DetailsWidget::on_ad_modified() {
-    reload(target);
 }
 
 void DetailsWidget::on_apply() {
@@ -232,13 +222,19 @@ void DetailsWidget::on_apply() {
         Status::instance()->show_errors_popup(errors_index);
     }
 
-    if (is_floating_instance) {
-        QDialog::accept();
+    const AdObject object = AD()->request_all(target);
+    for (auto tab : tabs) {
+        tab->load(object);
     }
 }
 
 void DetailsWidget::on_cancel() {
-    reload(target);
+    for (auto tab : tabs) {
+        tab->reset();
+    }
+
+    // Call slot to reset to unchanged state
+    on_tab_edited();
 }
 
 void DetailsWidget::on_tab_edited() {

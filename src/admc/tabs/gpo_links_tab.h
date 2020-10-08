@@ -25,6 +25,7 @@
 #include <QPoint>
 
 class QTreeView;
+class QStandardItemModel;
 
 // List objects that this GPO links to
 
@@ -32,13 +33,16 @@ class GpoLinksTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    GpoLinksTab(const AdObject &object);
+    GpoLinksTab();
+
+    void load(const AdObject &object) override;
 
 private slots:
     void on_context_menu(const QPoint pos);
 
 private:
     QTreeView *view;
+    QStandardItemModel *model;
 };
 
 #endif /* GPO_LINKS_TAB_H */

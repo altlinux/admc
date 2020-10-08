@@ -27,7 +27,7 @@ class QComboBox;
 class CountryEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    CountryEdit(const AdObject &object, QObject *parent);
+    CountryEdit(QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

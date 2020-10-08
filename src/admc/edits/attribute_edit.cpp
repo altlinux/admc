@@ -86,6 +86,12 @@ void edits_reset(QList<AttributeEdit *> edits) {
     }
 }
 
+void edits_load(QList<AttributeEdit *> edits, const AdObject &object) {
+    for (auto edit : edits) {
+        edit->load(object);
+    }
+}
+
 void edits_connect_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab) {
     for (auto edit : edits) {
         QObject::connect(

@@ -36,8 +36,9 @@ class GroupPolicyTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    GroupPolicyTab(const AdObject &object);
+    GroupPolicyTab();
 
+    void load(const AdObject &object) override;
     void reset() override;
     bool changed() const override;
     void apply(const QString &target) const override;

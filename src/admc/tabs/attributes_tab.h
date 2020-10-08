@@ -24,13 +24,20 @@
 
 #include <QStandardItemModel>
 
+class AttributesModel;
+
 // Show attributes of target as a list of attribute names and values
 // Values are editable
 class AttributesTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    AttributesTab(const AdObject &object);
+    AttributesTab();
+
+    void load(const AdObject &object) override;
+
+private:
+    AttributesModel *model;
 };
 
 class AttributesModel final : public QStandardItemModel {
@@ -40,7 +47,7 @@ public:
     explicit AttributesModel(QObject *parent);
 
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-    void reload(const AdObject &object);
+    void load(const AdObject &object);
 };
 
 #endif /* ATTRIBUTES_TAB_H */

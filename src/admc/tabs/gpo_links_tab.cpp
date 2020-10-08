@@ -36,14 +36,14 @@ enum GpoLinksColumn {
     GpoLinksColumn_COUNT
 };
 
-GpoLinksTab::GpoLinksTab(const AdObject &object) {   
+GpoLinksTab::GpoLinksTab() {   
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
 
-    auto model = new QStandardItemModel(0, GpoLinksColumn_COUNT, this);
+    model = new QStandardItemModel(0, GpoLinksColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model, {
         {GpoLinksColumn_Name, tr("Name")},
         {GpoLinksColumn_DN, tr("DN")}
@@ -60,11 +60,9 @@ GpoLinksTab::GpoLinksTab(const AdObject &object) {
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         this, &GpoLinksTab::on_context_menu);
+}
 
-    model->removeRows(0, model->rowCount());
-
-    // TODO: do this with search
-    
+void GpoLinksTab::load(const AdObject &object) {
     // NOTE: *target* means searching for gplink containing target
     const QList<QString> search_attributes = {ATTRIBUTE_NAME};
     const QString filter = filter_EQUALS(ATTRIBUTE_GPLINK, "*" + object.get_dn() + "*");
@@ -81,8 +79,6 @@ GpoLinksTab::GpoLinksTab(const AdObject &object) {
     }
 
     model->sort(GpoLinksColumn_Name);
-
-    reset();
 }
 
 void GpoLinksTab::on_context_menu(const QPoint pos) {

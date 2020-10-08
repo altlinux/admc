@@ -26,7 +26,7 @@ class AccountTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    AccountTab(const AdObject &object);
+    AccountTab();
 };
 
 #endif /* ACCOUNT_TAB_H */

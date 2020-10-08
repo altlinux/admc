@@ -73,10 +73,12 @@ RenameDialog::RenameDialog(const QString &target_arg)
         objectClass = CLASS_CONTAINER;
     }
 
-    make_string_edits(object, string_attributes, objectClass, &string_edits, &all_edits, this);
+    make_string_edits(string_attributes, objectClass, &string_edits, &all_edits, this);
     setup_string_edit_autofills(string_edits);
 
     edits_add_to_layout(all_edits, edits_layout);
+    edits_load(all_edits, object);
+    edits_reset(all_edits);
 
     const auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
     connect(
@@ -142,6 +144,10 @@ void RenameDialog::accept() {
         } else {
             const QString message = QString(tr("Failed to rename object - \"%1\"")).arg(name_for_message);
             Status::instance()->message(message, StatusType_Error);
+
+            // NOTE: reload updated object if any edits applied successfully
+            const AdObject object = AD()->request_all(target);
+            edits_load(all_edits, object);
         }
     }
     AD()->end_batch();

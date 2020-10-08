@@ -28,22 +28,22 @@
 
 // TODO: canonical name in ADUC replaces "CN=" with "/" making it look like a directory path
 
-ObjectTab::ObjectTab(const AdObject &object) {   
+ObjectTab::ObjectTab() {   
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
 
     const auto edits_layout = new QGridLayout();
     top_layout->addLayout(edits_layout);
 
-    edits.append(new StringEdit(object, ATTRIBUTE_DISTINGUISHED_NAME, "", this));
-    edits.append(new StringEdit(object, ATTRIBUTE_OBJECT_CLASS, "", this));
+    edits.append(new StringEdit(ATTRIBUTE_DISTINGUISHED_NAME, "", this));
+    edits.append(new StringEdit(ATTRIBUTE_OBJECT_CLASS, "", this));
     
-    edits.append(new DateTimeEdit(object, ATTRIBUTE_WHEN_CREATED, this));
-    edits.append(new DateTimeEdit(object, ATTRIBUTE_WHEN_CHANGED, this));
+    edits.append(new DateTimeEdit(ATTRIBUTE_WHEN_CREATED, this));
+    edits.append(new DateTimeEdit(ATTRIBUTE_WHEN_CHANGED, this));
 
     // TODO: use int edit for this when/if it gets added, though these attributes aren't supposed to be editable anyway?
-    edits.append(new StringEdit(object, ATTRIBUTE_USN_CREATED, "",  this));
-    edits.append(new StringEdit(object, ATTRIBUTE_USN_CHANGED, "",  this));
+    edits.append(new StringEdit(ATTRIBUTE_USN_CREATED, "",  this));
+    edits.append(new StringEdit(ATTRIBUTE_USN_CHANGED, "",  this));
 
     for (auto edit : edits) {
         edit->set_read_only(true);

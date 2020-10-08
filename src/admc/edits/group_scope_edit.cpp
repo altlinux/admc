@@ -26,7 +26,7 @@
 #include <QMessageBox>
 #include <QLabel>
 
-GroupScopeEdit::GroupScopeEdit(const AdObject &object, QObject *parent)
+GroupScopeEdit::GroupScopeEdit(QObject *parent)
 : AttributeEdit(parent)
 {
     combo = new QComboBox();
@@ -38,15 +38,15 @@ GroupScopeEdit::GroupScopeEdit(const AdObject &object, QObject *parent)
         combo->addItem(type_string, (int)type);
     }
 
-    original_value = object.get_group_scope();
-
     QObject::connect(
         combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         [this]() {
             emit edited();
         });
+}
 
-    reset();
+void GroupScopeEdit::load(const AdObject &object) {
+    original_value = object.get_group_scope();
 }
 
 void GroupScopeEdit::reset() {

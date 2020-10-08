@@ -44,10 +44,12 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
     auto edits_layout = new QGridLayout();
 
     edits.append(new PasswordEdit(this));
-    edits.append(new AccountOptionEdit(object, AccountOption_PasswordExpired, this));
+    edits.append(new AccountOptionEdit(AccountOption_PasswordExpired, this));
     edits.append(new UnlockEdit(this));
 
     edits_add_to_layout(edits, edits_layout);
+    edits_load(edits, object);
+    edits_reset(edits);
 
     auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
 

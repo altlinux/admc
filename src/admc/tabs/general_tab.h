@@ -22,11 +22,21 @@
 
 #include "tabs/details_tab.h"
 
+class QLabel;
+class QGridLayout;
+
 class GeneralTab final : public DetailsTab {
 Q_OBJECT
 
 public:
-    GeneralTab(const AdObject &object);
+    GeneralTab();
+
+    void load(const AdObject &object) override;
+
+private:
+    bool made_edits = false;
+    QLabel *name_label;
+    QGridLayout *edits_layout;
 };
 
 #endif /* GENERAL_TAB_H */

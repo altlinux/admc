@@ -35,7 +35,10 @@ Q_OBJECT
 public:
     using QObject::QObject;
 
-    // Reset to original value
+    // Load original value
+    virtual void load(const AdObject &object) = 0;
+
+    // Reset input to original value
     virtual void reset() = 0;
 
     virtual void set_read_only(const bool read_only) = 0;
@@ -63,6 +66,7 @@ protected:
 };
 
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
+void load(const AdObject &object);\
 void reset();\
 void set_read_only(const bool read_only);\
 void add_to_layout(QGridLayout *layout);\
@@ -79,5 +83,6 @@ bool edits_changed(QList<AttributeEdit *> edits);
 bool edits_verify(QList<AttributeEdit *> edits);
 bool edits_apply(QList<AttributeEdit *> edits, const QString &dn);
 void edits_reset(QList<AttributeEdit *> edits);
+void edits_load(QList<AttributeEdit *> edits, const AdObject &object);
 
 #endif /* ATTRIBUTE_EDIT_H */

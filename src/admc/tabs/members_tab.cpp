@@ -40,17 +40,17 @@ enum MembersColumn {
     MembersColumn_COUNT,
 };
 
-MembersTab::MembersTab(const AdObject &object)
-: MembershipTab(object, MembershipTabType_Members) {
+MembersTab::MembersTab()
+: MembershipTab(MembershipTabType_Members) {
 
 }
 
-MemberOfTab::MemberOfTab(const AdObject &object)
-: MembershipTab(object, MembershipTabType_MemberOf) {
+MemberOfTab::MemberOfTab()
+: MembershipTab(MembershipTabType_MemberOf) {
 
 }
 
-MembershipTab::MembershipTab(const AdObject &object, const MembershipTabType type_arg) {
+MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     type = type_arg;
 
     view = new QTreeView(this);
@@ -83,10 +83,6 @@ MembershipTab::MembershipTab(const AdObject &object, const MembershipTabType typ
     layout->addWidget(view);
     layout->addLayout(button_layout);
 
-    const QList<QString> values = object.get_strings(get_membership_attribute());
-    original_values = values.toSet();
-    current_values = original_values;
-
     connect(
         remove_button, &QAbstractButton::clicked,
         this, &MembershipTab::on_remove_button);
@@ -96,8 +92,12 @@ MembershipTab::MembershipTab(const AdObject &object, const MembershipTabType typ
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         this, &MembershipTab::on_context_menu);
+}
 
-    reset();
+void MembershipTab::load(const AdObject &object) {
+    const QList<QString> values = object.get_strings(get_membership_attribute());
+    original_values = values.toSet();
+    current_values = original_values;
 }
 
 void MembershipTab::reset() {

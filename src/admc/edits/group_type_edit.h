@@ -29,7 +29,7 @@ Q_OBJECT
 public:
     QComboBox *combo;
 
-    GroupTypeEdit(const AdObject &object, QObject *parent);
+    GroupTypeEdit(QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

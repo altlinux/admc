@@ -32,8 +32,8 @@ enum AttributesColumn {
     AttributesColumn_COUNT,
 };
 
-AttributesTab::AttributesTab(const AdObject &object) {
-    auto model = new AttributesModel(this);
+AttributesTab::AttributesTab() {
+    model = new AttributesModel(this);
 
     auto view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -46,9 +46,10 @@ AttributesTab::AttributesTab(const AdObject &object) {
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(view);
+}
 
-    model->reload(object);
-    view->sortByColumn(AttributesColumn_Name, Qt::AscendingOrder);
+void AttributesTab::load(const AdObject &object) {
+    model->load(object);
 }
 
 AttributesModel::AttributesModel(QObject *parent)
@@ -66,7 +67,7 @@ bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, i
     return true;
 }
 
-void AttributesModel::reload(const AdObject &object) {
+void AttributesModel::load(const AdObject &object) {
     removeRows(0, rowCount());
 
     // Populate model with attributes of new root

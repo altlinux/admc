@@ -44,7 +44,6 @@ public:
     void reload(const QString &new_target);
 
 private slots:
-    void on_ad_modified();
     void on_apply();
     void on_cancel();
     void on_docked_setting_changed();

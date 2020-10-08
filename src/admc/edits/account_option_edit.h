@@ -31,7 +31,7 @@ Q_OBJECT
 public:
     QCheckBox *check;
 
-    AccountOptionEdit(const AdObject &object, const AccountOption option_arg, QObject *parent);
+    AccountOptionEdit(const AccountOption option_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
@@ -39,6 +39,6 @@ private:
     bool original_value;
 };
 
-void make_account_option_edits(const AdObject &object, const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent);
+void make_account_option_edits(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent);
 
 #endif /* ACCOUNT_OPTION_EDIT_H */
