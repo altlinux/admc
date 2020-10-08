@@ -1,6 +1,7 @@
 option(ENABLE_TESTS "Enable unit tests for libadldap" ON)
 
 find_package(Ldap REQUIRED)
+find_package(Resolv REQUIRED)
 
 add_library(adldap SHARED
     active_directory.c
@@ -14,6 +15,7 @@ target_include_directories(adldap
 target_link_libraries(adldap
     PUBLIC
         Ldap::Ldap
+        Resolv::Resolv
 )
 
 install(TARGETS adldap)

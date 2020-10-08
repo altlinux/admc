@@ -24,12 +24,15 @@ BuildRequires: libcmocka-devel
 BuildRequires: qt5-base-common
 BuildRequires: doxygen
 BuildRequires: libuuid-devel
+BuildRequires: glib2-devel
+BuildRequires: libpcre-devel
 
 Requires: libldap
 Requires: libsasl2
 Requires: libsmbclient
 Requires: libuuid
 Requires: qt5-base-common
+Requires: glib2
 
 Source0: %name-%version.tar
 
