@@ -87,8 +87,6 @@ MembershipTab::MembershipTab(const AdObject &object, const MembershipTabType typ
     original_values = values.toSet();
     current_values = original_values;
 
-    reload_current_values_into_model();
-
     connect(
         remove_button, &QAbstractButton::clicked,
         this, &MembershipTab::on_remove_button);
@@ -98,6 +96,12 @@ MembershipTab::MembershipTab(const AdObject &object, const MembershipTabType typ
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         this, &MembershipTab::on_context_menu);
+
+    reset();
+}
+
+void MembershipTab::reset() {
+    reload_model(original_values);
 }
 
 bool MembershipTab::changed() const {
@@ -192,10 +196,10 @@ void MembershipTab::on_remove_button() {
     remove_values(removed_values);    
 }
 
-void MembershipTab::reload_current_values_into_model() {
+void MembershipTab::reload_model(const QSet<QString> &values) {
     model->removeRows(0, model->rowCount());
 
-    for (auto dn : current_values) {
+    for (auto dn : values) {
         const QString name = dn_get_rdn(dn);
         const QString parent = dn_get_parent(dn);
         
@@ -215,7 +219,7 @@ void MembershipTab::add_values(QList<QString> values) {
         current_values.insert(value);
     }
 
-    reload_current_values_into_model();
+    reload_model(current_values);
 
     emit edited();
 }
@@ -225,7 +229,7 @@ void MembershipTab::remove_values(QList<QString> values) {
         current_values.remove(value);
     }
 
-    reload_current_values_into_model();
+    reload_model(current_values);
 
     emit edited();
 }

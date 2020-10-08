@@ -38,6 +38,7 @@ Q_OBJECT
 public:
     GroupPolicyTab(const AdObject &object);
 
+    void reset() override;
     bool changed() const override;
     void apply(const QString &target) const override;
 
@@ -58,7 +59,7 @@ private:
     void move_link_up(const QString &gpo);
     void move_link_down(const QString &gpo);
 
-    void reload_current_gplink_into_model();
+    void reload_model(const Gplink &gplink);
 };
 
 #endif /* GROUP_POLICY_TAB_H */

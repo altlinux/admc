@@ -106,16 +106,21 @@ CountryEdit::CountryEdit(const AdObject &object, QObject *parent)
             return COUNTRY_CODE_NONE;
         }
     }();
-    const int index = combo->findData(QVariant(original_value));
-    if (index != -1) {
-        combo->setCurrentIndex(index);
-    }
 
     QObject::connect(
     combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
     [this]() {
         emit edited();
     });
+
+    reset();
+}
+
+void CountryEdit::reset() {
+    const int index = combo->findData(QVariant(original_value));
+    if (index != -1) {
+        combo->setCurrentIndex(index);
+    }
 }
 
 void CountryEdit::set_read_only(const bool read_only) {

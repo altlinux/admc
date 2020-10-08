@@ -38,13 +38,18 @@ GroupTypeEdit::GroupTypeEdit(const AdObject &object, QObject *parent)
     }
 
     original_value = object.get_group_type();
-    combo->setCurrentIndex((int) original_value);
 
     QObject::connect(
         combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         [this]() {
             emit edited();
         });
+
+    reset();
+}
+
+void GroupTypeEdit::reset() {
+    combo->setCurrentIndex((int) original_value);
 }
 
 void GroupTypeEdit::set_read_only(const bool read_only) {

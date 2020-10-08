@@ -88,7 +88,14 @@ DetailsWidget::DetailsWidget(const bool is_floating_instance_arg)
         this, &DetailsWidget::on_apply);
     connect(
         button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
-        this, &DetailsWidget::on_cancel);
+        [this]() {
+            for (auto tab : tabs) {
+                tab->reset();
+            }
+
+            // Call slot to reset to unchanged state
+            on_tab_edited();
+        });
 
     const BoolSettingSignal *docked_setting = SETTINGS()->get_bool_signal(BoolSetting_DetailsIsDocked);
     connect(
@@ -136,9 +143,6 @@ void DetailsWidget::reload(const QString &new_target) {
         const QString name = object.get_string(ATTRIBUTE_NAME);
         const QString title_text = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
         title_label->setText(title_text);
-
-        // Save old tab to restore it after recreating tabs
-        const int old_tab_index = tab_widget->currentIndex();
 
         // Clear old tabs
         tab_widget->clear();
@@ -191,11 +195,6 @@ void DetailsWidget::reload(const QString &new_target) {
             connect(
                 tab, &DetailsTab::edited,
                 this, &DetailsWidget::on_tab_edited);
-        }
-
-        // Restore old tab
-        if (old_tab_index != -1) {
-            tab_widget->setCurrentIndex(old_tab_index);
         }
 
         // Disable apply/cancel since this is a fresh reload and there are no changes

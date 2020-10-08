@@ -33,13 +33,18 @@ DateTimeEdit::DateTimeEdit(const AdObject &object, const QString &attribute_arg,
     attribute = attribute_arg;
 
     original_value = object.get_datetime(attribute);
-    edit->setDateTime(original_value);
 
     QObject::connect(
         edit, &QDateTimeEdit::dateTimeChanged,
         [this]() {
             emit edited();
         });
+
+    reset();
+}
+
+void DateTimeEdit::reset() {
+    edit->setDateTime(original_value);
 }
 
 void DateTimeEdit::set_read_only(const bool read_only) {

@@ -41,6 +41,13 @@ PasswordEdit::PasswordEdit(QObject *parent)
         [this]() {
             emit edited();
         });
+
+    reset();
+}
+
+void PasswordEdit::reset() {
+    edit->clear();
+    confirm_edit->clear();
 }
 
 void PasswordEdit::set_read_only(const bool read_only) {

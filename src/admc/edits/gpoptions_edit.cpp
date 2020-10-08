@@ -32,13 +32,18 @@ GpoptionsEdit::GpoptionsEdit(const AdObject &object, QObject *parent)
 
     const QString value = object.get_string(ATTRIBUTE_GPOPTIONS);
     original_checked_value = (value == GPOPTIONS_BLOCK_INHERITANCE);
-    checkbox_set_checked(check, original_checked_value);
 
     QObject::connect(
         check, &QCheckBox::stateChanged,
         [this]() {
             emit edited();
         });
+
+    reset();
+}
+
+void GpoptionsEdit::reset() {
+    checkbox_set_checked(check, original_checked_value);
 }
 
 void GpoptionsEdit::set_read_only(const bool read_only) {

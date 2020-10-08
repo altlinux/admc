@@ -81,6 +81,8 @@ GpoLinksTab::GpoLinksTab(const AdObject &object) {
     }
 
     model->sort(GpoLinksColumn_Name);
+
+    reset();
 }
 
 void GpoLinksTab::on_context_menu(const QPoint pos) {

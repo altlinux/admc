@@ -93,13 +93,18 @@ StringEdit::StringEdit(const AdObject &object, const QString &attribute_arg, con
             return object.get_string(attribute);
         }
     }();
-    edit->setText(original_value);
 
     QObject::connect(
         edit, &QLineEdit::textChanged,
         [this]() {
             emit edited();
         });
+
+    reset();
+}
+
+void StringEdit::reset() {
+    edit->setText(original_value);
 }
 
 void StringEdit::set_read_only(const bool read_only) {

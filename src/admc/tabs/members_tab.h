@@ -40,6 +40,7 @@ class MembershipTab : public DetailsTab {
 Q_OBJECT
 
 public:
+    void reset() override;
     bool changed() const override;
     void apply(const QString &target) const override;
 
@@ -63,7 +64,7 @@ private:
     QSet<QString> original_values;
     QSet<QString> current_values;
 
-    void reload_current_values_into_model();
+    void reload_model(const QSet<QString> &values);
     void add_values(QList<QString> values);
     void remove_values(QList<QString> values);
     QString get_membership_attribute();

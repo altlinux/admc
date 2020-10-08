@@ -85,13 +85,18 @@ AccountOptionEdit::AccountOptionEdit(const AdObject &object, const AccountOption
     check = new QCheckBox();
 
     original_value = object.get_account_option(option);
-    checkbox_set_checked(check, original_value);
 
     QObject::connect(
         check, &QCheckBox::stateChanged,
         [this]() {
             emit edited();
         });
+
+    reset();
+}
+
+void AccountOptionEdit::reset() {
+    checkbox_set_checked(check, original_value);
 }
 
 void AccountOptionEdit::set_read_only(const bool read_only) {

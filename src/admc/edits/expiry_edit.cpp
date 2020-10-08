@@ -51,6 +51,21 @@ ExpiryEdit::ExpiryEdit(const AdObject &object, QObject *parent)
     display_label = new QLabel();
 
     original_value = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);
+
+    connect(
+        never_check, &QCheckBox::stateChanged,
+        this, &ExpiryEdit::on_never_check);
+    connect(
+        end_of_check, &QCheckBox::stateChanged,
+        this, &ExpiryEdit::on_end_of_check);
+    connect(
+        edit_button, &QAbstractButton::clicked,
+        this, &ExpiryEdit::on_edit_button);
+
+    reset();
+}
+
+void ExpiryEdit::reset() {
     const bool never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, original_value);
 
     never_check->setChecked(never);
@@ -65,20 +80,10 @@ ExpiryEdit::ExpiryEdit(const AdObject &object, QObject *parent)
         const QDate default_expiry = QDate::currentDate();
         display_label_text = default_expiry.toString(DATE_FORMAT);
     } else {
-        const QDateTime current_expiry = object.get_datetime(ATTRIBUTE_ACCOUNT_EXPIRES);
+        const QDateTime current_expiry = datetime_string_to_qdatetime(ATTRIBUTE_ACCOUNT_EXPIRES, original_value);
         display_label_text = current_expiry.toString(DATE_FORMAT);
     }
     display_label->setText(display_label_text);
-
-    connect(
-        never_check, &QCheckBox::stateChanged,
-        this, &ExpiryEdit::on_never_check);
-    connect(
-        end_of_check, &QCheckBox::stateChanged,
-        this, &ExpiryEdit::on_end_of_check);
-    connect(
-        edit_button, &QAbstractButton::clicked,
-        this, &ExpiryEdit::on_edit_button);
 }
 
 void ExpiryEdit::set_read_only(const bool read_only) {

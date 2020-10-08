@@ -39,13 +39,18 @@ GroupScopeEdit::GroupScopeEdit(const AdObject &object, QObject *parent)
     }
 
     original_value = object.get_group_scope();
-    combo->setCurrentIndex((int) original_value);
 
     QObject::connect(
         combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         [this]() {
             emit edited();
         });
+
+    reset();
+}
+
+void GroupScopeEdit::reset() {
+    combo->setCurrentIndex((int) original_value);
 }
 
 void GroupScopeEdit::set_read_only(const bool read_only) {

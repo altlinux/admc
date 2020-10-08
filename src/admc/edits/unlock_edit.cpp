@@ -31,13 +31,17 @@ UnlockEdit::UnlockEdit(QObject *parent)
 : AttributeEdit(parent) {
     check = new QCheckBox();
 
-    check->setChecked(false);
-
     connect(
         check, &QCheckBox::stateChanged,
         [this]() {
             emit edited();
         });
+
+    reset();
+}
+
+void UnlockEdit::reset() {
+    check->setChecked(false);
 }
 
 void UnlockEdit::set_read_only(const bool read_only) {

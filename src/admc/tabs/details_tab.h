@@ -35,6 +35,7 @@ public:
     virtual bool changed() const;
     virtual bool verify() const;
     virtual void apply(const QString &target) const;
+    virtual void reset();
 
 protected:
     QList<AttributeEdit *> edits;
