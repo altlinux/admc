@@ -75,18 +75,6 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     const auto select_button = new QPushButton(tr("Select"), this);
     const auto cancel_button = new QPushButton(tr("Cancel"), this);
 
-    const bool setup_as_tree =
-    [classes]() {
-        QSet<QString> classes_copy = classes.toSet();
-
-        classes_copy.remove(CLASS_CONTAINER);
-        classes_copy.remove(CLASS_OU);
-
-        const bool only_container_and_ou = classes_copy.isEmpty();
-
-        return only_container_and_ou;
-    }();
-
     const auto layout = new QGridLayout(this);
     layout->addWidget(target_label, 0, 0);
     layout->addWidget(filter_class_label, 1, 0, Qt::AlignRight);
@@ -134,13 +122,6 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         }
     }
 
-    // Sort objects by length of DN, so that parents are first
-    std::sort(objects.begin(), objects.end(), [](const QString &a, const QString &b) {
-        return a.length() < b.length();   
-    });
-
-    QHash<QString, QStandardItem *> parents;
-
     for (auto dn : objects) {
         // TODO: get name from attribute
         const QString name = dn_get_rdn(dn);
@@ -153,22 +134,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         row[SelectDialogColumn_Class]->setText(object_class);
         row[SelectDialogColumn_DN]->setText(dn);
 
-        // const QIcon icon = get_icon(dn);
-        // row[0]->setIcon(icon);
-
-        if (setup_as_tree) {
-            const QString parent_dn = dn_get_parent(dn);
-            if (parents.contains(parent_dn)) {
-                QStandardItem *parent = parents[parent_dn];
-                parent->appendRow(row);
-            } else {
-                model->appendRow(row);
-            }
-
-            parents[dn] = row[0];
-        } else {
-            model->appendRow(row);
-        }
+        model->appendRow(row);
     }
 
     model->sort(SelectDialogColumn_Name);
