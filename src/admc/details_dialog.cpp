@@ -41,6 +41,8 @@
 #include <QPushButton>
 #include <QDebug>
 
+DetailsDialog *DetailsDialog::docked_instance = nullptr;
+
 QWidget *DetailsDialog::get_docked_container() {
     static QWidget *docked_container =
     []() {
@@ -61,18 +63,17 @@ void DetailsDialog::open_for_target(const QString &target) {
     const bool is_docked = SETTINGS()->get_bool(BoolSetting_DetailsIsDocked);
 
     if (is_docked) {
-        QWidget *docked_container = get_docked_container();
-        QLayout *docked_layout = docked_container->layout();
-
-        // Remove previous instance from layout
-        static DetailsDialog *prev_docked = nullptr;
-        if (prev_docked != nullptr) {
-            docked_layout->removeWidget(prev_docked);
-            delete prev_docked;
+        // Close (delete) previous docked instance
+        if (docked_instance != nullptr) {
+            docked_instance->close();
         }
 
-        prev_docked = new DetailsDialog(target, false);
-        docked_layout->addWidget(prev_docked);
+        docked_instance = new DetailsDialog(target, false);
+
+        // Add new docked instance to container layout
+        QWidget *docked_container = get_docked_container();
+        QLayout *docked_layout = docked_container->layout();
+        docked_layout->addWidget(docked_instance);
     } else {
         auto dialog = new DetailsDialog(target, true);
         dialog->open();
@@ -85,8 +86,9 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     target = target_arg;
     is_floating_instance = is_floating_instance_arg;
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     if (is_floating_instance) {
-        setAttribute(Qt::WA_DeleteOnClose);
         resize(600, 700);
     }
 
@@ -100,18 +102,6 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     layout->addWidget(title_label);
     layout->addWidget(tab_widget);
     layout->addWidget(button_box);
-
-    connect(
-        button_box->button(QDialogButtonBox::Apply), &QPushButton::clicked,
-        this, &DetailsDialog::on_apply);
-    connect(
-        button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
-        this, &DetailsDialog::on_cancel);
-
-    const BoolSettingSignal *docked_setting = SETTINGS()->get_bool_signal(BoolSetting_DetailsIsDocked);
-    connect(
-        docked_setting, &BoolSettingSignal::changed,
-        this, &DetailsDialog::on_docked_setting_changed);
 
     const AdObject object = AD()->request_all(target);
 
@@ -180,6 +170,20 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
         }
     }
 
+    connect(
+        button_box->button(QDialogButtonBox::Apply), &QPushButton::clicked,
+        this, &DetailsDialog::on_apply);
+    connect(
+        button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
+        this, &DetailsDialog::on_cancel);
+    connect(
+        AD(), &AdInterface::modified,
+        this, &DetailsDialog::on_ad_modified);
+
+    const BoolSettingSignal *docked_setting = SETTINGS()->get_bool_signal(BoolSetting_DetailsIsDocked);
+    connect(
+        docked_setting, &BoolSettingSignal::changed,
+        this, &DetailsDialog::on_docked_setting_changed);
     on_docked_setting_changed();
 }
 
@@ -189,7 +193,7 @@ void DetailsDialog::on_docked_setting_changed() {
     if (is_floating_instance) {
         // Close dialog if changed to docked
         if (is_docked) {
-            QDialog::reject();
+            QDialog::close();
         }
     } else {
         // Hide/show docked instance depending on docked setting
@@ -265,4 +269,17 @@ void DetailsDialog::on_tab_edited() {
     }
 
     button_box->setEnabled(any_changed);
+}
+
+void DetailsDialog::on_ad_modified() {
+    const AdObject object = AD()->request_all(target);
+
+    if (object.is_empty()) {
+        close();
+        docked_instance = nullptr;
+    } else {
+        for (auto tab : tabs) {
+            tab->load(object);
+        }
+    }
 }
