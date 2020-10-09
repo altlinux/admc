@@ -252,13 +252,34 @@ QString dn_get_rdn(const QString &dn) {
     return name;
 }
 
-// "CN=foo,CN=bar,DC=domain,DC=com"
+// "CN=foo,CN=bar,CN=xd,DC=domain,DC=com"
 // =>
-// "CN=bar,DC=domain,DC=com"
+// "domain.com/xd/bar"
+// NOTE: direction is reversed to match how it looks in the tree
 QString dn_get_parent(const QString &dn) {
-    int comma_i = dn.indexOf(',');
+    const int comma_i = dn.indexOf(',');
+    const QString parent_dn = dn.mid(comma_i + 1);
 
-    QString parent_dn = dn.mid(comma_i + 1);
+    QString parent;
 
-    return parent_dn;
+    const QList<QString> parent_dn_split = parent_dn.split(",");
+    for (int i = 0; i < parent_dn_split.size(); i++) {
+        const QString raw_part = parent_dn_split[i];
+        const int equals_i = raw_part.indexOf('=');
+        const QString part = raw_part.mid(equals_i + 1);
+        
+        const QString separator =
+        [parent_dn_split, i]() {
+            if (i == parent_dn_split.size() - 1) {
+                return ".";
+            } else if (i > 0) {
+                return "/";
+            }
+            return "";
+        }();
+
+        parent = part + separator + parent;
+    }
+
+    return parent;
 }
