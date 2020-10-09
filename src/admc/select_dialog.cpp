@@ -102,31 +102,39 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         {SelectDialogColumn_DN, tr("DN")}
     });
 
-    QList<QString> objects;
-    QHash<QString, QString> object_classes;
-    for (auto object_class : classes) {
-        const QString filter =
-        [object_class]() {
-            const QString class_filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, object_class);
-            const QString advanced_view_filter = current_advanced_view_filter();
-            
-            return filter_AND(class_filter, advanced_view_filter);
-        }();
+    const QString filter =
+    [classes]() {
+        QString out;
 
-        const QList<QString> objects_of_class = AD()->search_dns(filter);
+        for (int i = 0; i < classes.size(); i++) {
+            const QString object_class = classes[i];
+            const QString equals = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, object_class);
 
-        objects.append(objects_of_class);
-
-        for (const QString dn : objects_of_class) {
-            object_classes[dn] = object_class;
+            if (i == 0) {
+                out = equals;
+            } else {
+                out = filter_OR(out, equals);
+            }
         }
-    }
 
-    for (auto dn : objects) {
+        return out;
+    }();
+
+    const QList<QString> attributes = {ATTRIBUTE_OBJECT_CLASS};
+    const QHash<QString, AdObject> search_results = AD()->search(filter, attributes, SearchScope_All);
+
+    for (const AdObject &object : search_results.values()) {
         // TODO: get name from attribute
+        const QString dn = object.get_dn();
         const QString name = dn_get_rdn(dn);
         const QString parent = dn_get_parent(dn);
-        const QString object_class = object_classes[dn];
+
+        if (!object.contains(ATTRIBUTE_OBJECT_CLASS)) {
+            continue;
+        }
+        
+        const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
+        const QString object_class = object_classes.last();
 
         const QList<QStandardItem *> row = make_item_row(SelectDialogColumn_COUNT);
         row[SelectDialogColumn_Name]->setText(name);
