@@ -140,4 +140,19 @@ void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &a
 
     row[AttributesColumn_Name]->setText(attribute);
     row[AttributesColumn_Value]->setText(display_values);
+
+    // Change background color if value is changed
+    const QColor color =
+    [this, attribute, values]() {
+        const QList<QByteArray> original_values = original[attribute];
+        const bool changed = (original_values != values);
+
+        if (changed) {
+            return Qt::lightGray;
+        } else {
+            return Qt::white;
+        }
+    }();
+    
+    row[AttributesColumn_Name]->setData(color, Qt::BackgroundRole);
 }
