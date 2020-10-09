@@ -23,5 +23,6 @@
 #include <QByteArray>
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value);
+QString attribute_display_values(const QString &attribute, const QList<QByteArray> &values);
 
 #endif /* ATTRIBUTE_DISPLAY_H */

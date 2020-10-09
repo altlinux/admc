@@ -114,6 +114,17 @@ bool AttributesTab::changed() const {
     return original != current;
 }
 
+void AttributesTab::apply(const QString &target) const {
+    for (const QString &attribute : current.keys()) {
+        const QList<QByteArray> current_values = current[attribute];
+        const QList<QByteArray> original_values = original[attribute];
+
+        if (current_values != original_values) {
+            // AD()->attribute_replace_values(target, attribute, current_values);
+        }
+    }
+}
+
 AttributesModel::AttributesModel(QObject *parent)
 : QStandardItemModel(0, AttributesColumn_COUNT, parent)
 {
@@ -124,29 +135,7 @@ AttributesModel::AttributesModel(QObject *parent)
 }
 
 void AttributesModel::load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values) {
-    const QString display_values =
-    [attribute, values]() {
-        if (values.isEmpty()) {
-            return tr("<unset>");
-        } else {
-            QString out;
-
-            // Convert values list to
-            // "display_value1;display_value2;display_value3..."
-            for (int i = 0; i < values.size(); i++) {
-                if (i > 0) {
-                    out += ";";
-                }
-
-                const QByteArray value = values[i];
-                const QString display_value = attribute_display_value(attribute, value);
-
-                out += display_value;
-            }
-
-            return out;
-        }
-    }();
+    const QString display_values = attribute_display_values(attribute, values);
 
     row[AttributesColumn_Name]->setText(attribute);
     row[AttributesColumn_Value]->setText(display_values);

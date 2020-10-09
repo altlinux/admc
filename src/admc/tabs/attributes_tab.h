@@ -37,6 +37,7 @@ public:
     void load(const AdObject &object) override;
     void reset() override;
     bool changed() const override;
+    void apply(const QString &target) const override;
 
 private slots:
     void on_double_clicked(const QModelIndex &index);
