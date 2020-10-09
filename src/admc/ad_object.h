@@ -59,6 +59,9 @@ public:
     int get_int(const QString &attribute) const;
     QList<int> get_ints(const QString &attribute) const;
 
+    QList<bool> get_bools(const QString &attribute) const;
+    bool get_bool(const QString &attribute) const;
+
     QDateTime get_datetime(const QString &attribute) const;
 
     bool get_system_flag(const SystemFlagsBit bit) const;

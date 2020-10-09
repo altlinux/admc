@@ -21,6 +21,8 @@
 #include "ad_interface.h"
 #include "utils.h"
 
+bool ad_string_to_bool(const QString &string);
+
 AdObject::AdObject()
 {
 
@@ -102,6 +104,25 @@ QDateTime AdObject::get_datetime(const QString &attribute) const {
 int AdObject::get_int(const QString &attribute) const {
     const QString value_raw = get_string(attribute);
     const int value = value_raw.toInt();
+
+    return value;
+}
+
+QList<bool> AdObject::get_bools(const QString &attribute) const {
+    const QList<QString> strings = get_strings(attribute);
+
+    QList<bool> bools;
+    for (const auto string : strings) {
+        const bool value = ad_string_to_bool(string);
+        bools.append(value);
+    }
+
+    return bools;
+}
+
+bool AdObject::get_bool(const QString &attribute) const {
+    const QString string = get_string(attribute);
+    const bool value = ad_string_to_bool(string);
 
     return value;
 }
@@ -223,4 +244,8 @@ QIcon AdObject::get_icon() const {
     const QIcon icon = QIcon::fromTheme(icon_name);
 
     return icon;
+}
+
+bool ad_string_to_bool(const QString &string) {
+    return (string == LDAP_BOOL_TRUE);
 }

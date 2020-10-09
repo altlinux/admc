@@ -83,13 +83,6 @@ int ad_delete(LDAP *ld, const char *dn);
 int ad_attribute_add(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length);
 
 /**
- * Replaces the value of given attribute with new value
- * If attributes has multiple values, all of them are replaced
- * Returns AD_SUCCESS, AD_LDAP_ERROR
- */
-int ad_attribute_replace(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length);
-
-/**
  * Remove (attribute, value) mapping from object
  * If given value is NULL, remove all values of this attributes
  * Returns AD_SUCCESS, AD_LDAP_ERROR

@@ -49,6 +49,29 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
     }
 }
 
+QString attribute_display_values(const QString &attribute, const QList<QByteArray> &values) {
+    if (values.isEmpty()) {
+        return QObject::tr("<unset>");
+    } else {
+        QString out;
+
+        // Convert values list to
+        // "display_value1;display_value2;display_value3..."
+        for (int i = 0; i < values.size(); i++) {
+            if (i > 0) {
+                out += ";";
+            }
+
+            const QByteArray value = values[i];
+            const QString display_value = attribute_display_value(attribute, value);
+
+            out += display_value;
+        }
+
+        return out;
+    }
+}
+
 // TODO: replace with some library if possible. Maybe one of samba's libs has this.
 // NOTE: https://ldapwiki.com/wiki/ObjectSID
 QString object_sid_to_display_value(const QByteArray &sid) {

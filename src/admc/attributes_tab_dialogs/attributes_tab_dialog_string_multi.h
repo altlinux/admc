@@ -17,35 +17,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_TAB_H
-#define ATTRIBUTES_TAB_H
+#ifndef ATTRIBUTES_TAB_DIALOG_STRING_MULTI_H
+#define ATTRIBUTES_TAB_DIALOG_STRING_MULTI_H
 
-#include "tabs/details_tab.h"
+#include "attributes_tab_dialogs/attributes_tab_dialog.h"
 
-#include <QStandardItemModel>
+class QLineEdit;
+class QListWidget;
+class QPushButton;
 
-// Show attributes of target as a list of attribute names and values
-// Values are editable
-class AttributesTab final : public DetailsTab {
+class AttributesTabDialogStringMulti final : public AttributesTabDialog {
 Q_OBJECT
 
 public:
-    AttributesTab();
+    AttributesTabDialogStringMulti(const QString attribute, const QList<QByteArray> values);
 
-    void load(const AdObject &object) override;
-    void reset() override;
-    bool changed() const override;
-    void apply(const QString &target) const override;
+    QList<QByteArray> get_new_values() const;
 
 private slots:
-    void on_double_clicked(const QModelIndex &index);
+    void on_edit_changed();
+    void on_list_selected_changed();
+    void on_cancel();
+    void on_add();
+    void on_remove();
+
 
 private:
-    QStandardItemModel *model;
-    AdObjectAttributes original;
-    AdObjectAttributes current;
+    QList<QByteArray> original_values;
+    QLineEdit *edit;
+    QListWidget *list_widget;
+    QPushButton *add_button;
+    QPushButton *remove_button;
 
-    void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
+    void reset();
 };
 
-#endif /* ATTRIBUTES_TAB_H */
+#endif /* ATTRIBUTES_TAB_DIALOG_STRING_MULTI_H */

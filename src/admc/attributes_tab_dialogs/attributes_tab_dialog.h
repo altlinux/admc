@@ -16,13 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ATTRIBUTE_DISPLAY_H
-#define ATTRIBUTE_DISPLAY_H
+
+#ifndef ATTRIBUTES_TAB_DIALOG_H
+#define ATTRIBUTES_TAB_DIALOG_H
 
 #include <QString>
+#include <QDialog>
+#include <QList>
 #include <QByteArray>
 
-QString attribute_display_value(const QString &attribute, const QByteArray &value);
-QString attribute_display_values(const QString &attribute, const QList<QByteArray> &values);
+class AttributesTabDialog : public QDialog {
+Q_OBJECT
 
-#endif /* ATTRIBUTE_DISPLAY_H */
+public:
+    static AttributesTabDialog *make(const QString attribute, const QList<QByteArray> values);
+
+    virtual QList<QByteArray> get_new_values() const = 0;
+};
+
+#endif /* ATTRIBUTES_TAB_DIALOG_H */

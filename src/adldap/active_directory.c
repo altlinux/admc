@@ -302,34 +302,6 @@ int ad_attribute_add(LDAP *ld, const char *dn, const char *attribute, const char
     }
 }
 
-int ad_attribute_replace(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
-    int result = AD_SUCCESS;
-
-    char *data_copy = (char *) malloc(data_length);
-    memcpy(data_copy, data, data_length);
-
-    struct berval ber_data;
-    ber_data.bv_val = data_copy;
-    ber_data.bv_len = data_length;
-
-    LDAPMod attr;
-    struct berval *values[] = {&ber_data, NULL};
-    attr.mod_op = LDAP_MOD_REPLACE|LDAP_MOD_BVALUES;
-    attr.mod_type = (char *)attribute;
-    attr.mod_bvalues = values;
-    
-    LDAPMod *attrs[] = {&attr, NULL};
-
-    const int result_modify = ldap_modify_ext_s(ld, dn, attrs, NULL, NULL);
-    if (result_modify != LDAP_SUCCESS) {
-        result = AD_LDAP_ERROR;
-    }
-
-    free(data_copy);
-
-    return result;
-}
-
 int ad_attribute_delete(LDAP *ld, const char *dn, const char *attribute, const char *data, const int data_length) {
     int result = AD_SUCCESS;
 

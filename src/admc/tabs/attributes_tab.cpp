@@ -18,6 +18,7 @@
  */
 
 #include "tabs/attributes_tab.h"
+#include "attributes_tab_dialogs/attributes_tab_dialog.h"
 #include "ad_interface.h"
 #include "utils.h"
 #include "ad_config.h"
@@ -33,7 +34,11 @@ enum AttributesColumn {
 };
 
 AttributesTab::AttributesTab() {
-    model = new AttributesModel(this);
+    model = new QStandardItemModel(0, AttributesColumn_COUNT, this);
+    set_horizontal_header_labels_from_map(model, {
+        {AttributesColumn_Name, tr("Name")},
+        {AttributesColumn_Value, tr("Value")}
+    });
 
     auto view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -46,57 +51,108 @@ AttributesTab::AttributesTab() {
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(view);
+
+    connect(
+        view, &QAbstractItemView::doubleClicked,
+        this, &AttributesTab::on_double_clicked);
+}
+
+void AttributesTab::on_double_clicked(const QModelIndex &index) {
+    const int column = index.column();
+    if (column != AttributesColumn_Value) {
+        return;
+    }
+
+    const QModelIndex attribute_index = index.siblingAtColumn(AttributesColumn_Name);
+    QStandardItem *attribute_item = model->itemFromIndex(attribute_index);
+    const QModelIndex value_index = index.siblingAtColumn(AttributesColumn_Value);
+    QStandardItem *value_item = model->itemFromIndex(value_index);
+    const QList<QStandardItem *> row = {attribute_item, value_item};
+
+    const QString attribute = attribute_item->text();
+    const QList<QByteArray> values = current[attribute];
+
+    AttributesTabDialog *dialog = AttributesTabDialog::make(attribute, values);
+    if (dialog != nullptr) {
+        connect(
+            dialog, &QDialog::accepted,
+            [this, dialog, attribute, row]() {
+                const QList<QByteArray> new_values = dialog->get_new_values();
+
+                current[attribute] = new_values;
+                load_row(row, attribute, new_values);
+
+                emit edited();
+            });
+
+        dialog->open();
+    }
 }
 
 void AttributesTab::load(const AdObject &object) {
-    model->load(object);
-}
-
-AttributesModel::AttributesModel(QObject *parent)
-: QStandardItemModel(0, AttributesColumn_COUNT, parent)
-{
-    set_horizontal_header_labels_from_map(this, {
-        {AttributesColumn_Name, tr("Name")},
-        {AttributesColumn_Value, tr("Value")}
-    });
-}
-
-// This will be called when an attribute value is edited
-bool AttributesModel::setData(const QModelIndex &index, const QVariant &value, int role) {
-    // TODO: need to store changes to be apply when apply() is called
-    return true;
-}
-
-void AttributesModel::load(const AdObject &object) {
-    removeRows(0, rowCount());
-
-    // Populate model with attributes of new root
     for (auto attribute : object.attributes()) {
-        const QList<QByteArray> values = object.get_bytes_list(attribute);
-
-        for (auto value : values) {
-            const QString display_value = attribute_display_value(attribute, value);
-
-            auto name_item = new QStandardItem(attribute);
-            auto value_item = new QStandardItem(display_value);
-
-            name_item->setEditable(false);
-
-            appendRow({name_item, value_item});
-        }
+        original[attribute] = object.get_bytes_list(attribute);
     }
 
     // Add attributes without values
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
     const QList<QString> possible_attributes = ADCONFIG()->get_possible_attributes(object_classes);
     for (const QString attribute : possible_attributes) {
-        if (!object.contains(attribute)) {
-            auto name_item = new QStandardItem(attribute);
-            auto value_item = new QStandardItem("<unset>");
-            
-            appendRow({name_item, value_item});
+        if (!original.contains(attribute)) {
+            original[attribute] = QList<QByteArray>();
         }
     }
+}
 
-    sort(AttributesColumn_Name);
+void AttributesTab::reset() {
+    current = original;
+
+    model->removeRows(0, model->rowCount());
+
+    for (auto attribute : original.keys()) {
+        const QList<QStandardItem *> row = make_item_row(AttributesColumn_COUNT);
+        const QList<QByteArray> values = original[attribute];
+
+        model->appendRow(row);
+        load_row(row, attribute, values);
+    }
+
+    model->sort(AttributesColumn_Name);
+}
+
+bool AttributesTab::changed() const {
+    return original != current;
+}
+
+void AttributesTab::apply(const QString &target) const {
+    for (const QString &attribute : current.keys()) {
+        const QList<QByteArray> current_values = current[attribute];
+        const QList<QByteArray> original_values = original[attribute];
+
+        if (current_values != original_values) {
+            AD()->attribute_replace_values(target, attribute, current_values);
+        }
+    }
+}
+
+void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values) {
+    const QString display_values = attribute_display_values(attribute, values);
+
+    row[AttributesColumn_Name]->setText(attribute);
+    row[AttributesColumn_Value]->setText(display_values);
+
+    // Change background color if value is changed
+    const QColor color =
+    [this, attribute, values]() {
+        const QList<QByteArray> original_values = original[attribute];
+        const bool changed = (original_values != values);
+
+        if (changed) {
+            return Qt::lightGray;
+        } else {
+            return Qt::white;
+        }
+    }();
+    
+    row[AttributesColumn_Name]->setData(color, Qt::BackgroundRole);
 }
