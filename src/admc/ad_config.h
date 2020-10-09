@@ -67,6 +67,7 @@ public:
     QList<QString> get_possible_superiors(const QString &object_category) const;
     QList<QString> get_possible_attributes(const QList<QString> &object_classes) const;
     AttributeType get_attribute_type(const QString &attribute) const;
+    bool get_attribute_is_single_valued(const QString &attribute) const;
 
 private:
     // ldap name => ad name
@@ -90,6 +91,8 @@ private:
 
     // attribute name => type
     QHash<QString, AttributeType> attribute_types;
+
+    QHash<QString, bool> attribute_is_single_valued;
 
 
     QString get_ldap_to_ad_name(const QString &ldap_name) const;

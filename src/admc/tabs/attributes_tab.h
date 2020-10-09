@@ -35,9 +35,16 @@ public:
     AttributesTab();
 
     void load(const AdObject &object) override;
+    void reset() override;
+    bool changed() const override;
+
+private slots:
+    void on_double_clicked(const QModelIndex &index);
 
 private:
     AttributesModel *model;
+    AdObjectAttributes original;
+    AdObjectAttributes current;
 };
 
 class AttributesModel final : public QStandardItemModel {
@@ -46,8 +53,8 @@ Q_OBJECT
 public:
     explicit AttributesModel(QObject *parent);
 
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-    void load(const AdObject &object);
+    void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
+    void load(const AdObjectAttributes &attributes);
 };
 
 #endif /* ATTRIBUTES_TAB_H */

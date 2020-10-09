@@ -40,6 +40,7 @@
 #define TREAT_AS_LEAF                   "treatAsLeaf"
 #define ATTRIBUTE_MAY_CONTAIN           "mayContain"
 #define ATTRIBUTE_SYSTEM_MAY_CONTAIN    "systemMayContain"
+#define ATTRIBUTE_IS_SINGLE_VALUED      "isSingleValued"
 
 QString get_display_specifier_class(const QString &display_specifier);
 QString get_locale_dir();
@@ -50,16 +51,20 @@ AdConfig::AdConfig(QObject *parent)
     {
         const QString schema_dn = AD()->schema_dn();
 
-        const QList<QString> attributes = {ATTRIBUTE_LDAP_DISPLAY_NAME, ATTRIBUTE_ADMIN_DISPLAY_NAME};
+        const QList<QString> attributes = {ATTRIBUTE_LDAP_DISPLAY_NAME, ATTRIBUTE_ADMIN_DISPLAY_NAME,
+            ATTRIBUTE_IS_SINGLE_VALUED
+        };
         const QHash<QString, AdObject> search_results = AD()->search("", attributes, SearchScope_Children, schema_dn);
 
         for (const AdObject object : search_results.values()) {
             const QString ad_name = object.get_string(ATTRIBUTE_ADMIN_DISPLAY_NAME);
             const QString ldap_name = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
+            const bool is_single_valued = object.get_bool(ATTRIBUTE_IS_SINGLE_VALUED);
 
             if (!ad_name.isEmpty() && !ldap_name.isEmpty()) {
                 ldap_to_ad_names[ldap_name] = ad_name;
                 ad_to_ldap_names[ad_name] = ldap_name;
+                attribute_is_single_valued[ldap_name] = is_single_valued;
             }
         }
     }
@@ -410,6 +415,14 @@ AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
         return attribute_types[attribute];
     } else {
         return AttributeType_StringCase;
+    }
+}
+
+bool AdConfig::get_attribute_is_single_valued(const QString &attribute) const {
+    if (attribute_is_single_valued.contains(attribute)) {
+        return attribute_is_single_valued[attribute];
+    } else {
+        return true;
     }
 }
 
