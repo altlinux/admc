@@ -25,10 +25,12 @@
 #include <QObject>
 #include <QString>
 #include <QList>
+#include <QMap>
 
 class DetailsTab;
 class QLabel;
 class QGridLayout;
+class StringEdit;
 
 class AttributeEdit : public QObject {
 Q_OBJECT
