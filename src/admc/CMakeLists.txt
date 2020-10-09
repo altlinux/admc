@@ -44,7 +44,7 @@ add_executable(admc
     tabs/object_tab.cpp
     tabs/attributes_tab.cpp
     tabs/account_tab.cpp
-    tabs/members_tab.cpp
+    tabs/membership_tab.cpp
     tabs/address_tab.cpp
     tabs/group_policy_tab.cpp
     tabs/gpo_links_tab.cpp

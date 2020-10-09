@@ -679,32 +679,32 @@
 <context>
     <name>MembersTab</name>
     <message>
-        <location filename="../src/admc/tabs/members_tab.cpp" line="52"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="52"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/members_tab.cpp" line="53"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="53"/>
         <source>Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/members_tab.cpp" line="54"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="54"/>
         <source>DN</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/members_tab.cpp" line="61"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="61"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/members_tab.cpp" line="62"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="62"/>
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/members_tab.cpp" line="121"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="121"/>
         <source>Remove from group</source>
         <translation type="unfinished"></translation>
     </message>

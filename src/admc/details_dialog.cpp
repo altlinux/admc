@@ -20,7 +20,7 @@
 #include "details_dialog.h"
 #include "tabs/details_tab.h"
 #include "tabs/attributes_tab.h"
-#include "tabs/members_tab.h"
+#include "tabs/membership_tab.h"
 #include "tabs/account_tab.h"
 #include "tabs/general_tab.h"
 #include "tabs/address_tab.h"
