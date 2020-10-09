@@ -51,6 +51,7 @@ add_executable(admc
 
     attributes_tab_dialogs/attributes_tab_dialog.cpp
     attributes_tab_dialogs/attributes_tab_dialog_string.cpp
+    attributes_tab_dialogs/attributes_tab_dialog_string_multi.cpp
 
     edits/attribute_edit.cpp
     edits/string_edit.cpp

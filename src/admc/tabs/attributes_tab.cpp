@@ -34,7 +34,11 @@ enum AttributesColumn {
 };
 
 AttributesTab::AttributesTab() {
-    model = new AttributesModel(this);
+    model = new QStandardItemModel(0, AttributesColumn_COUNT, this);
+    set_horizontal_header_labels_from_map(model, {
+        {AttributesColumn_Name, tr("Name")},
+        {AttributesColumn_Value, tr("Value")}
+    });
 
     auto view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -76,7 +80,7 @@ void AttributesTab::on_double_clicked(const QModelIndex &index) {
                 const QList<QByteArray> new_values = dialog->get_new_values();
 
                 current[attribute] = new_values;
-                model->load_row(row, attribute, new_values);
+                load_row(row, attribute, new_values);
 
                 emit edited();
             });
@@ -98,16 +102,22 @@ void AttributesTab::load(const AdObject &object) {
             original[attribute] = QList<QByteArray>();
         }
     }
-
-    current = original;
-
-    model->load(current);
 }
 
 void AttributesTab::reset() {
     current = original;
-    
-    model->load(current);
+
+    model->removeRows(0, model->rowCount());
+
+    for (auto attribute : original.keys()) {
+        const QList<QStandardItem *> row = make_item_row(AttributesColumn_COUNT);
+        const QList<QByteArray> values = original[attribute];
+
+        model->appendRow(row);
+        load_row(row, attribute, values);
+    }
+
+    model->sort(AttributesColumn_Name);
 }
 
 bool AttributesTab::changed() const {
@@ -120,38 +130,14 @@ void AttributesTab::apply(const QString &target) const {
         const QList<QByteArray> original_values = original[attribute];
 
         if (current_values != original_values) {
-            // AD()->attribute_replace_values(target, attribute, current_values);
+            AD()->attribute_replace_values(target, attribute, current_values);
         }
     }
 }
 
-AttributesModel::AttributesModel(QObject *parent)
-: QStandardItemModel(0, AttributesColumn_COUNT, parent)
-{
-    set_horizontal_header_labels_from_map(this, {
-        {AttributesColumn_Name, tr("Name")},
-        {AttributesColumn_Value, tr("Value")}
-    });
-}
-
-void AttributesModel::load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values) {
+void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values) {
     const QString display_values = attribute_display_values(attribute, values);
 
     row[AttributesColumn_Name]->setText(attribute);
     row[AttributesColumn_Value]->setText(display_values);
-}
-
-void AttributesModel::load(const AdObjectAttributes &attributes) {
-    removeRows(0, rowCount());
-
-    // Populate model with attributes of new root
-    for (auto attribute : attributes.keys()) {
-        const QList<QStandardItem *> row = make_item_row(AttributesColumn_COUNT);
-        const QList<QByteArray> values = attributes[attribute];
-
-        appendRow(row);
-        load_row(row, attribute, values);
-    }
-
-    sort(AttributesColumn_Name);
 }

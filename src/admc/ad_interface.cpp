@@ -352,52 +352,70 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
     }
 }
 
-bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
-    const QByteArray old_value = request_value(dn, attribute);
+bool AdInterface::attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg) {
+    int result = AD_SUCCESS;
+    
+    const QList<QByteArray> old_values = request_values(dn, attribute);
 
-    const QString string(value);
-
-    if (old_value.isEmpty() && value.isEmpty()) {
-        // do nothing
+    // Do nothing if both new and old values are empty
+    if (old_values.isEmpty() && values.isEmpty()) {
         return true;
     }
 
-    const char *old_value_cstr = old_value.constData();
-    
     const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
 
     const QByteArray attribute_array = attribute.toUtf8();
     const char *attribute_cstr = attribute_array.constData();
 
-    const char *value_cstr = value.constData();
+    // NOTE: store bvalues in array instead of dynamically allocating ptrs
+    struct berval bvalues_storage[values.size()];
+    struct berval *bvalues[values.size() + 1];
+    bvalues[values.size()] = NULL;
+    for (int i = 0; i < values.size(); i++) {
+        const QByteArray value = values[i];
+        struct berval *bvalue = &(bvalues_storage[i]);
 
-    int result;
-    if (value.isEmpty()) {
-        result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, old_value_cstr, old_value.size());
-    } else {
-        result = ad_attribute_replace(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+        bvalue->bv_val = (char *) value.constData();
+        bvalue->bv_len = (size_t) value.size();
+
+        bvalues[i] = bvalue;
+    }
+        
+    LDAPMod attr;
+    attr.mod_op = (LDAP_MOD_REPLACE | LDAP_MOD_BVALUES);
+    attr.mod_type = (char *)attribute_cstr;
+    attr.mod_bvalues = bvalues;
+    
+    LDAPMod *attrs[] = {&attr, NULL};
+
+    const int result_modify = ldap_modify_ext_s(ld, dn_cstr, attrs, NULL, NULL);
+    if (result_modify != LDAP_SUCCESS) {
+        result = AD_LDAP_ERROR;
     }
 
     const QString name = dn_get_rdn(dn);
-
-    const QString old_display_value = attribute_display_value(attribute, old_value);
-    const QString new_display_value = attribute_display_value(attribute, value);
+    const QString values_display = attribute_display_values(attribute, values);
+    const QString old_values_display = attribute_display_values(attribute, old_values);
 
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_display_value, new_display_value), do_msg);
+        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_values_display, values_display), do_msg);
 
         emit_modified();
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_display_value, new_display_value);
+        const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_values_display, values_display);
         const QString error = default_error();
 
         error_status_message(context, error, do_msg);
 
         return false;
     }
+}
+
+bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
+    return attribute_replace_values(dn, attribute, {value}, do_msg);
 }
 
 bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {

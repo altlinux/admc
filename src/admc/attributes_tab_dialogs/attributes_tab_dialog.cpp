@@ -19,6 +19,7 @@
 
 #include "attributes_tab_dialog.h"
 #include "attributes_tab_dialog_string.h"
+#include "attributes_tab_dialog_string_multi.h"
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "edits/attribute_edit.h"
@@ -41,11 +42,15 @@ AttributesTabDialog *AttributesTabDialog::make(const QString attribute, const QL
         case AttributeType_StringCase: {
             if (single_valued) {
                 return new AttributesTabDialogString(attribute, values);
+            } else {
+                return new AttributesTabDialogStringMulti(attribute, values);
             }
         }
         case AttributeType_Unicode: {
             if (single_valued) {
                 return new AttributesTabDialogString(attribute, values);
+            } else {
+                return new AttributesTabDialogStringMulti(attribute, values);
             }
         }
         default: return nullptr;
