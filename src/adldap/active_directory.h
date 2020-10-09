@@ -87,7 +87,7 @@ int ad_attribute_add(LDAP *ld, const char *dn, const char *attribute, const char
  * If given value is NULL, remove all values of this attributes
  * Returns AD_SUCCESS, AD_LDAP_ERROR
  */
-int ad_attribute_delete(LDAP *ld, const char *dn, const char *attribute, const char *data, const int data_length);
+int ad_attribute_delete_value(LDAP *ld, const char *dn, const char *attribute, const char *data, const int data_length);
 
 /**
  * Rename object

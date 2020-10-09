@@ -302,7 +302,7 @@ int ad_attribute_add(LDAP *ld, const char *dn, const char *attribute, const char
     }
 }
 
-int ad_attribute_delete(LDAP *ld, const char *dn, const char *attribute, const char *data, const int data_length) {
+int ad_attribute_delete_value(LDAP *ld, const char *dn, const char *attribute, const char *data, const int data_length) {
     int result = AD_SUCCESS;
 
     char *data_copy = (char *) malloc(data_length);

@@ -309,13 +309,13 @@ bool AdInterface::attribute_add_string(const QString &dn, const QString &attribu
 bool AdInterface::attribute_replace_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
     const QByteArray value_bytes = value.toUtf8();
 
-    return attribute_replace(dn, attribute, value_bytes, do_msg);
+    return attribute_replace_value(dn, attribute, value_bytes, do_msg);
 }
 
 bool AdInterface::attribute_delete_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
     const QByteArray value_bytes = value.toUtf8();
     
-    return attribute_delete(dn, attribute, value_bytes, do_msg);
+    return attribute_delete_value(dn, attribute, value_bytes, do_msg);
 }
 
 bool AdInterface::attribute_add(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
@@ -414,11 +414,11 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
     }
 }
 
-bool AdInterface::attribute_replace(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
+bool AdInterface::attribute_replace_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
     return attribute_replace_values(dn, attribute, {value}, do_msg);
 }
 
-bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
+bool AdInterface::attribute_delete_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
     const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
 
@@ -427,7 +427,7 @@ bool AdInterface::attribute_delete(const QString &dn, const QString &attribute, 
 
     const char *value_cstr = value.constData();
 
-    const int result = ad_attribute_delete(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+    const int result = ad_attribute_delete_value(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
 
     const QString name = dn_get_rdn(dn);
 
@@ -692,7 +692,7 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
         password_bytes.remove(0, 2);
     }
 
-    const bool success = attribute_replace(dn, ATTRIBUTE_PASSWORD, password_bytes, DoStatusMsg_No);
+    const bool success = attribute_replace_value(dn, ATTRIBUTE_PASSWORD, password_bytes, DoStatusMsg_No);
 
     const QString name = dn_get_rdn(dn);
     
