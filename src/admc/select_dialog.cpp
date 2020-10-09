@@ -38,6 +38,7 @@
 
 enum SelectDialogColumn {
     SelectDialogColumn_Name,
+    SelectDialogColumn_Parent,
     SelectDialogColumn_Class,
     SelectDialogColumn_DN,
     SelectDialogColumn_COUNT
@@ -108,6 +109,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     auto model = new QStandardItemModel(0, SelectDialogColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model, {
         {SelectDialogColumn_Name, tr("Name")},
+        {SelectDialogColumn_Parent, tr("Parent")},
         {SelectDialogColumn_Class, tr("Class")},
         {SelectDialogColumn_DN, tr("DN")}
     });
@@ -142,10 +144,12 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     for (auto dn : objects) {
         // TODO: get name from attribute
         const QString name = dn_get_rdn(dn);
+        const QString parent = dn_get_parent(dn);
         const QString object_class = object_classes[dn];
 
         const QList<QStandardItem *> row = make_item_row(SelectDialogColumn_COUNT);
         row[SelectDialogColumn_Name]->setText(name);
+        row[SelectDialogColumn_Parent]->setText(parent);
         row[SelectDialogColumn_Class]->setText(object_class);
         row[SelectDialogColumn_DN]->setText(dn);
 
@@ -173,7 +177,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     proxy_class->setSourceModel(proxy_name);
     view->setModel(proxy_class);
 
-    setup_column_toggle_menu(view, model, {SelectDialogColumn_Name});
+    setup_column_toggle_menu(view, model, {SelectDialogColumn_Name, SelectDialogColumn_Parent});
 
     // Fill class combo box with possible classes
     filter_class_combo->clear();
