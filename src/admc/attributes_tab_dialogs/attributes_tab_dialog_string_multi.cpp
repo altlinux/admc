@@ -32,6 +32,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QListWidget>
+#include <QMessageBox>
 
 AttributesTabDialogStringMulti::AttributesTabDialogStringMulti(const QString attribute, const QList<QByteArray> values)
 : AttributesTabDialog()
@@ -101,8 +102,21 @@ void AttributesTabDialogStringMulti::on_cancel() {
 }
 
 void AttributesTabDialogStringMulti::on_add() {
-    list_widget->addItem(edit->text());
-    edit->clear();
+    const QString new_value = edit->text();
+
+    const bool duplicate =
+    [this, new_value]() {
+        const QList<QListWidgetItem *> items = list_widget->findItems(new_value, Qt::MatchExactly);
+
+        return !items.isEmpty();
+    }();
+
+    if (duplicate) {
+        QMessageBox::warning(this, tr("Error"), tr("Value already exists"));
+    } else {
+        list_widget->addItem(new_value);
+        edit->clear();
+    }
 }
 
 void AttributesTabDialogStringMulti::on_remove() {
