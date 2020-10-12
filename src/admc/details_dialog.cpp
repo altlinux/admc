@@ -124,7 +124,7 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
         titles.append(title);
     };
 
-    add_tab(new GeneralTab(), tr("General"));
+    add_tab(new GeneralTab(object), tr("General"));
     add_tab(new ObjectTab(), tr("Object"));
     add_tab(new AttributesTab(), tr("Attributes"));
     if (object.is_user()) {

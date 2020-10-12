@@ -34,91 +34,80 @@
 
 // TODO: other object types also have special general tab versions, like top level domain object for example. Find out all of them and implement them
 
-GeneralTab::GeneralTab() {   
-    name_label = new QLabel();
+GeneralTab::GeneralTab(const AdObject &object) {   
+    auto name_label = new QLabel();
+    const QString name = object.get_string(ATTRIBUTE_NAME);
+    name_label->setText(name);
 
     auto line = new QFrame();
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Sunken);
 
-    edits_layout = new QGridLayout();
+    auto edits_layout = new QGridLayout();
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addWidget(name_label);
     top_layout->addWidget(line);
     top_layout->addLayout(edits_layout);
-}
 
-// TODO: do this through subclasses and switch on type in details widget, there's no shared functionality here
-void GeneralTab::load(const AdObject &object) {
-    // NOTE: this really should be in ctor but since it depends on object type, it's here
-    if (!made_edits) {
-        made_edits = true;
+    QMap<QString, StringEdit *> string_edits;
 
-        const QString name = object.get_string(ATTRIBUTE_NAME);
-        name_label->setText(name);
+    if (object.is_user()) {
+        const QList<QString> attributes = {
+            ATTRIBUTE_DESCRIPTION,
+            ATTRIBUTE_FIRST_NAME,
+            ATTRIBUTE_LAST_NAME,
+            ATTRIBUTE_DISPLAY_NAME,
+            ATTRIBUTE_INITIALS,
+            ATTRIBUTE_MAIL,
+            ATTRIBUTE_OFFICE,
+            ATTRIBUTE_TELEPHONE_NUMBER,
+            ATTRIBUTE_WWW_HOMEPAGE
+        };
 
-        QMap<QString, StringEdit *> string_edits;
+        make_string_edits(attributes, CLASS_USER, this, &string_edits, &edits);
+    } else if (object.is_ou()) {
+        const QList<QString> attributes = {
+            ATTRIBUTE_DESCRIPTION,
+            ATTRIBUTE_STREET,
+            ATTRIBUTE_CITY,
+            ATTRIBUTE_STATE,
+            ATTRIBUTE_POSTAL_CODE,
+        };
 
-        if (object.is_user()) {
-            const QList<QString> attributes = {
-                ATTRIBUTE_DESCRIPTION,
-                ATTRIBUTE_FIRST_NAME,
-                ATTRIBUTE_LAST_NAME,
-                ATTRIBUTE_DISPLAY_NAME,
-                ATTRIBUTE_INITIALS,
-                ATTRIBUTE_MAIL,
-                ATTRIBUTE_OFFICE,
-                ATTRIBUTE_TELEPHONE_NUMBER,
-                ATTRIBUTE_WWW_HOMEPAGE
-            };
+        make_string_edits(attributes, CLASS_OU, this, &string_edits, &edits);
 
-            make_string_edits(attributes, CLASS_USER, this, &string_edits, &edits);
-        } else if (object.is_ou()) {
-            const QList<QString> attributes = {
-                ATTRIBUTE_DESCRIPTION,
-                ATTRIBUTE_STREET,
-                ATTRIBUTE_CITY,
-                ATTRIBUTE_STATE,
-                ATTRIBUTE_POSTAL_CODE,
-            };
+        edits.append(new CountryEdit(this));
+    } else if (object.is_computer()) {
+        const QList<QString> string_attributes = {
+            ATTRIBUTE_SAMACCOUNT_NAME,
+            ATTRIBUTE_DNS_HOST_NAME,
+            ATTRIBUTE_DESCRIPTION,
+        };
+        make_string_edits(string_attributes, CLASS_COMPUTER, this, &string_edits, &edits);
 
-            make_string_edits(attributes, CLASS_OU, this, &string_edits, &edits);
+        string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->set_read_only(true);
+        string_edits[ATTRIBUTE_DNS_HOST_NAME]->set_read_only(true);
 
-            edits.append(new CountryEdit(this));
-        } else if (object.is_computer()) {
-            const QList<QString> string_attributes = {
-                ATTRIBUTE_SAMACCOUNT_NAME,
-                ATTRIBUTE_DNS_HOST_NAME,
-                ATTRIBUTE_DESCRIPTION,
-            };
-            make_string_edits(string_attributes, CLASS_COMPUTER, this, &string_edits, &edits);
+        // TODO: more string edits for: site (probably just site?), dc type (no idea)
+    } else if (object.is_group()) {
+        const QList<QString> string_attributes = {
+            ATTRIBUTE_SAMACCOUNT_NAME,
+            ATTRIBUTE_DESCRIPTION,
+            ATTRIBUTE_MAIL,
+            ATTRIBUTE_INFO,
+        };
+        make_string_edits(string_attributes, CLASS_GROUP, this, &string_edits, &edits);
 
-            string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->set_read_only(true);
-            string_edits[ATTRIBUTE_DNS_HOST_NAME]->set_read_only(true);
-
-            // TODO: more string edits for: site (probably just site?), dc type (no idea)
-        } else if (object.is_group()) {
-            const QList<QString> string_attributes = {
-                ATTRIBUTE_SAMACCOUNT_NAME,
-                ATTRIBUTE_DESCRIPTION,
-                ATTRIBUTE_MAIL,
-                ATTRIBUTE_INFO,
-            };
-            make_string_edits(string_attributes, CLASS_GROUP, this, &string_edits, &edits);
-
-            edits.append(new GroupScopeEdit(this));
-            edits.append(new GroupTypeEdit(this));
-        } else if (object.is_container()) {
-            make_string_edit(ATTRIBUTE_DESCRIPTION, CLASS_GROUP, this, &string_edits, &edits);
-        }
-
-        StringEdit::setup_autofill(string_edits.values());
-
-        edits_add_to_layout(edits, edits_layout);
-        edits_connect_to_tab(edits, this);  
+        edits.append(new GroupScopeEdit(this));
+        edits.append(new GroupTypeEdit(this));
+    } else if (object.is_container()) {
+        make_string_edit(ATTRIBUTE_DESCRIPTION, CLASS_GROUP, this, &string_edits, &edits);
     }
 
-    DetailsTab::load(object);
+    StringEdit::setup_autofill(string_edits.values());
+
+    edits_add_to_layout(edits, edits_layout);
+    edits_connect_to_tab(edits, this);  
 }
