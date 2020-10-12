@@ -153,14 +153,14 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     }
 
     for (auto tab : tabs) {
-        connect(
-            tab, &DetailsTab::edited,
-            this, &DetailsDialog::on_tab_edited);
+        tab->load(object);
+        tab->reset();
     }
 
     for (auto tab : tabs) {
-        tab->load(object);
-        tab->reset();
+        connect(
+            tab, &DetailsTab::edited,
+            this, &DetailsDialog::on_tab_edited);
     }
 
     for (auto tab : tabs) {
