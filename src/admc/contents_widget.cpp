@@ -31,9 +31,11 @@
 
 #include <QTreeView>
 #include <QLabel>
-#include <QVBoxLayout>
 #include <QHeaderView>
 #include <QDebug>
+#include <QSortFilterProxyModel>
+#include <QLineEdit>
+#include <QGridLayout>
 
 // NOTE: not using enums for columns here, because each column maps directly to an attribute
 QList<QString> columns;
@@ -63,6 +65,10 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
 
     model = new ContentsModel(this);
 
+    auto proxy_name = new QSortFilterProxyModel(this);
+    proxy_name->setFilterKeyColumn(column_index(ATTRIBUTE_NAME));
+    proxy_name->setRecursiveFilteringEnabled(true);
+
     view = new QTreeView(this);
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -77,7 +83,8 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
     view->header()->setSectionsMovable(true);
     ObjectContextMenu::connect_view(view, column_index(ATTRIBUTE_DISTINGUISHED_NAME));
 
-    view->setModel(model);
+    proxy_name->setSourceModel(model);
+    view->setModel(proxy_name);
 
     setup_column_toggle_menu(view, model, 
     {
@@ -88,11 +95,17 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
 
     label = new QLabel(this);
 
-    const auto layout = new QVBoxLayout(this);
+    const auto filter_name_label = new QLabel(tr("Filter: "), this);
+    auto filter_name_edit = new QLineEdit(this);
+
+    const auto layout = new QGridLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    layout->addWidget(label);
-    layout->addWidget(view);
+    layout->addWidget(label, 0, 0);
+    layout->setColumnStretch(1, 1);
+    layout->addWidget(filter_name_label, 0, 2, Qt::AlignRight);
+    layout->addWidget(filter_name_edit, 0, 3);
+    layout->addWidget(view, 1, 0, 2, 4);
 
     connect(
         containers_widget, &ContainersWidget::selected_changed,
@@ -110,6 +123,13 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
         [this]() {
             change_target(target_dn);
         });
+
+    connect(
+        filter_name_edit, &QLineEdit::textChanged,
+        [proxy_name](const QString &text) {
+            proxy_name->setFilterRegExp(QRegExp(text, Qt::CaseInsensitive, QRegExp::FixedString));
+        });
+    filter_name_edit->setText("");
 }
 
 void ContentsWidget::on_containers_selected_changed(const QString &dn) {
