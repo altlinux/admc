@@ -267,8 +267,13 @@ AdConfig::AdConfig(QObject *parent)
                 {"2.5.5.17", {{"4", AttributeType_Sid}}},
                 {"2.5.5.4", {{"20", AttributeType_Teletex}}},
                 {"2.5.5.12", {{"64", AttributeType_Unicode}}},
-                {"2.5.5.17", {{"23", AttributeType_UTCTime}}},
-                {"2.5.5.11", {{"24", AttributeType_GeneralizedTime}}},
+                {
+                    "2.5.5.11",
+                    {
+                        {"23", AttributeType_UTCTime},
+                        {"24", AttributeType_GeneralizedTime}
+                    }
+                }
             };
 
             const AttributeType type =
