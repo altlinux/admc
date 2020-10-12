@@ -87,6 +87,10 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
     attribute = attribute_arg;
     objectClass = objectClass_arg;
 
+    const QString label_text = ADCONFIG()->get_attribute_display_name(attribute, objectClass) + ":";
+    label = new QLabel(label_text);
+    connect_changed_marker(label);
+
     QObject::connect(
         edit, &QLineEdit::textChanged,
         [this]() {
@@ -117,10 +121,6 @@ void StringEdit::set_read_only(const bool read_only) {
 }
 
 void StringEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = ADCONFIG()->get_attribute_display_name(attribute, objectClass) + ":";
-    const auto label = new QLabel(label_text);
-
-    connect_changed_marker(label);
     append_to_grid_layout_with_label(layout, label, edit);
 }
 

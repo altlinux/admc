@@ -18,6 +18,7 @@
  */
 
 #include "edits/string_multi_edit.h"
+#include "edits/string_edit.h"
 #include "edit_dialogs/string_multi_edit_dialog.h"
 #include "utils.h"
 #include "ad_interface.h"
@@ -29,55 +30,58 @@
 #include <QLabel>
 #include <QPushButton>
 
-StringMultiEdit::StringMultiEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent)
+StringMultiEdit::StringMultiEdit(const QString &main_attribute, const QString &other_attribute_arg, const QString &object_class, QObject *parent)
 : AttributeEdit(parent)
+, other_attribute(other_attribute_arg)
 {
-    edit = new QLineEdit();
-    attribute = attribute_arg;
-    objectClass = objectClass_arg;
+    main_edit = new StringEdit(main_attribute, object_class, parent);
+    // NOTE: connect to main_edit's label to display changes for
+    // "other" attribute through it
+    connect_changed_marker(main_edit->label);
 
     QObject::connect(
-        edit, &QLineEdit::textChanged,
+        main_edit, &AttributeEdit::edited,
         [this]() {
             emit edited();
         });
-}
 
-void StringMultiEdit::load(const AdObject &object) {
-    original = object.get_bytes_list(attribute);
-}
-
-void StringMultiEdit::reset() {
-    current = original;
-
-    load_current_into_edit();
-}
-
-void StringMultiEdit::set_read_only(const bool read_only) {
-    // NOTE: can't be read only
-}
-
-void StringMultiEdit::add_to_layout(QGridLayout *layout) {
-    const QString label_text = ADCONFIG()->get_attribute_display_name(attribute, objectClass) + ":";
-    const auto label = new QLabel(label_text);
-    connect_changed_marker(label);
-
-    auto other_button = new QPushButton(tr("Other..."));
+    other_button = new QPushButton(tr("Other..."));
     connect(other_button, &QPushButton::clicked,
         [this]() {
-            auto dialog = new StringMultiEditDialog(attribute, get_current());
+            auto dialog = new StringMultiEditDialog(other_attribute, current_other_values);
             dialog->open();
 
             connect(
                 dialog, &QDialog::accepted,
                 [this, dialog]() {
-                    current = dialog->get_new_values();
-
-                    load_current_into_edit();
+                    current_other_values = dialog->get_new_values();
 
                     emit edited();
                 });
         });
+}
+
+void StringMultiEdit::load(const AdObject &object) {
+    main_edit->load(object);
+    
+    original_other_values = object.get_bytes_list(other_attribute);
+}
+
+void StringMultiEdit::reset() {
+    main_edit->reset();
+
+    current_other_values = original_other_values;
+
+    emit edited();
+}
+
+void StringMultiEdit::set_read_only(const bool read_only) {
+    main_edit->set_read_only(read_only);
+}
+
+void StringMultiEdit::add_to_layout(QGridLayout *layout) {
+    QLabel *label = main_edit->label;
+    QLineEdit *edit = main_edit->edit;
 
     const int row = layout->rowCount();
     layout->addWidget(label, row, 0);
@@ -86,45 +90,19 @@ void StringMultiEdit::add_to_layout(QGridLayout *layout) {
 }
 
 bool StringMultiEdit::verify() const {
-    return true;
+    return main_edit->verify();
 }
 
 bool StringMultiEdit::changed() const {
-    return (get_current() != original);
+    const bool main_changed = main_edit->changed();
+    const bool other_changed = (current_other_values != original_other_values);
+
+    return (main_changed || other_changed);
 }
 
 bool StringMultiEdit::apply(const QString &dn) const {
-    // NOTE: name can't be replaced regularly so don't apply it. Need to get value from this edit and manually rename/create object
-    if (attribute == ATTRIBUTE_NAME) {
-        return true;
-    }
+    const bool main_succcess = main_edit->apply(dn);
+    const bool other_success = AD()->attribute_replace_values(dn, other_attribute, current_other_values);
 
-    const bool success = AD()->attribute_replace_values(dn, attribute, current);
-
-    return success;
-}
-
-// Returns current values with edit value added in at first position
-// Use this instead of directly accessing current
-QList<QByteArray> StringMultiEdit::get_current() const {
-    QList<QByteArray> current_out = current;
-
-    const QString first_value = edit->text();
-    if (!first_value.isEmpty()) {
-        current_out[0] = first_value.toUtf8();
-    }
-
-    return current_out;
-}
-
-void StringMultiEdit::load_current_into_edit() {
-    const QString first_value =
-    [this]() {
-        if (original.isEmpty()) {
-            return QString();
-        } else {
-            return QString::fromUtf8(original.first());
-        }
-    }();
-    edit->setText(first_value);
+    return (main_succcess && other_success);
 }

@@ -24,27 +24,31 @@
 
 #include <QString>
 #include <QByteArray>
-#include <QMap>
 #include <QList>
 
+class QLabel;
 class QLineEdit;
+class QPushButton;
+
+// Edit for attributes which have "other" version which is
+// multi-valued. For example "telephone" and "otherTelephone".
+// Contains a StringEdit for the attribute itself and an "Other"
+// button next to it which opens a dialog through which other
+// values are edited.
 
 class StringMultiEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    QLineEdit *edit;
-
-    StringMultiEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent);
+    StringMultiEdit(const QString &main_attribute_arg, const QString &other_attribute_arg, const QString &object_class, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
-    QString attribute;
-    QString objectClass;
-    QList<QByteArray> current;
-    QList<QByteArray> original;
+    StringEdit *main_edit;
+    QPushButton *other_button;
 
-    QList<QByteArray> get_current() const;
-    void load_current_into_edit();
+    const QString other_attribute;
+    QList<QByteArray> current_other_values;
+    QList<QByteArray> original_other_values;
 };
 
 #endif /* STRING_MULTI_EDIT_H */

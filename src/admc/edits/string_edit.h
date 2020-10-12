@@ -27,6 +27,7 @@
 #include <QList>
 
 class QLineEdit;
+class QLabel;
 
 class StringEdit final : public AttributeEdit {
 Q_OBJECT
@@ -41,9 +42,12 @@ public:
 
 private:
     QLineEdit *edit;
+    QLabel *label;
     QString attribute;
     QString objectClass;
     QString original_value;
+
+    friend class StringMultiEdit;
 };
 
 // Convenience f-ns that insert string edits into an edits list
