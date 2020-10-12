@@ -132,7 +132,7 @@ void RenameDialog::accept() {
         const bool rename_success =
         [this]() {
             if (name_edit != nullptr) {
-                const QString new_name = name_edit->edit->text();
+                const QString new_name = name_edit->get_input();
                 
                 return AD()->object_rename(target, new_name);
             } else {

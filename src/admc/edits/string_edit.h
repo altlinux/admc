@@ -34,13 +34,13 @@ public:
 
     static void setup_autofill(const QList<StringEdit *> &string_edits);
 
-    QLineEdit *edit;
-
     StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent);
-
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
+    QString get_input() const;
+
 private:
+    QLineEdit *edit;
     QString attribute;
     QString objectClass;
     QString original_value;

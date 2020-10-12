@@ -136,7 +136,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
 }
 
 void CreateDialog::accept() {
-    const QString name = name_edit->edit->text();
+    const QString name = name_edit->get_input();
 
     const QString suffix =
     [this]() {

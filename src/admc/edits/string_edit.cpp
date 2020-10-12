@@ -161,3 +161,7 @@ bool StringEdit::apply(const QString &dn) const {
 
     return success;
 }
+
+QString StringEdit::get_input() const {
+    return edit->text();
+}
