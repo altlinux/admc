@@ -102,10 +102,7 @@ void StringEdit::load(const AdObject &object) {
     original_value =
     [this, object]() {
         if (attribute == ATTRIBUTE_OBJECT_CLASS) {
-            // NOTE: object class is multi-valued so need to get the "primary" class
-            // TODO: not sure how to get the "primary" attribute, for now just getting the last one. I think what I need to do is get the most "derived" class? and that info should be in the scheme.
-            const QList<QString> classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-            return classes.last();
+            return object.get_class();
         } else {
             return object.get_string(attribute);
         }

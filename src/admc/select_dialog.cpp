@@ -133,8 +133,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
             continue;
         }
         
-        const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-        const QString object_class = object_classes.last();
+        const QString object_class = object.get_class();
 
         const QList<QStandardItem *> row = make_item_row(SelectDialogColumn_COUNT);
         row[SelectDialogColumn_Name]->setText(name);

@@ -186,6 +186,12 @@ GroupScope AdObject::get_group_scope() const {
     return GroupScope_Global;
 }
 
+QString AdObject::get_class() const {
+    const QList<QString> object_classes = get_strings(ATTRIBUTE_OBJECT_CLASS);
+
+    return object_classes.last();
+}
+
 bool AdObject::is_class(const QString &object_class) const {
     const QList<QByteArray> object_classes = attributes_data[ATTRIBUTE_OBJECT_CLASS];
     const bool is_class = object_classes.contains(object_class.toUtf8());

@@ -230,8 +230,8 @@ void ContentsModel::make_row(QStandardItem *parent, const AdObject &object) {
         [attribute, object]() {
             if (attribute == ATTRIBUTE_OBJECT_CLASS) {
                 // NOTE: last class in the list is the furthest by inheritance so display that one
-                const QList<QString> object_classes = object.get_strings(attribute);
-                const QString object_class = object_classes.last();
+                const QString object_class = object.get_class();
+                
                 return ADCONFIG()->get_class_display_name(object_class);
             } else {
                 const QByteArray value = object.get_bytes(attribute);

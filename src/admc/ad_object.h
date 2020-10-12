@@ -71,6 +71,9 @@ public:
     GroupScope get_group_scope() const;
     GroupType get_group_type() const;
 
+    // Get most derived class
+    QString get_class() const;
+
     bool is_class(const QString &object_class) const;
     bool is_user() const;
     bool is_group() const;
