@@ -17,21 +17,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_TAB_DIALOG_H
-#define ATTRIBUTES_TAB_DIALOG_H
+#ifndef ATTRIBUTES_TAB_DIALOG_STRING_MULTI_H
+#define ATTRIBUTES_TAB_DIALOG_STRING_MULTI_H
 
-#include <QString>
-#include <QDialog>
-#include <QList>
-#include <QByteArray>
+#include "edit_dialogs/edit_dialog.h"
 
-class AttributesTabDialog : public QDialog {
+class QLineEdit;
+class QListWidget;
+class QPushButton;
+
+class StringMultiEditDialog final : public EditDialog {
 Q_OBJECT
 
 public:
-    static AttributesTabDialog *make(const QString attribute, const QList<QByteArray> values);
+    StringMultiEditDialog(const QString attribute, const QList<QByteArray> values);
 
-    virtual QList<QByteArray> get_new_values() const = 0;
+    QList<QByteArray> get_new_values() const;
+
+private slots:
+    void on_edit_changed();
+    void on_list_selected_changed();
+    void on_cancel();
+    void on_add();
+    void on_remove();
+
+
+private:
+    QList<QByteArray> original_values;
+    QLineEdit *edit;
+    QListWidget *list_widget;
+    QPushButton *add_button;
+    QPushButton *remove_button;
+
+    void reset();
 };
 
-#endif /* ATTRIBUTES_TAB_DIALOG_H */
+#endif /* ATTRIBUTES_TAB_DIALOG_STRING_MULTI_H */

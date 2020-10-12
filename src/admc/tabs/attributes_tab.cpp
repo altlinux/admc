@@ -18,7 +18,7 @@
  */
 
 #include "tabs/attributes_tab.h"
-#include "attributes_tab_dialogs/attributes_tab_dialog.h"
+#include "edit_dialogs/edit_dialog.h"
 #include "ad_interface.h"
 #include "utils.h"
 #include "ad_config.h"
@@ -72,7 +72,7 @@ void AttributesTab::on_double_clicked(const QModelIndex &index) {
     const QString attribute = attribute_item->text();
     const QList<QByteArray> values = current[attribute];
 
-    AttributesTabDialog *dialog = AttributesTabDialog::make(attribute, values);
+    EditDialog *dialog = EditDialog::make(attribute, values);
     if (dialog != nullptr) {
         connect(
             dialog, &QDialog::accepted,

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attributes_tab_dialog_string.h"
+#include "string_edit_dialog.h"
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "edits/attribute_edit.h"
@@ -34,8 +34,8 @@
 
 // TODO: figure out what can and can't be renamed and disable renaming for exceptions (computers can't for example)
 
-AttributesTabDialogString::AttributesTabDialogString(const QString attribute, const QList<QByteArray> values)
-: AttributesTabDialog()
+StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArray> values)
+: EditDialog()
 {
     setAttribute(Qt::WA_DeleteOnClose);
     resize(300, 300);
@@ -63,15 +63,15 @@ AttributesTabDialogString::AttributesTabDialogString(const QString attribute, co
         this, &QDialog::accept);
     connect(
         button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
-        this, &AttributesTabDialogString::on_cancel);
+        this, &StringEditDialog::on_cancel);
 }
 
-void AttributesTabDialogString::on_cancel() {
+void StringEditDialog::on_cancel() {
     // Reset to original display value
     edit->setText(original_value);
 }
 
-QList<QByteArray> AttributesTabDialogString::get_new_values() const {
+QList<QByteArray> StringEditDialog::get_new_values() const {
     const QString new_value_string = edit->text();
 
     if (new_value_string.isEmpty()) {

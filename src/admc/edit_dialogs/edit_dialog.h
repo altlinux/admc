@@ -17,27 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_TAB_DIALOG_STRING_H
-#define ATTRIBUTES_TAB_DIALOG_STRING_H
+#ifndef ATTRIBUTES_TAB_DIALOG_H
+#define ATTRIBUTES_TAB_DIALOG_H
 
-#include "attributes_tab_dialogs/attributes_tab_dialog.h"
+#include <QString>
+#include <QDialog>
+#include <QList>
+#include <QByteArray>
 
-class QLineEdit;
+// Gets input from user and then returns it through
+// get_new_values(). Whatever widget opened this
+// dialog should be applying changes.
 
-class AttributesTabDialogString final : public AttributesTabDialog {
+class EditDialog : public QDialog {
 Q_OBJECT
 
 public:
-    AttributesTabDialogString(const QString attribute, const QList<QByteArray> values);
+    static EditDialog *make(const QString attribute, const QList<QByteArray> values);
 
-    QList<QByteArray> get_new_values() const;
-
-private slots:
-    void on_cancel();
-
-private:
-    QLineEdit *edit;
-    QString original_value;
+    virtual QList<QByteArray> get_new_values() const = 0;
 };
 
-#endif /* ATTRIBUTES_TAB_DIALOG_STRING_H */
+#endif /* ATTRIBUTES_TAB_DIALOG_H */

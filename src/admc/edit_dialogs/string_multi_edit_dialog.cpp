@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attributes_tab_dialog_string_multi.h"
+#include "string_multi_edit_dialog.h"
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "edits/attribute_edit.h"
@@ -34,8 +34,8 @@
 #include <QListWidget>
 #include <QMessageBox>
 
-AttributesTabDialogStringMulti::AttributesTabDialogStringMulti(const QString attribute, const QList<QByteArray> values)
-: AttributesTabDialog()
+StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QList<QByteArray> values)
+: EditDialog()
 {
     original_values = values;
 
@@ -70,38 +70,38 @@ AttributesTabDialogStringMulti::AttributesTabDialogStringMulti(const QString att
         this, &QDialog::accept);
     connect(
         button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
-        this, &AttributesTabDialogStringMulti::on_cancel);
+        this, &StringMultiEditDialog::on_cancel);
     connect(
         add_button, &QAbstractButton::clicked,
-        this, &AttributesTabDialogStringMulti::on_add);
+        this, &StringMultiEditDialog::on_add);
     connect(
         remove_button, &QAbstractButton::clicked,
-        this, &AttributesTabDialogStringMulti::on_remove);
+        this, &StringMultiEditDialog::on_remove);
     connect(
         edit, &QLineEdit::textChanged,
-        this, &AttributesTabDialogStringMulti::on_edit_changed);
+        this, &StringMultiEditDialog::on_edit_changed);
     on_edit_changed();
     connect(
         list_widget, &QListWidget::itemSelectionChanged,
-        this, &AttributesTabDialogStringMulti::on_list_selected_changed);
+        this, &StringMultiEditDialog::on_list_selected_changed);
     on_list_selected_changed();
 }
 
-void AttributesTabDialogStringMulti::on_edit_changed() {
+void StringMultiEditDialog::on_edit_changed() {
     const bool edit_has_text = !edit->text().isEmpty();
     add_button->setEnabled(edit_has_text);
 }
 
-void AttributesTabDialogStringMulti::on_list_selected_changed() {
+void StringMultiEditDialog::on_list_selected_changed() {
     const bool any_selected = !list_widget->selectedItems().isEmpty();
     remove_button->setEnabled(any_selected);
 }
 
-void AttributesTabDialogStringMulti::on_cancel() {
+void StringMultiEditDialog::on_cancel() {
     reset();
 }
 
-void AttributesTabDialogStringMulti::on_add() {
+void StringMultiEditDialog::on_add() {
     const QString new_value = edit->text();
 
     const bool duplicate =
@@ -119,7 +119,7 @@ void AttributesTabDialogStringMulti::on_add() {
     }
 }
 
-void AttributesTabDialogStringMulti::on_remove() {
+void StringMultiEditDialog::on_remove() {
     const QList<QListWidgetItem *> selected = list_widget->selectedItems();
 
     for (const auto item : selected) {
@@ -128,7 +128,7 @@ void AttributesTabDialogStringMulti::on_remove() {
     }
 }
 
-QList<QByteArray> AttributesTabDialogStringMulti::get_new_values() const {
+QList<QByteArray> StringMultiEditDialog::get_new_values() const {
     QList<QByteArray> new_values;
 
     for (int i = 0; i < list_widget->count(); i++) {
@@ -142,7 +142,7 @@ QList<QByteArray> AttributesTabDialogStringMulti::get_new_values() const {
     return new_values;
 }
 
-void AttributesTabDialogStringMulti::reset() {
+void StringMultiEditDialog::reset() {
     edit->clear();
     list_widget->clear();
 

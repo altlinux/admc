@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attributes_tab_dialog.h"
-#include "attributes_tab_dialog_string.h"
-#include "attributes_tab_dialog_string_multi.h"
+#include "edit_dialog.h"
+#include "string_edit_dialog.h"
+#include "string_multi_edit_dialog.h"
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "edits/attribute_edit.h"
@@ -34,23 +34,23 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-AttributesTabDialog *AttributesTabDialog::make(const QString attribute, const QList<QByteArray> values) {
+EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> values) {
     const bool single_valued = ADCONFIG()->get_attribute_is_single_valued(attribute);
     const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
     switch (type) {
         case AttributeType_StringCase: {
             if (single_valued) {
-                return new AttributesTabDialogString(attribute, values);
+                return new StringEditDialog(attribute, values);
             } else {
-                return new AttributesTabDialogStringMulti(attribute, values);
+                return new StringMultiEditDialog(attribute, values);
             }
         }
         case AttributeType_Unicode: {
             if (single_valued) {
-                return new AttributesTabDialogString(attribute, values);
+                return new StringEditDialog(attribute, values);
             } else {
-                return new AttributesTabDialogStringMulti(attribute, values);
+                return new StringMultiEditDialog(attribute, values);
             }
         }
         default: return nullptr;

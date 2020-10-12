@@ -18,7 +18,7 @@
  */
 
 #include "edits/string_multi_edit.h"
-#include "attributes_tab_dialogs/attributes_tab_dialog_string_multi.h"
+#include "edit_dialogs/string_multi_edit_dialog.h"
 #include "utils.h"
 #include "ad_interface.h"
 #include "ad_config.h"
@@ -65,7 +65,7 @@ void StringMultiEdit::add_to_layout(QGridLayout *layout) {
     auto other_button = new QPushButton(tr("Other..."));
     connect(other_button, &QPushButton::clicked,
         [this]() {
-            auto dialog = new AttributesTabDialogStringMulti(attribute, get_current());
+            auto dialog = new StringMultiEditDialog(attribute, get_current());
             dialog->open();
 
             connect(
