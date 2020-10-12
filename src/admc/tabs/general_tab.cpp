@@ -21,7 +21,7 @@
 #include "ad_interface.h"
 #include "edits/attribute_edit.h"
 #include "edits/string_edit.h"
-#include "edits/string_multi_edit.h"
+#include "edits/string_other_edit.h"
 #include "edits/country_edit.h"
 #include "edits/group_scope_edit.h"
 #include "edits/group_type_edit.h"
@@ -66,8 +66,8 @@ GeneralTab::GeneralTab(const AdObject &object) {
         };
         make_string_edits(attributes, CLASS_USER, this, &string_edits, &edits);
 
-        edits.append(new StringMultiEdit(ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, CLASS_USER, this));
-        edits.append(new StringMultiEdit(ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, CLASS_USER, this));
+        edits.append(new StringOtherEdit(ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, CLASS_USER, this));
+        edits.append(new StringOtherEdit(ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, CLASS_USER, this));
     } else if (object.is_ou()) {
         const QList<QString> attributes = {
             ATTRIBUTE_DESCRIPTION,

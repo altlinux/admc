@@ -47,7 +47,7 @@ private:
     QString objectClass;
     QString original_value;
 
-    friend class StringMultiEdit;
+    friend class StringOtherEdit;
 };
 
 // Convenience f-ns that insert string edits into an edits list

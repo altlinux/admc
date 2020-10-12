@@ -36,10 +36,10 @@ class QPushButton;
 // button next to it which opens a dialog through which other
 // values are edited.
 
-class StringMultiEdit final : public AttributeEdit {
+class StringOtherEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    StringMultiEdit(const QString &main_attribute_arg, const QString &other_attribute_arg, const QString &object_class, QObject *parent);
+    StringOtherEdit(const QString &main_attribute_arg, const QString &other_attribute_arg, const QString &object_class, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

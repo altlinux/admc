@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "edits/string_multi_edit.h"
+#include "edits/string_other_edit.h"
 #include "edits/string_edit.h"
 #include "edit_dialogs/string_multi_edit_dialog.h"
 #include "utils.h"
@@ -30,7 +30,7 @@
 #include <QLabel>
 #include <QPushButton>
 
-StringMultiEdit::StringMultiEdit(const QString &main_attribute, const QString &other_attribute_arg, const QString &object_class, QObject *parent)
+StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &other_attribute_arg, const QString &object_class, QObject *parent)
 : AttributeEdit(parent)
 , other_attribute(other_attribute_arg)
 {
@@ -61,13 +61,13 @@ StringMultiEdit::StringMultiEdit(const QString &main_attribute, const QString &o
         });
 }
 
-void StringMultiEdit::load(const AdObject &object) {
+void StringOtherEdit::load(const AdObject &object) {
     main_edit->load(object);
     
     original_other_values = object.get_bytes_list(other_attribute);
 }
 
-void StringMultiEdit::reset() {
+void StringOtherEdit::reset() {
     main_edit->reset();
 
     current_other_values = original_other_values;
@@ -75,11 +75,11 @@ void StringMultiEdit::reset() {
     emit edited();
 }
 
-void StringMultiEdit::set_read_only(const bool read_only) {
+void StringOtherEdit::set_read_only(const bool read_only) {
     main_edit->set_read_only(read_only);
 }
 
-void StringMultiEdit::add_to_layout(QGridLayout *layout) {
+void StringOtherEdit::add_to_layout(QGridLayout *layout) {
     QLabel *label = main_edit->label;
     QLineEdit *edit = main_edit->edit;
 
@@ -89,18 +89,18 @@ void StringMultiEdit::add_to_layout(QGridLayout *layout) {
     layout->addWidget(other_button, row, 2);
 }
 
-bool StringMultiEdit::verify() const {
+bool StringOtherEdit::verify() const {
     return main_edit->verify();
 }
 
-bool StringMultiEdit::changed() const {
+bool StringOtherEdit::changed() const {
     const bool main_changed = main_edit->changed();
     const bool other_changed = (current_other_values != original_other_values);
 
     return (main_changed || other_changed);
 }
 
-bool StringMultiEdit::apply(const QString &dn) const {
+bool StringOtherEdit::apply(const QString &dn) const {
     const bool main_succcess = main_edit->apply(dn);
     const bool other_success = AD()->attribute_replace_values(dn, other_attribute, current_other_values);
 
