@@ -100,9 +100,17 @@ GeneralTab::GeneralTab(const AdObject &object) {
             ATTRIBUTE_INFO,
         };
         make_string_edits(string_attributes, CLASS_GROUP, this, &string_edits, &edits);
+        
+        auto scope_edit = new GroupScopeEdit(this);
+        edits.append(scope_edit);
+        
+        auto type_edit = new GroupTypeEdit(this);
+        edits.append(type_edit);
 
-        edits.append(new GroupScopeEdit(this));
-        edits.append(new GroupTypeEdit(this));
+        if (object.contains(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT) && object.get_bool(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT)) {
+            scope_edit->set_read_only(true);
+            type_edit->set_read_only(true);
+        }
     } else if (object.is_container()) {
         make_string_edit(ATTRIBUTE_DESCRIPTION, CLASS_GROUP, this, &string_edits, &edits);
     }

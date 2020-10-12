@@ -93,6 +93,7 @@
 #define ATTRIBUTE_MAX_PWD_AGE           "maxPwdAge"
 #define ATTRIBUTE_MIN_PWD_AGE           "minPwdAge"
 #define ATTRIBUTE_LOCKOUT_DURATION      "lockoutDuration"
+#define ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT "isCriticalSystemObject"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
