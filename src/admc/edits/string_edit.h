@@ -31,9 +31,13 @@ class QLineEdit;
 class StringEdit final : public AttributeEdit {
 Q_OBJECT
 public:
+
+    static void setup_autofill(const QList<StringEdit *> &string_edits);
+
     QLineEdit *edit;
 
     StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent);
+
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
@@ -42,7 +46,9 @@ private:
     QString original_value;
 };
 
-void make_string_edits(const QList<QString> attributes, const QString &objectClass, QMap<QString, StringEdit *> *string_edits_out, QList<AttributeEdit *> *edits_out, QObject *parent);
-void setup_string_edit_autofills(const QMap<QString, StringEdit *> string_edits, const StringEdit *name_edit = nullptr);
+// Convenience f-ns that insert string edits into an edits list
+// and a map for you.
+StringEdit *make_string_edit(const QString &attribute, const QString &objectClass, QObject *parent, QMap<QString, StringEdit *> *map_out, QList<AttributeEdit *> *edits_out);
+void make_string_edits(const QList<QString> attributes, const QString &objectClass, QObject *parent, QMap<QString, StringEdit *> *map_out, QList<AttributeEdit *> *edits_out);
 
 #endif /* STRING_EDIT_H */

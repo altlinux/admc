@@ -61,22 +61,52 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
     
     const auto edits_layout = new QGridLayout();
 
-    name_edit = new StringEdit(ATTRIBUTE_NAME, create_type_to_class(type), this);
-    all_edits.append(name_edit);
+    QMap<QString, StringEdit *> string_edits;
+
+    const QString object_class = create_type_to_class(type);
+
+    name_edit = make_string_edit(ATTRIBUTE_NAME, object_class, this, &string_edits, &all_edits);
 
     switch (type) {
         case CreateType_User: {
-            make_user_edits();
+            const QList<QString> attributes = {
+                ATTRIBUTE_FIRST_NAME,
+                ATTRIBUTE_LAST_NAME,
+                ATTRIBUTE_DISPLAY_NAME,
+                ATTRIBUTE_INITIALS,
+                ATTRIBUTE_USER_PRINCIPAL_NAME,
+                ATTRIBUTE_SAMACCOUNT_NAME
+            };
+            make_string_edits(attributes, object_class, this, &string_edits, &all_edits);
+
+
+            all_edits.append(new PasswordEdit(this));
+
+            const QList<AccountOption> options = {
+                AccountOption_PasswordExpired,
+                AccountOption_DontExpirePassword,
+                AccountOption_Disabled
+                // TODO: AccountOption_CannotChangePass
+            };
+            QMap<AccountOption, AccountOptionEdit *> option_edits;
+            make_account_option_edits(options, &option_edits, &all_edits, this);
+
             break;
         }
         case CreateType_Group: {
-            make_group_edits();
+            make_string_edit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &string_edits, &all_edits);
+
+            all_edits.append(new GroupScopeEdit(this));
+            all_edits.append(new GroupTypeEdit(this));
+
             break;
         }
         default: {
             break;
         }
     }
+
+    StringEdit::setup_autofill(string_edits.values());
 
     edits_add_to_layout(all_edits, edits_layout);
 
@@ -171,44 +201,6 @@ void CreateDialog::accept() {
     }
     AD()->end_batch();
     Status::instance()->show_errors_popup(errors_index);
-}
-
-void CreateDialog::make_group_edits() {
-    const QList<QString> string_attributes = {
-        ATTRIBUTE_SAMACCOUNT_NAME,
-    };
-    QMap<QString, StringEdit *> string_edits;
-    make_string_edits(string_attributes, create_type_to_class(type), &string_edits, &all_edits, this);
-    setup_string_edit_autofills(string_edits, name_edit);
-
-    all_edits.append(new GroupScopeEdit(this));
-    all_edits.append(new GroupTypeEdit(this));
-}
-
-void CreateDialog::make_user_edits() {
-    const QList<QString> string_attributes = {
-        ATTRIBUTE_FIRST_NAME,
-        ATTRIBUTE_LAST_NAME,
-        ATTRIBUTE_DISPLAY_NAME,
-        ATTRIBUTE_INITIALS,
-        ATTRIBUTE_USER_PRINCIPAL_NAME,
-        ATTRIBUTE_SAMACCOUNT_NAME,
-    };
-    QMap<QString, StringEdit *> string_edits;
-    make_string_edits(string_attributes, create_type_to_class(type), &string_edits, &all_edits, this);
-
-    all_edits.append(new PasswordEdit(this));
-
-    const QList<AccountOption> options = {
-        AccountOption_PasswordExpired,
-        AccountOption_DontExpirePassword,
-        AccountOption_Disabled
-        // TODO: AccountOption_CannotChangePass
-    };
-    QMap<AccountOption, AccountOptionEdit *> option_edits;
-    make_account_option_edits(options, &option_edits, &all_edits, this);
-
-    setup_string_edit_autofills(string_edits, name_edit);
 }
 
 QString create_type_to_string(const CreateType &type) {

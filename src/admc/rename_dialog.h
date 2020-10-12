@@ -40,7 +40,8 @@ private slots:
 private:
     QString target;
     QList<AttributeEdit *> all_edits;
-    QMap<QString, StringEdit *> string_edits;
+    StringEdit *name_edit;
+    QString old_name_for_message;
 };
 
 #endif /* RENAME_DIALOG_H */

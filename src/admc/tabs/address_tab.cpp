@@ -42,7 +42,7 @@ AddressTab::AddressTab() {
     };
 
     QMap<QString, StringEdit *> string_edits;
-    make_string_edits(attributes, CLASS_USER, &string_edits, &edits, this);
+    make_string_edits(attributes, CLASS_USER, this, &string_edits, &edits);
 
     edits.append(new CountryEdit(this));
 

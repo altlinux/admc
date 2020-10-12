@@ -47,10 +47,25 @@ RenameDialog::RenameDialog(const QString &target_arg)
 
     const auto edits_layout = new QGridLayout();
 
-    QList<QString> string_attributes;
-    QString objectClass;
+    const QString object_class =
+    [object]() {
+        const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
+        return object_classes.last();
+    }();
+
+    old_name_for_message =
+    [object]() {
+        if (object.is_policy()) {
+            return object.get_string(ATTRIBUTE_DISPLAY_NAME);
+        } else {
+            return object.get_string(ATTRIBUTE_NAME);
+        }
+    }();
+
+    QMap<QString, StringEdit *> string_edits;
+
     if (object.is_user()) {
-        string_attributes = {
+        const QList<QString> attributes = {
             ATTRIBUTE_NAME,
             ATTRIBUTE_FIRST_NAME,
             ATTRIBUTE_LAST_NAME,
@@ -58,23 +73,30 @@ RenameDialog::RenameDialog(const QString &target_arg)
             ATTRIBUTE_USER_PRINCIPAL_NAME,
             ATTRIBUTE_SAMACCOUNT_NAME
         };
-        objectClass = CLASS_USER;
+
+        make_string_edits(attributes, object_class, this, &string_edits, &all_edits);
     } else if (object.is_group()) {
-        string_attributes = {
+        const QList<QString> attributes = {
             ATTRIBUTE_NAME,
             ATTRIBUTE_SAMACCOUNT_NAME
         };
-        objectClass = CLASS_GROUP;
+
+        make_string_edits(attributes, object_class, this, &string_edits, &all_edits);
     } else if (object.is_policy()) {
-        string_attributes = {
-            ATTRIBUTE_DISPLAY_NAME
-        };
-        // TODO: there's no display has no display name for displayName(heh). No group policy display specifier either.
-        objectClass = CLASS_CONTAINER;
+        // TODO: no display specifier for "displayName" for "policy" class, hardcode it?
+        make_string_edit(ATTRIBUTE_DISPLAY_NAME, object_class, this, &string_edits, &all_edits);
     }
 
-    make_string_edits(string_attributes, objectClass, &string_edits, &all_edits, this);
-    setup_string_edit_autofills(string_edits);
+    name_edit =
+    [string_edits]() -> StringEdit * {
+        if (string_edits.contains(ATTRIBUTE_NAME)) {
+            return string_edits[ATTRIBUTE_NAME];
+        } else {
+            return nullptr;
+        }
+    }();
+
+    StringEdit::setup_autofill(string_edits.values());
 
     edits_add_to_layout(all_edits, edits_layout);
     edits_load(all_edits, object);
@@ -107,19 +129,11 @@ void RenameDialog::accept() {
         // NOTE: apply attribute changes before renaming so that attribute changes can complete on old DN
         const bool apply_success = edits_apply(all_edits, target);
 
-        auto get_attribute_from_edit =
-        [this](const QString &attribute) -> QString {
-            const StringEdit *edit = string_edits[attribute];
-            const QString value = edit->edit->text();
-
-            return value;
-        };
-
         const bool rename_success =
-        [this, get_attribute_from_edit]() {
-            if (string_edits.contains(ATTRIBUTE_NAME)) {
-                const QString new_name = get_attribute_from_edit(ATTRIBUTE_NAME);
-
+        [this]() {
+            if (name_edit != nullptr) {
+                const QString new_name = name_edit->edit->text();
+                
                 return AD()->object_rename(target, new_name);
             } else {
                 // NOTE: for policies, object is never actually renamed, only the display name changes
@@ -127,22 +141,13 @@ void RenameDialog::accept() {
             }
         }();
 
-        const QString name_for_message =
-        [this, get_attribute_from_edit]() {
-            if (string_edits.contains(ATTRIBUTE_NAME)) {
-                return get_attribute_from_edit(ATTRIBUTE_NAME);
-            } else {
-                return get_attribute_from_edit(ATTRIBUTE_DISPLAY_NAME);
-            }
-        }();
-
         if (apply_success && rename_success) {
-            const QString message = QString(tr("Renamed object - \"%1\"")).arg(name_for_message);
+            const QString message = QString(tr("Renamed object - \"%1\"")).arg(old_name_for_message);
             Status::instance()->message(message, StatusType_Success);
 
             QDialog::accept();
         } else {
-            const QString message = QString(tr("Failed to rename object - \"%1\"")).arg(name_for_message);
+            const QString message = QString(tr("Failed to rename object - \"%1\"")).arg(old_name_for_message);
             Status::instance()->message(message, StatusType_Error);
 
             // NOTE: reload updated object if any edits applied successfully

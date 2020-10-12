@@ -34,16 +34,6 @@
 
 // TODO: other object types also have special general tab versions, like top level domain object for example. Find out all of them and implement them
 
-enum GeneralTabType {
-    GeneralTabType_Default,
-    GeneralTabType_User,
-    GeneralTabType_OU,
-    GeneralTabType_Computer,
-    GeneralTabType_Group,
-    GeneralTabType_Container,
-    GeneralTabType_COUNT
-};
-
 GeneralTab::GeneralTab() {   
     name_label = new QLabel();
 
@@ -69,101 +59,62 @@ void GeneralTab::load(const AdObject &object) {
         const QString name = object.get_string(ATTRIBUTE_NAME);
         name_label->setText(name);
 
-        const GeneralTabType type =
-        [object]() {
-            if (object.is_computer()) {
-                return GeneralTabType_Computer;
-            } else if (object.is_user()) {
-                return GeneralTabType_User;
-            } else if (object.is_ou()) {
-                return GeneralTabType_OU;
-            } else if (object.is_group()) {
-                return GeneralTabType_Group;
-            } else if (object.is_container()) {
-                return GeneralTabType_Container;
-            } else {
-                return GeneralTabType_Default;
-            }
-        }();
+        QMap<QString, StringEdit *> string_edits;
 
-        switch (type) {
-            case GeneralTabType_User: {
-                const QList<QString> string_attributes = {
-                    ATTRIBUTE_DESCRIPTION,
-                    ATTRIBUTE_FIRST_NAME,
-                    ATTRIBUTE_LAST_NAME,
-                    ATTRIBUTE_DISPLAY_NAME,
-                    ATTRIBUTE_INITIALS,
-                    ATTRIBUTE_MAIL,
-                    ATTRIBUTE_OFFICE,
-                    ATTRIBUTE_TELEPHONE_NUMBER,
-                    ATTRIBUTE_WWW_HOMEPAGE
-                };
+        if (object.is_user()) {
+            const QList<QString> attributes = {
+                ATTRIBUTE_DESCRIPTION,
+                ATTRIBUTE_FIRST_NAME,
+                ATTRIBUTE_LAST_NAME,
+                ATTRIBUTE_DISPLAY_NAME,
+                ATTRIBUTE_INITIALS,
+                ATTRIBUTE_MAIL,
+                ATTRIBUTE_OFFICE,
+                ATTRIBUTE_TELEPHONE_NUMBER,
+                ATTRIBUTE_WWW_HOMEPAGE
+            };
 
-                QMap<QString, StringEdit *> string_edits;
-                make_string_edits(string_attributes, CLASS_USER, &string_edits, &edits, this);
+            make_string_edits(attributes, CLASS_USER, this, &string_edits, &edits);
+        } else if (object.is_ou()) {
+            const QList<QString> attributes = {
+                ATTRIBUTE_DESCRIPTION,
+                ATTRIBUTE_STREET,
+                ATTRIBUTE_CITY,
+                ATTRIBUTE_STATE,
+                ATTRIBUTE_POSTAL_CODE,
+            };
 
-                setup_string_edit_autofills(string_edits);
+            make_string_edits(attributes, CLASS_OU, this, &string_edits, &edits);
 
-                break;
-            }
-            case GeneralTabType_OU: {
-                const QList<QString> string_attributes = {
-                    ATTRIBUTE_DESCRIPTION,
-                    ATTRIBUTE_STREET,
-                    ATTRIBUTE_CITY,
-                    ATTRIBUTE_STATE,
-                    ATTRIBUTE_POSTAL_CODE,
-                };
+            edits.append(new CountryEdit(this));
+        } else if (object.is_computer()) {
+            const QList<QString> string_attributes = {
+                ATTRIBUTE_SAMACCOUNT_NAME,
+                ATTRIBUTE_DNS_HOST_NAME,
+                ATTRIBUTE_DESCRIPTION,
+            };
+            make_string_edits(string_attributes, CLASS_COMPUTER, this, &string_edits, &edits);
 
-                QMap<QString, StringEdit *> string_edits;
-                make_string_edits(string_attributes, CLASS_OU, &string_edits, &edits, this);
+            string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->set_read_only(true);
+            string_edits[ATTRIBUTE_DNS_HOST_NAME]->set_read_only(true);
 
-                edits.append(new CountryEdit(this));
+            // TODO: more string edits for: site (probably just site?), dc type (no idea)
+        } else if (object.is_group()) {
+            const QList<QString> string_attributes = {
+                ATTRIBUTE_SAMACCOUNT_NAME,
+                ATTRIBUTE_DESCRIPTION,
+                ATTRIBUTE_MAIL,
+                ATTRIBUTE_INFO,
+            };
+            make_string_edits(string_attributes, CLASS_GROUP, this, &string_edits, &edits);
 
-                break;
-            }
-            case GeneralTabType_Computer: {
-                const QList<QString> string_attributes = {
-                    ATTRIBUTE_SAMACCOUNT_NAME,
-                    ATTRIBUTE_DNS_HOST_NAME,
-                    ATTRIBUTE_DESCRIPTION,
-                };
-
-                QMap<QString, StringEdit *> string_edits;
-                make_string_edits(string_attributes, CLASS_COMPUTER, &string_edits, &edits, this);
-
-                string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->set_read_only(true);
-                string_edits[ATTRIBUTE_DNS_HOST_NAME]->set_read_only(true);
-
-                // TODO: more string edits for: site (probably just site?), dc type (no idea)
-
-                break;
-            }
-            case GeneralTabType_Group: {
-                const QList<QString> string_attributes = {
-                    ATTRIBUTE_SAMACCOUNT_NAME,
-                    ATTRIBUTE_DESCRIPTION,
-                    ATTRIBUTE_MAIL,
-                    ATTRIBUTE_INFO,
-                };
-                QMap<QString, StringEdit *> string_edits;
-                make_string_edits(string_attributes, CLASS_GROUP, &string_edits, &edits, this);
-
-                edits.append(new GroupScopeEdit(this));
-                edits.append(new GroupTypeEdit(this));
-            
-                break;
-            }
-            case GeneralTabType_Container: {
-                edits.append(new StringEdit(ATTRIBUTE_DESCRIPTION, CLASS_CONTAINER, this));
-
-                break;
-            }
-            default: {
-                break;
-            }
+            edits.append(new GroupScopeEdit(this));
+            edits.append(new GroupTypeEdit(this));
+        } else if (object.is_container()) {
+            make_string_edit(ATTRIBUTE_DESCRIPTION, CLASS_GROUP, this, &string_edits, &edits);
         }
+
+        StringEdit::setup_autofill(string_edits.values());
 
         edits_add_to_layout(edits, edits_layout);
         edits_connect_to_tab(edits, this);  

@@ -27,23 +27,28 @@
 #include <QMessageBox>
 #include <QLabel>
 
-void make_string_edits(const QList<QString> attributes, const QString &objectClass, QMap<QString, StringEdit *> *string_edits_out, QList<AttributeEdit *> *edits_out, QObject *parent) {
+StringEdit *make_string_edit(const QString &attribute, const QString &objectClass, QObject *parent, QMap<QString, StringEdit *> *map_out, QList<AttributeEdit *> *edits_out) {
+    const auto edit = new StringEdit(attribute, objectClass, parent);
+    map_out->insert(attribute, edit);
+    edits_out->append(edit);
+
+    return edit;
+}
+
+void make_string_edits(const QList<QString> attributes, const QString &objectClass, QObject *parent, QMap<QString, StringEdit *> *map_out, QList<AttributeEdit *> *edits_out) {
     for (auto attribute : attributes) {
-        auto edit = new StringEdit(attribute, objectClass, parent);
-        string_edits_out->insert(attribute, edit);
-        edits_out->append((AttributeEdit *)edit);
+        make_string_edit(attribute, objectClass, parent, map_out, edits_out);
     }
 }
 
-void setup_string_edit_autofills(const QMap<QString, StringEdit *> string_edits, const StringEdit *name_edit) {
+void StringEdit::setup_autofill(const QList<StringEdit *> &string_edits) {
     // Get QLineEdit's out of string edits
     QMap<QString, QLineEdit *> edits;
-    for (auto attribute : string_edits.keys()) {
-        edits[attribute] = string_edits[attribute]->edit;
-    }
+    for (StringEdit *string_edit : string_edits) {
+        const QString attribute = string_edit->attribute;
+        QLineEdit *edit = string_edit->edit;
 
-    if (name_edit != nullptr) {
-        edits[ATTRIBUTE_NAME] = name_edit->edit;
+        edits[attribute] = edit;
     }
 
     // Autofill (first name + last name) into full name

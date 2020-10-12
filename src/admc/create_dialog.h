@@ -60,9 +60,6 @@ private:
     CreateType type;
     StringEdit *name_edit;
     QList<AttributeEdit *> all_edits;
-
-    void make_user_edits();
-    void make_group_edits();
 };
 
 QString create_type_to_string(const CreateType &type);
