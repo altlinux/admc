@@ -41,10 +41,9 @@
 #include <QCheckBox>
 #include <QDialogButtonBox>
 
-// TODO: implement cannot change pass
+// TODO: implement checkbox for account option "User cannot change password". Can't just do it through UAC attribute bits.
 
 QString create_type_to_string(const CreateType &type);
-QString create_type_to_class(const CreateType &type);
 
 CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
 : QDialog()
@@ -63,7 +62,17 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
 
     QMap<QString, StringEdit *> string_edits;
 
-    const QString object_class = create_type_to_class(type);
+    const QString object_class =
+    [this]() {
+        switch (type) {
+            case CreateType_User: return CLASS_USER;
+            case CreateType_Computer: return CLASS_COMPUTER;
+            case CreateType_OU: return CLASS_OU;
+            case CreateType_Group: return CLASS_GROUP;
+            case CreateType_COUNT: return "";
+        }
+        return "";
+    }();
 
     name_edit = make_string_edit(ATTRIBUTE_NAME, object_class, this, &string_edits, &all_edits);
 
@@ -210,17 +219,6 @@ QString create_type_to_string(const CreateType &type) {
         case CreateType_OU: return CreateDialog::tr("Organization Unit");
         case CreateType_Group: return CreateDialog::tr("Group");
         case CreateType_COUNT: return "COUNT";
-    }
-    return "";
-}
-
-QString create_type_to_class(const CreateType &type) {
-    switch (type) {
-        case CreateType_User: return CLASS_USER;
-        case CreateType_Computer: return CLASS_COMPUTER;
-        case CreateType_OU: return CLASS_OU;
-        case CreateType_Group: return CLASS_GROUP;
-        case CreateType_COUNT: return "";
     }
     return "";
 }
