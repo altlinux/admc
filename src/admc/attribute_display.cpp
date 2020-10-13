@@ -204,22 +204,11 @@ QString octet_to_display_value(const QByteArray &bytes_arg) {
         return out;
     }();
 
-    // TODO: can length even be different from UUID_STR_LEN?
-    const size_t cpy_length =
-    [bytes]() {
-        if (bytes.size() > UUID_STR_LEN) {
-            return UUID_STR_LEN;
-        } else {
-            return bytes.size();
-        }
-        return 0;
-    }();
-
     uuid_t uuid;
-    memcpy(uuid, bytes.constData(), cpy_length);
+    memcpy(uuid, bytes.constData(), bytes.size());
 
     char uuid_cstr[UUID_STR_LEN];
-    uuid_unparse(uuid, uuid_cstr);
+    uuid_unparse_lower(uuid, uuid_cstr);
 
     const QByteArray display_bytes(uuid_cstr, UUID_STR_LEN);
     const QString display_value(display_bytes);
