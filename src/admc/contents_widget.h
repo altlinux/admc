@@ -66,9 +66,6 @@ public:
     ContentsModel(QObject *parent);
 
     void change_target(const QString &dn);
-
-private:
-    void make_row(QStandardItem *parent, const AdObject &object);
 };
 
 #endif /* CONTENTS_WIDGET_H */

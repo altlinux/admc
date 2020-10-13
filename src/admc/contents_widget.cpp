@@ -67,7 +67,6 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
 
     auto proxy_name = new QSortFilterProxyModel(this);
     proxy_name->setFilterKeyColumn(column_index(ATTRIBUTE_NAME));
-    proxy_name->setRecursiveFilteringEnabled(true);
 
     view = new QTreeView(this);
     view->setAcceptDrops(true);
@@ -154,13 +153,6 @@ void ContentsWidget::change_target(const QString &dn) {
 
     model->change_target(target_dn);
 
-    const QAbstractItemModel *view_model = view->model();
-    
-    // Set root to head
-    // NOTE: need this to hide head while retaining it in model for drag and drop purposes
-    const QModelIndex head_index = view_model->index(0, 0);
-    view->setRootIndex(head_index);
-
     resize_columns();
 
     const QString target_name = AD()->request_value(target_dn, ATTRIBUTE_NAME);
@@ -169,6 +161,7 @@ void ContentsWidget::change_target(const QString &dn) {
     if (target_name.isEmpty()) {
         label_text = "";
     } else {
+        const QAbstractItemModel *view_model = view->model();
         const QModelIndex view_head = view_model->index(0, 0);
         const int object_count = view_model->rowCount(view_head);
 
@@ -211,12 +204,6 @@ void ContentsModel::change_target(const QString &target_dn) {
         return;
     }
 
-    // Load head
-    QStandardItem *root = invisibleRootItem();
-    const AdObject head_object = AD()->request_all(target_dn);
-    make_row(root, head_object);
-    QStandardItem *head = item(0, 0);
-
     // NOTE: get object class as well to get icon
     QList<QString> search_attributes = columns;
     search_attributes.append(ATTRIBUTE_OBJECT_CLASS);
@@ -227,33 +214,27 @@ void ContentsModel::change_target(const QString &target_dn) {
 
     // Load children
     for (auto child_dn : search_results.keys()) {
-        if (search_results.contains(child_dn)) {
-            const AdObject object  = search_results[child_dn];
-            make_row(head, object);
+        const AdObject object  = search_results[child_dn];
+        
+        const QList<QStandardItem *> row = make_item_row(columns.count());
+        for (int i = 0; i < columns.count(); i++) {
+            const QString attribute = columns[i];
+
+            if (!object.contains(attribute)) {
+                continue;
+            }
+
+            const QByteArray value = object.get_bytes(attribute);
+            const QString display_value = attribute_display_value(attribute, value);
+
+            row[i]->setText(display_value);
         }
+
+        const QIcon icon = object.get_icon();
+        row[0]->setIcon(icon);
+
+        invisibleRootItem()->appendRow(row);
     }
 
     sort(column_index(ATTRIBUTE_NAME));
-}
-
-void ContentsModel::make_row(QStandardItem *parent, const AdObject &object) {
-    const QList<QStandardItem *> row = make_item_row(columns.count());
-
-    for (int i = 0; i < columns.count(); i++) {
-        const QString attribute = columns[i];
-        
-        if (!object.contains(attribute)) {
-            continue;
-        }
-
-        const QByteArray value = object.get_bytes(attribute);
-        const QString display_value = attribute_display_value(attribute, value);
-
-        row[i]->setText(display_value);
-    }
-
-    const QIcon icon = object.get_icon();
-    row[0]->setIcon(icon);
-
-    parent->appendRow(row);
 }
