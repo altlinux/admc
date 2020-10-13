@@ -246,18 +246,8 @@ void ContentsModel::make_row(QStandardItem *parent, const AdObject &object) {
             continue;
         }
 
-        const QString display_value =
-        [attribute, object]() {
-            if (attribute == ATTRIBUTE_OBJECT_CLASS) {
-                // NOTE: last class in the list is the furthest by inheritance so display that one
-                const QString object_class = object.get_class();
-                
-                return ADCONFIG()->get_class_display_name(object_class);
-            } else {
-                const QByteArray value = object.get_bytes(attribute);
-                return attribute_display_value(attribute, value);
-            }
-        }();
+        const QByteArray value = object.get_bytes(attribute);
+        const QString display_value = attribute_display_value(attribute, value);
 
         row[i]->setText(display_value);
     }

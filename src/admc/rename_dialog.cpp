@@ -47,7 +47,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
 
     const auto edits_layout = new QGridLayout();
 
-    const QString object_class = object.get_class();
+    const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
     old_name_for_message =
     [object]() {

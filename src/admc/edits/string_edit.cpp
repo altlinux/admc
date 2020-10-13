@@ -99,14 +99,7 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
 }
 
 void StringEdit::load(const AdObject &object) {
-    original_value =
-    [this, object]() {
-        if (attribute == ATTRIBUTE_OBJECT_CLASS) {
-            return object.get_class();
-        } else {
-            return object.get_string(attribute);
-        }
-    }();
+    original_value = object.get_string(attribute);
 }
 
 void StringEdit::reset() {

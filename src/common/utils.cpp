@@ -228,17 +228,6 @@ void show_only_in_dev_mode(QWidget *widget) {
         });
 }
 
-QList<QString> byte_arrays_to_strings(const QList<QByteArray> &byte_arrays) {
-    QList<QString> strings;
-
-    for (const auto byte_array : byte_arrays) {
-        const QString string = QString::fromUtf8(byte_array);
-        strings.append(string);
-    }
-
-    return strings;
-}
-
 // "CN=foo,CN=bar,DC=domain,DC=com"
 // =>
 // "foo"

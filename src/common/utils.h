@@ -60,8 +60,6 @@ void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap
 
 void show_only_in_dev_mode(QWidget *widget);
 
-QList<QString> byte_arrays_to_strings(const QList<QByteArray> &byte_arrays);
-
 QString current_advanced_view_filter();
 
 QString dn_get_rdn(const QString &dn);

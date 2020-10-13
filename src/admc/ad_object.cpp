@@ -71,16 +71,29 @@ QByteArray AdObject::get_bytes(const QString &attribute) const {
 
 QList<QString> AdObject::get_strings(const QString &attribute) const {
     const QList<QByteArray> values = get_bytes_list(attribute);
-    const QList<QString> strings = byte_arrays_to_strings(values);
+
+    QList<QString> strings;
+    for (const auto value : values) {
+        const QString string = QString::fromUtf8(value);
+        strings.append(string);
+    }
 
     return strings;
 }
 
 QString AdObject::get_string(const QString &attribute) const {
-    const QByteArray bytes = get_bytes(attribute);
-    const QString string = QString::fromUtf8(bytes);
-
-    return string;
+    const QList<QString> strings = get_strings(attribute);
+    
+    // NOTE: return last object class because that is the most derived one and is what's needed most of the time
+    if (!strings.isEmpty()) {
+        if (attribute == ATTRIBUTE_OBJECT_CLASS) {
+            return strings.last();
+        } else {
+            return strings.first();
+        }
+    } else {
+        return QString();
+    }
 }
 
 QList<int> AdObject::get_ints(const QString &attribute) const {
@@ -88,24 +101,28 @@ QList<int> AdObject::get_ints(const QString &attribute) const {
 
     QList<int> ints;
     for (const auto string : strings) {
-        const int value_int = string.toInt();
-        ints.append(value_int);
+        const int int_value = string.toInt();
+        ints.append(int_value);
     }
 
     return ints;
 }
 
-QDateTime AdObject::get_datetime(const QString &attribute) const {
-    const QString datetime_string = get_string(attribute);
+int AdObject::get_int(const QString &attribute) const {
+    const QList<int> ints = get_ints(attribute);
 
-    return datetime_string_to_qdatetime(attribute, datetime_string);
+    if (!ints.isEmpty()) {
+        return ints.first();
+    } else {
+        return -1;
+    }
 }
 
-int AdObject::get_int(const QString &attribute) const {
-    const QString value_raw = get_string(attribute);
-    const int value = value_raw.toInt();
+QDateTime AdObject::get_datetime(const QString &attribute) const {
+    const QString datetime_string = get_string(attribute);
+    const QDateTime datetime = datetime_string_to_qdatetime(attribute, datetime_string);
 
-    return value;
+    return datetime;
 }
 
 QList<bool> AdObject::get_bools(const QString &attribute) const {
@@ -113,18 +130,21 @@ QList<bool> AdObject::get_bools(const QString &attribute) const {
 
     QList<bool> bools;
     for (const auto string : strings) {
-        const bool value = ad_string_to_bool(string);
-        bools.append(value);
+        const bool bool_value = ad_string_to_bool(string);
+        bools.append(bool_value);
     }
 
     return bools;
 }
 
 bool AdObject::get_bool(const QString &attribute) const {
-    const QString string = get_string(attribute);
-    const bool value = ad_string_to_bool(string);
+    const QList<bool> bools = get_bools(attribute);
 
-    return value;
+    if (!bools.isEmpty()) {
+        return bools.first();
+    } else {
+        return false;
+    }
 }
 
 bool AdObject::get_system_flag(const SystemFlagsBit bit) const {
@@ -186,15 +206,9 @@ GroupScope AdObject::get_group_scope() const {
     return GroupScope_Global;
 }
 
-QString AdObject::get_class() const {
-    const QList<QString> object_classes = get_strings(ATTRIBUTE_OBJECT_CLASS);
-
-    return object_classes.last();
-}
-
 bool AdObject::is_class(const QString &object_class) const {
-    const QList<QByteArray> object_classes = attributes_data[ATTRIBUTE_OBJECT_CLASS];
-    const bool is_class = object_classes.contains(object_class.toUtf8());
+    const QList<QString> object_classes = get_strings(ATTRIBUTE_OBJECT_CLASS);
+    const bool is_class = object_classes.contains(object_class);
 
     return is_class;
 }
@@ -226,16 +240,16 @@ bool AdObject::is_computer() const {
 QIcon AdObject::get_icon() const {
     // TODO: change to custom, good icons, add those icons to installation?
     // TODO: are there cases where an object can have multiple icons due to multiple objectClasses and one of them needs to be prioritized?
-    static const QMap<QByteArray, QString> class_to_icon = {
-        {QByteArray(CLASS_GP_CONTAINER), "x-office-address-book"},
-        {QByteArray(CLASS_CONTAINER), "folder"},
-        {QByteArray(CLASS_OU), "network-workgroup"},
-        {QByteArray(CLASS_PERSON), "avatar-default"},
-        {QByteArray(CLASS_GROUP), "application-x-smb-workgroup"},
-        {QByteArray(CLASS_BUILTIN_DOMAIN), "emblem-system"},
+    static const QMap<QString, QString> class_to_icon = {
+        {CLASS_GP_CONTAINER, "x-office-address-book"},
+        {CLASS_CONTAINER, "folder"},
+        {CLASS_OU, "network-workgroup"},
+        {CLASS_PERSON, "avatar-default"},
+        {CLASS_GROUP, "application-x-smb-workgroup"},
+        {CLASS_BUILTIN_DOMAIN, "emblem-system"},
     };
 
-    const QList<QByteArray> object_classes = attributes_data[ATTRIBUTE_OBJECT_CLASS];
+    const QList<QString> object_classes = get_strings(ATTRIBUTE_OBJECT_CLASS);
     const QString icon_name =
     [object_classes]() {
         for (auto c : class_to_icon.keys()) {
