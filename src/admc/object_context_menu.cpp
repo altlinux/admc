@@ -60,7 +60,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
         DetailsDialog::open_for_target(dn);
     });
 
-    if (object.is_policy()) {
+    if (object.is_class(CLASS_GP_CONTAINER)) {
         // TODO: policy version seems to be too disconnected from general object context menu, maybe just move it to policies widget?
         addAction(tr("Edit Policy"), [this, dn, object]() {
             edit_policy(dn, object);
@@ -110,7 +110,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
             move_action->setEnabled(false);
         }
 
-        if (object.is_user()) {
+        if (object.is_class(CLASS_USER)) {
             QAction *add_to_group_action = addAction(tr("Add to group"));
             connect(
                 add_to_group_action, &QAction::triggered,

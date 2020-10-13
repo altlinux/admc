@@ -858,8 +858,8 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
     const AdObject dropped = AD()->request_attributes(dn, {ATTRIBUTE_OBJECT_CLASS, ATTRIBUTE_OBJECT_CATEGORY});
     const AdObject target = AD()->request_attributes(target_dn, {ATTRIBUTE_OBJECT_CLASS});
 
-    const bool dropped_is_user = dropped.is_user();
-    const bool target_is_group = target.is_user();
+    const bool dropped_is_user = dropped.is_class(CLASS_USER);
+    const bool target_is_group = target.is_class(CLASS_USER);
 
     if (dropped_is_user && target_is_group) {
         return DropType_AddToGroup;
@@ -869,8 +869,9 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
 
         const bool can_move =
         [target, possible_superiors]() {
+            const QList<QString> object_classes = target.get_strings(ATTRIBUTE_OBJECT_CLASS);
             for (const auto object_class : possible_superiors) {
-                if (target.is_class(object_class)) {
+                if (object_classes.contains(object_class)) {
                     return true;
                 }
             }

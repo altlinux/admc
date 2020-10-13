@@ -51,7 +51,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
 
     old_name_for_message =
     [object]() {
-        if (object.is_policy()) {
+        if (object.is_class(CLASS_GP_CONTAINER)) {
             return object.get_string(ATTRIBUTE_DISPLAY_NAME);
         } else {
             return object.get_string(ATTRIBUTE_NAME);
@@ -60,7 +60,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
 
     QMap<QString, StringEdit *> string_edits;
 
-    if (object.is_user()) {
+    if (object.is_class(CLASS_USER)) {
         const QList<QString> attributes = {
             ATTRIBUTE_NAME,
             ATTRIBUTE_FIRST_NAME,
@@ -71,14 +71,14 @@ RenameDialog::RenameDialog(const QString &target_arg)
         };
 
         make_string_edits(attributes, object_class, this, &string_edits, &all_edits);
-    } else if (object.is_group()) {
+    } else if (object.is_class(CLASS_GROUP)) {
         const QList<QString> attributes = {
             ATTRIBUTE_NAME,
             ATTRIBUTE_SAMACCOUNT_NAME
         };
 
         make_string_edits(attributes, object_class, this, &string_edits, &all_edits);
-    } else if (object.is_policy()) {
+    } else if (object.is_class(CLASS_GP_CONTAINER)) {
         // TODO: no display specifier for "displayName" for "policy" class, hardcode it?
         make_string_edit(ATTRIBUTE_DISPLAY_NAME, object_class, this, &string_edits, &all_edits);
     }

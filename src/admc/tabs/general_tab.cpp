@@ -54,7 +54,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
 
     QMap<QString, StringEdit *> string_edits;
 
-    if (object.is_user()) {
+    if (object.is_class(CLASS_USER)) {
         const QList<QString> attributes = {
             ATTRIBUTE_DESCRIPTION,
             ATTRIBUTE_FIRST_NAME,
@@ -68,7 +68,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
 
         edits.append(new StringOtherEdit(ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, CLASS_USER, this));
         edits.append(new StringOtherEdit(ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, CLASS_USER, this));
-    } else if (object.is_ou()) {
+    } else if (object.is_class(CLASS_OU)) {
         const QList<QString> attributes = {
             ATTRIBUTE_DESCRIPTION,
             ATTRIBUTE_STREET,
@@ -80,7 +80,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
         make_string_edits(attributes, CLASS_OU, this, &string_edits, &edits);
 
         edits.append(new CountryEdit(this));
-    } else if (object.is_computer()) {
+    } else if (object.is_class(CLASS_COMPUTER)) {
         const QList<QString> string_attributes = {
             ATTRIBUTE_SAMACCOUNT_NAME,
             ATTRIBUTE_DNS_HOST_NAME,
@@ -92,7 +92,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
         string_edits[ATTRIBUTE_DNS_HOST_NAME]->set_read_only(true);
 
         // TODO: more string edits for: site (probably just site?), dc type (no idea)
-    } else if (object.is_group()) {
+    } else if (object.is_class(CLASS_GROUP)) {
         const QList<QString> string_attributes = {
             ATTRIBUTE_SAMACCOUNT_NAME,
             ATTRIBUTE_DESCRIPTION,
@@ -111,7 +111,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
             scope_edit->set_read_only(true);
             type_edit->set_read_only(true);
         }
-    } else if (object.is_container()) {
+    } else if (object.is_class(CLASS_CONTAINER)) {
         make_string_edit(ATTRIBUTE_DESCRIPTION, CLASS_GROUP, this, &string_edits, &edits);
     }
 

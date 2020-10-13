@@ -170,9 +170,6 @@ AdConfig::AdConfig(QObject *parent)
             out.append(class_ldap);
         }
 
-        // TODO: why is this not included???
-        out.append(CLASS_DOMAIN);
-
         return out;
     }();
 

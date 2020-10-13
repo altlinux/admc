@@ -71,13 +71,8 @@ public:
     GroupScope get_group_scope() const;
     GroupType get_group_type() const;
 
+    // NOTE: this compares for the most derived class, so each object only maps to one class. For example computers have objectClass values of both "user" and "computer" but "computer" is more derived so they are only computers and not users.
     bool is_class(const QString &object_class) const;
-    bool is_user() const;
-    bool is_group() const;
-    bool is_container() const;
-    bool is_ou() const;
-    bool is_policy() const;
-    bool is_computer() const;
 
     QIcon get_icon() const;
 

@@ -207,34 +207,10 @@ GroupScope AdObject::get_group_scope() const {
 }
 
 bool AdObject::is_class(const QString &object_class) const {
-    const QList<QString> object_classes = get_strings(ATTRIBUTE_OBJECT_CLASS);
-    const bool is_class = object_classes.contains(object_class);
+    const QString this_object_class = get_string(ATTRIBUTE_OBJECT_CLASS);
+    const bool is_class = (this_object_class == object_class);
 
     return is_class;
-}
-
-bool AdObject::is_user() const {
-    return is_class(CLASS_USER) && !is_class(CLASS_COMPUTER);
-}
-
-bool AdObject::is_group() const {
-    return is_class(CLASS_GROUP);
-}
-
-bool AdObject::is_container() const {
-    return is_class(CLASS_CONTAINER);
-}
-
-bool AdObject::is_ou() const {
-    return is_class(CLASS_OU);
-}
-
-bool AdObject::is_policy() const {
-    return is_class(CLASS_GP_CONTAINER);
-}
-
-bool AdObject::is_computer() const {
-    return is_class(CLASS_COMPUTER);
 }
 
 QIcon AdObject::get_icon() const {

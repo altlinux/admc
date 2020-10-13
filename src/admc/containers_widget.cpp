@@ -341,14 +341,17 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AdObject
             if (dev_mode) {
                 out.append({CLASS_CONFIGURATION, CLASS_dMD});
             }
+
+            // TODO: domain not included for some reason, so add it ourselves
+            out.append(CLASS_DOMAIN);
             
             return out;
         }();
 
+        // NOTE: compare against all classes of object, not just the most derived one
+        const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
         for (const auto acceptable_class : filter_classes) {
-            const bool is_class = object.is_class(acceptable_class);
-
-            if (is_class) {
+            if (object_classes.contains(acceptable_class)) {
                 return true;
             }
         }

@@ -127,11 +127,11 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     add_tab(new GeneralTab(object), tr("General"));
     add_tab(new ObjectTab(), tr("Object"));
     add_tab(new AttributesTab(), tr("Attributes"));
-    if (object.is_user()) {
+    if (object.is_class(CLASS_USER)) {
         add_tab(new AccountTab(), tr("Account"));
         add_tab(new AddressTab(), tr("Address"));
     }
-    if (object.is_group()) {
+    if (object.is_class(CLASS_GROUP)) {
         add_tab(new MembersTab(), tr("Members"));
     }
     const bool has_member_of_attribute =
@@ -144,11 +144,11 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     if (has_member_of_attribute) {
         add_tab(new MemberOfTab(), tr("Member of"));
     }
-    if (object.is_ou()) {
+    if (object.is_class(CLASS_OU)) {
         // TODO: not sure which object classes can have gplink, for now only know of OU's.
         add_tab(new GroupPolicyTab(), tr("Group policy"));
     }
-    if (object.is_policy()) {
+    if (object.is_class(CLASS_GP_CONTAINER)) {
         add_tab(new GpoLinksTab(), tr("Links to"));
     }
 
