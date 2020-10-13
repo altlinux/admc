@@ -224,8 +224,16 @@ void ContentsModel::change_target(const QString &target_dn) {
                 continue;
             }
 
-            const QByteArray value = object.get_bytes(attribute);
-            const QString display_value = attribute_display_value(attribute, value);
+            const QString display_value =
+            [attribute, object]() {
+                if (attribute == ATTRIBUTE_OBJECT_CLASS) {
+                    const QString value_string = object.get_string(attribute);
+                    return ADCONFIG()->get_class_display_name(value_string);
+                } else {
+                    const QByteArray value = object.get_bytes(attribute);
+                    return attribute_display_value(attribute, value);
+                }
+            }();
 
             row[i]->setText(display_value);
         }

@@ -44,13 +44,7 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
         default: {
             const QString value_string = QString::fromUtf8(value);
 
-            if (attribute == ATTRIBUTE_OBJECT_CLASS) {
-                const QString class_display_name = ADCONFIG()->get_class_display_name(value_string);
-
-                return class_display_name;
-            } else {
-                return value_string;
-            }
+            return value_string;
         }
     }
 }
