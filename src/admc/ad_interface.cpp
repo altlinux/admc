@@ -27,6 +27,8 @@
 
 #include <ldap.h>
 #include <lber.h>
+#include <libsmbclient.h>
+#include <uuid/uuid.h>
 
 #include <QSet>
 #include <QMessageBox>
@@ -46,14 +48,20 @@ AdInterface *AdInterface::instance() {
     return &ad_interface;
 }
 
-bool AdInterface::login(const QString &host_arg, const QString &domain) {
+void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgroup, int maxLenWorkgroup, char * pUsername, int maxLenUsername, char * pPassword, int maxLenPassword) {
+
+}
+
+bool AdInterface::login(const QString &host_arg, const QString &domain_arg) {
     m_host = host_arg;
 
     const QString uri = "ldap://" + m_host;
 
+    m_domain = domain_arg;
+
     // Transform domain to search base
     // "DOMAIN.COM" => "DC=domain,DC=com"
-    m_search_base = domain;
+    m_search_base = domain_arg;
     m_search_base = m_search_base.toLower();
     m_search_base = "DC=" + m_search_base;
     m_search_base = m_search_base.replace(".", ",DC=");
@@ -68,6 +76,17 @@ bool AdInterface::login(const QString &host_arg, const QString &domain) {
 
     if (result == AD_SUCCESS) {
         m_config = new AdConfig(this);
+
+        // TODO: can this context expire, for example from a disconnect?
+        smbc_init(get_auth_data_fn, 0);
+        smbc = smbc_new_context();
+        smbc_setOptionUseKerberos(smbc, true);
+        smbc_setOptionFallbackAfterKerberos(smbc, true);
+        if (!smbc_init_context(smbc)) {
+            smbc_free_context(smbc, 0);
+            printf("Could not initialize smbc context\n");
+        }
+        smbc_set_context(smbc);
 
         return true;
     } else {
@@ -97,6 +116,10 @@ void AdInterface::end_batch() {
 
 AdConfig *AdInterface::config() const {
     return m_config;
+}
+
+QString AdInterface::domain() const {
+    return m_domain;
 }
 
 QString AdInterface::search_base() const {
@@ -470,6 +493,7 @@ bool AdInterface::object_add(const QString &dn, const char **classes) {
     const char *dn_cstr = dn_array.constData();
 
     const int result = ad_add(ld, dn_cstr, classes);
+
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Created \"%1\"")).arg(dn));
 
@@ -914,6 +938,112 @@ void AdInterface::object_drop(const QString &dn, const QString &target_dn) {
             break;
         }
     }
+}
+
+bool AdInterface::create_gpo(const QString &display_name) {
+    //
+    // Generate GUID
+    //
+    // TODO: is it ok to not swap bytes here, like it's done in octet_to_display_value()? Probably yes.
+    const QString guid =
+    [](){
+        uuid_t uuid;
+        uuid_generate_random(uuid);
+
+        char uuid_cstr[UUID_STR_LEN];
+        uuid_unparse_upper(uuid, uuid_cstr);
+
+        const QString uuid_string = "{" + QString(uuid_cstr) + "}";
+
+        return uuid_string;
+    }();
+
+    //
+    // Create dirs and files for policy on sysvol
+    //
+
+    // Create main dir
+    // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
+    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(host(), domain().toLower(), guid);
+    const QByteArray main_dir_bytes = main_dir.toUtf8();
+    const char *main_dir_cstr = main_dir_bytes.constData();
+    const int result_mkdir_main = smbc_mkdir(main_dir_cstr, 0);
+    if (result_mkdir_main != 0) {
+        // TODO: handle errors
+        return false;
+    }
+
+    const QString machine_dir = main_dir + "/Machine";
+    const QByteArray machine_dir_bytes = machine_dir.toUtf8();
+    const char *machine_dir_cstr = machine_dir_bytes.constData();
+    const int result_mkdir_machine = smbc_mkdir(machine_dir_cstr, 0);
+    if (result_mkdir_machine != 0) {
+        // TODO: handle errors
+        return false;
+    }
+
+    const QString user_dir = main_dir + "/User";
+    const QByteArray user_dir_bytes = user_dir.toUtf8();
+    const char *user_dir_cstr = user_dir_bytes.constData();
+    const int result_mkdir_user = smbc_mkdir(user_dir_cstr, 0);
+    if (result_mkdir_user != 0) {
+        // TODO: handle errors
+        return false;
+    }
+
+    const QString init_file_path = main_dir + "/GPT.INI";
+    const QByteArray init_file_path_bytes = init_file_path.toUtf8();
+    const char *init_file_path_cstr = init_file_path_bytes.constData();
+    const int ini_file = smbc_open(init_file_path_cstr, O_WRONLY | O_CREAT, 0);
+
+    const char *ini_contents = "[General]\r\nVersion=0\r\n";
+    const int result_write_ini = smbc_write(ini_file, ini_contents, sizeof(ini_contents) / sizeof(char));
+    if (result_write_ini < 0) {
+        // TODO: handle errors
+        return false;
+    }
+
+    //
+    // Create AD object for gpo
+    //
+    // TODO: add all attributes during creation, need to directly create through ldap then
+    const char *gpc_classes[] = {"top", "container", "groupPolicyContainer", NULL};
+    const char *container_classes[] = {"top", "container", NULL};
+
+    const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(guid, search_base());
+    const bool result_add = object_add(dn, gpc_classes);
+    if (!result_add) {
+        return false;
+    }
+    attribute_replace_string(dn, "displayName", display_name);
+    // "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
+    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(domain().toLower(), guid);
+    attribute_replace_string(dn, "gPCFileSysPath", gPCFileSysPath);
+    // TODO: 1?
+    attribute_replace_string(dn, "flags", "1");
+    attribute_replace_string(dn, "versionNumber", "0");
+    attribute_replace_string(dn, "showInAdvancedViewOnly", "TRUE");
+    attribute_replace_string(dn, "gpCFunctionalityVersion", "2");
+
+    // User object
+    const QString user_dn = "CN=User," + dn;
+    const bool result_add_user = object_add(user_dn, container_classes);
+    attribute_replace_string(dn, "showInAdvancedViewOnly", "TRUE");
+    if (!result_add_user) {
+        return false;
+    }
+
+    // Machine object
+    const QString machine_dn = "CN=Machine," + dn;
+    const bool result_add_machine = object_add(machine_dn, container_classes);
+    attribute_replace_string(dn, "showInAdvancedViewOnly", "TRUE");
+    if (!result_add_machine) {
+        return false;
+    }
+
+    // TODO: security descriptor. Samba does this: get nTSecurityDescriptor attribute from the gpo object as raw bytes, then sets the security descriptor of the sysvol dir to that value. Currently not doing that, so security descriptor of sysvol dir is the default one, which is ... bad? Not sure. Problem is, libsmbclient only provides a way to set security descriptor using key/value strings, not the raw bytes basically. So to do it that way would need to decode object security descriptor. Samba source has that implemented internally but not exposed as a usable lib. Probably SHOULD set security descriptor because who knows what the default is, what if it's just randomly modifiable by any user. Also, the security descriptor functionality will be needed for "Security" details tab in ADMC at some point. So should either implement all of that stuff (it's a lot...) or hopefully find some lib to use (unlikely). On Windows you would just use Microsoft's lib.
+
+    return true;
 }
 
 void AdInterface::command(QStringList args) {

@@ -142,6 +142,7 @@ const qint64 HOURS_TO_SECONDS    = MINUTES_TO_SECONDS * 60LL;
 const qint64 DAYS_TO_SECONDS     = HOURS_TO_SECONDS * 24LL;
 
 typedef struct ldap LDAP;
+typedef struct _SMBCCTX SMBCCTX;
 class AdConfig;
 
 class AdInterface final : public QObject {
@@ -166,6 +167,7 @@ public:
     void end_batch();
 
     AdConfig *config() const;
+    QString domain() const;
     QString search_base() const;
     QString host() const;
     QString configuration_dn() const;
@@ -221,6 +223,8 @@ public:
     bool object_can_drop(const QString &dn, const QString &target_dn);
     void object_drop(const QString &dn, const QString &target_dn);
 
+    bool create_gpo(const QString &name);
+
     void command(QStringList args);
 
 signals:
@@ -228,7 +232,9 @@ signals:
 
 private:
     LDAP *ld;
+    SMBCCTX *smbc;
     AdConfig *m_config;
+    QString m_domain;
     QString m_search_base;
     QString m_configuration_dn;
     QString m_schema_dn;
@@ -267,7 +273,5 @@ QString group_scope_string(GroupScope scope);
 QString group_type_string(GroupType type);
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value);
-
-
 
 #endif /* AD_INTERFACE_H */
