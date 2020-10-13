@@ -69,6 +69,9 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
             auto rename_dialog = new RenameDialog(dn);
             rename_dialog->open();
         });
+        addAction(tr("Delete"), [dn]() {
+            AD()->delete_gpo(dn);
+        });
     } else {
         const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
         const bool cannot_rename = object.get_system_flag(SystemFlagsBit_CannotRename);
@@ -151,36 +154,18 @@ void ObjectContextMenu::edit_policy(const QString &dn, const AdObject &object) {
     // Start policy edit process
     const auto process = new QProcess();
 
-    const QString path =
-    [dn, object]() {
-        QString path_tmp = object.get_string("gPCFileSysPath");
-        path_tmp.replace("\\", "/");
-
-        // TODO: file sys path as it is, is like this:
-        // "smb://domain.alt/sysvol/domain.alt/Policies/{D7E75BC7-138D-4EE1-8974-105E4A2DE560}"
-        // But that fails to load the whole directory sometimes
-        // Replacing domain at the start with current host fixes it
-        // "smb://dc0.domain.alt/sysvol/domain.alt/Policies/{D7E75BC7-138D-4EE1-8974-105E4A2DE560}"
-        // not sure if this is required and which host/DC is the correct one
-        const QString host = AD()->host();
-
-        const int sysvol_i = path_tmp.indexOf("sysvol");
-        path_tmp.remove(0, sysvol_i);
-
-        path_tmp = QString("smb://%1/%2").arg(host, path_tmp);
-
-        return path_tmp;
-    }();
+    const QString sysvol_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+    const QString smb_path = sysvol_path_to_smb(sysvol_path);
 
     const QString program_name = "/home/kevl/admc/build/gpgui";
 
-    QStringList args = {"-p", path};
+    QStringList args = {"-p", smb_path};
 
     qint64 pid;
     const bool start_success = process->startDetached(program_name, args, QString(), &pid);
 
     printf("edit_policy\n");
-    printf("path=%s\n", qPrintable(path));
+    printf("smb_path=%s\n", qPrintable(smb_path));
     printf("pid=%lld\n", pid);
     printf("start_success=%d\n", start_success);
 }

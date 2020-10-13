@@ -94,6 +94,7 @@
 #define ATTRIBUTE_MIN_PWD_AGE           "minPwdAge"
 #define ATTRIBUTE_LOCKOUT_DURATION      "lockoutDuration"
 #define ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT "isCriticalSystemObject"
+#define ATTRIBUTE_GPC_FILE_SYS_PATH     "gPCFileSysPath"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
@@ -224,6 +225,7 @@ public:
     void object_drop(const QString &dn, const QString &target_dn);
 
     bool create_gpo(const QString &name);
+    bool delete_gpo(const QString &dn);
 
     void command(QStringList args);
 
@@ -273,5 +275,7 @@ QString group_scope_string(GroupScope scope);
 QString group_type_string(GroupType type);
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value);
+
+QString sysvol_path_to_smb(const QString &sysvol_path);
 
 #endif /* AD_INTERFACE_H */

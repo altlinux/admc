@@ -1046,6 +1046,37 @@ bool AdInterface::create_gpo(const QString &display_name) {
     return true;
 }
 
+bool AdInterface::delete_gpo(const QString &gpo_dn) {
+    // NOTE: can't delete object's while they have children so have to clean up recursively
+    QList<QString> delete_queue;
+    QList<QString> recurse_stack;
+    recurse_stack.append(gpo_dn);
+    while (!recurse_stack.isEmpty()) {
+        const QString dn = recurse_stack.last();
+        recurse_stack.removeLast();
+        delete_queue.insert(0, dn);
+
+        const QHash<QString, AdObject> children = AD()->search("", {}, SearchScope_Children, dn);
+        recurse_stack.append(children.keys());
+    }
+
+    for (const auto dn : delete_queue) {
+        object_delete(dn);
+    }
+
+    const AdObject object = request_attributes(gpo_dn, {ATTRIBUTE_GPC_FILE_SYS_PATH});
+    const QString sysvol_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+    const QString url = sysvol_path_to_smb(sysvol_path);
+    const QByteArray url_bytes = url.toUtf8();
+    const char *url_cstr = url_bytes.constData();
+    const int result_rmdir = smbc_rmdir(url_cstr);
+    if (result_rmdir < 0) {
+        return false;
+    }
+
+    return true;
+}
+
 void AdInterface::command(QStringList args) {
     QString command = args[0];
 
@@ -1276,4 +1307,25 @@ QString group_type_string(GroupType type) {
         case GroupType_COUNT: return "COUNT";
     }
     return "";
+}
+
+QString sysvol_path_to_smb(const QString &sysvol_path) {
+    QString out = sysvol_path;
+    
+    out.replace("\\", "/");
+
+    // TODO: file sys path as it is, is like this:
+    // "smb://domain.alt/sysvol/domain.alt/Policies/{D7E75BC7-138D-4EE1-8974-105E4A2DE560}"
+    // But that fails to load the whole directory sometimes
+    // Replacing domain at the start with current host fixes it
+    // "smb://dc0.domain.alt/sysvol/domain.alt/Policies/{D7E75BC7-138D-4EE1-8974-105E4A2DE560}"
+    // not sure if this is required and which host/DC is the correct one
+    const QString host = AD()->host();
+
+    const int sysvol_i = out.indexOf("sysvol");
+    out.remove(0, sysvol_i);
+
+    out = QString("smb://%1/%2").arg(host, out);
+
+    return out;
 }
