@@ -20,7 +20,7 @@
 #include "policies_widget.h"
 #include "ad_interface.h"
 #include "details_dialog.h"
-#include "object_context_menu.h"
+#include "rename_dialog.h"
 #include "utils.h"
 #include "filter.h"
 
@@ -29,6 +29,7 @@
 #include <QVBoxLayout>
 #include <QStandardItemModel>
 #include <QMenu>
+#include <QProcess>
 
 enum PoliciesColumn {
     PoliciesColumn_Name,
@@ -61,7 +62,9 @@ PoliciesWidget::PoliciesWidget()
     layout->addWidget(label);
     layout->addWidget(view);
 
-    ObjectContextMenu::connect_view(view, PoliciesColumn_DN);
+    QObject::connect(
+        view, &QWidget::customContextMenuRequested,
+        this, &PoliciesWidget::on_context_menu);
 
     show_only_in_dev_mode(this);
 
@@ -90,4 +93,46 @@ void PoliciesWidget::reload() {
     }
 
     model->sort(PoliciesColumn_Name);
+}
+
+void PoliciesWidget::on_context_menu(const QPoint pos) {
+    const QString dn = get_dn_from_pos(pos, view, PoliciesColumn_DN);
+    const AdObject object = AD()->request_all(dn);
+
+    QMenu menu;
+    menu.addAction(tr("Details"), [this, dn]() {
+        DetailsDialog::open_for_target(dn);
+    });
+    menu.addAction(tr("Edit Policy"), [this, dn, object]() {
+        edit_policy(dn, object);
+    });
+    menu.addAction(tr("Rename"), [this, dn]() {
+        auto rename_dialog = new RenameDialog(dn);
+        rename_dialog->open();
+    });
+    menu.addAction(tr("Delete"), [dn]() {
+        AD()->delete_gpo(dn);
+    });
+
+    exec_menu_from_view(&menu, view, pos);
+}
+
+void PoliciesWidget::edit_policy(const QString &dn, const AdObject &object) {
+    // Start policy edit process
+    const auto process = new QProcess();
+
+    const QString sysvol_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+    const QString smb_path = sysvol_path_to_smb(sysvol_path);
+
+    const QString program_name = "/home/kevl/admc/build/gpgui";
+
+    QStringList args = {"-p", smb_path};
+
+    qint64 pid;
+    const bool start_success = process->startDetached(program_name, args, QString(), &pid);
+
+    printf("edit_policy\n");
+    printf("smb_path=%s\n", qPrintable(smb_path));
+    printf("pid=%lld\n", pid);
+    printf("start_success=%d\n", start_success);
 }

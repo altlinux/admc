@@ -20,11 +20,14 @@
 #ifndef POLICIES_TAB_H
 #define POLICIES_TAB_H
 
+#include "ad_object.h"
+
 #include <QWidget>
+#include <QPoint>
+#include <QString>
 
 class QStandardItemModel;
 class QTreeView;
-class QPoint;
 
 // Shows member objects of targeted group
 class PoliciesWidget final : public QWidget {
@@ -35,10 +38,14 @@ public:
 
 private slots:
     void reload();
+    void on_context_menu(const QPoint pos);
 
 private:
     QStandardItemModel *model;
     QTreeView *view;
+
+    void edit_policy(const QString &dn, const AdObject &object);
+
 };
 
 #endif /* POLICIES_TAB_H */

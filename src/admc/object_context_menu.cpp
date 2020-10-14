@@ -32,7 +32,6 @@
 #include <QString>
 #include <QMessageBox>
 #include <QInputDialog>
-#include <QProcess>
 #include <QDir>
 #include <QPoint>
 #include <QModelIndex>
@@ -60,83 +59,69 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
         DetailsDialog::open_for_target(dn);
     });
 
-    if (object.is_class(CLASS_GP_CONTAINER)) {
-        // TODO: policy version seems to be too disconnected from general object context menu, maybe just move it to policies widget?
-        addAction(tr("Edit Policy"), [this, dn, object]() {
-            edit_policy(dn, object);
-        });
-        addAction(tr("Rename"), [this, dn]() {
-            auto rename_dialog = new RenameDialog(dn);
-            rename_dialog->open();
-        });
-        addAction(tr("Delete"), [dn]() {
-            AD()->delete_gpo(dn);
-        });
-    } else {
-        const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
-        const bool cannot_rename = object.get_system_flag(SystemFlagsBit_CannotRename);
-        const bool cannot_delete = object.get_system_flag(SystemFlagsBit_CannotDelete);
+    const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
+    const bool cannot_rename = object.get_system_flag(SystemFlagsBit_CannotRename);
+    const bool cannot_delete = object.get_system_flag(SystemFlagsBit_CannotDelete);
 
-        auto delete_action = addAction(tr("Delete"), [this, dn, object]() {
-            delete_object(dn, object);
+    auto delete_action = addAction(tr("Delete"), [this, dn, object]() {
+        delete_object(dn, object);
+    });
+    if (cannot_delete) {
+        delete_action->setEnabled(false);
+    }
+
+    auto rename_action = addAction(tr("Rename"), [this, dn]() {
+        auto rename_dialog = new RenameDialog(dn);
+        rename_dialog->open();
+    });
+    if (cannot_rename) {
+        rename_action->setEnabled(false);
+    }
+
+    QMenu *submenu_new = addMenu("New");
+    for (int i = 0; i < CreateType_COUNT; i++) {
+        const CreateType type = (CreateType) i;
+        const QString object_string = create_type_to_string(type);
+
+        submenu_new->addAction(object_string, [dn, type]() {
+            const auto create_dialog = new CreateDialog(dn, type);
+            create_dialog->open();
         });
-        if (cannot_delete) {
-            delete_action->setEnabled(false);
-        }
+    }
 
-        auto rename_action = addAction(tr("Rename"), [this, dn]() {
-            auto rename_dialog = new RenameDialog(dn);
-            rename_dialog->open();
+    auto move_action = addAction(tr("Move"));
+    connect(
+        move_action, &QAction::triggered,
+        [this, dn, object]() {
+            move(dn, object);
         });
-        if (cannot_rename) {
-            rename_action->setEnabled(false);
-        }
+    if (cannot_move) {
+        move_action->setEnabled(false);
+    }
 
-        QMenu *submenu_new = addMenu("New");
-        for (int i = 0; i < CreateType_COUNT; i++) {
-            const CreateType type = (CreateType) i;
-            const QString object_string = create_type_to_string(type);
-
-            submenu_new->addAction(object_string, [dn, type]() {
-                const auto create_dialog = new CreateDialog(dn, type);
-                create_dialog->open();
-            });
-        }
-
-        auto move_action = addAction(tr("Move"));
+    if (object.is_class(CLASS_USER)) {
+        QAction *add_to_group_action = addAction(tr("Add to group"));
         connect(
-            move_action, &QAction::triggered,
-            [this, dn, object]() {
-                move(dn, object);
+            add_to_group_action, &QAction::triggered,
+            [this, dn]() {
+                add_to_group(dn);
             });
-        if (cannot_move) {
-            move_action->setEnabled(false);
+
+        addAction(tr("Reset password"), [dn]() {
+            const auto password_dialog = new PasswordDialog(dn);
+            password_dialog->open();
+        });
+
+        const bool disabled = object.get_account_option(AccountOption_Disabled);
+        QString disable_text;
+        if (disabled) {
+            disable_text = tr("Enable account");
+        } else {
+            disable_text = tr("Disable account");
         }
-
-        if (object.is_class(CLASS_USER)) {
-            QAction *add_to_group_action = addAction(tr("Add to group"));
-            connect(
-                add_to_group_action, &QAction::triggered,
-                [this, dn]() {
-                    add_to_group(dn);
-                });
-
-            addAction(tr("Reset password"), [dn]() {
-                const auto password_dialog = new PasswordDialog(dn);
-                password_dialog->open();
-            });
-
-            const bool disabled = object.get_account_option(AccountOption_Disabled);
-            QString disable_text;
-            if (disabled) {
-                disable_text = tr("Enable account");
-            } else {
-                disable_text = tr("Disable account");
-            }
-            addAction(disable_text, [this, dn, disabled]() {
-                AD()->user_set_account_option(dn, AccountOption_Disabled, !disabled);
-            });
-        }
+        addAction(disable_text, [this, dn, disabled]() {
+            AD()->user_set_account_option(dn, AccountOption_Disabled, !disabled);
+        });
     }
 }
 
@@ -148,26 +133,6 @@ void ObjectContextMenu::delete_object(const QString &dn, const AdObject &object)
     if (confirmed) {
         AD()->object_delete(dn);
     }    
-}
-
-void ObjectContextMenu::edit_policy(const QString &dn, const AdObject &object) {
-    // Start policy edit process
-    const auto process = new QProcess();
-
-    const QString sysvol_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
-    const QString smb_path = sysvol_path_to_smb(sysvol_path);
-
-    const QString program_name = "/home/kevl/admc/build/gpgui";
-
-    QStringList args = {"-p", smb_path};
-
-    qint64 pid;
-    const bool start_success = process->startDetached(program_name, args, QString(), &pid);
-
-    printf("edit_policy\n");
-    printf("smb_path=%s\n", qPrintable(smb_path));
-    printf("pid=%lld\n", pid);
-    printf("start_success=%d\n", start_success);
 }
 
 void ObjectContextMenu::move(const QString &dn, const AdObject &object) {
