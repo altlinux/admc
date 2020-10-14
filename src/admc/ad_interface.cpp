@@ -942,20 +942,20 @@ void AdInterface::object_drop(const QString &dn, const QString &target_dn) {
 
 bool AdInterface::create_gpo(const QString &display_name) {
     //
-    // Generate GUID
+    // Generate UUID used for directory and object names
     //
     // TODO: is it ok to not swap bytes here, like it's done in octet_to_display_value()? Probably yes.
-    const QString guid =
+    const QString uuid =
     [](){
-        uuid_t uuid;
-        uuid_generate_random(uuid);
+        uuid_t uuid_struct;
+        uuid_generate_random(uuid_struct);
 
         char uuid_cstr[UUID_STR_LEN];
-        uuid_unparse_upper(uuid, uuid_cstr);
+        uuid_unparse_upper(uuid_struct, uuid_cstr);
 
-        const QString uuid_string = "{" + QString(uuid_cstr) + "}";
+        const QString out = "{" + QString(uuid_cstr) + "}";
 
-        return uuid_string;
+        return out;
     }();
 
     //
@@ -964,7 +964,7 @@ bool AdInterface::create_gpo(const QString &display_name) {
 
     // Create main dir
     // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(host(), domain().toLower(), guid);
+    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(host(), domain().toLower(), uuid);
     const QByteArray main_dir_bytes = main_dir.toUtf8();
     const char *main_dir_cstr = main_dir_bytes.constData();
     const int result_mkdir_main = smbc_mkdir(main_dir_cstr, 0);
@@ -1010,14 +1010,14 @@ bool AdInterface::create_gpo(const QString &display_name) {
     const char *gpc_classes[] = {"top", "container", "groupPolicyContainer", NULL};
     const char *container_classes[] = {"top", "container", NULL};
 
-    const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(guid, search_base());
+    const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, search_base());
     const bool result_add = object_add(dn, gpc_classes);
     if (!result_add) {
         return false;
     }
     attribute_replace_string(dn, "displayName", display_name);
     // "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(domain().toLower(), guid);
+    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(domain().toLower(), uuid);
     attribute_replace_string(dn, "gPCFileSysPath", gPCFileSysPath);
     // TODO: 1?
     attribute_replace_string(dn, "flags", "1");
