@@ -95,6 +95,9 @@
 #define ATTRIBUTE_LOCKOUT_DURATION      "lockoutDuration"
 #define ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT "isCriticalSystemObject"
 #define ATTRIBUTE_GPC_FILE_SYS_PATH     "gPCFileSysPath"
+#define ATTRIBUTE_GPC_FUNCTIONALITY_VERSION "gpCFunctionalityVersion"
+#define ATTRIBUTE_VERSION_NUMBER        "versionNumber"
+#define ATTRIBUTE_FLAGS                 "flags"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"

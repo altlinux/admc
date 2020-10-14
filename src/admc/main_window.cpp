@@ -118,8 +118,6 @@ void MainWindow::finish_init() {
     central_layout->setSpacing(0);
 
     central_widget->setLayout(central_layout);
-
-    // AD()->create_gpo("test xd");
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

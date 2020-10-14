@@ -1007,28 +1007,28 @@ bool AdInterface::create_gpo(const QString &display_name) {
     // Create AD object for gpo
     //
     // TODO: add all attributes during creation, need to directly create through ldap then
-    const char *gpc_classes[] = {"top", "container", "groupPolicyContainer", NULL};
-    const char *container_classes[] = {"top", "container", NULL};
+    const char *gpc_classes[] = {CLASS_TOP, CLASS_CONTAINER, CLASS_GP_CONTAINER, NULL};
+    const char *container_classes[] = {CLASS_TOP, CLASS_CONTAINER, NULL};
 
     const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, search_base());
     const bool result_add = object_add(dn, gpc_classes);
     if (!result_add) {
         return false;
     }
-    attribute_replace_string(dn, "displayName", display_name);
+    attribute_replace_string(dn, ATTRIBUTE_DISPLAY_NAME, display_name);
     // "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
     const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(domain().toLower(), uuid);
-    attribute_replace_string(dn, "gPCFileSysPath", gPCFileSysPath);
-    // TODO: 1?
-    attribute_replace_string(dn, "flags", "1");
-    attribute_replace_string(dn, "versionNumber", "0");
-    attribute_replace_string(dn, "showInAdvancedViewOnly", "TRUE");
-    attribute_replace_string(dn, "gpCFunctionalityVersion", "2");
+    attribute_replace_string(dn, ATTRIBUTE_GPC_FILE_SYS_PATH, gPCFileSysPath);
+    // TODO: samba defaults to 1, ADUC defaults to 0. Figure out what's this supposed to be.
+    attribute_replace_string(dn, ATTRIBUTE_FLAGS, "1");
+    attribute_replace_string(dn, ATTRIBUTE_VERSION_NUMBER, "0");
+    attribute_replace_string(dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
+    attribute_replace_string(dn, ATTRIBUTE_GPC_FUNCTIONALITY_VERSION, "2");
 
     // User object
     const QString user_dn = "CN=User," + dn;
     const bool result_add_user = object_add(user_dn, container_classes);
-    attribute_replace_string(dn, "showInAdvancedViewOnly", "TRUE");
+    attribute_replace_string(dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
     if (!result_add_user) {
         return false;
     }
@@ -1036,7 +1036,7 @@ bool AdInterface::create_gpo(const QString &display_name) {
     // Machine object
     const QString machine_dn = "CN=Machine," + dn;
     const bool result_add_machine = object_add(machine_dn, container_classes);
-    attribute_replace_string(dn, "showInAdvancedViewOnly", "TRUE");
+    attribute_replace_string(dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
     if (!result_add_machine) {
         return false;
     }
