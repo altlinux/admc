@@ -5,6 +5,7 @@ find_package(Qt5 REQUIRED
 )
 
 find_package(Uuid REQUIRED)
+find_package(Smbclient REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -86,6 +87,7 @@ target_link_libraries(admc
     Qt5::Widgets
     adldap
     Uuid::Uuid
+    Smbclient::Smbclient
 )
 
 install(TARGETS admc)

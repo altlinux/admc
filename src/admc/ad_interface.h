@@ -94,6 +94,10 @@
 #define ATTRIBUTE_MIN_PWD_AGE           "minPwdAge"
 #define ATTRIBUTE_LOCKOUT_DURATION      "lockoutDuration"
 #define ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT "isCriticalSystemObject"
+#define ATTRIBUTE_GPC_FILE_SYS_PATH     "gPCFileSysPath"
+#define ATTRIBUTE_GPC_FUNCTIONALITY_VERSION "gpCFunctionalityVersion"
+#define ATTRIBUTE_VERSION_NUMBER        "versionNumber"
+#define ATTRIBUTE_FLAGS                 "flags"
 #define ATTRIBUTE_OBJECT_GUID           "objectGUID"
 
 #define CLASS_GROUP                     "group"
@@ -143,6 +147,7 @@ const qint64 HOURS_TO_SECONDS    = MINUTES_TO_SECONDS * 60LL;
 const qint64 DAYS_TO_SECONDS     = HOURS_TO_SECONDS * 24LL;
 
 typedef struct ldap LDAP;
+typedef struct _SMBCCTX SMBCCTX;
 class AdConfig;
 
 class AdInterface final : public QObject {
@@ -167,6 +172,7 @@ public:
     void end_batch();
 
     AdConfig *config() const;
+    QString domain() const;
     QString search_base() const;
     QString host() const;
     QString configuration_dn() const;
@@ -222,6 +228,9 @@ public:
     bool object_can_drop(const QString &dn, const QString &target_dn);
     void object_drop(const QString &dn, const QString &target_dn);
 
+    bool create_gpo(const QString &name);
+    bool delete_gpo(const QString &dn);
+
     void command(QStringList args);
 
 signals:
@@ -229,7 +238,9 @@ signals:
 
 private:
     LDAP *ld;
+    SMBCCTX *smbc;
     AdConfig *m_config;
+    QString m_domain;
     QString m_search_base;
     QString m_configuration_dn;
     QString m_schema_dn;
@@ -269,6 +280,6 @@ QString group_type_string(GroupType type);
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value);
 
-
+QString sysvol_path_to_smb(const QString &sysvol_path);
 
 #endif /* AD_INTERFACE_H */
