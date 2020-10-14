@@ -21,14 +21,12 @@
 #include "ad_interface.h"
 #include "ad_config.h"
 
-#include <uuid/uuid.h>
-
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm"
 
 QString object_sid_to_display_value(const QByteArray &bytes);
 QString datetime_to_display_value(const QString &attribute, const QByteArray &bytes);
 QString timespan_to_display_value(const QByteArray &bytes);
-QString octet_to_display_value(const QByteArray &bytes);
+QString octet_to_display_value(const QString &attribute, const QByteArray &bytes);
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value) {
     const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
@@ -39,7 +37,7 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
         case AttributeType_GeneralizedTime: return datetime_to_display_value(attribute, value);
         case AttributeType_Sid: return object_sid_to_display_value(value);
         case AttributeType_LargeIntegerTimespan: return timespan_to_display_value(value);
-        case AttributeType_Octet: return octet_to_display_value(value);
+        case AttributeType_Octet: return octet_to_display_value(attribute, value);
 
         default: {
             const QString value_string = QString::fromUtf8(value);
@@ -182,47 +180,48 @@ QString timespan_to_display_value(const QByteArray &bytes) {
     return display;
 }
 
-// TODO: this is only for octet uuid's. What about other type of octets?
-QString octet_to_display_value(const QByteArray &bytes_arg) {
-    // Need to swap some bytes, to match how ADUC displays it
-    // TODO: no idea what the logic behind these byte swaps is, maybe some kind of encoding?
+QString octet_to_display_value(const QString &attribute, const QByteArray &bytes_arg) {
+    const QByteArray bytes_hex = bytes_arg.toHex();
+
     const QByteArray bytes =
-    [bytes_arg]() {
-        QByteArray out = bytes_arg;
+    [attribute, bytes_hex]() {
+        QByteArray out = bytes_hex;
 
-        const auto swap_bytes =
-        [&out, bytes_arg](const int a, const int b) {
-            out[a] = bytes_arg[b];
-            out[b] = bytes_arg[a];
-        };
+        if (attribute == ATTRIBUTE_OBJECT_GUID) {
+            // To match how ADUC displays GUID's, need to swap
+            // some bytes and insert hyphens
+            // TODO: no idea what the logic behind these byte swaps is, maybe some kind of encoding?
 
-        swap_bytes(0, 3);
-        swap_bytes(1, 2);
-        swap_bytes(4, 5);
-        swap_bytes(6, 7);
+            const auto swap_bytes =
+            [&out, bytes_hex](const int a, const int b) {
+                out[a] = bytes_hex[b];
+                out[b] = bytes_hex[a];
+            };
+
+            swap_bytes(0, 3);
+            swap_bytes(1, 2);
+            swap_bytes(4, 5);
+            swap_bytes(6, 7);
+
+            out.insert(20, '-');
+            out.insert(16, '-');
+            out.insert(12, '-');
+            out.insert(8, '-');
+        } else {
+            // Add " 0x" before each byte (every 2 indexes)
+            for (int i = bytes_hex.size() - 2; i >= 0; i -= 2) {
+                out.insert(i, "0x");
+
+                if (i != 0) {
+                    out.insert(i, " ");
+                }
+            }
+        }
 
         return out;
     }();
 
-    // TODO: can length even be different from UUID_STR_LEN?
-    const size_t cpy_length =
-    [bytes]() {
-        if (bytes.size() > UUID_STR_LEN) {
-            return UUID_STR_LEN;
-        } else {
-            return bytes.size();
-        }
-        return 0;
-    }();
-
-    uuid_t uuid;
-    memcpy(uuid, bytes.constData(), cpy_length);
-
-    char uuid_cstr[UUID_STR_LEN];
-    uuid_unparse(uuid, uuid_cstr);
-
-    const QByteArray display_bytes(uuid_cstr, UUID_STR_LEN);
-    const QString display_value(display_bytes);
+    const QString display_value = QString(bytes);
 
     return display_value;
 }

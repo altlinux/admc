@@ -98,6 +98,7 @@
 #define ATTRIBUTE_GPC_FUNCTIONALITY_VERSION "gpCFunctionalityVersion"
 #define ATTRIBUTE_VERSION_NUMBER        "versionNumber"
 #define ATTRIBUTE_FLAGS                 "flags"
+#define ATTRIBUTE_OBJECT_GUID           "objectGUID"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"

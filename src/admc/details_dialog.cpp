@@ -162,6 +162,7 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
             tab, &DetailsTab::edited,
             this, &DetailsDialog::on_tab_edited);
     }
+    on_tab_edited();
 
     for (auto tab : tabs) {
         if (tab->changed()) {
