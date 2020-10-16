@@ -180,7 +180,7 @@ void CreateDialog::accept() {
 
         const bool add_success = AD()->object_add(dn, classes);
 
-        bool apply_success = false;
+        bool apply_success = true;
         if (add_success) {
             // NOTE: need to apply even if edits aren't changed because this is a new object and so edits have no initial attribute values to load. So things like AccountOptionEdit checkboxes need to apply whether they are checked or unchecked.
             for (auto edit : all_edits) {
