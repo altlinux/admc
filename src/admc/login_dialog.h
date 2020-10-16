@@ -34,7 +34,6 @@ private slots:
     void on_host_double_clicked(QListWidgetItem *item);
     void on_login_button(bool);
     void on_cancel_button(bool);
-    void on_finished();
 
 private:
     QListWidget *hosts_list = nullptr;

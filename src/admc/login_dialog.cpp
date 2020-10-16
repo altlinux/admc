@@ -29,13 +29,15 @@
 #include <QMessageBox>
 #include <QString>
 #include <QGridLayout>
+#include <QApplication>
 
 LoginDialog::LoginDialog(QWidget *parent)
 : QDialog(parent)
 {
     resize(500, 300);
 
-    this->setWindowTitle(tr("Login"));
+    setWindowTitle(tr("Login"));
+    setAttribute(Qt::WA_DeleteOnClose);
 
     const auto domain_edit_label = new QLabel(tr("Domain: "), this);
     domain_edit = new QLineEdit(this);
@@ -77,9 +79,6 @@ LoginDialog::LoginDialog(QWidget *parent)
     connect(
         cancel_button, &QAbstractButton::clicked,
         this, &LoginDialog::on_cancel_button);
-    connect(
-        this, &QDialog::finished,
-        this, &LoginDialog::on_finished);
 }
 
 void LoginDialog::open() {
@@ -128,11 +127,9 @@ void LoginDialog::on_login_button(bool) {
 }
 
 void LoginDialog::on_cancel_button(bool) {
-    done(QDialog::Rejected);
-}
-
-void LoginDialog::on_finished() {
-    hosts_list->clear();
+    reject();
+    QApplication::closeAllWindows();
+    QApplication::quit();
 }
 
 void LoginDialog::load_hosts() {
