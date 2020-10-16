@@ -59,24 +59,14 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
         DetailsDialog::open_for_target(dn);
     });
 
-    const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
-    const bool cannot_rename = object.get_system_flag(SystemFlagsBit_CannotRename);
-    const bool cannot_delete = object.get_system_flag(SystemFlagsBit_CannotDelete);
-
     auto delete_action = addAction(tr("Delete"), [this, dn, object]() {
         delete_object(dn, object);
     });
-    if (cannot_delete) {
-        delete_action->setEnabled(false);
-    }
 
     auto rename_action = addAction(tr("Rename"), [this, dn]() {
         auto rename_dialog = new RenameDialog(dn);
         rename_dialog->open();
     });
-    if (cannot_rename) {
-        rename_action->setEnabled(false);
-    }
 
     QMenu *submenu_new = addMenu("New");
     for (int i = 0; i < CreateType_COUNT; i++) {
@@ -95,9 +85,6 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
         [this, dn, object]() {
             move(dn, object);
         });
-    if (cannot_move) {
-        move_action->setEnabled(false);
-    }
 
     if (object.is_class(CLASS_USER)) {
         QAction *add_to_group_action = addAction(tr("Add to group"));
@@ -122,6 +109,23 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
         addAction(disable_text, [this, dn, disabled]() {
             AD()->user_set_account_option(dn, AccountOption_Disabled, !disabled);
         });
+    }
+
+    // Disable certain actions based on system flags
+    if (object.contains(ATTRIBUTE_SYSTEM_FLAGS)) {
+        const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
+        const bool cannot_rename = object.get_system_flag(SystemFlagsBit_CannotRename);
+        const bool cannot_delete = object.get_system_flag(SystemFlagsBit_CannotDelete);
+        
+        if (cannot_move) {
+            move_action->setEnabled(false);
+        }
+        if (cannot_delete) {
+            delete_action->setEnabled(false);
+        }
+        if (cannot_rename) {
+            rename_action->setEnabled(false);
+        }
     }
 }
 
