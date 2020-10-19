@@ -102,8 +102,9 @@ void Status::show_errors_popup(int starting_index) {
     }
 
     // NOTE: message box is too small and non-resizable
-    auto dialog = new QDialog();
-    dialog->resize(600, 600);
+    QDialog dialog;
+    dialog.resize(400, 400);
+    dialog.setModal(true);
 
     auto label = new QLabel(tr("Errors occured:"));
 
@@ -115,18 +116,10 @@ void Status::show_errors_popup(int starting_index) {
         error_log->append(error);
     }
 
-    const auto close_button = new QPushButton(tr("Close"));
-
-    const auto layout = new QVBoxLayout(dialog);
+    const auto layout = new QVBoxLayout();
+    dialog.setLayout(layout);
     layout->addWidget(label);
     layout->addWidget(error_log);
-    layout->addWidget(close_button);
 
-    connect(
-        close_button, &QAbstractButton::clicked,
-        [dialog]() {
-            dialog->accept();
-        });
-
-    dialog->open();
+    dialog.exec();
 }
