@@ -23,40 +23,37 @@
 
 #include <QGridLayout>
 #include <QLabel>
-#include <QCheckBox>
+#include <QPushButton>
 
-// This edit works differently from other account option edits. The checkbox starts out as unchecked, if it's checked, then applying will unlock the user. Unchecking only disables the unlock action, it DOES NOT lock the user. Can't lock the account manually. Also finding out whether user is locked is convoluted, so can't show any status about that.
 
 UnlockEdit::UnlockEdit(QObject *parent)
 : AttributeEdit(parent) {
-    check = new QCheckBox();
+    button = new QPushButton();
+    button->setCheckable(true);
+    button->setText(tr("Unlock account"));
 
     connect(
-        check, &QCheckBox::stateChanged,
+        button, &QAbstractButton::clicked,
         [this]() {
             emit edited();
         });
 }
 
 void UnlockEdit::load(const AdObject &object) {
-    
+    reset();
 }
 
 void UnlockEdit::reset() {
-    check->setChecked(false);
+    button->setChecked(false);
 }
 
 void UnlockEdit::set_read_only(const bool read_only) {
-    check->setDisabled(read_only);
+    button->setDisabled(read_only);
 }
 
 void UnlockEdit::add_to_layout(QGridLayout *layout) {
-    const auto label = new QLabel(tr("Unlock account:"));
-
-    label->setToolTip(tr("Can only unlock the account, impossible to lock it manually."));
-
-    connect_changed_marker(label);
-    append_to_grid_layout_with_label(layout, label, check);
+    const int row = layout->rowCount();
+    layout->addWidget(button, row, 0);
 }
 
 bool UnlockEdit::verify() const {
@@ -64,11 +61,11 @@ bool UnlockEdit::verify() const {
 }
 
 bool UnlockEdit::changed() const {
-    return checkbox_is_checked(check);
+    return button->isChecked();
 }
 
 bool UnlockEdit::apply(const QString &dn) const {
-    if (checkbox_is_checked(check)) {
+    if (button->isChecked()) {
         const bool result = AD()->user_unlock(dn);
         
         return result;
