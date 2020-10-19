@@ -31,7 +31,7 @@ class QPushButton;
 class ExpiryEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    ExpiryEdit(QObject *parent);
+    ExpiryEdit(QObject *parent, QList<AttributeEdit *> *edits_out = nullptr);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private slots:

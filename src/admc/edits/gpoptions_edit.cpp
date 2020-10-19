@@ -25,7 +25,7 @@
 #include <QLabel>
 #include <QHash>
 
-GpoptionsEdit::GpoptionsEdit(QObject *parent)
+GpoptionsEdit::GpoptionsEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 : AttributeEdit(parent)
 {
     check = new QCheckBox();
@@ -35,6 +35,8 @@ GpoptionsEdit::GpoptionsEdit(QObject *parent)
         [this]() {
             emit edited();
         });
+
+    AttributeEdit::append_to_list(edits_out);
 }
 
 void GpoptionsEdit::load(const AdObject &object) {

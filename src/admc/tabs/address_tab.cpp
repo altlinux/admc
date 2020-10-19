@@ -43,7 +43,7 @@ AddressTab::AddressTab() {
 
     make_string_edits(attributes, CLASS_USER, this, &edits);
 
-    edits.append(new CountryEdit(this));
+    new CountryEdit(this, &edits);
 
     edits_add_to_layout(edits, edits_layout);
     edits_connect_to_tab(edits, this);

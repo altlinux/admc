@@ -27,7 +27,7 @@
 #include <QLabel>
 #include <QTextCodec>
 
-PasswordEdit::PasswordEdit(QObject *parent)
+PasswordEdit::PasswordEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 : AttributeEdit(parent)
 {
     edit = new QLineEdit();
@@ -41,6 +41,8 @@ PasswordEdit::PasswordEdit(QObject *parent)
         [this]() {
             emit edited();
         });
+
+    AttributeEdit::append_to_list(edits_out);
 }
 
 void PasswordEdit::load(const AdObject &object) {

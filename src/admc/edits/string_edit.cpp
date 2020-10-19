@@ -27,16 +27,9 @@
 #include <QMessageBox>
 #include <QLabel>
 
-StringEdit *make_string_edit(const QString &attribute, const QString &objectClass, QObject *parent, QList<AttributeEdit *> *edits_out) {
-    const auto edit = new StringEdit(attribute, objectClass, parent);
-    edits_out->append(edit);
-
-    return edit;
-}
-
 void make_string_edits(const QList<QString> attributes, const QString &objectClass, QObject *parent, QList<AttributeEdit *> *edits_out) {
     for (auto attribute : attributes) {
-        make_string_edit(attribute, objectClass, parent, edits_out);
+        new StringEdit(attribute, objectClass, parent, edits_out);
     }
 }
 
@@ -46,7 +39,7 @@ QString get_domain_as_email_suffix() {
     return "@" + domain.toLower();
 }
 
-StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent)
+StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent, QList<AttributeEdit *> *edits_out)
 : AttributeEdit(parent)
 {
     edit = new QLineEdit();
@@ -62,6 +55,8 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
         [this]() {
             emit edited();
         });
+
+    AttributeEdit::append_to_list(edits_out);
 }
 
 void StringEdit::load(const AdObject &object) {

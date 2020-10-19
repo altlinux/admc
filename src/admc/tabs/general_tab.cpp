@@ -64,8 +64,8 @@ GeneralTab::GeneralTab(const AdObject &object) {
         };
         make_string_edits(attributes, CLASS_USER, this, &edits);
 
-        edits.append(new StringOtherEdit(ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, CLASS_USER, this));
-        edits.append(new StringOtherEdit(ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, CLASS_USER, this));
+        new StringOtherEdit(ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, CLASS_USER, this, &edits);
+        new StringOtherEdit(ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, CLASS_USER, this, &edits);
     } else if (object.is_class(CLASS_OU)) {
         const QList<QString> attributes = {
             ATTRIBUTE_DESCRIPTION,
@@ -77,15 +77,15 @@ GeneralTab::GeneralTab(const AdObject &object) {
 
         make_string_edits(attributes, CLASS_OU, this, &edits);
 
-        edits.append(new CountryEdit(this));
+        new CountryEdit(this, &edits);
     } else if (object.is_class(CLASS_COMPUTER)) {
-        auto sama_edit = make_string_edit(ATTRIBUTE_SAMACCOUNT_NAME, CLASS_COMPUTER, this, &edits);
+        auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, CLASS_COMPUTER, this, &edits);
         sama_edit->set_read_only(true);
         
-        auto dns_edit = make_string_edit(ATTRIBUTE_DNS_HOST_NAME, CLASS_COMPUTER, this, &edits);
+        auto dns_edit = new StringEdit(ATTRIBUTE_DNS_HOST_NAME, CLASS_COMPUTER, this, &edits);
         dns_edit->set_read_only(true);
         
-        make_string_edit(ATTRIBUTE_DESCRIPTION, CLASS_COMPUTER, this, &edits);
+        new StringEdit(ATTRIBUTE_DESCRIPTION, CLASS_COMPUTER, this, &edits);
 
         // TODO: more string edits for: site (probably just site?), dc type (no idea)
     } else if (object.is_class(CLASS_GROUP)) {
@@ -97,18 +97,17 @@ GeneralTab::GeneralTab(const AdObject &object) {
         };
         make_string_edits(string_attributes, CLASS_GROUP, this, &edits);
         
-        auto scope_edit = new GroupScopeEdit(this);
-        edits.append(scope_edit);
+        auto scope_edit = new GroupScopeEdit(this, &edits);
         
-        auto type_edit = new GroupTypeEdit(this);
-        edits.append(type_edit);
+        auto type_edit = new GroupTypeEdit(this, &edits);
 
-        if (object.contains(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT) && object.get_bool(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT)) {
+        const bool is_critical_system_object = (object.contains(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT) && object.get_bool(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT));
+        if (is_critical_system_object) {
             scope_edit->set_read_only(true);
             type_edit->set_read_only(true);
         }
     } else if (object.is_class(CLASS_CONTAINER)) {
-        make_string_edit(ATTRIBUTE_DESCRIPTION, CLASS_GROUP, this, &edits);
+        new StringEdit(ATTRIBUTE_DESCRIPTION, CLASS_GROUP, this, &edits);
     }
 
     edits_add_to_layout(edits, edits_layout);

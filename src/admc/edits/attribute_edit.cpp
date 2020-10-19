@@ -35,6 +35,16 @@ void AttributeEdit::connect_changed_marker(QLabel *label) {
         });
 }
 
+void AttributeEdit::append_to_list(QList<AttributeEdit *> *edits_out) {
+    if (edits_out->contains(this)) {
+        printf("ERROR: attribute edit added twice to list!");
+    } else {
+        if (edits_out != nullptr) {
+            edits_out->append(this);
+        }
+    }
+}
+
 void edits_add_to_layout(QList<AttributeEdit *> edits, QGridLayout *layout) {
     for (auto edit : edits) {
         edit->add_to_layout(layout);

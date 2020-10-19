@@ -26,7 +26,7 @@
 #include <QMessageBox>
 #include <QLabel>
 
-GroupScopeEdit::GroupScopeEdit(QObject *parent)
+GroupScopeEdit::GroupScopeEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 : AttributeEdit(parent)
 {
     combo = new QComboBox();
@@ -43,6 +43,8 @@ GroupScopeEdit::GroupScopeEdit(QObject *parent)
         [this]() {
             emit edited();
         });
+
+    AttributeEdit::append_to_list(edits_out);
 }
 
 void GroupScopeEdit::load(const AdObject &object) {

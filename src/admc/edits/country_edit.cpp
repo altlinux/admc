@@ -37,7 +37,7 @@
 
 #define COUNTRY_CODE_NONE 0
 
-CountryEdit::CountryEdit(QObject *parent)
+CountryEdit::CountryEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 : AttributeEdit(parent)
 {
     combo = new QComboBox();
@@ -103,6 +103,8 @@ CountryEdit::CountryEdit(QObject *parent)
     [this]() {
         emit edited();
     });
+
+    AttributeEdit::append_to_list(edits_out);
 }
 
 void CountryEdit::load(const AdObject &object) {

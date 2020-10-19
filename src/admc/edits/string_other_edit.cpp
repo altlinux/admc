@@ -30,7 +30,7 @@
 #include <QLabel>
 #include <QPushButton>
 
-StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &other_attribute_arg, const QString &object_class, QObject *parent)
+StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &other_attribute_arg, const QString &object_class, QObject *parent, QList<AttributeEdit *> *edits_out)
 : AttributeEdit(parent)
 , other_attribute(other_attribute_arg)
 {
@@ -59,6 +59,8 @@ StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &o
                     emit edited();
                 });
         });
+
+    AttributeEdit::append_to_list(edits_out);
 }
 
 void StringOtherEdit::load(const AdObject &object) {

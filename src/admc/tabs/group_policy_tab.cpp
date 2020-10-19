@@ -72,8 +72,7 @@ GroupPolicyTab::GroupPolicyTab() {
 
     const auto edits_layout = new QGridLayout();
 
-    auto gpoptions_edit = new GpoptionsEdit(this);
-    edits.append(gpoptions_edit);
+    new GpoptionsEdit(this, &edits);
     edits_add_to_layout(edits, edits_layout);
     edits_connect_to_tab(edits, this);
 

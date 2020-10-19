@@ -25,7 +25,7 @@
 #include <QGridLayout>
 #include <QLabel>
 
-GroupTypeEdit::GroupTypeEdit(QObject *parent)
+GroupTypeEdit::GroupTypeEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 : AttributeEdit(parent)
 {
     combo = new QComboBox();
@@ -42,6 +42,8 @@ GroupTypeEdit::GroupTypeEdit(QObject *parent)
         [this]() {
             emit edited();
         });
+
+    AttributeEdit::append_to_list(edits_out);
 }
 
 void GroupTypeEdit::load(const AdObject &object) {

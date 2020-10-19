@@ -61,7 +61,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
     name_edit = nullptr;
 
     if (object.is_class(CLASS_USER)) {
-        name_edit = make_string_edit(ATTRIBUTE_NAME, object_class, this, &all_edits);
+        name_edit = new StringEdit(ATTRIBUTE_NAME, object_class, this, &all_edits);
 
         const QList<QString> attributes = {
             ATTRIBUTE_FIRST_NAME,
@@ -72,11 +72,11 @@ RenameDialog::RenameDialog(const QString &target_arg)
         };
         make_string_edits(attributes, object_class, this, &all_edits);
     } else if (object.is_class(CLASS_GROUP)) {
-        name_edit = make_string_edit(ATTRIBUTE_NAME, object_class, this, &all_edits);
-        make_string_edit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
+        name_edit = new StringEdit(ATTRIBUTE_NAME, object_class, this, &all_edits);
+        new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
     } else if (object.is_class(CLASS_GP_CONTAINER)) {
         // TODO: no display specifier for "displayName" for "policy" class, hardcode it?
-        make_string_edit(ATTRIBUTE_DISPLAY_NAME, object_class, this, &all_edits);
+        new StringEdit(ATTRIBUTE_DISPLAY_NAME, object_class, this, &all_edits);
     }
 
     edits_add_to_layout(all_edits, edits_layout);

@@ -32,10 +32,9 @@ void make_account_option_edits(const QList<AccountOption> options, QMap<AccountO
     QMap<AccountOption, AccountOptionEdit *> option_edits;
 
     for (auto option : options) {
-        auto edit = new AccountOptionEdit(option, parent);
+        auto edit = new AccountOptionEdit(option, parent, edits_out);
         option_edits.insert(option, edit);
         option_edits_out->insert(option, edit);
-        edits_out->append(edit);
     }
 
     // PasswordExpired conflicts with (DontExpirePassword and CantChangePassword)
@@ -78,7 +77,7 @@ void make_account_option_edits(const QList<AccountOption> options, QMap<AccountO
     }
 }
 
-AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *parent)
+AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *parent, QList<AttributeEdit *> *edits_out)
 : AttributeEdit(parent)
 {
     option = option_arg;
@@ -89,6 +88,8 @@ AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *pa
         [this]() {
             emit edited();
         });
+
+    AttributeEdit::append_to_list(edits_out);
 }
 
 void AccountOptionEdit::load(const AdObject &object) {

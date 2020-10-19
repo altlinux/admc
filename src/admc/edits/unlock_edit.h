@@ -31,7 +31,7 @@ class QPushButton;
 class UnlockEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    UnlockEdit(QObject *parent);
+    UnlockEdit(QObject *parent, QList<AttributeEdit *> *edits_out = nullptr);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

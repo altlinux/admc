@@ -43,9 +43,9 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
 
     auto edits_layout = new QGridLayout();
 
-    edits.append(new PasswordEdit(this));
-    edits.append(new AccountOptionEdit(AccountOption_PasswordExpired, this));
-    edits.append(new UnlockEdit(this));
+    new PasswordEdit(this, &edits);
+    new AccountOptionEdit(AccountOption_PasswordExpired, this, &edits);
+    new UnlockEdit(this, &edits);
 
     edits_add_to_layout(edits, edits_layout);
     edits_load(edits, object);

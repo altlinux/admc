@@ -79,11 +79,11 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
         case CreateType_User: {
             auto name_edit_label = new QLabel(tr("Full name:"));
             
-            auto first_name_edit = make_string_edit(ATTRIBUTE_FIRST_NAME, object_class, this, &all_edits);
-            auto last_name_edit = make_string_edit(ATTRIBUTE_LAST_NAME, object_class, this, &all_edits);
-            auto initials_edit = make_string_edit(ATTRIBUTE_INITIALS, object_class, this, &all_edits);
-            auto upn_edit = make_string_edit(ATTRIBUTE_USER_PRINCIPAL_NAME, object_class, this, &all_edits);
-            auto sama_edit = make_string_edit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
+            auto first_name_edit = new StringEdit(ATTRIBUTE_FIRST_NAME, object_class, this, &all_edits);
+            auto last_name_edit = new StringEdit(ATTRIBUTE_LAST_NAME, object_class, this, &all_edits);
+            auto initials_edit = new StringEdit(ATTRIBUTE_INITIALS, object_class, this, &all_edits);
+            auto upn_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, object_class, this, &all_edits);
+            auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
 
             // Setup autofills
             // (first name + last name) -> full name
@@ -120,8 +120,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
                     sama_edit->set_input(upn_input);
                 });
 
-            auto pass_edit = new PasswordEdit(this);
-            all_edits.append(pass_edit);
+            auto pass_edit = new PasswordEdit(this, &all_edits);
 
             const QList<AccountOption> options = {
                 AccountOption_PasswordExpired,
@@ -155,12 +154,11 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
             break;
         }
         case CreateType_Group: {
-            auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this);
-            all_edits.append(sama_edit);
+            auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
             required_edits.append(sama_edit);
 
-            all_edits.append(new GroupScopeEdit(this));
-            all_edits.append(new GroupTypeEdit(this));
+            new GroupScopeEdit(this, &all_edits);
+            new GroupTypeEdit(this, &all_edits);
 
             auto name_edit_label = new QLabel(tr("Name:"));
 

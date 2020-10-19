@@ -26,7 +26,7 @@
 #include <QPushButton>
 
 
-UnlockEdit::UnlockEdit(QObject *parent)
+UnlockEdit::UnlockEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 : AttributeEdit(parent) {
     button = new QPushButton();
     button->setCheckable(true);
@@ -37,6 +37,8 @@ UnlockEdit::UnlockEdit(QObject *parent)
         [this]() {
             emit edited();
         });
+    
+    AttributeEdit::append_to_list(edits_out);
 }
 
 void UnlockEdit::load(const AdObject &object) {

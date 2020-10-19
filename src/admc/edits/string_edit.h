@@ -32,7 +32,7 @@ class QLabel;
 class StringEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent);
+    StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent, QList<AttributeEdit *> *edits_out = nullptr);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
     QString get_input() const;
