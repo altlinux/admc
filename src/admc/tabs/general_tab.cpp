@@ -115,8 +115,6 @@ GeneralTab::GeneralTab(const AdObject &object) {
         make_string_edit(ATTRIBUTE_DESCRIPTION, CLASS_GROUP, this, &string_edits, &edits);
     }
 
-    StringEdit::setup_autofill(string_edits.values());
-
     edits_add_to_layout(edits, edits_layout);
     edits_connect_to_tab(edits, this);  
 }

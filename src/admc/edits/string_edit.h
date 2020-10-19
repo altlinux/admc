@@ -32,13 +32,11 @@ class QLabel;
 class StringEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-
-    static void setup_autofill(const QList<StringEdit *> &string_edits);
-
     StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
     QString get_input() const;
+    void set_input(const QString &value);
 
 private:
     QLineEdit *edit;

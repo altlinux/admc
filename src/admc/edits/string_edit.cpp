@@ -21,7 +21,6 @@
 #include "utils.h"
 #include "ad_interface.h"
 #include "ad_config.h"
-#include "settings.h"
 
 #include <QLineEdit>
 #include <QGridLayout>
@@ -39,54 +38,6 @@ StringEdit *make_string_edit(const QString &attribute, const QString &objectClas
 void make_string_edits(const QList<QString> attributes, const QString &objectClass, QObject *parent, QMap<QString, StringEdit *> *map_out, QList<AttributeEdit *> *edits_out) {
     for (auto attribute : attributes) {
         make_string_edit(attribute, objectClass, parent, map_out, edits_out);
-    }
-}
-
-void StringEdit::setup_autofill(const QList<StringEdit *> &string_edits) {
-    // Get QLineEdit's out of string edits
-    QMap<QString, QLineEdit *> edits;
-    for (StringEdit *string_edit : string_edits) {
-        const QString attribute = string_edit->attribute;
-        QLineEdit *edit = string_edit->edit;
-
-        edits[attribute] = edit;
-    }
-
-    // Autofill (first name + last name) into full name
-    if (edits.contains(ATTRIBUTE_FIRST_NAME) && edits.contains(ATTRIBUTE_LAST_NAME) && edits.contains(ATTRIBUTE_DISPLAY_NAME)) {
-        auto autofill =
-        [=]() {
-            const QString full_name =
-            [edits]() {
-                const QString first_name = edits[ATTRIBUTE_FIRST_NAME]->text(); 
-                const QString last_name = edits[ATTRIBUTE_LAST_NAME]->text();
-
-                const bool last_name_first = SETTINGS()->get_bool(BoolSetting_LastNameBeforeFirstName);
-                if (last_name_first) {
-                    return last_name + " " + first_name;
-                } else {
-                    return first_name + " " + last_name;
-                }
-            }();
-
-            edits[ATTRIBUTE_DISPLAY_NAME]->setText(full_name);
-        };
-
-        QObject::connect(
-            edits[ATTRIBUTE_FIRST_NAME], &QLineEdit::textChanged,
-            autofill);
-        QObject::connect(
-            edits[ATTRIBUTE_LAST_NAME], &QLineEdit::textChanged,
-            autofill);
-    }
-
-    // Autofill name into samaccount name
-    if (edits.contains(ATTRIBUTE_USER_PRINCIPAL_NAME) && edits.contains(ATTRIBUTE_SAMACCOUNT_NAME)) {
-        QObject::connect(
-            edits[ATTRIBUTE_USER_PRINCIPAL_NAME], &QLineEdit::textChanged,
-            [=] () {
-                edits[ATTRIBUTE_SAMACCOUNT_NAME]->setText(edits[ATTRIBUTE_USER_PRINCIPAL_NAME]->text());
-            });
     }
 }
 
@@ -193,4 +144,8 @@ bool StringEdit::apply(const QString &dn) const {
 
 QString StringEdit::get_input() const {
     return edit->text();
+}
+
+void StringEdit::set_input(const QString &value) {
+    edit->setText(value);
 }

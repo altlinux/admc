@@ -28,6 +28,7 @@
 #include "edits/account_option_edit.h"
 #include "edits/password_edit.h"
 #include "utils.h"
+#include "settings.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -78,16 +79,46 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
 
     switch (type) {
         case CreateType_User: {
-            const QList<QString> attributes = {
-                ATTRIBUTE_FIRST_NAME,
-                ATTRIBUTE_LAST_NAME,
-                ATTRIBUTE_DISPLAY_NAME,
-                ATTRIBUTE_INITIALS,
-                ATTRIBUTE_USER_PRINCIPAL_NAME,
-                ATTRIBUTE_SAMACCOUNT_NAME
-            };
-            make_string_edits(attributes, object_class, this, &string_edits, &all_edits);
+            auto first_name_edit = make_string_edit(ATTRIBUTE_FIRST_NAME, object_class, this, &string_edits, &all_edits);
+            auto last_name_edit = make_string_edit(ATTRIBUTE_LAST_NAME, object_class, this, &string_edits, &all_edits);
+            auto display_name_edit = make_string_edit(ATTRIBUTE_DISPLAY_NAME, object_class, this, &string_edits, &all_edits);
+            auto initials_edit = make_string_edit(ATTRIBUTE_INITIALS, object_class, this, &string_edits, &all_edits);
+            auto upn_edit = make_string_edit(ATTRIBUTE_USER_PRINCIPAL_NAME, object_class, this, &string_edits, &all_edits);
+            auto sama_edit = make_string_edit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &string_edits, &all_edits);
 
+            // Setup autofills
+            // (first name + last name) -> full name
+            auto autofill_full_name =
+            [=]() {
+                const QString full_name_value =
+                [=]() {
+                    const QString first_name = first_name_edit->get_input(); 
+                    const QString last_name = last_name_edit->get_input(); 
+
+                    const bool last_name_first = SETTINGS()->get_bool(BoolSetting_LastNameBeforeFirstName);
+                    if (last_name_first) {
+                        return last_name + " " + first_name;
+                    } else {
+                        return first_name + " " + last_name;
+                    }
+                }();
+
+                // TODO: replace with full name
+                display_name_edit->set_input(full_name_value);
+            };
+            QObject::connect(
+                first_name_edit, &StringEdit::edited,
+                autofill_full_name);
+            QObject::connect(
+                last_name_edit, &StringEdit::edited,
+                autofill_full_name);
+
+            // upn -> samaccount name
+            QObject::connect(
+                upn_edit, &StringEdit::edited,
+                [=] () {
+                    sama_edit->set_input(upn_edit->get_input());
+                });
 
             all_edits.append(new PasswordEdit(this));
 
@@ -114,8 +145,6 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
             break;
         }
     }
-
-    StringEdit::setup_autofill(string_edits.values());
 
     edits_add_to_layout(all_edits, edits_layout);
 

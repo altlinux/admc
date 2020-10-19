@@ -92,8 +92,6 @@ RenameDialog::RenameDialog(const QString &target_arg)
         }
     }();
 
-    StringEdit::setup_autofill(string_edits.values());
-
     edits_add_to_layout(all_edits, edits_layout);
     edits_load(all_edits, object);
     edits_reset(all_edits);
