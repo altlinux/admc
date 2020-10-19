@@ -179,6 +179,11 @@ int ad_login(const char* uri, LDAP **ld_out) {
         goto end;
     }
 
+    ldap_set_option(ld, LDAP_OPT_X_SASL_NOCANON, LDAP_OPT_ON);
+
+    // TODO: add option to turn off
+    ldap_set_option(ld, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
+
     // Setup sasl_defaults_gssapi 
     struct sasl_defaults_gssapi defaults;
     defaults.mech = "GSSAPI";
