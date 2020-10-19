@@ -58,57 +58,51 @@ RenameDialog::RenameDialog(const QString &target_arg)
         }
     }();
 
-    QMap<QString, StringEdit *> string_edits;
+    name_edit = nullptr;
 
     if (object.is_class(CLASS_USER)) {
+        name_edit = make_string_edit(ATTRIBUTE_NAME, object_class, this, nullptr, &all_edits);
+
         const QList<QString> attributes = {
-            ATTRIBUTE_NAME,
             ATTRIBUTE_FIRST_NAME,
             ATTRIBUTE_LAST_NAME,
             ATTRIBUTE_DISPLAY_NAME,
             ATTRIBUTE_USER_PRINCIPAL_NAME,
             ATTRIBUTE_SAMACCOUNT_NAME
         };
-
-        make_string_edits(attributes, object_class, this, &string_edits, &all_edits);
+        make_string_edits(attributes, object_class, this, nullptr, &all_edits);
     } else if (object.is_class(CLASS_GROUP)) {
-        const QList<QString> attributes = {
-            ATTRIBUTE_NAME,
-            ATTRIBUTE_SAMACCOUNT_NAME
-        };
-
-        make_string_edits(attributes, object_class, this, &string_edits, &all_edits);
+        name_edit = make_string_edit(ATTRIBUTE_NAME, object_class, this, nullptr, &all_edits);
+        make_string_edit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, nullptr, &all_edits);
     } else if (object.is_class(CLASS_GP_CONTAINER)) {
         // TODO: no display specifier for "displayName" for "policy" class, hardcode it?
-        make_string_edit(ATTRIBUTE_DISPLAY_NAME, object_class, this, &string_edits, &all_edits);
+        make_string_edit(ATTRIBUTE_DISPLAY_NAME, object_class, this, nullptr, &all_edits);
     }
-
-    name_edit =
-    [string_edits]() -> StringEdit * {
-        if (string_edits.contains(ATTRIBUTE_NAME)) {
-            return string_edits[ATTRIBUTE_NAME];
-        } else {
-            return nullptr;
-        }
-    }();
 
     edits_add_to_layout(all_edits, edits_layout);
     edits_load(all_edits, object);
     edits_reset(all_edits);
 
-    const auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
+    button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
     connect(
         button_box->button(QDialogButtonBox::Ok), &QPushButton::clicked,
         this, &QDialog::accept);
     connect(
         button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
-        this, &QDialog::reject);
+        this, &RenameDialog::on_cancel);
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addWidget(title_label);
     top_layout->addLayout(edits_layout);
     top_layout->addWidget(button_box);
+
+    for (auto edit : all_edits) {
+        connect(
+            edit, &AttributeEdit::edited,
+            this, &RenameDialog::on_edited);
+    }
+    on_edited();
 }
 
 void RenameDialog::accept() {
@@ -151,4 +145,19 @@ void RenameDialog::accept() {
     }
     AD()->end_batch();
     Status::instance()->show_errors_popup(errors_index);
+}
+
+void RenameDialog::on_edited() {
+    QPushButton *cancel_button = button_box->button(QDialogButtonBox::Cancel);
+    const bool any_changed = edits_changed(all_edits);
+    cancel_button->setEnabled(any_changed);
+
+    QPushButton *ok_button = button_box->button(QDialogButtonBox::Ok);
+    const bool name_not_empty = !name_edit->get_input().isEmpty();
+    const bool enable_ok = (name_not_empty && any_changed);
+    ok_button->setEnabled(enable_ok);
+}
+
+void RenameDialog::on_cancel() {
+    edits_reset(all_edits);
 }

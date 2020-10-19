@@ -27,6 +27,7 @@
 
 class AttributeEdit;
 class StringEdit;
+class QDialogButtonBox;
 
 class RenameDialog final : public QDialog {
 Q_OBJECT
@@ -36,12 +37,15 @@ public:
 
 private slots:
     void accept();
+    void on_edited();
+    void on_cancel();
 
 private:
     QString target;
     QList<AttributeEdit *> all_edits;
     StringEdit *name_edit;
     QString old_name_for_message;
+    QDialogButtonBox *button_box;
 };
 
 #endif /* RENAME_DIALOG_H */
