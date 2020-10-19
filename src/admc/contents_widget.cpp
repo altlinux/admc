@@ -80,7 +80,6 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
     view->header()->setSectionsMovable(true);
-    ObjectContextMenu::connect_view(view, column_index(ATTRIBUTE_DISTINGUISHED_NAME));
 
     proxy_name->setSourceModel(model);
     view->setModel(proxy_name);
@@ -129,6 +128,10 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
             proxy_name->setFilterRegExp(QRegExp(text, Qt::CaseInsensitive, QRegExp::FixedString));
         });
     filter_name_edit->setText("");
+
+    QObject::connect(
+        view, &QWidget::customContextMenuRequested,
+        this, &ContentsWidget::on_context_menu);
 }
 
 void ContentsWidget::on_containers_selected_changed(const QString &dn) {
@@ -145,6 +148,21 @@ void ContentsWidget::on_view_clicked(const QModelIndex &index) {
     if (details_from_contents) {
         const QString dn = get_dn_from_index(index, column_index(ATTRIBUTE_DISTINGUISHED_NAME));
         DetailsDialog::open_for_target(dn);
+    }
+}
+
+void ContentsWidget::on_context_menu(const QPoint pos) {
+    const int dn_column = column_index(ATTRIBUTE_DISTINGUISHED_NAME);
+    QString dn = get_dn_from_pos(pos, view, dn_column);
+
+    // Interprect clicks on empty space as clicks on parent
+    if (dn.isEmpty() && !target_dn.isEmpty()) {
+        dn = target_dn;
+    }
+
+    if (!dn.isEmpty()) {
+        ObjectContextMenu context_menu(dn);
+        exec_menu_from_view(&context_menu, view, pos);
     }
 }
 

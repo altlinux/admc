@@ -35,8 +35,9 @@ Q_OBJECT
 public:
     static void connect_view(QAbstractItemView *view, int dn_column);
 
-private:
     ObjectContextMenu(const QString &dn);
+
+private:
     void delete_object(const QString &dn, const AdObject &object);
     void edit_policy(const QString &dn, const AdObject &object);
     void move(const QString &dn, const AdObject &object);

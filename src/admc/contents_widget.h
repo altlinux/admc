@@ -27,6 +27,7 @@
 #include <QString>
 #include <QList>
 #include <QHash>
+#include <QPoint>
 
 class ContainersWidget;
 class QStandardItem;
@@ -46,6 +47,7 @@ private slots:
     void on_containers_selected_changed(const QString &dn);
     void on_ad_modified();
     void on_view_clicked(const QModelIndex &index);
+    void on_context_menu(const QPoint pos);
 
 private:
     QString target_dn = "";
