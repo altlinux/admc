@@ -29,7 +29,9 @@
 
 StringEdit *make_string_edit(const QString &attribute, const QString &objectClass, QObject *parent, QMap<QString, StringEdit *> *map_out, QList<AttributeEdit *> *edits_out) {
     const auto edit = new StringEdit(attribute, objectClass, parent);
-    map_out->insert(attribute, edit);
+    if (map_out != nullptr) {
+        map_out->insert(attribute, edit);
+    }
     edits_out->append(edit);
 
     return edit;

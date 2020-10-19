@@ -61,8 +61,6 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
     
     const auto edits_layout = new QGridLayout();
 
-    QMap<QString, StringEdit *> string_edits;
-
     const QString object_class =
     [this]() {
         switch (type) {
@@ -76,19 +74,16 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
     }();
 
     name_edit = new QLineEdit();
-    auto name_edit_label = new QLabel(tr("Full name:"));
-    append_to_grid_layout_with_label(edits_layout, name_edit_label, name_edit);
 
     switch (type) {
         case CreateType_User: {
-            const QList<QString> string_attributes = {
-                ATTRIBUTE_FIRST_NAME,
-                ATTRIBUTE_LAST_NAME,
-                ATTRIBUTE_INITIALS,
-                ATTRIBUTE_USER_PRINCIPAL_NAME,
-                ATTRIBUTE_SAMACCOUNT_NAME
-            };
-            make_string_edits(string_attributes, object_class, this, &string_edits, &all_edits);
+            auto name_edit_label = new QLabel(tr("Full name:"));
+            
+            auto first_name_edit = make_string_edit(ATTRIBUTE_FIRST_NAME, object_class, this, nullptr, &all_edits);
+            auto last_name_edit = make_string_edit(ATTRIBUTE_LAST_NAME, object_class, this, nullptr, &all_edits);
+            auto initials_edit = make_string_edit(ATTRIBUTE_INITIALS, object_class, this, nullptr, &all_edits);
+            auto upn_edit = make_string_edit(ATTRIBUTE_USER_PRINCIPAL_NAME, object_class, this, nullptr, &all_edits);
+            auto sama_edit = make_string_edit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, nullptr, &all_edits);
 
             // Setup autofills
             // (first name + last name) -> full name
@@ -96,8 +91,8 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
             [=]() {
                 const QString full_name_value =
                 [=]() {
-                    const QString first_name = string_edits[ATTRIBUTE_FIRST_NAME]->get_input(); 
-                    const QString last_name = string_edits[ATTRIBUTE_LAST_NAME]->get_input(); 
+                    const QString first_name = first_name_edit->get_input(); 
+                    const QString last_name = last_name_edit->get_input(); 
 
                     const bool last_name_first = SETTINGS()->get_bool(BoolSetting_LastNameBeforeFirstName);
                     if (last_name_first) {
@@ -111,18 +106,18 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
                 name_edit->setText(full_name_value);
             };
             QObject::connect(
-                string_edits[ATTRIBUTE_FIRST_NAME], &StringEdit::edited,
+                first_name_edit, &StringEdit::edited,
                 autofill_full_name);
             QObject::connect(
-                string_edits[ATTRIBUTE_LAST_NAME], &StringEdit::edited,
+                last_name_edit, &StringEdit::edited,
                 autofill_full_name);
 
             // upn -> samaccount name
             QObject::connect(
-                string_edits[ATTRIBUTE_USER_PRINCIPAL_NAME], &StringEdit::edited,
+                upn_edit, &StringEdit::edited,
                 [=] () {
-                    const QString upn_input = string_edits[ATTRIBUTE_USER_PRINCIPAL_NAME]->get_input();
-                    string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->set_input(upn_input);
+                    const QString upn_input = upn_edit->get_input();
+                    sama_edit->set_input(upn_input);
                 });
 
             auto pass_edit = new PasswordEdit(this);
@@ -137,33 +132,50 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
             QMap<AccountOption, AccountOptionEdit *> option_edits;
             make_account_option_edits(options, &option_edits, &all_edits, this);
 
-            // Add edits to required list
-            for (const QString attribute : string_attributes) {
-                if (attribute == ATTRIBUTE_INITIALS) {
-                    continue;
-                }
+            // Add edits to required list (no initials)
+            required_edits.append({
+                first_name_edit,
+                last_name_edit,
+                upn_edit,
+                sama_edit
+            });
 
-                StringEdit *string_edit = string_edits[attribute];
-                required_edits.append(string_edit);
+            // NOTE: name edit has to be in between string edits, so have to layout one by one
+            first_name_edit->add_to_layout(edits_layout);
+            last_name_edit->add_to_layout(edits_layout);
+            append_to_grid_layout_with_label(edits_layout, name_edit_label, name_edit);
+            initials_edit->add_to_layout(edits_layout);
+            upn_edit->add_to_layout(edits_layout);
+            sama_edit->add_to_layout(edits_layout);
+            pass_edit->add_to_layout(edits_layout);
+            for (auto option_edit : option_edits) {
+                option_edit->add_to_layout(edits_layout);
             }
-            required_edits.append(pass_edit);
 
             break;
         }
         case CreateType_Group: {
-            make_string_edit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &string_edits, &all_edits);
+            auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this);
+            all_edits.append(sama_edit);
+            required_edits.append(sama_edit);
 
             all_edits.append(new GroupScopeEdit(this));
             all_edits.append(new GroupTypeEdit(this));
 
+            auto name_edit_label = new QLabel(tr("Name:"));
+
+            append_to_grid_layout_with_label(edits_layout, name_edit_label, name_edit);
+            edits_add_to_layout(all_edits, edits_layout);
+
             break;
         }
         default: {
+            auto name_edit_label = new QLabel(tr("Name:"));
+            append_to_grid_layout_with_label(edits_layout, name_edit_label, name_edit);
+
             break;
         }
     }
-
-    edits_add_to_layout(all_edits, edits_layout);
 
     create_button = new QPushButton(tr("Create"));
 
