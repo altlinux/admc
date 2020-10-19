@@ -80,6 +80,12 @@ void StringEdit::setup_autofill(const QList<StringEdit *> &string_edits) {
     }
 }
 
+// "DOMAIN.COM" => "@domain.com"
+QString get_domain_as_email_suffix() {
+    const QString domain = AD()->domain();
+    return "@" + domain.toLower();
+}
+
 StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent)
 : AttributeEdit(parent)
 {
@@ -99,7 +105,14 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
 }
 
 void StringEdit::load(const AdObject &object) {
-    original_value = object.get_string(attribute);
+    const QString value = object.get_string(attribute);
+
+    if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
+        // Take "user" from "user@domain.com"
+        original_value = value.split("@")[0];
+    } else {
+        original_value = value;
+    }
 }
 
 void StringEdit::reset() {
@@ -111,7 +124,31 @@ void StringEdit::set_read_only(const bool read_only) {
 }
 
 void StringEdit::add_to_layout(QGridLayout *layout) {
-    append_to_grid_layout_with_label(layout, label, edit);
+    if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
+        const QString extra_edit_text = get_domain_as_email_suffix();
+        auto extra_edit = new QLineEdit();
+        extra_edit->setEnabled(false);
+        extra_edit->setText(extra_edit_text);
+
+        const int row = layout->rowCount();
+        layout->addWidget(label, row, 0);
+        layout->addWidget(edit, row, 1);
+        layout->addWidget(extra_edit, row, 2);
+    } else if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
+        const QString domain = AD()->domain();
+        const QString domain_name = domain.split(".")[0];
+        const QString extra_edit_text = "\\" + domain_name;
+        auto extra_edit = new QLineEdit();
+        extra_edit->setEnabled(false);
+        extra_edit->setText(extra_edit_text);
+
+        const int row = layout->rowCount();
+        layout->addWidget(label, row, 0);
+        layout->addWidget(extra_edit, row, 1);
+        layout->addWidget(edit, row, 2);
+    } else {
+        append_to_grid_layout_with_label(layout, label, edit);
+    }
 }
 
 bool StringEdit::verify() const {
@@ -146,7 +183,16 @@ bool StringEdit::apply(const QString &dn) const {
         return true;
     }
 
-    const QString new_value = edit->text();
+    const QString new_value =
+    [this]() {
+        if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
+            // Get "user" from edit and combine into "user@domain.com"
+            return edit->text() + get_domain_as_email_suffix();
+        } else {
+            return edit->text();
+        }
+    }();
+
     const bool success = AD()->attribute_replace_string(dn, attribute, new_value);
 
     return success;
