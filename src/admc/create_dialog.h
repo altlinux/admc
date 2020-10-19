@@ -29,7 +29,9 @@
 
 class QGridLayout;
 class AttributeEdit;
-class StringEdit;
+class QLineEdit;
+class AttributeEdit;
+class QPushButton;
 
 enum CreateType {
     CreateType_User,
@@ -54,12 +56,15 @@ public:
 
 private slots:
     void accept();
+    void on_edited();
 
 private:
     QString parent_dn;
     CreateType type;
-    StringEdit *name_edit;
+    QLineEdit *name_edit;
+    QPushButton *create_button;
     QList<AttributeEdit *> all_edits;
+    QList<AttributeEdit *> required_edits;
 };
 
 QString create_type_to_string(const CreateType &type);

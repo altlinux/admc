@@ -40,7 +40,7 @@
 #include <QComboBox>
 #include <QMessageBox>
 #include <QCheckBox>
-#include <QDialogButtonBox>
+#include <QPushButton>
 
 // TODO: implement checkbox for account option "User cannot change password". Can't just do it through UAC attribute bits.
 
@@ -75,16 +75,20 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
         return "";
     }();
 
-    name_edit = make_string_edit(ATTRIBUTE_NAME, object_class, this, &string_edits, &all_edits);
+    name_edit = new QLineEdit();
+    auto name_edit_label = new QLabel(tr("Full name:"));
+    append_to_grid_layout_with_label(edits_layout, name_edit_label, name_edit);
 
     switch (type) {
         case CreateType_User: {
-            auto first_name_edit = make_string_edit(ATTRIBUTE_FIRST_NAME, object_class, this, &string_edits, &all_edits);
-            auto last_name_edit = make_string_edit(ATTRIBUTE_LAST_NAME, object_class, this, &string_edits, &all_edits);
-            auto display_name_edit = make_string_edit(ATTRIBUTE_DISPLAY_NAME, object_class, this, &string_edits, &all_edits);
-            auto initials_edit = make_string_edit(ATTRIBUTE_INITIALS, object_class, this, &string_edits, &all_edits);
-            auto upn_edit = make_string_edit(ATTRIBUTE_USER_PRINCIPAL_NAME, object_class, this, &string_edits, &all_edits);
-            auto sama_edit = make_string_edit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &string_edits, &all_edits);
+            const QList<QString> string_attributes = {
+                ATTRIBUTE_FIRST_NAME,
+                ATTRIBUTE_LAST_NAME,
+                ATTRIBUTE_INITIALS,
+                ATTRIBUTE_USER_PRINCIPAL_NAME,
+                ATTRIBUTE_SAMACCOUNT_NAME
+            };
+            make_string_edits(string_attributes, object_class, this, &string_edits, &all_edits);
 
             // Setup autofills
             // (first name + last name) -> full name
@@ -92,8 +96,8 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
             [=]() {
                 const QString full_name_value =
                 [=]() {
-                    const QString first_name = first_name_edit->get_input(); 
-                    const QString last_name = last_name_edit->get_input(); 
+                    const QString first_name = string_edits[ATTRIBUTE_FIRST_NAME]->get_input(); 
+                    const QString last_name = string_edits[ATTRIBUTE_LAST_NAME]->get_input(); 
 
                     const bool last_name_first = SETTINGS()->get_bool(BoolSetting_LastNameBeforeFirstName);
                     if (last_name_first) {
@@ -104,23 +108,25 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
                 }();
 
                 // TODO: replace with full name
-                display_name_edit->set_input(full_name_value);
+                name_edit->setText(full_name_value);
             };
             QObject::connect(
-                first_name_edit, &StringEdit::edited,
+                string_edits[ATTRIBUTE_FIRST_NAME], &StringEdit::edited,
                 autofill_full_name);
             QObject::connect(
-                last_name_edit, &StringEdit::edited,
+                string_edits[ATTRIBUTE_LAST_NAME], &StringEdit::edited,
                 autofill_full_name);
 
             // upn -> samaccount name
             QObject::connect(
-                upn_edit, &StringEdit::edited,
+                string_edits[ATTRIBUTE_USER_PRINCIPAL_NAME], &StringEdit::edited,
                 [=] () {
-                    sama_edit->set_input(upn_edit->get_input());
+                    const QString upn_input = string_edits[ATTRIBUTE_USER_PRINCIPAL_NAME]->get_input();
+                    string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->set_input(upn_input);
                 });
 
-            all_edits.append(new PasswordEdit(this));
+            auto pass_edit = new PasswordEdit(this);
+            all_edits.append(pass_edit);
 
             const QList<AccountOption> options = {
                 AccountOption_PasswordExpired,
@@ -130,6 +136,17 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
             };
             QMap<AccountOption, AccountOptionEdit *> option_edits;
             make_account_option_edits(options, &option_edits, &all_edits, this);
+
+            // Add edits to required list
+            for (const QString attribute : string_attributes) {
+                if (attribute == ATTRIBUTE_INITIALS) {
+                    continue;
+                }
+
+                StringEdit *string_edit = string_edits[attribute];
+                required_edits.append(string_edit);
+            }
+            required_edits.append(pass_edit);
 
             break;
         }
@@ -148,24 +165,31 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
 
     edits_add_to_layout(all_edits, edits_layout);
 
-    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
+    create_button = new QPushButton(tr("Create"));
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addWidget(title_label);
     top_layout->addLayout(edits_layout);
-    top_layout->addWidget(button_box);
+    top_layout->addWidget(create_button);
 
     connect(
-        button_box, &QDialogButtonBox::accepted,
+        create_button, &QAbstractButton::clicked,
         this, &CreateDialog::accept);
+
+    for (auto edit : required_edits) {
+        connect(
+            edit, &AttributeEdit::edited,
+            this, &CreateDialog::on_edited);
+    }
     connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
+        name_edit, &QLineEdit::textChanged,
+        this, &CreateDialog::on_edited);
+    on_edited();
 }
 
 void CreateDialog::accept() {
-    const QString name = name_edit->get_input();
+    const QString name = name_edit->text();
 
     const QString suffix =
     [this]() {
@@ -239,6 +263,24 @@ void CreateDialog::accept() {
     }
     AD()->end_batch();
     Status::instance()->show_errors_popup(errors_index);
+}
+
+// Enable/disable create button if all required edits filled
+void CreateDialog::on_edited() {
+    const bool required_edits_filled =
+    [this]() {
+        for (auto edit : required_edits) {
+            if (!edit->changed()) {
+                return false;
+            }
+        }
+
+        return true;
+    }();
+    const bool name_edit_filled = !name_edit->text().isEmpty();
+    const bool enable_create = required_edits_filled && name_edit_filled;
+
+    create_button->setEnabled(enable_create);
 }
 
 QString create_type_to_string(const CreateType &type) {

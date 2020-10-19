@@ -147,5 +147,5 @@ QString StringEdit::get_input() const {
 }
 
 void StringEdit::set_input(const QString &value) {
-    edit->setText(value);
+    return edit->setText(value);
 }
