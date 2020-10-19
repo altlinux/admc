@@ -44,6 +44,9 @@ void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
         [=]
         (const QPoint pos) {
             const QString dn = get_dn_from_pos(pos, view, dn_column);
+            if (dn.isEmpty()) {
+                return;
+            }
 
             ObjectContextMenu context_menu(dn);
             exec_menu_from_view(&context_menu, view, pos);

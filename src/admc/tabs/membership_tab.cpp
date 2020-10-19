@@ -154,6 +154,9 @@ void MembershipTab::apply(const QString &target) const {
 
 void MembershipTab::on_context_menu(const QPoint pos) {
     const QString dn = get_dn_from_pos(pos, view, MembersColumn_DN);
+    if (dn.isEmpty()) {
+        return;
+    }
 
     QMenu menu(this);
     menu.addAction(tr("Remove"),

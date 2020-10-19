@@ -97,6 +97,10 @@ void PoliciesWidget::reload() {
 
 void PoliciesWidget::on_context_menu(const QPoint pos) {
     const QString dn = get_dn_from_pos(pos, view, PoliciesColumn_DN);
+    if (dn.isEmpty()) {
+        return;
+    }
+
     const AdObject object = AD()->request_all(dn);
 
     QMenu menu;

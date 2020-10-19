@@ -136,6 +136,9 @@ void GroupPolicyTab::apply(const QString &target) const {
 
 void GroupPolicyTab::on_context_menu(const QPoint pos) {
     const QString gpo = get_dn_from_pos(pos, view, GplinkColumn_DN);
+    if (gpo.isEmpty()) {
+        return;
+    }
 
     QMenu menu(this);
     menu.addAction(tr("Remove link"), [this, gpo]() {

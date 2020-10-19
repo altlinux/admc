@@ -83,6 +83,9 @@ void GpoLinksTab::load(const AdObject &object) {
 
 void GpoLinksTab::on_context_menu(const QPoint pos) {
     const QString dn = get_dn_from_pos(pos, view, GpoLinksColumn_DN);
+    if (dn.isEmpty()) {
+        return;
+    }
 
     QMenu menu(this);
     menu.addAction(tr("Details"), [dn]() {

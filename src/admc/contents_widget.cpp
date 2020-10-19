@@ -152,18 +152,24 @@ void ContentsWidget::on_view_clicked(const QModelIndex &index) {
 }
 
 void ContentsWidget::on_context_menu(const QPoint pos) {
-    const int dn_column = column_index(ATTRIBUTE_DISTINGUISHED_NAME);
-    QString dn = get_dn_from_pos(pos, view, dn_column);
+    const QString dn =
+    [this, pos]() {
+        const int dn_column = column_index(ATTRIBUTE_DISTINGUISHED_NAME);
+        QString out = get_dn_from_pos(pos, view, dn_column);
+        
+        // Interpret clicks on empty space as clicks on parent
+        if (out.isEmpty() && !target_dn.isEmpty()) {
+            out = target_dn;
+        }
 
-    // Interprect clicks on empty space as clicks on parent
-    if (dn.isEmpty() && !target_dn.isEmpty()) {
-        dn = target_dn;
-    }
+        return out;
+    }();
+    if (dn.isEmpty()) {
+        return;
+    }    
 
-    if (!dn.isEmpty()) {
-        ObjectContextMenu context_menu(dn);
-        exec_menu_from_view(&context_menu, view, pos);
-    }
+    ObjectContextMenu context_menu(dn);
+    exec_menu_from_view(&context_menu, view, pos);
 }
 
 void ContentsWidget::change_target(const QString &dn) {
