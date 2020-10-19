@@ -81,11 +81,11 @@ void StringEdit::setup_autofill(const QList<StringEdit *> &string_edits) {
     }
 
     // Autofill name into samaccount name
-    if (edits.contains(ATTRIBUTE_NAME) && edits.contains(ATTRIBUTE_SAMACCOUNT_NAME)) {
+    if (edits.contains(ATTRIBUTE_USER_PRINCIPAL_NAME) && edits.contains(ATTRIBUTE_SAMACCOUNT_NAME)) {
         QObject::connect(
-            edits[ATTRIBUTE_NAME], &QLineEdit::textChanged,
+            edits[ATTRIBUTE_USER_PRINCIPAL_NAME], &QLineEdit::textChanged,
             [=] () {
-                edits[ATTRIBUTE_SAMACCOUNT_NAME]->setText(edits[ATTRIBUTE_NAME]->text());
+                edits[ATTRIBUTE_SAMACCOUNT_NAME]->setText(edits[ATTRIBUTE_USER_PRINCIPAL_NAME]->text());
             });
     }
 }
