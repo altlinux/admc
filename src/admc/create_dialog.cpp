@@ -73,15 +73,12 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
         return "";
     }();
 
-    name_edit = new QLineEdit();
-
     switch (type) {
         case CreateType_User: {
-            auto name_edit_label = new QLabel(tr("Full name:"));
-            
             auto first_name_edit = new StringEdit(ATTRIBUTE_FIRST_NAME, object_class, this, &all_edits);
             auto last_name_edit = new StringEdit(ATTRIBUTE_LAST_NAME, object_class, this, &all_edits);
-            auto initials_edit = new StringEdit(ATTRIBUTE_INITIALS, object_class, this, &all_edits);
+            name_edit = new StringEdit(ATTRIBUTE_NAME, object_class, this, &all_edits);
+            new StringEdit(ATTRIBUTE_INITIALS, object_class, this, &all_edits);
             auto upn_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, object_class, this, &all_edits);
             auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
 
@@ -103,7 +100,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
                 }();
 
                 // TODO: replace with full name
-                name_edit->setText(full_name_value);
+                name_edit->set_input(full_name_value);
             };
             QObject::connect(
                 first_name_edit, &StringEdit::edited,
@@ -131,49 +128,45 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
             QMap<AccountOption, AccountOptionEdit *> option_edits;
             make_account_option_edits(options, &option_edits, &all_edits, this);
 
-            // Add edits to required list (no initials)
-            required_edits.append({
+            // NOTE: initials not required
+            required_edits = {
                 first_name_edit,
                 last_name_edit,
+                name_edit,
                 upn_edit,
-                sama_edit
-            });
-
-            // NOTE: name edit has to be in between string edits, so have to layout one by one
-            first_name_edit->add_to_layout(edits_layout);
-            last_name_edit->add_to_layout(edits_layout);
-            append_to_grid_layout_with_label(edits_layout, name_edit_label, name_edit);
-            initials_edit->add_to_layout(edits_layout);
-            upn_edit->add_to_layout(edits_layout);
-            sama_edit->add_to_layout(edits_layout);
-            pass_edit->add_to_layout(edits_layout);
-            for (auto option_edit : option_edits) {
-                option_edit->add_to_layout(edits_layout);
-            }
+                sama_edit,
+                pass_edit
+            };
 
             break;
         }
         case CreateType_Group: {
+            name_edit = new StringEdit(ATTRIBUTE_NAME, "", this, &all_edits);
+
             auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
-            required_edits.append(sama_edit);
+
+            required_edits = {
+                name_edit,
+                sama_edit
+            };
 
             new GroupScopeEdit(this, &all_edits);
             new GroupTypeEdit(this, &all_edits);
 
-            auto name_edit_label = new QLabel(tr("Name:"));
-
-            append_to_grid_layout_with_label(edits_layout, name_edit_label, name_edit);
-            edits_add_to_layout(all_edits, edits_layout);
-
             break;
         }
         default: {
-            auto name_edit_label = new QLabel(tr("Name:"));
-            append_to_grid_layout_with_label(edits_layout, name_edit_label, name_edit);
+            name_edit = new StringEdit(ATTRIBUTE_NAME, "", this, &all_edits);
+
+            required_edits = {
+                name_edit
+            };
 
             break;
         }
     }
+
+    edits_add_to_layout(all_edits, edits_layout);
 
     create_button = new QPushButton(tr("Create"));
 
@@ -192,14 +185,11 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
             edit, &AttributeEdit::edited,
             this, &CreateDialog::on_edited);
     }
-    connect(
-        name_edit, &QLineEdit::textChanged,
-        this, &CreateDialog::on_edited);
     on_edited();
 }
 
 void CreateDialog::accept() {
-    const QString name = name_edit->text();
+    const QString name = name_edit->get_input();
 
     const QString suffix =
     [this]() {
@@ -287,10 +277,8 @@ void CreateDialog::on_edited() {
 
         return true;
     }();
-    const bool name_edit_filled = !name_edit->text().isEmpty();
-    const bool enable_create = required_edits_filled && name_edit_filled;
 
-    create_button->setEnabled(enable_create);
+    create_button->setEnabled(required_edits_filled);
 }
 
 QString create_type_to_string(const CreateType &type) {
