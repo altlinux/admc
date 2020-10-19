@@ -54,6 +54,7 @@ MenuBar::MenuBar(QWidget* parent)
     add_bool_setting_action(menubar_preferences, tr("Login using saved session at startup"), BoolSetting_AutoLogin);
     add_bool_setting_action(menubar_preferences, tr("Dev mode"), BoolSetting_DevMode);
     add_bool_setting_action(menubar_preferences, tr("Show non-container objects in Containers tree"), BoolSetting_ShowNonContainersInContainersTree);
+    add_bool_setting_action(menubar_preferences, tr("Put last name before first name when creating users"), BoolSetting_LastNameBeforeFirstName);
 
     QMenu *language_menu = menubar_preferences->addMenu(tr("Language"));
     auto language_group = new QActionGroup(language_menu);

@@ -21,6 +21,7 @@
 #include "utils.h"
 #include "ad_interface.h"
 #include "ad_config.h"
+#include "settings.h"
 
 #include <QLineEdit>
 #include <QGridLayout>
@@ -55,9 +56,18 @@ void StringEdit::setup_autofill(const QList<StringEdit *> &string_edits) {
     if (edits.contains(ATTRIBUTE_FIRST_NAME) && edits.contains(ATTRIBUTE_LAST_NAME) && edits.contains(ATTRIBUTE_DISPLAY_NAME)) {
         auto autofill =
         [=]() {
-            const QString first_name = edits[ATTRIBUTE_FIRST_NAME]->text(); 
-            const QString last_name = edits[ATTRIBUTE_LAST_NAME]->text();
-            const QString full_name = first_name + " " + last_name; 
+            const QString full_name =
+            [edits]() {
+                const QString first_name = edits[ATTRIBUTE_FIRST_NAME]->text(); 
+                const QString last_name = edits[ATTRIBUTE_LAST_NAME]->text();
+
+                const bool last_name_first = SETTINGS()->get_bool(BoolSetting_LastNameBeforeFirstName);
+                if (last_name_first) {
+                    return last_name + " " + first_name;
+                } else {
+                    return first_name + " " + last_name;
+                }
+            }();
 
             edits[ATTRIBUTE_DISPLAY_NAME]->setText(full_name);
         };

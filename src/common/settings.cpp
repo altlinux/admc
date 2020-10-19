@@ -22,6 +22,7 @@
 #include <QAction>
 #include <QWidget>
 #include <QSettings>
+#include <QLocale>
 
 QString bool_to_string(BoolSetting type);
 QString variant_to_string(VariantSetting type);
@@ -62,9 +63,23 @@ void Settings::connect_action_to_bool_setting(QAction *action, const BoolSetting
     action->setCheckable(true);
 
     const QString setting_str = bool_to_string(type);
+
+    const bool default_value =
+    [type]() {
+        if (type == BoolSetting_LastNameBeforeFirstName) {
+            const bool locale_is_russian = (QLocale::system().language() == QLocale::Russian);
+            if (locale_is_russian) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }();
     
     // Init action state to saved value
-    const bool saved_value = qsettings->value(setting_str, false).toBool();
+    const bool saved_value = qsettings->value(setting_str, default_value).toBool();
     action->setChecked(saved_value);
 
     // Update saved value when action is toggled
@@ -104,6 +119,7 @@ QString bool_to_string(BoolSetting type) {
         CASE_ENUM_TO_STRING(BoolSetting_DevMode);
         CASE_ENUM_TO_STRING(BoolSetting_DetailsIsDocked);
         CASE_ENUM_TO_STRING(BoolSetting_ShowNonContainersInContainersTree);
+        CASE_ENUM_TO_STRING(BoolSetting_LastNameBeforeFirstName);
         CASE_ENUM_TO_STRING(BoolSetting_COUNT);
     }
     return "";

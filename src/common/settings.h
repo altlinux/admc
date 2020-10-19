@@ -66,6 +66,7 @@ enum BoolSetting {
     BoolSetting_DevMode,
     BoolSetting_DetailsIsDocked,
     BoolSetting_ShowNonContainersInContainersTree,
+    BoolSetting_LastNameBeforeFirstName,
 
     // GPGUI
 
