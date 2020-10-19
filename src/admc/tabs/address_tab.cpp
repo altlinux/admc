@@ -41,8 +41,7 @@ AddressTab::AddressTab() {
         ATTRIBUTE_POSTAL_CODE
     };
 
-    QMap<QString, StringEdit *> string_edits;
-    make_string_edits(attributes, CLASS_USER, this, &string_edits, &edits);
+    make_string_edits(attributes, CLASS_USER, this, &edits);
 
     edits.append(new CountryEdit(this));
 

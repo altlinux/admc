@@ -79,11 +79,11 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
         case CreateType_User: {
             auto name_edit_label = new QLabel(tr("Full name:"));
             
-            auto first_name_edit = make_string_edit(ATTRIBUTE_FIRST_NAME, object_class, this, nullptr, &all_edits);
-            auto last_name_edit = make_string_edit(ATTRIBUTE_LAST_NAME, object_class, this, nullptr, &all_edits);
-            auto initials_edit = make_string_edit(ATTRIBUTE_INITIALS, object_class, this, nullptr, &all_edits);
-            auto upn_edit = make_string_edit(ATTRIBUTE_USER_PRINCIPAL_NAME, object_class, this, nullptr, &all_edits);
-            auto sama_edit = make_string_edit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, nullptr, &all_edits);
+            auto first_name_edit = make_string_edit(ATTRIBUTE_FIRST_NAME, object_class, this, &all_edits);
+            auto last_name_edit = make_string_edit(ATTRIBUTE_LAST_NAME, object_class, this, &all_edits);
+            auto initials_edit = make_string_edit(ATTRIBUTE_INITIALS, object_class, this, &all_edits);
+            auto upn_edit = make_string_edit(ATTRIBUTE_USER_PRINCIPAL_NAME, object_class, this, &all_edits);
+            auto sama_edit = make_string_edit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
 
             // Setup autofills
             // (first name + last name) -> full name

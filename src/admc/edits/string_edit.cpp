@@ -27,19 +27,16 @@
 #include <QMessageBox>
 #include <QLabel>
 
-StringEdit *make_string_edit(const QString &attribute, const QString &objectClass, QObject *parent, QMap<QString, StringEdit *> *map_out, QList<AttributeEdit *> *edits_out) {
+StringEdit *make_string_edit(const QString &attribute, const QString &objectClass, QObject *parent, QList<AttributeEdit *> *edits_out) {
     const auto edit = new StringEdit(attribute, objectClass, parent);
-    if (map_out != nullptr) {
-        map_out->insert(attribute, edit);
-    }
     edits_out->append(edit);
 
     return edit;
 }
 
-void make_string_edits(const QList<QString> attributes, const QString &objectClass, QObject *parent, QMap<QString, StringEdit *> *map_out, QList<AttributeEdit *> *edits_out) {
+void make_string_edits(const QList<QString> attributes, const QString &objectClass, QObject *parent, QList<AttributeEdit *> *edits_out) {
     for (auto attribute : attributes) {
-        make_string_edit(attribute, objectClass, parent, map_out, edits_out);
+        make_string_edit(attribute, objectClass, parent, edits_out);
     }
 }
 

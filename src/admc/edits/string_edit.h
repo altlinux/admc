@@ -50,7 +50,7 @@ private:
 
 // Convenience f-ns that insert string edits into an edits list
 // and a map for you.
-StringEdit *make_string_edit(const QString &attribute, const QString &objectClass, QObject *parent, QMap<QString, StringEdit *> *map_out, QList<AttributeEdit *> *edits_out);
-void make_string_edits(const QList<QString> attributes, const QString &objectClass, QObject *parent, QMap<QString, StringEdit *> *map_out, QList<AttributeEdit *> *edits_out);
+StringEdit *make_string_edit(const QString &attribute, const QString &objectClass, QObject *parent, QList<AttributeEdit *> *edits_out);
+void make_string_edits(const QList<QString> attributes, const QString &objectClass, QObject *parent, QList<AttributeEdit *> *edits_out);
 
 #endif /* STRING_EDIT_H */

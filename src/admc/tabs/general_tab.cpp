@@ -52,8 +52,6 @@ GeneralTab::GeneralTab(const AdObject &object) {
     top_layout->addWidget(line);
     top_layout->addLayout(edits_layout);
 
-    QMap<QString, StringEdit *> string_edits;
-
     if (object.is_class(CLASS_USER)) {
         const QList<QString> attributes = {
             ATTRIBUTE_DESCRIPTION,
@@ -64,7 +62,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
             ATTRIBUTE_MAIL,
             ATTRIBUTE_OFFICE,
         };
-        make_string_edits(attributes, CLASS_USER, this, &string_edits, &edits);
+        make_string_edits(attributes, CLASS_USER, this, &edits);
 
         edits.append(new StringOtherEdit(ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, CLASS_USER, this));
         edits.append(new StringOtherEdit(ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, CLASS_USER, this));
@@ -77,19 +75,17 @@ GeneralTab::GeneralTab(const AdObject &object) {
             ATTRIBUTE_POSTAL_CODE,
         };
 
-        make_string_edits(attributes, CLASS_OU, this, &string_edits, &edits);
+        make_string_edits(attributes, CLASS_OU, this, &edits);
 
         edits.append(new CountryEdit(this));
     } else if (object.is_class(CLASS_COMPUTER)) {
-        const QList<QString> string_attributes = {
-            ATTRIBUTE_SAMACCOUNT_NAME,
-            ATTRIBUTE_DNS_HOST_NAME,
-            ATTRIBUTE_DESCRIPTION,
-        };
-        make_string_edits(string_attributes, CLASS_COMPUTER, this, &string_edits, &edits);
-
-        string_edits[ATTRIBUTE_SAMACCOUNT_NAME]->set_read_only(true);
-        string_edits[ATTRIBUTE_DNS_HOST_NAME]->set_read_only(true);
+        auto sama_edit = make_string_edit(ATTRIBUTE_SAMACCOUNT_NAME, CLASS_COMPUTER, this, &edits);
+        sama_edit->set_read_only(true);
+        
+        auto dns_edit = make_string_edit(ATTRIBUTE_DNS_HOST_NAME, CLASS_COMPUTER, this, &edits);
+        dns_edit->set_read_only(true);
+        
+        make_string_edit(ATTRIBUTE_DESCRIPTION, CLASS_COMPUTER, this, &edits);
 
         // TODO: more string edits for: site (probably just site?), dc type (no idea)
     } else if (object.is_class(CLASS_GROUP)) {
@@ -99,7 +95,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
             ATTRIBUTE_MAIL,
             ATTRIBUTE_INFO,
         };
-        make_string_edits(string_attributes, CLASS_GROUP, this, &string_edits, &edits);
+        make_string_edits(string_attributes, CLASS_GROUP, this, &edits);
         
         auto scope_edit = new GroupScopeEdit(this);
         edits.append(scope_edit);
@@ -112,7 +108,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
             type_edit->set_read_only(true);
         }
     } else if (object.is_class(CLASS_CONTAINER)) {
-        make_string_edit(ATTRIBUTE_DESCRIPTION, CLASS_GROUP, this, &string_edits, &edits);
+        make_string_edit(ATTRIBUTE_DESCRIPTION, CLASS_GROUP, this, &edits);
     }
 
     edits_add_to_layout(edits, edits_layout);
