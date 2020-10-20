@@ -36,10 +36,10 @@ void AttributeEdit::connect_changed_marker(QLabel *label) {
 }
 
 void AttributeEdit::append_to_list(QList<AttributeEdit *> *edits_out) {
-    if (edits_out->contains(this)) {
-        printf("ERROR: attribute edit added twice to list!");
-    } else {
-        if (edits_out != nullptr) {
+    if (edits_out != nullptr) {
+        if (edits_out->contains(this)) {
+            printf("ERROR: attribute edit added twice to list!");
+        } else {
             edits_out->append(this);
         }
     }
