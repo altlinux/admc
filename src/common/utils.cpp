@@ -108,9 +108,9 @@ void check_item_set_checked(QStandardItem *item, bool checked) {
 void append_to_grid_layout_with_label(QGridLayout *layout,QLabel *label, QWidget *widget) {
     const int row = layout->rowCount();
     layout->addWidget(label, row, 0);
-    // NOTE: Align right and span all the way so that widget
-    // occupies all available space if more columns are added
-    layout->addWidget(widget, row, 1, Qt::AlignRight, -1);
+    // NOTE: span for two columns because some edits need 3 columns
+    // TODO: do this better, not sure if possible
+    layout->addWidget(widget, row, 1, 1, 2);
 }
 
 // If changed, return text with asterisk at the end
