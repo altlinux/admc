@@ -29,14 +29,13 @@
 #include <QLabel>
 #include <QDialogButtonBox>
 
-// TODO: find out exact password rules and add them to dialog?
-// or display more info about constraint violations
-
 PasswordDialog::PasswordDialog(const QString &target_arg)
 : QDialog()
 {
     target = target_arg;
     const AdObject object = AD()->search_object(target);
+
+    setAttribute(Qt::WA_DeleteOnClose);
 
     const QString name = dn_get_rdn(target);
     const QString title_label_text = QString(tr("Resetting password of \"%1\"")).arg(name);
@@ -74,11 +73,9 @@ void PasswordDialog::accept() {
     if (verify_success) {
         const int errors_index = Status::instance()->get_errors_size();
 
-        const bool success = edits_apply(edits, target);
+        edits_apply(edits, target);
 
-        if (success) {
-            QDialog::accept();
-        }
+        QDialog::close();
 
         Status::instance()->show_errors_popup(errors_index);
     }

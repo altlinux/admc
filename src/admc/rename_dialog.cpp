@@ -132,18 +132,14 @@ void RenameDialog::accept() {
         if (apply_success && rename_success) {
             const QString message = QString(tr("Renamed object - \"%1\"")).arg(old_name_for_message);
             Status::instance()->message(message, StatusType_Success);
-
-            QDialog::accept();
         } else {
             const QString message = QString(tr("Failed to rename object - \"%1\"")).arg(old_name_for_message);
             Status::instance()->message(message, StatusType_Error);
-
-            // NOTE: reload updated object if any edits applied successfully
-            const AdObject object = AD()->search_object(target);
-            edits_load(all_edits, object);
         }
     }
     AD()->end_batch();
+
+    QDialog::close();
     Status::instance()->show_errors_popup(errors_index);
 }
 
