@@ -48,9 +48,7 @@ GroupTypeEdit::GroupTypeEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 
 void GroupTypeEdit::load(const AdObject &object) {
     original_value = object.get_group_type();
-}
 
-void GroupTypeEdit::reset() {
     combo->setCurrentIndex((int) original_value);
 
     emit edited();

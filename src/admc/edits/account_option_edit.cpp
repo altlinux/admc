@@ -94,9 +94,6 @@ AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *pa
 
 void AccountOptionEdit::load(const AdObject &object) {
     original_value = object.get_account_option(option);
-}
-
-void AccountOptionEdit::reset() {
     checkbox_set_checked(check, original_value);
 
     emit edited();

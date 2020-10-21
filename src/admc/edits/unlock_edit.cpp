@@ -42,10 +42,6 @@ UnlockEdit::UnlockEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 }
 
 void UnlockEdit::load(const AdObject &object) {
-    reset();
-}
-
-void UnlockEdit::reset() {
     button->setChecked(false);
 
     emit edited();

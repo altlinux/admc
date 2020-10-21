@@ -98,9 +98,7 @@ void MembershipTab::load(const AdObject &object) {
     const QList<QString> values = object.get_strings(get_membership_attribute());
     original_values = values.toSet();
     current_values = original_values;
-}
 
-void MembershipTab::reset() {
     reload_model(original_values);
 }
 

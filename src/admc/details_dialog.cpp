@@ -154,7 +154,6 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
 
     for (auto tab : tabs) {
         tab->load(object);
-        tab->reset();
     }
 
     for (auto tab : tabs) {
@@ -176,7 +175,7 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
         this, &DetailsDialog::on_apply);
     connect(
         button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
-        this, &DetailsDialog::on_cancel);
+        this, &DetailsDialog::load);
     connect(
         AD(), &AdInterface::modified,
         this, &DetailsDialog::on_ad_modified);
@@ -231,17 +230,13 @@ void DetailsDialog::on_apply() {
         Status::instance()->show_errors_popup(errors_index);
     }
 
-    // Update tabs with new object state
+    load();
+}
+
+void DetailsDialog::load() {
     const AdObject object = AD()->search_object(target);
     for (auto tab : tabs) {
         tab->load(object);
-        tab->reset();
-    }
-}
-
-void DetailsDialog::on_cancel() {
-    for (auto tab : tabs) {
-        tab->reset();
     }
 
     // Call slot to reset to unchanged state

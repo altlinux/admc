@@ -49,7 +49,6 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
 
     edits_add_to_layout(edits, edits_layout);
     edits_load(edits, object);
-    edits_reset(edits);
 
     auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
 

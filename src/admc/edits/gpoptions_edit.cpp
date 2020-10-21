@@ -42,9 +42,7 @@ GpoptionsEdit::GpoptionsEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 void GpoptionsEdit::load(const AdObject &object) {
     const QString value = object.get_string(ATTRIBUTE_GPOPTIONS);
     original_checked_value = (value == GPOPTIONS_BLOCK_INHERITANCE);
-}
 
-void GpoptionsEdit::reset() {
     checkbox_set_checked(check, original_checked_value);
 
     emit edited();

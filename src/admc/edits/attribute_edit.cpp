@@ -90,12 +90,6 @@ bool edits_apply(QList<AttributeEdit *> edits, const QString &dn) {
     return success;
 }
 
-void edits_reset(QList<AttributeEdit *> edits) {
-    for (auto edit : edits) {
-        edit->reset();
-    }
-}
-
 void edits_load(QList<AttributeEdit *> edits, const AdObject &object) {
     for (auto edit : edits) {
         edit->load(object);

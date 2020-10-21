@@ -67,10 +67,6 @@ void StringOtherEdit::load(const AdObject &object) {
     main_edit->load(object);
     
     original_other_values = object.get_values(other_attribute);
-}
-
-void StringOtherEdit::reset() {
-    main_edit->reset();
 
     current_other_values = original_other_values;
 

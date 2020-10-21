@@ -116,9 +116,7 @@ void CountryEdit::load(const AdObject &object) {
             return COUNTRY_CODE_NONE;
         }
     }();
-}
 
-void CountryEdit::reset() {
     const int index = combo->findData(QVariant(original_value));
     if (index != -1) {
         combo->setCurrentIndex(index);

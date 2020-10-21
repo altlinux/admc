@@ -32,11 +32,8 @@ class DetailsTab : public QWidget {
 Q_OBJECT
 
 public:
-    // Load original attribute values
+    // Load state from object
     virtual void load(const AdObject &object);
-
-    // Reset input to original attribute values
-    virtual void reset();
 
     virtual bool changed() const;
     virtual bool verify() const;

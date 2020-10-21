@@ -48,7 +48,6 @@ public:
 
 private slots:
     void on_apply();
-    void on_cancel();
     void on_docked_setting_changed();
     void on_tab_edited();
     void on_ad_modified();
@@ -63,6 +62,7 @@ private:
     QString target;
 
     DetailsDialog(const QString &target_arg, bool is_floating_instance_arg);
+    void load();
     
     DetailsDialog(const DetailsDialog&) = delete;
     DetailsDialog& operator=(const DetailsDialog&) = delete;

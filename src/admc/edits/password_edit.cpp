@@ -46,10 +46,6 @@ PasswordEdit::PasswordEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 }
 
 void PasswordEdit::load(const AdObject &object) {
-
-}
-
-void PasswordEdit::reset() {
     edit->clear();
     confirm_edit->clear();
 

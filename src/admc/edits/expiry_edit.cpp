@@ -65,9 +65,7 @@ ExpiryEdit::ExpiryEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 
 void ExpiryEdit::load(const AdObject &object) {
     original_value = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);
-}
 
-void ExpiryEdit::reset() {
     const bool never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, original_value);
 
     never_check->setChecked(never);

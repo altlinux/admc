@@ -81,7 +81,6 @@ RenameDialog::RenameDialog(const QString &target_arg)
 
     edits_add_to_layout(all_edits, edits_layout);
     edits_load(all_edits, object);
-    edits_reset(all_edits);
 
     button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
     connect(
@@ -155,5 +154,6 @@ void RenameDialog::on_edited() {
 }
 
 void RenameDialog::on_cancel() {
-    edits_reset(all_edits);
+    const AdObject object = AD()->search_object(target);
+    edits_load(all_edits, object);
 }

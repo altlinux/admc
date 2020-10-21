@@ -102,9 +102,7 @@ void AttributesTab::load(const AdObject &object) {
             original[attribute] = QList<QByteArray>();
         }
     }
-}
 
-void AttributesTab::reset() {
     current = original;
 
     model->removeRows(0, model->rowCount());

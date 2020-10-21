@@ -37,11 +37,10 @@ Q_OBJECT
 public:
     using QObject::QObject;
 
-    // Load original value
+    // Load state from object
+    // NOTE: emit edited() signal at the end when
+    // implementing this f-n
     virtual void load(const AdObject &object) = 0;
-
-    // Reset input to original value
-    virtual void reset() = 0;
 
     virtual void set_read_only(const bool read_only) = 0;
     virtual void add_to_layout(QGridLayout *layout) = 0;
@@ -58,12 +57,6 @@ public:
     virtual bool apply(const QString &dn) const = 0;
 
 signals:
-    // Emit this signal when user edits subwidget(s)
-    // (by connecting to the widget's version of edited signal)
-    // Also emit this at the end of reset() because widgets don't
-    // always emit signals when they are edited programmatically.
-    // For example QLineEdit::setText() does NOT emit 
-    // QLineEdit::textChanged
     void edited();
 
 protected:
@@ -74,7 +67,6 @@ protected:
 
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
 void load(const AdObject &object);\
-void reset();\
 void set_read_only(const bool read_only);\
 void add_to_layout(QGridLayout *layout);\
 bool changed() const;\
@@ -89,7 +81,6 @@ void edits_add_to_layout(QList<AttributeEdit *> edits, QGridLayout *layout);
 bool edits_changed(QList<AttributeEdit *> edits);
 bool edits_verify(QList<AttributeEdit *> edits);
 bool edits_apply(QList<AttributeEdit *> edits, const QString &dn);
-void edits_reset(QList<AttributeEdit *> edits);
 void edits_load(QList<AttributeEdit *> edits, const AdObject &object);
 
 #endif /* ATTRIBUTE_EDIT_H */

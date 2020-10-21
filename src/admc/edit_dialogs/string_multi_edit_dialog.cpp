@@ -63,14 +63,12 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
     top_layout->addWidget(remove_button);
     top_layout->addWidget(button_box);
 
-    reset();
-
     connect(
         button_box->button(QDialogButtonBox::Ok), &QPushButton::clicked,
         this, &QDialog::accept);
     connect(
         button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
-        this, &StringMultiEditDialog::on_cancel);
+        this, &StringMultiEditDialog::reset);
     connect(
         add_button, &QAbstractButton::clicked,
         this, &StringMultiEditDialog::on_add);
@@ -85,6 +83,8 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
         list_widget, &QListWidget::itemSelectionChanged,
         this, &StringMultiEditDialog::on_list_selected_changed);
     on_list_selected_changed();
+
+    reset();
 }
 
 void StringMultiEditDialog::on_edit_changed() {
@@ -95,10 +95,6 @@ void StringMultiEditDialog::on_edit_changed() {
 void StringMultiEditDialog::on_list_selected_changed() {
     const bool any_selected = !list_widget->selectedItems().isEmpty();
     remove_button->setEnabled(any_selected);
-}
-
-void StringMultiEditDialog::on_cancel() {
-    reset();
 }
 
 void StringMultiEditDialog::on_add() {

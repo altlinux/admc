@@ -109,13 +109,9 @@ void GroupPolicyTab::load(const AdObject &object) {
     original_gplink = Gplink(gplink_string);
     current_gplink = original_gplink;
     
-    DetailsTab::load(object);
-}
-
-void GroupPolicyTab::reset() {
     reload_model(original_gplink);
-
-    DetailsTab::reset();
+    
+    DetailsTab::load(object);
 }
 
 bool GroupPolicyTab::changed() const {

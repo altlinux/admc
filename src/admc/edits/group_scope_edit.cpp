@@ -49,9 +49,7 @@ GroupScopeEdit::GroupScopeEdit(QObject *parent, QList<AttributeEdit *> *edits_ou
 
 void GroupScopeEdit::load(const AdObject &object) {
     original_value = object.get_group_scope();
-}
 
-void GroupScopeEdit::reset() {
     combo->setCurrentIndex((int) original_value);
 
     emit edited();

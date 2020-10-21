@@ -37,7 +37,6 @@ public:
 private slots:
     void on_edit_changed();
     void on_list_selected_changed();
-    void on_cancel();
     void on_add();
     void on_remove();
 

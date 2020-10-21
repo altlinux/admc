@@ -68,9 +68,7 @@ void StringEdit::load(const AdObject &object) {
     } else {
         original_value = value;
     }
-}
-
-void StringEdit::reset() {
+    
     edit->setText(original_value);
 
     emit edited();

@@ -39,7 +39,6 @@ public:
     GroupPolicyTab();
 
     void load(const AdObject &object) override;
-    void reset() override;
     bool changed() const override;
     void apply(const QString &target) const override;
 

@@ -36,10 +36,6 @@ void DetailsTab::apply(const QString &target) const {
     edits_apply(edits, target);
 }
 
-void DetailsTab::reset() {
-    edits_reset(edits);
-}
-
 void DetailsTab::on_edit_edited() {
     emit edited();
 }
