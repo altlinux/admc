@@ -86,6 +86,8 @@ void ExpiryEdit::reset() {
         display_label_text = current_expiry.toString(DATE_FORMAT);
     }
     display_label->setText(display_label_text);
+
+    emit edited();
 }
 
 void ExpiryEdit::set_read_only(const bool read_only) {

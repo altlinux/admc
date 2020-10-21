@@ -47,6 +47,8 @@ void UnlockEdit::load(const AdObject &object) {
 
 void UnlockEdit::reset() {
     button->setChecked(false);
+
+    emit edited();
 }
 
 void UnlockEdit::set_read_only(const bool read_only) {

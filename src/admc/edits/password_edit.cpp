@@ -52,6 +52,8 @@ void PasswordEdit::load(const AdObject &object) {
 void PasswordEdit::reset() {
     edit->clear();
     confirm_edit->clear();
+
+    emit edited();
 }
 
 void PasswordEdit::set_read_only(const bool read_only) {

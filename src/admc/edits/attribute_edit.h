@@ -60,6 +60,10 @@ public:
 signals:
     // Emit this signal when user edits subwidget(s)
     // (by connecting to the widget's version of edited signal)
+    // Also emit this at the end of reset() because widgets don't
+    // always emit signals when they are edited programmatically.
+    // For example QLineEdit::setText() does NOT emit 
+    // QLineEdit::textChanged
     void edited();
 
 protected:

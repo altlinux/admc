@@ -72,6 +72,8 @@ void StringEdit::load(const AdObject &object) {
 
 void StringEdit::reset() {
     edit->setText(original_value);
+
+    emit edited();
 }
 
 void StringEdit::set_read_only(const bool read_only) {

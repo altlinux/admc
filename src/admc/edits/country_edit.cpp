@@ -123,6 +123,8 @@ void CountryEdit::reset() {
     if (index != -1) {
         combo->setCurrentIndex(index);
     }
+
+    emit edited();
 }
 
 void CountryEdit::set_read_only(const bool read_only) {

@@ -46,6 +46,8 @@ void GpoptionsEdit::load(const AdObject &object) {
 
 void GpoptionsEdit::reset() {
     checkbox_set_checked(check, original_checked_value);
+
+    emit edited();
 }
 
 void GpoptionsEdit::set_read_only(const bool read_only) {

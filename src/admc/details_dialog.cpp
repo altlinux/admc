@@ -231,9 +231,11 @@ void DetailsDialog::on_apply() {
         Status::instance()->show_errors_popup(errors_index);
     }
 
+    // Update tabs with new object state
     const AdObject object = AD()->search_object(target);
     for (auto tab : tabs) {
         tab->load(object);
+        tab->reset();
     }
 }
 

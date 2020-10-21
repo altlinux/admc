@@ -47,6 +47,8 @@ void DateTimeEdit::load(const AdObject &object) {
 
 void DateTimeEdit::reset() {
     edit->setDateTime(original_value);
+
+    emit edited();
 }
 
 void DateTimeEdit::set_read_only(const bool read_only) {

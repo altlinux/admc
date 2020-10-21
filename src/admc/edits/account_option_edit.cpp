@@ -98,6 +98,8 @@ void AccountOptionEdit::load(const AdObject &object) {
 
 void AccountOptionEdit::reset() {
     checkbox_set_checked(check, original_value);
+
+    emit edited();
 }
 
 void AccountOptionEdit::set_read_only(const bool read_only) {

@@ -53,6 +53,8 @@ void GroupScopeEdit::load(const AdObject &object) {
 
 void GroupScopeEdit::reset() {
     combo->setCurrentIndex((int) original_value);
+
+    emit edited();
 }
 
 void GroupScopeEdit::set_read_only(const bool read_only) {

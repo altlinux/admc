@@ -52,6 +52,8 @@ void GroupTypeEdit::load(const AdObject &object) {
 
 void GroupTypeEdit::reset() {
     combo->setCurrentIndex((int) original_value);
+
+    emit edited();
 }
 
 void GroupTypeEdit::set_read_only(const bool read_only) {
