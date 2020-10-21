@@ -28,8 +28,8 @@
 #include <QString>
 
 class QTreeView;
-
 class QStandardItemModel;
+class QPushButton;
 
 // Displays and edits membership info which can go both ways
 // 1. users that are members of group
@@ -48,6 +48,7 @@ private slots:
     void on_context_menu(const QPoint pos);
     void on_add_button();
     void on_remove_button();
+    void on_selection_changed();
 
 protected:
     enum MembershipTabType {
@@ -61,6 +62,8 @@ private:
     MembershipTabType type;
     QStandardItemModel *model = nullptr;
     QTreeView *view = nullptr;
+    QPushButton *remove_button;
+
     QSet<QString> original_values;
     QSet<QString> original_primary_values;
     QSet<QString> current_values;

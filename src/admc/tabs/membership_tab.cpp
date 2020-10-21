@@ -18,7 +18,8 @@
  */
 
 #include "tabs/membership_tab.h"
-#include "object_context_menu.h"
+#include "details_dialog.h"
+#include "ad_interface.h"
 #include "utils.h"
 #include "select_dialog.h"
 #include "filter.h"
@@ -75,7 +76,7 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     setup_column_toggle_menu(view, model, {MembersColumn_Name, MembersColumn_Parent});
 
     auto add_button = new QPushButton(tr("Add"));
-    auto remove_button = new QPushButton(tr("Remove"));
+    remove_button = new QPushButton(tr("Remove"));
     auto button_layout = new QHBoxLayout();
     button_layout->addWidget(add_button);
     button_layout->addWidget(remove_button);
@@ -86,6 +87,12 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     layout->setSpacing(0);
     layout->addWidget(view);
     layout->addLayout(button_layout);
+
+    const QItemSelectionModel *selection_model = view->selectionModel();
+    connect(
+        selection_model, &QItemSelectionModel::selectionChanged,
+        this, &MembershipTab::on_selection_changed);
+    on_selection_changed();
 
     connect(
         remove_button, &QAbstractButton::clicked,
@@ -209,11 +216,9 @@ void MembershipTab::on_context_menu(const QPoint pos) {
     }
 
     QMenu menu(this);
-    menu.addAction(tr("Remove"),
-        [this, dn]() {
-            const QList<QString> removed_values = {dn};
-            remove_values(removed_values);
-        });
+    menu.addAction(tr("Details"), [this, dn]() {
+        DetailsDialog::open_for_target(dn);
+    });
 
     exec_menu_from_view(&menu, view, pos);
 }
@@ -249,6 +254,14 @@ void MembershipTab::on_remove_button() {
     remove_values(removed_values);    
 }
 
+void MembershipTab::on_selection_changed() {
+    const QItemSelectionModel *selection_model = view->selectionModel();
+    const QList<QModelIndex> selected = selection_model->selectedIndexes();
+    const bool any_selected = !selected.isEmpty();
+
+    remove_button->setEnabled(any_selected);
+}
+
 void MembershipTab::reload_model() {
     model->removeRows(0, model->rowCount());
 
@@ -257,9 +270,9 @@ void MembershipTab::reload_model() {
     for (auto dn : all_values) {
         const QString name = dn_get_rdn(dn);
         const QString parent = dn_get_parent(dn);
+        const bool primary = current_primary_values.contains(dn);
         const Qt::CheckState check_state =
-        [this, dn]() {
-            const bool primary = current_primary_values.contains(dn);
+        [primary]() {
             if (primary) {
                 return Qt::Checked;
             } else {
@@ -272,6 +285,11 @@ void MembershipTab::reload_model() {
         row[MembersColumn_Parent]->setText(parent);
         row[MembersColumn_Primary]->setCheckState(check_state);
         row[MembersColumn_DN]->setText(dn);
+
+        // Make primary non selectable so you cant remove them
+        for (int i = 0; i < MembersColumn_COUNT; i++) {
+            row[i]->setSelectable(!primary);
+        }
 
         model->appendRow(row);
     }
