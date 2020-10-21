@@ -51,7 +51,7 @@ QList<QString> AdObject::attributes() const {
     return attributes_data.keys();
 }
 
-QList<QByteArray> AdObject::get_bytes_list(const QString &attribute) const {
+QList<QByteArray> AdObject::get_values(const QString &attribute) const {
     if (contains(attribute)) {
         return attributes_data[attribute];
     } else {
@@ -59,8 +59,8 @@ QList<QByteArray> AdObject::get_bytes_list(const QString &attribute) const {
     }
 }
 
-QByteArray AdObject::get_bytes(const QString &attribute) const {
-    const QList<QByteArray> values = get_bytes_list(attribute);
+QByteArray AdObject::get_value(const QString &attribute) const {
+    const QList<QByteArray> values = get_values(attribute);
 
     if (!values.isEmpty()) {
         return values.first();
@@ -70,7 +70,7 @@ QByteArray AdObject::get_bytes(const QString &attribute) const {
 }
 
 QList<QString> AdObject::get_strings(const QString &attribute) const {
-    const QList<QByteArray> values = get_bytes_list(attribute);
+    const QList<QByteArray> values = get_values(attribute);
 
     QList<QString> strings;
     for (const auto value : values) {

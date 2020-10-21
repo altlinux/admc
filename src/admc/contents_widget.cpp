@@ -179,7 +179,7 @@ void ContentsWidget::change_target(const QString &dn) {
 
     resize_columns();
 
-    const QString target_name = AD()->request_value(target_dn, ATTRIBUTE_NAME);
+    const QString target_name = dn_get_rdn(target_dn);
 
     QString label_text;
     if (target_name.isEmpty()) {
@@ -228,12 +228,8 @@ void ContentsModel::change_target(const QString &target_dn) {
         return;
     }
 
-    // NOTE: get object class as well to get icon
-    QList<QString> search_attributes = columns;
-    search_attributes.append(ATTRIBUTE_OBJECT_CLASS);
-
+    const QList<QString> search_attributes = columns;
     const QString filter = current_advanced_view_filter();
-
     const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, target_dn);
 
     // Load children
@@ -254,7 +250,7 @@ void ContentsModel::change_target(const QString &target_dn) {
                     const QString value_string = object.get_string(attribute);
                     return ADCONFIG()->get_class_display_name(value_string);
                 } else {
-                    const QByteArray value = object.get_bytes(attribute);
+                    const QByteArray value = object.get_value(attribute);
                     return attribute_display_value(attribute, value);
                 }
             }();

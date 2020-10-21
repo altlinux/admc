@@ -101,7 +101,7 @@ void PoliciesWidget::on_context_menu(const QPoint pos) {
         return;
     }
 
-    const AdObject object = AD()->request_all(dn);
+    const AdObject object = AD()->search_object(dn);
 
     QMenu menu;
     menu.addAction(tr("Details"), [this, dn]() {

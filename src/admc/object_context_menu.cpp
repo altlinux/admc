@@ -56,7 +56,7 @@ void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
 ObjectContextMenu::ObjectContextMenu(const QString &dn)
 : QMenu()
 {
-    const AdObject object = AD()->request_all(dn);
+    const AdObject object = AD()->search_object(dn);
 
     addAction(tr("Details"), [this, dn]() {
         DetailsDialog::open_for_target(dn);

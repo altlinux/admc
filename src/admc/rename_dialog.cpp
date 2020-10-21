@@ -38,7 +38,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
 : QDialog()
 {
     target = target_arg;
-    const AdObject object = AD()->request_all(target);
+    const AdObject object = AD()->search_object(target);
 
     setAttribute(Qt::WA_DeleteOnClose);
     resize(600, 600);
@@ -139,7 +139,7 @@ void RenameDialog::accept() {
             Status::instance()->message(message, StatusType_Error);
 
             // NOTE: reload updated object if any edits applied successfully
-            const AdObject object = AD()->request_all(target);
+            const AdObject object = AD()->search_object(target);
             edits_load(all_edits, object);
         }
     }

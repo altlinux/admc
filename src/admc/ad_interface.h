@@ -133,6 +133,8 @@
 #define GROUP_TYPE_BIT_SECURITY 0x80000000
 #define GROUP_TYPE_BIT_SYSTEM 0x00000001
 
+#define SEARCH_ALL_ATTRIBUTES "SEARCH_ALL_ATTRIBUTES"
+
 enum SearchScope {
     SearchScope_Object,
     SearchScope_Children,
@@ -178,26 +180,11 @@ public:
     QString configuration_dn() const;
     QString schema_dn() const;
 
-    // NOTE: all request and search f-ns need to communicate
-    // with the AD server, so use them only for infrequent calls.
+    // NOTE: search f-ns need to communicate with the AD server, 
+    // so use them only for infrequent calls. Also try to ask
+    // only for attributes that you need.
     QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &custom_search_base = QString());
-    QList<QString> search_dns(const QString &filter, const QString &custom_search_base = QString());
-    
-    // Try to limit request size by asking only for attributes
-    // you need, though request count is still higher priority.
-    // One small request is better than one big request.
-    // One big request is better than two small requests/
-    AdObject request_attributes(const QString &dn, const QList<QString> &attributes);
-    AdObject request_all(const QString &dn);
-
-    QList<QByteArray> request_values(const QString &dn, const QString &attribute);
-    QByteArray request_value(const QString &dn, const QString &attribute);
-
-    QList<QString> request_strings(const QString &dn, const QString &attribute);
-    QString request_string(const QString &dn, const QString &attribute);
-
-    QList<int> request_ints(const QString &dn, const QString &attribute);
-    int request_int(const QString &dn, const QString &attribute);
+    AdObject search_object(const QString &dn, const QList<QString> &attributes = {SEARCH_ALL_ATTRIBUTES});
 
     bool attribute_add(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg = DoStatusMsg_Yes);
@@ -208,7 +195,7 @@ public:
     bool attribute_replace_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_delete_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
 
-    bool attribute_replace_int(const QString &dn, const QString &attribute, const int value);
+    bool attribute_replace_int(const QString &dn, const QString &attribute, const int value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace_datetime(const QString &dn, const QString &attribute, const QDateTime &datetime);
 
     bool object_add(const QString &dn, const char **classes);

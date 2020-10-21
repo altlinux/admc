@@ -134,8 +134,10 @@ AdConfig::AdConfig(QObject *parent)
         const QList<QString> columns_values =
         []() {
             const QString locale_dir = get_locale_dir();
-            const QString default_display_specifier = QString("CN=default-Display,%1").arg(locale_dir);
-            QList<QString> columns_out = AD()->request_strings(default_display_specifier, ATTRIBUTE_EXTRA_COLUMNS);
+            const QString dn = QString("CN=default-Display,%1").arg(locale_dir);
+            const AdObject object = AD()->search_object(dn, {ATTRIBUTE_EXTRA_COLUMNS});
+            QList<QString> columns_out = object.get_strings(ATTRIBUTE_EXTRA_COLUMNS);
+
             std::reverse(columns_out.begin(), columns_out.end());
 
             return columns_out;
@@ -160,8 +162,9 @@ AdConfig::AdConfig(QObject *parent)
         QList<QString> out;
         
         const QString locale_dir = get_locale_dir();
-        const QString display_specifier = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
-        QList<QString> filter_containers_ad = AD()->request_strings(display_specifier, ATTRIBUTE_FILTER_CONTAINERS);
+        const QString dn = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
+        const AdObject object = AD()->search_object(dn, {ATTRIBUTE_FILTER_CONTAINERS});
+        QList<QString> filter_containers_ad = object.get_strings(ATTRIBUTE_FILTER_CONTAINERS);
 
         // ATTRIBUTE_FILTER_CONTAINERS contains ad class names
         // so convert to ldap class names

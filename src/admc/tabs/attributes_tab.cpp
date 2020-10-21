@@ -91,7 +91,7 @@ void AttributesTab::on_double_clicked(const QModelIndex &index) {
 
 void AttributesTab::load(const AdObject &object) {
     for (auto attribute : object.attributes()) {
-        original[attribute] = object.get_bytes_list(attribute);
+        original[attribute] = object.get_values(attribute);
     }
 
     // Add attributes without values

@@ -34,7 +34,7 @@
 // NOTE: https://ldapwiki.com/wiki/MMC%20Account%20Tab
 
 AccountTab::AccountTab() {   
-    const auto logon_name_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER, this, &edits);
+    new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER, this, &edits);
 
     new UnlockEdit(this, &edits);
 

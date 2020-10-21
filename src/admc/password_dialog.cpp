@@ -23,6 +23,7 @@
 #include "edits/unlock_edit.h"
 #include "edits/account_option_edit.h"
 #include "status.h"
+#include "utils.h"
 
 #include <QGridLayout>
 #include <QLabel>
@@ -35,9 +36,9 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
 : QDialog()
 {
     target = target_arg;
-    const AdObject object = AD()->request_all(target);
+    const AdObject object = AD()->search_object(target);
 
-    const QString name = AD()->request_value(target, ATTRIBUTE_NAME);
+    const QString name = dn_get_rdn(target);
     const QString title_label_text = QString(tr("Resetting password of \"%1\"")).arg(name);
     const auto title_label = new QLabel(title_label_text, this);
 

@@ -35,8 +35,6 @@
 #include <QTextCodec>
 #include <QDebug>
 
-#define SEARCH_ALL_ATTRIBUTES "SEARCH_ALL_ATTRIBUTES"
-
 // TODO: confirm these are fine. I think need to make seconds option for UTC? Don't know if QDatetime can handle that.
 #define GENERALIZED_TIME_FORMAT_STRING "yyyyMMddhhmmss.zZ"
 #define UTC_TIME_FORMAT_STRING "yyMMddhhmmss.zZ"
@@ -263,15 +261,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
     }
 }
 
-QList<QString> AdInterface::search_dns(const QString &filter, const QString &custom_search_base) {
-    const QHash<QString, AdObject> search_results = search(filter, QList<QString>(), SearchScope_All, custom_search_base);
-    const QList<QString> dns = search_results.keys();
-
-
-    return dns;
-}
-
-AdObject AdInterface::request_attributes(const QString &dn, const QList<QString> &attributes) {
+AdObject AdInterface::search_object(const QString &dn, const QList<QString> &attributes) {
     const QHash<QString, AdObject> search_results = search("", attributes, SearchScope_Object, dn);
 
     if (search_results.contains(dn)) {
@@ -279,48 +269,6 @@ AdObject AdInterface::request_attributes(const QString &dn, const QList<QString>
     } else {
         return AdObject();
     }
-}
-
-AdObject AdInterface::request_all(const QString &dn) {
-    const AdObject result = request_attributes(dn, {SEARCH_ALL_ATTRIBUTES});
-
-    return result;
-}
-
-QList<QByteArray> AdInterface::request_values(const QString &dn, const QString &attribute) {
-    const AdObject object = request_attributes(dn, {attribute});
-    
-    return object.get_bytes_list(attribute);
-}
-
-QByteArray AdInterface::request_value(const QString &dn, const QString &attribute) {
-    const AdObject object = request_attributes(dn, {attribute});
-    
-    return object.get_bytes(attribute);
-}
-
-QList<QString> AdInterface::request_strings(const QString &dn, const QString &attribute) {
-    const AdObject object = request_attributes(dn, {attribute});
-
-    return object.get_strings(attribute);
-}
-
-QString AdInterface::request_string(const QString &dn, const QString &attribute) {
-    const AdObject object = request_attributes(dn, {attribute});
-    
-    return object.get_string(attribute);
-}
-
-QList<int> AdInterface::request_ints(const QString &dn, const QString &attribute) {
-    const AdObject object = request_attributes(dn, {attribute});
-
-    return object.get_ints(attribute);
-}
-
-int AdInterface::request_int(const QString &dn, const QString &attribute) {
-    const AdObject object = request_attributes(dn, {attribute});
-    
-    return object.get_int(attribute);
 }
 
 bool AdInterface::attribute_add_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
@@ -378,8 +326,10 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 bool AdInterface::attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg) {
     int result = AD_SUCCESS;
     
-    const QList<QByteArray> old_values = request_values(dn, attribute);
+    const AdObject object = search_object(dn, {attribute});
+    const QList<QByteArray> old_values = object.get_values(attribute);
 
+    // TODO: i think this was only added as a hack to prevent applying empty edits in create dialog, but it doesn't work for that anyway because when edit is empty it replace to an array with an empty string(array is NOT empty). Figure it out.
     // Do nothing if both new and old values are empty
     if (old_values.isEmpty() && values.isEmpty()) {
         return true;
@@ -474,9 +424,9 @@ bool AdInterface::attribute_delete_value(const QString &dn, const QString &attri
     }
 }
 
-bool AdInterface::attribute_replace_int(const QString &dn, const QString &attribute, const int value) {
+bool AdInterface::attribute_replace_int(const QString &dn, const QString &attribute, const int value, const DoStatusMsg do_msg) {
     const QString value_string = QString::number(value);
-    const bool result = attribute_replace_string(dn, attribute, value_string);
+    const bool result = attribute_replace_string(dn, attribute, value_string, do_msg);
 
     return result;
 }
@@ -648,7 +598,8 @@ bool AdInterface::group_remove_user(const QString &group_dn, const QString &user
 
 // TODO: are there side-effects on group members from this?...
 bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
-    int group_type = request_int(dn, ATTRIBUTE_GROUP_TYPE);
+    const AdObject object = search_object(dn, {ATTRIBUTE_GROUP_TYPE});
+    int group_type = object.get_int(ATTRIBUTE_GROUP_TYPE);
 
     // Unset all scope bits, because scope bits are exclusive
     for (int i = 0; i < GroupScope_COUNT; i++) {
@@ -679,7 +630,8 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
 }
 
 bool AdInterface::group_set_type(const QString &dn, GroupType type) {
-    const int group_type = request_int(dn, ATTRIBUTE_GROUP_TYPE);
+    const AdObject object = search_object(dn, {ATTRIBUTE_GROUP_TYPE});
+    const int group_type = object.get_int(ATTRIBUTE_GROUP_TYPE);
 
     const bool set_security_bit = type == GroupType_Security;
 
@@ -770,24 +722,20 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             break;
         }
         default: {
-            const QString control =
+            const int uac =
             [this, dn]() {
-                QString out = request_string(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL);
-                if (out.isEmpty()) {
-                    out = "0";
+                const AdObject object = search_object(dn, {ATTRIBUTE_USER_ACCOUNT_CONTROL});
+                if (object.contains(ATTRIBUTE_USER_ACCOUNT_CONTROL)) {
+                    return object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
+                } else {
+                    return 0;
                 }
-
-                return out;
             }();
 
             const int bit = account_option_bit(option);
+            const int updated_uac = bit_set(uac, bit, set);
 
-            int control_int = control.toInt();
-            control_int = bit_set(control_int, bit, set);
-
-            const QString control_updated = QString::number(control_int);
-
-            success = attribute_replace_string(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, control_updated, DoStatusMsg_No);
+            success = attribute_replace_int(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, updated_uac, DoStatusMsg_No);
         }
     }
 
@@ -879,8 +827,8 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
         return DropType_None;
     }
 
-    const AdObject dropped = AD()->request_attributes(dn, {ATTRIBUTE_OBJECT_CLASS, ATTRIBUTE_OBJECT_CATEGORY});
-    const AdObject target = AD()->request_attributes(target_dn, {ATTRIBUTE_OBJECT_CLASS});
+    const AdObject dropped = AD()->search_object(dn, {ATTRIBUTE_OBJECT_CLASS, ATTRIBUTE_OBJECT_CATEGORY});
+    const AdObject target = AD()->search_object(target_dn, {ATTRIBUTE_OBJECT_CLASS});
 
     const bool dropped_is_user = dropped.is_class(CLASS_USER);
     const bool target_is_group = target.is_class(CLASS_USER);
@@ -1064,7 +1012,7 @@ bool AdInterface::delete_gpo(const QString &gpo_dn) {
         object_delete(dn);
     }
 
-    const AdObject object = request_attributes(gpo_dn, {ATTRIBUTE_GPC_FILE_SYS_PATH});
+    const AdObject object = search_object(gpo_dn, {ATTRIBUTE_GPC_FILE_SYS_PATH});
     const QString sysvol_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
     const QString url = sysvol_path_to_smb(sysvol_path);
     const QByteArray url_bytes = url.toUtf8();

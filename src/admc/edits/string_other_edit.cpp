@@ -66,7 +66,7 @@ StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &o
 void StringOtherEdit::load(const AdObject &object) {
     main_edit->load(object);
     
-    original_other_values = object.get_bytes_list(other_attribute);
+    original_other_values = object.get_values(other_attribute);
 }
 
 void StringOtherEdit::reset() {

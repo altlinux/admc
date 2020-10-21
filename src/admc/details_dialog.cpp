@@ -103,7 +103,7 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     layout->addWidget(tab_widget);
     layout->addWidget(button_box);
 
-    const AdObject object = AD()->request_all(target);
+    const AdObject object = AD()->search_object(target);
 
     // TODO: is this actually possible and what should happen, currently leaving the dialog blank which might be enough.
     if (object.is_empty()) {
@@ -231,7 +231,7 @@ void DetailsDialog::on_apply() {
         Status::instance()->show_errors_popup(errors_index);
     }
 
-    const AdObject object = AD()->request_all(target);
+    const AdObject object = AD()->search_object(target);
     for (auto tab : tabs) {
         tab->load(object);
     }
@@ -273,7 +273,7 @@ void DetailsDialog::on_tab_edited() {
 }
 
 void DetailsDialog::on_ad_modified() {
-    const AdObject object = AD()->request_all(target);
+    const AdObject object = AD()->search_object(target);
 
     if (object.is_empty()) {
         close();
