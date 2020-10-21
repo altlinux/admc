@@ -26,15 +26,24 @@
 #include <QString>
 #include <QList>
 
+/**
+ * Details tabs are used in DetailsDialog. They usually are
+ * a collection of AttributeEdit's and so mirror their
+ * behavior. Tabs start out unchanged, then enter changed()
+ * state if their edits change. Then tabs may be reset via
+ * load() or verified and applied. All tab f-ns call f-ns of
+ * tab's edits. Note that edits are not required. If
+ * needed, a tab can have no edits at all and implement
+ * custom functionality.
+ */
+
 class AttributeEdit;
 
 class DetailsTab : public QWidget {
 Q_OBJECT
 
 public:
-    // Load state from object
     virtual void load(const AdObject &object);
-
     virtual bool changed() const;
     virtual bool verify() const;
     virtual void apply(const QString &target) const;
@@ -43,6 +52,7 @@ protected:
     QList<AttributeEdit *> edits;
 
 signals:
+    // Emitted to notify details dialog that tab was edited.
     void edited();
     
 public slots:

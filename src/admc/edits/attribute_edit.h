@@ -27,6 +27,42 @@
 #include <QList>
 #include <QMap>
 
+Attribute edits wrap regular Qt widgets so that they can be used to edit attributes of an AD object.
+
+/**
+ * AttributeEdit's wrap regular Qt widgets so that they can
+ * be used to edit attributes of an AD object. Edits
+ * themselves are wrapped in parent objects where they are
+ * shown in groups. Edits are mostly used by DetailsTab's
+ * and some dialogs. Depending on what kind of attribute is
+ * being edited, different widgets may be used. For example,
+ * QLineEdit for string attributes and QDateTimeEdit for
+ * datetimes. At creation, edits are clear and out of sync
+ * with the AD server. Calling load() loads the state of an
+ * object, at which point edit state becomes equal to
+ * current object state. load() is also used to reset back
+ * to original state to cancel input or to load updated
+ * state if the object changed. When user edits the edit
+ * through the wrapped qt widgets, edit becomes out of sync
+ * with current object state, which is represented as edit
+ * being in the changed() state. Edits may show being in
+ * changed state using the changed marker ("*" next to
+ * edit's label). Note that edit may exit changed() state
+ * due to a load() call OR the user manually undoing changes
+ * by retyping original string value for example. When edit
+ * is changed(), it may be applied, but verify() should be
+ * called first to show any input erros. If verify()
+ * succeeds, apply() can be called to apply changes to the
+ * object on the AD server. verify() and apply() need to be
+ * two separate f-ns because for a group of edits, all of
+ * them need to be verified first and then all of them must
+ * be applied, so mixing verify()'s and apply()'s wouldn't
+ * work. It is recommended to operate on lists of edits,
+ * rather than singular edits. Typically, an apply button on
+ * edit's parent object would call edit's verify() and
+ * apply() f-ns and a cancel button would call load().
+ */
+
 class DetailsTab;
 class QLabel;
 class QGridLayout;
@@ -43,6 +79,8 @@ public:
     virtual void load(const AdObject &object) = 0;
 
     virtual void set_read_only(const bool read_only) = 0;
+
+    // Layout all widgets that are part of this edit
     virtual void add_to_layout(QGridLayout *layout) = 0;
 
     // Returns whether edit's value has been changed by the user
@@ -57,6 +95,7 @@ public:
     virtual bool apply(const QString &dn) const = 0;
 
 signals:
+    // Emitted to notify parent object that edit was edited.
     void edited();
 
 protected:

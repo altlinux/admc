@@ -30,12 +30,16 @@ class QLabel;
 class DetailsTab;
 class QDialogButtonBox;
 
-// Shows info about object's attributes in multiple tabs.
-// Targeted at a particular object. Normally, a new dialog is
-// opened for each target. So can have multiple dialogs open a
-// the same time. If docked setting is turned on, only one dialog
-// is shown, docked to the right side of main window. When a new
-// target is selected, that one docked dialog switches to it.
+/**
+ * Shows info about object's attributes in multiple tabs.
+ * Targeted at a particular object. Normally, a new dialog
+ * is opened for each target. So can have multiple dialogs
+ * open a the same time. If docked setting is turned on,
+ * only one dialog is shown, docked to the right side of
+ * main window. When a new target is selected, that one
+ * docked dialog switches to it.
+ */
+
 class DetailsDialog final : public QDialog {
 Q_OBJECT
 

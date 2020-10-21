@@ -25,9 +25,11 @@
 #include <QList>
 #include <QByteArray>
 
-// Gets input from user and then returns it through
-// get_new_values(). Whatever widget opened this
-// dialog should be applying changes.
+/**
+ * Gets input from user, which can be obtained through
+ * get_new_values(). Parent object is responsible for
+ * actually applying the changes.
+ */
 
 class EditDialog : public QDialog {
 Q_OBJECT
