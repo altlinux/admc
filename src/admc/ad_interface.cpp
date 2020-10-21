@@ -388,7 +388,16 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
 }
 
 bool AdInterface::attribute_replace_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
-    return attribute_replace_values(dn, attribute, {value}, do_msg);
+    const QList<QByteArray> values =
+    [=]() -> QList<QByteArray> {
+        if (value.isEmpty()) {
+            return QList<QByteArray>();
+        } else {
+            return {value};
+        }
+    }();
+
+    return attribute_replace_values(dn, attribute, values, do_msg);
 }
 
 bool AdInterface::attribute_delete_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
