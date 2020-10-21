@@ -23,7 +23,6 @@
 
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm"
 
-QString object_sid_to_display_value(const QByteArray &bytes);
 QString datetime_to_display_value(const QString &attribute, const QByteArray &bytes);
 QString timespan_to_display_value(const QByteArray &bytes);
 QString octet_to_display_value(const QString &attribute, const QByteArray &bytes);

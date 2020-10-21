@@ -21,6 +21,8 @@
 #include "object_context_menu.h"
 #include "utils.h"
 #include "select_dialog.h"
+#include "filter.h"
+#include "attribute_display.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -36,6 +38,7 @@
 enum MembersColumn {
     MembersColumn_Name,
     MembersColumn_Parent,
+    MembersColumn_Primary,
     MembersColumn_DN,
     MembersColumn_COUNT,
 };
@@ -63,6 +66,7 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     set_horizontal_header_labels_from_map(model, {
         {MembersColumn_Name, tr("Name")},
         {MembersColumn_Parent, tr("Folder")},
+        {MembersColumn_Primary, tr("Primary")},
         {MembersColumn_DN, tr("DN")}
     });
 
@@ -99,7 +103,55 @@ void MembershipTab::load(const AdObject &object) {
     original_values = values.toSet();
     current_values = original_values;
 
-    reload_model(original_values);
+    // Add primary groups or primary members
+    original_primary_values.clear();
+    switch (type) {
+        case MembershipTabType_Members: {
+            // Get users who have this group as primary group
+            const QByteArray group_sid = object.get_value(ATTRIBUTE_OBJECT_SID);
+            const QString group_sid_string = object_sid_to_display_value(group_sid);
+            const int cut_index = group_sid_string.lastIndexOf("-") + 1;
+            const QString group_rid = group_sid_string.mid(cut_index);
+
+            const QString filter = filter_EQUALS(ATTRIBUTE_PRIMARY_GROUP_ID, group_rid);
+            const QHash<QString, AdObject> result = AD()->search(filter, QList<QString>(), SearchScope_All);
+
+            for (const QString user : result.keys()) {
+                original_primary_values.insert(user);
+            }
+
+            break;
+        }
+        case MembershipTabType_MemberOf: {
+            // Get primary group's dn
+            // Need to first construct group sid from ATTRIBUTE_PRIMARY_GROUP_ID
+            // and then search for object with that sid to get dn
+
+            // Construct group sid from group rid + user sid
+            // user sid  = "S-foo-bar-baz-abc"
+            // group rid = "xyz" 
+            // group sid = "S-foo-bar-baz-xyz"
+            const QString group_rid = object.get_string(ATTRIBUTE_PRIMARY_GROUP_ID);
+            const QByteArray user_sid = object.get_value(ATTRIBUTE_OBJECT_SID);
+            const QString user_sid_string = object_sid_to_display_value(user_sid);
+            const int cut_index = user_sid_string.lastIndexOf("-") + 1;
+            const QString group_sid = user_sid_string.left(cut_index) + group_rid;
+
+            const QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_SID, group_sid);
+            const QHash<QString, AdObject> result = AD()->search(filter, QList<QString>(), SearchScope_All);
+
+            if (!result.isEmpty()) {
+                const QString group_dn = result.values()[0].get_dn();
+                original_primary_values.insert(group_dn);
+            }
+
+            break;
+        }
+    } 
+
+    current_primary_values = original_primary_values;
+
+    reload_model();
 }
 
 bool MembershipTab::changed() const {
@@ -197,16 +249,28 @@ void MembershipTab::on_remove_button() {
     remove_values(removed_values);    
 }
 
-void MembershipTab::reload_model(const QSet<QString> &values) {
+void MembershipTab::reload_model() {
     model->removeRows(0, model->rowCount());
 
-    for (auto dn : values) {
+    const QSet<QString> all_values = current_values + current_primary_values;
+
+    for (auto dn : all_values) {
         const QString name = dn_get_rdn(dn);
         const QString parent = dn_get_parent(dn);
+        const Qt::CheckState check_state =
+        [this, dn]() {
+            const bool primary = current_primary_values.contains(dn);
+            if (primary) {
+                return Qt::Checked;
+            } else {
+                return Qt::Unchecked;
+            }
+        }();
         
         const QList<QStandardItem *> row = make_item_row(MembersColumn_COUNT);
         row[MembersColumn_Name]->setText(name);
         row[MembersColumn_Parent]->setText(parent);
+        row[MembersColumn_Primary]->setCheckState(check_state);
         row[MembersColumn_DN]->setText(dn);
 
         model->appendRow(row);
@@ -220,7 +284,7 @@ void MembershipTab::add_values(QList<QString> values) {
         current_values.insert(value);
     }
 
-    reload_model(current_values);
+    reload_model();
 
     emit edited();
 }
@@ -230,7 +294,7 @@ void MembershipTab::remove_values(QList<QString> values) {
         current_values.remove(value);
     }
 
-    reload_model(current_values);
+    reload_model();
 
     emit edited();
 }

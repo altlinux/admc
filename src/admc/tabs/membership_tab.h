@@ -62,9 +62,11 @@ private:
     QStandardItemModel *model = nullptr;
     QTreeView *view = nullptr;
     QSet<QString> original_values;
+    QSet<QString> original_primary_values;
     QSet<QString> current_values;
+    QSet<QString> current_primary_values;
 
-    void reload_model(const QSet<QString> &values);
+    void reload_model();
     void add_values(QList<QString> values);
     void remove_values(QList<QString> values);
     QString get_membership_attribute();

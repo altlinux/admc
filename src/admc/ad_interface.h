@@ -99,6 +99,7 @@
 #define ATTRIBUTE_VERSION_NUMBER        "versionNumber"
 #define ATTRIBUTE_FLAGS                 "flags"
 #define ATTRIBUTE_OBJECT_GUID           "objectGUID"
+#define ATTRIBUTE_PRIMARY_GROUP_ID      "primaryGroupID"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
