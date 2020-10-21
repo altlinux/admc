@@ -329,7 +329,6 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
     const AdObject object = search_object(dn, {attribute});
     const QList<QByteArray> old_values = object.get_values(attribute);
 
-    // TODO: i think this was only added as a hack to prevent applying empty edits in create dialog, but it doesn't work for that anyway because when edit is empty it replace to an array with an empty string(array is NOT empty). Figure it out.
     // Do nothing if both new and old values are empty
     if (old_values.isEmpty() && values.isEmpty()) {
         return true;
