@@ -71,15 +71,21 @@ void Settings::connect_action_to_bool_setting(QAction *action, const BoolSetting
 
     const bool default_value =
     [type]() {
-        if (type == BoolSetting_LastNameBeforeFirstName) {
-            const bool locale_is_russian = (QLocale::system().language() == QLocale::Russian);
-            if (locale_is_russian) {
+        switch (type) {
+            case BoolSetting_LastNameBeforeFirstName: {
+                const bool locale_is_russian = (QLocale::system().language() == QLocale::Russian);
+                if (locale_is_russian) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            case BoolSetting_ConfirmActions: {
                 return true;
-            } else {
+            }
+            default: {
                 return false;
             }
-        } else {
-            return false;
         }
     }();
     
