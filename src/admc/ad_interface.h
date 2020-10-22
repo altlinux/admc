@@ -100,6 +100,8 @@
 #define ATTRIBUTE_FLAGS                 "flags"
 #define ATTRIBUTE_OBJECT_GUID           "objectGUID"
 #define ATTRIBUTE_PRIMARY_GROUP_ID      "primaryGroupID"
+#define ATTRIBUTE_MANAGER               "manager"
+#define ATTRIBUTE_DIRECT_REPORTS        "directReports"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"

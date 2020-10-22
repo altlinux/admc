@@ -27,6 +27,7 @@
 #include "tabs/object_tab.h"
 #include "tabs/group_policy_tab.h"
 #include "tabs/gpo_links_tab.h"
+#include "tabs/organization_tab.h"
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "settings.h"
@@ -130,6 +131,7 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     if (object.is_class(CLASS_USER)) {
         add_tab(new AccountTab(), tr("Account"));
         add_tab(new AddressTab(), tr("Address"));
+        add_tab(new OrganizationTab(), tr("Organization"));
     }
     if (object.is_class(CLASS_GROUP)) {
         add_tab(new MembersTab(), tr("Members"));

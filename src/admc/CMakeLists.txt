@@ -49,6 +49,7 @@ add_executable(admc
     tabs/address_tab.cpp
     tabs/group_policy_tab.cpp
     tabs/gpo_links_tab.cpp
+    tabs/organization_tab.cpp
 
     edit_dialogs/edit_dialog.cpp
     edit_dialogs/string_edit_dialog.cpp
@@ -66,6 +67,7 @@ add_executable(admc
     edits/password_edit.cpp
     edits/datetime_edit.cpp
     edits/gpoptions_edit.cpp
+    edits/manager_edit.cpp
 
     ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/common/settings.cpp
