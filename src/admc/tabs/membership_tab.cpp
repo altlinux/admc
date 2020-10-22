@@ -100,9 +100,8 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     connect(
         add_button, &QAbstractButton::clicked,
         this, &MembershipTab::on_add_button);
-    QObject::connect(
-        view, &QWidget::customContextMenuRequested,
-        this, &MembershipTab::on_context_menu);
+
+    DetailsDialog::connect_to_open_by_double_click(view, MembersColumn_DN);
 }
 
 void MembershipTab::load(const AdObject &object) {
@@ -207,20 +206,6 @@ void MembershipTab::apply(const QString &target) const {
             break;
         }
     } 
-}
-
-void MembershipTab::on_context_menu(const QPoint pos) {
-    const QString dn = get_dn_from_pos(pos, view, MembersColumn_DN);
-    if (dn.isEmpty()) {
-        return;
-    }
-
-    QMenu menu(this);
-    menu.addAction(tr("Details"), [this, dn]() {
-        DetailsDialog::open_for_target(dn);
-    });
-
-    exec_menu_from_view(&menu, view, pos);
 }
 
 void MembershipTab::on_add_button() {

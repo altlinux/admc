@@ -29,6 +29,7 @@ class QTabWidget;
 class QLabel;
 class DetailsTab;
 class QDialogButtonBox;
+class QAbstractItemView;
 
 /**
  * Shows info about object's attributes in multiple tabs.
@@ -47,6 +48,7 @@ public:
     static QWidget *get_docked_container();
 
     static void open_for_target(const QString &target);
+    static void connect_to_open_by_double_click(QAbstractItemView *view, const int dn_column);
 
     QString get_target() const;
 

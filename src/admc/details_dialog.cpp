@@ -41,6 +41,7 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QDebug>
+#include <QAbstractItemView>
 
 DetailsDialog *DetailsDialog::docked_instance = nullptr;
 
@@ -61,6 +62,10 @@ QWidget *DetailsDialog::get_docked_container() {
 }
 
 void DetailsDialog::open_for_target(const QString &target) {
+    if (target.isEmpty()) {
+        return;
+    }
+
     const bool is_docked = SETTINGS()->get_bool(BoolSetting_DetailsIsDocked);
 
     if (is_docked) {
@@ -79,6 +84,15 @@ void DetailsDialog::open_for_target(const QString &target) {
         auto dialog = new DetailsDialog(target, true);
         dialog->open();
     }
+}
+
+void DetailsDialog::connect_to_open_by_double_click(QAbstractItemView *view, const int dn_column) {
+    connect(
+        view, &QAbstractItemView::doubleClicked,
+        [dn_column](const QModelIndex &index) {
+            const QString dn = get_dn_from_index(index, dn_column);
+            open_for_target(dn);
+        });
 }
 
 DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_instance_arg)

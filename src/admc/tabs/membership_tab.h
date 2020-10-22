@@ -45,7 +45,6 @@ public:
     void apply(const QString &target) const override;
 
 private slots:
-    void on_context_menu(const QPoint pos);
     void on_add_button();
     void on_remove_button();
     void on_selection_changed();

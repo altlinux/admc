@@ -37,9 +37,6 @@ public:
 
     void load(const AdObject &object) override;
 
-private slots:
-    void on_context_menu(const QPoint pos);
-
 private:
     QTreeView *view;
     QStandardItemModel *model;

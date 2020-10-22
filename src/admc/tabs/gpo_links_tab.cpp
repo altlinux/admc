@@ -57,9 +57,7 @@ GpoLinksTab::GpoLinksTab() {
     setLayout(layout);
     layout->addWidget(view);
 
-    QObject::connect(
-        view, &QWidget::customContextMenuRequested,
-        this, &GpoLinksTab::on_context_menu);
+    DetailsDialog::connect_to_open_by_double_click(view, GpoLinksColumn_DN);
 }
 
 void GpoLinksTab::load(const AdObject &object) {
@@ -79,18 +77,4 @@ void GpoLinksTab::load(const AdObject &object) {
     }
 
     model->sort(GpoLinksColumn_Name);
-}
-
-void GpoLinksTab::on_context_menu(const QPoint pos) {
-    const QString dn = get_dn_from_pos(pos, view, GpoLinksColumn_DN);
-    if (dn.isEmpty()) {
-        return;
-    }
-
-    QMenu menu(this);
-    menu.addAction(tr("Details"), [dn]() {
-        DetailsDialog::open_for_target(dn);
-    });
-
-    exec_menu_from_view(&menu, view, pos);
 }
