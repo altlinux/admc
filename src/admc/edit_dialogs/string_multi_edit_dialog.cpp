@@ -46,6 +46,9 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
     const auto title_label = new QLabel(title_text);
 
     edit = new QLineEdit();
+    if (ADCONFIG()->attribute_is_number(attribute)) {
+        set_line_edit_to_numbers_only(edit);
+    }
 
     add_button = new QPushButton(tr("Add"));
 

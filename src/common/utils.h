@@ -35,6 +35,7 @@ class QStandardItem;
 class QStandardItemModel;
 class QMenu;
 class QTreeView;
+class QLineEdit;
 
 QString get_dn_from_index(const QModelIndex &index, int dn_column);
 QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn_column);
@@ -64,5 +65,8 @@ QString current_advanced_view_filter();
 
 QString dn_get_rdn(const QString &dn);
 QString dn_get_parent(const QString &dn);
+
+// Prohibits leading zeroes
+void set_line_edit_to_numbers_only(QLineEdit *edit);
 
 #endif /* UTILS_H */

@@ -420,6 +420,18 @@ LargeIntegerSubtype AdConfig::get_large_integer_subtype(const QString &attribute
     }
 }
 
+bool AdConfig::attribute_is_number(const QString &attribute) const {
+    static const QList<AttributeType> number_types = {
+        AttributeType_Integer,
+        AttributeType_LargeInteger,
+        AttributeType_Enumeration,
+        AttributeType_Numeric,
+    };
+    const AttributeType type = get_attribute_type(attribute);
+
+    return number_types.contains(type);
+}
+
 bool AdConfig::get_attribute_is_single_valued(const QString &attribute) const {
     if (attribute_is_single_valued.contains(attribute)) {
         return attribute_is_single_valued[attribute];

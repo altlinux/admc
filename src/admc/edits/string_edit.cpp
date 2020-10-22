@@ -42,9 +42,13 @@ QString get_domain_as_email_suffix() {
 StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent, QList<AttributeEdit *> *edits_out)
 : AttributeEdit(parent)
 {
-    edit = new QLineEdit();
     attribute = attribute_arg;
     objectClass = objectClass_arg;
+    
+    edit = new QLineEdit();
+    if (ADCONFIG()->attribute_is_number(attribute)) {
+        set_line_edit_to_numbers_only(edit);
+    }
 
     const QString label_text = ADCONFIG()->get_attribute_display_name(attribute, objectClass) + ":";
     label = new QLabel(label_text);

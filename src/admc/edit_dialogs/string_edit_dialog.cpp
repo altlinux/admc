@@ -45,6 +45,10 @@ StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArr
 
     edit = new QLineEdit();
 
+    if (ADCONFIG()->attribute_is_number(attribute)) {
+        set_line_edit_to_numbers_only(edit);
+    }
+
     const QByteArray value = values.value(0, QByteArray());
     original_value = QString::fromUtf8(value);
     edit->setText(original_value);

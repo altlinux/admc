@@ -71,6 +71,7 @@ public:
     QList<QString> get_possible_attributes(const QList<QString> &object_classes) const;
     AttributeType get_attribute_type(const QString &attribute) const;
     LargeIntegerSubtype get_large_integer_subtype(const QString &attribute) const;
+    bool attribute_is_number(const QString &attribute) const;
     bool get_attribute_is_single_valued(const QString &attribute) const;
 
 private:

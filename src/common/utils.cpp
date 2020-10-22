@@ -33,6 +33,7 @@
 #include <QHeaderView>
 #include <QtGlobal>
 #include <QStandardItemModel>
+#include <QLineEdit>
 
 // Index can be an index of any column in target row and of any proxy in the proxy chain
 QString get_dn_from_index(const QModelIndex &index, int dn_column) {
@@ -273,4 +274,8 @@ QString dn_get_parent(const QString &dn) {
     }
 
     return parent;
+}
+
+void set_line_edit_to_numbers_only(QLineEdit *edit) {
+    edit->setValidator(new QRegExpValidator(QRegExp("[0-9]*"), edit));
 }
