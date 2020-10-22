@@ -122,4 +122,6 @@ void MainWindow::finish_init() {
 
 void MainWindow::closeEvent(QCloseEvent *event) {
     SETTINGS()->save_geometry(this, VariantSetting_MainWindowGeometry);
+
+    QApplication::quit();
 }

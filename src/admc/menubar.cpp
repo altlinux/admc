@@ -96,7 +96,6 @@ void MenuBar::on_exit_action() {
     const bool confirmed = confirmation_dialog(text, this);
 
     if (confirmed) {
-        QApplication::closeAllWindows();
         QApplication::quit();
     }   
 }
