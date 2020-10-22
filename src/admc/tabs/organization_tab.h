@@ -22,7 +22,7 @@
 
 #include "tabs/details_tab.h"
 
-class QTextEdit;
+class QStandardItemModel;
 
 class OrganizationTab final : public DetailsTab {
 Q_OBJECT
@@ -33,7 +33,7 @@ public:
     void load(const AdObject &object) override;
 
 private:
-    QTextEdit *reports_text_edit;
+    QStandardItemModel *reports_model;
 };
 
 #endif /* ORGANIZATION_TAB_H */
