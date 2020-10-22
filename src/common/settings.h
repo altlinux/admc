@@ -44,7 +44,6 @@ enum VariantSetting {
     // ADMC
     VariantSetting_Domain,    
     VariantSetting_Site,    
-    VariantSetting_Host,    
     VariantSetting_Locale,
 
     // GPGUI
@@ -90,6 +89,7 @@ public:
 
     const BoolSettingSignal *get_bool_signal(BoolSetting type) const;
     bool get_bool(BoolSetting type) const;
+    void set_bool(const BoolSetting type, const bool value);
 
     /** 
      * Connect action and bool setting so that toggling

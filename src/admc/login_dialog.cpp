@@ -24,18 +24,16 @@
 
 #include <QLineEdit>
 #include <QLabel>
-#include <QListWidget>
 #include <QPushButton>
 #include <QMessageBox>
 #include <QString>
 #include <QGridLayout>
 #include <QApplication>
+#include <QCheckBox>
 
 LoginDialog::LoginDialog(QWidget *parent)
 : QDialog(parent)
 {
-    resize(500, 300);
-
     setWindowTitle(tr("Login"));
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -46,117 +44,50 @@ LoginDialog::LoginDialog(QWidget *parent)
     site_edit = new QLineEdit(this);
 
     const auto login_button = new QPushButton(tr("Login"), this);
-    const auto cancel_button = new QPushButton(tr("Cancel"), this);
     login_button->setAutoDefault(false);
-    cancel_button->setAutoDefault(false);
 
-    const auto hosts_list_label = new QLabel(tr("Select host:"), this);
-    hosts_list = new QListWidget(this);
-    hosts_list->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    autologin_check = new QCheckBox(tr("Login using saved session at startup"));
 
     const auto layout = new QGridLayout(this);
-    layout->addWidget(domain_edit_label, 1, 0);
-    layout->addWidget(domain_edit, 1, 1);
-    layout->addWidget(site_edit_label, 1, 3);
-    layout->addWidget(site_edit, 1, 4);
-    layout->addWidget(hosts_list_label, 3, 0);
-    layout->addWidget(hosts_list, 4, 0, 1, 5);
-    layout->addWidget(cancel_button, 5, 0, Qt::AlignLeft);
-    layout->addWidget(login_button, 5, 4, Qt::AlignRight);
+    append_to_grid_layout_with_label(layout, domain_edit_label, domain_edit);
+    append_to_grid_layout_with_label(layout, site_edit_label, site_edit);
+    layout->addWidget(autologin_check, layout->rowCount(), 0, 1, layout->columnCount());
+    layout->addWidget(login_button, layout->rowCount(), 0, 1, layout->columnCount());
 
-    connect(
-        domain_edit, &QLineEdit::editingFinished,
-        this, &LoginDialog::load_hosts);
-    connect(
-        site_edit, &QLineEdit::editingFinished,
-        this, &LoginDialog::load_hosts);
-    connect(
-        hosts_list, &QListWidget::itemDoubleClicked,
-        this, &LoginDialog::on_host_double_clicked);
+    // Load session values from settings
+    const QString domain = SETTINGS()->get_variant(VariantSetting_Domain).toString();
+    const QString site = SETTINGS()->get_variant(VariantSetting_Site).toString();
+    domain_edit->setText(domain);
+    site_edit->setText(site);
+
     connect(
         login_button, &QAbstractButton::clicked,
         this, &LoginDialog::on_login_button);
     connect(
-        cancel_button, &QAbstractButton::clicked,
-        this, &LoginDialog::on_cancel_button);
+        this, &QDialog::rejected,
+        this, &LoginDialog::on_rejected);
 }
 
-void LoginDialog::open() {
-    // Load session values from settings
-    const QString domain = SETTINGS()->get_variant(VariantSetting_Domain).toString();
-    const QString site = SETTINGS()->get_variant(VariantSetting_Site).toString();
-    const QString host = SETTINGS()->get_variant(VariantSetting_Host).toString();
-    
-    domain_edit->setText(domain);
-    site_edit->setText(site);
-
-    load_hosts();
-
-    // Select saved session host in hosts list
-    QList<QListWidgetItem *> found_hosts = hosts_list->findItems(host, Qt::MatchExactly);
-    if (!found_hosts.isEmpty()) {
-        QListWidgetItem *host_item = found_hosts[0];
-        hosts_list->setCurrentItem(host_item);
-    }
-
-    QDialog::open();
-
-    if (found_hosts.isEmpty() && host != "") {
-        QMessageBox::warning(this, tr("Warning"), tr("Failed to find saved session's host"));
-    }
-}
-
-void LoginDialog::on_host_double_clicked(QListWidgetItem *item) {
-    const QString host = item->text();
-
-    complete(host);
-}
-
-void LoginDialog::on_login_button(bool) {
-    // NOTE: listwidget has to have focus to properly return current item...
-    hosts_list->setFocus();
-    QListWidgetItem *current_item = hosts_list->currentItem();
-
-    if (current_item == nullptr) {
-        QMessageBox::warning(this, tr("Error"), tr("Need to select a host to login."));
-    } else {
-        const QString host = current_item->text();
-
-        complete(host);
-    } 
-}
-
-void LoginDialog::on_cancel_button(bool) {
-    reject();
-    QApplication::closeAllWindows();
-    QApplication::quit();
-}
-
-void LoginDialog::load_hosts() {
+void LoginDialog::on_login_button() {
     const QString domain = domain_edit->text();
     const QString site = site_edit->text();
 
-    QList<QString> hosts = get_domain_hosts(domain, site);
-
-    hosts_list->clear();
-    for (auto h : hosts) {
-        new QListWidgetItem(h, hosts_list);
-    }
-}
-
-void LoginDialog::complete(const QString &host) {
-    const QString domain = domain_edit->text();
-
-    const bool login_success = AD()->login(host, domain);
+    const bool login_success = AD()->login(domain, site);
 
     if (login_success) {
-        const QString site = site_edit->text();
         SETTINGS()->set_variant(VariantSetting_Domain, domain);
         SETTINGS()->set_variant(VariantSetting_Site, site);
-        SETTINGS()->set_variant(VariantSetting_Host, host);
+
+        const bool autologin_checked = checkbox_is_checked(autologin_check);
+        SETTINGS()->set_bool(BoolSetting_AutoLogin, autologin_checked);
 
         accept();
     } else {
         QMessageBox::critical(this, tr("Error"), tr("Failed to login!"));
     }
+}
+
+void LoginDialog::on_rejected() {
+    QApplication::closeAllWindows();
+    QApplication::quit();
 }

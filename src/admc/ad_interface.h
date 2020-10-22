@@ -165,7 +165,7 @@ private:
 public:
     static AdInterface *instance();
 
-    bool login(const QString &host_arg, const QString &domain);
+    bool login(const QString &domain, const QString &site);
 
     // Use this if you are doing a series of AD modifications.
     // During the batch, modified() signals won't be emitted
@@ -251,8 +251,6 @@ private:
 };
 
 AdInterface *AD();
-
-QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 
 bool datetime_is_never(const QString &attribute, const QString &value);
 QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime);

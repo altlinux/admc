@@ -56,10 +56,10 @@ MainWindow::MainWindow()
 
     const bool auto_login = SETTINGS()->get_bool(BoolSetting_AutoLogin);
     if (auto_login) {
-        const QString host = SETTINGS()->get_variant(VariantSetting_Host).toString();
         const QString domain = SETTINGS()->get_variant(VariantSetting_Domain).toString();
+        const QString site = SETTINGS()->get_variant(VariantSetting_Site).toString();
 
-        const bool login_success = AD()->login(host, domain);
+        const bool login_success = AD()->login(domain, site);
 
         if (login_success) {
             finish_init();

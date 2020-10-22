@@ -43,6 +43,11 @@ bool Settings::get_bool(BoolSetting type) const {
     return value;
 }
 
+void Settings::set_bool(const BoolSetting type, const bool value) {
+    const QString name = bool_to_string(type);
+    qsettings->setValue(name, value);
+}
+
 QVariant Settings::get_variant(VariantSetting type) const {
     const QString name = variant_to_string(type);
     const QVariant value = qsettings->value(name); 
@@ -129,7 +134,6 @@ QString variant_to_string(VariantSetting type) {
     switch (type) {
         CASE_ENUM_TO_STRING(VariantSetting_Domain);
         CASE_ENUM_TO_STRING(VariantSetting_Site);
-        CASE_ENUM_TO_STRING(VariantSetting_Host);
         CASE_ENUM_TO_STRING(VariantSetting_MainWindowGeometry);
         CASE_ENUM_TO_STRING(VariantSetting_Locale);
         CASE_ENUM_TO_STRING(VariantSetting_COUNT);

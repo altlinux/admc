@@ -41,6 +41,8 @@
 
 #define LDAP_SEARCH_NO_ATTRIBUTES "1.1"
 
+QList<QString> get_domain_hosts(const QString &domain, const QString &site);
+
 AdInterface *AdInterface::instance() {
     static AdInterface ad_interface;
     return &ad_interface;
@@ -50,16 +52,22 @@ void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgro
 
 }
 
-bool AdInterface::login(const QString &host_arg, const QString &domain_arg) {
-    m_host = host_arg;
+bool AdInterface::login(const QString &domain, const QString &site) {
+    const QList<QString> hosts = get_domain_hosts(domain, site);
+    if (hosts.isEmpty()) {
+        return false;
+    }
+
+    // TODO: for now selecting first host, which seems to be fine but investigate what should be selected.
+    m_host = hosts[0];
 
     const QString uri = "ldap://" + m_host;
 
-    m_domain = domain_arg;
+    m_domain = domain;
 
     // Transform domain to search base
     // "DOMAIN.COM" => "DC=domain,DC=com"
-    m_search_base = domain_arg;
+    m_search_base = m_domain;
     m_search_base = m_search_base.toLower();
     m_search_base = "DC=" + m_search_base;
     m_search_base = m_search_base.replace(".", ",DC=");
