@@ -176,6 +176,7 @@ void ContentsWidget::change_target(const QString &dn) {
     target_dn = dn;
 
     model->change_target(target_dn);
+    view->sortByColumn(column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
 
     resize_columns();
 
@@ -263,6 +264,4 @@ void ContentsModel::change_target(const QString &target_dn) {
 
         invisibleRootItem()->appendRow(row);
     }
-
-    sort(column_index(ATTRIBUTE_NAME));
 }
