@@ -66,7 +66,7 @@ ExpiryEdit::ExpiryEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 void ExpiryEdit::load(const AdObject &object) {
     original_value = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);
 
-    const bool never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, original_value);
+    const bool never = large_integer_datetime_is_never(original_value);
 
     never_check->setChecked(never);
     end_of_check->setChecked(!never);
@@ -181,7 +181,7 @@ QString ExpiryEdit::get_new_value() const {
     const bool never = checkbox_is_checked(never_check);
 
     if (never) {
-        const bool original_value_is_never = datetime_is_never(ATTRIBUTE_ACCOUNT_EXPIRES, original_value);
+        const bool original_value_is_never = large_integer_datetime_is_never(original_value);
 
         // NOTE: there are two valid NEVER values so need to match original if it was "never" to avoid changing to different NEVER value and entering into "changed" state when nothing was actually changed
         if (original_value_is_never) {

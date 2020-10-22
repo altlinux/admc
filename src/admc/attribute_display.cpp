@@ -23,6 +23,7 @@
 
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm"
 
+QString large_integer_datetime_to_display_value(const QString &attribute, const QByteArray &bytes);
 QString datetime_to_display_value(const QString &attribute, const QByteArray &bytes);
 QString timespan_to_display_value(const QByteArray &bytes);
 QString octet_to_display_value(const QString &attribute, const QByteArray &bytes);
@@ -35,7 +36,7 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
             const LargeIntegerSubtype subtype = ADCONFIG()->get_large_integer_subtype(attribute);
 
             switch (subtype) {
-                case LargeIntegerSubtype_Datetime: return datetime_to_display_value(attribute, value);
+                case LargeIntegerSubtype_Datetime: return large_integer_datetime_to_display_value(attribute, value);
                 case LargeIntegerSubtype_Timespan: return timespan_to_display_value(value);
                 case LargeIntegerSubtype_Integer: return QString(value);
             }
@@ -112,12 +113,21 @@ QString object_sid_to_display_value(const QByteArray &sid) {
     return string;
 }
 
-QString datetime_to_display_value(const QString &attribute, const QByteArray &bytes) {
-    const QString value_string = QString::fromUtf8(bytes);
+QString large_integer_datetime_to_display_value(const QString &attribute, const QByteArray &value) {
+    const QString value_string = QString(value);
+    
+    if (large_integer_datetime_is_never(value_string)) {
+        return QObject::tr("(never)");
+    } else {
+        const QDateTime datetime = datetime_string_to_qdatetime(attribute, value_string);
+        const QString display = datetime.toString(DATETIME_DISPLAY_FORMAT);
 
-    if (datetime_is_never(attribute, value_string)) {
-        return "(never)";
+        return display;
     }
+}
+
+QString datetime_to_display_value(const QString &attribute, const QByteArray &bytes) {
+    const QString value_string = QString(bytes);
     const QDateTime datetime = datetime_string_to_qdatetime(attribute, value_string);
     const QString display = datetime.toString(DATETIME_DISPLAY_FORMAT);
 

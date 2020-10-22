@@ -254,7 +254,7 @@ private:
 
 AdInterface *AD();
 
-bool datetime_is_never(const QString &attribute, const QString &value);
+bool large_integer_datetime_is_never(const QString &value);
 QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime);
 QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &raw_value);
 

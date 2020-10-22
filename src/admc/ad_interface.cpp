@@ -1138,16 +1138,10 @@ QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
     }
 }
 
-bool datetime_is_never(const QString &attribute, const QString &value) {
-    const LargeIntegerSubtype subtype = ADCONFIG()->get_large_integer_subtype(attribute);
-
-    if (subtype == LargeIntegerSubtype_Datetime) {
-        const bool is_never = (value == AD_LARGE_INTEGER_DATETIME_NEVER_1 || value == AD_LARGE_INTEGER_DATETIME_NEVER_2);
-        
-        return is_never;
-    } else {
-        return false;
-    }
+bool large_integer_datetime_is_never(const QString &value) {
+    const bool is_never = (value == AD_LARGE_INTEGER_DATETIME_NEVER_1 || value == AD_LARGE_INTEGER_DATETIME_NEVER_2);
+    
+    return is_never;
 }
 
 QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime) {
