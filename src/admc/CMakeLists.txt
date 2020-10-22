@@ -54,6 +54,7 @@ add_executable(admc
     edit_dialogs/edit_dialog.cpp
     edit_dialogs/string_edit_dialog.cpp
     edit_dialogs/string_multi_edit_dialog.cpp
+    edit_dialogs/binary_edit_dialog.cpp
 
     edits/attribute_edit.cpp
     edits/string_edit.cpp

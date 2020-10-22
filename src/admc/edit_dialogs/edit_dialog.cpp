@@ -20,39 +20,35 @@
 #include "edit_dialog.h"
 #include "string_edit_dialog.h"
 #include "string_multi_edit_dialog.h"
-#include "ad_interface.h"
+#include "binary_edit_dialog.h"
 #include "ad_config.h"
-#include "edits/attribute_edit.h"
-#include "edits/string_edit.h"
-#include "status.h"
-#include "utils.h"
-
-#include <QDialog>
-#include <QLineEdit>
-#include <QLabel>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QVBoxLayout>
 
 EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> values) {
     const bool single_valued = ADCONFIG()->get_attribute_is_single_valued(attribute);
-    const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
-    switch (type) {
-        case AttributeType_StringCase: {
-            if (single_valued) {
-                return new StringEditDialog(attribute, values);
-            } else {
-                return new StringMultiEditDialog(attribute, values);
-            }
+    const bool is_binary =
+    [attribute]() {
+        static const QList<AttributeType> binary_types = {
+            AttributeType_Octet,
+            AttributeType_Sid,
+        };
+        const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
+
+        return binary_types.contains(type);
+    }();
+
+    if (single_valued) {
+        if (is_binary) {
+            return new BinaryEditDialog(attribute, values);
+        } else {
+            return new StringEditDialog(attribute, values);
         }
-        case AttributeType_Unicode: {
-            if (single_valued) {
-                return new StringEditDialog(attribute, values);
-            } else {
-                return new StringMultiEditDialog(attribute, values);
-            }
+    } else {
+        // TODO: are there multi-valued binary attributes?
+        if (is_binary) {
+            return nullptr;
+        } else {
+            return new StringMultiEditDialog(attribute, values);
         }
-        default: return nullptr;
     }
 }
