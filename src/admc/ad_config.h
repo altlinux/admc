@@ -42,12 +42,15 @@ enum AttributeType {
     AttributeType_Unicode,
     AttributeType_UTCTime,
     AttributeType_GeneralizedTime,
+};
 
-    // NOTE: large integer type has sub types but AD schema
-    // doesn't distinguish between them (from what I've seen).
-    // Create enums for subtypes for easier processing.
-    AttributeType_LargeIntegerDatetime,
-    AttributeType_LargeIntegerTimespan,
+// NOTE: large integer type has sub types but AD schema
+// doesn't distinguish between them (from what I've seen).
+// Create enums for subtypes for easier processing.
+enum LargeIntegerSubtype {
+    LargeIntegerSubtype_Integer,
+    LargeIntegerSubtype_Datetime,
+    LargeIntegerSubtype_Timespan,
 };
 
 // Provides access to some server configuration data
@@ -67,6 +70,7 @@ public:
     QList<QString> get_possible_superiors(const QString &object_category) const;
     QList<QString> get_possible_attributes(const QList<QString> &object_classes) const;
     AttributeType get_attribute_type(const QString &attribute) const;
+    LargeIntegerSubtype get_large_integer_subtype(const QString &attribute) const;
     bool get_attribute_is_single_valued(const QString &attribute) const;
 
 private:

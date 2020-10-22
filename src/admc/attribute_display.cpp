@@ -31,17 +31,22 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
     const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
     switch (type) {
-        case AttributeType_LargeIntegerDatetime: return datetime_to_display_value(attribute, value);
+        case AttributeType_LargeInteger: {
+            const LargeIntegerSubtype subtype = ADCONFIG()->get_large_integer_subtype(attribute);
+
+            switch (subtype) {
+                case LargeIntegerSubtype_Datetime: return datetime_to_display_value(attribute, value);
+                case LargeIntegerSubtype_Timespan: return timespan_to_display_value(value);
+                case LargeIntegerSubtype_Integer: return QString(value);
+            }
+        }
         case AttributeType_UTCTime: return datetime_to_display_value(attribute, value);
         case AttributeType_GeneralizedTime: return datetime_to_display_value(attribute, value);
         case AttributeType_Sid: return object_sid_to_display_value(value);
-        case AttributeType_LargeIntegerTimespan: return timespan_to_display_value(value);
         case AttributeType_Octet: return octet_to_display_value(attribute, value);
-
+        case AttributeType_Unicode: return QString::fromUtf8(value);
         default: {
-            const QString value_string = QString::fromUtf8(value);
-
-            return value_string;
+            return QString(value);
         }
     }
 }

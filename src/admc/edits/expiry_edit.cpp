@@ -187,7 +187,7 @@ QString ExpiryEdit::get_new_value() const {
         if (original_value_is_never) {
             return original_value;
         } else {
-            return AD_LARGEINTEGERTIME_NEVER_1;
+            return AD_LARGE_INTEGER_DATETIME_NEVER_1;
         }
     } else {
         const QString new_date_string = display_label->text();

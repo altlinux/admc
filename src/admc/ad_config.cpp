@@ -276,44 +276,14 @@ AdConfig::AdConfig(QObject *parent)
                 }
             };
 
-            const AttributeType type =
+            out[attribute] =
             [=]() {
-                const bool unknown_type = (!type_map.contains(syntax) || !type_map[syntax].contains(om_syntax));
-                if (unknown_type) {
+                if (type_map.contains(syntax) && type_map[syntax].contains(om_syntax)) {
+                    return type_map[syntax][om_syntax];
+                } else {
                     return AttributeType_StringCase;
                 }
-
-                AttributeType type_out = type_map[syntax][om_syntax];
-
-                // Manually remap large integer types to subtypes
-                // TODO: figure out where to get this data
-                // externally. So far haven't found anything.
-                if (type_out == AttributeType_LargeInteger) {
-                    static const QList<QString> datetimes = {
-                        ATTRIBUTE_ACCOUNT_EXPIRES,
-                        ATTRIBUTE_LAST_LOGON,
-                        ATTRIBUTE_LAST_LOGON_TIMESTAMP,
-                        ATTRIBUTE_PWD_LAST_SET,
-                        ATTRIBUTE_LOCKOUT_TIME,
-                        ATTRIBUTE_BAD_PWD_TIME
-                    };
-                    static const QList<QString> timespans = {
-                        ATTRIBUTE_MAX_PWD_AGE,
-                        ATTRIBUTE_MIN_PWD_AGE,
-                        ATTRIBUTE_LOCKOUT_DURATION,
-                    };
-
-                    if (datetimes.contains(attribute)) {
-                        return AttributeType_LargeIntegerDatetime;
-                    } else if (timespans.contains(attribute)) {
-                        return AttributeType_LargeIntegerTimespan;
-                    } 
-                }
-
-                return type_out;
             }();
-
-            out[attribute] = type;
         }
 
         return out;
@@ -420,6 +390,33 @@ AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
         return attribute_types[attribute];
     } else {
         return AttributeType_StringCase;
+    }
+}
+
+LargeIntegerSubtype AdConfig::get_large_integer_subtype(const QString &attribute) const {
+    // Manually remap large integer types to subtypes
+    // TODO: figure out where to get this data
+    // externally. So far haven't found anything.
+    static const QList<QString> datetimes = {
+        ATTRIBUTE_ACCOUNT_EXPIRES,
+        ATTRIBUTE_LAST_LOGON,
+        ATTRIBUTE_LAST_LOGON_TIMESTAMP,
+        ATTRIBUTE_PWD_LAST_SET,
+        ATTRIBUTE_LOCKOUT_TIME,
+        ATTRIBUTE_BAD_PWD_TIME
+    };
+    static const QList<QString> timespans = {
+        ATTRIBUTE_MAX_PWD_AGE,
+        ATTRIBUTE_MIN_PWD_AGE,
+        ATTRIBUTE_LOCKOUT_DURATION,
+    };
+
+    if (datetimes.contains(attribute)) {
+        return LargeIntegerSubtype_Datetime;
+    } else if (timespans.contains(attribute)) {
+        return LargeIntegerSubtype_Timespan;
+    } else {
+        return LargeIntegerSubtype_Integer;
     }
 }
 

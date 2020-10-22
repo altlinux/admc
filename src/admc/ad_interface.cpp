@@ -1139,10 +1139,10 @@ QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
 }
 
 bool datetime_is_never(const QString &attribute, const QString &value) {
-    const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
+    const LargeIntegerSubtype subtype = ADCONFIG()->get_large_integer_subtype(attribute);
 
-    if (type == AttributeType_LargeIntegerDatetime) {
-        const bool is_never = (value == AD_LARGEINTEGERTIME_NEVER_1 || value == AD_LARGEINTEGERTIME_NEVER_2);
+    if (subtype == LargeIntegerSubtype_Datetime) {
+        const bool is_never = (value == AD_LARGE_INTEGER_DATETIME_NEVER_1 || value == AD_LARGE_INTEGER_DATETIME_NEVER_2);
         
         return is_never;
     } else {
@@ -1154,12 +1154,15 @@ QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &
     const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
     switch (type) {
-        case AttributeType_LargeIntegerDatetime: {
-            const QDateTime ntfs_epoch(QDate(1601, 1, 1));
-            const qint64 millis = ntfs_epoch.msecsTo(datetime);
-            const qint64 hundred_nanos = millis * MILLIS_TO_100_NANOS;
-            
-            return QString::number(hundred_nanos);
+        case AttributeType_LargeInteger: {
+            const LargeIntegerSubtype subtype = ADCONFIG()->get_large_integer_subtype(attribute);
+            if (subtype == LargeIntegerSubtype_Datetime) {
+                const QDateTime ntfs_epoch(QDate(1601, 1, 1));
+                const qint64 millis = ntfs_epoch.msecsTo(datetime);
+                const qint64 hundred_nanos = millis * MILLIS_TO_100_NANOS;
+                
+                return QString::number(hundred_nanos);
+            }
 
             break;
         }
@@ -1184,13 +1187,18 @@ QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &
     const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
     switch (type) {
-        case AttributeType_LargeIntegerDatetime: {
-            // TODO: couldn't find epoch in qt, but maybe its hidden somewhere
-            QDateTime datetime(QDate(1601, 1, 1));
-            const qint64 hundred_nanos = raw_value.toLongLong();
-            const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
-            datetime = datetime.addMSecs(millis);
-            return datetime;
+        case AttributeType_LargeInteger: {
+            const LargeIntegerSubtype subtype = ADCONFIG()->get_large_integer_subtype(attribute);
+            if (subtype == LargeIntegerSubtype_Datetime) {
+                // TODO: couldn't find epoch in qt, but maybe its hidden somewhere
+                QDateTime datetime(QDate(1601, 1, 1));
+                const qint64 hundred_nanos = raw_value.toLongLong();
+                const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
+                datetime = datetime.addMSecs(millis);
+                return datetime;
+            }
+
+            break;
         }
         case AttributeType_GeneralizedTime: {
             return QDateTime::fromString(raw_value, GENERALIZED_TIME_FORMAT_STRING);
