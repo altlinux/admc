@@ -131,6 +131,11 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
 
         const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
+        // NOTE: search returns objects if ANY of their classes are equal to given ones, we only want to get objects by their most inherited class(last), so filter out others
+        if (!classes.contains(object_class)) {
+            continue;
+        }
+
         const QList<QStandardItem *> row = make_item_row(SelectDialogColumn_COUNT);
         row[SelectDialogColumn_Name]->setText(name);
         row[SelectDialogColumn_Parent]->setText(parent);
