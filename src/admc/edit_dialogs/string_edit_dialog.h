@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_TAB_DIALOG_STRING_H
-#define ATTRIBUTES_TAB_DIALOG_STRING_H
+#ifndef STRING_EDIT_DIALOG_H
+#define STRING_EDIT_DIALOG_H
 
 #include "edit_dialogs/edit_dialog.h"
 
@@ -40,4 +40,4 @@ private:
     QString original_value;
 };
 
-#endif /* ATTRIBUTES_TAB_DIALOG_STRING_H */
+#endif /* STRING_EDIT_DIALOG_H */

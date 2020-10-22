@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_TAB_DIALOG_STRING_MULTI_H
-#define ATTRIBUTES_TAB_DIALOG_STRING_MULTI_H
+#ifndef STRING_MULTI_EDIT_DIALOG_H
+#define STRING_MULTI_EDIT_DIALOG_H
 
 #include "edit_dialogs/edit_dialog.h"
 
@@ -51,4 +51,4 @@ private:
     void reset();
 };
 
-#endif /* ATTRIBUTES_TAB_DIALOG_STRING_MULTI_H */
+#endif /* STRING_MULTI_EDIT_DIALOG_H */

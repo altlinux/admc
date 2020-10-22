@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_TAB_DIALOG_H
-#define ATTRIBUTES_TAB_DIALOG_H
+#ifndef EDIT_DIALOG_H
+#define EDIT_DIALOG_H
 
 #include <QString>
 #include <QDialog>
@@ -40,4 +40,4 @@ public:
     virtual QList<QByteArray> get_new_values() const = 0;
 };
 
-#endif /* ATTRIBUTES_TAB_DIALOG_H */
+#endif /* EDIT_DIALOG_H */
