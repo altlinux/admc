@@ -84,6 +84,8 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
     proxy_name->setSourceModel(model);
     view->setModel(proxy_name);
 
+    DetailsDialog::connect_to_open_by_double_click(view, column_index(ATTRIBUTE_DISTINGUISHED_NAME));
+
     setup_column_toggle_menu(view, model, 
     {
         column_index(ATTRIBUTE_NAME),
@@ -111,9 +113,6 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *par
     connect(
         AD(), &AdInterface::modified,
         this, &ContentsWidget::on_ad_modified);
-    connect(
-        view, &QAbstractItemView::clicked,
-        this, &ContentsWidget::on_view_clicked);
 
     const BoolSettingSignal *advanced_view_setting = SETTINGS()->get_bool_signal(BoolSetting_AdvancedView);
     connect(
@@ -140,15 +139,6 @@ void ContentsWidget::on_containers_selected_changed(const QString &dn) {
 
 void ContentsWidget::on_ad_modified() {
     change_target(target_dn);
-}
-
-void ContentsWidget::on_view_clicked(const QModelIndex &index) {
-    const bool details_from_contents = SETTINGS()->get_bool(BoolSetting_DetailsFromContents);
-
-    if (details_from_contents) {
-        const QString dn = get_dn_from_index(index, column_index(ATTRIBUTE_DISTINGUISHED_NAME));
-        DetailsDialog::open_for_target(dn);
-    }
 }
 
 void ContentsWidget::on_context_menu(const QPoint pos) {

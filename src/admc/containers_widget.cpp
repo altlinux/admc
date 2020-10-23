@@ -76,10 +76,6 @@ ContainersWidget::ContainersWidget(QWidget *parent)
         view->selectionModel(), &QItemSelectionModel::selectionChanged,
         this, &ContainersWidget::on_selection_changed);
 
-    connect(
-        view, &QAbstractItemView::clicked,
-        this, &ContainersWidget::on_view_clicked);
-
     const BoolSettingSignal *show_non_containers_signal = SETTINGS()->get_bool_signal(BoolSetting_ShowNonContainersInContainersTree);
     connect(
         show_non_containers_signal, &BoolSettingSignal::changed,
@@ -242,15 +238,6 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
     const QString dn = get_dn_from_index(indexes[0], ContainersColumn_DN);
 
     emit selected_changed(dn);
-}
-
-void ContainersWidget::on_view_clicked(const QModelIndex &index) {
-    const bool details_from_containers = SETTINGS()->get_bool(BoolSetting_DetailsFromContainers);
-
-    if (details_from_containers) {
-        const QString dn = get_dn_from_index(index, ContainersColumn_DN);
-        DetailsDialog::open_for_target(dn);
-    }
 }
 
 ContainersModel::ContainersModel(QObject *parent)

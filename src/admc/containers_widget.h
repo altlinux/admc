@@ -41,7 +41,6 @@ signals:
 
 private slots:
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
-    void on_view_clicked(const QModelIndex &index);
 
 private:
     QTreeView *view = nullptr;

@@ -48,8 +48,6 @@ MenuBar::MenuBar(QWidget* parent)
     add_bool_setting_action(menubar_view, tr("Dock Details dialog"), BoolSetting_DetailsIsDocked);
 
     QMenu *menubar_preferences = addMenu(tr("Preferences"));
-    add_bool_setting_action(menubar_preferences, tr("Open attributes on left click in Containers window"), BoolSetting_DetailsFromContainers);
-    add_bool_setting_action(menubar_preferences, tr("Open attributes on left click in Contents window"), BoolSetting_DetailsFromContents);
     add_bool_setting_action(menubar_preferences, tr("Confirm actions"), BoolSetting_ConfirmActions);
     add_bool_setting_action(menubar_preferences, tr("Login using saved session at startup"), BoolSetting_AutoLogin);
     add_bool_setting_action(menubar_preferences, tr("Dev mode"), BoolSetting_DevMode);

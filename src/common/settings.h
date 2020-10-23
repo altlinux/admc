@@ -57,8 +57,6 @@ enum VariantSetting {
 enum BoolSetting {
     // ADMC
     BoolSetting_AdvancedView,
-    BoolSetting_DetailsFromContainers,
-    BoolSetting_DetailsFromContents,
     BoolSetting_ConfirmActions,
     BoolSetting_ShowStatusLog,
     BoolSetting_AutoLogin,
