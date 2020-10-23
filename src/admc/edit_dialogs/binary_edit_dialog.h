@@ -34,8 +34,6 @@ public:
     QList<QByteArray> get_new_values() const;
 
 private:
-    QLineEdit *string_display;
-    QTextEdit *hex_display;
     QList<QByteArray> original_values;
 };
 

@@ -40,10 +40,9 @@ BinaryEditDialog::BinaryEditDialog(const QString attribute, const QList<QByteArr
     const auto title_text = QString(tr("Attribute: %1")).arg(attribute);
     const auto title_label = new QLabel(title_text);
 
-    string_display = new QLineEdit();
+    auto string_display = new QLineEdit();
     string_display->setReadOnly(true);
 
-    auto hex_display_label = new QLabel(tr("Hexadecimal:"));
     auto hex_display = new QTextEdit();
     hex_display->setReadOnly(true);
     const QFont fixed_font = QFontDatabase::systemFont(QFontDatabase::FixedFont);

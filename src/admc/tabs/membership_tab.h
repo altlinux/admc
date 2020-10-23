@@ -47,6 +47,7 @@ public:
 private slots:
     void on_add_button();
     void on_remove_button();
+    void on_primary_button();
     void on_selection_changed();
 
 protected:
@@ -62,6 +63,7 @@ private:
     QStandardItemModel *model = nullptr;
     QTreeView *view = nullptr;
     QPushButton *remove_button;
+    QPushButton *primary_button;
 
     QSet<QString> original_values;
     QSet<QString> original_primary_values;

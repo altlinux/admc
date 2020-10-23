@@ -361,7 +361,7 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
 
         bvalues[i] = bvalue;
     }
-        
+
     LDAPMod attr;
     attr.mod_op = (LDAP_MOD_REPLACE | LDAP_MOD_BVALUES);
     attr.mod_type = (char *)attribute_cstr;
@@ -605,6 +605,39 @@ bool AdInterface::group_remove_user(const QString &group_dn, const QString &user
         return true;
     } else {
         const QString context = QString(tr("Failed to remove user \"%1\" from group \"%2\"")).arg(user_name, group_name);
+
+        error_status_message(context, "");
+
+        return false;
+    }
+}
+
+bool AdInterface::group_set_primary_for_user(const QString &group_dn, const QString &user_dn) {
+    const AdObject group_object = AD()->search_object(group_dn, {ATTRIBUTE_OBJECT_SID, ATTRIBUTE_MEMBER});
+
+    // NOTE: need to add user to group before it can become primary
+    const QList<QString> group_members = group_object.get_strings(ATTRIBUTE_MEMBER);
+    const bool user_is_in_group = group_members.contains(user_dn);
+    if (!user_is_in_group) {
+        group_add_user(group_dn, user_dn);
+    }
+
+    const QByteArray group_sid = group_object.get_value(ATTRIBUTE_OBJECT_SID);
+    const QString group_rid = extract_rid_from_sid(group_sid);
+
+    const bool success = AD()->attribute_replace_string(user_dn, ATTRIBUTE_PRIMARY_GROUP_ID, group_rid, DoStatusMsg_No);
+
+    const QString user_name = dn_get_rdn(user_dn);
+    const QString group_name = dn_get_rdn(group_dn);
+
+    if (success) {
+        success_status_message(QString(tr("Set primary group for user \"%1\" to \"%2\"")).arg(user_name, group_name));
+
+        emit_modified();
+
+        return true;
+    } else {
+        const QString context = QString(tr("Failed to set primary group for user \"%1\" to \"%2\"")).arg(user_name, group_name);
 
         error_status_message(context, "");
 
@@ -1294,4 +1327,12 @@ QString sysvol_path_to_smb(const QString &sysvol_path) {
     out = QString("smb://%1/%2").arg(host, out);
 
     return out;
+}
+
+QString extract_rid_from_sid(const QByteArray &sid) {
+    const QString sid_string = object_sid_to_display_value(sid);
+    const int cut_index = sid_string.lastIndexOf("-") + 1;
+    const QString rid = sid_string.mid(cut_index);
+
+    return rid;
 }

@@ -207,6 +207,7 @@ public:
 
     bool group_add_user(const QString &group_dn, const QString &user_dn);
     bool group_remove_user(const QString &group_dn, const QString &user_dn);
+    bool group_set_primary_for_user(const QString &group_dn, const QString &user_dn);
     bool group_set_scope(const QString &dn, GroupScope scope);
     bool group_set_type(const QString &dn, GroupType type);
 
@@ -268,5 +269,7 @@ QString group_type_string(GroupType type);
 QString attribute_display_value(const QString &attribute, const QByteArray &value);
 
 QString sysvol_path_to_smb(const QString &sysvol_path);
+
+QString extract_rid_from_sid(const QByteArray &sid);
 
 #endif /* AD_INTERFACE_H */
