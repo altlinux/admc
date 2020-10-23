@@ -107,7 +107,6 @@
 #define CLASS_USER                      "user"
 #define CLASS_CONTAINER                 "container"
 #define CLASS_OU                        "organizationalUnit"
-#define CLASS_BUILTIN_DOMAIN            "builtinDomain"
 #define CLASS_PERSON                    "person"
 #define CLASS_GP_CONTAINER              "groupPolicyContainer"
 #define CLASS_DOMAIN                    "domain"

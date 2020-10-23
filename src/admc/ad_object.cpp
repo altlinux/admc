@@ -21,6 +21,8 @@
 #include "ad_interface.h"
 #include "utils.h"
 
+#include <algorithm>
+
 bool ad_string_to_bool(const QString &string);
 
 AdObject::AdObject()
@@ -215,26 +217,34 @@ bool AdObject::is_class(const QString &object_class) const {
 
 QIcon AdObject::get_icon() const {
     // TODO: change to custom, good icons, add those icons to installation?
-    // TODO: are there cases where an object can have multiple icons due to multiple objectClasses and one of them needs to be prioritized?
     static const QMap<QString, QString> class_to_icon = {
-        {CLASS_GP_CONTAINER, "x-office-address-book"},
+        {CLASS_DOMAIN, "network-server"},
         {CLASS_CONTAINER, "folder"},
-        {CLASS_OU, "network-workgroup"},
-        {CLASS_PERSON, "avatar-default"},
+        {CLASS_OU, "folder-documents"},
         {CLASS_GROUP, "application-x-smb-workgroup"},
-        {CLASS_BUILTIN_DOMAIN, "emblem-system"},
+        {CLASS_PERSON, "avatar-default"},
+        {CLASS_COMPUTER, "computer"},
+        {CLASS_GP_CONTAINER, "folder-templates"},
+
+        // Some custom icons for one-off objects
+        {"builtinDomain", "emblem-system"},
+        {"configuration", "emblem-system"},
+        {"lostAndFound", "emblem-system"},
     };
 
-    const QList<QString> object_classes = get_strings(ATTRIBUTE_OBJECT_CLASS);
+    // Iterate over object classes in reverse, starting from most inherited class
+    QList<QString> object_classes = get_strings(ATTRIBUTE_OBJECT_CLASS);
+    std::reverse(object_classes.begin(), object_classes.end());
+
     const QString icon_name =
-    [object_classes]() {
-        for (auto c : class_to_icon.keys()) {
-            if (object_classes.contains(c)) {
-                return class_to_icon[c];
+    [object_classes]() -> QString {
+        for (auto object_class : object_classes) {
+            if (class_to_icon.contains(object_class)) {
+                return class_to_icon[object_class];
             }
         }
 
-        return QString("dialog-question");
+        return "dialog-question";
     }();
 
     const QIcon icon = QIcon::fromTheme(icon_name);
