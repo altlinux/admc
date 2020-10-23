@@ -150,7 +150,6 @@ void ContainersWidget::reload() {
                         stack.push(child);
                         row++;
                     } else {
-                        view->expand(index);
                         break;
                     }
                 }
@@ -163,7 +162,7 @@ void ContainersWidget::reload() {
 
     // NOTE: objects with changed DN's won't be refetched/re-expanded
 
-    // Reload model, refetching everything that was fetched before clear
+    // Reload model, restoring fetch and expand states
     {
         QStack<QModelIndex> stack;
 
@@ -175,8 +174,8 @@ void ContainersWidget::reload() {
         while (!stack.isEmpty()) {
             const QModelIndex index = stack.pop();
             const QString dn = get_dn_from_index(index, ContainersColumn_DN);
+            
             const bool was_fetched = fetched.contains(dn);
-
             if (was_fetched) {
                 model->fetchMore(index);
 
@@ -188,40 +187,14 @@ void ContainersWidget::reload() {
                         stack.push(child);
                         row++;
                     } else {
-                        view->expand(index);
                         break;
                     }
                 }
             }
-        }
-    }
 
-    // Re-expand items in view
-    {
-        const QModelIndex head = view_model->index(0, 0);
-        QStack<QModelIndex> stack;
-        stack.push(head);
-
-        while (!stack.isEmpty()) {
-            const QModelIndex index = stack.pop();
-            const QString dn = get_dn_from_index(index, ContainersColumn_DN);
-            const bool expand_index = expanded.contains(dn);
-
-            if (expand_index) {
+            const bool was_expanded = expanded.contains(dn);
+            if (was_expanded) {
                 view->expand(index);
-
-                int row = 0;
-                while (true) {
-                    const QModelIndex child = view_model->index(row, 0, index);
-
-                    if (child.isValid()) {
-                        stack.push(child);
-                        row++;
-                    } else {
-                        view->expand(index);
-                        break;
-                    }
-                }
             }
         }
     }
