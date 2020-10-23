@@ -41,6 +41,7 @@
 #define ATTRIBUTE_MAY_CONTAIN           "mayContain"
 #define ATTRIBUTE_SYSTEM_MAY_CONTAIN    "systemMayContain"
 #define ATTRIBUTE_IS_SINGLE_VALUED      "isSingleValued"
+#define ATTRIBUTE_SYSTEM_ONLY        "systemOnly"
 
 QString get_display_specifier_class(const QString &display_specifier);
 QString get_locale_dir();
@@ -52,7 +53,8 @@ AdConfig::AdConfig(QObject *parent)
         const QString schema_dn = AD()->schema_dn();
 
         const QList<QString> attributes = {ATTRIBUTE_LDAP_DISPLAY_NAME, ATTRIBUTE_ADMIN_DISPLAY_NAME,
-            ATTRIBUTE_IS_SINGLE_VALUED
+            ATTRIBUTE_IS_SINGLE_VALUED,
+            ATTRIBUTE_SYSTEM_ONLY,
         };
         const QHash<QString, AdObject> search_results = AD()->search("", attributes, SearchScope_Children, schema_dn);
 
@@ -60,11 +62,13 @@ AdConfig::AdConfig(QObject *parent)
             const QString ad_name = object.get_string(ATTRIBUTE_ADMIN_DISPLAY_NAME);
             const QString ldap_name = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
             const bool is_single_valued = object.get_bool(ATTRIBUTE_IS_SINGLE_VALUED);
+            const bool is_system_only = object.get_bool(ATTRIBUTE_SYSTEM_ONLY);
 
             if (!ad_name.isEmpty() && !ldap_name.isEmpty()) {
                 ldap_to_ad_names[ldap_name] = ad_name;
                 ad_to_ldap_names[ad_name] = ldap_name;
                 attribute_is_single_valued[ldap_name] = is_single_valued;
+                attribute_is_system_only[ldap_name] = is_system_only;
             }
         }
     }
@@ -435,6 +439,14 @@ bool AdConfig::attribute_is_number(const QString &attribute) const {
 bool AdConfig::get_attribute_is_single_valued(const QString &attribute) const {
     if (attribute_is_single_valued.contains(attribute)) {
         return attribute_is_single_valued[attribute];
+    } else {
+        return true;
+    }
+}
+
+bool AdConfig::get_attribute_is_system_only(const QString &attribute) const {
+    if (attribute_is_system_only.contains(attribute)) {
+        return attribute_is_system_only[attribute];
     } else {
         return true;
     }

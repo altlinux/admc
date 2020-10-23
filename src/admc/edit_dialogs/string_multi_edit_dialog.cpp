@@ -66,6 +66,12 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
     top_layout->addWidget(remove_button);
     top_layout->addWidget(button_box);
 
+    if (ADCONFIG()->get_attribute_is_system_only(attribute)) {
+        edit->setReadOnly(true);
+        button_box->setEnabled(false);
+        add_button->setEnabled(false);
+    }
+
     connect(
         button_box->button(QDialogButtonBox::Ok), &QPushButton::clicked,
         this, &QDialog::accept);

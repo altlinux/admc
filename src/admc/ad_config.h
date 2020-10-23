@@ -73,6 +73,7 @@ public:
     LargeIntegerSubtype get_large_integer_subtype(const QString &attribute) const;
     bool attribute_is_number(const QString &attribute) const;
     bool get_attribute_is_single_valued(const QString &attribute) const;
+    bool get_attribute_is_system_only(const QString &attribute) const;
 
 private:
     // ldap name => ad name
@@ -98,6 +99,7 @@ private:
     QHash<QString, AttributeType> attribute_types;
 
     QHash<QString, bool> attribute_is_single_valued;
+    QHash<QString, bool> attribute_is_system_only;
 
 
     QString get_ldap_to_ad_name(const QString &ldap_name) const;

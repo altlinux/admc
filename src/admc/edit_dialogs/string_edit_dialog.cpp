@@ -61,6 +61,11 @@ StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArr
     top_layout->addWidget(edit);
     top_layout->addWidget(button_box);
 
+    if (ADCONFIG()->get_attribute_is_system_only(attribute)) {
+        edit->setReadOnly(true);
+        button_box->setEnabled(false);
+    }
+
     // TODO: verify before saving?
     connect(
         button_box->button(QDialogButtonBox::Ok), &QPushButton::clicked,
