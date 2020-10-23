@@ -248,13 +248,21 @@ QString dn_get_rdn(const QString &dn) {
 // =>
 // "domain.com/xd/bar"
 // NOTE: direction is reversed to match how it looks in the tree
-QString dn_get_parent(const QString &dn) {
-    const int comma_i = dn.indexOf(',');
-    const QString parent_dn = dn.mid(comma_i + 1);
+// "CN=foo,CN=bar,CN=xd,DC=domain,DC=com"
+// =>
+// "domain.com/xd/bar"
+// NOTE: direction is reversed to match how it looks in the tree
+QString dn_as_folder(const QString &dn) {
+    QString folder;
 
-    QString parent;
+    QList<QString> parent_dn_split = dn.split(",");
 
-    const QList<QString> parent_dn_split = parent_dn.split(",");
+    // Swap "domain" and "com" parts
+    if (parent_dn_split.size() >= 2) {
+        const QString last = parent_dn_split.takeLast();
+        parent_dn_split.insert(parent_dn_split.size() - 1, last);
+    }
+
     for (int i = 0; i < parent_dn_split.size(); i++) {
         const QString raw_part = parent_dn_split[i];
         const int equals_i = raw_part.indexOf('=');
@@ -270,10 +278,17 @@ QString dn_get_parent(const QString &dn) {
             return "";
         }();
 
-        parent = part + separator + parent;
+        folder = part + separator + folder;
     }
 
-    return parent;
+    return folder;
+}
+
+QString dn_get_parent(const QString &dn) {
+    const int comma_i = dn.indexOf(',');
+    const QString parent_dn = dn.mid(comma_i + 1);
+
+    return dn_as_folder(parent_dn);
 }
 
 void set_line_edit_to_numbers_only(QLineEdit *edit) {

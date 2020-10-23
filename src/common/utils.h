@@ -63,6 +63,7 @@ void show_only_in_dev_mode(QWidget *widget);
 
 QString current_advanced_view_filter();
 
+QString dn_as_folder(const QString &dn);
 QString dn_get_rdn(const QString &dn);
 QString dn_get_parent(const QString &dn);
 

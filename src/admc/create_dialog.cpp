@@ -56,7 +56,8 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
     resize(600, 600);
 
     const QString type_string = create_type_to_string(type);
-    const auto title_text = QString(CreateDialog::tr("Create %1 in \"%2\"")).arg(type_string, parent_dn);
+    const QString parent_as_folder = dn_as_folder(parent_dn);
+    const auto title_text = QString(CreateDialog::tr("Create %1 in \"%2\"")).arg(type_string, parent_as_folder);
     const auto title_label = new QLabel(title_text);
     
     const auto edits_layout = new QGridLayout();
