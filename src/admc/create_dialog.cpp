@@ -156,13 +156,43 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
 
             break;
         }
-        default: {
+        case CreateType_Computer: {
+            name_edit = new StringEdit(ATTRIBUTE_NAME, "", this, &all_edits);
+
+            // TODO: need to autofill from name in uppercase
+            auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
+
+            // TODO: "Assign this computer account as a pre-Windows 2000 computer". Is this needed?
+
+            // TODO: "The following user or group may join this computer to a domain". Tried to figure out how this is implemented and couldn't see any easy ways via attributes, so probably something to do with setting ACL'S.
+
+            // TODO: "This is a managed computer" checkbox and an edit for guid/uuid which I assume modifies objectGUID?
+
+            required_edits = {
+                name_edit,
+                sama_edit
+            };
+
+            // Autofill name -> sama
+            QObject::connect(
+                name_edit, &StringEdit::edited,
+                [=] () {
+                    const QString name_input = name_edit->get_input();
+                    sama_edit->set_input(name_input.toUpper());
+                });
+
+            break;
+        }
+        case CreateType_OU: {
             name_edit = new StringEdit(ATTRIBUTE_NAME, "", this, &all_edits);
 
             required_edits = {
                 name_edit
             };
 
+            break;
+        }
+        case CreateType_COUNT: {
             break;
         }
     }
