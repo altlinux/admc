@@ -22,7 +22,14 @@
 
 #include "tabs/details_tab.h"
 
-#include <QStandardItemModel>
+#include <QSortFilterProxyModel>
+#include <QHash>
+#include <QString>
+
+class QStandardItemModel;
+class QStandardItem;
+class AttributesTabProxy;
+class QTreeView;
 
 // Show attributes of target as a list of attribute names and values
 // Values are editable
@@ -37,14 +44,30 @@ public:
     void apply(const QString &target) const override;
 
 private slots:
-    void on_double_clicked(const QModelIndex &index);
+    void on_double_clicked(const QModelIndex &proxy_index);
+    void on_context_menu(const QPoint pos);
 
 private:
+    QTreeView *view;
     QStandardItemModel *model;
+    AttributesTabProxy *proxy;
     AdObjectAttributes original;
     AdObjectAttributes current;
 
     void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
+};
+
+class AttributesTabProxy final : public QSortFilterProxyModel {
+
+public:
+    using QSortFilterProxyModel::QSortFilterProxyModel;
+
+    bool hide_unset = false;
+    bool hide_read_only = false;
+    QHash<QString, bool> unset_map;
+    QHash<QString, bool> read_only_map;
+
+    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
 
 #endif /* ATTRIBUTES_TAB_H */
