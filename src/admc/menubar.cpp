@@ -20,6 +20,7 @@
 #include "menubar.h"
 #include "settings.h"
 #include "confirmation_dialog.h"
+#include "find_dialog.h"
 
 #include <QMenu>
 #include <QLocale>
@@ -30,6 +31,14 @@
 MenuBar::MenuBar(QWidget* parent)
 : QMenuBar(parent) {
     QMenu *menubar_file = addMenu(tr("File"));
+
+    QAction *find_action = menubar_file->addAction(tr("Find"));
+    connect(
+        find_action, &QAction::triggered,
+        []() {
+            auto find_dialog = new FindDialog();
+            find_dialog->open();
+        });
 
     QAction *exit_action = menubar_file->addAction(tr("Exit"));
     connect(
