@@ -61,7 +61,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     view->setSortingEnabled(true);
 
     if (multi_selection == SelectDialogMultiSelection_Yes) {
-        view->setSelectionMode(QAbstractItemView::MultiSelection);
+        view->setSelectionMode(QAbstractItemView::ContiguousSelection);
     }
 
     auto target_label = new QLabel(tr("Select object"), this);
