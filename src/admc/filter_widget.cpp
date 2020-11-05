@@ -18,6 +18,7 @@
  */
 
 #include "filter_widget.h"
+#include "ad_interface.h"
 
 #include <QLabel>
 #include <QPlainTextEdit>
@@ -25,6 +26,17 @@
 #include <QGridLayout>
 #include <QTabWidget>
 #include <QComboBox>
+
+const QHash<QString, QList<QString>> attributes_by_class = {
+    {CLASS_USER, {
+        ATTRIBUTE_FIRST_NAME,
+        ATTRIBUTE_LAST_NAME,
+    }},
+    {CLASS_GROUP, {
+        ATTRIBUTE_DESCRIPTION,
+        ATTRIBUTE_SAMACCOUNT_NAME,
+    }},
+}; 
 
 FilterWidget::FilterWidget()
 : QWidget()
@@ -40,7 +52,20 @@ FilterWidget::FilterWidget()
 
     normal_tab = new QWidget();
     {
-    
+        class_combo = new QComboBox();
+        class_combo->addItem(tr("User"), CLASS_USER);
+        class_combo->addItem(tr("Group"), CLASS_GROUP);
+
+        // TODO: when class combo changes, reload attributes combo
+
+        attributes_combo = new QComboBox();
+
+        // TODO: when i got the list of attributes, insert attribute names as values, use display strings for labels
+
+        auto layout = new QGridLayout();
+        normal_tab->setLayout(layout);
+        layout->addWidget(class_combo, 0, 0);
+        layout->addWidget(attributes_combo, 0, 1);
     }
 
     tab_widget = new QTabWidget();
@@ -52,10 +77,34 @@ FilterWidget::FilterWidget()
     layout->addWidget(tab_widget);
 
     connect(
+        class_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &FilterWidget::on_class_combo);
+    on_class_combo();
+
+    connect(
         ldap_filter_edit, &QPlainTextEdit::textChanged,
         [this]() {
             emit changed();
         });
+}
+
+// Fill attributes combo with attributes for selected class
+void FilterWidget::on_class_combo() {
+    attributes_combo->clear();
+    
+    const QList<QString> attributes =
+    [this]() {
+        const int index = class_combo->currentIndex();
+        const QVariant item_data = class_combo->itemData(index);
+        const QString object_class = item_data.toString();
+        
+        return attributes_by_class[object_class];
+    }();
+
+    for (const auto attribute : attributes) {
+        // TODO: insert attribute display strings
+        attributes_combo->addItem(attribute, attribute);
+    }
 }
 
 QString FilterWidget::get_filter() const {

@@ -36,6 +36,7 @@
 
 class QPlainTextEdit;
 class QTabWidget;
+class QComboBox;
 
 class FilterWidget final : public QWidget {
 Q_OBJECT
@@ -48,10 +49,15 @@ public:
 signals:
     void changed();
 
+private slots:
+    void on_class_combo();
+
 private:
     QTabWidget *tab_widget;
     QWidget *normal_tab;
     QWidget *advanced_tab;
+    QComboBox *attributes_combo;
+    QComboBox *class_combo;
 
     QPlainTextEdit *ldap_filter_edit;
 };
