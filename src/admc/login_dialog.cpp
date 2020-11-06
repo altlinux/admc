@@ -22,6 +22,8 @@
 #include "settings.h"
 #include "utils.h"
 
+#include <krb5.h>
+
 #include <QLineEdit>
 #include <QLabel>
 #include <QPushButton>
@@ -37,28 +39,30 @@ LoginDialog::LoginDialog(QWidget *parent)
     setWindowTitle(tr("Login"));
     setAttribute(Qt::WA_DeleteOnClose);
 
-    const auto domain_edit_label = new QLabel(tr("Domain: "), this);
-    domain_edit = new QLineEdit(this);
+    const auto principal_edit_label = new QLabel(tr("Login as:"), this);
+    principal_edit = new QLineEdit(this);
+    const QString last_principal = SETTINGS()->get_variant(VariantSetting_Principal).toString();
+    if (!last_principal.isEmpty()) {
+        principal_edit->setText("administrator");
+    } else {
+        principal_edit->setText(last_principal);
+    }
 
-    const auto site_edit_label = new QLabel(tr("Site: "), this);
-    site_edit = new QLineEdit(this);
+    const auto password_edit_label = new QLabel(tr("Password:"), this);
+    password_edit = new QLineEdit(this);
+    password_edit->setEchoMode(QLineEdit::Password);
+
+    autologin_check = new QCheckBox(tr("Auto-login next time"));
 
     const auto login_button = new QPushButton(tr("Login"), this);
     login_button->setAutoDefault(false);
 
-    autologin_check = new QCheckBox(tr("Login using saved session at startup"));
-
-    const auto layout = new QGridLayout(this);
-    append_to_grid_layout_with_label(layout, domain_edit_label, domain_edit);
-    append_to_grid_layout_with_label(layout, site_edit_label, site_edit);
-    layout->addWidget(autologin_check, layout->rowCount(), 0, 1, layout->columnCount());
-    layout->addWidget(login_button, layout->rowCount(), 0, 1, layout->columnCount());
-
-    // Load session values from settings
-    const QString domain = SETTINGS()->get_variant(VariantSetting_Domain).toString();
-    const QString site = SETTINGS()->get_variant(VariantSetting_Site).toString();
-    domain_edit->setText(domain);
-    site_edit->setText(site);
+    const auto layout = new QGridLayout();
+    setLayout(layout);
+    append_to_grid_layout_with_label(layout, principal_edit_label, principal_edit);
+    append_to_grid_layout_with_label(layout, password_edit_label, password_edit);
+    layout->addWidget(autologin_check);
+    layout->addWidget(login_button);
 
     connect(
         login_button, &QAbstractButton::clicked,
@@ -69,22 +73,105 @@ LoginDialog::LoginDialog(QWidget *parent)
 }
 
 void LoginDialog::on_login_button() {
-    const QString domain = domain_edit->text();
-    const QString site = site_edit->text();
+    // Authenticate using krb5
+    krb5_context context;
+    krb5_ccache ccache = NULL;
+    krb5_principal principal;
+    krb5_error_code result;
+    bool switch_to_cache = false;
 
-    const bool login_success = AD()->login(domain, site);
-
-    if (login_success) {
-        SETTINGS()->set_variant(VariantSetting_Domain, domain);
-        SETTINGS()->set_variant(VariantSetting_Site, site);
-
-        const bool autologin_checked = checkbox_is_checked(autologin_check);
-        SETTINGS()->set_bool(BoolSetting_AutoLogin, autologin_checked);
-
-        accept();
-    } else {
-        QMessageBox::critical(this, tr("Error"), tr("Failed to login!"));
+    result = krb5_init_context(&context);
+    if (result) {
+        printf("krb5_init_context failed\n");
+        return;
     }
+
+    // Put principal name into principal struct
+    const QString principal_name = principal_edit->text();
+    const QByteArray principal_name_bytes = principal_name.toUtf8();
+    const char *principal_name_cstr = principal_name_bytes.constData();
+    result = krb5_parse_name(context, principal_name_cstr, &principal);
+    if (result) {
+        printf("krb5_parse_name failed\n");
+        return;
+        // goto cleanup;
+    }
+
+    // Use an existing cache for the client principal if we can
+    result = krb5_cc_cache_match(context, principal, &ccache);
+    if (result && result != KRB5_CC_NOTFOUND) {
+        printf("Error while searching for ccache");
+        // goto cleanup;
+        return;
+    }
+    if (result == 0) {
+        printf("Using existing cache %s\n", krb5_cc_get_name(context, ccache));
+        switch_to_cache = true;
+    }
+
+    krb5_creds my_creds;
+    memset(&my_creds, 0, sizeof(my_creds));
+    
+    krb5_get_init_creds_opt *options = NULL;
+    result = krb5_get_init_creds_opt_alloc(context, &options);
+    if (result) {
+        printf("krb5_get_init_creds_opt_alloc fail\n");
+        return;
+    }
+
+    result = krb5_get_init_creds_opt_set_out_ccache(context, options, ccache);
+    if (result) {
+        printf("Failed to set out ccache\n");
+        // goto cleanup;
+        return;
+    }
+
+    const krb5_deltat start_time = 0;
+    const char *service_name = NULL;
+    void *prompter_data = (void *)this;
+
+    const QString password = password_edit->text();
+    const QByteArray password_bytes = password.toUtf8();
+    const char *password_cstr = password_bytes.constData();
+
+    result = krb5_get_init_creds_password(context, &my_creds, principal, password_cstr, NULL, prompter_data, start_time, service_name, options);
+
+    if (result == 0) {
+        printf("krb5_get_init_creds_password success\n");
+        const bool login_success = AD()->login();
+
+        if (login_success) {
+            SETTINGS()->set_variant(VariantSetting_Principal, principal_edit->text());
+
+            const bool autologin_checked = checkbox_is_checked(autologin_check);
+            SETTINGS()->set_bool(BoolSetting_AutoLogin, autologin_checked);
+
+            accept();
+        } else {
+            QMessageBox::critical(this, tr("Error"), tr("Failed to login!"));
+        }
+    } else {
+        const QString error_string =
+        [result]() {
+            if (result == KRB5KDC_ERR_KEY_EXP) {
+                // TODO: Implement changing password in here?
+                return tr("Password expired, change it in kinit.");
+            } else if (result == KRB5KDC_ERR_PREAUTH_FAILED) {
+                return tr("Incorrect password");
+            } else {
+                return QString(tr("Unknown krb5 error: %1")).arg( result);
+            }
+        }();
+
+        QMessageBox::critical(this, tr("Authentication error"), error_string);
+    }
+
+    krb5_free_principal(context, principal);
+    // TODO: shouldn't need this check?
+    if (ccache != NULL) {
+        krb5_cc_close(context, ccache);
+    }
+    krb5_free_context(context);
 }
 
 void LoginDialog::on_rejected() {

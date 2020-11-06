@@ -30,8 +30,8 @@ private slots:
     void on_rejected();
 
 private:
-    QLineEdit *domain_edit = nullptr;
-    QLineEdit *site_edit = nullptr;
+    QLineEdit *principal_edit = nullptr;
+    QLineEdit *password_edit = nullptr;
     QCheckBox *autologin_check;
 };
 

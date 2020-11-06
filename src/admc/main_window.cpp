@@ -42,8 +42,23 @@ MainWindow::MainWindow()
 {
     SETTINGS()->restore_geometry(this, VariantSetting_MainWindowGeometry);
 
-    const auto open_login_dialog =
-    [this]() {
+    // If auto login is turned on, try to login
+    // Skip login dialog if autologin suceeds
+    bool skip_login_dialog = false;
+    const bool auto_login = SETTINGS()->get_bool(BoolSetting_AutoLogin);
+    if (auto_login) {
+        const bool login_success = AD()->login();
+
+        if (login_success) {
+            skip_login_dialog = true;
+
+            finish_init();
+        } else {
+            QMessageBox::critical(this, tr("Error"), tr("Failed to auto-login!"));
+        }
+    }
+
+    if (!skip_login_dialog) {
         const auto login_dialog = new LoginDialog(this);
         login_dialog->open();
 
@@ -52,24 +67,6 @@ MainWindow::MainWindow()
             [this] () {
                 finish_init();
             });
-    };
-
-    const bool auto_login = SETTINGS()->get_bool(BoolSetting_AutoLogin);
-    if (auto_login) {
-        const QString domain = SETTINGS()->get_variant(VariantSetting_Domain).toString();
-        const QString site = SETTINGS()->get_variant(VariantSetting_Site).toString();
-
-        const bool login_success = AD()->login(domain, site);
-
-        if (login_success) {
-            finish_init();
-        } else {
-            QMessageBox::warning(this, tr("Warning"), tr("Failed to login using saved login info"));
-
-            open_login_dialog();
-        }
-    } else {
-        open_login_dialog();
     }
 }
 
@@ -118,6 +115,8 @@ void MainWindow::finish_init() {
     central_layout->setSpacing(0);
 
     central_widget->setLayout(central_layout);
+
+    show();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

@@ -42,8 +42,7 @@ class QWidget;
 
 enum VariantSetting {
     // ADMC
-    VariantSetting_Domain,    
-    VariantSetting_Site,    
+    VariantSetting_Principal,    
     VariantSetting_Locale,
 
     // GPGUI

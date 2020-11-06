@@ -136,10 +136,9 @@ QString bool_to_string(BoolSetting type) {
 
 QString variant_to_string(VariantSetting type) {
     switch (type) {
-        CASE_ENUM_TO_STRING(VariantSetting_Domain);
-        CASE_ENUM_TO_STRING(VariantSetting_Site);
         CASE_ENUM_TO_STRING(VariantSetting_MainWindowGeometry);
         CASE_ENUM_TO_STRING(VariantSetting_Locale);
+        CASE_ENUM_TO_STRING(VariantSetting_Principal);
         CASE_ENUM_TO_STRING(VariantSetting_COUNT);
     }
     return "";

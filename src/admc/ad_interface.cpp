@@ -29,6 +29,7 @@
 #include <lber.h>
 #include <libsmbclient.h>
 #include <uuid/uuid.h>
+#include <krb5.h>
 
 #include <QSet>
 #include <QMessageBox>
@@ -52,8 +53,33 @@ void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgro
 
 }
 
-bool AdInterface::login(const QString &domain, const QString &site) {
-    const QList<QString> hosts = get_domain_hosts(domain, site);
+bool AdInterface::login() {
+    // Get default krb5 domain (realm)
+    const QString domain =
+    []() {
+        krb5_context context;
+        const krb5_error_code result = krb5_init_context(&context);
+        if (result) {
+            printf("krb5_init_context failed\n");
+            return QString();
+        }
+
+        char *realm_cstr = NULL;
+        krb5_get_default_realm(context, &realm_cstr);
+        // TODO: error
+
+        QString out;
+        if (realm_cstr != NULL) {
+            out = QString(realm_cstr);
+        }
+
+        krb5_free_default_realm(context, realm_cstr);
+        krb5_free_context(context);
+
+        return out;
+    }();
+
+    const QList<QString> hosts = get_domain_hosts(domain, QString());
     if (hosts.isEmpty()) {
         return false;
     }

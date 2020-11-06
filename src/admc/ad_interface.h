@@ -166,7 +166,7 @@ private:
 public:
     static AdInterface *instance();
 
-    bool login(const QString &domain, const QString &site);
+    bool login();
 
     // Use this if you are doing a series of AD modifications.
     // During the batch, modified() signals won't be emitted

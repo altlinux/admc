@@ -26,6 +26,7 @@ BuildRequires: doxygen
 BuildRequires: libuuid-devel
 BuildRequires: glib2-devel
 BuildRequires: libpcre-devel
+BuildRequires: libkrb5-devel
 
 Requires: libldap
 Requires: libsasl2
@@ -33,6 +34,7 @@ Requires: libsmbclient
 Requires: libuuid
 Requires: qt5-base-common
 Requires: glib2
+Requires: libkrb5
 
 Source0: %name-%version.tar
 
