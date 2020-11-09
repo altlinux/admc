@@ -100,6 +100,10 @@ bool AdInterface::login(const QString &domain, const QString &site) {
     }
 }
 
+void AdInterface::refresh() {
+    emit modified();
+}
+
 void AdInterface::start_batch() {
     if (batch_in_progress) {
         printf("Called start_batch() while batch is in progress!\n");
