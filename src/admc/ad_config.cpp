@@ -475,8 +475,8 @@ bool AdConfig::get_attribute_is_system_only(const QString &attribute) const {
     }
 }
 
-// Display specifier DN is "CN=class-Display,CN=..."
-// Get "class" from that
+// Display specifier DN is "CN=object-class-Display,CN=..."
+// Get "object-class" from that
 QString get_display_specifier_class(const QString &display_specifier) {
     const QString rdn = display_specifier.split(",")[0];
     const QString removed_cn = QString(rdn).remove("CN=", Qt::CaseInsensitive);
