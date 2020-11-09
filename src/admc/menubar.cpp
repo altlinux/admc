@@ -33,9 +33,7 @@ MenuBar::MenuBar(QWidget* parent)
 : QMenuBar(parent) {
     QMenu *menubar_file = addMenu(tr("File"));
 
-    QAction *find_action = menubar_file->addAction(tr("Find"));
-    connect(
-        find_action, &QAction::triggered,
+    menubar_file->addAction(tr("Find"),
         []() {
             auto find_dialog = new FindDialog();
             find_dialog->open();

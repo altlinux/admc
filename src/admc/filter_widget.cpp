@@ -21,6 +21,7 @@
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "utils.h"
+#include "select_dialog.h"
 
 #include <QDebug>
 #include <QLabel>
@@ -29,6 +30,7 @@
 #include <QGridLayout>
 #include <QTabWidget>
 #include <QComboBox>
+#include <QPushButton>
 
 #include <algorithm>
 
@@ -78,12 +80,26 @@ FilterWidget::FilterWidget()
         auto attributes_combo_label = new QLabel(tr("Attribute:"));
         attributes_combo = new QComboBox();
 
-        // TODO: when i got the list of attributes, insert attribute names as values, use display strings for labels
+        auto search_base_combo_label = new QLabel(tr("In:"));
+        search_base_combo = new QComboBox();
+
+        // TODO: technically, entire directory does NOT equal to the domain. In cases where we're browsing multiple domains at the same time (or maybe some other situations as well), we'd need "Entire directory" AND all of domains. Currently search base is set to domain anyway, so would need to start from reworking that.
+        search_base_combo->addItem(tr("Entire directory"), AD()->search_base());
+
+        const QString users_dn = "CN=Users," + AD()->search_base();
+        search_base_combo->addItem("Users", users_dn);
+
+        auto custom_search_base_button = new QPushButton(tr("Browse"));
+        connect(
+            custom_search_base_button, &QAbstractButton::clicked,
+            this, &FilterWidget::on_custom_search_base);
 
         auto layout = new QGridLayout();
         normal_tab->setLayout(layout);
         append_to_grid_layout_with_label(layout, class_combo_label, class_combo);
         append_to_grid_layout_with_label(layout, attributes_combo_label, attributes_combo);
+        append_to_grid_layout_with_label(layout, search_base_combo_label, search_base_combo);
+        layout->addWidget(custom_search_base_button);
     }
 
     tab_widget = new QTabWidget();
@@ -162,6 +178,22 @@ void FilterWidget::on_class_combo() {
     }
 }
 
+void FilterWidget::on_custom_search_base() {
+    // TODO: maybe need some other classes?
+    const QList<QString> selecteds = SelectDialog::open({CLASS_CONTAINER, CLASS_OU});
+
+    if (!selecteds.isEmpty()) {
+        const QString selected = selecteds[0];
+        const QString name = dn_get_rdn(selected);
+
+        search_base_combo->addItem(name, selected);
+
+        // Select newly added search base
+        const int new_base_index = search_base_combo->count() - 1;
+        search_base_combo->setCurrentIndex(new_base_index);
+    }
+}
+
 QString FilterWidget::get_filter() const {
     const QWidget *current_tab = tab_widget->currentWidget();
 
@@ -172,4 +204,11 @@ QString FilterWidget::get_filter() const {
     }
 
     return QString();
+}
+
+QString FilterWidget::get_search_base() const {
+    const int index = search_base_combo->currentIndex();
+    const QVariant item_data = search_base_combo->itemData(index);
+
+    return item_data.toString();
 }

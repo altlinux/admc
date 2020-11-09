@@ -45,12 +45,14 @@ public:
     FilterWidget();
 
     QString get_filter() const;
+    QString get_search_base() const;
 
 signals:
     void changed();
 
 private slots:
     void on_class_combo();
+    void on_custom_search_base();
 
 private:
     QTabWidget *tab_widget;
@@ -58,6 +60,7 @@ private:
     QWidget *advanced_tab;
     QComboBox *attributes_combo;
     QComboBox *class_combo;
+    QComboBox *search_base_combo;
 
     QPlainTextEdit *ldap_filter_edit;
 };
