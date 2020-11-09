@@ -226,6 +226,21 @@ AdConfig::AdConfig(QObject *parent)
         return out;
     }();
 
+    find_attributes =
+    [this]() {
+        QHash<QString, QList<QString>> out;
+
+        for (const QString object_class : attribute_display_names.keys()) {
+            const QHash<QString, QString> attributes_hash = attribute_display_names[object_class];
+
+            const QList<QString> attributes = attributes_hash.keys();
+
+            out[object_class] = attributes;
+        }
+
+        return out;
+    }();
+
     attribute_types =
     [this]() {
         QHash<QString, AttributeType> out;
@@ -387,6 +402,14 @@ QList<QString> AdConfig::get_possible_attributes(const QList<QString> &object_cl
     }
 
     return attributes;
+}
+
+QList<QString> AdConfig::get_find_attributes(const QString &object_class) const {
+    if (find_attributes.contains(object_class)) {
+        return find_attributes[object_class];
+    } else {
+        return QList<QString>();
+    }
 }
 
 AttributeType AdConfig::get_attribute_type(const QString &attribute) const {

@@ -113,6 +113,9 @@
 #define CLASS_TOP                       "top"
 #define CLASS_COMPUTER                  "computer"
 #define CLASS_ORG_PERSON                "organizationalPerson"
+#define CLASS_CONTACT                   "contact"
+// TODO: not sure if this is correct class for printer, but display name for this in display specifiers is "Printer"
+#define CLASS_PRINTER                   "printQueue"
 #define CLASS_DEFAULT                   "default"
 #define CLASS_CONFIGURATION             "configuration"
 // NOTE: for schema object

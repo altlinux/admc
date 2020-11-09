@@ -69,6 +69,7 @@ public:
     QList<QString> get_filter_containers() const;
     QList<QString> get_possible_superiors(const QString &object_category) const;
     QList<QString> get_possible_attributes(const QList<QString> &object_classes) const;
+    QList<QString> get_find_attributes(const QString &object_class) const;
     AttributeType get_attribute_type(const QString &attribute) const;
     LargeIntegerSubtype get_large_integer_subtype(const QString &attribute) const;
     bool attribute_is_number(const QString &attribute) const;
@@ -94,6 +95,8 @@ private:
 
     // object class => attributes
     QHash<QString, QList<QString>> possible_attributes;
+
+    QHash<QString, QList<QString>> find_attributes;
 
     // attribute name => type
     QHash<QString, AttributeType> attribute_types;
