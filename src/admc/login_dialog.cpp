@@ -52,6 +52,11 @@ LoginDialog::LoginDialog(QWidget *parent)
     password_edit = new QLineEdit(this);
     password_edit->setEchoMode(QLineEdit::Password);
 
+    const bool principal_entered = !principal_edit->text().isEmpty();
+    if (principal_entered) {
+        password_edit->setFocus(Qt::NoFocusReason);
+    }
+
     autologin_check = new QCheckBox(tr("Auto-login next time"));
 
     const auto login_button = new QPushButton(tr("Login"), this);
@@ -97,16 +102,13 @@ void LoginDialog::on_login_button() {
         // goto cleanup;
     }
 
-    // Use an existing cache for the client principal if we can
-    result = krb5_cc_cache_match(context, principal, &ccache);
-    if (result && result != KRB5_CC_NOTFOUND) {
-        printf("Error while searching for ccache");
-        // goto cleanup;
+    // Use default ccache
+    // TODO: kinit attempts to use an existing ccache for this principal, if it exists and only if that fails does it use the default one. Not sure when and how another cache for principal might exist alongside the default one.
+    result = krb5_cc_default(context, &ccache);
+    if (result) {
+        printf("Failed to get default ccache\n");
         return;
-    }
-    if (result == 0) {
-        printf("Using existing cache %s\n", krb5_cc_get_name(context, ccache));
-        switch_to_cache = true;
+        // goto cleanup;
     }
 
     krb5_creds my_creds;
