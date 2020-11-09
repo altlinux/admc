@@ -230,12 +230,26 @@ AdConfig::AdConfig(QObject *parent)
     [this]() {
         QHash<QString, QList<QString>> out;
 
-        for (const QString object_class : attribute_display_names.keys()) {
-            const QHash<QString, QString> attributes_hash = attribute_display_names[object_class];
+        const QString locale_dir = get_locale_dir();
+        const QList<QString> search_attributes = {ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES};
+        const QHash<QString, AdObject> search_results = AD()->search("", search_attributes, SearchScope_Children, locale_dir);
 
-            const QList<QString> attributes = attributes_hash.keys();
+        for (const QString &dn : search_results.keys()) {
+            const AdObject object  = search_results[dn];
 
-            out[object_class] = attributes;
+            const QList<QString> display_names = object.get_strings(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES);
+
+            const QString specifier_class = get_display_specifier_class(dn);
+
+            QList<QString> attributes;
+            for (const auto display_name_pair : display_names) {
+                const QList<QString> split = display_name_pair.split(",");
+                const QString attribute_name = split[0];
+
+                attributes.append(attribute_name);
+            }
+
+            out[specifier_class] = attributes;
         }
 
         return out;
