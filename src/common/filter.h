@@ -23,8 +23,8 @@
 #include <QString>
 
 QString filter_EQUALS(const QString &attribute, const QString &value);
-QString filter_AND(const QString &a, const QString &b);
-QString filter_OR(const QString &a, const QString &b);
+QString filter_AND(const QList<QString> &subfilters);
+QString filter_OR(const QList<QString> &subfilters);
 QString filter_NOT(const QString &a);
 
 QString current_advanced_view_filter();
