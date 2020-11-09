@@ -49,7 +49,6 @@ FilterWidget::FilterWidget()
         auto class_combo_label = new QLabel(tr("Class:"));
         class_combo = new QComboBox();
 
-        // TODO: add shared folder(is it a class?)
         static const QList<QString> classes = {
             CLASS_USER,
             CLASS_GROUP,
@@ -57,6 +56,17 @@ FilterWidget::FilterWidget()
             CLASS_COMPUTER,
             CLASS_PRINTER,
             CLASS_OU,
+            CLASS_TRUSTED_DOMAIN,
+            CLASS_DOMAIN,
+            CLASS_CONTAINER,
+            CLASS_INET_ORG_PERSON,
+            CLASS_FOREIGN_SECURITY_PRINCIPAL,
+            CLASS_SHARED_FOLDER,
+            CLASS_RPC_SERVICES,
+            CLASS_CERTIFICATE_TEMPLATE,
+            CLASS_MSMQ_GROUP,
+            CLASS_MSMQ_QUEUE_ALIAS,
+            CLASS_REMOTE_STORAGE_SERVICE,
         };
         for (const QString object_class : classes) {
             const QString display = ADCONFIG()->get_class_display_name(object_class);
