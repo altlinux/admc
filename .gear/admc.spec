@@ -5,7 +5,7 @@ Version: 0.3.1
 Release: alt1
 
 Summary: AD editor
-License: GPLv2+
+License: GPLv3+
 Group: Other
 Url: https://github.com/altlinuxteam/admc
 
