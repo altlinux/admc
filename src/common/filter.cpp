@@ -26,14 +26,28 @@ QString filter_EQUALS(const QString &attribute, const QString &value) {
     return filter;
 }
 
-QString filter_AND(const QString &a, const QString &b) {
-    auto filter = QString("(&%1%2)").arg(a, b);
+// {x, y, z ...} => (&(x)(y)(z)...)
+QString filter_AND(const QList<QString> &subfilters) {
+    QString filter = "(&";
+    for (const QString subfilter : subfilters) {
+        filter += subfilter;
+    }
+    filter += ")";
+
     return filter;
 }
-QString filter_OR(const QString &a, const QString &b) {
-    auto filter = QString("(|%1%2)").arg(a, b);
+
+// {x, y, z ...} => (|(x)(y)(z)...)
+QString filter_OR(const QList<QString> &subfilters) {
+    QString filter = "(|";
+    for (const QString subfilter : subfilters) {
+        filter += subfilter;
+    }
+    filter += ")";
+
     return filter;
 }
+
 QString filter_NOT(const QString &a) {
     auto filter = QString("(!%1)").arg(a);
     return filter;

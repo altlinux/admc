@@ -18,6 +18,7 @@
  */
 
 #include "contents_widget.h"
+#include "object_model.h"
 #include "containers_widget.h"
 #include "object_context_menu.h"
 #include "details_dialog.h"
@@ -37,33 +38,32 @@
 #include <QLineEdit>
 #include <QGridLayout>
 
-// NOTE: not using enums for columns here, because each column maps directly to an attribute
-QList<QString> columns;
-
-int column_index(const QString &attribute) {
-    if (!columns.contains(attribute)) {
-        printf("ContentsWidget is missing column for %s\n", qPrintable(attribute));
-    }
-
-    return columns.indexOf(attribute);
-}
-
 ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, QWidget *parent)
 : QWidget(parent)
 {   
-    if (columns.isEmpty()) {
-        columns = {
-            ATTRIBUTE_NAME,
-            ATTRIBUTE_OBJECT_CLASS,
-            ATTRIBUTE_DESCRIPTION
-        };
-        // NOTE: dn is not one of ADUC's columns, but adding it here for convenience
-        columns.append(ATTRIBUTE_DISTINGUISHED_NAME);
-        const QList<QString> extra_columns =ADCONFIG()->get_extra_columns();
-        columns.append(extra_columns);
-    }
+    // NOTE: dn is not one of ADUC's columns, but adding it here for convenience
+    const QList<QString> base_columns = {
+        ATTRIBUTE_NAME,
+        ATTRIBUTE_OBJECT_CLASS,
+        ATTRIBUTE_DESCRIPTION,
+        ATTRIBUTE_DISTINGUISHED_NAME
+    };
+    const QList<QString> extra_columns = ADCONFIG()->get_extra_columns();
+    columns = base_columns + extra_columns;
 
-    model = new ContentsModel(this);
+    model = new ObjectModel(columns.count(), column_index(ATTRIBUTE_DISTINGUISHED_NAME), parent);
+
+    const QList<QString> header_labels =
+    [this]() {
+        QList<QString> out;
+        for (const QString attribute : columns) {
+            const QString attribute_name = ADCONFIG()->get_attribute_display_name(attribute, CLASS_DEFAULT);
+
+            out.append(attribute_name);
+        }
+        return out;
+    }();
+    model->setHorizontalHeaderLabels(header_labels);
 
     auto proxy_name = new QSortFilterProxyModel(this);
     proxy_name->setFilterKeyColumn(column_index(ATTRIBUTE_NAME));
@@ -165,7 +165,44 @@ void ContentsWidget::on_context_menu(const QPoint pos) {
 void ContentsWidget::change_target(const QString &dn) {
     target_dn = dn;
 
-    model->change_target(target_dn);
+    // Load model
+    model->removeRows(0, model->rowCount());
+
+    const QList<QString> search_attributes = columns;
+    const QString filter = current_advanced_view_filter();
+    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, target_dn);
+
+    for (auto child_dn : search_results.keys()) {
+        const AdObject object  = search_results[child_dn];
+        
+        const QList<QStandardItem *> row = make_item_row(columns.count());
+        for (int i = 0; i < columns.count(); i++) {
+            const QString attribute = columns[i];
+
+            if (!object.contains(attribute)) {
+                continue;
+            }
+
+            const QString display_value =
+            [attribute, object]() {
+                if (attribute == ATTRIBUTE_OBJECT_CLASS) {
+                    const QString value_string = object.get_string(attribute);
+                    return ADCONFIG()->get_class_display_name(value_string);
+                } else {
+                    const QByteArray value = object.get_value(attribute);
+                    return attribute_display_value(attribute, value);
+                }
+            }();
+
+            row[i]->setText(display_value);
+        }
+
+        const QIcon icon = object.get_icon();
+        row[0]->setIcon(icon);
+
+        model->appendRow(row);
+    }
+
     view->sortByColumn(column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
 
     resize_columns();
@@ -199,59 +236,10 @@ void ContentsWidget::showEvent(QShowEvent *event) {
     resize_columns();
 }
 
-ContentsModel::ContentsModel(QObject *parent)
-: ObjectModel(columns.count(), column_index(ATTRIBUTE_DISTINGUISHED_NAME), parent)
-{
-    QList<QString> labels;
-    for (const QString attribute : columns) {
-        const QString attribute_name = ADCONFIG()->get_attribute_display_name(attribute, CLASS_DEFAULT);
-
-        labels.append(attribute_name);
+int ContentsWidget::column_index(const QString &attribute) {
+    if (!columns.contains(attribute)) {
+        printf("ContentsWidget is missing column for %s\n", qPrintable(attribute));
     }
 
-    setHorizontalHeaderLabels(labels);
-}
-
-void ContentsModel::change_target(const QString &target_dn) {
-    removeRows(0, rowCount());
-
-    if (target_dn == "") {
-        return;
-    }
-
-    const QList<QString> search_attributes = columns;
-    const QString filter = current_advanced_view_filter();
-    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, target_dn);
-
-    // Load children
-    for (auto child_dn : search_results.keys()) {
-        const AdObject object  = search_results[child_dn];
-        
-        const QList<QStandardItem *> row = make_item_row(columns.count());
-        for (int i = 0; i < columns.count(); i++) {
-            const QString attribute = columns[i];
-
-            if (!object.contains(attribute)) {
-                continue;
-            }
-
-            const QString display_value =
-            [attribute, object]() {
-                if (attribute == ATTRIBUTE_OBJECT_CLASS) {
-                    const QString value_string = object.get_string(attribute);
-                    return ADCONFIG()->get_class_display_name(value_string);
-                } else {
-                    const QByteArray value = object.get_value(attribute);
-                    return attribute_display_value(attribute, value);
-                }
-            }();
-
-            row[i]->setText(display_value);
-        }
-
-        const QIcon icon = object.get_icon();
-        row[0]->setIcon(icon);
-
-        invisibleRootItem()->appendRow(row);
-    }
+    return columns.indexOf(attribute);
 }

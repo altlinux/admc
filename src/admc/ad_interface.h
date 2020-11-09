@@ -180,6 +180,8 @@ public:
 
     bool login(const QString &domain, const QString &site);
 
+    void refresh();
+
     // Use this if you are doing a series of AD modifications.
     // During the batch, modified() signals won't be emitted
     // and once the batch is complete one modified() signal

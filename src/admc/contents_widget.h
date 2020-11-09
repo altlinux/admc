@@ -21,20 +21,16 @@
 #define CONTENTS_WIDGET_H
 
 #include "ad_object.h"
-#include "object_model.h"
 
 #include <QWidget>
 #include <QString>
 #include <QList>
-#include <QHash>
 #include <QPoint>
 
 class ContainersWidget;
-class QStandardItem;
-class ObjectContextMenu;
 class QTreeView;
-class ContentsModel;
 class QLabel;
+class ObjectModel;
 
 // Shows name, category and description of children of object selected in containers view
 class ContentsWidget final : public QWidget {
@@ -50,23 +46,15 @@ private slots:
 
 private:
     QString target_dn = "";
-    ContentsModel *model = nullptr;
+    QList<QString> columns;
+    ObjectModel *model = nullptr;
     QTreeView *view = nullptr;
     QLabel *label = nullptr;
 
     void change_target(const QString &dn);
     void resize_columns();
     void showEvent(QShowEvent *event);
-
-};
-
-class ContentsModel final : public ObjectModel {
-Q_OBJECT
-
-public:
-    ContentsModel(QObject *parent);
-
-    void change_target(const QString &dn);
+    int column_index(const QString &attribute);
 };
 
 #endif /* CONTENTS_WIDGET_H */

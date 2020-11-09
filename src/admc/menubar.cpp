@@ -21,6 +21,7 @@
 #include "settings.h"
 #include "confirmation_dialog.h"
 #include "find_dialog.h"
+#include "ad_interface.h"
 
 #include <QMenu>
 #include <QLocale>
@@ -38,6 +39,11 @@ MenuBar::MenuBar(QWidget* parent)
         []() {
             auto find_dialog = new FindDialog();
             find_dialog->open();
+        });
+
+    menubar_file->addAction(tr("Refresh"),
+        []() {
+            AD()->refresh();
         });
 
     QAction *exit_action = menubar_file->addAction(tr("Exit"));

@@ -61,7 +61,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     view->setSortingEnabled(true);
 
     if (multi_selection == SelectDialogMultiSelection_Yes) {
-        view->setSelectionMode(QAbstractItemView::MultiSelection);
+        view->setSelectionMode(QAbstractItemView::ContiguousSelection);
     }
 
     auto target_label = new QLabel(tr("Select object"), this);
@@ -104,20 +104,15 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
 
     const QString filter =
     [classes]() {
-        QString out;
-
+        QList<QString> subfilters;
         for (int i = 0; i < classes.size(); i++) {
             const QString object_class = classes[i];
-            const QString equals = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, object_class);
+            const QString equals_to_class = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, object_class);
 
-            if (i == 0) {
-                out = equals;
-            } else {
-                out = filter_OR(out, equals);
-            }
+            subfilters.append(equals_to_class);
         }
 
-        return out;
+        return filter_OR(subfilters);
     }();
 
     const QList<QString> attributes = {ATTRIBUTE_OBJECT_CLASS};
