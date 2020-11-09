@@ -24,6 +24,7 @@
 
 #include <krb5.h>
 
+#include <QDebug>
 #include <QLineEdit>
 #include <QLabel>
 #include <QPushButton>
@@ -80,72 +81,81 @@ LoginDialog::LoginDialog(QWidget *parent)
         this, &LoginDialog::on_rejected);
 }
 
+// TODO: Implement changing password in here? Error code should be KRB5KDC_ERR_KEY_EXP
 void LoginDialog::login() {
-    // Authenticate using krb5
-    krb5_context context;
-    krb5_ccache ccache = NULL;
-    krb5_principal principal;
     krb5_error_code result;
-    bool switch_to_cache = false;
-
-    result = krb5_init_context(&context);
-    if (result) {
-        printf("krb5_init_context failed\n");
-        return;
-    }
-
-    // Put principal name into principal struct
-    const QString principal_name = principal_edit->text();
-    const QByteArray principal_name_bytes = principal_name.toUtf8();
-    const char *principal_name_cstr = principal_name_bytes.constData();
-    result = krb5_parse_name(context, principal_name_cstr, &principal);
-    if (result) {
-        printf("krb5_parse_name failed\n");
-        return;
-        // goto cleanup;
-    }
-
-    // Use default ccache
-    // TODO: kinit attempts to use an existing ccache for this principal, if it exists and only if that fails does it use the default one. Not sure when and how another cache for principal might exist alongside the default one.
-    result = krb5_cc_default(context, &ccache);
-    if (result) {
-        printf("Failed to get default ccache\n");
-        return;
-        // goto cleanup;
-    }
-
+    krb5_context context;
+    krb5_get_init_creds_opt *options = nullptr;
+    krb5_ccache ccache = nullptr;
+    krb5_principal principal = nullptr;
     krb5_creds my_creds;
+
     memset(&my_creds, 0, sizeof(my_creds));
-    
-    krb5_get_init_creds_opt *options = NULL;
-    result = krb5_get_init_creds_opt_alloc(context, &options);
-    if (result) {
-        printf("krb5_get_init_creds_opt_alloc fail\n");
-        return;
-    }
-
-    result = krb5_get_init_creds_opt_set_out_ccache(context, options, ccache);
-    if (result) {
-        printf("Failed to set out ccache\n");
-        // goto cleanup;
-        return;
-    }
-
-    const krb5_deltat start_time = 0;
-    const char *service_name = NULL;
-    void *prompter_data = (void *)this;
 
     const QString password = password_edit->text();
     const QByteArray password_bytes = password.toUtf8();
     const char *password_cstr = password_bytes.constData();
 
-    result = krb5_get_init_creds_password(context, &my_creds, principal, password_cstr, NULL, prompter_data, start_time, service_name, options);
+    result = krb5_init_context(&context);
+    if (result) {
+        QMessageBox::critical(this, tr("Authentication error"), tr("Failed to init krb5 context"));
+        return;
+    }
 
-    if (result == 0) {
-        printf("krb5_get_init_creds_password success\n");
+    // Opens message box with the message followed by an
+    // error string for last krb5 error.
+    auto error_message =
+    [this, context, &result](const QString &message) {
+        const char *krb5_error_message_cstr = krb5_get_error_message(context, result);
+        const QString krb5_error_message = QString(krb5_error_message_cstr);
+        krb5_free_error_message(context, krb5_error_message_cstr);
+
+        const QString message_with_krb5_error = QString("%1. Error: %2.").arg(message, krb5_error_message);
+        QMessageBox::critical(this, tr("Authentication error"), message_with_krb5_error);
+    };
+
+    // Parse principal name into principal struct
+    const QString principal_name = principal_edit->text();
+    const QByteArray principal_name_bytes = principal_name.toUtf8();
+    const char *principal_name_cstr = principal_name_bytes.constData();
+    result = krb5_parse_name(context, principal_name_cstr, &principal);
+    if (result) {
+        error_message(tr("Failed to parse principal name"));
+        goto cleanup;
+    }
+
+    // Use default ccache
+    // TODO: kinit attempts to use an existing ccache for selected principal, if it exists and only if that fails does it use the default one. Not sure when and how another cache for principal might exist alongside the default one.
+    result = krb5_cc_default(context, &ccache);
+    if (result) {
+        error_message(tr("Failed to get default ccache"));
+        goto cleanup;
+    }
+    
+    result = krb5_get_init_creds_opt_alloc(context, &options);
+    if (result) {
+        error_message(tr("Failed to init krb5 options"));
+        goto cleanup;
+    }
+
+    result = krb5_get_init_creds_opt_set_out_ccache(context, options, ccache);
+    if (result) {
+        error_message(tr("Failed to set out ccache"));
+        goto cleanup;
+    }
+
+    result = krb5_get_init_creds_password(context, &my_creds, principal, password_cstr, nullptr, nullptr, 0, nullptr, options);
+
+    if (result) {
+        error_message(tr("Failed to get initial credentials"));
+    } else {
+        qDebug() << "Got initial credentials";
+
         const bool login_success = AD()->login();
 
         if (login_success) {
+            qDebug() << "Logged in successfully";
+
             SETTINGS()->set_variant(VariantSetting_Principal, principal_edit->text());
 
             const bool autologin_checked = checkbox_is_checked(autologin_check);
@@ -155,28 +165,19 @@ void LoginDialog::login() {
         } else {
             QMessageBox::critical(this, tr("Error"), tr("Failed to login!"));
         }
-    } else {
-        const QString error_string =
-        [result]() {
-            if (result == KRB5KDC_ERR_KEY_EXP) {
-                // TODO: Implement changing password in here?
-                return tr("Password expired, change it in kinit.");
-            } else if (result == KRB5KDC_ERR_PREAUTH_FAILED) {
-                return tr("Incorrect password");
-            } else {
-                return QString(tr("Unknown krb5 error: %1")).arg( result);
-            }
-        }();
-
-        QMessageBox::critical(this, tr("Authentication error"), error_string);
     }
 
-    krb5_free_principal(context, principal);
-    // TODO: shouldn't need this check?
-    if (ccache != NULL) {
-        krb5_cc_close(context, ccache);
+    cleanup: {
+        krb5_free_cred_contents(context, &my_creds);
+        krb5_free_principal(context, principal);
+        if (ccache != nullptr) {
+            krb5_cc_close(context, ccache);
+        }
+        if (options != nullptr) {
+            krb5_get_init_creds_opt_free(context, options);
+        }
+        krb5_free_context(context);
     }
-    krb5_free_context(context);
 }
 
 void LoginDialog::on_rejected() {

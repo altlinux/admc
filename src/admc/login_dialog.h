@@ -14,6 +14,13 @@
 #ifndef LOGIN_DIALOG_H
 #define LOGIN_DIALOG_H
 
+/**
+ * Opened when app launches. Asks for username and password
+ * and then authenticates through kerberos. Toggling "auto
+ * login" option will skip this dialog on subsequent
+ * launches unless authentication is required.
+ */
+
 #include <QDialog>
 
 class QLineEdit;

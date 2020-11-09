@@ -54,27 +54,31 @@ void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgro
 }
 
 bool AdInterface::login() {
-    // Get default krb5 domain (realm)
+    // Get default domain (realm)
     const QString domain =
     []() {
+        krb5_error_code result;
         krb5_context context;
-        const krb5_error_code result = krb5_init_context(&context);
+
+        result = krb5_init_context(&context);
         if (result) {
-            printf("krb5_init_context failed\n");
+            qDebug() << "Failed to init krb5 context";
             return QString();
         }
 
         char *realm_cstr = NULL;
-        krb5_get_default_realm(context, &realm_cstr);
-        // TODO: error
+        result = krb5_get_default_realm(context, &realm_cstr);
+        if (result) {
+            qDebug() << "Failed to get default realm";
 
-        QString out;
-        if (realm_cstr != NULL) {
-            out = QString(realm_cstr);
+            krb5_free_context(context);
+
+            return QString();
         }
 
+        const QString out = QString(realm_cstr);
+
         krb5_free_default_realm(context, realm_cstr);
-        krb5_free_context(context);
 
         return out;
     }();
