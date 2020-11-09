@@ -71,13 +71,16 @@ LoginDialog::LoginDialog(QWidget *parent)
 
     connect(
         login_button, &QAbstractButton::clicked,
-        this, &LoginDialog::on_login_button);
+        this, &LoginDialog::login);
+    connect(
+        password_edit, &QLineEdit::returnPressed,
+        this, &LoginDialog::login);
     connect(
         this, &QDialog::rejected,
         this, &LoginDialog::on_rejected);
 }
 
-void LoginDialog::on_login_button() {
+void LoginDialog::login() {
     // Authenticate using krb5
     krb5_context context;
     krb5_ccache ccache = NULL;

@@ -26,13 +26,14 @@ public:
     LoginDialog(QWidget *parent);
 
 private slots:
-    void on_login_button();
     void on_rejected();
+    void login();
 
 private:
     QLineEdit *principal_edit = nullptr;
     QLineEdit *password_edit = nullptr;
     QCheckBox *autologin_check;
+
 };
 
 #endif /* LOGIN_DIALOG_H */
