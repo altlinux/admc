@@ -480,9 +480,10 @@ bool AdConfig::get_attribute_is_system_only(const QString &attribute) const {
 QString get_display_specifier_class(const QString &display_specifier) {
     const QString rdn = display_specifier.split(",")[0];
     const QString removed_cn = QString(rdn).remove("CN=", Qt::CaseInsensitive);
-    const QString specifier_class = removed_cn.split('-')[0];
+    QString out = removed_cn;
+    out.remove("-Display");
 
-    return specifier_class;
+    return out;
 }
 
 QString get_locale_dir() {
