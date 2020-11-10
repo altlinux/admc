@@ -84,23 +84,23 @@ FilterWidget::FilterWidget()
 
     normal_tab = new QWidget();
     {
-        auto class_combo_label = new QLabel(tr("Class:"));
-        class_combo = new QComboBox();
+        selected_classes_display = new QLineEdit();
+        selected_classes_display->setReadOnly(true);
 
         auto select_classes_button = new QPushButton(tr("Select classes"));
         connect(
             select_classes_button, &QAbstractButton::clicked,
             this, &FilterWidget::on_select_classes);
 
+        auto attribute_combo_label = new QLabel(tr("Attribute:"));
+
+        attribute_class_combo = new QComboBox();
         for (const QString object_class : search_classes) {
             const QString display = ADCONFIG()->get_class_display_name(object_class);
-            class_combo->addItem(display, object_class);
+            attribute_class_combo->addItem(display, object_class);
         }
 
-        // TODO: when class combo changes, reload attributes combo
-
-        auto attributes_combo_label = new QLabel(tr("Attribute:"));
-        attributes_combo = new QComboBox();
+        attribute_combo = new QComboBox();
 
         auto search_base_combo_label = new QLabel(tr("In:"));
         search_base_combo = new QComboBox();
@@ -142,24 +142,40 @@ FilterWidget::FilterWidget()
 
         filter_list = new QListWidget();
 
+        auto filter_builder_wrapper = new QFrame();
+        filter_builder_wrapper->setFrameStyle(QFrame::Raised);
+        filter_builder_wrapper->setFrameShape(QFrame::Box);
+
+        auto filter_builder_layout = new QGridLayout();
+        filter_builder_wrapper->setLayout(filter_builder_layout);
+
+        const int attribute_row = filter_builder_layout->rowCount();
+        filter_builder_layout->addWidget(attribute_combo_label, attribute_row, 0);
+        filter_builder_layout->addWidget(attribute_class_combo, attribute_row, 1);
+        filter_builder_layout->addWidget(attribute_combo, attribute_row, 2);
+
+        const int condition_value_row = filter_builder_layout->rowCount();
+        filter_builder_layout->addWidget(condition_combo, condition_value_row, 0);
+        filter_builder_layout->addWidget(value_edit, condition_value_row, 1, 1, 2);
+
+        filter_builder_layout->addWidget(add_filter_button, filter_builder_layout->rowCount(), 0, 1, 3, Qt::AlignHCenter);
+
         auto layout = new QGridLayout();
         normal_tab->setLayout(layout);
 
-        layout->addWidget(select_classes_button);
-        append_to_grid_layout_with_label(layout, class_combo_label, class_combo);
-        append_to_grid_layout_with_label(layout, attributes_combo_label, attributes_combo);
-
-        const int condition_value_row = layout->rowCount();
-        layout->addWidget(condition_combo, condition_value_row, 0);
-        layout->addWidget(value_edit, condition_value_row, 1, 1, 2);
+        const int selected_classes_row = layout->rowCount();
+        layout->addWidget(selected_classes_display, selected_classes_row, 0, 1, 2);
+        layout->addWidget(select_classes_button, selected_classes_row, 2);
 
         const int search_base_row = layout->rowCount();
         layout->addWidget(search_base_combo_label, search_base_row, 0);
         layout->addWidget(search_base_combo, search_base_row, 1);
         layout->addWidget(custom_search_base_button, search_base_row, 2);
 
-        layout->addWidget(add_filter_button, layout->rowCount(), 0);
-        layout->addWidget(filter_list, layout->rowCount(), 0);
+        layout->addWidget(filter_builder_wrapper, layout->rowCount(), 0, 1, 3);
+
+        layout->addWidget(new QLabel(tr("Filters:")), layout->rowCount(), 0, 1, 3);
+        layout->addWidget(filter_list, layout->rowCount(), 0, 1, 3);
     }
 
     tab_widget = new QTabWidget();
@@ -171,9 +187,9 @@ FilterWidget::FilterWidget()
     layout->addWidget(tab_widget);
 
     connect(
-        class_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        this, &FilterWidget::on_class_combo);
-    on_class_combo();
+        attribute_class_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &FilterWidget::on_attribute_class_combo);
+    on_attribute_class_combo();
 
     connect(
         ldap_filter_edit, &QPlainTextEdit::textChanged,
@@ -183,13 +199,13 @@ FilterWidget::FilterWidget()
 }
 
 // Fill attributes combo with attributes for selected class. Attributes are sorted by their display names.
-void FilterWidget::on_class_combo() {
-    attributes_combo->clear();
+void FilterWidget::on_attribute_class_combo() {
+    attribute_combo->clear();
 
     const QString object_class =
     [this]() {
-        const int index = class_combo->currentIndex();
-        const QVariant item_data = class_combo->itemData(index);
+        const int index = attribute_class_combo->currentIndex();
+        const QVariant item_data = attribute_class_combo->itemData(index);
 
         return item_data.toString();
     }();
@@ -234,7 +250,7 @@ void FilterWidget::on_class_combo() {
     // Insert attributes into combobox in the sorted order of display attributes
     for (const auto display_attribute : display_attributes) {
         const QString attribute = display_to_attribute[display_attribute];
-        attributes_combo->addItem(display_attribute, attribute);
+        attribute_combo->addItem(display_attribute, attribute);
     }
 }
 
@@ -255,7 +271,7 @@ void FilterWidget::on_custom_search_base() {
 }
 
 void FilterWidget::on_add_filter() {
-    const QString attribute = attributes_combo->itemData(attributes_combo->currentIndex()).toString();
+    const QString attribute = attribute_combo->itemData(attribute_combo->currentIndex()).toString();
     const Condition condition = (Condition) condition_combo->itemData(condition_combo->currentIndex()).toInt();
     const QString value = value_edit->text();
 
@@ -328,7 +344,26 @@ void FilterWidget::on_select_classes() {
                 }
             }
 
-            qInfo() << selected_search_classes;
+            // Display selected classes set as a sorted list
+            // of class display strings separated by ","
+            // {"user", "organizationUnit"}
+            // =>
+            // "User, Organizational Unit"
+            const QString selected_classes_string =
+            [this]() {
+                QList<QString> selected_classes_display_strings;
+                for (const QString object_class : selected_search_classes) {
+                    const QString class_display = ADCONFIG()->get_class_display_name(object_class);
+                    selected_classes_display_strings.append(class_display);
+                }
+
+                std::sort(selected_classes_display_strings.begin(), selected_classes_display_strings.end());
+
+                const QString joined = selected_classes_display_strings.join(", ");
+
+                return joined;
+            }();
+            selected_classes_display->setText(selected_classes_string);
         });
 
     dialog->open();

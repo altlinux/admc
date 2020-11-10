@@ -54,7 +54,7 @@ signals:
     void changed();
 
 private slots:
-    void on_class_combo();
+    void on_attribute_class_combo();
     void on_custom_search_base();
     void on_add_filter();
     void on_select_classes();
@@ -63,12 +63,13 @@ private:
     QTabWidget *tab_widget;
     QWidget *normal_tab;
     QWidget *advanced_tab;
-    QComboBox *attributes_combo;
-    QComboBox *class_combo;
+    QComboBox *attribute_class_combo;
+    QComboBox *attribute_combo;
     QComboBox *search_base_combo;
     QComboBox *condition_combo;
     QLineEdit *value_edit;
     QListWidget *filter_list;
+    QLineEdit *selected_classes_display;
 
     QPlainTextEdit *ldap_filter_edit;
 
