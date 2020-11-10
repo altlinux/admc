@@ -33,7 +33,6 @@ add_executable(admc
     password_dialog.cpp
     menubar.cpp
     attribute_display.cpp
-    filter_widget.cpp
     
     rename_dialog.cpp
     create_dialog.cpp
@@ -41,6 +40,8 @@ add_executable(admc
     policies_widget.cpp
     gplink.cpp
     ad_object.cpp
+
+    filter_widget/filter_widget.cpp
     
     tabs/details_tab.cpp
     tabs/general_tab.cpp

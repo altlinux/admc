@@ -24,7 +24,7 @@
 #include "containers_widget.h"
 #include "utils.h"
 #include "filter.h"
-#include "filter_widget.h"
+#include "filter_widget/filter_widget.h"
 
 #include <QString>
 #include <QList>

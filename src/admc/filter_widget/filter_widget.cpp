@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "filter_widget.h"
+#include "filter_widget/filter_widget.h"
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "utils.h"
