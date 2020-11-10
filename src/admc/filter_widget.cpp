@@ -22,17 +22,53 @@
 #include "ad_config.h"
 #include "utils.h"
 #include "select_dialog.h"
+#include "filter.h"
 
 #include <QDebug>
 #include <QLabel>
 #include <QPlainTextEdit>
+#include <QLineEdit>
 #include <QVBoxLayout>
 #include <QGridLayout>
 #include <QTabWidget>
 #include <QComboBox>
 #include <QPushButton>
+#include <QListWidget>
+#include <QCheckBox>
+#include <QDialogButtonBox>
 
 #include <algorithm>
+
+enum Condition {
+    Condition_Equals,
+    Condition_NotEquals,
+    Condition_StartsWith,
+    Condition_EndsWith,
+    Condition_Contains,
+    Condition_COUNT,
+};
+
+const QList<QString> search_classes = {
+    CLASS_USER,
+    CLASS_GROUP,
+    CLASS_CONTACT,
+    CLASS_COMPUTER,
+    CLASS_PRINTER,
+    CLASS_OU,
+    CLASS_TRUSTED_DOMAIN,
+    CLASS_DOMAIN,
+    CLASS_CONTAINER,
+    CLASS_INET_ORG_PERSON,
+    CLASS_FOREIGN_SECURITY_PRINCIPAL,
+    CLASS_SHARED_FOLDER,
+    CLASS_RPC_SERVICES,
+    CLASS_CERTIFICATE_TEMPLATE,
+    CLASS_MSMQ_GROUP,
+    CLASS_MSMQ_QUEUE_ALIAS,
+    CLASS_REMOTE_STORAGE_SERVICE,
+};
+
+QString condition_to_display_string(const Condition condition);
 
 FilterWidget::FilterWidget()
 : QWidget()
@@ -51,26 +87,12 @@ FilterWidget::FilterWidget()
         auto class_combo_label = new QLabel(tr("Class:"));
         class_combo = new QComboBox();
 
-        static const QList<QString> classes = {
-            CLASS_USER,
-            CLASS_GROUP,
-            CLASS_CONTACT,
-            CLASS_COMPUTER,
-            CLASS_PRINTER,
-            CLASS_OU,
-            CLASS_TRUSTED_DOMAIN,
-            CLASS_DOMAIN,
-            CLASS_CONTAINER,
-            CLASS_INET_ORG_PERSON,
-            CLASS_FOREIGN_SECURITY_PRINCIPAL,
-            CLASS_SHARED_FOLDER,
-            CLASS_RPC_SERVICES,
-            CLASS_CERTIFICATE_TEMPLATE,
-            CLASS_MSMQ_GROUP,
-            CLASS_MSMQ_QUEUE_ALIAS,
-            CLASS_REMOTE_STORAGE_SERVICE,
-        };
-        for (const QString object_class : classes) {
+        auto select_classes_button = new QPushButton(tr("Select classes"));
+        connect(
+            select_classes_button, &QAbstractButton::clicked,
+            this, &FilterWidget::on_select_classes);
+
+        for (const QString object_class : search_classes) {
             const QString display = ADCONFIG()->get_class_display_name(object_class);
             class_combo->addItem(display, object_class);
         }
@@ -94,12 +116,50 @@ FilterWidget::FilterWidget()
             custom_search_base_button, &QAbstractButton::clicked,
             this, &FilterWidget::on_custom_search_base);
 
+        condition_combo = new QComboBox();
+        for (int i = 0; i < Condition_COUNT; i++) {
+            const Condition condition = (Condition) i;
+            const QString condition_string = condition_to_display_string(condition);
+
+            condition_combo->addItem(condition_string, i);
+        }
+
+        value_edit = new QLineEdit();
+
+        auto add_filter_button = new QPushButton(tr("Add"));
+        connect(
+            add_filter_button, &QAbstractButton::clicked,
+            this, &FilterWidget::on_add_filter);
+
+        // Enable/disable add filter button depending on if value is filled
+        connect(
+            value_edit, &QLineEdit::textChanged,
+            [this, add_filter_button]() {
+                const bool value_filled = !value_edit->text().isEmpty();
+                add_filter_button->setEnabled(value_filled);
+            });
+        add_filter_button->setEnabled(false);
+
+        filter_list = new QListWidget();
+
         auto layout = new QGridLayout();
         normal_tab->setLayout(layout);
+
+        layout->addWidget(select_classes_button);
         append_to_grid_layout_with_label(layout, class_combo_label, class_combo);
         append_to_grid_layout_with_label(layout, attributes_combo_label, attributes_combo);
-        append_to_grid_layout_with_label(layout, search_base_combo_label, search_base_combo);
-        layout->addWidget(custom_search_base_button);
+
+        const int condition_value_row = layout->rowCount();
+        layout->addWidget(condition_combo, condition_value_row, 0);
+        layout->addWidget(value_edit, condition_value_row, 1, 1, 2);
+
+        const int search_base_row = layout->rowCount();
+        layout->addWidget(search_base_combo_label, search_base_row, 0);
+        layout->addWidget(search_base_combo, search_base_row, 1);
+        layout->addWidget(custom_search_base_button, search_base_row, 2);
+
+        layout->addWidget(add_filter_button, layout->rowCount(), 0);
+        layout->addWidget(filter_list, layout->rowCount(), 0);
     }
 
     tab_widget = new QTabWidget();
@@ -194,6 +254,86 @@ void FilterWidget::on_custom_search_base() {
     }
 }
 
+void FilterWidget::on_add_filter() {
+    const QString attribute = attributes_combo->itemData(attributes_combo->currentIndex()).toString();
+    const Condition condition = (Condition) condition_combo->itemData(condition_combo->currentIndex()).toInt();
+    const QString value = value_edit->text();
+
+    const QString condition_string = condition_to_display_string(condition);
+    const QString filter_display_string = QString("%1: \"%2\"").arg(condition_string, value);
+
+    const QString filter =
+    [attribute, condition, value]() {
+        switch(condition) {
+            case Condition_Equals: return filter_EQUALS(attribute, value);
+            case Condition_NotEquals: return filter_NOT(filter_EQUALS(attribute, value));
+            case Condition_StartsWith: return filter_EQUALS(attribute, "*" + value);
+            case Condition_EndsWith: return filter_EQUALS(attribute, value + "*");
+            case Condition_Contains: return filter_EQUALS(attribute, "*" + value + "*");
+            case Condition_COUNT: return QString();
+        }
+        return QString();
+    }();
+
+    auto item = new QListWidgetItem();
+    item->setText(filter_display_string);
+    item->setData(Qt::UserRole, filter);
+    filter_list->addItem(item);
+
+    value_edit->clear();
+}
+
+void FilterWidget::on_select_classes() {
+    auto dialog = new QDialog();
+    dialog->setModal(true);
+
+    auto layout = new QGridLayout();
+    dialog->setLayout(layout);
+
+    QHash<QString, QCheckBox *> checkboxes;
+
+    for (const QString object_class : search_classes) {
+        const QString class_display = ADCONFIG()->get_class_display_name(object_class);
+
+        auto label = new QLabel(class_display);
+        auto checkbox = new QCheckBox();
+
+        const bool class_is_selected = selected_search_classes.contains(object_class);
+        checkbox_set_checked(checkbox, class_is_selected);
+
+        append_to_grid_layout_with_label(layout, label, checkbox);
+
+        checkboxes[object_class] = checkbox;
+    }
+
+    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(
+        button_box, &QDialogButtonBox::accepted,
+        dialog, &QDialog::accept);
+    connect(
+        button_box, &QDialogButtonBox::rejected,
+        dialog, &QDialog::reject);
+    layout->addWidget(button_box);
+
+    connect(dialog, &QDialog::accepted,
+        [this, checkboxes]() {
+            selected_search_classes.clear();
+
+            // Save selected classes
+            for (const QString object_class : search_classes) {
+                QCheckBox *checkbox = checkboxes[object_class];
+
+                if (checkbox_is_checked(checkbox)) {
+                    selected_search_classes.insert(object_class);
+                }
+            }
+
+            qInfo() << selected_search_classes;
+        });
+
+    dialog->open();
+}
+
 QString FilterWidget::get_filter() const {
     const QWidget *current_tab = tab_widget->currentWidget();
 
@@ -211,4 +351,16 @@ QString FilterWidget::get_search_base() const {
     const QVariant item_data = search_base_combo->itemData(index);
 
     return item_data.toString();
+}
+
+QString condition_to_display_string(const Condition condition) {
+    switch (condition) {
+        case Condition_Equals: return QObject::tr("Equals");
+        case Condition_NotEquals: return QObject::tr("Doesn't equal");
+        case Condition_StartsWith: return QObject::tr("Starts with");
+        case Condition_EndsWith: return QObject::tr("Ends with");
+        case Condition_Contains: return QObject::tr("Contains");
+        case Condition_COUNT: return QString();
+    }
+    return QString();
 }

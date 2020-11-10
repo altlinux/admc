@@ -33,10 +33,13 @@
 
 #include <QWidget>
 #include <QString>
+#include <QSet>
 
 class QPlainTextEdit;
 class QTabWidget;
 class QComboBox;
+class QLineEdit;
+class QListWidget;
 
 class FilterWidget final : public QWidget {
 Q_OBJECT
@@ -53,6 +56,8 @@ signals:
 private slots:
     void on_class_combo();
     void on_custom_search_base();
+    void on_add_filter();
+    void on_select_classes();
 
 private:
     QTabWidget *tab_widget;
@@ -61,8 +66,13 @@ private:
     QComboBox *attributes_combo;
     QComboBox *class_combo;
     QComboBox *search_base_combo;
+    QComboBox *condition_combo;
+    QLineEdit *value_edit;
+    QListWidget *filter_list;
 
     QPlainTextEdit *ldap_filter_edit;
+
+    QSet<QString> selected_search_classes;
 };
 
 #endif /* FILTER_WIDGET_H */
