@@ -29,8 +29,6 @@
  * allows to enter the LDAP filter string directly.
  */
 
-// TODO: for now just AND'ing filters, somehow allow OR'ing?
-
 #include <QWidget>
 #include <QString>
 #include <QSet>
@@ -58,6 +56,8 @@ private slots:
     void on_custom_search_base();
     void on_add_filter();
     void on_select_classes();
+    void on_remove_filter();
+    void on_clear_filters();
 
 private:
     QTabWidget *tab_widget;

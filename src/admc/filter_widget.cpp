@@ -142,6 +142,30 @@ FilterWidget::FilterWidget()
 
         filter_list = new QListWidget();
 
+        auto remove_filter_button = new QPushButton(tr("Remove"));
+        connect(
+            remove_filter_button, &QAbstractButton::clicked,
+            this, &FilterWidget::on_remove_filter);
+
+        const QItemSelectionModel *filters_selection_model = filter_list->selectionModel();
+
+        // Enable/disable remove filter button depending on
+        // if any filter is currently selected
+        connect(
+            filters_selection_model, &QItemSelectionModel::selectionChanged,
+            [remove_filter_button, filters_selection_model]() {
+                const QList<QModelIndex> selecteds = filters_selection_model->selectedIndexes();
+                const bool any_selected = !selecteds.isEmpty();
+
+                remove_filter_button->setEnabled(any_selected);
+            });
+        remove_filter_button->setEnabled(false);
+
+        auto clear_filters_button = new QPushButton(tr("Clear"));
+        connect(
+            clear_filters_button, &QAbstractButton::clicked,
+            this, &FilterWidget::on_clear_filters);
+
         auto filter_builder_wrapper = new QFrame();
         filter_builder_wrapper->setFrameStyle(QFrame::Raised);
         filter_builder_wrapper->setFrameShape(QFrame::Box);
@@ -176,6 +200,10 @@ FilterWidget::FilterWidget()
 
         layout->addWidget(new QLabel(tr("Filters:")), layout->rowCount(), 0, 1, 3);
         layout->addWidget(filter_list, layout->rowCount(), 0, 1, 3);
+
+        const int filter_list_buttons_row = layout->rowCount();
+        layout->addWidget(remove_filter_button, filter_list_buttons_row, 0);
+        layout->addWidget(clear_filters_button, filter_list_buttons_row, 1);
     }
 
     tab_widget = new QTabWidget();
@@ -367,6 +395,33 @@ void FilterWidget::on_select_classes() {
         });
 
     dialog->open();
+}
+
+void FilterWidget::on_remove_filter() {
+    const QSet<QListWidgetItem *> removed_items =
+    [this]() {
+        QSet<QListWidgetItem *> out;
+
+        const QItemSelectionModel *selection_model = filter_list->selectionModel();
+        const QList<QModelIndex> selecteds = selection_model->selectedIndexes();
+
+        for (const auto selected : selecteds) {
+            const int row = selected.row();
+            QListWidgetItem *item = filter_list->item(row);
+
+            out.insert(item);
+        }
+
+        return out;
+    }();
+
+    for (auto item : removed_items) {
+        delete item;
+    }
+}
+
+void FilterWidget::on_clear_filters() {
+    filter_list->clear();
 }
 
 QString FilterWidget::get_filter() const {
