@@ -55,7 +55,10 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
     list_widget = new QListWidget();
 
     remove_button = new QPushButton(tr("Remove"));
-    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
+
+    auto button_box = new QDialogButtonBox();
+    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
+    auto reset_button = button_box->addButton(QDialogButtonBox::Reset);
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
@@ -73,10 +76,10 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
     }
 
     connect(
-        button_box->button(QDialogButtonBox::Ok), &QPushButton::clicked,
+        ok_button, &QPushButton::clicked,
         this, &QDialog::accept);
     connect(
-        button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
+        reset_button, &QPushButton::clicked,
         this, &StringMultiEditDialog::reset);
     connect(
         add_button, &QAbstractButton::clicked,

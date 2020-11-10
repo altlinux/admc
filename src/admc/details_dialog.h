@@ -28,8 +28,8 @@ class QString;
 class QTabWidget;
 class QLabel;
 class DetailsTab;
-class QDialogButtonBox;
 class QAbstractItemView;
+class QPushButton;
 
 /**
  * Shows info about object's attributes in multiple tabs.
@@ -53,7 +53,8 @@ public:
     QString get_target() const;
 
 private slots:
-    void on_apply();
+    void apply();
+    void reset();
     void on_docked_setting_changed();
     void on_tab_edited();
     void on_ad_modified();
@@ -63,12 +64,12 @@ private:
     bool is_floating_instance;
     QTabWidget *tab_widget = nullptr;
     QLabel *title_label = nullptr;
-    QDialogButtonBox *button_box = nullptr;
     QList<DetailsTab *> tabs;
     QString target;
+    QPushButton *apply_button;
+    QPushButton *reset_button;
 
     DetailsDialog(const QString &target_arg, bool is_floating_instance_arg);
-    void load();
     
     DetailsDialog(const DetailsDialog&) = delete;
     DetailsDialog& operator=(const DetailsDialog&) = delete;
