@@ -59,6 +59,7 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
     auto button_box = new QDialogButtonBox();
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
     auto reset_button = button_box->addButton(QDialogButtonBox::Reset);
+    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
@@ -87,6 +88,9 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
     connect(
         remove_button, &QAbstractButton::clicked,
         this, &StringMultiEditDialog::on_remove);
+    connect(
+        cancel_button, &QAbstractButton::clicked,
+        this, &StringMultiEditDialog::reject);
     connect(
         edit, &QLineEdit::textChanged,
         this, &StringMultiEditDialog::on_edit_changed);

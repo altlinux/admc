@@ -85,12 +85,16 @@ RenameDialog::RenameDialog(const QString &target_arg)
     auto button_box = new QDialogButtonBox();
     ok_button = button_box->addButton(QDialogButtonBox::Ok);
     reset_button = button_box->addButton(QDialogButtonBox::Reset);
+    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
     connect(
         ok_button, &QPushButton::clicked,
         this, &QDialog::accept);
     connect(
         reset_button, &QPushButton::clicked,
         this, &RenameDialog::reset);
+    connect(
+        cancel_button, &QPushButton::clicked,
+        this, &RenameDialog::reject);
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);

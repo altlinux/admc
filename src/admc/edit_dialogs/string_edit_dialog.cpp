@@ -56,6 +56,7 @@ StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArr
     auto button_box = new QDialogButtonBox();
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
     auto reset_button = button_box->addButton(QDialogButtonBox::Reset);
+    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
@@ -75,6 +76,9 @@ StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArr
     connect(
         reset_button, &QPushButton::clicked,
         this, &StringEditDialog::reset);
+    connect(
+        cancel_button, &QPushButton::clicked,
+        this, &StringEditDialog::reject);
 }
 
 void StringEditDialog::reset() {

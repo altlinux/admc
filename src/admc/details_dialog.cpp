@@ -113,6 +113,7 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     auto button_box = new QDialogButtonBox();
     apply_button = button_box->addButton(QDialogButtonBox::Apply);
     reset_button = button_box->addButton(QDialogButtonBox::Reset);
+    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
 
     const auto layout = new QVBoxLayout(this);
     layout->setSpacing(0);
@@ -194,6 +195,9 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     connect(
         reset_button, &QPushButton::clicked,
         this, &DetailsDialog::reset);
+    connect(
+        cancel_button, &QPushButton::clicked,
+        this, &DetailsDialog::reject);
     connect(
         AD(), &AdInterface::modified,
         this, &DetailsDialog::on_ad_modified);
