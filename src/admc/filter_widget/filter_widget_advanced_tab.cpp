@@ -17,32 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FIND_DIALOG_H
-#define FIND_DIALOG_H
+#include "filter_widget/filter_widget_advanced_tab.h"
 
-/**
- * User inputs a filter through FilterWidget. Then the
- * dialog displays search results from that filter. TODO:
- * update comment depending on if end up displaying results
- * in real time or not.
- */
+#include <QPlainTextEdit>
+#include <QVBoxLayout>
 
-#include <QDialog>
+FilterWidgetAdvancedTab::FilterWidgetAdvancedTab()
+: FilterWidgetTab()
+{
+    ldap_filter_edit = new QPlainTextEdit(this);
 
-class QStandardItemModel;
-class FilterWidget;
+    auto layout = new QVBoxLayout();
+    setLayout(layout);
+    layout->addWidget(ldap_filter_edit);
+}
 
-class FindDialog final : public QDialog {
-Q_OBJECT
+QString FilterWidgetAdvancedTab::get_filter() const {
+    const QString filter = ldap_filter_edit->toPlainText();
 
-public:
-    FindDialog();
-
-private:
-    QStandardItemModel *model;
-    FilterWidget *filter_widget;
-
-    void load(const QString &filter);
-};
-
-#endif /* FIND_DIALOG_H */
+    return filter;
+}

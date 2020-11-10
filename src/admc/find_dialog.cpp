@@ -79,10 +79,6 @@ FindDialog::FindDialog()
     //     view->resizeColumnToContents(col);
     // }
 
-    connect(
-        filter_widget, &FilterWidget::changed,
-        this, &FindDialog::on_filter_changed);
-
     load("");
 
     // const auto list = ADCONFIG()->get_possible_attributes({"top", "person", "organizationalPerson", "user"});
@@ -100,11 +96,6 @@ FindDialog::FindDialog()
     //     return out;
     // }();
     // qInfo() << only_strings;
-}
-
-void FindDialog::on_filter_changed() {
-    const QString filter = filter_widget->get_filter();
-    load(filter);
 }
 
 void FindDialog::load(const QString &filter) {

@@ -17,46 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FILTER_WIDGET_H
-#define FILTER_WIDGET_H
+#ifndef FILTER_WIDGET_ADVANCED_TAB_H
+#define FILTER_WIDGET_ADVANCED_TAB_H
 
 /**
- * Allows user to enter a filter, which is then passed on to
- * a parent widget. Has tabs for different ways to enter a
- * filter: normal and advanced tab.
+ * Allows input of a plain LDAP filter string.
  */
 
-#include <QWidget>
-#include <QString>
-#include <QList>
+#include "filter_widget/filter_widget.h"
 
-class QTabWidget;
-class FilterWidgetTab;
-class QComboBox;
+class QPlainTextEdit;
 
-class FilterWidget final : public QWidget {
+class FilterWidgetAdvancedTab final : public FilterWidgetTab {
 Q_OBJECT
 
 public:
-    FilterWidget();
+    FilterWidgetAdvancedTab();
 
     QString get_filter() const;
-    QString get_search_base() const;
-
-private slots:
-    void on_custom_search_base();
 
 private:
-    QTabWidget *tab_widget;
-    QList<FilterWidgetTab *> tabs;
-    QComboBox *search_base_combo;
-
-    const FilterWidgetTab *get_current_tab() const;
+    QPlainTextEdit *ldap_filter_edit;
 };
 
-class FilterWidgetTab : public QWidget {
-public:
-    virtual QString get_filter() const = 0;
-};
-
-#endif /* FILTER_WIDGET_H */
+#endif /* FILTER_WIDGET_ADVANCED_TAB_H */
