@@ -29,8 +29,8 @@
 
 #include <QDialog>
 
-class QStandardItemModel;
 class FilterWidget;
+class ObjectListWidget;
 
 class FindDialog final : public QDialog {
 Q_OBJECT
@@ -42,8 +42,8 @@ private slots:
     void find();
 
 private:
-    QStandardItemModel *model;
     FilterWidget *filter_widget;
+    ObjectListWidget *find_results;
 };
 
 #endif /* FIND_DIALOG_H */

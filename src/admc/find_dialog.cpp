@@ -25,6 +25,7 @@
 #include "utils.h"
 #include "filter.h"
 #include "filter_widget/filter_widget.h"
+#include "object_list_widget.h"
 
 #include <QString>
 #include <QList>
@@ -39,12 +40,6 @@
 #include <QStandardItemModel>
 #include <QDebug>
 
-enum FindDialogColumn {
-    FindDialogColumn_Name,
-    FindDialogColumn_DN,
-    FindDialogColumn_COUNT
-};
-
 FindDialog::FindDialog()
 : QDialog()
 {
@@ -52,35 +47,16 @@ FindDialog::FindDialog()
     resize(600, 600);
     setAttribute(Qt::WA_DeleteOnClose);
 
-    model = new QStandardItemModel(0, FindDialogColumn_COUNT, this);
-    set_horizontal_header_labels_from_map(model, {
-        {FindDialogColumn_Name, tr("Name")},
-        {FindDialogColumn_DN, tr("DN")}
-    });
-
-    auto view = new QTreeView(this);
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setSortingEnabled(true);
-    view->setSelectionMode(QAbstractItemView::ContiguousSelection);
-    view->setModel(model);
-
     filter_widget = new FilterWidget();
 
     auto find_button = new QPushButton(tr("Find"));
 
+    find_results = new ObjectListWidget();
+
     const auto layout = new QVBoxLayout(this);
     layout->addWidget(filter_widget);
     layout->addWidget(find_button);
-    layout->addWidget(view);
-
-    setup_column_toggle_menu(view, model, {FindDialogColumn_Name});
-
-    // TODO: sort after each new search
-    // model->sort(FindDialogColumn_Name);
-    // TODO: column sizing
-    // for (int col = 0; col < view->model()->columnCount(); col++) {
-    //     view->resizeColumnToContents(col);
-    // }
+    layout->addWidget(find_results);
 
     connect(
         find_button, &QPushButton::clicked,
@@ -88,29 +64,8 @@ FindDialog::FindDialog()
 }
 
 void FindDialog::find() {
-    model->removeRows(0, model->rowCount());
-    
     const QString filter = filter_widget->get_filter();
+    const QString search_base = filter_widget->get_search_base();
 
-    QList<QString> attributes = {
-        ATTRIBUTE_NAME,
-        ATTRIBUTE_OBJECT_CLASS,
-        ATTRIBUTE_DESCRIPTION
-    };
-    attributes.append(ATTRIBUTE_DISTINGUISHED_NAME);
-    const QList<QString> extra_columns = ADCONFIG()->get_extra_columns();
-    attributes.append(extra_columns);
-
-    const QHash<QString, AdObject> search_results = AD()->search(filter, attributes, SearchScope_All);
-
-    for (const AdObject &object : search_results.values()) {
-        const QString dn = object.get_dn();
-        const QString name = dn_get_rdn(dn);
-
-        const QList<QStandardItem *> row = make_item_row(FindDialogColumn_COUNT);
-        row[FindDialogColumn_Name]->setText(name);
-        row[FindDialogColumn_DN]->setText(dn);
-
-        model->appendRow(row);
-    }
+    find_results->load_filter(filter, search_base);
 }

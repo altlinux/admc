@@ -33,6 +33,7 @@ add_executable(admc
     password_dialog.cpp
     menubar.cpp
     attribute_display.cpp
+    object_list_widget.cpp
     
     rename_dialog.cpp
     create_dialog.cpp

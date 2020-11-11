@@ -24,37 +24,31 @@
 
 #include <QWidget>
 #include <QString>
-#include <QList>
-#include <QPoint>
 
 class ContainersWidget;
-class QTreeView;
-class QLabel;
-class ObjectModel;
+class ObjectListWidget;
 
-// Shows name, category and description of children of object selected in containers view
+/**
+ * Shows a list of objects, which are children of a target
+ * parent object. Parent object is equal to most recent
+ * selection in containers widget. Updates on AD modifications.
+ */
+
 class ContentsWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContentsWidget(ContainersWidget *containers_widget, QWidget *parent);
+    ContentsWidget(ContainersWidget *containers_widget);
 
 private slots:
     void on_containers_selected_changed(const QString &dn);
     void on_ad_modified();
-    void on_context_menu(const QPoint pos);
 
 private:
-    QString target_dn = "";
-    QList<QString> columns;
-    ObjectModel *model = nullptr;
-    QTreeView *view = nullptr;
-    QLabel *label = nullptr;
+    QString target_dn;
+    ObjectListWidget *object_list;
 
     void change_target(const QString &dn);
-    void resize_columns();
-    void showEvent(QShowEvent *event);
-    int column_index(const QString &attribute);
 };
 
 #endif /* CONTENTS_WIDGET_H */
