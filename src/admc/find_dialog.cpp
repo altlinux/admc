@@ -26,11 +26,12 @@
 #include "filter.h"
 #include "filter_widget/filter_widget.h"
 #include "object_list_widget.h"
+#include "select_dialog.h"
 
 #include <QString>
 #include <QList>
 #include <QLineEdit>
-#include <QVBoxLayout>
+#include <QGridLayout>
 #include <QLabel>
 #include <QTreeView>
 #include <QSortFilterProxyModel>
@@ -47,25 +48,67 @@ FindDialog::FindDialog()
     resize(600, 600);
     setAttribute(Qt::WA_DeleteOnClose);
 
+    // TODO: technically, entire directory does NOT equal to the domain. In cases where we're browsing multiple domains at the same time (or maybe some other situations as well), we'd need "Entire directory" AND all of domains. Currently search base is set to domain anyway, so would need to start from reworking that.
+
+    auto search_base_combo_label = new QLabel(tr("In:"));
+    search_base_combo = new QComboBox();
+    search_base_combo->addItem(tr("Entire directory"), AD()->search_base());
+
+    const QString users_dn = "CN=Users," + AD()->search_base();
+    search_base_combo->addItem("Users", users_dn);
+
+    auto custom_search_base_button = new QPushButton(tr("Browse"));
+
     filter_widget = new FilterWidget();
 
     auto find_button = new QPushButton(tr("Find"));
 
     find_results = new ObjectListWidget();
 
-    const auto layout = new QVBoxLayout(this);
-    layout->addWidget(filter_widget);
-    layout->addWidget(find_button);
-    layout->addWidget(find_results);
+    const auto layout = new QGridLayout(this);
 
+    const int search_base_combo_row = layout->rowCount();
+    layout->addWidget(search_base_combo_label, search_base_combo_row, 0);
+    layout->addWidget(search_base_combo, search_base_combo_row, 1);
+    layout->addWidget(custom_search_base_button, search_base_combo_row, 2);
+
+    layout->addWidget(filter_widget, layout->rowCount(), 0, 1, layout->columnCount());
+    layout->addWidget(find_button, layout->rowCount(), 0, 1, layout->columnCount());
+    layout->addWidget(find_results, layout->rowCount(), 0, 1, layout->columnCount());
+
+    connect(
+        custom_search_base_button, &QAbstractButton::clicked,
+        this, &FindDialog::select_custom_search_base);
     connect(
         find_button, &QPushButton::clicked,
         this, &FindDialog::find);
 }
 
+void FindDialog::select_custom_search_base() {
+    // TODO: maybe need some other classes?
+    const QList<QString> selecteds = SelectDialog::open({CLASS_CONTAINER, CLASS_OU});
+
+    if (!selecteds.isEmpty()) {
+        const QString selected = selecteds[0];
+        const QString name = dn_get_rdn(selected);
+
+        search_base_combo->addItem(name, selected);
+
+        // Select newly added search base in combobox
+        const int new_base_index = search_base_combo->count() - 1;
+        search_base_combo->setCurrentIndex(new_base_index);
+    }
+}
+
 void FindDialog::find() {
     const QString filter = filter_widget->get_filter();
-    const QString search_base = filter_widget->get_search_base();
+    const QString search_base =
+    [this]() {
+        const int index = search_base_combo->currentIndex();
+        const QVariant item_data = search_base_combo->itemData(index);
+
+        return item_data.toString();
+    }();
 
     find_results->load_filter(filter, search_base);
 }

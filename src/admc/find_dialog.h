@@ -31,6 +31,7 @@
 
 class FilterWidget;
 class ObjectListWidget;
+class QComboBox;
 
 class FindDialog final : public QDialog {
 Q_OBJECT
@@ -39,11 +40,13 @@ public:
     FindDialog();
 
 private slots:
+    void select_custom_search_base();
     void find();
 
 private:
     FilterWidget *filter_widget;
     ObjectListWidget *find_results;
+    QComboBox *search_base_combo;
 };
 
 #endif /* FIND_DIALOG_H */

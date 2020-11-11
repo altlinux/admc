@@ -32,7 +32,6 @@
 
 class QTabWidget;
 class FilterWidgetTab;
-class QComboBox;
 
 class FilterWidget final : public QWidget {
 Q_OBJECT
@@ -41,15 +40,10 @@ public:
     FilterWidget();
 
     QString get_filter() const;
-    QString get_search_base() const;
-
-private slots:
-    void on_custom_search_base();
 
 private:
     QTabWidget *tab_widget;
     QList<FilterWidgetTab *> tabs;
-    QComboBox *search_base_combo;
 
     const FilterWidgetTab *get_current_tab() const;
 };
