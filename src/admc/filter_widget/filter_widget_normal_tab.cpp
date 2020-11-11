@@ -36,11 +36,11 @@
 #include <algorithm>
 
 enum Condition {
+    Condition_Contains,
     Condition_Equals,
     Condition_NotEquals,
     Condition_StartsWith,
     Condition_EndsWith,
-    Condition_Contains,
     Condition_Set,
     Condition_Unset,
     Condition_COUNT,
