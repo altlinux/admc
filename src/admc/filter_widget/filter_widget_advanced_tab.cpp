@@ -21,14 +21,17 @@
 
 #include <QPlainTextEdit>
 #include <QVBoxLayout>
+#include <QLabel>
 
 FilterWidgetAdvancedTab::FilterWidgetAdvancedTab()
 : FilterWidgetTab()
 {
+    auto label = new QLabel(tr("Enter LDAP filter:"));
     ldap_filter_edit = new QPlainTextEdit(this);
 
     auto layout = new QVBoxLayout();
     setLayout(layout);
+    layout->addWidget(label);
     layout->addWidget(ldap_filter_edit);
 }
 

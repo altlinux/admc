@@ -52,6 +52,7 @@ private slots:
     void on_select_classes();
     void on_remove_filter();
     void on_clear_filters();
+    void on_condition_combo();
 
 private:
     QTabWidget *tab_widget;

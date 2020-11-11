@@ -41,6 +41,8 @@ enum Condition {
     Condition_StartsWith,
     Condition_EndsWith,
     Condition_Contains,
+    Condition_Set,
+    Condition_Unset,
     Condition_COUNT,
 };
 
@@ -101,15 +103,6 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
     connect(
         add_filter_button, &QAbstractButton::clicked,
         this, &FilterWidgetNormalTab::on_add_filter);
-
-    // Enable/disable add filter button depending on if value is filled
-    connect(
-        value_edit, &QLineEdit::textChanged,
-        [this, add_filter_button]() {
-            const bool value_filled = !value_edit->text().isEmpty();
-            add_filter_button->setEnabled(value_filled);
-        });
-    add_filter_button->setEnabled(false);
 
     filter_list = new QListWidget();
 
@@ -175,6 +168,11 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
         attribute_class_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &FilterWidgetNormalTab::on_attribute_class_combo);
     on_attribute_class_combo();
+
+    connect(
+        condition_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &FilterWidgetNormalTab::on_condition_combo);
+
 }
 
 QString FilterWidgetNormalTab::get_filter() const {
@@ -243,8 +241,20 @@ void FilterWidgetNormalTab::on_add_filter() {
     const Condition condition = (Condition) condition_combo->itemData(condition_combo->currentIndex()).toInt();
     const QString value = value_edit->text();
 
-    const QString condition_string = condition_to_display_string(condition);
-    const QString filter_display_string = QString("%1: \"%2\"").arg(condition_string, value);
+    const QString filter_display_string =
+    [this, condition, value]() {
+        const QString attribute_display = attribute_combo->itemText(attribute_combo->currentIndex());
+        const QString condition_string = condition_to_display_string(condition);
+        
+        const bool set_unset_condition = (condition == Condition_Set || condition == Condition_Unset);
+        if (set_unset_condition) {
+            return QString("%1 %2").arg(attribute_display, condition_string);
+        } else {
+            return QString("%1 %2: \"%3\"").arg(attribute_display, condition_string, value);
+        }
+    }();
+
+
 
     const QString filter =
     [attribute, condition, value]() {
@@ -254,6 +264,8 @@ void FilterWidgetNormalTab::on_add_filter() {
             case Condition_StartsWith: return filter_EQUALS(attribute, "*" + value);
             case Condition_EndsWith: return filter_EQUALS(attribute, value + "*");
             case Condition_Contains: return filter_EQUALS(attribute, "*" + value + "*");
+            case Condition_Set: return filter_EQUALS(attribute, "*");
+            case Condition_Unset: return filter_NOT(filter_EQUALS(attribute, "*"));
             case Condition_COUNT: return QString();
         }
         return QString();
@@ -367,6 +379,17 @@ void FilterWidgetNormalTab::on_clear_filters() {
     filter_list->clear();
 }
 
+void FilterWidgetNormalTab::on_condition_combo() {
+    const Condition condition = (Condition) condition_combo->itemData(condition_combo->currentIndex()).toInt();
+
+    const bool disable_value_edit = (condition == Condition_Set || condition == Condition_Unset);
+    value_edit->setDisabled(disable_value_edit);
+
+    if (disable_value_edit) {
+        value_edit->clear();
+    }
+}
+
 QString condition_to_display_string(const Condition condition) {
     switch (condition) {
         case Condition_Equals: return QObject::tr("Equals");
@@ -374,6 +397,8 @@ QString condition_to_display_string(const Condition condition) {
         case Condition_StartsWith: return QObject::tr("Starts with");
         case Condition_EndsWith: return QObject::tr("Ends with");
         case Condition_Contains: return QObject::tr("Contains");
+        case Condition_Set: return QObject::tr("Set");
+        case Condition_Unset: return QObject::tr("Unset");
         case Condition_COUNT: return QString();
     }
     return QString();
