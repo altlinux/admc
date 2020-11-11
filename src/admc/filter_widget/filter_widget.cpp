@@ -21,7 +21,6 @@
 #include "filter_widget/filter_widget_normal_tab.h"
 #include "filter_widget/filter_widget_advanced_tab.h"
 #include "ad_interface.h"
-#include "select_dialog.h"
 #include "utils.h"
 
 #include <QLabel>

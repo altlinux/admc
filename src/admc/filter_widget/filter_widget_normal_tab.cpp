@@ -336,7 +336,7 @@ void FilterWidgetNormalTab::on_select_classes() {
         checkboxes[object_class] = checkbox;
     }
 
-    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    auto button_box = new QDialogButtonBox();
     layout->addWidget(button_box);
     
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);

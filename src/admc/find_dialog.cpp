@@ -45,7 +45,6 @@ FindDialog::FindDialog()
 : QDialog()
 {
     setWindowTitle(tr("Find dialog"));
-    resize(600, 600);
     setAttribute(Qt::WA_DeleteOnClose);
 
     // TODO: technically, entire directory does NOT equal to the domain. In cases where we're browsing multiple domains at the same time (or maybe some other situations as well), we'd need "Entire directory" AND all of domains. Currently search base is set to domain anyway, so would need to start from reworking that.
@@ -73,7 +72,7 @@ FindDialog::FindDialog()
     layout->addWidget(custom_search_base_button, search_base_combo_row, 2);
 
     layout->addWidget(filter_widget, layout->rowCount(), 0, 1, layout->columnCount());
-    layout->addWidget(find_button, layout->rowCount(), 0, 1, layout->columnCount());
+    layout->addWidget(find_button, layout->rowCount(), 1);
     layout->addWidget(find_results, layout->rowCount(), 0, 1, layout->columnCount());
 
     connect(
