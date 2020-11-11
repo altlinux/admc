@@ -66,8 +66,11 @@ FindDialog::FindDialog()
 
     filter_widget = new FilterWidget();
 
+    auto find_button = new QPushButton(tr("Find"));
+
     const auto layout = new QVBoxLayout(this);
     layout->addWidget(filter_widget);
+    layout->addWidget(find_button);
     layout->addWidget(view);
 
     setup_column_toggle_menu(view, model, {FindDialogColumn_Name});
@@ -79,26 +82,16 @@ FindDialog::FindDialog()
     //     view->resizeColumnToContents(col);
     // }
 
-    load("");
-
-    // const auto list = ADCONFIG()->get_possible_attributes({"top", "person", "organizationalPerson", "user"});
-    // qInfo() << list;
-    
-    // const auto only_strings =
-    // [list]() {
-    //     QList<QString> out;
-    //     for (auto attribute : list) {
-    //         const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
-    //         if (type == AttributeType_Unicode) {
-    //             out.append(attribute);
-    //         }
-    //     }
-    //     return out;
-    // }();
-    // qInfo() << only_strings;
+    connect(
+        find_button, &QPushButton::clicked,
+        this, &FindDialog::find);
 }
 
-void FindDialog::load(const QString &filter) {
+void FindDialog::find() {
+    model->removeRows(0, model->rowCount());
+    
+    const QString filter = filter_widget->get_filter();
+
     QList<QString> attributes = {
         ATTRIBUTE_NAME,
         ATTRIBUTE_OBJECT_CLASS,
@@ -110,7 +103,6 @@ void FindDialog::load(const QString &filter) {
 
     const QHash<QString, AdObject> search_results = AD()->search(filter, attributes, SearchScope_All);
 
-    model->removeRows(0, model->rowCount());
     for (const AdObject &object : search_results.values()) {
         const QString dn = object.get_dn();
         const QString name = dn_get_rdn(dn);

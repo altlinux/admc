@@ -202,7 +202,18 @@ QString FilterWidgetNormalTab::get_filter() const {
         return out;
     }();
 
-    return filter_AND({filter_OR(class_filters), filter_AND(attribute_filters)});
+    const bool classes = !class_filters.isEmpty();
+    const bool attributes = !attribute_filters.isEmpty();
+
+    if (classes && attributes) {
+        return filter_AND({filter_OR(class_filters), filter_AND(attribute_filters)});
+    } else if (!classes && attributes) {
+        return filter_AND(attribute_filters);
+    } else if (classes && !attributes) {
+        return filter_OR(class_filters);
+    } else {
+        return QString();
+    }
 }
 
 // Fill attributes combo with attributes for selected class. Attributes are sorted by their display names.

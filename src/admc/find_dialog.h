@@ -38,11 +38,12 @@ Q_OBJECT
 public:
     FindDialog();
 
+private slots:
+    void find();
+
 private:
     QStandardItemModel *model;
     FilterWidget *filter_widget;
-
-    void load(const QString &filter);
 };
 
 #endif /* FIND_DIALOG_H */
