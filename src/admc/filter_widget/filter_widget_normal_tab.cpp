@@ -176,8 +176,33 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
 }
 
 QString FilterWidgetNormalTab::get_filter() const {
-    // TODO:
-    return QString();
+    const QList<QString> attribute_filters =
+    [this]() {
+        QList<QString> out;
+        for (int i = 0; i < filter_list->count(); i++) {
+            const QListWidgetItem *item = filter_list->item(i);
+            const QString subfilter = item->data(Qt::UserRole).toString();
+
+            out.append(subfilter);
+        }
+
+        return out;
+    }();
+
+    const QList<QString> class_filters =
+    [this]() {
+        QList<QString> out;
+        for (const QString object_class : selected_search_classes) {
+            // TODO: replace with filter contains f-n if end up making it
+            const QString class_filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, "*" + object_class + "*");
+            
+            out.append(class_filter);
+        }
+
+        return out;
+    }();
+
+    return filter_AND({filter_OR(class_filters), filter_AND(attribute_filters)});
 }
 
 // Fill attributes combo with attributes for selected class. Attributes are sorted by their display names.
@@ -253,8 +278,6 @@ void FilterWidgetNormalTab::on_add_filter() {
             return QString("%1 %2: \"%3\"").arg(attribute_display, condition_string, value);
         }
     }();
-
-
 
     const QString filter =
     [attribute, condition, value]() {

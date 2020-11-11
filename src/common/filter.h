@@ -22,10 +22,12 @@
 
 #include <QString>
 
+// If arguments for AND/OR are empty, empty string is returned
+
 QString filter_EQUALS(const QString &attribute, const QString &value);
 QString filter_AND(const QList<QString> &subfilters);
 QString filter_OR(const QList<QString> &subfilters);
-QString filter_NOT(const QString &a);
+QString filter_NOT(const QString &filter);
 
 QString current_advanced_view_filter();
 

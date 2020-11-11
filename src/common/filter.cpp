@@ -28,29 +28,36 @@ QString filter_EQUALS(const QString &attribute, const QString &value) {
 
 // {x, y, z ...} => (&(x)(y)(z)...)
 QString filter_AND(const QList<QString> &subfilters) {
-    QString filter = "(&";
-    for (const QString subfilter : subfilters) {
-        filter += subfilter;
-    }
-    filter += ")";
+    if (!subfilters.isEmpty()) {
+        QString filter = "(&";
+        for (const QString subfilter : subfilters) {
+            filter += subfilter;
+        }
+        filter += ")";
 
-    return filter;
+        return filter;
+    } else {
+        return QString();
+    }
 }
 
 // {x, y, z ...} => (|(x)(y)(z)...)
 QString filter_OR(const QList<QString> &subfilters) {
-    QString filter = "(|";
-    for (const QString subfilter : subfilters) {
-        filter += subfilter;
-    }
-    filter += ")";
+    if (!subfilters.isEmpty()) {
+        QString filter = "(|";
+        for (const QString subfilter : subfilters) {
+            filter += subfilter;
+        }
+        filter += ")";
 
-    return filter;
+        return filter;
+    } else {
+        return QString();
+    }
 }
 
-QString filter_NOT(const QString &a) {
-    auto filter = QString("(!%1)").arg(a);
-    return filter;
+QString filter_NOT(const QString &filter) {
+    return QString("(!%1)").arg(filter);
 }
 
 QString current_advanced_view_filter() {
