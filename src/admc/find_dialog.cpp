@@ -64,16 +64,36 @@ FindDialog::FindDialog()
 
     find_results = new ObjectListWidget();
 
-    const auto layout = new QGridLayout(this);
+    // Keep filter widget compact and expand find results.
+    // As a result, when user expands find dialog
+    // vertically, filter widget will keep it's size, find
+    // results will get expanded
+    filter_widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    find_results->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-    const int search_base_combo_row = layout->rowCount();
-    layout->addWidget(search_base_combo_label, search_base_combo_row, 0);
-    layout->addWidget(search_base_combo, search_base_combo_row, 1);
-    layout->addWidget(custom_search_base_button, search_base_combo_row, 2);
+    auto filter_widget_frame = new QFrame();
+    filter_widget_frame->setFrameStyle(QFrame::Raised);
+    filter_widget_frame->setFrameShape(QFrame::Box);
+    
+    {
+        auto layout = new QGridLayout();
+        filter_widget_frame->setLayout(layout);
 
-    layout->addWidget(filter_widget, layout->rowCount(), 0, 1, layout->columnCount());
-    layout->addWidget(find_button, layout->rowCount(), 1);
-    layout->addWidget(find_results, layout->rowCount(), 0, 1, layout->columnCount());
+        const int search_base_combo_row = layout->rowCount();
+        layout->addWidget(search_base_combo_label, search_base_combo_row, 0);
+        layout->addWidget(search_base_combo, search_base_combo_row, 1);
+        layout->addWidget(custom_search_base_button, search_base_combo_row, 2);
+
+        layout->addWidget(filter_widget, layout->rowCount(), 0, 1, layout->columnCount());
+        layout->addWidget(find_button, layout->rowCount(), 1);
+    }
+
+    {
+        auto layout = new QVBoxLayout();
+        setLayout(layout);
+        layout->addWidget(filter_widget_frame);
+        layout->addWidget(find_results);
+    }
 
     connect(
         custom_search_base_button, &QAbstractButton::clicked,
