@@ -79,8 +79,6 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
         select_classes_button, &QAbstractButton::clicked,
         this, &FilterWidgetNormalTab::on_select_classes);
 
-    auto attribute_combo_label = new QLabel(tr("Attribute:"));
-
     attribute_class_combo = new QComboBox();
     for (const QString object_class : search_classes) {
         const QString display = ADCONFIG()->get_class_display_name(object_class);
@@ -137,10 +135,8 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
     auto filter_builder_layout = new QGridLayout();
     filter_builder_wrapper->setLayout(filter_builder_layout);
 
-    const int attribute_row = filter_builder_layout->rowCount();
-    filter_builder_layout->addWidget(attribute_combo_label, attribute_row, 0);
-    filter_builder_layout->addWidget(attribute_class_combo, attribute_row, 1);
-    filter_builder_layout->addWidget(attribute_combo, attribute_row, 2);
+    filter_builder_layout->addWidget(attribute_class_combo, filter_builder_layout->rowCount(), 0, 1, 3);
+    filter_builder_layout->addWidget(attribute_combo, filter_builder_layout->rowCount(), 0, 1, 3);
 
     const int condition_value_row = filter_builder_layout->rowCount();
     filter_builder_layout->addWidget(condition_combo, condition_value_row, 0);

@@ -64,13 +64,6 @@ FindDialog::FindDialog()
 
     find_results = new ObjectListWidget();
 
-    // Keep filter widget compact and expand find results.
-    // As a result, when user expands find dialog
-    // vertically, filter widget will keep it's size, find
-    // results will get expanded
-    filter_widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    find_results->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-
     auto filter_widget_frame = new QFrame();
     filter_widget_frame->setFrameStyle(QFrame::Raised);
     filter_widget_frame->setFrameShape(QFrame::Box);
@@ -94,6 +87,13 @@ FindDialog::FindDialog()
         layout->addWidget(filter_widget_frame);
         layout->addWidget(find_results);
     }
+
+    // Keep filter widget compact and expand find results.
+    // As a result, when user expands find dialog
+    // vertically, filter widget will keep it's size, find
+    // results will get expanded
+    filter_widget_frame->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
+    find_results->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 
     connect(
         custom_search_base_button, &QAbstractButton::clicked,
