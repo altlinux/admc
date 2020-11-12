@@ -46,7 +46,7 @@ QString FilterWidgetSimpleTab::get_filter() const {
     [this]() {
         const QString name = name_edit->text();
 
-        return filter_EQUALS(ATTRIBUTE_NAME, "*" + name + "*");
+        return filter_CONDITION(Condition_Contains, name);
     }();
 
     const QString classes_filter = select_classes->get_filter();

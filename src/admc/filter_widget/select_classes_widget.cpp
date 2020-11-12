@@ -77,7 +77,7 @@ QString SelectClassesWidget::get_filter() const {
         QList<QString> out;
 
         for (const QString object_class : selected) {
-            const QString class_filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, "*" + object_class + "*");
+            const QString class_filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_OBJECT_CLASS, object_class);
 
             out.append(class_filter);
         }

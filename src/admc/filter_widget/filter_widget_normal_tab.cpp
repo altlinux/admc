@@ -34,17 +34,6 @@
 
 #include <algorithm>
 
-enum Condition {
-    Condition_Contains,
-    Condition_Equals,
-    Condition_NotEquals,
-    Condition_StartsWith,
-    Condition_EndsWith,
-    Condition_Set,
-    Condition_Unset,
-    Condition_COUNT,
-};
-
 QString condition_to_display_string(const Condition condition);
 
 FilterWidgetNormalTab::FilterWidgetNormalTab()
@@ -289,20 +278,7 @@ void FilterWidgetNormalTab::on_add_filter() {
         }
     }();
 
-    const QString filter =
-    [attribute, condition, value]() {
-        switch(condition) {
-            case Condition_Equals: return filter_EQUALS(attribute, value);
-            case Condition_NotEquals: return filter_NOT(filter_EQUALS(attribute, value));
-            case Condition_StartsWith: return filter_EQUALS(attribute, "*" + value);
-            case Condition_EndsWith: return filter_EQUALS(attribute, value + "*");
-            case Condition_Contains: return filter_EQUALS(attribute, "*" + value + "*");
-            case Condition_Set: return filter_EQUALS(attribute, "*");
-            case Condition_Unset: return filter_NOT(filter_EQUALS(attribute, "*"));
-            case Condition_COUNT: return QString();
-        }
-        return QString();
-    }();
+    const QString filter = filter_CONDITION(condition, attribute, value);
 
     auto item = new QListWidgetItem();
     item->setText(filter_display_string);

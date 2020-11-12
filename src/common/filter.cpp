@@ -21,9 +21,18 @@
 #include "settings.h"
 #include "ad_interface.h"
 
-QString filter_EQUALS(const QString &attribute, const QString &value) {
-    auto filter = QString("(%1=%2)").arg(attribute, value);
-    return filter;
+QString filter_CONDITION(const Condition condition, const QString &attribute, const QString &value) {
+    switch(condition) {
+        case Condition_Equals: return QString("(%1=%2)").arg(attribute, value);
+        case Condition_NotEquals: return QString("(!%1=%2)").arg(attribute, value);
+        case Condition_StartsWith: return QString("(%1=*%2)").arg(attribute, value);
+        case Condition_EndsWith: return QString("(%1=%2*)").arg(attribute, value);
+        case Condition_Contains: return QString("(%1=*%2*)").arg(attribute, value);
+        case Condition_Set: return QString("(%1=*)").arg(attribute);
+        case Condition_Unset: return QString("(!%1=*)").arg(attribute);
+        case Condition_COUNT: return QString();
+    }
+    return QString();
 }
 
 // {x, y, z ...} => (&(x)(y)(z)...)
@@ -56,16 +65,12 @@ QString filter_OR(const QList<QString> &subfilters) {
     }
 }
 
-QString filter_NOT(const QString &filter) {
-    return QString("(!%1)").arg(filter);
-}
-
 QString current_advanced_view_filter() {
     const bool advanced_view = SETTINGS()->get_bool(BoolSetting_AdvancedView);
 
     if (advanced_view) {
         return QString();
     } else {
-        return filter_NOT(filter_EQUALS(ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true"));
+        return filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
     }
 }

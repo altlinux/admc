@@ -206,7 +206,7 @@ void GroupPolicyTab::reload_model(const Gplink &gplink) {
 
     // TODO: use filter to search only for needed gpo's, not all of them (dn=dn1 or dn=dn2 or ...)
     const QList<QString> search_attributes = {ATTRIBUTE_DISPLAY_NAME};
-    const QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
+    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
     const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_All);
 
     const QList<QString> gpos = gplink.get_gpos();

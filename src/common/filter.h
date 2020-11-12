@@ -22,12 +22,23 @@
 
 #include <QString>
 
-// If arguments for AND/OR are empty, empty string is returned
+enum Condition {
+    Condition_Contains,
+    Condition_Equals,
+    Condition_NotEquals,
+    Condition_StartsWith,
+    Condition_EndsWith,
+    Condition_Set,
+    Condition_Unset,
+    Condition_COUNT,
+};
 
-QString filter_EQUALS(const QString &attribute, const QString &value);
+
+QString filter_CONDITION(const Condition condition, const QString &attribute, const QString &value = QString());
+
+// If arguments for AND/OR are empty, empty string is returned
 QString filter_AND(const QList<QString> &subfilters);
 QString filter_OR(const QList<QString> &subfilters);
-QString filter_NOT(const QString &filter);
 
 QString current_advanced_view_filter();
 

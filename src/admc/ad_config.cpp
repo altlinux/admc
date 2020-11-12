@@ -185,7 +185,7 @@ AdConfig::AdConfig(QObject *parent)
         QHash<QString, QList<QString>> out;
 
         const QString schema_dn = AD()->schema_dn();
-        const QString filter = filter_EQUALS(ATTRIBUTE_POSSIBLE_SUPERIORS, "*");
+        const QString filter = filter_CONDITION(Condition_Set, ATTRIBUTE_POSSIBLE_SUPERIORS);
         const QList<QString> attributes = {ATTRIBUTE_POSSIBLE_SUPERIORS};
         const QHash<QString, AdObject> search_results = AD()->search(filter, attributes, SearchScope_Children, schema_dn);
 
@@ -260,7 +260,7 @@ AdConfig::AdConfig(QObject *parent)
         QHash<QString, AttributeType> out;
 
         const QString schema_dn = AD()->schema_dn();
-        const QString filter = filter_EQUALS(ATTRIBUTE_POSSIBLE_SUPERIORS, "*");
+        const QString filter = filter_CONDITION(Condition_Set, ATTRIBUTE_POSSIBLE_SUPERIORS);
         const QList<QString> attributes = {ATTRIBUTE_ATTRIBUTE_SYNTAX,
             ATTRIBUTE_OM_SYNTAX,
             ATTRIBUTE_LDAP_DISPLAY_NAME

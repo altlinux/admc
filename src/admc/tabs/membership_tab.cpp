@@ -129,7 +129,7 @@ void MembershipTab::load(const AdObject &object) {
             const QByteArray group_sid = object.get_value(ATTRIBUTE_OBJECT_SID);
             const QString group_rid = extract_rid_from_sid(group_sid);
 
-            const QString filter = filter_EQUALS(ATTRIBUTE_PRIMARY_GROUP_ID, group_rid);
+            const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_PRIMARY_GROUP_ID, group_rid);
             const QHash<QString, AdObject> result = AD()->search(filter, QList<QString>(), SearchScope_All);
 
             for (const QString user : result.keys()) {
@@ -153,7 +153,7 @@ void MembershipTab::load(const AdObject &object) {
             const int cut_index = user_sid_string.lastIndexOf("-") + 1;
             const QString group_sid = user_sid_string.left(cut_index) + group_rid;
 
-            const QString filter = filter_EQUALS(ATTRIBUTE_OBJECT_SID, group_sid);
+            const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, group_sid);
             const QHash<QString, AdObject> result = AD()->search(filter, QList<QString>(), SearchScope_All);
 
             if (!result.isEmpty()) {
