@@ -89,12 +89,6 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
     attribute_combo = new QComboBox();
 
     condition_combo = new QComboBox();
-    for (int i = 0; i < Condition_COUNT; i++) {
-        const Condition condition = (Condition) i;
-        const QString condition_string = condition_to_display_string(condition);
-
-        condition_combo->addItem(condition_string, i);
-    }
 
     value_edit = new QLineEdit();
 
@@ -174,6 +168,11 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
         attribute_class_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &FilterWidgetNormalTab::on_attribute_class_combo);
     on_attribute_class_combo();
+
+    connect(
+        attribute_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &FilterWidgetNormalTab::fill_conditions_combo);
+    fill_conditions_combo();
 
     connect(
         condition_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -266,6 +265,49 @@ void FilterWidgetNormalTab::on_attribute_class_combo() {
     for (const auto display_attribute : display_attributes) {
         const QString attribute = display_to_attribute[display_attribute];
         attribute_combo->addItem(display_attribute, attribute);
+    }
+}
+
+void FilterWidgetNormalTab::fill_conditions_combo() {
+    const QList<Condition> conditions =
+    [this]() {
+        const AttributeType attribute_type =
+        [this]() {
+            const int index = attribute_combo->currentIndex();
+            const QVariant item_data = attribute_combo->itemData(index);
+            const QString attribute = item_data.toString();
+
+            return ADCONFIG()->get_attribute_type(attribute);
+        }();
+
+        // NOTE: extra conditions don't work on DSDN type
+        // attributes, so don't include them in the combobox
+        // in that case
+        if (attribute_type == AttributeType_DSDN) {
+            return {
+                Condition_Equals,
+                Condition_NotEquals,
+                Condition_Set,
+                Condition_Unset,
+            };
+        } else {
+            return {
+                Condition_Contains,
+                Condition_StartsWith,
+                Condition_EndsWith,
+                Condition_Equals,
+                Condition_NotEquals,
+                Condition_Set,
+                Condition_Unset,
+            };
+        }
+    }();
+
+    condition_combo->clear();
+    for (const auto condition : conditions) {
+        const QString condition_string = condition_to_display_string(condition);
+
+        condition_combo->addItem(condition_string, (int)condition);
     }
 }
 

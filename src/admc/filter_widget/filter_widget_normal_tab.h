@@ -48,6 +48,7 @@ public:
 
 private slots:
     void on_attribute_class_combo();
+    void fill_conditions_combo();
     void on_add_filter();
     void on_select_classes();
     void on_remove_filter();
