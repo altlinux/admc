@@ -23,7 +23,8 @@
 #include "filter.h"
 
 #include <QLineEdit>
-#include <QGridLayout>
+#include <QVBoxLayout>
+#include <QFormLayout>
 #include <QLabel>
 
 FilterWidgetSimpleTab::FilterWidgetSimpleTab()
@@ -31,14 +32,16 @@ FilterWidgetSimpleTab::FilterWidgetSimpleTab()
 {
     select_classes = new SelectClassesWidget();
 
-    auto name_label = new QLabel(tr("Name:"));
     name_edit = new QLineEdit(this);
 
-    auto layout = new QGridLayout();
+    auto name_layout = new QFormLayout();
+    name_layout->addRow(tr("Name:"), name_edit);
+
+    auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->addWidget(select_classes, 0, 0, 1, 2);
-    layout->addWidget(name_label, 1, 0);
-    layout->addWidget(name_edit, 1, 1);
+    layout->addWidget(select_classes);
+    layout->addLayout(name_layout);
+    layout->addStretch(100);
 }
 
 QString FilterWidgetSimpleTab::get_filter() const {

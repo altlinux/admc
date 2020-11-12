@@ -62,7 +62,8 @@ SelectClassesWidget::SelectClassesWidget()
 
     auto layout = new QHBoxLayout();
     setLayout(layout);
-
+    layout->setContentsMargins(0, 0, 0, 0);
+    
     layout->addWidget(classes_display);
     layout->addWidget(select_classes_button);
 
