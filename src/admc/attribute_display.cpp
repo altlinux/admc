@@ -45,7 +45,6 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
         case AttributeType_GeneralizedTime: return datetime_to_display_value(attribute, value);
         case AttributeType_Sid: return object_sid_to_display_value(value);
         case AttributeType_Octet: return octet_to_display_value(attribute, value);
-        case AttributeType_Unicode: return QString::fromUtf8(value);
         default: {
             return QString(value);
         }
@@ -138,7 +137,7 @@ QString timespan_to_display_value(const QByteArray &bytes) {
     // Timespan = integer value of hundred nanosecond quantities
     // (also negated)
     // Convert to dd:hh:mm:ss
-    const QString value_string = QString::fromUtf8(bytes);
+    const QString value_string = QString(bytes);
     const qint64 hundred_nanos_negative = value_string.toLongLong();
 
     if (hundred_nanos_negative == LLONG_MIN) {

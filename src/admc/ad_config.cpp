@@ -295,7 +295,13 @@ AdConfig::AdConfig(QObject *parent)
                 {"2.5.5.15", {{"66", AttributeType_NTSecDesc}}},
                 {"2.5.5.6", {{"18", AttributeType_Numeric}}},
                 {"2.5.5.2", {{"6", AttributeType_ObjectIdentifier}}},
-                {"2.5.5.10", {{"4", AttributeType_Octet}}},
+                {
+                    "2.5.5.10",
+                    {
+                        {"4", AttributeType_Octet},
+                        {"127", AttributeType_ReplicaLink}
+                    }
+                },
                 {"2.5.5.5", {{"19", AttributeType_Printable}}},
                 {"2.5.5.17", {{"4", AttributeType_Sid}}},
                 {"2.5.5.4", {{"20", AttributeType_Teletex}}},
@@ -306,7 +312,10 @@ AdConfig::AdConfig(QObject *parent)
                         {"23", AttributeType_UTCTime},
                         {"24", AttributeType_GeneralizedTime}
                     }
-                }
+                },
+                {"2.5.5.14", {{"127", AttributeType_DNString}}},
+                {"2.5.5.7", {{"127", AttributeType_DNBinary}}},
+                {"2.5.5.1", {{"127", AttributeType_DSDN}}},
             };
 
             out[attribute] =

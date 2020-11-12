@@ -36,12 +36,16 @@ enum AttributeType {
     AttributeType_Numeric,
     AttributeType_ObjectIdentifier,
     AttributeType_Octet,
+    AttributeType_ReplicaLink,
     AttributeType_Printable,
     AttributeType_Sid,
     AttributeType_Teletex,
     AttributeType_Unicode,
     AttributeType_UTCTime,
     AttributeType_GeneralizedTime,
+    AttributeType_DNString,
+    AttributeType_DNBinary,
+    AttributeType_DSDN,
 };
 
 // NOTE: large integer type has sub types but AD schema
