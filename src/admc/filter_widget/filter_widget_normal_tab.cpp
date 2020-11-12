@@ -32,6 +32,7 @@
 #include <QListWidget>
 #include <QCheckBox>
 #include <QDialogButtonBox>
+#include <QDebug>
 
 #include <algorithm>
 
@@ -224,16 +225,7 @@ void FilterWidgetNormalTab::on_attribute_class_combo() {
         return item_data.toString();
     }();
     
-    const QList<QString> attributes = 
-    [this, object_class]() {
-        const QList<QString> attributes_for_class = ADCONFIG()->get_find_attributes(object_class);
-        const QList<QString> default_attributes = ADCONFIG()->get_find_attributes(CLASS_DEFAULT);
-
-        QList<QString> out = attributes_for_class + default_attributes;
-        out.removeDuplicates();
-        
-        return out;
-    }();
+    const QList<QString> attributes = ADCONFIG()->get_find_attributes(object_class);
 
     const QList<QString> display_attributes =
     [attributes, object_class]() {
