@@ -73,7 +73,7 @@ FindDialog::FindDialog()
         filter_widget_frame->setLayout(layout);
 
         const int search_base_combo_row = layout->rowCount();
-        layout->addWidget(search_base_combo_label, search_base_combo_row, 0);
+        layout->addWidget(search_base_combo_label, search_base_combo_row, 0, 1, 1, Qt::AlignRight);
         layout->addWidget(search_base_combo, search_base_combo_row, 1);
         layout->addWidget(custom_search_base_button, search_base_combo_row, 2);
 

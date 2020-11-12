@@ -136,8 +136,17 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
     auto filter_builder_layout = new QGridLayout();
     filter_builder_wrapper->setLayout(filter_builder_layout);
 
-    filter_builder_layout->addWidget(attribute_class_combo, filter_builder_layout->rowCount(), 0, 1, 3);
-    filter_builder_layout->addWidget(attribute_combo, filter_builder_layout->rowCount(), 0, 1, 3);
+    const int attribute_labels_row = filter_builder_layout->rowCount();
+    filter_builder_layout->addWidget(new QLabel(tr("Attribute class:")), attribute_labels_row, 0);
+    filter_builder_layout->addWidget(new QLabel(tr("Attribute:")), attribute_labels_row, 1);
+
+    const int attribute_row = filter_builder_layout->rowCount();
+    filter_builder_layout->addWidget(attribute_class_combo, attribute_row, 0);
+    filter_builder_layout->addWidget(attribute_combo, attribute_row, 1, 1, 2);
+
+    const int condition_value_labels_row = filter_builder_layout->rowCount();
+    filter_builder_layout->addWidget(new QLabel(tr("Condition:")), condition_value_labels_row, 0);
+    filter_builder_layout->addWidget(new QLabel(tr("Value:")), condition_value_labels_row, 1);
 
     const int condition_value_row = filter_builder_layout->rowCount();
     filter_builder_layout->addWidget(condition_combo, condition_value_row, 0);
