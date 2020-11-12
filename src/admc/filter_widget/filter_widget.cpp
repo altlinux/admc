@@ -18,6 +18,7 @@
  */
 
 #include "filter_widget/filter_widget.h"
+#include "filter_widget/filter_widget_simple_tab.h"
 #include "filter_widget/filter_widget_normal_tab.h"
 #include "filter_widget/filter_widget_advanced_tab.h"
 #include "ad_interface.h"
@@ -33,13 +34,15 @@ FilterWidget::FilterWidget()
 {
     tab_widget = new QTabWidget();
 
-    auto normal_tab = new FilterWidgetNormalTab();
-    tab_widget->addTab(normal_tab, tr("Normal"));
-    tabs.append(normal_tab);
+    const auto add_tab =
+    [this](FilterWidgetTab *tab, const QString &title) {
+        tabs.append(tab);
+        tab_widget->addTab(tab, title);
+    };
 
-    auto advanced_tab = new FilterWidgetAdvancedTab();
-    tab_widget->addTab(advanced_tab, tr("Advanced"));
-    tabs.append(advanced_tab);
+    add_tab(new FilterWidgetSimpleTab(), tr("Simple"));
+    add_tab(new FilterWidgetNormalTab(), tr("Normal"));
+    add_tab(new FilterWidgetAdvancedTab(), tr("Advanced"));
 
     auto layout = new QGridLayout();
     setLayout(layout);

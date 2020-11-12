@@ -18,20 +18,18 @@
  */
 
 #include "filter_widget/filter_widget_normal_tab.h"
+#include "filter_widget/select_classes_widget.h"
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "utils.h"
 #include "filter.h"
 
-#include <QDialog>
 #include <QLabel>
 #include <QLineEdit>
 #include <QGridLayout>
 #include <QComboBox>
 #include <QPushButton>
 #include <QListWidget>
-#include <QCheckBox>
-#include <QDialogButtonBox>
 #include <QDebug>
 
 #include <algorithm>
@@ -47,38 +45,12 @@ enum Condition {
     Condition_COUNT,
 };
 
-const QList<QString> search_classes = {
-    CLASS_USER,
-    CLASS_GROUP,
-    CLASS_CONTACT,
-    CLASS_COMPUTER,
-    CLASS_PRINTER,
-    CLASS_OU,
-    CLASS_TRUSTED_DOMAIN,
-    CLASS_DOMAIN,
-    CLASS_CONTAINER,
-    CLASS_INET_ORG_PERSON,
-    CLASS_FOREIGN_SECURITY_PRINCIPAL,
-    CLASS_SHARED_FOLDER,
-    CLASS_RPC_SERVICES,
-    CLASS_CERTIFICATE_TEMPLATE,
-    CLASS_MSMQ_GROUP,
-    CLASS_MSMQ_QUEUE_ALIAS,
-    CLASS_REMOTE_STORAGE_SERVICE,
-};
-
 QString condition_to_display_string(const Condition condition);
 
 FilterWidgetNormalTab::FilterWidgetNormalTab()
 : FilterWidgetTab()
 {
-    selected_classes_display = new QLineEdit();
-    selected_classes_display->setReadOnly(true);
-
-    auto select_classes_button = new QPushButton(tr("Select classes"));
-    connect(
-        select_classes_button, &QAbstractButton::clicked,
-        this, &FilterWidgetNormalTab::on_select_classes);
+    select_classes = new SelectClassesWidget();
 
     attribute_class_combo = new QComboBox();
     for (const QString object_class : search_classes) {
@@ -151,9 +123,8 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
     auto layout = new QGridLayout();
     setLayout(layout);
 
-    const int selected_classes_row = layout->rowCount();
-    layout->addWidget(selected_classes_display, selected_classes_row, 0, 1, 2);
-    layout->addWidget(select_classes_button, selected_classes_row, 2);
+    const int select_classes_row = layout->rowCount();
+    layout->addWidget(select_classes, select_classes_row, 0, 1, 3);
 
     layout->addWidget(filter_builder_wrapper, layout->rowCount(), 0, 1, 3);
 
@@ -181,41 +152,30 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
 }
 
 QString FilterWidgetNormalTab::get_filter() const {
-    const QList<QString> attribute_filters =
+    const QString attribute_filter =
     [this]() {
-        QList<QString> out;
+        QList<QString> filters;
         for (int i = 0; i < filter_list->count(); i++) {
             const QListWidgetItem *item = filter_list->item(i);
-            const QString subfilter = item->data(Qt::UserRole).toString();
+            const QString filter = item->data(Qt::UserRole).toString();
 
-            out.append(subfilter);
+            filters.append(filter);
         }
 
-        return out;
+        return filter_AND(filters);
     }();
 
-    const QList<QString> class_filters =
-    [this]() {
-        QList<QString> out;
-        for (const QString object_class : selected_search_classes) {
-            // TODO: replace with filter contains f-n if end up making it
-            const QString class_filter = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, "*" + object_class + "*");
-            
-            out.append(class_filter);
-        }
+    const QString class_filter = select_classes->get_filter();
 
-        return out;
-    }();
-
-    const bool classes = !class_filters.isEmpty();
-    const bool attributes = !attribute_filters.isEmpty();
+    const bool classes = !class_filter.isEmpty();
+    const bool attributes = !attribute_filter.isEmpty();
 
     if (classes && attributes) {
-        return filter_AND({filter_OR(class_filters), filter_AND(attribute_filters)});
+        return filter_AND({class_filter, attribute_filter});
     } else if (!classes && attributes) {
-        return filter_AND(attribute_filters);
+        return attribute_filter;
     } else if (classes && !attributes) {
-        return filter_OR(class_filters);
+        return class_filter;
     } else {
         return QString();
     }
@@ -270,7 +230,7 @@ void FilterWidgetNormalTab::on_attribute_class_combo() {
 
 void FilterWidgetNormalTab::fill_conditions_combo() {
     const QList<Condition> conditions =
-    [this]() {
+    [this]() -> QList<Condition> {
         const AttributeType attribute_type =
         [this]() {
             const int index = attribute_combo->currentIndex();
@@ -350,79 +310,6 @@ void FilterWidgetNormalTab::on_add_filter() {
     filter_list->addItem(item);
 
     value_edit->clear();
-}
-
-void FilterWidgetNormalTab::on_select_classes() {
-    auto dialog = new QDialog();
-    dialog->setModal(true);
-
-    auto layout = new QGridLayout();
-    dialog->setLayout(layout);
-
-    QHash<QString, QCheckBox *> checkboxes;
-
-    for (const QString object_class : search_classes) {
-        const QString class_display = ADCONFIG()->get_class_display_name(object_class);
-
-        auto label = new QLabel(class_display);
-        auto checkbox = new QCheckBox();
-
-        const bool class_is_selected = selected_search_classes.contains(object_class);
-        checkbox_set_checked(checkbox, class_is_selected);
-
-        append_to_grid_layout_with_label(layout, label, checkbox);
-
-        checkboxes[object_class] = checkbox;
-    }
-
-    auto button_box = new QDialogButtonBox();
-    layout->addWidget(button_box);
-    
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
-    connect(
-        ok_button, &QPushButton::clicked,
-        dialog, &QDialog::accept);
-    connect(
-        cancel_button, &QPushButton::clicked,
-        dialog, &QDialog::reject);
-
-    connect(dialog, &QDialog::accepted,
-        [this, checkboxes]() {
-            selected_search_classes.clear();
-
-            // Save selected classes
-            for (const QString object_class : search_classes) {
-                QCheckBox *checkbox = checkboxes[object_class];
-
-                if (checkbox_is_checked(checkbox)) {
-                    selected_search_classes.insert(object_class);
-                }
-            }
-
-            // Display selected classes set as a sorted list
-            // of class display strings separated by ","
-            // {"user", "organizationUnit"}
-            // =>
-            // "User, Organizational Unit"
-            const QString selected_classes_string =
-            [this]() {
-                QList<QString> selected_classes_display_strings;
-                for (const QString object_class : selected_search_classes) {
-                    const QString class_display = ADCONFIG()->get_class_display_name(object_class);
-                    selected_classes_display_strings.append(class_display);
-                }
-
-                std::sort(selected_classes_display_strings.begin(), selected_classes_display_strings.end());
-
-                const QString joined = selected_classes_display_strings.join(", ");
-
-                return joined;
-            }();
-            selected_classes_display->setText(selected_classes_string);
-        });
-
-    dialog->open();
 }
 
 void FilterWidgetNormalTab::on_remove_filter() {

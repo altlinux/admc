@@ -32,11 +32,11 @@
 #include "filter_widget/filter_widget.h"
 
 #include <QString>
-#include <QSet>
 
 class QComboBox;
 class QLineEdit;
 class QListWidget;
+class SelectClassesWidget;
 
 class FilterWidgetNormalTab final : public FilterWidgetTab {
 Q_OBJECT
@@ -50,7 +50,6 @@ private slots:
     void on_attribute_class_combo();
     void fill_conditions_combo();
     void on_add_filter();
-    void on_select_classes();
     void on_remove_filter();
     void on_clear_filters();
     void on_condition_combo();
@@ -64,9 +63,7 @@ private:
     QComboBox *condition_combo;
     QLineEdit *value_edit;
     QListWidget *filter_list;
-    QLineEdit *selected_classes_display;
-
-    QSet<QString> selected_search_classes;
+    SelectClassesWidget *select_classes;
 };
 
 #endif /* FILTER_WIDGET_NORMAL_TAB_H */
