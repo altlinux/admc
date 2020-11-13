@@ -92,6 +92,7 @@ FindDialog::FindDialog()
     // expands find dialog horizontally, filter widget will
     // keep it's size, find results will get expanded
     filter_widget_frame->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
+    find_results->setMinimumSize(500, 0);
 
     connect(
         custom_search_base_button, &QAbstractButton::clicked,
