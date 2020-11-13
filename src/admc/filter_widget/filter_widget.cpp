@@ -24,6 +24,7 @@
 #include "ad_interface.h"
 #include "utils.h"
 
+#include <QDebug>
 #include <QLabel>
 #include <QTabWidget>
 #include <QGridLayout>
@@ -33,16 +34,9 @@ FilterWidget::FilterWidget()
 : QWidget()
 {
     tab_widget = new QTabWidget();
-
-    const auto add_tab =
-    [this](FilterWidgetTab *tab, const QString &title) {
-        tabs.append(tab);
-        tab_widget->addTab(tab, title);
-    };
-
-    add_tab(new FilterWidgetSimpleTab(), tr("Simple"));
-    add_tab(new FilterWidgetNormalTab(), tr("Normal"));
-    add_tab(new FilterWidgetAdvancedTab(), tr("Advanced"));
+    tab_widget->addTab(new FilterWidgetSimpleTab(), tr("Simple"));
+    tab_widget->addTab(new FilterWidgetNormalTab(), tr("Normal"));
+    tab_widget->addTab(new FilterWidgetAdvancedTab(), tr("Advanced"));
 
     auto layout = new QGridLayout();
     setLayout(layout);
@@ -53,13 +47,12 @@ FilterWidget::FilterWidget()
 }
 
 QString FilterWidget::get_filter() const {
-    const FilterWidgetTab *current_tab = get_current_tab();
-    return current_tab->get_filter();
-}
+    const FilterWidgetTab *current_tab = dynamic_cast<FilterWidgetTab *> (tab_widget->currentWidget());
 
-const FilterWidgetTab *FilterWidget::get_current_tab() const {
-    const int index = tab_widget->currentIndex();
-    const FilterWidgetTab *current_tab = tabs[index];
-
-    return current_tab;
+    if (current_tab) {
+        return current_tab->get_filter();
+    } else {
+        qDebug() << "Inserted a non FilterWidgetTab into FilterWidget";
+        return QString();
+    }
 }

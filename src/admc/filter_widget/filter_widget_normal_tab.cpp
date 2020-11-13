@@ -21,7 +21,6 @@
 #include "filter_widget/select_classes_widget.h"
 #include "filter_widget/filter_builder.h"
 #include "ad_interface.h"
-#include "utils.h"
 #include "filter.h"
 
 #include <QLabel>

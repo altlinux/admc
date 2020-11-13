@@ -42,8 +42,6 @@ private slots:
 
 private:
     QLineEdit *classes_display;
-    QDialog *select_dialog;
-
     QList<QString> selected;
 };
 

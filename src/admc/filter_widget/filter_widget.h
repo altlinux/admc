@@ -28,7 +28,6 @@
 
 #include <QWidget>
 #include <QString>
-#include <QList>
 
 class QTabWidget;
 class FilterWidgetTab;
@@ -43,9 +42,6 @@ public:
 
 private:
     QTabWidget *tab_widget;
-    QList<FilterWidgetTab *> tabs;
-
-    const FilterWidgetTab *get_current_tab() const;
 };
 
 class FilterWidgetTab : public QWidget {

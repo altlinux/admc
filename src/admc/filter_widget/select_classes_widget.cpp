@@ -23,8 +23,8 @@
 #include "utils.h"
 #include "filter.h"
 
-#include <QLabel>
-#include <QGridLayout>
+#include <QVBoxLayout>
+#include <QFormLayout>
 #include <QPushButton>
 #include <QDialog>
 #include <QCheckBox>
@@ -73,26 +73,26 @@ void SelectClassesWidget::select_classes() {
     auto dialog = new QDialog(this);
     dialog->setModal(true);
 
-    auto layout = new QGridLayout();
+    auto layout = new QVBoxLayout();
     dialog->setLayout(layout);
 
     QHash<QString, QCheckBox *> checkboxes;
 
-    for (const QString object_class : filter_classes) {
-        const QString class_display = ADCONFIG()->get_class_display_name(object_class);
+    auto checkboxes_layout = new QFormLayout();
 
-        auto label = new QLabel(class_display);
+    for (const QString object_class : filter_classes) {
         auto checkbox = new QCheckBox();
+        checkboxes[object_class] = checkbox;
 
         const bool class_is_selected = selected.contains(object_class);
         checkbox_set_checked(checkbox, class_is_selected);
 
-        append_to_grid_layout_with_label(layout, label, checkbox);
-
-        checkboxes[object_class] = checkbox;
+        const QString class_display = ADCONFIG()->get_class_display_name(object_class);
+        checkboxes_layout->addRow(class_display, checkbox);
     }
 
     auto button_box = new QDialogButtonBox();
+    layout->addLayout(checkboxes_layout);
     layout->addWidget(button_box);
     
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
