@@ -47,6 +47,7 @@ add_executable(admc
     filter_widget/filter_widget_normal_tab.cpp
     filter_widget/filter_widget_advanced_tab.cpp
     filter_widget/select_classes_widget.cpp
+    filter_widget/filter_builder.cpp
     
     tabs/details_tab.cpp
     tabs/general_tab.cpp

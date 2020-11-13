@@ -33,10 +33,9 @@
 
 #include <QString>
 
-class QComboBox;
-class QLineEdit;
 class QListWidget;
 class SelectClassesWidget;
+class FilterBuilder;
 
 class FilterWidgetNormalTab final : public FilterWidgetTab {
 Q_OBJECT
@@ -47,23 +46,14 @@ public:
     QString get_filter() const;
 
 private slots:
-    void on_attribute_class_combo();
-    void fill_conditions_combo();
     void on_add_filter();
     void on_remove_filter();
     void on_clear_filters();
-    void on_condition_combo();
 
 private:
-    QTabWidget *tab_widget;
-    QWidget *normal_tab;
-    QWidget *advanced_tab;
-    QComboBox *attribute_class_combo;
-    QComboBox *attribute_combo;
-    QComboBox *condition_combo;
-    QLineEdit *value_edit;
-    QListWidget *filter_list;
     SelectClassesWidget *select_classes;
+    FilterBuilder *filter_builder;
+    QListWidget *filter_list;
 };
 
 #endif /* FILTER_WIDGET_NORMAL_TAB_H */

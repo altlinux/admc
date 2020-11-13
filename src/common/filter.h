@@ -33,6 +33,7 @@ enum Condition {
     Condition_COUNT,
 };
 
+extern const QList<QString> filter_classes;
 
 QString filter_CONDITION(const Condition condition, const QString &attribute, const QString &value = QString());
 

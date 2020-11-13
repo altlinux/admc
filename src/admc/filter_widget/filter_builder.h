@@ -17,34 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SELECT_CLASSES_WIDGET_H
-#define SELECT_CLASSES_WIDGET_H
+#ifndef FILTER_BUILDER_H
+#define FILTER_BUILDER_H
 
 /**
- * Select classes for filtering.
+ * Build a single LDAP filter step by step by selecting
+ * attribute, condition and value. Attributes are split into
+ * groups by class to which they are related.
  */
 
 #include <QWidget>
 #include <QString>
-#include <QList>
 
+class QComboBox;
 class QLineEdit;
 
-class SelectClassesWidget final : public QWidget {
-public:
-    SelectClassesWidget();
+class FilterBuilder final : public QWidget {
+Q_OBJECT
 
-    // Return a filter that accepts only selected classes
+public:
+    FilterBuilder();
+
     QString get_filter() const;
+    QString get_filter_display() const;
+    void clear();
 
 private slots:
-    void select_classes();
+    void update_attributes_combo();
+    void update_conditions_combo();
+    void update_value_edit();
 
 private:
-    QLineEdit *classes_display;
-    QDialog *select_dialog;
-
-    QList<QString> selected;
+    QComboBox *attribute_class_combo;
+    QComboBox *attribute_combo;
+    QComboBox *condition_combo;
+    QLineEdit *value_edit;
 };
 
-#endif /* SELECT_CLASSES_WIDGET_H */
+#endif /* FILTER_BUILDER_H */

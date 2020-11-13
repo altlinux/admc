@@ -31,26 +31,6 @@
 #include <QLineEdit>
 #include <QDialogButtonBox>
 
-const QList<QString> search_classes = {
-    CLASS_USER,
-    CLASS_GROUP,
-    CLASS_CONTACT,
-    CLASS_COMPUTER,
-    CLASS_PRINTER,
-    CLASS_OU,
-    CLASS_TRUSTED_DOMAIN,
-    CLASS_DOMAIN,
-    CLASS_CONTAINER,
-    CLASS_INET_ORG_PERSON,
-    CLASS_FOREIGN_SECURITY_PRINCIPAL,
-    CLASS_SHARED_FOLDER,
-    CLASS_RPC_SERVICES,
-    CLASS_CERTIFICATE_TEMPLATE,
-    CLASS_MSMQ_GROUP,
-    CLASS_MSMQ_QUEUE_ALIAS,
-    CLASS_REMOTE_STORAGE_SERVICE,
-};
-
 SelectClassesWidget::SelectClassesWidget()
 : QWidget()
 {
@@ -98,7 +78,7 @@ void SelectClassesWidget::select_classes() {
 
     QHash<QString, QCheckBox *> checkboxes;
 
-    for (const QString object_class : search_classes) {
+    for (const QString object_class : filter_classes) {
         const QString class_display = ADCONFIG()->get_class_display_name(object_class);
 
         auto label = new QLabel(class_display);
@@ -132,7 +112,7 @@ void SelectClassesWidget::select_classes() {
             selected.clear();
 
             // Save selected classes
-            for (const QString object_class : search_classes) {
+            for (const QString object_class : filter_classes) {
                 QCheckBox *checkbox = checkboxes[object_class];
 
                 if (checkbox_is_checked(checkbox)) {

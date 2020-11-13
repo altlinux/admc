@@ -292,7 +292,7 @@ bool ContainersModel::hasChildren(const QModelIndex &parent = QModelIndex()) con
 QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AdObject &object) {
     const bool passes_filter =
     [dn, object]() {
-        static const QList<QString> filter_classes =
+        static const QList<QString> accepted_classes =
         []() {
             QList<QString> out = ADCONFIG()->get_filter_containers();
 
@@ -310,7 +310,7 @@ QStandardItem *make_row(QStandardItem *parent, const QString &dn, const AdObject
 
         // NOTE: compare against all classes of object, not just the most derived one
         const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-        for (const auto acceptable_class : filter_classes) {
+        for (const auto acceptable_class : accepted_classes) {
             if (object_classes.contains(acceptable_class)) {
                 return true;
             }

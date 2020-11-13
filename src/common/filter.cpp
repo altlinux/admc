@@ -21,6 +21,26 @@
 #include "settings.h"
 #include "ad_interface.h"
 
+const QList<QString> filter_classes = {
+    CLASS_USER,
+    CLASS_GROUP,
+    CLASS_CONTACT,
+    CLASS_COMPUTER,
+    CLASS_PRINTER,
+    CLASS_OU,
+    CLASS_TRUSTED_DOMAIN,
+    CLASS_DOMAIN,
+    CLASS_CONTAINER,
+    CLASS_INET_ORG_PERSON,
+    CLASS_FOREIGN_SECURITY_PRINCIPAL,
+    CLASS_SHARED_FOLDER,
+    CLASS_RPC_SERVICES,
+    CLASS_CERTIFICATE_TEMPLATE,
+    CLASS_MSMQ_GROUP,
+    CLASS_MSMQ_QUEUE_ALIAS,
+    CLASS_REMOTE_STORAGE_SERVICE,
+};
+
 QString filter_CONDITION(const Condition condition, const QString &attribute, const QString &value) {
     switch(condition) {
         case Condition_Equals: return QString("(%1=%2)").arg(attribute, value);
