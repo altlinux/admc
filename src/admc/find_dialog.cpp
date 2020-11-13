@@ -82,18 +82,16 @@ FindDialog::FindDialog()
     }
 
     {
-        auto layout = new QVBoxLayout();
+        auto layout = new QHBoxLayout();
         setLayout(layout);
         layout->addWidget(filter_widget_frame);
         layout->addWidget(find_results);
     }
 
-    // Keep filter widget compact and expand find results.
-    // As a result, when user expands find dialog
-    // vertically, filter widget will keep it's size, find
-    // results will get expanded
+    // Keep filter widget compact, so that when user
+    // expands find dialog horizontally, filter widget will
+    // keep it's size, find results will get expanded
     filter_widget_frame->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
-    find_results->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 
     connect(
         custom_search_base_button, &QAbstractButton::clicked,
