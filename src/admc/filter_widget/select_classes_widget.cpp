@@ -38,7 +38,7 @@ SelectClassesWidget::SelectClassesWidget()
     classes_display->setReadOnly(true);
     classes_display->setPlaceholderText(tr("All classes"));
 
-    auto select_classes_button = new QPushButton(tr("Select classes"));
+    auto select_classes_button = new QPushButton(tr("Select"));
 
     auto layout = new QHBoxLayout();
     setLayout(layout);

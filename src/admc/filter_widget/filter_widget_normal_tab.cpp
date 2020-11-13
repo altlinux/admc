@@ -25,7 +25,8 @@
 #include "filter.h"
 
 #include <QLabel>
-#include <QGridLayout>
+#include <QFormLayout>
+#include <QVBoxLayout>
 #include <QPushButton>
 #include <QListWidget>
 #include <QDebug>
@@ -78,20 +79,24 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
         layout->addWidget(add_filter_button);
     }
 
-    auto layout = new QGridLayout();
+    auto classes_layout = new QFormLayout();
+    classes_layout->addRow(tr("Classes:"), select_classes);
+
+    auto list_buttons_layout = new QHBoxLayout();
+    list_buttons_layout->addWidget(remove_filter_button);
+    list_buttons_layout->addWidget(clear_filters_button);
+
+    auto layout = new QVBoxLayout();
     setLayout(layout);
 
-    const int select_classes_row = layout->rowCount();
-    layout->addWidget(select_classes, select_classes_row, 0, 1, 3);
+    layout->addLayout(classes_layout);
 
-    layout->addWidget(filter_builder_framed, layout->rowCount(), 0, 1, 3);
+    layout->addWidget(filter_builder_framed);
 
-    layout->addWidget(new QLabel(tr("Filters:")), layout->rowCount(), 0, 1, 3);
-    layout->addWidget(filter_list, layout->rowCount(), 0, 1, 3);
+    layout->addWidget(new QLabel(tr("Filters:")));
+    layout->addWidget(filter_list);
 
-    const int filter_list_buttons_row = layout->rowCount();
-    layout->addWidget(remove_filter_button, filter_list_buttons_row, 0);
-    layout->addWidget(clear_filters_button, filter_list_buttons_row, 1);
+    layout->addLayout(list_buttons_layout);
 }
 
 QString FilterWidgetNormalTab::get_filter() const {
