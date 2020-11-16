@@ -32,7 +32,6 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private:
-    void retry_connect_dialog();
     void attempt_to_connect();
     void finish_init();
 

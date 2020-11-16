@@ -45,44 +45,41 @@ MainWindow::MainWindow()
     attempt_to_connect();
 }
 
-void MainWindow::retry_connect_dialog() {
-    const QMessageBox::Icon icon = QMessageBox::Warning;
-    const QString title = tr("Failed to connect");
-    const QString text = tr("Check that you are connected to the domain network and that you are kerberos authenticated");
-    const QMessageBox::StandardButtons buttons = (QMessageBox::Retry | QMessageBox::Cancel);
-    auto dialog = new QMessageBox(icon, title, text, buttons);
-
-    connect(
-        dialog, &QDialog::accepted,
-        [this, icon, title]() {
-            // NOTE: delay retry and open an intermediate dialog so that the user can follow the process. Otherwise it would look like clicking retry button did nothing
-            auto retrying_dialog = new QMessageBox(icon, title, tr("Retrying..."), QMessageBox::NoButton);
-
-            retrying_dialog->open();
-
-            QTimer::singleShot(1000,
-            [this, retrying_dialog]() {
-                retrying_dialog->close();
-                attempt_to_connect();
-            });
-        });
-
-    connect(
-        dialog, &QDialog::rejected,
-        []() {
-            QApplication::quit();
-        });
-
-    dialog->open();
-}
-
 void MainWindow::attempt_to_connect() {
     const bool connect_success = AD()->connect();
 
     if (connect_success) {
         finish_init();
     } else {
-        retry_connect_dialog();
+        // Open retry dialog
+        const QMessageBox::Icon icon = QMessageBox::Warning;
+        const QString title = tr("Failed to connect");
+        const QString text = tr("Check that you are connected to the domain network and that you are kerberos authenticated");
+        const QMessageBox::StandardButtons buttons = (QMessageBox::Retry | QMessageBox::Cancel);
+        auto dialog = new QMessageBox(icon, title, text, buttons);
+
+        // NOTE: delay retry and open an intermediate dialog so that the user can follow the process. Otherwise it would look like clicking retry button did nothing
+        connect(
+            dialog, &QDialog::accepted,
+            [this, icon, title]() {
+                auto retrying_dialog = new QMessageBox(icon, title, tr("Retrying..."), QMessageBox::NoButton);
+
+                retrying_dialog->open();
+
+                QTimer::singleShot(1000,
+                    [this, retrying_dialog]() {
+                        retrying_dialog->close();
+                        attempt_to_connect();
+                    });
+            });
+
+        connect(
+            dialog, &QDialog::rejected,
+            []() {
+                QApplication::quit();
+            });
+
+        dialog->open();
     }
 }
 
