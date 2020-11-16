@@ -30,14 +30,14 @@
 
 MenuBar::MenuBar(QWidget* parent)
 : QMenuBar(parent) {
-    QMenu *menubar_file = addMenu(tr("File"));
+    QMenu *menubar_action = addMenu(tr("Action"));
 
-    menubar_file->addAction(tr("Refresh"),
+    menubar_action->addAction(tr("Refresh"),
         []() {
             AD()->refresh();
         });
 
-    QAction *exit_action = menubar_file->addAction(tr("Exit"));
+    QAction *exit_action = menubar_action->addAction(tr("Exit"));
     connect(
         exit_action, &QAction::triggered,
         this, &MenuBar::on_exit_action);
