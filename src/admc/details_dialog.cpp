@@ -110,7 +110,10 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     title_label = new QLabel(this);
     tab_widget = new QTabWidget(this);
 
-    button_box = new QDialogButtonBox(QDialogButtonBox::Apply |  QDialogButtonBox::Cancel, this);
+    auto button_box = new QDialogButtonBox();
+    apply_button = button_box->addButton(QDialogButtonBox::Apply);
+    reset_button = button_box->addButton(QDialogButtonBox::Reset);
+    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
 
     const auto layout = new QVBoxLayout(this);
     layout->setSpacing(0);
@@ -187,11 +190,14 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     }
 
     connect(
-        button_box->button(QDialogButtonBox::Apply), &QPushButton::clicked,
-        this, &DetailsDialog::on_apply);
+        apply_button, &QPushButton::clicked,
+        this, &DetailsDialog::apply);
     connect(
-        button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
-        this, &DetailsDialog::load);
+        reset_button, &QPushButton::clicked,
+        this, &DetailsDialog::reset);
+    connect(
+        cancel_button, &QPushButton::clicked,
+        this, &DetailsDialog::reject);
     connect(
         AD(), &AdInterface::modified,
         this, &DetailsDialog::on_ad_modified);
@@ -221,7 +227,7 @@ QString DetailsDialog::get_target() const {
     return target;
 }
 
-void DetailsDialog::on_apply() {
+void DetailsDialog::apply() {
     const int errors_index = Status::instance()->get_errors_size();
 
     bool all_verified = true;
@@ -246,10 +252,10 @@ void DetailsDialog::on_apply() {
         Status::instance()->show_errors_popup(errors_index);
     }
 
-    load();
+    reset();
 }
 
-void DetailsDialog::load() {
+void DetailsDialog::reset() {
     const AdObject object = AD()->search_object(target);
     for (auto tab : tabs) {
         tab->load(object);
@@ -282,7 +288,8 @@ void DetailsDialog::on_tab_edited() {
         }
     }
 
-    button_box->setEnabled(any_changed);
+    apply_button->setEnabled(any_changed);
+    reset_button->setEnabled(any_changed);
 }
 
 void DetailsDialog::on_ad_modified() {

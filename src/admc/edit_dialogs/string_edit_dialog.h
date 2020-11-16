@@ -33,7 +33,7 @@ public:
     QList<QByteArray> get_new_values() const;
 
 private slots:
-    void on_cancel();
+    void reset();
 
 private:
     QLineEdit *edit;

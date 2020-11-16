@@ -191,7 +191,7 @@ public:
 
     AdConfig *config() const;
     QString domain() const;
-    QString search_base() const;
+    QString domain_head() const;
     QString host() const;
     QString configuration_dn() const;
     QString schema_dn() const;
@@ -199,7 +199,7 @@ public:
     // NOTE: search f-ns need to communicate with the AD server, 
     // so use them only for infrequent calls. Also try to ask
     // only for attributes that you need.
-    QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &custom_search_base = QString());
+    QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &search_base = QString());
     AdObject search_object(const QString &dn, const QList<QString> &attributes = {SEARCH_ALL_ATTRIBUTES});
 
     bool attribute_add(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
@@ -245,7 +245,7 @@ private:
     SMBCCTX *smbc;
     AdConfig *m_config;
     QString m_domain;
-    QString m_search_base;
+    QString m_domain_head;
     QString m_configuration_dn;
     QString m_schema_dn;
     QString m_host;

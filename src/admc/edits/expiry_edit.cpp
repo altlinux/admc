@@ -147,7 +147,9 @@ void ExpiryEdit::on_edit_button() {
 
     auto label = new QLabel(tr("Edit expiry time"), dialog);
     auto calendar = new QCalendarWidget(dialog);
-    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, dialog);
+    auto button_box = new QDialogButtonBox();
+    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
+    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
 
     const auto layout = new QVBoxLayout(dialog);
     layout->addWidget(label);
@@ -155,7 +157,7 @@ void ExpiryEdit::on_edit_button() {
     layout->addWidget(button_box);
 
     connect(
-        button_box, &QDialogButtonBox::accepted,
+        ok_button, &QPushButton::clicked,
         [this, dialog, calendar]() {
             const QDate new_date = calendar->selectedDate();
             const QString new_date_string = new_date.toString(DATE_FORMAT);
@@ -168,10 +170,8 @@ void ExpiryEdit::on_edit_button() {
         });
 
     connect(
-        button_box, &QDialogButtonBox::rejected,
-        [dialog]() {
-            dialog->reject();
-        });
+        cancel_button, &QPushButton::clicked,
+        dialog, &QDialog::reject);
 
     dialog->open();
 }

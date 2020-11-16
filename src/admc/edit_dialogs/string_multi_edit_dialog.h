@@ -40,7 +40,6 @@ private slots:
     void on_add();
     void on_remove();
 
-
 private:
     QList<QByteArray> original_values;
     QLineEdit *edit;

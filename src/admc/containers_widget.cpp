@@ -95,7 +95,7 @@ ContainersWidget::ContainersWidget(QWidget *parent)
 };
 
 void ContainersWidget::reload() {
-    const QString head_dn = AD()->search_base();
+    const QString head_dn = AD()->domain_head();
     QAbstractItemModel *view_model = view->model();
 
     // Save DN's that were fetched
@@ -258,7 +258,7 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
     // NOTE: have to manually add configuration and schema objects because they aren't searchable
     const bool dev_mode = SETTINGS()->get_bool(BoolSetting_DevMode);
     if (dev_mode) {
-        const QString search_base = AD()->search_base();
+        const QString search_base = AD()->domain_head();
         const QString configuration_dn = AD()->configuration_dn();
         const QString schema_dn = AD()->schema_dn();
 

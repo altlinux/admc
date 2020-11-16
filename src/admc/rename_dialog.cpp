@@ -82,13 +82,19 @@ RenameDialog::RenameDialog(const QString &target_arg)
     edits_add_to_layout(all_edits, edits_layout);
     edits_load(all_edits, object);
 
-    button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
+    auto button_box = new QDialogButtonBox();
+    ok_button = button_box->addButton(QDialogButtonBox::Ok);
+    reset_button = button_box->addButton(QDialogButtonBox::Reset);
+    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
     connect(
-        button_box->button(QDialogButtonBox::Ok), &QPushButton::clicked,
+        ok_button, &QPushButton::clicked,
         this, &QDialog::accept);
     connect(
-        button_box->button(QDialogButtonBox::Cancel), &QPushButton::clicked,
-        this, &RenameDialog::on_cancel);
+        reset_button, &QPushButton::clicked,
+        this, &RenameDialog::reset);
+    connect(
+        cancel_button, &QPushButton::clicked,
+        this, &RenameDialog::reject);
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
@@ -143,17 +149,14 @@ void RenameDialog::accept() {
 }
 
 void RenameDialog::on_edited() {
-    QPushButton *cancel_button = button_box->button(QDialogButtonBox::Cancel);
     const bool any_changed = edits_changed(all_edits);
-    cancel_button->setEnabled(any_changed);
-
-    QPushButton *ok_button = button_box->button(QDialogButtonBox::Ok);
     const bool name_not_empty = !name_edit->get_input().isEmpty();
-    const bool enable_ok = (name_not_empty && any_changed);
-    ok_button->setEnabled(enable_ok);
+    
+    reset_button->setEnabled(any_changed);
+    ok_button->setEnabled(name_not_empty && any_changed);
 }
 
-void RenameDialog::on_cancel() {
+void RenameDialog::reset() {
     const AdObject object = AD()->search_object(target);
     edits_load(all_edits, object);
 }

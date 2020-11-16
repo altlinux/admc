@@ -28,6 +28,7 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QDialogButtonBox>
+#include <QPushButton>
 
 PasswordDialog::PasswordDialog(const QString &target_arg)
 : QDialog()
@@ -50,7 +51,9 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
     edits_add_to_layout(edits, edits_layout);
     edits_load(edits, object);
 
-    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel, this);
+    auto button_box = new QDialogButtonBox();
+    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
+    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
@@ -59,10 +62,10 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
     layout->addWidget(button_box);
 
     connect(
-        button_box, &QDialogButtonBox::accepted,
+        ok_button, &QPushButton::clicked,
         this, &PasswordDialog::accept);
     connect(
-        button_box, &QDialogButtonBox::rejected,
+        cancel_button, &QPushButton::clicked,
         this, &QDialog::reject);
 }
 
