@@ -143,6 +143,8 @@ void FilterWidgetNormalTab::add_filter() {
         filter_list->addItem(item);
 
         filter_builder->clear();
+
+        emit changed();
     }
 }
 
@@ -167,8 +169,14 @@ void FilterWidgetNormalTab::remove_filter() {
     for (auto item : removed_items) {
         delete item;
     }
+
+    if (!removed_items.isEmpty()) {
+        emit changed();
+    }
 }
 
 void FilterWidgetNormalTab::clear_filters() {
     filter_list->clear();
+
+    emit changed();
 }

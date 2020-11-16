@@ -39,6 +39,7 @@ class QAction;
 class QSettings;
 class QVariant;
 class QWidget;
+class QCheckBox;
 
 enum VariantSetting {
     // ADMC
@@ -64,6 +65,7 @@ enum BoolSetting {
     BoolSetting_DetailsIsDocked,
     BoolSetting_ShowNonContainersInContainersTree,
     BoolSetting_LastNameBeforeFirstName,
+    BoolSetting_QuickFind,
 
     // GPGUI
 
@@ -89,12 +91,16 @@ public:
     bool get_bool(BoolSetting type) const;
     void set_bool(const BoolSetting type, const bool value);
 
+    // TODO: rename type arg to setting and change to const
+
     /** 
      * Connect action and bool setting so that toggling
      * the action updates the setting value
      * Action becomes checkable
      */ 
     void connect_action_to_bool_setting(QAction *action, const BoolSetting type);
+
+    void connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSetting type);
 
     void restore_geometry(QWidget *widget, const VariantSetting geometry_setting);
     void save_geometry(QWidget *widget, const VariantSetting geometry_setting);

@@ -35,19 +35,30 @@ FilterWidget::FilterWidget()
 {
     tab_widget = new QTabWidget();
 
+    auto add_tab =
+    [this](FilterWidgetTab *tab, const QString &title) {
+        tab_widget->addTab(tab, title);
+
+        connect(
+            tab, &FilterWidgetTab::changed,
+            [this]() {
+                emit changed();
+            });
+    };
+
     auto simple_tab = new FilterWidgetSimpleTab();
-    tab_widget->addTab(simple_tab, tr("Simple"));
-    tab_widget->addTab(new FilterWidgetNormalTab(), tr("Normal"));
-    tab_widget->addTab(new FilterWidgetAdvancedTab(), tr("Advanced"));
+    add_tab(simple_tab, tr("Simple"));
+    add_tab(new FilterWidgetNormalTab(), tr("Normal"));
+    add_tab(new FilterWidgetAdvancedTab(), tr("Advanced"));
 
     auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(tab_widget);
 
     connect(
-        simple_tab, &FilterWidgetSimpleTab::returnPressed,
+        simple_tab, &FilterWidgetSimpleTab::return_pressed,
         [this]() {
-            emit returnPressed();
+            emit return_pressed();
         });
 }
 

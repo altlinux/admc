@@ -33,6 +33,12 @@ FilterWidgetAdvancedTab::FilterWidgetAdvancedTab()
     setLayout(layout);
     layout->addWidget(label);
     layout->addWidget(ldap_filter_edit);
+
+    connect(
+        ldap_filter_edit, &QPlainTextEdit::textChanged,
+        [this]() {
+            emit changed();
+        });
 }
 
 QString FilterWidgetAdvancedTab::get_filter() const {

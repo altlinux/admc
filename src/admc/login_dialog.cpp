@@ -46,7 +46,7 @@ LoginDialog::LoginDialog(QWidget *parent)
     const auto login_button = new QPushButton(tr("Login"), this);
     login_button->setAutoDefault(false);
 
-    autologin_check = new QCheckBox(tr("Login using saved session at startup"));
+    auto autologin_check = new QCheckBox(tr("Login using saved session at startup"));
 
     const auto layout = new QGridLayout(this);
     append_to_grid_layout_with_label(layout, domain_edit_label, domain_edit);
@@ -66,6 +66,8 @@ LoginDialog::LoginDialog(QWidget *parent)
     connect(
         this, &QDialog::rejected,
         this, &LoginDialog::on_rejected);
+
+    SETTINGS()->connect_checkbox_to_bool_setting(autologin_check, BoolSetting_AutoLogin);
 }
 
 void LoginDialog::on_login_button() {
@@ -77,9 +79,6 @@ void LoginDialog::on_login_button() {
     if (login_success) {
         SETTINGS()->set_variant(VariantSetting_Domain, domain);
         SETTINGS()->set_variant(VariantSetting_Site, site);
-
-        const bool autologin_checked = checkbox_is_checked(autologin_check);
-        SETTINGS()->set_bool(BoolSetting_AutoLogin, autologin_checked);
 
         accept();
     } else {

@@ -38,7 +38,7 @@ public:
     QString get_filter() const;
 
 signals:
-    void returnPressed();
+    void return_pressed();
 
 private:
     SelectClassesWidget *select_classes;

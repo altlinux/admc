@@ -32,7 +32,6 @@ private slots:
 private:
     QLineEdit *domain_edit = nullptr;
     QLineEdit *site_edit = nullptr;
-    QCheckBox *autologin_check;
 };
 
 #endif /* LOGIN_DIALOG_H */

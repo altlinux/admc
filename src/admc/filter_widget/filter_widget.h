@@ -41,16 +41,23 @@ public:
     QString get_filter() const;
 
 signals:
+    void changed();
+
     // Indicates that input of filter is complete
-    void returnPressed();
+    void return_pressed();
 
 private:
     QTabWidget *tab_widget;
 };
 
 class FilterWidgetTab : public QWidget {
+Q_OBJECT
+
 public:
     virtual QString get_filter() const = 0;
+
+signals:
+    void changed();
 };
 
 #endif /* FILTER_WIDGET_H */

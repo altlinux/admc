@@ -41,6 +41,7 @@ public:
 
 private slots:
     void select_custom_search_base();
+    void on_filter_changed();
     void find();
 
 private:

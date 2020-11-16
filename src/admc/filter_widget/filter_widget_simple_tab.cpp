@@ -39,9 +39,14 @@ FilterWidgetSimpleTab::FilterWidgetSimpleTab()
     layout->addRow(tr("Name:"), name_edit);
 
     connect(
+        name_edit, &QLineEdit::textChanged,
+        [this]() {
+            emit changed();
+        });
+    connect(
         name_edit, &QLineEdit::returnPressed,
         [this]() {
-            emit returnPressed();
+            emit return_pressed();
         });
 }
 

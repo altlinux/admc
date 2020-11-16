@@ -41,6 +41,7 @@
 #include <QItemSelectionModel>
 #include <QStandardItemModel>
 #include <QDebug>
+#include <QCheckBox>
 
 FindDialog::FindDialog()
 : QDialog()
@@ -60,6 +61,8 @@ FindDialog::FindDialog()
     custom_search_base_button->setAutoDefault(false);
 
     filter_widget = new FilterWidget();
+
+    auto quick_find_check = new QCheckBox(tr("Quick find"));
 
     auto find_button = new QPushButton(tr("Find"));
     find_button->setAutoDefault(false);
@@ -82,6 +85,7 @@ FindDialog::FindDialog()
         filter_widget_frame->setLayout(layout);
         layout->addLayout(search_base_row);
         layout->addWidget(filter_widget);
+        layout->addWidget(quick_find_check);
         layout->addWidget(find_button);
     }
 
@@ -105,8 +109,13 @@ FindDialog::FindDialog()
         find_button, &QPushButton::clicked,
         this, &FindDialog::find);
     connect(
-        filter_widget, &FilterWidget::returnPressed,
+        filter_widget, &FilterWidget::return_pressed,
         this, &FindDialog::find);
+    connect(
+        filter_widget, &FilterWidget::changed,
+        this, &FindDialog::on_filter_changed);
+
+    SETTINGS()->connect_checkbox_to_bool_setting(quick_find_check, BoolSetting_QuickFind);
 }
 
 void FindDialog::select_custom_search_base() {
@@ -122,6 +131,14 @@ void FindDialog::select_custom_search_base() {
         // Select newly added search base in combobox
         const int new_base_index = search_base_combo->count() - 1;
         search_base_combo->setCurrentIndex(new_base_index);
+    }
+}
+
+void FindDialog::on_filter_changed() {
+    const bool quick_find = SETTINGS()->get_bool(BoolSetting_QuickFind);
+
+    if (quick_find) {
+        find();
     }
 }
 
