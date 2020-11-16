@@ -166,7 +166,7 @@ private:
 public:
     static AdInterface *instance();
 
-    bool login(const QString &domain, const QString &site);
+    bool login();
 
     void refresh();
 

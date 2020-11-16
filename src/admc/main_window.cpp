@@ -26,7 +26,6 @@
 #include "settings.h"
 #include "confirmation_dialog.h"
 #include "policies_widget.h"
-#include "login_dialog.h"
 #include "ad_interface.h"
 
 #include <QApplication>
@@ -42,34 +41,14 @@ MainWindow::MainWindow()
 {
     SETTINGS()->restore_geometry(this, VariantSetting_MainWindowGeometry);
 
-    const auto open_login_dialog =
-    [this]() {
-        const auto login_dialog = new LoginDialog(this);
-        login_dialog->open();
+    const bool login_success = AD()->login();
 
-        QObject::connect(
-            login_dialog, &QDialog::accepted,
-            [this] () {
-                finish_init();
-            });
-    };
-
-    const bool auto_login = SETTINGS()->get_bool(BoolSetting_AutoLogin);
-    if (auto_login) {
-        const QString domain = SETTINGS()->get_variant(VariantSetting_Domain).toString();
-        const QString site = SETTINGS()->get_variant(VariantSetting_Site).toString();
-
-        const bool login_success = AD()->login(domain, site);
-
-        if (login_success) {
-            finish_init();
-        } else {
-            QMessageBox::warning(this, tr("Warning"), tr("Failed to login using saved login info"));
-
-            open_login_dialog();
-        }
+    if (login_success) {
+        finish_init();
     } else {
-        open_login_dialog();
+        QMessageBox::warning(this, tr("Warning"), tr("Failed to login using saved login info"));
+
+        // TODO: retry
     }
 }
 
