@@ -67,12 +67,12 @@ bool AdInterface::login(const QString &domain, const QString &site) {
 
     // Transform domain to search base
     // "DOMAIN.COM" => "DC=domain,DC=com"
-    m_search_base = m_domain;
-    m_search_base = m_search_base.toLower();
-    m_search_base = "DC=" + m_search_base;
-    m_search_base = m_search_base.replace(".", ",DC=");
+    m_domain_head = m_domain;
+    m_domain_head = m_domain_head.toLower();
+    m_domain_head = "DC=" + m_domain_head;
+    m_domain_head = m_domain_head.replace(".", ",DC=");
 
-    m_configuration_dn = "CN=Configuration," + m_search_base;
+    m_configuration_dn = "CN=Configuration," + m_domain_head;
     m_schema_dn = "CN=Schema," + m_configuration_dn;
 
     const QByteArray uri_array = uri.toUtf8();
@@ -132,8 +132,8 @@ QString AdInterface::domain() const {
     return m_domain;
 }
 
-QString AdInterface::search_base() const {
-    return m_search_base;
+QString AdInterface::domain_head() const {
+    return m_domain_head;
 }
 
 QString AdInterface::configuration_dn() const {
@@ -148,7 +148,7 @@ QString AdInterface::host() const {
     return m_host;
 }
 
-QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &custom_search_base) {
+QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &search_base) {
     // int result = AD_SUCCESS;
     QHash<QString, AdObject> out;
 
@@ -157,11 +157,11 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
 
 
     const QString base =
-    [this, custom_search_base]() {
-        if (custom_search_base.isEmpty()) {
-            return m_search_base;
+    [this, search_base]() {
+        if (search_base.isEmpty()) {
+            return m_domain_head;
         } else {
-            return custom_search_base;
+            return search_base;
         }
     }();
 
@@ -1011,7 +1011,7 @@ bool AdInterface::create_gpo(const QString &display_name) {
     const char *gpc_classes[] = {CLASS_TOP, CLASS_CONTAINER, CLASS_GP_CONTAINER, NULL};
     const char *container_classes[] = {CLASS_TOP, CLASS_CONTAINER, NULL};
 
-    const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, search_base());
+    const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, m_domain_head);
     const bool result_add = object_add(dn, gpc_classes);
     if (!result_add) {
         return false;
