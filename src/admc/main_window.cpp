@@ -46,15 +46,24 @@ MainWindow::MainWindow()
 }
 
 void MainWindow::attempt_to_connect() {
-    const bool connect_success = AD()->connect();
+    const ConnectResult result = AD()->connect();
 
-    if (connect_success) {
+    if (result == ConnectResult_Success) {
         finish_init();
     } else {
         // Open retry dialog
+        // TODO: not sure about phrasing of errors
         const QMessageBox::Icon icon = QMessageBox::Warning;
         const QString title = tr("Failed to connect");
-        const QString text = tr("Check that you are connected to the domain network and that you are kerberos authenticated");
+        const QString text =
+        [result]() {
+            switch (result) {
+                case ConnectResult_Success: return QString();
+                case ConnectResult_FailedToFindHosts: return tr("Not connected to a domain network");
+                case ConnectResult_FailedToConnect: return tr("Authentication failed");
+            }
+            return QString();
+        }();
         const QMessageBox::StandardButtons buttons = (QMessageBox::Retry | QMessageBox::Cancel);
         auto dialog = new QMessageBox(icon, title, text, buttons);
 

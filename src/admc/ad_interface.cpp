@@ -53,7 +53,7 @@ void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgro
 
 }
 
-bool AdInterface::connect() {
+ConnectResult AdInterface::connect() {
     // Get default domain from krb5
     const QString domain =
     []() {
@@ -88,9 +88,9 @@ bool AdInterface::connect() {
     const QList<QString> hosts = get_domain_hosts(domain, QString());
     if (hosts.isEmpty()) {
         qDebug() << "No hosts found";
-        return false;
+        return ConnectResult_FailedToFindHosts;
     }
-    qDebug() << hosts;
+    qDebug() << "hosts=" << hosts;
 
     // TODO: for now selecting first host, which seems to be fine but investigate what should be selected.
     m_host = hosts[0];
@@ -128,9 +128,9 @@ bool AdInterface::connect() {
         }
         smbc_set_context(smbc);
 
-        return true;
+        return ConnectResult_Success;
     } else {
-        return false;
+        return ConnectResult_FailedToConnect;
     }
 }
 
