@@ -35,6 +35,7 @@
 #include <QVBoxLayout>
 #include <QTextEdit>
 #include <QMessageBox>
+#include <QTimer>
 
 MainWindow::MainWindow()
 : QMainWindow()
@@ -53,7 +54,18 @@ void MainWindow::retry_connect_dialog() {
 
     connect(
         dialog, &QDialog::accepted,
-        this, &MainWindow::attempt_to_connect);
+        [this, icon, title]() {
+            // NOTE: delay retry and open an intermediate dialog so that the user can follow the process. Otherwise it would look like clicking retry button did nothing
+            auto retrying_dialog = new QMessageBox(icon, title, tr("Retrying..."), QMessageBox::NoButton);
+
+            retrying_dialog->open();
+
+            QTimer::singleShot(1000,
+            [this, retrying_dialog]() {
+                retrying_dialog->close();
+                attempt_to_connect();
+            });
+        });
 
     connect(
         dialog, &QDialog::rejected,
