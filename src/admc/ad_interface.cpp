@@ -29,6 +29,7 @@
 #include <lber.h>
 #include <libsmbclient.h>
 #include <uuid/uuid.h>
+#include <krb5.h>
 
 #include <QSet>
 #include <QMessageBox>
