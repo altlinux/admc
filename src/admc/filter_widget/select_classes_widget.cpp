@@ -105,8 +105,6 @@ void SelectClassesWidget::select_classes() {
         cancel_button, &QPushButton::clicked,
         dialog, &QDialog::reject);
 
-    dialog->open();
-
     connect(
         dialog, &QDialog::accepted,
         [this, checkboxes]() {
@@ -142,4 +140,6 @@ void SelectClassesWidget::select_classes() {
             }();
             classes_display->setText(selected_classes_string);
         });
+
+    dialog->open();
 }

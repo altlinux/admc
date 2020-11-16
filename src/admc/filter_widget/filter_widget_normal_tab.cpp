@@ -39,37 +39,14 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
 
     auto add_filter_button = new QPushButton(tr("Add"));
     add_filter_button->setAutoDefault(false);
-    connect(
-        add_filter_button, &QAbstractButton::clicked,
-        this, &FilterWidgetNormalTab::on_add_filter);
 
     filter_list = new QListWidget();
 
     auto remove_filter_button = new QPushButton(tr("Remove"));
     remove_filter_button->setAutoDefault(false);
-    connect(
-        remove_filter_button, &QAbstractButton::clicked,
-        this, &FilterWidgetNormalTab::on_remove_filter);
-
-    const QItemSelectionModel *filters_selection_model = filter_list->selectionModel();
-
-    // Enable/disable remove filter button depending on
-    // if any filter is currently selected
-    connect(
-        filters_selection_model, &QItemSelectionModel::selectionChanged,
-        [remove_filter_button, filters_selection_model]() {
-            const QList<QModelIndex> selecteds = filters_selection_model->selectedIndexes();
-            const bool any_selected = !selecteds.isEmpty();
-
-            remove_filter_button->setEnabled(any_selected);
-        });
-    remove_filter_button->setEnabled(false);
 
     auto clear_filters_button = new QPushButton(tr("Clear"));
     clear_filters_button->setAutoDefault(false);
-    connect(
-        clear_filters_button, &QAbstractButton::clicked,
-        this, &FilterWidgetNormalTab::on_clear_filters);
 
     auto filter_builder_framed = new QFrame();
     filter_builder_framed->setFrameStyle(QFrame::Raised);
@@ -99,6 +76,16 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
     layout->addWidget(filter_list);
 
     layout->addLayout(list_buttons_layout);
+
+    connect(
+        remove_filter_button, &QAbstractButton::clicked,
+        this, &FilterWidgetNormalTab::remove_filter);
+    connect(
+        add_filter_button, &QAbstractButton::clicked,
+        this, &FilterWidgetNormalTab::add_filter);
+    connect(
+        clear_filters_button, &QAbstractButton::clicked,
+        this, &FilterWidgetNormalTab::clear_filters);
 }
 
 QString FilterWidgetNormalTab::get_filter() const {
@@ -131,19 +118,35 @@ QString FilterWidgetNormalTab::get_filter() const {
     }
 }
 
-void FilterWidgetNormalTab::on_add_filter() {
+void FilterWidgetNormalTab::add_filter() {
     const QString filter = filter_builder->get_filter();
     const QString filter_display = filter_builder->get_filter_display();
 
-    auto item = new QListWidgetItem();
-    item->setText(filter_display);
-    item->setData(Qt::UserRole, filter);
-    filter_list->addItem(item);
+    const bool filter_is_new =
+    [this, filter]() {
+        for (int i = 0; i < filter_list->count(); i++) {
+            const QListWidgetItem *item = filter_list->item(i);
+            const QString this_filter = item->data(Qt::UserRole).toString();
 
-    filter_builder->clear();
+            if (this_filter == filter) {
+                return false;
+            }
+        }
+
+        return true;
+    }();
+
+    if (filter_is_new) {
+        auto item = new QListWidgetItem();
+        item->setText(filter_display);
+        item->setData(Qt::UserRole, filter);
+        filter_list->addItem(item);
+
+        filter_builder->clear();
+    }
 }
 
-void FilterWidgetNormalTab::on_remove_filter() {
+void FilterWidgetNormalTab::remove_filter() {
     const QSet<QListWidgetItem *> removed_items =
     [this]() {
         QSet<QListWidgetItem *> out;
@@ -166,6 +169,6 @@ void FilterWidgetNormalTab::on_remove_filter() {
     }
 }
 
-void FilterWidgetNormalTab::on_clear_filters() {
+void FilterWidgetNormalTab::clear_filters() {
     filter_list->clear();
 }

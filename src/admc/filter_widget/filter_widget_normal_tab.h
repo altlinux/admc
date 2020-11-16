@@ -46,9 +46,9 @@ public:
     QString get_filter() const;
 
 private slots:
-    void on_add_filter();
-    void on_remove_filter();
-    void on_clear_filters();
+    void add_filter();
+    void remove_filter();
+    void clear_filters();
 
 private:
     SelectClassesWidget *select_classes;
