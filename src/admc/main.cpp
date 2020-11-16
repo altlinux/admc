@@ -72,7 +72,6 @@ int main(int argc, char **argv) {
     } else {
         // GUI
         MainWindow main_window;
-        main_window.show();
 
         const int retval = app.exec();
 

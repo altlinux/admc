@@ -46,10 +46,36 @@ MainWindow::MainWindow()
     if (login_success) {
         finish_init();
     } else {
-        QMessageBox::warning(this, tr("Warning"), tr("Failed to login using saved login info"));
-
-        // TODO: retry
+        retry_connect_dialog();
     }
+}
+
+void MainWindow::retry_connect_dialog() {
+    const QMessageBox::Icon icon = QMessageBox::Warning;
+    const QString title = tr("Failed to connect");
+    const QString text = tr("Check that you are connected to the domain network and that you are kerberos authenticated");
+    const QMessageBox::StandardButtons buttons = (QMessageBox::Retry | QMessageBox::Cancel);
+    auto dialog = new QMessageBox(icon, title, text, buttons);
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this]() {
+            const bool connect_success = AD()->login();
+
+            if (connect_success) {
+                finish_init();
+            } else {
+                retry_connect_dialog();
+            }
+        });
+
+    connect(
+        dialog, &QDialog::rejected,
+        []() {
+            QApplication::quit();
+        });
+
+    dialog->open();
 }
 
 void MainWindow::finish_init() {
@@ -97,6 +123,8 @@ void MainWindow::finish_init() {
     central_layout->setSpacing(0);
 
     central_widget->setLayout(central_layout);
+
+    show();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

@@ -83,7 +83,7 @@ bool AdInterface::login() {
         return out;
     }();
 
-    printf("domain=%s\n", qPrintable(domain));
+    qDebug() << "domain=" << domain;
 
     const QList<QString> hosts = get_domain_hosts(domain, QString());
     if (hosts.isEmpty()) {
