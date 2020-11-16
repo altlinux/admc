@@ -7,8 +7,6 @@ Do `$ kinit administrator@DOMAIN.ALT` and enter the admin password.
 
 Launch admc.
 
-Menubar -> File -> Login -> enter domain name (DOMAIN.ALT) -> press enter -> select host (dc0 is fine) -> Login.
-
 ## GPGUI
 
 ### Remote
