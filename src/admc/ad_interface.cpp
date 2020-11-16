@@ -53,7 +53,7 @@ void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgro
 
 }
 
-bool AdInterface::login() {
+bool AdInterface::connect() {
     // Get default domain from krb5
     const QString domain =
     []() {
@@ -87,8 +87,10 @@ bool AdInterface::login() {
 
     const QList<QString> hosts = get_domain_hosts(domain, QString());
     if (hosts.isEmpty()) {
+        qDebug() << "No hosts found";
         return false;
     }
+    qDebug() << hosts;
 
     // TODO: for now selecting first host, which seems to be fine but investigate what should be selected.
     m_host = hosts[0];

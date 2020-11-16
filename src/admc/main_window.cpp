@@ -41,13 +41,7 @@ MainWindow::MainWindow()
 {
     SETTINGS()->restore_geometry(this, VariantSetting_MainWindowGeometry);
 
-    const bool login_success = AD()->login();
-
-    if (login_success) {
-        finish_init();
-    } else {
-        retry_connect_dialog();
-    }
+    attempt_to_connect();
 }
 
 void MainWindow::retry_connect_dialog() {
@@ -59,15 +53,7 @@ void MainWindow::retry_connect_dialog() {
 
     connect(
         dialog, &QDialog::accepted,
-        [this]() {
-            const bool connect_success = AD()->login();
-
-            if (connect_success) {
-                finish_init();
-            } else {
-                retry_connect_dialog();
-            }
-        });
+        this, &MainWindow::attempt_to_connect);
 
     connect(
         dialog, &QDialog::rejected,
@@ -76,6 +62,16 @@ void MainWindow::retry_connect_dialog() {
         });
 
     dialog->open();
+}
+
+void MainWindow::attempt_to_connect() {
+    const bool connect_success = AD()->connect();
+
+    if (connect_success) {
+        finish_init();
+    } else {
+        retry_connect_dialog();
+    }
 }
 
 void MainWindow::finish_init() {

@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
         const QString host = cli_parser.value("host");
         const QString domain = cli_parser.value("domain");
         
-        AD()->login();
+        AD()->connect();
         AD()->command(positional_args);
 
         return 0;

@@ -166,7 +166,7 @@ private:
 public:
     static AdInterface *instance();
 
-    bool login();
+    bool connect();
 
     void refresh();
 
