@@ -37,6 +37,12 @@ FilterWidgetSimpleTab::FilterWidgetSimpleTab()
     setLayout(layout);
     layout->addRow(tr("Classes:"), select_classes);
     layout->addRow(tr("Name:"), name_edit);
+
+    connect(
+        name_edit, &QLineEdit::returnPressed,
+        [this]() {
+            emit returnPressed();
+        });
 }
 
 QString FilterWidgetSimpleTab::get_filter() const {

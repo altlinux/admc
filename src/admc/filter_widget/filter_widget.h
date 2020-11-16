@@ -40,6 +40,10 @@ public:
 
     QString get_filter() const;
 
+signals:
+    // Indicates that input of filter is complete
+    void returnPressed();
+
 private:
     QTabWidget *tab_widget;
 };

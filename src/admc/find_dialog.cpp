@@ -104,6 +104,9 @@ FindDialog::FindDialog()
     connect(
         find_button, &QPushButton::clicked,
         this, &FindDialog::find);
+    connect(
+        filter_widget, &FilterWidget::returnPressed,
+        this, &FindDialog::find);
 }
 
 void FindDialog::select_custom_search_base() {

@@ -34,13 +34,21 @@ FilterWidget::FilterWidget()
 : QWidget()
 {
     tab_widget = new QTabWidget();
-    tab_widget->addTab(new FilterWidgetSimpleTab(), tr("Simple"));
+
+    auto simple_tab = new FilterWidgetSimpleTab();
+    tab_widget->addTab(simple_tab, tr("Simple"));
     tab_widget->addTab(new FilterWidgetNormalTab(), tr("Normal"));
     tab_widget->addTab(new FilterWidgetAdvancedTab(), tr("Advanced"));
 
     auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(tab_widget);
+
+    connect(
+        simple_tab, &FilterWidgetSimpleTab::returnPressed,
+        [this]() {
+            emit returnPressed();
+        });
 }
 
 QString FilterWidget::get_filter() const {

@@ -37,6 +37,9 @@ public:
 
     QString get_filter() const;
 
+signals:
+    void returnPressed();
+
 private:
     SelectClassesWidget *select_classes;
     QLineEdit *name_edit;
