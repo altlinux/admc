@@ -31,7 +31,8 @@
 #include <QString>
 #include <QList>
 #include <QLineEdit>
-#include <QGridLayout>
+#include <QFormLayout>
+#include <QGroupBox>
 #include <QLabel>
 #include <QTreeView>
 #include <QSortFilterProxyModel>
@@ -69,16 +70,18 @@ FindDialog::FindDialog()
     filter_widget_frame->setFrameShape(QFrame::Box);
     
     {
-        auto layout = new QGridLayout();
+        auto search_base_layout = new QHBoxLayout();
+        search_base_layout->addWidget(search_base_combo);
+        search_base_layout->addWidget(custom_search_base_button);
+
+        auto search_base_row = new QFormLayout();
+        search_base_row->addRow(tr("Search in:"), search_base_layout);
+
+        auto layout = new QVBoxLayout();
         filter_widget_frame->setLayout(layout);
-
-        const int search_base_combo_row = layout->rowCount();
-        layout->addWidget(search_base_combo_label, search_base_combo_row, 0, 1, 1, Qt::AlignRight);
-        layout->addWidget(search_base_combo, search_base_combo_row, 1);
-        layout->addWidget(custom_search_base_button, search_base_combo_row, 2);
-
-        layout->addWidget(filter_widget, layout->rowCount(), 0, 1, layout->columnCount());
-        layout->addWidget(find_button, layout->rowCount(), 1);
+        layout->addLayout(search_base_row);
+        layout->addWidget(filter_widget);
+        layout->addWidget(find_button);
     }
 
     {

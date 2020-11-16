@@ -27,7 +27,7 @@
 #include <QDebug>
 #include <QLabel>
 #include <QTabWidget>
-#include <QGridLayout>
+#include <QVBoxLayout>
 #include <QPushButton>
 
 FilterWidget::FilterWidget()
@@ -38,12 +38,9 @@ FilterWidget::FilterWidget()
     tab_widget->addTab(new FilterWidgetNormalTab(), tr("Normal"));
     tab_widget->addTab(new FilterWidgetAdvancedTab(), tr("Advanced"));
 
-    auto layout = new QGridLayout();
+    auto layout = new QVBoxLayout();
     setLayout(layout);
-
-    const int tab_widget_row = layout->rowCount();
-    const int tab_widget_col_span = layout->columnCount();
-    layout->addWidget(tab_widget, tab_widget_row, 0, 1, tab_widget_col_span);
+    layout->addWidget(tab_widget);
 }
 
 QString FilterWidget::get_filter() const {
