@@ -39,6 +39,7 @@ SelectClassesWidget::SelectClassesWidget()
     classes_display->setPlaceholderText(tr("All classes"));
 
     auto select_classes_button = new QPushButton(tr("Select"));
+    select_classes_button->setAutoDefault(false);
 
     auto layout = new QHBoxLayout();
     setLayout(layout);

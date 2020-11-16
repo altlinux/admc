@@ -50,7 +50,6 @@ FindDialog::FindDialog()
 
     // TODO: technically, entire directory does NOT equal to the domain. In cases where we're browsing multiple domains at the same time (or maybe some other situations as well), we'd need "Entire directory" AND all of domains. Currently search base is set to domain anyway, so would need to start from reworking that.
 
-    auto search_base_combo_label = new QLabel(tr("In:"));
     search_base_combo = new QComboBox();
     search_base_combo->addItem(tr("Entire directory"), AD()->search_base());
 
@@ -58,10 +57,12 @@ FindDialog::FindDialog()
     search_base_combo->addItem("Users", users_dn);
 
     auto custom_search_base_button = new QPushButton(tr("Browse"));
+    custom_search_base_button->setAutoDefault(false);
 
     filter_widget = new FilterWidget();
 
     auto find_button = new QPushButton(tr("Find"));
+    find_button->setAutoDefault(false);
 
     find_results = new ObjectListWidget();
 

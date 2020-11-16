@@ -38,6 +38,7 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
     filter_builder = new FilterBuilder();
 
     auto add_filter_button = new QPushButton(tr("Add"));
+    add_filter_button->setAutoDefault(false);
     connect(
         add_filter_button, &QAbstractButton::clicked,
         this, &FilterWidgetNormalTab::on_add_filter);
@@ -45,6 +46,7 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
     filter_list = new QListWidget();
 
     auto remove_filter_button = new QPushButton(tr("Remove"));
+    remove_filter_button->setAutoDefault(false);
     connect(
         remove_filter_button, &QAbstractButton::clicked,
         this, &FilterWidgetNormalTab::on_remove_filter);
@@ -64,6 +66,7 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
     remove_filter_button->setEnabled(false);
 
     auto clear_filters_button = new QPushButton(tr("Clear"));
+    clear_filters_button->setAutoDefault(false);
     connect(
         clear_filters_button, &QAbstractButton::clicked,
         this, &FilterWidgetNormalTab::on_clear_filters);
