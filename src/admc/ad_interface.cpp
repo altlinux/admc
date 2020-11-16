@@ -112,7 +112,7 @@ bool AdInterface::connect() {
     const QByteArray uri_array = uri.toUtf8();
     const char *uri_cstr = uri_array.constData();
 
-    const int result = ad_login(uri_cstr, &ld);
+    const int result = ad_connect(uri_cstr, &ld);
 
     if (result == AD_SUCCESS) {
         m_config = new AdConfig(this);
