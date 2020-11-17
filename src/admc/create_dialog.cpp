@@ -52,6 +52,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
     parent_dn = parent_dn_arg;
     type = type_arg;
 
+    setWindowTitle(tr("Create dialog"));
     setAttribute(Qt::WA_DeleteOnClose);
 
     const QString type_string = create_type_to_string(type);
@@ -196,11 +197,14 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
 
     create_button = new QPushButton(tr("Create"));
 
-    const auto layout = new QFormLayout();
+    const auto edits_layout = new QFormLayout();
+    edits_add_to_layout(all_edits, edits_layout);
+
+    const auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->addRow(title_label);
-    edits_add_to_layout(all_edits, layout);
-    layout->addRow(create_button);
+    layout->addWidget(title_label);
+    layout->addLayout(edits_layout);
+    layout->addWidget(create_button);
 
     connect(
         create_button, &QAbstractButton::clicked,
