@@ -74,7 +74,7 @@ public:
     QList<ObjectClass> get_filter_containers() const;
     QList<Attribute> get_extra_columns() const;
 
-    QList<ObjectClass> get_possible_superiors(const QString &object_category) const;
+    QList<ObjectClass> get_possible_superiors(const QList<ObjectClass> &object_classes) const;
 
     QString get_class_display_name(const ObjectClass &objectClass) const;
     QList<Attribute> get_possible_attributes(const QList<ObjectClass> &object_classes) const;
@@ -91,9 +91,8 @@ private:
     QList<ObjectClass> filter_containers;
     QList<Attribute> extra_columns;
 
-    QHash<QString, QList<ObjectClass>> possible_superiors;
-
     QHash<ObjectClass, QString> class_display_names;
+    QHash<ObjectClass, QList<ObjectClass>> possible_superiors;
     QHash<ObjectClass, QList<Attribute>> possible_attributes;
     QHash<ObjectClass, QList<Attribute>> find_attributes;
     QHash<ObjectClass, QHash<Attribute, QString>> attribute_display_names;

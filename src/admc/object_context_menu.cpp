@@ -143,8 +143,8 @@ void ObjectContextMenu::delete_object(const QString &dn, const AdObject &object)
 }
 
 void ObjectContextMenu::move(const QString &dn, const AdObject &object) {
-    const QString object_category = object.get_string(ATTRIBUTE_OBJECT_CATEGORY);
-    const QList<QString> possible_superiors = ADCONFIG()->get_possible_superiors(object_category);
+    const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
+    const QList<QString> possible_superiors = ADCONFIG()->get_possible_superiors(object_classes);
 
     const QList<QString> selected_objects = SelectDialog::open(possible_superiors);
 

@@ -914,7 +914,7 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
         return DropType_None;
     }
 
-    const AdObject dropped = AD()->search_object(dn, {ATTRIBUTE_OBJECT_CLASS, ATTRIBUTE_OBJECT_CATEGORY});
+    const AdObject dropped = AD()->search_object(dn, {ATTRIBUTE_OBJECT_CLASS});
     const AdObject target = AD()->search_object(target_dn, {ATTRIBUTE_OBJECT_CLASS});
 
     const bool dropped_is_user = dropped.is_class(CLASS_USER);
@@ -923,14 +923,14 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
     if (dropped_is_user && target_is_group) {
         return DropType_AddToGroup;
     } else {
-        const QString dropped_category = dropped.get_string(ATTRIBUTE_OBJECT_CATEGORY);
-        const QList<QString> possible_superiors = ADCONFIG()->get_possible_superiors(dropped_category);
+        const QList<QString> dropped_classes = dropped.get_strings(ATTRIBUTE_OBJECT_CLASS);
+        const QList<QString> dropped_superiors = ADCONFIG()->get_possible_superiors(dropped_classes);
 
         const bool can_move =
-        [target, possible_superiors]() {
-            const QList<QString> object_classes = target.get_strings(ATTRIBUTE_OBJECT_CLASS);
-            for (const auto object_class : possible_superiors) {
-                if (object_classes.contains(object_class)) {
+        [target, dropped_superiors]() {
+            const QList<QString> target_classes = target.get_strings(ATTRIBUTE_OBJECT_CLASS);
+            for (const auto object_class : dropped_superiors) {
+                if (target_classes.contains(object_class)) {
                     return true;
                 }
             }

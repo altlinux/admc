@@ -186,14 +186,14 @@ AdConfig::AdConfig(QObject *parent)
 
         const QString schema_dn = AD()->schema_dn();
         const QString filter = filter_CONDITION(Condition_Set, ATTRIBUTE_POSSIBLE_SUPERIORS);
-        const QList<QString> attributes = {ATTRIBUTE_POSSIBLE_SUPERIORS};
+        const QList<QString> attributes = {ATTRIBUTE_POSSIBLE_SUPERIORS, ATTRIBUTE_LDAP_DISPLAY_NAME};
         const QHash<QString, AdObject> search_results = AD()->search(filter, attributes, SearchScope_Children, schema_dn);
 
         for (const AdObject object : search_results.values()) {
-            const QString category = object.get_dn();
-            const QList<QString> category_superiors = object.get_strings(ATTRIBUTE_POSSIBLE_SUPERIORS);
+            const QString object_class = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
+            const QList<QString> superiors = object.get_strings(ATTRIBUTE_POSSIBLE_SUPERIORS);
 
-            out[category] = category_superiors;
+            out[object_class] = superiors;
         }
 
         return out;
@@ -388,12 +388,19 @@ QList<QString> AdConfig::get_filter_containers() const {
     return filter_containers;
 }
 
-QList<QString> AdConfig::get_possible_superiors(const QString &object_category) const {
-    if (possible_superiors.contains(object_category)) {
-        return possible_superiors[object_category];
-    } else {
-        return QList<QString>();
+QList<QString> AdConfig::get_possible_superiors(const QList<ObjectClass> &object_classes) const {
+    QList<QString> out;
+
+    for (const QString &object_class : object_classes) {
+        if (possible_superiors.contains(object_class)) {
+            const QList<QString> superiors = possible_superiors[object_class];
+            out.append(superiors);
+        } 
     }
+
+    out.removeDuplicates();
+
+    return out;
 }
 
 QString AdConfig::get_ldap_to_ad_name(const QString &ldap_name) const {
