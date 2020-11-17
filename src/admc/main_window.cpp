@@ -67,12 +67,14 @@ void MainWindow::attempt_to_connect() {
         }();
         const QMessageBox::StandardButtons buttons = (QMessageBox::Retry | QMessageBox::Cancel);
         auto dialog = new QMessageBox(icon, title, text, buttons);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
 
         // NOTE: delay retry and open an intermediate dialog so that the user can follow the process. Otherwise it would look like clicking retry button did nothing
         connect(
             dialog, &QDialog::accepted,
             [this, icon, title]() {
                 auto retrying_dialog = new QMessageBox(icon, title, tr("Retrying..."), QMessageBox::Cancel);
+                retrying_dialog->setAttribute(Qt::WA_DeleteOnClose);
 
                 retrying_dialog->open();
 
