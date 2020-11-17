@@ -20,6 +20,10 @@
 #ifndef SERVER_CONFIGURATION_H
 #define SERVER_CONFIGURATION_H
 
+// Provides access to some server configuration data. All of
+// the data is loaded once at startup to avoid unnecessary
+// server requests.
+
 #include <QObject>
 #include <QString>
 #include <QList>
@@ -57,9 +61,9 @@ enum LargeIntegerSubtype {
     LargeIntegerSubtype_Timespan,
 };
 
-// Provides access to some server configuration data
-// NOTE: it is assumed that a language change requires a restart
-// so localized data is loaded once and is then reused after that
+// NOTE: name strings to reduce confusion
+typedef QString ObjectClass;
+typedef QString Attribute;
 
 class AdConfig final : public QObject {
 Q_OBJECT
@@ -67,47 +71,39 @@ Q_OBJECT
 public:
     AdConfig(QObject *parent);
 
-    QString get_attribute_display_name(const QString &attribute, const QString &objectClass) const;
-    QString get_class_display_name(const QString &objectClass) const;
-    QList<QString> get_extra_columns() const;
-    QList<QString> get_filter_containers() const;
-    QList<QString> get_possible_superiors(const QString &object_category) const;
-    QList<QString> get_possible_attributes(const QList<QString> &object_classes) const;
-    QList<QString> get_find_attributes(const QString &object_class) const;
-    AttributeType get_attribute_type(const QString &attribute) const;
-    LargeIntegerSubtype get_large_integer_subtype(const QString &attribute) const;
-    bool attribute_is_number(const QString &attribute) const;
-    bool get_attribute_is_single_valued(const QString &attribute) const;
-    bool get_attribute_is_system_only(const QString &attribute) const;
+    QList<ObjectClass> get_filter_containers() const;
+    QList<Attribute> get_extra_columns() const;
+
+    QList<ObjectClass> get_possible_superiors(const QString &object_category) const;
+
+    QString get_class_display_name(const ObjectClass &objectClass) const;
+    QList<Attribute> get_possible_attributes(const QList<ObjectClass> &object_classes) const;
+    QList<Attribute> get_find_attributes(const ObjectClass &object_class) const;
+    QString get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const;
+
+    AttributeType get_attribute_type(const Attribute &attribute) const;
+    bool get_attribute_is_single_valued(const Attribute &attribute) const;
+    bool get_attribute_is_system_only(const Attribute &attribute) const;
+    bool attribute_is_number(const Attribute &attribute) const;
+    LargeIntegerSubtype get_large_integer_subtype(const Attribute &attribute) const;
 
 private:
-    // ldap name => ad name
+    QList<ObjectClass> filter_containers;
+    QList<Attribute> extra_columns;
+
+    QHash<QString, QList<ObjectClass>> possible_superiors;
+
+    QHash<ObjectClass, QString> class_display_names;
+    QHash<ObjectClass, QList<Attribute>> possible_attributes;
+    QHash<ObjectClass, QList<Attribute>> find_attributes;
+    QHash<ObjectClass, QHash<Attribute, QString>> attribute_display_names;
+
+    QHash<Attribute, AttributeType> attribute_types;
+    QHash<Attribute, bool> attribute_is_single_valued;
+    QHash<Attribute, bool> attribute_is_system_only;
+
     QHash<QString, QString> ldap_to_ad_names;
     QHash<QString, QString> ad_to_ldap_names;
-
-    // object class => attribute => display name
-    QHash<QString, QHash<QString, QString>> attribute_display_names;
-
-    // object class => display name
-    QHash<QString, QString> class_display_names;
-
-    QList<QString> extra_columns;
-    QList<QString> filter_containers;
-
-    // object category => superiors
-    QHash<QString, QList<QString>> possible_superiors;
-
-    // object class => attributes
-    QHash<QString, QList<QString>> possible_attributes;
-
-    QHash<QString, QList<QString>> find_attributes;
-
-    // attribute name => type
-    QHash<QString, AttributeType> attribute_types;
-
-    QHash<QString, bool> attribute_is_single_valued;
-    QHash<QString, bool> attribute_is_system_only;
-
 
     QString get_ldap_to_ad_name(const QString &ldap_name) const;
     QString get_ad_to_ldap_name(const QString &ad_name) const;
