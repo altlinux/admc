@@ -65,14 +65,13 @@ int main(int argc, char **argv) {
         const QString host = cli_parser.value("host");
         const QString domain = cli_parser.value("domain");
         
-        AD()->login(host, domain);
+        AD()->connect();
         AD()->command(positional_args);
 
         return 0;
     } else {
         // GUI
         MainWindow main_window;
-        main_window.show();
 
         const int retval = app.exec();
 

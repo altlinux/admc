@@ -141,7 +141,7 @@ int ad_get_domain_hosts(const char *domain, const char *site, char ***hosts_out)
     }
 }
 
-int ad_login(const char* uri, LDAP **ld_out) {
+int ad_connect(const char* uri, LDAP **ld_out) {
     int result = AD_SUCCESS;
 
     LDAP *ld = NULL;

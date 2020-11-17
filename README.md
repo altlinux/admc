@@ -3,11 +3,9 @@
 ## ADMC
 Join your machine to the domain. See this [guide](https://www.altlinux.org/%D0%A3%D1%87%D0%B0%D1%81%D1%82%D0%BD%D0%B8%D0%BA:Toga/ADJoin).
 
-Do `$ kinit administrator@DOMAIN.ALT` and enter the admin password.
+Use `kinit` to setup kerberos credentials (if needed).
 
 Launch admc.
-
-Menubar -> File -> Login -> enter domain name (DOMAIN.ALT) -> press enter -> select host (dc0 is fine) -> Login.
 
 ## GPGUI
 
