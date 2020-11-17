@@ -39,10 +39,6 @@ class QLineEdit;
 
 QString get_dn_from_index(const QModelIndex &index, int dn_column);
 QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn_column);
-bool checkbox_is_checked(const QCheckBox *checkbox);
-void checkbox_set_checked(QCheckBox *checkbox, bool checked);
-bool check_item_is_checked(const QStandardItem *check_item);
-void check_item_set_checked(QStandardItem *checkbox, bool checked);
 void append_to_grid_layout_with_label(QGridLayout *layout, QLabel *label, QWidget *widget);
 QString set_changed_marker(const QString &text, bool changed);
 QList<QStandardItem *> make_item_row(const int count);

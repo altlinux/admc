@@ -72,40 +72,6 @@ QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn
     return dn;
 }
 
-bool checkbox_is_checked(const QCheckBox *checkbox) {
-    return (checkbox->checkState() == Qt::Checked);
-}
-
-void checkbox_set_checked(QCheckBox *checkbox, bool checked) {
-    const Qt::CheckState check_state =
-    [checked]() {
-        if (checked) {
-            return Qt::Checked;
-        } else {
-            return Qt::Unchecked;
-        }
-    }();
-    
-    checkbox->setCheckState(check_state);
-}
-
-bool check_item_is_checked(const QStandardItem *item) {
-    return (item->checkState() == Qt::Checked);
-}
-
-void check_item_set_checked(QStandardItem *item, bool checked) {
-    const Qt::CheckState check_state =
-    [checked]() {
-        if (checked) {
-            return Qt::Checked;
-        } else {
-            return Qt::Unchecked;
-        }
-    }();
-    
-    item->setCheckState(check_state);
-}
-
 void append_to_grid_layout_with_label(QGridLayout *layout,QLabel *label, QWidget *widget) {
     const int row = layout->rowCount();
     layout->addWidget(label, row, 0);

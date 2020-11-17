@@ -49,7 +49,7 @@ void make_account_option_edits(const QList<AccountOption> options, QMap<AccountO
 
         QObject::connect(subject_check, &QCheckBox::stateChanged,
             [subject, blocker, subject_check, blocker_check, parent]() {
-                if (checkbox_is_checked(subject_check) && checkbox_is_checked(blocker_check)) {
+                if (subject_check->isChecked() && blocker_check->isChecked()) {
                     subject_check->setCheckState(Qt::Unchecked);
 
                     const QString subject_name = account_option_string(subject);
@@ -94,7 +94,7 @@ AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *pa
 
 void AccountOptionEdit::load(const AdObject &object) {
     original_value = object.get_account_option(option);
-    checkbox_set_checked(check, original_value);
+    check->setChecked(original_value);
 
     emit edited();
 }
@@ -116,12 +116,12 @@ bool AccountOptionEdit::verify() const {
 }
 
 bool AccountOptionEdit::changed() const {
-    const bool new_value = checkbox_is_checked(check);
+    const bool new_value = check->isChecked();
     return (new_value != original_value);
 }
 
 bool AccountOptionEdit::apply(const QString &dn) const {
-    const bool new_value = checkbox_is_checked(check);
+    const bool new_value = check->isChecked();
     const bool success = AD()->user_set_account_option(dn, option, new_value);
 
     return success;

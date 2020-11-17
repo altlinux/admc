@@ -43,7 +43,7 @@ void GpoptionsEdit::load(const AdObject &object) {
     const QString value = object.get_string(ATTRIBUTE_GPOPTIONS);
     original_checked_value = (value == GPOPTIONS_BLOCK_INHERITANCE);
 
-    checkbox_set_checked(check, original_checked_value);
+    check->setChecked(original_checked_value);
 
     emit edited();
 }
@@ -65,14 +65,14 @@ bool GpoptionsEdit::verify() const {
 }
 
 bool GpoptionsEdit::changed() const {
-    const bool new_checked_value = checkbox_is_checked(check);
+    const bool new_checked_value = check->isChecked();
     return (new_checked_value != original_checked_value);
 }
 
 bool GpoptionsEdit::apply(const QString &dn) const {
     const QString new_value =
     [this]() {
-        const bool checked = checkbox_is_checked(check);
+        const bool checked = check->isChecked();
         if (checked) {
             return GPOPTIONS_BLOCK_INHERITANCE;
         } else {

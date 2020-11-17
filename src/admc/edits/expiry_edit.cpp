@@ -125,7 +125,7 @@ bool ExpiryEdit::apply(const QString &dn) const {
 }
 
 void ExpiryEdit::on_never_check() {
-    if (checkbox_is_checked(never_check)) {
+    if (never_check->isChecked()) {
         display_label->setEnabled(false);
         edit_button->setEnabled(false);
 
@@ -134,7 +134,7 @@ void ExpiryEdit::on_never_check() {
 }
 
 void ExpiryEdit::on_end_of_check() {
-    if (checkbox_is_checked(end_of_check)) {
+    if (end_of_check->isChecked()) {
         display_label->setEnabled(true);
         edit_button->setEnabled(true);
 
@@ -178,7 +178,7 @@ void ExpiryEdit::on_edit_button() {
 
 // NOTE: have to operate on raw string datetime values here because (never) value can't be expressed as QDateTime
 QString ExpiryEdit::get_new_value() const {
-    const bool never = checkbox_is_checked(never_check);
+    const bool never = never_check->isChecked();
 
     if (never) {
         const bool original_value_is_never = large_integer_datetime_is_never(original_value);

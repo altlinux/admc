@@ -86,7 +86,7 @@ void SelectClassesWidget::select_classes() {
         checkboxes[object_class] = checkbox;
 
         const bool class_is_selected = selected.contains(object_class);
-        checkbox_set_checked(checkbox, class_is_selected);
+        checkbox->setChecked(class_is_selected);
 
         const QString class_display = ADCONFIG()->get_class_display_name(object_class);
         checkboxes_layout->addRow(class_display, checkbox);
@@ -114,7 +114,7 @@ void SelectClassesWidget::select_classes() {
             for (const QString object_class : filter_classes) {
                 QCheckBox *checkbox = checkboxes[object_class];
 
-                if (checkbox_is_checked(checkbox)) {
+                if (checkbox->isChecked()) {
                     selected.append(object_class);
                 }
             }

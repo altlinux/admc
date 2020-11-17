@@ -42,7 +42,7 @@ void XmlBoolEdit::load(const QDomDocument &doc) {
     original_value = (value_string == "1");
 
     check->blockSignals(true);
-    checkbox_set_checked(check, original_value);
+    check->setChecked(original_value);
     check->blockSignals(false);
 
     emit edited();
@@ -57,12 +57,12 @@ bool XmlBoolEdit::verify_input(QWidget *parent) {
 }
 
 bool XmlBoolEdit::changed() const {
-    const bool new_value = checkbox_is_checked(check);
+    const bool new_value = check->isChecked();
     return (new_value != original_value);
 }
 
 void XmlBoolEdit::apply(QDomDocument *doc) {
-    const bool new_value_bool = checkbox_is_checked(check);
+    const bool new_value_bool = check->isChecked();
     const QString new_value = (new_value_bool ? "1" : "0");
 
     set_xml_attribute(doc, attribute, new_value);

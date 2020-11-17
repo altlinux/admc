@@ -228,9 +228,17 @@ void GroupPolicyTab::reload_model(const Gplink &gplink) {
             QStandardItem *item = row[column];
             item->setCheckable(true);
 
-            const GplinkOption option = column_to_option[column];
-            const bool option_is_set = gplink.get_option(dn, option);
-            check_item_set_checked(item, option_is_set);
+            const Qt::CheckState checkstate =
+            [=]() {
+                const GplinkOption option = column_to_option[column];
+                const bool option_is_set = gplink.get_option(dn, option);
+                if (option_is_set) {
+                    return Qt::Checked;
+                } else {
+                    return Qt::Unchecked;
+                }
+            }();
+            item->setCheckState(checkstate);
         }
 
         model->appendRow(row);
@@ -246,7 +254,7 @@ void GroupPolicyTab::on_item_changed(QStandardItem *item) {
         const QModelIndex index = item->index();
         const QString gpo = get_dn_from_index(index, GplinkColumn_DN);
         const GplinkOption option = column_to_option[column];
-        const bool is_checked = check_item_is_checked(item);
+        const bool is_checked = (item->checkState() == Qt::Checked);
 
         current_gplink.set_option(gpo, option, is_checked);
 
