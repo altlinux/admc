@@ -137,6 +137,12 @@
 
 #define SEARCH_ALL_ATTRIBUTES "SEARCH_ALL_ATTRIBUTES"
 
+enum ConnectResult {
+    ConnectResult_Success,
+    ConnectResult_FailedToFindHosts,
+    ConnectResult_FailedToConnect,
+};
+
 enum SearchScope {
     SearchScope_Object,
     SearchScope_Children,
@@ -166,7 +172,7 @@ private:
 public:
     static AdInterface *instance();
 
-    bool login(const QString &domain, const QString &site);
+    ConnectResult connect();
 
     void refresh();
 

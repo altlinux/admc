@@ -29,6 +29,7 @@
 #include <lber.h>
 #include <libsmbclient.h>
 #include <uuid/uuid.h>
+#include <krb5.h>
 
 #include <QSet>
 #include <QMessageBox>
@@ -52,11 +53,44 @@ void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgro
 
 }
 
-bool AdInterface::login(const QString &domain, const QString &site) {
-    const QList<QString> hosts = get_domain_hosts(domain, site);
+ConnectResult AdInterface::connect() {
+    // Get default domain from krb5
+    const QString domain =
+    []() {
+        krb5_error_code result;
+        krb5_context context;
+
+        result = krb5_init_context(&context);
+        if (result) {
+            qDebug() << "Failed to init krb5 context";
+            return QString();
+        }
+
+        char *realm_cstr = NULL;
+        result = krb5_get_default_realm(context, &realm_cstr);
+        if (result) {
+            qDebug() << "Failed to get default realm";
+
+            krb5_free_context(context);
+
+            return QString();
+        }
+
+        const QString out = QString(realm_cstr);
+
+        krb5_free_default_realm(context, realm_cstr);
+
+        return out;
+    }();
+
+    qDebug() << "domain=" << domain;
+
+    const QList<QString> hosts = get_domain_hosts(domain, QString());
     if (hosts.isEmpty()) {
-        return false;
+        qDebug() << "No hosts found";
+        return ConnectResult_FailedToFindHosts;
     }
+    qDebug() << "hosts=" << hosts;
 
     // TODO: for now selecting first host, which seems to be fine but investigate what should be selected.
     m_host = hosts[0];
@@ -78,7 +112,7 @@ bool AdInterface::login(const QString &domain, const QString &site) {
     const QByteArray uri_array = uri.toUtf8();
     const char *uri_cstr = uri_array.constData();
 
-    const int result = ad_login(uri_cstr, &ld);
+    const int result = ad_connect(uri_cstr, &ld);
 
     if (result == AD_SUCCESS) {
         m_config = new AdConfig(this);
@@ -94,9 +128,9 @@ bool AdInterface::login(const QString &domain, const QString &site) {
         }
         smbc_set_context(smbc);
 
-        return true;
+        return ConnectResult_Success;
     } else {
-        return false;
+        return ConnectResult_FailedToConnect;
     }
 }
 

@@ -32,6 +32,7 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private:
+    void attempt_to_connect();
     void finish_init();
 
 };

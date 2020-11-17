@@ -26,7 +26,6 @@
 #include "settings.h"
 #include "confirmation_dialog.h"
 #include "policies_widget.h"
-#include "login_dialog.h"
 #include "ad_interface.h"
 
 #include <QApplication>
@@ -36,40 +35,54 @@
 #include <QVBoxLayout>
 #include <QTextEdit>
 #include <QMessageBox>
+#include <QTimer>
 
 MainWindow::MainWindow()
 : QMainWindow()
 {
     SETTINGS()->restore_geometry(this, VariantSetting_MainWindowGeometry);
 
-    const auto open_login_dialog =
-    [this]() {
-        const auto login_dialog = new LoginDialog(this);
-        login_dialog->open();
+    attempt_to_connect();
+}
 
-        QObject::connect(
-            login_dialog, &QDialog::accepted,
-            [this] () {
-                finish_init();
-            });
-    };
+void MainWindow::attempt_to_connect() {
+    const ConnectResult result = AD()->connect();
 
-    const bool auto_login = SETTINGS()->get_bool(BoolSetting_AutoLogin);
-    if (auto_login) {
-        const QString domain = SETTINGS()->get_variant(VariantSetting_Domain).toString();
-        const QString site = SETTINGS()->get_variant(VariantSetting_Site).toString();
-
-        const bool login_success = AD()->login(domain, site);
-
-        if (login_success) {
-            finish_init();
-        } else {
-            QMessageBox::warning(this, tr("Warning"), tr("Failed to login using saved login info"));
-
-            open_login_dialog();
-        }
+    if (result == ConnectResult_Success) {
+        finish_init();
     } else {
-        open_login_dialog();
+        // Open retry dialog
+        // TODO: not sure about phrasing of errors
+        const QMessageBox::Icon icon = QMessageBox::Warning;
+        const QString title = tr("Failed to connect");
+        const QString text =
+        [result]() {
+            switch (result) {
+                case ConnectResult_Success: return QString();
+                case ConnectResult_FailedToFindHosts: return tr("Not connected to a domain network");
+                case ConnectResult_FailedToConnect: return tr("Authentication failed");
+            }
+            return QString();
+        }();
+        const QMessageBox::StandardButtons buttons = (QMessageBox::Retry | QMessageBox::Cancel);
+        auto dialog = new QMessageBox(icon, title, text, buttons);
+
+        // NOTE: delay retry and open an intermediate dialog so that the user can follow the process. Otherwise it would look like clicking retry button did nothing
+        connect(
+            dialog, &QDialog::accepted,
+            [this, icon, title]() {
+                auto retrying_dialog = new QMessageBox(icon, title, tr("Retrying..."), QMessageBox::Cancel);
+
+                retrying_dialog->open();
+
+                QTimer::singleShot(1000,
+                    [this, retrying_dialog]() {
+                        retrying_dialog->close();
+                        attempt_to_connect();
+                    });
+            });
+
+        dialog->open();
     }
 }
 
@@ -118,6 +131,8 @@ void MainWindow::finish_init() {
     central_layout->setSpacing(0);
 
     central_widget->setLayout(central_layout);
+
+    show();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

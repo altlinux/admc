@@ -6,6 +6,7 @@ find_package(Qt5 REQUIRED
 
 find_package(Uuid REQUIRED)
 find_package(Smbclient REQUIRED)
+find_package(Krb5 REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -29,7 +30,6 @@ add_executable(admc
     select_dialog.cpp
     object_context_menu.cpp
     confirmation_dialog.cpp
-    login_dialog.cpp
     password_dialog.cpp
     menubar.cpp
     attribute_display.cpp
@@ -91,6 +91,7 @@ target_link_libraries(admc
     adldap
     Uuid::Uuid
     Smbclient::Smbclient
+    Krb5::Krb5
 )
 
 install(TARGETS admc)
