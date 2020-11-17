@@ -40,10 +40,12 @@ RenameDialog::RenameDialog(const QString &target_arg)
     target = target_arg;
     const AdObject object = AD()->search_object(target);
 
+    setWindowTitle(tr("Rename dialog"));
     setAttribute(Qt::WA_DeleteOnClose);
-    resize(600, 600);
 
-    const auto title_label = new QLabel(QString(tr("Rename dialog")), this);
+    const QString object_as_folder = dn_as_folder(object.get_dn());
+    const auto title_text = QString(tr("Renaming %1")).arg(object_as_folder);
+    const auto title_label = new QLabel(title_text);
 
     const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
