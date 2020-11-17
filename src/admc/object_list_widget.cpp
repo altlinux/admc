@@ -213,13 +213,22 @@ void ObjectListWidget::load(const QHash<QString, AdObject> &objects) {
     label->setText(label_text);
 }
 
+// Resize name and class columns to fit their contents but
+// limit both to a portion of total available width because
+// contents can be extremely long
 void ObjectListWidget::resize_columns() {
-    const int view_width = view->width();
-    const int name_width = (int) (view_width * 0.4);
-    const int category_width = (int) (view_width * 0.15);
+    const int name_column = column_index(ATTRIBUTE_NAME);
+    const int class_column = column_index(ATTRIBUTE_OBJECT_CLASS);
 
-    view->setColumnWidth(column_index(ATTRIBUTE_NAME), name_width);
-    view->setColumnWidth(column_index(ATTRIBUTE_OBJECT_CLASS), category_width);
+    view->resizeColumnToContents(name_column);
+    view->resizeColumnToContents(class_column);
+    
+    const int name_contents_width = view->columnWidth(name_column);
+    const int class_contents_width = view->columnWidth(class_column);
+
+    const int max_width = (int) (view->width() * 0.4);
+    view->setColumnWidth(name_column, qMin(name_contents_width, max_width));
+    view->setColumnWidth(class_column, qMin(class_contents_width, max_width));
 }
 
 void ObjectListWidget::showEvent(QShowEvent *event) {
