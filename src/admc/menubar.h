@@ -22,7 +22,7 @@
 
 #include <QMenuBar>
 
-class LoginDialog;
+class QAction;
 
 class MenuBar final : public QMenuBar {
 Q_OBJECT
@@ -30,8 +30,16 @@ Q_OBJECT
 public:
     explicit MenuBar(QWidget* parent);
 
+    const QAction *get_filter_contents_action() const;
+
+signals:
+    void filter_contents_dialog();
+
 private slots:
     void on_exit_action();
+
+private:
+    QAction *filter_contents_action;
 
 };
 

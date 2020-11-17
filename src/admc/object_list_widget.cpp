@@ -116,12 +116,14 @@ ObjectListWidget::ObjectListWidget()
     filter_name_edit->setText("");
 }
 
-void ObjectListWidget::load_children(const QString &new_parent_dn) {
+void ObjectListWidget::load_children(const QString &new_parent_dn, const QString &filter) {
     parent_dn = new_parent_dn;
 
     const QList<QString> search_attributes = columns;
-    const QString filter = current_advanced_view_filter();
-    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, parent_dn);
+    const QString total_filter = filter_AND({filter, current_advanced_view_filter()});
+    const QHash<QString, AdObject> search_results = AD()->search(total_filter, search_attributes, SearchScope_Children, parent_dn);
+
+    qDebug() << "Object list filter:" << total_filter;
 
     load(search_results);
 }

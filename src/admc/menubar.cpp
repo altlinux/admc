@@ -44,6 +44,8 @@ MenuBar::MenuBar(QWidget* parent)
             AD()->refresh();
         });
 
+    filter_contents_action = menubar_action->addAction(tr("Filter contents"));
+
     QAction *exit_action = menubar_action->addAction(tr("Exit"));
     connect(
         exit_action, &QAction::triggered,
@@ -99,6 +101,10 @@ MenuBar::MenuBar(QWidget* parent)
 
     add_language_action(QLocale::English);
     add_language_action(QLocale::Russian);
+}
+
+const QAction *MenuBar::get_filter_contents_action() const {
+    return filter_contents_action;
 }
 
 void MenuBar::on_exit_action() {

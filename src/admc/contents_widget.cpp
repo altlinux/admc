@@ -22,10 +22,15 @@
 #include "settings.h"
 #include "ad_interface.h"
 #include "object_list_widget.h"
+#include "filter_widget/filter_widget.h"
 
 #include <QVBoxLayout>
+#include <QAction>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QDebug>
 
-ContentsWidget::ContentsWidget(ContainersWidget *containers_widget)
+ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, const QAction *filter_contents_action)
 : QWidget()
 {   
     object_list = new ObjectListWidget();
@@ -34,6 +39,32 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget)
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(object_list);
+
+    filter_dialog = new QDialog(this);
+    filter_dialog->setModal(true);
+    filter_dialog->setWindowTitle(tr("Filter contents"));
+
+    filter_widget = new FilterWidget();
+
+    auto buttonbox = new QDialogButtonBox();
+    buttonbox->addButton(QDialogButtonBox::Ok);
+    buttonbox->addButton(QDialogButtonBox::Cancel);
+
+    connect(
+        buttonbox, &QDialogButtonBox::accepted,
+        filter_dialog, &QDialog::accept);
+    connect(
+        buttonbox, &QDialogButtonBox::rejected,
+        filter_dialog, &QDialog::reject);
+
+    auto dialog_layout = new QVBoxLayout();
+    filter_dialog->setLayout(dialog_layout);
+    dialog_layout->addWidget(filter_widget);
+    dialog_layout->addWidget(buttonbox);
+
+    connect(
+        filter_dialog, &QDialog::accepted,
+        this, &ContentsWidget::load_filter);
 
     connect(
         containers_widget, &ContainersWidget::selected_changed,
@@ -48,6 +79,12 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget)
         [this]() {
             change_target(target_dn);
         });
+
+    connect(
+        filter_contents_action, &QAction::triggered,
+        [this]() {
+            filter_dialog->open();
+        });
 }
 
 void ContentsWidget::on_containers_selected_changed(const QString &dn) {
@@ -56,6 +93,14 @@ void ContentsWidget::on_containers_selected_changed(const QString &dn) {
 
 void ContentsWidget::on_ad_modified() {
     change_target(target_dn);
+}
+
+void ContentsWidget::load_filter() {
+    const QString filter = filter_widget->get_filter();
+
+    qDebug() << "Contents filter:" << filter;
+
+    object_list->load_children(target_dn, filter);
 }
 
 void ContentsWidget::change_target(const QString &dn) {

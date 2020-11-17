@@ -45,7 +45,7 @@ Q_OBJECT
 public:
     ObjectListWidget();
 
-    void load_children(const QString &new_parent_dn);
+    void load_children(const QString &new_parent_dn, const QString &filter = QString());
     void load_filter(const QString &filter, const QString &search_base);
 
 private slots:

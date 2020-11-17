@@ -36,6 +36,7 @@
 #include <QTextEdit>
 #include <QMessageBox>
 #include <QTimer>
+#include <QAction>
 
 MainWindow::MainWindow()
 : QMainWindow()
@@ -100,7 +101,10 @@ void MainWindow::finish_init() {
     setCentralWidget(central_widget);
 
     auto containers_widget = new ContainersWidget(this);
-    auto contents_widget = new ContentsWidget(containers_widget);
+
+    const QAction *filter_contents_action = menubar->get_filter_contents_action();
+    auto contents_widget = new ContentsWidget(containers_widget, filter_contents_action);
+    
     auto details_widget_docked_container = DetailsDialog::get_docked_container();
     auto policies_widget = new PoliciesWidget();
 
