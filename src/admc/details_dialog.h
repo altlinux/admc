@@ -26,7 +26,6 @@
 
 class QString;
 class QTabWidget;
-class QLabel;
 class DetailsTab;
 class QAbstractItemView;
 class QPushButton;
@@ -63,7 +62,6 @@ private:
     static DetailsDialog *docked_instance;
     bool is_floating_instance;
     QTabWidget *tab_widget = nullptr;
-    QLabel *title_label = nullptr;
     QList<DetailsTab *> tabs;
     QString target;
     QPushButton *apply_button;

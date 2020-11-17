@@ -23,6 +23,7 @@
 #include "edits/string_edit.h"
 #include "status.h"
 #include "utils.h"
+#include "config.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -40,12 +41,11 @@ RenameDialog::RenameDialog(const QString &target_arg)
     target = target_arg;
     const AdObject object = AD()->search_object(target);
 
-    setWindowTitle(tr("Rename dialog"));
     setAttribute(Qt::WA_DeleteOnClose);
 
     const QString object_as_folder = dn_as_folder(object.get_dn());
-    const auto title_text = QString(tr("Renaming %1")).arg(object_as_folder);
-    const auto title_label = new QLabel(title_text);
+    const auto title = QString(tr("Rename %1 - %2")).arg(object_as_folder, ADMC_APPLICATION_NAME);
+    setWindowTitle(title);
 
     const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
@@ -98,7 +98,6 @@ RenameDialog::RenameDialog(const QString &target_arg)
     
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
-    top_layout->addWidget(title_label);
     top_layout->addLayout(edits_layout);
     top_layout->addWidget(button_box);
 

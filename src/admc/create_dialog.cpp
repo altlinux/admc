@@ -29,6 +29,7 @@
 #include "edits/password_edit.h"
 #include "utils.h"
 #include "settings.h"
+#include "config.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -52,13 +53,12 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
     parent_dn = parent_dn_arg;
     type = type_arg;
 
-    setWindowTitle(tr("Create dialog"));
     setAttribute(Qt::WA_DeleteOnClose);
 
     const QString type_string = create_type_to_string(type);
     const QString parent_as_folder = dn_as_folder(parent_dn);
-    const auto title_text = QString(CreateDialog::tr("Create %1 in \"%2\"")).arg(type_string, parent_as_folder);
-    const auto title_label = new QLabel(title_text);
+    const auto title = QString(tr("Create %1 in \"%2\" - %3")).arg(type_string, parent_as_folder, ADMC_APPLICATION_NAME);
+    setWindowTitle(title);
     
     const QString object_class =
     [this]() {
@@ -202,7 +202,6 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->addWidget(title_label);
     layout->addLayout(edits_layout);
     layout->addWidget(create_button);
 

@@ -102,12 +102,8 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     is_floating_instance = is_floating_instance_arg;
 
     setAttribute(Qt::WA_DeleteOnClose);
-
-    if (is_floating_instance) {
         resize(600, 700);
-    }
 
-    title_label = new QLabel(this);
     tab_widget = new QTabWidget(this);
 
     auto button_box = new QDialogButtonBox();
@@ -115,22 +111,30 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     reset_button = button_box->addButton(QDialogButtonBox::Reset);
     auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
 
+    const AdObject object = AD()->search_object(target);
+
     const auto layout = new QVBoxLayout(this);
     layout->setSpacing(0);
-    layout->addWidget(title_label);
+
+    // Title goes to window title or title label depending
+    // on whether instance is docked or not
+    const QString name = object.get_string(ATTRIBUTE_NAME);
+    const QString title = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
+
+    if (is_floating_instance) {
+        setWindowTitle(title);
+    } else {
+        auto title_label = new QLabel(title);
+        layout->addWidget(title_label);
+    }
+
     layout->addWidget(tab_widget);
     layout->addWidget(button_box);
-
-    const AdObject object = AD()->search_object(target);
 
     // TODO: is this actually possible and what should happen, currently leaving the dialog blank which might be enough.
     if (object.is_empty()) {
         return;
     }
-
-    const QString name = object.get_string(ATTRIBUTE_NAME);
-    const QString title_text = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
-    title_label->setText(title_text);
 
     QList<QString> titles;
 

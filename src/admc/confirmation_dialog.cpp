@@ -18,6 +18,7 @@
  */
 
 #include "settings.h"
+#include "config.h"
 
 #include <QString>
 #include <QMessageBox>
@@ -29,7 +30,7 @@ bool confirmation_dialog(const QString &text, QWidget *parent) {
         return true;
     }
 
-    const QString title = "ADMC";
+    const QString title = QString(QObject::tr("Confirm action - %1")).arg(ADMC_APPLICATION_NAME);
     const QMessageBox::StandardButton reply = QMessageBox::question(parent, title, text, QMessageBox::Yes|QMessageBox::No);
 
     if (reply == QMessageBox::Yes) {

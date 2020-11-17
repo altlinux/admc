@@ -24,6 +24,7 @@
 #include "edits/account_option_edit.h"
 #include "status.h"
 #include "utils.h"
+#include "config.h"
 
 #include <QFormLayout>
 #include <QLabel>
@@ -39,8 +40,8 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
     setAttribute(Qt::WA_DeleteOnClose);
 
     const QString name = dn_get_rdn(target);
-    const QString title_label_text = QString(tr("Resetting password of \"%1\"")).arg(name);
-    const auto title_label = new QLabel(title_label_text, this);
+    const QString title = QString(tr("Change password of \"%1\" - %2")).arg(name, ADMC_APPLICATION_NAME);
+    setWindowTitle(title);
 
     new PasswordEdit(this, &edits);
     new AccountOptionEdit(AccountOption_PasswordExpired, this, &edits);
@@ -55,7 +56,6 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->addWidget(title_label);
     layout->addLayout(edits_layout);
     layout->addWidget(button_box);
 

@@ -24,6 +24,7 @@
 #include "ad_config.h"
 #include "utils.h"
 #include "filter.h"
+#include "config.h"
 
 #include <QLineEdit>
 #include <QGridLayout>
@@ -54,7 +55,7 @@ QList<QString> SelectDialog::open(QList<QString> classes, SelectDialogMultiSelec
 SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection multi_selection)
 : QDialog()
 {
-    resize(600, 600);
+    setWindowTitle(QString(tr("Select object - %1")).arg(ADMC_APPLICATION_NAME));
 
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -63,8 +64,6 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     if (multi_selection == SelectDialogMultiSelection_Yes) {
         view->setSelectionMode(QAbstractItemView::ContiguousSelection);
     }
-
-    auto target_label = new QLabel(tr("Select object"), this);
 
     auto filter_class_label = new QLabel(tr("Class: "), this);
     auto filter_class_combo = new QComboBox(this);
@@ -76,7 +75,6 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     const auto cancel_button = new QPushButton(tr("Cancel"), this);
 
     const auto layout = new QGridLayout(this);
-    layout->addWidget(target_label, 0, 0);
     layout->addWidget(filter_class_label, 1, 0, Qt::AlignRight);
     layout->addWidget(filter_class_combo, 1, 1, 1, 2);
     layout->addWidget(filter_name_label, 2, 0, Qt::AlignRight);

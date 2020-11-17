@@ -24,6 +24,7 @@
 #include "edits/string_edit.h"
 #include "status.h"
 #include "utils.h"
+#include "config.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -38,10 +39,8 @@ StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArr
 : EditDialog()
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    resize(300, 300);
 
-    const auto title_text = QString(tr("Edit %1")).arg(attribute);
-    const auto title_label = new QLabel(title_text);
+    setWindowTitle(QString(tr("Edit %1 - %2")).arg(attribute, ADMC_APPLICATION_NAME));
 
     edit = new QLineEdit();
 
@@ -60,7 +59,6 @@ StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArr
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
-    top_layout->addWidget(title_label);
     top_layout->addWidget(edit);
     top_layout->addWidget(button_box);
 
