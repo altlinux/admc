@@ -20,13 +20,13 @@
 #ifndef UNLOCK_EDIT_H
 #define UNLOCK_EDIT_H
 
-#include "edits/attribute_edit.h"
-
 // Unlocks the account, if pressed down (when being applied,
 // NOT immediately. Doesn't implement the reverse operation
 // (locking) because that's only doable by the server.
 
-class QPushButton;
+#include "edits/attribute_edit.h"
+
+class QCheckBox;
 
 class UnlockEdit final : public AttributeEdit {
 Q_OBJECT
@@ -35,7 +35,7 @@ public:
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
-    QPushButton *button;
+    QCheckBox *check;
 };
 
 #endif /* UNLOCK_EDIT_H */

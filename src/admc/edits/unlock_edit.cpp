@@ -22,18 +22,14 @@
 #include "utils.h"
 
 #include <QFormLayout>
-#include <QLabel>
-#include <QPushButton>
-
+#include <QCheckBox>
 
 UnlockEdit::UnlockEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 : AttributeEdit(parent) {
-    button = new QPushButton();
-    button->setCheckable(true);
-    button->setText(tr("Unlock account"));
+    check = new QCheckBox();
 
     connect(
-        button, &QAbstractButton::clicked,
+        check, &QCheckBox::stateChanged,
         [this]() {
             emit edited();
         });
@@ -42,17 +38,17 @@ UnlockEdit::UnlockEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 }
 
 void UnlockEdit::load(const AdObject &object) {
-    button->setChecked(false);
+    check->setChecked(false);
 
     emit edited();
 }
 
 void UnlockEdit::set_read_only(const bool read_only) {
-    button->setDisabled(read_only);
+    check->setDisabled(read_only);
 }
 
 void UnlockEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow("", button);
+    layout->addRow(tr("Unlock account"), check);
 }
 
 bool UnlockEdit::verify() const {
@@ -60,11 +56,11 @@ bool UnlockEdit::verify() const {
 }
 
 bool UnlockEdit::changed() const {
-    return button->isChecked();
+    return check->isChecked();
 }
 
 bool UnlockEdit::apply(const QString &dn) const {
-    if (button->isChecked()) {
+    if (check->isChecked()) {
         const bool result = AD()->user_unlock(dn);
         
         return result;
