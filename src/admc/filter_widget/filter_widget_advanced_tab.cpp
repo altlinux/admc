@@ -17,38 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONTENTS_WIDGET_H
-#define CONTENTS_WIDGET_H
+#include "filter_widget/filter_widget_advanced_tab.h"
 
-#include "ad_object.h"
+#include <QPlainTextEdit>
+#include <QVBoxLayout>
+#include <QLabel>
 
-#include <QWidget>
-#include <QString>
+FilterWidgetAdvancedTab::FilterWidgetAdvancedTab()
+: FilterWidgetTab()
+{
+    auto label = new QLabel(tr("Enter LDAP filter:"));
+    ldap_filter_edit = new QPlainTextEdit(this);
 
-class ContainersWidget;
-class ObjectListWidget;
+    auto layout = new QVBoxLayout();
+    setLayout(layout);
+    layout->addWidget(label);
+    layout->addWidget(ldap_filter_edit);
 
-/**
- * Shows a list of objects, which are children of a target
- * parent object. Parent object is equal to most recent
- * selection in containers widget. Updates on AD modifications.
- */
+    connect(
+        ldap_filter_edit, &QPlainTextEdit::textChanged,
+        [this]() {
+            emit changed();
+        });
+}
 
-class ContentsWidget final : public QWidget {
-Q_OBJECT
+QString FilterWidgetAdvancedTab::get_filter() const {
+    const QString filter = ldap_filter_edit->toPlainText();
 
-public:
-    ContentsWidget(ContainersWidget *containers_widget);
-
-private slots:
-    void on_containers_selected_changed(const QString &dn);
-    void on_ad_modified();
-
-private:
-    QString target_dn;
-    ObjectListWidget *object_list;
-
-    void change_target(const QString &dn);
-};
-
-#endif /* CONTENTS_WIDGET_H */
+    return filter;
+}

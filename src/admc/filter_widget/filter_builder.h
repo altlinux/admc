@@ -17,38 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONTENTS_WIDGET_H
-#define CONTENTS_WIDGET_H
+#ifndef FILTER_BUILDER_H
+#define FILTER_BUILDER_H
 
-#include "ad_object.h"
+/**
+ * Build a single LDAP filter step by step by selecting
+ * attribute, condition and value. Attributes are split into
+ * groups by class to which they are related.
+ */
 
 #include <QWidget>
 #include <QString>
 
-class ContainersWidget;
-class ObjectListWidget;
+class QComboBox;
+class QLineEdit;
 
-/**
- * Shows a list of objects, which are children of a target
- * parent object. Parent object is equal to most recent
- * selection in containers widget. Updates on AD modifications.
- */
-
-class ContentsWidget final : public QWidget {
+class FilterBuilder final : public QWidget {
 Q_OBJECT
 
 public:
-    ContentsWidget(ContainersWidget *containers_widget);
+    FilterBuilder();
+
+    QString get_filter() const;
+    QString get_filter_display() const;
+    void clear();
 
 private slots:
-    void on_containers_selected_changed(const QString &dn);
-    void on_ad_modified();
+    void update_attributes_combo();
+    void update_conditions_combo();
+    void update_value_edit();
 
 private:
-    QString target_dn;
-    ObjectListWidget *object_list;
-
-    void change_target(const QString &dn);
+    QComboBox *attribute_class_combo;
+    QComboBox *attribute_combo;
+    QComboBox *condition_combo;
+    QLineEdit *value_edit;
 };
 
-#endif /* CONTENTS_WIDGET_H */
+#endif /* FILTER_BUILDER_H */

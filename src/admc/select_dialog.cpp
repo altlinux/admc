@@ -107,7 +107,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         QList<QString> subfilters;
         for (int i = 0; i < classes.size(); i++) {
             const QString object_class = classes[i];
-            const QString equals_to_class = filter_EQUALS(ATTRIBUTE_OBJECT_CLASS, object_class);
+            const QString equals_to_class = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
 
             subfilters.append(equals_to_class);
         }

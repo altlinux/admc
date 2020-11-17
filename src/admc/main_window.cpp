@@ -100,7 +100,7 @@ void MainWindow::finish_init() {
     setCentralWidget(central_widget);
 
     auto containers_widget = new ContainersWidget(this);
-    auto contents_widget = new ContentsWidget(containers_widget, this);
+    auto contents_widget = new ContentsWidget(containers_widget);
     auto details_widget_docked_container = DetailsDialog::get_docked_container();
     auto policies_widget = new PoliciesWidget();
 

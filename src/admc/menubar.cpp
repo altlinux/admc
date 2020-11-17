@@ -20,6 +20,7 @@
 #include "menubar.h"
 #include "settings.h"
 #include "confirmation_dialog.h"
+#include "find_dialog.h"
 #include "ad_interface.h"
 
 #include <QMenu>
@@ -31,6 +32,12 @@
 MenuBar::MenuBar(QWidget* parent)
 : QMenuBar(parent) {
     QMenu *menubar_action = addMenu(tr("Action"));
+
+    menubar_action->addAction(tr("Find"),
+        []() {
+            auto find_dialog = new FindDialog();
+            find_dialog->open();
+        });
 
     menubar_action->addAction(tr("Refresh"),
         []() {

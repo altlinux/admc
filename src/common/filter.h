@@ -22,10 +22,24 @@
 
 #include <QString>
 
-QString filter_EQUALS(const QString &attribute, const QString &value);
+enum Condition {
+    Condition_Contains,
+    Condition_Equals,
+    Condition_NotEquals,
+    Condition_StartsWith,
+    Condition_EndsWith,
+    Condition_Set,
+    Condition_Unset,
+    Condition_COUNT,
+};
+
+extern const QList<QString> filter_classes;
+
+QString filter_CONDITION(const Condition condition, const QString &attribute, const QString &value = QString());
+
+// If arguments for AND/OR are empty, empty string is returned
 QString filter_AND(const QList<QString> &subfilters);
 QString filter_OR(const QList<QString> &subfilters);
-QString filter_NOT(const QString &a);
 
 QString current_advanced_view_filter();
 

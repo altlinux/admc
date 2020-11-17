@@ -185,7 +185,7 @@ AdConfig::AdConfig(QObject *parent)
         QHash<QString, QList<QString>> out;
 
         const QString schema_dn = AD()->schema_dn();
-        const QString filter = filter_EQUALS(ATTRIBUTE_POSSIBLE_SUPERIORS, "*");
+        const QString filter = filter_CONDITION(Condition_Set, ATTRIBUTE_POSSIBLE_SUPERIORS);
         const QList<QString> attributes = {ATTRIBUTE_POSSIBLE_SUPERIORS};
         const QHash<QString, AdObject> search_results = AD()->search(filter, attributes, SearchScope_Children, schema_dn);
 
@@ -226,12 +226,41 @@ AdConfig::AdConfig(QObject *parent)
         return out;
     }();
 
+    find_attributes =
+    [this]() {
+        QHash<QString, QList<QString>> out;
+
+        const QString locale_dir = get_locale_dir();
+        const QList<QString> search_attributes = {ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES};
+        const QHash<QString, AdObject> search_results = AD()->search("", search_attributes, SearchScope_Children, locale_dir);
+
+        for (const QString &dn : search_results.keys()) {
+            const AdObject object  = search_results[dn];
+
+            const QList<QString> display_names = object.get_strings(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES);
+
+            const QString specifier_class = get_display_specifier_class(dn);
+
+            QList<QString> attributes;
+            for (const auto display_name_pair : display_names) {
+                const QList<QString> split = display_name_pair.split(",");
+                const QString attribute_name = split[0];
+
+                attributes.append(attribute_name);
+            }
+
+            out[specifier_class] = attributes;
+        }
+
+        return out;
+    }();
+
     attribute_types =
     [this]() {
         QHash<QString, AttributeType> out;
 
         const QString schema_dn = AD()->schema_dn();
-        const QString filter = filter_EQUALS(ATTRIBUTE_POSSIBLE_SUPERIORS, "*");
+        const QString filter = filter_CONDITION(Condition_Set, ATTRIBUTE_POSSIBLE_SUPERIORS);
         const QList<QString> attributes = {ATTRIBUTE_ATTRIBUTE_SYNTAX,
             ATTRIBUTE_OM_SYNTAX,
             ATTRIBUTE_LDAP_DISPLAY_NAME
@@ -266,7 +295,13 @@ AdConfig::AdConfig(QObject *parent)
                 {"2.5.5.15", {{"66", AttributeType_NTSecDesc}}},
                 {"2.5.5.6", {{"18", AttributeType_Numeric}}},
                 {"2.5.5.2", {{"6", AttributeType_ObjectIdentifier}}},
-                {"2.5.5.10", {{"4", AttributeType_Octet}}},
+                {
+                    "2.5.5.10",
+                    {
+                        {"4", AttributeType_Octet},
+                        {"127", AttributeType_ReplicaLink}
+                    }
+                },
                 {"2.5.5.5", {{"19", AttributeType_Printable}}},
                 {"2.5.5.17", {{"4", AttributeType_Sid}}},
                 {"2.5.5.4", {{"20", AttributeType_Teletex}}},
@@ -277,7 +312,10 @@ AdConfig::AdConfig(QObject *parent)
                         {"23", AttributeType_UTCTime},
                         {"24", AttributeType_GeneralizedTime}
                     }
-                }
+                },
+                {"2.5.5.14", {{"127", AttributeType_DNString}}},
+                {"2.5.5.7", {{"127", AttributeType_DNBinary}}},
+                {"2.5.5.1", {{"127", AttributeType_DSDN}}},
             };
 
             out[attribute] =
@@ -389,6 +427,14 @@ QList<QString> AdConfig::get_possible_attributes(const QList<QString> &object_cl
     return attributes;
 }
 
+QList<QString> AdConfig::get_find_attributes(const QString &object_class) const {
+    if (find_attributes.contains(object_class)) {
+        return find_attributes[object_class];
+    } else {
+        return QList<QString>();
+    }
+}
+
 AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
     if (attribute_types.contains(attribute)) {
         return attribute_types[attribute];
@@ -452,14 +498,15 @@ bool AdConfig::get_attribute_is_system_only(const QString &attribute) const {
     }
 }
 
-// Display specifier DN is "CN=class-Display,CN=..."
-// Get "class" from that
+// Display specifier DN is "CN=object-class-Display,CN=..."
+// Get "object-class" from that
 QString get_display_specifier_class(const QString &display_specifier) {
     const QString rdn = display_specifier.split(",")[0];
     const QString removed_cn = QString(rdn).remove("CN=", Qt::CaseInsensitive);
-    const QString specifier_class = removed_cn.split('-')[0];
+    QString out = removed_cn;
+    out.remove("-Display");
 
-    return specifier_class;
+    return out;
 }
 
 QString get_locale_dir() {

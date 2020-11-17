@@ -21,36 +21,68 @@
 #include "settings.h"
 #include "ad_interface.h"
 
-QString filter_EQUALS(const QString &attribute, const QString &value) {
-    auto filter = QString("(%1=%2)").arg(attribute, value);
-    return filter;
+const QList<QString> filter_classes = {
+    CLASS_USER,
+    CLASS_GROUP,
+    CLASS_CONTACT,
+    CLASS_COMPUTER,
+    CLASS_PRINTER,
+    CLASS_OU,
+    CLASS_TRUSTED_DOMAIN,
+    CLASS_DOMAIN,
+    CLASS_CONTAINER,
+    CLASS_INET_ORG_PERSON,
+    CLASS_FOREIGN_SECURITY_PRINCIPAL,
+    CLASS_SHARED_FOLDER,
+    CLASS_RPC_SERVICES,
+    CLASS_CERTIFICATE_TEMPLATE,
+    CLASS_MSMQ_GROUP,
+    CLASS_MSMQ_QUEUE_ALIAS,
+    CLASS_REMOTE_STORAGE_SERVICE,
+};
+
+QString filter_CONDITION(const Condition condition, const QString &attribute, const QString &value) {
+    switch(condition) {
+        case Condition_Equals: return QString("(%1=%2)").arg(attribute, value);
+        case Condition_NotEquals: return QString("(!%1=%2)").arg(attribute, value);
+        case Condition_StartsWith: return QString("(%1=*%2)").arg(attribute, value);
+        case Condition_EndsWith: return QString("(%1=%2*)").arg(attribute, value);
+        case Condition_Contains: return QString("(%1=*%2*)").arg(attribute, value);
+        case Condition_Set: return QString("(%1=*)").arg(attribute);
+        case Condition_Unset: return QString("(!%1=*)").arg(attribute);
+        case Condition_COUNT: return QString();
+    }
+    return QString();
 }
 
 // {x, y, z ...} => (&(x)(y)(z)...)
 QString filter_AND(const QList<QString> &subfilters) {
-    QString filter = "(&";
-    for (const QString subfilter : subfilters) {
-        filter += subfilter;
-    }
-    filter += ")";
+    if (!subfilters.isEmpty()) {
+        QString filter = "(&";
+        for (const QString subfilter : subfilters) {
+            filter += subfilter;
+        }
+        filter += ")";
 
-    return filter;
+        return filter;
+    } else {
+        return QString();
+    }
 }
 
 // {x, y, z ...} => (|(x)(y)(z)...)
 QString filter_OR(const QList<QString> &subfilters) {
-    QString filter = "(|";
-    for (const QString subfilter : subfilters) {
-        filter += subfilter;
+    if (!subfilters.isEmpty()) {
+        QString filter = "(|";
+        for (const QString subfilter : subfilters) {
+            filter += subfilter;
+        }
+        filter += ")";
+
+        return filter;
+    } else {
+        return QString();
     }
-    filter += ")";
-
-    return filter;
-}
-
-QString filter_NOT(const QString &a) {
-    auto filter = QString("(!%1)").arg(a);
-    return filter;
 }
 
 QString current_advanced_view_filter() {
@@ -59,6 +91,6 @@ QString current_advanced_view_filter() {
     if (advanced_view) {
         return QString();
     } else {
-        return filter_NOT(filter_EQUALS(ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true"));
+        return filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
     }
 }

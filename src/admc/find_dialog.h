@@ -17,38 +17,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONTENTS_WIDGET_H
-#define CONTENTS_WIDGET_H
-
-#include "ad_object.h"
-
-#include <QWidget>
-#include <QString>
-
-class ContainersWidget;
-class ObjectListWidget;
+#ifndef FIND_DIALOG_H
+#define FIND_DIALOG_H
 
 /**
- * Shows a list of objects, which are children of a target
- * parent object. Parent object is equal to most recent
- * selection in containers widget. Updates on AD modifications.
+ * User inputs a filter through FilterWidget. Then the
+ * dialog displays search results from that filter. TODO:
+ * update comment depending on if end up displaying results
+ * in real time or not.
  */
 
-class ContentsWidget final : public QWidget {
+#include <QDialog>
+
+class FilterWidget;
+class ObjectListWidget;
+class QComboBox;
+
+class FindDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    ContentsWidget(ContainersWidget *containers_widget);
+    FindDialog();
 
 private slots:
-    void on_containers_selected_changed(const QString &dn);
-    void on_ad_modified();
+    void select_custom_search_base();
+    void on_filter_changed();
+    void find();
 
 private:
-    QString target_dn;
-    ObjectListWidget *object_list;
-
-    void change_target(const QString &dn);
+    FilterWidget *filter_widget;
+    ObjectListWidget *find_results;
+    QComboBox *search_base_combo;
 };
 
-#endif /* CONTENTS_WIDGET_H */
+#endif /* FIND_DIALOG_H */

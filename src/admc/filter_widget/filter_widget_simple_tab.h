@@ -17,38 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONTENTS_WIDGET_H
-#define CONTENTS_WIDGET_H
-
-#include "ad_object.h"
-
-#include <QWidget>
-#include <QString>
-
-class ContainersWidget;
-class ObjectListWidget;
+#ifndef FILTER_WIDGET_SIMPLE_TAB_H
+#define FILTER_WIDGET_SIMPLE_TAB_H
 
 /**
- * Shows a list of objects, which are children of a target
- * parent object. Parent object is equal to most recent
- * selection in containers widget. Updates on AD modifications.
+ * Simple filter with just a class selection and name input.
  */
 
-class ContentsWidget final : public QWidget {
+#include "filter_widget/filter_widget.h"
+
+class QLineEdit;
+class SelectClassesWidget;
+
+class FilterWidgetSimpleTab final : public FilterWidgetTab {
 Q_OBJECT
 
 public:
-    ContentsWidget(ContainersWidget *containers_widget);
+    FilterWidgetSimpleTab();
 
-private slots:
-    void on_containers_selected_changed(const QString &dn);
-    void on_ad_modified();
+    QString get_filter() const;
+
+signals:
+    void return_pressed();
 
 private:
-    QString target_dn;
-    ObjectListWidget *object_list;
-
-    void change_target(const QString &dn);
+    SelectClassesWidget *select_classes;
+    QLineEdit *name_edit;
 };
 
-#endif /* CONTENTS_WIDGET_H */
+#endif /* FILTER_WIDGET_SIMPLE_TAB_H */

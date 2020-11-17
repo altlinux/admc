@@ -36,12 +36,16 @@ enum AttributeType {
     AttributeType_Numeric,
     AttributeType_ObjectIdentifier,
     AttributeType_Octet,
+    AttributeType_ReplicaLink,
     AttributeType_Printable,
     AttributeType_Sid,
     AttributeType_Teletex,
     AttributeType_Unicode,
     AttributeType_UTCTime,
     AttributeType_GeneralizedTime,
+    AttributeType_DNString,
+    AttributeType_DNBinary,
+    AttributeType_DSDN,
 };
 
 // NOTE: large integer type has sub types but AD schema
@@ -69,6 +73,7 @@ public:
     QList<QString> get_filter_containers() const;
     QList<QString> get_possible_superiors(const QString &object_category) const;
     QList<QString> get_possible_attributes(const QList<QString> &object_classes) const;
+    QList<QString> get_find_attributes(const QString &object_class) const;
     AttributeType get_attribute_type(const QString &attribute) const;
     LargeIntegerSubtype get_large_integer_subtype(const QString &attribute) const;
     bool attribute_is_number(const QString &attribute) const;
@@ -94,6 +99,8 @@ private:
 
     // object class => attributes
     QHash<QString, QList<QString>> possible_attributes;
+
+    QHash<QString, QList<QString>> find_attributes;
 
     // attribute name => type
     QHash<QString, AttributeType> attribute_types;

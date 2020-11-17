@@ -20,10 +20,12 @@
 #include "settings.h"
 
 #include <QAction>
+#include <QCheckBox>
 #include <QWidget>
 #include <QSettings>
 #include <QLocale>
 
+bool bool_default_value(BoolSetting type);
 QString bool_to_string(BoolSetting type);
 QString variant_to_string(VariantSetting type);
 
@@ -69,25 +71,7 @@ void Settings::connect_action_to_bool_setting(QAction *action, const BoolSetting
 
     const QString setting_str = bool_to_string(type);
 
-    const bool default_value =
-    [type]() {
-        switch (type) {
-            case BoolSetting_LastNameBeforeFirstName: {
-                const bool locale_is_russian = (QLocale::system().language() == QLocale::Russian);
-                if (locale_is_russian) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            case BoolSetting_ConfirmActions: {
-                return true;
-            }
-            default: {
-                return false;
-            }
-        }
-    }();
+    const bool default_value = bool_default_value(type);
     
     // Init action state to saved value
     const bool saved_value = qsettings->value(setting_str, default_value).toBool();
@@ -97,6 +81,25 @@ void Settings::connect_action_to_bool_setting(QAction *action, const BoolSetting
     connect(
         action, &QAction::toggled,
         [this, type, setting_str](bool checked) {
+            qsettings->setValue(setting_str, checked);
+
+            emit bools[type].changed();
+        });
+}
+
+void Settings::connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSetting type) {
+    const QString setting_str = bool_to_string(type);
+
+    const bool default_value = bool_default_value(type);
+    
+    // Init action state to saved value
+    const bool saved_value = qsettings->value(setting_str, default_value).toBool();
+    check->setChecked(saved_value);
+
+    connect(
+        check, &QCheckBox::stateChanged,
+        [this, type, setting_str, check]() {
+            const bool checked = check->isChecked();
             qsettings->setValue(setting_str, checked);
 
             emit bools[type].changed();
@@ -115,6 +118,25 @@ void Settings::save_geometry(QWidget *widget, const VariantSetting geometry_sett
     set_variant(VariantSetting_MainWindowGeometry, QVariant(geometry));
 }
 
+bool bool_default_value(BoolSetting type) {
+    switch (type) {
+        case BoolSetting_LastNameBeforeFirstName: {
+            const bool locale_is_russian = (QLocale::system().language() == QLocale::Russian);
+            if (locale_is_russian) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        case BoolSetting_ConfirmActions: {
+            return true;
+        }
+        default: {
+            return false;
+        }
+    }
+}
+
 #define CASE_ENUM_TO_STRING(ENUM) case ENUM: return #ENUM
 
 // Convert enum to string literal via macro
@@ -128,6 +150,7 @@ QString bool_to_string(BoolSetting type) {
         CASE_ENUM_TO_STRING(BoolSetting_DetailsIsDocked);
         CASE_ENUM_TO_STRING(BoolSetting_ShowNonContainersInContainersTree);
         CASE_ENUM_TO_STRING(BoolSetting_LastNameBeforeFirstName);
+        CASE_ENUM_TO_STRING(BoolSetting_QuickFind);
         CASE_ENUM_TO_STRING(BoolSetting_COUNT);
     }
     return "";

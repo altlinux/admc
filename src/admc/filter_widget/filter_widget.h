@@ -17,38 +17,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONTENTS_WIDGET_H
-#define CONTENTS_WIDGET_H
+#ifndef FILTER_WIDGET_H
+#define FILTER_WIDGET_H
 
-#include "ad_object.h"
+/**
+ * Allows user to enter a filter, which is then passed on to
+ * a parent widget. Has tabs for different ways to enter a
+ * filter: normal and advanced tab.
+ */
 
 #include <QWidget>
 #include <QString>
 
-class ContainersWidget;
-class ObjectListWidget;
+class QTabWidget;
+class FilterWidgetTab;
 
-/**
- * Shows a list of objects, which are children of a target
- * parent object. Parent object is equal to most recent
- * selection in containers widget. Updates on AD modifications.
- */
-
-class ContentsWidget final : public QWidget {
+class FilterWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContentsWidget(ContainersWidget *containers_widget);
+    FilterWidget();
 
-private slots:
-    void on_containers_selected_changed(const QString &dn);
-    void on_ad_modified();
+    QString get_filter() const;
+
+signals:
+    void changed();
+
+    // Indicates that input of filter is complete
+    void return_pressed();
 
 private:
-    QString target_dn;
-    ObjectListWidget *object_list;
-
-    void change_target(const QString &dn);
+    QTabWidget *tab_widget;
 };
 
-#endif /* CONTENTS_WIDGET_H */
+class FilterWidgetTab : public QWidget {
+Q_OBJECT
+
+public:
+    virtual QString get_filter() const = 0;
+
+signals:
+    void changed();
+};
+
+#endif /* FILTER_WIDGET_H */
