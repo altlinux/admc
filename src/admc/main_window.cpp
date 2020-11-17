@@ -71,7 +71,7 @@ void MainWindow::attempt_to_connect() {
         connect(
             dialog, &QDialog::accepted,
             [this, icon, title]() {
-                auto retrying_dialog = new QMessageBox(icon, title, tr("Retrying..."), QMessageBox::NoButton);
+                auto retrying_dialog = new QMessageBox(icon, title, tr("Retrying..."), QMessageBox::Cancel);
 
                 retrying_dialog->open();
 
@@ -80,12 +80,6 @@ void MainWindow::attempt_to_connect() {
                         retrying_dialog->close();
                         attempt_to_connect();
                     });
-            });
-
-        connect(
-            dialog, &QDialog::rejected,
-            []() {
-                QApplication::quit();
             });
 
         dialog->open();
