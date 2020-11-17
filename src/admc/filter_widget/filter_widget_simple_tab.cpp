@@ -55,7 +55,11 @@ QString FilterWidgetSimpleTab::get_filter() const {
     [this]() {
         const QString name = name_edit->text();
 
-        return filter_CONDITION(Condition_Contains, ATTRIBUTE_NAME, name);
+        if (!name.isEmpty()) {
+            return filter_CONDITION(Condition_Contains, ATTRIBUTE_NAME, name);
+        } else {
+            return QString();
+        }
     }();
 
     const QString classes_filter = select_classes->get_filter();
