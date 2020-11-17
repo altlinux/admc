@@ -38,6 +38,7 @@
 class QTreeView;
 class QLabel;
 class ObjectModel;
+class QLineEdit;
 
 class ObjectListWidget final : public QWidget {
 Q_OBJECT
@@ -47,6 +48,7 @@ public:
 
     void load_children(const QString &new_parent_dn, const QString &filter = QString());
     void load_filter(const QString &filter, const QString &search_base);
+    void reset_name_filter();
 
 private slots:
     void on_context_menu(const QPoint pos);
@@ -57,6 +59,7 @@ private:
     QLabel *label;
     ObjectModel *model;
     QTreeView *view;
+    QLineEdit *filter_name_edit;
 
     void load(const QHash<QString, AdObject> &objects);
     void resize_columns();

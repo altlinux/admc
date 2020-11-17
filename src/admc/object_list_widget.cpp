@@ -90,8 +90,8 @@ ObjectListWidget::ObjectListWidget()
 
     label = new QLabel(this);
 
-    const auto filter_name_label = new QLabel(tr("Filter: "), this);
-    auto filter_name_edit = new QLineEdit(this);
+    const auto filter_name_label = new QLabel(tr("Search: "), this);
+    filter_name_edit = new QLineEdit(this);
 
     const auto layout = new QGridLayout();
     setLayout(layout);
@@ -113,7 +113,6 @@ ObjectListWidget::ObjectListWidget()
         [proxy_name](const QString &text) {
             proxy_name->setFilterRegExp(QRegExp(text, Qt::CaseInsensitive, QRegExp::FixedString));
         });
-    filter_name_edit->setText("");
 }
 
 void ObjectListWidget::load_children(const QString &new_parent_dn, const QString &filter) {
@@ -136,6 +135,9 @@ void ObjectListWidget::load_filter(const QString &filter, const QString &search_
     load(search_results);
 }
 
+void ObjectListWidget::reset_name_filter() {
+    filter_name_edit->clear();
+}
 
 void ObjectListWidget::on_context_menu(const QPoint pos) {
     const QString dn =

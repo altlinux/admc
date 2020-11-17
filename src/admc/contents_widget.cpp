@@ -88,6 +88,7 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, const QActio
 }
 
 void ContentsWidget::on_containers_selected_changed(const QString &dn) {
+    object_list->reset_name_filter();
     change_target(dn);
 }
 
