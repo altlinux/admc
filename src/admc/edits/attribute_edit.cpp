@@ -23,7 +23,7 @@
 
 #include "ad_interface.h"
 
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QLabel>
 
 void AttributeEdit::connect_changed_marker(QLabel *label) {
@@ -45,7 +45,7 @@ void AttributeEdit::append_to_list(QList<AttributeEdit *> *edits_out) {
     }
 }
 
-void edits_add_to_layout(QList<AttributeEdit *> edits, QGridLayout *layout) {
+void edits_add_to_layout(QList<AttributeEdit *> edits, QFormLayout *layout) {
     for (auto edit : edits) {
         edit->add_to_layout(layout);
     }

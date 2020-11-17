@@ -29,7 +29,7 @@
 #include "ad_config.h"
 
 #include <QLabel>
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QMap>
 #include <QFrame>
 
@@ -44,7 +44,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Sunken);
 
-    auto edits_layout = new QGridLayout();
+    auto edits_layout = new QFormLayout();
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);

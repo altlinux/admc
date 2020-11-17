@@ -32,7 +32,7 @@
 
 #include <QDialog>
 #include <QLineEdit>
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QLabel>
 #include <QPushButton>
 #include <QButtonGroup>
@@ -53,15 +53,12 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
     type = type_arg;
 
     setAttribute(Qt::WA_DeleteOnClose);
-    resize(600, 600);
 
     const QString type_string = create_type_to_string(type);
     const QString parent_as_folder = dn_as_folder(parent_dn);
     const auto title_text = QString(CreateDialog::tr("Create %1 in \"%2\"")).arg(type_string, parent_as_folder);
     const auto title_label = new QLabel(title_text);
     
-    const auto edits_layout = new QGridLayout();
-
     const QString object_class =
     [this]() {
         switch (type) {
@@ -197,15 +194,13 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
         }
     }
 
-    edits_add_to_layout(all_edits, edits_layout);
-
     create_button = new QPushButton(tr("Create"));
 
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addWidget(title_label);
-    top_layout->addLayout(edits_layout);
-    top_layout->addWidget(create_button);
+    const auto layout = new QFormLayout();
+    setLayout(layout);
+    layout->addRow(title_label);
+    edits_add_to_layout(all_edits, layout);
+    layout->addRow(create_button);
 
     connect(
         create_button, &QAbstractButton::clicked,

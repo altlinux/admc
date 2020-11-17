@@ -25,7 +25,7 @@
 #include "select_dialog.h"
 
 #include <QLineEdit>
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QLabel>
 #include <QPushButton>
 
@@ -68,13 +68,17 @@ void ManagerEdit::set_read_only(const bool read_only) {
 
 }
 
-void ManagerEdit::add_to_layout(QGridLayout *layout) {
-    append_to_grid_layout_with_label(layout, label, edit);
+void ManagerEdit::add_to_layout(QFormLayout *layout) {
+    auto buttons_layout = new QHBoxLayout();
+    buttons_layout->addWidget(change_button);
+    buttons_layout->addWidget(details_button);
+    buttons_layout->addWidget(clear_button);
 
-    const int button_row = layout->rowCount();
-    layout->addWidget(change_button, button_row, 0);
-    layout->addWidget(details_button, button_row, 1);
-    layout->addWidget(clear_button, button_row, 2);
+    auto sublayout = new QVBoxLayout();
+    sublayout->addWidget(edit);
+    sublayout->addLayout(buttons_layout);
+
+    layout->addRow(label, sublayout);
 }
 
 bool ManagerEdit::verify() const {

@@ -24,9 +24,10 @@
 #include "details_dialog.h"
 #include "utils.h"
 
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QTreeView>
 #include <QStandardItemModel>
+#include <QLabel>
 
 enum ReportsColumn {
     ReportsColumn_Name,
@@ -36,8 +37,6 @@ enum ReportsColumn {
 };
 
 OrganizationTab::OrganizationTab() {   
-    auto edits_layout = new QGridLayout();
-
     const QList<QString> attributes = {
         ATTRIBUTE_TITLE,
         ATTRIBUTE_DEPARTMENT,
@@ -47,7 +46,6 @@ OrganizationTab::OrganizationTab() {
 
     new ManagerEdit(this, &edits);
 
-    edits_add_to_layout(edits, edits_layout);
     edits_connect_to_tab(edits, this);
 
     reports_model = new QStandardItemModel(0, ReportsColumn_COUNT, this);
@@ -56,6 +54,8 @@ OrganizationTab::OrganizationTab() {
         {ReportsColumn_Folder, tr("Folder")},
         {ReportsColumn_DN, tr("DN")}
     });
+
+    auto reports_label = new QLabel(tr("Reports:"));
 
     auto reports_view = new QTreeView(this);
     reports_view->setModel(reports_model);
@@ -66,10 +66,11 @@ OrganizationTab::OrganizationTab() {
 
     setup_column_toggle_menu(reports_view, reports_model, {ReportsColumn_Name, ReportsColumn_Folder});
 
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addLayout(edits_layout);
-    top_layout->addWidget(reports_view);
+    auto layout = new QFormLayout();
+    setLayout(layout);
+    edits_add_to_layout(edits, layout);
+    layout->addRow(reports_label);
+    layout->addRow(reports_view);
 }
 
 void OrganizationTab::load(const AdObject &object) {

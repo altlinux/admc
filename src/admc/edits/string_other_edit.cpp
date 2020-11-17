@@ -25,7 +25,7 @@
 #include "ad_config.h"
 
 #include <QLineEdit>
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QMessageBox>
 #include <QLabel>
 #include <QPushButton>
@@ -77,14 +77,15 @@ void StringOtherEdit::set_read_only(const bool read_only) {
 
 }
 
-void StringOtherEdit::add_to_layout(QGridLayout *layout) {
+void StringOtherEdit::add_to_layout(QFormLayout *layout) {
     QLabel *label = main_edit->label;
     QLineEdit *edit = main_edit->edit;
 
-    const int row = layout->rowCount();
-    layout->addWidget(label, row, 0);
-    layout->addWidget(edit, row, 1);
-    layout->addWidget(other_button, row, 2);
+    auto sublayout = new QHBoxLayout();
+    sublayout->addWidget(edit);
+    sublayout->addWidget(other_button);
+
+    layout->addRow(label, sublayout);
 }
 
 bool StringOtherEdit::verify() const {

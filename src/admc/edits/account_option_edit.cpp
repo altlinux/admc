@@ -23,7 +23,7 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QComboBox>
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QDateTimeEdit>
 #include <QMessageBox>
 #include <QLabel>
@@ -103,12 +103,12 @@ void AccountOptionEdit::set_read_only(const bool read_only) {
     check->setDisabled(read_only);
 }
 
-void AccountOptionEdit::add_to_layout(QGridLayout *layout) {
+void AccountOptionEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = account_option_string(option) + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(label);
-    append_to_grid_layout_with_label(layout, label, check);
+    layout->addRow(label, check);
 }
 
 bool AccountOptionEdit::verify() const {

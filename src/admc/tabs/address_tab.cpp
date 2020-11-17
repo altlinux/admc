@@ -24,15 +24,9 @@
 #include "edits/country_edit.h"
 
 #include <QVBoxLayout>
-#include <QGridLayout>
+#include <QFormLayout>
 
-AddressTab::AddressTab() {   
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-
-    const auto edits_layout = new QGridLayout();
-    top_layout->addLayout(edits_layout);
-    
+AddressTab::AddressTab() {
     const QList<QString> attributes = {
         ATTRIBUTE_STREET,
         ATTRIBUTE_PO_BOX,
@@ -45,6 +39,9 @@ AddressTab::AddressTab() {
 
     new CountryEdit(this, &edits);
 
-    edits_add_to_layout(edits, edits_layout);
     edits_connect_to_tab(edits, this);
+
+    const auto layout = new QFormLayout();
+    setLayout(layout);
+    edits_add_to_layout(edits, layout);
 }

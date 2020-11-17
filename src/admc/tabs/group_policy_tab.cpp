@@ -26,6 +26,7 @@
 
 #include <QTreeView>
 #include <QVBoxLayout>
+#include <QFormLayout>
 #include <QStandardItemModel>
 #include <QMenu>
 #include <QPushButton>
@@ -70,7 +71,7 @@ GroupPolicyTab::GroupPolicyTab() {
 
     setup_column_toggle_menu(view, model, {GplinkColumn_Name, GplinkColumn_Disabled, GplinkColumn_Enforced});
 
-    const auto edits_layout = new QGridLayout();
+    const auto edits_layout = new QFormLayout();
 
     new GpoptionsEdit(this, &edits);
     edits_add_to_layout(edits, edits_layout);

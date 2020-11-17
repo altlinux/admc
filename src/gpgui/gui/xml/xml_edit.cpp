@@ -22,12 +22,15 @@
 
 #include <QDomDocument>
 #include <QLabel>
+#include <QGridLayout>
 
 void add_xml_edit_to_layout(QGridLayout *layout, const XmlAttribute &attribute, QWidget *widget, XmlEdit *edit) {
     const QString label_text = attribute.display_string() + ":";
     const auto label = new QLabel(label_text);
 
-    append_to_grid_layout_with_label(layout, label, widget);
+    const int row = layout->rowCount();
+    layout->addWidget(label, row, 0);
+    layout->addWidget(widget, row, 1);
 
     QObject::connect(edit, &XmlEdit::edited,
         [=]() {

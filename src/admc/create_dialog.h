@@ -27,7 +27,6 @@
 #include <QList>
 #include <QMap>
 
-class QGridLayout;
 class AttributeEdit;
 class StringEdit;
 class QPushButton;

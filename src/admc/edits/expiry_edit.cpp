@@ -23,7 +23,7 @@
 #include "utils.h"
 
 #include <QVBoxLayout>
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QLabel>
 #include <QPushButton>
 #include <QCheckBox>
@@ -94,15 +94,17 @@ void ExpiryEdit::set_read_only(const bool read_only) {
     edit_button->setDisabled(read_only);
 }
 
-void ExpiryEdit::add_to_layout(QGridLayout *layout) {
+void ExpiryEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = ADCONFIG()->get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
     const auto label = new QLabel(label_text);
 
-    layout->addWidget(label, layout->rowCount(), 0);
-    layout->addWidget(never_check, layout->rowCount(), 0);
-    layout->addWidget(end_of_check, layout->rowCount(), 0);
-    layout->addWidget(display_label, layout->rowCount(), 0);
-    layout->addWidget(edit_button, layout->rowCount(), 0);
+    auto sublayout = new QVBoxLayout();
+    sublayout->addWidget(never_check);
+    sublayout->addWidget(end_of_check);
+    sublayout->addWidget(display_label);
+    sublayout->addWidget(edit_button);
+
+    layout->addRow(label, sublayout);
 
     connect_changed_marker(label);
 }

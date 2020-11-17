@@ -26,7 +26,7 @@
 #include "edits/country_edit.h"
 
 #include <QVBoxLayout>
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QComboBox>
 #include <QHash>
 #include <QFile>
@@ -129,12 +129,12 @@ void CountryEdit::set_read_only(const bool read_only) {
     combo->setDisabled(read_only);
 }
 
-void CountryEdit::add_to_layout(QGridLayout *layout) {
+void CountryEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = ADCONFIG()->get_attribute_display_name(ATTRIBUTE_COUNTRY, CLASS_USER) + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(label);
-    append_to_grid_layout_with_label(layout, label, combo);
+    layout->addRow(label, combo);
 }
 
 bool CountryEdit::verify() const {

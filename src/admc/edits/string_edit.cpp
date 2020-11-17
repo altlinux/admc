@@ -23,7 +23,7 @@
 #include "ad_config.h"
 
 #include <QLineEdit>
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QMessageBox>
 #include <QLabel>
 
@@ -82,17 +82,18 @@ void StringEdit::set_read_only(const bool read_only) {
     edit->setReadOnly(read_only);
 }
 
-void StringEdit::add_to_layout(QGridLayout *layout) {
+void StringEdit::add_to_layout(QFormLayout *layout) {
     if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
         const QString extra_edit_text = get_domain_as_email_suffix();
         auto extra_edit = new QLineEdit();
         extra_edit->setEnabled(false);
         extra_edit->setText(extra_edit_text);
 
-        const int row = layout->rowCount();
-        layout->addWidget(label, row, 0);
-        layout->addWidget(edit, row, 1);
-        layout->addWidget(extra_edit, row, 2);
+        auto sublayout = new QHBoxLayout();
+        sublayout->addWidget(edit);
+        sublayout->addWidget(extra_edit);
+
+        layout->addRow(label, sublayout);
     } else if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
         const QString domain = AD()->domain();
         const QString domain_name = domain.split(".")[0];
@@ -101,12 +102,13 @@ void StringEdit::add_to_layout(QGridLayout *layout) {
         extra_edit->setEnabled(false);
         extra_edit->setText(extra_edit_text);
 
-        const int row = layout->rowCount();
-        layout->addWidget(label, row, 0);
-        layout->addWidget(extra_edit, row, 1);
-        layout->addWidget(edit, row, 2);
+        auto sublayout = new QHBoxLayout();
+        sublayout->addWidget(edit);
+        sublayout->addWidget(extra_edit);
+
+        layout->addRow(label, sublayout);
     } else {
-        append_to_grid_layout_with_label(layout, label, edit);
+        layout->addRow(label, edit);
     }
 }
 

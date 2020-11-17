@@ -22,7 +22,7 @@
 #include "ad_interface.h"
 
 #include <QLineEdit>
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QMessageBox>
 #include <QLabel>
 #include <QTextCodec>
@@ -57,12 +57,9 @@ void PasswordEdit::set_read_only(const bool read_only) {
     confirm_edit->setReadOnly(read_only);
 }
 
-void PasswordEdit::add_to_layout(QGridLayout *layout) {
-    const auto password_label = new QLabel(tr("Password:"));
-    const auto confirm_label = new QLabel(tr("Confirm password:"));
-
-    append_to_grid_layout_with_label(layout, password_label, edit);
-    append_to_grid_layout_with_label(layout, confirm_label, confirm_edit);
+void PasswordEdit::add_to_layout(QFormLayout *layout) {
+    layout->addRow(tr("Password:"), edit);
+    layout->addRow(tr("Confirm password:"), confirm_edit);
 }
 
 bool PasswordEdit::verify() const {

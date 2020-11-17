@@ -25,7 +25,7 @@
 #include "status.h"
 #include "utils.h"
 
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QLabel>
 #include <QDialogButtonBox>
 #include <QPushButton>
@@ -42,24 +42,24 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
     const QString title_label_text = QString(tr("Resetting password of \"%1\"")).arg(name);
     const auto title_label = new QLabel(title_label_text, this);
 
-    auto edits_layout = new QGridLayout();
-
     new PasswordEdit(this, &edits);
     new AccountOptionEdit(AccountOption_PasswordExpired, this, &edits);
     new UnlockEdit(this, &edits);
 
-    edits_add_to_layout(edits, edits_layout);
-    edits_load(edits, object);
-
     auto button_box = new QDialogButtonBox();
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
     auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
+
+    auto edits_layout = new QFormLayout();
+    edits_add_to_layout(edits, edits_layout);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(title_label);
     layout->addLayout(edits_layout);
     layout->addWidget(button_box);
+
+    edits_load(edits, object);
 
     connect(
         ok_button, &QPushButton::clicked,

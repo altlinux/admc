@@ -63,7 +63,7 @@
 
 class DetailsTab;
 class QLabel;
-class QGridLayout;
+class QFormLayout;
 class StringEdit;
 
 class AttributeEdit : public QObject {
@@ -72,6 +72,7 @@ public:
     using QObject::QObject;
 
     // Load state from object
+    // Call this AFTER add_to_layout()
     // NOTE: emit edited() signal at the end when
     // implementing this f-n
     virtual void load(const AdObject &object) = 0;
@@ -79,7 +80,7 @@ public:
     virtual void set_read_only(const bool read_only) = 0;
 
     // Layout all widgets that are part of this edit
-    virtual void add_to_layout(QGridLayout *layout) = 0;
+    virtual void add_to_layout(QFormLayout *layout) = 0;
 
     // Returns whether edit's value has been changed by the user
     // Edit should be applied only if it changed() 
@@ -105,7 +106,7 @@ protected:
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
 void load(const AdObject &object);\
 void set_read_only(const bool read_only);\
-void add_to_layout(QGridLayout *layout);\
+void add_to_layout(QFormLayout *layout);\
 bool changed() const;\
 bool verify() const;\
 bool apply(const QString &dn) const;
@@ -114,7 +115,7 @@ bool apply(const QString &dn) const;
 // Helper f-ns that iterate over edit lists for you
 void edits_connect_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
 void edits_connect_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
-void edits_add_to_layout(QList<AttributeEdit *> edits, QGridLayout *layout);
+void edits_add_to_layout(QList<AttributeEdit *> edits, QFormLayout *layout);
 bool edits_changed(QList<AttributeEdit *> edits);
 bool edits_verify(QList<AttributeEdit *> edits);
 bool edits_apply(QList<AttributeEdit *> edits, const QString &dn);

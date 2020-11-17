@@ -22,7 +22,7 @@
 #include "utils.h"
 #include "ad_interface.h"
 
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QDateTimeEdit>
 #include <QLabel>
 
@@ -53,13 +53,13 @@ void DateTimeEdit::set_read_only(const bool read_only) {
     edit->setReadOnly(read_only);
 }
 
-void DateTimeEdit::add_to_layout(QGridLayout *layout) {
+void DateTimeEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = ADCONFIG()->get_attribute_display_name(attribute, "") + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(label);
 
-    append_to_grid_layout_with_label(layout, label, edit);
+    layout->addRow(label, edit);
 }
 
 bool DateTimeEdit::verify() const {

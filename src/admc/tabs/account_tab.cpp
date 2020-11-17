@@ -26,8 +26,8 @@
 #include "edits/account_option_edit.h"
 #include "ad_interface.h"
 
-#include <QVBoxLayout>
 #include <QPushButton>
+#include <QFormLayout>
 
 // TODO: logon hours, logon computers
 
@@ -48,12 +48,9 @@ AccountTab::AccountTab() {
 
     new ExpiryEdit(this, &edits);
 
-    auto edits_layout = new QGridLayout();
-
-    edits_add_to_layout(edits, edits_layout);
     edits_connect_to_tab(edits, this);
 
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addLayout(edits_layout);
+    auto layout = new QFormLayout();
+    setLayout(layout);
+    edits_add_to_layout(edits, layout);
 }

@@ -21,7 +21,7 @@
 #include "ad_interface.h"
 #include "utils.h"
 
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QLabel>
 #include <QPushButton>
 
@@ -51,9 +51,8 @@ void UnlockEdit::set_read_only(const bool read_only) {
     button->setDisabled(read_only);
 }
 
-void UnlockEdit::add_to_layout(QGridLayout *layout) {
-    const int row = layout->rowCount();
-    layout->addWidget(button, row, 0);
+void UnlockEdit::add_to_layout(QFormLayout *layout) {
+    layout->addRow("", button);
 }
 
 bool UnlockEdit::verify() const {

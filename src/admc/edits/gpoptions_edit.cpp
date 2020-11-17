@@ -21,7 +21,7 @@
 #include "utils.h"
 
 #include <QCheckBox>
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QLabel>
 #include <QHash>
 
@@ -52,12 +52,12 @@ void GpoptionsEdit::set_read_only(const bool read_only) {
     check->setDisabled(read_only);
 }
 
-void GpoptionsEdit::add_to_layout(QGridLayout *layout) {
+void GpoptionsEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = tr("Block policy inheritance:");
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(label);
-    append_to_grid_layout_with_label(layout, label, check);
+    layout->addRow(label, check);
 }
 
 bool GpoptionsEdit::verify() const {

@@ -30,7 +30,7 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <QGridLayout>
+#include <QFormLayout>
 
 // TODO: figure out what can and can't be renamed and disable renaming for exceptions (computers can't for example)
 
@@ -44,8 +44,6 @@ RenameDialog::RenameDialog(const QString &target_arg)
     resize(600, 600);
 
     const auto title_label = new QLabel(QString(tr("Rename dialog")), this);
-
-    const auto edits_layout = new QGridLayout();
 
     const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
@@ -79,9 +77,6 @@ RenameDialog::RenameDialog(const QString &target_arg)
         new StringEdit(ATTRIBUTE_DISPLAY_NAME, object_class, this, &all_edits);
     }
 
-    edits_add_to_layout(all_edits, edits_layout);
-    edits_load(all_edits, object);
-
     auto button_box = new QDialogButtonBox();
     ok_button = button_box->addButton(QDialogButtonBox::Ok);
     reset_button = button_box->addButton(QDialogButtonBox::Reset);
@@ -96,6 +91,9 @@ RenameDialog::RenameDialog(const QString &target_arg)
         cancel_button, &QPushButton::clicked,
         this, &RenameDialog::reject);
 
+    const auto edits_layout = new QFormLayout();
+    edits_add_to_layout(all_edits, edits_layout);
+    
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addWidget(title_label);
@@ -108,6 +106,8 @@ RenameDialog::RenameDialog(const QString &target_arg)
             this, &RenameDialog::on_edited);
     }
     on_edited();
+
+    edits_load(all_edits, object);
 }
 
 void RenameDialog::accept() {

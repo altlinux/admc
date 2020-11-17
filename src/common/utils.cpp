@@ -25,8 +25,6 @@
 #include <QAbstractItemView>
 #include <QModelIndex>
 #include <QCheckBox>
-#include <QLabel>
-#include <QGridLayout>
 #include <QStandardItem>
 #include <QMenu>
 #include <QTreeView>
@@ -70,14 +68,6 @@ QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn
     const QString dn = get_dn_from_index(base_index, dn_column);
 
     return dn;
-}
-
-void append_to_grid_layout_with_label(QGridLayout *layout,QLabel *label, QWidget *widget) {
-    const int row = layout->rowCount();
-    layout->addWidget(label, row, 0);
-    // NOTE: span for two columns because some edits need 3 columns
-    // TODO: do this better, not sure if possible
-    layout->addWidget(widget, row, 1, 1, 2);
 }
 
 // If changed, return text with asterisk at the end

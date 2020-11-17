@@ -22,7 +22,7 @@
 #include "ad_interface.h"
 
 #include <QComboBox>
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QLabel>
 
 GroupTypeEdit::GroupTypeEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
@@ -58,12 +58,12 @@ void GroupTypeEdit::set_read_only(const bool read_only) {
     combo->setDisabled(read_only);
 }
 
-void GroupTypeEdit::add_to_layout(QGridLayout *layout) {
+void GroupTypeEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = tr("Group type") + ":";
     const auto label = new QLabel(label_text);
 
     connect_changed_marker(label);
-    append_to_grid_layout_with_label(layout, label, combo);
+    layout->addRow(label, combo);
 }
 
 bool GroupTypeEdit::verify() const {

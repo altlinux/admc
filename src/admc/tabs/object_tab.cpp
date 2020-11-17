@@ -23,18 +23,11 @@
 #include "edits/string_edit.h"
 #include "edits/datetime_edit.h"
 
-#include <QVBoxLayout>
-#include <QGridLayout>
+#include <QFormLayout>
 
 // TODO: canonical name in ADUC replaces "CN=" with "/" making it look like a directory path
 
 ObjectTab::ObjectTab() {   
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-
-    const auto edits_layout = new QGridLayout();
-    top_layout->addLayout(edits_layout);
-
     new StringEdit(ATTRIBUTE_DISTINGUISHED_NAME, "", this, &edits);
     new StringEdit(ATTRIBUTE_OBJECT_CLASS, "", this, &edits);
     
@@ -49,6 +42,9 @@ ObjectTab::ObjectTab() {
         edit->set_read_only(true);
     }
 
-    edits_add_to_layout(edits, edits_layout);
     edits_connect_to_tab(edits, this);
+
+    const auto layout = new QFormLayout();
+    setLayout(layout);
+    edits_add_to_layout(edits, layout);
 }
