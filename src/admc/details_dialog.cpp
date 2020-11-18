@@ -116,15 +116,15 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     const auto layout = new QVBoxLayout(this);
     layout->setSpacing(0);
 
-    // Title goes to window title or title label depending
-    // on whether instance is docked or not
     const QString name = object.get_string(ATTRIBUTE_NAME);
-    const QString title = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
+    const QString window_title = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
 
     if (is_floating_instance) {
-        setWindowTitle(title);
+        setWindowTitle(window_title);
     } else {
-        auto title_label = new QLabel(title);
+        // Docked instance is not a window so can't use
+        // window title and have to put it in a label.
+        auto title_label = new QLabel(window_title);
         layout->addWidget(title_label);
     }
 

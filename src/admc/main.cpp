@@ -19,12 +19,9 @@
 
 #include "config.h"
 #include "main_window.h"
-#include "ad_interface.h"
 #include "settings.h"
 
 #include <QApplication>
-#include <QCommandLineParser>
-#include <QStringList>
 #include <QTranslator>
 
 int main(int argc, char **argv) {
@@ -35,46 +32,14 @@ int main(int argc, char **argv) {
     app.setOrganizationName(ADMC_ORGANIZATION);
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
 
-    const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
-
     QTranslator translator;
+    const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
     translator.load(saved_locale, QString(), QString(), ":/translations");
     app.installTranslator(&translator);
 
-    QCommandLineParser cli_parser;
-    cli_parser.setApplicationDescription(QCoreApplication::applicationName());
-    cli_parser.addHelpOption();
-    cli_parser.addVersionOption();
+    MainWindow main_window;
 
-    cli_parser.addOption({{"H", "host"}, "Host to use for login", "host"});
-    cli_parser.addOption({{"D", "domain"}, "Domain to use for login", "domain"});
+    const int retval = app.exec();
 
-    const QStringList arg_list = qApp->arguments();
-    cli_parser.process(arg_list);
-
-    QStringList positional_args = cli_parser.positionalArguments();
-    if (positional_args.size() > 0) {
-        // CLI
-        const bool defined_login_values = cli_parser.isSet("host") && cli_parser.isSet("domain");
-        if (!defined_login_values) {
-            printf("Error: must define host and domain options, see help for options.");
-
-            return 1;
-        }
-
-        const QString host = cli_parser.value("host");
-        const QString domain = cli_parser.value("domain");
-        
-        AD()->connect();
-        AD()->command(positional_args);
-
-        return 0;
-    } else {
-        // GUI
-        MainWindow main_window;
-
-        const int retval = app.exec();
-
-        return retval;
-    }
+    return retval;
 }

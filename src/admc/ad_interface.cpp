@@ -1112,22 +1112,6 @@ bool AdInterface::delete_gpo(const QString &gpo_dn) {
     return true;
 }
 
-void AdInterface::command(QStringList args) {
-    QString command = args[0];
-
-    QMap<QString, int> arg_count_map = {
-        {"get-attribute", 2},
-        {"get-attribute-multi", 2},
-    };
-
-    const int arg_count = arg_count_map[command];
-    if (args.size() - 1 != arg_count) {
-        printf("Command \"%s\" needs %d arguments!\n", qPrintable(command), arg_count);
-
-        return;
-    }
-}
-
 AdInterface::AdInterface()
 : QObject()
 {

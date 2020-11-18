@@ -241,8 +241,6 @@ public:
     bool create_gpo(const QString &name);
     bool delete_gpo(const QString &dn);
 
-    void command(QStringList args);
-
 signals:
     void modified();
 
