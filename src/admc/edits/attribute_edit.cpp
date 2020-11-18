@@ -43,8 +43,9 @@ AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
         });
 }
 
-void AttributeEdit::reset_modified() {
+void AttributeEdit::load(const AdObject &object) {
     m_modified = false;
+    load_internal(object);
 }
 
 bool AttributeEdit::modified() const {
@@ -88,7 +89,6 @@ bool edits_apply(QList<AttributeEdit *> edits, const QString &dn, const bool app
 
 void edits_load(QList<AttributeEdit *> edits, const AdObject &object) {
     for (auto edit : edits) {
-        edit->reset_modified();
         edit->load(object);
     }
 }

@@ -42,9 +42,9 @@ Q_OBJECT
 public:
     AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
 
-    // Load state from object
-    // Used to initialize or reset edit
-    virtual void load(const AdObject &object) = 0;
+    // Load state from object, used to initialize or reset edit
+    // Calls load_internal() implemented by subclasses
+    void load(const AdObject &object);
 
     virtual void set_read_only(const bool read_only) = 0;
 
@@ -59,8 +59,6 @@ public:
     // AD server
     virtual bool apply(const QString &dn) const = 0;
 
-    void reset_modified();
-
     // Returns whether edit was edited by user
     // Resets on load()
     bool modified() const;
@@ -69,16 +67,21 @@ signals:
     // Emitted when edit was edited by user
     void edited();
 
+protected:
+    virtual void load_internal(const AdObject &object) = 0;
+
 private:
     bool m_modified;
 };
 
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
-void load(const AdObject &object);\
 void set_read_only(const bool read_only);\
 void add_to_layout(QFormLayout *layout);\
 bool verify() const;\
-bool apply(const QString &dn) const;
+bool apply(const QString &dn) const;\
+protected:\
+void load_internal(const AdObject &object);\
+public:\
 
 
 // Helper f-ns that iterate over edit lists for you

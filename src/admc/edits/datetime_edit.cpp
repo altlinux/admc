@@ -38,7 +38,7 @@ DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QObject *parent, QList<
         });
 }
 
-void DateTimeEdit::load(const AdObject &object) {
+void DateTimeEdit::load_internal(const AdObject &object) {
     const QDateTime value = object.get_datetime(attribute);
 
     edit->setDateTime(value);

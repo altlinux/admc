@@ -44,7 +44,7 @@ GroupScopeEdit::GroupScopeEdit(QObject *parent, QList<AttributeEdit *> *edits_ou
         });
 }
 
-void GroupScopeEdit::load(const AdObject &object) {
+void GroupScopeEdit::load_internal(const AdObject &object) {
     const GroupScope scope = object.get_group_scope();
 
     combo->setCurrentIndex((int) scope);

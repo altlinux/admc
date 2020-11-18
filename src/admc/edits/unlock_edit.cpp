@@ -35,7 +35,7 @@ UnlockEdit::UnlockEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
         });
 }
 
-void UnlockEdit::load(const AdObject &object) {
+void UnlockEdit::load_internal(const AdObject &object) {
     check->setChecked(false);
 }
 

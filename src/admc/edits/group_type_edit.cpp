@@ -43,7 +43,7 @@ GroupTypeEdit::GroupTypeEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
         });
 }
 
-void GroupTypeEdit::load(const AdObject &object) {
+void GroupTypeEdit::load_internal(const AdObject &object) {
     const GroupType type = object.get_group_type();
 
     combo->setCurrentIndex((int) type);

@@ -89,7 +89,7 @@ AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *pa
         });
 }
 
-void AccountOptionEdit::load(const AdObject &object) {
+void AccountOptionEdit::load_internal(const AdObject &object) {
     const bool option_is_set = object.get_account_option(option);
     check->setChecked(option_is_set);
 }
