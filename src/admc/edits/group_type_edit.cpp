@@ -58,10 +58,6 @@ void GroupTypeEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(label_text, combo);
 }
 
-bool GroupTypeEdit::verify() const {
-    return true;
-}
-
 bool GroupTypeEdit::apply(const QString &dn) const {
     const GroupType new_value = (GroupType)combo->currentData().toInt();
     const bool success = AD()->group_set_type(dn, new_value);

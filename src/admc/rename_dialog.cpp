@@ -111,11 +111,6 @@ RenameDialog::RenameDialog(const QString &target_arg)
 }
 
 void RenameDialog::accept() {
-    const bool verify_success = edits_verify(all_edits);
-    if (!verify_success) {
-        return;
-    }
-
     const int errors_index = Status::instance()->get_errors_size();
     AD()->start_batch();
     {

@@ -51,10 +51,6 @@ public:
     // Layout all widgets that are part of this edit
     virtual void add_to_layout(QFormLayout *layout) = 0;
 
-    // Check that current input is valid and show errors
-    // to user in a warning message
-    virtual bool verify() const = 0;
-
     // Apply current input by making a modification to the
     // AD server
     virtual bool apply(const QString &dn) const = 0;
@@ -77,7 +73,6 @@ private:
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
 void set_read_only(const bool read_only);\
 void add_to_layout(QFormLayout *layout);\
-bool verify() const;\
 bool apply(const QString &dn) const;\
 protected:\
 void load_internal(const AdObject &object);\
@@ -87,7 +82,6 @@ public:\
 // Helper f-ns that iterate over edit lists for you
 void edits_connect_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
 void edits_add_to_layout(QList<AttributeEdit *> edits, QFormLayout *layout);
-bool edits_verify(QList<AttributeEdit *> edits);
 bool edits_apply(QList<AttributeEdit *> edits, const QString &dn, const bool apply_if_unmodified = false);
 void edits_load(QList<AttributeEdit *> edits, const AdObject &object);
 

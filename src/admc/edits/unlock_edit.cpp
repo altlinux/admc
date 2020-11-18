@@ -47,10 +47,6 @@ void UnlockEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(tr("Unlock account"), check);
 }
 
-bool UnlockEdit::verify() const {
-    return true;
-}
-
 bool UnlockEdit::apply(const QString &dn) const {
     if (check->isChecked()) {
         const bool result = AD()->user_unlock(dn);

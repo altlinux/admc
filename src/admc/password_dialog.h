@@ -25,6 +25,7 @@
 
 class QWidget;
 class AttributeEdit;
+class PasswordEdit;
 
 // Accepts input of new password and changes password when done
 class PasswordDialog final : public QDialog {
@@ -39,6 +40,7 @@ private slots:
 private:
     QString target;
     QList<AttributeEdit *> edits;
+    PasswordEdit *pass_edit;
 
 };
 

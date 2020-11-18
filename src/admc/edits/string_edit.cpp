@@ -107,10 +107,6 @@ void StringEdit::add_to_layout(QFormLayout *layout) {
     }
 }
 
-bool StringEdit::verify() const {
-    return true;
-}
-
 bool StringEdit::apply(const QString &dn) const {
     const QString new_value =
     [this]() {

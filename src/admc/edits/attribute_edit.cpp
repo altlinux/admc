@@ -58,20 +58,6 @@ void edits_add_to_layout(QList<AttributeEdit *> edits, QFormLayout *layout) {
     }
 }
 
-bool edits_verify(QList<AttributeEdit *> edits) {
-    bool success = true;
-
-    for (auto edit : edits) {
-        const bool verify_success = edit->verify();
-
-        if (!verify_success) {
-            success = false;
-        }
-    }
-
-    return success;
-}
-
 bool edits_apply(QList<AttributeEdit *> edits, const QString &dn, const bool apply_if_unmodified) {
     bool success = true;
 

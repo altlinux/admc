@@ -76,6 +76,8 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
 
     const auto edits_layout = new QFormLayout();
 
+    pass_edit = nullptr;
+
     switch (type) {
         case CreateType_User: {
             auto first_name_edit = new StringEdit(ATTRIBUTE_FIRST_NAME, object_class, this, &all_edits);
@@ -84,7 +86,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
             auto upn_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, object_class, this, &all_edits);
             auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
 
-            auto pass_edit = new PasswordEdit(this, &all_edits);
+            pass_edit = new PasswordEdit(this, &all_edits);
 
             const QList<AccountOption> options = {
                 AccountOption_PasswordExpired,
@@ -223,6 +225,11 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
 }
 
 void CreateDialog::accept() {
+    const bool pass_confirmed = pass_edit->check_confirm();
+    if (!pass_confirmed) {
+        return;
+    }
+    
     const QString name = name_edit->text();
 
     const QString suffix =
@@ -238,11 +245,6 @@ void CreateDialog::accept() {
     }();
 
     const QString dn = suffix + "=" + name + "," + parent_dn;
-
-    const bool verify_success = edits_verify(all_edits);
-    if (!verify_success) {
-        return;
-    }
 
     const char **classes =
     [this]() {

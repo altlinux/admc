@@ -30,6 +30,7 @@
 class AttributeEdit;
 class QLineEdit;
 class QPushButton;
+class PasswordEdit;
 
 enum CreateType {
     CreateType_User,
@@ -63,6 +64,7 @@ private:
     QPushButton *create_button;
     QList<AttributeEdit *> all_edits;
     QList<AttributeEdit *> required_edits;
+    PasswordEdit *pass_edit;
 };
 
 QString create_type_to_string(const CreateType &type);

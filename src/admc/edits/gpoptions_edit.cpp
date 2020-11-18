@@ -53,10 +53,6 @@ void GpoptionsEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(label_text, check);
 }
 
-bool GpoptionsEdit::verify() const {
-    return true;
-}
-
 bool GpoptionsEdit::apply(const QString &dn) const {
     const QString new_value =
     [this]() {

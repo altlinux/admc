@@ -58,7 +58,7 @@ void PasswordEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(tr("Confirm password:"), confirm_edit);
 }
 
-bool PasswordEdit::verify() const {
+bool PasswordEdit::check_confirm() const {
     const QString pass = edit->text();
     const QString confirm_pass = confirm_edit->text();
     if (pass != confirm_pass) {

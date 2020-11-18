@@ -102,11 +102,6 @@ void ExpiryEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(label_text, sublayout);
 }
 
-// TODO: limit date to the format's date range, make a f-n in adinterface that checks if format in limit
-bool ExpiryEdit::verify() const {
-    return true;
-}
-
 bool ExpiryEdit::apply(const QString &dn) const {
     const bool never = never_check->isChecked();
 

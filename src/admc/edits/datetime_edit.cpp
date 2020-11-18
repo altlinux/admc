@@ -53,12 +53,6 @@ void DateTimeEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(label_text, edit);
 }
 
-bool DateTimeEdit::verify() const {
-    // TODO: datetime should fit within bounds of it's format, so greater than start of epoch for NTFS format?
-
-    return true;
-}
-
 bool DateTimeEdit::apply(const QString &dn) const {
     const QDateTime new_value = edit->dateTime();
 

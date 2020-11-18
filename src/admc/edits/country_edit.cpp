@@ -129,10 +129,6 @@ void CountryEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(label_text, combo);
 }
 
-bool CountryEdit::verify() const {
-    return true;
-}
-
 bool CountryEdit::apply(const QString &dn) const {
     const int code = combo->currentData().toInt();
 

@@ -221,27 +221,15 @@ QString DetailsDialog::get_target() const {
 void DetailsDialog::apply() {
     const int errors_index = Status::instance()->get_errors_size();
 
-    bool all_verified = true;
+    AD()->start_batch();
     for (auto tab : tabs) {
         if (tab_widget->indexOf(tab) != -1) {
-            const bool verify_success = tab->verify();
-            if (!verify_success) {
-                all_verified = false;
-            }
+            tab->apply(target);
         }
     }
+    AD()->end_batch();
 
-    if (all_verified) {
-        AD()->start_batch();
-        for (auto tab : tabs) {
-            if (tab_widget->indexOf(tab) != -1) {
-                tab->apply(target);
-            }
-        }
-        AD()->end_batch();
-
-        Status::instance()->show_errors_popup(errors_index);
-    }
+    Status::instance()->show_errors_popup(errors_index);
 
     reset();
 }

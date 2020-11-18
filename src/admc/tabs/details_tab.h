@@ -41,7 +41,6 @@ Q_OBJECT
 
 public:
     virtual void load(const AdObject &object);
-    virtual bool verify() const;
     virtual void apply(const QString &target) const;
 
 protected:

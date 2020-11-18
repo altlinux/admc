@@ -67,7 +67,6 @@ StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArr
         button_box->setEnabled(false);
     }
 
-    // TODO: verify before saving?
     connect(
         ok_button, &QPushButton::clicked,
         this, &QDialog::accept);

@@ -43,7 +43,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
     const QString title = QString(tr("Change password of \"%1\" - %2")).arg(name, ADMC_APPLICATION_NAME);
     setWindowTitle(title);
 
-    new PasswordEdit(this, &edits);
+    pass_edit = new PasswordEdit(this, &edits);
     new AccountOptionEdit(AccountOption_PasswordExpired, this, &edits);
     new UnlockEdit(this, &edits);
 
@@ -70,9 +70,9 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
 }
 
 void PasswordDialog::accept() {
-    const bool verify_success = edits_verify(edits);
+    const bool pass_confirmed = pass_edit->check_confirm();
 
-    if (verify_success) {
+    if (pass_confirmed) {
         const int errors_index = Status::instance()->get_errors_size();
 
         edits_apply(edits, target);
