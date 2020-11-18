@@ -107,24 +107,15 @@ GroupPolicyTab::GroupPolicyTab() {
 
 void GroupPolicyTab::load(const AdObject &object) {
     const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
-    original_gplink = Gplink(gplink_string);
-    current_gplink = original_gplink;
+    gplink = Gplink(gplink_string);
     
-    reload_model(original_gplink);
+    reload_gplink();
     
     DetailsTab::load(object);
 }
 
-bool GroupPolicyTab::modified() const {
-    const QString original_gplink_string = original_gplink.to_string();
-    const QString current_gplink_string = current_gplink.to_string();
-    const bool gplink_modified = (current_gplink_string != original_gplink_string);
-
-    return DetailsTab::modified() || gplink_modified;
-}
-
 void GroupPolicyTab::apply(const QString &target) const {
-    const QString gplink_string = current_gplink.to_string();
+    const QString gplink_string = gplink.to_string();
     AD()->attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
 
     DetailsTab::apply(target);
@@ -176,33 +167,41 @@ void GroupPolicyTab::on_remove_button() {
 
 void GroupPolicyTab::add_link(QList<QString> gps) {
     for (auto gp : gps) {
-        current_gplink.add(gp);
+        gplink.add(gp);
     }
 
-    reload_model(current_gplink);
+    reload_gplink();
+
+    emit edited();
 }
 
 void GroupPolicyTab::remove_link(QList<QString> gps) {
     for (auto gp : gps) {
-        current_gplink.remove(gp);
+        gplink.remove(gp);
     }
 
-    reload_model(current_gplink);
+    reload_gplink();
+
+    emit edited();
 }
 
 void GroupPolicyTab::move_link_up(const QString &gpo) {
-    current_gplink.move_up(gpo);
+    gplink.move_up(gpo);
 
-    reload_model(current_gplink);
+    reload_gplink();
+
+    emit edited();
 }
 
 void GroupPolicyTab::move_link_down(const QString &gpo) {
-    current_gplink.move_down(gpo);
+    gplink.move_down(gpo);
 
-    reload_model(current_gplink);
+    reload_gplink();
+
+    emit edited();
 }
 
-void GroupPolicyTab::reload_model(const Gplink &gplink) {
+void GroupPolicyTab::reload_gplink() {
     model->removeRows(0, model->rowCount());
 
     // TODO: use filter to search only for needed gpo's, not all of them (dn=dn1 or dn=dn2 or ...)
@@ -257,8 +256,8 @@ void GroupPolicyTab::on_item_changed(QStandardItem *item) {
         const GplinkOption option = column_to_option[column];
         const bool is_checked = (item->checkState() == Qt::Checked);
 
-        current_gplink.set_option(gpo, option, is_checked);
+        gplink.set_option(gpo, option, is_checked);
 
-        reload_model(current_gplink);
+        reload_gplink();
     }
 }

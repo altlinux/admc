@@ -31,7 +31,7 @@
 #include <QPushButton>
 
 StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &other_attribute_arg, const QString &object_class, QObject *parent, QList<AttributeEdit *> *edits_out)
-: AttributeEdit(parent)
+: AttributeEdit(edits_out, parent)
 , other_attribute(other_attribute_arg)
 {
     main_edit = new StringEdit(main_attribute, object_class, parent);
@@ -45,29 +45,23 @@ StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &o
     other_button = new QPushButton(tr("Other..."));
     connect(other_button, &QPushButton::clicked,
         [this]() {
-            auto dialog = new StringMultiEditDialog(other_attribute, current_other_values);
+            auto dialog = new StringMultiEditDialog(other_attribute, other_values);
             dialog->open();
 
             connect(
                 dialog, &QDialog::accepted,
                 [this, dialog]() {
-                    current_other_values = dialog->get_new_values();
+                    other_values = dialog->get_new_values();
 
                     emit edited();
                 });
         });
-
-    AttributeEdit::append_to_list(edits_out);
 }
 
 void StringOtherEdit::load(const AdObject &object) {
     main_edit->load(object);
     
-    original_other_values = object.get_values(other_attribute);
-
-    current_other_values = original_other_values;
-
-    emit edited();
+    other_values = object.get_values(other_attribute);
 }
 
 void StringOtherEdit::set_read_only(const bool read_only) {
@@ -87,16 +81,9 @@ bool StringOtherEdit::verify() const {
     return main_edit->verify();
 }
 
-bool StringOtherEdit::modified() const {
-    const bool main_modified = main_edit->modified();
-    const bool other_modified = (current_other_values != original_other_values);
-
-    return (main_modified || other_modified);
-}
-
 bool StringOtherEdit::apply(const QString &dn) const {
     const bool main_succcess = main_edit->apply(dn);
-    const bool other_success = AD()->attribute_replace_values(dn, other_attribute, current_other_values);
+    const bool other_success = AD()->attribute_replace_values(dn, other_attribute, other_values);
 
     return (main_succcess && other_success);
 }

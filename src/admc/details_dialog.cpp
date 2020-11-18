@@ -136,14 +136,11 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
         return;
     }
 
-    QList<QString> titles;
-
     // Create new tabs
     const auto add_tab =
-    [this, &titles](DetailsTab *tab, const QString &title) {
+    [this](DetailsTab *tab, const QString &title) {
         tabs.append(tab);
         tab_widget->addTab(tab, title);
-        titles.append(title);
     };
 
     add_tab(new GeneralTab(object), tr("General"));
@@ -176,22 +173,12 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     }
 
     for (auto tab : tabs) {
-        tab->load(object);
-    }
-
-    for (auto tab : tabs) {
         connect(
             tab, &DetailsTab::edited,
-            this, &DetailsDialog::update_buttons);
+            this, &DetailsDialog::on_edited);
     }
-    update_buttons();
 
-    for (auto tab : tabs) {
-        if (tab->modified()) {
-            const QString title = titles[tabs.indexOf(tab)];
-            printf("ERROR: a newly created tab %s is in modified() state! Something must be wrong with edits.\n", qPrintable(title));
-        }
-    }
+    reset();
 
     connect(
         apply_button, &QPushButton::clicked,
@@ -265,32 +252,13 @@ void DetailsDialog::reset() {
         tab->load(object);
     }
 
-    update_buttons();
+    apply_button->setEnabled(false);
+    reset_button->setEnabled(false);
 }
 
-// Enable/disable apply and cancel depending on if there are
-// any changes in tabs
-void DetailsDialog::update_buttons() {
-    const bool any_tabs_modified =
-    [this]() {
-        for (auto tab : tabs) {
-            const int tab_index = tab_widget->indexOf(tab);
-            const bool tab_is_active = (tab_index != -1);
-
-            if (tab_is_active) {
-                const bool tab_modified = tab->modified();
-
-                if (tab_modified) {
-                    return true;
-                }
-            }
-        }
-        
-        return false;
-    }();
-
-    apply_button->setEnabled(any_tabs_modified);
-    reset_button->setEnabled(any_tabs_modified);
+void DetailsDialog::on_edited() {
+    apply_button->setEnabled(true);
+    reset_button->setEnabled(true);
 }
 
 void DetailsDialog::reload_target() {

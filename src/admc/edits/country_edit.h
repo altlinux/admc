@@ -31,7 +31,6 @@ public:
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
-    int original_value;
     QComboBox *combo;
     
     // NOTE: country codes are 3 digits only, so 0-999 = 1000

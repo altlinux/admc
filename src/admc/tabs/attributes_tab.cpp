@@ -156,10 +156,6 @@ void AttributesTab::load(const AdObject &object) {
     model->sort(AttributesColumn_Name);
 }
 
-bool AttributesTab::modified() const {
-    return original != current;
-}
-
 void AttributesTab::apply(const QString &target) const {
     for (const QString &attribute : current.keys()) {
         const QList<QByteArray> current_values = current[attribute];
@@ -181,21 +177,6 @@ void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &a
 
     proxy->unset_map[attribute] = unset;
     proxy->read_only_map[attribute] = read_only;
-
-    // Change background color if value is modified
-    const QColor color =
-    [this, attribute, values]() {
-        const QList<QByteArray> original_values = original[attribute];
-        const bool modified = (original_values != values);
-
-        if (modified) {
-            return Qt::lightGray;
-        } else {
-            return Qt::white;
-        }
-    }();
-    
-    row[AttributesColumn_Name]->setData(color, Qt::BackgroundRole);
 }
 
 bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {

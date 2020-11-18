@@ -36,13 +36,12 @@ public:
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
     QString get_input() const;
-    void set_input(const QString &value);
+    void set_input(const QString &value);\
 
 private:
     QLineEdit *edit;
     QString attribute;
     QString objectClass;
-    QString original_value;
 
     friend class StringOtherEdit;
 };

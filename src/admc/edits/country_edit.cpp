@@ -37,7 +37,7 @@
 #define COUNTRY_CODE_NONE 0
 
 CountryEdit::CountryEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
-: AttributeEdit(parent)
+: AttributeEdit(edits_out, parent)
 {
     combo = new QComboBox();
 
@@ -102,12 +102,10 @@ CountryEdit::CountryEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
     [this]() {
         emit edited();
     });
-
-    AttributeEdit::append_to_list(edits_out);
 }
 
 void CountryEdit::load(const AdObject &object) {
-    original_value =
+    const int country_code =
     [object]() {
         if (object.contains(ATTRIBUTE_COUNTRY)) {
             return object.get_int(ATTRIBUTE_COUNTRY);
@@ -116,12 +114,10 @@ void CountryEdit::load(const AdObject &object) {
         }
     }();
 
-    const int index = combo->findData(QVariant(original_value));
+    const int index = combo->findData(QVariant(country_code));
     if (index != -1) {
         combo->setCurrentIndex(index);
     }
-
-    emit edited();
 }
 
 void CountryEdit::set_read_only(const bool read_only) {
@@ -135,11 +131,6 @@ void CountryEdit::add_to_layout(QFormLayout *layout) {
 
 bool CountryEdit::verify() const {
     return true;
-}
-
-bool CountryEdit::modified() const {
-    const int new_value = combo->currentData().toInt();
-    return (new_value != original_value);
 }
 
 bool CountryEdit::apply(const QString &dn) const {

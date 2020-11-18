@@ -26,7 +26,7 @@
 #include <QMessageBox>
 
 GroupScopeEdit::GroupScopeEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
-: AttributeEdit(parent)
+: AttributeEdit(edits_out, parent)
 {
     combo = new QComboBox();
 
@@ -42,16 +42,12 @@ GroupScopeEdit::GroupScopeEdit(QObject *parent, QList<AttributeEdit *> *edits_ou
         [this]() {
             emit edited();
         });
-
-    AttributeEdit::append_to_list(edits_out);
 }
 
 void GroupScopeEdit::load(const AdObject &object) {
-    original_value = object.get_group_scope();
+    const GroupScope scope = object.get_group_scope();
 
-    combo->setCurrentIndex((int) original_value);
-
-    emit edited();
+    combo->setCurrentIndex((int) scope);
 }
 
 void GroupScopeEdit::set_read_only(const bool read_only) {
@@ -65,11 +61,6 @@ void GroupScopeEdit::add_to_layout(QFormLayout *layout) {
 
 bool GroupScopeEdit::verify() const {
     return true;
-}
-
-bool GroupScopeEdit::modified() const {
-    const int new_value = combo->currentData().toInt();
-    return (new_value != original_value);
 }
 
 bool GroupScopeEdit::apply(const QString &dn) const {

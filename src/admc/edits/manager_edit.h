@@ -46,10 +46,9 @@ private:
     QPushButton *details_button;
     QPushButton *clear_button;
 
-    QString original_value;
     QString current_value;
 
-    void load_current_value();
+    void load_value(const QString &value);
 };
 
 #endif /* MANAGER_EDIT_H */

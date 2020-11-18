@@ -25,7 +25,7 @@
 #include <QCheckBox>
 
 UnlockEdit::UnlockEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
-: AttributeEdit(parent) {
+: AttributeEdit(edits_out, parent) {
     check = new QCheckBox();
 
     connect(
@@ -33,14 +33,10 @@ UnlockEdit::UnlockEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
         [this]() {
             emit edited();
         });
-    
-    AttributeEdit::append_to_list(edits_out);
 }
 
 void UnlockEdit::load(const AdObject &object) {
     check->setChecked(false);
-
-    emit edited();
 }
 
 void UnlockEdit::set_read_only(const bool read_only) {
@@ -53,10 +49,6 @@ void UnlockEdit::add_to_layout(QFormLayout *layout) {
 
 bool UnlockEdit::verify() const {
     return true;
-}
-
-bool UnlockEdit::modified() const {
-    return check->isChecked();
 }
 
 bool UnlockEdit::apply(const QString &dn) const {

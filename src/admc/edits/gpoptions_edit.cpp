@@ -19,13 +19,14 @@
 
 #include "edits/gpoptions_edit.h"
 #include "utils.h"
+#include "ad_interface.h"
 
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QHash>
 
 GpoptionsEdit::GpoptionsEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
-: AttributeEdit(parent)
+: AttributeEdit(edits_out, parent)
 {
     check = new QCheckBox();
 
@@ -34,17 +35,13 @@ GpoptionsEdit::GpoptionsEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
         [this]() {
             emit edited();
         });
-
-    AttributeEdit::append_to_list(edits_out);
 }
 
 void GpoptionsEdit::load(const AdObject &object) {
     const QString value = object.get_string(ATTRIBUTE_GPOPTIONS);
-    original_checked_value = (value == GPOPTIONS_BLOCK_INHERITANCE);
+    const bool checked = (value == GPOPTIONS_BLOCK_INHERITANCE);
 
-    check->setChecked(original_checked_value);
-
-    emit edited();
+    check->setChecked(checked);
 }
 
 void GpoptionsEdit::set_read_only(const bool read_only) {
@@ -58,11 +55,6 @@ void GpoptionsEdit::add_to_layout(QFormLayout *layout) {
 
 bool GpoptionsEdit::verify() const {
     return true;
-}
-
-bool GpoptionsEdit::modified() const {
-    const bool new_checked_value = check->isChecked();
-    return (new_checked_value != original_checked_value);
 }
 
 bool GpoptionsEdit::apply(const QString &dn) const {

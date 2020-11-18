@@ -37,7 +37,7 @@ public:
 
 private slots:
     void accept();
-    void update_buttons();
+    void on_edited();
     void reset();
 
 private:

@@ -31,9 +31,7 @@
 
 // TODO: logon hours, logon computers
 
-// NOTE: https://ldapwiki.com/wiki/MMC%20Account%20Tab
-
-AccountTab::AccountTab() {   
+AccountTab::AccountTab() {
     new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER, this, &edits);
 
     new UnlockEdit(this, &edits);
@@ -44,7 +42,7 @@ AccountTab::AccountTab() {
         options.append(option);
     }
     QMap<AccountOption, AccountOptionEdit *> option_edits;
-    make_account_option_edits(options, &option_edits, &edits, this);
+    AccountOptionEdit::make(options, &option_edits, &edits, this);
 
     new ExpiryEdit(this, &edits);
 

@@ -25,7 +25,7 @@
 #include <QFormLayout>
 
 GroupTypeEdit::GroupTypeEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
-: AttributeEdit(parent)
+: AttributeEdit(edits_out, parent)
 {
     combo = new QComboBox();
 
@@ -41,16 +41,12 @@ GroupTypeEdit::GroupTypeEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
         [this]() {
             emit edited();
         });
-
-    AttributeEdit::append_to_list(edits_out);
 }
 
 void GroupTypeEdit::load(const AdObject &object) {
-    original_value = object.get_group_type();
+    const GroupType type = object.get_group_type();
 
-    combo->setCurrentIndex((int) original_value);
-
-    emit edited();
+    combo->setCurrentIndex((int) type);
 }
 
 void GroupTypeEdit::set_read_only(const bool read_only) {
@@ -64,11 +60,6 @@ void GroupTypeEdit::add_to_layout(QFormLayout *layout) {
 
 bool GroupTypeEdit::verify() const {
     return true;
-}
-
-bool GroupTypeEdit::modified() const {
-    const int new_value = combo->currentData().toInt();
-    return (new_value != original_value);
 }
 
 bool GroupTypeEdit::apply(const QString &dn) const {

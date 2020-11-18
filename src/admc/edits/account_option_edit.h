@@ -29,17 +29,14 @@ class QWidget;
 class AccountOptionEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    QCheckBox *check;
+    static void make(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent);
 
     AccountOptionEdit(const AccountOption option_arg, QObject *parent, QList<AttributeEdit *> *edits_out = nullptr);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
     AccountOption option;
-    bool original_value;
-    bool loaded;
+    QCheckBox *check;
 };
-
-void make_account_option_edits(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent);
 
 #endif /* ACCOUNT_OPTION_EDIT_H */

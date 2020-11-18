@@ -39,7 +39,7 @@ QString get_domain_as_email_suffix() {
 }
 
 StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent, QList<AttributeEdit *> *edits_out)
-: AttributeEdit(parent)
+: AttributeEdit(edits_out, parent)
 {
     attribute = attribute_arg;
     objectClass = objectClass_arg;
@@ -54,23 +54,21 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
         [this]() {
             emit edited();
         });
-
-    AttributeEdit::append_to_list(edits_out);
 }
 
 void StringEdit::load(const AdObject &object) {
-    const QString value = object.get_string(attribute);
+    const QString value =
+    [=]() {
+        QString out = object.get_string(attribute);
+        if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
+            // Take "user" from "user@domain.com"
+            out = out.split("@")[0];
+        }
 
-    if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
-        // Take "user" from "user@domain.com"
-        original_value = value.split("@")[0];
-    } else {
-        original_value = value;
-    }
+        return out;
+    }();
     
-    edit->setText(original_value);
-
-    emit edited();
+    edit->setText(value);
 }
 
 void StringEdit::set_read_only(const bool read_only) {
@@ -111,11 +109,6 @@ void StringEdit::add_to_layout(QFormLayout *layout) {
 
 bool StringEdit::verify() const {
     return true;
-}
-
-bool StringEdit::modified() const {
-    const QString new_value = edit->text();
-    return (new_value != original_value);
 }
 
 bool StringEdit::apply(const QString &dn) const {

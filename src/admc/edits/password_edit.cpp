@@ -28,7 +28,7 @@
 #include <QTextCodec>
 
 PasswordEdit::PasswordEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
-: AttributeEdit(parent)
+: AttributeEdit(edits_out, parent)
 {
     edit = new QLineEdit();
     confirm_edit = new QLineEdit();
@@ -41,15 +41,11 @@ PasswordEdit::PasswordEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
         [this]() {
             emit edited();
         });
-
-    AttributeEdit::append_to_list(edits_out);
 }
 
 void PasswordEdit::load(const AdObject &object) {
     edit->clear();
     confirm_edit->clear();
-
-    emit edited();
 }
 
 void PasswordEdit::set_read_only(const bool read_only) {
@@ -82,10 +78,6 @@ bool PasswordEdit::verify() const {
     }
 
     return true;
-}
-
-bool PasswordEdit::modified() const {
-    return (!edit->text().isEmpty() || !confirm_edit->text().isEmpty());
 }
 
 bool PasswordEdit::apply(const QString &dn) const {

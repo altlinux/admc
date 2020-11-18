@@ -29,7 +29,7 @@
 #include <QPushButton>
 
 ManagerEdit::ManagerEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
-: AttributeEdit(parent)
+: AttributeEdit(edits_out, parent)
 {
     edit = new QLineEdit();
 
@@ -46,17 +46,12 @@ ManagerEdit::ManagerEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
     connect(
         clear_button, &QPushButton::clicked,
         this, &ManagerEdit::on_clear);
-
-    AttributeEdit::append_to_list(edits_out);
 }
 
 void ManagerEdit::load(const AdObject &object) {
-    original_value = object.get_string(ATTRIBUTE_MANAGER);
-    current_value = original_value;
+    const QString manager = object.get_string(ATTRIBUTE_MANAGER);
     
-    load_current_value();
-
-    emit edited();
+    load_value(manager);
 }
 
 void ManagerEdit::set_read_only(const bool read_only) {
@@ -81,10 +76,6 @@ bool ManagerEdit::verify() const {
     return true;
 }
 
-bool ManagerEdit::modified() const {
-    return (current_value != original_value);
-}
-
 bool ManagerEdit::apply(const QString &dn) const {
     const bool success = AD()->attribute_replace_string(dn, ATTRIBUTE_MANAGER, current_value);
 
@@ -95,9 +86,7 @@ void ManagerEdit::on_change() {
     const QList<QString> selected_objects = SelectDialog::open({CLASS_USER}, SelectDialogMultiSelection_No);
 
     if (selected_objects.size() > 0) {
-        current_value = selected_objects[0];
-
-        load_current_value();
+        load_value(selected_objects[0]);
 
         emit edited();
     }
@@ -108,14 +97,14 @@ void ManagerEdit::on_details() {
 }
 
 void ManagerEdit::on_clear() {
-    current_value = QString();
-
-    load_current_value();
+    load_value(QString());
 
     emit edited();
 }
 
-void ManagerEdit::load_current_value() {
+void ManagerEdit::load_value(const QString &value) {
+    current_value = value;
+
     const QString rdn = dn_get_rdn(current_value);
     edit->setText(current_value);
 

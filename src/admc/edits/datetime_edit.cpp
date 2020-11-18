@@ -26,7 +26,7 @@
 #include <QDateTimeEdit>
 
 DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QObject *parent, QList<AttributeEdit *> *edits_out)
-: AttributeEdit(parent)
+: AttributeEdit(edits_out, parent)
 {
     edit = new QDateTimeEdit();
     attribute = attribute_arg;
@@ -36,16 +36,12 @@ DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QObject *parent, QList<
         [this]() {
             emit edited();
         });
-
-    AttributeEdit::append_to_list(edits_out);
 }
 
 void DateTimeEdit::load(const AdObject &object) {
-    original_value = object.get_datetime(attribute);
+    const QDateTime value = object.get_datetime(attribute);
 
-    edit->setDateTime(original_value);
-
-    emit edited();
+    edit->setDateTime(value);
 }
 
 void DateTimeEdit::set_read_only(const bool read_only) {
@@ -61,11 +57,6 @@ bool DateTimeEdit::verify() const {
     // TODO: datetime should fit within bounds of it's format, so greater than start of epoch for NTFS format?
 
     return true;
-}
-
-bool DateTimeEdit::modified() const {
-    const QDateTime new_value = edit->dateTime();
-    return (new_value != original_value);
 }
 
 bool DateTimeEdit::apply(const QString &dn) const {

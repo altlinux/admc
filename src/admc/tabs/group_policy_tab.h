@@ -39,7 +39,6 @@ public:
     GroupPolicyTab();
 
     void load(const AdObject &object) override;
-    bool modified() const override;
     void apply(const QString &target) const override;
 
 private slots:
@@ -51,15 +50,14 @@ private slots:
 private:
     QStandardItemModel *model = nullptr;
     QTreeView *view = nullptr;
-    Gplink original_gplink;
-    Gplink current_gplink;
+    Gplink gplink;
 
     void add_link(QList<QString> gpos);
     void remove_link(QList<QString> gpos);
     void move_link_up(const QString &gpo);
     void move_link_down(const QString &gpo);
 
-    void reload_model(const Gplink &gplink);
+    void reload_gplink();
 };
 
 #endif /* GROUP_POLICY_TAB_H */

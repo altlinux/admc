@@ -27,11 +27,12 @@ class QLineEdit;
 class PasswordEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    QLineEdit *edit;
-    QLineEdit *confirm_edit;
-
     PasswordEdit(QObject *parent, QList<AttributeEdit *> *edits_out = nullptr);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
+
+private:
+    QLineEdit *edit;
+    QLineEdit *confirm_edit;
 };
 
 #endif /* PASSWORD_EDIT_H */

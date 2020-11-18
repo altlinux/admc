@@ -93,7 +93,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
                 // TODO: AccountOption_CannotChangePass
             };
             QMap<AccountOption, AccountOptionEdit *> option_edits;
-            make_account_option_edits(options, &option_edits, &all_edits, this);
+            AccountOptionEdit::make(options, &option_edits, &all_edits, this);
 
             // NOTE: initials not required
             required_edits = {
@@ -275,7 +275,8 @@ void CreateDialog::accept() {
         const bool add_success = AD()->object_add(dn, classes);
 
         if (add_success) {
-            const bool apply_success = edits_apply(all_edits, dn);
+            const bool apply_if_unmodified = true;
+            const bool apply_success = edits_apply(all_edits, dn, apply_if_unmodified);
 
             if (apply_success) {
                 const QString message = QString(tr("Created %1 - \"%2\"")).arg(type_string, name);

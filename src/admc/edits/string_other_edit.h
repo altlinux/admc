@@ -47,8 +47,7 @@ private:
     QPushButton *other_button;
 
     const QString other_attribute;
-    QList<QByteArray> current_other_values;
-    QList<QByteArray> original_other_values;
+    QList<QByteArray> other_values;
 };
 
 #endif /* STRING_MULTI_EDIT_H */

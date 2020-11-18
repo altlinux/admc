@@ -27,7 +27,7 @@
 #include <QDateTimeEdit>
 #include <QMessageBox>
 
-void make_account_option_edits(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
+void AccountOptionEdit::make(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
     QMap<AccountOption, AccountOptionEdit *> option_edits;
 
     for (auto option : options) {
@@ -77,7 +77,7 @@ void make_account_option_edits(const QList<AccountOption> options, QMap<AccountO
 }
 
 AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *parent, QList<AttributeEdit *> *edits_out)
-: AttributeEdit(parent)
+: AttributeEdit(edits_out, parent)
 {
     option = option_arg;
     check = new QCheckBox();
@@ -87,17 +87,11 @@ AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *pa
         [this]() {
             emit edited();
         });
-
-    AttributeEdit::append_to_list(edits_out);
 }
 
 void AccountOptionEdit::load(const AdObject &object) {
-    original_value = object.get_account_option(option);
-    check->setChecked(original_value);
-
-    loaded = true;
-
-    emit edited();
+    const bool option_is_set = object.get_account_option(option);
+    check->setChecked(option_is_set);
 }
 
 void AccountOptionEdit::set_read_only(const bool read_only) {
@@ -111,11 +105,6 @@ void AccountOptionEdit::add_to_layout(QFormLayout *layout) {
 
 bool AccountOptionEdit::verify() const {
     return true;
-}
-
-bool AccountOptionEdit::modified() const {
-    const bool new_value = check->isChecked();
-    return ((new_value != original_value) || !loaded);
 }
 
 bool AccountOptionEdit::apply(const QString &dn) const {

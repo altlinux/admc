@@ -38,7 +38,7 @@
 const QTime END_OF_DAY(23, 59);
 
 ExpiryEdit::ExpiryEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
-: AttributeEdit(parent)
+: AttributeEdit(edits_out, parent)
 {
     never_check = new QCheckBox(tr("Never"));
     end_of_check = new QCheckBox(tr("End of:"));
@@ -59,14 +59,12 @@ ExpiryEdit::ExpiryEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
     connect(
         edit_button, &QAbstractButton::clicked,
         this, &ExpiryEdit::on_edit_button);
-
-    AttributeEdit::append_to_list(edits_out);
 }
 
 void ExpiryEdit::load(const AdObject &object) {
-    original_value = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);
+    const QString expiry_string = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);
 
-    const bool never = large_integer_datetime_is_never(original_value);
+    const bool never = large_integer_datetime_is_never(expiry_string);
 
     never_check->setChecked(never);
     end_of_check->setChecked(!never);
@@ -80,12 +78,10 @@ void ExpiryEdit::load(const AdObject &object) {
         const QDate default_expiry = QDate::currentDate();
         display_label_text = default_expiry.toString(DATE_FORMAT);
     } else {
-        const QDateTime current_expiry = datetime_string_to_qdatetime(ATTRIBUTE_ACCOUNT_EXPIRES, original_value);
+        const QDateTime current_expiry = datetime_string_to_qdatetime(ATTRIBUTE_ACCOUNT_EXPIRES, expiry_string);
         display_label_text = current_expiry.toString(DATE_FORMAT);
     }
     display_label->setText(display_label_text);
-
-    emit edited();
 }
 
 void ExpiryEdit::set_read_only(const bool read_only) {
@@ -111,16 +107,18 @@ bool ExpiryEdit::verify() const {
     return true;
 }
 
-bool ExpiryEdit::modified() const {
-    const QString new_value = get_new_value();
-    return (new_value != original_value);
-}
-
 bool ExpiryEdit::apply(const QString &dn) const {
-    const QString new_value = get_new_value();
-    const bool result = AD()->attribute_replace_string(dn, ATTRIBUTE_ACCOUNT_EXPIRES, new_value);
+    const bool never = never_check->isChecked();
 
-    return result;
+    if (never) {
+        return AD()->attribute_replace_string(dn, ATTRIBUTE_ACCOUNT_EXPIRES, AD_LARGE_INTEGER_DATETIME_NEVER_2);
+    } else {
+        const QString date_string = display_label->text();
+        const QDate date = QDate::fromString(date_string, DATE_FORMAT);
+        const QDateTime datetime(date, END_OF_DAY);
+
+        return AD()->attribute_replace_datetime(dn, ATTRIBUTE_ACCOUNT_EXPIRES, datetime);
+    }
 }
 
 void ExpiryEdit::on_never_check() {
@@ -173,27 +171,4 @@ void ExpiryEdit::on_edit_button() {
         dialog, &QDialog::reject);
 
     dialog->open();
-}
-
-// NOTE: have to operate on raw string datetime values here because (never) value can't be expressed as QDateTime
-QString ExpiryEdit::get_new_value() const {
-    const bool never = never_check->isChecked();
-
-    if (never) {
-        const bool original_value_is_never = large_integer_datetime_is_never(original_value);
-
-        // NOTE: there are two valid NEVER values so need to match original if it was "never" to avoid changing to different NEVER value and entering into "modified" state when nothing was actually edited
-        if (original_value_is_never) {
-            return original_value;
-        } else {
-            return AD_LARGE_INTEGER_DATETIME_NEVER_1;
-        }
-    } else {
-        const QString new_date_string = display_label->text();
-        const QDate new_date = QDate::fromString(new_date_string, DATE_FORMAT);
-        const QDateTime new_datetime(new_date, END_OF_DAY);
-        const QString value = datetime_qdatetime_to_string(ATTRIBUTE_ACCOUNT_EXPIRES, new_datetime);
-
-        return value;
-    }
 }

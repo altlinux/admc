@@ -40,7 +40,6 @@ public:
     AttributesTab();
 
     void load(const AdObject &object) override;
-    bool modified() const override;
     void apply(const QString &target) const override;
 
 private slots:

@@ -44,7 +44,6 @@ private:
     QCheckBox *end_of_check;
     QLabel *display_label;
     QPushButton *edit_button;
-    QString original_value;
 
     QString get_new_value() const;
 };

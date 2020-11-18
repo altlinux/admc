@@ -32,7 +32,6 @@ public:
 
 private:
     QComboBox *combo;
-    GroupScope original_value;
 };
 
 #endif /* GROUP_SCOPE_EDIT_H */

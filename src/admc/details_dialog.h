@@ -55,7 +55,7 @@ private slots:
     void apply();
     void reset();
     void on_docked_setting_changed();
-    void update_buttons();
+    void on_edited();
     void reload_target();
 
 private:

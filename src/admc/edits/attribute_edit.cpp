@@ -26,7 +26,7 @@
 #include <QFormLayout>
 #include <QLabel>
 
-void AttributeEdit::append_to_list(QList<AttributeEdit *> *edits_out) {
+AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent) {
     if (edits_out != nullptr) {
         if (edits_out->contains(this)) {
             printf("ERROR: attribute edit added twice to list!");
@@ -34,22 +34,27 @@ void AttributeEdit::append_to_list(QList<AttributeEdit *> *edits_out) {
             edits_out->append(this);
         }
     }
+
+    m_modified = false;
+    connect(
+        this, &AttributeEdit::edited,
+        [this]() {
+            m_modified = true;
+        });
+}
+
+void AttributeEdit::reset_modified() {
+    m_modified = false;
+}
+
+bool AttributeEdit::modified() const {
+    return m_modified;
 }
 
 void edits_add_to_layout(QList<AttributeEdit *> edits, QFormLayout *layout) {
     for (auto edit : edits) {
         edit->add_to_layout(layout);
     }
-}
-
-bool edits_modified(QList<AttributeEdit *> edits) {
-    for (auto edit : edits) {
-        if (edit->modified()) {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 bool edits_verify(QList<AttributeEdit *> edits) {
@@ -66,11 +71,11 @@ bool edits_verify(QList<AttributeEdit *> edits) {
     return success;
 }
 
-bool edits_apply(QList<AttributeEdit *> edits, const QString &dn) {
+bool edits_apply(QList<AttributeEdit *> edits, const QString &dn, const bool apply_if_unmodified) {
     bool success = true;
 
     for (auto edit : edits) {
-        if (edit->modified()) {
+        if (edit->modified() || apply_if_unmodified) {
             const bool apply_success = edit->apply(dn);
             if (!apply_success) {
                 success = false;
@@ -83,6 +88,7 @@ bool edits_apply(QList<AttributeEdit *> edits, const QString &dn) {
 
 void edits_load(QList<AttributeEdit *> edits, const AdObject &object) {
     for (auto edit : edits) {
+        edit->reset_modified();
         edit->load(object);
     }
 }

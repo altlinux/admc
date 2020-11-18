@@ -21,7 +21,6 @@
 #define GPOPTIONS_EDIT_H
 
 #include "edits/attribute_edit.h"
-#include "ad_interface.h"
 
 class QCheckBox;
 
@@ -33,7 +32,6 @@ public:
 
 private:
     QCheckBox *check;
-    bool original_checked_value;
 };
 
 #endif /* GPOPTIONS_EDIT_H */

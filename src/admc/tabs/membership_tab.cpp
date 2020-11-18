@@ -170,10 +170,6 @@ void MembershipTab::load(const AdObject &object) {
     reload_model();
 }
 
-bool MembershipTab::modified() const {
-    return (current_values != original_values || current_primary_values != original_primary_values);
-}
-
 void MembershipTab::apply(const QString &target) const {
     // NOTE: logic is kinda duplicated but switching on behavior within iterations would be very confusing
     switch (type) {
