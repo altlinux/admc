@@ -37,6 +37,7 @@ public:
 private:
     AccountOption option;
     bool original_value;
+    bool loaded;
 };
 
 void make_account_option_edits(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent);

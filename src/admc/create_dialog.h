@@ -28,7 +28,7 @@
 #include <QMap>
 
 class AttributeEdit;
-class StringEdit;
+class QLineEdit;
 class QPushButton;
 
 enum CreateType {
@@ -59,7 +59,7 @@ private slots:
 private:
     QString parent_dn;
     CreateType type;
-    StringEdit *name_edit;
+    QLineEdit *name_edit;
     QPushButton *create_button;
     QList<AttributeEdit *> all_edits;
     QList<AttributeEdit *> required_edits;

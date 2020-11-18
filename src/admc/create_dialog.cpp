@@ -72,14 +72,48 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
         return "";
     }();
 
+    name_edit = new QLineEdit();
+
+    const auto edits_layout = new QFormLayout();
+
     switch (type) {
         case CreateType_User: {
             auto first_name_edit = new StringEdit(ATTRIBUTE_FIRST_NAME, object_class, this, &all_edits);
             auto last_name_edit = new StringEdit(ATTRIBUTE_LAST_NAME, object_class, this, &all_edits);
-            name_edit = new StringEdit(ATTRIBUTE_NAME, object_class, this, &all_edits);
-            new StringEdit(ATTRIBUTE_INITIALS, object_class, this, &all_edits);
+            auto initials_edit = new StringEdit(ATTRIBUTE_INITIALS, object_class, this, &all_edits);
             auto upn_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, object_class, this, &all_edits);
             auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
+
+            auto pass_edit = new PasswordEdit(this, &all_edits);
+
+            const QList<AccountOption> options = {
+                AccountOption_PasswordExpired,
+                AccountOption_DontExpirePassword,
+                AccountOption_Disabled
+                // TODO: AccountOption_CannotChangePass
+            };
+            QMap<AccountOption, AccountOptionEdit *> option_edits;
+            make_account_option_edits(options, &option_edits, &all_edits, this);
+
+            // NOTE: initials not required
+            required_edits = {
+                first_name_edit,
+                last_name_edit,
+                upn_edit,
+                sama_edit,
+                pass_edit
+            };
+
+            first_name_edit->add_to_layout(edits_layout);
+            last_name_edit->add_to_layout(edits_layout);
+            edits_layout->addRow(tr("Full name:"), name_edit);
+            initials_edit->add_to_layout(edits_layout);
+            upn_edit->add_to_layout(edits_layout);
+            sama_edit->add_to_layout(edits_layout);
+            pass_edit->add_to_layout(edits_layout);
+            option_edits[AccountOption_PasswordExpired]->add_to_layout(edits_layout);
+            option_edits[AccountOption_DontExpirePassword]->add_to_layout(edits_layout);
+            option_edits[AccountOption_Disabled]->add_to_layout(edits_layout);
 
             // Setup autofills
             // (first name + last name) -> full name
@@ -99,7 +133,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
                 }();
 
                 // TODO: replace with full name
-                name_edit->set_input(full_name_value);
+                name_edit->setText(full_name_value);
             };
             QObject::connect(
                 first_name_edit, &StringEdit::edited,
@@ -116,77 +150,51 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
                     sama_edit->set_input(upn_input);
                 });
 
-            auto pass_edit = new PasswordEdit(this, &all_edits);
-
-            const QList<AccountOption> options = {
-                AccountOption_PasswordExpired,
-                AccountOption_DontExpirePassword,
-                AccountOption_Disabled
-                // TODO: AccountOption_CannotChangePass
-            };
-            QMap<AccountOption, AccountOptionEdit *> option_edits;
-            make_account_option_edits(options, &option_edits, &all_edits, this);
-
-            // NOTE: initials not required
-            required_edits = {
-                first_name_edit,
-                last_name_edit,
-                name_edit,
-                upn_edit,
-                sama_edit,
-                pass_edit
-            };
-
             break;
         }
         case CreateType_Group: {
-            name_edit = new StringEdit(ATTRIBUTE_NAME, "", this, &all_edits);
-
             auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
 
             required_edits = {
-                name_edit,
                 sama_edit
             };
 
             new GroupScopeEdit(this, &all_edits);
             new GroupTypeEdit(this, &all_edits);
 
+            edits_layout->addRow(tr("Name:"), name_edit);
+            edits_add_to_layout(all_edits, edits_layout);
+
             break;
         }
         case CreateType_Computer: {
-            name_edit = new StringEdit(ATTRIBUTE_NAME, "", this, &all_edits);
-
-            // TODO: need to autofill from name in uppercase
-            auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
-
             // TODO: "Assign this computer account as a pre-Windows 2000 computer". Is this needed?
 
             // TODO: "The following user or group may join this computer to a domain". Tried to figure out how this is implemented and couldn't see any easy ways via attributes, so probably something to do with setting ACL'S.
 
             // TODO: "This is a managed computer" checkbox and an edit for guid/uuid which I assume modifies objectGUID?
 
+            auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
+
             required_edits = {
-                name_edit,
                 sama_edit
             };
 
+            edits_layout->addRow(tr("Name:"), name_edit);
+            sama_edit->add_to_layout(edits_layout);
+
             // Autofill name -> sama
             QObject::connect(
-                name_edit, &StringEdit::edited,
+                name_edit, &QLineEdit::textChanged,
                 [=] () {
-                    const QString name_input = name_edit->get_input();
+                    const QString name_input = name_edit->text();
                     sama_edit->set_input(name_input.toUpper());
                 });
 
             break;
         }
         case CreateType_OU: {
-            name_edit = new StringEdit(ATTRIBUTE_NAME, "", this, &all_edits);
-
-            required_edits = {
-                name_edit
-            };
+            edits_layout->addRow(tr("Name:"), name_edit);
 
             break;
         }
@@ -196,9 +204,6 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
     }
 
     create_button = new QPushButton(tr("Create"));
-
-    const auto edits_layout = new QFormLayout();
-    edits_add_to_layout(all_edits, edits_layout);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
@@ -218,7 +223,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
 }
 
 void CreateDialog::accept() {
-    const QString name = name_edit->get_input();
+    const QString name = name_edit->text();
 
     const QString suffix =
     [this]() {
@@ -259,35 +264,31 @@ void CreateDialog::accept() {
     const int errors_index = Status::instance()->get_errors_size();
     AD()->start_batch();
     {   
+        const QString type_string = create_type_to_string(type);
+
+        auto fail_msg =
+        [this, type_string, name]() {
+            const QString message = QString(tr("Failed to create %1 - \"%2\"")).arg(type_string, name);
+            Status::instance()->message(message, StatusType_Error);
+        };
 
         const bool add_success = AD()->object_add(dn, classes);
 
-        bool apply_success = true;
         if (add_success) {
-            // NOTE: need to apply even if edits aren't changed because this is a new object and so edits have no initial attribute values to load. So things like AccountOptionEdit checkboxes need to apply whether they are checked or unchecked.
-            for (auto edit : all_edits) {
-                const bool this_success = edit->apply(dn);
-                if (!this_success) {
-                    apply_success = false;
-                }
-            }
-        }
+            const bool apply_success = edits_apply(all_edits, dn);
 
-        const QString type_string = create_type_to_string(type);
+            if (apply_success) {
+                const QString message = QString(tr("Created %1 - \"%2\"")).arg(type_string, name);
 
-        if (add_success && apply_success) {
-            const QString message = QString(tr("Created %1 - \"%2\"")).arg(type_string, name);
+                Status::instance()->message(message, StatusType_Success);
 
-            Status::instance()->message(message, StatusType_Success);
-
-            QDialog::accept();
-        } else {
-            if (add_success) {
+                QDialog::accept();
+            } else {
                 AD()->object_delete(dn);
+                fail_msg();
             }
-
-            const QString message = QString(tr("Failed to create %1 - \"%2\"")).arg(type_string, name);
-            Status::instance()->message(message, StatusType_Error);
+        } else {
+            fail_msg();
         }
     }
     AD()->end_batch();
@@ -307,7 +308,9 @@ void CreateDialog::on_edited() {
         return true;
     }();
 
-    create_button->setEnabled(required_edits_filled);
+    const bool name_filled = !name_edit->text().isEmpty();
+
+    create_button->setEnabled(required_edits_filled && name_filled);
 }
 
 QString create_type_to_string(const CreateType &type) {

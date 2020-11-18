@@ -122,11 +122,6 @@ bool StringEdit::changed() const {
 }
 
 bool StringEdit::apply(const QString &dn) const {
-    // NOTE: name can't be replaced regularly so don't apply it. Need to get value from this edit and manually rename/create object
-    if (attribute == ATTRIBUTE_NAME) {
-        return true;
-    }
-
     const QString new_value =
     [this]() {
         if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {

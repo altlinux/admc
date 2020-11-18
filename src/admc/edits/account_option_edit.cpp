@@ -96,6 +96,8 @@ void AccountOptionEdit::load(const AdObject &object) {
     original_value = object.get_account_option(option);
     check->setChecked(original_value);
 
+    loaded = true;
+
     emit edited();
 }
 
@@ -117,7 +119,7 @@ bool AccountOptionEdit::verify() const {
 
 bool AccountOptionEdit::changed() const {
     const bool new_value = check->isChecked();
-    return (new_value != original_value);
+    return ((new_value != original_value) || !loaded);
 }
 
 bool AccountOptionEdit::apply(const QString &dn) const {
