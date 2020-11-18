@@ -39,7 +39,7 @@ public:
     GroupPolicyTab();
 
     void load(const AdObject &object) override;
-    bool changed() const override;
+    bool modified() const override;
     void apply(const QString &target) const override;
 
 private slots:

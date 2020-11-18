@@ -29,10 +29,10 @@
 /**
  * Details tabs are used in DetailsDialog. They usually are
  * a collection of AttributeEdit's and so mirror their
- * behavior. Tabs start out unchanged, then enter changed()
- * state if their edits change. Then tabs may be reset via
- * load() or verified and applied. All tab f-ns call f-ns of
- * tab's edits. Note that edits are not required. If
+ * behavior. Tabs start out unmodified, then enter
+ * modified() when user edits them. Then tabs may be reset
+ * via load() or verified and applied. All tab f-ns call
+ * f-ns of tab's edits. Note that edits are not required. If
  * needed, a tab can have no edits at all and implement
  * custom functionality.
  */
@@ -44,7 +44,7 @@ Q_OBJECT
 
 public:
     virtual void load(const AdObject &object);
-    virtual bool changed() const;
+    virtual bool modified() const;
     virtual bool verify() const;
     virtual void apply(const QString &target) const;
 

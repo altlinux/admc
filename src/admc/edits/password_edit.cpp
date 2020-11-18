@@ -84,7 +84,7 @@ bool PasswordEdit::verify() const {
     return true;
 }
 
-bool PasswordEdit::changed() const {
+bool PasswordEdit::modified() const {
     return (!edit->text().isEmpty() || !confirm_edit->text().isEmpty());
 }
 

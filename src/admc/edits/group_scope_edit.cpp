@@ -67,7 +67,7 @@ bool GroupScopeEdit::verify() const {
     return true;
 }
 
-bool GroupScopeEdit::changed() const {
+bool GroupScopeEdit::modified() const {
     const int new_value = combo->currentData().toInt();
     return (new_value != original_value);
 }

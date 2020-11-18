@@ -56,7 +56,7 @@ bool XmlBoolEdit::verify_input(QWidget *parent) {
     return true;
 }
 
-bool XmlBoolEdit::changed() const {
+bool XmlBoolEdit::modified() const {
     const bool new_value = check->isChecked();
     return (new_value != original_value);
 }

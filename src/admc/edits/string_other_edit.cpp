@@ -87,11 +87,11 @@ bool StringOtherEdit::verify() const {
     return main_edit->verify();
 }
 
-bool StringOtherEdit::changed() const {
-    const bool main_changed = main_edit->changed();
-    const bool other_changed = (current_other_values != original_other_values);
+bool StringOtherEdit::modified() const {
+    const bool main_modified = main_edit->modified();
+    const bool other_modified = (current_other_values != original_other_values);
 
-    return (main_changed || other_changed);
+    return (main_modified || other_modified);
 }
 
 bool StringOtherEdit::apply(const QString &dn) const {

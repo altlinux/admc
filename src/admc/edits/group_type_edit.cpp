@@ -66,7 +66,7 @@ bool GroupTypeEdit::verify() const {
     return true;
 }
 
-bool GroupTypeEdit::changed() const {
+bool GroupTypeEdit::modified() const {
     const int new_value = combo->currentData().toInt();
     return (new_value != original_value);
 }

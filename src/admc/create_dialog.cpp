@@ -300,7 +300,7 @@ void CreateDialog::on_edited() {
     const bool required_edits_filled =
     [this]() {
         for (auto edit : required_edits) {
-            if (!edit->changed()) {
+            if (!edit->modified()) {
                 return false;
             }
         }

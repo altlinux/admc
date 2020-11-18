@@ -60,7 +60,7 @@ bool GpoptionsEdit::verify() const {
     return true;
 }
 
-bool GpoptionsEdit::changed() const {
+bool GpoptionsEdit::modified() const {
     const bool new_checked_value = check->isChecked();
     return (new_checked_value != original_checked_value);
 }

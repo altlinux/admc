@@ -55,7 +55,7 @@ bool UnlockEdit::verify() const {
     return true;
 }
 
-bool UnlockEdit::changed() const {
+bool UnlockEdit::modified() const {
     return check->isChecked();
 }
 

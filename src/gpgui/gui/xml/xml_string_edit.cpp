@@ -55,7 +55,7 @@ bool XmlStringEdit::verify_input(QWidget *parent) {
     return true;
 }
 
-bool XmlStringEdit::changed() const {
+bool XmlStringEdit::modified() const {
     const QString new_value = edit->text();
     return (new_value != original_value);
 }

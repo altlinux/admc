@@ -55,8 +55,8 @@ private slots:
     void apply();
     void reset();
     void on_docked_setting_changed();
-    void on_tab_edited();
-    void on_ad_modified();
+    void update_buttons();
+    void reload_target();
 
 private:
     static DetailsDialog *docked_instance;

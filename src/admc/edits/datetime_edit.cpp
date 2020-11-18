@@ -63,7 +63,7 @@ bool DateTimeEdit::verify() const {
     return true;
 }
 
-bool DateTimeEdit::changed() const {
+bool DateTimeEdit::modified() const {
     const QDateTime new_value = edit->dateTime();
     return (new_value != original_value);
 }

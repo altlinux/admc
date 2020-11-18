@@ -170,7 +170,7 @@ void MembershipTab::load(const AdObject &object) {
     reload_model();
 }
 
-bool MembershipTab::changed() const {
+bool MembershipTab::modified() const {
     return (current_values != original_values || current_primary_values != original_primary_values);
 }
 

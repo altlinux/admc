@@ -42,9 +42,9 @@ void edits_add_to_layout(QList<AttributeEdit *> edits, QFormLayout *layout) {
     }
 }
 
-bool edits_changed(QList<AttributeEdit *> edits) {
+bool edits_modified(QList<AttributeEdit *> edits) {
     for (auto edit : edits) {
-        if (edit->changed()) {
+        if (edit->modified()) {
             return true;
         }
     }
@@ -70,7 +70,7 @@ bool edits_apply(QList<AttributeEdit *> edits, const QString &dn) {
     bool success = true;
 
     for (auto edit : edits) {
-        if (edit->changed()) {
+        if (edit->modified()) {
             const bool apply_success = edit->apply(dn);
             if (!apply_success) {
                 success = false;

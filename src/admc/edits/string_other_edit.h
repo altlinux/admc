@@ -27,7 +27,7 @@
 #include <QList>
 
 class QLabel;
-class QLineEdit;
+class StringEdit;
 class QPushButton;
 
 // Edit for attributes which have "other" version which is

@@ -182,14 +182,14 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     for (auto tab : tabs) {
         connect(
             tab, &DetailsTab::edited,
-            this, &DetailsDialog::on_tab_edited);
+            this, &DetailsDialog::update_buttons);
     }
-    on_tab_edited();
+    update_buttons();
 
     for (auto tab : tabs) {
-        if (tab->changed()) {
+        if (tab->modified()) {
             const QString title = titles[tabs.indexOf(tab)];
-            printf("ERROR: a newly created tab %s is in changed() state! Something must be wrong with edits.\n", qPrintable(title));
+            printf("ERROR: a newly created tab %s is in modified() state! Something must be wrong with edits.\n", qPrintable(title));
         }
     }
 
@@ -204,7 +204,7 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
         this, &DetailsDialog::reject);
     connect(
         AD(), &AdInterface::modified,
-        this, &DetailsDialog::on_ad_modified);
+        this, &DetailsDialog::reload_target);
 
     const BoolSettingSignal *docked_setting = SETTINGS()->get_bool_signal(BoolSetting_DetailsIsDocked);
     connect(
@@ -265,23 +265,22 @@ void DetailsDialog::reset() {
         tab->load(object);
     }
 
-    // Call slot to reset to unchanged state
-    on_tab_edited();
+    update_buttons();
 }
 
-void DetailsDialog::on_tab_edited() {
-    // Enable/disable apply and cancel depending on if there are
-    // any changes in tabs
-    const bool any_tabs_changed =
+// Enable/disable apply and cancel depending on if there are
+// any changes in tabs
+void DetailsDialog::update_buttons() {
+    const bool any_tabs_modified =
     [this]() {
         for (auto tab : tabs) {
             const int tab_index = tab_widget->indexOf(tab);
             const bool tab_is_active = (tab_index != -1);
 
             if (tab_is_active) {
-                const bool tab_changed = tab->changed();
+                const bool tab_modified = tab->modified();
 
-                if (tab_changed) {
+                if (tab_modified) {
                     return true;
                 }
             }
@@ -290,11 +289,11 @@ void DetailsDialog::on_tab_edited() {
         return false;
     }();
 
-    apply_button->setEnabled(any_tabs_changed);
-    reset_button->setEnabled(any_tabs_changed);
+    apply_button->setEnabled(any_tabs_modified);
+    reset_button->setEnabled(any_tabs_modified);
 }
 
-void DetailsDialog::on_ad_modified() {
+void DetailsDialog::reload_target() {
     const AdObject object = AD()->search_object(target);
 
     if (object.is_empty()) {

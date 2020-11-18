@@ -24,8 +24,8 @@ void DetailsTab::load(const AdObject &object) {
     edits_load(edits, object);
 }
 
-bool DetailsTab::changed() const {
-    return edits_changed(edits);
+bool DetailsTab::modified() const {
+    return edits_modified(edits);
 }
 
 bool DetailsTab::verify() const {

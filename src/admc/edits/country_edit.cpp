@@ -137,7 +137,7 @@ bool CountryEdit::verify() const {
     return true;
 }
 
-bool CountryEdit::changed() const {
+bool CountryEdit::modified() const {
     const int new_value = combo->currentData().toInt();
     return (new_value != original_value);
 }

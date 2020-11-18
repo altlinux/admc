@@ -104,9 +104,9 @@ RenameDialog::RenameDialog(const QString &target_arg)
     for (auto edit : all_edits) {
         connect(
             edit, &AttributeEdit::edited,
-            this, &RenameDialog::on_edited);
+            this, &RenameDialog::update_buttons);
     }
-    on_edited();
+    update_buttons();
 
     edits_load(all_edits, object);
 }
@@ -149,12 +149,12 @@ void RenameDialog::accept() {
     Status::instance()->show_errors_popup(errors_index);
 }
 
-void RenameDialog::on_edited() {
-    const bool any_changed = edits_changed(all_edits);
+void RenameDialog::update_buttons() {
+    const bool any_modified = edits_modified(all_edits);
     const bool name_not_empty = !name_edit->get_input().isEmpty();
     
-    reset_button->setEnabled(any_changed);
-    ok_button->setEnabled(name_not_empty && any_changed);
+    reset_button->setEnabled(any_modified);
+    ok_button->setEnabled(name_not_empty && any_modified);
 }
 
 void RenameDialog::reset() {

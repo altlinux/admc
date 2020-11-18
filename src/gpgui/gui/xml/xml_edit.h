@@ -36,7 +36,7 @@ public:
     using QObject::QObject;
     virtual void add_to_layout(QGridLayout *layout) = 0;
     virtual void load(const QDomDocument &doc) = 0;
-    virtual bool changed() const = 0;
+    virtual bool modified() const = 0;
     virtual bool verify_input(QWidget *parent) = 0;
     virtual void apply(QDomDocument *doc) = 0;
 
@@ -47,7 +47,7 @@ signals:
 #define DECL_XML_EDIT_VIRTUALS()\
 void add_to_layout(QGridLayout *layout);\
 void load(const QDomDocument &doc);\
-bool changed() const;\
+bool modified() const;\
 bool verify_input(QWidget *parent);\
 void apply(QDomDocument *doc);
 

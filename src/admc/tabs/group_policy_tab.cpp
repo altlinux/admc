@@ -115,12 +115,12 @@ void GroupPolicyTab::load(const AdObject &object) {
     DetailsTab::load(object);
 }
 
-bool GroupPolicyTab::changed() const {
+bool GroupPolicyTab::modified() const {
     const QString original_gplink_string = original_gplink.to_string();
     const QString current_gplink_string = current_gplink.to_string();
-    const bool gplink_changed = (current_gplink_string != original_gplink_string);
+    const bool gplink_modified = (current_gplink_string != original_gplink_string);
 
-    return DetailsTab::changed() || gplink_changed;
+    return DetailsTab::modified() || gplink_modified;
 }
 
 void GroupPolicyTab::apply(const QString &target) const {

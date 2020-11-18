@@ -113,7 +113,7 @@ bool AccountOptionEdit::verify() const {
     return true;
 }
 
-bool AccountOptionEdit::changed() const {
+bool AccountOptionEdit::modified() const {
     const bool new_value = check->isChecked();
     return ((new_value != original_value) || !loaded);
 }

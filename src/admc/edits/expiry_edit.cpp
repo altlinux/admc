@@ -111,7 +111,7 @@ bool ExpiryEdit::verify() const {
     return true;
 }
 
-bool ExpiryEdit::changed() const {
+bool ExpiryEdit::modified() const {
     const QString new_value = get_new_value();
     return (new_value != original_value);
 }
@@ -182,7 +182,7 @@ QString ExpiryEdit::get_new_value() const {
     if (never) {
         const bool original_value_is_never = large_integer_datetime_is_never(original_value);
 
-        // NOTE: there are two valid NEVER values so need to match original if it was "never" to avoid changing to different NEVER value and entering into "changed" state when nothing was actually changed
+        // NOTE: there are two valid NEVER values so need to match original if it was "never" to avoid changing to different NEVER value and entering into "modified" state when nothing was actually edited
         if (original_value_is_never) {
             return original_value;
         } else {

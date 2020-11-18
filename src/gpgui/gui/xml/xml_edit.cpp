@@ -36,7 +36,7 @@ void add_xml_edit_to_layout(QGridLayout *layout, const XmlAttribute &attribute, 
         [=]() {
             const QString current_text = label->text();
             // TODO:
-            // const QString new_text = set_changed_marker(current_text, edit->changed());
+            // const QString new_text = set_changed_marker(current_text, edit->modified());
             label->setText(current_text);
         });
 }

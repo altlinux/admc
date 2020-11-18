@@ -140,7 +140,7 @@ void XmlEditor::enable_buttons_if_changed() {
     const bool changed =
     [this]() {
         for (auto edit : edits) {
-            if (edit->changed()) {
+            if (edit->modified()) {
                 return true;
             }
         }
@@ -181,7 +181,7 @@ bool XmlEditor::apply() {
     doc.setContent(original_content);
 
     for (auto edit : edits) {
-        if (edit->changed()) {
+        if (edit->modified()) {
             edit->apply(&doc);
         }
     }

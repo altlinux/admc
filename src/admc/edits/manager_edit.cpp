@@ -81,7 +81,7 @@ bool ManagerEdit::verify() const {
     return true;
 }
 
-bool ManagerEdit::changed() const {
+bool ManagerEdit::modified() const {
     return (current_value != original_value);
 }
 

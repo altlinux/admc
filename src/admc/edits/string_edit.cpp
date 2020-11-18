@@ -113,7 +113,7 @@ bool StringEdit::verify() const {
     return true;
 }
 
-bool StringEdit::changed() const {
+bool StringEdit::modified() const {
     const QString new_value = edit->text();
     return (new_value != original_value);
 }
