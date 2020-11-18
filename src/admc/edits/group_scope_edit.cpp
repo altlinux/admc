@@ -24,7 +24,6 @@
 #include <QComboBox>
 #include <QFormLayout>
 #include <QMessageBox>
-#include <QLabel>
 
 GroupScopeEdit::GroupScopeEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 : AttributeEdit(parent)
@@ -61,10 +60,7 @@ void GroupScopeEdit::set_read_only(const bool read_only) {
 
 void GroupScopeEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = tr("Group scope") + ":";
-    const auto label = new QLabel(label_text);
-
-    connect_changed_marker(label);
-    layout->addRow(label, combo);
+    layout->addRow(label_text, combo);
 }
 
 bool GroupScopeEdit::verify() const {

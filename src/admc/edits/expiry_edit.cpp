@@ -96,7 +96,6 @@ void ExpiryEdit::set_read_only(const bool read_only) {
 
 void ExpiryEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = ADCONFIG()->get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
-    const auto label = new QLabel(label_text);
 
     auto sublayout = new QVBoxLayout();
     sublayout->addWidget(never_check);
@@ -104,9 +103,7 @@ void ExpiryEdit::add_to_layout(QFormLayout *layout) {
     sublayout->addWidget(display_label);
     sublayout->addWidget(edit_button);
 
-    layout->addRow(label, sublayout);
-
-    connect_changed_marker(label);
+    layout->addRow(label_text, sublayout);
 }
 
 // TODO: limit date to the format's date range, make a f-n in adinterface that checks if format in limit

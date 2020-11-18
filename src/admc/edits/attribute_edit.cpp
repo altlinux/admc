@@ -26,15 +26,6 @@
 #include <QFormLayout>
 #include <QLabel>
 
-void AttributeEdit::connect_changed_marker(QLabel *label) {
-    connect(this, &AttributeEdit::edited,
-        [=]() {
-            const QString current_text = label->text();
-            const QString new_text = set_changed_marker(current_text, changed());
-            label->setText(new_text);
-        });
-}
-
 void AttributeEdit::append_to_list(QList<AttributeEdit *> *edits_out) {
     if (edits_out != nullptr) {
         if (edits_out->contains(this)) {

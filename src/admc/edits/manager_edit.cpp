@@ -26,17 +26,12 @@
 
 #include <QLineEdit>
 #include <QFormLayout>
-#include <QLabel>
 #include <QPushButton>
 
 ManagerEdit::ManagerEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 : AttributeEdit(parent)
 {
     edit = new QLineEdit();
-
-    const QString label_text = ADCONFIG()->get_attribute_display_name(ATTRIBUTE_MANAGER, CLASS_USER) + ":";
-    label = new QLabel(label_text);
-    connect_changed_marker(label);
 
     change_button = new QPushButton(tr("Change"));
     details_button = new QPushButton(tr("Details"));
@@ -78,7 +73,8 @@ void ManagerEdit::add_to_layout(QFormLayout *layout) {
     sublayout->addWidget(edit);
     sublayout->addLayout(buttons_layout);
 
-    layout->addRow(label, sublayout);
+    const QString label_text = ADCONFIG()->get_attribute_display_name(ATTRIBUTE_MANAGER, CLASS_USER) + ":";
+    layout->addRow(label_text, sublayout);
 }
 
 bool ManagerEdit::verify() const {

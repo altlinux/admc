@@ -70,23 +70,6 @@ QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn
     return dn;
 }
 
-// If changed, return text with asterisk at the end
-// If not changed, return text without asterisk
-QString set_changed_marker(const QString &text, bool changed) {
-    const int asterisk_index = text.indexOf("*");
-    const bool has_asterisk = (asterisk_index != -1);
-
-    QString new_text = text;
-    if (changed && !has_asterisk) {
-        new_text = text + "*";
-    } else if (!changed && has_asterisk) {
-        new_text = text;
-        new_text.remove(asterisk_index, 1);
-    }
-
-    return new_text;
-}
-
 QList<QStandardItem *> make_item_row(const int count) {
     QList<QStandardItem *> row;
 

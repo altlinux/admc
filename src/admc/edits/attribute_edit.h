@@ -98,7 +98,6 @@ signals:
     void edited();
 
 protected:
-    void connect_changed_marker(QLabel *label);
     void append_to_list(QList<AttributeEdit *> *edits_out);
 
 };

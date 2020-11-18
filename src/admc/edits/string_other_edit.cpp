@@ -35,9 +35,6 @@ StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &o
 , other_attribute(other_attribute_arg)
 {
     main_edit = new StringEdit(main_attribute, object_class, parent);
-    // NOTE: connect to main_edit's label to display changes for
-    // "other" attribute through it
-    connect_changed_marker(main_edit->label);
 
     QObject::connect(
         main_edit, &AttributeEdit::edited,
@@ -78,14 +75,12 @@ void StringOtherEdit::set_read_only(const bool read_only) {
 }
 
 void StringOtherEdit::add_to_layout(QFormLayout *layout) {
-    QLabel *label = main_edit->label;
-    QLineEdit *edit = main_edit->edit;
-
     auto sublayout = new QHBoxLayout();
-    sublayout->addWidget(edit);
+    sublayout->addWidget(main_edit->edit);
     sublayout->addWidget(other_button);
 
-    layout->addRow(label, sublayout);
+    const QString label_text = ADCONFIG()->get_attribute_display_name(main_edit->attribute, main_edit->objectClass) + ":";
+    layout->addRow(label_text, sublayout);
 }
 
 bool StringOtherEdit::verify() const {

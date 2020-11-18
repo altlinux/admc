@@ -40,7 +40,6 @@ public:
 
 private:
     QLineEdit *edit;
-    QLabel *label;
     QString attribute;
     QString objectClass;
     QString original_value;

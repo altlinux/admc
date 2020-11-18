@@ -27,7 +27,6 @@
 #include <QList>
 
 class QLineEdit;
-class QLabel;
 class QPushButton;
 
 class ManagerEdit final : public AttributeEdit {
@@ -43,7 +42,6 @@ private slots:
 
 private:
     QLineEdit *edit;
-    QLabel *label;
     QPushButton *change_button;
     QPushButton *details_button;
     QPushButton *clear_button;

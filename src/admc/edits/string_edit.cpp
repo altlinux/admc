@@ -25,7 +25,6 @@
 #include <QLineEdit>
 #include <QFormLayout>
 #include <QMessageBox>
-#include <QLabel>
 
 void make_string_edits(const QList<QString> attributes, const QString &objectClass, QObject *parent, QList<AttributeEdit *> *edits_out) {
     for (auto attribute : attributes) {
@@ -49,10 +48,6 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
     if (ADCONFIG()->attribute_is_number(attribute)) {
         set_line_edit_to_numbers_only(edit);
     }
-
-    const QString label_text = ADCONFIG()->get_attribute_display_name(attribute, objectClass) + ":";
-    label = new QLabel(label_text);
-    connect_changed_marker(label);
 
     QObject::connect(
         edit, &QLineEdit::textChanged,
@@ -83,6 +78,8 @@ void StringEdit::set_read_only(const bool read_only) {
 }
 
 void StringEdit::add_to_layout(QFormLayout *layout) {
+    const QString label_text = ADCONFIG()->get_attribute_display_name(attribute, objectClass) + ":";
+    
     if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
         const QString extra_edit_text = get_domain_as_email_suffix();
         auto extra_edit = new QLineEdit();
@@ -93,7 +90,7 @@ void StringEdit::add_to_layout(QFormLayout *layout) {
         sublayout->addWidget(edit);
         sublayout->addWidget(extra_edit);
 
-        layout->addRow(label, sublayout);
+        layout->addRow(label_text, sublayout);
     } else if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
         const QString domain = AD()->domain();
         const QString domain_name = domain.split(".")[0];
@@ -106,9 +103,9 @@ void StringEdit::add_to_layout(QFormLayout *layout) {
         sublayout->addWidget(edit);
         sublayout->addWidget(extra_edit);
 
-        layout->addRow(label, sublayout);
+        layout->addRow(label_text, sublayout);
     } else {
-        layout->addRow(label, edit);
+        layout->addRow(label_text, edit);
     }
 }
 

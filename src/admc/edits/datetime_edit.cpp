@@ -24,7 +24,6 @@
 
 #include <QFormLayout>
 #include <QDateTimeEdit>
-#include <QLabel>
 
 DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QObject *parent, QList<AttributeEdit *> *edits_out)
 : AttributeEdit(parent)
@@ -55,11 +54,7 @@ void DateTimeEdit::set_read_only(const bool read_only) {
 
 void DateTimeEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = ADCONFIG()->get_attribute_display_name(attribute, "") + ":";
-    const auto label = new QLabel(label_text);
-
-    connect_changed_marker(label);
-
-    layout->addRow(label, edit);
+    layout->addRow(label_text, edit);
 }
 
 bool DateTimeEdit::verify() const {

@@ -102,7 +102,7 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     is_floating_instance = is_floating_instance_arg;
 
     setAttribute(Qt::WA_DeleteOnClose);
-        resize(600, 700);
+    resize(600, 700);
 
     tab_widget = new QTabWidget(this);
 
@@ -272,28 +272,26 @@ void DetailsDialog::reset() {
 void DetailsDialog::on_tab_edited() {
     // Enable/disable apply and cancel depending on if there are
     // any changes in tabs
-    bool any_changed = false;
-    for (auto tab : tabs) {
-        const int tab_index = tab_widget->indexOf(tab);
-        const bool tab_is_active = (tab_index != -1);
+    const bool any_tabs_changed =
+    [this]() {
+        for (auto tab : tabs) {
+            const int tab_index = tab_widget->indexOf(tab);
+            const bool tab_is_active = (tab_index != -1);
 
-        if (tab_is_active) {
-            const bool tab_changed = tab->changed();
+            if (tab_is_active) {
+                const bool tab_changed = tab->changed();
 
-            if (tab_changed) {
-                any_changed = true;
+                if (tab_changed) {
+                    return true;
+                }
             }
-
-            // Add asterisk to end of tab text if it contains
-            // changes
-            const QString current_text = tab_widget->tabText(tab_index);
-            const QString new_text = set_changed_marker(current_text, tab_changed);
-            tab_widget->setTabText(tab_index, new_text);
         }
-    }
+        
+        return false;
+    }();
 
-    apply_button->setEnabled(any_changed);
-    reset_button->setEnabled(any_changed);
+    apply_button->setEnabled(any_tabs_changed);
+    reset_button->setEnabled(any_tabs_changed);
 }
 
 void DetailsDialog::on_ad_modified() {

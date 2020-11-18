@@ -30,7 +30,6 @@
 #include <QComboBox>
 #include <QHash>
 #include <QFile>
-#include <QLabel>
 #include <algorithm>
 
 // TODO: translate country strings to Russian (qt doesn't have it)
@@ -131,10 +130,7 @@ void CountryEdit::set_read_only(const bool read_only) {
 
 void CountryEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = ADCONFIG()->get_attribute_display_name(ATTRIBUTE_COUNTRY, CLASS_USER) + ":";
-    const auto label = new QLabel(label_text);
-
-    connect_changed_marker(label);
-    layout->addRow(label, combo);
+    layout->addRow(label_text, combo);
 }
 
 bool CountryEdit::verify() const {

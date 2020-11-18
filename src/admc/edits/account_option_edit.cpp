@@ -26,7 +26,6 @@
 #include <QFormLayout>
 #include <QDateTimeEdit>
 #include <QMessageBox>
-#include <QLabel>
 
 void make_account_option_edits(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
     QMap<AccountOption, AccountOptionEdit *> option_edits;
@@ -107,10 +106,7 @@ void AccountOptionEdit::set_read_only(const bool read_only) {
 
 void AccountOptionEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = account_option_string(option) + ":";
-    const auto label = new QLabel(label_text);
-
-    connect_changed_marker(label);
-    layout->addRow(label, check);
+    layout->addRow(label_text, check);
 }
 
 bool AccountOptionEdit::verify() const {

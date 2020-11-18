@@ -23,7 +23,6 @@
 
 #include <QComboBox>
 #include <QFormLayout>
-#include <QLabel>
 
 GroupTypeEdit::GroupTypeEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
 : AttributeEdit(parent)
@@ -59,11 +58,8 @@ void GroupTypeEdit::set_read_only(const bool read_only) {
 }
 
 void GroupTypeEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = tr("Group type") + ":";
-    const auto label = new QLabel(label_text);
-
-    connect_changed_marker(label);
-    layout->addRow(label, combo);
+    const QString label_text = tr("Group type:");
+    layout->addRow(label_text, combo);
 }
 
 bool GroupTypeEdit::verify() const {

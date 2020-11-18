@@ -37,7 +37,6 @@ class QLineEdit;
 
 QString get_dn_from_index(const QModelIndex &index, int dn_column);
 QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn_column);
-QString set_changed_marker(const QString &text, bool changed);
 QList<QStandardItem *> make_item_row(const int count);
 
 int bit_set(int bitmask, int bit, bool set);
