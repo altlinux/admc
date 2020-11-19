@@ -39,17 +39,17 @@ RenameDialog::RenameDialog(const QString &target_arg)
 : QDialog()
 {
     target = target_arg;
-    const AdObject object = AD()->search_object(target);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    const QString object_as_folder = dn_as_folder(object.get_dn());
-    const auto title = QString(tr("Rename %1 - %2")).arg(object_as_folder, ADMC_APPLICATION_NAME);
+    const QString target_as_folder = dn_as_folder(target);
+    const auto title = QString(tr("Rename %1 - %2")).arg(target_as_folder, ADMC_APPLICATION_NAME);
     setWindowTitle(title);
 
-    const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
-
     name_edit = new QLineEdit();
+
+    const AdObject object = AD()->search_object(target);
+    const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
     if (object.is_class(CLASS_USER)) {
         const QList<QString> attributes = {
@@ -102,14 +102,15 @@ RenameDialog::RenameDialog(const QString &target_arg)
 
 void RenameDialog::accept() {
     const QString old_name = dn_get_rdn(target);
+    const int errors_index = Status::instance()->get_errors_size();
 
     auto fail_msg =
     [=]() {
         const QString message = QString(tr("Failed to rename object - \"%1\"")).arg(old_name);
         Status::instance()->message(message, StatusType_Error);
+        Status::instance()->show_errors_popup(errors_index);
     };
 
-    const int errors_index = Status::instance()->get_errors_size();
     AD()->start_batch();
     {
         const QString new_name = name_edit->text();
@@ -122,6 +123,7 @@ void RenameDialog::accept() {
             if (apply_success) {
                 const QString message = QString(tr("Renamed object - \"%1\"")).arg(old_name);
                 Status::instance()->message(message, StatusType_Success);
+                QDialog::close();
             } else {
                 fail_msg();
             }
@@ -130,16 +132,11 @@ void RenameDialog::accept() {
         }
     }
     AD()->end_batch();
-
-    QDialog::close();
-    Status::instance()->show_errors_popup(errors_index);
 }
 
 void RenameDialog::on_edited() {
     reset_button->setEnabled(true);
-
-    const bool name_filled = !name_edit->text().isEmpty();
-    ok_button->setEnabled(name_filled);
+    ok_button->setEnabled(true);
 }
 
 void RenameDialog::reset() {
