@@ -20,29 +20,20 @@
 #include "create_dialog.h"
 #include "ad_interface.h"
 #include "ad_config.h"
-#include "utils.h"
 #include "status.h"
+#include "settings.h"
+#include "config.h"
 #include "edits/attribute_edit.h"
 #include "edits/string_edit.h"
 #include "edits/group_scope_edit.h"
 #include "edits/group_type_edit.h"
 #include "edits/account_option_edit.h"
 #include "edits/password_edit.h"
-#include "utils.h"
-#include "settings.h"
-#include "config.h"
 
 #include <QDebug>
-#include <QDialog>
 #include <QLineEdit>
 #include <QFormLayout>
-#include <QLabel>
-#include <QPushButton>
 #include <QButtonGroup>
-#include <QList>
-#include <QComboBox>
-#include <QMessageBox>
-#include <QCheckBox>
 #include <QPushButton>
 
 // TODO: implement checkbox for account option "User cannot change password". Can't just do it through UAC attribute bits.

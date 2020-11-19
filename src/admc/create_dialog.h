@@ -27,12 +27,9 @@
  * creation.
  */
 
-#include "ad_interface.h"
-
-#include <QString>
 #include <QDialog>
+#include <QString>
 #include <QList>
-#include <QMap>
 
 class AttributeEdit;
 class QLineEdit;
