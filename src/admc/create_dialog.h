@@ -20,6 +20,13 @@
 #ifndef CREATE_DIALOG_H
 #define CREATE_DIALOG_H
 
+/**
+ * Creates an object by letting user fill in attributes. All
+ * objects require a name. Depending on object's class,
+ * different additional attributes may be set after
+ * creation.
+ */
+
 #include "ad_interface.h"
 
 #include <QString>
@@ -32,13 +39,6 @@ class QLineEdit;
 class QPushButton;
 class PasswordEdit;
 
-/**
- * By default only has line edit for name and creates an object with
- * that name.
- * Subclass to add more widgets.
- bool apply_more_widgets() to apply changes from
- * those widgets after object is created.
- */
 class CreateDialog : public QDialog {
 Q_OBJECT
 
