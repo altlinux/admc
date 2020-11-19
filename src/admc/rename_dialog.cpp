@@ -19,6 +19,7 @@
 
 #include "rename_dialog.h"
 #include "ad_interface.h"
+#include "ad_config.h"
 #include "edits/attribute_edit.h"
 #include "edits/string_edit.h"
 #include "status.h"
@@ -42,14 +43,14 @@ RenameDialog::RenameDialog(const QString &target_arg)
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    const QString target_canonical = dn_canonical(target);
-    const auto title = QString(tr("Rename %1 - %2")).arg(target_canonical, ADMC_APPLICATION_NAME);
+    const AdObject object = AD()->search_object(target);
+    const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
+
+    const QString type_string = ADCONFIG()->get_class_display_name(object_class);
+    const auto title = QString(tr("Rename %1 - %2")).arg(type_string, ADMC_APPLICATION_NAME);
     setWindowTitle(title);
 
     name_edit = new QLineEdit();
-
-    const AdObject object = AD()->search_object(target);
-    const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
     if (object.is_class(CLASS_USER)) {
         const QList<QString> attributes = {

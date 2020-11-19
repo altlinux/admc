@@ -492,9 +492,13 @@ bool AdInterface::attribute_replace_datetime(const QString &dn, const QString &a
     return result;
 }
 
-bool AdInterface::object_add(const QString &dn, const char **classes) {
+bool AdInterface::object_add(const QString &dn, const QString &object_class) {
     const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
+
+    const QByteArray class_bytes = object_class.toLocal8Bit();
+    const char *class_cstr = class_bytes.constData();
+    const char *classes[2] = {class_cstr, NULL};
 
     const int result = ad_add(ld, dn_cstr, classes);
 
@@ -1035,11 +1039,8 @@ bool AdInterface::create_gpo(const QString &display_name) {
     // Create AD object for gpo
     //
     // TODO: add all attributes during creation, need to directly create through ldap then
-    const char *gpc_classes[] = {CLASS_TOP, CLASS_CONTAINER, CLASS_GP_CONTAINER, NULL};
-    const char *container_classes[] = {CLASS_TOP, CLASS_CONTAINER, NULL};
-
     const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, m_domain_head);
-    const bool result_add = object_add(dn, gpc_classes);
+    const bool result_add = object_add(dn, CLASS_GP_CONTAINER);
     if (!result_add) {
         return false;
     }
@@ -1055,7 +1056,7 @@ bool AdInterface::create_gpo(const QString &display_name) {
 
     // User object
     const QString user_dn = "CN=User," + dn;
-    const bool result_add_user = object_add(user_dn, container_classes);
+    const bool result_add_user = object_add(user_dn, CLASS_CONTAINER);
     attribute_replace_string(dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
     if (!result_add_user) {
         return false;
@@ -1063,7 +1064,7 @@ bool AdInterface::create_gpo(const QString &display_name) {
 
     // Machine object
     const QString machine_dn = "CN=Machine," + dn;
-    const bool result_add_machine = object_add(machine_dn, container_classes);
+    const bool result_add_machine = object_add(machine_dn, CLASS_CONTAINER);
     attribute_replace_string(dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
     if (!result_add_machine) {
         return false;

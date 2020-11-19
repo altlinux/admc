@@ -32,14 +32,6 @@ class QLineEdit;
 class QPushButton;
 class PasswordEdit;
 
-enum CreateType {
-    CreateType_User,
-    CreateType_Computer,
-    CreateType_OU,
-    CreateType_Group,
-    CreateType_COUNT
-};
-
 /**
  * By default only has line edit for name and creates an object with
  * that name.
@@ -51,7 +43,7 @@ class CreateDialog : public QDialog {
 Q_OBJECT
 
 public:
-    CreateDialog(const QString &parent_dn_arg, CreateType type_arg);
+    CreateDialog(const QString &parent_dn_arg, const QString &object_class_arg);
 
 private slots:
     void accept();
@@ -59,14 +51,12 @@ private slots:
 
 private:
     QString parent_dn;
-    CreateType type;
+    QString object_class;
     QLineEdit *name_edit;
     QPushButton *create_button;
     QList<AttributeEdit *> all_edits;
     QList<AttributeEdit *> required_edits;
     PasswordEdit *pass_edit;
 };
-
-QString create_type_to_string(const CreateType &type);
 
 #endif /* CREATE_DIALOG_H */

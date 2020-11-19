@@ -72,12 +72,17 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
     });
 
     QMenu *submenu_new = addMenu("New");
-    for (int i = 0; i < CreateType_COUNT; i++) {
-        const CreateType type = (CreateType) i;
-        const QString object_string = create_type_to_string(type);
+    static const QList<QString> create_classes = {
+        CLASS_USER,
+        CLASS_COMPUTER,
+        CLASS_OU,
+        CLASS_GROUP,
+    };
+    for (const auto object_class : create_classes) {
+        const QString action_text = ADCONFIG()->get_class_display_name(object_class);
 
-        submenu_new->addAction(object_string, [dn, type]() {
-            const auto create_dialog = new CreateDialog(dn, type);
+        submenu_new->addAction(action_text, [dn, object_class]() {
+            const auto create_dialog = new CreateDialog(dn, object_class);
             create_dialog->open();
         });
     }
