@@ -254,7 +254,6 @@ private:
     QString m_schema_dn;
     QString m_host;
 
-    bool suppress_not_found_error = false;
     bool batch_in_progress = false;
         
     AdInterface();

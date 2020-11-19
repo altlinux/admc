@@ -302,7 +302,6 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
         ldap_msgfree(res);
         ad_array_free(attrs);
 
-
         return out;
     }
 }
@@ -1113,12 +1112,8 @@ AdInterface::AdInterface()
 }
 
 void AdInterface::emit_modified() {
-    if (batch_in_progress) {
-        return;
-    } else {
-        suppress_not_found_error = true;
+    if (!batch_in_progress) {
         emit modified();
-        suppress_not_found_error = false;
     }
 }
 
