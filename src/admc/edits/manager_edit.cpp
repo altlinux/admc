@@ -101,7 +101,7 @@ void ManagerEdit::on_clear() {
 void ManagerEdit::load_value(const QString &value) {
     current_value = value;
 
-    const QString rdn = dn_get_rdn(current_value);
+    const QString rdn = dn_get_name(current_value);
     edit->setText(current_value);
 
     const bool have_manager = !current_value.isEmpty();

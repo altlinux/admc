@@ -101,7 +101,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
 }
 
 void RenameDialog::accept() {
-    const QString old_name = dn_get_rdn(target);
+    const QString old_name = dn_get_name(target);
     const int errors_index = Status::instance()->get_errors_size();
 
     auto fail_msg =
@@ -140,7 +140,7 @@ void RenameDialog::on_edited() {
 }
 
 void RenameDialog::reset() {
-    const QString name = dn_get_rdn(target);
+    const QString name = dn_get_name(target);
     name_edit->setText(name);
 
     const AdObject object = AD()->search_object(target);

@@ -39,7 +39,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    const QString name = dn_get_rdn(target);
+    const QString name = dn_get_name(target);
     const QString title = QString(tr("Change password of \"%1\" - %2")).arg(name, ADMC_APPLICATION_NAME);
     setWindowTitle(title);
 

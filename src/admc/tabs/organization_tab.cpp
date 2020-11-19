@@ -78,7 +78,7 @@ void OrganizationTab::load(const AdObject &object) {
     
     reports_model->removeRows(0, reports_model->rowCount());
     for (auto dn : reports) {
-        const QString name = dn_get_rdn(dn);
+        const QString name = dn_get_name(dn);
         const QString parent = dn_get_parent_canonical(dn);
         
         const QList<QStandardItem *> row = make_item_row(ReportsColumn_COUNT);

@@ -203,7 +203,7 @@ void ObjectListWidget::load(const QHash<QString, AdObject> &objects) {
 
         if (!parent_dn.isEmpty()) {
             // "Parent: # objects"
-            const QString parent_rdn = dn_get_rdn(parent_dn);
+            const QString parent_rdn = dn_get_name(parent_dn);
 
             return QString("%1: %2").arg(parent_rdn, object_count_string);
         } else {

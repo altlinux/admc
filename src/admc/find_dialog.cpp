@@ -126,7 +126,7 @@ void FindDialog::select_custom_search_base() {
 
     if (!selecteds.isEmpty()) {
         const QString selected = selecteds[0];
-        const QString name = dn_get_rdn(selected);
+        const QString name = dn_get_name(selected);
 
         search_base_combo->addItem(name, selected);
 

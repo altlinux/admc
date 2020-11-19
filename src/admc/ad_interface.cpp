@@ -346,7 +346,7 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 
     const int result = ad_attribute_add(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
 
-    const QString name = dn_get_rdn(dn);
+    const QString name = dn_get_name(dn);
 
     const QString new_display_value = attribute_display_value(attribute, value);
     ;
@@ -412,7 +412,7 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
         result = AD_LDAP_ERROR;
     }
 
-    const QString name = dn_get_rdn(dn);
+    const QString name = dn_get_name(dn);
     const QString values_display = attribute_display_values(attribute, values);
     const QString old_values_display = attribute_display_values(attribute, old_values);
 
@@ -456,7 +456,7 @@ bool AdInterface::attribute_delete_value(const QString &dn, const QString &attri
 
     const int result = ad_attribute_delete_value(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
 
-    const QString name = dn_get_rdn(dn);
+    const QString name = dn_get_name(dn);
 
     const QString value_display = attribute_display_value(attribute, value);
 
@@ -520,7 +520,7 @@ bool AdInterface::object_delete(const QString &dn) {
 
     int result = ad_delete(ld, dn_cstr);
 
-    const QString name = dn_get_rdn(dn);
+    const QString name = dn_get_name(dn);
     
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Deleted object \"%1\"")).arg(name));
@@ -553,8 +553,8 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
     // TODO: drag and drop handles checking move compatibility but need
     // to do this here as well for CLI?
     
-    const QString object_name = dn_get_rdn(dn);
-    const QString container_name = dn_get_rdn(new_container);
+    const QString object_name = dn_get_name(dn);
+    const QString container_name = dn_get_name(new_container);
 
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Moved \"%1\" to \"%2\"")).arg(object_name, container_name));
@@ -583,7 +583,7 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
 
     int result = ad_rename(ld, dn_cstr, new_rdn_cstr);
 
-    const QString old_name = dn_get_rdn(dn);
+    const QString old_name = dn_get_name(dn);
 
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Renamed \"%1\" to \"%2\"")).arg(old_name, new_name));
@@ -604,8 +604,8 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
 bool AdInterface::group_add_user(const QString &group_dn, const QString &user_dn) {
     const bool success = attribute_add_string(group_dn, ATTRIBUTE_MEMBER, user_dn);
 
-    const QString user_name = dn_get_rdn(user_dn);
-    const QString group_name = dn_get_rdn(group_dn);
+    const QString user_name = dn_get_name(user_dn);
+    const QString group_name = dn_get_name(group_dn);
     
     if (success) {
         success_status_message(QString(tr("Added user \"%1\" to group \"%2\"")).arg(user_name, group_name));
@@ -625,8 +625,8 @@ bool AdInterface::group_add_user(const QString &group_dn, const QString &user_dn
 bool AdInterface::group_remove_user(const QString &group_dn, const QString &user_dn) {
     const bool success = attribute_delete_string(group_dn, ATTRIBUTE_MEMBER, user_dn);
 
-    const QString user_name = dn_get_rdn(user_dn);
-    const QString group_name = dn_get_rdn(group_dn);
+    const QString user_name = dn_get_name(user_dn);
+    const QString group_name = dn_get_name(group_dn);
 
     if (success) {
         success_status_message(QString(tr("Removed user \"%1\" from group \"%2\"")).arg(user_name, group_name));
@@ -658,8 +658,8 @@ bool AdInterface::group_set_primary_for_user(const QString &group_dn, const QStr
 
     const bool success = AD()->attribute_replace_string(user_dn, ATTRIBUTE_PRIMARY_GROUP_ID, group_rid, DoStatusMsg_No);
 
-    const QString user_name = dn_get_rdn(user_dn);
-    const QString group_name = dn_get_rdn(group_dn);
+    const QString user_name = dn_get_name(user_dn);
+    const QString group_name = dn_get_name(group_dn);
 
     if (success) {
         success_status_message(QString(tr("Set primary group for user \"%1\" to \"%2\"")).arg(user_name, group_name));
@@ -693,7 +693,7 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
     const int scope_bit = group_scope_bit(scope);
     group_type = bit_set(group_type, scope_bit, true);
 
-    const QString name = dn_get_rdn(dn);
+    const QString name = dn_get_name(dn);
     const QString scope_string = group_scope_string(scope);
     
     const bool result = attribute_replace_int(dn, ATTRIBUTE_GROUP_TYPE, group_type);
@@ -718,7 +718,7 @@ bool AdInterface::group_set_type(const QString &dn, GroupType type) {
     const int update_group_type = bit_set(group_type, GROUP_TYPE_BIT_SECURITY, set_security_bit);
     const QString update_group_type_string = QString::number(update_group_type);
 
-    const QString name = dn_get_rdn(dn);
+    const QString name = dn_get_name(dn);
     const QString type_string = group_type_string(type);
     
     const bool result = attribute_replace_string(dn, ATTRIBUTE_GROUP_TYPE, update_group_type_string);
@@ -750,7 +750,7 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
 
     const bool success = attribute_replace_value(dn, ATTRIBUTE_PASSWORD, password_bytes, DoStatusMsg_No);
 
-    const QString name = dn_get_rdn(dn);
+    const QString name = dn_get_name(dn);
     
     if (success) {
         success_status_message(QString(tr("Set pass of \"%1\"")).arg(name));
@@ -819,7 +819,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
         }
     }
 
-    const QString name = dn_get_rdn(dn);
+    const QString name = dn_get_name(dn);
     
     if (success) {
         const QString success_context =
@@ -879,7 +879,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
 bool AdInterface::user_unlock(const QString &dn) {
     const bool result = attribute_replace_string(dn, ATTRIBUTE_LOCKOUT_TIME, LOCKOUT_UNLOCKED_VALUE);
 
-    const QString name = dn_get_rdn(dn);
+    const QString name = dn_get_name(dn);
     
     if (result) {
         success_status_message(QString(tr("Unlocked user \"%1\"")).arg(name));
@@ -1356,7 +1356,7 @@ QString extract_rid_from_sid(const QByteArray &sid) {
 // =>
 // "foo"
 // TODO: should be dn_get_name()
-QString dn_get_rdn(const QString &dn) {
+QString dn_get_name(const QString &dn) {
     int equals_i = dn.indexOf('=') + 1;
     int comma_i = dn.indexOf(',');
     int segment_length = comma_i - equals_i;
