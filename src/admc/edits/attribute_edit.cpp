@@ -44,8 +44,8 @@ AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 }
 
 void AttributeEdit::load(const AdObject &object) {
-    m_modified = false;
     load_internal(object);
+    m_modified = false;
 }
 
 bool AttributeEdit::modified() const {
