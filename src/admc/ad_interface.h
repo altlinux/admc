@@ -290,4 +290,9 @@ QString sysvol_path_to_smb(const QString &sysvol_path);
 
 QString extract_rid_from_sid(const QByteArray &sid);
 
+QString dn_get_rdn(const QString &dn);
+QString dn_get_parent_canonical(const QString &dn);
+QString dn_rename(const QString &dn, const QString &new_name);
+QString dn_canonical(const QString &dn);
+
 #endif /* AD_INTERFACE_H */

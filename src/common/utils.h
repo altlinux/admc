@@ -55,11 +55,6 @@ void show_only_in_dev_mode(QWidget *widget);
 
 QString current_advanced_view_filter();
 
-QString dn_as_folder(const QString &dn);
-QString dn_get_rdn(const QString &dn);
-QString dn_get_parent(const QString &dn);
-QString dn_rename(const QString &dn, const QString &new_name);
-
 // Prohibits leading zeroes
 void set_line_edit_to_numbers_only(QLineEdit *edit);
 

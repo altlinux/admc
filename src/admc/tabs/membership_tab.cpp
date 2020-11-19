@@ -325,7 +325,7 @@ void MembershipTab::reload_model() {
 
     for (auto dn : all_values) {
         const QString name = dn_get_rdn(dn);
-        const QString parent = dn_get_parent(dn);
+        const QString parent = dn_get_parent_canonical(dn);
         const bool primary = current_primary_values.contains(dn);
         const Qt::CheckState check_state =
         [primary]() {

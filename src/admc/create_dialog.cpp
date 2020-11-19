@@ -56,8 +56,8 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
     setAttribute(Qt::WA_DeleteOnClose);
 
     const QString type_string = create_type_to_string(type);
-    const QString parent_as_folder = dn_as_folder(parent_dn);
-    const auto title = QString(tr("Create %1 in \"%2\" - %3")).arg(type_string, parent_as_folder, ADMC_APPLICATION_NAME);
+    const QString parent_canonical = dn_canonical(parent_dn);
+    const auto title = QString(tr("Create %1 in \"%2\" - %3")).arg(type_string, parent_canonical, ADMC_APPLICATION_NAME);
     setWindowTitle(title);
     
     const QString object_class =

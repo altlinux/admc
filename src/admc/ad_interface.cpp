@@ -1351,3 +1351,58 @@ QString extract_rid_from_sid(const QByteArray &sid) {
 
     return rid;
 }
+
+// "CN=foo,CN=bar,DC=domain,DC=com"
+// =>
+// "foo"
+// TODO: should be dn_get_name()
+QString dn_get_rdn(const QString &dn) {
+    int equals_i = dn.indexOf('=') + 1;
+    int comma_i = dn.indexOf(',');
+    int segment_length = comma_i - equals_i;
+
+    QString name = dn.mid(equals_i, segment_length);
+
+    return name;
+}
+
+QString dn_get_parent_canonical(const QString &dn) {
+    const int comma_i = dn.indexOf(',');
+    const QString parent_dn = dn.mid(comma_i + 1);
+
+    return dn_canonical(parent_dn);
+}
+
+QString dn_rename(const QString &dn, const QString &new_name) {
+    const QStringList exploded_dn = dn.split(',');
+    
+    const QString new_rdn =
+    [=]() {
+        const QString old_rdn = exploded_dn[0];
+        const int prefix_index = old_rdn.indexOf('=') + 1;
+        const QString prefix = old_rdn.left(prefix_index);
+
+        return (prefix + new_name);
+    }();
+
+    QStringList new_exploded_dn(exploded_dn);
+    new_exploded_dn.replace(0, new_rdn);
+
+    const QString new_dn = new_exploded_dn.join(',');
+
+    return new_dn;
+}
+
+// "CN=foo,CN=bar,DC=domain,DC=com"
+// =>
+// "domain.com/bar/foo"
+QString dn_canonical(const QString &dn) {
+    const QByteArray dn_array = dn.toUtf8();
+    const char *dn_cstr = dn_array.constData();
+
+    char *canonical_cstr = ldap_dn2ad_canonical(dn_cstr);
+    const QString canonical = QString(canonical_cstr);
+    ldap_memfree(canonical_cstr);
+
+    return canonical;
+}

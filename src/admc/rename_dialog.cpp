@@ -42,8 +42,8 @@ RenameDialog::RenameDialog(const QString &target_arg)
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    const QString target_as_folder = dn_as_folder(target);
-    const auto title = QString(tr("Rename %1 - %2")).arg(target_as_folder, ADMC_APPLICATION_NAME);
+    const QString target_canonical = dn_canonical(target);
+    const auto title = QString(tr("Rename %1 - %2")).arg(target_canonical, ADMC_APPLICATION_NAME);
     setWindowTitle(title);
 
     name_edit = new QLineEdit();

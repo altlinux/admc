@@ -120,7 +120,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         // TODO: get name from attribute
         const QString dn = object.get_dn();
         const QString name = dn_get_rdn(dn);
-        const QString parent = dn_get_parent(dn);
+        const QString parent = dn_get_parent_canonical(dn);
 
         const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
