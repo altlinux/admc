@@ -44,12 +44,12 @@ const QList<QString> filter_classes = {
 QString filter_CONDITION(const Condition condition, const QString &attribute, const QString &value) {
     switch(condition) {
         case Condition_Equals: return QString("(%1=%2)").arg(attribute, value);
-        case Condition_NotEquals: return QString("(!%1=%2)").arg(attribute, value);
+        case Condition_NotEquals: return QString("(!(%1=%2))").arg(attribute, value);
         case Condition_StartsWith: return QString("(%1=*%2)").arg(attribute, value);
         case Condition_EndsWith: return QString("(%1=%2*)").arg(attribute, value);
         case Condition_Contains: return QString("(%1=*%2*)").arg(attribute, value);
         case Condition_Set: return QString("(%1=*)").arg(attribute);
-        case Condition_Unset: return QString("(!%1=*)").arg(attribute);
+        case Condition_Unset: return QString("(!(%1=*))").arg(attribute);
         case Condition_COUNT: return QString();
     }
     return QString();
