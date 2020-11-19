@@ -18,13 +18,7 @@
  */
 
 #include "edits/attribute_edit.h"
-#include "utils.h"
 #include "tabs/details_tab.h"
-
-#include "ad_interface.h"
-
-#include <QFormLayout>
-#include <QLabel>
 
 AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent) {
     if (edits_out != nullptr) {

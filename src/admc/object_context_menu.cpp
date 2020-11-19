@@ -19,22 +19,16 @@
 
 #include "object_context_menu.h"
 #include "ad_interface.h"
+#include "ad_config.h"
 #include "confirmation_dialog.h"
 #include "select_dialog.h"
 #include "rename_dialog.h"
-#include "utils.h"
 #include "password_dialog.h"
 #include "create_dialog.h"
-#include "settings.h"
 #include "details_dialog.h"
-#include "ad_config.h"
+#include "utils.h"
 
-#include <QString>
-#include <QMessageBox>
-#include <QInputDialog>
-#include <QDir>
 #include <QPoint>
-#include <QModelIndex>
 #include <QAbstractItemView>
 
 // Open this context menu when view requests one

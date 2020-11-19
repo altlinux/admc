@@ -20,6 +20,7 @@
 #include "edits/group_type_edit.h"
 #include "utils.h"
 #include "ad_interface.h"
+#include "ad_utils.h"
 
 #include <QComboBox>
 #include <QFormLayout>

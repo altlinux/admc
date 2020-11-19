@@ -20,7 +20,7 @@
 #include "tabs/organization_tab.h"
 #include "edits/string_edit.h"
 #include "edits/manager_edit.h"
-#include "ad_interface.h"
+#include "ad_utils.h"
 #include "details_dialog.h"
 #include "utils.h"
 

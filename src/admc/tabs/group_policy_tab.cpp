@@ -18,6 +18,7 @@
  */
 
 #include "tabs/group_policy_tab.h"
+#include "ad_interface.h"
 #include "object_context_menu.h"
 #include "utils.h"
 #include "select_dialog.h"

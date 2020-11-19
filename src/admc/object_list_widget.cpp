@@ -24,6 +24,8 @@
 #include "utils.h"
 #include "ad_interface.h"
 #include "ad_config.h"
+#include "ad_utils.h"
+#include "attribute_display.h"
 #include "filter.h"
 
 #include <QTreeView>

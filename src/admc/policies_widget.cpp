@@ -20,7 +20,6 @@
 #include "policies_widget.h"
 #include "ad_interface.h"
 #include "details_dialog.h"
-#include "rename_dialog.h"
 #include "utils.h"
 #include "filter.h"
 
@@ -126,7 +125,7 @@ void PoliciesWidget::edit_policy(const QString &dn, const AdObject &object) {
     const auto process = new QProcess();
 
     const QString sysvol_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
-    const QString smb_path = sysvol_path_to_smb(sysvol_path);
+    const QString smb_path = AD()->sysvol_path_to_smb(sysvol_path);
 
     const QString program_name = "/home/kevl/admc/build/gpgui";
 

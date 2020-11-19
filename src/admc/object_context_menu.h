@@ -20,14 +20,11 @@
 #ifndef OBJECT_CONTEXT_MENU_H
 #define OBJECT_CONTEXT_MENU_H
 
-#include "ad_interface.h"
-
 #include <QMenu>
 
-class QString;
-class QPoint;
+#include "ad_object.h"
+
 class QAbstractItemView;
-class SelectDialog;
 
 class ObjectContextMenu final : public QMenu {
 Q_OBJECT

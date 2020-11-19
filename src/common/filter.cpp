@@ -19,7 +19,7 @@
 
 #include "filter.h"
 #include "settings.h"
-#include "ad_interface.h"
+#include "ad_defines.h"
 
 const QList<QString> filter_classes = {
     CLASS_USER,

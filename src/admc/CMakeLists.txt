@@ -21,6 +21,8 @@ add_executable(admc
     main.cpp
     ad_interface.cpp
     ad_config.cpp
+    ad_utils.cpp
+    ad_object.cpp
     details_dialog.cpp
     containers_widget.cpp
     contents_widget.cpp
@@ -40,7 +42,6 @@ add_executable(admc
     find_dialog.cpp
     policies_widget.cpp
     gplink.cpp
-    ad_object.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_widget_simple_tab.cpp

@@ -17,18 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "string_multi_edit_dialog.h"
-#include "ad_interface.h"
+#include "edit_dialogs/string_multi_edit_dialog.h"
 #include "ad_config.h"
-#include "edits/attribute_edit.h"
-#include "edits/string_edit.h"
-#include "status.h"
 #include "utils.h"
 #include "config.h"
 
 #include <QDialog>
 #include <QLineEdit>
-#include <QLabel>
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QVBoxLayout>

@@ -21,14 +21,10 @@
 #include "filter_widget/filter_widget_simple_tab.h"
 #include "filter_widget/filter_widget_normal_tab.h"
 #include "filter_widget/filter_widget_advanced_tab.h"
-#include "ad_interface.h"
-#include "utils.h"
 
 #include <QDebug>
-#include <QLabel>
 #include <QTabWidget>
 #include <QVBoxLayout>
-#include <QPushButton>
 
 FilterWidget::FilterWidget()
 : QWidget()

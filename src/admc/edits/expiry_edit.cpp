@@ -20,6 +20,7 @@
 #include "edits/expiry_edit.h"
 #include "ad_interface.h"
 #include "ad_config.h"
+#include "ad_utils.h"
 #include "utils.h"
 
 #include <QVBoxLayout>

@@ -17,10 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "edit_dialog.h"
-#include "string_edit_dialog.h"
-#include "string_multi_edit_dialog.h"
-#include "binary_edit_dialog.h"
+#include "edit_dialogs/edit_dialog.h"
+#include "edit_dialogs/string_edit_dialog.h"
+#include "edit_dialogs/string_multi_edit_dialog.h"
+#include "edit_dialogs/binary_edit_dialog.h"
 #include "ad_config.h"
 
 EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> values) {

@@ -20,7 +20,7 @@
 #ifndef ATTRIBUTES_H
 #define ATTRIBUTES_H
 
-#include "ad_enums.h"
+#include "ad_defines.h"
 
 #include <QHash>
 #include <QString>

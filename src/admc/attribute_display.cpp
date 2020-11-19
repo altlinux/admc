@@ -18,7 +18,8 @@
  */
 
 #include "attribute_display.h"
-#include "ad_interface.h"
+#include "ad_defines.h"
+#include "ad_utils.h"
 #include "ad_config.h"
 
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm"

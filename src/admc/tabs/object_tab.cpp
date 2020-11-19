@@ -18,8 +18,6 @@
  */
 
 #include "tabs/object_tab.h"
-#include "ad_interface.h"
-#include "edits/attribute_edit.h"
 #include "edits/string_edit.h"
 #include "edits/datetime_edit.h"
 

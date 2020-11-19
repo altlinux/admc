@@ -20,6 +20,7 @@
 #include "edits/manager_edit.h"
 #include "utils.h"
 #include "ad_interface.h"
+#include "ad_utils.h"
 #include "ad_config.h"
 #include "details_dialog.h"
 #include "select_dialog.h"

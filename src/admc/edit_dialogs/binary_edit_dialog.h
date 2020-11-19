@@ -22,9 +22,6 @@
 
 #include "edit_dialogs/edit_dialog.h"
 
-class QLineEdit;
-class QTextEdit;
-
 class BinaryEditDialog final : public EditDialog {
 Q_OBJECT
 

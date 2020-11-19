@@ -20,8 +20,8 @@
 #include "tabs/attributes_tab.h"
 #include "edit_dialogs/edit_dialog.h"
 #include "ad_interface.h"
-#include "utils.h"
 #include "ad_config.h"
+#include "utils.h"
 #include "attribute_display.h"
 
 #include <QTreeView>

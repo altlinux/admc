@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "binary_edit_dialog.h"
+#include "edit_dialogs/binary_edit_dialog.h"
 #include "ad_config.h"
 #include "utils.h"
 #include "attribute_display.h"

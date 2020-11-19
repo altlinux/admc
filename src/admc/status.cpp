@@ -18,16 +18,13 @@
  */
 
 #include "status.h"
-#include "ad_interface.h"
 #include "settings.h"
 
 #include <QStatusBar>
 #include <QTextEdit>
-#include <QAction>
 #include <QDialog>
 #include <QLabel>
 #include <QVBoxLayout>
-#include <QPushButton>
 
 Status *Status::instance() {
     static Status instance;

@@ -19,9 +19,10 @@
 
 #include "select_dialog.h"
 #include "ad_interface.h"
+#include "ad_utils.h"
+#include "ad_config.h"
 #include "settings.h"
 #include "containers_widget.h"
-#include "ad_config.h"
 #include "utils.h"
 #include "filter.h"
 #include "config.h"

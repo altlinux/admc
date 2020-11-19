@@ -18,10 +18,10 @@
  */
 
 #include "menubar.h"
+#include "ad_interface.h"
 #include "settings.h"
 #include "confirmation_dialog.h"
 #include "find_dialog.h"
-#include "ad_interface.h"
 
 #include <QMenu>
 #include <QLocale>

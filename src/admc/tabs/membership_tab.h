@@ -21,9 +21,7 @@
 #define MEMBERS_TAB_H
 
 #include "tabs/details_tab.h"
-#include "object_model.h"
 
-#include <QPoint>
 #include <QSet>
 #include <QString>
 

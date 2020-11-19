@@ -18,19 +18,14 @@
  */
 
 #include "tabs/general_tab.h"
-#include "ad_interface.h"
-#include "edits/attribute_edit.h"
 #include "edits/string_edit.h"
 #include "edits/string_other_edit.h"
 #include "edits/country_edit.h"
 #include "edits/group_scope_edit.h"
 #include "edits/group_type_edit.h"
-#include "utils.h"
-#include "ad_config.h"
 
 #include <QLabel>
 #include <QFormLayout>
-#include <QMap>
 #include <QFrame>
 
 // TODO: other object types also have special general tab versions, like top level domain object for example. Find out all of them and implement them

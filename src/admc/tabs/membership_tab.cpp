@@ -20,6 +20,7 @@
 #include "tabs/membership_tab.h"
 #include "details_dialog.h"
 #include "ad_interface.h"
+#include "ad_utils.h"
 #include "utils.h"
 #include "select_dialog.h"
 #include "filter.h"
