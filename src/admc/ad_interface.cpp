@@ -573,15 +573,8 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
 }
 
 bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
-    // Compose new_rdn and new_dn
-    const QStringList exploded_dn = dn.split(',');
-    const QString old_rdn = exploded_dn[0];
-    const int prefix_i = old_rdn.indexOf('=') + 1;
-    const QString prefix = old_rdn.left(prefix_i);
-    const QString new_rdn = prefix + new_name;
-    QStringList new_exploded_dn(exploded_dn);
-    new_exploded_dn.replace(0, new_rdn);
-    const QString new_dn = new_exploded_dn.join(',');
+    const QString new_dn = dn_rename(dn, new_name);
+    const QString new_rdn = new_dn.split(",")[0];
 
     const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();

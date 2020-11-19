@@ -26,7 +26,7 @@
 #include <QMap>
 
 class AttributeEdit;
-class StringEdit;
+class QLineEdit;
 class QPushButton;
 
 class RenameDialog final : public QDialog {
@@ -43,8 +43,7 @@ private slots:
 private:
     QString target;
     QList<AttributeEdit *> all_edits;
-    StringEdit *name_edit;
-    QString old_name_for_message;
+    QLineEdit *name_edit;
     QPushButton *ok_button;
     QPushButton *reset_button;
 };

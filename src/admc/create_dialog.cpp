@@ -221,6 +221,9 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, CreateType type_arg)
             edit, &AttributeEdit::edited,
             this, &CreateDialog::on_edited);
     }
+    connect(
+        name_edit, &QLineEdit::textChanged,
+        this, &CreateDialog::on_edited);
     on_edited();
 }
 

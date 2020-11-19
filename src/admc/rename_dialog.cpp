@@ -49,20 +49,9 @@ RenameDialog::RenameDialog(const QString &target_arg)
 
     const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
-    old_name_for_message =
-    [object]() {
-        if (object.is_class(CLASS_GP_CONTAINER)) {
-            return object.get_string(ATTRIBUTE_DISPLAY_NAME);
-        } else {
-            return object.get_string(ATTRIBUTE_NAME);
-        }
-    }();
-
-    name_edit = nullptr;
+    name_edit = new QLineEdit();
 
     if (object.is_class(CLASS_USER)) {
-        name_edit = new StringEdit(ATTRIBUTE_NAME, object_class, this, &all_edits);
-
         const QList<QString> attributes = {
             ATTRIBUTE_FIRST_NAME,
             ATTRIBUTE_LAST_NAME,
@@ -72,11 +61,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
         };
         make_string_edits(attributes, object_class, this, &all_edits);
     } else if (object.is_class(CLASS_GROUP)) {
-        name_edit = new StringEdit(ATTRIBUTE_NAME, object_class, this, &all_edits);
         new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
-    } else if (object.is_class(CLASS_GP_CONTAINER)) {
-        // TODO: no display specifier for "displayName" for "policy" class, hardcode it?
-        new StringEdit(ATTRIBUTE_DISPLAY_NAME, object_class, this, &all_edits);
     }
 
     auto button_box = new QDialogButtonBox();
@@ -94,6 +79,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
         this, &RenameDialog::reject);
 
     const auto edits_layout = new QFormLayout();
+    edits_layout->addRow(tr("Name:"), name_edit);
     edits_add_to_layout(all_edits, edits_layout);
     
     const auto top_layout = new QVBoxLayout();
@@ -106,35 +92,41 @@ RenameDialog::RenameDialog(const QString &target_arg)
             edit, &AttributeEdit::edited,
             this, &RenameDialog::on_edited);
     }
+    connect(
+        name_edit, &QLineEdit::textChanged,
+        this, &RenameDialog::on_edited);
+    on_edited();
 
     reset();
 }
 
 void RenameDialog::accept() {
+    const QString old_name = dn_get_rdn(target);
+
+    auto fail_msg =
+    [=]() {
+        const QString message = QString(tr("Failed to rename object - \"%1\"")).arg(old_name);
+        Status::instance()->message(message, StatusType_Error);
+    };
+
     const int errors_index = Status::instance()->get_errors_size();
     AD()->start_batch();
     {
-        // NOTE: apply attribute changes before renaming so that attribute changes can complete on old DN
-        const bool apply_success = edits_apply(all_edits, target);
+        const QString new_name = name_edit->text();
+        const bool rename_success = AD()->object_rename(target, new_name);
 
-        const bool rename_success =
-        [this]() {
-            if (name_edit != nullptr) {
-                const QString new_name = name_edit->get_input();
-                
-                return AD()->object_rename(target, new_name);
+        if (rename_success) {
+            const QString new_dn = dn_rename(target, new_name);
+            const bool apply_success = edits_apply(all_edits, new_dn);
+
+            if (apply_success) {
+                const QString message = QString(tr("Renamed object - \"%1\"")).arg(old_name);
+                Status::instance()->message(message, StatusType_Success);
             } else {
-                // NOTE: for policies, object is never actually renamed, only the display name changes
-                return true;
+                fail_msg();
             }
-        }();
-
-        if (apply_success && rename_success) {
-            const QString message = QString(tr("Renamed object - \"%1\"")).arg(old_name_for_message);
-            Status::instance()->message(message, StatusType_Success);
         } else {
-            const QString message = QString(tr("Failed to rename object - \"%1\"")).arg(old_name_for_message);
-            Status::instance()->message(message, StatusType_Error);
+            fail_msg();
         }
     }
     AD()->end_batch();
@@ -146,11 +138,14 @@ void RenameDialog::accept() {
 void RenameDialog::on_edited() {
     reset_button->setEnabled(true);
 
-    const bool name_filled = !name_edit->get_input().isEmpty();
+    const bool name_filled = !name_edit->text().isEmpty();
     ok_button->setEnabled(name_filled);
 }
 
 void RenameDialog::reset() {
+    const QString name = dn_get_rdn(target);
+    name_edit->setText(name);
+
     const AdObject object = AD()->search_object(target);
     edits_load(all_edits, object);
 
