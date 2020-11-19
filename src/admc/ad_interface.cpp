@@ -34,8 +34,6 @@
 #include <QTextCodec>
 #include <QDebug>
 
-#define LDAP_SEARCH_NO_ATTRIBUTES "1.1"
-
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 
 AdInterface *AdInterface::instance() {
@@ -220,13 +218,9 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
     attrs =
     [attributes]() {
         char **attrs_out;
-        if (attributes.contains(SEARCH_ALL_ATTRIBUTES)) {
-            // TODO: should do this better but kinda hard but not sure how to do this with as little details leaking out, like making caller put in LDAP_SEARCH_NO_ATTRIBUTES into QList is no good.
+        if (attributes.isEmpty()) {
+            // Pass NULL so LDAP gets all attributes
             attrs_out = NULL;
-        } else if (attributes.isEmpty()) {
-            attrs_out = (char **) malloc(2 * sizeof(char *));
-            attrs_out[0] = strdup(LDAP_SEARCH_NO_ATTRIBUTES);
-            attrs_out[1] = NULL;
         } else {
             attrs_out = (char **) malloc((attributes.size() + 1) * sizeof(char *));
             for (int i = 0; i < attributes.size(); i++) {

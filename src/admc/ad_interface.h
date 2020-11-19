@@ -47,9 +47,6 @@ enum SearchScope {
     SearchScope_All,
 };
 
-// TODO: follow same logic as ldap f-n, "If no attrs are listed, all user attributes are returned. If only 1.1 is listed, no attributes will be returned."
-#define SEARCH_ALL_ATTRIBUTES "SEARCH_ALL_ATTRIBUTES"
-
 typedef struct ldap LDAP;
 typedef struct _SMBCCTX SMBCCTX;
 class AdConfig;
@@ -84,11 +81,9 @@ public:
     QString configuration_dn() const;
     QString schema_dn() const;
 
-    // NOTE: search f-ns need to communicate with the AD server, 
-    // so use them only for infrequent calls. Also try to ask
-    // only for attributes that you need.
+    // NOTE: If no attributes are listed, all attributes are returned
     QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &search_base = QString());
-    AdObject search_object(const QString &dn, const QList<QString> &attributes = {SEARCH_ALL_ATTRIBUTES});
+    AdObject search_object(const QString &dn, const QList<QString> &attributes = QList<QString>());
 
     bool attribute_add(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg = DoStatusMsg_Yes);
