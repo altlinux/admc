@@ -44,7 +44,7 @@ private:
     QStandardItemModel *model;
     QTreeView *view;
 
-    void edit_policy(const QString &dn, const AdObject &object);
+    void edit_policy(const AdObject &object);
 
 };
 

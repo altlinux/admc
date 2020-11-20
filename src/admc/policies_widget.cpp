@@ -108,7 +108,7 @@ void PoliciesWidget::on_context_menu(const QPoint pos) {
         DetailsDialog::open_for_target(dn);
     });
     menu.addAction(tr("Edit Policy"), [this, dn, object]() {
-        edit_policy(dn, object);
+        edit_policy(object);
     });
     menu.addAction(tr("Rename"), [this, dn]() {
         auto dialog = new RenamePolicyDialog(dn);
@@ -121,7 +121,7 @@ void PoliciesWidget::on_context_menu(const QPoint pos) {
     exec_menu_from_view(&menu, view, pos);
 }
 
-void PoliciesWidget::edit_policy(const QString &dn, const AdObject &object) {
+void PoliciesWidget::edit_policy(const AdObject &object) {
     // Start policy edit process
     const auto process = new QProcess();
 

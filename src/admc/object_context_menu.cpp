@@ -57,7 +57,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
     });
 
     auto delete_action = addAction(tr("Delete"), [this, dn, object]() {
-        delete_object(dn, object);
+        delete_object(object);
     });
 
     auto rename_action = addAction(tr("Rename"), [this, dn]() {
@@ -84,16 +84,16 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
     auto move_action = addAction(tr("Move"));
     connect(
         move_action, &QAction::triggered,
-        [this, dn, object]() {
-            move(dn, object);
+        [this, object]() {
+            move(object);
         });
 
     if (object.is_class(CLASS_USER)) {
         QAction *add_to_group_action = addAction(tr("Add to group"));
         connect(
             add_to_group_action, &QAction::triggered,
-            [this, dn]() {
-                add_to_group(dn);
+            [this, object]() {
+                add_to_group(object);
             });
 
         addAction(tr("Reset password"), [dn]() {
@@ -131,17 +131,17 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
     }
 }
 
-void ObjectContextMenu::delete_object(const QString &dn, const AdObject &object) {
+void ObjectContextMenu::delete_object(const AdObject &object) {
     const QString name = object.get_string(ATTRIBUTE_NAME);
     const QString text = QString(tr("Are you sure you want to delete \"%1\"?")).arg(name);
     const bool confirmed = confirmation_dialog(text, this);
 
     if (confirmed) {
-        AD()->object_delete(dn);
-    }    
+        AD()->object_delete(object.get_dn());
+    }
 }
 
-void ObjectContextMenu::move(const QString &dn, const AdObject &object) {
+void ObjectContextMenu::move(const AdObject &object) {
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
     const QList<QString> possible_superiors = ADCONFIG()->get_possible_superiors(object_classes);
 
@@ -150,17 +150,17 @@ void ObjectContextMenu::move(const QString &dn, const AdObject &object) {
     if (selected_objects.size() == 1) {
         const QString container = selected_objects[0];
 
-        AD()->object_move(dn, container);
+        AD()->object_move(object.get_dn(), container);
     }
 }
 
-void ObjectContextMenu::add_to_group(const QString &dn) {
+void ObjectContextMenu::add_to_group(const AdObject &object) {
     const QList<QString> classes = {CLASS_GROUP};
     const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes);
 
     if (selected_objects.size() > 0) {
         for (auto group : selected_objects) {
-            AD()->group_add_user(group, dn);
+            AD()->group_add_user(group, object.get_dn());
         }
     }
 }

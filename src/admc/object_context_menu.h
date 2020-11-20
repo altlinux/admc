@@ -35,10 +35,10 @@ public:
     ObjectContextMenu(const QString &dn);
 
 private:
-    void delete_object(const QString &dn, const AdObject &object);
-    void edit_policy(const QString &dn, const AdObject &object);
-    void move(const QString &dn, const AdObject &object);
-    void add_to_group(const QString &dn);
+    void delete_object(const AdObject &object);
+    void edit_policy(const AdObject &object);
+    void move(const AdObject &object);
+    void add_to_group(const AdObject &object);
 
 };
 
