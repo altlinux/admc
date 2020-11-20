@@ -62,6 +62,7 @@ add_executable(admc
     tabs/gpo_links_tab.cpp
     tabs/organization_tab.cpp
     tabs/telephones_tab.cpp
+    tabs/profile_tab.cpp
 
     edit_dialogs/edit_dialog.cpp
     edit_dialogs/string_edit_dialog.cpp

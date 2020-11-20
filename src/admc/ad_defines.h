@@ -119,6 +119,9 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_PRIMARY_GROUP_ID      "primaryGroupID"
 #define ATTRIBUTE_MANAGER               "manager"
 #define ATTRIBUTE_DIRECT_REPORTS        "directReports"
+#define ATTRIBUTE_PROFILE_PATH          "profilePath"
+#define ATTRIBUTE_SCRIPT_PATH           "scriptPath"
+#define ATTRIBUTE_HOME_DIRECTORY        "homeDirectory"
 
 #define ATTRIBUTE_HOME_PHONE            "homePhone"
 #define ATTRIBUTE_OTHER_HOME_PHONE      "otherHomePhone"

@@ -363,6 +363,8 @@ QString AdConfig::get_attribute_display_name(const QString &attribute, const QSt
         {ATTRIBUTE_USN_CHANGED, QObject::tr("USN changed")},
         {ATTRIBUTE_ACCOUNT_EXPIRES, QObject::tr("Account expires")},
         {ATTRIBUTE_OBJECT_CATEGORY, QObject::tr("Type")},
+        {ATTRIBUTE_PROFILE_PATH, QObject::tr("Profile path")},
+        {ATTRIBUTE_SCRIPT_PATH, QObject::tr("Logon script")},
     };
 
     if (fallback_strings.contains(attribute)) {

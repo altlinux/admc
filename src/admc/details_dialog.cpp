@@ -29,6 +29,7 @@
 #include "tabs/gpo_links_tab.h"
 #include "tabs/organization_tab.h"
 #include "tabs/telephones_tab.h"
+#include "tabs/profile_tab.h"
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "settings.h"
@@ -152,6 +153,7 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
         add_tab(new AddressTab(), tr("Address"));
         add_tab(new OrganizationTab(), tr("Organization"));
         add_tab(new TelephonesTab(), tr("Telephones"));
+        add_tab(new ProfileTab(), tr("Profile"));
     }
     if (object.is_class(CLASS_GROUP)) {
         add_tab(new MembersTab(), tr("Members"));
