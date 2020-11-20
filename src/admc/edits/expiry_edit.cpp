@@ -38,7 +38,7 @@
 
 const QTime END_OF_DAY(23, 59);
 
-ExpiryEdit::ExpiryEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
+ExpiryEdit::ExpiryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
 {
     never_check = new QCheckBox(tr("Never"));

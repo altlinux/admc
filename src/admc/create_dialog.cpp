@@ -58,13 +58,13 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
     pass_edit = nullptr;
 
     if (object_class == CLASS_USER) {
-        auto first_name_edit = new StringEdit(ATTRIBUTE_FIRST_NAME, object_class, this, &all_edits);
-        auto last_name_edit = new StringEdit(ATTRIBUTE_LAST_NAME, object_class, this, &all_edits);
-        auto initials_edit = new StringEdit(ATTRIBUTE_INITIALS, object_class, this, &all_edits);
-        auto upn_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, object_class, this, &all_edits);
-        auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
+        auto first_name_edit = new StringEdit(ATTRIBUTE_FIRST_NAME, object_class, &all_edits, this);
+        auto last_name_edit = new StringEdit(ATTRIBUTE_LAST_NAME, object_class, &all_edits, this);
+        auto initials_edit = new StringEdit(ATTRIBUTE_INITIALS, object_class, &all_edits, this);
+        auto upn_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, object_class, &all_edits, this);
+        auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
 
-        pass_edit = new PasswordEdit(this, &all_edits);
+        pass_edit = new PasswordEdit(&all_edits, this);
 
         const QList<AccountOption> options = {
             AccountOption_PasswordExpired,
@@ -130,14 +130,14 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
                 sama_edit->set_input(upn_input);
             });
     } else if (object_class == CLASS_GROUP) {
-        auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
+        auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
 
         required_edits = {
             sama_edit
         };
 
-        new GroupScopeEdit(this, &all_edits);
-        new GroupTypeEdit(this, &all_edits);
+        new GroupScopeEdit(&all_edits, this);
+        new GroupTypeEdit(&all_edits, this);
 
         edits_layout->addRow(tr("Name:"), name_edit);
         edits_add_to_layout(all_edits, edits_layout);
@@ -148,7 +148,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
 
         // TODO: "This is a managed computer" checkbox and an edit for guid/uuid which I assume modifies objectGUID?
 
-        auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
+        auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
 
         required_edits = {
             sama_edit

@@ -28,7 +28,7 @@
 class DateTimeEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    DateTimeEdit(const QString &attribute_arg, QObject *parent, QList<AttributeEdit *> *edits_out = nullptr);
+    DateTimeEdit(const QString &attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

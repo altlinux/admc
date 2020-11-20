@@ -74,7 +74,7 @@ GroupPolicyTab::GroupPolicyTab() {
 
     const auto edits_layout = new QFormLayout();
 
-    new GpoptionsEdit(this, &edits);
+    new GpoptionsEdit(&edits, this);
     edits_add_to_layout(edits, edits_layout);
     edits_connect_to_tab(edits, this);
 

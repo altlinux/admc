@@ -25,7 +25,7 @@
 #include <QFormLayout>
 #include <QDateTimeEdit>
 
-DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QObject *parent, QList<AttributeEdit *> *edits_out)
+DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
 {
     edit = new QDateTimeEdit();

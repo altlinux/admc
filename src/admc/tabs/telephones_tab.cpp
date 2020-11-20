@@ -24,13 +24,13 @@
 #include <QFormLayout>
 
 TelephonesTab::TelephonesTab() {
-    new StringOtherEdit(ATTRIBUTE_HOME_PHONE, ATTRIBUTE_OTHER_HOME_PHONE, CLASS_USER, this, &edits);
-    new StringOtherEdit(ATTRIBUTE_PAGER, ATTRIBUTE_OTHER_PAGER, CLASS_USER, this, &edits);
-    new StringOtherEdit(ATTRIBUTE_MOBILE, ATTRIBUTE_OTHER_MOBILE, CLASS_USER, this, &edits);
-    new StringOtherEdit(ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, CLASS_USER, this, &edits);
-    new StringOtherEdit(ATTRIBUTE_IP_PHONE, ATTRIBUTE_OTHER_IP_PHONE, CLASS_USER, this, &edits);
+    new StringOtherEdit(ATTRIBUTE_HOME_PHONE, ATTRIBUTE_OTHER_HOME_PHONE, CLASS_USER, &edits, this);
+    new StringOtherEdit(ATTRIBUTE_PAGER, ATTRIBUTE_OTHER_PAGER, CLASS_USER, &edits, this);
+    new StringOtherEdit(ATTRIBUTE_MOBILE, ATTRIBUTE_OTHER_MOBILE, CLASS_USER, &edits, this);
+    new StringOtherEdit(ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, CLASS_USER, &edits, this);
+    new StringOtherEdit(ATTRIBUTE_IP_PHONE, ATTRIBUTE_OTHER_IP_PHONE, CLASS_USER, &edits, this);
 
-    new StringLargeEdit(ATTRIBUTE_INFO, CLASS_USER, this, &edits);
+    new StringLargeEdit(ATTRIBUTE_INFO, CLASS_USER, &edits, this);
 
     edits_connect_to_tab(edits, this);
 

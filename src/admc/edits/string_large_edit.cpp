@@ -24,7 +24,7 @@
 #include <QPlainTextEdit>
 #include <QFormLayout>
 
-StringLargeEdit::StringLargeEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent, QList<AttributeEdit *> *edits_out)
+StringLargeEdit::StringLargeEdit(const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
 {
     attribute = attribute_arg;

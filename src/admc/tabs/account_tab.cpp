@@ -28,9 +28,9 @@
 // TODO: logon hours, logon computers
 
 AccountTab::AccountTab() {
-    new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER, this, &edits);
+    new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER, &edits, this);
 
-    new UnlockEdit(this, &edits);
+    new UnlockEdit(&edits, this);
 
     QList<AccountOption> options;
     for (int i = 0; i < AccountOption_COUNT; i++) {
@@ -40,7 +40,7 @@ AccountTab::AccountTab() {
     QMap<AccountOption, AccountOptionEdit *> option_edits;
     AccountOptionEdit::make(options, &option_edits, &edits, this);
 
-    new ExpiryEdit(this, &edits);
+    new ExpiryEdit(&edits, this);
 
     edits_connect_to_tab(edits, this);
 

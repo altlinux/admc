@@ -27,7 +27,7 @@ class QLineEdit;
 class PasswordEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    PasswordEdit(QObject *parent, QList<AttributeEdit *> *edits_out = nullptr);
+    PasswordEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
     // Checks that password confirmation matches input

@@ -25,7 +25,7 @@
 #include <QComboBox>
 #include <QFormLayout>
 
-GroupTypeEdit::GroupTypeEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
+GroupTypeEdit::GroupTypeEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
 {
     combo = new QComboBox();

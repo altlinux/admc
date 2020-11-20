@@ -26,7 +26,7 @@
 #include <QFormLayout>
 
 AddressTab::AddressTab() {
-    new StringLargeEdit(ATTRIBUTE_STREET, CLASS_USER, this, &edits);
+    new StringLargeEdit(ATTRIBUTE_STREET, CLASS_USER, &edits, this);
 
     const QList<QString> attributes = {
         ATTRIBUTE_PO_BOX,
@@ -34,9 +34,9 @@ AddressTab::AddressTab() {
         ATTRIBUTE_STATE,
         ATTRIBUTE_POSTAL_CODE
     };
-    make_string_edits(attributes, CLASS_USER, this, &edits);
+    make_string_edits(attributes, CLASS_USER, &edits, this);
 
-    new CountryEdit(this, &edits);
+    new CountryEdit(&edits, this);
 
     edits_connect_to_tab(edits, this);
 

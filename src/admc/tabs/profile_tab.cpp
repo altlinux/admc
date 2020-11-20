@@ -23,11 +23,11 @@
 #include <QFormLayout>
 
 ProfileTab::ProfileTab() {
-    new StringEdit(ATTRIBUTE_PROFILE_PATH, CLASS_USER, this, &edits);
-    new StringEdit(ATTRIBUTE_SCRIPT_PATH, CLASS_USER, this, &edits);
+    new StringEdit(ATTRIBUTE_PROFILE_PATH, CLASS_USER, &edits, this);
+    new StringEdit(ATTRIBUTE_SCRIPT_PATH, CLASS_USER, &edits, this);
 
     // TODO: verify that local path exists. Also add alternate input method named "Connect"? Has drop-down of disk letters and path input.
-    new StringEdit(ATTRIBUTE_HOME_DIRECTORY, CLASS_USER, this, &edits);
+    new StringEdit(ATTRIBUTE_HOME_DIRECTORY, CLASS_USER, &edits, this);
 
     edits_connect_to_tab(edits, this);
 

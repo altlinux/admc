@@ -44,9 +44,9 @@ PasswordDialog::PasswordDialog(const QString &target_arg)
     const QString title = QString(tr("Change password of \"%1\" - %2")).arg(name, ADMC_APPLICATION_NAME);
     setWindowTitle(title);
 
-    pass_edit = new PasswordEdit(this, &edits);
-    new AccountOptionEdit(AccountOption_PasswordExpired, this, &edits);
-    new UnlockEdit(this, &edits);
+    pass_edit = new PasswordEdit(&edits, this);
+    new AccountOptionEdit(AccountOption_PasswordExpired, &edits, this);
+    new UnlockEdit(&edits, this);
 
     auto button_box = new QDialogButtonBox();
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);

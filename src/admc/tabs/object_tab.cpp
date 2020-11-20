@@ -26,15 +26,15 @@
 // TODO: canonical name in ADUC replaces "CN=" with "/" making it look like a directory path
 
 ObjectTab::ObjectTab() {   
-    new StringEdit(ATTRIBUTE_DISTINGUISHED_NAME, "", this, &edits);
-    new StringEdit(ATTRIBUTE_OBJECT_CLASS, "", this, &edits);
+    new StringEdit(ATTRIBUTE_DISTINGUISHED_NAME, "", &edits, this);
+    new StringEdit(ATTRIBUTE_OBJECT_CLASS, "", &edits, this);
     
-    new DateTimeEdit(ATTRIBUTE_WHEN_CREATED, this, &edits);
-    new DateTimeEdit(ATTRIBUTE_WHEN_CHANGED, this, &edits);
+    new DateTimeEdit(ATTRIBUTE_WHEN_CREATED, &edits, this);
+    new DateTimeEdit(ATTRIBUTE_WHEN_CHANGED, &edits, this);
 
     // TODO: use int edit for this when/if it gets added, though these attributes aren't supposed to be editable anyway?
-    new StringEdit(ATTRIBUTE_USN_CREATED, "",  this, &edits);
-    new StringEdit(ATTRIBUTE_USN_CHANGED, "",  this, &edits);
+    new StringEdit(ATTRIBUTE_USN_CREATED, "", &edits, this);
+    new StringEdit(ATTRIBUTE_USN_CHANGED, "", &edits, this);
 
     for (auto edit : edits) {
         edit->set_read_only(true);

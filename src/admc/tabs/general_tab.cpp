@@ -57,10 +57,10 @@ GeneralTab::GeneralTab(const AdObject &object) {
             ATTRIBUTE_MAIL,
             ATTRIBUTE_OFFICE,
         };
-        make_string_edits(attributes, CLASS_USER, this, &edits);
+        make_string_edits(attributes, CLASS_USER, &edits, this);
 
-        new StringOtherEdit(ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, CLASS_USER, this, &edits);
-        new StringOtherEdit(ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, CLASS_USER, this, &edits);
+        new StringOtherEdit(ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, CLASS_USER, &edits, this);
+        new StringOtherEdit(ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, CLASS_USER, &edits, this);
     } else if (object.is_class(CLASS_OU)) {
         const QList<QString> attributes = {
             ATTRIBUTE_DESCRIPTION,
@@ -70,17 +70,17 @@ GeneralTab::GeneralTab(const AdObject &object) {
             ATTRIBUTE_POSTAL_CODE,
         };
 
-        make_string_edits(attributes, CLASS_OU, this, &edits);
+        make_string_edits(attributes, CLASS_OU, &edits, this);
 
-        new CountryEdit(this, &edits);
+        new CountryEdit(&edits, this);
     } else if (object.is_class(CLASS_COMPUTER)) {
-        auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, CLASS_COMPUTER, this, &edits);
+        auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, CLASS_COMPUTER, &edits, this);
         sama_edit->set_read_only(true);
         
-        auto dns_edit = new StringEdit(ATTRIBUTE_DNS_HOST_NAME, CLASS_COMPUTER, this, &edits);
+        auto dns_edit = new StringEdit(ATTRIBUTE_DNS_HOST_NAME, CLASS_COMPUTER, &edits, this);
         dns_edit->set_read_only(true);
         
-        new StringEdit(ATTRIBUTE_DESCRIPTION, CLASS_COMPUTER, this, &edits);
+        new StringEdit(ATTRIBUTE_DESCRIPTION, CLASS_COMPUTER, &edits, this);
 
         // TODO: more string edits for: site (probably just site?), dc type (no idea)
     } else if (object.is_class(CLASS_GROUP)) {
@@ -90,11 +90,11 @@ GeneralTab::GeneralTab(const AdObject &object) {
             ATTRIBUTE_MAIL,
             ATTRIBUTE_INFO,
         };
-        make_string_edits(string_attributes, CLASS_GROUP, this, &edits);
+        make_string_edits(string_attributes, CLASS_GROUP, &edits, this);
         
-        auto scope_edit = new GroupScopeEdit(this, &edits);
+        auto scope_edit = new GroupScopeEdit(&edits, this);
         
-        auto type_edit = new GroupTypeEdit(this, &edits);
+        auto type_edit = new GroupTypeEdit(&edits, this);
 
         const bool is_critical_system_object = (object.contains(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT) && object.get_bool(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT));
         if (is_critical_system_object) {
@@ -102,7 +102,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
             type_edit->set_read_only(true);
         }
     } else if (object.is_class(CLASS_CONTAINER)) {
-        new StringEdit(ATTRIBUTE_DESCRIPTION, CLASS_GROUP, this, &edits);
+        new StringEdit(ATTRIBUTE_DESCRIPTION, CLASS_GROUP, &edits, this);
     }
 
     edits_add_to_layout(edits, edits_layout);

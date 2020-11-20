@@ -24,7 +24,7 @@
 #include <QFormLayout>
 #include <QCheckBox>
 
-UnlockEdit::UnlockEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
+UnlockEdit::UnlockEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     check = new QCheckBox();
 

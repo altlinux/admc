@@ -30,11 +30,11 @@
 #include <QLabel>
 #include <QPushButton>
 
-StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &other_attribute_arg, const QString &object_class, QObject *parent, QList<AttributeEdit *> *edits_out)
+StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &other_attribute_arg, const QString &object_class, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
 , other_attribute(other_attribute_arg)
 {
-    main_edit = new StringEdit(main_attribute, object_class, parent);
+    main_edit = new StringEdit(main_attribute, object_class, nullptr, parent);
 
     QObject::connect(
         main_edit, &AttributeEdit::edited,

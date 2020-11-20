@@ -31,7 +31,7 @@ class QCheckBox;
 class UnlockEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    UnlockEdit(QObject *parent, QList<AttributeEdit *> *edits_out = nullptr);
+    UnlockEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

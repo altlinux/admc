@@ -32,7 +32,7 @@ class QPushButton;
 class ManagerEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    ManagerEdit(QObject *parent, QList<AttributeEdit *> *edits_out = nullptr);
+    ManagerEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private slots:

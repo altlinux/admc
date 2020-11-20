@@ -25,7 +25,7 @@
 #include <QFormLayout>
 #include <QHash>
 
-GpoptionsEdit::GpoptionsEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
+GpoptionsEdit::GpoptionsEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
 {
     check = new QCheckBox();

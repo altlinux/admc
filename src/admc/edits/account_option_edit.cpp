@@ -33,7 +33,7 @@ void AccountOptionEdit::make(const QList<AccountOption> options, QMap<AccountOpt
     QMap<AccountOption, AccountOptionEdit *> option_edits;
 
     for (auto option : options) {
-        auto edit = new AccountOptionEdit(option, parent, edits_out);
+        auto edit = new AccountOptionEdit(option, edits_out, parent);
         option_edits.insert(option, edit);
         option_edits_out->insert(option, edit);
     }
@@ -79,7 +79,7 @@ void AccountOptionEdit::make(const QList<AccountOption> options, QMap<AccountOpt
     }
 }
 
-AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QObject *parent, QList<AttributeEdit *> *edits_out)
+AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
 {
     option = option_arg;

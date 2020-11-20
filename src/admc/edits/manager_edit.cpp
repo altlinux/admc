@@ -29,7 +29,7 @@
 #include <QFormLayout>
 #include <QPushButton>
 
-ManagerEdit::ManagerEdit(QObject *parent, QList<AttributeEdit *> *edits_out)
+ManagerEdit::ManagerEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
 {
     edit = new QLineEdit();

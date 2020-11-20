@@ -26,19 +26,9 @@
 #include <QLineEdit>
 #include <QFormLayout>
 
-void make_string_edits(const QList<QString> attributes, const QString &objectClass, QObject *parent, QList<AttributeEdit *> *edits_out) {
-    for (auto attribute : attributes) {
-        new StringEdit(attribute, objectClass, parent, edits_out);
-    }
-}
+QString get_domain_as_email_suffix();
 
-// "DOMAIN.COM" => "@domain.com"
-QString get_domain_as_email_suffix() {
-    const QString domain = AD()->domain();
-    return "@" + domain.toLower();
-}
-
-StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent, QList<AttributeEdit *> *edits_out)
+StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
 {
     attribute = attribute_arg;
@@ -133,4 +123,16 @@ void StringEdit::set_input(const QString &value) {
     edit->setText(value);
 
     emit edited();
+}
+
+void make_string_edits(const QList<QString> attributes, const QString &objectClass, QList<AttributeEdit *> *edits_out, QObject *parent) {
+    for (auto attribute : attributes) {
+        new StringEdit(attribute, objectClass, edits_out, parent);
+    }
+}
+
+// "DOMAIN.COM" => "@domain.com"
+QString get_domain_as_email_suffix() {
+    const QString domain = AD()->domain();
+    return "@" + domain.toLower();
 }

@@ -42,9 +42,9 @@ OrganizationTab::OrganizationTab() {
         ATTRIBUTE_DEPARTMENT,
         ATTRIBUTE_COMPANY,
     };
-    make_string_edits(attributes, CLASS_USER, this, &edits);
+    make_string_edits(attributes, CLASS_USER, &edits, this);
 
-    new ManagerEdit(this, &edits);
+    new ManagerEdit(&edits, this);
 
     edits_connect_to_tab(edits, this);
 
