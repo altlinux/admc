@@ -36,17 +36,12 @@
 #include <QLineEdit>
 #include <QGridLayout>
 
+// TODO: object class column should be processed somehow, not just plain class value. For example for groups also show group type ("Security group"). And header label shouldn't be class.
+
 ObjectListWidget::ObjectListWidget()
 : QWidget()
 {   
-    const QList<QString> base_columns = {
-        ATTRIBUTE_NAME,
-        ATTRIBUTE_OBJECT_CLASS,
-        ATTRIBUTE_DESCRIPTION,
-        ATTRIBUTE_DISTINGUISHED_NAME
-    };
-    const QList<QString> extra_columns = ADCONFIG()->get_extra_columns();
-    columns = base_columns + extra_columns;
+    columns = ADCONFIG()->get_columns();
 
     model = new ObjectModel(columns.count(), column_index(ATTRIBUTE_DISTINGUISHED_NAME), this);
 
@@ -54,9 +49,9 @@ ObjectListWidget::ObjectListWidget()
     [this]() {
         QList<QString> out;
         for (const QString attribute : columns) {
-            const QString attribute_name = ADCONFIG()->get_attribute_display_name(attribute, CLASS_DEFAULT);
+            const QString attribute_display_name = ADCONFIG()->get_column_display_name(attribute);
 
-            out.append(attribute_name);
+            out.append(attribute_display_name);
         }
         return out;
     }();
@@ -241,7 +236,7 @@ void ObjectListWidget::showEvent(QShowEvent *event) {
 
 int ObjectListWidget::column_index(const QString &attribute) {
     if (!columns.contains(attribute)) {
-        printf("ObjectListWidget is missing column for %s\n", qPrintable(attribute));
+        qWarning() << "ObjectListWidget is missing column for" << attribute;
     }
 
     return columns.indexOf(attribute);

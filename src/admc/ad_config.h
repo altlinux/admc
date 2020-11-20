@@ -72,7 +72,9 @@ public:
     AdConfig(QObject *parent);
 
     QList<ObjectClass> get_filter_containers() const;
-    QList<Attribute> get_extra_columns() const;
+
+    QList<Attribute> get_columns() const;
+    QString get_column_display_name(const Attribute &attribute) const;
 
     QList<ObjectClass> get_possible_superiors(const QList<ObjectClass> &object_classes) const;
 
@@ -89,7 +91,9 @@ public:
 
 private:
     QList<ObjectClass> filter_containers;
-    QList<Attribute> extra_columns;
+    
+    QList<Attribute> columns;
+    QHash<Attribute, QString> column_display_names;
 
     QHash<ObjectClass, QString> class_display_names;
     QHash<ObjectClass, QList<ObjectClass>> possible_superiors;

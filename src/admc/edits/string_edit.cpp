@@ -20,6 +20,7 @@
 #include "edits/string_edit.h"
 #include "utils.h"
 #include "ad_interface.h"
+#include "ad_utils.h"
 #include "ad_config.h"
 
 #include <QLineEdit>
@@ -62,6 +63,8 @@ void StringEdit::load_internal(const AdObject &object) {
         if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
             // Take "user" from "user@domain.com"
             out = out.split("@")[0];
+        } else if (attribute == ATTRIBUTE_DISTINGUISHED_NAME) {
+            out = dn_canonical(out);
         }
 
         return out;

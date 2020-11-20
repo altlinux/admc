@@ -133,33 +133,50 @@ AdConfig::AdConfig(QObject *parent)
         return out;
     }();
 
-    extra_columns =
-    []() {
+    // Columns
+    {
         const QList<QString> columns_values =
         []() {
             const QString locale_dir = get_locale_dir();
             const QString dn = QString("CN=default-Display,%1").arg(locale_dir);
             const AdObject object = AD()->search_object(dn, {ATTRIBUTE_EXTRA_COLUMNS});
-            QList<QString> columns_out = object.get_strings(ATTRIBUTE_EXTRA_COLUMNS);
 
-            std::reverse(columns_out.begin(), columns_out.end());
+            // NOTE: order as stored in attribute is reversed. Order is not sorted alphabetically so can't just sort.
+            QList<QString> extra_columns = object.get_strings(ATTRIBUTE_EXTRA_COLUMNS);
+            std::reverse(extra_columns.begin(), extra_columns.end());
 
-            return columns_out;
+            return extra_columns;
         }();
 
         // ATTRIBUTE_EXTRA_COLUMNS value is
-        // "$attribute,$display_name"
+        // "$attribute,$display_name,..."
         // Get attributes out of that
-        QList<QString> out;
         for (const QString &value : columns_values) {
             const QList<QString> column_split = value.split(',');
-            const QString attribute = column_split[0];
 
-            out.append(attribute);
+            if (column_split.size() < 2) {
+                continue;
+            }
+
+            const QString attribute = column_split[0];
+            const QString attribute_display_name = column_split[1];
+
+            columns.append(attribute);
+            column_display_names[attribute] = attribute_display_name;
         }
 
-        return out;
-    }();
+        // Insert some columns manually
+        auto add_custom =
+        [this](const Attribute &attribute, const QString &display_name) {
+            columns.prepend(attribute);
+            column_display_names[attribute] = display_name;
+        };
+
+        add_custom(ATTRIBUTE_DISTINGUISHED_NAME, tr("Distinguished name"));
+        add_custom(ATTRIBUTE_DESCRIPTION, tr("Description"));
+        add_custom(ATTRIBUTE_OBJECT_CLASS, tr("Class"));
+        add_custom(ATTRIBUTE_NAME, tr("Name"));
+    }
 
     filter_containers =
     [this]() {
@@ -336,26 +353,17 @@ AdConfig *ADCONFIG() {
     return AdInterface::instance()->config();
 }
 
-QString AdConfig::get_attribute_display_name(const QString &attribute, const QString &objectClass) const {
-    // TODO: all objects have name attribute, but not all have cn. There is no display name for name though, only for cn.
-    if (attribute == ATTRIBUTE_NAME) {
-        return get_attribute_display_name(ATTRIBUTE_CN, objectClass);
+QString AdConfig::get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const {
+    if (attribute_display_names.contains(objectClass) && attribute_display_names[objectClass].contains(attribute)) {
+        const QString display_name = attribute_display_names[objectClass][attribute];
+
+        return display_name;
     }
 
-    // NOTE: try to find display name in default display specifier last
-    const QList<QString> objectClasses = {objectClass, CLASS_DEFAULT};
-
-    for (const QString &the_class : objectClasses) {
-        if (attribute_display_names.contains(the_class) && attribute_display_names[the_class].contains(attribute)) {
-            const QString display_name = attribute_display_names[the_class][attribute];
-
-            return display_name;
-        }
-    }
-
-    // NOTE: display specifier doesn't contain all display names, so need to hardcode some of them here
-    static const QHash<QString, QString> fallback_strings = {
-        {ATTRIBUTE_DISTINGUISHED_NAME, QObject::tr("DN")},
+    // NOTE: display specifier doesn't cover all attributes for all classes, so need to hardcode some of them here
+    static const QHash<Attribute, QString> fallback_display_names = {
+        {ATTRIBUTE_NAME, QObject::tr("Name")},
+        {ATTRIBUTE_DISTINGUISHED_NAME, QObject::tr("Distinguished name")},
         {ATTRIBUTE_OBJECT_CLASS, QObject::tr("Object class")},
         {ATTRIBUTE_WHEN_CREATED, QObject::tr("Created")},
         {ATTRIBUTE_WHEN_CHANGED, QObject::tr("Changed")},
@@ -367,11 +375,7 @@ QString AdConfig::get_attribute_display_name(const QString &attribute, const QSt
         {ATTRIBUTE_SCRIPT_PATH, QObject::tr("Logon script")},
     };
 
-    if (fallback_strings.contains(attribute)) {
-        return fallback_strings[attribute];
-    } else {
-        return attribute;
-    }
+    return fallback_display_names.value(attribute, attribute);
 }
 
 QString AdConfig::get_class_display_name(const QString &objectClass) const {
@@ -382,8 +386,12 @@ QString AdConfig::get_class_display_name(const QString &objectClass) const {
     }
 }
 
-QList<QString> AdConfig::get_extra_columns() const {
-    return extra_columns;
+QList<QString> AdConfig::get_columns() const {
+    return columns;
+}
+
+QString AdConfig::get_column_display_name(const Attribute &attribute) const {
+    return column_display_names.value(attribute, attribute);
 }
 
 QList<QString> AdConfig::get_filter_containers() const {
