@@ -57,7 +57,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
             ATTRIBUTE_MAIL,
             ATTRIBUTE_OFFICE,
         };
-        make_string_edits(attributes, CLASS_USER, &edits, this);
+        StringEdit::make_many(attributes, CLASS_USER, &edits, this);
 
         new StringOtherEdit(ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, CLASS_USER, &edits, this);
         new StringOtherEdit(ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, CLASS_USER, &edits, this);
@@ -70,7 +70,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
             ATTRIBUTE_POSTAL_CODE,
         };
 
-        make_string_edits(attributes, CLASS_OU, &edits, this);
+        StringEdit::make_many(attributes, CLASS_OU, &edits, this);
 
         new CountryEdit(&edits, this);
     } else if (object.is_class(CLASS_COMPUTER)) {
@@ -90,7 +90,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
             ATTRIBUTE_MAIL,
             ATTRIBUTE_INFO,
         };
-        make_string_edits(string_attributes, CLASS_GROUP, &edits, this);
+        StringEdit::make_many(string_attributes, CLASS_GROUP, &edits, this);
         
         auto scope_edit = new GroupScopeEdit(&edits, this);
         

@@ -42,7 +42,7 @@ OrganizationTab::OrganizationTab() {
         ATTRIBUTE_DEPARTMENT,
         ATTRIBUTE_COMPANY,
     };
-    make_string_edits(attributes, CLASS_USER, &edits, this);
+    StringEdit::make_many(attributes, CLASS_USER, &edits, this);
 
     new ManagerEdit(&edits, this);
 

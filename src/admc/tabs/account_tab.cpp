@@ -38,7 +38,7 @@ AccountTab::AccountTab() {
         options.append(option);
     }
     QMap<AccountOption, AccountOptionEdit *> option_edits;
-    AccountOptionEdit::make(options, &option_edits, &edits, this);
+    AccountOptionEdit::make_many(options, &option_edits, &edits, this);
 
     new ExpiryEdit(&edits, this);
 

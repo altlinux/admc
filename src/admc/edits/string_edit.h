@@ -32,6 +32,8 @@ class QLabel;
 class StringEdit final : public AttributeEdit {
 Q_OBJECT
 public:
+    static void make_many(const QList<QString> attributes, const QString &objectClass, QList<AttributeEdit *> *edits_out, QObject *parent);
+
     StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
@@ -45,7 +47,5 @@ private:
 
     friend class StringOtherEdit;
 };
-
-void make_string_edits(const QList<QString> attributes, const QString &objectClass, QList<AttributeEdit *> *edits_out, QObject *parent);
 
 #endif /* STRING_EDIT_H */

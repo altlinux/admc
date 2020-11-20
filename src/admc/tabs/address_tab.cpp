@@ -34,7 +34,7 @@ AddressTab::AddressTab() {
         ATTRIBUTE_STATE,
         ATTRIBUTE_POSTAL_CODE
     };
-    make_string_edits(attributes, CLASS_USER, &edits, this);
+    StringEdit::make_many(attributes, CLASS_USER, &edits, this);
 
     new CountryEdit(&edits, this);
 

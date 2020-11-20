@@ -59,7 +59,7 @@ RenameDialog::RenameDialog(const QString &target_arg)
             ATTRIBUTE_USER_PRINCIPAL_NAME,
             ATTRIBUTE_SAMACCOUNT_NAME
         };
-        make_string_edits(attributes, object_class, &all_edits, this);
+        StringEdit::make_many(attributes, object_class, &all_edits, this);
     } else if (object.is_class(CLASS_GROUP)) {
         new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
     }

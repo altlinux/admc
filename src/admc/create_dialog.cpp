@@ -73,7 +73,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
             // TODO: AccountOption_CannotChangePass
         };
         QMap<AccountOption, AccountOptionEdit *> option_edits;
-        AccountOptionEdit::make(options, &option_edits, &all_edits, this);
+        AccountOptionEdit::make_many(options, &option_edits, &all_edits, this);
 
         // NOTE: initials not required
         required_edits = {

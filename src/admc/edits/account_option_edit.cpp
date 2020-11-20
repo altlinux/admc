@@ -29,7 +29,7 @@
 #include <QDateTimeEdit>
 #include <QMessageBox>
 
-void AccountOptionEdit::make(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
+void AccountOptionEdit::make_many(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
     QMap<AccountOption, AccountOptionEdit *> option_edits;
 
     for (auto option : options) {
