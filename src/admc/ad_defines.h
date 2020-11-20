@@ -120,6 +120,17 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_MANAGER               "manager"
 #define ATTRIBUTE_DIRECT_REPORTS        "directReports"
 
+#define ATTRIBUTE_HOME_PHONE            "homePhone"
+#define ATTRIBUTE_OTHER_HOME_PHONE      "otherHomePhone"
+#define ATTRIBUTE_PAGER                 "pager"
+#define ATTRIBUTE_OTHER_PAGER           "otherPager"
+#define ATTRIBUTE_MOBILE                "mobile"
+#define ATTRIBUTE_OTHER_MOBILE          "otherMobile"
+#define ATTRIBUTE_FAX_NUMBER            "facsimileTelephoneNumber"
+#define ATTRIBUTE_OTHER_FAX_NUMBER      "otherFacsimileTelephoneNumber"
+#define ATTRIBUTE_IP_PHONE              "ipPhone"
+#define ATTRIBUTE_OTHER_IP_PHONE        "otherIpPhone"
+
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
 #define CLASS_CONTAINER                 "container"
