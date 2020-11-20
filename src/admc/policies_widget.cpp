@@ -20,6 +20,7 @@
 #include "policies_widget.h"
 #include "ad_interface.h"
 #include "details_dialog.h"
+#include "rename_policy_dialog.h"
 #include "utils.h"
 #include "filter.h"
 
@@ -110,8 +111,8 @@ void PoliciesWidget::on_context_menu(const QPoint pos) {
         edit_policy(dn, object);
     });
     menu.addAction(tr("Rename"), [this, dn]() {
-        // auto rename_dialog = new RenameDialog(dn);
-        // rename_dialog->open();
+        auto dialog = new RenamePolicyDialog(dn);
+        dialog->open();
     });
     menu.addAction(tr("Delete"), [dn]() {
         AD()->delete_gpo(dn);

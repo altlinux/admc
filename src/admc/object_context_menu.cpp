@@ -61,8 +61,8 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
     });
 
     auto rename_action = addAction(tr("Rename"), [this, dn]() {
-        auto rename_dialog = new RenameDialog(dn);
-        rename_dialog->open();
+        auto dialog = new RenameDialog(dn);
+        dialog->open();
     });
 
     QMenu *submenu_new = addMenu("New");

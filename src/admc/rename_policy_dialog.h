@@ -17,22 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RENAME_DIALOG_H
-#define RENAME_DIALOG_H
+#ifndef RENAME_DIALOG_POLICY_H
+#define RENAME_DIALOG_POLICY_H
+
+/**
+ * Special rename dialog for policy objects. Policy objects
+ * are never renamed because their names are GUID's. Instead
+ * their display name attribute is modified.
+ */
 
 #include <QDialog>
 #include <QString>
-#include <QList>
 
-class AttributeEdit;
 class QLineEdit;
 class QPushButton;
 
-class RenameDialog final : public QDialog {
+class RenamePolicyDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    RenameDialog(const QString &target_arg);
+    RenamePolicyDialog(const QString &target_arg);
 
 private slots:
     void accept();
@@ -41,11 +45,9 @@ private slots:
 
 private:
     QString target;
-    QList<AttributeEdit *> all_edits;
     QLineEdit *name_edit;
     QPushButton *ok_button;
     QPushButton *reset_button;
-
 };
 
-#endif /* RENAME_DIALOG_H */
+#endif /* RENAME_DIALOG_POLICY_H */

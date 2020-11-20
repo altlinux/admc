@@ -63,10 +63,11 @@ void AccountOptionEdit::make(const QList<AccountOption> options, QMap<AccountOpt
     };
 
     // NOTE: only setup conflicts for options that exist
+    // TODO: AccountOption_CantChangePassword. Once security descriptor manipulation is implemented, it should be evident how to do this. See link: https://docs.microsoft.com/en-us/windows/win32/adsi/modifying-user-cannot-change-password-ldap-provider?redirectedfrom=MSDN
     if (options.contains(AccountOption_PasswordExpired)) {
         const QList<AccountOption> other_two_options = {
             AccountOption_DontExpirePassword,
-            // TODO: AccountOption_CantChangePassword
+            // AccountOption_CantChangePassword,
         };
 
         for (auto other_option : other_two_options) {

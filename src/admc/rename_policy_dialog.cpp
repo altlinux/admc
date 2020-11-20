@@ -17,11 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "rename_dialog.h"
+#include "rename_policy_dialog.h"
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "ad_utils.h"
-#include "edits/string_edit.h"
 #include "status.h"
 #include "utils.h"
 #include "config.h"
@@ -33,9 +32,9 @@
 #include <QVBoxLayout>
 #include <QFormLayout>
 
-// TODO: figure out what can and can't be renamed and disable renaming for exceptions (computers can't for example)
+// TODO: prohibit duplicate names? Server probably doesn't check for that since this is editing display name, not name.
 
-RenameDialog::RenameDialog(const QString &target_arg)
+RenamePolicyDialog::RenamePolicyDialog(const QString &target_arg)
 : QDialog()
 {
     target = target_arg;
@@ -51,19 +50,6 @@ RenameDialog::RenameDialog(const QString &target_arg)
 
     name_edit = new QLineEdit();
 
-    if (object.is_class(CLASS_USER)) {
-        const QList<QString> attributes = {
-            ATTRIBUTE_FIRST_NAME,
-            ATTRIBUTE_LAST_NAME,
-            ATTRIBUTE_DISPLAY_NAME,
-            ATTRIBUTE_USER_PRINCIPAL_NAME,
-            ATTRIBUTE_SAMACCOUNT_NAME
-        };
-        make_string_edits(attributes, object_class, this, &all_edits);
-    } else if (object.is_class(CLASS_GROUP)) {
-        new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, this, &all_edits);
-    }
-
     auto button_box = new QDialogButtonBox();
     ok_button = button_box->addButton(QDialogButtonBox::Ok);
     reset_button = button_box->addButton(QDialogButtonBox::Reset);
@@ -73,78 +59,57 @@ RenameDialog::RenameDialog(const QString &target_arg)
         this, &QDialog::accept);
     connect(
         reset_button, &QPushButton::clicked,
-        this, &RenameDialog::reset);
+        this, &RenamePolicyDialog::reset);
     connect(
         cancel_button, &QPushButton::clicked,
-        this, &RenameDialog::reject);
+        this, &RenamePolicyDialog::reject);
 
     const auto edits_layout = new QFormLayout();
+    // NOTE: label name edit as "Name" even though it edits
+    // display name attribute
     edits_layout->addRow(tr("Name:"), name_edit);
-    edits_add_to_layout(all_edits, edits_layout);
     
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addLayout(edits_layout);
     top_layout->addWidget(button_box);
 
-    for (auto edit : all_edits) {
-        connect(
-            edit, &AttributeEdit::edited,
-            this, &RenameDialog::on_edited);
-    }
     connect(
         name_edit, &QLineEdit::textChanged,
-        this, &RenameDialog::on_edited);
+        this, &RenamePolicyDialog::on_edited);
     on_edited();
 
     reset();
 }
 
-void RenameDialog::accept() {
-    const QString old_name = dn_get_name(target);
+void RenamePolicyDialog::accept() {
+    const AdObject object = AD()->search_object(target);
+    const QString old_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
     const int errors_index = Status::instance()->get_errors_size();
 
-    auto fail_msg =
-    [=]() {
+    const QString new_name = name_edit->text();
+    const bool apply_success = AD()->attribute_replace_string(target, ATTRIBUTE_DISPLAY_NAME, new_name);
+
+    if (apply_success) {
+        const QString message = QString(tr("Renamed object - \"%1\"")).arg(old_name);
+        Status::instance()->message(message, StatusType_Success);
+        QDialog::close();
+    } else {
         const QString message = QString(tr("Failed to rename object - \"%1\"")).arg(old_name);
         Status::instance()->message(message, StatusType_Error);
         Status::instance()->show_errors_popup(errors_index);
-    };
-
-    AD()->start_batch();
-    {
-        const QString new_name = name_edit->text();
-        const bool rename_success = AD()->object_rename(target, new_name);
-
-        if (rename_success) {
-            const QString new_dn = dn_rename(target, new_name);
-            const bool apply_success = edits_apply(all_edits, new_dn);
-
-            if (apply_success) {
-                const QString message = QString(tr("Renamed object - \"%1\"")).arg(old_name);
-                Status::instance()->message(message, StatusType_Success);
-                QDialog::close();
-            } else {
-                fail_msg();
-            }
-        } else {
-            fail_msg();
-        }
     }
-    AD()->end_batch();
 }
 
-void RenameDialog::on_edited() {
+void RenamePolicyDialog::on_edited() {
     reset_button->setEnabled(true);
     ok_button->setEnabled(true);
 }
 
-void RenameDialog::reset() {
-    const QString name = dn_get_name(target);
-    name_edit->setText(name);
-
+void RenamePolicyDialog::reset() {
     const AdObject object = AD()->search_object(target);
-    edits_load(all_edits, object);
+    const QString name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
+    name_edit->setText(name);
 
     reset_button->setEnabled(false);
     ok_button->setEnabled(false);

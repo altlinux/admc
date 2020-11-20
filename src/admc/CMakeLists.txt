@@ -38,6 +38,7 @@ add_executable(admc
     object_list_widget.cpp
     
     rename_dialog.cpp
+    rename_policy_dialog.cpp
     create_dialog.cpp
     find_dialog.cpp
     policies_widget.cpp
