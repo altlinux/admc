@@ -379,11 +379,7 @@ QString AdConfig::get_attribute_display_name(const Attribute &attribute, const O
 }
 
 QString AdConfig::get_class_display_name(const QString &objectClass) const {
-    if (class_display_names.contains(objectClass)) {
-        return class_display_names[objectClass];
-    } else {
-        return objectClass;
-    }
+    return class_display_names.value(objectClass, objectClass);
 }
 
 QList<QString> AdConfig::get_columns() const {
@@ -414,19 +410,11 @@ QList<QString> AdConfig::get_possible_superiors(const QList<ObjectClass> &object
 }
 
 QString AdConfig::get_ldap_to_ad_name(const QString &ldap_name) const {
-    if (ldap_to_ad_names.contains(ldap_name)) {
-        return ldap_to_ad_names[ldap_name];
-    } else {
-        return ldap_name;
-    }
+    return ldap_to_ad_names.value(ldap_name, ldap_name);
 }
 
 QString AdConfig::get_ad_to_ldap_name(const QString &ad_name) const {
-    if (ad_to_ldap_names.contains(ad_name)) {
-        return ad_to_ldap_names[ad_name];
-    } else {
-        return ad_name;
-    }
+    return ad_to_ldap_names.value(ad_name, ad_name);
 }
 
 // TODO: Object's objectClass list appears to already contain the full inheritance chain. Confirm that this applies to all objects, because otherwise would need to manually go down the inheritance chain to get all possible attributes.
@@ -445,19 +433,11 @@ QList<QString> AdConfig::get_possible_attributes(const QList<QString> &object_cl
 }
 
 QList<QString> AdConfig::get_find_attributes(const QString &object_class) const {
-    if (find_attributes.contains(object_class)) {
-        return find_attributes[object_class];
-    } else {
-        return QList<QString>();
-    }
+    return find_attributes.value(object_class, QList<QString>());
 }
 
 AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
-    if (attribute_types.contains(attribute)) {
-        return attribute_types[attribute];
-    } else {
-        return AttributeType_StringCase;
-    }
+    return attribute_types.value(attribute, AttributeType_StringCase);
 }
 
 LargeIntegerSubtype AdConfig::get_large_integer_subtype(const QString &attribute) const {
@@ -500,19 +480,11 @@ bool AdConfig::attribute_is_number(const QString &attribute) const {
 }
 
 bool AdConfig::get_attribute_is_single_valued(const QString &attribute) const {
-    if (attribute_is_single_valued.contains(attribute)) {
-        return attribute_is_single_valued[attribute];
-    } else {
-        return true;
-    }
+    return attribute_is_single_valued.value(attribute, true);
 }
 
 bool AdConfig::get_attribute_is_system_only(const QString &attribute) const {
-    if (attribute_is_system_only.contains(attribute)) {
-        return attribute_is_system_only[attribute];
-    } else {
-        return true;
-    }
+    return attribute_is_system_only.value(attribute, true);
 }
 
 // Display specifier DN is "CN=object-class-Display,CN=..."
