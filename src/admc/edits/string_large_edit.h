@@ -17,30 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tabs/address_tab.h"
-#include "edits/string_edit.h"
-#include "edits/string_large_edit.h"
-#include "edits/country_edit.h"
+#ifndef STRING_LARGE_EDIT_H
+#define STRING_LARGE_EDIT_H
 
-#include <QVBoxLayout>
-#include <QFormLayout>
+/**
+ * Edit for large, multi-line strings. Uses QPlainTextEdit
+ * instead of QLineEdit.
+ */
 
-AddressTab::AddressTab() {
-    new StringLargeEdit(ATTRIBUTE_STREET, CLASS_USER, this, &edits);
+#include "attribute_edit.h"
 
-    const QList<QString> attributes = {
-        ATTRIBUTE_PO_BOX,
-        ATTRIBUTE_CITY,
-        ATTRIBUTE_STATE,
-        ATTRIBUTE_POSTAL_CODE
-    };
-    make_string_edits(attributes, CLASS_USER, this, &edits);
+#include <QString>
+#include <QList>
 
-    new CountryEdit(this, &edits);
+class QPlainTextEdit;
 
-    edits_connect_to_tab(edits, this);
+class StringLargeEdit final : public AttributeEdit {
+Q_OBJECT
+public:
+    StringLargeEdit(const QString &attribute_arg, const QString &objectClass_arg, QObject *parent, QList<AttributeEdit *> *edits_out = nullptr);
+    DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
-    const auto layout = new QFormLayout();
-    setLayout(layout);
-    edits_add_to_layout(edits, layout);
-}
+private:
+    QPlainTextEdit *edit;
+    QString attribute;
+    QString objectClass;
+};
+
+#endif /* STRING_LARGE_EDIT_H */

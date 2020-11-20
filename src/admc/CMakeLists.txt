@@ -71,6 +71,7 @@ add_executable(admc
     edits/attribute_edit.cpp
     edits/string_edit.cpp
     edits/string_other_edit.cpp
+    edits/string_large_edit.cpp
     edits/country_edit.cpp
     edits/expiry_edit.cpp
     edits/unlock_edit.cpp

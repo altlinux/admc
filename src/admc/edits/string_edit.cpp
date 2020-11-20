@@ -24,7 +24,6 @@
 
 #include <QLineEdit>
 #include <QFormLayout>
-#include <QMessageBox>
 
 void make_string_edits(const QList<QString> attributes, const QString &objectClass, QObject *parent, QList<AttributeEdit *> *edits_out) {
     for (auto attribute : attributes) {

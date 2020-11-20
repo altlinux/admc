@@ -18,8 +18,8 @@
  */
 
 #include "tabs/telephones_tab.h"
-#include "edits/string_edit.h"
 #include "edits/string_other_edit.h"
+#include "edits/string_large_edit.h"
 
 #include <QFormLayout>
 
@@ -30,7 +30,7 @@ TelephonesTab::TelephonesTab() {
     new StringOtherEdit(ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, CLASS_USER, this, &edits);
     new StringOtherEdit(ATTRIBUTE_IP_PHONE, ATTRIBUTE_OTHER_IP_PHONE, CLASS_USER, this, &edits);
 
-    new StringEdit(ATTRIBUTE_INFO, CLASS_USER, this, &edits);
+    new StringLargeEdit(ATTRIBUTE_INFO, CLASS_USER, this, &edits);
 
     edits_connect_to_tab(edits, this);
 
