@@ -23,12 +23,14 @@
 #include "ad_interface.h"
 #include "filter.h"
 
+#include <algorithm>
+
 #include <QTreeView>
 #include <QVBoxLayout>
 #include <QStandardItemModel>
 #include <QMenu>
 
-// TODO: giving up on providing a way to edit from here, too complicated. Instead user needs to go to one of the object's details and edit from there. Complicated because adding/removing modifies attribute of *object* NOT of the *gpo*. Also no way to see or modify order, etc.
+
 
 enum GpoLinksColumn {
     GpoLinksColumn_Name,
@@ -60,13 +62,17 @@ GpoLinksTab::GpoLinksTab() {
     DetailsDialog::connect_to_open_by_double_click(view, GpoLinksColumn_DN);
 }
 
-void GpoLinksTab::load(const AdObject &object) {
-    // NOTE: *target* means searching for gplink containing target
+void GpoLinksTab::load(const AdObject &policy) {
     const QList<QString> search_attributes = {ATTRIBUTE_NAME};
-    const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, object.get_dn());
+    const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, policy.get_dn());
     const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_All);
 
-    for (auto dn : search_results.keys()) {
+    // Sort objects by dn(identical to sorting by name)
+    QList<QString> dns = search_results.keys();
+    std::sort(dns.begin(), dns.end());
+
+    for (auto dn : dns) {
+        const AdObject object = search_results[dn];
         const QString name = object.get_string(ATTRIBUTE_NAME);
 
         const QList<QStandardItem *> row = make_item_row(GpoLinksColumn_COUNT);

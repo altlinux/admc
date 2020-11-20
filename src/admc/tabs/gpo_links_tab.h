@@ -27,7 +27,11 @@
 class QTreeView;
 class QStandardItemModel;
 
-// List objects that this GPO links to
+/**
+ * List objects that this GPO links to. Does not provide a
+ * way to edit, editing should be done in group policy tabs
+ * of objects.
+ */
 
 class GpoLinksTab final : public DetailsTab {
 Q_OBJECT
@@ -35,7 +39,7 @@ Q_OBJECT
 public:
     GpoLinksTab();
 
-    void load(const AdObject &object) override;
+    void load(const AdObject &policy) override;
 
 private:
     QTreeView *view;
