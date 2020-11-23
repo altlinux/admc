@@ -23,6 +23,7 @@
 
 #include <QApplication>
 #include <QTranslator>
+#include <QLibraryInfo>
 
 int main(int argc, char **argv) {
     QApplication app(argc, argv);
@@ -36,6 +37,11 @@ int main(int argc, char **argv) {
     const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
     translator.load(saved_locale, QString(), QString(), ":/translations");
     app.installTranslator(&translator);
+
+    // NOTE: these translations are for qt-defined text, like standard dialog buttons
+    QTranslator qt_translator;
+    qt_translator.load("qt_" + saved_locale.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    app.installTranslator(&qt_translator);
 
     MainWindow main_window;
     main_window.show();

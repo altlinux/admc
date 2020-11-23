@@ -31,6 +31,8 @@
 class QLineEdit;
 
 class SelectClassesWidget final : public QWidget {
+Q_OBJECT
+    
 public:
     SelectClassesWidget();
 

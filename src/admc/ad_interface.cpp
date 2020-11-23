@@ -819,7 +819,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
                     if (set) {
                         return QString(tr("Disabled account for user - \"%1\"")).arg(name);
                     } else {
-                        return QString(tr("Enabled account user - \"%1\"")).arg(name);
+                        return QString(tr("Enabled account for user - \"%1\"")).arg(name);
                     }
                 }
                 default: {
@@ -845,7 +845,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
                     if (set) {
                         return QString(tr("Failed to disable account for user - \"%1\"")).arg(name);
                     } else {
-                        return QString(tr("Enabled account for user - \"%1\"")).arg(name);
+                        return QString(tr("Failed to enable account for user - \"%1\"")).arg(name);
                     }
                 }
                 default: {
@@ -1138,7 +1138,7 @@ void AdInterface::error_status_message(const QString &context, const QString &er
 
     QString msg = context;
     if (!error.isEmpty()) {
-        msg += QString(tr(". Error: \"%2\"")).arg(error);;
+        msg += QString(tr(". Error: \"%1\"")).arg(error);;
     }
 
     Status::instance()->message(msg, StatusType_Error);
