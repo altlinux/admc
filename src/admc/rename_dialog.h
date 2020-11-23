@@ -34,6 +34,9 @@ Q_OBJECT
 public:
     RenameDialog(const QString &target_arg);
 
+    static void success_msg(const QString &old_name);
+    static void fail_msg(const QString &old_name, const int errors_index);
+
 private slots:
     void accept();
     void on_edited();
@@ -47,5 +50,7 @@ private:
     QPushButton *reset_button;
 
 };
+
+
 
 #endif /* RENAME_DIALOG_H */

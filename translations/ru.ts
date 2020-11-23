@@ -1359,7 +1359,7 @@
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="../src/admc/rename_dialog.cpp" line="124"/>
+        <location filename="../src/admc/rename_dialog.cpp" line="104"/>
         <source>Renamed object - &quot;%1&quot;</source>
         <translation>Переименован объект - &quot;%1&quot;</translation>
     </message>
@@ -1372,24 +1372,14 @@
 <context>
     <name>RenamePolicyDialog</name>
     <message>
-        <location filename="../src/admc/rename_policy_dialog.cpp" line="48"/>
+        <location filename="../src/admc/rename_policy_dialog.cpp" line="49"/>
         <source>Rename %1 - %2</source>
         <translation>Переименовать %1 - %2</translation>
     </message>
     <message>
-        <location filename="../src/admc/rename_policy_dialog.cpp" line="70"/>
+        <location filename="../src/admc/rename_policy_dialog.cpp" line="71"/>
         <source>Name:</source>
         <translation>Имя:</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/rename_policy_dialog.cpp" line="94"/>
-        <source>Renamed object - &quot;%1&quot;</source>
-        <translation>Переименован объект - &quot;%1&quot;</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/rename_policy_dialog.cpp" line="98"/>
-        <source>Failed to rename object - &quot;%1&quot;</source>
-        <translation>Не удалось переименовать объект - &quot;%1&quot;</translation>
     </message>
 </context>
 <context>

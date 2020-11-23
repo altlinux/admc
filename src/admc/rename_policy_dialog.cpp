@@ -18,6 +18,7 @@
  */
 
 #include "rename_policy_dialog.h"
+#include "rename_dialog.h"
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "ad_utils.h"
@@ -91,13 +92,10 @@ void RenamePolicyDialog::accept() {
     const bool apply_success = AD()->attribute_replace_string(target, ATTRIBUTE_DISPLAY_NAME, new_name);
 
     if (apply_success) {
-        const QString message = QString(tr("Renamed object - \"%1\"")).arg(old_name);
-        Status::instance()->message(message, StatusType_Success);
+        RenameDialog::success_msg(old_name);
         QDialog::close();
     } else {
-        const QString message = QString(tr("Failed to rename object - \"%1\"")).arg(old_name);
-        Status::instance()->message(message, StatusType_Error);
-        Status::instance()->show_errors_popup(errors_index);
+        RenameDialog::fail_msg(old_name, errors_index);
     }
 }
 
