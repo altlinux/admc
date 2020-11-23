@@ -27,220 +27,220 @@
 <context>
     <name>AdInterface</name>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="341"/>
+        <location filename="../src/admc/ad_interface.cpp" line="399"/>
         <source>Added value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="349"/>
+        <location filename="../src/admc/ad_interface.cpp" line="407"/>
         <source>Failed to add value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="406"/>
-        <source>Changed attribute &quot;%1&quot; of &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="412"/>
+        <location filename="../src/admc/ad_interface.cpp" line="360"/>
         <source>Failed to change attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="450"/>
+        <location filename="../src/admc/ad_interface.cpp" line="432"/>
         <source>Deleted value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="458"/>
+        <location filename="../src/admc/ad_interface.cpp" line="440"/>
         <source>Failed to delete value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="492"/>
-        <source>Created &quot;%1&quot;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="498"/>
-        <source>Failed to create &quot;%1&quot;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="516"/>
+        <location filename="../src/admc/ad_interface.cpp" line="504"/>
         <source>Deleted object &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="522"/>
+        <location filename="../src/admc/ad_interface.cpp" line="510"/>
         <source>Failed to delete object &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="550"/>
-        <source>Moved &quot;%1&quot; to &quot;%2&quot;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="556"/>
-        <source>Failed to move &quot;%1&quot; to &quot;%2&quot;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="601"/>
+        <location filename="../src/admc/ad_interface.cpp" line="590"/>
         <source>Added user &quot;%1&quot; to group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="607"/>
+        <location filename="../src/admc/ad_interface.cpp" line="596"/>
         <source>Failed to add user &quot;%1&quot; to group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="622"/>
+        <location filename="../src/admc/ad_interface.cpp" line="612"/>
         <source>Removed user &quot;%1&quot; from group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="628"/>
+        <location filename="../src/admc/ad_interface.cpp" line="618"/>
         <source>Failed to remove user &quot;%1&quot; from group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="655"/>
+        <location filename="../src/admc/ad_interface.cpp" line="704"/>
         <source>Set primary group for user &quot;%1&quot; to &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="661"/>
+        <location filename="../src/admc/ad_interface.cpp" line="710"/>
         <source>Failed to set primary group for user &quot;%1&quot; to &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="691"/>
+        <location filename="../src/admc/ad_interface.cpp" line="648"/>
         <source>Set scope for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="695"/>
+        <location filename="../src/admc/ad_interface.cpp" line="354"/>
+        <source>Changed attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="480"/>
+        <source>Created object &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="486"/>
+        <source>Failed to create object &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="538"/>
+        <source>Moved object &quot;%1&quot; to &quot;%2&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="544"/>
+        <source>Failed to move object &quot;%1&quot; to &quot;%2&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="567"/>
+        <source>Renamed object &quot;%1&quot; to &quot;%2&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="573"/>
+        <source>Failed to rename object &quot;%1&quot; to &quot;%2&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="652"/>
         <source>Failed to set scope for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="716"/>
+        <location filename="../src/admc/ad_interface.cpp" line="673"/>
         <source>Set type for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="720"/>
+        <location filename="../src/admc/ad_interface.cpp" line="677"/>
         <source>Failed to set type for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="579"/>
-        <source>Renamed &quot;%1&quot; to &quot;%2&quot;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="585"/>
-        <source>Failed to rename &quot;%1&quot; to &quot;%2&quot;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="758"/>
-        <source>Password doesn&apos;t match rules</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="820"/>
-        <source>Disabled account for user - &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="829"/>
-        <source>Turned ON account option &quot;%1&quot; of user &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="831"/>
-        <source>Turned OFF account option &quot;%1&quot; of user &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/admc/ad_interface.cpp" line="846"/>
-        <source>Failed to disable account for user - &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="822"/>
-        <source>Enabled account for user - &quot;%1&quot;</source>
+        <source>Failed to turn ON account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/admc/ad_interface.cpp" line="848"/>
+        <source>Failed to turn OFF account option &quot;%1&quot; for user &quot;%2&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="749"/>
+        <source>Password doesn&apos;t match rules</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="811"/>
+        <source>Disabled account for user - &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="837"/>
+        <source>Failed to disable account for user - &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="813"/>
+        <source>Enabled account for user - &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="737"/>
+        <source>Set pass of user &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="743"/>
+        <source>Failed to set pass of user &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="820"/>
+        <source>Turned ON account option &quot;%1&quot; for user &quot;%2&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="822"/>
+        <source>Turned OFF account option &quot;%1&quot; for user &quot;%2&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_interface.cpp" line="839"/>
         <source>Failed to enable account for user - &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="855"/>
-        <source>Failed to turn ON account option &quot;%1&quot; of user &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="857"/>
-        <source>Failed to turn OFF account option &quot;%1&quot; of user &quot;%2&quot;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="875"/>
+        <location filename="../src/admc/ad_interface.cpp" line="866"/>
         <source>Unlocked user &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="879"/>
+        <location filename="../src/admc/ad_interface.cpp" line="870"/>
         <source>Failed to unlock user &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1157"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1148"/>
         <source>LDAP error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="752"/>
-        <source>Failed to set pass of &quot;%1&quot;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1141"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1132"/>
         <source>. Error: &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1150"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1141"/>
         <source>No such object</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1151"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1142"/>
         <source>Constraint violation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1152"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1143"/>
         <source>Server is unwilling to perform</source>
         <translation>Server is unwilling to perform</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1153"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1144"/>
         <source>Already exists</source>
         <translatorcomment>add &quot;object&quot; to avoid gendering verb in russian</translatorcomment>
         <translation>Object already exists</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="746"/>
-        <source>Set pass of &quot;%1&quot;</source>
-        <translation></translation>
     </message>
 </context>
 <context>

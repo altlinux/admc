@@ -351,7 +351,7 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
     const QString old_values_display = attribute_display_values(attribute, old_values);
 
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Changed attribute \"%1\" of \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_values_display, values_display), do_msg);
+        success_status_message(QString(tr("Changed attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_values_display, values_display), do_msg);
 
         emit_modified();
 
@@ -477,13 +477,13 @@ bool AdInterface::object_add(const QString &dn, const QString &object_class) {
     const int result = ad_add(ld, dn_cstr, classes);
 
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Created \"%1\"")).arg(dn));
+        success_status_message(QString(tr("Created object \"%1\"")).arg(dn));
 
         emit_modified();
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to create \"%1\"")).arg(dn);
+        const QString context = QString(tr("Failed to create object \"%1\"")).arg(dn);
         const QString error = default_error();
 
         error_status_message(context, error);
@@ -535,13 +535,13 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
     const QString container_name = dn_get_name(new_container);
 
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Moved \"%1\" to \"%2\"")).arg(object_name, container_name));
+        success_status_message(QString(tr("Moved object \"%1\" to \"%2\"")).arg(object_name, container_name));
 
         emit_modified();
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to move \"%1\" to \"%2\"")).arg(object_name, container_name);
+        const QString context = QString(tr("Failed to move object \"%1\" to \"%2\"")).arg(object_name, container_name);
         const QString error = default_error();
 
         error_status_message(context, error);
@@ -564,13 +564,13 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     const QString old_name = dn_get_name(dn);
 
     if (result == AD_SUCCESS) {
-        success_status_message(QString(tr("Renamed \"%1\" to \"%2\"")).arg(old_name, new_name));
+        success_status_message(QString(tr("Renamed object \"%1\" to \"%2\"")).arg(old_name, new_name));
 
         emit_modified();
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to rename \"%1\" to \"%2\"")).arg(old_name, new_name);
+        const QString context = QString(tr("Failed to rename object \"%1\" to \"%2\"")).arg(old_name, new_name);
         const QString error = default_error();
 
         error_status_message(context, error);
@@ -734,13 +734,13 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
     const QString name = dn_get_name(dn);
     
     if (success) {
-        success_status_message(QString(tr("Set pass of \"%1\"")).arg(name));
+        success_status_message(QString(tr("Set pass of user \"%1\"")).arg(name));
 
         emit_modified();
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to set pass of \"%1\"")).arg(name);
+        const QString context = QString(tr("Failed to set pass of user \"%1\"")).arg(name);
 
         const QString error =
         [this]() {
@@ -817,9 +817,9 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
                     const QString description = account_option_string(option);
 
                     if (set) {
-                        return QString(tr("Turned ON account option \"%1\" of user \"%2\"")).arg(description, name);
+                        return QString(tr("Turned ON account option \"%1\" for user \"%2\"")).arg(description, name);
                     } else {
-                        return QString(tr("Turned OFF account option \"%1\" of user \"%2\"")).arg(description, name);
+                        return QString(tr("Turned OFF account option \"%1\" for user \"%2\"")).arg(description, name);
                     }
                 }
             }
@@ -843,9 +843,9 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
                     const QString description = account_option_string(option);
 
                     if (set) {
-                        return QString(tr("Failed to turn ON account option \"%1\" of user \"%2\"")).arg(description, name);
+                        return QString(tr("Failed to turn ON account option \"%1\" for user \"%2\"")).arg(description, name);
                     } else {
-                        return QString(tr("Failed to turn OFF account option \"%1\" of user \"%2\"")).arg(description, name);
+                        return QString(tr("Failed to turn OFF account option \"%1\" for user \"%2\"")).arg(description, name);
                     }
                 }
             }
