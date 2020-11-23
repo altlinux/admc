@@ -80,7 +80,7 @@ int ad_delete(LDAP *ld, const char *dn);
  * This function works only on multi-valued attributes
  * Returns AD_SUCCESS, AD_LDAP_ERROR
  */
-int ad_attribute_add(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length);
+int ad_attribute_add_value(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length);
 
 /**
  * Remove (attribute, value) mapping from object

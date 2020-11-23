@@ -180,14 +180,14 @@ void MembershipTab::apply(const QString &target) const {
             for (auto user : original_values) {
                 const bool removed = !current_values.contains(user);
                 if (removed) {
-                    AD()->group_remove_user(group, user);
+                    AD()->group_remove_member(group, user);
                 }
             }
 
             for (auto user : current_values) {
                 const bool added = !original_values.contains(user);
                 if (added) {
-                    AD()->group_add_user(group, user);
+                    AD()->group_add_member(group, user);
                 }
             }
 
@@ -206,14 +206,14 @@ void MembershipTab::apply(const QString &target) const {
 
                 const bool removed = !current_values.contains(group);
                 if (removed) {
-                    AD()->group_remove_user(group, user);
+                    AD()->group_remove_member(group, user);
                 }
             }
 
             if (current_primary_values != original_primary_values) {
                 const QString group_dn = current_primary_values.values()[0];
                 
-                AD()->group_set_primary_for_user(group_dn, target);
+                AD()->user_set_primary_group(group_dn, target);
             }
 
             // Add user to groups that were added
@@ -226,7 +226,7 @@ void MembershipTab::apply(const QString &target) const {
 
                 const bool added = !original_values.contains(group);
                 if (added) {
-                    AD()->group_add_user(group, user);
+                    AD()->group_add_member(group, user);
                 }
             }
 

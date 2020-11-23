@@ -303,25 +303,7 @@ AdObject AdInterface::search_object(const QString &dn, const QList<QString> &att
     }
 }
 
-bool AdInterface::attribute_add_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
-    const QByteArray value_bytes = value.toUtf8();
-    
-    return attribute_add(dn, attribute, value_bytes, do_msg);
-}
-
-bool AdInterface::attribute_replace_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
-    const QByteArray value_bytes = value.toUtf8();
-
-    return attribute_replace_value(dn, attribute, value_bytes, do_msg);
-}
-
-bool AdInterface::attribute_delete_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
-    const QByteArray value_bytes = value.toUtf8();
-    
-    return attribute_delete_value(dn, attribute, value_bytes, do_msg);
-}
-
-bool AdInterface::attribute_add(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
+bool AdInterface::attribute_add_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
     const QByteArray dn_array = dn.toUtf8();
     const char *dn_cstr = dn_array.constData();
 
@@ -330,7 +312,7 @@ bool AdInterface::attribute_add(const QString &dn, const QString &attribute, con
 
     const char *value_cstr = value.constData();
 
-    const int result = ad_attribute_add(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+    const int result = ad_attribute_add_value(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
 
     const QString name = dn_get_name(dn);
 
@@ -464,6 +446,12 @@ bool AdInterface::attribute_delete_value(const QString &dn, const QString &attri
     }
 }
 
+bool AdInterface::attribute_replace_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg) {
+    const QByteArray value_bytes = value.toUtf8();
+
+    return attribute_replace_value(dn, attribute, value_bytes, do_msg);
+}
+
 bool AdInterface::attribute_replace_int(const QString &dn, const QString &attribute, const int value, const DoStatusMsg do_msg) {
     const QString value_string = QString::number(value);
     const bool result = attribute_replace_string(dn, attribute, value_string, do_msg);
@@ -591,8 +579,9 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     }
 }
 
-bool AdInterface::group_add_user(const QString &group_dn, const QString &user_dn) {
-    const bool success = attribute_add_string(group_dn, ATTRIBUTE_MEMBER, user_dn);
+bool AdInterface::group_add_member(const QString &group_dn, const QString &user_dn) {
+    const QByteArray user_dn_bytes = user_dn.toUtf8();
+    const bool success = attribute_add_value(group_dn, ATTRIBUTE_MEMBER, user_dn_bytes, DoStatusMsg_No);
 
     const QString user_name = dn_get_name(user_dn);
     const QString group_name = dn_get_name(group_dn);
@@ -612,8 +601,9 @@ bool AdInterface::group_add_user(const QString &group_dn, const QString &user_dn
     }
 }
 
-bool AdInterface::group_remove_user(const QString &group_dn, const QString &user_dn) {
-    const bool success = attribute_delete_string(group_dn, ATTRIBUTE_MEMBER, user_dn);
+bool AdInterface::group_remove_member(const QString &group_dn, const QString &user_dn) {
+    const QByteArray user_dn_bytes = user_dn.toUtf8();
+    const bool success = attribute_delete_value(group_dn, ATTRIBUTE_MEMBER, user_dn_bytes, DoStatusMsg_No);
 
     const QString user_name = dn_get_name(user_dn);
     const QString group_name = dn_get_name(group_dn);
@@ -633,14 +623,14 @@ bool AdInterface::group_remove_user(const QString &group_dn, const QString &user
     }
 }
 
-bool AdInterface::group_set_primary_for_user(const QString &group_dn, const QString &user_dn) {
+bool AdInterface::user_set_primary_group(const QString &group_dn, const QString &user_dn) {
     const AdObject group_object = AD()->search_object(group_dn, {ATTRIBUTE_OBJECT_SID, ATTRIBUTE_MEMBER});
 
     // NOTE: need to add user to group before it can become primary
     const QList<QString> group_members = group_object.get_strings(ATTRIBUTE_MEMBER);
     const bool user_is_in_group = group_members.contains(user_dn);
     if (!user_is_in_group) {
-        group_add_user(group_dn, user_dn);
+        group_add_member(group_dn, user_dn);
     }
 
     const QByteArray group_sid = group_object.get_value(ATTRIBUTE_OBJECT_SID);
@@ -949,7 +939,7 @@ void AdInterface::object_drop(const QString &dn, const QString &target_dn) {
             break;
         }
         case DropType_AddToGroup: {
-            AD()->group_add_user(target_dn, dn);
+            AD()->group_add_member(target_dn, dn);
             break;
         }
         case DropType_None: {

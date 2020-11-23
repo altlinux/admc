@@ -85,15 +85,12 @@ public:
     QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &search_base = QString());
     AdObject search_object(const QString &dn, const QList<QString> &attributes = QList<QString>());
 
-    bool attribute_add(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
+    bool attribute_add_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_delete_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     
-    bool attribute_add_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
-    bool attribute_delete_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
-
     bool attribute_replace_int(const QString &dn, const QString &attribute, const int value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace_datetime(const QString &dn, const QString &attribute, const QDateTime &datetime);
 
@@ -102,9 +99,9 @@ public:
     bool object_move(const QString &dn, const QString &new_container);
     bool object_rename(const QString &dn, const QString &new_name);
 
-    bool group_add_user(const QString &group_dn, const QString &user_dn);
-    bool group_remove_user(const QString &group_dn, const QString &user_dn);
-    bool group_set_primary_for_user(const QString &group_dn, const QString &user_dn);
+    bool group_add_member(const QString &group_dn, const QString &user_dn);
+    bool group_remove_member(const QString &group_dn, const QString &user_dn);
+    bool user_set_primary_group(const QString &group_dn, const QString &user_dn);
     bool group_set_scope(const QString &dn, GroupScope scope);
     bool group_set_type(const QString &dn, GroupType type);
 

@@ -160,7 +160,7 @@ void ObjectContextMenu::add_to_group(const AdObject &object) {
 
     if (selected_objects.size() > 0) {
         for (auto group : selected_objects) {
-            AD()->group_add_user(group, object.get_dn());
+            AD()->group_add_member(group, object.get_dn());
         }
     }
 }

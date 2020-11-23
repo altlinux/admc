@@ -273,7 +273,7 @@ int ad_delete(LDAP *ld, const char *dn) {
     return result;
 }
 
-int ad_attribute_add(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
+int ad_attribute_add_value(LDAP *ld, const char *dn, const char *attribute, const char *data, int data_length) {
     int result = AD_SUCCESS;
 
     char *data_copy = strdup(data);
