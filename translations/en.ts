@@ -927,6 +927,11 @@
         <translation></translation>
     </message>
     <message>
+        <location filename="../src/admc/object_context_menu.cpp" line="68"/>
+        <source>New</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/admc/object_context_menu.cpp" line="84"/>
         <source>Move</source>
         <translation></translation>

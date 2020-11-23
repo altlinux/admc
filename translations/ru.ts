@@ -928,6 +928,11 @@
         <translation>Переименовать</translation>
     </message>
     <message>
+        <location filename="../src/admc/object_context_menu.cpp" line="68"/>
+        <source>New</source>
+        <translation>Создать</translation>
+    </message>
+    <message>
         <location filename="../src/admc/object_context_menu.cpp" line="84"/>
         <source>Move</source>
         <translation>Переместить</translation>

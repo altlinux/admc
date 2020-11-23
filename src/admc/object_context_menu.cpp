@@ -65,7 +65,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
         dialog->open();
     });
 
-    QMenu *submenu_new = addMenu("New");
+    QMenu *submenu_new = addMenu(tr("New"));
     static const QList<QString> create_classes = {
         CLASS_USER,
         CLASS_COMPUTER,
