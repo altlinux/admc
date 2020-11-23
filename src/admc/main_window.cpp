@@ -43,6 +43,22 @@ MainWindow::MainWindow()
 {
     SETTINGS()->restore_geometry(this, VariantSetting_MainWindowGeometry);
 
+    // Offline menubar
+    auto menubar = new QMenuBar();
+    setMenuBar(menubar);
+
+    QMenu *menubar_action = menubar->addMenu(tr("Action"));
+
+    menubar_action->addAction(tr("Connect"),
+        [this]() {
+            attempt_to_connect();
+        });
+
+    menubar_action->addAction(tr("Exit"),
+        []() {
+            QApplication::quit();
+        });
+
     attempt_to_connect();
 }
 
@@ -52,7 +68,7 @@ void MainWindow::attempt_to_connect() {
     if (result == ConnectResult_Success) {
         finish_init();
     } else {
-        // Open retry dialog
+        // Open dialog explaining connection error
         // TODO: not sure about phrasing of errors
         const QMessageBox::Icon icon = QMessageBox::Warning;
         const QString title = tr("Failed to connect");
@@ -65,25 +81,10 @@ void MainWindow::attempt_to_connect() {
             }
             return QString();
         }();
-        const QMessageBox::StandardButtons buttons = (QMessageBox::Retry | QMessageBox::Cancel);
+        const QMessageBox::StandardButtons buttons = QMessageBox::Cancel;
         auto dialog = new QMessageBox(icon, title, text, buttons);
+        dialog->setModal(true);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
-
-        // NOTE: delay retry and open an intermediate dialog so that the user can follow the process. Otherwise it would look like clicking retry button did nothing
-        connect(
-            dialog, &QDialog::accepted,
-            [this, icon, title]() {
-                auto retrying_dialog = new QMessageBox(icon, title, tr("Retrying..."), QMessageBox::Cancel);
-                retrying_dialog->setAttribute(Qt::WA_DeleteOnClose);
-
-                retrying_dialog->open();
-
-                QTimer::singleShot(1000,
-                    [this, retrying_dialog]() {
-                        retrying_dialog->close();
-                        attempt_to_connect();
-                    });
-            });
 
         dialog->open();
     }
@@ -137,8 +138,6 @@ void MainWindow::finish_init() {
     central_layout->setSpacing(0);
 
     central_widget->setLayout(central_layout);
-
-    show();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
