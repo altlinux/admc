@@ -303,40 +303,6 @@ AdObject AdInterface::search_object(const QString &dn, const QList<QString> &att
     }
 }
 
-bool AdInterface::attribute_add_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
-    const QByteArray dn_array = dn.toUtf8();
-    const char *dn_cstr = dn_array.constData();
-
-    const QByteArray attribute_array = attribute.toUtf8();
-    const char *attribute_cstr = attribute_array.constData();
-
-    const char *value_cstr = value.constData();
-
-    const int result = ad_attribute_add_value(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
-
-    const QString name = dn_get_name(dn);
-
-    const QString new_display_value = attribute_display_value(attribute, value);
-    ;
-
-    if (result == AD_SUCCESS) {
-        const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_display_value, attribute, name);
-
-        success_status_message(context, do_msg);
-
-        emit_modified();
-
-        return true;
-    } else {
-        const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_display_value, attribute, name);
-        const QString error = default_error();
-
-        error_status_message(context, error, do_msg);
-
-        return false;
-    }
-}
-
 bool AdInterface::attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg) {
     int result = AD_SUCCESS;
     
@@ -411,6 +377,40 @@ bool AdInterface::attribute_replace_value(const QString &dn, const QString &attr
     }();
 
     return attribute_replace_values(dn, attribute, values, do_msg);
+}
+
+bool AdInterface::attribute_add_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
+    const QByteArray dn_array = dn.toUtf8();
+    const char *dn_cstr = dn_array.constData();
+
+    const QByteArray attribute_array = attribute.toUtf8();
+    const char *attribute_cstr = attribute_array.constData();
+
+    const char *value_cstr = value.constData();
+
+    const int result = ad_attribute_add_value(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+
+    const QString name = dn_get_name(dn);
+
+    const QString new_display_value = attribute_display_value(attribute, value);
+    ;
+
+    if (result == AD_SUCCESS) {
+        const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_display_value, attribute, name);
+
+        success_status_message(context, do_msg);
+
+        emit_modified();
+
+        return true;
+    } else {
+        const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_display_value, attribute, name);
+        const QString error = default_error();
+
+        error_status_message(context, error, do_msg);
+
+        return false;
+    }
 }
 
 bool AdInterface::attribute_delete_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
@@ -623,39 +623,6 @@ bool AdInterface::group_remove_member(const QString &group_dn, const QString &us
     }
 }
 
-bool AdInterface::user_set_primary_group(const QString &group_dn, const QString &user_dn) {
-    const AdObject group_object = AD()->search_object(group_dn, {ATTRIBUTE_OBJECT_SID, ATTRIBUTE_MEMBER});
-
-    // NOTE: need to add user to group before it can become primary
-    const QList<QString> group_members = group_object.get_strings(ATTRIBUTE_MEMBER);
-    const bool user_is_in_group = group_members.contains(user_dn);
-    if (!user_is_in_group) {
-        group_add_member(group_dn, user_dn);
-    }
-
-    const QByteArray group_sid = group_object.get_value(ATTRIBUTE_OBJECT_SID);
-    const QString group_rid = extract_rid_from_sid(group_sid);
-
-    const bool success = AD()->attribute_replace_string(user_dn, ATTRIBUTE_PRIMARY_GROUP_ID, group_rid, DoStatusMsg_No);
-
-    const QString user_name = dn_get_name(user_dn);
-    const QString group_name = dn_get_name(group_dn);
-
-    if (success) {
-        success_status_message(QString(tr("Set primary group for user \"%1\" to \"%2\"")).arg(user_name, group_name));
-
-        emit_modified();
-
-        return true;
-    } else {
-        const QString context = QString(tr("Failed to set primary group for user \"%1\" to \"%2\"")).arg(user_name, group_name);
-
-        error_status_message(context, "");
-
-        return false;
-    }
-}
-
 // TODO: are there side-effects on group members from this?...
 bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
     const AdObject object = search_object(dn, {ATTRIBUTE_GROUP_TYPE});
@@ -708,6 +675,40 @@ bool AdInterface::group_set_type(const QString &dn, GroupType type) {
         return true;
     } else {
         const QString context = QString(tr("Failed to set type for group \"%1\" to \"%2\"")).arg(name, type_string);
+        error_status_message(context, "");
+
+        return false;
+    }
+}
+
+
+bool AdInterface::user_set_primary_group(const QString &group_dn, const QString &user_dn) {
+    const AdObject group_object = AD()->search_object(group_dn, {ATTRIBUTE_OBJECT_SID, ATTRIBUTE_MEMBER});
+
+    // NOTE: need to add user to group before it can become primary
+    const QList<QString> group_members = group_object.get_strings(ATTRIBUTE_MEMBER);
+    const bool user_is_in_group = group_members.contains(user_dn);
+    if (!user_is_in_group) {
+        group_add_member(group_dn, user_dn);
+    }
+
+    const QByteArray group_sid = group_object.get_value(ATTRIBUTE_OBJECT_SID);
+    const QString group_rid = extract_rid_from_sid(group_sid);
+
+    const bool success = AD()->attribute_replace_string(user_dn, ATTRIBUTE_PRIMARY_GROUP_ID, group_rid, DoStatusMsg_No);
+
+    const QString user_name = dn_get_name(user_dn);
+    const QString group_name = dn_get_name(group_dn);
+
+    if (success) {
+        success_status_message(QString(tr("Set primary group for user \"%1\" to \"%2\"")).arg(user_name, group_name));
+
+        emit_modified();
+
+        return true;
+    } else {
+        const QString context = QString(tr("Failed to set primary group for user \"%1\" to \"%2\"")).arg(user_name, group_name);
+
         error_status_message(context, "");
 
         return false;
