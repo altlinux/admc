@@ -54,7 +54,8 @@ AttributesTab::AttributesTab() {
     proxy->setSourceModel(model);
     view->setModel(proxy);
 
-    const auto layout = new QVBoxLayout(this);
+    const auto layout = new QVBoxLayout();
+    setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(view);

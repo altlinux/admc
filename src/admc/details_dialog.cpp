@@ -115,7 +115,8 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
 
     const AdObject object = AD()->search_object(target);
 
-    const auto layout = new QVBoxLayout(this);
+    const auto layout = new QVBoxLayout();
+    setLayout(layout);
     layout->setSpacing(0);
 
     const QString name = object.get_string(ATTRIBUTE_NAME);

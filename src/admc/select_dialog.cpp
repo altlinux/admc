@@ -75,7 +75,8 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     const auto select_button = new QPushButton(tr("Select"), this);
     const auto cancel_button = new QPushButton(tr("Cancel"), this);
 
-    const auto layout = new QGridLayout(this);
+    const auto layout = new QGridLayout();
+    setLayout(layout);
     layout->addWidget(filter_class_label, 1, 0, Qt::AlignRight);
     layout->addWidget(filter_class_combo, 1, 1, 1, 2);
     layout->addWidget(filter_name_label, 2, 0, Qt::AlignRight);

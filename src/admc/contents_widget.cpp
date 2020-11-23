@@ -35,7 +35,8 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, const QActio
 {   
     object_list = new ObjectListWidget();
 
-    const auto layout = new QVBoxLayout(this);
+    const auto layout = new QVBoxLayout();
+    setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(object_list);
