@@ -209,6 +209,9 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
         return;
     }
 
+    // Fetch selected object to remove expander if it has not children
+    model->fetchMore(indexes[0]);
+
     const QString dn = get_dn_from_index(indexes[0], ContainersColumn_DN);
 
     emit selected_changed(dn);
