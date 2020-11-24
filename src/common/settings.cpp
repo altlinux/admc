@@ -18,47 +18,49 @@
  */
 
 #include "settings.h"
+#include "config.h"
 
 #include <QAction>
 #include <QCheckBox>
 #include <QWidget>
 #include <QSettings>
 #include <QLocale>
+#include <QCoreApplication>
 
-bool bool_default_value(BoolSetting type);
-QString bool_to_string(BoolSetting type);
-QString variant_to_string(VariantSetting type);
+bool bool_default_value(const BoolSetting setting);
+QString bool_to_string(const BoolSetting setting);
+QString variant_to_string(const VariantSetting setting);
 
 Settings *Settings::instance() {
     static Settings settings;
     return &settings;
 }
 
-const BoolSettingSignal *Settings::get_bool_signal(BoolSetting type) const {
-    return &bools[type];
+const BoolSettingSignal *Settings::get_bool_signal(const BoolSetting setting) const {
+    return &bools[setting];
 }
 
-bool Settings::get_bool(BoolSetting type) const {
-    const QString setting_str = bool_to_string(type);
+bool Settings::get_bool(const BoolSetting setting) const {
+    const QString setting_str = bool_to_string(setting);
     const bool value = qsettings->value(setting_str, false).toBool();
 
     return value;
 }
 
-void Settings::set_bool(const BoolSetting type, const bool value) {
-    const QString name = bool_to_string(type);
+void Settings::set_bool(const BoolSetting setting, const bool value) {
+    const QString name = bool_to_string(setting);
     qsettings->setValue(name, value);
 }
 
-QVariant Settings::get_variant(VariantSetting type) const {
-    const QString name = variant_to_string(type);
+QVariant Settings::get_variant(const VariantSetting setting) const {
+    const QString name = variant_to_string(setting);
     const QVariant value = qsettings->value(name); 
 
     return value;
 }
 
-void Settings::set_variant(VariantSetting type, const QVariant &value) {
-    const QString name = variant_to_string(type);
+void Settings::set_variant(const VariantSetting setting, const QVariant &value) {
+    const QString name = variant_to_string(setting);
     qsettings->setValue(name, value);
 }
 
@@ -66,12 +68,12 @@ Settings::Settings() {
     qsettings = new QSettings(this);
 }
 
-void Settings::connect_action_to_bool_setting(QAction *action, const BoolSetting type) {
+void Settings::connect_action_to_bool_setting(QAction *action, const BoolSetting setting) {
     action->setCheckable(true);
 
-    const QString setting_str = bool_to_string(type);
+    const QString setting_str = bool_to_string(setting);
 
-    const bool default_value = bool_default_value(type);
+    const bool default_value = bool_default_value(setting);
     
     // Init action state to saved value
     const bool saved_value = qsettings->value(setting_str, default_value).toBool();
@@ -80,17 +82,17 @@ void Settings::connect_action_to_bool_setting(QAction *action, const BoolSetting
     // Update saved value when action is toggled
     connect(
         action, &QAction::toggled,
-        [this, type, setting_str](bool checked) {
+        [this, setting, setting_str](bool checked) {
             qsettings->setValue(setting_str, checked);
 
-            emit bools[type].changed();
+            emit bools[setting].changed();
         });
 }
 
-void Settings::connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSetting type) {
-    const QString setting_str = bool_to_string(type);
+void Settings::connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSetting setting) {
+    const QString setting_str = bool_to_string(setting);
 
-    const bool default_value = bool_default_value(type);
+    const bool default_value = bool_default_value(setting);
     
     // Init action state to saved value
     const bool saved_value = qsettings->value(setting_str, default_value).toBool();
@@ -98,11 +100,11 @@ void Settings::connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSett
 
     connect(
         check, &QCheckBox::stateChanged,
-        [this, type, setting_str, check]() {
+        [this, setting, setting_str, check]() {
             const bool checked = check->isChecked();
             qsettings->setValue(setting_str, checked);
 
-            emit bools[type].changed();
+            emit bools[setting].changed();
         });
 }
 
@@ -118,8 +120,8 @@ void Settings::save_geometry(QWidget *widget, const VariantSetting geometry_sett
     set_variant(VariantSetting_MainWindowGeometry, QVariant(geometry));
 }
 
-bool bool_default_value(BoolSetting type) {
-    switch (type) {
+bool bool_default_value(const BoolSetting setting) {
+    switch (setting) {
         case BoolSetting_LastNameBeforeFirstName: {
             const bool locale_is_russian = (QLocale::system().language() == QLocale::Russian);
             if (locale_is_russian) {
@@ -141,8 +143,8 @@ bool bool_default_value(BoolSetting type) {
 
 // Convert enum to string literal via macro
 // BoolSetting_Foo => "BoolSetting_Foo"
-QString bool_to_string(BoolSetting type) {
-    switch (type) {
+QString bool_to_string(const BoolSetting setting) {
+    switch (setting) {
         CASE_ENUM_TO_STRING(BoolSetting_AdvancedView);
         CASE_ENUM_TO_STRING(BoolSetting_ConfirmActions);
         CASE_ENUM_TO_STRING(BoolSetting_DevMode);
@@ -157,8 +159,8 @@ QString bool_to_string(BoolSetting type) {
     return "";
 }
 
-QString variant_to_string(VariantSetting type) {
-    switch (type) {
+QString variant_to_string(const VariantSetting setting) {
+    switch (setting) {
         CASE_ENUM_TO_STRING(VariantSetting_Domain);
         CASE_ENUM_TO_STRING(VariantSetting_Site);
         CASE_ENUM_TO_STRING(VariantSetting_MainWindowGeometry);

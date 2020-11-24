@@ -29,10 +29,10 @@
 #include <QByteArray>
 #include <QDateTime>
 
-// Interface to AD/LDAP
-// Emits modified() signal after performing an action that
-// modifies data on the AD server
-// Reload GUI state when that signal is emitted
+/** 
+ * Interface to AD server that provides a way to search for
+ * objects and modify them.
+ */
 
 enum ConnectResult {
     ConnectResult_Success,
@@ -55,6 +55,9 @@ class AdInterface final : public QObject {
 Q_OBJECT
 
 private:
+    // Some f-ns in this class reuse other f-ns and this
+    // enum is used to turn off status messages of child
+    // f-ns which are otherwise displayed by default.
     enum DoStatusMsg {
         DoStatusMsg_Yes,
         DoStatusMsg_No
@@ -81,7 +84,7 @@ public:
     QString configuration_dn() const;
     QString schema_dn() const;
 
-    // NOTE: If no attributes are listed, all attributes are returned
+    // NOTE: If request attributes list is empty, all attributes are returned
     QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &search_base = QString());
     AdObject search_object(const QString &dn, const QList<QString> &attributes = QList<QString>());
 
@@ -119,6 +122,9 @@ public:
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
 signals:
+    // Emitted when a f-n that modifies server state is
+    // used. Widgets should connect to this signal and
+    // reload updated server state in the slot.
     void modified();
 
 private:

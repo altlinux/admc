@@ -21,16 +21,11 @@
 #define SETTINGS_H
 
 /**
- * Provides access to settings via enums rather than plain strings.
- * Settings are saved to file automatically when this object is
- * destructed.
- * Settings of boolean type have BoolSettingSignal objects which emit
- * changed() signal when setting is changed
- *
- * NOTE: admc and gpgui share settings keys BUT
- * the settings files are separate
- *
- * NOTE: MUST BE used AFTER app's organization and applications names are set (in main)
+ * Provides access to settings via enums rather than plain
+ * strings. Settings are saved to file automatically when
+ * this object is destructed. Settings of boolean type have
+ * BoolSettingSignal objects which emit changed() signal
+ * when setting is changed.
  */
 
 #include <QObject>
@@ -85,23 +80,21 @@ Q_OBJECT
 public:
     static Settings *instance();
 
-    QVariant get_variant(VariantSetting type) const;
-    void set_variant(VariantSetting type, const QVariant &value);
+    QVariant get_variant(const VariantSetting setting) const;
+    void set_variant(const VariantSetting setting, const QVariant &value);
 
-    const BoolSettingSignal *get_bool_signal(BoolSetting type) const;
-    bool get_bool(BoolSetting type) const;
-    void set_bool(const BoolSetting type, const bool value);
-
-    // TODO: rename type arg to setting and change to const
+    const BoolSettingSignal *get_bool_signal(const BoolSetting setting) const;
+    bool get_bool(const BoolSetting setting) const;
+    void set_bool(const BoolSetting setting, const bool value);
 
     /** 
      * Connect action and bool setting so that toggling
      * the action updates the setting value
      * Action becomes checkable
      */ 
-    void connect_action_to_bool_setting(QAction *action, const BoolSetting type);
+    void connect_action_to_bool_setting(QAction *action, const BoolSetting setting);
 
-    void connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSetting type);
+    void connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSetting setting);
 
     void restore_geometry(QWidget *widget, const VariantSetting geometry_setting);
     void save_geometry(QWidget *widget, const VariantSetting geometry_setting);
