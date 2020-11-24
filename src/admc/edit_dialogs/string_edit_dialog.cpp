@@ -43,6 +43,8 @@ StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArr
         set_line_edit_to_numbers_only(edit);
     }
 
+    ADCONFIG()->limit_edit(edit, attribute);
+
     const QByteArray value = values.value(0, QByteArray());
     original_value = QString::fromUtf8(value);
     edit->setText(original_value);

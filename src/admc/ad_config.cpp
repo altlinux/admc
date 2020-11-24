@@ -26,6 +26,7 @@
 
 #include <QLocale>
 #include <QDebug>
+#include <QLineEdit>
 #include <algorithm>
 
 #define ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES "attributeDisplayNames"
@@ -41,7 +42,8 @@
 #define ATTRIBUTE_MAY_CONTAIN           "mayContain"
 #define ATTRIBUTE_SYSTEM_MAY_CONTAIN    "systemMayContain"
 #define ATTRIBUTE_IS_SINGLE_VALUED      "isSingleValued"
-#define ATTRIBUTE_SYSTEM_ONLY        "systemOnly"
+#define ATTRIBUTE_SYSTEM_ONLY           "systemOnly"
+#define ATTRIBUTE_RANGE_UPPER           "rangeUpper"
 
 QString get_display_specifier_class(const QString &display_specifier);
 QString get_locale_dir();
@@ -52,9 +54,12 @@ AdConfig::AdConfig(QObject *parent)
     {
         const QString schema_dn = AD()->schema_dn();
 
-        const QList<QString> attributes = {ATTRIBUTE_LDAP_DISPLAY_NAME, ATTRIBUTE_ADMIN_DISPLAY_NAME,
+        const QList<QString> attributes = {
+            ATTRIBUTE_LDAP_DISPLAY_NAME,
+            ATTRIBUTE_ADMIN_DISPLAY_NAME,
             ATTRIBUTE_IS_SINGLE_VALUED,
             ATTRIBUTE_SYSTEM_ONLY,
+            ATTRIBUTE_RANGE_UPPER,
         };
         const QHash<QString, AdObject> search_results = AD()->search("", attributes, SearchScope_Children, schema_dn);
 
@@ -64,11 +69,18 @@ AdConfig::AdConfig(QObject *parent)
             const bool is_single_valued = object.get_bool(ATTRIBUTE_IS_SINGLE_VALUED);
             const bool is_system_only = object.get_bool(ATTRIBUTE_SYSTEM_ONLY);
 
+            const QString attribute = ldap_name;
+
             if (!ad_name.isEmpty() && !ldap_name.isEmpty()) {
                 ldap_to_ad_names[ldap_name] = ad_name;
                 ad_to_ldap_names[ad_name] = ldap_name;
-                attribute_is_single_valued[ldap_name] = is_single_valued;
-                attribute_is_system_only[ldap_name] = is_system_only;
+                attribute_is_single_valued[attribute] = is_single_valued;
+                attribute_is_system_only[attribute] = is_system_only;
+            }
+
+            if (object.contains(ATTRIBUTE_RANGE_UPPER)) {
+                const int range_upper = object.get_int(ATTRIBUTE_RANGE_UPPER);
+                attribute_range_upper[attribute] = range_upper;
             }
         }
     }
@@ -467,6 +479,13 @@ LargeIntegerSubtype AdConfig::get_large_integer_subtype(const QString &attribute
     }
 }
 
+void AdConfig::limit_edit(QLineEdit *edit, const QString &attribute) {
+    const int range_upper = get_attribute_range_upper(attribute);
+    if (range_upper > 0) {
+        edit->setMaxLength(range_upper);
+    }
+}
+
 bool AdConfig::attribute_is_number(const QString &attribute) const {
     static const QList<AttributeType> number_types = {
         AttributeType_Integer,
@@ -485,6 +504,10 @@ bool AdConfig::get_attribute_is_single_valued(const QString &attribute) const {
 
 bool AdConfig::get_attribute_is_system_only(const QString &attribute) const {
     return attribute_is_system_only.value(attribute, true);
+}
+
+int AdConfig::get_attribute_range_upper(const QString &attribute) const {
+    return attribute_range_upper.value(attribute, 0);
 }
 
 // Display specifier DN is "CN=object-class-Display,CN=..."

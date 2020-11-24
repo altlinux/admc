@@ -44,6 +44,8 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
         set_line_edit_to_numbers_only(edit);
     }
 
+    ADCONFIG()->limit_edit(edit, attribute);
+
     add_button = new QPushButton(tr("Add"));
 
     list_widget = new QListWidget();

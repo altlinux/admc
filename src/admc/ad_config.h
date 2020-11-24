@@ -65,6 +65,8 @@ enum LargeIntegerSubtype {
 typedef QString ObjectClass;
 typedef QString Attribute;
 
+class QLineEdit;
+
 class AdConfig final : public QObject {
 Q_OBJECT
 
@@ -86,8 +88,11 @@ public:
     AttributeType get_attribute_type(const Attribute &attribute) const;
     bool get_attribute_is_single_valued(const Attribute &attribute) const;
     bool get_attribute_is_system_only(const Attribute &attribute) const;
+    int get_attribute_range_upper(const Attribute &attribute) const;
     bool attribute_is_number(const Attribute &attribute) const;
     LargeIntegerSubtype get_large_integer_subtype(const Attribute &attribute) const;
+
+    void limit_edit(QLineEdit *edit, const QString &attribute);
 
 private:
     QList<ObjectClass> filter_containers;
@@ -104,6 +109,7 @@ private:
     QHash<Attribute, AttributeType> attribute_types;
     QHash<Attribute, bool> attribute_is_single_valued;
     QHash<Attribute, bool> attribute_is_system_only;
+    QHash<Attribute, int> attribute_range_upper;
 
     QHash<QString, QString> ldap_to_ad_names;
     QHash<QString, QString> ad_to_ldap_names;

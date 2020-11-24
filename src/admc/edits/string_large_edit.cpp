@@ -32,6 +32,22 @@ StringLargeEdit::StringLargeEdit(const QString &attribute_arg, const QString &ob
     
     edit = new QPlainTextEdit();
 
+    const int range_upper = ADCONFIG()->get_attribute_range_upper(attribute);
+    if (range_upper > 0) {
+        // NOTE: QPlainTextEdit doesn't have a straightforward setMaxLength() so have to do it ourselves
+        connect(
+            edit, &QPlainTextEdit::textChanged,
+            [this, range_upper]() {
+                const QString text = edit->toPlainText();
+
+                if (text.length() > range_upper) {
+                    const QString shortened = text.left(range_upper);
+
+                    edit->setPlainText(text);
+                }
+            });
+    }
+
     QObject::connect(
         edit, &QPlainTextEdit::textChanged,
         [this]() {
