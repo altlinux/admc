@@ -28,6 +28,9 @@
 #include <QFormLayout>
 #include <QDateTimeEdit>
 #include <QMessageBox>
+#include <QScrollArea>
+#include <QGridLayout>
+#include <QLabel>
 
 void AccountOptionEdit::make_many(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
     QMap<AccountOption, AccountOptionEdit *> option_edits;
@@ -77,6 +80,30 @@ void AccountOptionEdit::make_many(const QList<AccountOption> options, QMap<Accou
             }
         }
     }
+}
+
+QWidget *AccountOptionEdit::layout_many(const QList<AccountOption> &options, const QMap<AccountOption, AccountOptionEdit *> &option_edits) {
+    auto checks_layout = new QGridLayout();
+    for (const auto option : options) {
+        auto edit = option_edits[option];
+
+        const int row = checks_layout->rowCount();
+        const QString label_text = account_option_string(edit->option);
+        checks_layout->addWidget(edit->check, row, 0);
+        checks_layout->addWidget(new QLabel(label_text), row, 1);
+    }
+
+    auto layout = new QVBoxLayout();
+    layout->addWidget(new QLabel(tr("Account options:")));
+    layout->addLayout(checks_layout);
+
+    auto options_widget = new QWidget();
+    options_widget->setLayout(layout);
+
+    auto options_scroll = new QScrollArea();
+    options_scroll->setWidget(options_widget);
+
+    return options_scroll;
 }
 
 AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QList<AttributeEdit *> *edits_out, QObject *parent)

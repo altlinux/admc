@@ -74,6 +74,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
         };
         QMap<AccountOption, AccountOptionEdit *> option_edits;
         AccountOptionEdit::make_many(options, &option_edits, &all_edits, this);
+        QWidget *options_widget = AccountOptionEdit::layout_many(options, option_edits);
 
         // NOTE: initials not required
         required_edits = {
@@ -91,9 +92,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
         upn_edit->add_to_layout(edits_layout);
         sama_edit->add_to_layout(edits_layout);
         pass_edit->add_to_layout(edits_layout);
-        option_edits[AccountOption_PasswordExpired]->add_to_layout(edits_layout);
-        option_edits[AccountOption_DontExpirePassword]->add_to_layout(edits_layout);
-        option_edits[AccountOption_Disabled]->add_to_layout(edits_layout);
+        edits_layout->addRow(options_widget);
 
         // Setup autofills
         // (first name + last name) -> full name

@@ -28,9 +28,11 @@
 // TODO: logon hours, logon computers
 
 AccountTab::AccountTab() {
-    new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER, &edits, this);
+    auto upn_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER, &edits, this);
 
-    new UnlockEdit(&edits, this);
+    auto unlock_edit = new UnlockEdit(&edits, this);
+
+    auto expiry_edit = new ExpiryEdit(&edits, this);
 
     QList<AccountOption> options;
     for (int i = 0; i < AccountOption_COUNT; i++) {
@@ -39,12 +41,21 @@ AccountTab::AccountTab() {
     }
     QMap<AccountOption, AccountOptionEdit *> option_edits;
     AccountOptionEdit::make_many(options, &option_edits, &edits, this);
-
-    new ExpiryEdit(&edits, this);
+    QWidget *options_widget = AccountOptionEdit::layout_many(options, option_edits);
 
     edits_connect_to_tab(edits, this);
 
-    auto layout = new QFormLayout();
+    auto edits_layout = new QFormLayout();
+
+    const QList<AttributeEdit *> top_edits = {
+        upn_edit,
+        unlock_edit,
+        expiry_edit,
+    };
+    edits_add_to_layout(top_edits, edits_layout);
+
+    auto layout = new QVBoxLayout();
     setLayout(layout);
-    edits_add_to_layout(edits, layout);
+    layout->addLayout(edits_layout);
+    layout->addWidget(options_widget);
 }
