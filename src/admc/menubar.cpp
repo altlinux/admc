@@ -22,6 +22,7 @@
 #include "settings.h"
 #include "confirmation_dialog.h"
 #include "find_dialog.h"
+#include "toggle_widgets_dialog.h"
 
 #include <QMenu>
 #include <QLocale>
@@ -59,8 +60,8 @@ MenuBar::MenuBar()
 
     QMenu *view_menu = addMenu(tr("View"));
     add_bool_setting_action(view_menu, tr("Advanced view"), BoolSetting_AdvancedView);
-    add_bool_setting_action(view_menu, tr("Show status log"), BoolSetting_ShowStatusLog);
     add_bool_setting_action(view_menu, tr("Dock Details dialog"), BoolSetting_DetailsIsDocked);
+    auto toggle_widgets_action = view_menu->addAction(tr("Toggle widgets"));
 
     QMenu *preferences_menu = addMenu(tr("Preferences"));
     add_bool_setting_action(preferences_menu, tr("Confirm actions"), BoolSetting_ConfirmActions);
@@ -111,6 +112,13 @@ MenuBar::MenuBar()
     enable_actions(false);
     connect_action->setEnabled(true);
     quit_action->setEnabled(true);
+
+    connect(
+        toggle_widgets_action, &QAction::triggered,
+        [this]() {
+            auto dialog = new ToggleWidgetsDialog();
+            dialog->open();
+        });
 }
 
 void MenuBar::enter_online_mode() {

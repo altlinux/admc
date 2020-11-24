@@ -150,6 +150,20 @@ void MainWindow::finish_init() {
     vert_splitter->setStretchFactor(1, 3);
 
     setCentralWidget(vert_splitter);
+
+    auto connect_toggle_widget =
+    [](QWidget *widget, const BoolSetting setting) {
+        const BoolSettingSignal *signal = SETTINGS()->get_bool_signal(setting);
+        connect(
+            signal, &BoolSettingSignal::changed,
+            [=]() {
+                const bool visible = SETTINGS()->get_bool(setting);
+                widget->setVisible(visible); 
+            });
+    };
+
+    connect_toggle_widget(containers_widget, BoolSetting_ShowContainers);
+    connect_toggle_widget(status_log, BoolSetting_ShowStatusLog);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

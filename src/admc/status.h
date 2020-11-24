@@ -42,9 +42,6 @@ public:
     int get_errors_size() const;
     void show_errors_popup(int starting_index);
 
-private slots:
-    void on_toggle_show_status_log();
-
 private:
     bool initialized = false;
     QStatusBar *status_bar = nullptr;

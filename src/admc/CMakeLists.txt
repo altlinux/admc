@@ -36,6 +36,7 @@ add_executable(admc
     menubar.cpp
     attribute_display.cpp
     object_list_widget.cpp
+    toggle_widgets_dialog.cpp
     
     rename_dialog.cpp
     rename_policy_dialog.cpp

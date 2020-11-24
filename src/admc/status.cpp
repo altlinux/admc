@@ -18,7 +18,6 @@
  */
 
 #include "status.h"
-#include "settings.h"
 
 #include <QStatusBar>
 #include <QTextEdit>
@@ -41,22 +40,6 @@ void Status::init(QStatusBar *status_bar_arg, QTextEdit *status_log_arg) {
 
     status_bar = status_bar_arg;
     status_log = status_log_arg;
-
-    const BoolSettingSignal *show_status_log_setting = SETTINGS()->get_bool_signal(BoolSetting_ShowStatusLog);
-    connect(
-        show_status_log_setting, &BoolSettingSignal::changed,
-        this, &Status::on_toggle_show_status_log);
-    on_toggle_show_status_log();
-}
-
-void Status::on_toggle_show_status_log() {
-    const bool show_status_log = SETTINGS()->get_bool(BoolSetting_ShowStatusLog);
-
-    if (show_status_log) {
-        status_log->setVisible(true); 
-    } else {
-        status_log->setVisible(false); 
-    }
 }
 
 // TODO: probably want to cap total amount of message and delete old ones?

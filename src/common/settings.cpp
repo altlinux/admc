@@ -145,12 +145,13 @@ QString bool_to_string(BoolSetting type) {
     switch (type) {
         CASE_ENUM_TO_STRING(BoolSetting_AdvancedView);
         CASE_ENUM_TO_STRING(BoolSetting_ConfirmActions);
-        CASE_ENUM_TO_STRING(BoolSetting_ShowStatusLog);
         CASE_ENUM_TO_STRING(BoolSetting_DevMode);
         CASE_ENUM_TO_STRING(BoolSetting_DetailsIsDocked);
         CASE_ENUM_TO_STRING(BoolSetting_ShowNonContainersInContainersTree);
         CASE_ENUM_TO_STRING(BoolSetting_LastNameBeforeFirstName);
         CASE_ENUM_TO_STRING(BoolSetting_QuickFind);
+        CASE_ENUM_TO_STRING(BoolSetting_ShowStatusLog);
+        CASE_ENUM_TO_STRING(BoolSetting_ShowContainers);
         CASE_ENUM_TO_STRING(BoolSetting_COUNT);
     }
     return "";
