@@ -22,6 +22,8 @@
 
 #include <QMainWindow>
 
+class MenuBar;
+
 class MainWindow final : public QMainWindow {
 Q_OBJECT
 
@@ -34,6 +36,8 @@ protected:
 private:
     void attempt_to_connect();
     void finish_init();
+
+    MenuBar *menubar;
 
 };
 

@@ -32,32 +32,54 @@
 #include <QString>
 #include <QSplitter>
 #include <QStatusBar>
-#include <QVBoxLayout>
 #include <QTextEdit>
 #include <QMessageBox>
 #include <QTimer>
 #include <QAction>
+#include <QTreeWidget>
 
 MainWindow::MainWindow()
 : QMainWindow()
 {
     SETTINGS()->restore_geometry(this, VariantSetting_MainWindowGeometry);
 
-    // Offline menubar
-    auto menubar = new QMenuBar();
+    menubar = new MenuBar();
     setMenuBar(menubar);
 
-    QMenu *menubar_action = menubar->addMenu(tr("Action"));
-
-    menubar_action->addAction(tr("Connect"),
+    connect(
+        menubar->connect_action, &QAction::triggered,
         [this]() {
             attempt_to_connect();
         });
 
-    menubar_action->addAction(tr("Exit"),
+    connect(
+        menubar->quit_action, &QAction::triggered,
         []() {
             QApplication::quit();
         });
+
+    // Setup fake offline versions of widgets for display purposes
+    auto offline_containers = new QTreeWidget();
+    offline_containers->setHeaderLabels({
+        tr("Name"),
+    });
+
+    auto offline_contents = new QTreeWidget();
+    offline_contents->setHeaderLabels({
+        tr("Name"),
+        tr("Class"),
+        tr("Description"),
+    });
+
+    auto splitter = new QSplitter();
+    splitter->addWidget(offline_containers);
+    splitter->addWidget(offline_contents);
+    splitter->setStretchFactor(0, 1);
+    splitter->setStretchFactor(1, 2);
+
+    setCentralWidget(splitter);
+
+    statusBar()->showMessage(tr("Ready"));
 
     attempt_to_connect();
 }
@@ -81,7 +103,7 @@ void MainWindow::attempt_to_connect() {
             }
             return QString();
         }();
-        const QMessageBox::StandardButtons buttons = QMessageBox::Cancel;
+        const QMessageBox::StandardButtons buttons = QMessageBox::Ok;
         auto dialog = new QMessageBox(icon, title, text, buttons);
         dialog->setModal(true);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
@@ -90,23 +112,18 @@ void MainWindow::attempt_to_connect() {
     }
 }
 
+// Complete initialization
 void MainWindow::finish_init() {
+    menubar->enter_online_mode();
+
     auto status_log = new QTextEdit(this);
     status_log->setReadOnly(true);
     QStatusBar *status_bar = statusBar();
     Status::instance()->init(status_bar, status_log);
 
-    auto menubar = new MenuBar(this);
-    setMenuBar(menubar);
-
-    // Widgets
-    auto central_widget = new QWidget(this);
-    setCentralWidget(central_widget);
-
     auto containers_widget = new ContainersWidget(this);
 
-    const QAction *filter_contents_action = menubar->get_filter_contents_action();
-    auto contents_widget = new ContentsWidget(containers_widget, filter_contents_action);
+    auto contents_widget = new ContentsWidget(containers_widget, menubar->filter_contents_action);
     
     auto details_widget_docked_container = DetailsDialog::get_docked_container();
     auto policies_widget = new PoliciesWidget();
@@ -132,12 +149,7 @@ void MainWindow::finish_init() {
     vert_splitter->setStretchFactor(0, 1);
     vert_splitter->setStretchFactor(1, 3);
 
-    auto central_layout = new QVBoxLayout();
-    central_layout->addWidget(vert_splitter);
-    central_layout->setContentsMargins(0, 0, 0, 0);
-    central_layout->setSpacing(0);
-
-    central_widget->setLayout(central_layout);
+    setCentralWidget(vert_splitter);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

@@ -42,8 +42,6 @@ void Status::init(QStatusBar *status_bar_arg, QTextEdit *status_log_arg) {
     status_bar = status_bar_arg;
     status_log = status_log_arg;
 
-    status_bar->showMessage(tr("Ready"));
-
     const BoolSettingSignal *show_status_log_setting = SETTINGS()->get_bool_signal(BoolSetting_ShowStatusLog);
     connect(
         show_status_log_setting, &BoolSettingSignal::changed,

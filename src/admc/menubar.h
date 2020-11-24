@@ -21,26 +21,30 @@
 #define MENUBAR_H
 
 #include <QMenuBar>
+#include <QList>
 
 class QAction;
+class QMenu;
 
 class MenuBar final : public QMenuBar {
 Q_OBJECT
 
 public:
-    explicit MenuBar(QWidget* parent);
+    MenuBar();
 
-    const QAction *get_filter_contents_action() const;
+    void enter_online_mode();
+
+    QAction *filter_contents_action;
+    QAction *connect_action;
+    QAction *quit_action;
 
 signals:
     void filter_contents_dialog();
 
-private slots:
-    void on_exit_action();
-
 private:
-    QAction *filter_contents_action;
+    QList<QMenu *> menus;
 
+    void enable_actions(const bool enabled);
 };
 
 #endif /* MENUBAR_H */

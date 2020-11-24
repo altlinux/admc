@@ -28,28 +28,28 @@
 #include <QMessageBox>
 #include <QActionGroup>
 #include <QApplication>
+#include <QDebug>
 
-MenuBar::MenuBar(QWidget* parent)
-: QMenuBar(parent) {
-    QMenu *menubar_action = addMenu(tr("Action"));
+MenuBar::MenuBar()
+: QMenuBar() {
+    QMenu *action_menu = addMenu(tr("Action"));
 
-    menubar_action->addAction(tr("Find"),
+    connect_action = action_menu->addAction(tr("Connect"));
+
+    action_menu->addAction(tr("Find"),
         []() {
             auto find_dialog = new FindDialog();
             find_dialog->open();
         });
 
-    menubar_action->addAction(tr("Refresh"),
+    action_menu->addAction(tr("Refresh"),
         []() {
             AD()->refresh();
         });
 
-    filter_contents_action = menubar_action->addAction(tr("Filter contents"));
+    filter_contents_action = action_menu->addAction(tr("Filter contents"));
 
-    QAction *exit_action = menubar_action->addAction(tr("Exit"));
-    connect(
-        exit_action, &QAction::triggered,
-        this, &MenuBar::on_exit_action);
+    quit_action = action_menu->addAction(tr("Quit"));
 
     auto add_bool_setting_action = 
     [](QMenu *menu, QString display_text, BoolSetting type) {
@@ -57,18 +57,18 @@ MenuBar::MenuBar(QWidget* parent)
         SETTINGS()->connect_action_to_bool_setting(action, type);
     };
 
-    QMenu *menubar_view = addMenu(tr("View"));
-    add_bool_setting_action(menubar_view, tr("Advanced view"), BoolSetting_AdvancedView);
-    add_bool_setting_action(menubar_view, tr("Show status log"), BoolSetting_ShowStatusLog);
-    add_bool_setting_action(menubar_view, tr("Dock Details dialog"), BoolSetting_DetailsIsDocked);
+    QMenu *view_menu = addMenu(tr("View"));
+    add_bool_setting_action(view_menu, tr("Advanced view"), BoolSetting_AdvancedView);
+    add_bool_setting_action(view_menu, tr("Show status log"), BoolSetting_ShowStatusLog);
+    add_bool_setting_action(view_menu, tr("Dock Details dialog"), BoolSetting_DetailsIsDocked);
 
-    QMenu *menubar_preferences = addMenu(tr("Preferences"));
-    add_bool_setting_action(menubar_preferences, tr("Confirm actions"), BoolSetting_ConfirmActions);
-    add_bool_setting_action(menubar_preferences, tr("Dev mode"), BoolSetting_DevMode);
-    add_bool_setting_action(menubar_preferences, tr("Show non-container objects in Containers tree"), BoolSetting_ShowNonContainersInContainersTree);
-    add_bool_setting_action(menubar_preferences, tr("Put last name before first name when creating users"), BoolSetting_LastNameBeforeFirstName);
+    QMenu *preferences_menu = addMenu(tr("Preferences"));
+    add_bool_setting_action(preferences_menu, tr("Confirm actions"), BoolSetting_ConfirmActions);
+    add_bool_setting_action(preferences_menu, tr("Dev mode"), BoolSetting_DevMode);
+    add_bool_setting_action(preferences_menu, tr("Show non-container objects in Containers tree"), BoolSetting_ShowNonContainersInContainersTree);
+    add_bool_setting_action(preferences_menu, tr("Put last name before first name when creating users"), BoolSetting_LastNameBeforeFirstName);
 
-    QMenu *language_menu = menubar_preferences->addMenu(tr("Language"));
+    QMenu *language_menu = preferences_menu->addMenu(tr("Language"));
     auto language_group = new QActionGroup(language_menu);
 
     auto add_language_action =
@@ -95,23 +95,36 @@ MenuBar::MenuBar(QWidget* parent)
 
                     QMessageBox::information(this, tr("Info"), tr("App needs to be restarted for the language option to take effect."));
                 }
-            }
-            );
+            });
     };
 
     add_language_action(QLocale::English);
     add_language_action(QLocale::Russian);
+
+    menus = {
+        action_menu,
+        view_menu,
+        preferences_menu,
+    };
+
+    // While offline, only "connect" and "exit" are enabled
+    enable_actions(false);
+    connect_action->setEnabled(true);
+    quit_action->setEnabled(true);
 }
 
-const QAction *MenuBar::get_filter_contents_action() const {
-    return filter_contents_action;
+void MenuBar::enter_online_mode() {
+    // Once online, everything is enabled except for "connect"
+    enable_actions(true);
+    connect_action->setEnabled(false);
 }
 
-void MenuBar::on_exit_action() {
-    const QString text = QString(tr("Are you sure you want to exit?"));
-    const bool confirmed = confirmation_dialog(text, this);
+void MenuBar::enable_actions(const bool enabled) {
+    for (auto menu : menus) {
+        const QList<QAction *> actions = menu->actions();
 
-    if (confirmed) {
-        QApplication::quit();
-    }   
+        for (auto action : actions) {
+            action->setEnabled(enabled);
+        }
+    }
 }

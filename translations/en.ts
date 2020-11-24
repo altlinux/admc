@@ -724,33 +724,43 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/main_window.cpp" line="50"/>
-        <source>Action</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/main_window.cpp" line="52"/>
-        <source>Connect</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/main_window.cpp" line="57"/>
         <location filename="../src/gpgui/gui/MainWindow.cpp" line="112"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/main_window.cpp" line="74"/>
+        <location filename="../src/admc/main_window.cpp" line="64"/>
+        <location filename="../src/admc/main_window.cpp" line="69"/>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/main_window.cpp" line="70"/>
+        <source>Class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/main_window.cpp" line="71"/>
+        <source>Description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/main_window.cpp" line="82"/>
+        <source>Ready</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/main_window.cpp" line="96"/>
         <source>Failed to connect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/main_window.cpp" line="79"/>
+        <location filename="../src/admc/main_window.cpp" line="101"/>
         <source>Not connected to a domain network</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/main_window.cpp" line="80"/>
+        <location filename="../src/admc/main_window.cpp" line="102"/>
         <source>Authentication failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -819,11 +829,6 @@
 <context>
     <name>MenuBar</name>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="49"/>
-        <source>Exit</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../src/admc/menubar.cpp" line="60"/>
         <source>View</source>
         <translation></translation>
@@ -849,23 +854,33 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="34"/>
+        <location filename="../src/admc/menubar.cpp" line="35"/>
         <source>Action</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="36"/>
+        <location filename="../src/admc/menubar.cpp" line="37"/>
+        <source>Connect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/menubar.cpp" line="39"/>
         <source>Find</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="42"/>
+        <location filename="../src/admc/menubar.cpp" line="45"/>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="47"/>
+        <location filename="../src/admc/menubar.cpp" line="50"/>
         <source>Filter contents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/menubar.cpp" line="52"/>
+        <source>Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -901,11 +916,6 @@
     <message>
         <location filename="../src/admc/menubar.cpp" line="96"/>
         <source>App needs to be restarted for the language option to take effect.</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/menubar.cpp" line="111"/>
-        <source>Are you sure you want to exit?</source>
         <translation></translation>
     </message>
 </context>
@@ -1454,12 +1464,7 @@
 <context>
     <name>Status</name>
     <message>
-        <location filename="../src/admc/status.cpp" line="45"/>
-        <source>Ready</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/status.cpp" line="106"/>
+        <location filename="../src/admc/status.cpp" line="104"/>
         <source>Errors occured:</source>
         <translation type="unfinished"></translation>
     </message>
