@@ -23,6 +23,7 @@
 #include <QDialog>
 #include <QString>
 #include <QList>
+#include <QHash>
 
 class QString;
 class QTabWidget;
@@ -49,8 +50,6 @@ public:
     static void open_for_target(const QString &target);
     static void connect_to_open_by_double_click(QAbstractItemView *view, const int dn_column);
 
-    QString get_target() const;
-
 private slots:
     void apply();
     void reset();
@@ -60,6 +59,8 @@ private slots:
 
 private:
     static DetailsDialog *docked_instance;
+    static QHash<QString, DetailsDialog *> floating_instances;
+
     bool is_floating_instance;
     QTabWidget *tab_widget = nullptr;
     QList<DetailsTab *> tabs;

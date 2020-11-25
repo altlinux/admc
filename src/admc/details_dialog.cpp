@@ -46,6 +46,7 @@
 #include <QAbstractItemView>
 
 DetailsDialog *DetailsDialog::docked_instance = nullptr;
+QHash<QString, DetailsDialog *> DetailsDialog::floating_instances;
 
 QWidget *DetailsDialog::get_docked_container() {
     static QWidget *docked_container =
@@ -83,8 +84,26 @@ void DetailsDialog::open_for_target(const QString &target) {
         QLayout *docked_layout = docked_container->layout();
         docked_layout->addWidget(docked_instance);
     } else {
-        auto dialog = new DetailsDialog(target, true);
-        dialog->show();
+        const bool dialog_already_open_for_this_target = floating_instances.contains(target);
+
+        if (dialog_already_open_for_this_target) {
+            // Focus already open dialog
+            DetailsDialog *dialog = floating_instances[target];
+            dialog->raise();
+            dialog->setFocus();
+        } else {
+            // Make new dialog for this target
+            auto dialog = new DetailsDialog(target, true);
+
+            floating_instances[target] = dialog;
+            connect(
+                dialog, &QDialog::finished,
+                [target]() {
+                    floating_instances.remove(target);
+                });
+
+            dialog->show();
+        }
     }
 }
 
@@ -211,16 +230,12 @@ void DetailsDialog::on_docked_setting_changed() {
     if (is_floating_instance) {
         // Close dialog if changed to docked
         if (is_docked) {
-            QDialog::close();
+            QDialog::reject();
         }
     } else {
         // Hide/show docked instance depending on docked setting
         get_docked_container()->setVisible(is_docked);
     }
-}
-
-QString DetailsDialog::get_target() const {
-    return target;
 }
 
 void DetailsDialog::apply() {
