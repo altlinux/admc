@@ -86,7 +86,7 @@ void Status::start_error_log() {
     error_log.clear();
 }
 
-void Status::end_error_log() {
+void Status::end_error_log(QWidget *parent) {
     if (error_log.isEmpty()) {
         return;
     }
@@ -96,7 +96,6 @@ void Status::end_error_log() {
     const QString text = error_log.join("\n");
     const QMessageBox::StandardButtons buttons = QMessageBox::Ok;
 
-    auto dialog = new QMessageBox(icon, title, text, buttons);
-    dialog->setModal(true);
+    auto dialog = new QMessageBox(icon, title, text, buttons, parent);
     dialog->open();
 }

@@ -145,7 +145,7 @@ void GroupPolicyTab::on_context_menu(const QPoint pos) {
 
 void GroupPolicyTab::on_add_button() {
     const QList<QString> classes = {CLASS_GP_CONTAINER};
-    const QList<QString> selected = SelectDialog::open(classes, SelectDialogMultiSelection_Yes);
+    const QList<QString> selected = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, this);
 
     if (selected.size() > 0) {
         add_link(selected);

@@ -30,8 +30,8 @@
 #include <QListWidget>
 #include <QMessageBox>
 
-StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QList<QByteArray> values)
-: EditDialog()
+StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+: EditDialog(parent)
 {
     original_values = values;
 

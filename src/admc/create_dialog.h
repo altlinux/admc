@@ -40,7 +40,7 @@ class CreateDialog : public QDialog {
 Q_OBJECT
 
 public:
-    CreateDialog(const QString &parent_dn_arg, const QString &object_class_arg);
+    CreateDialog(const QString &parent_dn_arg, const QString &object_class_arg, QWidget *parent);
 
 private slots:
     void accept();

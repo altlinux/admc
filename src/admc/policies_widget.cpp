@@ -111,7 +111,7 @@ void PoliciesWidget::on_context_menu(const QPoint pos) {
         edit_policy(object);
     });
     menu.addAction(tr("Rename"), [this, dn]() {
-        auto dialog = new RenamePolicyDialog(dn);
+        auto dialog = new RenamePolicyDialog(dn, this);
         dialog->open();
     });
     menu.addAction(tr("Delete"), [dn]() {

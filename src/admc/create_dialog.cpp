@@ -38,8 +38,8 @@
 
 // TODO: implement checkbox for account option "User cannot change password". Can't just do it through UAC attribute bits.
 
-CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_class_arg)
-: QDialog()
+CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_class_arg, QWidget *parent)
+: QDialog(parent)
 {
     parent_dn = parent_dn_arg;
     object_class = object_class_arg;
@@ -247,7 +247,7 @@ void CreateDialog::accept() {
     }
     AD()->end_batch();
     
-    STATUS()->end_error_log();
+    STATUS()->end_error_log(this);
 }
 
 // Enable/disable create button if all required edits filled

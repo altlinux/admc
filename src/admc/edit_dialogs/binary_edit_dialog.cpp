@@ -30,8 +30,8 @@
 #include <QFont>
 #include <QFontDatabase>
 
-BinaryEditDialog::BinaryEditDialog(const QString attribute, const QList<QByteArray> values)
-: EditDialog()
+BinaryEditDialog::BinaryEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+: EditDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 

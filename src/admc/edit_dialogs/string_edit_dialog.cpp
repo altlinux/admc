@@ -30,8 +30,8 @@
 
 // TODO: figure out what can and can't be renamed and disable renaming for exceptions (computers can't for example)
 
-StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArray> values)
-: EditDialog()
+StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+: EditDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 

@@ -105,8 +105,7 @@ void MainWindow::attempt_to_connect() {
             return QString();
         }();
         const QMessageBox::StandardButtons buttons = QMessageBox::Ok;
-        auto dialog = new QMessageBox(icon, title, text, buttons);
-        dialog->setModal(true);
+        auto dialog = new QMessageBox(icon, title, text, buttons, this);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
 
         dialog->open();

@@ -151,7 +151,7 @@ void ObjectListWidget::on_context_menu(const QPoint pos) {
         return;
     }    
 
-    ObjectContextMenu context_menu(dn);
+    ObjectContextMenu context_menu(dn, view);
     exec_menu_from_view(&context_menu, view, pos);
 }
 

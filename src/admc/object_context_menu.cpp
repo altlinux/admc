@@ -42,13 +42,13 @@ void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
                 return;
             }
 
-            ObjectContextMenu context_menu(dn);
+            ObjectContextMenu context_menu(dn, view);
             exec_menu_from_view(&context_menu, view, pos);
         });
 }
 
-ObjectContextMenu::ObjectContextMenu(const QString &dn)
-: QMenu()
+ObjectContextMenu::ObjectContextMenu(const QString &dn, QWidget *parent)
+: QMenu(parent)
 {
     const AdObject object = AD()->search_object(dn);
 
@@ -61,7 +61,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
     });
 
     auto rename_action = addAction(tr("Rename"), [this, dn]() {
-        auto dialog = new RenameDialog(dn);
+        auto dialog = new RenameDialog(dn, parentWidget());
         dialog->open();
     });
 
@@ -75,8 +75,9 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
     for (const auto object_class : create_classes) {
         const QString action_text = ADCONFIG()->get_class_display_name(object_class);
 
-        submenu_new->addAction(action_text, [dn, object_class]() {
-            const auto create_dialog = new CreateDialog(dn, object_class);
+        submenu_new->addAction(action_text,
+            [this, dn, object_class]() {
+            const auto create_dialog = new CreateDialog(dn, object_class, parentWidget());
             create_dialog->open();
         });
     }
@@ -96,8 +97,9 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn)
                 add_to_group(object);
             });
 
-        addAction(tr("Reset password"), [dn]() {
-            const auto password_dialog = new PasswordDialog(dn);
+        addAction(tr("Reset password"),
+            [this, dn]() {
+            const auto password_dialog = new PasswordDialog(dn, parentWidget());
             password_dialog->open();
         });
 
@@ -145,7 +147,7 @@ void ObjectContextMenu::move(const AdObject &object) {
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
     const QList<QString> possible_superiors = ADCONFIG()->get_possible_superiors(object_classes);
 
-    const QList<QString> selected_objects = SelectDialog::open(possible_superiors);
+    const QList<QString> selected_objects = SelectDialog::open(possible_superiors, SelectDialogMultiSelection_Yes, this);
 
     if (selected_objects.size() == 1) {
         const QString container = selected_objects[0];
@@ -156,7 +158,7 @@ void ObjectContextMenu::move(const AdObject &object) {
 
 void ObjectContextMenu::add_to_group(const AdObject &object) {
     const QList<QString> classes = {CLASS_GROUP};
-    const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes);
+    const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, this);
 
     if (selected_objects.size() > 0) {
         for (auto group : selected_objects) {

@@ -45,7 +45,7 @@ StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &o
     other_button = new QPushButton(tr("Other..."));
     connect(other_button, &QPushButton::clicked,
         [this]() {
-            auto dialog = new StringMultiEditDialog(other_attribute, other_values);
+            auto dialog = new StringMultiEditDialog(other_attribute, other_values, other_button);
             dialog->open();
 
             connect(

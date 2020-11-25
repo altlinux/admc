@@ -33,10 +33,8 @@
 #include <QVBoxLayout>
 #include <QFormLayout>
 
-// TODO: figure out what can and can't be renamed and disable renaming for exceptions (computers can't for example)
-
-RenameDialog::RenameDialog(const QString &target_arg)
-: QDialog()
+RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
+: QDialog(parent)
 {
     target = target_arg;
 
@@ -105,11 +103,11 @@ void RenameDialog::success_msg(const QString &old_name) {
     STATUS()->message(message, StatusType_Success);
 }
 
-void RenameDialog::fail_msg(const QString &old_name) {
+void RenameDialog::fail_msg(const QString &old_name, QWidget *parent) {
     const QString message = QString(tr("Failed to rename object - \"%1\"")).arg(old_name);
     STATUS()->message(message, StatusType_Error);
     
-    STATUS()->end_error_log();
+    STATUS()->end_error_log(parent);
 }
 
 void RenameDialog::accept() {
@@ -130,10 +128,10 @@ void RenameDialog::accept() {
                 success_msg(old_name);
                 QDialog::close();
             } else {
-                fail_msg(old_name);
+                fail_msg(old_name, this);
             }
         } else {
-            fail_msg(old_name);
+            fail_msg(old_name, this);
         }
     }
     AD()->end_batch();

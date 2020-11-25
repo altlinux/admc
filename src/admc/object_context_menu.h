@@ -32,7 +32,7 @@ Q_OBJECT
 public:
     static void connect_view(QAbstractItemView *view, int dn_column);
 
-    ObjectContextMenu(const QString &dn);
+    ObjectContextMenu(const QString &dn, QWidget *parent);
 
 private:
     void delete_object(const AdObject &object);

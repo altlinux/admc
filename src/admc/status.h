@@ -49,11 +49,11 @@ public:
 
     // To show an error log for operation(s) that result in
     // Status messages, call start_error_log() before
-    // performing operation(s) and end_error_log() after. If
+    // performing operation(s) and end_error_log(this) after. If
     // any errors occured, error log will open when
-    // end_error_log() is called.
+    // end_error_log(this) is called.
     void start_error_log();
-    void end_error_log();
+    void end_error_log(QWidget *parent);
 
 private:
     QList<QString> error_log;

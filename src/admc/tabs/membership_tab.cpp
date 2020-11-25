@@ -245,7 +245,7 @@ void MembershipTab::on_add_button() {
         return QList<QString>();
     }();
     ;
-    const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes);
+    const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, this);
 
     if (selected_objects.size() > 0) {
         add_values(selected_objects);

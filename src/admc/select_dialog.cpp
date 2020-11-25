@@ -46,15 +46,15 @@ enum SelectDialogColumn {
     SelectDialogColumn_COUNT
 };
 
-QList<QString> SelectDialog::open(QList<QString> classes, SelectDialogMultiSelection multi_selection) {
-    SelectDialog dialog(classes, multi_selection);
+QList<QString> SelectDialog::open(QList<QString> classes, SelectDialogMultiSelection multi_selection, QWidget *parent) {
+    SelectDialog dialog(classes, multi_selection, parent);
     dialog.exec();
 
     return dialog.selected_objects;
 }
 
-SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection multi_selection)
-: QDialog()
+SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection multi_selection, QWidget *parent)
+: QDialog(parent)
 {
     setWindowTitle(QString(tr("Select object - %1")).arg(ADMC_APPLICATION_NAME));
 
@@ -122,7 +122,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         // TODO: get name from attribute
         const QString dn = object.get_dn();
         const QString name = dn_get_name(dn);
-        const QString parent = dn_get_parent_canonical(dn);
+        const QString parent_canonical = dn_get_parent_canonical(dn);
 
         const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
@@ -133,7 +133,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
 
         const QList<QStandardItem *> row = make_item_row(SelectDialogColumn_COUNT);
         row[SelectDialogColumn_Name]->setText(name);
-        row[SelectDialogColumn_Parent]->setText(parent);
+        row[SelectDialogColumn_Parent]->setText(parent_canonical);
         row[SelectDialogColumn_Class]->setText(object_class);
         row[SelectDialogColumn_DN]->setText(dn);
 

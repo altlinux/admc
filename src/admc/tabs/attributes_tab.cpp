@@ -85,7 +85,7 @@ void AttributesTab::on_double_clicked(const QModelIndex &proxy_index) {
     const QString attribute = attribute_item->text();
     const QList<QByteArray> values = current[attribute];
 
-    EditDialog *dialog = EditDialog::make(attribute, values);
+    EditDialog *dialog = EditDialog::make(attribute, values, this);
     if (dialog != nullptr) {
         connect(
             dialog, &QDialog::accepted,

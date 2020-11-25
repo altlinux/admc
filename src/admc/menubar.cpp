@@ -38,8 +38,8 @@ MenuBar::MenuBar()
     connect_action = action_menu->addAction(tr("Connect"));
 
     action_menu->addAction(tr("Find"),
-        []() {
-            auto find_dialog = new FindDialog();
+        [this]() {
+            auto find_dialog = new FindDialog(this);
             find_dialog->open();
         });
 
@@ -116,7 +116,7 @@ MenuBar::MenuBar()
     connect(
         toggle_widgets_action, &QAction::triggered,
         [this]() {
-            auto dialog = new ToggleWidgetsDialog();
+            auto dialog = new ToggleWidgetsDialog(this);
             dialog->open();
         });
 }

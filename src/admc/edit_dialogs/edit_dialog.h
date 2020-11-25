@@ -35,7 +35,9 @@ class EditDialog : public QDialog {
 Q_OBJECT
 
 public:
-    static EditDialog *make(const QString attribute, const QList<QByteArray> values);
+    static EditDialog *make(const QString attribute, const QList<QByteArray> valuesm, QWidget *parent);
+
+    using QDialog::QDialog;
 
     virtual QList<QByteArray> get_new_values() const = 0;
 };

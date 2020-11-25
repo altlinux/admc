@@ -26,7 +26,7 @@ class BinaryEditDialog final : public EditDialog {
 Q_OBJECT
 
 public:
-    BinaryEditDialog(const QString attribute, const QList<QByteArray> values);
+    BinaryEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent);
 
     QList<QByteArray> get_new_values() const;
 

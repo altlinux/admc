@@ -36,7 +36,7 @@ class RenamePolicyDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    RenamePolicyDialog(const QString &target_arg);
+    RenamePolicyDialog(const QString &target_arg, QWidget *parent);
 
 private slots:
     void accept();

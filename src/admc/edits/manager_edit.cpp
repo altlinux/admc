@@ -80,7 +80,7 @@ bool ManagerEdit::apply(const QString &dn) const {
 }
 
 void ManagerEdit::on_change() {
-    const QList<QString> selected_objects = SelectDialog::open({CLASS_USER}, SelectDialogMultiSelection_No);
+    const QList<QString> selected_objects = SelectDialog::open({CLASS_USER}, SelectDialogMultiSelection_No, edit);
 
     if (selected_objects.size() > 0) {
         load_value(selected_objects[0]);

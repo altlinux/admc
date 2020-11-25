@@ -32,8 +32,8 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 
-PasswordDialog::PasswordDialog(const QString &target_arg)
-: QDialog()
+PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
+: QDialog(parent)
 {
     target = target_arg;
     const AdObject object = AD()->search_object(target);
@@ -80,6 +80,6 @@ void PasswordDialog::accept() {
 
         QDialog::close();
 
-        STATUS()->end_error_log();
+        STATUS()->end_error_log(this);
     }
 }

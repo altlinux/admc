@@ -35,7 +35,7 @@ class SelectDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    static QList<QString> open(QList<QString> classes, SelectDialogMultiSelection multi_selection = SelectDialogMultiSelection_No);
+    static QList<QString> open(QList<QString> classes, SelectDialogMultiSelection multi_selection, QWidget *parent);
 
 private slots:
     void accept();
@@ -44,7 +44,7 @@ private:
     QTreeView *view;
     QList<QString> selected_objects;
 
-    SelectDialog(QList<QString> classes, SelectDialogMultiSelection multi_selection);
+    SelectDialog(QList<QString> classes, SelectDialogMultiSelection multi_selection, QWidget *parent);
 };
 
 #endif /* MOVE_DIALOG_H */

@@ -30,11 +30,13 @@ class QLabel;
 class StringEdit;
 class QPushButton;
 
-// Edit for attributes which have "other" version which is
-// multi-valued. For example "telephone" and "otherTelephone".
-// Contains a StringEdit for the attribute itself and an "Other"
-// button next to it which opens a dialog through which other
-// values are edited.
+/**
+ * Edit for attributes which have "other" version which is
+ * multi-valued. For example "telephone" and
+ * "otherTelephone". Contains a StringEdit for the attribute
+ * itself and an "Other" button next to it which opens a
+ * dialog through which other values are edited.
+ */
 
 class StringOtherEdit final : public AttributeEdit {
 Q_OBJECT

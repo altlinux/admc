@@ -23,7 +23,9 @@
 #include "edit_dialogs/binary_edit_dialog.h"
 #include "ad_config.h"
 
-EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> values) {
+// TODO: implement missing types
+
+EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> values, QWidget *parent) {
     const bool single_valued = ADCONFIG()->get_attribute_is_single_valued(attribute);
 
     const bool is_binary =
@@ -39,16 +41,16 @@ EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> va
 
     if (single_valued) {
         if (is_binary) {
-            return new BinaryEditDialog(attribute, values);
+            return new BinaryEditDialog(attribute, values, parent);
         } else {
-            return new StringEditDialog(attribute, values);
+            return new StringEditDialog(attribute, values, parent);
         }
     } else {
         // TODO: are there multi-valued binary attributes?
         if (is_binary) {
             return nullptr;
         } else {
-            return new StringMultiEditDialog(attribute, values);
+            return new StringMultiEditDialog(attribute, values, parent);
         }
     }
 }

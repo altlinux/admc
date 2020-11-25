@@ -27,11 +27,10 @@
 #include <QCheckBox>
 #include <QDialogButtonBox>
 
-ToggleWidgetsDialog::ToggleWidgetsDialog()
-: QDialog()
+ToggleWidgetsDialog::ToggleWidgetsDialog(QWidget *parent)
+: QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    setModal(true);
 
     setWindowTitle(QString(tr("Toggle widgets - %1")).arg(ADMC_APPLICATION_NAME));
 

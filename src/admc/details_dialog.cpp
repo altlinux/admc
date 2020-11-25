@@ -84,7 +84,7 @@ void DetailsDialog::open_for_target(const QString &target) {
         docked_layout->addWidget(docked_instance);
     } else {
         auto dialog = new DetailsDialog(target, true);
-        dialog->open();
+        dialog->show();
     }
 }
 
@@ -234,7 +234,7 @@ void DetailsDialog::apply() {
     }
     AD()->end_batch();
 
-    STATUS()->end_error_log();
+    STATUS()->end_error_log(this);
 
     reset();
 }

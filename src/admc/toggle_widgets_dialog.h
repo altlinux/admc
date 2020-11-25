@@ -21,6 +21,7 @@
 #define TOGGLE_WIDGETS_DIALOG
 
 /**
+ * Toggle main widgets of the application.
  */
 
 #include <QDialog>
@@ -29,7 +30,7 @@ class ToggleWidgetsDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    ToggleWidgetsDialog();
+    ToggleWidgetsDialog(QWidget *parent);
 };
 
 #endif /* TOGGLE_WIDGETS_DIALOG */

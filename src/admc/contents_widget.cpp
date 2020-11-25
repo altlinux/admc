@@ -42,7 +42,6 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, const QActio
     layout->addWidget(object_list);
 
     filter_dialog = new QDialog(this);
-    filter_dialog->setModal(true);
     filter_dialog->setWindowTitle(tr("Filter contents"));
 
     filter_widget = new FilterWidget();

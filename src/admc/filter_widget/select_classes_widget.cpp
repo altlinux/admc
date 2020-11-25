@@ -71,7 +71,6 @@ QString SelectClassesWidget::get_filter() const {
 
 void SelectClassesWidget::select_classes() {
     auto dialog = new QDialog(this);
-    dialog->setModal(true);
 
     auto layout = new QVBoxLayout();
     dialog->setLayout(layout);

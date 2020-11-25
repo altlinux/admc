@@ -33,10 +33,8 @@
 #include <QVBoxLayout>
 #include <QFormLayout>
 
-// TODO: prohibit duplicate names? Server probably doesn't check for that since this is editing display name, not name.
-
-RenamePolicyDialog::RenamePolicyDialog(const QString &target_arg)
-: QDialog()
+RenamePolicyDialog::RenamePolicyDialog(const QString &target_arg, QWidget *parent)
+: QDialog(parent)
 {
     target = target_arg;
 
@@ -96,7 +94,7 @@ void RenamePolicyDialog::accept() {
         RenameDialog::success_msg(old_name);
         QDialog::close();
     } else {
-        RenameDialog::fail_msg(old_name);
+        RenameDialog::fail_msg(old_name, this);
     }
 }
 
