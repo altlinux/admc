@@ -20,6 +20,12 @@
 #ifndef STATUS_BAR_H
 #define STATUS_BAR_H
 
+/**
+ * Collects status messages and displays them in a status
+ * bar and status log. Can also display a log of recent
+ * error messages in a dialog.
+ */
+
 #include <QObject>
 
 class QTextEdit;
@@ -30,30 +36,36 @@ enum StatusType {
     StatusType_Error
 };
 
-// Pushes messages about AD operations to status bar and status log
 class Status final : public QObject {
 Q_OBJECT
 
-public:
+public:   
+    QStatusBar *status_bar;
+    QTextEdit *status_log;
+
     static Status *instance();
-    
-    void init(QStatusBar *status_bar_arg, QTextEdit *status_log_arg);
+
     void message(const QString &msg, const StatusType &type);
-    int get_errors_size() const;
-    void show_errors_popup(int starting_index);
+
+    // To show an error log for operation(s) that result in
+    // Status messages, call start_error_log() before
+    // performing operation(s) and end_error_log() after. If
+    // any errors occured, error log will open when
+    // end_error_log() is called.
+    void start_error_log();
+    void end_error_log();
 
 private:
-    bool initialized = false;
-    QStatusBar *status_bar = nullptr;
-    QTextEdit* status_log = nullptr;
-    QList<QString> errors;
+    QList<QString> error_log;
 
-    using QObject::QObject;
+    Status();
 
     Status(const Status&) = delete;
     Status& operator=(const Status&) = delete;
     Status(Status&&) = delete;
     Status& operator=(Status&&) = delete;
 };
+
+Status *STATUS();
 
 #endif /* STATUS_BAR_H */

@@ -215,13 +215,14 @@ void CreateDialog::accept() {
 
     const QString class_name = ADCONFIG()->get_class_display_name(object_class);
 
-    const int errors_index = Status::instance()->get_errors_size();
+    STATUS()->start_error_log();
+
     AD()->start_batch();
     {   
         auto fail_msg =
         [this, class_name, name]() {
             const QString message = QString(tr("Failed to create %1 - \"%2\"")).arg(class_name, name);
-            Status::instance()->message(message, StatusType_Error);
+            STATUS()->message(message, StatusType_Error);
         };
 
         const bool add_success = AD()->object_add(dn, object_class);
@@ -233,7 +234,7 @@ void CreateDialog::accept() {
             if (apply_success) {
                 const QString message = QString(tr("Created %1 - \"%2\"")).arg(class_name, name);
 
-                Status::instance()->message(message, StatusType_Success);
+                STATUS()->message(message, StatusType_Success);
 
                 QDialog::accept();
             } else {
@@ -245,7 +246,8 @@ void CreateDialog::accept() {
         }
     }
     AD()->end_batch();
-    Status::instance()->show_errors_popup(errors_index);
+    
+    STATUS()->end_error_log();
 }
 
 // Enable/disable create button if all required edits filled

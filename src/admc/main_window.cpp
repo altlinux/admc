@@ -58,6 +58,9 @@ MainWindow::MainWindow()
             QApplication::quit();
         });
 
+    QStatusBar *status_bar = STATUS()->status_bar;
+    setStatusBar(status_bar);
+
     // Setup fake offline versions of widgets for display purposes
     auto offline_containers = new QTreeWidget();
     offline_containers->setHeaderLabels({
@@ -78,8 +81,6 @@ MainWindow::MainWindow()
     splitter->setStretchFactor(1, 2);
 
     setCentralWidget(splitter);
-
-    statusBar()->showMessage(tr("Ready"));
 
     attempt_to_connect();
 }
@@ -114,12 +115,11 @@ void MainWindow::attempt_to_connect() {
 
 // Complete initialization
 void MainWindow::finish_init() {
+    statusBar()->showMessage(tr("Ready"));
+    
     menubar->enter_online_mode();
 
-    auto status_log = new QTextEdit(this);
-    status_log->setReadOnly(true);
-    QStatusBar *status_bar = statusBar();
-    Status::instance()->init(status_bar, status_log);
+    QTextEdit *status_log = STATUS()->status_log;
 
     auto containers_widget = new ContainersWidget(this);
 

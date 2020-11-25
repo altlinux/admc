@@ -102,19 +102,20 @@ RenameDialog::RenameDialog(const QString &target_arg)
 
 void RenameDialog::success_msg(const QString &old_name) {
     const QString message = QString(tr("Renamed object - \"%1\"")).arg(old_name);
-    Status::instance()->message(message, StatusType_Success);
+    STATUS()->message(message, StatusType_Success);
 }
 
-void RenameDialog::fail_msg(const QString &old_name, const int errors_index) {
+void RenameDialog::fail_msg(const QString &old_name) {
     const QString message = QString(tr("Failed to rename object - \"%1\"")).arg(old_name);
-    Status::instance()->message(message, StatusType_Error);
+    STATUS()->message(message, StatusType_Error);
     
-    Status::instance()->show_errors_popup(errors_index);
+    STATUS()->end_error_log();
 }
 
 void RenameDialog::accept() {
     const QString old_name = dn_get_name(target);
-    const int errors_index = Status::instance()->get_errors_size();
+
+    STATUS()->start_error_log();
 
     AD()->start_batch();
     {
@@ -129,10 +130,10 @@ void RenameDialog::accept() {
                 success_msg(old_name);
                 QDialog::close();
             } else {
-                fail_msg(old_name, errors_index);
+                fail_msg(old_name);
             }
         } else {
-            fail_msg(old_name, errors_index);
+            fail_msg(old_name);
         }
     }
     AD()->end_batch();

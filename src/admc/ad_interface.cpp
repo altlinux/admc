@@ -1119,7 +1119,7 @@ void AdInterface::success_status_message(const QString &msg, const DoStatusMsg d
         return;
     }
 
-    Status::instance()->message(msg, StatusType_Success);
+    STATUS()->message(msg, StatusType_Success);
 }
 
 void AdInterface::error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg) {
@@ -1132,7 +1132,7 @@ void AdInterface::error_status_message(const QString &context, const QString &er
         msg += QString(tr(". Error: \"%1\"")).arg(error);;
     }
 
-    Status::instance()->message(msg, StatusType_Error);
+    STATUS()->message(msg, StatusType_Error);
 }
 
 QString AdInterface::default_error() const {

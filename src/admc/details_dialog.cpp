@@ -224,7 +224,7 @@ QString DetailsDialog::get_target() const {
 }
 
 void DetailsDialog::apply() {
-    const int errors_index = Status::instance()->get_errors_size();
+    STATUS()->start_error_log();
 
     AD()->start_batch();
     for (auto tab : tabs) {
@@ -234,7 +234,7 @@ void DetailsDialog::apply() {
     }
     AD()->end_batch();
 
-    Status::instance()->show_errors_popup(errors_index);
+    STATUS()->end_error_log();
 
     reset();
 }

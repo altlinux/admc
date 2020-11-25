@@ -35,7 +35,7 @@ public:
     RenameDialog(const QString &target_arg);
 
     static void success_msg(const QString &old_name);
-    static void fail_msg(const QString &old_name, const int errors_index);
+    static void fail_msg(const QString &old_name);
 
 private slots:
     void accept();

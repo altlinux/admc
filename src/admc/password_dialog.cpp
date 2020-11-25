@@ -74,12 +74,12 @@ void PasswordDialog::accept() {
     const bool pass_confirmed = pass_edit->check_confirm();
 
     if (pass_confirmed) {
-        const int errors_index = Status::instance()->get_errors_size();
+        STATUS()->start_error_log();
 
         edits_apply(edits, target);
 
         QDialog::close();
 
-        Status::instance()->show_errors_popup(errors_index);
+        STATUS()->end_error_log();
     }
 }

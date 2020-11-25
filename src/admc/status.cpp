@@ -18,32 +18,36 @@
  */
 
 #include "status.h"
+#include "config.h"
 
 #include <QStatusBar>
 #include <QTextEdit>
-#include <QDialog>
-#include <QLabel>
-#include <QVBoxLayout>
+#include <QMessageBox>
+
+#define MAX_MESSAGES_IN_LOG 200
 
 Status *Status::instance() {
-    static Status instance;
-    return &instance;
+    static Status status;
+    return &status;
 }
 
-void Status::init(QStatusBar *status_bar_arg, QTextEdit *status_log_arg) {
-    if (initialized) {
-        printf("ERROR: double init of Status!\n");
-        return;
-    } else {
-        initialized = true;
+Status *STATUS() {
+    return Status::instance();
+}
+
+Status::Status()
+: QObject()
+{
+    status_bar = new QStatusBar();
+    status_log = new QTextEdit();
+    status_log->setReadOnly(true);
+}
+
+void Status::message(const QString &msg, const StatusType &type) {
+    if (type == StatusType_Error) {
+        error_log.append(msg);
     }
 
-    status_bar = status_bar_arg;
-    status_log = status_log_arg;
-}
-
-// TODO: probably want to cap total amount of message and delete old ones?
-void Status::message(const QString &msg, const StatusType &type) {
     status_bar->showMessage(msg);
     
     const QColor color =
@@ -60,44 +64,39 @@ void Status::message(const QString &msg, const StatusType &type) {
     status_log->append(msg);
     status_log->setTextColor(original_color);
 
-    // Scroll text edit to the newest message
-    status_log->ensureCursorVisible();
-
-    if (type == StatusType_Error) {
-        errors.append(msg);
+    // Limit number of messages in log by deleting old ones
+    // once over limit
+    QTextCursor cursor = status_log->textCursor();
+    const int message_count = cursor.blockNumber();
+    if (message_count > MAX_MESSAGES_IN_LOG) {
+        cursor.movePosition(QTextCursor::Start);
+        cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, 0);
+        cursor.select(QTextCursor::LineUnderCursor);
+        cursor.removeSelectedText();
+        cursor.deleteChar();
     }
+
+    // Move cursor to newest message
+    QTextCursor end_cursor = status_log->textCursor();
+    end_cursor.movePosition(QTextCursor::End);
+    status_log->setTextCursor(end_cursor);
 }
 
-int Status::get_errors_size() const {
-    return errors.size();
+void Status::start_error_log() {
+    error_log.clear();
 }
 
-// TODO: make size fit the contents of error log?
-void Status::show_errors_popup(int starting_index) {
-    const bool no_errors = (starting_index >= errors.size());
-    if (no_errors) {
+void Status::end_error_log() {
+    if (error_log.isEmpty()) {
         return;
     }
 
-    // NOTE: message box is too small and non-resizable
-    QDialog dialog;
-    dialog.resize(400, 400);
-    dialog.setModal(true);
+    const QMessageBox::Icon icon = QMessageBox::Critical;
+    const QString title = QString(tr("Errors occured - %1")).arg(ADMC_APPLICATION_NAME);
+    const QString text = error_log.join("\n");
+    const QMessageBox::StandardButtons buttons = QMessageBox::Ok;
 
-    auto label = new QLabel(tr("Errors occured:"));
-
-    auto error_log = new QTextEdit();
-    error_log->setReadOnly(true);
-
-    for (int i = starting_index; i < errors.size(); i++) {
-        const QString error = errors[i];
-        error_log->append(error);
-    }
-
-    const auto layout = new QVBoxLayout();
-    dialog.setLayout(layout);
-    layout->addWidget(label);
-    layout->addWidget(error_log);
-
-    dialog.exec();
+    auto dialog = new QMessageBox(icon, title, text, buttons);
+    dialog->setModal(true);
+    dialog->open();
 }
