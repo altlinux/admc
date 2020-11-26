@@ -121,7 +121,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn, QWidget *parent)
 void ObjectContextMenu::delete_object(const AdObject &object) {
     const QString name = object.get_string(ATTRIBUTE_NAME);
     const QString text = QString(tr("Are you sure you want to delete \"%1\"?")).arg(name);
-    const bool confirmed = confirmation_dialog(text, this);
+    const bool confirmed = confirmation_dialog(text, parentWidget());
 
     if (confirmed) {
         AD()->object_delete(object.get_dn());
@@ -134,7 +134,7 @@ void ObjectContextMenu::move(const AdObject &object) {
 
     const QString name = dn_get_name(object.get_dn());
     const QString title = QString(tr("Move \"%1\"")).arg(name);
-    const QList<QString> selected_objects = SelectDialog::open(possible_superiors, SelectDialogMultiSelection_Yes, title, this);
+    const QList<QString> selected_objects = SelectDialog::open(possible_superiors, SelectDialogMultiSelection_Yes, title, parentWidget());
 
     if (selected_objects.size() == 1) {
         const QString container = selected_objects[0];
@@ -147,7 +147,7 @@ void ObjectContextMenu::add_to_group(const AdObject &object) {
     const QList<QString> classes = {CLASS_GROUP};
     const QString name = dn_get_name(object.get_dn());
     const QString title = QString(tr("Add object \"%1\" to group")).arg(name);
-    const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, title, this);
+    const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, title, parentWidget());
 
     if (selected_objects.size() > 0) {
         for (auto group : selected_objects) {
