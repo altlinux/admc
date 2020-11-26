@@ -35,7 +35,7 @@ class SelectDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    static QList<QString> open(QList<QString> classes, SelectDialogMultiSelection multi_selection, QWidget *parent);
+    static QList<QString> open(QList<QString> classes, SelectDialogMultiSelection multi_selection, const QString &title, QWidget *parent);
 
 private slots:
     void accept();

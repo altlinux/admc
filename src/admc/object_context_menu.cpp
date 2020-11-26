@@ -20,6 +20,7 @@
 #include "object_context_menu.h"
 #include "ad_interface.h"
 #include "ad_config.h"
+#include "ad_utils.h"
 #include "confirmation_dialog.h"
 #include "select_dialog.h"
 #include "rename_dialog.h"
@@ -131,7 +132,9 @@ void ObjectContextMenu::move(const AdObject &object) {
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
     const QList<QString> possible_superiors = ADCONFIG()->get_possible_superiors(object_classes);
 
-    const QList<QString> selected_objects = SelectDialog::open(possible_superiors, SelectDialogMultiSelection_Yes, this);
+    const QString name = dn_get_name(object.get_dn());
+    const QString title = QString(tr("Move \"%1\"")).arg(name);
+    const QList<QString> selected_objects = SelectDialog::open(possible_superiors, SelectDialogMultiSelection_Yes, title, this);
 
     if (selected_objects.size() == 1) {
         const QString container = selected_objects[0];
@@ -142,7 +145,9 @@ void ObjectContextMenu::move(const AdObject &object) {
 
 void ObjectContextMenu::add_to_group(const AdObject &object) {
     const QList<QString> classes = {CLASS_GROUP};
-    const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, this);
+    const QString name = dn_get_name(object.get_dn());
+    const QString title = QString(tr("Add object \"%1\" to group")).arg(name);
+    const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, title, this);
 
     if (selected_objects.size() > 0) {
         for (auto group : selected_objects) {

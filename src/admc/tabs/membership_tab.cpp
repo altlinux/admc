@@ -244,8 +244,17 @@ void MembershipTab::on_add_button() {
         }
         return QList<QString>();
     }();
-    ;
-    const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, this);
+
+    const QString title =
+    [=]() {
+        switch (type) {
+            case MembershipTabType_Members: return QString(tr("Add member to group"));
+            case MembershipTabType_MemberOf: return QString(tr("Add user to group"));
+        }
+        return QString();
+    }();
+
+    const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, title, this);
 
     if (selected_objects.size() > 0) {
         add_values(selected_objects);

@@ -123,7 +123,8 @@ FindDialog::FindDialog(QWidget *parent)
 
 void FindDialog::select_custom_search_base() {
     // TODO: maybe need some other classes?
-    const QList<QString> selecteds = SelectDialog::open({CLASS_CONTAINER, CLASS_OU}, SelectDialogMultiSelection_Yes, this);
+    const QString title = QString(tr("Select search base"));
+    const QList<QString> selecteds = SelectDialog::open({CLASS_CONTAINER, CLASS_OU}, SelectDialogMultiSelection_Yes, title, this);
 
     if (!selecteds.isEmpty()) {
         const QString selected = selecteds[0];

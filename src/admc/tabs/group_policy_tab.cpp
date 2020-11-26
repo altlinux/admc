@@ -19,6 +19,7 @@
 
 #include "tabs/group_policy_tab.h"
 #include "ad_interface.h"
+#include "ad_utils.h"
 #include "object_context_menu.h"
 #include "utils.h"
 #include "select_dialog.h"
@@ -145,7 +146,8 @@ void GroupPolicyTab::on_context_menu(const QPoint pos) {
 
 void GroupPolicyTab::on_add_button() {
     const QList<QString> classes = {CLASS_GP_CONTAINER};
-    const QList<QString> selected = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, this);
+    const QString title = tr("Add policy link");
+    const QList<QString> selected = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, title, this);
 
     if (selected.size() > 0) {
         add_link(selected);
