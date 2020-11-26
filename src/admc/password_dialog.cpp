@@ -25,7 +25,6 @@
 #include "edits/account_option_edit.h"
 #include "status.h"
 #include "utils.h"
-#include "config.h"
 
 #include <QFormLayout>
 #include <QLabel>
@@ -41,7 +40,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose);
 
     const QString name = dn_get_name(target);
-    const QString title = QString(tr("Change password of \"%1\" - %2")).arg(name, ADMC_APPLICATION_NAME);
+    const QString title = QString(tr("Change password of object \"%1\"")).arg(name);
     setWindowTitle(title);
 
     pass_edit = new PasswordEdit(&edits, this);

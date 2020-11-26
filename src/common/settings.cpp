@@ -18,7 +18,6 @@
  */
 
 #include "settings.h"
-#include "config.h"
 
 #include <QAction>
 #include <QCheckBox>

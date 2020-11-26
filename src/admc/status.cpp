@@ -18,7 +18,6 @@
  */
 
 #include "status.h"
-#include "config.h"
 
 #include <QStatusBar>
 #include <QTextEdit>
@@ -92,7 +91,7 @@ void Status::end_error_log(QWidget *parent) {
     }
 
     const QMessageBox::Icon icon = QMessageBox::Critical;
-    const QString title = QString(tr("Errors occured - %1")).arg(ADMC_APPLICATION_NAME);
+    const QString title = tr("Errors occured");
     const QString text = error_log.join("\n");
     const QMessageBox::StandardButtons buttons = QMessageBox::Ok;
 

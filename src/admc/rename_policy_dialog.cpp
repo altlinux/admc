@@ -24,7 +24,6 @@
 #include "ad_utils.h"
 #include "status.h"
 #include "utils.h"
-#include "config.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -44,7 +43,7 @@ RenamePolicyDialog::RenamePolicyDialog(const QString &target_arg, QWidget *paren
     const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
     const QString type_string = ADCONFIG()->get_class_display_name(object_class);
-    const auto title = QString(tr("Rename %1 - %2")).arg(type_string, ADMC_APPLICATION_NAME);
+    const auto title = QString(tr("Rename object \"%1\"")).arg(type_string);
     setWindowTitle(title);
 
     name_edit = new QLineEdit();

@@ -21,7 +21,6 @@
 #include "ad_config.h"
 #include "utils.h"
 #include "attribute_display.h"
-#include "config.h"
 
 #include <QLineEdit>
 #include <QLabel>
@@ -37,7 +36,7 @@ BinaryEditDialog::BinaryEditDialog(const QString attribute, const QList<QByteArr
 
     original_values = values;
 
-    setWindowTitle(QString(tr("Edit %1 - %2")).arg(attribute, ADMC_APPLICATION_NAME));
+    setWindowTitle(QString(tr("Edit attribute \"%1\"")).arg(attribute));
 
     auto string_display = new QLineEdit();
     string_display->setReadOnly(true);

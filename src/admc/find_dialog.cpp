@@ -28,7 +28,6 @@
 #include "filter_widget/filter_widget.h"
 #include "object_list_widget.h"
 #include "select_dialog.h"
-#include "config.h"
 
 #include <QString>
 #include <QList>
@@ -50,7 +49,7 @@ FindDialog::FindDialog(QWidget *parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    setWindowTitle(QString(tr("Find dialog - %1")).arg(ADMC_APPLICATION_NAME));
+    setWindowTitle(tr("Find objects"));
 
     // TODO: technically, entire directory does NOT equal to the domain. In cases where we're browsing multiple domains at the same time (or maybe some other situations as well), we'd need "Entire directory" AND all of domains. Currently search base is set to domain anyway, so would need to start from reworking that.
 

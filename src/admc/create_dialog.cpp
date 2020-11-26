@@ -23,7 +23,6 @@
 #include "ad_config.h"
 #include "status.h"
 #include "settings.h"
-#include "config.h"
 #include "edits/string_edit.h"
 #include "edits/group_scope_edit.h"
 #include "edits/group_type_edit.h"
@@ -48,7 +47,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
 
     const QString class_name = ADCONFIG()->get_class_display_name(object_class);
     const QString parent_canonical = dn_canonical(parent_dn);
-    const auto title = QString(tr("Create %1 in \"%2\" - %3")).arg(class_name, parent_canonical, ADMC_APPLICATION_NAME);
+    const auto title = QString(tr("Create %1 in \"%2\"")).arg(class_name, parent_canonical);
     setWindowTitle(title);
 
     name_edit = new QLineEdit();

@@ -20,7 +20,6 @@
 #include "edit_dialogs/string_edit_dialog.h"
 #include "ad_config.h"
 #include "utils.h"
-#include "config.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -35,7 +34,7 @@ StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArr
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    setWindowTitle(QString(tr("Edit %1 - %2")).arg(attribute, ADMC_APPLICATION_NAME));
+    setWindowTitle(QString(tr("Edit attribute \"%1\"")).arg(attribute));
 
     edit = new QLineEdit();
 

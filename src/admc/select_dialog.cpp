@@ -25,7 +25,6 @@
 #include "containers_widget.h"
 #include "utils.h"
 #include "filter.h"
-#include "config.h"
 
 #include <QLineEdit>
 #include <QGridLayout>
@@ -49,13 +48,7 @@ enum SelectDialogColumn {
 // NOTE: using exec() instead of open() to return list of selected objects from this f-n
 QList<QString> SelectDialog::open(QList<QString> classes, SelectDialogMultiSelection multi_selection, const QString &title, QWidget *parent) {
     SelectDialog dialog(classes, multi_selection, parent);
-
-    if (!title.isEmpty()) {
-        dialog.setWindowTitle(title);
-    } else {
-        dialog.setWindowTitle(QString(tr("Select object - %1")).arg(ADMC_APPLICATION_NAME));
-    }
-
+    dialog.setWindowTitle(title);
     dialog.exec();
 
     return dialog.selected_objects;

@@ -20,7 +20,6 @@
 #include "toggle_widgets_dialog.h"
 
 #include "settings.h"
-#include "config.h"
 
 #include <QString>
 #include <QFormLayout>
@@ -32,7 +31,7 @@ ToggleWidgetsDialog::ToggleWidgetsDialog(QWidget *parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    setWindowTitle(QString(tr("Toggle widgets - %1")).arg(ADMC_APPLICATION_NAME));
+    setWindowTitle(tr("Toggle widgets"));
 
     auto checks_layout = new QFormLayout();
 
