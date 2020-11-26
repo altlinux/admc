@@ -45,7 +45,7 @@ void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgro
 
 }
 
-ConnectResult AdInterface::connect() {
+bool AdInterface::connect() {
     // Get default domain from krb5
     const QString domain =
     []() {
@@ -80,7 +80,10 @@ ConnectResult AdInterface::connect() {
     const QList<QString> hosts = get_domain_hosts(domain, QString());
     if (hosts.isEmpty()) {
         qDebug() << "No hosts found";
-        return ConnectResult_FailedToFindHosts;
+
+        error_status_message(tr("Failed to connect"), tr("Not connected to a domain network"));
+
+        return false;
     }
     qDebug() << "hosts=" << hosts;
 
@@ -120,9 +123,13 @@ ConnectResult AdInterface::connect() {
         }
         smbc_set_context(smbc);
 
-        return ConnectResult_Success;
+        emit connected();
+
+        return true;
     } else {
-        return ConnectResult_FailedToConnect;
+        error_status_message(tr("Failed to connect"), tr("Authentication failed"));
+
+        return false;
     }
 }
 

@@ -30,13 +30,9 @@ class MenuBar final : public QMenuBar {
 Q_OBJECT
 
 public:
-    MenuBar();
-
-    void enter_online_mode();
-
     QAction *filter_contents_action;
-    QAction *connect_action;
-    QAction *quit_action;
+
+    MenuBar();
 
 signals:
     void filter_contents_dialog();

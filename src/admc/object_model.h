@@ -36,7 +36,7 @@ Q_OBJECT
 public:
     const int dn_column;
     
-    explicit ObjectModel(int column_count, int dn_column_in, QObject *parent);
+    ObjectModel(int column_count, int dn_column_in, QObject *parent);
 
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;

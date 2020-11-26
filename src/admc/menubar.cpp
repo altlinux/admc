@@ -23,6 +23,7 @@
 #include "confirmation_dialog.h"
 #include "find_dialog.h"
 #include "toggle_widgets_dialog.h"
+#include "status.h"
 
 #include <QMenu>
 #include <QLocale>
@@ -35,7 +36,12 @@ MenuBar::MenuBar()
 : QMenuBar() {
     QMenu *action_menu = addMenu(tr("Action"));
 
-    connect_action = action_menu->addAction(tr("Connect"));
+    auto connect_action = action_menu->addAction(tr("Connect"),
+        [this]() {
+            STATUS()->start_error_log();
+            AD()->connect();
+            STATUS()->end_error_log(this);
+        });
 
     action_menu->addAction(tr("Find"),
         [this]() {
@@ -50,7 +56,10 @@ MenuBar::MenuBar()
 
     filter_contents_action = action_menu->addAction(tr("Filter contents"));
 
-    quit_action = action_menu->addAction(tr("Quit"));
+    auto quit_action = action_menu->addAction(tr("Quit"),
+        []() {
+            QApplication::quit();
+        });
 
     auto add_bool_setting_action = 
     [](QMenu *menu, QString display_text, BoolSetting type) {
@@ -108,10 +117,18 @@ MenuBar::MenuBar()
         preferences_menu,
     };
 
-    // While offline, only "connect" and "exit" are enabled
+    // Offline, only "connect" and "exit" are enabled
     enable_actions(false);
     connect_action->setEnabled(true);
     quit_action->setEnabled(true);
+
+    // Once connected, everything is enabled and connect is removed
+    connect(
+        AD(), &AdInterface::connected,
+        [this, action_menu, connect_action]() {
+            enable_actions(true);
+            action_menu->removeAction(connect_action);
+        });
 
     connect(
         toggle_widgets_action, &QAction::triggered,
@@ -119,12 +136,6 @@ MenuBar::MenuBar()
             auto dialog = new ToggleWidgetsDialog(this);
             dialog->open();
         });
-}
-
-void MenuBar::enter_online_mode() {
-    // Once online, everything is enabled except for "connect"
-    enable_actions(true);
-    connect_action->setEnabled(false);
 }
 
 void MenuBar::enable_actions(const bool enabled) {

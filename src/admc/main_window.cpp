@@ -33,8 +33,6 @@
 #include <QSplitter>
 #include <QStatusBar>
 #include <QTextEdit>
-#include <QMessageBox>
-#include <QTimer>
 #include <QAction>
 #include <QTreeWidget>
 
@@ -45,18 +43,6 @@ MainWindow::MainWindow()
 
     menubar = new MenuBar();
     setMenuBar(menubar);
-
-    connect(
-        menubar->connect_action, &QAction::triggered,
-        [this]() {
-            attempt_to_connect();
-        });
-
-    connect(
-        menubar->quit_action, &QAction::triggered,
-        []() {
-            QApplication::quit();
-        });
 
     QStatusBar *status_bar = STATUS()->status_bar;
     setStatusBar(status_bar);
@@ -82,43 +68,30 @@ MainWindow::MainWindow()
 
     setCentralWidget(splitter);
 
-    attempt_to_connect();
+    connect(
+        AD(), &AdInterface::connected,
+        this, &MainWindow::on_connected);
+
+    // NOTE: order of operations here is very finnicky. Have
+    // to connect() BEFORE show(), otherwise for the
+    // duration of the connection process, main window will
+    // be black. Have to end_error_log() (show error popup)
+    // AFTER show(), otherwise error popup modality won't
+    // work.
+
+    STATUS()->start_error_log();
+
+    AD()->connect();
+
+    show();
+
+    STATUS()->end_error_log(this);
 }
 
-void MainWindow::attempt_to_connect() {
-    const ConnectResult result = AD()->connect();
-
-    if (result == ConnectResult_Success) {
-        finish_init();
-    } else {
-        // Open dialog explaining connection error
-        // TODO: not sure about phrasing of errors
-        const QMessageBox::Icon icon = QMessageBox::Warning;
-        const QString title = tr("Failed to connect");
-        const QString text =
-        [result]() {
-            switch (result) {
-                case ConnectResult_Success: return QString();
-                case ConnectResult_FailedToFindHosts: return tr("Not connected to a domain network");
-                case ConnectResult_FailedToConnect: return tr("Authentication failed");
-            }
-            return QString();
-        }();
-        const QMessageBox::StandardButtons buttons = QMessageBox::Ok;
-        auto dialog = new QMessageBox(icon, title, text, buttons, this);
-        dialog->setAttribute(Qt::WA_DeleteOnClose);
-
-        dialog->open();
-    }
-}
-
-// Complete initialization
-void MainWindow::finish_init() {
-    statusBar()->showMessage(tr("Ready"));
-    
-    menubar->enter_online_mode();
-
+void MainWindow::on_connected() {
     QTextEdit *status_log = STATUS()->status_log;
+    status_log->clear();
+    STATUS()->status_bar->showMessage(tr("Ready"));
 
     auto containers_widget = new ContainersWidget(this);
 

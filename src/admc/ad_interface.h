@@ -34,12 +34,6 @@
  * objects and modify them.
  */
 
-enum ConnectResult {
-    ConnectResult_Success,
-    ConnectResult_FailedToFindHosts,
-    ConnectResult_FailedToConnect,
-};
-
 enum SearchScope {
     SearchScope_Object,
     SearchScope_Children,
@@ -66,7 +60,7 @@ private:
 public:
     static AdInterface *instance();
 
-    ConnectResult connect();
+    bool connect();
 
     void refresh();
 
@@ -122,6 +116,9 @@ public:
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
 signals:
+    // Emitted when connected successfully to a server
+    void connected();
+
     // Emitted when a f-n that modifies server state is
     // used. Widgets should connect to this signal and
     // reload updated server state in the slot.
