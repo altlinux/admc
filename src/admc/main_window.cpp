@@ -126,12 +126,17 @@ void MainWindow::on_connected() {
     auto connect_toggle_widget =
     [](QWidget *widget, const BoolSetting setting) {
         const BoolSettingSignal *signal = SETTINGS()->get_bool_signal(setting);
+
+        auto on_changed =
+        [=]() {
+            const bool visible = SETTINGS()->get_bool(setting);
+            widget->setVisible(visible);
+        };
+
         connect(
             signal, &BoolSettingSignal::changed,
-            [=]() {
-                const bool visible = SETTINGS()->get_bool(setting);
-                widget->setVisible(visible); 
-            });
+            on_changed);
+        on_changed();
     };
 
     connect_toggle_widget(containers_widget, BoolSetting_ShowContainers);
