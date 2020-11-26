@@ -154,8 +154,14 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
 
         filter_class_combo->addItem(class_name, object_class);
     }
-    filter_class_combo->addItem(tr("All"), "");
-    filter_class_combo->setCurrentIndex(filter_class_combo->count() - 1);
+
+    // Add "All" class filter if multiple classes possible
+    if (classes.size() > 1) {
+        filter_class_combo->addItem(tr("All"), "");
+
+        // Select "All" class filter by default
+        filter_class_combo->setCurrentIndex(filter_class_combo->count() - 1);
+    }
 
     // Disable/hide class-related elements if selecting only from one class
     if (classes.size() == 1) {
