@@ -67,7 +67,7 @@ bool PasswordEdit::check_confirm() const {
     const QString confirm_pass = confirm_edit->text();
     if (pass != confirm_pass) {
         const QString error_text = QString(tr("Passwords don't match!"));
-        QMessageBox::warning(nullptr, tr("Error"), error_text);
+        QMessageBox::warning(edit, tr("Error"), error_text);
 
         return false;
     }
@@ -76,7 +76,7 @@ bool PasswordEdit::check_confirm() const {
     const bool can_encode = codec->canEncode(pass);
     if (!can_encode) {
         const QString error_text = QString(tr("Password contains invalid characters"));
-        QMessageBox::warning(nullptr, tr("Error"), error_text);
+        QMessageBox::warning(edit, tr("Error"), error_text);
 
         return false;
     }

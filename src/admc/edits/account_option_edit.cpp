@@ -51,15 +51,15 @@ void AccountOptionEdit::make_many(const QList<AccountOption> options, QMap<Accou
         QCheckBox *subject_check = option_edits[subject]->check;
         QCheckBox *blocker_check = option_edits[blocker]->check;
 
-        QObject::connect(subject_check, &QCheckBox::stateChanged,
+        connect(subject_check, &QCheckBox::stateChanged,
             [subject, blocker, subject_check, blocker_check, parent]() {
                 if (subject_check->isChecked() && blocker_check->isChecked()) {
                     subject_check->setCheckState(Qt::Unchecked);
 
                     const QString subject_name = account_option_string(subject);
                     const QString blocker_name = account_option_string(blocker);
-                    const QString error = QString(QObject::tr("Can't set \"%1\" when \"%2\" is set.")).arg(blocker_name, subject_name);
-                    QMessageBox::warning(nullptr, QObject::tr("Error"), error);
+                    const QString error = QString(tr("Can't set \"%1\" when \"%2\" is set.")).arg(blocker_name, subject_name);
+                    QMessageBox::warning(blocker_check, tr("Error"), error);
                 }
             }
             );

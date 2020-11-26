@@ -26,7 +26,6 @@
 
 #include <QLineEdit>
 #include <QFormLayout>
-#include <QMessageBox>
 #include <QLabel>
 #include <QPushButton>
 

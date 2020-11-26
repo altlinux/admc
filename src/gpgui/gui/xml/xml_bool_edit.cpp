@@ -20,7 +20,6 @@
 #include "xml_bool_edit.h"
 #include "utils.h"
 
-#include <QMessageBox>
 #include <QLabel>
 #include <QCheckBox>
 

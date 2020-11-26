@@ -21,7 +21,6 @@
 #include "utils.h"
 
 #include <QLineEdit>
-#include <QMessageBox>
 #include <QLabel>
 
 XmlStringEdit::XmlStringEdit(const XmlAttribute &attribute_arg, QObject *parent)
