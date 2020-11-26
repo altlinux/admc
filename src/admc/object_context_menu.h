@@ -30,8 +30,6 @@ class ObjectContextMenu final : public QMenu {
 Q_OBJECT
 
 public:
-    static void connect_view(QAbstractItemView *view, int dn_column);
-
     ObjectContextMenu(const QString &dn, QWidget *parent);
 
 private:

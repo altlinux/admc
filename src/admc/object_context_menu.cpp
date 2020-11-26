@@ -31,22 +31,6 @@
 #include <QPoint>
 #include <QAbstractItemView>
 
-// Open this context menu when view requests one
-void ObjectContextMenu::connect_view(QAbstractItemView *view, int dn_column) {
-    QObject::connect(
-        view, &QWidget::customContextMenuRequested,
-        [=]
-        (const QPoint pos) {
-            const QString dn = get_dn_from_pos(pos, view, dn_column);
-            if (dn.isEmpty()) {
-                return;
-            }
-
-            ObjectContextMenu context_menu(dn, view);
-            exec_menu_from_view(&context_menu, view, pos);
-        });
-}
-
 ObjectContextMenu::ObjectContextMenu(const QString &dn, QWidget *parent)
 : QMenu(parent)
 {

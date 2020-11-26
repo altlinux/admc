@@ -41,6 +41,7 @@ signals:
 
 private slots:
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
+    void on_context_menu(const QPoint pos);
 
 private:
     QTreeView *view = nullptr;

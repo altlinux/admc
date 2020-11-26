@@ -57,7 +57,6 @@ ContainersWidget::ContainersWidget(QWidget *parent)
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
-    ObjectContextMenu::connect_view(view, ContainersColumn_DN);
 
     view->setModel(model);
 
@@ -91,6 +90,10 @@ ContainersWidget::ContainersWidget(QWidget *parent)
     connect(
         advanced_view_setting, &BoolSettingSignal::changed,
         this, &ContainersWidget::reload);
+
+    QObject::connect(
+        view, &QWidget::customContextMenuRequested,
+        this, &ContainersWidget::on_context_menu);
 
     reload();
 };
@@ -215,6 +218,16 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
     const QString dn = get_dn_from_index(indexes[0], ContainersColumn_DN);
 
     emit selected_changed(dn);
+}
+
+void ContainersWidget::on_context_menu(const QPoint pos) {
+    const QString dn = get_dn_from_pos(pos, view, ContainersColumn_DN);
+    if (dn.isEmpty()) {
+        return;
+    }
+
+    ObjectContextMenu context_menu(dn, view);
+    exec_menu_from_view(&context_menu, view, pos);
 }
 
 ContainersModel::ContainersModel(QObject *parent)
