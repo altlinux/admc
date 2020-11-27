@@ -169,7 +169,7 @@ void AttributesTab::load(const AdObject &object) {
         load_row(row, attribute, values);
     }
 
-    model->sort(AttributesColumn_Name);
+    view->sortByColumn(AttributesColumn_Name, Qt::AscendingOrder);
 }
 
 void AttributesTab::apply(const QString &target) const {
