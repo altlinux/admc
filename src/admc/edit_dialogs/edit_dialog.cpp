@@ -21,6 +21,7 @@
 #include "edit_dialogs/string_edit_dialog.h"
 #include "edit_dialogs/string_multi_edit_dialog.h"
 #include "edit_dialogs/binary_edit_dialog.h"
+#include "edit_dialogs/bool_edit_dialog.h"
 #include "ad_config.h"
 
 #include <QVBoxLayout>
@@ -32,17 +33,23 @@
 EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> values, QWidget *parent) {
     const bool single_valued = ADCONFIG()->get_attribute_is_single_valued(attribute);
 
+    const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
+
     const bool is_binary =
-    [attribute]() {
+    [attribute, type]() {
         static const QList<AttributeType> binary_types = {
             AttributeType_Octet,
             AttributeType_Sid,
         };
-        const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
         return binary_types.contains(type);
     }();
 
+    if (type == AttributeType_Boolean) {
+        return new BoolEditDialog(attribute, values, parent);
+    }
+
+    // TODO: split by type first, then single/multi
     if (single_valued) {
         if (is_binary) {
             return new BinaryEditDialog(attribute, values, parent);

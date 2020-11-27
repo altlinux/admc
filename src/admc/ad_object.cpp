@@ -23,8 +23,6 @@
 
 #include <algorithm>
 
-bool ad_string_to_bool(const QString &string);
-
 AdObject::AdObject()
 {
 
@@ -250,8 +248,4 @@ QIcon AdObject::get_icon() const {
     const QIcon icon = QIcon::fromTheme(icon_name);
 
     return icon;
-}
-
-bool ad_string_to_bool(const QString &string) {
-    return (string == LDAP_BOOL_TRUE);
 }

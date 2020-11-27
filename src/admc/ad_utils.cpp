@@ -172,6 +172,12 @@ QString extract_rid_from_sid(const QByteArray &sid) {
     return rid;
 }
 
+
+bool ad_string_to_bool(const QString &string) {
+    return (string == LDAP_BOOL_TRUE);
+}
+
+
 // "CN=foo,CN=bar,DC=domain,DC=com"
 // =>
 // "foo"
