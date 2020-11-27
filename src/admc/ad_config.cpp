@@ -44,6 +44,8 @@
 #define ATTRIBUTE_IS_SINGLE_VALUED      "isSingleValued"
 #define ATTRIBUTE_SYSTEM_ONLY           "systemOnly"
 #define ATTRIBUTE_RANGE_UPPER           "rangeUpper"
+#define ATTRIBUTE_AUXILIARY_CLASS       "auxiliaryClass"
+#define ATTRIBUTE_SYSTEM_AUXILIARY_CLASS "systemAuxiliaryClass"
 
 QString get_display_specifier_class(const QString &display_specifier);
 QString get_locale_dir();
@@ -255,6 +257,28 @@ AdConfig::AdConfig(QObject *parent)
         return out;
     }();
 
+    auxiliary_classes =
+    []() {
+        QHash<QString, QList<QString>> out;
+
+        const QString schema_dn = AD()->schema_dn();
+        const QList<QString> attributes = {
+            ATTRIBUTE_LDAP_DISPLAY_NAME,
+            ATTRIBUTE_AUXILIARY_CLASS,
+            ATTRIBUTE_SYSTEM_AUXILIARY_CLASS,
+        };
+        const QHash<QString, AdObject> search_results = AD()->search("", attributes, SearchScope_Children, schema_dn);
+
+        for (const AdObject &schema : search_results.values()) {
+            const QString object_class = schema.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
+            const QList<QString> aux_classes = schema.get_strings(ATTRIBUTE_AUXILIARY_CLASS) + schema.get_strings(ATTRIBUTE_SYSTEM_AUXILIARY_CLASS);
+
+            out[object_class] = aux_classes;
+        }
+
+        return out;
+    }();
+
     find_attributes =
     [this]() {
         QHash<QString, QList<QString>> out;
@@ -429,17 +453,39 @@ QString AdConfig::get_ad_to_ldap_name(const QString &ad_name) const {
     return ad_to_ldap_names.value(ad_name, ad_name);
 }
 
-// TODO: Object's objectClass list appears to already contain the full inheritance chain. Confirm that this applies to all objects, because otherwise would need to manually go down the inheritance chain to get all possible attributes.
 QList<QString> AdConfig::get_possible_attributes(const QList<QString> &object_classes) const {
+    // Add auxiliary classes of given classes to list
+    const QList<QString> all_classes =
+    [=]() {
+        // TODO: preeeeety sure auxiliary classes can't have auxiliary classes themselves so don't have to recurse here. Makes sense since they are somewhat like interfaces.
+        QList<QString> out;
+
+        out.append(object_classes);
+
+        for (const auto object_class : object_classes) {
+            if (auxiliary_classes.contains(object_class)) {
+                const QList<QString> aux_classes = auxiliary_classes[object_class];
+                out.append(aux_classes);
+            }
+        }
+
+        out.removeDuplicates();
+
+        return out;
+    }();
+
+    // Combine possible attributes of all classes of this object
     QList<QString> attributes;
 
-    for (const auto object_class : object_classes) {
+    for (const auto object_class : all_classes) {
         if (possible_attributes.contains(object_class)) {
             const QList<QString> class_attributes = possible_attributes[object_class];
 
             attributes.append(class_attributes);
         }
     }
+
+    attributes.removeDuplicates();
 
     return attributes;
 }

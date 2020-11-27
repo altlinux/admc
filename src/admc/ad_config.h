@@ -105,6 +105,7 @@ private:
     QHash<ObjectClass, QList<Attribute>> possible_attributes;
     QHash<ObjectClass, QList<Attribute>> find_attributes;
     QHash<ObjectClass, QHash<Attribute, QString>> attribute_display_names;
+    QHash<ObjectClass, QList<QString>> auxiliary_classes;
 
     QHash<Attribute, AttributeType> attribute_types;
     QHash<Attribute, bool> attribute_is_single_valued;
