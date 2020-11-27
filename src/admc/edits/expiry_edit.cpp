@@ -135,9 +135,9 @@ void ExpiryEdit::on_end_of_check() {
     }
 }
 
-// TODO: dialog not deleted?
 void ExpiryEdit::on_edit_button() {
     auto dialog = new QDialog(edit_button);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
 
     auto label = new QLabel(tr("Edit expiry time"), dialog);
     auto calendar = new QCalendarWidget(dialog);
