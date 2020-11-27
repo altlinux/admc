@@ -75,7 +75,7 @@ QList<QStandardItem *> make_item_row(const int count) {
 
     for (int i = 0; i < count; i++) {
         const auto item = new QStandardItem();
-        row.push_back(item);
+        row.append(item);
     }
 
     return row;

@@ -86,7 +86,7 @@ QList<QStandardItem *> ObjectModel::find_row(const QString &dn) {
     auto row = QList<QStandardItem *>();
     for (int col_i = 0; col_i < column_count; col_i++) {
         QStandardItem *item = parent->child(row_i, col_i);
-        row.push_back(item);
+        row.append(item);
     }
 
     return row;

@@ -1176,7 +1176,7 @@ QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
 
         for (int i = 0; hosts_raw[i] != NULL; i++) {
             auto host = QString(hosts_raw[i]);
-            hosts.push_back(host);
+            hosts.append(host);
         }
         ad_array_free(hosts_raw);
 
