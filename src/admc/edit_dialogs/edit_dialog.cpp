@@ -33,28 +33,43 @@
 EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> values, QWidget *parent) {
     const bool single_valued = ADCONFIG()->get_attribute_is_single_valued(attribute);
 
-    const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
-
-    const bool is_octet = (type == AttributeType_Octet || type == AttributeType_Sid);
-
-    if (type == AttributeType_Boolean) {
-        return new BoolEditDialog(attribute, values, parent);
-    }
-
-    // TODO: split by type first, then single/multi
-    if (single_valued) {
-        if (is_octet) {
+    auto octet_dialog =
+    [=]() -> EditDialog * {
+        if (single_valued) {
             return new OctetEditDialog(attribute, values, parent);
         } else {
-            return new StringEditDialog(attribute, values, parent);
-        }
-    } else {
-        // TODO: there are multi-valued octet attributes!
-        if (is_octet) {
+            // TODO:
             return nullptr;
+        } 
+    };
+
+    auto string_dialog =
+    [=]() -> EditDialog * {
+        if (single_valued) {
+            return new StringEditDialog(attribute, values, parent);
         } else {
             return new StringMultiEditDialog(attribute, values, parent);
-        }
+        } 
+    };
+
+    auto bool_dialog =
+    [=]() -> EditDialog * {
+        if (single_valued) {
+            return new BoolEditDialog(attribute, values, parent);
+        } else {
+            return nullptr;
+        } 
+    };
+
+    const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
+    switch (type) {
+        case AttributeType_Octet: return octet_dialog();
+        case AttributeType_Sid: return octet_dialog();
+        case AttributeType_Boolean: return bool_dialog();
+        case AttributeType_StringCase: return string_dialog();
+        case AttributeType_Unicode: return string_dialog();
+        case AttributeType_DSDN: return string_dialog();
+        default: return nullptr;
     }
 }
 

@@ -28,6 +28,7 @@
 #include <QVBoxLayout>
 #include <QStandardItemModel>
 #include <QMenu>
+#include <QMessageBox>
 
 enum AttributesColumn {
     AttributesColumn_Name,
@@ -109,6 +110,8 @@ void AttributesTab::on_double_clicked(const QModelIndex &proxy_index) {
             });
 
         dialog->open();
+    } else {
+        QMessageBox::critical(this, tr("Error"), tr("No edit dialog is available for this attribute type."));
     }
 }
 
