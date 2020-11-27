@@ -23,6 +23,10 @@
 #include "edit_dialogs/binary_edit_dialog.h"
 #include "ad_config.h"
 
+#include <QVBoxLayout>
+#include <QFormLayout>
+#include <QLabel>
+
 // TODO: implement missing types
 
 EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> values, QWidget *parent) {
@@ -53,4 +57,11 @@ EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> va
             return new StringMultiEditDialog(attribute, values, parent);
         }
     }
+}
+
+void EditDialog::add_attribute_label(QVBoxLayout *layout, const QString &attribute) {
+    auto form = new QFormLayout();
+    form->addRow(tr("Attribute:"), new QLabel(attribute));
+
+    layout->addLayout(form);
 }

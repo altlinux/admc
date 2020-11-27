@@ -36,7 +36,7 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    setWindowTitle(QString(tr("Edit attribute \"%1\"")).arg(attribute));
+    setWindowTitle(tr("Edit multi-valued string"));
 
     edit = new QLineEdit();
     if (ADCONFIG()->attribute_is_number(attribute)) {
@@ -58,6 +58,7 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
+    add_attribute_label(top_layout, attribute);
     top_layout->addWidget(edit);
     top_layout->addWidget(add_button);
     top_layout->addWidget(list_widget);

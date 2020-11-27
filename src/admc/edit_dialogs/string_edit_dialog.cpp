@@ -34,7 +34,7 @@ StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArr
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    setWindowTitle(QString(tr("Edit attribute \"%1\"")).arg(attribute));
+    setWindowTitle(tr("Edit string"));
 
     edit = new QLineEdit();
 
@@ -55,6 +55,7 @@ StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArr
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
+    add_attribute_label(top_layout, attribute);
     top_layout->addWidget(edit);
     top_layout->addWidget(button_box);
 

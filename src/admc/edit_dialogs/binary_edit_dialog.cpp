@@ -29,6 +29,8 @@
 #include <QFont>
 #include <QFontDatabase>
 
+// TODO: need to display value in these formats: hexadecimal, binary, decimal, octal. Currently only have hexadecimal.
+
 BinaryEditDialog::BinaryEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent)
 : EditDialog(parent)
 {
@@ -36,7 +38,7 @@ BinaryEditDialog::BinaryEditDialog(const QString attribute, const QList<QByteArr
 
     original_values = values;
 
-    setWindowTitle(QString(tr("Edit attribute \"%1\"")).arg(attribute));
+    setWindowTitle(tr("Edit binary string"));
 
     auto string_display = new QLineEdit();
     string_display->setReadOnly(true);
@@ -48,6 +50,7 @@ BinaryEditDialog::BinaryEditDialog(const QString attribute, const QList<QByteArr
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
+    add_attribute_label(top_layout, attribute);
     top_layout->addWidget(string_display);
     top_layout->addWidget(hex_display);
 

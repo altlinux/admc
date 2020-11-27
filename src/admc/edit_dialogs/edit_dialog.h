@@ -25,6 +25,8 @@
 #include <QList>
 #include <QByteArray>
 
+class QVBoxLayout;
+
 /**
  * Gets input from user, which can be obtained through
  * get_new_values(). Parent object is responsible for
@@ -40,6 +42,9 @@ public:
     using QDialog::QDialog;
 
     virtual QList<QByteArray> get_new_values() const = 0;
+
+protected:
+    static void add_attribute_label(QVBoxLayout *layout, const QString &attribute);
 };
 
 #endif /* EDIT_DIALOG_H */
