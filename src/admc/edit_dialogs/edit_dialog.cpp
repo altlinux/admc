@@ -20,7 +20,7 @@
 #include "edit_dialogs/edit_dialog.h"
 #include "edit_dialogs/string_edit_dialog.h"
 #include "edit_dialogs/string_multi_edit_dialog.h"
-#include "edit_dialogs/binary_edit_dialog.h"
+#include "edit_dialogs/octet_edit_dialog.h"
 #include "edit_dialogs/bool_edit_dialog.h"
 #include "ad_config.h"
 
@@ -35,15 +35,7 @@ EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> va
 
     const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
-    const bool is_binary =
-    [attribute, type]() {
-        static const QList<AttributeType> binary_types = {
-            AttributeType_Octet,
-            AttributeType_Sid,
-        };
-
-        return binary_types.contains(type);
-    }();
+    const bool is_octet = (type == AttributeType_Octet || type == AttributeType_Sid);
 
     if (type == AttributeType_Boolean) {
         return new BoolEditDialog(attribute, values, parent);
@@ -51,14 +43,14 @@ EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> va
 
     // TODO: split by type first, then single/multi
     if (single_valued) {
-        if (is_binary) {
-            return new BinaryEditDialog(attribute, values, parent);
+        if (is_octet) {
+            return new OctetEditDialog(attribute, values, parent);
         } else {
             return new StringEditDialog(attribute, values, parent);
         }
     } else {
-        // TODO: are there multi-valued binary attributes?
-        if (is_binary) {
+        // TODO: there are multi-valued octet attributes!
+        if (is_octet) {
             return nullptr;
         } else {
             return new StringMultiEditDialog(attribute, values, parent);

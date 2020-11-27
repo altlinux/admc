@@ -17,16 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BINARY_EDIT_DIALOG_H
-#define BINARY_EDIT_DIALOG_H
+#ifndef OCTET_EDIT_DIALOG_H
+#define OCTET_EDIT_DIALOG_H
 
 #include "edit_dialogs/edit_dialog.h"
 
-class BinaryEditDialog final : public EditDialog {
+class OctetEditDialog final : public EditDialog {
 Q_OBJECT
 
 public:
-    BinaryEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent);
+    OctetEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent);
 
     QList<QByteArray> get_new_values() const;
 
@@ -34,4 +34,4 @@ private:
     QList<QByteArray> original_values;
 };
 
-#endif /* BINARY_EDIT_DIALOG_H */
+#endif /* OCTET_EDIT_DIALOG_H */

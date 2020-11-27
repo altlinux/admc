@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "edit_dialogs/binary_edit_dialog.h"
+#include "edit_dialogs/octet_edit_dialog.h"
 #include "ad_config.h"
 #include "utils.h"
 #include "attribute_display.h"
@@ -31,14 +31,14 @@
 
 // TODO: need to display value in these formats: hexadecimal, binary, decimal, octal. Currently only have hexadecimal.
 
-BinaryEditDialog::BinaryEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+OctetEditDialog::OctetEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent)
 : EditDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
     original_values = values;
 
-    setWindowTitle(tr("Edit binary string"));
+    setWindowTitle(tr("Edit octet string"));
 
     auto string_display = new QLineEdit();
     string_display->setReadOnly(true);
@@ -71,6 +71,6 @@ BinaryEditDialog::BinaryEditDialog(const QString attribute, const QList<QByteArr
     }
 }
 
-QList<QByteArray> BinaryEditDialog::get_new_values() const {
+QList<QByteArray> OctetEditDialog::get_new_values() const {
     return original_values;
 }

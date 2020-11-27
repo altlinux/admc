@@ -267,9 +267,9 @@
     </message>
 </context>
 <context>
-    <name>BinaryEditDialog</name>
+    <name>OctetEditDialog</name>
     <message>
-        <location filename="../src/admc/edit_dialogs/binary_edit_dialog.cpp" line="40"/>
+        <location filename="../src/admc/edit_dialogs/octet_edit_dialog.cpp" line="40"/>
         <source>Edit %1 - %2</source>
         <translation type="unfinished"></translation>
     </message>
