@@ -81,13 +81,18 @@ void AttributesTab::on_double_clicked(const QModelIndex &proxy_index) {
         return;
     }
 
-    const QModelIndex attribute_index = index.siblingAtColumn(AttributesColumn_Name);
-    QStandardItem *attribute_item = model->itemFromIndex(attribute_index);
-    const QModelIndex value_index = index.siblingAtColumn(AttributesColumn_Value);
-    QStandardItem *value_item = model->itemFromIndex(value_index);
-    const QList<QStandardItem *> row = {attribute_item, value_item};
+    const QList<QStandardItem *> row =
+    [this, index]() {
+        QList<QStandardItem *> out;
+        for (int col = 0; col < AttributesColumn_COUNT; col++) {
+            const QModelIndex item_index = index.siblingAtColumn(col);
+            QStandardItem *item = model->itemFromIndex(item_index);
+            out.append(item);
+        }
+        return out;
+    }();
 
-    const QString attribute = attribute_item->text();
+    const QString attribute = row[AttributesColumn_Name]->text();
     const QList<QByteArray> values = current[attribute];
 
     EditDialog *dialog = EditDialog::make(attribute, values, this);
