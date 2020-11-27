@@ -43,13 +43,44 @@ SelectClassesWidget::SelectClassesWidget()
     auto layout = new QHBoxLayout();
     setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
-    
     layout->addWidget(classes_display);
     layout->addWidget(select_classes_button);
 
+    dialog = new QDialog(this);
+
+    for (const QString object_class : filter_classes) {
+        dialog_checks[object_class] = new QCheckBox();
+    }
+
+    auto dialog_buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+
+    auto checks_layout = new QFormLayout();
+    for (const QString object_class : filter_classes) {
+        auto check = dialog_checks[object_class];
+
+        const QString class_display = ADCONFIG()->get_class_display_name(object_class);
+        checks_layout->addRow(class_display, check);
+    }
+
+    auto dialog_layout = new QVBoxLayout();
+    dialog->setLayout(dialog_layout);
+    dialog_layout->addLayout(checks_layout);
+    dialog_layout->addWidget(dialog_buttons);
+    
+    connect(
+        dialog_buttons, &QDialogButtonBox::accepted,
+        dialog, &QDialog::accept);
+    connect(
+        dialog_buttons, &QDialogButtonBox::rejected,
+        dialog, &QDialog::reject);
+
+    connect(
+        dialog, &QDialog::accepted,
+        this, &SelectClassesWidget::on_dialog_accepted);
+
     connect(
         select_classes_button, &QAbstractButton::clicked,
-        this, &SelectClassesWidget::select_classes);
+        dialog, &QDialog::open);
 }
 
 QString SelectClassesWidget::get_filter() const {
@@ -57,7 +88,9 @@ QString SelectClassesWidget::get_filter() const {
     [this]() {
         QList<QString> out;
 
-        for (const QString object_class : selected) {
+        const QList<QString> selected_classes = get_selected_classes();
+        
+        for (const QString object_class : selected_classes) {
             const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
 
             out.append(class_filter);
@@ -69,75 +102,41 @@ QString SelectClassesWidget::get_filter() const {
     return filter_OR(class_filters);
 }
 
-void SelectClassesWidget::select_classes() {
-    auto dialog = new QDialog(this);
+// Display selected classes in line edit as a sorted list of
+// class display strings separated by ","
+// "User, Organizational Unit, ..."
+void SelectClassesWidget::on_dialog_accepted() {
+    const QString classes_display_text =
+    [this]() {
+        const QList<QString> selected_classes = get_selected_classes();
+        
+        QList<QString> classes_display_strings;
+        for (const QString object_class : selected_classes) {
+            const QString class_display = ADCONFIG()->get_class_display_name(object_class);
+            classes_display_strings.append(class_display);
+        }
 
-    auto layout = new QVBoxLayout();
-    dialog->setLayout(layout);
+        std::sort(classes_display_strings.begin(), classes_display_strings.end());
 
-    QHash<QString, QCheckBox *> checkboxes;
+        const QString joined = classes_display_strings.join(", ");
 
-    auto checkboxes_layout = new QFormLayout();
+        return joined;
+    }();
+
+    classes_display->setText(classes_display_text);
+}
+
+QList<QString> SelectClassesWidget::get_selected_classes() const {
+    QList<QString> out;
 
     for (const QString object_class : filter_classes) {
-        auto checkbox = new QCheckBox();
-        checkboxes[object_class] = checkbox;
+        const QCheckBox *check = dialog_checks[object_class];
 
-        const bool class_is_selected = selected.contains(object_class);
-        checkbox->setChecked(class_is_selected);
-
-        const QString class_display = ADCONFIG()->get_class_display_name(object_class);
-        checkboxes_layout->addRow(class_display, checkbox);
+        if (check->isChecked()) {
+            out.append(object_class);
+        }
     }
 
-    auto button_box = new QDialogButtonBox();
-    layout->addLayout(checkboxes_layout);
-    layout->addWidget(button_box);
-    
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
-    connect(
-        ok_button, &QPushButton::clicked,
-        dialog, &QDialog::accept);
-    connect(
-        cancel_button, &QPushButton::clicked,
-        dialog, &QDialog::reject);
-
-    connect(
-        dialog, &QDialog::accepted,
-        [this, checkboxes]() {
-            selected.clear();
-
-            // Save selected classes
-            for (const QString object_class : filter_classes) {
-                QCheckBox *checkbox = checkboxes[object_class];
-
-                if (checkbox->isChecked()) {
-                    selected.append(object_class);
-                }
-            }
-
-            // Display selected classes set as a sorted list
-            // of class display strings separated by ","
-            // {"user", "organizationUnit"}
-            // =>
-            // "User, Organizational Unit"
-            const QString selected_classes_string =
-            [this]() {
-                QList<QString> classes_display_strings;
-                for (const QString object_class : selected) {
-                    const QString class_display = ADCONFIG()->get_class_display_name(object_class);
-                    classes_display_strings.append(class_display);
-                }
-
-                std::sort(classes_display_strings.begin(), classes_display_strings.end());
-
-                const QString joined = classes_display_strings.join(", ");
-
-                return joined;
-            }();
-            classes_display->setText(selected_classes_string);
-        });
-
-    dialog->open();
+    return out;
 }
+

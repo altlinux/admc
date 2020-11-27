@@ -26,9 +26,11 @@
 
 #include <QWidget>
 #include <QString>
-#include <QList>
+#include <QHash>
 
 class QLineEdit;
+class QDialog;
+class QCheckBox;
 
 class SelectClassesWidget final : public QWidget {
 Q_OBJECT
@@ -40,11 +42,14 @@ public:
     QString get_filter() const;
 
 private slots:
-    void select_classes();
+    void on_dialog_accepted();
 
 private:
     QLineEdit *classes_display;
-    QList<QString> selected;
+    QDialog *dialog;
+    QHash<QString, QCheckBox *> dialog_checks;
+
+    QList<QString> get_selected_classes() const;
 };
 
 #endif /* SELECT_CLASSES_WIDGET_H */
