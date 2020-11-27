@@ -32,14 +32,18 @@
 enum AttributesColumn {
     AttributesColumn_Name,
     AttributesColumn_Value,
+    AttributesColumn_Type,
     AttributesColumn_COUNT,
 };
+
+QString attribute_type_display_string(const AttributeType type);
 
 AttributesTab::AttributesTab() {
     model = new QStandardItemModel(0, AttributesColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model, {
         {AttributesColumn_Name, tr("Name")},
-        {AttributesColumn_Value, tr("Value")}
+        {AttributesColumn_Value, tr("Value")},
+        {AttributesColumn_Type, tr("Type")}
     });
 
     view = new QTreeView(this);
@@ -71,6 +75,7 @@ AttributesTab::AttributesTab() {
 void AttributesTab::on_double_clicked(const QModelIndex &proxy_index) {
     const QModelIndex index = proxy->mapToSource(proxy_index);
     
+    // TODO: should be editable by clicking on any column, also dont split selection by column
     const int column = index.column();
     if (column != AttributesColumn_Value) {
         return;
@@ -125,6 +130,11 @@ void AttributesTab::on_context_menu(const QPoint pos) {
     exec_menu_from_view(&menu, view, pos);
 }
 
+void AttributesTab::showEvent(QShowEvent *event) {
+    view->setColumnWidth(AttributesColumn_Name, (int)(view->width() * 0.4));
+    view->resizeColumnToContents(AttributesColumn_Value);
+}
+
 void AttributesTab::load(const AdObject &object) {
     for (auto attribute : object.attributes()) {
         original[attribute] = object.get_values(attribute);
@@ -172,9 +182,13 @@ void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &a
     const QString display_values = attribute_display_values(attribute, values);
     const bool unset = values.isEmpty();
     const bool read_only = ADCONFIG()->get_attribute_is_system_only(attribute);
+    const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
+    const QString type_display = attribute_type_display_string(type);
+
 
     row[AttributesColumn_Name]->setText(attribute);
     row[AttributesColumn_Value]->setText(display_values);
+    row[AttributesColumn_Type]->setText(type_display);
 
     proxy->unset_map[attribute] = unset;
     proxy->read_only_map[attribute] = read_only;
@@ -193,4 +207,30 @@ bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &sou
     } else {
         return true;
     }
+}
+
+QString attribute_type_display_string(const AttributeType type) {
+    switch (type) {
+        case AttributeType_Boolean: return AttributesTab::tr("Boolean");
+        case AttributeType_Enumeration: return AttributesTab::tr("Enumeration");
+        case AttributeType_Integer: return AttributesTab::tr("Integer");
+        case AttributeType_LargeInteger: return AttributesTab::tr("Large Integer");
+        case AttributeType_StringCase: return AttributesTab::tr("String Case");
+        case AttributeType_IA5: return AttributesTab::tr("IA5");
+        case AttributeType_NTSecDesc: return AttributesTab::tr("NT Security Descriptor");
+        case AttributeType_Numeric: return AttributesTab::tr("Numeric");
+        case AttributeType_ObjectIdentifier: return AttributesTab::tr("Object Identifier");
+        case AttributeType_Octet: return AttributesTab::tr("Octet");
+        case AttributeType_ReplicaLink: return AttributesTab::tr("Replica Link");
+        case AttributeType_Printable: return AttributesTab::tr("Printable");
+        case AttributeType_Sid: return AttributesTab::tr("Sid");
+        case AttributeType_Teletex: return AttributesTab::tr("Teletex");
+        case AttributeType_Unicode: return AttributesTab::tr("Unicode");
+        case AttributeType_UTCTime: return AttributesTab::tr("UTC Time");
+        case AttributeType_GeneralizedTime: return AttributesTab::tr("Generalized Time");
+        case AttributeType_DNString: return AttributesTab::tr("DN String");
+        case AttributeType_DNBinary: return AttributesTab::tr("DN Binary");
+        case AttributeType_DSDN: return AttributesTab::tr("DSDN");
+    }
+    return QString();
 }

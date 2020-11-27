@@ -27,6 +27,7 @@ Q_OBJECT
 
 public:
     AccountTab();
+    
 };
 
 #endif /* ACCOUNT_TAB_H */
