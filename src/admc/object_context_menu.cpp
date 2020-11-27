@@ -120,7 +120,7 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn, QWidget *parent)
 
 void ObjectContextMenu::delete_object(const AdObject &object) {
     const QString name = object.get_string(ATTRIBUTE_NAME);
-    const QString text = QString(tr("Are you sure you want to delete \"%1\"?")).arg(name);
+    const QString text = QString(tr("Are you sure you want to delete object \"%1\"?")).arg(name);
     const bool confirmed = confirmation_dialog(text, parentWidget());
 
     if (confirmed) {
@@ -133,7 +133,7 @@ void ObjectContextMenu::move(const AdObject &object) {
     const QList<QString> possible_superiors = ADCONFIG()->get_possible_superiors(object_classes);
 
     const QString name = dn_get_name(object.get_dn());
-    const QString title = QString(tr("Move \"%1\"")).arg(name);
+    const QString title = QString(tr("Move object \"%1\"")).arg(name);
     const QList<QString> selected_objects = SelectDialog::open(possible_superiors, SelectDialogMultiSelection_Yes, title, parentWidget());
 
     if (selected_objects.size() == 1) {

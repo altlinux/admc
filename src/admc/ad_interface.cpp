@@ -741,13 +741,13 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
     const QString name = dn_get_name(dn);
     
     if (success) {
-        success_status_message(QString(tr("Set pass of user \"%1\"")).arg(name));
+        success_status_message(QString(tr("Set password for user \"%1\"")).arg(name));
 
         emit_modified();
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to set pass of user \"%1\"")).arg(name);
+        const QString context = QString(tr("Failed to set password for user \"%1\"")).arg(name);
 
         const QString error =
         [this]() {
@@ -841,9 +841,9 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             switch (option) {
                 case AccountOption_Disabled: {
                     if (set) {
-                        return QString(tr("Failed to disable account for user - \"%1\"")).arg(name);
+                        return QString(tr("Failed to disable account for user \"%1\"")).arg(name);
                     } else {
-                        return QString(tr("Failed to enable account for user - \"%1\"")).arg(name);
+                        return QString(tr("Failed to enable account for user \"%1\"")).arg(name);
                     }
                 }
                 default: {

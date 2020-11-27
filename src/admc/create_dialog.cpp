@@ -47,7 +47,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
 
     const QString class_name = ADCONFIG()->get_class_display_name(object_class);
     const QString parent_canonical = dn_canonical(parent_dn);
-    const auto title = QString(tr("Create %1 in \"%2\"")).arg(class_name, parent_canonical);
+    const auto title = QString(tr("Create \"%1\" in \"%2\"")).arg(class_name, parent_canonical);
     setWindowTitle(title);
 
     name_edit = new QLineEdit();
@@ -220,7 +220,7 @@ void CreateDialog::accept() {
     {   
         auto fail_msg =
         [this, class_name, name]() {
-            const QString message = QString(tr("Failed to create %1 - \"%2\"")).arg(class_name, name);
+            const QString message = QString(tr("Failed to create %1 \"%2\"")).arg(class_name, name);
             STATUS()->message(message, StatusType_Error);
         };
 
@@ -231,7 +231,7 @@ void CreateDialog::accept() {
             const bool apply_success = edits_apply(all_edits, dn, apply_if_unmodified);
 
             if (apply_success) {
-                const QString message = QString(tr("Created %1 - \"%2\"")).arg(class_name, name);
+                const QString message = QString(tr("Created %1 \"%2\"")).arg(class_name, name);
 
                 STATUS()->message(message, StatusType_Success);
 

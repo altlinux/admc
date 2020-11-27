@@ -139,7 +139,7 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     layout->setSpacing(0);
 
     const QString name = object.get_string(ATTRIBUTE_NAME);
-    const QString window_title = name.isEmpty() ? tr("Details") : QString(tr("%1 Details")).arg(name);
+    const QString window_title = name.isEmpty() ? tr("Details") : QString(tr("\"%1\" Details")).arg(name);
 
     if (is_floating_instance) {
         setWindowTitle(window_title);
