@@ -49,7 +49,7 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
 
     list_widget = new QListWidget();
 
-    remove_button = new QPushButton(tr("Remove"));
+    auto remove_button = new QPushButton(tr("Remove"));
 
     auto button_box = new QDialogButtonBox();
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
@@ -65,10 +65,14 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
     top_layout->addWidget(remove_button);
     top_layout->addWidget(button_box);
 
-    if (ADCONFIG()->get_attribute_is_system_only(attribute)) {
+    const bool read_only = ADCONFIG()->get_attribute_is_system_only(attribute);
+    if (read_only) {
         edit->setReadOnly(true);
         button_box->setEnabled(false);
         add_button->setEnabled(false);
+        remove_button->setEnabled(false);
+    } else {
+        enable_widget_on_selection(remove_button, list_widget);
     }
 
     connect(
@@ -90,10 +94,6 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
         edit, &QLineEdit::textChanged,
         this, &StringMultiEditDialog::on_edit_changed);
     on_edit_changed();
-    connect(
-        list_widget, &QListWidget::itemSelectionChanged,
-        this, &StringMultiEditDialog::on_list_selected_changed);
-    on_list_selected_changed();
 
     reset();
 }
@@ -101,11 +101,6 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
 void StringMultiEditDialog::on_edit_changed() {
     const bool edit_has_text = !edit->text().isEmpty();
     add_button->setEnabled(edit_has_text);
-}
-
-void StringMultiEditDialog::on_list_selected_changed() {
-    const bool any_selected = !list_widget->selectedItems().isEmpty();
-    remove_button->setEnabled(any_selected);
 }
 
 void StringMultiEditDialog::on_add() {

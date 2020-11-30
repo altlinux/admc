@@ -34,7 +34,6 @@ public:
     QList<QByteArray> get_new_values() const;
 
 private slots:
-    void on_list_selected_changed();
     void on_add();
     void on_remove();
     void reset();
@@ -44,7 +43,6 @@ private:
     QList<QByteArray> original_values;
     QListWidget *list_widget;
     QPushButton *add_button;
-    QPushButton *remove_button;
 };
 
 #endif /* OCTET_MULTI_EDIT_DIALOG_H */

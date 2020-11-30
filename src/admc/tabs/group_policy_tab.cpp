@@ -93,6 +93,8 @@ GroupPolicyTab::GroupPolicyTab() {
     layout->addLayout(button_layout);
     layout->addLayout(edits_layout);
 
+    enable_widget_on_selection(remove_button, view);
+
     connect(
         remove_button, &QAbstractButton::clicked,
         this, &GroupPolicyTab::on_remove_button);

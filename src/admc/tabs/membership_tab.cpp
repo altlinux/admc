@@ -78,7 +78,7 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     setup_column_toggle_menu(view, model, {MembersColumn_Name, MembersColumn_Parent});
 
     auto add_button = new QPushButton(tr("Add"));
-    remove_button = new QPushButton(tr("Remove"));
+    auto remove_button = new QPushButton(tr("Remove"));
     auto button_layout = new QHBoxLayout();
     button_layout->addWidget(add_button);
     button_layout->addWidget(remove_button);
@@ -101,11 +101,13 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     layout->addWidget(view);
     layout->addLayout(button_layout);
 
+    enable_widget_on_selection(remove_button, view);
+
     const QItemSelectionModel *selection_model = view->selectionModel();
     connect(
         selection_model, &QItemSelectionModel::selectionChanged,
-        this, &MembershipTab::on_selection_changed);
-    on_selection_changed();
+        this, &MembershipTab::enable_primary_button_on_valid_selection);
+    enable_primary_button_on_valid_selection();
 
     connect(
         remove_button, &QAbstractButton::clicked,
@@ -294,37 +296,35 @@ void MembershipTab::on_primary_button() {
     emit edited();
 }
 
-void MembershipTab::on_selection_changed() {
+void MembershipTab::enable_primary_button_on_valid_selection() {
+    if (primary_button == nullptr) {
+        return;
+    }
+
     const QItemSelectionModel *selection_model = view->selectionModel();
     const QList<QModelIndex> selecteds = selection_model->selectedIndexes();
-    const bool any_selected = !selecteds.isEmpty();
-
-    remove_button->setEnabled(any_selected);
 
     // Enable "set primary group" button if
-    // 1) it exists (this is memberOf tab)
-    // 2) there's one selected
-    // 3) the selected group is NOT primary already
-    if (primary_button != nullptr) {
-        // NOTE: selectedIndexes contains multiple indexes for each row, so need to convert to set of dn's
-        const QSet<QString> selected_dns =
-        [selecteds]() {
-            QSet<QString> out;
-            for (const QModelIndex selected : selecteds) {
-                const QString dn = get_dn_from_index(selected, MembersColumn_DN);
-                out.insert(dn);
-            }
-            return out;
-        }();
-
-        if (selected_dns.size() == 1) {
-            const QString dn = selected_dns.values()[0];
-            const bool is_primary = current_primary_values.contains(dn);
-
-            primary_button->setEnabled(!is_primary);
-        } else {
-            primary_button->setEnabled(false);
+    // 1) there's a selection
+    // 2) the selected group is NOT primary already
+    // NOTE: selectedIndexes contains multiple indexes for each row, so need to convert to set of dn's
+    const QSet<QString> selected_dns =
+    [selecteds]() {
+        QSet<QString> out;
+        for (const QModelIndex selected : selecteds) {
+            const QString dn = get_dn_from_index(selected, MembersColumn_DN);
+            out.insert(dn);
         }
+        return out;
+    }();
+
+    if (selected_dns.size() == 1) {
+        const QString dn = selected_dns.values()[0];
+        const bool is_primary = current_primary_values.contains(dn);
+
+        primary_button->setEnabled(!is_primary);
+    } else {
+        primary_button->setEnabled(false);
     }
 }
 

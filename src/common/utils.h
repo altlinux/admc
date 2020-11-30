@@ -56,4 +56,6 @@ void show_only_in_dev_mode(QWidget *widget);
 // Prohibits leading zeroes
 void set_line_edit_to_numbers_only(QLineEdit *edit);
 
+void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view);
+
 #endif /* UTILS_H */

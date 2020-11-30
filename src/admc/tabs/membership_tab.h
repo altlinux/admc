@@ -45,7 +45,7 @@ private slots:
     void on_add_button();
     void on_remove_button();
     void on_primary_button();
-    void on_selection_changed();
+    void enable_primary_button_on_valid_selection();
 
 protected:
     enum MembershipTabType {
@@ -59,7 +59,6 @@ private:
     MembershipTabType type;
     QStandardItemModel *model = nullptr;
     QTreeView *view = nullptr;
-    QPushButton *remove_button;
     QPushButton *primary_button;
 
     QSet<QString> original_values;

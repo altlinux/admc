@@ -49,7 +49,7 @@ OctetMultiEditDialog::OctetMultiEditDialog(const QString attribute_arg, const QL
 
     list_widget = new QListWidget();
     
-    remove_button = new QPushButton(tr("Remove"));
+    auto remove_button = new QPushButton(tr("Remove"));
 
     auto button_box = new QDialogButtonBox();
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
@@ -64,10 +64,13 @@ OctetMultiEditDialog::OctetMultiEditDialog(const QString attribute_arg, const QL
     top_layout->addWidget(remove_button);
     top_layout->addWidget(button_box);
 
-    if (ADCONFIG()->get_attribute_is_system_only(attribute)) {
+    const bool read_only = ADCONFIG()->get_attribute_is_system_only(attribute);
+    if (read_only) {
         add_button->setEnabled(false);
         remove_button->setEnabled(false);
         button_box->setEnabled(false);
+    } else {
+        enable_widget_on_selection(remove_button, list_widget);
     }
 
     connect(
@@ -85,17 +88,8 @@ OctetMultiEditDialog::OctetMultiEditDialog(const QString attribute_arg, const QL
     connect(
         cancel_button, &QAbstractButton::clicked,
         this, &OctetMultiEditDialog::reject);
-    connect(
-        list_widget, &QListWidget::itemSelectionChanged,
-        this, &OctetMultiEditDialog::on_list_selected_changed);
-    on_list_selected_changed();
 
     reset();
-}
-
-void OctetMultiEditDialog::on_list_selected_changed() {
-    const bool any_selected = !list_widget->selectedItems().isEmpty();
-    remove_button->setEnabled(any_selected);
 }
 
 void OctetMultiEditDialog::on_add() {

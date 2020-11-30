@@ -173,3 +173,18 @@ void show_only_in_dev_mode(QWidget *widget) {
 void set_line_edit_to_numbers_only(QLineEdit *edit) {
     edit->setValidator(new QRegExpValidator(QRegExp("[0-9]*"), edit));
 }
+
+void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view) {
+    auto selection_model = view->selectionModel();
+
+    auto do_it =
+    [widget, selection_model]() {
+        const bool has_selection = selection_model->hasSelection();
+        widget->setEnabled(has_selection);
+    };
+
+    QObject::connect(
+        selection_model, &QItemSelectionModel::selectionChanged,
+        do_it);
+    do_it();
+}
