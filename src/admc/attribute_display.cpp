@@ -22,8 +22,6 @@
 #include "ad_utils.h"
 #include "ad_config.h"
 
-#define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm"
-
 QString large_integer_datetime_to_display_value(const QString &attribute, const QByteArray &bytes);
 QString datetime_to_display_value(const QString &attribute, const QByteArray &bytes);
 QString timespan_to_display_value(const QByteArray &bytes);
@@ -126,8 +124,8 @@ QString large_integer_datetime_to_display_value(const QString &attribute, const 
     if (large_integer_datetime_is_never(value_string)) {
         return QObject::tr("(never)");
     } else {
-        const QDateTime datetime = datetime_string_to_qdatetime(attribute, value_string);
-        const QString display = datetime.toString(DATETIME_DISPLAY_FORMAT);
+        QDateTime datetime = datetime_string_to_qdatetime(attribute, value_string);
+        const QString display = datetime.toLocalTime().toString(DATETIME_DISPLAY_FORMAT);
 
         return display;
     }
@@ -136,7 +134,8 @@ QString large_integer_datetime_to_display_value(const QString &attribute, const 
 QString datetime_to_display_value(const QString &attribute, const QByteArray &bytes) {
     const QString value_string = QString(bytes);
     const QDateTime datetime = datetime_string_to_qdatetime(attribute, value_string);
-    const QString display = datetime.toString(DATETIME_DISPLAY_FORMAT);
+    const QDateTime datetime_local = datetime.toLocalTime();
+    const QString display = datetime_local.toString(DATETIME_DISPLAY_FORMAT) + datetime.toLocalTime().timeZoneAbbreviation();
 
     return display;
 }

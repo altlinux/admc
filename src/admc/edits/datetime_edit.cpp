@@ -19,8 +19,8 @@
 
 #include "edits/datetime_edit.h"
 #include "ad_config.h"
-#include "utils.h"
 #include "ad_interface.h"
+#include "utils.h"
 
 #include <QFormLayout>
 #include <QDateTimeEdit>
@@ -29,6 +29,7 @@ DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QList<AttributeEdit *> 
 : AttributeEdit(edits_out, parent)
 {
     edit = new QDateTimeEdit();
+    edit->setDisplayFormat(DATETIME_DISPLAY_FORMAT);
     attribute = attribute_arg;
 
     QObject::connect(
@@ -39,9 +40,10 @@ DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QList<AttributeEdit *> 
 }
 
 void DateTimeEdit::load_internal(const AdObject &object) {
-    const QDateTime value = object.get_datetime(attribute);
+    const QDateTime datetime = object.get_datetime(attribute);
+    const QDateTime datetime_local = datetime.toLocalTime();
 
-    edit->setDateTime(value);
+    edit->setDateTime(datetime_local);
 }
 
 void DateTimeEdit::set_read_only(const bool read_only) {
@@ -54,9 +56,10 @@ void DateTimeEdit::add_to_layout(QFormLayout *layout) {
 }
 
 bool DateTimeEdit::apply(const QString &dn) const {
-    const QDateTime new_value = edit->dateTime();
+    const QDateTime datetime_local = edit->dateTime();
+    const QDateTime datetime = datetime_local.toUTC();
 
-    const bool success = AD()->attribute_replace_datetime(dn, attribute, new_value);
+    const bool success = AD()->attribute_replace_datetime(dn, attribute, datetime);
 
     return success;
 }

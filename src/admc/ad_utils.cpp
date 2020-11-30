@@ -70,32 +70,38 @@ QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &
 QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &raw_value) {
     const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
-    switch (type) {
-        case AttributeType_LargeInteger: {
-            const LargeIntegerSubtype subtype = ADCONFIG()->get_large_integer_subtype(attribute);
-            if (subtype == LargeIntegerSubtype_Datetime) {
-                // TODO: couldn't find epoch in qt, but maybe its hidden somewhere
-                QDateTime datetime(QDate(1601, 1, 1));
-                const qint64 hundred_nanos = raw_value.toLongLong();
-                const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
-                datetime = datetime.addMSecs(millis);
-                return datetime;
+    QDateTime datetime =
+    [=]() {
+        switch (type) {
+            case AttributeType_LargeInteger: {
+                const LargeIntegerSubtype subtype = ADCONFIG()->get_large_integer_subtype(attribute);
+                
+                if (subtype == LargeIntegerSubtype_Datetime) {
+                    // TODO: couldn't find epoch in qt, but maybe its hidden somewhere
+                    QDateTime out(QDate(1601, 1, 1));
+                    const qint64 hundred_nanos = raw_value.toLongLong();
+                    const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
+                    out = out.addMSecs(millis);
+
+                    return out;
+                } else {
+                    break;
+                }
             }
+            case AttributeType_GeneralizedTime: {
+                return QDateTime::fromString(raw_value, GENERALIZED_TIME_FORMAT_STRING);
+            }
+            case AttributeType_UTCTime: {
+                return QDateTime::fromString(raw_value, UTC_TIME_FORMAT_STRING);
+            }
+            default: break;
+        }
+        return QDateTime();
+    }();
 
-            break;
-        }
-        case AttributeType_GeneralizedTime: {
-            return QDateTime::fromString(raw_value, GENERALIZED_TIME_FORMAT_STRING);
-        }
-        case AttributeType_UTCTime: {
-            return QDateTime::fromString(raw_value, UTC_TIME_FORMAT_STRING);
-        }
-        default: {
-            return QDateTime();
-        }
-    }
+    datetime.setTimeSpec(Qt::UTC);
 
-    return QDateTime();
+    return datetime;
 }
 
 QString account_option_string(const AccountOption &option) {
@@ -202,7 +208,7 @@ QString dn_get_parent_canonical(const QString &dn) {
 
 QString dn_rename(const QString &dn, const QString &new_name) {
     const QStringList exploded_dn = dn.split(',');
-    
+
     const QString new_rdn =
     [=]() {
         const QString old_rdn = exploded_dn[0];

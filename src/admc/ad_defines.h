@@ -177,4 +177,6 @@ enum SystemFlagsBit {
 #define GROUP_TYPE_BIT_SECURITY 0x80000000
 #define GROUP_TYPE_BIT_SYSTEM 0x00000001
 
+#define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm UTCt"
+
 #endif /* AD_DEFINES_H */

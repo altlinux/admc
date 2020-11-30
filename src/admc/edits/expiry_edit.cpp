@@ -63,9 +63,11 @@ ExpiryEdit::ExpiryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 }
 
 void ExpiryEdit::load_internal(const AdObject &object) {
-    const QString expiry_string = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);
-
-    const bool never = large_integer_datetime_is_never(expiry_string);
+    const bool never =
+    [object]() {
+        const QString expiry_string = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);
+        return large_integer_datetime_is_never(expiry_string);
+    }();
 
     never_check->setChecked(never);
     end_of_check->setChecked(!never);
@@ -79,8 +81,10 @@ void ExpiryEdit::load_internal(const AdObject &object) {
         const QDate default_expiry = QDate::currentDate();
         display_label_text = default_expiry.toString(DATE_FORMAT);
     } else {
-        const QDateTime current_expiry = datetime_string_to_qdatetime(ATTRIBUTE_ACCOUNT_EXPIRES, expiry_string);
-        display_label_text = current_expiry.toString(DATE_FORMAT);
+        const QDateTime datetime = object.get_datetime(ATTRIBUTE_ACCOUNT_EXPIRES);
+        const QDateTime datetime_local = datetime.toLocalTime();
+
+        display_label_text = datetime_local.toString(DATE_FORMAT);
     }
     display_label->setText(display_label_text);
 }
