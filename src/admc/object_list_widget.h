@@ -62,7 +62,6 @@ private:
     QLineEdit *filter_name_edit;
 
     void load(const QHash<QString, AdObject> &objects);
-    void resize_columns();
     void showEvent(QShowEvent *event);
     int column_index(const QString &attribute);
 };

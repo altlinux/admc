@@ -389,4 +389,12 @@ QString MembershipTab::get_membership_attribute() {
         case MembershipTabType_MemberOf: return ATTRIBUTE_MEMBER_OF;
     }
     return "";
+}    
+
+void MembershipTab::showEvent(QShowEvent *event) {
+    resize_columns(view,
+    {
+        {MembersColumn_Name, 0.4},
+        {MembersColumn_Parent, 0.6},
+    });
 }

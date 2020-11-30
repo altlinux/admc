@@ -139,11 +139,11 @@ void AttributesTab::on_context_menu(const QPoint pos) {
 }
 
 void AttributesTab::showEvent(QShowEvent *event) {
-    view->setColumnWidth(AttributesColumn_Name, (int)(view->width() * 0.4));
-
-    view->resizeColumnToContents(AttributesColumn_Value);
-    const int value_contents_width = view->columnWidth(AttributesColumn_Value);
-    view->setColumnWidth(AttributesColumn_Value, qMin(value_contents_width, (int)(view->width() * 0.8)));
+    resize_columns(view,
+    {
+        {AttributesColumn_Name, 0.4},
+        {AttributesColumn_Value, 0.8},
+    });
 }
 
 void AttributesTab::load(const AdObject &object) {

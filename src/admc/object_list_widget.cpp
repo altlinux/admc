@@ -191,8 +191,6 @@ void ObjectListWidget::load(const QHash<QString, AdObject> &objects) {
 
     view->sortByColumn(column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
 
-    resize_columns();
-
     const QString label_text =
     [this]() {
         const int object_count = model->rowCount();
@@ -212,26 +210,12 @@ void ObjectListWidget::load(const QHash<QString, AdObject> &objects) {
     label->setText(label_text);
 }
 
-// Resize name and class columns to fit their contents but
-// limit both to a portion of total available width because
-// contents can be extremely long
-void ObjectListWidget::resize_columns() {
-    const int name_column = column_index(ATTRIBUTE_NAME);
-    const int class_column = column_index(ATTRIBUTE_OBJECT_CLASS);
-
-    view->resizeColumnToContents(name_column);
-    view->resizeColumnToContents(class_column);
-    
-    const int name_contents_width = view->columnWidth(name_column);
-    const int class_contents_width = view->columnWidth(class_column);
-
-    const int max_width = (int) (view->width() * 0.4);
-    view->setColumnWidth(name_column, qMin(name_contents_width, max_width));
-    view->setColumnWidth(class_column, qMin(class_contents_width, max_width));
-}
-
 void ObjectListWidget::showEvent(QShowEvent *event) {
-    resize_columns();
+    resize_columns(view,
+    {
+        {column_index(ATTRIBUTE_NAME), 0.4},
+        {column_index(ATTRIBUTE_OBJECT_CLASS), 0.4},
+    });
 }
 
 int ObjectListWidget::column_index(const QString &attribute) {

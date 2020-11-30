@@ -169,10 +169,6 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
         view->setColumnHidden(SelectDialogColumn_Class, true);
     }
 
-    for (int col = 0; col < view->model()->columnCount(); col++) {
-        view->resizeColumnToContents(col);
-    }
-
     // Disable select button when there's no selection and enable when there is
     const QItemSelectionModel *selection_model = view->selectionModel();
     connect(selection_model, &QItemSelectionModel::selectionChanged,
@@ -220,4 +216,13 @@ void SelectDialog::accept() {
     }
 
     QDialog::accept();
+}
+
+void SelectDialog::showEvent(QShowEvent *event) {
+    resize_columns(view,
+    {
+        {SelectDialogColumn_Name, 0.4},
+        {SelectDialogColumn_Parent, 0.4},
+        {SelectDialogColumn_Class, 0.2},
+    });
 }

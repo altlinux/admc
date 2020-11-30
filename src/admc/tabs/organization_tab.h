@@ -23,6 +23,7 @@
 #include "tabs/details_tab.h"
 
 class QStandardItemModel;
+class QTreeView;
 
 class OrganizationTab final : public DetailsTab {
 Q_OBJECT
@@ -34,6 +35,9 @@ public:
 
 private:
     QStandardItemModel *reports_model;
+    QTreeView *reports_view;
+
+    void showEvent(QShowEvent *event);
 };
 
 #endif /* ORGANIZATION_TAB_H */

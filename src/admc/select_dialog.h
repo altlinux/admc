@@ -45,6 +45,8 @@ private:
     QList<QString> selected_objects;
 
     SelectDialog(QList<QString> classes, SelectDialogMultiSelection multi_selection, QWidget *parent);
+
+    void showEvent(QShowEvent *event);
 };
 
 #endif /* MOVE_DIALOG_H */

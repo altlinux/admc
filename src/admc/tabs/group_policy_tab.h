@@ -58,6 +58,8 @@ private:
     void move_link_down(const QString &gpo);
 
     void reload_gplink();
+
+    void showEvent(QShowEvent *event);
 };
 
 #endif /* GROUP_POLICY_TAB_H */

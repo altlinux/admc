@@ -203,3 +203,12 @@ const char *cstr(const QString &qstr) {
     // NOTE: return data of bytes in buffer NOT the temp local bytes
     return buffer.last().constData();
 }
+
+void resize_columns(QTreeView *view, const QHash<int, double> widths) {
+    for (const int col : widths.keys()) {
+        const double width_ratio = widths[col];
+        const int width = (int) (view->width() * width_ratio);
+        
+        view->setColumnWidth(col, width);
+    }
+}

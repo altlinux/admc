@@ -266,3 +266,10 @@ void GroupPolicyTab::on_item_changed(QStandardItem *item) {
         reload_gplink();
     }
 }
+
+void GroupPolicyTab::showEvent(QShowEvent *event) {
+    resize_columns(view,
+    {
+        {GplinkColumn_Name, 0.5},
+    });
+}

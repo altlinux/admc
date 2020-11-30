@@ -70,6 +70,7 @@ private:
     void add_values(QList<QString> values);
     void remove_values(QList<QString> values);
     QString get_membership_attribute();
+    void showEvent(QShowEvent *event);
 };
 
 class MembersTab final : public MembershipTab {

@@ -57,7 +57,7 @@ OrganizationTab::OrganizationTab() {
 
     auto reports_label = new QLabel(tr("Reports:"));
 
-    auto reports_view = new QTreeView(this);
+    reports_view = new QTreeView(this);
     reports_view->setModel(reports_model);
     reports_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     reports_view->setAllColumnsShowFocus(true);
@@ -90,4 +90,12 @@ void OrganizationTab::load(const AdObject &object) {
     }
 
     DetailsTab::load(object);
+}
+
+void OrganizationTab::showEvent(QShowEvent *event) {
+    resize_columns(reports_view,
+    {
+        {ReportsColumn_Name, 0.5},
+        {ReportsColumn_Folder, 0.5},
+    });
 }

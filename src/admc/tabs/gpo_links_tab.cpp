@@ -30,8 +30,6 @@
 #include <QStandardItemModel>
 #include <QMenu>
 
-
-
 enum GpoLinksColumn {
     GpoLinksColumn_Name,
     GpoLinksColumn_DN,
@@ -83,4 +81,11 @@ void GpoLinksTab::load(const AdObject &policy) {
     }
 
     model->sort(GpoLinksColumn_Name);
+}
+
+void GpoLinksTab::showEvent(QShowEvent *event) {
+    resize_columns(view,
+    {
+        {GpoLinksColumn_Name, 0.5},
+    });
 }

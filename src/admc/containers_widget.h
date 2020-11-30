@@ -34,7 +34,7 @@ Q_OBJECT
 
 public:
     ContainersWidget(QWidget *parent);
-    ContainersModel *model = nullptr;
+    ContainersModel *model;
 
 signals:
     void selected_changed(const QString &dn);
@@ -44,9 +44,10 @@ private slots:
     void on_context_menu(const QPoint pos);
 
 private:
-    QTreeView *view = nullptr;
+    QTreeView *view;
 
     void reload();
+    void showEvent(QShowEvent *event);
 };
 
 class ContainersModel final : public ObjectModel {

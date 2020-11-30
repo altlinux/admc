@@ -230,6 +230,14 @@ void ContainersWidget::on_context_menu(const QPoint pos) {
     exec_menu_from_view(&context_menu, view, pos);
 }
 
+void ContainersWidget::showEvent(QShowEvent *event) {
+    resize_columns(view,
+    {
+        {ContainersColumn_Name, 0.5},
+        {ContainersColumn_DN, 0.5},
+    });
+}
+
 ContainersModel::ContainersModel(QObject *parent)
 : ObjectModel(ContainersColumn_COUNT, ContainersColumn_DN, parent)
 {
