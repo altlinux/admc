@@ -45,7 +45,7 @@ StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArr
     ADCONFIG()->limit_edit(edit, attribute);
 
     const QByteArray value = values.value(0, QByteArray());
-    original_value = QString::fromUtf8(value);
+    original_value = QString(value);
     edit->setText(original_value);
 
     auto button_box = new QDialogButtonBox();

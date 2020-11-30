@@ -150,7 +150,7 @@ void StringMultiEditDialog::reset() {
 
     for (const QByteArray &value : original_values) {
         // TODO: use conversion f-n
-        const QString value_string = QString::fromUtf8(value);
+        const QString value_string = QString(value);
 
         list_widget->addItem(value_string);
     }

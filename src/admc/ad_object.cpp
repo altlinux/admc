@@ -74,7 +74,7 @@ QList<QString> AdObject::get_strings(const QString &attribute) const {
 
     QList<QString> strings;
     for (const auto value : values) {
-        const QString string = QString::fromUtf8(value);
+        const QString string = QString(value);
         strings.append(string);
     }
 
