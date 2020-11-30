@@ -58,4 +58,7 @@ void set_line_edit_to_numbers_only(QLineEdit *edit);
 
 void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view);
 
+// NOTE: uses a buffer that is capped at 100 strings, so pointers returned from this become invalid after 99 more calls. Only use this to give cstr args to C routines in the same scope. Keep this far away from any recursion.
+const char *cstr(const QString &qstr);
+
 #endif /* UTILS_H */

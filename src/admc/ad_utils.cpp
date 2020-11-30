@@ -20,6 +20,7 @@
 #include "ad_utils.h"
 #include "ad_config.h"
 #include "attribute_display.h"
+#include "utils.h"
 
 #include <ldap.h>
 
@@ -223,10 +224,7 @@ QString dn_rename(const QString &dn, const QString &new_name) {
 // =>
 // "domain.com/bar/foo"
 QString dn_canonical(const QString &dn) {
-    const QByteArray dn_array = dn.toUtf8();
-    const char *dn_cstr = dn_array.constData();
-
-    char *canonical_cstr = ldap_dn2ad_canonical(dn_cstr);
+    char *canonical_cstr = ldap_dn2ad_canonical(cstr(dn));
     const QString canonical = QString(canonical_cstr);
     ldap_memfree(canonical_cstr);
 

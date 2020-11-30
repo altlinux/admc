@@ -104,10 +104,7 @@ bool AdInterface::connect() {
     m_configuration_dn = "CN=Configuration," + m_domain_head;
     m_schema_dn = "CN=Schema," + m_configuration_dn;
 
-    const QByteArray uri_array = uri.toUtf8();
-    const char *uri_cstr = uri_array.constData();
-
-    const int result = ad_connect(uri_cstr, &ld);
+    const int result = ad_connect(cstr(uri), &ld);
 
     if (result == AD_SUCCESS) {
         m_config = new AdConfig(this);
@@ -197,13 +194,12 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
         }
     }();
 
-    const QByteArray filter_array = filter.toUtf8();
     const char *filter_cstr =
-    [filter_array]() {
-        if (filter_array.isEmpty()) {
+    [filter]() {
+        if (filter.isEmpty()) {
             return (const char *) NULL;
         } else {
-            return filter_array.constData();
+            return cstr(filter);
         }
     }();
 
@@ -218,9 +214,6 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
         return 0;
     }();
 
-    const QByteArray base_array = base.toUtf8();
-    const char *base_cstr = base_array.constData();
-
     // Convert attributes list to NULL-terminated array
     attrs =
     [attributes]() {
@@ -232,9 +225,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
             attrs_out = (char **) malloc((attributes.size() + 1) * sizeof(char *));
             for (int i = 0; i < attributes.size(); i++) {
                 const QString attribute = attributes[i];
-                const QByteArray attribute_array = attribute.toUtf8();
-                const char *attribute_cstr = attribute_array.constData();
-                attrs_out[i] = strdup(attribute_cstr);
+                attrs_out[i] = strdup(cstr(attribute));
             }
             attrs_out[attributes.size()] = NULL;
         }
@@ -242,7 +233,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
         return attrs_out;
     }();
 
-    const int result_search = ldap_search_ext_s(ld, base_cstr, scope, filter_cstr, attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
+    const int result_search = ldap_search_ext_s(ld, cstr(base), scope, filter_cstr, attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
     if (result_search != LDAP_SUCCESS) {
         // result = result_search;
 
@@ -321,12 +312,6 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
         return true;
     }
 
-    const QByteArray dn_array = dn.toUtf8();
-    const char *dn_cstr = dn_array.constData();
-
-    const QByteArray attribute_array = attribute.toUtf8();
-    const char *attribute_cstr = attribute_array.constData();
-
     // NOTE: store bvalues in array instead of dynamically allocating ptrs
     struct berval bvalues_storage[values.size()];
     struct berval *bvalues[values.size() + 1];
@@ -343,12 +328,12 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
 
     LDAPMod attr;
     attr.mod_op = (LDAP_MOD_REPLACE | LDAP_MOD_BVALUES);
-    attr.mod_type = (char *)attribute_cstr;
+    attr.mod_type = (char *) cstr(attribute);
     attr.mod_bvalues = bvalues;
     
     LDAPMod *attrs[] = {&attr, NULL};
 
-    const int result_modify = ldap_modify_ext_s(ld, dn_cstr, attrs, NULL, NULL);
+    const int result_modify = ldap_modify_ext_s(ld, cstr(dn), attrs, NULL, NULL);
     if (result_modify != LDAP_SUCCESS) {
         result = AD_LDAP_ERROR;
     }
@@ -387,15 +372,7 @@ bool AdInterface::attribute_replace_value(const QString &dn, const QString &attr
 }
 
 bool AdInterface::attribute_add_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
-    const QByteArray dn_array = dn.toUtf8();
-    const char *dn_cstr = dn_array.constData();
-
-    const QByteArray attribute_array = attribute.toUtf8();
-    const char *attribute_cstr = attribute_array.constData();
-
-    const char *value_cstr = value.constData();
-
-    const int result = ad_attribute_add_value(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+    const int result = ad_attribute_add_value(ld, cstr(dn), cstr(attribute), value.constData(), value.size());
 
     const QString name = dn_get_name(dn);
 
@@ -421,15 +398,7 @@ bool AdInterface::attribute_add_value(const QString &dn, const QString &attribut
 }
 
 bool AdInterface::attribute_delete_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
-    const QByteArray dn_array = dn.toUtf8();
-    const char *dn_cstr = dn_array.constData();
-
-    const QByteArray attribute_array = attribute.toUtf8();
-    const char *attribute_cstr = attribute_array.constData();
-
-    const char *value_cstr = value.constData();
-
-    const int result = ad_attribute_delete_value(ld, dn_cstr, attribute_cstr, value_cstr, value.size());
+    const int result = ad_attribute_delete_value(ld, cstr(dn), cstr(attribute), value.constData(), value.size());
 
     const QString name = dn_get_name(dn);
 
@@ -474,14 +443,9 @@ bool AdInterface::attribute_replace_datetime(const QString &dn, const QString &a
 }
 
 bool AdInterface::object_add(const QString &dn, const QString &object_class) {
-    const QByteArray dn_array = dn.toUtf8();
-    const char *dn_cstr = dn_array.constData();
+    const char *classes[2] = {cstr(object_class), NULL};
 
-    const QByteArray class_bytes = object_class.toLocal8Bit();
-    const char *class_cstr = class_bytes.constData();
-    const char *classes[2] = {class_cstr, NULL};
-
-    const int result = ad_add(ld, dn_cstr, classes);
+    const int result = ad_add(ld, cstr(dn), classes);
 
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Created object \"%1\"")).arg(dn));
@@ -500,10 +464,7 @@ bool AdInterface::object_add(const QString &dn, const QString &object_class) {
 }
 
 bool AdInterface::object_delete(const QString &dn) {
-    const QByteArray dn_array = dn.toUtf8();
-    const char *dn_cstr = dn_array.constData();
-
-    int result = ad_delete(ld, dn_cstr);
+    int result = ad_delete(ld, cstr(dn));
 
     const QString name = dn_get_name(dn);
     
@@ -527,13 +488,7 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
     QList<QString> dn_split = dn.split(',');
     QString new_dn = dn_split[0] + "," + new_container;
 
-    const QByteArray dn_array = dn.toUtf8();
-    const char *dn_cstr = dn_array.constData();
-
-    const QByteArray new_container_array = new_container.toUtf8();
-    const char *new_container_cstr = new_container_array.constData();
-
-    const int result = ad_move(ld, dn_cstr, new_container_cstr);
+    const int result = ad_move(ld, cstr(dn), cstr(new_container));
 
     // TODO: drag and drop handles checking move compatibility but need
     // to do this here as well for CLI?
@@ -561,12 +516,7 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     const QString new_dn = dn_rename(dn, new_name);
     const QString new_rdn = new_dn.split(",")[0];
 
-    const QByteArray dn_array = dn.toUtf8();
-    const char *dn_cstr = dn_array.constData();
-    const QByteArray new_rdn_array = new_rdn.toUtf8();
-    const char *new_rdn_cstr = new_rdn_array.constData();
-
-    int result = ad_rename(ld, dn_cstr, new_rdn_cstr);
+    int result = ad_rename(ld, cstr(dn), cstr(new_rdn));
 
     const QString old_name = dn_get_name(dn);
 
@@ -981,36 +931,28 @@ bool AdInterface::create_gpo(const QString &display_name) {
     // Create main dir
     // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
     const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(host(), domain().toLower(), uuid);
-    const QByteArray main_dir_bytes = main_dir.toUtf8();
-    const char *main_dir_cstr = main_dir_bytes.constData();
-    const int result_mkdir_main = smbc_mkdir(main_dir_cstr, 0);
+    const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0);
     if (result_mkdir_main != 0) {
         // TODO: handle errors
         return false;
     }
 
     const QString machine_dir = main_dir + "/Machine";
-    const QByteArray machine_dir_bytes = machine_dir.toUtf8();
-    const char *machine_dir_cstr = machine_dir_bytes.constData();
-    const int result_mkdir_machine = smbc_mkdir(machine_dir_cstr, 0);
+    const int result_mkdir_machine = smbc_mkdir(cstr(machine_dir), 0);
     if (result_mkdir_machine != 0) {
         // TODO: handle errors
         return false;
     }
 
     const QString user_dir = main_dir + "/User";
-    const QByteArray user_dir_bytes = user_dir.toUtf8();
-    const char *user_dir_cstr = user_dir_bytes.constData();
-    const int result_mkdir_user = smbc_mkdir(user_dir_cstr, 0);
+    const int result_mkdir_user = smbc_mkdir(cstr(user_dir), 0);
     if (result_mkdir_user != 0) {
         // TODO: handle errors
         return false;
     }
 
     const QString init_file_path = main_dir + "/GPT.INI";
-    const QByteArray init_file_path_bytes = init_file_path.toUtf8();
-    const char *init_file_path_cstr = init_file_path_bytes.constData();
-    const int ini_file = smbc_open(init_file_path_cstr, O_WRONLY | O_CREAT, 0);
+    const int ini_file = smbc_open(cstr(init_file_path), O_WRONLY | O_CREAT, 0);
 
     const char *ini_contents = "[General]\r\nVersion=0\r\n";
     const int result_write_ini = smbc_write(ini_file, ini_contents, sizeof(ini_contents) / sizeof(char));
@@ -1080,9 +1022,7 @@ bool AdInterface::delete_gpo(const QString &gpo_dn) {
     const AdObject object = search_object(gpo_dn, {ATTRIBUTE_GPC_FILE_SYS_PATH});
     const QString sysvol_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
     const QString url = sysvol_path_to_smb(sysvol_path);
-    const QByteArray url_bytes = url.toUtf8();
-    const char *url_cstr = url_bytes.constData();
-    const int result_rmdir = smbc_rmdir(url_cstr);
+    const int result_rmdir = smbc_rmdir(cstr(url));
     if (result_rmdir < 0) {
         return false;
     }
@@ -1162,14 +1102,8 @@ AdInterface *AD() {
 }
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
-    const QByteArray domain_array = domain.toUtf8();
-    const char *domain_cstr = domain_array.constData();
-
-    const QByteArray site_array = site.toUtf8();
-    const char *site_cstr = site_array.constData();
-
     char **hosts_raw = NULL;
-    int hosts_result = ad_get_domain_hosts(domain_cstr, site_cstr, &hosts_raw);
+    int hosts_result = ad_get_domain_hosts(cstr(domain), cstr(site), &hosts_raw);
 
     if (hosts_result == AD_SUCCESS) {
         auto hosts = QList<QString>();

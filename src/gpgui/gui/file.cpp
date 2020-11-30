@@ -19,6 +19,8 @@
 
 #include "file.h"
 
+#include "utils.h"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -78,9 +80,6 @@ QList<QString> file_get_children(const QString &path) {
 
     const FileLocation location = get_file_location(path);
 
-    const QByteArray path_array = path.toLatin1();
-    const char *path_cstr = path_array.constData();
-
     auto add_child =
     [path, &children](const char *child_name_cstr) {
         const QString child_name(child_name_cstr);
@@ -97,11 +96,11 @@ QList<QString> file_get_children(const QString &path) {
     switch (location) {
         case FileLocation_Local: {
             struct stat filestat;
-            stat(path_cstr, &filestat);
+            stat(cstr(path), &filestat);
 
             const bool is_dir = S_ISDIR(filestat.st_mode);
             if (is_dir) {
-                DIR *dirp = opendir(path_cstr);
+                DIR *dirp = opendir(cstr(path));
 
                 struct dirent *child;
                 while ((child = readdir(dirp)) != NULL) {
@@ -117,11 +116,11 @@ QList<QString> file_get_children(const QString &path) {
             SMBCCTX *context = make_smbc_context();
 
             struct stat filestat;
-            smbc_stat(path_cstr, &filestat);
+            smbc_stat(cstr(path), &filestat);
 
             const bool is_dir = S_ISDIR(filestat.st_mode);
             if (is_dir) {
-                const int dirp = smbc_opendir(path_cstr);
+                const int dirp = smbc_opendir(cstr(path));
 
                 struct smbc_dirent *child;
                 while ((child = smbc_readdir(dirp)) != NULL) {
@@ -164,10 +163,7 @@ QByteArray file_read(const QString &path) {
         case FileLocation_Smb: {
             SMBCCTX *context = make_smbc_context();
 
-            const QByteArray path_array = path.toLatin1();
-            const char *path_cstr = path_array.constData();
-
-            const int file = smbc_open(path_cstr, O_RDONLY, 0);
+            const int file = smbc_open(cstr(path), O_RDONLY, 0);
 
             const bool open_success = (file > 0);
             if (open_success) {
@@ -216,10 +212,7 @@ void file_write(const QString &path, const QByteArray &bytes) {
         case FileLocation_Smb: {
             SMBCCTX *context = make_smbc_context();
 
-            const QByteArray path_array = path.toLatin1();
-            const char *path_cstr = path_array.constData();
-
-            const int file = smbc_open(path_cstr, O_WRONLY, 0);
+            const int file = smbc_open(cstr(path), O_WRONLY, 0);
 
             const bool open_success = (file > 0);
             if (open_success) {

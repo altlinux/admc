@@ -82,9 +82,7 @@ void BrowseWidget::change_target(const QString &policy_path_arg) {
 
 void BrowseWidget::add_entry_recursively(const QString &path, QStandardItem *parent) {
     // TODO: ok to use system f-n basename for smp url?
-    const QByteArray path_array = path.toLatin1();
-    const char *path_cstr = path_array.constData();
-    const QString name = basename(path_cstr);
+    const QString name = basename(cstr(path));
 
     const QList<QStandardItem *> row = make_item_row(BrowseColumn_COUNT);
     row[BrowseColumn_Name]->setText(name);
