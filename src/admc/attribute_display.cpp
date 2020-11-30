@@ -28,6 +28,7 @@ QString large_integer_datetime_to_display_value(const QString &attribute, const 
 QString datetime_to_display_value(const QString &attribute, const QByteArray &bytes);
 QString timespan_to_display_value(const QByteArray &bytes);
 QString octet_to_display_value(const QString &attribute, const QByteArray &bytes);
+QString guid_to_display_value(const QByteArray &bytes);
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value) {
     const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
@@ -45,7 +46,13 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
         case AttributeType_UTCTime: return datetime_to_display_value(attribute, value);
         case AttributeType_GeneralizedTime: return datetime_to_display_value(attribute, value);
         case AttributeType_Sid: return object_sid_to_display_value(value);
-        case AttributeType_Octet: return octet_to_display_value(attribute, value);
+        case AttributeType_Octet: {
+            if (attribute == ATTRIBUTE_OBJECT_GUID) {
+                return guid_to_display_value(value);
+            } else {
+                return octet_to_display_value(value);
+            }
+        }
         default: {
             return QString(value);
         }
@@ -194,48 +201,46 @@ QString timespan_to_display_value(const QByteArray &bytes) {
     return display;
 }
 
-QString octet_to_display_value(const QString &attribute, const QByteArray &bytes_arg) {
-    const QByteArray bytes_hex = bytes_arg.toHex();
+// To match how ADUC displays GUID's, need to swap
+// some bytes and insert hyphens
+// TODO: no idea what the logic behind these byte swaps is, figure it out
+QString guid_to_display_value(const QByteArray &bytes) {
+    const QByteArray bytes_hex = bytes.toHex();
 
-    const QByteArray bytes =
-    [attribute, bytes_hex]() {
-        QByteArray out = bytes_hex;
+    QByteArray out = bytes_hex;
 
-        if (attribute == ATTRIBUTE_OBJECT_GUID) {
-            // To match how ADUC displays GUID's, need to swap
-            // some bytes and insert hyphens
-            // TODO: no idea what the logic behind these byte swaps is, maybe some kind of encoding?
+    const auto swap_bytes =
+    [&out, bytes_hex](const int a, const int b) {
+        out[a] = bytes_hex[b];
+        out[b] = bytes_hex[a];
+    };
 
-            const auto swap_bytes =
-            [&out, bytes_hex](const int a, const int b) {
-                out[a] = bytes_hex[b];
-                out[b] = bytes_hex[a];
-            };
+    swap_bytes(0, 3);
+    swap_bytes(1, 2);
+    swap_bytes(4, 5);
+    swap_bytes(6, 7);
 
-            swap_bytes(0, 3);
-            swap_bytes(1, 2);
-            swap_bytes(4, 5);
-            swap_bytes(6, 7);
+    out.insert(20, '-');
+    out.insert(16, '-');
+    out.insert(12, '-');
+    out.insert(8, '-');
 
-            out.insert(20, '-');
-            out.insert(16, '-');
-            out.insert(12, '-');
-            out.insert(8, '-');
-        } else {
-            // Add " 0x" before each byte (every 2 indexes)
-            for (int i = bytes_hex.size() - 2; i >= 0; i -= 2) {
-                out.insert(i, "0x");
+    return QString(out);
+}
 
-                if (i != 0) {
-                    out.insert(i, " ");
-                }
-            }
+QString octet_to_display_value(const QByteArray &bytes) {
+    const QByteArray bytes_hex = bytes.toHex();
+
+    QByteArray out = bytes_hex;
+
+    // Add " 0x" before each byte (every 2 indexes)
+    for (int i = out.size() - 2; i >= 0; i -= 2) {
+        out.insert(i, "0x");
+
+        if (i != 0) {
+            out.insert(i, " ");
         }
+    }
 
-        return out;
-    }();
-
-    const QString display_value = QString(bytes);
-
-    return display_value;
+    return QString(out);
 }

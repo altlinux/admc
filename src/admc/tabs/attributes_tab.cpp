@@ -234,14 +234,14 @@ QString attribute_type_display_string(const AttributeType type) {
         case AttributeType_Octet: return AttributesTab::tr("Octet");
         case AttributeType_ReplicaLink: return AttributesTab::tr("Replica Link");
         case AttributeType_Printable: return AttributesTab::tr("Printable");
-        case AttributeType_Sid: return AttributesTab::tr("Sid");
+        case AttributeType_Sid: return AttributesTab::tr("SID");
         case AttributeType_Teletex: return AttributesTab::tr("Teletex");
         case AttributeType_Unicode: return AttributesTab::tr("Unicode");
         case AttributeType_UTCTime: return AttributesTab::tr("UTC Time");
         case AttributeType_GeneralizedTime: return AttributesTab::tr("Generalized Time");
         case AttributeType_DNString: return AttributesTab::tr("DN String");
         case AttributeType_DNBinary: return AttributesTab::tr("DN Binary");
-        case AttributeType_DSDN: return AttributesTab::tr("DSDN");
+        case AttributeType_DSDN: return AttributesTab::tr("Distinguished Name");
     }
     return QString();
 }

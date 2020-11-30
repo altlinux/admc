@@ -16,22 +16,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ATTRIBUTE_DISPLAY_H
-#define ATTRIBUTE_DISPLAY_H
 
-#include <QString>
-#include <QByteArray>
+#ifndef OCTET_MULTI_EDIT_DIALOG_H
+#define OCTET_MULTI_EDIT_DIALOG_H
 
-const qint64 MILLIS_TO_100_NANOS = 10000LL;
-const qint64 SECONDS_TO_MILLIS   = 1000LL;
-const qint64 MINUTES_TO_SECONDS  = 60LL;
-const qint64 HOURS_TO_SECONDS    = MINUTES_TO_SECONDS * 60LL;
-const qint64 DAYS_TO_SECONDS     = HOURS_TO_SECONDS * 24LL;
+#include "edit_dialogs/edit_dialog.h"
 
-QString attribute_display_value(const QString &attribute, const QByteArray &value);
-QString attribute_display_values(const QString &attribute, const QList<QByteArray> &values);
+class QListWidget;
+class QPushButton;
 
-QString object_sid_to_display_value(const QByteArray &bytes);
-QString octet_to_display_value(const QByteArray &bytes);
+class OctetMultiEditDialog final : public EditDialog {
+Q_OBJECT
 
-#endif /* ATTRIBUTE_DISPLAY_H */
+public:
+    OctetMultiEditDialog(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent);
+
+    QList<QByteArray> get_new_values() const;
+
+private slots:
+    void on_list_selected_changed();
+    void on_add();
+    void on_remove();
+    void reset();
+
+private:
+    QString attribute;
+    QList<QByteArray> original_values;
+    QListWidget *list_widget;
+    QPushButton *add_button;
+    QPushButton *remove_button;
+};
+
+#endif /* OCTET_MULTI_EDIT_DIALOG_H */

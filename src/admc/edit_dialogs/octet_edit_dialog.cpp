@@ -18,6 +18,7 @@
  */
 
 #include "edit_dialogs/octet_edit_dialog.h"
+
 #include "ad_config.h"
 #include "utils.h"
 #include "attribute_display.h"
@@ -28,49 +29,57 @@
 #include <QTextEdit>
 #include <QFont>
 #include <QFontDatabase>
+#include <QDialogButtonBox>
+#include <QPushButton>
 
 // TODO: need to display value in these formats: hexadecimal, binary, decimal, octal. Currently only have hexadecimal.
+// TODO: implement editing. Should editing be availabel though all display formats or just hex? Note that built-in qt input mask is very limited, and textedit doesn't even have one.
 
-OctetEditDialog::OctetEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+OctetEditDialog::OctetEditDialog(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent)
 : EditDialog(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     original_values = values;
+    attribute = attribute_arg;
 
+    setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(tr("Edit octet string"));
 
-    auto string_display = new QLineEdit();
-    string_display->setReadOnly(true);
+    edit = new QLineEdit();
+    edit->setReadOnly(true);
 
-    auto hex_display = new QTextEdit();
-    hex_display->setReadOnly(true);
-    const QFont fixed_font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    hex_display->setCurrentFont(fixed_font);
+    auto button_box = new QDialogButtonBox();
+    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
+    auto reset_button = button_box->addButton(QDialogButtonBox::Reset);
+    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     add_attribute_label(top_layout, attribute);
-    top_layout->addWidget(string_display);
-    top_layout->addWidget(hex_display);
+    top_layout->addWidget(edit);
+    top_layout->addWidget(button_box);
 
-    // Load value into widgets
-    if (!values.isEmpty()) {
-        const QByteArray value = values[0];
+    connect(
+        ok_button, &QPushButton::clicked,
+        this, &QDialog::accept);
+    connect(
+        reset_button, &QPushButton::clicked,
+        this, &OctetEditDialog::reset);
+    connect(
+        cancel_button, &QAbstractButton::clicked,
+        this, &OctetEditDialog::reject);
 
-        const QString display_value = attribute_display_value(attribute, value);
-        string_display->setText(display_value);
-
-        const QByteArray value_hex = value.toHex();
-        QString value_hex_string = QString(value_hex);
-        // Separate bytes by spaces
-        for (int i = value_hex_string.size() - 2; i > 0; i-=2) {
-            value_hex_string.insert(i, " ");
-        }
-        hex_display->setText(value_hex_string);
-    }
+    reset();
 }
 
 QList<QByteArray> OctetEditDialog::get_new_values() const {
     return original_values;
+}
+
+void OctetEditDialog::reset() {
+    if (!original_values.isEmpty()) {
+        const QByteArray value = original_values[0];
+
+        const QString display_value = octet_to_display_value(value);
+        edit->setText(display_value);
+    }
 }

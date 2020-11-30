@@ -21,6 +21,7 @@
 #include "edit_dialogs/string_edit_dialog.h"
 #include "edit_dialogs/string_multi_edit_dialog.h"
 #include "edit_dialogs/octet_edit_dialog.h"
+#include "edit_dialogs/octet_multi_edit_dialog.h"
 #include "edit_dialogs/bool_edit_dialog.h"
 #include "ad_config.h"
 
@@ -38,8 +39,7 @@ EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> va
         if (single_valued) {
             return new OctetEditDialog(attribute, values, parent);
         } else {
-            // TODO:
-            return nullptr;
+            return new OctetMultiEditDialog(attribute, values, parent);
         } 
     };
 
@@ -65,10 +65,19 @@ EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> va
     switch (type) {
         case AttributeType_Octet: return octet_dialog();
         case AttributeType_Sid: return octet_dialog();
+
         case AttributeType_Boolean: return bool_dialog();
-        case AttributeType_StringCase: return string_dialog();
+
         case AttributeType_Unicode: return string_dialog();
+        case AttributeType_StringCase: return string_dialog();
         case AttributeType_DSDN: return string_dialog();
+        case AttributeType_IA5: return string_dialog();
+        case AttributeType_Teletex: return string_dialog();
+        case AttributeType_ObjectIdentifier: return string_dialog();
+
+        // NOTE: putting these here as confirmed to be unsupported
+        case AttributeType_DNBinary: return nullptr;
+
         default: return nullptr;
     }
 }

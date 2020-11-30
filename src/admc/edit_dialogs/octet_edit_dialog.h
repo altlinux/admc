@@ -22,16 +22,22 @@
 
 #include "edit_dialogs/edit_dialog.h"
 
+class QLineEdit;
+
 class OctetEditDialog final : public EditDialog {
 Q_OBJECT
 
 public:
-    OctetEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent);
+    OctetEditDialog(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent);
 
     QList<QByteArray> get_new_values() const;
 
 private:
     QList<QByteArray> original_values;
+    QLineEdit *edit;
+    QString attribute;
+
+    void reset();
 };
 
 #endif /* OCTET_EDIT_DIALOG_H */
