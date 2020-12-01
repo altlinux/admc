@@ -71,6 +71,7 @@ add_executable(admc
     edit_dialogs/octet_edit_dialog.cpp
     edit_dialogs/octet_multi_edit_dialog.cpp
     edit_dialogs/bool_edit_dialog.cpp
+    edit_dialogs/datetime_edit_dialog.cpp
 
     edits/attribute_edit.cpp
     edits/string_edit.cpp

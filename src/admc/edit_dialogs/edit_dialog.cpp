@@ -23,6 +23,7 @@
 #include "edit_dialogs/octet_edit_dialog.h"
 #include "edit_dialogs/octet_multi_edit_dialog.h"
 #include "edit_dialogs/bool_edit_dialog.h"
+#include "edit_dialogs/datetime_edit_dialog.h"
 #include "ad_config.h"
 
 #include <QVBoxLayout>
@@ -62,6 +63,15 @@ EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> va
         } 
     };
 
+    auto datetime_dialog =
+    [=]() -> EditDialog * {
+        if (single_valued) {
+            return new DateTimeEditDialog(attribute, values, parent);
+        } else {
+            return nullptr;
+        } 
+    };
+
     const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
     switch (type) {
         case AttributeType_Octet: return octet_dialog();
@@ -75,6 +85,12 @@ EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> va
         case AttributeType_IA5: return string_dialog();
         case AttributeType_Teletex: return string_dialog();
         case AttributeType_ObjectIdentifier: return string_dialog();
+        case AttributeType_Integer: return string_dialog();
+        case AttributeType_Enumeration: return string_dialog();
+        case AttributeType_LargeInteger: return string_dialog();
+
+        case AttributeType_UTCTime: return datetime_dialog();
+        case AttributeType_GeneralizedTime: return datetime_dialog();
 
         // NOTE: putting these here as confirmed to be unsupported
         case AttributeType_DNBinary: return nullptr;
