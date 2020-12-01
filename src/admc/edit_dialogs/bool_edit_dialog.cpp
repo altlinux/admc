@@ -23,73 +23,53 @@
 
 #include <QRadioButton>
 #include <QDialogButtonBox>
-#include <QPushButton>
 #include <QVBoxLayout>
-#include <QFormLayout>
+#include <QLabel>
 
 BoolEditDialog::BoolEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent)
 : EditDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-
     setWindowTitle(tr("Edit boolean"));
 
-    original_value = values;
+    QLabel *attribute_label = make_attribute_label(attribute);
 
     true_button = new QRadioButton(tr("True"));
     false_button = new QRadioButton(tr("False"));
     unset_button = new QRadioButton(tr("Unset"));
 
-    auto button_box = new QDialogButtonBox();
-    QPushButton *ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    QPushButton *reset_button = button_box->addButton(QDialogButtonBox::Reset);
-    QPushButton *cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
-
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    add_attribute_label(top_layout, attribute);
-    top_layout->addWidget(true_button);
-    top_layout->addWidget(false_button);
-    top_layout->addWidget(unset_button);
-    top_layout->addWidget(button_box);
-
-    if (ADCONFIG()->get_attribute_is_system_only(attribute)) {
-        true_button->setEnabled(false);
-        false_button->setEnabled(false);
-        unset_button->setEnabled(false);
-        button_box->setEnabled(false);
-    }
-
-    connect(
-        ok_button, &QPushButton::clicked,
-        this, &QDialog::accept);
-    connect(
-        reset_button, &QPushButton::clicked,
-        this, &BoolEditDialog::reset);
-    connect(
-        cancel_button, &QPushButton::clicked,
-        this, &BoolEditDialog::reject);
-
-    reset();
-}
-
-void BoolEditDialog::reset() {
-    if (original_value.isEmpty()) {
+    if (values.isEmpty()) {
         unset_button->setChecked(true);
     } else {
-        const QByteArray value_bytes = original_value[0];
-        const QString value_string(value_bytes);
-        const bool value = ad_string_to_bool(value_string);
+        const QByteArray value = values[0];
+        const QString value_string = QString(value);
+        const bool value_bool = ad_string_to_bool(value_string);
 
-        if (value) {
+        if (value_bool) {
             true_button->setChecked(true);        
         } else {
             false_button->setChecked(true);
         }
     }
+
+    QDialogButtonBox *button_box = make_button_box(attribute);;
+
+    const auto layout = new QVBoxLayout();
+    setLayout(layout);
+    layout->addWidget(attribute_label);
+    layout->addWidget(true_button);
+    layout->addWidget(false_button);
+    layout->addWidget(unset_button);
+    layout->addWidget(button_box);
+
+    if (ADCONFIG()->get_attribute_is_system_only(attribute)) {
+        true_button->setEnabled(false);
+        false_button->setEnabled(false);
+        unset_button->setEnabled(false);
+    }
 }
 
-// TODO: this might be useful somewhere else
+// TODO: this might be useful somewhere else. "this" = "converting unset/true/false into bytes"
 QList<QByteArray> BoolEditDialog::get_new_values() const {
     if (unset_button->isChecked()) {
         return QList<QByteArray>();

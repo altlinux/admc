@@ -21,20 +21,18 @@
 #include "ad_config.h"
 #include "utils.h"
 
-#include <QDialog>
 #include <QLineEdit>
 #include <QDialogButtonBox>
-#include <QPushButton>
 #include <QVBoxLayout>
-
-// TODO: figure out what can and can't be renamed and disable renaming for exceptions (computers can't for example)
+#include <QLabel>
 
 StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent)
 : EditDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-
     setWindowTitle(tr("Edit string"));
+
+    QLabel *attribute_label = make_attribute_label(attribute);
 
     edit = new QLineEdit();
 
@@ -45,38 +43,21 @@ StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArr
     ADCONFIG()->limit_edit(edit, attribute);
 
     const QByteArray value = values.value(0, QByteArray());
-    original_value = QString(value);
-    edit->setText(original_value);
+    const QString value_string = QString(value);
+    edit->setText(value_string);
 
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    auto reset_button = button_box->addButton(QDialogButtonBox::Reset);
-    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
+    QDialogButtonBox *button_box = make_button_box(attribute);;
 
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    add_attribute_label(top_layout, attribute);
-    top_layout->addWidget(edit);
-    top_layout->addWidget(button_box);
+    const auto layout = new QVBoxLayout();
+    setLayout(layout);
+    layout->addWidget(attribute_label);
+    layout->addWidget(edit);
+    layout->addWidget(button_box);
 
-    if (ADCONFIG()->get_attribute_is_system_only(attribute)) {
+    const bool system_only = ADCONFIG()->get_attribute_is_system_only(attribute);
+    if (system_only) {
         edit->setReadOnly(true);
-        button_box->setEnabled(false);
     }
-
-    connect(
-        ok_button, &QPushButton::clicked,
-        this, &QDialog::accept);
-    connect(
-        reset_button, &QPushButton::clicked,
-        this, &StringEditDialog::reset);
-    connect(
-        cancel_button, &QPushButton::clicked,
-        this, &StringEditDialog::reject);
-}
-
-void StringEditDialog::reset() {
-    edit->setText(original_value);
 }
 
 QList<QByteArray> StringEditDialog::get_new_values() const {

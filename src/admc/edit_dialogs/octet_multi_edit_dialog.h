@@ -29,18 +29,15 @@ class OctetMultiEditDialog final : public EditDialog {
 Q_OBJECT
 
 public:
-    OctetMultiEditDialog(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent);
+    OctetMultiEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent);
 
     QList<QByteArray> get_new_values() const;
 
 private slots:
     void on_add();
     void on_remove();
-    void reset();
 
 private:
-    QString attribute;
-    QList<QByteArray> original_values;
     QListWidget *list_widget;
     QPushButton *add_button;
 };

@@ -28,6 +28,7 @@
 #include <QVBoxLayout>
 #include <QFormLayout>
 #include <QLabel>
+#include <QDialogButtonBox>
 
 // TODO: implement missing types
 
@@ -82,9 +83,27 @@ EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> va
     }
 }
 
-void EditDialog::add_attribute_label(QVBoxLayout *layout, const QString &attribute) {
-    auto form = new QFormLayout();
-    form->addRow(tr("Attribute:"), new QLabel(attribute));
+QLabel *EditDialog::make_attribute_label(const QString &attribute) {
+    const QString text = QString(tr("Attribute: %1")).arg(attribute);
+    auto label = new QLabel(text);
 
-    layout->addLayout(form);
+    return label;
+}
+
+QDialogButtonBox *EditDialog::make_button_box(const QString attribute) {
+    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+
+    const bool system_only = ADCONFIG()->get_attribute_is_system_only(attribute);
+    if (system_only) {
+        button_box->setEnabled(false);
+    }
+
+    connect(
+        button_box, &QDialogButtonBox::accepted,
+        this, &EditDialog::accept);
+    connect(
+        button_box, &QDialogButtonBox::rejected,
+        this, &EditDialog::reject);
+
+    return button_box;
 }

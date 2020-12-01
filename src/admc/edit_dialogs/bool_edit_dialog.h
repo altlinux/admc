@@ -32,11 +32,7 @@ public:
 
     QList<QByteArray> get_new_values() const;
 
-private slots:
-    void reset();
-
 private:
-    QList<QByteArray> original_value;
     QRadioButton *true_button;
     QRadioButton *false_button;
     QRadioButton *unset_button;

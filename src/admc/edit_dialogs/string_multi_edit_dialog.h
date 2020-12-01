@@ -35,17 +35,14 @@ public:
     QList<QByteArray> get_new_values() const;
 
 private slots:
-    void on_edit_changed();
-    void on_add();
-    void on_remove();
+    void enable_add_button_if_edit_not_empty();
+    void add();
+    void remove();
 
 private:
-    QList<QByteArray> original_values;
     QLineEdit *edit;
     QListWidget *list_widget;
     QPushButton *add_button;
-
-    void reset();
 };
 
 #endif /* STRING_MULTI_EDIT_DIALOG_H */

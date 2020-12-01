@@ -32,12 +32,8 @@ public:
 
     QList<QByteArray> get_new_values() const;
 
-private slots:
-    void reset();
-
 private:
     QLineEdit *edit;
-    QString original_value;
 };
 
 #endif /* STRING_EDIT_DIALOG_H */

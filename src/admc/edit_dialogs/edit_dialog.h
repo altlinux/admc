@@ -26,6 +26,8 @@
 #include <QByteArray>
 
 class QVBoxLayout;
+class QLabel;
+class QDialogButtonBox;
 
 /**
  * Gets input from user, which can be obtained through
@@ -37,14 +39,15 @@ class EditDialog : public QDialog {
 Q_OBJECT
 
 public:
-    static EditDialog *make(const QString attribute, const QList<QByteArray> valuesm, QWidget *parent);
+    static EditDialog *make(const QString attribute, const QList<QByteArray> values, QWidget *parent);
 
     using QDialog::QDialog;
 
     virtual QList<QByteArray> get_new_values() const = 0;
 
 protected:
-    static void add_attribute_label(QVBoxLayout *layout, const QString &attribute);
+    static QLabel *make_attribute_label(const QString &attribute);
+    QDialogButtonBox *make_button_box(const QString attribute);
 };
 
 #endif /* EDIT_DIALOG_H */

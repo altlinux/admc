@@ -21,22 +21,21 @@
 #include "ad_config.h"
 #include "utils.h"
 
-#include <QDialog>
 #include <QLineEdit>
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QListWidget>
 #include <QMessageBox>
+#include <QLabel>
 
 StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent)
 : EditDialog(parent)
 {
-    original_values = values;
-
     setAttribute(Qt::WA_DeleteOnClose);
-
     setWindowTitle(tr("Edit multi-valued string"));
+
+    QLabel *attribute_label = make_attribute_label(attribute);
 
     edit = new QLineEdit();
     if (ADCONFIG()->attribute_is_number(attribute)) {
@@ -49,16 +48,18 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
 
     list_widget = new QListWidget();
 
+    for (const QByteArray &value : values) {
+        const QString value_string = QString(value);
+        list_widget->addItem(value_string);
+    }
+
     auto remove_button = new QPushButton(tr("Remove"));
 
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    auto reset_button = button_box->addButton(QDialogButtonBox::Reset);
-    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
+    QDialogButtonBox *button_box = make_button_box(attribute);;
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
-    add_attribute_label(top_layout, attribute);
+    top_layout->addWidget(attribute_label);
     top_layout->addWidget(edit);
     top_layout->addWidget(add_button);
     top_layout->addWidget(list_widget);
@@ -68,7 +69,6 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
     const bool read_only = ADCONFIG()->get_attribute_is_system_only(attribute);
     if (read_only) {
         edit->setReadOnly(true);
-        button_box->setEnabled(false);
         add_button->setEnabled(false);
         remove_button->setEnabled(false);
     } else {
@@ -76,34 +76,23 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
     }
 
     connect(
-        ok_button, &QPushButton::clicked,
-        this, &QDialog::accept);
-    connect(
-        reset_button, &QPushButton::clicked,
-        this, &StringMultiEditDialog::reset);
-    connect(
         add_button, &QAbstractButton::clicked,
-        this, &StringMultiEditDialog::on_add);
+        this, &StringMultiEditDialog::add);
     connect(
         remove_button, &QAbstractButton::clicked,
-        this, &StringMultiEditDialog::on_remove);
-    connect(
-        cancel_button, &QAbstractButton::clicked,
-        this, &StringMultiEditDialog::reject);
+        this, &StringMultiEditDialog::remove);
     connect(
         edit, &QLineEdit::textChanged,
-        this, &StringMultiEditDialog::on_edit_changed);
-    on_edit_changed();
-
-    reset();
+        this, &StringMultiEditDialog::enable_add_button_if_edit_not_empty);
+    enable_add_button_if_edit_not_empty();
 }
 
-void StringMultiEditDialog::on_edit_changed() {
+void StringMultiEditDialog::enable_add_button_if_edit_not_empty() {
     const bool edit_has_text = !edit->text().isEmpty();
     add_button->setEnabled(edit_has_text);
 }
 
-void StringMultiEditDialog::on_add() {
+void StringMultiEditDialog::add() {
     const QString new_value = edit->text();
 
     const bool duplicate =
@@ -121,7 +110,7 @@ void StringMultiEditDialog::on_add() {
     }
 }
 
-void StringMultiEditDialog::on_remove() {
+void StringMultiEditDialog::remove() {
     const QList<QListWidgetItem *> selected = list_widget->selectedItems();
 
     for (const auto item : selected) {
@@ -142,16 +131,4 @@ QList<QByteArray> StringMultiEditDialog::get_new_values() const {
     }
 
     return new_values;
-}
-
-void StringMultiEditDialog::reset() {
-    edit->clear();
-    list_widget->clear();
-
-    for (const QByteArray &value : original_values) {
-        // TODO: use conversion f-n
-        const QString value_string = QString(value);
-
-        list_widget->addItem(value_string);
-    }
 }
