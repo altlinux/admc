@@ -24,9 +24,10 @@
 
 #include <ldap.h>
 
-// TODO: confirm these are fine. I think need to make seconds option for UTC? Don't know if QDatetime can handle that.
-#define GENERALIZED_TIME_FORMAT_STRING "yyyyMMddhhmmss.zZ"
-#define UTC_TIME_FORMAT_STRING "yyMMddhhmmss.zZ"
+#define GENERALIZED_TIME_FORMAT_STRING  "yyyyMMddhhmmss.zZ"
+#define UTC_TIME_FORMAT_STRING          "yyMMddhhmmss.zZ"
+
+const QDate ntfs_epoch = QDate(1601, 1, 1);
 
 bool large_integer_datetime_is_never(const QString &value) {
     const bool is_never = (value == AD_LARGE_INTEGER_DATETIME_NEVER_1 || value == AD_LARGE_INTEGER_DATETIME_NEVER_2);
@@ -41,8 +42,7 @@ QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &
         case AttributeType_LargeInteger: {
             const LargeIntegerSubtype subtype = ADCONFIG()->get_large_integer_subtype(attribute);
             if (subtype == LargeIntegerSubtype_Datetime) {
-                const QDateTime ntfs_epoch(QDate(1601, 1, 1));
-                const qint64 millis = ntfs_epoch.msecsTo(datetime);
+                const qint64 millis = QDateTime(ntfs_epoch).msecsTo(datetime);
                 const qint64 hundred_nanos = millis * MILLIS_TO_100_NANOS;
                 
                 return QString::number(hundred_nanos);
@@ -51,7 +51,6 @@ QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &
             break;
         }
         case AttributeType_UTCTime: {
-            // TODO: i think this uses 2 digits for year and needs a different format
             return datetime.toString(UTC_TIME_FORMAT_STRING);
 
             break;
@@ -68,6 +67,7 @@ QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &
 }
 
 QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &raw_value) {
+
     const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
     QDateTime datetime =
@@ -77,8 +77,8 @@ QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &
                 const LargeIntegerSubtype subtype = ADCONFIG()->get_large_integer_subtype(attribute);
                 
                 if (subtype == LargeIntegerSubtype_Datetime) {
-                    // TODO: couldn't find epoch in qt, but maybe its hidden somewhere
-                    QDateTime out(QDate(1601, 1, 1));
+                    QDateTime out = QDateTime(ntfs_epoch);
+
                     const qint64 hundred_nanos = raw_value.toLongLong();
                     const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
                     out = out.addMSecs(millis);
@@ -188,7 +188,6 @@ bool ad_string_to_bool(const QString &string) {
 // "CN=foo,CN=bar,DC=domain,DC=com"
 // =>
 // "foo"
-// TODO: should be dn_get_name()
 QString dn_get_name(const QString &dn) {
     int equals_i = dn.indexOf('=') + 1;
     int comma_i = dn.indexOf(',');
