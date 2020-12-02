@@ -25,16 +25,12 @@
 
 #include <QVBoxLayout>
 #include <QFormLayout>
-#include <QLabel>
-#include <QPushButton>
 #include <QCheckBox>
 #include <QDateTime>
 #include <QButtonGroup>
-#include <QCalendarWidget>
-#include <QDialog>
-#include <QDialogButtonBox>
+#include <QDateEdit>
 
-#define DATE_FORMAT "dd.MM.yyyy"
+// TODO: do end of day by local time or UTC????
 
 const QTime END_OF_DAY(23, 59);
 
@@ -44,12 +40,12 @@ ExpiryEdit::ExpiryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
     never_check = new QCheckBox(tr("Never"));
     end_of_check = new QCheckBox(tr("End of:"));
 
+    edit = new QDateEdit();
+
     auto button_group = new QButtonGroup();
     button_group->setExclusive(true);
     button_group->addButton(never_check);
     button_group->addButton(end_of_check);
-    edit_button = new QPushButton(tr("Edit"));
-    display_label = new QLabel();
 
     connect(
         never_check, &QCheckBox::stateChanged,
@@ -58,8 +54,10 @@ ExpiryEdit::ExpiryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
         end_of_check, &QCheckBox::stateChanged,
         this, &ExpiryEdit::on_end_of_check);
     connect(
-        edit_button, &QAbstractButton::clicked,
-        this, &ExpiryEdit::on_edit_button);
+        edit, &QDateEdit::dateChanged,
+        [this]() {
+            emit edited();
+        });
 }
 
 void ExpiryEdit::load_internal(const AdObject &object) {
@@ -69,30 +67,36 @@ void ExpiryEdit::load_internal(const AdObject &object) {
         return large_integer_datetime_is_never(expiry_string);
     }();
 
-    never_check->setChecked(never);
-    end_of_check->setChecked(!never);
-
-    display_label->setEnabled(!never);
-    edit_button->setEnabled(!never);
-
-    QString display_label_text;
     if (never) {
-        // Load current date as default value when expiry is never
-        const QDate default_expiry = QDate::currentDate();
-        display_label_text = default_expiry.toString(DATE_FORMAT);
-    } else {
-        const QDateTime datetime = object.get_datetime(ATTRIBUTE_ACCOUNT_EXPIRES);
-        const QDateTime datetime_local = datetime.toLocalTime();
+        never_check->setChecked(true);
 
-        display_label_text = datetime_local.toString(DATE_FORMAT);
+        end_of_check->setChecked(false);
+        edit->setEnabled(false);
+    } else {
+        never_check->setChecked(false);
+
+        end_of_check->setChecked(true);
+        edit->setEnabled(true);
     }
-    display_label->setText(display_label_text);
+    
+    const QDate date =
+    [=]() {
+        if (never) {
+            // Default to current date when expiry is never
+            return QDate::currentDate();
+        } else {
+            const QDateTime datetime = object.get_datetime(ATTRIBUTE_ACCOUNT_EXPIRES);
+            return datetime.date();
+        }
+    }();
+
+    edit->setDate(date);
 }
 
 void ExpiryEdit::set_read_only(const bool read_only) {
     never_check->setDisabled(read_only);
     end_of_check->setDisabled(read_only);
-    edit_button->setDisabled(read_only);
+    edit->setReadOnly(read_only);
 }
 
 void ExpiryEdit::add_to_layout(QFormLayout *layout) {
@@ -101,8 +105,7 @@ void ExpiryEdit::add_to_layout(QFormLayout *layout) {
     auto sublayout = new QVBoxLayout();
     sublayout->addWidget(never_check);
     sublayout->addWidget(end_of_check);
-    sublayout->addWidget(display_label);
-    sublayout->addWidget(edit_button);
+    sublayout->addWidget(edit);
 
     layout->addRow(label_text, sublayout);
 }
@@ -113,8 +116,7 @@ bool ExpiryEdit::apply(const QString &dn) const {
     if (never) {
         return AD()->attribute_replace_string(dn, ATTRIBUTE_ACCOUNT_EXPIRES, AD_LARGE_INTEGER_DATETIME_NEVER_2);
     } else {
-        const QString date_string = display_label->text();
-        const QDate date = QDate::fromString(date_string, DATE_FORMAT);
+        const QDate date = edit->date();
         const QDateTime datetime(date, END_OF_DAY);
 
         return AD()->attribute_replace_datetime(dn, ATTRIBUTE_ACCOUNT_EXPIRES, datetime);
@@ -123,8 +125,7 @@ bool ExpiryEdit::apply(const QString &dn) const {
 
 void ExpiryEdit::on_never_check() {
     if (never_check->isChecked()) {
-        display_label->setEnabled(false);
-        edit_button->setEnabled(false);
+        edit->setEnabled(false);
 
         emit edited();
     }
@@ -132,44 +133,8 @@ void ExpiryEdit::on_never_check() {
 
 void ExpiryEdit::on_end_of_check() {
     if (end_of_check->isChecked()) {
-        display_label->setEnabled(true);
-        edit_button->setEnabled(true);
+        edit->setEnabled(true);
 
         emit edited();
     }
-}
-
-void ExpiryEdit::on_edit_button() {
-    auto dialog = new QDialog(edit_button);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-
-    auto label = new QLabel(tr("Edit expiry time"), dialog);
-    auto calendar = new QCalendarWidget(dialog);
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
-
-    const auto layout = new QVBoxLayout(dialog);
-    layout->addWidget(label);
-    layout->addWidget(calendar);
-    layout->addWidget(button_box);
-
-    connect(
-        ok_button, &QPushButton::clicked,
-        [this, dialog, calendar]() {
-            const QDate new_date = calendar->selectedDate();
-            const QString new_date_string = new_date.toString(DATE_FORMAT);
-
-            display_label->setText(new_date_string);
-
-            dialog->accept();
-
-            emit edited();
-        });
-
-    connect(
-        cancel_button, &QPushButton::clicked,
-        dialog, &QDialog::reject);
-
-    dialog->open();
 }

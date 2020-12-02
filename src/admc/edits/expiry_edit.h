@@ -25,8 +25,7 @@
 #include <QString>
 
 class QCheckBox;
-class QLabel;
-class QPushButton;
+class QDateEdit;
 
 class ExpiryEdit final : public AttributeEdit {
 Q_OBJECT
@@ -37,13 +36,11 @@ public:
 private slots:
     void on_never_check();
     void on_end_of_check();
-    void on_edit_button();
 
 private:
     QCheckBox *never_check;
     QCheckBox *end_of_check;
-    QLabel *display_label;
-    QPushButton *edit_button;
+    QDateEdit *edit;
 
     QString get_new_value() const;
 };
