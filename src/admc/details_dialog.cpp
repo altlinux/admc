@@ -132,6 +132,14 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     reset_button = button_box->addButton(QDialogButtonBox::Reset);
     auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
 
+    // Make apply button "auto default", which means that
+    // when a tab is edited and apply/reset get enabled,
+    // apply will become focused and if user presses enter,
+    // apply button will be pressed, applying the changes.
+    cancel_button->setAutoDefault(false);
+    reset_button->setAutoDefault(false);
+    apply_button->setAutoDefault(true);
+
     const AdObject object = AD()->search_object(target);
 
     const auto layout = new QVBoxLayout();
