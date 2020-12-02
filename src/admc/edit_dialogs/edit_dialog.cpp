@@ -31,8 +31,6 @@
 #include <QLabel>
 #include <QDialogButtonBox>
 
-// TODO: implement missing types
-
 EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> values, QWidget *parent) {
     const bool single_valued = ADCONFIG()->get_attribute_is_single_valued(attribute);
 

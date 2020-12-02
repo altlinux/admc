@@ -30,7 +30,21 @@ StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArr
 : EditDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle(tr("Edit string"));
+
+    const QString title =
+    [attribute]() {
+        const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
+
+        switch (type) {
+            case AttributeType_Integer: return tr("Edit integer");
+            case AttributeType_LargeInteger: return tr("Edit large integer");
+            case AttributeType_Enumeration: return tr("Edit enumeration");
+            default: break;
+        };
+
+        return tr("Edit string");
+    }();
+    setWindowTitle(title);
 
     QLabel *attribute_label = make_attribute_label(attribute);
 

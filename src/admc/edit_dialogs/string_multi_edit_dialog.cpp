@@ -33,7 +33,21 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
 : EditDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle(tr("Edit multi-valued string"));
+
+    const QString title =
+    [attribute]() {
+        const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
+
+        switch (type) {
+            case AttributeType_Integer: return tr("Edit  multi-valued integer");
+            case AttributeType_LargeInteger: return tr("Edit  multi-valued large integer");
+            case AttributeType_Enumeration: return tr("Edit  multi-valued enumeration");
+            default: break;
+        };
+
+        return tr("Edit multi-valued string");
+    }();
+    setWindowTitle(title);
 
     QLabel *attribute_label = make_attribute_label(attribute);
 
