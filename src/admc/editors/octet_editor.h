@@ -49,7 +49,12 @@ private:
     QComboBox *format_combo;
 
     bool check_input(const OctetDisplayFormat format);
-    OctetDisplayFormat current_format() const;
 };
+
+QComboBox *make_format_combo();
+OctetDisplayFormat current_format(QComboBox *format_combo);
+QString bytes_to_string(const QByteArray bytes, const OctetDisplayFormat format);
+QByteArray string_to_bytes(const QString string, const OctetDisplayFormat format);
+QString string_change_format(const QString old_string, const OctetDisplayFormat old_format, const OctetDisplayFormat new_format);
 
 #endif /* OCTET_EDITOR_H */

@@ -32,28 +32,25 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QListWidget>
+#include <QComboBox>
 
-// TODO: implement editing. Once single valued octet edit has it. Also display in different formats?
-
-OctetMultiEditor::OctetMultiEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+OctetMultiEditor::OctetMultiEditor(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent)
 : AttributeEditor(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(tr("Edit multi-valued octet string"));
 
+    attribute = attribute_arg;
+
     QLabel *attribute_label = make_attribute_label(attribute);
+
+    format_combo = make_format_combo();
 
     add_button = new QPushButton(tr("Add"));
 
     list_widget = new QListWidget();
     for (const QByteArray &value : values) {
-        const QString display_value = attribute_display_value(attribute, value);
-
-        auto item = new QListWidgetItem(display_value);
-        const QFont fixed_font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-        item->setFont(fixed_font);
-
-        list_widget->addItem(item);
+        add_value(value);
     }
 
     auto remove_button = new QPushButton(tr("Remove"));
@@ -63,6 +60,7 @@ OctetMultiEditor::OctetMultiEditor(const QString attribute, const QList<QByteArr
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(attribute_label);
+    layout->addWidget(format_combo);
     layout->addWidget(add_button);
     layout->addWidget(list_widget);
     layout->addWidget(remove_button);
@@ -82,22 +80,100 @@ OctetMultiEditor::OctetMultiEditor(const QString attribute, const QList<QByteArr
     connect(
         remove_button, &QAbstractButton::clicked,
         this, &OctetMultiEditor::on_remove);
+    connect(
+        list_widget, &QListWidget::itemDoubleClicked,
+        this, &OctetMultiEditor::edit_item);
+    connect(
+        format_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &OctetMultiEditor::on_format_combo);
+}
+
+void OctetMultiEditor::on_format_combo() {
+    static OctetDisplayFormat prev_format = OctetDisplayFormat_Hexadecimal;
+
+    // NOTE: don't need to check input before changing
+    // format because values are checked before they are
+    // added
+
+    // Change format of all items
+    for (int i = 0; i < list_widget->count(); i++) {
+        QListWidgetItem *item = list_widget->item(i);
+        const QString old_text = item->text();
+        const QString new_text = string_change_format(old_text, prev_format, current_format(format_combo));
+
+        item->setText(new_text);
+    }
+
+    prev_format = current_format(format_combo);
+}
+
+void OctetMultiEditor::edit_item(QListWidgetItem *item) {
+    const QString text = item->text();
+    const QByteArray bytes = string_to_bytes(text, current_format(format_combo));
+
+    auto editor = new OctetEditor(attribute, {bytes}, this);
+
+    connect(
+        editor, &QDialog::accepted,
+        [this, editor, item]() {
+            const QList<QByteArray> new_values = editor->get_new_values();
+
+            if (!new_values.isEmpty()) {
+                const QByteArray new_bytes = new_values[0];
+                const QString new_text = bytes_to_string(new_bytes, current_format(format_combo));
+
+                item->setText(new_text);
+            }
+        });
+
+    editor->open();
 }
 
 void OctetMultiEditor::on_add() {
-    // TODO: open octet editor and load new value from it into list widget
+    auto editor = new OctetEditor(attribute, QList<QByteArray>(), this);
+
+    connect(
+        editor, &QDialog::accepted,
+        [this, editor]() {
+            const QList<QByteArray> new_values = editor->get_new_values();
+
+            if (!new_values.isEmpty()) {
+                const QByteArray value = new_values[0];
+                add_value(value);
+            }
+        });
+
+    editor->open();
 }
 
 void OctetMultiEditor::on_remove() {
     const QList<QListWidgetItem *> selected = list_widget->selectedItems();
 
     for (const auto item : selected) {
-        list_widget->removeItemWidget(item);
         delete item;
     }
 }
 
 QList<QByteArray> OctetMultiEditor::get_new_values() const {
-    // TODO:
-    return QList<QByteArray>();
+    QList<QByteArray> out;
+
+    for (int i = 0; i < list_widget->count(); i++) {
+        QListWidgetItem *item = list_widget->item(i);
+        const QString text = item->text();
+        const QByteArray bytes = string_to_bytes(text, current_format(format_combo));
+
+        out.append(bytes);
+    }
+
+    return out;
+}
+
+void OctetMultiEditor::add_value(const QByteArray value) {
+    const QString text = bytes_to_string(value, current_format(format_combo));
+
+    auto item = new QListWidgetItem(text);
+    const QFont fixed_font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    item->setFont(fixed_font);
+
+    list_widget->addItem(item);
 }

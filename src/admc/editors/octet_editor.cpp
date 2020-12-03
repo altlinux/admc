@@ -35,8 +35,6 @@
 #include <cstdint>
 #include <cstdlib>
 
-QString bytes_to_string(const QByteArray bytes, const OctetDisplayFormat format);
-QByteArray string_to_bytes(const QString string, const OctetDisplayFormat format);
 int format_base(const OctetDisplayFormat format);
 char* itoa(int value, char* result, int base);
 
@@ -48,18 +46,14 @@ OctetEditor::OctetEditor(const QString attribute, const QList<QByteArray> values
 
     QLabel *attribute_label = make_attribute_label(attribute);
 
-    format_combo = new QComboBox();
-    format_combo->addItem(tr("Hexadecimal"), (int)OctetDisplayFormat_Hexadecimal);
-    format_combo->addItem(tr("Binary"), (int)OctetDisplayFormat_Binary);
-    format_combo->addItem(tr("Decimal"), (int)OctetDisplayFormat_Decimal);
-    format_combo->addItem(tr("Octal"), (int)OctetDisplayFormat_Octal);
+    format_combo = make_format_combo();
 
     edit = new QPlainTextEdit();
     const QFont fixed_font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     edit->setFont(fixed_font);
 
     const QByteArray value = values.value(0, QByteArray());
-    const QString value_string = bytes_to_string(value, current_format());
+    const QString value_string = bytes_to_string(value, current_format(format_combo));
     edit->setPlainText(value_string);
 
     if (ADCONFIG()->get_attribute_is_system_only(attribute)) {
@@ -81,14 +75,14 @@ OctetEditor::OctetEditor(const QString attribute, const QList<QByteArray> values
 }
 
 QList<QByteArray> OctetEditor::get_new_values() const {
-    const QString input = edit->toPlainText();
-    const QByteArray bytes = string_to_bytes(input, current_format());
+    const QString text = edit->toPlainText();
+    const QByteArray bytes = string_to_bytes(text, current_format(format_combo));
 
     return {bytes};
 }
 
 void OctetEditor::accept() {
-    const bool input_ok = check_input(current_format());
+    const bool input_ok = check_input(current_format(format_combo));
 
     if (input_ok) {
         QDialog::accept();
@@ -106,12 +100,11 @@ void OctetEditor::on_format_combo() {
         // Convert input in prev format back to bytes, then
         // convert bytes to input in new format
         // Ex: hex -> bytes -> octal
-        const QString input_in_prev_format = edit->toPlainText();
-        const QByteArray input_bytes = string_to_bytes(input_in_prev_format, prev_format);
-        const QString input_in_new_format = bytes_to_string(input_bytes, current_format());
-        edit->setPlainText(input_in_new_format);
-    
-        prev_format = current_format();
+        const QString old_text = edit->toPlainText();
+        const QString new_text = string_change_format(old_text, prev_format, current_format(format_combo));
+        edit->setPlainText(new_text);
+
+        prev_format = current_format(format_combo);
     } else {
         // Revert to previous format if input is invalid for
         // current format
@@ -124,12 +117,12 @@ void OctetEditor::on_format_combo() {
 bool OctetEditor::check_input(const OctetDisplayFormat format) {
     const bool ok =
     [=]() {
-        const QString input = edit->toPlainText();
-        const QList<QString> input_split = input.split(" ");
+        const QString text = edit->toPlainText();
+        const QList<QString> text_split = text.split(" ");
 
-        // Check that all elements of input (separated by
+        // Check that all elements of text (separated by
         // space) match the format
-        for (const QString element : input_split) {
+        for (const QString element : text_split) {
             switch (format) {
                 case OctetDisplayFormat_Hexadecimal: {
                     const QRegExp rx("([0-9a-f]{2})");
@@ -203,12 +196,22 @@ bool OctetEditor::check_input(const OctetDisplayFormat format) {
     return ok;
 }
 
-OctetDisplayFormat OctetEditor::current_format() const {
+OctetDisplayFormat current_format(QComboBox *format_combo) {
     const int format_index = format_combo->currentIndex();
     const QVariant format_variant = format_combo->itemData(format_index);
     const OctetDisplayFormat format = (OctetDisplayFormat) (format_variant.toInt());
 
     return format;
+}
+
+QComboBox *make_format_combo() {
+    auto format_combo = new QComboBox();
+    format_combo->addItem(OctetEditor::tr("Hexadecimal"), (int)OctetDisplayFormat_Hexadecimal);
+    format_combo->addItem(OctetEditor::tr("Binary"), (int)OctetDisplayFormat_Binary);
+    format_combo->addItem(OctetEditor::tr("Decimal"), (int)OctetDisplayFormat_Decimal);
+    format_combo->addItem(OctetEditor::tr("Octal"), (int)OctetDisplayFormat_Octal);
+
+    return format_combo;
 }
 
 QString bytes_to_string(const QByteArray bytes, const OctetDisplayFormat format) {
@@ -279,6 +282,16 @@ QByteArray string_to_bytes(const QString string, const OctetDisplayFormat format
     }
 
     return out;
+}
+
+QString string_change_format(const QString old_string, const OctetDisplayFormat old_format, const OctetDisplayFormat new_format) {
+    // Convert string in old format back to bytes, then
+    // convert bytes to text in new format
+    // Ex: hex -> bytes -> octal
+    const QByteArray bytes = string_to_bytes(old_string, old_format);
+    const QString new_string = bytes_to_string(bytes, new_format);
+
+    return new_string;
 }
 
 int format_base(const OctetDisplayFormat format) {

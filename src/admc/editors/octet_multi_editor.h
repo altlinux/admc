@@ -21,25 +21,34 @@
 #define OCTET_MULTI_EDITOR_H
 
 #include "editors/attribute_editor.h"
+#include "editors/octet_editor.h"
 
 class QListWidget;
 class QPushButton;
+class QComboBox;
+class QListWidgetItem;
 
 class OctetMultiEditor final : public AttributeEditor {
 Q_OBJECT
 
 public:
-    OctetMultiEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);
+    OctetMultiEditor(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent);
 
     QList<QByteArray> get_new_values() const;
 
 private slots:
     void on_add();
     void on_remove();
+    void on_format_combo();
+    void edit_item(QListWidgetItem *item);
 
 private:
+    QString attribute;
     QListWidget *list_widget;
     QPushButton *add_button;
+    QComboBox *format_combo;
+
+    void add_value(const QByteArray value);
 };
 
 #endif /* OCTET_MULTI_EDITOR_H */
