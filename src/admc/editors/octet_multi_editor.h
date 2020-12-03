@@ -37,10 +37,10 @@ public:
     QList<QByteArray> get_new_values() const;
 
 private slots:
-    void on_add();
-    void on_remove();
     void on_format_combo();
     void edit_item(QListWidgetItem *item);
+    void on_add();
+    void on_remove();
 
 private:
     QString attribute;

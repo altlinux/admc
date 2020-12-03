@@ -88,6 +88,20 @@ OctetMultiEditor::OctetMultiEditor(const QString attribute_arg, const QList<QByt
         this, &OctetMultiEditor::on_format_combo);
 }
 
+QList<QByteArray> OctetMultiEditor::get_new_values() const {
+    QList<QByteArray> out;
+
+    for (int i = 0; i < list_widget->count(); i++) {
+        QListWidgetItem *item = list_widget->item(i);
+        const QString text = item->text();
+        const QByteArray bytes = string_to_bytes(text, current_format(format_combo));
+
+        out.append(bytes);
+    }
+
+    return out;
+}
+
 void OctetMultiEditor::on_format_combo() {
     static OctetDisplayFormat prev_format = OctetDisplayFormat_Hexadecimal;
 
@@ -152,20 +166,6 @@ void OctetMultiEditor::on_remove() {
     for (const auto item : selected) {
         delete item;
     }
-}
-
-QList<QByteArray> OctetMultiEditor::get_new_values() const {
-    QList<QByteArray> out;
-
-    for (int i = 0; i < list_widget->count(); i++) {
-        QListWidgetItem *item = list_widget->item(i);
-        const QString text = item->text();
-        const QByteArray bytes = string_to_bytes(text, current_format(format_combo));
-
-        out.append(bytes);
-    }
-
-    return out;
 }
 
 void OctetMultiEditor::add_value(const QByteArray value) {

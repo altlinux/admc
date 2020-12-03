@@ -41,7 +41,7 @@ public:
     QList<QByteArray> get_new_values() const;
     void accept() override;
 
-    private slots:
+private slots:
     void on_format_combo();
 
 private:
@@ -51,8 +51,8 @@ private:
     bool check_input(const OctetDisplayFormat format);
 };
 
-QComboBox *make_format_combo();
 OctetDisplayFormat current_format(QComboBox *format_combo);
+QComboBox *make_format_combo();
 QString bytes_to_string(const QByteArray bytes, const OctetDisplayFormat format);
 QByteArray string_to_bytes(const QString string, const OctetDisplayFormat format);
 QString string_change_format(const QString old_string, const OctetDisplayFormat old_format, const OctetDisplayFormat new_format);
