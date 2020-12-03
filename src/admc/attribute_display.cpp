@@ -204,20 +204,20 @@ QString timespan_to_display_value(const QByteArray &bytes) {
 // some bytes and insert hyphens
 // TODO: no idea what the logic behind these byte swaps is, figure it out
 QString guid_to_display_value(const QByteArray &bytes) {
-    const QByteArray bytes_hex = bytes.toHex();
-
-    QByteArray out = bytes_hex;
+    QByteArray out = bytes;
 
     const auto swap_bytes =
-    [&out, bytes_hex](const int a, const int b) {
-        out[a] = bytes_hex[b];
-        out[b] = bytes_hex[a];
+    [&out, bytes](const int a, const int b) {
+        out[a] = bytes[b];
+        out[b] = bytes[a];
     };
 
     swap_bytes(0, 3);
     swap_bytes(1, 2);
     swap_bytes(4, 5);
     swap_bytes(6, 7);
+
+    out = out.toHex();
 
     out.insert(20, '-');
     out.insert(16, '-');
