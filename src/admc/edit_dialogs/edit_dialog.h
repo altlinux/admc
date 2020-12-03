@@ -31,21 +31,25 @@ class QDialogButtonBox;
 
 /**
  * Gets input from user, which can be obtained through
- * get_new_values(). Parent object is responsible for
- * actually applying the changes.
+ * get_new_values(). Different from AttributeEdit because it
+ * is opened as a separate dialog and parent object is
+ * responsible for actually applying the changes.
  */
 
 class EditDialog : public QDialog {
 Q_OBJECT
 
 public:
+    // Makes a dialog by picking the appropriate type of
+    // edit dialog for given attribute. If attribute is not
+    // supported, returns nullptr.
     static EditDialog *make(const QString attribute, const QList<QByteArray> values, QWidget *parent);
-
-    using QDialog::QDialog;
 
     virtual QList<QByteArray> get_new_values() const = 0;
 
 protected:
+    using QDialog::QDialog;
+    
     static QLabel *make_attribute_label(const QString &attribute);
     QDialogButtonBox *make_button_box(const QString attribute);
 };

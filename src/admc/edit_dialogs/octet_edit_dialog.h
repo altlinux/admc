@@ -22,7 +22,15 @@
 
 #include "edit_dialogs/edit_dialog.h"
 
-class QLineEdit;
+class QPlainTextEdit;
+class QComboBox;
+
+enum OctetDisplayFormat {
+    OctetDisplayFormat_Hexadecimal,
+    OctetDisplayFormat_Binary,
+    OctetDisplayFormat_Decimal,
+    OctetDisplayFormat_Octal,
+};
 
 class OctetEditDialog final : public EditDialog {
 Q_OBJECT
@@ -31,9 +39,17 @@ public:
     OctetEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent);
 
     QList<QByteArray> get_new_values() const;
+    void accept() override;
+
+    private slots:
+    void on_format_combo();
 
 private:
-    QLineEdit *edit;
+    QPlainTextEdit *edit;
+    QComboBox *format_combo;
+
+    bool check_input(const OctetDisplayFormat format);
+    OctetDisplayFormat current_format() const;
 };
 
 #endif /* OCTET_EDIT_DIALOG_H */
