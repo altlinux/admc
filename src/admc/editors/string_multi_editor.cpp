@@ -35,8 +35,6 @@ StringMultiEditor::StringMultiEditor(const QString attribute_arg, const QList<QB
 {
     attribute = attribute_arg;
 
-    setAttribute(Qt::WA_DeleteOnClose);
-
     const QString title =
     [this]() {
         const AttributeType type = ADCONFIG()->get_attribute_type(attribute);

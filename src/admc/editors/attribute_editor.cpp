@@ -31,6 +31,12 @@
 #include <QLabel>
 #include <QDialogButtonBox>
 
+AttributeEditor::AttributeEditor(QWidget *parent)
+: QDialog(parent) {
+    setAttribute(Qt::WA_DeleteOnClose);
+    resize(600, height());
+}
+
 AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByteArray> values, QWidget *parent) {
     const bool single_valued = ADCONFIG()->get_attribute_is_single_valued(attribute);
 

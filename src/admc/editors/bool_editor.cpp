@@ -29,7 +29,6 @@
 BoolEditor::BoolEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
 : AttributeEditor(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(tr("Edit boolean"));
 
     QLabel *attribute_label = make_attribute_label(attribute);

@@ -48,7 +48,7 @@ public:
     virtual QList<QByteArray> get_new_values() const = 0;
 
 protected:
-    using QDialog::QDialog;
+    AttributeEditor(QWidget *parent);
     
     static QLabel *make_attribute_label(const QString &attribute);
     QDialogButtonBox *make_button_box(const QString attribute);

@@ -37,7 +37,6 @@
 OctetMultiEditor::OctetMultiEditor(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent)
 : AttributeEditor(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(tr("Edit multi-valued octet string"));
 
     attribute = attribute_arg;

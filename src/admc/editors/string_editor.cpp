@@ -25,12 +25,11 @@
 #include <QDialogButtonBox>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QDebug>
 
 StringEditor::StringEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
 : AttributeEditor(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     const QString title =
     [attribute]() {
         const AttributeType type = ADCONFIG()->get_attribute_type(attribute);

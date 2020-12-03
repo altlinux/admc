@@ -41,7 +41,6 @@ char* itoa(int value, char* result, int base);
 OctetEditor::OctetEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
 : AttributeEditor(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(tr("Edit octet string"));
 
     QLabel *attribute_label = make_attribute_label(attribute);
