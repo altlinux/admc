@@ -147,6 +147,8 @@ void AttributesTab::showEvent(QShowEvent *event) {
 }
 
 void AttributesTab::load(const AdObject &object) {
+    original.clear();
+
     for (auto attribute : object.attributes()) {
         original[attribute] = object.get_values(attribute);
     }

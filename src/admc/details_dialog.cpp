@@ -258,8 +258,6 @@ void DetailsDialog::apply() {
     AD()->end_batch();
 
     STATUS()->end_error_log(this);
-
-    reset();
 }
 
 void DetailsDialog::reset() {
