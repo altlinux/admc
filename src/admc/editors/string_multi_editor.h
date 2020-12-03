@@ -25,12 +25,13 @@
 class QLineEdit;
 class QListWidget;
 class QPushButton;
+class QListWidgetItem;
 
 class StringMultiEditor final : public AttributeEditor {
 Q_OBJECT
 
 public:
-    StringMultiEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);
+    StringMultiEditor(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent);
 
     QList<QByteArray> get_new_values() const;
 
@@ -38,8 +39,10 @@ private slots:
     void enable_add_button_if_edit_not_empty();
     void add();
     void remove();
+    void edit_item(QListWidgetItem *item);
 
 private:
+    QString attribute;
     QLineEdit *edit;
     QListWidget *list_widget;
     QPushButton *add_button;

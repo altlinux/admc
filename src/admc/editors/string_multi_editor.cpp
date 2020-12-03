@@ -18,6 +18,7 @@
  */
 
 #include "editors/string_multi_editor.h"
+#include "editors/string_editor.h"
 #include "ad_config.h"
 #include "utils.h"
 
@@ -29,13 +30,15 @@
 #include <QMessageBox>
 #include <QLabel>
 
-StringMultiEditor::StringMultiEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+StringMultiEditor::StringMultiEditor(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent)
 : AttributeEditor(parent)
 {
+    attribute = attribute_arg;
+
     setAttribute(Qt::WA_DeleteOnClose);
 
     const QString title =
-    [attribute]() {
+    [this]() {
         const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
         switch (type) {
@@ -96,6 +99,9 @@ StringMultiEditor::StringMultiEditor(const QString attribute, const QList<QByteA
         remove_button, &QAbstractButton::clicked,
         this, &StringMultiEditor::remove);
     connect(
+        list_widget, &QListWidget::itemDoubleClicked,
+        this, &StringMultiEditor::edit_item);
+    connect(
         edit, &QLineEdit::textChanged,
         this, &StringMultiEditor::enable_add_button_if_edit_not_empty);
     enable_add_button_if_edit_not_empty();
@@ -128,7 +134,6 @@ void StringMultiEditor::remove() {
     const QList<QListWidgetItem *> selected = list_widget->selectedItems();
 
     for (const auto item : selected) {
-        list_widget->removeItemWidget(item);
         delete item;
     }
 }
@@ -145,4 +150,26 @@ QList<QByteArray> StringMultiEditor::get_new_values() const {
     }
 
     return new_values;
+}
+
+void StringMultiEditor::edit_item(QListWidgetItem *item) {
+    const QString text = item->text();
+    const QByteArray bytes = text.toUtf8();
+
+    auto editor = new StringEditor(attribute, {bytes}, this);
+
+    connect(
+        editor, &QDialog::accepted,
+        [this, editor, item]() {
+            const QList<QByteArray> new_values = editor->get_new_values();
+
+            if (!new_values.isEmpty()) {
+                const QByteArray new_bytes = new_values[0];
+                const QString new_text = QString(new_bytes);
+
+                item->setText(new_text);
+            }
+        });
+
+    editor->open();
 }
