@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "edit_dialogs/string_multi_edit_dialog.h"
+#include "editors/string_multi_editor.h"
 #include "ad_config.h"
 #include "utils.h"
 
@@ -29,8 +29,8 @@
 #include <QMessageBox>
 #include <QLabel>
 
-StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent)
-: EditDialog(parent)
+StringMultiEditor::StringMultiEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+: AttributeEditor(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -91,22 +91,22 @@ StringMultiEditDialog::StringMultiEditDialog(const QString attribute, const QLis
 
     connect(
         add_button, &QAbstractButton::clicked,
-        this, &StringMultiEditDialog::add);
+        this, &StringMultiEditor::add);
     connect(
         remove_button, &QAbstractButton::clicked,
-        this, &StringMultiEditDialog::remove);
+        this, &StringMultiEditor::remove);
     connect(
         edit, &QLineEdit::textChanged,
-        this, &StringMultiEditDialog::enable_add_button_if_edit_not_empty);
+        this, &StringMultiEditor::enable_add_button_if_edit_not_empty);
     enable_add_button_if_edit_not_empty();
 }
 
-void StringMultiEditDialog::enable_add_button_if_edit_not_empty() {
+void StringMultiEditor::enable_add_button_if_edit_not_empty() {
     const bool edit_has_text = !edit->text().isEmpty();
     add_button->setEnabled(edit_has_text);
 }
 
-void StringMultiEditDialog::add() {
+void StringMultiEditor::add() {
     const QString new_value = edit->text();
 
     const bool duplicate =
@@ -124,7 +124,7 @@ void StringMultiEditDialog::add() {
     }
 }
 
-void StringMultiEditDialog::remove() {
+void StringMultiEditor::remove() {
     const QList<QListWidgetItem *> selected = list_widget->selectedItems();
 
     for (const auto item : selected) {
@@ -133,7 +133,7 @@ void StringMultiEditDialog::remove() {
     }
 }
 
-QList<QByteArray> StringMultiEditDialog::get_new_values() const {
+QList<QByteArray> StringMultiEditor::get_new_values() const {
     QList<QByteArray> new_values;
 
     for (int i = 0; i < list_widget->count(); i++) {

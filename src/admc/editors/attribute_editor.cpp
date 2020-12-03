@@ -17,13 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "edit_dialogs/edit_dialog.h"
-#include "edit_dialogs/string_edit_dialog.h"
-#include "edit_dialogs/string_multi_edit_dialog.h"
-#include "edit_dialogs/octet_edit_dialog.h"
-#include "edit_dialogs/octet_multi_edit_dialog.h"
-#include "edit_dialogs/bool_edit_dialog.h"
-#include "edit_dialogs/datetime_edit_dialog.h"
+#include "editors/attribute_editor.h"
+#include "editors/string_editor.h"
+#include "editors/string_multi_editor.h"
+#include "editors/octet_editor.h"
+#include "editors/octet_multi_editor.h"
+#include "editors/bool_editor.h"
+#include "editors/datetime_editor.h"
 #include "ad_config.h"
 
 #include <QVBoxLayout>
@@ -31,40 +31,40 @@
 #include <QLabel>
 #include <QDialogButtonBox>
 
-EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> values, QWidget *parent) {
+AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByteArray> values, QWidget *parent) {
     const bool single_valued = ADCONFIG()->get_attribute_is_single_valued(attribute);
 
     auto octet_dialog =
-    [=]() -> EditDialog * {
+    [=]() -> AttributeEditor * {
         if (single_valued) {
-            return new OctetEditDialog(attribute, values, parent);
+            return new OctetEditor(attribute, values, parent);
         } else {
-            return new OctetMultiEditDialog(attribute, values, parent);
+            return new OctetMultiEditor(attribute, values, parent);
         } 
     };
 
     auto string_dialog =
-    [=]() -> EditDialog * {
+    [=]() -> AttributeEditor * {
         if (single_valued) {
-            return new StringEditDialog(attribute, values, parent);
+            return new StringEditor(attribute, values, parent);
         } else {
-            return new StringMultiEditDialog(attribute, values, parent);
+            return new StringMultiEditor(attribute, values, parent);
         } 
     };
 
     auto bool_dialog =
-    [=]() -> EditDialog * {
+    [=]() -> AttributeEditor * {
         if (single_valued) {
-            return new BoolEditDialog(attribute, values, parent);
+            return new BoolEditor(attribute, values, parent);
         } else {
             return nullptr;
         } 
     };
 
     auto datetime_dialog =
-    [=]() -> EditDialog * {
+    [=]() -> AttributeEditor * {
         if (single_valued) {
-            return new DateTimeEditDialog(attribute, values, parent);
+            return new DateTimeEditor(attribute, values, parent);
         } else {
             return nullptr;
         } 
@@ -97,14 +97,14 @@ EditDialog *EditDialog::make(const QString attribute, const QList<QByteArray> va
     }
 }
 
-QLabel *EditDialog::make_attribute_label(const QString &attribute) {
+QLabel *AttributeEditor::make_attribute_label(const QString &attribute) {
     const QString text = QString(tr("Attribute: %1")).arg(attribute);
     auto label = new QLabel(text);
 
     return label;
 }
 
-QDialogButtonBox *EditDialog::make_button_box(const QString attribute) {
+QDialogButtonBox *AttributeEditor::make_button_box(const QString attribute) {
     auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
     const bool system_only = ADCONFIG()->get_attribute_is_system_only(attribute);
@@ -114,10 +114,10 @@ QDialogButtonBox *EditDialog::make_button_box(const QString attribute) {
 
     connect(
         button_box, &QDialogButtonBox::accepted,
-        this, &EditDialog::accept);
+        this, &AttributeEditor::accept);
     connect(
         button_box, &QDialogButtonBox::rejected,
-        this, &EditDialog::reject);
+        this, &AttributeEditor::reject);
 
     return button_box;
 }

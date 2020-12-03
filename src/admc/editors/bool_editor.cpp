@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "edit_dialogs/bool_edit_dialog.h"
+#include "editors/bool_editor.h"
 #include "ad_utils.h"
 #include "ad_config.h"
 
@@ -26,8 +26,8 @@
 #include <QVBoxLayout>
 #include <QLabel>
 
-BoolEditDialog::BoolEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent)
-: EditDialog(parent)
+BoolEditor::BoolEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+: AttributeEditor(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(tr("Edit boolean"));
@@ -70,7 +70,7 @@ BoolEditDialog::BoolEditDialog(const QString attribute, const QList<QByteArray> 
 }
 
 // TODO: this might be useful somewhere else. "this" = "converting unset/true/false into bytes"
-QList<QByteArray> BoolEditDialog::get_new_values() const {
+QList<QByteArray> BoolEditor::get_new_values() const {
     if (unset_button->isChecked()) {
         return QList<QByteArray>();
     } else if (true_button->isChecked()) {

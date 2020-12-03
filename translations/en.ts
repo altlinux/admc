@@ -267,9 +267,9 @@
     </message>
 </context>
 <context>
-    <name>OctetEditDialog</name>
+    <name>OctetEditor</name>
     <message>
-        <location filename="../src/admc/edit_dialogs/octet_edit_dialog.cpp" line="40"/>
+        <location filename="../src/admc/editors/octet_editor.cpp" line="40"/>
         <source>Edit %1 - %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1470,37 +1470,37 @@
     </message>
 </context>
 <context>
-    <name>StringEditDialog</name>
+    <name>StringEditor</name>
     <message>
-        <location filename="../src/admc/edit_dialogs/string_edit_dialog.cpp" line="38"/>
+        <location filename="../src/admc/editors/string_editor.cpp" line="38"/>
         <source>Edit %1 - %2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>StringMultiEditDialog</name>
+    <name>StringMultiEditor</name>
     <message>
-        <location filename="../src/admc/edit_dialogs/string_multi_edit_dialog.cpp" line="40"/>
+        <location filename="../src/admc/editors/string_multi_editor.cpp" line="40"/>
         <source>Edit %1 - %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/edit_dialogs/string_multi_edit_dialog.cpp" line="47"/>
+        <location filename="../src/admc/editors/string_multi_editor.cpp" line="47"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/edit_dialogs/string_multi_edit_dialog.cpp" line="51"/>
+        <location filename="../src/admc/editors/string_multi_editor.cpp" line="51"/>
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/edit_dialogs/string_multi_edit_dialog.cpp" line="120"/>
+        <location filename="../src/admc/editors/string_multi_editor.cpp" line="120"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/edit_dialogs/string_multi_edit_dialog.cpp" line="120"/>
+        <location filename="../src/admc/editors/string_multi_editor.cpp" line="120"/>
         <source>Value already exists</source>
         <translation type="unfinished"></translation>
     </message>

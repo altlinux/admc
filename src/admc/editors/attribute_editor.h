@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EDIT_DIALOG_H
-#define EDIT_DIALOG_H
+#ifndef ATTRIBUTE_EDITOR_H
+#define ATTRIBUTE_EDITOR_H
 
 #include <QString>
 #include <QDialog>
@@ -36,14 +36,14 @@ class QDialogButtonBox;
  * responsible for actually applying the changes.
  */
 
-class EditDialog : public QDialog {
+class AttributeEditor : public QDialog {
 Q_OBJECT
 
 public:
     // Makes a dialog by picking the appropriate type of
-    // edit dialog for given attribute. If attribute is not
+    // editor for given attribute. If attribute is not
     // supported, returns nullptr.
-    static EditDialog *make(const QString attribute, const QList<QByteArray> values, QWidget *parent);
+    static AttributeEditor *make(const QString attribute, const QList<QByteArray> values, QWidget *parent);
 
     virtual QList<QByteArray> get_new_values() const = 0;
 
@@ -54,4 +54,4 @@ protected:
     QDialogButtonBox *make_button_box(const QString attribute);
 };
 
-#endif /* EDIT_DIALOG_H */
+#endif /* ATTRIBUTE_EDITOR_H */

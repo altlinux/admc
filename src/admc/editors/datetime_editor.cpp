@@ -17,48 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "edit_dialogs/string_edit_dialog.h"
+#include "editors/datetime_editor.h"
 #include "ad_config.h"
+#include "ad_utils.h"
 #include "utils.h"
 
-#include <QLineEdit>
+#include <QDateTimeEdit>
 #include <QDialogButtonBox>
 #include <QVBoxLayout>
 #include <QLabel>
 
-StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent)
-: EditDialog(parent)
+DateTimeEditor::DateTimeEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+: AttributeEditor(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-
-    const QString title =
-    [attribute]() {
-        const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
-
-        switch (type) {
-            case AttributeType_Integer: return tr("Edit integer");
-            case AttributeType_LargeInteger: return tr("Edit large integer");
-            case AttributeType_Enumeration: return tr("Edit enumeration");
-            default: break;
-        };
-
-        return tr("Edit string");
-    }();
-    setWindowTitle(title);
+    setWindowTitle(tr("Edit datetime"));
 
     QLabel *attribute_label = make_attribute_label(attribute);
 
-    edit = new QLineEdit();
-
-    if (ADCONFIG()->attribute_is_number(attribute)) {
-        set_line_edit_to_numbers_only(edit);
-    }
-
-    ADCONFIG()->limit_edit(edit, attribute);
+    edit = new QDateTimeEdit();
 
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = QString(value);
-    edit->setText(value_string);
+    const QDateTime value_datetime = datetime_string_to_qdatetime(attribute, value_string);
+    edit->setDateTime(value_datetime);
 
     QDialogButtonBox *button_box = make_button_box(attribute);;
 
@@ -74,13 +56,6 @@ StringEditDialog::StringEditDialog(const QString attribute, const QList<QByteArr
     }
 }
 
-QList<QByteArray> StringEditDialog::get_new_values() const {
-    const QString new_value_string = edit->text();
-
-    if (new_value_string.isEmpty()) {
-        return {};
-    } else {
-        const QByteArray new_value = new_value_string.toUtf8();
-        return {new_value};
-    }
+QList<QByteArray> DateTimeEditor::get_new_values() const {
+    return QList<QByteArray>();
 }

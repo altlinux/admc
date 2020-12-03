@@ -18,7 +18,7 @@
  */
 
 #include "tabs/attributes_tab.h"
-#include "edit_dialogs/edit_dialog.h"
+#include "editors/attribute_editor.h"
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "utils.h"
@@ -96,12 +96,12 @@ void AttributesTab::on_double_clicked(const QModelIndex &proxy_index) {
     const QString attribute = row[AttributesColumn_Name]->text();
     const QList<QByteArray> values = current[attribute];
 
-    EditDialog *dialog = EditDialog::make(attribute, values, this);
-    if (dialog != nullptr) {
+    AttributeEditor *editor = AttributeEditor::make(attribute, values, this);
+    if (editor != nullptr) {
         connect(
-            dialog, &QDialog::accepted,
-            [this, dialog, attribute, row]() {
-                const QList<QByteArray> new_values = dialog->get_new_values();
+            editor, &QDialog::accepted,
+            [this, editor, attribute, row]() {
+                const QList<QByteArray> new_values = editor->get_new_values();
 
                 current[attribute] = new_values;
                 load_row(row, attribute, new_values);
@@ -109,9 +109,9 @@ void AttributesTab::on_double_clicked(const QModelIndex &proxy_index) {
                 emit edited();
             });
 
-        dialog->open();
+        editor->open();
     } else {
-        QMessageBox::critical(this, tr("Error"), tr("No edit dialog is available for this attribute type."));
+        QMessageBox::critical(this, tr("Error"), tr("No editor is available for this attribute type."));
     }
 }
 

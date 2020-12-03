@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "edit_dialogs/octet_edit_dialog.h"
+#include "editors/octet_editor.h"
 
 #include "ad_config.h"
 #include "utils.h"
@@ -40,8 +40,8 @@ QByteArray string_to_bytes(const QString string, const OctetDisplayFormat format
 int format_base(const OctetDisplayFormat format);
 char* itoa(int value, char* result, int base);
 
-OctetEditDialog::OctetEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent)
-: EditDialog(parent)
+OctetEditor::OctetEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+: AttributeEditor(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(tr("Edit octet string"));
@@ -77,17 +77,17 @@ OctetEditDialog::OctetEditDialog(const QString attribute, const QList<QByteArray
 
     connect(
         format_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        this, &OctetEditDialog::on_format_combo);
+        this, &OctetEditor::on_format_combo);
 }
 
-QList<QByteArray> OctetEditDialog::get_new_values() const {
+QList<QByteArray> OctetEditor::get_new_values() const {
     const QString input = edit->toPlainText();
     const QByteArray bytes = string_to_bytes(input, current_format());
 
     return {bytes};
 }
 
-void OctetEditDialog::accept() {
+void OctetEditor::accept() {
     const bool input_ok = check_input(current_format());
 
     if (input_ok) {
@@ -95,7 +95,7 @@ void OctetEditDialog::accept() {
     }
 }
 
-void OctetEditDialog::on_format_combo() {
+void OctetEditor::on_format_combo() {
     static OctetDisplayFormat prev_format = OctetDisplayFormat_Hexadecimal;
     static int prev_index = 0;
 
@@ -121,7 +121,7 @@ void OctetEditDialog::on_format_combo() {
     }
 }
 
-bool OctetEditDialog::check_input(const OctetDisplayFormat format) {
+bool OctetEditor::check_input(const OctetDisplayFormat format) {
     const bool ok =
     [=]() {
         const QString input = edit->toPlainText();
@@ -203,7 +203,7 @@ bool OctetEditDialog::check_input(const OctetDisplayFormat format) {
     return ok;
 }
 
-OctetDisplayFormat OctetEditDialog::current_format() const {
+OctetDisplayFormat OctetEditor::current_format() const {
     const int format_index = format_combo->currentIndex();
     const QVariant format_variant = format_combo->itemData(format_index);
     const OctetDisplayFormat format = (OctetDisplayFormat) (format_variant.toInt());

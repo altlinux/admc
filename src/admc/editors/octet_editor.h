@@ -17,10 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OCTET_EDIT_DIALOG_H
-#define OCTET_EDIT_DIALOG_H
+#ifndef OCTET_EDITOR_H
+#define OCTET_EDITOR_H
 
-#include "edit_dialogs/edit_dialog.h"
+#include "editors/attribute_editor.h"
 
 class QPlainTextEdit;
 class QComboBox;
@@ -32,11 +32,11 @@ enum OctetDisplayFormat {
     OctetDisplayFormat_Octal,
 };
 
-class OctetEditDialog final : public EditDialog {
+class OctetEditor final : public AttributeEditor {
 Q_OBJECT
 
 public:
-    OctetEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent);
+    OctetEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);
 
     QList<QByteArray> get_new_values() const;
     void accept() override;
@@ -52,4 +52,4 @@ private:
     OctetDisplayFormat current_format() const;
 };
 
-#endif /* OCTET_EDIT_DIALOG_H */
+#endif /* OCTET_EDITOR_H */

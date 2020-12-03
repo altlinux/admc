@@ -65,13 +65,13 @@ add_executable(admc
     tabs/telephones_tab.cpp
     tabs/profile_tab.cpp
 
-    edit_dialogs/edit_dialog.cpp
-    edit_dialogs/string_edit_dialog.cpp
-    edit_dialogs/string_multi_edit_dialog.cpp
-    edit_dialogs/octet_edit_dialog.cpp
-    edit_dialogs/octet_multi_edit_dialog.cpp
-    edit_dialogs/bool_edit_dialog.cpp
-    edit_dialogs/datetime_edit_dialog.cpp
+    editors/attribute_editor.cpp
+    editors/string_editor.cpp
+    editors/string_multi_editor.cpp
+    editors/octet_editor.cpp
+    editors/octet_multi_editor.cpp
+    editors/bool_editor.cpp
+    editors/datetime_editor.cpp
 
     edits/attribute_edit.cpp
     edits/string_edit.cpp

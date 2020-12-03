@@ -17,23 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATETIME_EDIT_DIALOG_H
-#define DATETIME_EDIT_DIALOG_H
+#ifndef OCTET_MULTI_EDITOR_H
+#define OCTET_MULTI_EDITOR_H
 
-#include "edit_dialogs/edit_dialog.h"
+#include "editors/attribute_editor.h"
 
-class QDateTimeEdit;
+class QListWidget;
+class QPushButton;
 
-class DateTimeEditDialog final : public EditDialog {
+class OctetMultiEditor final : public AttributeEditor {
 Q_OBJECT
 
 public:
-    DateTimeEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent);
+    OctetMultiEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);
 
     QList<QByteArray> get_new_values() const;
 
+private slots:
+    void on_add();
+    void on_remove();
+
 private:
-    QDateTimeEdit *edit;
+    QListWidget *list_widget;
+    QPushButton *add_button;
 };
 
-#endif /* DATETIME_EDIT_DIALOG_H */
+#endif /* OCTET_MULTI_EDITOR_H */

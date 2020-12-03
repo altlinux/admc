@@ -17,32 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STRING_MULTI_EDIT_DIALOG_H
-#define STRING_MULTI_EDIT_DIALOG_H
+#ifndef BOOL_EDITOR_H
+#define BOOL_EDITOR_H
 
-#include "edit_dialogs/edit_dialog.h"
+#include "editors/attribute_editor.h"
 
-class QLineEdit;
-class QListWidget;
-class QPushButton;
+class QRadioButton;
 
-class StringMultiEditDialog final : public EditDialog {
+class BoolEditor final : public AttributeEditor {
 Q_OBJECT
 
 public:
-    StringMultiEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent);
+    BoolEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);
 
     QList<QByteArray> get_new_values() const;
 
-private slots:
-    void enable_add_button_if_edit_not_empty();
-    void add();
-    void remove();
-
 private:
-    QLineEdit *edit;
-    QListWidget *list_widget;
-    QPushButton *add_button;
+    QRadioButton *true_button;
+    QRadioButton *false_button;
+    QRadioButton *unset_button;
 };
 
-#endif /* STRING_MULTI_EDIT_DIALOG_H */
+#endif /* BOOL_EDITOR_H */

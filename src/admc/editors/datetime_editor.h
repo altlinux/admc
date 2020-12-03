@@ -17,25 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BOOL_EDIT_DIALOG_H
-#define BOOL_EDIT_DIALOG_H
+#ifndef DATETIME_EDITOR_H
+#define DATETIME_EDITOR_H
 
-#include "edit_dialogs/edit_dialog.h"
+#include "editors/attribute_editor.h"
 
-class QRadioButton;
+class QDateTimeEdit;
 
-class BoolEditDialog final : public EditDialog {
+class DateTimeEditor final : public AttributeEditor {
 Q_OBJECT
 
 public:
-    BoolEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent);
+    DateTimeEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);
 
     QList<QByteArray> get_new_values() const;
 
 private:
-    QRadioButton *true_button;
-    QRadioButton *false_button;
-    QRadioButton *unset_button;
+    QDateTimeEdit *edit;
 };
 
-#endif /* BOOL_EDIT_DIALOG_H */
+#endif /* DATETIME_EDITOR_H */

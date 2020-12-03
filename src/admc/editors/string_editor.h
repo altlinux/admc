@@ -17,18 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STRING_EDIT_DIALOG_H
-#define STRING_EDIT_DIALOG_H
+#ifndef STRING_EDITOR_H
+#define STRING_EDITOR_H
 
-#include "edit_dialogs/edit_dialog.h"
+#include "editors/attribute_editor.h"
 
 class QLineEdit;
 
-class StringEditDialog final : public EditDialog {
+class StringEditor final : public AttributeEditor {
 Q_OBJECT
 
 public:
-    StringEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent);
+    StringEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);
 
     QList<QByteArray> get_new_values() const;
 
@@ -36,4 +36,4 @@ private:
     QLineEdit *edit;
 };
 
-#endif /* STRING_EDIT_DIALOG_H */
+#endif /* STRING_EDITOR_H */

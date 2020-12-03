@@ -17,29 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OCTET_MULTI_EDIT_DIALOG_H
-#define OCTET_MULTI_EDIT_DIALOG_H
+#ifndef STRING_MULTI_EDITOR_H
+#define STRING_MULTI_EDITOR_H
 
-#include "edit_dialogs/edit_dialog.h"
+#include "editors/attribute_editor.h"
 
+class QLineEdit;
 class QListWidget;
 class QPushButton;
 
-class OctetMultiEditDialog final : public EditDialog {
+class StringMultiEditor final : public AttributeEditor {
 Q_OBJECT
 
 public:
-    OctetMultiEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent);
+    StringMultiEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);
 
     QList<QByteArray> get_new_values() const;
 
 private slots:
-    void on_add();
-    void on_remove();
+    void enable_add_button_if_edit_not_empty();
+    void add();
+    void remove();
 
 private:
+    QLineEdit *edit;
     QListWidget *list_widget;
     QPushButton *add_button;
 };
 
-#endif /* OCTET_MULTI_EDIT_DIALOG_H */
+#endif /* STRING_MULTI_EDITOR_H */

@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "edit_dialogs/octet_multi_edit_dialog.h"
+#include "editors/octet_multi_editor.h"
 
-#include "edit_dialogs/octet_edit_dialog.h"
+#include "editors/octet_editor.h"
 #include "ad_config.h"
 #include "utils.h"
 #include "attribute_display.h"
@@ -35,8 +35,8 @@
 
 // TODO: implement editing. Once single valued octet edit has it. Also display in different formats?
 
-OctetMultiEditDialog::OctetMultiEditDialog(const QString attribute, const QList<QByteArray> values, QWidget *parent)
-: EditDialog(parent)
+OctetMultiEditor::OctetMultiEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+: AttributeEditor(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(tr("Edit multi-valued octet string"));
@@ -78,17 +78,17 @@ OctetMultiEditDialog::OctetMultiEditDialog(const QString attribute, const QList<
 
     connect(
         add_button, &QAbstractButton::clicked,
-        this, &OctetMultiEditDialog::on_add);
+        this, &OctetMultiEditor::on_add);
     connect(
         remove_button, &QAbstractButton::clicked,
-        this, &OctetMultiEditDialog::on_remove);
+        this, &OctetMultiEditor::on_remove);
 }
 
-void OctetMultiEditDialog::on_add() {
-    // TODO: open octet edit dialog and load new value from it into list widget
+void OctetMultiEditor::on_add() {
+    // TODO: open octet editor and load new value from it into list widget
 }
 
-void OctetMultiEditDialog::on_remove() {
+void OctetMultiEditor::on_remove() {
     const QList<QListWidgetItem *> selected = list_widget->selectedItems();
 
     for (const auto item : selected) {
@@ -97,7 +97,7 @@ void OctetMultiEditDialog::on_remove() {
     }
 }
 
-QList<QByteArray> OctetMultiEditDialog::get_new_values() const {
+QList<QByteArray> OctetMultiEditor::get_new_values() const {
     // TODO:
     return QList<QByteArray>();
 }
