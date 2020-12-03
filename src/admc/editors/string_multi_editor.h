@@ -36,16 +36,15 @@ public:
     QList<QByteArray> get_new_values() const;
 
 private slots:
-    void enable_add_button_if_edit_not_empty();
     void add();
     void remove();
     void edit_item(QListWidgetItem *item);
 
 private:
     QString attribute;
-    QLineEdit *edit;
     QListWidget *list_widget;
-    QPushButton *add_button;
+
+    void add_value(const QByteArray value);
 };
 
 #endif /* STRING_MULTI_EDITOR_H */

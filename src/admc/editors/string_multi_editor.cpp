@@ -54,20 +54,12 @@ StringMultiEditor::StringMultiEditor(const QString attribute_arg, const QList<QB
 
     QLabel *attribute_label = make_attribute_label(attribute);
 
-    edit = new QLineEdit();
-    if (ADCONFIG()->attribute_is_number(attribute)) {
-        set_line_edit_to_numbers_only(edit);
-    }
-
-    ADCONFIG()->limit_edit(edit, attribute);
-
-    add_button = new QPushButton(tr("Add"));
+    auto add_button = new QPushButton(tr("Add"));
 
     list_widget = new QListWidget();
 
     for (const QByteArray &value : values) {
-        const QString value_string = QString(value);
-        list_widget->addItem(value_string);
+        add_value(value);
     }
 
     auto remove_button = new QPushButton(tr("Remove"));
@@ -77,7 +69,6 @@ StringMultiEditor::StringMultiEditor(const QString attribute_arg, const QList<QB
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addWidget(attribute_label);
-    top_layout->addWidget(edit);
     top_layout->addWidget(add_button);
     top_layout->addWidget(list_widget);
     top_layout->addWidget(remove_button);
@@ -85,7 +76,6 @@ StringMultiEditor::StringMultiEditor(const QString attribute_arg, const QList<QB
 
     const bool read_only = ADCONFIG()->get_attribute_is_system_only(attribute);
     if (read_only) {
-        edit->setReadOnly(true);
         add_button->setEnabled(false);
         remove_button->setEnabled(false);
     } else {
@@ -101,33 +91,23 @@ StringMultiEditor::StringMultiEditor(const QString attribute_arg, const QList<QB
     connect(
         list_widget, &QListWidget::itemDoubleClicked,
         this, &StringMultiEditor::edit_item);
-    connect(
-        edit, &QLineEdit::textChanged,
-        this, &StringMultiEditor::enable_add_button_if_edit_not_empty);
-    enable_add_button_if_edit_not_empty();
-}
-
-void StringMultiEditor::enable_add_button_if_edit_not_empty() {
-    const bool edit_has_text = !edit->text().isEmpty();
-    add_button->setEnabled(edit_has_text);
 }
 
 void StringMultiEditor::add() {
-    const QString new_value = edit->text();
+    auto editor = new StringEditor(attribute, QList<QByteArray>(), this);
 
-    const bool duplicate =
-    [this, new_value]() {
-        const QList<QListWidgetItem *> items = list_widget->findItems(new_value, Qt::MatchExactly);
+    connect(
+        editor, &QDialog::accepted,
+        [this, editor]() {
+            const QList<QByteArray> new_values = editor->get_new_values();
 
-        return !items.isEmpty();
-    }();
+            if (!new_values.isEmpty()) {
+                const QByteArray value = new_values[0];
+                add_value(value);
+            }
+        });
 
-    if (duplicate) {
-        QMessageBox::warning(this, tr("Error"), tr("Value already exists"));
-    } else {
-        list_widget->addItem(new_value);
-        edit->clear();
-    }
+    editor->open();
 }
 
 void StringMultiEditor::remove() {
@@ -172,4 +152,9 @@ void StringMultiEditor::edit_item(QListWidgetItem *item) {
         });
 
     editor->open();
+}
+
+void StringMultiEditor::add_value(const QByteArray value) {
+    const QString text = QString(value);
+    list_widget->addItem(text);
 }
