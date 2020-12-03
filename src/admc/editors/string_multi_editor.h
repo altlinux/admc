@@ -22,9 +22,7 @@
 
 #include "editors/attribute_editor.h"
 
-class QLineEdit;
 class QListWidget;
-class QPushButton;
 class QListWidgetItem;
 
 class StringMultiEditor final : public AttributeEditor {

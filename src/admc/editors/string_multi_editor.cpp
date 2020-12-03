@@ -19,6 +19,7 @@
 
 #include "editors/string_multi_editor.h"
 #include "editors/string_editor.h"
+#include "editors/bool_editor.h"
 #include "ad_config.h"
 #include "utils.h"
 
@@ -43,6 +44,7 @@ StringMultiEditor::StringMultiEditor(const QString attribute_arg, const QList<QB
             case AttributeType_Integer: return tr("Edit  multi-valued integer");
             case AttributeType_LargeInteger: return tr("Edit  multi-valued large integer");
             case AttributeType_Enumeration: return tr("Edit  multi-valued enumeration");
+            case AttributeType_Boolean: return tr("Edit multi-valued boolean");
             default: break;
         };
 
@@ -92,7 +94,15 @@ StringMultiEditor::StringMultiEditor(const QString attribute_arg, const QList<QB
 }
 
 void StringMultiEditor::add() {
-    auto editor = new StringEditor(attribute, QList<QByteArray>(), this);
+    AttributeEditor *editor =
+    [this]() -> AttributeEditor * {
+        const bool is_bool = (ADCONFIG()->get_attribute_type(attribute) == AttributeType_Boolean);
+        if (is_bool) {
+            return new BoolEditor(attribute, QList<QByteArray>(), this);
+        } else {
+            return new StringEditor(attribute, QList<QByteArray>(), this);
+        }
+    }();
 
     connect(
         editor, &QDialog::accepted,

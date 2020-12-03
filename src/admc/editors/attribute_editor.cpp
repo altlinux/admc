@@ -63,7 +63,8 @@ AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByt
         if (single_valued) {
             return new BoolEditor(attribute, values, parent);
         } else {
-            return nullptr;
+            // NOTE: yes, string multi editor also works for multi-valued bools since they are just strings (TRUE/FALSE)
+            return new StringMultiEditor(attribute, values, parent);
         } 
     };
 
