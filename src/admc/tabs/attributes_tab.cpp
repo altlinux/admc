@@ -49,8 +49,8 @@ AttributesTab::AttributesTab() {
 
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setSelectionMode(QAbstractItemView::NoSelection);
     view->setSelectionBehavior(QAbstractItemView::SelectRows);
+    view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -76,12 +76,6 @@ AttributesTab::AttributesTab() {
 void AttributesTab::on_double_clicked(const QModelIndex &proxy_index) {
     const QModelIndex index = proxy->mapToSource(proxy_index);
     
-    // TODO: should be editable by clicking on any column, also dont split selection by column
-    const int column = index.column();
-    if (column != AttributesColumn_Value) {
-        return;
-    }
-
     const QList<QStandardItem *> row =
     [this, index]() {
         QList<QStandardItem *> out;
