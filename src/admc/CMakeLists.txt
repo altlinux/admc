@@ -66,8 +66,8 @@ add_executable(admc
     tabs/profile_tab.cpp
 
     editors/attribute_editor.cpp
+    editors/multi_editor.cpp
     editors/string_editor.cpp
-    editors/string_multi_editor.cpp
     editors/octet_editor.cpp
     editors/bool_editor.cpp
     editors/datetime_editor.cpp

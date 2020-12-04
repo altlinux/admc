@@ -1480,29 +1480,29 @@
     </message>
 </context>
 <context>
-    <name>StringMultiEditor</name>
+    <name>MultiEditor</name>
     <message>
-        <location filename="../src/admc/editors/string_multi_editor.cpp" line="40"/>
+        <location filename="../src/admc/editors/multi_editor.cpp" line="40"/>
         <source>Edit %1 - %2</source>
         <translation>Редактировать %1 - %2</translation>
     </message>
     <message>
-        <location filename="../src/admc/editors/string_multi_editor.cpp" line="47"/>
+        <location filename="../src/admc/editors/multi_editor.cpp" line="47"/>
         <source>Add</source>
         <translation>Добавить</translation>
     </message>
     <message>
-        <location filename="../src/admc/editors/string_multi_editor.cpp" line="51"/>
+        <location filename="../src/admc/editors/multi_editor.cpp" line="51"/>
         <source>Remove</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/admc/editors/string_multi_editor.cpp" line="120"/>
+        <location filename="../src/admc/editors/multi_editor.cpp" line="120"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/admc/editors/string_multi_editor.cpp" line="120"/>
+        <location filename="../src/admc/editors/multi_editor.cpp" line="120"/>
         <source>Value already exists</source>
         <translation>Значение уже задано</translation>
     </message>

@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STRING_MULTI_EDITOR_H
-#define STRING_MULTI_EDITOR_H
+#ifndef MULTI_EDITOR_H
+#define MULTI_EDITOR_H
 
 #include "editors/attribute_editor.h"
 
@@ -30,11 +30,11 @@ enum MultiEditorType {
     MultiEditorType_Octet,
 };
 
-class StringMultiEditor final : public AttributeEditor {
+class MultiEditor final : public AttributeEditor {
     Q_OBJECT
 
 public:
-    StringMultiEditor(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent);
+    MultiEditor(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent);
 
     QList<QByteArray> get_new_values() const;
 
@@ -53,4 +53,4 @@ private:
     MultiEditorType get_editor_type() const;
 };
 
-#endif /* STRING_MULTI_EDITOR_H */
+#endif /* MULTI_EDITOR_H */

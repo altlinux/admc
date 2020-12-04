@@ -19,7 +19,7 @@
 
 #include "edits/string_other_edit.h"
 #include "edits/string_edit.h"
-#include "editors/string_multi_editor.h"
+#include "editors/multi_editor.h"
 #include "utils.h"
 #include "ad_interface.h"
 #include "ad_config.h"
@@ -44,7 +44,7 @@ StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &o
     other_button = new QPushButton(tr("Other..."));
     connect(other_button, &QPushButton::clicked,
         [this]() {
-            auto dialog = new StringMultiEditor(other_attribute, other_values, other_button);
+            auto dialog = new MultiEditor(other_attribute, other_values, other_button);
             dialog->open();
 
             connect(

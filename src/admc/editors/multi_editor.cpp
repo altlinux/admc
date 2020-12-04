@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "editors/string_multi_editor.h"
+#include "editors/multi_editor.h"
 #include "editors/string_editor.h"
 #include "editors/bool_editor.h"
 #include "editors/octet_editor.h"
@@ -32,7 +32,7 @@
 #include <QMessageBox>
 #include <QLabel>
 
-StringMultiEditor::StringMultiEditor(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent)
+MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent)
 : AttributeEditor(parent)
 {
     attribute = attribute_arg;
@@ -89,16 +89,16 @@ StringMultiEditor::StringMultiEditor(const QString attribute_arg, const QList<QB
 
     connect(
         add_button, &QAbstractButton::clicked,
-        this, &StringMultiEditor::add);
+        this, &MultiEditor::add);
     connect(
         remove_button, &QAbstractButton::clicked,
-        this, &StringMultiEditor::remove);
+        this, &MultiEditor::remove);
     connect(
         list_widget, &QListWidget::itemDoubleClicked,
-        this, &StringMultiEditor::edit_item);
+        this, &MultiEditor::edit_item);
 }
 
-void StringMultiEditor::add() {
+void MultiEditor::add() {
     AttributeEditor *editor =
     [this]() -> AttributeEditor * {
         const bool is_bool = (ADCONFIG()->get_attribute_type(attribute) == AttributeType_Boolean);
@@ -123,7 +123,7 @@ void StringMultiEditor::add() {
     editor->open();
 }
 
-void StringMultiEditor::remove() {
+void MultiEditor::remove() {
     const QList<QListWidgetItem *> selected = list_widget->selectedItems();
 
     for (const auto item : selected) {
@@ -131,7 +131,7 @@ void StringMultiEditor::remove() {
     }
 }
 
-QList<QByteArray> StringMultiEditor::get_new_values() const {
+QList<QByteArray> MultiEditor::get_new_values() const {
     QList<QByteArray> new_values;
 
     for (int i = 0; i < list_widget->count(); i++) {
@@ -145,7 +145,7 @@ QList<QByteArray> StringMultiEditor::get_new_values() const {
     return new_values;
 }
 
-void StringMultiEditor::edit_item(QListWidgetItem *item) {
+void MultiEditor::edit_item(QListWidgetItem *item) {
     const QString text = item->text();
     const QByteArray bytes = string_to_bytes(text);
 
@@ -185,12 +185,12 @@ void StringMultiEditor::edit_item(QListWidgetItem *item) {
     editor->open();
 }
 
-void StringMultiEditor::add_value(const QByteArray value) {
+void MultiEditor::add_value(const QByteArray value) {
     const QString text = bytes_to_string(value);
     list_widget->addItem(text);
 }
 
-MultiEditorType StringMultiEditor::get_editor_type() const {
+MultiEditorType MultiEditor::get_editor_type() const {
     const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
     switch (type) {
@@ -201,7 +201,7 @@ MultiEditorType StringMultiEditor::get_editor_type() const {
     }
 }
 
-QString StringMultiEditor::bytes_to_string(const QByteArray bytes) const {
+QString MultiEditor::bytes_to_string(const QByteArray bytes) const {
     const MultiEditorType editor_type = get_editor_type();
     switch (editor_type) {
         case MultiEditorType_String: return QString(bytes);
@@ -210,7 +210,7 @@ QString StringMultiEditor::bytes_to_string(const QByteArray bytes) const {
     return QString();
 }
 
-QByteArray StringMultiEditor::string_to_bytes(const QString string) const {
+QByteArray MultiEditor::string_to_bytes(const QString string) const {
     const MultiEditorType editor_type = get_editor_type();
 
     switch (editor_type) {

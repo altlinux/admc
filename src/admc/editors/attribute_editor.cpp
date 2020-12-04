@@ -19,7 +19,7 @@
 
 #include "editors/attribute_editor.h"
 #include "editors/string_editor.h"
-#include "editors/string_multi_editor.h"
+#include "editors/multi_editor.h"
 #include "editors/octet_editor.h"
 #include "editors/bool_editor.h"
 #include "editors/datetime_editor.h"
@@ -44,7 +44,7 @@ AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByt
         if (single_valued) {
             return new OctetEditor(attribute, values, parent);
         } else {
-            return new StringMultiEditor(attribute, values, parent);
+            return new MultiEditor(attribute, values, parent);
         } 
     };
 
@@ -53,7 +53,7 @@ AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByt
         if (single_valued) {
             return new StringEditor(attribute, values, parent);
         } else {
-            return new StringMultiEditor(attribute, values, parent);
+            return new MultiEditor(attribute, values, parent);
         } 
     };
 
@@ -63,7 +63,7 @@ AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByt
             return new BoolEditor(attribute, values, parent);
         } else {
             // NOTE: yes, string multi editor also works for multi-valued bools since they are just strings (TRUE/FALSE)
-            return new StringMultiEditor(attribute, values, parent);
+            return new MultiEditor(attribute, values, parent);
         } 
     };
 
