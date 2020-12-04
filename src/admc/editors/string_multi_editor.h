@@ -25,8 +25,13 @@
 class QListWidget;
 class QListWidgetItem;
 
+enum MultiEditorType {
+    MultiEditorType_String,
+    MultiEditorType_Octet,
+};
+
 class StringMultiEditor final : public AttributeEditor {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     StringMultiEditor(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent);
@@ -43,6 +48,9 @@ private:
     QListWidget *list_widget;
 
     void add_value(const QByteArray value);
+    QString bytes_to_string(const QByteArray bytes) const;
+    QByteArray string_to_bytes(const QString string) const;
+    MultiEditorType get_editor_type() const;
 };
 
 #endif /* STRING_MULTI_EDITOR_H */

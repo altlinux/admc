@@ -20,6 +20,7 @@
 #include "editors/string_multi_editor.h"
 #include "editors/string_editor.h"
 #include "editors/bool_editor.h"
+#include "editors/octet_editor.h"
 #include "ad_config.h"
 #include "utils.h"
 
@@ -40,11 +41,15 @@ StringMultiEditor::StringMultiEditor(const QString attribute_arg, const QList<QB
     [this]() {
         const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
+        const QString octet_title = tr("Edit multi-valued octet");
+
         switch (type) {
             case AttributeType_Integer: return tr("Edit  multi-valued integer");
             case AttributeType_LargeInteger: return tr("Edit  multi-valued large integer");
             case AttributeType_Enumeration: return tr("Edit  multi-valued enumeration");
             case AttributeType_Boolean: return tr("Edit multi-valued boolean");
+            case AttributeType_Octet: return octet_title;
+            case AttributeType_Sid: return octet_title;
             default: break;
         };
 
@@ -132,7 +137,7 @@ QList<QByteArray> StringMultiEditor::get_new_values() const {
     for (int i = 0; i < list_widget->count(); i++) {
         const QListWidgetItem *item = list_widget->item(i);
         const QString new_value_string = item->text();
-        const QByteArray new_value = new_value_string.toUtf8();
+        const QByteArray new_value = string_to_bytes(new_value_string);
 
         new_values.append(new_value);
     }
@@ -142,9 +147,27 @@ QList<QByteArray> StringMultiEditor::get_new_values() const {
 
 void StringMultiEditor::edit_item(QListWidgetItem *item) {
     const QString text = item->text();
-    const QByteArray bytes = text.toUtf8();
+    const QByteArray bytes = string_to_bytes(text);
 
-    auto editor = new StringEditor(attribute, {bytes}, this);
+    auto editor =
+    [=]() -> AttributeEditor * {
+        const MultiEditorType editor_type = get_editor_type();
+
+        switch (editor_type) {
+            case MultiEditorType_String: {
+                return new StringEditor(attribute, {bytes}, this);
+            }
+            case MultiEditorType_Octet: {
+                return new OctetEditor(attribute, {bytes}, this);
+            }
+        }
+
+        return nullptr;
+    }();
+
+    if (editor == nullptr) {
+        return;
+    }
 
     connect(
         editor, &QDialog::accepted,
@@ -153,7 +176,7 @@ void StringMultiEditor::edit_item(QListWidgetItem *item) {
 
             if (!new_values.isEmpty()) {
                 const QByteArray new_bytes = new_values[0];
-                const QString new_text = QString(new_bytes);
+                const QString new_text = bytes_to_string(new_bytes);
 
                 item->setText(new_text);
             }
@@ -163,6 +186,38 @@ void StringMultiEditor::edit_item(QListWidgetItem *item) {
 }
 
 void StringMultiEditor::add_value(const QByteArray value) {
-    const QString text = QString(value);
+    const QString text = bytes_to_string(value);
     list_widget->addItem(text);
 }
+
+MultiEditorType StringMultiEditor::get_editor_type() const {
+    const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
+
+    switch (type) {
+        case AttributeType_Octet: return MultiEditorType_Octet;
+        case AttributeType_Sid: return MultiEditorType_Octet;
+
+        default: return MultiEditorType_String;
+    }
+}
+
+QString StringMultiEditor::bytes_to_string(const QByteArray bytes) const {
+    const MultiEditorType editor_type = get_editor_type();
+    switch (editor_type) {
+        case MultiEditorType_String: return QString(bytes);
+        case MultiEditorType_Octet: return octet_bytes_to_string(bytes, OctetDisplayFormat_Hexadecimal);
+    }
+    return QString();
+}
+
+QByteArray StringMultiEditor::string_to_bytes(const QString string) const {
+    const MultiEditorType editor_type = get_editor_type();
+
+    switch (editor_type) {
+        case MultiEditorType_String: return string.toUtf8();
+        case MultiEditorType_Octet: return octet_string_to_bytes(string, OctetDisplayFormat_Hexadecimal);
+    }
+
+    return QByteArray();
+}
+

@@ -21,7 +21,6 @@
 #include "editors/string_editor.h"
 #include "editors/string_multi_editor.h"
 #include "editors/octet_editor.h"
-#include "editors/octet_multi_editor.h"
 #include "editors/bool_editor.h"
 #include "editors/datetime_editor.h"
 #include "ad_config.h"
@@ -45,7 +44,7 @@ AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByt
         if (single_valued) {
             return new OctetEditor(attribute, values, parent);
         } else {
-            return new OctetMultiEditor(attribute, values, parent);
+            return new StringMultiEditor(attribute, values, parent);
         } 
     };
 

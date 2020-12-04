@@ -69,7 +69,6 @@ add_executable(admc
     editors/string_editor.cpp
     editors/string_multi_editor.cpp
     editors/octet_editor.cpp
-    editors/octet_multi_editor.cpp
     editors/bool_editor.cpp
     editors/datetime_editor.cpp
 

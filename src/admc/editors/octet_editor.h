@@ -51,10 +51,7 @@ private:
     bool check_input(const OctetDisplayFormat format);
 };
 
-OctetDisplayFormat current_format(QComboBox *format_combo);
-QComboBox *make_format_combo();
-QString bytes_to_string(const QByteArray bytes, const OctetDisplayFormat format);
-QByteArray string_to_bytes(const QString string, const OctetDisplayFormat format);
-QString string_change_format(const QString old_string, const OctetDisplayFormat old_format, const OctetDisplayFormat new_format);
+QString octet_bytes_to_string(const QByteArray bytes, const OctetDisplayFormat format);
+QByteArray octet_string_to_bytes(const QString string, const OctetDisplayFormat format);
 
 #endif /* OCTET_EDITOR_H */
