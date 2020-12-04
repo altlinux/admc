@@ -18,9 +18,11 @@
  */
 
 #include "editors/multi_editor.h"
+
 #include "editors/string_editor.h"
 #include "editors/bool_editor.h"
 #include "editors/octet_editor.h"
+#include "editors/datetime_editor.h"
 #include "ad_config.h"
 #include "utils.h"
 
@@ -42,14 +44,20 @@ MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> va
         const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
 
         const QString octet_title = tr("Edit multi-valued octet");
+        const QString datetime_title = tr("Edit multi-valued datetime");
 
         switch (type) {
             case AttributeType_Integer: return tr("Edit  multi-valued integer");
             case AttributeType_LargeInteger: return tr("Edit  multi-valued large integer");
             case AttributeType_Enumeration: return tr("Edit  multi-valued enumeration");
             case AttributeType_Boolean: return tr("Edit multi-valued boolean");
+
             case AttributeType_Octet: return octet_title;
             case AttributeType_Sid: return octet_title;
+
+            case AttributeType_UTCTime: return datetime_title;
+            case AttributeType_GeneralizedTime: return datetime_title;
+            
             default: break;
         };
 
@@ -154,12 +162,9 @@ void MultiEditor::edit_item(QListWidgetItem *item) {
         const MultiEditorType editor_type = get_editor_type();
 
         switch (editor_type) {
-            case MultiEditorType_String: {
-                return new StringEditor(attribute, {bytes}, this);
-            }
-            case MultiEditorType_Octet: {
-                return new OctetEditor(attribute, {bytes}, this);
-            }
+            case MultiEditorType_String: return new StringEditor(attribute, {bytes}, this);
+            case MultiEditorType_Octet: return new OctetEditor(attribute, {bytes}, this);
+            case MultiEditorType_Datetime: return new DateTimeEditor(attribute, {bytes}, this);
         }
 
         return nullptr;
@@ -197,6 +202,9 @@ MultiEditorType MultiEditor::get_editor_type() const {
         case AttributeType_Octet: return MultiEditorType_Octet;
         case AttributeType_Sid: return MultiEditorType_Octet;
 
+        case AttributeType_UTCTime: return MultiEditorType_Datetime;
+        case AttributeType_GeneralizedTime: return MultiEditorType_Datetime;
+
         default: return MultiEditorType_String;
     }
 }
@@ -206,6 +214,7 @@ QString MultiEditor::bytes_to_string(const QByteArray bytes) const {
     switch (editor_type) {
         case MultiEditorType_String: return QString(bytes);
         case MultiEditorType_Octet: return octet_bytes_to_string(bytes, OctetDisplayFormat_Hexadecimal);
+        case MultiEditorType_Datetime: return QString(bytes);
     }
     return QString();
 }
@@ -216,6 +225,7 @@ QByteArray MultiEditor::string_to_bytes(const QString string) const {
     switch (editor_type) {
         case MultiEditorType_String: return string.toUtf8();
         case MultiEditorType_Octet: return octet_string_to_bytes(string, OctetDisplayFormat_Hexadecimal);
+        case MultiEditorType_Datetime: return string.toUtf8();
     }
 
     return QByteArray();

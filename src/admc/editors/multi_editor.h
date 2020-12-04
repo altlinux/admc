@@ -28,6 +28,7 @@ class QListWidgetItem;
 enum MultiEditorType {
     MultiEditorType_String,
     MultiEditorType_Octet,
+    MultiEditorType_Datetime,
 };
 
 class MultiEditor final : public AttributeEditor {
