@@ -129,25 +129,13 @@ AdConfig::AdConfig(QObject *parent)
         QHash<QString, QHash<QString, QString>> out;
 
         const QString locale_dir = get_locale_dir();
-        const QList<QString> search_attributes = {ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES, ATTRIBUTE_EXTRA_COLUMNS};
+        const QList<QString> search_attributes = {ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES};
         const QHash<QString, AdObject> search_results = AD()->search("", search_attributes, SearchScope_Children, locale_dir);
 
         for (const QString &dn : search_results.keys()) {
-            const AdObject object  = search_results[dn];
+            const AdObject object = search_results[dn];
 
-            const QList<QString> display_names =
-            [dn, object]() {
-                QList<QString> display_names_out = object.get_strings(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES);
-
-                // NOTE: default display specifier contains some extra display names that are used for contents columns
-                if (dn.contains("default-Display")) {
-                    const QList<QString> extra_display_names = object.get_strings(ATTRIBUTE_EXTRA_COLUMNS);
-
-                    display_names_out.append(extra_display_names);
-                }
-
-                return display_names_out;
-            }();
+            const QList<QString> display_names = object.get_strings(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES);
 
             const QString specifier_class = get_display_specifier_class(dn);
 
