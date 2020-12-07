@@ -49,7 +49,7 @@ StringEditor::StringEditor(const QString attribute, const QList<QByteArray> valu
 
     edit = new QLineEdit();
 
-    if (ADCONFIG()->attribute_is_number(attribute)) {
+    if (ADCONFIG()->get_attribute_is_number(attribute)) {
         set_line_edit_to_numbers_only(edit);
     }
 

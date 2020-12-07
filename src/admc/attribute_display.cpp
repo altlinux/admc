@@ -33,7 +33,7 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
 
     switch (type) {
         case AttributeType_LargeInteger: {
-            const LargeIntegerSubtype subtype = ADCONFIG()->get_large_integer_subtype(attribute);
+            const LargeIntegerSubtype subtype = ADCONFIG()->get_attribute_large_integer_subtype(attribute);
 
             switch (subtype) {
                 case LargeIntegerSubtype_Datetime: return large_integer_datetime_to_display_value(attribute, value);
