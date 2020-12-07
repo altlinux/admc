@@ -537,33 +537,15 @@ bool AdConfig::attribute_is_number(const QString &attribute) const {
 }
 
 bool AdConfig::get_attribute_is_single_valued(const QString &attribute) const {
-    const AdObject schema = attribute_schemas[attribute];
-
-    if (schema.contains(ATTRIBUTE_IS_SINGLE_VALUED)) {
-        return schema.get_bool(ATTRIBUTE_IS_SINGLE_VALUED);
-    } else {
-        return false;
-    }
+    return attribute_schemas[attribute].get_bool(ATTRIBUTE_IS_SINGLE_VALUED);
 }
 
 bool AdConfig::get_attribute_is_system_only(const QString &attribute) const {
-    const AdObject schema = attribute_schemas[attribute];
-
-    if (schema.contains(ATTRIBUTE_SYSTEM_ONLY)) {
-        return schema.get_bool(ATTRIBUTE_SYSTEM_ONLY);
-    } else {
-        return false;
-    }
+    return attribute_schemas[attribute].get_bool(ATTRIBUTE_SYSTEM_ONLY);
 }
 
 int AdConfig::get_attribute_range_upper(const QString &attribute) const {
-    const AdObject schema = attribute_schemas[attribute];
-
-    if (schema.contains(ATTRIBUTE_RANGE_UPPER)) {
-        return schema.get_int(ATTRIBUTE_RANGE_UPPER);
-    } else {
-        return 0;
-    }
+    return attribute_schemas[attribute].get_int(ATTRIBUTE_RANGE_UPPER);
 }
 
 // Display specifier DN is "CN=object-class-Display,CN=..."
