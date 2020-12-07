@@ -358,7 +358,7 @@ AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
     }
 }
 
-LargeIntegerSubtype AdConfig::get_large_integer_subtype(const QString &attribute) const {
+LargeIntegerSubtype AdConfig::get_attribute_large_integer_subtype(const QString &attribute) const {
     // Manually remap large integer types to subtypes
     // TODO: figure out where to get this data
     // externally. So far haven't found anything.
@@ -385,7 +385,7 @@ LargeIntegerSubtype AdConfig::get_large_integer_subtype(const QString &attribute
     }
 }
 
-bool AdConfig::attribute_is_number(const QString &attribute) const {
+bool AdConfig::get_attribute_is_number(const QString &attribute) const {
     static const QList<AttributeType> number_types = {
         AttributeType_Integer,
         AttributeType_LargeInteger,

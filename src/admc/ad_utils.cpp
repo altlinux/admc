@@ -40,7 +40,7 @@ QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &
 
     switch (type) {
         case AttributeType_LargeInteger: {
-            const LargeIntegerSubtype subtype = ADCONFIG()->get_large_integer_subtype(attribute);
+            const LargeIntegerSubtype subtype = ADCONFIG()->get_attribute_large_integer_subtype(attribute);
             if (subtype == LargeIntegerSubtype_Datetime) {
                 const qint64 millis = QDateTime(ntfs_epoch).msecsTo(datetime);
                 const qint64 hundred_nanos = millis * MILLIS_TO_100_NANOS;
@@ -74,7 +74,7 @@ QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &
     [=]() {
         switch (type) {
             case AttributeType_LargeInteger: {
-                const LargeIntegerSubtype subtype = ADCONFIG()->get_large_integer_subtype(attribute);
+                const LargeIntegerSubtype subtype = ADCONFIG()->get_attribute_large_integer_subtype(attribute);
                 
                 if (subtype == LargeIntegerSubtype_Datetime) {
                     QDateTime out = QDateTime(ntfs_epoch);

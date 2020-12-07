@@ -89,8 +89,8 @@ public:
     QList<Attribute> get_find_attributes(const ObjectClass &object_class) const;
 
     AttributeType get_attribute_type(const Attribute &attribute) const;
-    LargeIntegerSubtype get_large_integer_subtype(const Attribute &attribute) const;
-    bool attribute_is_number(const Attribute &attribute) const;
+    LargeIntegerSubtype get_attribute_large_integer_subtype(const Attribute &attribute) const;
+    bool get_attribute_is_number(const Attribute &attribute) const;
     bool get_attribute_is_single_valued(const Attribute &attribute) const;
     bool get_attribute_is_system_only(const Attribute &attribute) const;
     int get_attribute_range_upper(const Attribute &attribute) const;
