@@ -102,20 +102,18 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn, QWidget *parent)
     }
 
     // Disable certain actions based on system flags
-    if (object.contains(ATTRIBUTE_SYSTEM_FLAGS)) {
-        const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
-        const bool cannot_rename = object.get_system_flag(SystemFlagsBit_CannotRename);
-        const bool cannot_delete = object.get_system_flag(SystemFlagsBit_CannotDelete);
-        
-        if (cannot_move) {
-            move_action->setEnabled(false);
-        }
-        if (cannot_delete) {
-            delete_action->setEnabled(false);
-        }
-        if (cannot_rename) {
-            rename_action->setEnabled(false);
-        }
+    const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
+    const bool cannot_rename = object.get_system_flag(SystemFlagsBit_CannotRename);
+    const bool cannot_delete = object.get_system_flag(SystemFlagsBit_CannotDelete);
+    
+    if (cannot_move) {
+        move_action->setEnabled(false);
+    }
+    if (cannot_delete) {
+        delete_action->setEnabled(false);
+    }
+    if (cannot_rename) {
+        rename_action->setEnabled(false);
     }
 }
 

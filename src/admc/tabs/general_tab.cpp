@@ -97,7 +97,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
         
         auto type_edit = new GroupTypeEdit(&edits, this);
 
-        const bool is_critical_system_object = (object.contains(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT) && object.get_bool(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT));
+        const bool is_critical_system_object = object.get_bool(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT);
         if (is_critical_system_object) {
             scope_edit->set_read_only(true);
             type_edit->set_read_only(true);

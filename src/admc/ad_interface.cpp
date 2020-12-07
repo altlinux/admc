@@ -744,11 +744,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             const int uac =
             [this, dn]() {
                 const AdObject object = search_object(dn, {ATTRIBUTE_USER_ACCOUNT_CONTROL});
-                if (object.contains(ATTRIBUTE_USER_ACCOUNT_CONTROL)) {
-                    return object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
-                } else {
-                    return 0;
-                }
+                return object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
             }();
 
             const int bit = account_option_bit(option);
