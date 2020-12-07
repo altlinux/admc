@@ -108,9 +108,6 @@ private:
     QHash<Attribute, AdObject> attribute_schemas;
     QHash<ObjectClass, AdObject> class_schemas;
 
-    QHash<QString, QString> ldap_to_ad_names;
-    QHash<QString, QString> ad_to_ldap_names;
-
     QString get_ldap_to_ad_name(const QString &ldap_name) const;
     QString get_ad_to_ldap_name(const QString &ad_name) const;
 };

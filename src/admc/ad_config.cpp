@@ -56,28 +56,6 @@ QString get_locale_dir();
 AdConfig::AdConfig(QObject *parent)
 : QObject(parent)
 {
-    // LDAP <=> AD names mapping
-    {
-        const QString schema_dn = AD()->schema_dn();
-
-        const QList<QString> attributes = {
-            ATTRIBUTE_LDAP_DISPLAY_NAME,
-            ATTRIBUTE_ADMIN_DISPLAY_NAME,
-        };
-
-        const QHash<QString, AdObject> search_results = AD()->search("", attributes, SearchScope_Children, schema_dn);
-
-        for (const AdObject object : search_results.values()) {
-            const QString ad_name = object.get_string(ATTRIBUTE_ADMIN_DISPLAY_NAME);
-            const QString ldap_name = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
-
-            if (!ad_name.isEmpty() && !ldap_name.isEmpty()) {
-                ldap_to_ad_names[ldap_name] = ad_name;
-                ad_to_ldap_names[ad_name] = ldap_name;
-            }
-        }
-    }
-
     // Attribute schemas
     {
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_ATTRIBUTE_SCHEMA);
@@ -222,15 +200,29 @@ AdConfig::AdConfig(QObject *parent)
         QList<QString> out;
         
         const QString locale_dir = get_locale_dir();
-        const QString dn = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
-        const AdObject object = AD()->search_object(dn, {ATTRIBUTE_FILTER_CONTAINERS});
-        QList<QString> filter_containers_ad = object.get_strings(ATTRIBUTE_FILTER_CONTAINERS);
+        const QString ui_settings_dn = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
+        const AdObject object = AD()->search_object(ui_settings_dn, {ATTRIBUTE_FILTER_CONTAINERS});
 
-        // ATTRIBUTE_FILTER_CONTAINERS contains ad class names
-        // so convert to ldap class names
-        for (const auto class_ad : filter_containers_ad) {
-            const QString class_ldap = get_ad_to_ldap_name(class_ad);
-            out.append(class_ldap);
+        // TODO: dns-Zone category is mispelled in
+        // ATTRIBUTE_FILTER_CONTAINERS, no idea why, might
+        // just be on this domain version
+        const QList<QString> categories =
+        [object]() {
+            QList<QString> categories_out = object.get_strings(ATTRIBUTE_FILTER_CONTAINERS);
+            categories_out.replaceInStrings("dns-Zone", "Dns-Zone");
+
+            return categories_out;
+        }();
+
+        // NOTE: ATTRIBUTE_FILTER_CONTAINERS contains object
+        // *categories* not classes, so need to get object
+        // class from category object
+        for (const auto object_category : categories) {
+            const QString category_dn = QString("CN=%1,%2").arg(object_category, AD()->schema_dn());
+            const AdObject category_object = AD()->search_object(category_dn, {ATTRIBUTE_LDAP_DISPLAY_NAME});
+            const QString object_class = category_object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
+
+            out.append(object_class);
         }
 
         return out;
@@ -322,14 +314,6 @@ QList<QString> AdConfig::get_possible_superiors(const QList<ObjectClass> &object
     out.removeDuplicates();
 
     return out;
-}
-
-QString AdConfig::get_ldap_to_ad_name(const QString &ldap_name) const {
-    return ldap_to_ad_names.value(ldap_name, ldap_name);
-}
-
-QString AdConfig::get_ad_to_ldap_name(const QString &ad_name) const {
-    return ad_to_ldap_names.value(ad_name, ad_name);
 }
 
 QList<QString> AdConfig::get_possible_attributes(const QList<QString> &object_classes) const {
