@@ -385,13 +385,6 @@ LargeIntegerSubtype AdConfig::get_large_integer_subtype(const QString &attribute
     }
 }
 
-void AdConfig::limit_edit(QLineEdit *edit, const QString &attribute) {
-    const int range_upper = get_attribute_range_upper(attribute);
-    if (range_upper > 0) {
-        edit->setMaxLength(range_upper);
-    }
-}
-
 bool AdConfig::attribute_is_number(const QString &attribute) const {
     static const QList<AttributeType> number_types = {
         AttributeType_Integer,
@@ -414,6 +407,13 @@ bool AdConfig::get_attribute_is_system_only(const QString &attribute) const {
 
 int AdConfig::get_attribute_range_upper(const QString &attribute) const {
     return attribute_schemas[attribute].get_int(ATTRIBUTE_RANGE_UPPER);
+}
+
+void AdConfig::limit_edit(QLineEdit *edit, const QString &attribute) {
+    const int range_upper = get_attribute_range_upper(attribute);
+    if (range_upper > 0) {
+        edit->setMaxLength(range_upper);
+    }
 }
 
 QString get_locale_dir() {

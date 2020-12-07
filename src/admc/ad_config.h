@@ -74,24 +74,26 @@ Q_OBJECT
 public:
     AdConfig(QObject *parent);
 
-    QList<ObjectClass> get_filter_containers() const;
+    QString get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const;
+
+    QString get_class_display_name(const ObjectClass &objectClass) const;
 
     QList<Attribute> get_columns() const;
     QString get_column_display_name(const Attribute &attribute) const;
 
+    QList<ObjectClass> get_filter_containers() const;
+
     QList<ObjectClass> get_possible_superiors(const QList<ObjectClass> &object_classes) const;
 
-    QString get_class_display_name(const ObjectClass &objectClass) const;
     QList<Attribute> get_possible_attributes(const QList<ObjectClass> &object_classes) const;
     QList<Attribute> get_find_attributes(const ObjectClass &object_class) const;
-    QString get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const;
 
     AttributeType get_attribute_type(const Attribute &attribute) const;
+    LargeIntegerSubtype get_large_integer_subtype(const Attribute &attribute) const;
+    bool attribute_is_number(const Attribute &attribute) const;
     bool get_attribute_is_single_valued(const Attribute &attribute) const;
     bool get_attribute_is_system_only(const Attribute &attribute) const;
     int get_attribute_range_upper(const Attribute &attribute) const;
-    bool attribute_is_number(const Attribute &attribute) const;
-    LargeIntegerSubtype get_large_integer_subtype(const Attribute &attribute) const;
 
     void limit_edit(QLineEdit *edit, const QString &attribute);
 
