@@ -50,7 +50,6 @@
 #define CLASS_ATTRIBUTE_SCHEMA          "attributeSchema"
 #define CLASS_CLASS_SCHEMA              "classSchema"
 
-QString get_display_specifier_class(const QString &display_specifier);
 QString get_locale_dir();
 
 AdConfig::AdConfig(QObject *parent)
@@ -102,53 +101,66 @@ AdConfig::AdConfig(QObject *parent)
         }
     }
 
-    attribute_display_names =
-    []() {
-        QHash<QString, QHash<QString, QString>> out;
+    // Class display specifiers
+    // NOTE: can't just store objects for these because the values require a decent amount of preprocessing which is best done once here, not everytime value is requested
+    {
+        const QString filter = QString();
+
+        const QList<QString> search_attributes = {
+            ATTRIBUTE_CLASS_DISPLAY_NAME,
+            ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES,
+        };
 
         const QString locale_dir = get_locale_dir();
-        const QList<QString> search_attributes = {ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES};
-        const QHash<QString, AdObject> search_results = AD()->search("", search_attributes, SearchScope_Children, locale_dir);
 
-        for (const QString &dn : search_results.keys()) {
-            const AdObject object = search_results[dn];
+        const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, locale_dir);
 
-            const QList<QString> display_names = object.get_strings(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES);
+        for (const AdObject object : search_results) {
+            const QString dn = object.get_dn();
 
-            const QString specifier_class = get_display_specifier_class(dn);
+            // Display specifier DN is "CN=object-class-Display,CN=..."
+            // Get "object-class" from that
+            const QString object_class =
+            [dn]() {
+                const QString rdn = dn.split(",")[0];
+                QString out = rdn;
+                out.remove("CN=", Qt::CaseInsensitive);
+                out.remove("-Display");
 
-            for (const auto display_name_pair : display_names) {
-                const QList<QString> split = display_name_pair.split(",");
-                const QString attribute_name = split[0];
-                const QString display_name = split[1];
+                return out;
+            }();
 
-                out[specifier_class][attribute_name] = display_name;
+            if (object.contains(ATTRIBUTE_CLASS_DISPLAY_NAME)) {
+                class_display_names[object_class] = object.get_string(ATTRIBUTE_CLASS_DISPLAY_NAME);
+            }
+
+            if (object.contains(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES)) {
+                const QList<QString> display_names = object.get_strings(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES);
+
+                for (const auto display_name_pair : display_names) {
+                    const QList<QString> split = display_name_pair.split(",");
+                    const QString attribute_name = split[0];
+                    const QString display_name = split[1];
+
+                    attribute_display_names[object_class][attribute_name] = display_name;
+                }
+
+                find_attributes[object_class] =
+                [this, object_class, display_names]() {
+                    QList<QString> out;
+
+                    for (const auto display_name_pair : display_names) {
+                        const QList<QString> split = display_name_pair.split(",");
+                        const QString attribute = split[0];
+
+                        out.append(attribute);
+                    }
+
+                    return out;
+                }();
             }
         }
-
-        return out;
-    }();
-
-    class_display_names =
-    []() {
-        QHash<QString, QString> out;
-
-        const QString locale_dir = get_locale_dir();
-        const QList<QString> search_attributes = {ATTRIBUTE_CLASS_DISPLAY_NAME};
-        const QHash<QString, AdObject> search_results = AD()->search("", search_attributes, SearchScope_Children, locale_dir);
-
-        for (const QString &dn : search_results.keys()) {
-            // TODO: duplicated code. Probably load this together with other display specifier info.
-            const QString specifier_class = get_display_specifier_class(dn);
-
-            const AdObject object  = search_results[dn];
-            const QString class_display_name = object.get_string(ATTRIBUTE_CLASS_DISPLAY_NAME);
-
-            out[specifier_class] = class_display_name;
-        }
-
-        return out;
-    }();
+    }
 
     // Columns
     {
@@ -194,68 +206,6 @@ AdConfig::AdConfig(QObject *parent)
         add_custom(ATTRIBUTE_OBJECT_CLASS, tr("Class"));
         add_custom(ATTRIBUTE_NAME, tr("Name"));
     }
-
-    filter_containers =
-    [this]() {
-        QList<QString> out;
-        
-        const QString locale_dir = get_locale_dir();
-        const QString ui_settings_dn = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
-        const AdObject object = AD()->search_object(ui_settings_dn, {ATTRIBUTE_FILTER_CONTAINERS});
-
-        // TODO: dns-Zone category is mispelled in
-        // ATTRIBUTE_FILTER_CONTAINERS, no idea why, might
-        // just be on this domain version
-        const QList<QString> categories =
-        [object]() {
-            QList<QString> categories_out = object.get_strings(ATTRIBUTE_FILTER_CONTAINERS);
-            categories_out.replaceInStrings("dns-Zone", "Dns-Zone");
-
-            return categories_out;
-        }();
-
-        // NOTE: ATTRIBUTE_FILTER_CONTAINERS contains object
-        // *categories* not classes, so need to get object
-        // class from category object
-        for (const auto object_category : categories) {
-            const QString category_dn = QString("CN=%1,%2").arg(object_category, AD()->schema_dn());
-            const AdObject category_object = AD()->search_object(category_dn, {ATTRIBUTE_LDAP_DISPLAY_NAME});
-            const QString object_class = category_object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
-
-            out.append(object_class);
-        }
-
-        return out;
-    }();
-
-    find_attributes =
-    [this]() {
-        QHash<QString, QList<QString>> out;
-
-        const QString locale_dir = get_locale_dir();
-        const QList<QString> search_attributes = {ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES};
-        const QHash<QString, AdObject> search_results = AD()->search("", search_attributes, SearchScope_Children, locale_dir);
-
-        for (const QString &dn : search_results.keys()) {
-            const AdObject object  = search_results[dn];
-
-            const QList<QString> display_names = object.get_strings(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES);
-
-            const QString specifier_class = get_display_specifier_class(dn);
-
-            QList<QString> attributes;
-            for (const auto display_name_pair : display_names) {
-                const QList<QString> split = display_name_pair.split(",");
-                const QString attribute_name = split[0];
-
-                attributes.append(attribute_name);
-            }
-
-            out[specifier_class] = attributes;
-        }
-
-        return out;
-    }();
 }
 
 AdConfig *ADCONFIG() {
@@ -464,17 +414,6 @@ bool AdConfig::get_attribute_is_system_only(const QString &attribute) const {
 
 int AdConfig::get_attribute_range_upper(const QString &attribute) const {
     return attribute_schemas[attribute].get_int(ATTRIBUTE_RANGE_UPPER);
-}
-
-// Display specifier DN is "CN=object-class-Display,CN=..."
-// Get "object-class" from that
-QString get_display_specifier_class(const QString &display_specifier) {
-    const QString rdn = display_specifier.split(",")[0];
-    const QString removed_cn = QString(rdn).remove("CN=", Qt::CaseInsensitive);
-    QString out = removed_cn;
-    out.remove("-Display");
-
-    return out;
 }
 
 QString get_locale_dir() {
