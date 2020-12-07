@@ -102,13 +102,11 @@ private:
     QHash<Attribute, QString> column_display_names;
 
     QHash<ObjectClass, QString> class_display_names;
-    QHash<ObjectClass, QList<ObjectClass>> possible_superiors;
-    QHash<ObjectClass, QList<Attribute>> possible_attributes;
     QHash<ObjectClass, QList<Attribute>> find_attributes;
     QHash<ObjectClass, QHash<Attribute, QString>> attribute_display_names;
-    QHash<ObjectClass, QList<QString>> auxiliary_classes;
 
     QHash<Attribute, AdObject> attribute_schemas;
+    QHash<ObjectClass, AdObject> class_schemas;
 
     QHash<QString, QString> ldap_to_ad_names;
     QHash<QString, QString> ad_to_ldap_names;

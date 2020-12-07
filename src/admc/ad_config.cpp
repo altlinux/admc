@@ -48,6 +48,7 @@
 #define ATTRIBUTE_SYSTEM_AUXILIARY_CLASS "systemAuxiliaryClass"
 
 #define CLASS_ATTRIBUTE_SCHEMA          "attributeSchema"
+#define CLASS_CLASS_SCHEMA              "classSchema"
 
 QString get_display_specifier_class(const QString &display_specifier);
 QString get_locale_dir();
@@ -95,12 +96,31 @@ AdConfig::AdConfig(QObject *parent)
         const QHash<QString, AdObject> search_results = AD()->search(filter, attributes, SearchScope_Children, schema_dn);
 
         for (const AdObject object : search_results.values()) {
-            if (!object.contains(ATTRIBUTE_LDAP_DISPLAY_NAME)) {
-                continue;
-            }
-
             const QString attribute = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
             attribute_schemas[attribute] = object;
+        }
+    }
+
+    // Class schemas
+    {
+        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_CLASS_SCHEMA);
+
+        const QList<QString> attributes = {
+            ATTRIBUTE_LDAP_DISPLAY_NAME,
+            ATTRIBUTE_POSSIBLE_SUPERIORS,
+            ATTRIBUTE_MAY_CONTAIN,
+            ATTRIBUTE_SYSTEM_MAY_CONTAIN,
+            ATTRIBUTE_AUXILIARY_CLASS,
+            ATTRIBUTE_SYSTEM_AUXILIARY_CLASS,
+        };
+
+        const QString schema_dn = AD()->schema_dn();
+
+        const QHash<QString, AdObject> search_results = AD()->search(filter, attributes, SearchScope_Children, schema_dn);
+
+        for (const AdObject object : search_results.values()) {
+            const QString object_class = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
+            class_schemas[object_class] = object;
         }
     }
 
@@ -228,74 +248,6 @@ AdConfig::AdConfig(QObject *parent)
         return out;
     }();
 
-    possible_superiors =
-    []() {
-        QHash<QString, QList<QString>> out;
-
-        const QString schema_dn = AD()->schema_dn();
-        const QString filter = filter_CONDITION(Condition_Set, ATTRIBUTE_POSSIBLE_SUPERIORS);
-        const QList<QString> attributes = {ATTRIBUTE_POSSIBLE_SUPERIORS, ATTRIBUTE_LDAP_DISPLAY_NAME};
-        const QHash<QString, AdObject> search_results = AD()->search(filter, attributes, SearchScope_Children, schema_dn);
-
-        for (const AdObject object : search_results.values()) {
-            const QString object_class = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
-            const QList<QString> superiors = object.get_strings(ATTRIBUTE_POSSIBLE_SUPERIORS);
-
-            out[object_class] = superiors;
-        }
-
-        return out;
-    }();
-
-    possible_attributes =
-    []() {
-        QHash<QString, QList<QString>> out;
-
-        const QString schema_dn = AD()->schema_dn();
-        const QList<QString> attributes = {
-            ATTRIBUTE_MAY_CONTAIN,
-            ATTRIBUTE_SYSTEM_MAY_CONTAIN,
-            ATTRIBUTE_LDAP_DISPLAY_NAME
-        };
-        const QHash<QString, AdObject> search_results = AD()->search("", attributes, SearchScope_Children, schema_dn);
-
-        for (const AdObject &schema : search_results.values()) {
-            const QString object_class = schema.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
-            const QList<QString> may_contain = schema.get_strings(ATTRIBUTE_MAY_CONTAIN);
-            const QList<QString> system_may_contain = schema.get_strings(ATTRIBUTE_SYSTEM_MAY_CONTAIN);
-
-            QList<QString> total_contain;
-            total_contain.append(may_contain);
-            total_contain.append(system_may_contain);
-
-            out[object_class] = total_contain;
-        }
-
-        return out;
-    }();
-
-    auxiliary_classes =
-    []() {
-        QHash<QString, QList<QString>> out;
-
-        const QString schema_dn = AD()->schema_dn();
-        const QList<QString> attributes = {
-            ATTRIBUTE_LDAP_DISPLAY_NAME,
-            ATTRIBUTE_AUXILIARY_CLASS,
-            ATTRIBUTE_SYSTEM_AUXILIARY_CLASS,
-        };
-        const QHash<QString, AdObject> search_results = AD()->search("", attributes, SearchScope_Children, schema_dn);
-
-        for (const AdObject &schema : search_results.values()) {
-            const QString object_class = schema.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
-            const QList<QString> aux_classes = schema.get_strings(ATTRIBUTE_AUXILIARY_CLASS) + schema.get_strings(ATTRIBUTE_SYSTEM_AUXILIARY_CLASS);
-
-            out[object_class] = aux_classes;
-        }
-
-        return out;
-    }();
-
     find_attributes =
     [this]() {
         QHash<QString, QList<QString>> out;
@@ -375,10 +327,8 @@ QList<QString> AdConfig::get_possible_superiors(const QList<ObjectClass> &object
     QList<QString> out;
 
     for (const QString &object_class : object_classes) {
-        if (possible_superiors.contains(object_class)) {
-            const QList<QString> superiors = possible_superiors[object_class];
-            out.append(superiors);
-        } 
+        const AdObject schema = class_schemas[object_class];
+        out += schema.get_strings(ATTRIBUTE_POSSIBLE_SUPERIORS);
     }
 
     out.removeDuplicates();
@@ -398,16 +348,14 @@ QList<QString> AdConfig::get_possible_attributes(const QList<QString> &object_cl
     // Add auxiliary classes of given classes to list
     const QList<QString> all_classes =
     [=]() {
-        // TODO: preeeeety sure auxiliary classes can't have auxiliary classes themselves so don't have to recurse here. Makes sense since they are somewhat like interfaces.
         QList<QString> out;
 
-        out.append(object_classes);
+        out += object_classes;
 
         for (const auto object_class : object_classes) {
-            if (auxiliary_classes.contains(object_class)) {
-                const QList<QString> aux_classes = auxiliary_classes[object_class];
-                out.append(aux_classes);
-            }
+            const AdObject schema = class_schemas[object_class];
+            out += schema.get_strings(ATTRIBUTE_AUXILIARY_CLASS);
+            out += schema.get_strings(ATTRIBUTE_SYSTEM_AUXILIARY_CLASS);
         }
 
         out.removeDuplicates();
@@ -419,11 +367,9 @@ QList<QString> AdConfig::get_possible_attributes(const QList<QString> &object_cl
     QList<QString> attributes;
 
     for (const auto object_class : all_classes) {
-        if (possible_attributes.contains(object_class)) {
-            const QList<QString> class_attributes = possible_attributes[object_class];
-
-            attributes.append(class_attributes);
-        }
+        const AdObject schema = class_schemas[object_class];
+        attributes += schema.get_strings(ATTRIBUTE_MAY_CONTAIN);
+        attributes += schema.get_strings(ATTRIBUTE_SYSTEM_MAY_CONTAIN);
     }
 
     attributes.removeDuplicates();
