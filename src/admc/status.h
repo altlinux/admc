@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STATUS_BAR_H
-#define STATUS_BAR_H
+#ifndef STATUS_H
+#define STATUS_H
 
 /**
  * Collects status messages and displays them in a status

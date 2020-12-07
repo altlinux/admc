@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RENAME_DIALOG_POLICY_H
-#define RENAME_DIALOG_POLICY_H
+#ifndef RENAME_POLICY_DIALOG_H
+#define RENAME_POLICY_DIALOG_H
 
 /**
  * Special rename dialog for policy objects. Policy objects

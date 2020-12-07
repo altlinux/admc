@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SERVER_CONFIGURATION_H
-#define SERVER_CONFIGURATION_H
+#ifndef AD_CONFIG_H
+#define AD_CONFIG_H
 
 // Provides access to some server configuration data. All of
 // the data is loaded once at startup to avoid unnecessary
@@ -113,4 +113,4 @@ private:
 
 AdConfig *ADCONFIG();
 
-#endif /* SERVER_CONFIGURATION_H */
+#endif /* AD_CONFIG_H */

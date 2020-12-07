@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MOVE_DIALOG_H
-#define MOVE_DIALOG_H
+#ifndef SELECT_DIALOG_H
+#define SELECT_DIALOG_H
 
 #include <QDialog>
 #include <QString>

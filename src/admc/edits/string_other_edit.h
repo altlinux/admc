@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STRING_MULTI_EDIT_H
-#define STRING_MULTI_EDIT_H
+#ifndef STRING_OTHER_EDIT_H
+#define STRING_OTHER_EDIT_H
 
 #include "attribute_edit.h"
 
@@ -52,4 +52,4 @@ private:
     QList<QByteArray> other_values;
 };
 
-#endif /* STRING_MULTI_EDIT_H */
+#endif /* STRING_OTHER_EDIT_H */

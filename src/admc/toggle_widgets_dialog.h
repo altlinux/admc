@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TOGGLE_WIDGETS_DIALOG
-#define TOGGLE_WIDGETS_DIALOG
+#ifndef TOGGLE_WIDGETS_DIALOG_H
+#define TOGGLE_WIDGETS_DIALOG_H
 
 /**
  * Toggle main widgets of the application.
@@ -33,4 +33,4 @@ public:
     ToggleWidgetsDialog(QWidget *parent);
 };
 
-#endif /* TOGGLE_WIDGETS_DIALOG */
+#endif /* TOGGLE_WIDGETS_DIALOG_H */

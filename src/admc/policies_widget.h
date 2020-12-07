@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef POLICIES_TAB_H
-#define POLICIES_TAB_H
+#ifndef POLICIES_WIDGET_H
+#define POLICIES_WIDGET_H
 
 #include "ad_object.h"
 

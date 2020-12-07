@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_H
-#define ATTRIBUTES_H
+#ifndef AD_OBJECT_H
+#define AD_OBJECT_H
 
 #include "ad_defines.h"
 
@@ -81,4 +81,4 @@ private:
     AdObjectAttributes attributes_data;
 };
 
-#endif /* ATTRIBUTES_H */
+#endif /* AD_OBJECT_H */
