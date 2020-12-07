@@ -47,43 +47,60 @@
 #define ATTRIBUTE_AUXILIARY_CLASS       "auxiliaryClass"
 #define ATTRIBUTE_SYSTEM_AUXILIARY_CLASS "systemAuxiliaryClass"
 
+#define CLASS_ATTRIBUTE_SCHEMA          "attributeSchema"
+
 QString get_display_specifier_class(const QString &display_specifier);
 QString get_locale_dir();
 
 AdConfig::AdConfig(QObject *parent)
 : QObject(parent)
 {
+    // LDAP <=> AD names mapping
     {
         const QString schema_dn = AD()->schema_dn();
 
         const QList<QString> attributes = {
             ATTRIBUTE_LDAP_DISPLAY_NAME,
             ATTRIBUTE_ADMIN_DISPLAY_NAME,
-            ATTRIBUTE_IS_SINGLE_VALUED,
-            ATTRIBUTE_SYSTEM_ONLY,
-            ATTRIBUTE_RANGE_UPPER,
         };
+
         const QHash<QString, AdObject> search_results = AD()->search("", attributes, SearchScope_Children, schema_dn);
 
         for (const AdObject object : search_results.values()) {
             const QString ad_name = object.get_string(ATTRIBUTE_ADMIN_DISPLAY_NAME);
             const QString ldap_name = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
-            const bool is_single_valued = object.get_bool(ATTRIBUTE_IS_SINGLE_VALUED);
-            const bool is_system_only = object.get_bool(ATTRIBUTE_SYSTEM_ONLY);
-
-            const QString attribute = ldap_name;
 
             if (!ad_name.isEmpty() && !ldap_name.isEmpty()) {
                 ldap_to_ad_names[ldap_name] = ad_name;
                 ad_to_ldap_names[ad_name] = ldap_name;
-                attribute_is_single_valued[attribute] = is_single_valued;
-                attribute_is_system_only[attribute] = is_system_only;
+            }
+        }
+    }
+
+    // Attribute schemas
+    {
+        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_ATTRIBUTE_SCHEMA);
+
+        const QList<QString> attributes = {
+            ATTRIBUTE_LDAP_DISPLAY_NAME,
+            ATTRIBUTE_ATTRIBUTE_SYNTAX,
+            ATTRIBUTE_OM_SYNTAX,
+            ATTRIBUTE_IS_SINGLE_VALUED,
+            ATTRIBUTE_SYSTEM_ONLY,
+            ATTRIBUTE_RANGE_UPPER,
+        };
+
+        const QString schema_dn = AD()->schema_dn();
+
+        const QHash<QString, AdObject> search_results = AD()->search(filter, attributes, SearchScope_Children, schema_dn);
+
+        for (const AdObject object : search_results.values()) {
+            if (!object.contains(ATTRIBUTE_LDAP_DISPLAY_NAME)) {
+                continue;
             }
 
-            if (object.contains(ATTRIBUTE_RANGE_UPPER)) {
-                const int range_upper = object.get_int(ATTRIBUTE_RANGE_UPPER);
-                attribute_range_upper[attribute] = range_upper;
-            }
+            const QString attribute = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
+            attribute_schemas[attribute] = object;
         }
     }
 
@@ -307,82 +324,6 @@ AdConfig::AdConfig(QObject *parent)
 
         return out;
     }();
-
-    attribute_types =
-    [this]() {
-        QHash<QString, AttributeType> out;
-
-        const QString schema_dn = AD()->schema_dn();
-        const QString filter = filter_CONDITION(Condition_Set, ATTRIBUTE_POSSIBLE_SUPERIORS);
-        const QList<QString> attributes = {ATTRIBUTE_ATTRIBUTE_SYNTAX,
-            ATTRIBUTE_OM_SYNTAX,
-            ATTRIBUTE_LDAP_DISPLAY_NAME
-        };
-        const QHash<QString, AdObject> search_results = AD()->search("", attributes, SearchScope_Children, schema_dn);
-
-        for (const AdObject &schema : search_results) {
-            const QString attribute = schema.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
-            const QString syntax = schema.get_string(ATTRIBUTE_ATTRIBUTE_SYNTAX);
-            const QString om_syntax = schema.get_string(ATTRIBUTE_OM_SYNTAX);
-
-            if (attribute.isEmpty() || syntax.isEmpty() || om_syntax.isEmpty()) {
-                continue;
-            }
-
-            // NOTE: replica of: https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/7cda533e-d7a4-4aec-a517-91d02ff4a1aa
-            // syntax -> om syntax list -> type
-            // TODO: is there a lib for this?
-            // TODO: there are Object(x) types, not sure if need those
-            static QHash<QString, QHash<QString, AttributeType>> type_map = {
-                {"2.5.5.8", {{"1", AttributeType_Boolean}}},
-                {
-                    "2.5.5.9",
-                    {
-                        {"10", AttributeType_Enumeration},
-                        {"2", AttributeType_Integer}
-                    }
-                },
-                {"2.5.5.16", {{"65", AttributeType_LargeInteger}}},
-                {"2.5.5.3", {{"27", AttributeType_StringCase}}},
-                {"2.5.5.5", {{"22", AttributeType_IA5}}},
-                {"2.5.5.15", {{"66", AttributeType_NTSecDesc}}},
-                {"2.5.5.6", {{"18", AttributeType_Numeric}}},
-                {"2.5.5.2", {{"6", AttributeType_ObjectIdentifier}}},
-                {
-                    "2.5.5.10",
-                    {
-                        {"4", AttributeType_Octet},
-                        {"127", AttributeType_ReplicaLink}
-                    }
-                },
-                {"2.5.5.5", {{"19", AttributeType_Printable}}},
-                {"2.5.5.17", {{"4", AttributeType_Sid}}},
-                {"2.5.5.4", {{"20", AttributeType_Teletex}}},
-                {"2.5.5.12", {{"64", AttributeType_Unicode}}},
-                {
-                    "2.5.5.11",
-                    {
-                        {"23", AttributeType_UTCTime},
-                        {"24", AttributeType_GeneralizedTime}
-                    }
-                },
-                {"2.5.5.14", {{"127", AttributeType_DNString}}},
-                {"2.5.5.7", {{"127", AttributeType_DNBinary}}},
-                {"2.5.5.1", {{"127", AttributeType_DSDN}}},
-            };
-
-            out[attribute] =
-            [=]() {
-                if (type_map.contains(syntax) && type_map[syntax].contains(om_syntax)) {
-                    return type_map[syntax][om_syntax];
-                } else {
-                    return AttributeType_StringCase;
-                }
-            }();
-        }
-
-        return out;
-    }();
 }
 
 AdConfig *ADCONFIG() {
@@ -495,7 +436,58 @@ QList<QString> AdConfig::get_find_attributes(const QString &object_class) const 
 }
 
 AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
-    return attribute_types.value(attribute, AttributeType_StringCase);
+    // NOTE: replica of: https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/7cda533e-d7a4-4aec-a517-91d02ff4a1aa
+    // syntax -> om syntax list -> type
+    // TODO: is there a lib for this?
+    // TODO: there are Object(x) types, not sure if need those
+    static QHash<QString, QHash<QString, AttributeType>> type_map = {
+        {"2.5.5.8", {{"1", AttributeType_Boolean}}},
+        {
+            "2.5.5.9",
+            {
+                {"10", AttributeType_Enumeration},
+                {"2", AttributeType_Integer}
+            }
+        },
+        {"2.5.5.16", {{"65", AttributeType_LargeInteger}}},
+        {"2.5.5.3", {{"27", AttributeType_StringCase}}},
+        {"2.5.5.5", {{"22", AttributeType_IA5}}},
+        {"2.5.5.15", {{"66", AttributeType_NTSecDesc}}},
+        {"2.5.5.6", {{"18", AttributeType_Numeric}}},
+        {"2.5.5.2", {{"6", AttributeType_ObjectIdentifier}}},
+        {
+            "2.5.5.10",
+            {
+                {"4", AttributeType_Octet},
+                {"127", AttributeType_ReplicaLink}
+            }
+        },
+        {"2.5.5.5", {{"19", AttributeType_Printable}}},
+        {"2.5.5.17", {{"4", AttributeType_Sid}}},
+        {"2.5.5.4", {{"20", AttributeType_Teletex}}},
+        {"2.5.5.12", {{"64", AttributeType_Unicode}}},
+        {
+            "2.5.5.11",
+            {
+                {"23", AttributeType_UTCTime},
+                {"24", AttributeType_GeneralizedTime}
+            }
+        },
+        {"2.5.5.14", {{"127", AttributeType_DNString}}},
+        {"2.5.5.7", {{"127", AttributeType_DNBinary}}},
+        {"2.5.5.1", {{"127", AttributeType_DSDN}}},
+    };
+
+    const AdObject schema = attribute_schemas[attribute];
+
+    const QString attribute_syntax = schema.get_string(ATTRIBUTE_ATTRIBUTE_SYNTAX);
+    const QString om_syntax = schema.get_string(ATTRIBUTE_OM_SYNTAX);
+
+    if (type_map.contains(attribute_syntax) && type_map[attribute_syntax].contains(om_syntax)) {
+        return type_map[attribute_syntax][om_syntax];
+    } else {
+        return AttributeType_StringCase;
+    }
 }
 
 LargeIntegerSubtype AdConfig::get_large_integer_subtype(const QString &attribute) const {
@@ -545,15 +537,33 @@ bool AdConfig::attribute_is_number(const QString &attribute) const {
 }
 
 bool AdConfig::get_attribute_is_single_valued(const QString &attribute) const {
-    return attribute_is_single_valued.value(attribute, true);
+    const AdObject schema = attribute_schemas[attribute];
+
+    if (schema.contains(ATTRIBUTE_IS_SINGLE_VALUED)) {
+        return schema.get_bool(ATTRIBUTE_IS_SINGLE_VALUED);
+    } else {
+        return false;
+    }
 }
 
 bool AdConfig::get_attribute_is_system_only(const QString &attribute) const {
-    return attribute_is_system_only.value(attribute, true);
+    const AdObject schema = attribute_schemas[attribute];
+
+    if (schema.contains(ATTRIBUTE_SYSTEM_ONLY)) {
+        return schema.get_bool(ATTRIBUTE_SYSTEM_ONLY);
+    } else {
+        return false;
+    }
 }
 
 int AdConfig::get_attribute_range_upper(const QString &attribute) const {
-    return attribute_range_upper.value(attribute, 0);
+    const AdObject schema = attribute_schemas[attribute];
+
+    if (schema.contains(ATTRIBUTE_RANGE_UPPER)) {
+        return schema.get_int(ATTRIBUTE_RANGE_UPPER);
+    } else {
+        return 0;
+    }
 }
 
 // Display specifier DN is "CN=object-class-Display,CN=..."

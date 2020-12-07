@@ -66,6 +66,7 @@ typedef QString ObjectClass;
 typedef QString Attribute;
 
 class QLineEdit;
+class AdObject;
 
 class AdConfig final : public QObject {
 Q_OBJECT
@@ -107,10 +108,7 @@ private:
     QHash<ObjectClass, QHash<Attribute, QString>> attribute_display_names;
     QHash<ObjectClass, QList<QString>> auxiliary_classes;
 
-    QHash<Attribute, AttributeType> attribute_types;
-    QHash<Attribute, bool> attribute_is_single_valued;
-    QHash<Attribute, bool> attribute_is_system_only;
-    QHash<Attribute, int> attribute_range_upper;
+    QHash<Attribute, AdObject> attribute_schemas;
 
     QHash<QString, QString> ldap_to_ad_names;
     QHash<QString, QString> ad_to_ldap_names;
