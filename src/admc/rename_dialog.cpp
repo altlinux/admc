@@ -21,6 +21,7 @@
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "ad_utils.h"
+#include "ad_object.h"
 #include "edits/string_edit.h"
 #include "status.h"
 #include "utils.h"

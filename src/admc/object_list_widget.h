@@ -28,8 +28,6 @@
  * in some other widget.
  */
 
-#include "ad_object.h"
-
 #include <QWidget>
 #include <QHash>
 #include <QList>
@@ -39,6 +37,7 @@ class QTreeView;
 class QLabel;
 class ObjectModel;
 class QLineEdit;
+class AdObject;
 
 class ObjectListWidget final : public QWidget {
 Q_OBJECT

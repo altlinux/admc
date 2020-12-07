@@ -23,6 +23,7 @@
 #include "edits/country_edit.h"
 #include "edits/group_scope_edit.h"
 #include "edits/group_type_edit.h"
+#include "ad_object.h"
 
 #include <QLabel>
 #include <QFormLayout>

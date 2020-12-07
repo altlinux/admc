@@ -23,7 +23,7 @@
 #include "utils.h"
 #include "ad_interface.h"
 #include "ad_config.h"
-
+#include "ad_object.h"
 #include <QLineEdit>
 #include <QFormLayout>
 #include <QLabel>

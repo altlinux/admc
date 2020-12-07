@@ -20,8 +20,6 @@
 #ifndef ATTRIBUTE_EDIT_H
 #define ATTRIBUTE_EDIT_H
 
-#include "ad_object.h"
-
 #include <QObject>
 #include <QString>
 #include <QList>
@@ -36,6 +34,7 @@
 
 class DetailsTab;
 class QFormLayout;
+class AdObject;
 
 class AttributeEdit : public QObject {
 Q_OBJECT

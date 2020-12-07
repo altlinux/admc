@@ -24,7 +24,7 @@
 #include "ad_config.h"
 #include "details_dialog.h"
 #include "select_dialog.h"
-
+#include "ad_object.h"
 #include <QLineEdit>
 #include <QFormLayout>
 #include <QPushButton>

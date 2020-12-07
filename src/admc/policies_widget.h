@@ -20,14 +20,13 @@
 #ifndef POLICIES_WIDGET_H
 #define POLICIES_WIDGET_H
 
-#include "ad_object.h"
-
 #include <QWidget>
 #include <QPoint>
 #include <QString>
 
 class QStandardItemModel;
 class QTreeView;
+class AdObject;
 
 // Shows member objects of targeted group
 class PoliciesWidget final : public QWidget {

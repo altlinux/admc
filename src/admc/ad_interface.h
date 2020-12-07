@@ -20,9 +20,6 @@
 #ifndef AD_INTERFACE_H
 #define AD_INTERFACE_H
 
-#include "ad_defines.h"
-#include "ad_object.h"
-
 #include <QObject>
 #include <QList>
 #include <QString>
@@ -44,6 +41,7 @@ enum SearchScope {
 typedef struct ldap LDAP;
 typedef struct _SMBCCTX SMBCCTX;
 class AdConfig;
+class AdObject;
 
 class AdInterface final : public QObject {
 Q_OBJECT

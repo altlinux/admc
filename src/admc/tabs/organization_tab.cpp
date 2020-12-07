@@ -21,6 +21,7 @@
 #include "edits/string_edit.h"
 #include "edits/manager_edit.h"
 #include "ad_utils.h"
+#include "ad_object.h"
 #include "details_dialog.h"
 #include "utils.h"
 

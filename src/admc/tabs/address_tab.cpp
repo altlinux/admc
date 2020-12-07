@@ -21,6 +21,7 @@
 #include "edits/string_edit.h"
 #include "edits/string_large_edit.h"
 #include "edits/country_edit.h"
+#include "ad_defines.h"
 
 #include <QVBoxLayout>
 #include <QFormLayout>

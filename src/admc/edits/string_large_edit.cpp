@@ -20,7 +20,7 @@
 #include "edits/string_large_edit.h"
 #include "ad_interface.h"
 #include "ad_config.h"
-
+#include "ad_object.h"
 #include <QPlainTextEdit>
 #include <QFormLayout>
 

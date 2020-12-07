@@ -50,8 +50,8 @@ private:
     QTreeView *view;
     QStandardItemModel *model;
     AttributesTabProxy *proxy;
-    AdObjectAttributes original;
-    AdObjectAttributes current;
+    QHash<QString, QList<QByteArray>> original;
+    QHash<QString, QList<QByteArray>> current;
 
     void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
     void showEvent(QShowEvent *event);

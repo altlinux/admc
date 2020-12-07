@@ -21,7 +21,7 @@
 #include "ad_interface.h"
 #include "ad_utils.h"
 #include "utils.h"
-
+#include "ad_object.h"
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QComboBox>

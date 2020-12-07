@@ -20,8 +20,6 @@
 #ifndef CONTENTS_WIDGET_H
 #define CONTENTS_WIDGET_H
 
-#include "ad_object.h"
-
 #include <QWidget>
 #include <QString>
 

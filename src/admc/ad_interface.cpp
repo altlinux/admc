@@ -21,6 +21,7 @@
 #include "active_directory.h"
 #include "ad_utils.h"
 #include "ad_config.h"
+#include "ad_object.h"
 #include "attribute_display.h"
 #include "status.h"
 #include "utils.h"

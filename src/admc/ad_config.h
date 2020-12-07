@@ -24,6 +24,8 @@
 // the data is loaded once at startup to avoid unnecessary
 // server requests.
 
+#include "ad_object.h"
+
 #include <QObject>
 #include <QString>
 #include <QList>

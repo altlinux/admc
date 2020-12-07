@@ -22,9 +22,8 @@
 
 #include <QMenu>
 
-#include "ad_object.h"
-
 class QAbstractItemView;
+class AdObject;
 
 class ObjectContextMenu final : public QMenu {
 Q_OBJECT

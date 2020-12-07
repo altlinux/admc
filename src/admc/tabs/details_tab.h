@@ -20,8 +20,6 @@
 #ifndef DETAILS_TAB_H
 #define DETAILS_TAB_H
 
-#include "ad_object.h"
-
 #include <QWidget>
 #include <QString>
 #include <QList>
@@ -35,6 +33,7 @@
  */
 
 class AttributeEdit;
+class AdObject;
 
 class DetailsTab : public QWidget {
 Q_OBJECT

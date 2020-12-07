@@ -21,6 +21,7 @@
 #include "details_dialog.h"
 #include "utils.h"
 #include "ad_interface.h"
+#include "ad_object.h"
 #include "filter.h"
 
 #include <algorithm>

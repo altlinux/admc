@@ -32,6 +32,7 @@
 #include "tabs/profile_tab.h"
 #include "ad_interface.h"
 #include "ad_config.h"
+#include "ad_object.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
