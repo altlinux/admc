@@ -20,6 +20,8 @@
 #ifndef AD_INTERFACE_H
 #define AD_INTERFACE_H
 
+#include "ad_defines.h"
+
 #include <QObject>
 #include <QList>
 #include <QString>
