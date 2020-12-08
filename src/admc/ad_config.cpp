@@ -45,10 +45,14 @@
 #define ATTRIBUTE_SYSTEM_ONLY           "systemOnly"
 #define ATTRIBUTE_RANGE_UPPER           "rangeUpper"
 #define ATTRIBUTE_AUXILIARY_CLASS       "auxiliaryClass"
+#define ATTRIBUTE_SYSTEM_FLAGS          "systemFlags"
+#define ATTRIBUTE_LINK_ID               "linkID"
 #define ATTRIBUTE_SYSTEM_AUXILIARY_CLASS "systemAuxiliaryClass"
 
 #define CLASS_ATTRIBUTE_SCHEMA          "attributeSchema"
 #define CLASS_CLASS_SCHEMA              "classSchema"
+
+#define FLAG_ATTR_IS_CONSTRUCTED        0x00000004 
 
 QString get_locale_dir();
 
@@ -66,6 +70,8 @@ AdConfig::AdConfig(QObject *parent)
             ATTRIBUTE_IS_SINGLE_VALUED,
             ATTRIBUTE_SYSTEM_ONLY,
             ATTRIBUTE_RANGE_UPPER,
+            ATTRIBUTE_LINK_ID,
+            ATTRIBUTE_SYSTEM_FLAGS,
         };
 
         const QString schema_dn = AD()->schema_dn();
@@ -407,6 +413,18 @@ bool AdConfig::get_attribute_is_system_only(const QString &attribute) const {
 
 int AdConfig::get_attribute_range_upper(const QString &attribute) const {
     return attribute_schemas[attribute].get_int(ATTRIBUTE_RANGE_UPPER);
+}
+
+bool AdConfig::get_attribute_is_backlink(const QString &attribute) const {
+    const int link_id = attribute_schemas[attribute].get_int(ATTRIBUTE_LINK_ID);
+    const bool link_id_is_odd = (link_id % 2 != 0);
+
+    return link_id_is_odd;
+}
+
+bool AdConfig::get_attribute_is_constructed(const QString &attribute) const {
+    const int system_flags = attribute_schemas[attribute].get_int(ATTRIBUTE_SYSTEM_FLAGS);
+    return bit_is_set(system_flags, FLAG_ATTR_IS_CONSTRUCTED);   
 }
 
 void AdConfig::limit_edit(QLineEdit *edit, const QString &attribute) {

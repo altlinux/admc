@@ -96,6 +96,8 @@ public:
     bool get_attribute_is_single_valued(const Attribute &attribute) const;
     bool get_attribute_is_system_only(const Attribute &attribute) const;
     int get_attribute_range_upper(const Attribute &attribute) const;
+    bool get_attribute_is_backlink(const Attribute &attribute) const;
+    bool get_attribute_is_constructed(const Attribute &attribute) const;
 
     void limit_edit(QLineEdit *edit, const QString &attribute);
 
