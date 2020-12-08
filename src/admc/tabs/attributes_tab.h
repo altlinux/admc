@@ -20,6 +20,11 @@
 #ifndef ATTRIBUTES_TAB_H
 #define ATTRIBUTES_TAB_H
 
+/** 
+ * Show attributes of target in a list. Allows
+ * viewing/editing if possible via attribute editor dialogs.
+ */
+
 #include "tabs/details_tab.h"
 
 #include <QSortFilterProxyModel>
@@ -31,19 +36,20 @@ class QStandardItem;
 class AttributesTabProxy;
 class QTreeView;
 
+// NOTE: "readonly" is really "systemonly", it's just that this set of attributes is broken down into "backlink", "constructed" and "systemonly"(aka, not backlink or constructed but still systemonly). Not sure if this is the ideal behavior, maybe change it to be more logical and aligned with what user needs.
 enum AttributeFilter {
     AttributeFilter_Unset,
-    AttributeFilter_SystemOnly,
+    AttributeFilter_ReadOnly,
     AttributeFilter_Mandatory,
     AttributeFilter_Optional,
+    AttributeFilter_SystemOnly,
     AttributeFilter_Constructed,
     AttributeFilter_Backlink,
 
     AttributeFilter_COUNT,
 };
 
-// Show attributes of target as a list of attribute names and values
-// Values are editable
+
 class AttributesTab final : public DetailsTab {
 Q_OBJECT
 

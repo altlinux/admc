@@ -34,6 +34,11 @@
 #include <QDialogButtonBox>
 #include <QCheckBox>
 #include <QFrame>
+#include <QLabel>
+
+// TODO: in relation to filter. There's "read-only" and "system-only". "Read-only"current system only should be "writable"
+// and there should be another system only which is part of the 
+// set of: system only, constructed, backlink
 
 enum AttributesColumn {
     AttributesColumn_Name,
@@ -117,7 +122,7 @@ void AttributesTab::on_double_clicked(const QModelIndex &proxy_index) {
 }
 
 void AttributesTab::open_filter_dialog() {
-    auto dialog = new QDialog();
+    auto dialog = new QDialog(this);
 
     auto layout = new QVBoxLayout();
     dialog->setLayout(layout);
@@ -143,25 +148,36 @@ void AttributesTab::open_filter_dialog() {
         checks.insert(filter, check);
     };
 
-    // TODO: current system only should be "writable"
-    // and there should be another system only which is part of the 
-    // set of: system only, constructed, backlink
     add_check(tr("Unset"), AttributeFilter_Unset);
-    add_check(tr("System only"), AttributeFilter_SystemOnly);
+    add_check(tr("Read-only"), AttributeFilter_ReadOnly);
     add_check(tr("Mandatory"), AttributeFilter_Mandatory);
     add_check(tr("Optional"), AttributeFilter_Optional);
+    add_check(tr("System-only"), AttributeFilter_SystemOnly);
     add_check(tr("Constructed"), AttributeFilter_Constructed);
     add_check(tr("Backlink"), AttributeFilter_Backlink);
 
+    // Enable readonly subtype checks when readonly is enabled
+    connect(
+        checks[AttributeFilter_ReadOnly], &QCheckBox::stateChanged,
+        [checks]() {
+            const bool read_only_enabled = checks[AttributeFilter_ReadOnly]->isChecked();
+
+            checks[AttributeFilter_SystemOnly]->setEnabled(read_only_enabled);
+            checks[AttributeFilter_Constructed]->setEnabled(read_only_enabled);
+            checks[AttributeFilter_Backlink]->setEnabled(read_only_enabled);
+        });
+
     auto first_frame = make_frame();
     first_frame->layout()->addWidget(checks[AttributeFilter_Unset]);
-    first_frame->layout()->addWidget(checks[AttributeFilter_SystemOnly]);
+    first_frame->layout()->addWidget(checks[AttributeFilter_ReadOnly]);
 
     auto second_frame = make_frame();
     second_frame->layout()->addWidget(checks[AttributeFilter_Mandatory]);
     second_frame->layout()->addWidget(checks[AttributeFilter_Optional]);
 
     auto third_frame = make_frame();
+    third_frame->layout()->addWidget(new QLabel(tr("Read-only attributes:")));
+    third_frame->layout()->addWidget(checks[AttributeFilter_SystemOnly]);
     third_frame->layout()->addWidget(checks[AttributeFilter_Constructed]);
     third_frame->layout()->addWidget(checks[AttributeFilter_Backlink]);
 
@@ -271,42 +287,48 @@ void AttributesTabProxy::load(const AdObject &object) {
     set_attributes = object.attributes().toSet();
 }
 
-#include <QDebug>
-
 bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
     auto source = sourceModel();
     const QString attribute = source->index(source_row, AttributesColumn_Name, source_parent).data().toString();
+    
     const bool system_only = ADCONFIG()->get_attribute_is_system_only(attribute);
     const bool unset = !set_attributes.contains(attribute);
     const bool mandatory = mandatory_attributes.contains(attribute);
     const bool optional = optional_attributes.contains(attribute);
-    const bool constructed = ADCONFIG()->get_attribute_is_constructed(attribute);
-    const bool backlink = ADCONFIG()->get_attribute_is_backlink(attribute);
 
-    if (unset && !filters[AttributeFilter_Unset]) {
+    if (!filters[AttributeFilter_Unset] && unset) {
         return false;
     }
 
-    if (system_only && !filters[AttributeFilter_SystemOnly]) {
+    if (!filters[AttributeFilter_Mandatory] && mandatory) {
         return false;
     }
 
-    if (mandatory && !filters[AttributeFilter_Mandatory]) {
+    if (!filters[AttributeFilter_Optional] && optional) {
         return false;
     }
 
-    if (optional && !filters[AttributeFilter_Optional]) {
+    if (filters[AttributeFilter_ReadOnly] && system_only) {
+        const bool constructed = ADCONFIG()->get_attribute_is_constructed(attribute);
+        const bool backlink = ADCONFIG()->get_attribute_is_backlink(attribute);
+
+        if (!filters[AttributeFilter_SystemOnly] && !constructed && !backlink) {
+            return false;
+        }
+
+        if (!filters[AttributeFilter_Constructed] && constructed) {
+            return false;
+        }
+
+        if (!filters[AttributeFilter_Backlink] && backlink) {
+            return false;
+        }
+    }
+
+    if (!filters[AttributeFilter_ReadOnly] && system_only) {
         return false;
     }
 
-    if (constructed && !filters[AttributeFilter_Constructed]) {
-        return false;
-    }
-
-    if (backlink && !filters[AttributeFilter_Backlink]) {
-        return false;
-    }
-    
     return true;
 }
 
