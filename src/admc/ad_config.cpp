@@ -276,7 +276,7 @@ QList<QString> AdConfig::get_possible_superiors(const QList<ObjectClass> &object
     return out;
 }
 
-QList<QString> AdConfig::get_possible_attributes(const QList<QString> &object_classes) const {
+QList<QString> AdConfig::get_optional_attributes(const QList<QString> &object_classes) const {
     // Add auxiliary classes of given classes to list
     const QList<QString> all_classes =
     [=]() {

@@ -187,14 +187,7 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     if (object.is_class(CLASS_GROUP)) {
         add_tab(new MembersTab(), tr("Members"));
     }
-    const bool has_member_of_attribute =
-    [object]() {
-        const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-        const QList<QString> possible_attributes = ADCONFIG()->get_possible_attributes(object_classes);
-
-        return possible_attributes.contains(ATTRIBUTE_MEMBER_OF);
-    }();
-    if (has_member_of_attribute) {
+    if (object.is_class(CLASS_USER)) {
         add_tab(new MemberOfTab(), tr("Member of"));
     }
     if (object.is_class(CLASS_OU)) {

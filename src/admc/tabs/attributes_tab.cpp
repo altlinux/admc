@@ -180,8 +180,8 @@ void AttributesTab::load(const AdObject &object) {
 
     // Add attributes without values
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-    const QList<QString> possible_attributes = ADCONFIG()->get_possible_attributes(object_classes);
-    for (const QString attribute : possible_attributes) {
+    const QList<QString> optional_attributes = ADCONFIG()->get_optional_attributes(object_classes);
+    for (const QString attribute : optional_attributes) {
         if (!original.contains(attribute)) {
             original[attribute] = QList<QByteArray>();
         }
@@ -236,7 +236,7 @@ AttributesTabProxy::AttributesTabProxy(QObject *parent)
 void AttributesTabProxy::load(const AdObject &object) {
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
     mandatory_attributes = ADCONFIG()->get_mandatory_attributes(object_classes).toSet();
-    optional_attributes = ADCONFIG()->get_possible_attributes(object_classes).toSet();
+    optional_attributes = ADCONFIG()->get_optional_attributes(object_classes).toSet();
 
     set_attributes = object.attributes().toSet();
 }
