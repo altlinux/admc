@@ -31,6 +31,11 @@ class QStandardItem;
 class AttributesTabProxy;
 class QTreeView;
 
+enum AttributeFilter {
+    AttributeFilter_HideUnset,
+    AttributeFilter_HideSystemOnly,
+};
+
 // Show attributes of target as a list of attribute names and values
 // Values are editable
 class AttributesTab final : public DetailsTab {
@@ -44,7 +49,7 @@ public:
 
 private slots:
     void on_double_clicked(const QModelIndex &proxy_index);
-    void on_context_menu(const QPoint pos);
+    void open_filter_dialog();
 
 private:
     QTreeView *view;
@@ -62,10 +67,8 @@ class AttributesTabProxy final : public QSortFilterProxyModel {
 public:
     using QSortFilterProxyModel::QSortFilterProxyModel;
 
-    bool hide_unset = false;
-    bool hide_read_only = false;
+    QHash<AttributeFilter, bool> filters;
     QHash<QString, bool> unset_map;
-    QHash<QString, bool> read_only_map;
 
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };

@@ -28,8 +28,11 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 #include <QStandardItemModel>
-#include <QMenu>
 #include <QMessageBox>
+#include <QPushButton>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QCheckBox>
 
 enum AttributesColumn {
     AttributesColumn_Name,
@@ -53,25 +56,27 @@ AttributesTab::AttributesTab() {
     view->setSelectionBehavior(QAbstractItemView::SelectRows);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
-    view->setContextMenuPolicy(Qt::CustomContextMenu);
 
     proxy = new AttributesTabProxy(this);
 
     proxy->setSourceModel(model);
     view->setModel(proxy);
 
+    auto filter_button = new QPushButton(tr("Filter"));
+
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(view);
+    layout->addWidget(filter_button);
 
-    connect(
-        view, &QWidget::customContextMenuRequested,
-        this, &AttributesTab::on_context_menu);
     connect(
         view, &QAbstractItemView::doubleClicked,
         this, &AttributesTab::on_double_clicked);
+    connect(
+        filter_button, &QAbstractButton::clicked,
+        this, &AttributesTab::open_filter_dialog);
 }
 
 void AttributesTab::on_double_clicked(const QModelIndex &proxy_index) {
@@ -110,27 +115,50 @@ void AttributesTab::on_double_clicked(const QModelIndex &proxy_index) {
     }
 }
 
-// TODO: add options to show/hide attributes based on if they are in the "may contain" group (optional). Need to go through all parent classes to figure out the full set of such attributes.
-void AttributesTab::on_context_menu(const QPoint pos) {
-    QMenu menu;
+void AttributesTab::open_filter_dialog() {
+    auto dialog = new QDialog();
 
-    QAction *hide_unset = menu.addAction(tr("Hide unset"),
-        [this](bool checked) {
-            proxy->hide_unset = checked;
+    auto layout = new QVBoxLayout();
+    dialog->setLayout(layout);
+
+    QHash<AttributeFilter, QCheckBox *> checks;
+
+    auto add_check =
+    [this, &checks, layout](const QString text, const AttributeFilter filter) {
+        auto check = new QCheckBox(text);
+        const bool is_checked = proxy->filters[filter];
+        check->setChecked(is_checked);
+
+        checks.insert(filter, check);
+
+        layout->addWidget(check);
+    };
+
+    add_check(tr("Hide unset"), AttributeFilter_HideUnset);
+    add_check(tr("Hide system only"), AttributeFilter_HideSystemOnly);
+
+    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(
+        button_box, &QDialogButtonBox::accepted,
+        dialog, &QDialog::accept);
+    connect(
+        button_box, &QDialogButtonBox::rejected,
+        dialog, &QDialog::reject);
+
+    layout->addWidget(button_box);
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this, checks]() {
+            for (const AttributeFilter filter : checks.keys()) {
+                const QCheckBox *check = checks[filter];
+                proxy->filters[filter] = check->isChecked();
+            }
+
             proxy->invalidate();
         });
-    hide_unset->setCheckable(true);
-    hide_unset->setChecked(proxy->hide_unset);
 
-    QAction *hide_read_only = menu.addAction(tr("Hide read only"),
-        [this](bool checked) {
-            proxy->hide_read_only = checked;
-            proxy->invalidate();
-        });
-    hide_read_only->setCheckable(true);
-    hide_read_only->setChecked(proxy->hide_read_only);
-
-    exec_menu_from_view(&menu, view, pos);
+    dialog->open();
 }
 
 void AttributesTab::showEvent(QShowEvent *event) {
@@ -162,7 +190,6 @@ void AttributesTab::load(const AdObject &object) {
     model->removeRows(0, model->rowCount());
 
     proxy->unset_map.clear();
-    proxy->read_only_map.clear();
 
     for (auto attribute : original.keys()) {
         const QList<QStandardItem *> row = make_item_row(AttributesColumn_COUNT);
@@ -189,28 +216,25 @@ void AttributesTab::apply(const QString &target) const {
 void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values) {
     const QString display_values = attribute_display_values(attribute, values);
     const bool unset = values.isEmpty();
-    const bool read_only = ADCONFIG()->get_attribute_is_system_only(attribute);
     const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
     const QString type_display = attribute_type_display_string(type);
-
 
     row[AttributesColumn_Name]->setText(attribute);
     row[AttributesColumn_Value]->setText(display_values);
     row[AttributesColumn_Type]->setText(type_display);
 
     proxy->unset_map[attribute] = unset;
-    proxy->read_only_map[attribute] = read_only;
 }
 
 bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
     auto source = sourceModel();
     const QString attribute = source->index(source_row, AttributesColumn_Name, source_parent).data().toString();
-    const bool read_only = read_only_map[attribute];
+    const bool system_only = ADCONFIG()->get_attribute_is_system_only(attribute);
     const bool unset = unset_map[attribute];
 
-    if (hide_unset && unset) {
+    if (unset && filters[AttributeFilter_HideUnset]) {
         return false;
-    } else if (hide_read_only && read_only) {
+    } else if (system_only && filters[AttributeFilter_HideSystemOnly]) {
         return false;
     } else {
         return true;
