@@ -33,6 +33,7 @@
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QCheckBox>
+#include <QFrame>
 
 enum AttributesColumn {
     AttributesColumn_Name,
@@ -123,21 +124,40 @@ void AttributesTab::open_filter_dialog() {
 
     QHash<AttributeFilter, QCheckBox *> checks;
 
+    auto make_frame =
+    []() -> QFrame * {
+        auto frame = new QFrame();
+        frame->setFrameShape(QFrame::Box);
+        frame->setFrameShadow(QFrame::Raised);
+        frame->setLayout(new QVBoxLayout());
+
+        return frame;
+    };
+
     auto add_check =
-    [this, &checks, layout](const QString text, const AttributeFilter filter) {
+    [this, &checks](const QString text, const AttributeFilter filter) {
         auto check = new QCheckBox(text);
         const bool is_checked = proxy->filters[filter];
         check->setChecked(is_checked);
 
         checks.insert(filter, check);
-
-        layout->addWidget(check);
     };
 
     add_check(tr("Unset"), AttributeFilter_Unset);
     add_check(tr("System only"), AttributeFilter_SystemOnly);
     add_check(tr("Mandatory"), AttributeFilter_Mandatory);
     add_check(tr("Optional"), AttributeFilter_Optional);
+
+    auto first_frame = make_frame();
+    first_frame->layout()->addWidget(checks[AttributeFilter_Unset]);
+    first_frame->layout()->addWidget(checks[AttributeFilter_SystemOnly]);
+
+    auto second_frame = make_frame();
+    second_frame->layout()->addWidget(checks[AttributeFilter_Mandatory]);
+    second_frame->layout()->addWidget(checks[AttributeFilter_Optional]);
+
+    layout->addWidget(first_frame);
+    layout->addWidget(second_frame);
 
     auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(
