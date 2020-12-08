@@ -57,6 +57,7 @@
 #define FLAG_ATTR_IS_CONSTRUCTED        0x00000004 
 
 QString get_locale_dir();
+QList<QString> add_auxiliary_classes(const QList<QString> &object_classes);
 
 AdConfig::AdConfig(QObject *parent)
 : QObject(parent)
@@ -277,25 +278,8 @@ QList<QString> AdConfig::get_possible_superiors(const QList<ObjectClass> &object
 }
 
 QList<QString> AdConfig::get_optional_attributes(const QList<QString> &object_classes) const {
-    // Add auxiliary classes of given classes to list
-    const QList<QString> all_classes =
-    [=]() {
-        QList<QString> out;
+    const QList<QString> all_classes = add_auxiliary_classes(object_classes);
 
-        out += object_classes;
-
-        for (const auto object_class : object_classes) {
-            const AdObject schema = class_schemas[object_class];
-            out += schema.get_strings(ATTRIBUTE_AUXILIARY_CLASS);
-            out += schema.get_strings(ATTRIBUTE_SYSTEM_AUXILIARY_CLASS);
-        }
-
-        out.removeDuplicates();
-
-        return out;
-    }();
-
-    // Combine possible attributes of all classes of this object
     QList<QString> attributes;
 
     for (const auto object_class : all_classes) {
@@ -310,25 +294,8 @@ QList<QString> AdConfig::get_optional_attributes(const QList<QString> &object_cl
 }
 
 QList<QString> AdConfig::get_mandatory_attributes(const QList<QString> &object_classes) const {
-    // Add auxiliary classes of given classes to list
-    const QList<QString> all_classes =
-    [=]() {
-        QList<QString> out;
+    const QList<QString> all_classes = add_auxiliary_classes(object_classes);
 
-        out += object_classes;
-
-        for (const auto object_class : object_classes) {
-            const AdObject schema = class_schemas[object_class];
-            out += schema.get_strings(ATTRIBUTE_AUXILIARY_CLASS);
-            out += schema.get_strings(ATTRIBUTE_SYSTEM_AUXILIARY_CLASS);
-        }
-
-        out.removeDuplicates();
-
-        return out;
-    }();
-
-    // Combine possible attributes of all classes of this object
     QList<QString> attributes;
 
     for (const auto object_class : all_classes) {
@@ -469,6 +436,22 @@ void AdConfig::limit_edit(QLineEdit *edit, const QString &attribute) {
     if (range_upper > 0) {
         edit->setMaxLength(range_upper);
     }
+}
+
+QList<QString> AdConfig::add_auxiliary_classes(const QList<QString> &object_classes) const {
+    QList<QString> out;
+
+    out += object_classes;
+
+    for (const auto object_class : object_classes) {
+        const AdObject schema = class_schemas[object_class];
+        out += schema.get_strings(ATTRIBUTE_AUXILIARY_CLASS);
+        out += schema.get_strings(ATTRIBUTE_SYSTEM_AUXILIARY_CLASS);
+    }
+
+    out.removeDuplicates();
+
+    return out;
 }
 
 QString get_locale_dir() {

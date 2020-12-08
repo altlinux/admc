@@ -114,6 +114,8 @@ private:
 
     QHash<Attribute, AdObject> attribute_schemas;
     QHash<ObjectClass, AdObject> class_schemas;
+
+    QList<QString> add_auxiliary_classes(const QList<QString> &object_classes) const;
 };
 
 AdConfig *ADCONFIG();
