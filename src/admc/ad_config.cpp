@@ -217,6 +217,39 @@ AdConfig::AdConfig(QObject *parent)
         add_custom(ATTRIBUTE_OBJECT_CLASS, tr("Class"));
         add_custom(ATTRIBUTE_NAME, tr("Name"));
     }
+
+    filter_containers =
+    [this]() {
+        QList<QString> out;
+        
+        const QString locale_dir = get_locale_dir();
+        const QString ui_settings_dn = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
+        const AdObject object = AD()->search_object(ui_settings_dn, {ATTRIBUTE_FILTER_CONTAINERS});
+
+        // TODO: dns-Zone category is mispelled in
+        // ATTRIBUTE_FILTER_CONTAINERS, no idea why, might
+        // just be on this domain version
+        const QList<QString> categories =
+        [object]() {
+            QList<QString> categories_out = object.get_strings(ATTRIBUTE_FILTER_CONTAINERS);
+            categories_out.replaceInStrings("dns-Zone", "Dns-Zone");
+
+            return categories_out;
+        }();
+
+        // NOTE: ATTRIBUTE_FILTER_CONTAINERS contains object
+        // *categories* not classes, so need to get object
+        // class from category object
+        for (const auto object_category : categories) {
+            const QString category_dn = QString("CN=%1,%2").arg(object_category, AD()->schema_dn());
+            const AdObject category_object = AD()->search_object(category_dn, {ATTRIBUTE_LDAP_DISPLAY_NAME});
+            const QString object_class = category_object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
+
+            out.append(object_class);
+        }
+
+        return out;
+    }();
 }
 
 AdConfig *ADCONFIG() {
