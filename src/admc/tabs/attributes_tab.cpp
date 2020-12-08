@@ -28,14 +28,33 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 #include <QStandardItemModel>
-#include <QMenu>
 #include <QMessageBox>
+#include <QPushButton>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QCheckBox>
+#include <QFrame>
+#include <QLabel>
+
+// TODO: in relation to filter. There's "read-only" and "system-only". "Read-only"current system only should be "writable"
+// and there should be another system only which is part of the 
+// set of: system only, constructed, backlink
 
 enum AttributesColumn {
     AttributesColumn_Name,
     AttributesColumn_Value,
     AttributesColumn_Type,
     AttributesColumn_COUNT,
+};
+
+QHash<AttributeFilter, bool> AttributesTabProxy::default_filters = {
+    {AttributeFilter_Unset, true},
+    {AttributeFilter_ReadOnly, true},
+    {AttributeFilter_Mandatory, true},
+    {AttributeFilter_Optional, true},
+    {AttributeFilter_SystemOnly, true},
+    {AttributeFilter_Constructed, true},
+    {AttributeFilter_Backlink, true},
 };
 
 QString attribute_type_display_string(const AttributeType type);
@@ -53,25 +72,27 @@ AttributesTab::AttributesTab() {
     view->setSelectionBehavior(QAbstractItemView::SelectRows);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
-    view->setContextMenuPolicy(Qt::CustomContextMenu);
 
     proxy = new AttributesTabProxy(this);
 
     proxy->setSourceModel(model);
     view->setModel(proxy);
 
+    auto filter_button = new QPushButton(tr("Filter"));
+
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(view);
+    layout->addWidget(filter_button);
 
-    connect(
-        view, &QWidget::customContextMenuRequested,
-        this, &AttributesTab::on_context_menu);
     connect(
         view, &QAbstractItemView::doubleClicked,
         this, &AttributesTab::on_double_clicked);
+    connect(
+        filter_button, &QAbstractButton::clicked,
+        this, &AttributesTab::open_filter_dialog);
 }
 
 void AttributesTab::on_double_clicked(const QModelIndex &proxy_index) {
@@ -110,27 +131,98 @@ void AttributesTab::on_double_clicked(const QModelIndex &proxy_index) {
     }
 }
 
-// TODO: add options to show/hide attributes based on if they are in the "may contain" group (optional). Need to go through all parent classes to figure out the full set of such attributes.
-void AttributesTab::on_context_menu(const QPoint pos) {
-    QMenu menu;
+void AttributesTab::open_filter_dialog() {
+    auto dialog = new QDialog(this);
 
-    QAction *hide_unset = menu.addAction(tr("Hide unset"),
-        [this](bool checked) {
-            proxy->hide_unset = checked;
-            proxy->invalidate();
+    auto layout = new QVBoxLayout();
+    dialog->setLayout(layout);
+
+    QHash<AttributeFilter, QCheckBox *> checks;
+
+    auto make_frame =
+    []() -> QFrame * {
+        auto frame = new QFrame();
+        frame->setFrameShape(QFrame::Box);
+        frame->setFrameShadow(QFrame::Raised);
+        frame->setLayout(new QVBoxLayout());
+
+        return frame;
+    };
+
+    auto add_check =
+    [this, &checks](const QString text, const AttributeFilter filter) {
+        auto check = new QCheckBox(text);
+        const bool is_checked = proxy->filters[filter];
+        check->setChecked(is_checked);
+
+        checks.insert(filter, check);
+    };
+
+    add_check(tr("Unset"), AttributeFilter_Unset);
+    add_check(tr("Read-only"), AttributeFilter_ReadOnly);
+    add_check(tr("Mandatory"), AttributeFilter_Mandatory);
+    add_check(tr("Optional"), AttributeFilter_Optional);
+    add_check(tr("System-only"), AttributeFilter_SystemOnly);
+    add_check(tr("Constructed"), AttributeFilter_Constructed);
+    add_check(tr("Backlink"), AttributeFilter_Backlink);
+
+    // Enable readonly subtype checks when readonly is enabled
+    connect(
+        checks[AttributeFilter_ReadOnly], &QCheckBox::stateChanged,
+        [checks]() {
+            const bool read_only_enabled = checks[AttributeFilter_ReadOnly]->isChecked();
+
+            checks[AttributeFilter_SystemOnly]->setEnabled(read_only_enabled);
+            checks[AttributeFilter_Constructed]->setEnabled(read_only_enabled);
+            checks[AttributeFilter_Backlink]->setEnabled(read_only_enabled);
         });
-    hide_unset->setCheckable(true);
-    hide_unset->setChecked(proxy->hide_unset);
 
-    QAction *hide_read_only = menu.addAction(tr("Hide read only"),
-        [this](bool checked) {
-            proxy->hide_read_only = checked;
+    auto first_frame = make_frame();
+    first_frame->layout()->addWidget(checks[AttributeFilter_Unset]);
+    first_frame->layout()->addWidget(checks[AttributeFilter_ReadOnly]);
+
+    auto second_frame = make_frame();
+    second_frame->layout()->addWidget(checks[AttributeFilter_Mandatory]);
+    second_frame->layout()->addWidget(checks[AttributeFilter_Optional]);
+
+    auto third_frame = make_frame();
+    third_frame->layout()->addWidget(new QLabel(tr("Read-only attributes:")));
+    third_frame->layout()->addWidget(checks[AttributeFilter_SystemOnly]);
+    third_frame->layout()->addWidget(checks[AttributeFilter_Constructed]);
+    third_frame->layout()->addWidget(checks[AttributeFilter_Backlink]);
+
+    layout->addWidget(first_frame);
+    layout->addWidget(second_frame);
+    layout->addWidget(third_frame);
+
+    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(
+        button_box, &QDialogButtonBox::accepted,
+        dialog, &QDialog::accept);
+    connect(
+        button_box, &QDialogButtonBox::rejected,
+        dialog, &QDialog::reject);
+
+    layout->addWidget(button_box);
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this, checks]() {
+            for (const AttributeFilter filter : checks.keys()) {
+                const QCheckBox *check = checks[filter];
+                proxy->filters[filter] = check->isChecked();
+            }
+
             proxy->invalidate();
-        });
-    hide_read_only->setCheckable(true);
-    hide_read_only->setChecked(proxy->hide_read_only);
 
-    exec_menu_from_view(&menu, view, pos);
+            // Save selected filters as defaults
+            for (const AttributeFilter filter : checks.keys()) {
+                const QCheckBox *check = checks[filter];
+                AttributesTabProxy::default_filters[filter] = check->isChecked();
+            }
+        });
+
+    dialog->open();
 }
 
 void AttributesTab::showEvent(QShowEvent *event) {
@@ -150,8 +242,8 @@ void AttributesTab::load(const AdObject &object) {
 
     // Add attributes without values
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-    const QList<QString> possible_attributes = ADCONFIG()->get_possible_attributes(object_classes);
-    for (const QString attribute : possible_attributes) {
+    const QList<QString> optional_attributes = ADCONFIG()->get_optional_attributes(object_classes);
+    for (const QString attribute : optional_attributes) {
         if (!original.contains(attribute)) {
             original[attribute] = QList<QByteArray>();
         }
@@ -159,10 +251,9 @@ void AttributesTab::load(const AdObject &object) {
 
     current = original;
 
-    model->removeRows(0, model->rowCount());
+    proxy->load(object);
 
-    proxy->unset_map.clear();
-    proxy->read_only_map.clear();
+    model->removeRows(0, model->rowCount());
 
     for (auto attribute : original.keys()) {
         const QList<QStandardItem *> row = make_item_row(AttributesColumn_COUNT);
@@ -188,33 +279,72 @@ void AttributesTab::apply(const QString &target) const {
 
 void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values) {
     const QString display_values = attribute_display_values(attribute, values);
-    const bool unset = values.isEmpty();
-    const bool read_only = ADCONFIG()->get_attribute_is_system_only(attribute);
     const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
     const QString type_display = attribute_type_display_string(type);
-
 
     row[AttributesColumn_Name]->setText(attribute);
     row[AttributesColumn_Value]->setText(display_values);
     row[AttributesColumn_Type]->setText(type_display);
+}
 
-    proxy->unset_map[attribute] = unset;
-    proxy->read_only_map[attribute] = read_only;
+AttributesTabProxy::AttributesTabProxy(QObject *parent)
+: QSortFilterProxyModel(parent) {
+    // Load default filters once on creation, after that
+    // filters are unrelated to defaults
+    filters = default_filters;
+}
+
+void AttributesTabProxy::load(const AdObject &object) {
+    const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
+    mandatory_attributes = ADCONFIG()->get_mandatory_attributes(object_classes).toSet();
+    optional_attributes = ADCONFIG()->get_optional_attributes(object_classes).toSet();
+
+    set_attributes = object.attributes().toSet();
 }
 
 bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
     auto source = sourceModel();
     const QString attribute = source->index(source_row, AttributesColumn_Name, source_parent).data().toString();
-    const bool read_only = read_only_map[attribute];
-    const bool unset = unset_map[attribute];
+    
+    const bool system_only = ADCONFIG()->get_attribute_is_system_only(attribute);
+    const bool unset = !set_attributes.contains(attribute);
+    const bool mandatory = mandatory_attributes.contains(attribute);
+    const bool optional = optional_attributes.contains(attribute);
 
-    if (hide_unset && unset) {
+    if (!filters[AttributeFilter_Unset] && unset) {
         return false;
-    } else if (hide_read_only && read_only) {
-        return false;
-    } else {
-        return true;
     }
+
+    if (!filters[AttributeFilter_Mandatory] && mandatory) {
+        return false;
+    }
+
+    if (!filters[AttributeFilter_Optional] && optional) {
+        return false;
+    }
+
+    if (filters[AttributeFilter_ReadOnly] && system_only) {
+        const bool constructed = ADCONFIG()->get_attribute_is_constructed(attribute);
+        const bool backlink = ADCONFIG()->get_attribute_is_backlink(attribute);
+
+        if (!filters[AttributeFilter_SystemOnly] && !constructed && !backlink) {
+            return false;
+        }
+
+        if (!filters[AttributeFilter_Constructed] && constructed) {
+            return false;
+        }
+
+        if (!filters[AttributeFilter_Backlink] && backlink) {
+            return false;
+        }
+    }
+
+    if (!filters[AttributeFilter_ReadOnly] && system_only) {
+        return false;
+    }
+
+    return true;
 }
 
 QString attribute_type_display_string(const AttributeType type) {

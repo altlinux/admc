@@ -20,10 +20,15 @@
 #ifndef ATTRIBUTES_TAB_H
 #define ATTRIBUTES_TAB_H
 
+/** 
+ * Show attributes of target in a list. Allows
+ * viewing/editing if possible via attribute editor dialogs.
+ */
+
 #include "tabs/details_tab.h"
 
 #include <QSortFilterProxyModel>
-#include <QHash>
+#include <QSet>
 #include <QString>
 
 class QStandardItemModel;
@@ -31,8 +36,20 @@ class QStandardItem;
 class AttributesTabProxy;
 class QTreeView;
 
-// Show attributes of target as a list of attribute names and values
-// Values are editable
+// NOTE: "readonly" is really "systemonly", it's just that this set of attributes is broken down into "backlink", "constructed" and "systemonly"(aka, not backlink or constructed but still systemonly). Not sure if this is the ideal behavior, maybe change it to be more logical and aligned with what user needs.
+enum AttributeFilter {
+    AttributeFilter_Unset,
+    AttributeFilter_ReadOnly,
+    AttributeFilter_Mandatory,
+    AttributeFilter_Optional,
+    AttributeFilter_SystemOnly,
+    AttributeFilter_Constructed,
+    AttributeFilter_Backlink,
+
+    AttributeFilter_COUNT,
+};
+
+
 class AttributesTab final : public DetailsTab {
 Q_OBJECT
 
@@ -44,7 +61,7 @@ public:
 
 private slots:
     void on_double_clicked(const QModelIndex &proxy_index);
-    void on_context_menu(const QPoint pos);
+    void open_filter_dialog();
 
 private:
     QTreeView *view;
@@ -60,12 +77,17 @@ private:
 class AttributesTabProxy final : public QSortFilterProxyModel {
 
 public:
-    using QSortFilterProxyModel::QSortFilterProxyModel;
+    static QHash<AttributeFilter, bool> default_filters;
+    QHash<AttributeFilter, bool> filters;
 
-    bool hide_unset = false;
-    bool hide_read_only = false;
-    QHash<QString, bool> unset_map;
-    QHash<QString, bool> read_only_map;
+    AttributesTabProxy(QObject *parent);
+
+    void load(const AdObject &object);
+
+private:
+    QSet<QString> set_attributes;
+    QSet<QString> mandatory_attributes;
+    QSet<QString> optional_attributes;
 
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };

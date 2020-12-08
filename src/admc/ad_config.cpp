@@ -41,16 +41,23 @@
 #define TREAT_AS_LEAF                   "treatAsLeaf"
 #define ATTRIBUTE_MAY_CONTAIN           "mayContain"
 #define ATTRIBUTE_SYSTEM_MAY_CONTAIN    "systemMayContain"
+#define ATTRIBUTE_MUST_CONTAIN          "mustContain"
+#define ATTRIBUTE_SYSTEM_MUST_CONTAIN   "systemMustContain"
 #define ATTRIBUTE_IS_SINGLE_VALUED      "isSingleValued"
 #define ATTRIBUTE_SYSTEM_ONLY           "systemOnly"
 #define ATTRIBUTE_RANGE_UPPER           "rangeUpper"
 #define ATTRIBUTE_AUXILIARY_CLASS       "auxiliaryClass"
+#define ATTRIBUTE_SYSTEM_FLAGS          "systemFlags"
+#define ATTRIBUTE_LINK_ID               "linkID"
 #define ATTRIBUTE_SYSTEM_AUXILIARY_CLASS "systemAuxiliaryClass"
 
 #define CLASS_ATTRIBUTE_SCHEMA          "attributeSchema"
 #define CLASS_CLASS_SCHEMA              "classSchema"
 
+#define FLAG_ATTR_IS_CONSTRUCTED        0x00000004 
+
 QString get_locale_dir();
+QList<QString> add_auxiliary_classes(const QList<QString> &object_classes);
 
 AdConfig::AdConfig(QObject *parent)
 : QObject(parent)
@@ -66,6 +73,8 @@ AdConfig::AdConfig(QObject *parent)
             ATTRIBUTE_IS_SINGLE_VALUED,
             ATTRIBUTE_SYSTEM_ONLY,
             ATTRIBUTE_RANGE_UPPER,
+            ATTRIBUTE_LINK_ID,
+            ATTRIBUTE_SYSTEM_FLAGS,
         };
 
         const QString schema_dn = AD()->schema_dn();
@@ -87,6 +96,8 @@ AdConfig::AdConfig(QObject *parent)
             ATTRIBUTE_POSSIBLE_SUPERIORS,
             ATTRIBUTE_MAY_CONTAIN,
             ATTRIBUTE_SYSTEM_MAY_CONTAIN,
+            ATTRIBUTE_MUST_CONTAIN,
+            ATTRIBUTE_SYSTEM_MUST_CONTAIN,
             ATTRIBUTE_AUXILIARY_CLASS,
             ATTRIBUTE_SYSTEM_AUXILIARY_CLASS,
         };
@@ -299,32 +310,31 @@ QList<QString> AdConfig::get_possible_superiors(const QList<ObjectClass> &object
     return out;
 }
 
-QList<QString> AdConfig::get_possible_attributes(const QList<QString> &object_classes) const {
-    // Add auxiliary classes of given classes to list
-    const QList<QString> all_classes =
-    [=]() {
-        QList<QString> out;
+QList<QString> AdConfig::get_optional_attributes(const QList<QString> &object_classes) const {
+    const QList<QString> all_classes = add_auxiliary_classes(object_classes);
 
-        out += object_classes;
-
-        for (const auto object_class : object_classes) {
-            const AdObject schema = class_schemas[object_class];
-            out += schema.get_strings(ATTRIBUTE_AUXILIARY_CLASS);
-            out += schema.get_strings(ATTRIBUTE_SYSTEM_AUXILIARY_CLASS);
-        }
-
-        out.removeDuplicates();
-
-        return out;
-    }();
-
-    // Combine possible attributes of all classes of this object
     QList<QString> attributes;
 
     for (const auto object_class : all_classes) {
         const AdObject schema = class_schemas[object_class];
         attributes += schema.get_strings(ATTRIBUTE_MAY_CONTAIN);
         attributes += schema.get_strings(ATTRIBUTE_SYSTEM_MAY_CONTAIN);
+    }
+
+    attributes.removeDuplicates();
+
+    return attributes;
+}
+
+QList<QString> AdConfig::get_mandatory_attributes(const QList<QString> &object_classes) const {
+    const QList<QString> all_classes = add_auxiliary_classes(object_classes);
+
+    QList<QString> attributes;
+
+    for (const auto object_class : all_classes) {
+        const AdObject schema = class_schemas[object_class];
+        attributes += schema.get_strings(ATTRIBUTE_MUST_CONTAIN);
+        attributes += schema.get_strings(ATTRIBUTE_SYSTEM_MUST_CONTAIN);
     }
 
     attributes.removeDuplicates();
@@ -442,11 +452,43 @@ int AdConfig::get_attribute_range_upper(const QString &attribute) const {
     return attribute_schemas[attribute].get_int(ATTRIBUTE_RANGE_UPPER);
 }
 
+bool AdConfig::get_attribute_is_backlink(const QString &attribute) const {
+    if (attribute_schemas[attribute].contains(ATTRIBUTE_LINK_ID)) {
+        const int link_id = attribute_schemas[attribute].get_int(ATTRIBUTE_LINK_ID);
+        const bool link_id_is_odd = (link_id % 2 != 0);
+
+        return link_id_is_odd;
+    } else {
+        return false;
+    }
+}
+
+bool AdConfig::get_attribute_is_constructed(const QString &attribute) const {
+    const int system_flags = attribute_schemas[attribute].get_int(ATTRIBUTE_SYSTEM_FLAGS);
+    return bit_is_set(system_flags, FLAG_ATTR_IS_CONSTRUCTED);   
+}
+
 void AdConfig::limit_edit(QLineEdit *edit, const QString &attribute) {
     const int range_upper = get_attribute_range_upper(attribute);
     if (range_upper > 0) {
         edit->setMaxLength(range_upper);
     }
+}
+
+QList<QString> AdConfig::add_auxiliary_classes(const QList<QString> &object_classes) const {
+    QList<QString> out;
+
+    out += object_classes;
+
+    for (const auto object_class : object_classes) {
+        const AdObject schema = class_schemas[object_class];
+        out += schema.get_strings(ATTRIBUTE_AUXILIARY_CLASS);
+        out += schema.get_strings(ATTRIBUTE_SYSTEM_AUXILIARY_CLASS);
+    }
+
+    out.removeDuplicates();
+
+    return out;
 }
 
 QString get_locale_dir() {

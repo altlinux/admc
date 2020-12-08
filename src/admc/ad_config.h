@@ -87,7 +87,8 @@ public:
 
     QList<ObjectClass> get_possible_superiors(const QList<ObjectClass> &object_classes) const;
 
-    QList<Attribute> get_possible_attributes(const QList<ObjectClass> &object_classes) const;
+    QList<Attribute> get_optional_attributes(const QList<ObjectClass> &object_classes) const;
+    QList<Attribute> get_mandatory_attributes(const QList<ObjectClass> &object_classes) const;
     QList<Attribute> get_find_attributes(const ObjectClass &object_class) const;
 
     AttributeType get_attribute_type(const Attribute &attribute) const;
@@ -96,6 +97,8 @@ public:
     bool get_attribute_is_single_valued(const Attribute &attribute) const;
     bool get_attribute_is_system_only(const Attribute &attribute) const;
     int get_attribute_range_upper(const Attribute &attribute) const;
+    bool get_attribute_is_backlink(const Attribute &attribute) const;
+    bool get_attribute_is_constructed(const Attribute &attribute) const;
 
     void limit_edit(QLineEdit *edit, const QString &attribute);
 
@@ -111,6 +114,8 @@ private:
 
     QHash<Attribute, AdObject> attribute_schemas;
     QHash<ObjectClass, AdObject> class_schemas;
+
+    QList<QString> add_auxiliary_classes(const QList<QString> &object_classes) const;
 };
 
 AdConfig *ADCONFIG();
