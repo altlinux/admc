@@ -78,24 +78,40 @@ AttributesTab::AttributesTab() {
     proxy->setSourceModel(model);
     view->setModel(proxy);
 
+    auto edit_button = new QPushButton(tr("Edit"));
     auto filter_button = new QPushButton(tr("Filter"));
+    auto buttons = new QHBoxLayout();
+    buttons->addWidget(edit_button);
+    buttons->addStretch(1);
+    buttons->addWidget(filter_button);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
     layout->addWidget(view);
-    layout->addWidget(filter_button);
+    layout->addLayout(buttons);
+
+    enable_widget_on_selection(edit_button, view);
 
     connect(
         view, &QAbstractItemView::doubleClicked,
-        this, &AttributesTab::on_double_clicked);
+        this, &AttributesTab::edit_attribute);
+    connect(
+        edit_button, &QAbstractButton::clicked,
+        this, &AttributesTab::edit_attribute);
     connect(
         filter_button, &QAbstractButton::clicked,
         this, &AttributesTab::open_filter_dialog);
 }
 
-void AttributesTab::on_double_clicked(const QModelIndex &proxy_index) {
+void AttributesTab::edit_attribute() {
+    const QItemSelectionModel *selection_model = view->selectionModel();
+    const QList<QModelIndex> selecteds = selection_model->selectedIndexes();
+
+    if (selecteds.isEmpty()) {
+        return;
+    }
+
+    const QModelIndex proxy_index = selecteds[0];
     const QModelIndex index = proxy->mapToSource(proxy_index);
     
     const QList<QStandardItem *> row =

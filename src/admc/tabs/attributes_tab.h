@@ -60,7 +60,7 @@ public:
     void apply(const QString &target) const override;
 
 private slots:
-    void on_double_clicked(const QModelIndex &proxy_index);
+    void edit_attribute();
     void open_filter_dialog();
 
 private:
