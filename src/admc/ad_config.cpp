@@ -41,6 +41,8 @@
 #define TREAT_AS_LEAF                   "treatAsLeaf"
 #define ATTRIBUTE_MAY_CONTAIN           "mayContain"
 #define ATTRIBUTE_SYSTEM_MAY_CONTAIN    "systemMayContain"
+#define ATTRIBUTE_MUST_CONTAIN          "mustContain"
+#define ATTRIBUTE_SYSTEM_MUST_CONTAIN   "systemMustContain"
 #define ATTRIBUTE_IS_SINGLE_VALUED      "isSingleValued"
 #define ATTRIBUTE_SYSTEM_ONLY           "systemOnly"
 #define ATTRIBUTE_RANGE_UPPER           "rangeUpper"
@@ -93,6 +95,8 @@ AdConfig::AdConfig(QObject *parent)
             ATTRIBUTE_POSSIBLE_SUPERIORS,
             ATTRIBUTE_MAY_CONTAIN,
             ATTRIBUTE_SYSTEM_MAY_CONTAIN,
+            ATTRIBUTE_MUST_CONTAIN,
+            ATTRIBUTE_SYSTEM_MUST_CONTAIN,
             ATTRIBUTE_AUXILIARY_CLASS,
             ATTRIBUTE_SYSTEM_AUXILIARY_CLASS,
         };
@@ -298,6 +302,39 @@ QList<QString> AdConfig::get_possible_attributes(const QList<QString> &object_cl
         const AdObject schema = class_schemas[object_class];
         attributes += schema.get_strings(ATTRIBUTE_MAY_CONTAIN);
         attributes += schema.get_strings(ATTRIBUTE_SYSTEM_MAY_CONTAIN);
+    }
+
+    attributes.removeDuplicates();
+
+    return attributes;
+}
+
+QList<QString> AdConfig::get_mandatory_attributes(const QList<QString> &object_classes) const {
+    // Add auxiliary classes of given classes to list
+    const QList<QString> all_classes =
+    [=]() {
+        QList<QString> out;
+
+        out += object_classes;
+
+        for (const auto object_class : object_classes) {
+            const AdObject schema = class_schemas[object_class];
+            out += schema.get_strings(ATTRIBUTE_AUXILIARY_CLASS);
+            out += schema.get_strings(ATTRIBUTE_SYSTEM_AUXILIARY_CLASS);
+        }
+
+        out.removeDuplicates();
+
+        return out;
+    }();
+
+    // Combine possible attributes of all classes of this object
+    QList<QString> attributes;
+
+    for (const auto object_class : all_classes) {
+        const AdObject schema = class_schemas[object_class];
+        attributes += schema.get_strings(ATTRIBUTE_MUST_CONTAIN);
+        attributes += schema.get_strings(ATTRIBUTE_SYSTEM_MUST_CONTAIN);
     }
 
     attributes.removeDuplicates();

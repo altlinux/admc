@@ -23,7 +23,7 @@
 #include "tabs/details_tab.h"
 
 #include <QSortFilterProxyModel>
-#include <QHash>
+#include <QSet>
 #include <QString>
 
 class QStandardItemModel;
@@ -32,8 +32,11 @@ class AttributesTabProxy;
 class QTreeView;
 
 enum AttributeFilter {
-    AttributeFilter_HideUnset,
-    AttributeFilter_HideSystemOnly,
+    AttributeFilter_Unset,
+    AttributeFilter_SystemOnly,
+    AttributeFilter_Mandatory,
+    AttributeFilter_Optional,
+    AttributeFilter_COUNT,
 };
 
 // Show attributes of target as a list of attribute names and values
@@ -65,11 +68,15 @@ private:
 class AttributesTabProxy final : public QSortFilterProxyModel {
 
 public:
+    AttributesTabProxy(QObject *parent);
     using QSortFilterProxyModel::QSortFilterProxyModel;
 
     QHash<AttributeFilter, bool> filters;
-    QHash<QString, bool> unset_map;
+    QSet<QString> set_attributes;
+    QSet<QString> mandatory_attributes;
+    QSet<QString> optional_attributes;
 
+    void load(const AdObject &object);
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
 

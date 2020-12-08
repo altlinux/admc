@@ -134,8 +134,10 @@ void AttributesTab::open_filter_dialog() {
         layout->addWidget(check);
     };
 
-    add_check(tr("Hide unset"), AttributeFilter_HideUnset);
-    add_check(tr("Hide system only"), AttributeFilter_HideSystemOnly);
+    add_check(tr("Unset"), AttributeFilter_Unset);
+    add_check(tr("System only"), AttributeFilter_SystemOnly);
+    add_check(tr("Mandatory"), AttributeFilter_Mandatory);
+    add_check(tr("Optional"), AttributeFilter_Optional);
 
     auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(
@@ -187,9 +189,9 @@ void AttributesTab::load(const AdObject &object) {
 
     current = original;
 
-    model->removeRows(0, model->rowCount());
+    proxy->load(object);
 
-    proxy->unset_map.clear();
+    model->removeRows(0, model->rowCount());
 
     for (auto attribute : original.keys()) {
         const QList<QStandardItem *> row = make_item_row(AttributesColumn_COUNT);
@@ -215,30 +217,55 @@ void AttributesTab::apply(const QString &target) const {
 
 void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values) {
     const QString display_values = attribute_display_values(attribute, values);
-    const bool unset = values.isEmpty();
     const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
     const QString type_display = attribute_type_display_string(type);
 
     row[AttributesColumn_Name]->setText(attribute);
     row[AttributesColumn_Value]->setText(display_values);
     row[AttributesColumn_Type]->setText(type_display);
+}
 
-    proxy->unset_map[attribute] = unset;
+AttributesTabProxy::AttributesTabProxy(QObject *parent)
+: QSortFilterProxyModel(parent) {
+    for (int i = 0; i < AttributeFilter_COUNT; i++) {
+        const AttributeFilter filter = (AttributeFilter) i;
+        filters[filter] = true;
+    }
+}
+
+void AttributesTabProxy::load(const AdObject &object) {
+    const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
+    mandatory_attributes = ADCONFIG()->get_mandatory_attributes(object_classes).toSet();
+    optional_attributes = ADCONFIG()->get_possible_attributes(object_classes).toSet();
+
+    set_attributes = object.attributes().toSet();
 }
 
 bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
     auto source = sourceModel();
     const QString attribute = source->index(source_row, AttributesColumn_Name, source_parent).data().toString();
     const bool system_only = ADCONFIG()->get_attribute_is_system_only(attribute);
-    const bool unset = unset_map[attribute];
+    const bool unset = !set_attributes.contains(attribute);
+    const bool mandatory = mandatory_attributes.contains(attribute);
+    const bool optional = optional_attributes.contains(attribute);
 
-    if (unset && filters[AttributeFilter_HideUnset]) {
+    if (unset && !filters[AttributeFilter_Unset]) {
         return false;
-    } else if (system_only && filters[AttributeFilter_HideSystemOnly]) {
-        return false;
-    } else {
-        return true;
     }
+
+    if (system_only && !filters[AttributeFilter_SystemOnly]) {
+        return false;
+    }
+
+    if (mandatory && !filters[AttributeFilter_Mandatory]) {
+        return false;
+    }
+
+    if (optional && !filters[AttributeFilter_Optional]) {
+        return false;
+    }
+    
+    return true;
 }
 
 QString attribute_type_display_string(const AttributeType type) {

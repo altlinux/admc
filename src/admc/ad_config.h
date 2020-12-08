@@ -88,6 +88,7 @@ public:
     QList<ObjectClass> get_possible_superiors(const QList<ObjectClass> &object_classes) const;
 
     QList<Attribute> get_possible_attributes(const QList<ObjectClass> &object_classes) const;
+    QList<Attribute> get_mandatory_attributes(const QList<ObjectClass> &object_classes) const;
     QList<Attribute> get_find_attributes(const ObjectClass &object_class) const;
 
     AttributeType get_attribute_type(const Attribute &attribute) const;
