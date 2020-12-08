@@ -77,15 +77,18 @@ private:
 class AttributesTabProxy final : public QSortFilterProxyModel {
 
 public:
-    AttributesTabProxy(QObject *parent);
-    using QSortFilterProxyModel::QSortFilterProxyModel;
-
+    static QHash<AttributeFilter, bool> default_filters;
     QHash<AttributeFilter, bool> filters;
+
+    AttributesTabProxy(QObject *parent);
+
+    void load(const AdObject &object);
+
+private:
     QSet<QString> set_attributes;
     QSet<QString> mandatory_attributes;
     QSet<QString> optional_attributes;
 
-    void load(const AdObject &object);
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
 

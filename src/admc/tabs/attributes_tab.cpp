@@ -47,6 +47,16 @@ enum AttributesColumn {
     AttributesColumn_COUNT,
 };
 
+QHash<AttributeFilter, bool> AttributesTabProxy::default_filters = {
+    {AttributeFilter_Unset, true},
+    {AttributeFilter_ReadOnly, true},
+    {AttributeFilter_Mandatory, true},
+    {AttributeFilter_Optional, true},
+    {AttributeFilter_SystemOnly, true},
+    {AttributeFilter_Constructed, true},
+    {AttributeFilter_Backlink, true},
+};
+
 QString attribute_type_display_string(const AttributeType type);
 
 AttributesTab::AttributesTab() {
@@ -204,6 +214,12 @@ void AttributesTab::open_filter_dialog() {
             }
 
             proxy->invalidate();
+
+            // Save selected filters as defaults
+            for (const AttributeFilter filter : checks.keys()) {
+                const QCheckBox *check = checks[filter];
+                AttributesTabProxy::default_filters[filter] = check->isChecked();
+            }
         });
 
     dialog->open();
@@ -273,10 +289,9 @@ void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &a
 
 AttributesTabProxy::AttributesTabProxy(QObject *parent)
 : QSortFilterProxyModel(parent) {
-    for (int i = 0; i < AttributeFilter_COUNT; i++) {
-        const AttributeFilter filter = (AttributeFilter) i;
-        filters[filter] = true;
-    }
+    // Load default filters once on creation, after that
+    // filters are unrelated to defaults
+    filters = default_filters;
 }
 
 void AttributesTabProxy::load(const AdObject &object) {
