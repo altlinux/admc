@@ -114,7 +114,7 @@ int AdObject::get_int(const QString &attribute) const {
     if (!ints.isEmpty()) {
         return ints.first();
     } else {
-        return -1;
+        return 0;
     }
 }
 
@@ -148,31 +148,39 @@ bool AdObject::get_bool(const QString &attribute) const {
 }
 
 bool AdObject::get_system_flag(const SystemFlagsBit bit) const {
-    const int system_flags_bits = get_int(ATTRIBUTE_SYSTEM_FLAGS);
-    const bool is_set = bit_is_set(system_flags_bits, bit);
+    if (contains(ATTRIBUTE_SYSTEM_FLAGS)) {
+        const int system_flags_bits = get_int(ATTRIBUTE_SYSTEM_FLAGS);
+        const bool is_set = bit_is_set(system_flags_bits, bit);
 
-    return is_set;
+        return is_set;
+    } else {
+        return false;
+    }
 }
 
 bool AdObject::get_account_option(AccountOption option) const {
     switch (option) {
         case AccountOption_PasswordExpired: {
-            const QString pwdLastSet_value = get_string(ATTRIBUTE_PWD_LAST_SET);
-            const bool expired = (pwdLastSet_value == AD_PWD_LAST_SET_EXPIRED);
+            if (contains(ATTRIBUTE_PWD_LAST_SET)) {
+                const QString pwdLastSet_value = get_string(ATTRIBUTE_PWD_LAST_SET);
+                const bool expired = (pwdLastSet_value == AD_PWD_LAST_SET_EXPIRED);
 
-            return expired;
+                return expired;
+            } else {
+                return false;
+            }
         }
         default: {
             // Account option is a UAC bit
             if (contains(ATTRIBUTE_USER_ACCOUNT_CONTROL)) {
-                return false;
-            } else {
                 const int control = get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
                 const int bit = account_option_bit(option);
 
                 const bool set = ((control & bit) != 0);
 
                 return set;
+            } else {
+                return false;
             }
         }
     }
