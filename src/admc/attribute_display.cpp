@@ -18,14 +18,24 @@
  */
 
 #include "attribute_display.h"
+
 #include "ad_defines.h"
 #include "ad_utils.h"
 #include "ad_config.h"
 
-QString large_integer_datetime_to_display_value(const QString &attribute, const QByteArray &bytes);
-QString datetime_to_display_value(const QString &attribute, const QByteArray &bytes);
-QString timespan_to_display_value(const QByteArray &bytes);
-QString octet_to_display_value(const QString &attribute, const QByteArray &bytes);
+#include <QString>
+#include <QByteArray> 
+#include <QList> 
+
+const qint64 SECONDS_TO_MILLIS  = 1000LL;
+const qint64 MINUTES_TO_SECONDS = 60LL;
+const qint64 HOURS_TO_SECONDS   = MINUTES_TO_SECONDS * 60LL;
+const qint64 DAYS_TO_SECONDS    = HOURS_TO_SECONDS * 24LL;
+
+QString large_integer_datetime_display_value(const QString &attribute, const QByteArray &bytes);
+QString datetime_display_value(const QString &attribute, const QByteArray &bytes);
+QString timespan_display_value(const QByteArray &bytes);
+QString octet_display_value(const QByteArray &bytes);
 QString guid_to_display_value(const QByteArray &bytes);
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value) {
@@ -36,19 +46,19 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
             const LargeIntegerSubtype subtype = ADCONFIG()->get_attribute_large_integer_subtype(attribute);
 
             switch (subtype) {
-                case LargeIntegerSubtype_Datetime: return large_integer_datetime_to_display_value(attribute, value);
-                case LargeIntegerSubtype_Timespan: return timespan_to_display_value(value);
+                case LargeIntegerSubtype_Datetime: return large_integer_datetime_display_value(attribute, value);
+                case LargeIntegerSubtype_Timespan: return timespan_display_value(value);
                 case LargeIntegerSubtype_Integer: return QString(value);
             }
         }
-        case AttributeType_UTCTime: return datetime_to_display_value(attribute, value);
-        case AttributeType_GeneralizedTime: return datetime_to_display_value(attribute, value);
-        case AttributeType_Sid: return object_sid_to_display_value(value);
+        case AttributeType_UTCTime: return datetime_display_value(attribute, value);
+        case AttributeType_GeneralizedTime: return datetime_display_value(attribute, value);
+        case AttributeType_Sid: return object_sid_display_value(value);
         case AttributeType_Octet: {
             if (attribute == ATTRIBUTE_OBJECT_GUID) {
                 return guid_to_display_value(value);
             } else {
-                return octet_to_display_value(value);
+                return octet_display_value(value);
             }
         }
         default: {
@@ -82,7 +92,7 @@ QString attribute_display_values(const QString &attribute, const QList<QByteArra
 
 // TODO: replace with some library if possible. Maybe one of samba's libs has this.
 // NOTE: https://ldapwiki.com/wiki/ObjectSID
-QString object_sid_to_display_value(const QByteArray &sid) {
+QString object_sid_display_value(const QByteArray &sid) {
     QString string = "S-";
     
     // byte[0] - revision level
@@ -118,7 +128,7 @@ QString object_sid_to_display_value(const QByteArray &sid) {
     return string;
 }
 
-QString large_integer_datetime_to_display_value(const QString &attribute, const QByteArray &value) {
+QString large_integer_datetime_display_value(const QString &attribute, const QByteArray &value) {
     const QString value_string = QString(value);
     
     if (large_integer_datetime_is_never(value_string)) {
@@ -131,7 +141,7 @@ QString large_integer_datetime_to_display_value(const QString &attribute, const 
     }
 }
 
-QString datetime_to_display_value(const QString &attribute, const QByteArray &bytes) {
+QString datetime_display_value(const QString &attribute, const QByteArray &bytes) {
     const QString value_string = QString(bytes);
     const QDateTime datetime = datetime_string_to_qdatetime(attribute, value_string);
     const QDateTime datetime_local = datetime.toLocalTime();
@@ -140,7 +150,7 @@ QString datetime_to_display_value(const QString &attribute, const QByteArray &by
     return display;
 }
 
-QString timespan_to_display_value(const QByteArray &bytes) {
+QString timespan_display_value(const QByteArray &bytes) {
     // Timespan = integer value of hundred nanosecond quantities
     // (also negated)
     // Convert to dd:hh:mm:ss
@@ -227,7 +237,7 @@ QString guid_to_display_value(const QByteArray &bytes) {
     return QString(out);
 }
 
-QString octet_to_display_value(const QByteArray &bytes) {
+QString octet_display_value(const QByteArray &bytes) {
     const QByteArray bytes_hex = bytes.toHex();
 
     QByteArray out = bytes_hex;

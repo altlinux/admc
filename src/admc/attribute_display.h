@@ -19,19 +19,20 @@
 #ifndef ATTRIBUTE_DISPLAY_H
 #define ATTRIBUTE_DISPLAY_H
 
-#include <QString>
-#include <QByteArray>
+/**
+ * Functions for converting raw attribute values (bytes)
+ * into strings fit for displaying to user. Not that string attributes 
+ */
 
-const qint64 MILLIS_TO_100_NANOS = 10000LL;
-const qint64 SECONDS_TO_MILLIS   = 1000LL;
-const qint64 MINUTES_TO_SECONDS  = 60LL;
-const qint64 HOURS_TO_SECONDS    = MINUTES_TO_SECONDS * 60LL;
-const qint64 DAYS_TO_SECONDS     = HOURS_TO_SECONDS * 24LL;
+class QString;
+class QByteArray;
+template <typename T> class QList;
+
+const long long MILLIS_TO_100_NANOS = 10000LL;
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value);
 QString attribute_display_values(const QString &attribute, const QList<QByteArray> &values);
 
-QString object_sid_to_display_value(const QByteArray &bytes);
-QString octet_to_display_value(const QByteArray &bytes);
+QString object_sid_display_value(const QByteArray &bytes);
 
 #endif /* ATTRIBUTE_DISPLAY_H */

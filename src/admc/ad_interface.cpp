@@ -907,7 +907,7 @@ bool AdInterface::create_gpo(const QString &display_name) {
     //
     // Generate UUID used for directory and object names
     //
-    // TODO: is it ok to not swap bytes here, like it's done in octet_to_display_value()? Probably yes.
+    // TODO: is it ok to not swap bytes here, like it's done in octet_display_value()? Probably yes.
     const QString uuid =
     [](){
         uuid_t uuid_struct;
