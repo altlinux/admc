@@ -143,10 +143,15 @@ void AttributesTab::open_filter_dialog() {
         checks.insert(filter, check);
     };
 
+    // TODO: current system only should be "writable"
+    // and there should be another system only which is part of the 
+    // set of: system only, constructed, backlink
     add_check(tr("Unset"), AttributeFilter_Unset);
     add_check(tr("System only"), AttributeFilter_SystemOnly);
     add_check(tr("Mandatory"), AttributeFilter_Mandatory);
     add_check(tr("Optional"), AttributeFilter_Optional);
+    add_check(tr("Constructed"), AttributeFilter_Constructed);
+    add_check(tr("Backlink"), AttributeFilter_Backlink);
 
     auto first_frame = make_frame();
     first_frame->layout()->addWidget(checks[AttributeFilter_Unset]);
@@ -156,8 +161,13 @@ void AttributesTab::open_filter_dialog() {
     second_frame->layout()->addWidget(checks[AttributeFilter_Mandatory]);
     second_frame->layout()->addWidget(checks[AttributeFilter_Optional]);
 
+    auto third_frame = make_frame();
+    third_frame->layout()->addWidget(checks[AttributeFilter_Constructed]);
+    third_frame->layout()->addWidget(checks[AttributeFilter_Backlink]);
+
     layout->addWidget(first_frame);
     layout->addWidget(second_frame);
+    layout->addWidget(third_frame);
 
     auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(
@@ -261,6 +271,8 @@ void AttributesTabProxy::load(const AdObject &object) {
     set_attributes = object.attributes().toSet();
 }
 
+#include <QDebug>
+
 bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
     auto source = sourceModel();
     const QString attribute = source->index(source_row, AttributesColumn_Name, source_parent).data().toString();
@@ -268,6 +280,8 @@ bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &sou
     const bool unset = !set_attributes.contains(attribute);
     const bool mandatory = mandatory_attributes.contains(attribute);
     const bool optional = optional_attributes.contains(attribute);
+    const bool constructed = ADCONFIG()->get_attribute_is_constructed(attribute);
+    const bool backlink = ADCONFIG()->get_attribute_is_backlink(attribute);
 
     if (unset && !filters[AttributeFilter_Unset]) {
         return false;
@@ -282,6 +296,14 @@ bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &sou
     }
 
     if (optional && !filters[AttributeFilter_Optional]) {
+        return false;
+    }
+
+    if (constructed && !filters[AttributeFilter_Constructed]) {
+        return false;
+    }
+
+    if (backlink && !filters[AttributeFilter_Backlink]) {
         return false;
     }
     

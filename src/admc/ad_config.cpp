@@ -453,10 +453,14 @@ int AdConfig::get_attribute_range_upper(const QString &attribute) const {
 }
 
 bool AdConfig::get_attribute_is_backlink(const QString &attribute) const {
-    const int link_id = attribute_schemas[attribute].get_int(ATTRIBUTE_LINK_ID);
-    const bool link_id_is_odd = (link_id % 2 != 0);
-
-    return link_id_is_odd;
+    if (attribute_schemas[attribute].contains(ATTRIBUTE_LINK_ID)) {
+         const int link_id = attribute_schemas[attribute].get_int(ATTRIBUTE_LINK_ID);
+        const bool link_id_is_odd = (link_id % 2 != 0);
+        
+        return link_id_is_odd;
+    } else {
+        return false;
+    }
 }
 
 bool AdConfig::get_attribute_is_constructed(const QString &attribute) const {

@@ -36,6 +36,9 @@ enum AttributeFilter {
     AttributeFilter_SystemOnly,
     AttributeFilter_Mandatory,
     AttributeFilter_Optional,
+    AttributeFilter_Constructed,
+    AttributeFilter_Backlink,
+
     AttributeFilter_COUNT,
 };
 
