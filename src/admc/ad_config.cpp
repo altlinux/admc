@@ -33,12 +33,11 @@
 #define ATTRIBUTE_EXTRA_COLUMNS         "extraColumns"
 #define ATTRIBUTE_FILTER_CONTAINERS     "msDS-FilterContainers"
 #define ATTRIBUTE_LDAP_DISPLAY_NAME     "lDAPDisplayName"
-#define ATTRIBUTE_ADMIN_DISPLAY_NAME    "adminDisplayName"
-#define ATTRIBUTE_POSSIBLE_SUPERIORS    "systemPossSuperiors"
+#define ATTRIBUTE_POSSIBLE_SUPERIORS    "possSuperiors"
+#define ATTRIBUTE_SYSTEM_POSSIBLE_SUPERIORS "systemPossSuperiors"
 #define ATTRIBUTE_ATTRIBUTE_SYNTAX      "attributeSyntax"
 #define ATTRIBUTE_OM_SYNTAX             "oMSyntax"
 #define ATTRIBUTE_CLASS_DISPLAY_NAME    "classDisplayName"
-#define TREAT_AS_LEAF                   "treatAsLeaf"
 #define ATTRIBUTE_MAY_CONTAIN           "mayContain"
 #define ATTRIBUTE_SYSTEM_MAY_CONTAIN    "systemMayContain"
 #define ATTRIBUTE_MUST_CONTAIN          "mustContain"
@@ -94,6 +93,7 @@ AdConfig::AdConfig(QObject *parent)
         const QList<QString> attributes = {
             ATTRIBUTE_LDAP_DISPLAY_NAME,
             ATTRIBUTE_POSSIBLE_SUPERIORS,
+            ATTRIBUTE_SYSTEM_POSSIBLE_SUPERIORS,
             ATTRIBUTE_MAY_CONTAIN,
             ATTRIBUTE_SYSTEM_MAY_CONTAIN,
             ATTRIBUTE_MUST_CONTAIN,
@@ -303,6 +303,7 @@ QList<QString> AdConfig::get_possible_superiors(const QList<ObjectClass> &object
     for (const QString &object_class : object_classes) {
         const AdObject schema = class_schemas[object_class];
         out += schema.get_strings(ATTRIBUTE_POSSIBLE_SUPERIORS);
+        out += schema.get_strings(ATTRIBUTE_SYSTEM_POSSIBLE_SUPERIORS);
     }
 
     out.removeDuplicates();

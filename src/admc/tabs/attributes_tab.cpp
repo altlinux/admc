@@ -36,10 +36,6 @@
 #include <QFrame>
 #include <QLabel>
 
-// TODO: in relation to filter. There's "read-only" and "system-only". "Read-only"current system only should be "writable"
-// and there should be another system only which is part of the 
-// set of: system only, constructed, backlink
-
 enum AttributesColumn {
     AttributesColumn_Name,
     AttributesColumn_Value,
