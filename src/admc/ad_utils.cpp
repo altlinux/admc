@@ -155,7 +155,7 @@ int group_scope_bit(GroupScope scope) {
 QString group_scope_string(GroupScope scope) {
     switch (scope) {
         case GroupScope_Global: return QObject::tr("Global");
-        case GroupScope_DomainLocal: return QObject::tr("DomainLocal");
+        case GroupScope_DomainLocal: return QObject::tr("Domain Local");
         case GroupScope_Universal: return QObject::tr("Universal");
         case GroupScope_COUNT: return "COUNT";
     }

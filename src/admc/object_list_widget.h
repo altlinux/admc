@@ -48,7 +48,7 @@ class ObjectListWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ObjectListWidget(const ObjectListWidgetType type_arg);
+    ObjectListWidget(const ObjectListWidgetType list_type_arg);
 
     void load_children(const QString &new_parent_dn, const QString &filter = QString());
     void load_filter(const QString &filter, const QString &search_base);
@@ -59,7 +59,7 @@ private slots:
     void on_header_toggled();
 
 private:
-    ObjectListWidgetType type;
+    ObjectListWidgetType list_type;
     QString parent_dn;
     QList<QString> columns;
     QLabel *label;

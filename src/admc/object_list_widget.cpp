@@ -38,12 +38,10 @@
 #include <QLineEdit>
 #include <QGridLayout>
 
-// TODO: object class column should be processed somehow, not just plain class value. For example for groups also show group type ("Security group"). And header label shouldn't be class.
-
-ObjectListWidget::ObjectListWidget(const ObjectListWidgetType type_arg)
+ObjectListWidget::ObjectListWidget(const ObjectListWidgetType list_type_arg)
 : QWidget()
 {   
-    type = type_arg;
+    list_type = list_type_arg;
 
     columns = ADCONFIG()->get_columns();
 
@@ -122,7 +120,7 @@ ObjectListWidget::ObjectListWidget(const ObjectListWidgetType type_arg)
             proxy_name->setFilterRegExp(QRegExp(text, Qt::CaseInsensitive, QRegExp::FixedString));
         });
 
-    if (type == ObjectListWidgetType_Contents) {
+    if (list_type == ObjectListWidgetType_Contents) {
         const BoolSettingSignal *show_header_signal = SETTINGS()->get_bool_signal(BoolSetting_ShowContentsHeader);
         connect(
             show_header_signal, &BoolSettingSignal::changed,
@@ -134,7 +132,7 @@ ObjectListWidget::ObjectListWidget(const ObjectListWidgetType type_arg)
 void ObjectListWidget::load_children(const QString &new_parent_dn, const QString &filter) {
     parent_dn = new_parent_dn;
 
-    const QList<QString> search_attributes = columns;
+    const QList<QString> search_attributes = QList<QString>();
     const QString total_filter = filter_AND({filter, current_advanced_view_filter()});
     const QHash<QString, AdObject> search_results = AD()->search(total_filter, search_attributes, SearchScope_Children, parent_dn);
 
@@ -196,8 +194,19 @@ void ObjectListWidget::load(const QHash<QString, AdObject> &objects) {
             const QString display_value =
             [attribute, object]() {
                 if (attribute == ATTRIBUTE_OBJECT_CLASS) {
-                    const QString value_string = object.get_string(attribute);
-                    return ADCONFIG()->get_class_display_name(value_string);
+                    const QString object_class = object.get_string(attribute);
+
+                    if (object_class == CLASS_GROUP) {
+                        const GroupScope scope = object.get_group_scope(); 
+                        const QString scope_string = group_scope_string(scope);
+
+                        const GroupType type = object.get_group_type(); 
+                        const QString type_string = group_type_string(type);
+
+                        return QString("%1 Group - %2").arg(type_string, scope_string);
+                    } else {
+                        return ADCONFIG()->get_class_display_name(object_class);
+                    }
                 } else {
                     const QByteArray value = object.get_value(attribute);
                     return attribute_display_value(attribute, value);
