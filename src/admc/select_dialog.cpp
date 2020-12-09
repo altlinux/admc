@@ -58,6 +58,8 @@ QList<QString> SelectDialog::open(QList<QString> classes, SelectDialogMultiSelec
 SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection multi_selection, QWidget *parent)
 : QDialog(parent)
 {
+    resize(600, 700);
+
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setSortingEnabled(true);
