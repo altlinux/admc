@@ -62,6 +62,7 @@ enum BoolSetting {
 
     BoolSetting_ShowStatusLog,
     BoolSetting_ShowContainers,
+    BoolSetting_ShowContentsHeader,
 
     // GPGUI
 

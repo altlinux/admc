@@ -153,6 +153,7 @@ QString bool_to_string(const BoolSetting setting) {
         CASE_ENUM_TO_STRING(BoolSetting_QuickFind);
         CASE_ENUM_TO_STRING(BoolSetting_ShowStatusLog);
         CASE_ENUM_TO_STRING(BoolSetting_ShowContainers);
+        CASE_ENUM_TO_STRING(BoolSetting_ShowContentsHeader);
         CASE_ENUM_TO_STRING(BoolSetting_COUNT);
     }
     return "";

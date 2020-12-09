@@ -44,6 +44,7 @@ ToggleWidgetsDialog::ToggleWidgetsDialog(QWidget *parent)
 
     add(tr("Directory tree"), BoolSetting_ShowContainers);
     add(tr("Status Log"), BoolSetting_ShowStatusLog);
+    add(tr("Contents header"), BoolSetting_ShowContentsHeader);
 
     auto buttonbox = new QDialogButtonBox(QDialogButtonBox::Ok);
     connect(

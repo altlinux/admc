@@ -39,11 +39,16 @@ class ObjectModel;
 class QLineEdit;
 class AdObject;
 
+enum ObjectListWidgetType {
+    ObjectListWidgetType_Contents,
+    ObjectListWidgetType_Find,
+};
+
 class ObjectListWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ObjectListWidget();
+    ObjectListWidget(const ObjectListWidgetType type_arg);
 
     void load_children(const QString &new_parent_dn, const QString &filter = QString());
     void load_filter(const QString &filter, const QString &search_base);
@@ -51,14 +56,17 @@ public:
 
 private slots:
     void on_context_menu(const QPoint pos);
+    void on_header_toggled();
 
 private:
+    ObjectListWidgetType type;
     QString parent_dn;
     QList<QString> columns;
     QLabel *label;
     ObjectModel *model;
     QTreeView *view;
     QLineEdit *filter_name_edit;
+    QWidget *header;
 
     void load(const QHash<QString, AdObject> &objects);
     void showEvent(QShowEvent *event);

@@ -33,7 +33,7 @@
 ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, const QAction *filter_contents_action)
 : QWidget()
 {   
-    object_list = new ObjectListWidget();
+    object_list = new ObjectListWidget(ObjectListWidgetType_Contents);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);

@@ -28,6 +28,7 @@
 #include "ad_object.h"
 #include "attribute_display.h"
 #include "filter.h"
+#include "settings.h"
 
 #include <QTreeView>
 #include <QLabel>
@@ -39,9 +40,11 @@
 
 // TODO: object class column should be processed somehow, not just plain class value. For example for groups also show group type ("Security group"). And header label shouldn't be class.
 
-ObjectListWidget::ObjectListWidget()
+ObjectListWidget::ObjectListWidget(const ObjectListWidgetType type_arg)
 : QWidget()
 {   
+    type = type_arg;
+
     columns = ADCONFIG()->get_columns();
 
     model = new ObjectModel(columns.count(), column_index(ATTRIBUTE_DISTINGUISHED_NAME), this);
@@ -91,16 +94,23 @@ ObjectListWidget::ObjectListWidget()
     const auto filter_name_label = new QLabel(tr("Search: "), this);
     filter_name_edit = new QLineEdit(this);
 
-    const auto layout = new QGridLayout();
+    const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    layout->setColumnStretch(1, 1);
 
-    layout->addWidget(label, 0, 0);
-    layout->addWidget(filter_name_label, 0, 2, Qt::AlignRight);
-    layout->addWidget(filter_name_edit, 0, 3);
-    layout->addWidget(view, 1, 0, 2, 4);
+    header = new QWidget();
+    auto header_layout = new QHBoxLayout();
+    header_layout->setContentsMargins(0, 0, 0, 0);
+    header_layout->setSpacing(0);
+    header->setLayout(header_layout);
+    header_layout->addWidget(label);
+    header_layout->addStretch(1);
+    header_layout->addWidget(filter_name_label);
+    header_layout->addWidget(filter_name_edit);
+
+    layout->addWidget(header);
+    layout->addWidget(view);
 
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
@@ -111,6 +121,14 @@ ObjectListWidget::ObjectListWidget()
         [proxy_name](const QString &text) {
             proxy_name->setFilterRegExp(QRegExp(text, Qt::CaseInsensitive, QRegExp::FixedString));
         });
+
+    if (type == ObjectListWidgetType_Contents) {
+        const BoolSettingSignal *show_header_signal = SETTINGS()->get_bool_signal(BoolSetting_ShowContentsHeader);
+        connect(
+            show_header_signal, &BoolSettingSignal::changed,
+            this, &ObjectListWidget::on_header_toggled);
+        on_header_toggled();
+    }
 }
 
 void ObjectListWidget::load_children(const QString &new_parent_dn, const QString &filter) {
@@ -154,6 +172,11 @@ void ObjectListWidget::on_context_menu(const QPoint pos) {
 
     ObjectContextMenu context_menu(dn, view);
     exec_menu_from_view(&context_menu, view, pos);
+}
+
+void ObjectListWidget::on_header_toggled() {
+    const bool show_header = SETTINGS()->get_bool(BoolSetting_ShowContentsHeader);
+    header->setVisible(show_header);
 }
 
 void ObjectListWidget::load(const QHash<QString, AdObject> &objects) {
