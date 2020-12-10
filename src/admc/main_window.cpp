@@ -86,6 +86,12 @@ MainWindow::MainWindow()
     show();
 
     STATUS()->end_error_log(this);
+
+    connect(
+        AD(), &AdInterface::search_has_multiple_pages,
+        [this]() {
+            statusBar()->showMessage(tr("Request to server is taking a long time due to a large number of objects."));
+        });
 }
 
 void MainWindow::on_connected() {

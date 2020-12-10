@@ -124,6 +124,8 @@ signals:
     // reload updated server state in the slot.
     void modified();
 
+    void search_has_multiple_pages();
+
 private:
     LDAP *ld;
     SMBCCTX *smbc;

@@ -34,6 +34,7 @@
 
 #include <QTextCodec>
 #include <QDebug>
+#include <QCoreApplication>
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 
@@ -180,11 +181,7 @@ QString AdInterface::host() const {
 }
 
 QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &search_base) {
-    // int result = AD_SUCCESS;
     QHash<QString, AdObject> out;
-
-    LDAPMessage *res;
-    char **attrs;
 
     const QString base =
     [this, search_base]() {
@@ -216,7 +213,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
     }();
 
     // Convert attributes list to NULL-terminated array
-    attrs =
+    char **attrs =
     [attributes]() {
         char **attrs_out;
         if (attributes.isEmpty()) {
@@ -234,62 +231,131 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
         return attrs_out;
     }();
 
-    const int result_search = ldap_search_ext_s(ld, cstr(base), scope, filter_cstr, attrs, 0, NULL, NULL, NULL, LDAP_NO_LIMIT, &res);
-    if (result_search != LDAP_SUCCESS) {
-        // result = result_search;
+    struct berval *prev_cookie = NULL;
 
-        goto end;
-    }
+    int result;
 
-    for (LDAPMessage *entry = ldap_first_entry(ld, res); entry != NULL; entry = ldap_next_entry(ld, entry)) {
-        char *dn_cstr = ldap_get_dn(ld, entry);
-        const QString dn(dn_cstr);
-        ldap_memfree(dn_cstr);
+    bool emitted_search_has_multiple_pages = false;
 
-        AdObjectAttributes object_attributes;
+    // Search until received all pages
+    while (true) {
+        // Create page control
+        LDAPControl *page_control = NULL;
+        const ber_int_t page_size = 1000;
+        const int is_critical = 1;
+        result = ldap_create_page_control(ld, page_size, prev_cookie, is_critical, &page_control);
+        if (result != LDAP_SUCCESS) {
+            qDebug() << "Failed to create page control: " << ldap_err2string(result);
+            break;
+        }
+        LDAPControl *server_controls[2] = {page_control, NULL};
         
-        BerElement *berptr;
-        for (char *attr = ldap_first_attribute(ld, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ld, entry, berptr)) {
-            struct berval **values_ldap = ldap_get_values_len(ld, entry, attr);
-            if (values_ldap == NULL) {
-                ldap_value_free_len(values_ldap);
+        // Perform search
+        LDAPMessage *res;
+        const int attrsonly = 0;
+        result = ldap_search_ext_s(ld, cstr(base), scope, filter_cstr, attrs, attrsonly, server_controls, NULL, NULL, LDAP_NO_LIMIT, &res);
+        if ((result != LDAP_SUCCESS) && (result != LDAP_PARTIAL_RESULTS)) {
+            qDebug() << "Error in paged ldap_search_ext_s: " << ldap_err2string(result);
+            break;
+        }
 
-                continue;
-            }
+        ldap_control_free(server_controls[0]);
 
-            const QList<QByteArray> values_bytes =
-            [=]() {
-                QList<QByteArray> values_bytes_out;
+        // Collect results for this search
+        for (LDAPMessage *entry = ldap_first_entry(ld, res); entry != NULL; entry = ldap_next_entry(ld, entry)) {
+            char *dn_cstr = ldap_get_dn(ld, entry);
+            const QString dn(dn_cstr);
+            ldap_memfree(dn_cstr);
 
-                const int values_count = ldap_count_values_len(values_ldap);
-                for (int i = 0; i < values_count; i++) {
-                    struct berval value_berval = *values_ldap[i];
-                    const QByteArray value_bytes(value_berval.bv_val, value_berval.bv_len);
+            AdObjectAttributes object_attributes;
 
-                    values_bytes_out.append(value_bytes);
+            BerElement *berptr;
+            for (char *attr = ldap_first_attribute(ld, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ld, entry, berptr)) {
+                struct berval **values_ldap = ldap_get_values_len(ld, entry, attr);
+                if (values_ldap == NULL) {
+                    ldap_value_free_len(values_ldap);
+
+                    continue;
                 }
 
-                return values_bytes_out;
-            }();
+                const QList<QByteArray> values_bytes =
+                [=]() {
+                    QList<QByteArray> values_bytes_out;
 
-            const QString attribute(attr);
+                    const int values_count = ldap_count_values_len(values_ldap);
+                    for (int i = 0; i < values_count; i++) {
+                        struct berval value_berval = *values_ldap[i];
+                        const QByteArray value_bytes(value_berval.bv_val, value_berval.bv_len);
 
-            object_attributes[attribute] = values_bytes;
+                        values_bytes_out.append(value_bytes);
+                    }
 
-            ldap_value_free_len(values_ldap);
-            ldap_memfree(attr);
+                    return values_bytes_out;
+                }();
+
+                const QString attribute(attr);
+
+                object_attributes[attribute] = values_bytes;
+
+                ldap_value_free_len(values_ldap);
+                ldap_memfree(attr);
+            }
+            ber_free(berptr, 0);
+
+            out[dn] = AdObject(dn, object_attributes);
         }
-        ber_free(berptr, 0);
 
-        out[dn] = AdObject(dn, object_attributes);
-    }
+        // Parse the results to retrieve returned controls
+        int errcodep;
+        LDAPControl **returned_controls = NULL;
+        result = ldap_parse_result(ld, res, &errcodep, NULL, NULL, NULL, &returned_controls, false);
+        if (result != LDAP_SUCCESS) {
+            qDebug() << "Failed to parse result: " << ldap_err2string(result);
+            break;
+        }
 
-    end: {
+        // Get page response control
+        LDAPControl *pageresponse_control = ldap_control_find(LDAP_CONTROL_PAGEDRESULTS, returned_controls, NULL);
+        if (pageresponse_control == NULL) {
+            qDebug() << "Failed to find PAGEDRESULTS control";
+            break;
+        }
+
+        // Parse page response control to determine whether
+        // there are more pages
+        struct berval new_cookie;
+        ber_int_t total_count;
+        result = ldap_parse_pageresponse_control(ld, pageresponse_control, &total_count, &new_cookie);
+        if (result != LDAP_SUCCESS) {
+            qDebug() << "Failed to parse pageresponse control: " << ldap_err2string(result);
+            break;
+        }
+        ber_bvfree(prev_cookie);
+        prev_cookie = ber_bvdup(&new_cookie);
+
+        ldap_controls_free(returned_controls);
+        returned_controls = NULL;
+
         ldap_msgfree(res);
-        ad_array_free(attrs);
 
-        return out;
-    }
+        // There are more pages if the cookie is not empty
+        const bool more_pages = (prev_cookie->bv_len > 0);
+        if (more_pages) {
+            if (!emitted_search_has_multiple_pages) {
+                emitted_search_has_multiple_pages = false;
+                emit search_has_multiple_pages();
+                QCoreApplication::processEvents();
+            }
+        } else {
+            break;
+        }
+    };
+
+    ad_array_free(attrs);
+
+    ber_bvfree(prev_cookie);
+
+    return out;
 }
 
 AdObject AdInterface::search_object(const QString &dn, const QList<QString> &attributes) {
