@@ -26,8 +26,7 @@
 class ContainersWidget;
 class ObjectListWidget;
 class QAction;
-class QDialog;
-class FilterWidget;
+class ContentsFilterDialog;
 
 /**
  * Shows a list of objects, which are children of a target
@@ -44,13 +43,12 @@ public:
 private slots:
     void on_containers_selected_changed(const QString &dn);
     void on_ad_modified();
-    void load_filter();
+    void load_filter(const QString &filter);
 
 private:
     QString target_dn;
     ObjectListWidget *object_list;
-    QDialog *filter_dialog;
-    FilterWidget *filter_widget;
+    ContentsFilterDialog *filter_dialog;
 
     void change_target(const QString &dn);
 };

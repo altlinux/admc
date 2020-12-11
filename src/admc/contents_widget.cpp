@@ -22,12 +22,10 @@
 #include "settings.h"
 #include "ad_interface.h"
 #include "object_list_widget.h"
-#include "filter_widget/filter_widget.h"
+#include "contents_filter_dialog.h"
 
 #include <QVBoxLayout>
 #include <QAction>
-#include <QDialog>
-#include <QDialogButtonBox>
 #include <QDebug>
 
 ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, const QAction *filter_contents_action)
@@ -41,29 +39,10 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, const QActio
     layout->setSpacing(0);
     layout->addWidget(object_list);
 
-    filter_dialog = new QDialog(this);
-    filter_dialog->setWindowTitle(tr("Filter contents"));
-
-    filter_widget = new FilterWidget();
-
-    auto buttonbox = new QDialogButtonBox();
-    buttonbox->addButton(QDialogButtonBox::Ok);
-    buttonbox->addButton(QDialogButtonBox::Cancel);
+    filter_dialog = new ContentsFilterDialog(this);
 
     connect(
-        buttonbox, &QDialogButtonBox::accepted,
-        filter_dialog, &QDialog::accept);
-    connect(
-        buttonbox, &QDialogButtonBox::rejected,
-        filter_dialog, &QDialog::reject);
-
-    auto dialog_layout = new QVBoxLayout();
-    filter_dialog->setLayout(dialog_layout);
-    dialog_layout->addWidget(filter_widget);
-    dialog_layout->addWidget(buttonbox);
-
-    connect(
-        filter_dialog, &QDialog::accepted,
+        filter_dialog, &ContentsFilterDialog::filter_changed,
         this, &ContentsWidget::load_filter);
 
     connect(
@@ -96,11 +75,8 @@ void ContentsWidget::on_ad_modified() {
     change_target(target_dn);
 }
 
-void ContentsWidget::load_filter() {
-    const QString filter = filter_widget->get_filter();
-
+void ContentsWidget::load_filter(const QString &filter) {
     qDebug() << "Contents filter:" << filter;
-
     object_list->load_children(target_dn, filter);
 }
 
