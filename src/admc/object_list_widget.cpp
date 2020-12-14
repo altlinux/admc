@@ -18,7 +18,6 @@
  */
 
 #include "object_list_widget.h"
-#include "object_model.h"
 #include "object_context_menu.h"
 #include "details_dialog.h"
 #include "utils.h"
@@ -37,6 +36,7 @@
 #include <QSortFilterProxyModel>
 #include <QLineEdit>
 #include <QGridLayout>
+#include <QStandardItemModel>
 
 ObjectListWidget::ObjectListWidget(const ObjectListWidgetType list_type_arg)
 : QWidget()
@@ -45,7 +45,7 @@ ObjectListWidget::ObjectListWidget(const ObjectListWidgetType list_type_arg)
 
     columns = ADCONFIG()->get_columns();
 
-    model = new ObjectModel(columns.count(), column_index(ATTRIBUTE_DISTINGUISHED_NAME), this);
+    model = new QStandardItemModel(columns.count(), column_index(ATTRIBUTE_DISTINGUISHED_NAME), this);
 
     const QList<QString> header_labels =
     [this]() {

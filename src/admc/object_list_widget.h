@@ -35,9 +35,9 @@
 
 class QTreeView;
 class QLabel;
-class ObjectModel;
 class QLineEdit;
 class AdObject;
+class QStandardItemModel;
 
 enum ObjectListWidgetType {
     ObjectListWidgetType_Contents,
@@ -63,7 +63,7 @@ private:
     QString parent_dn;
     QList<QString> columns;
     QLabel *label;
-    ObjectModel *model;
+    QStandardItemModel *model;
     QTreeView *view;
     QLineEdit *filter_name_edit;
     QWidget *header;

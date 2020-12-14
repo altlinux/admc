@@ -19,16 +19,94 @@
 
 #include "object_model.h"
 #include "ad_interface.h"
+#include "ad_object.h"
+#include "ad_config.h"
+#include "filter.h"
+#include "settings.h"
 #include "utils.h"
 
 #include <QMimeData>
 #include <QString>
 
-ObjectModel::ObjectModel(int column_count, int dn_column_in, QObject *parent)
+ObjectModel::ObjectModel(const int column_count, const int dn_column_arg, QObject *parent)
 : QStandardItemModel(0, column_count, parent)
-, dn_column(dn_column_in)
+, dn_column(dn_column_arg)
 {
+    set_horizontal_header_labels_from_map(this, {
+        {ObjectModel::Column::Name, tr("Name")},
+        {ObjectModel::Column::DN, tr("DN")}
+    });
 
+    // Make row for head object
+    QStandardItem *invis_root = invisibleRootItem();
+    const QString head_dn = AD()->domain_head();
+    const AdObject head_object = AD()->search_object(head_dn);
+
+    make_row(invis_root, head_object);
+}
+
+bool ObjectModel::canFetchMore(const QModelIndex &parent) const {
+    if (!parent.isValid()) {
+        return false;
+    }
+
+    bool can_fetch = parent.data(ObjectModel::Roles::CanFetch).toBool();
+
+    return can_fetch;
+}
+
+void ObjectModel::fetchMore(const QModelIndex &parent) {
+    if (!parent.isValid() || !canFetchMore(parent)) {
+        return;
+    }
+
+    const QString parent_dn = get_dn_from_index(parent, ObjectModel::Column::DN);
+
+    QStandardItem *parent_item = itemFromIndex(parent);
+
+    // Add children
+    // TODO: move advanced view filtering to a proxy
+    const QList<QString> search_attributes = {ATTRIBUTE_NAME, ATTRIBUTE_DISTINGUISHED_NAME, ATTRIBUTE_OBJECT_CLASS};
+    const QString filter = current_advanced_view_filter();
+    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, parent_dn);
+
+    for (const AdObject object : search_results.values()) {
+        make_row(parent_item, object);
+    }
+
+    // Unset CanFetch flag
+    parent_item->setData(false, ObjectModel::Roles::CanFetch);
+
+    // In dev mode, load configuration and schema objects
+    // NOTE: have to manually add configuration and schema objects because they aren't searchable
+    const bool dev_mode = SETTINGS()->get_bool(BoolSetting_DevMode);
+    if (dev_mode) {
+        const QString search_base = AD()->domain_head();
+        const QString configuration_dn = AD()->configuration_dn();
+        const QString schema_dn = AD()->schema_dn();
+
+        const auto load_manually =
+        [this, parent_item](const QString &child) {
+            const AdObject object = AD()->search_object(child);
+            make_row(parent_item, object);
+        };
+
+        if (parent_dn == search_base) {
+            load_manually(configuration_dn);
+        } else if (parent_dn == configuration_dn) {
+            load_manually(schema_dn);
+        }
+    }
+}
+
+// Override this so that unexpanded and unfetched items show the expander even though they technically don't have any children loaded
+// NOTE: expander is show if hasChildren returns true
+bool ObjectModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
+    if (canFetchMore(parent)) {
+        return true;
+    } else {
+        return QStandardItemModel::hasChildren(parent);
+    }
 }
 
 QMimeData *ObjectModel::mimeData(const QModelIndexList &indexes) const {
@@ -70,31 +148,52 @@ bool ObjectModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int
     return true;
 }
 
-QList<QStandardItem *> ObjectModel::find_row(const QString &dn) {
-    // Find dn item
-    const QList<QStandardItem *> dn_items = findItems(dn, Qt::MatchExactly | Qt::MatchRecursive, dn_column);
-    if (dn_items.isEmpty()) {
-        return QList<QStandardItem *>();
-    }
+// Make row in model at given parent based on object with given dn
+QStandardItem *ObjectModel::make_row(QStandardItem *parent, const AdObject &object) {
+    const bool is_container =
+    [object]() {
+        static const QList<QString> accepted_classes =
+        []() {
+            QList<QString> out = ADCONFIG()->get_filter_containers();
 
-    const QStandardItem *dn_item = dn_items[0];
-    const QStandardItem *parent = dn_item->parent();
-    const int column_count = parent->columnCount();
-    const int row_i = dn_item->row();
+            // Make configuration and schema pass filter in dev mode so they are visible and can be fetched
+            const bool dev_mode = SETTINGS()->get_bool(BoolSetting_DevMode);
+            if (dev_mode) {
+                out.append({CLASS_CONFIGURATION, CLASS_dMD});
+            }
 
-    // Compose the row
-    auto row = QList<QStandardItem *>();
-    for (int col_i = 0; col_i < column_count; col_i++) {
-        QStandardItem *item = parent->child(row_i, col_i);
-        row.append(item);
-    }
+            // TODO: domain not included for some reason, so add it ourselves
+            out.append(CLASS_DOMAIN);
+            
+            return out;
+        }();
 
-    return row;
-}
+        // NOTE: compare against all classes of object, not just the most derived one
+        const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
+        for (const auto acceptable_class : accepted_classes) {
+            if (object_classes.contains(acceptable_class)) {
+                return true;
+            }
+        }
 
-QStandardItem *ObjectModel::find_item(const QString &dn, int col) {
-    QList<QStandardItem *> row = find_row(dn);
-    QStandardItem *item = row.value(col);
+        return false;
+    }();
 
-    return item;
+    const QList<QStandardItem *> row = make_item_row(ObjectModel::Column::COUNT);
+    
+    const QString name = object.get_string(ATTRIBUTE_NAME);
+    const QString dn = object.get_dn();
+    row[ObjectModel::Column::Name]->setText(name);
+    row[ObjectModel::Column::DN]->setText(dn);
+
+    const QIcon icon = object.get_icon();
+    row[0]->setIcon(icon);
+
+    // Can fetch(expand) object if it's a container
+    row[0]->setData(is_container, ObjectModel::Roles::CanFetch);
+    row[0]->setData(is_container, ObjectModel::Roles::IsContainer);
+
+    parent->appendRow(row);
+
+    return row[0];
 }

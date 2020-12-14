@@ -26,24 +26,45 @@
 class QMimeData;
 class QModelIndex;
 class QString;
+class QStandardItem;
+class AdObject;
 
+/**
+ * TODO: comment
+ */
 // Model for objects
 // Requires at least a DN column
 // Implements drag/drop of objects using their DN's
+
 class ObjectModel : public QStandardItemModel {
 Q_OBJECT
 
 public:
+    enum Roles {
+        CanFetch = Qt::UserRole + 1,
+        IsContainer = Qt::UserRole + 2,
+    };
+
+    enum Column {
+        Name,
+        DN,
+        COUNT
+    };
+
     const int dn_column;
     
-    ObjectModel(int column_count, int dn_column_in, QObject *parent);
+    ObjectModel(const int column_count, const int dn_column_arg, QObject *parent);
+
+    bool canFetchMore(const QModelIndex &parent) const;
+    void fetchMore(const QModelIndex &parent);
+    bool hasChildren(const QModelIndex &parent) const override;
 
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
-    QList<QStandardItem *> find_row(const QString &dn);
-    QStandardItem *find_item(const QString &dn, int col);
 
+private:
+    QStandardItem *make_row(QStandardItem *parent, const AdObject &object);
 };
 
 #endif /* OBJECT_MODEL_H */

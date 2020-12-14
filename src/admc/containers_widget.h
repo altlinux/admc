@@ -20,15 +20,13 @@
 #ifndef CONTAINERS_WIDGET_H
 #define CONTAINERS_WIDGET_H
 
-#include "object_model.h"
-
 #include <QWidget>
 #include <QSortFilterProxyModel>
 
 class QItemSelection;
 class AdvancedViewProxy;
 class QTreeView;
-class ContainersModel;
+class ObjectModel;
 class ContainersFilterProxy;
 
 class ContainersWidget final : public QWidget {
@@ -36,7 +34,7 @@ Q_OBJECT
 
 public:
     ContainersWidget(QWidget *parent);
-    ContainersModel *model;
+    ObjectModel *model;
 
 signals:
     void selected_changed(const QString &dn);
@@ -50,24 +48,6 @@ private:
     ContainersFilterProxy *proxy;
 
     void showEvent(QShowEvent *event);
-};
-
-class ContainersModel final : public ObjectModel {
-Q_OBJECT
-
-public:
-    enum Roles {
-        CanFetch = Qt::UserRole + 1,
-        IsContainer = Qt::UserRole + 2,
-    };
-
-    ContainersModel(QObject *parent);
-
-    bool canFetchMore(const QModelIndex &parent) const;
-    void fetchMore(const QModelIndex &parent);
-    bool hasChildren(const QModelIndex &parent) const override;
-
-private slots:
 };
 
 class ContainersFilterProxy final : public QSortFilterProxyModel {
