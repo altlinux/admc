@@ -23,21 +23,38 @@
 #include "ad_interface.h"
 #include "object_list_widget.h"
 #include "contents_filter_dialog.h"
+#include "object_model.h"
 
 #include <QVBoxLayout>
 #include <QAction>
 #include <QDebug>
+#include <QTreeView>
+#include <QHeaderView>
 
-ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, const QAction *filter_contents_action)
+ContentsWidget::ContentsWidget(ObjectModel *model, ContainersWidget *containers_widget, const QAction *filter_contents_action)
 : QWidget()
 {   
-    object_list = new ObjectListWidget(ObjectListWidgetType_Contents);
+    // object_list = new ObjectListWidget(ObjectListWidgetType_Contents);
+    view = new QTreeView(this);
+    view->setAcceptDrops(true);
+    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    view->setSelectionMode(QAbstractItemView::SingleSelection);
+    view->setRootIsDecorated(false);
+    view->setItemsExpandable(false);
+    view->setExpandsOnDoubleClick(false);
+    view->setContextMenuPolicy(Qt::CustomContextMenu);
+    view->setDragDropMode(QAbstractItemView::DragDrop);
+    view->setAllColumnsShowFocus(true);
+    view->setSortingEnabled(true);
+    view->header()->setSectionsMovable(true);
+
+    view->setModel(model);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    layout->addWidget(object_list);
+    layout->addWidget(view);
 
     filter_dialog = new ContentsFilterDialog(this);
 
@@ -66,22 +83,23 @@ ContentsWidget::ContentsWidget(ContainersWidget *containers_widget, const QActio
         });
 }
 
-void ContentsWidget::on_containers_selected_changed(const QString &dn) {
-    object_list->reset_name_filter();
-    change_target(dn);
+void ContentsWidget::on_containers_selected_changed(const QModelIndex &source_index) {
+    // object_list->reset_name_filter();
+    // change_target(dn);
+    view->setRootIndex(source_index);
 }
 
 void ContentsWidget::on_ad_modified() {
-    change_target(target_dn);
+    // change_target(target_dn);
 }
 
 void ContentsWidget::load_filter(const QString &filter) {
-    qDebug() << "Contents filter:" << filter;
-    object_list->load_children(target_dn, filter);
+    // qDebug() << "Contents filter:" << filter;
+    // object_list->load_children(target_dn, filter);
 }
 
 void ContentsWidget::change_target(const QString &dn) {
-    target_dn = dn;
+    // target_dn = dn;
 
-    object_list->load_children(target_dn);
+    // object_list->load_children(target_dn);
 }

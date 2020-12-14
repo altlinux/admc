@@ -33,17 +33,17 @@ class ContainersWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContainersWidget(QWidget *parent);
-    ObjectModel *model;
+    ContainersWidget(ObjectModel *model_arg, QWidget *parent);
 
 signals:
-    void selected_changed(const QString &dn);
+    void selected_changed(const QModelIndex &source_index);
 
 private slots:
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
     void on_context_menu(const QPoint pos);
 
 private:
+    ObjectModel *model;
     QTreeView *view;
     ContainersFilterProxy *proxy;
 

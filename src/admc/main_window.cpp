@@ -27,6 +27,7 @@
 #include "confirmation_dialog.h"
 #include "policies_widget.h"
 #include "ad_interface.h"
+#include "object_model.h"
 
 #include <QApplication>
 #include <QString>
@@ -99,9 +100,11 @@ void MainWindow::on_connected() {
     status_log->clear();
     STATUS()->status_bar->showMessage(tr("Ready"));
 
-    auto containers_widget = new ContainersWidget(this);
+    auto object_model = new ObjectModel(ObjectModel::Column::COUNT, ObjectModel::Column::DN, this);
 
-    auto contents_widget = new ContentsWidget(containers_widget, menubar->filter_contents_action);
+    auto containers_widget = new ContainersWidget(object_model, this);
+
+    auto contents_widget = new ContentsWidget(object_model, containers_widget, menubar->filter_contents_action);
     
     auto details_widget_docked_container = DetailsDialog::get_docked_container();
     auto policies_widget = new PoliciesWidget();

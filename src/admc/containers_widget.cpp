@@ -38,10 +38,10 @@
 
 QStandardItem *make_row(QStandardItem *parent, const AdObject &object);
 
-ContainersWidget::ContainersWidget(QWidget *parent)
+ContainersWidget::ContainersWidget(ObjectModel *model_arg, QWidget *parent)
 : QWidget(parent)
 {
-    model = new ObjectModel(ObjectModel::Column::COUNT, ObjectModel::Column::DN, this);
+    model = model_arg;
 
     proxy = new ContainersFilterProxy(this);
 
@@ -86,14 +86,10 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
         return;
     }
 
-    // Fetch selected object to remove expander if it has not children
-    const QModelIndex index_proxy = indexes[0];
-    const QModelIndex index = proxy->mapToSource(index_proxy);
-    model->fetchMore(index);
-
-    const QString dn = get_dn_from_index(index, ObjectModel::Column::DN);
-
-    emit selected_changed(dn);
+    const QModelIndex proxy_index = indexes[0];
+    const QModelIndex source_index = proxy->mapToSource(proxy_index);
+    
+    emit selected_changed(source_index);
 }
 
 void ContainersWidget::on_context_menu(const QPoint pos) {
