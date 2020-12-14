@@ -28,6 +28,8 @@
 #include <QMimeData>
 #include <QString>
 
+// TODO: remove dev mode once developing winds down OR extract it better because it adds a lot of confusion
+
 ObjectModel::ObjectModel(const int column_count, const int dn_column_arg, QObject *parent)
 : QStandardItemModel(0, column_count, parent)
 , dn_column(dn_column_arg)
@@ -65,17 +67,9 @@ void ObjectModel::fetchMore(const QModelIndex &parent) {
     QStandardItem *parent_item = itemFromIndex(parent);
 
     // Add children
-    // TODO: move advanced view filtering to a proxy
     const QList<QString> search_attributes = {ATTRIBUTE_NAME, ATTRIBUTE_DISTINGUISHED_NAME, ATTRIBUTE_OBJECT_CLASS};
-    const QString filter = current_advanced_view_filter();
-    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, parent_dn);
-
-    for (const AdObject object : search_results.values()) {
-        make_row(parent_item, object);
-    }
-
-    // Unset CanFetch flag
-    parent_item->setData(false, ObjectModel::Roles::CanFetch);
+    const QString filter = QString();
+    QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, parent_dn);
 
     // In dev mode, load configuration and schema objects
     // NOTE: have to manually add configuration and schema objects because they aren't searchable
@@ -85,18 +79,19 @@ void ObjectModel::fetchMore(const QModelIndex &parent) {
         const QString configuration_dn = AD()->configuration_dn();
         const QString schema_dn = AD()->schema_dn();
 
-        const auto load_manually =
-        [this, parent_item](const QString &child) {
-            const AdObject object = AD()->search_object(child);
-            make_row(parent_item, object);
-        };
-
         if (parent_dn == search_base) {
-            load_manually(configuration_dn);
+            search_results[configuration_dn] = AD()->search_object(configuration_dn);
         } else if (parent_dn == configuration_dn) {
-            load_manually(schema_dn);
+            search_results[schema_dn] = AD()->search_object(schema_dn);
         }
     }
+
+    for (const AdObject object : search_results.values()) {
+        make_row(parent_item, object);
+    }
+
+    // Unset CanFetch flag since we are done fetching
+    parent_item->setData(false, ObjectModel::Roles::CanFetch);
 }
 
 // Override this so that unexpanded and unfetched items show the expander even though they technically don't have any children loaded
@@ -150,6 +145,16 @@ bool ObjectModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int
 
 // Make row in model at given parent based on object with given dn
 QStandardItem *ObjectModel::make_row(QStandardItem *parent, const AdObject &object) {
+    const QList<QStandardItem *> row = make_item_row(ObjectModel::Column::COUNT);
+    
+    const QString name = object.get_string(ATTRIBUTE_NAME);
+    const QString dn = object.get_dn();
+    row[ObjectModel::Column::Name]->setText(name);
+    row[ObjectModel::Column::DN]->setText(dn);
+
+    const QIcon icon = object.get_icon();
+    row[0]->setIcon(icon);
+
     const bool is_container =
     [object]() {
         static const QList<QString> accepted_classes =
@@ -179,19 +184,13 @@ QStandardItem *ObjectModel::make_row(QStandardItem *parent, const AdObject &obje
         return false;
     }();
 
-    const QList<QStandardItem *> row = make_item_row(ObjectModel::Column::COUNT);
-    
-    const QString name = object.get_string(ATTRIBUTE_NAME);
-    const QString dn = object.get_dn();
-    row[ObjectModel::Column::Name]->setText(name);
-    row[ObjectModel::Column::DN]->setText(dn);
-
-    const QIcon icon = object.get_icon();
-    row[0]->setIcon(icon);
+    row[0]->setData(is_container, ObjectModel::Roles::IsContainer);
 
     // Can fetch(expand) object if it's a container
     row[0]->setData(is_container, ObjectModel::Roles::CanFetch);
-    row[0]->setData(is_container, ObjectModel::Roles::IsContainer);
+
+    const bool advanced_view_only = object.get_bool(ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY);
+    row[0]->setData(advanced_view_only, ObjectModel::Roles::AdvancedViewOnly);
 
     parent->appendRow(row);
 

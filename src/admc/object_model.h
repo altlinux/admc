@@ -43,6 +43,7 @@ public:
     enum Roles {
         CanFetch = Qt::UserRole + 1,
         IsContainer = Qt::UserRole + 2,
+        AdvancedViewOnly = Qt::UserRole + 3,
     };
 
     enum Column {
