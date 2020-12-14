@@ -52,9 +52,7 @@ public:
         COUNT
     };
 
-    const int dn_column;
-    
-    ObjectModel(const int column_count, const int dn_column_arg, QObject *parent);
+    ObjectModel(QObject *parent);
 
     bool canFetchMore(const QModelIndex &parent) const;
     void fetchMore(const QModelIndex &parent);

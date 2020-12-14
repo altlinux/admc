@@ -100,7 +100,7 @@ void MainWindow::on_connected() {
     status_log->clear();
     STATUS()->status_bar->showMessage(tr("Ready"));
 
-    auto object_model = new ObjectModel(ObjectModel::Column::COUNT, ObjectModel::Column::DN, this);
+    auto object_model = new ObjectModel(this);
 
     auto containers_widget = new ContainersWidget(object_model, this);
 

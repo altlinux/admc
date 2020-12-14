@@ -30,13 +30,12 @@
 
 // TODO: remove dev mode once developing winds down OR extract it better because it adds a lot of confusion
 
-ObjectModel::ObjectModel(const int column_count, const int dn_column_arg, QObject *parent)
-: QStandardItemModel(0, column_count, parent)
-, dn_column(dn_column_arg)
+ObjectModel::ObjectModel(QObject *parent)
+: QStandardItemModel(0, Column::COUNT, parent)
 {
     set_horizontal_header_labels_from_map(this, {
-        {ObjectModel::Column::Name, tr("Name")},
-        {ObjectModel::Column::DN, tr("DN")}
+        {Column::Name, tr("Name")},
+        {Column::DN, tr("DN")}
     });
 
     // Make row for head object
@@ -62,7 +61,7 @@ void ObjectModel::fetchMore(const QModelIndex &parent) {
         return;
     }
 
-    const QString parent_dn = get_dn_from_index(parent, ObjectModel::Column::DN);
+    const QString parent_dn = get_dn_from_index(parent, Column::DN);
 
     QStandardItem *parent_item = itemFromIndex(parent);
 
@@ -109,7 +108,7 @@ QMimeData *ObjectModel::mimeData(const QModelIndexList &indexes) const {
 
     if (indexes.size() > 0) {
         QModelIndex index = indexes[0];
-        QString dn = get_dn_from_index(index, dn_column);
+        QString dn = get_dn_from_index(index, Column::DN);
 
         data->setText(dn);
     }
@@ -119,7 +118,7 @@ QMimeData *ObjectModel::mimeData(const QModelIndexList &indexes) const {
 
 bool ObjectModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
     const QString dn = data->text();
-    const QString target_dn = get_dn_from_index(parent, dn_column);
+    const QString target_dn = get_dn_from_index(parent, Column::DN);
 
     const bool can_drop = AD()->object_can_drop(dn, target_dn);
 
@@ -136,7 +135,7 @@ bool ObjectModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int
     }
 
     const QString dn = data->text();
-    const QString target_dn = get_dn_from_index(parent, dn_column);
+    const QString target_dn = get_dn_from_index(parent, Column::DN);
 
     AD()->object_drop(dn, target_dn);
 
@@ -145,12 +144,12 @@ bool ObjectModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int
 
 // Make row in model at given parent based on object with given dn
 QStandardItem *ObjectModel::make_row(QStandardItem *parent, const AdObject &object) {
-    const QList<QStandardItem *> row = make_item_row(ObjectModel::Column::COUNT);
+    const QList<QStandardItem *> row = make_item_row(Column::COUNT);
     
     const QString name = object.get_string(ATTRIBUTE_NAME);
     const QString dn = object.get_dn();
-    row[ObjectModel::Column::Name]->setText(name);
-    row[ObjectModel::Column::DN]->setText(dn);
+    row[Column::Name]->setText(name);
+    row[Column::DN]->setText(dn);
 
     const QIcon icon = object.get_icon();
     row[0]->setIcon(icon);
