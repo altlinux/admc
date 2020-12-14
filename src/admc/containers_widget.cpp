@@ -48,6 +48,8 @@ ContainersWidget::ContainersWidget(QWidget *parent)
 {
     model = new ContainersModel(this);
 
+    proxy = new ContainersFilterProxy(this);
+
     view = new QTreeView(this);
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -58,8 +60,10 @@ ContainersWidget::ContainersWidget(QWidget *parent)
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
+    view->sortByColumn(ContainersColumn_Name, Qt::AscendingOrder);
 
-    view->setModel(model);
+    proxy->setSourceModel(model);
+    view->setModel(proxy);
 
     setup_column_toggle_menu(view, model, {ContainersColumn_Name});
 
@@ -71,152 +75,35 @@ ContainersWidget::ContainersWidget(QWidget *parent)
     layout->addWidget(view);
 
     connect(
-        AD(), &AdInterface::modified,
-        this, &ContainersWidget::reload);
-    connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,
         this, &ContainersWidget::on_selection_changed);
-
-    const BoolSettingSignal *show_non_containers_signal = SETTINGS()->get_bool_signal(BoolSetting_ShowNonContainersInContainersTree);
-    connect(
-        show_non_containers_signal, &BoolSettingSignal::changed,
-        this, &ContainersWidget::reload);
-
-    const BoolSettingSignal *dev_mode_signal = SETTINGS()->get_bool_signal(BoolSetting_DevMode);
-    connect(
-        dev_mode_signal, &BoolSettingSignal::changed,
-        this, &ContainersWidget::reload);
-
-    const BoolSettingSignal *advanced_view_setting = SETTINGS()->get_bool_signal(BoolSetting_AdvancedView);
-    connect(
-        advanced_view_setting, &BoolSettingSignal::changed,
-        this, &ContainersWidget::reload);
 
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         this, &ContainersWidget::on_context_menu);
 
-    reload();
+    // Make row for head object
+    QStandardItem *invis_root = model->invisibleRootItem();
+    const QString head_dn = AD()->domain_head();
+    const AdObject head_object = AD()->search_object(head_dn);
+
+    make_row(invis_root, head_object);
 };
 
-void ContainersWidget::reload() {
-    const QString head_dn = AD()->domain_head();
-    QAbstractItemModel *view_model = view->model();
-
-    // Save DN's that were fetched
-    QSet<QString> fetched;
-    {
-        QStack<QModelIndex> stack;
-        const QModelIndex head = model->index(0, 0);
-        stack.push(head);
-
-        while (!stack.isEmpty()) {
-            const QModelIndex index = stack.pop();
-            const bool index_fetched = !model->canFetchMore(index);
-
-            if (index_fetched) {
-                const QString dn = get_dn_from_index(index, ContainersColumn_DN);
-                fetched.insert(dn);
-
-                int row = 0;
-                while (true) {
-                    const QModelIndex child = model->index(row, 0, index);
-
-                    if (child.isValid()) {
-                        stack.push(child);
-                        row++;
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    // Save DN's that were expanded in view
-    QSet<QString> expanded;
-    {
-        QStack<QModelIndex> stack;
-        const QModelIndex head = view_model->index(0, 0);
-        stack.push(head);
-
-        while (!stack.isEmpty()) {
-            const QModelIndex index = stack.pop();
-
-            if (view->isExpanded(index)) {
-                const QString dn = get_dn_from_index(index, ContainersColumn_DN);
-                expanded.insert(dn);
-
-                int row = 0;
-                while (true) {
-                    const QModelIndex child = view_model->index(row, 0, index);
-
-                    if (child.isValid()) {
-                        stack.push(child);
-                        row++;
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    // Clear model
-    model->removeRows(0, model->rowCount());
-
-    // NOTE: objects with changed DN's won't be refetched/re-expanded
-
-    // Reload model, restoring fetch and expand states
-    {
-        QStack<QModelIndex> stack;
-
-        QStandardItem *invis_root = model->invisibleRootItem();
-        const AdObject head_object = AD()->search_object(head_dn);
-        const QStandardItem *head_item = make_row(invis_root, head_object);
-        stack.push(head_item->index());
-
-        while (!stack.isEmpty()) {
-            const QModelIndex index = stack.pop();
-            const QString dn = get_dn_from_index(index, ContainersColumn_DN);
-            
-            const bool was_fetched = fetched.contains(dn);
-            if (was_fetched) {
-                model->fetchMore(index);
-
-                int row = 0;
-                while (true) {
-                    const QModelIndex child = model->index(row, 0, index);
-
-                    if (child.isValid()) {
-                        stack.push(child);
-                        row++;
-                    } else {
-                        break;
-                    }
-                }
-            }
-
-            const bool was_expanded = expanded.contains(dn);
-            if (was_expanded) {
-                view->expand(index);
-            }
-        }
-    }
-}
-
+// Transform selected index into source index and pass it on
+// to selected_container_changed() signal
 void ContainersWidget::on_selection_changed(const QItemSelection &selected, const QItemSelection &) {
-    // Transform selected index into source index and pass it on
-    // to selected_container_changed() signal
     const QList<QModelIndex> indexes = selected.indexes();
     if (indexes.isEmpty()) {
         return;
     }
 
     // Fetch selected object to remove expander if it has not children
-    model->fetchMore(indexes[0]);
+    const QModelIndex index_proxy = indexes[0];
+    const QModelIndex index = proxy->mapToSource(index_proxy);
+    model->fetchMore(index);
 
-    const QString dn = get_dn_from_index(indexes[0], ContainersColumn_DN);
+    const QString dn = get_dn_from_index(index, ContainersColumn_DN);
 
     emit selected_changed(dn);
 }
@@ -263,14 +150,14 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
         return;
     }
 
-    const QString dn = get_dn_from_index(parent, ContainersColumn_DN);
+    const QString parent_dn = get_dn_from_index(parent, ContainersColumn_DN);
 
     QStandardItem *parent_item = itemFromIndex(parent);
 
     // Add children
     const QList<QString> search_attributes = {ATTRIBUTE_NAME, ATTRIBUTE_DISTINGUISHED_NAME, ATTRIBUTE_OBJECT_CLASS};
     const QString filter = current_advanced_view_filter();
-    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, dn);
+    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, parent_dn);
 
     for (const AdObject object : search_results.values()) {
         make_row(parent_item, object);
@@ -293,14 +180,12 @@ void ContainersModel::fetchMore(const QModelIndex &parent) {
             make_row(parent_item, object);
         };
 
-        if (dn == search_base) {
+        if (parent_dn == search_base) {
             load_manually(configuration_dn);
-        } else if (dn == configuration_dn) {
+        } else if (parent_dn == configuration_dn) {
             load_manually(schema_dn);
         }
     }
-
-    sort(ContainersColumn_Name);
 }
 
 // Override this so that unexpanded and unfetched items show the expander even though they technically don't have any children loaded
@@ -315,7 +200,7 @@ bool ContainersModel::hasChildren(const QModelIndex &parent = QModelIndex()) con
 
 // Make row in model at given parent based on object with given dn
 QStandardItem *make_row(QStandardItem *parent, const AdObject &object) {
-    const bool passes_filter =
+    const bool is_container =
     [object]() {
         static const QList<QString> accepted_classes =
         []() {
@@ -344,11 +229,6 @@ QStandardItem *make_row(QStandardItem *parent, const AdObject &object) {
         return false;
     }();
 
-    const bool ignore_filter = SETTINGS()->get_bool(BoolSetting_ShowNonContainersInContainersTree);
-    if (!passes_filter && !ignore_filter) {
-        return nullptr;
-    }
-
     const QList<QStandardItem *> row = make_item_row(ContainersColumn_COUNT);
     
     const QString name = object.get_string(ATTRIBUTE_NAME);
@@ -360,9 +240,37 @@ QStandardItem *make_row(QStandardItem *parent, const AdObject &object) {
     row[0]->setIcon(icon);
 
     // Can fetch(expand) object if it's a container
-    row[0]->setData(passes_filter, ContainersModel::Roles::CanFetch);
+    row[0]->setData(is_container, ContainersModel::Roles::CanFetch);
+    row[0]->setData(is_container, ContainersModel::Roles::IsContainer);
 
     parent->appendRow(row);
 
     return row[0];
+}
+
+ContainersFilterProxy::ContainersFilterProxy(QObject *parent)
+: QSortFilterProxyModel(parent) {
+    const BoolSettingSignal *show_non_containers_signal = SETTINGS()->get_bool_signal(BoolSetting_ShowNonContainersInContainersTree);
+    connect(
+        show_non_containers_signal, &BoolSettingSignal::changed,
+        this, &ContainersFilterProxy::on_show_non_containers);
+    on_show_non_containers();
+}
+
+void ContainersFilterProxy::on_show_non_containers() {
+    // NOTE: get the setting here and save it instead of in
+    // filterAcceptsRow() for better perfomance
+    show_non_containers = SETTINGS()->get_bool(BoolSetting_ShowNonContainersInContainersTree);
+    invalidateFilter();
+}
+
+bool ContainersFilterProxy::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
+    if (show_non_containers) {
+        return true;
+    } else {
+        const QModelIndex index = sourceModel()->index(source_row, 0, source_parent);
+        const bool is_container = index.data(ContainersModel::Roles::IsContainer).toBool();
+
+        return is_container;
+    }
 }

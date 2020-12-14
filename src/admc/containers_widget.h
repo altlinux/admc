@@ -23,11 +23,13 @@
 #include "object_model.h"
 
 #include <QWidget>
+#include <QSortFilterProxyModel>
 
 class QItemSelection;
 class AdvancedViewProxy;
 class QTreeView;
 class ContainersModel;
+class ContainersFilterProxy;
 
 class ContainersWidget final : public QWidget {
 Q_OBJECT
@@ -45,8 +47,8 @@ private slots:
 
 private:
     QTreeView *view;
+    ContainersFilterProxy *proxy;
 
-    void reload();
     void showEvent(QShowEvent *event);
 };
 
@@ -56,6 +58,7 @@ Q_OBJECT
 public:
     enum Roles {
         CanFetch = Qt::UserRole + 1,
+        IsContainer = Qt::UserRole + 2,
     };
 
     ContainersModel(QObject *parent);
@@ -65,6 +68,21 @@ public:
     bool hasChildren(const QModelIndex &parent) const override;
 
 private slots:
+};
+
+class ContainersFilterProxy final : public QSortFilterProxyModel {
+Q_OBJECT
+
+public:
+    ContainersFilterProxy(QObject *parent);
+
+private slots:
+    void on_show_non_containers();
+    
+private:
+    bool show_non_containers;
+
+    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
 
 #endif /* CONTAINERS_WIDGET_H */
