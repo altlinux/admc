@@ -198,9 +198,15 @@ QString dn_get_name(const QString &dn) {
     return name;
 }
 
-QString dn_get_parent_canonical(const QString &dn) {
+QString dn_get_parent(const QString &dn) {
     const int comma_i = dn.indexOf(',');
     const QString parent_dn = dn.mid(comma_i + 1);
+
+    return parent_dn;
+}
+
+QString dn_get_parent_canonical(const QString &dn) {
+    const QString parent_dn = dn_get_parent(dn);
 
     return dn_canonical(parent_dn);
 }

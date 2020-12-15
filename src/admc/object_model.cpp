@@ -21,10 +21,12 @@
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "ad_config.h"
+#include "ad_utils.h"
 #include "filter.h"
 #include "settings.h"
 #include "utils.h"
 
+#include <QDebug>
 #include <QMimeData>
 #include <QString>
 
@@ -43,7 +45,19 @@ ObjectModel::ObjectModel(QObject *parent)
     const QString head_dn = AD()->domain_head();
     const AdObject head_object = AD()->search_object(head_dn);
 
-    make_row(invis_root, head_object);
+    const QList<QStandardItem *> row = make_item_row(Column::COUNT);
+    invis_root->appendRow(row);
+    load_row(row, head_object);
+
+    connect(
+        AD(), &AdInterface::object_added,
+        this, &ObjectModel::on_object_added);
+    connect(
+        AD(), &AdInterface::object_deleted,
+        this, &ObjectModel::on_object_deleted);
+    // connect(
+    //     AD(), &AdInterface::object_changed,
+    //     this, &ObjectModel::on_object_changed);
 }
 
 bool ObjectModel::canFetchMore(const QModelIndex &parent) const {
@@ -59,7 +73,7 @@ bool ObjectModel::canFetchMore(const QModelIndex &parent) const {
 void ObjectModel::fetchMore(const QModelIndex &parent) {
     if (!parent.isValid() || !canFetchMore(parent)) {
         return;
-    }
+    }    
 
     const QString parent_dn = get_dn_from_index(parent, Column::DN);
 
@@ -86,7 +100,9 @@ void ObjectModel::fetchMore(const QModelIndex &parent) {
     }
 
     for (const AdObject object : search_results.values()) {
-        make_row(parent_item, object);
+        const QList<QStandardItem *> row = make_item_row(Column::COUNT);
+        parent_item->appendRow(row);
+        load_row(row, object);
     }
 
     // Unset CanFetch flag since we are done fetching
@@ -142,10 +158,64 @@ bool ObjectModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int
     return true;
 }
 
+void ObjectModel::on_object_added(const QString &dn) {
+    const QString parent_dn = dn_get_parent(dn);
+    QStandardItem *parent_item = find_object(parent_dn);
+    if (parent_item == nullptr) {
+        return;
+    }
+
+    const bool parent_fetched = !canFetchMore(parent_item->index());
+
+    // NOTE: only need to add row if parent has been fetched. If parent wasn't fetched, then row will be loaded together with it's siblings.
+    if (parent_fetched) {
+        const AdObject object = AD()->search_object(dn);
+        const QList<QStandardItem *> row = make_item_row(Column::COUNT);
+        load_row(row, object);
+        parent_item->appendRow(row);
+    }
+}
+
+void ObjectModel::on_object_deleted(const QString &dn) {
+    QStandardItem *item = find_object(dn);
+    if (item == nullptr) {
+        return;
+    }
+
+    QStandardItem *parent_item = item->parent();
+    const int row = item->row();
+
+    parent_item->removeRow(row);
+}
+
+void ObjectModel::on_object_changed(const QString &dn) {
+    QStandardItem *main_item = find_object(dn);
+    if (main_item == nullptr) {
+        return;
+    }
+
+    const QList<QStandardItem *> row =
+    [=]() {
+        QList<QStandardItem *> out;
+
+        const QModelIndex main_index = main_item->index();
+
+        for (int col = 0; col < Column::COUNT; col++) {
+            const QModelIndex index = main_index.siblingAtColumn(col);
+            QStandardItem *item = itemFromIndex(index);
+
+            out.append(item);
+        }
+
+        return out;
+    }();
+
+    const AdObject object = AD()->search_object(dn);
+    load_row(row, object);
+}
+
 // Make row in model at given parent based on object with given dn
-QStandardItem *ObjectModel::make_row(QStandardItem *parent, const AdObject &object) {
-    const QList<QStandardItem *> row = make_item_row(Column::COUNT);
-    
+void ObjectModel::load_row(const QList<QStandardItem *> row, const AdObject &object) {    
     const QString name = object.get_string(ATTRIBUTE_NAME);
     const QString dn = object.get_dn();
     row[Column::Name]->setText(name);
@@ -190,8 +260,21 @@ QStandardItem *ObjectModel::make_row(QStandardItem *parent, const AdObject &obje
 
     const bool advanced_view_only = object.get_bool(ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY);
     row[0]->setData(advanced_view_only, ObjectModel::Roles::AdvancedViewOnly);
+}
 
-    parent->appendRow(row);
+QStandardItem *ObjectModel::find_object(const QString &dn) const {
+    const QList<QStandardItem *> items = findItems(dn, Qt::MatchFixedString | Qt::MatchRecursive, Column::DN);
+    if (items.isEmpty()) {
+        qDebug() << "ObjectModel failed to find item for object:" << dn;
 
-    return row[0];
+        return nullptr;
+    } else {
+        // NOTE: we need the main item at 0th index, not dn index
+        const QStandardItem *dn_item = items[0];
+        const QModelIndex dn_index = dn_item->index();
+        const QModelIndex index = dn_index.siblingAtColumn(0);
+        QStandardItem *item = itemFromIndex(index);
+
+        return item;
+    }
 }

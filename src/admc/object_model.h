@@ -62,8 +62,14 @@ public:
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
 
+private slots:
+    void on_object_added(const QString &dn);
+    void on_object_deleted(const QString &dn);
+    void on_object_changed(const QString &dn);
+
 private:
-    QStandardItem *make_row(QStandardItem *parent, const AdObject &object);
+    void load_row(const QList<QStandardItem *> row, const AdObject &object);
+    QStandardItem *find_object(const QString &dn) const;
 };
 
 #endif /* OBJECT_MODEL_H */

@@ -115,6 +115,8 @@ public:
 
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
+    void emit_object_added(const QString &dn);
+
 signals:
     // Emitted when connected successfully to a server
     void connected();
@@ -125,6 +127,11 @@ signals:
     void modified();
 
     void search_has_multiple_pages();
+
+    // These signals are for ObjectModel
+    void object_added(const QString &dn);
+    void object_deleted(const QString &dn);
+    void object_changed(const QString &dn);
 
 private:
     LDAP *ld;
@@ -140,7 +147,6 @@ private:
         
     AdInterface();
 
-    void emit_modified();
     void success_status_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     void error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     QString default_error() const;
@@ -152,6 +158,5 @@ private:
 };
 
 AdInterface *AD();
-
 
 #endif /* AD_INTERFACE_H */
