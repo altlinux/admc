@@ -115,7 +115,7 @@ public:
 
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
-    void emit_object_added(const QString &dn);
+    void emit_object_changed(const QString &dn);
 
 signals:
     // Emitted when connected successfully to a server

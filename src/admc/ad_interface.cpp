@@ -1099,6 +1099,10 @@ QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
     return out;
 }
 
+void AdInterface::emit_object_changed(const QString &dn) {
+    emit object_changed(dn);
+}
+
 AdInterface::AdInterface()
 : QObject()
 {

@@ -64,9 +64,9 @@ ObjectModel::ObjectModel(QObject *parent)
     connect(
         AD(), &AdInterface::object_deleted,
         this, &ObjectModel::on_object_deleted);
-    // connect(
-    //     AD(), &AdInterface::object_changed,
-    //     this, &ObjectModel::on_object_changed);
+    connect(
+        AD(), &AdInterface::object_changed,
+        this, &ObjectModel::on_object_changed);
 }
 
 bool ObjectModel::canFetchMore(const QModelIndex &parent) const {

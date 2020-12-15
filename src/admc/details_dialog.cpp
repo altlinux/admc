@@ -250,6 +250,7 @@ void DetailsDialog::apply() {
         }
     }
     AD()->end_batch();
+    AD()->emit_object_changed(target);
 
     STATUS()->end_error_log(this);
 }
