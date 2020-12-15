@@ -17,52 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONTAINERS_WIDGET_H
-#define CONTAINERS_WIDGET_H
+#ifndef ADVANCED_VIEW_PROXY_H
+#define ADVANCED_VIEW_PROXY_H
 
-#include <QWidget>
 #include <QSortFilterProxyModel>
 
-class QItemSelection;
-class AdvancedViewProxy;
-class QTreeView;
-class ObjectModel;
-class ContainersFilterProxy;
-
-class ContainersWidget final : public QWidget {
+class AdvancedViewProxy final : public QSortFilterProxyModel {
 Q_OBJECT
 
 public:
-    ContainersWidget(ObjectModel *model, QWidget *parent);
-
-signals:
-    void selected_changed(const QModelIndex &source_index);
+    AdvancedViewProxy(QObject *parent);
 
 private slots:
-    void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
-    void on_context_menu(const QPoint pos);
-
-private:
-    QTreeView *view;
-    AdvancedViewProxy *advanced_view_proxy;
-    ContainersFilterProxy *containers_proxy;
-
-    void showEvent(QShowEvent *event);
-};
-
-class ContainersFilterProxy final : public QSortFilterProxyModel {
-Q_OBJECT
-
-public:
-    ContainersFilterProxy(QObject *parent);
-
-private slots:
-    void on_show_non_containers();
+    void on_setting_changed();
     
 private:
-    bool show_non_containers;
-
+    bool advanced_view;
+    
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
 
-#endif /* CONTAINERS_WIDGET_H */
+#endif /* ADVANCED_VIEW_PROXY_H */

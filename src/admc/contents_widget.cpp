@@ -25,6 +25,7 @@
 #include "object_list_widget.h"
 #include "contents_filter_dialog.h"
 #include "object_model.h"
+#include "advanced_view_proxy.h"
 #include "utils.h"
 
 #include <QVBoxLayout>
@@ -50,7 +51,10 @@ ContentsWidget::ContentsWidget(ObjectModel *model, ContainersWidget *containers_
     view->setSortingEnabled(true);
     view->header()->setSectionsMovable(true);
 
-    view->setModel(model);
+    advanced_view_proxy = new AdvancedViewProxy(this);
+
+    advanced_view_proxy->setSourceModel(model);
+    view->setModel(advanced_view_proxy);
 
     setup_column_toggle_menu(view, model, {ADCONFIG()->get_column_index(ATTRIBUTE_NAME), ADCONFIG()->get_column_index(ATTRIBUTE_OBJECT_CLASS), ADCONFIG()->get_column_index(ATTRIBUTE_DESCRIPTION)});
 
@@ -73,13 +77,6 @@ ContentsWidget::ContentsWidget(ObjectModel *model, ContainersWidget *containers_
         AD(), &AdInterface::modified,
         this, &ContentsWidget::on_ad_modified);
 
-    const BoolSettingSignal *advanced_view_setting = SETTINGS()->get_bool_signal(BoolSetting_AdvancedView);
-    connect(
-        advanced_view_setting, &BoolSettingSignal::changed,
-        [this]() {
-            change_target(target_dn);
-        });
-
     connect(
         filter_contents_action, &QAction::triggered,
         [this]() {
@@ -88,9 +85,8 @@ ContentsWidget::ContentsWidget(ObjectModel *model, ContainersWidget *containers_
 }
 
 void ContentsWidget::on_containers_selected_changed(const QModelIndex &source_index) {
-    // object_list->reset_name_filter();
-    // change_target(dn);
-    view->setRootIndex(source_index);
+    const QModelIndex proxy_index = advanced_view_proxy->mapFromSource(source_index);
+    view->setRootIndex(proxy_index);
 }
 
 void ContentsWidget::on_ad_modified() {

@@ -30,6 +30,7 @@ class ContentsFilterDialog;
 class ObjectModel;
 class QTreeView;
 class QModelIndex;
+class AdvancedViewProxy;
 
 /**
  * Shows a list of objects, which are children of a target
@@ -52,6 +53,7 @@ private:
     QString target_dn;
     QTreeView *view;
     ContentsFilterDialog *filter_dialog;
+    AdvancedViewProxy *advanced_view_proxy;
 
     void change_target(const QString &dn);
     void showEvent(QShowEvent *event);

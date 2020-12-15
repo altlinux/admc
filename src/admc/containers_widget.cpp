@@ -18,6 +18,7 @@
  */
 
 #include "containers_widget.h"
+
 #include "object_context_menu.h"
 #include "utils.h"
 #include "settings.h"
@@ -27,6 +28,7 @@
 #include "ad_object.h"
 #include "filter.h"
 #include "object_model.h"
+#include "advanced_view_proxy.h"
 
 #include <QTreeView>
 #include <QIcon>
@@ -38,13 +40,9 @@
 
 QStandardItem *make_row(QStandardItem *parent, const AdObject &object);
 
-ContainersWidget::ContainersWidget(ObjectModel *model_arg, QWidget *parent)
+ContainersWidget::ContainersWidget(ObjectModel *model, QWidget *parent)
 : QWidget(parent)
 {
-    model = model_arg;
-
-    proxy = new ContainersFilterProxy(this);
-
     view = new QTreeView(this);
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -57,8 +55,12 @@ ContainersWidget::ContainersWidget(ObjectModel *model_arg, QWidget *parent)
     view->setSortingEnabled(true);
     view->sortByColumn(ADCONFIG()->get_column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
 
-    proxy->setSourceModel(model);
-    view->setModel(proxy);
+    advanced_view_proxy = new AdvancedViewProxy(this);
+    containers_proxy = new ContainersFilterProxy(this);
+
+    containers_proxy->setSourceModel(model);
+    advanced_view_proxy->setSourceModel(containers_proxy);
+    view->setModel(advanced_view_proxy);
 
     setup_column_toggle_menu(view, model, {ADCONFIG()->get_column_index(ATTRIBUTE_NAME)});
 
@@ -86,9 +88,11 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
         return;
     }
 
-    const QModelIndex proxy_index = indexes[0];
-    const QModelIndex source_index = proxy->mapToSource(proxy_index);
-    
+    // Convert view's (advanced view proxy) index to source index
+    const QModelIndex advanced_view_proxy_index = indexes[0];
+    const QModelIndex containers_proxy_index = advanced_view_proxy->mapToSource(advanced_view_proxy_index);
+    const QModelIndex source_index = containers_proxy->mapToSource(containers_proxy_index);
+
     emit selected_changed(source_index);
 }
 
