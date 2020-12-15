@@ -293,6 +293,14 @@ QString AdConfig::get_column_display_name(const Attribute &attribute) const {
     return column_display_names.value(attribute, attribute);
 }
 
+int AdConfig::get_column_index(const QString &attribute) const {
+    if (!columns.contains(attribute)) {
+        qWarning() << "ADCONFIG columns missing attribute:" << attribute;
+    }
+
+    return columns.indexOf(attribute);
+}
+
 QList<QString> AdConfig::get_filter_containers() const {
     return filter_containers;
 }

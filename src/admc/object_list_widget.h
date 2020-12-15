@@ -61,7 +61,6 @@ private slots:
 private:
     ObjectListWidgetType list_type;
     QString parent_dn;
-    QList<QString> columns;
     QLabel *label;
     QStandardItemModel *model;
     QTreeView *view;
@@ -70,7 +69,6 @@ private:
 
     void load(const QHash<QString, AdObject> &objects);
     void showEvent(QShowEvent *event);
-    int column_index(const QString &attribute);
 };
 
 #endif /* OBJECTS_LIST_WIDGET_H */

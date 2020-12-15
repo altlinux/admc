@@ -25,6 +25,7 @@
 #include "filter.h"
 #include "settings.h"
 #include "utils.h"
+#include "attribute_display.h"
 
 #include <QDebug>
 #include <QMimeData>
@@ -33,19 +34,27 @@
 // TODO: remove dev mode once developing winds down OR extract it better because it adds a lot of confusion
 
 ObjectModel::ObjectModel(QObject *parent)
-: QStandardItemModel(0, Column::COUNT, parent)
+: QStandardItemModel(0, ADCONFIG()->get_columns().count(), parent)
 {
-    set_horizontal_header_labels_from_map(this, {
-        {Column::Name, tr("Name")},
-        {Column::DN, tr("DN")}
-    });
+    // TODO: duplicated in object list widget
+    const QList<QString> header_labels =
+    [this]() {
+        QList<QString> out;
+        for (const QString attribute : ADCONFIG()->get_columns()) {
+            const QString attribute_display_name = ADCONFIG()->get_column_display_name(attribute);
+
+            out.append(attribute_display_name);
+        }
+        return out;
+    }();
+    setHorizontalHeaderLabels(header_labels);
 
     // Make row for head object
     QStandardItem *invis_root = invisibleRootItem();
     const QString head_dn = AD()->domain_head();
     const AdObject head_object = AD()->search_object(head_dn);
 
-    const QList<QStandardItem *> row = make_item_row(Column::COUNT);
+    const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
     invis_root->appendRow(row);
     load_row(row, head_object);
 
@@ -75,7 +84,7 @@ void ObjectModel::fetchMore(const QModelIndex &parent) {
         return;
     }    
 
-    const QString parent_dn = get_dn_from_index(parent, Column::DN);
+    const QString parent_dn = get_dn_from_index(parent, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
 
     QStandardItem *parent_item = itemFromIndex(parent);
 
@@ -100,7 +109,7 @@ void ObjectModel::fetchMore(const QModelIndex &parent) {
     }
 
     for (const AdObject object : search_results.values()) {
-        const QList<QStandardItem *> row = make_item_row(Column::COUNT);
+        const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
         parent_item->appendRow(row);
         load_row(row, object);
     }
@@ -124,7 +133,7 @@ QMimeData *ObjectModel::mimeData(const QModelIndexList &indexes) const {
 
     if (indexes.size() > 0) {
         QModelIndex index = indexes[0];
-        QString dn = get_dn_from_index(index, Column::DN);
+        QString dn = get_dn_from_index(index, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
 
         data->setText(dn);
     }
@@ -134,7 +143,7 @@ QMimeData *ObjectModel::mimeData(const QModelIndexList &indexes) const {
 
 bool ObjectModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
     const QString dn = data->text();
-    const QString target_dn = get_dn_from_index(parent, Column::DN);
+    const QString target_dn = get_dn_from_index(parent, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
 
     const bool can_drop = AD()->object_can_drop(dn, target_dn);
 
@@ -151,7 +160,7 @@ bool ObjectModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int
     }
 
     const QString dn = data->text();
-    const QString target_dn = get_dn_from_index(parent, Column::DN);
+    const QString target_dn = get_dn_from_index(parent, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
 
     AD()->object_drop(dn, target_dn);
 
@@ -170,7 +179,7 @@ void ObjectModel::on_object_added(const QString &dn) {
     // NOTE: only need to add row if parent has been fetched. If parent wasn't fetched, then row will be loaded together with it's siblings.
     if (parent_fetched) {
         const AdObject object = AD()->search_object(dn);
-        const QList<QStandardItem *> row = make_item_row(Column::COUNT);
+        const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
         load_row(row, object);
         parent_item->appendRow(row);
     }
@@ -200,7 +209,7 @@ void ObjectModel::on_object_changed(const QString &dn) {
 
         const QModelIndex main_index = main_item->index();
 
-        for (int col = 0; col < Column::COUNT; col++) {
+        for (int col = 0; col < ADCONFIG()->get_columns().size(); col++) {
             const QModelIndex index = main_index.siblingAtColumn(col);
             QStandardItem *item = itemFromIndex(index);
 
@@ -215,15 +224,45 @@ void ObjectModel::on_object_changed(const QString &dn) {
 }
 
 // Make row in model at given parent based on object with given dn
-void ObjectModel::load_row(const QList<QStandardItem *> row, const AdObject &object) {    
-    const QString name = object.get_string(ATTRIBUTE_NAME);
-    const QString dn = object.get_dn();
-    row[Column::Name]->setText(name);
-    row[Column::DN]->setText(dn);
+void ObjectModel::load_row(const QList<QStandardItem *> row, const AdObject &object) {
+    // TODO: duplicated
+    // Load attribute columns
+    for (int i = 0; i < ADCONFIG()->get_columns().count(); i++) {
+        const QString attribute = ADCONFIG()->get_columns()[i];
+
+        if (!object.contains(attribute)) {
+            continue;
+        }
+
+        const QString display_value =
+        [attribute, object]() {
+            if (attribute == ATTRIBUTE_OBJECT_CLASS) {
+                const QString object_class = object.get_string(attribute);
+
+                if (object_class == CLASS_GROUP) {
+                    const GroupScope scope = object.get_group_scope(); 
+                    const QString scope_string = group_scope_string(scope);
+
+                    const GroupType type = object.get_group_type(); 
+                    const QString type_string = group_type_string(type);
+
+                    return QString("%1 Group - %2").arg(type_string, scope_string);
+                } else {
+                    return ADCONFIG()->get_class_display_name(object_class);
+                }
+            } else {
+                const QByteArray value = object.get_value(attribute);
+                return attribute_display_value(attribute, value);
+            }
+        }();
+
+        row[i]->setText(display_value);
+    }
 
     const QIcon icon = object.get_icon();
     row[0]->setIcon(icon);
 
+    // Load item roles
     const bool is_container =
     [object]() {
         static const QList<QString> accepted_classes =
@@ -263,7 +302,7 @@ void ObjectModel::load_row(const QList<QStandardItem *> row, const AdObject &obj
 }
 
 QStandardItem *ObjectModel::find_object(const QString &dn) const {
-    const QList<QStandardItem *> items = findItems(dn, Qt::MatchFixedString | Qt::MatchRecursive, Column::DN);
+    const QList<QStandardItem *> items = findItems(dn, Qt::MatchFixedString | Qt::MatchRecursive, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
     if (items.isEmpty()) {
         qDebug() << "ObjectModel failed to find item for object:" << dn;
 

@@ -43,14 +43,12 @@ ObjectListWidget::ObjectListWidget(const ObjectListWidgetType list_type_arg)
 {   
     list_type = list_type_arg;
 
-    columns = ADCONFIG()->get_columns();
-
-    model = new QStandardItemModel(columns.count(), column_index(ATTRIBUTE_DISTINGUISHED_NAME), this);
+    model = new QStandardItemModel(ADCONFIG()->get_columns().count(), ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME), this);
 
     const QList<QString> header_labels =
     [this]() {
         QList<QString> out;
-        for (const QString attribute : columns) {
+        for (const QString attribute : ADCONFIG()->get_columns()) {
             const QString attribute_display_name = ADCONFIG()->get_column_display_name(attribute);
 
             out.append(attribute_display_name);
@@ -60,7 +58,7 @@ ObjectListWidget::ObjectListWidget(const ObjectListWidgetType list_type_arg)
     model->setHorizontalHeaderLabels(header_labels);
 
     auto proxy_name = new QSortFilterProxyModel(this);
-    proxy_name->setFilterKeyColumn(column_index(ATTRIBUTE_NAME));
+    proxy_name->setFilterKeyColumn(ADCONFIG()->get_column_index(ATTRIBUTE_NAME));
 
     view = new QTreeView(this);
     view->setAcceptDrops(true);
@@ -78,13 +76,13 @@ ObjectListWidget::ObjectListWidget(const ObjectListWidgetType list_type_arg)
     proxy_name->setSourceModel(model);
     view->setModel(proxy_name);
 
-    DetailsDialog::connect_to_open_by_double_click(view, column_index(ATTRIBUTE_DISTINGUISHED_NAME));
+    DetailsDialog::connect_to_open_by_double_click(view, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
 
     setup_column_toggle_menu(view, model, 
     {
-        column_index(ATTRIBUTE_NAME),
-        column_index(ATTRIBUTE_OBJECT_CLASS),
-        column_index(ATTRIBUTE_DESCRIPTION)
+        ADCONFIG()->get_column_index(ATTRIBUTE_NAME),
+        ADCONFIG()->get_column_index(ATTRIBUTE_OBJECT_CLASS),
+        ADCONFIG()->get_column_index(ATTRIBUTE_DESCRIPTION)
     });
 
     label = new QLabel(this);
@@ -140,7 +138,7 @@ void ObjectListWidget::load_children(const QString &new_parent_dn, const QString
 }
 
 void ObjectListWidget::load_filter(const QString &filter, const QString &search_base) {
-    const QList<QString> search_attributes = columns;
+    const QList<QString> search_attributes = ADCONFIG()->get_columns();
     const QString filter_and_advanced = filter_AND({filter, current_advanced_view_filter()});
     const QHash<QString, AdObject> search_results = AD()->search(filter_and_advanced, search_attributes, SearchScope_All, search_base);
 
@@ -154,7 +152,7 @@ void ObjectListWidget::reset_name_filter() {
 void ObjectListWidget::on_context_menu(const QPoint pos) {
     const QString dn =
     [this, pos]() {
-        const int dn_column = column_index(ATTRIBUTE_DISTINGUISHED_NAME);
+        const int dn_column = ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME);
         QString out = get_dn_from_pos(pos, view, dn_column);
         
         // Interpret clicks on empty space as clicks on parent (if parent is defined
@@ -183,9 +181,9 @@ void ObjectListWidget::load(const QHash<QString, AdObject> &objects) {
     for (auto child_dn : objects.keys()) {
         const AdObject object  = objects[child_dn];
         
-        const QList<QStandardItem *> row = make_item_row(columns.count());
-        for (int i = 0; i < columns.count(); i++) {
-            const QString attribute = columns[i];
+        const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().count());
+        for (int i = 0; i < ADCONFIG()->get_columns().count(); i++) {
+            const QString attribute = ADCONFIG()->get_columns()[i];
 
             if (!object.contains(attribute)) {
                 continue;
@@ -222,7 +220,7 @@ void ObjectListWidget::load(const QHash<QString, AdObject> &objects) {
         model->appendRow(row);
     }
 
-    view->sortByColumn(column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
+    view->sortByColumn(ADCONFIG()->get_column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
 
     const QString label_text =
     [this]() {
@@ -246,15 +244,7 @@ void ObjectListWidget::load(const QHash<QString, AdObject> &objects) {
 void ObjectListWidget::showEvent(QShowEvent *event) {
     resize_columns(view,
     {
-        {column_index(ATTRIBUTE_NAME), 0.4},
-        {column_index(ATTRIBUTE_OBJECT_CLASS), 0.4},
+        {ADCONFIG()->get_column_index(ATTRIBUTE_NAME), 0.4},
+        {ADCONFIG()->get_column_index(ATTRIBUTE_OBJECT_CLASS), 0.4},
     });
-}
-
-int ObjectListWidget::column_index(const QString &attribute) {
-    if (!columns.contains(attribute)) {
-        qWarning() << "ObjectListWidget is missing column for" << attribute;
-    }
-
-    return columns.indexOf(attribute);
 }

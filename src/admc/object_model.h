@@ -46,12 +46,6 @@ public:
         AdvancedViewOnly = Qt::UserRole + 3,
     };
 
-    enum Column {
-        Name,
-        DN,
-        COUNT
-    };
-
     ObjectModel(QObject *parent);
 
     bool canFetchMore(const QModelIndex &parent) const;

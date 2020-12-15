@@ -55,12 +55,12 @@ ContainersWidget::ContainersWidget(ObjectModel *model_arg, QWidget *parent)
     view->setDragDropMode(QAbstractItemView::DragDrop);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
-    view->sortByColumn(ObjectModel::Column::Name, Qt::AscendingOrder);
+    view->sortByColumn(ADCONFIG()->get_column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
 
     proxy->setSourceModel(model);
     view->setModel(proxy);
 
-    setup_column_toggle_menu(view, model, {ObjectModel::Column::Name});
+    setup_column_toggle_menu(view, model, {ADCONFIG()->get_column_index(ATTRIBUTE_NAME)});
 
     // Insert label into layout
     const auto layout = new QVBoxLayout();
@@ -93,7 +93,7 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
 }
 
 void ContainersWidget::on_context_menu(const QPoint pos) {
-    const QString dn = get_dn_from_pos(pos, view, ObjectModel::Column::DN);
+    const QString dn = get_dn_from_pos(pos, view, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
     if (dn.isEmpty()) {
         return;
     }
@@ -105,8 +105,8 @@ void ContainersWidget::on_context_menu(const QPoint pos) {
 void ContainersWidget::showEvent(QShowEvent *event) {
     resize_columns(view,
     {
-        {ObjectModel::Column::Name, 0.5},
-        {ObjectModel::Column::DN, 0.5},
+        {ADCONFIG()->get_column_index(ATTRIBUTE_NAME), 0.5},
+        {ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME), 0.5},
     });
 }
 

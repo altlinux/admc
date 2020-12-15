@@ -21,9 +21,11 @@
 #include "containers_widget.h"
 #include "settings.h"
 #include "ad_interface.h"
+#include "ad_config.h"
 #include "object_list_widget.h"
 #include "contents_filter_dialog.h"
 #include "object_model.h"
+#include "utils.h"
 
 #include <QVBoxLayout>
 #include <QAction>
@@ -49,6 +51,8 @@ ContentsWidget::ContentsWidget(ObjectModel *model, ContainersWidget *containers_
     view->header()->setSectionsMovable(true);
 
     view->setModel(model);
+
+    setup_column_toggle_menu(view, model, {ADCONFIG()->get_column_index(ATTRIBUTE_NAME), ADCONFIG()->get_column_index(ATTRIBUTE_OBJECT_CLASS), ADCONFIG()->get_column_index(ATTRIBUTE_DESCRIPTION)});
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
@@ -102,4 +106,12 @@ void ContentsWidget::change_target(const QString &dn) {
     // target_dn = dn;
 
     // object_list->load_children(target_dn);
+}
+
+void ContentsWidget::showEvent(QShowEvent *event) {
+    resize_columns(view,
+    {
+        {ADCONFIG()->get_column_index(ATTRIBUTE_NAME), 0.4},
+        {ADCONFIG()->get_column_index(ATTRIBUTE_OBJECT_CLASS), 0.4},
+    });
 }

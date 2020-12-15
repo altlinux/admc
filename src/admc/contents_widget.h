@@ -54,6 +54,7 @@ private:
     ContentsFilterDialog *filter_dialog;
 
     void change_target(const QString &dn);
+    void showEvent(QShowEvent *event);
 };
 
 #endif /* CONTENTS_WIDGET_H */
