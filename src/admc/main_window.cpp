@@ -105,7 +105,7 @@ void MainWindow::on_connected() {
     auto containers_widget = new ContainersWidget(object_model, this);
 
     auto contents_widget = new ContentsWidget(object_model, containers_widget, menubar->filter_contents_action);
-    
+
     auto details_widget_docked_container = DetailsDialog::get_docked_container();
     auto policies_widget = new PoliciesWidget();
 

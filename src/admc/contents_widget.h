@@ -24,9 +24,7 @@
 #include <QString>
 
 class ContainersWidget;
-class ObjectListWidget;
 class QAction;
-class ContentsFilterDialog;
 class ObjectModel;
 class QTreeView;
 class QModelIndex;
@@ -46,16 +44,12 @@ public:
 
 private slots:
     void on_containers_selected_changed(const QModelIndex &source_index);
-    void on_ad_modified();
-    void load_filter(const QString &filter);
 
 private:
     QString target_dn;
     QTreeView *view;
-    ContentsFilterDialog *filter_dialog;
     AdvancedViewProxy *advanced_view_proxy;
 
-    void change_target(const QString &dn);
     void showEvent(QShowEvent *event);
 };
 

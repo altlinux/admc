@@ -22,8 +22,6 @@
 #include "settings.h"
 #include "ad_interface.h"
 #include "ad_config.h"
-#include "object_list_widget.h"
-#include "contents_filter_dialog.h"
 #include "object_model.h"
 #include "advanced_view_proxy.h"
 #include "utils.h"
@@ -37,7 +35,6 @@
 ContentsWidget::ContentsWidget(ObjectModel *model, ContainersWidget *containers_widget, const QAction *filter_contents_action)
 : QWidget()
 {   
-    // object_list = new ObjectListWidget(ObjectListWidgetType_Contents);
     view = new QTreeView(this);
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -64,44 +61,14 @@ ContentsWidget::ContentsWidget(ObjectModel *model, ContainersWidget *containers_
     layout->setSpacing(0);
     layout->addWidget(view);
 
-    filter_dialog = new ContentsFilterDialog(this);
-
-    connect(
-        filter_dialog, &ContentsFilterDialog::filter_changed,
-        this, &ContentsWidget::load_filter);
-
     connect(
         containers_widget, &ContainersWidget::selected_changed,
         this, &ContentsWidget::on_containers_selected_changed);
-    connect(
-        AD(), &AdInterface::modified,
-        this, &ContentsWidget::on_ad_modified);
-
-    connect(
-        filter_contents_action, &QAction::triggered,
-        [this]() {
-            filter_dialog->open();
-        });
 }
 
 void ContentsWidget::on_containers_selected_changed(const QModelIndex &source_index) {
     const QModelIndex proxy_index = advanced_view_proxy->mapFromSource(source_index);
     view->setRootIndex(proxy_index);
-}
-
-void ContentsWidget::on_ad_modified() {
-    // change_target(target_dn);
-}
-
-void ContentsWidget::load_filter(const QString &filter) {
-    // qDebug() << "Contents filter:" << filter;
-    // object_list->load_children(target_dn, filter);
-}
-
-void ContentsWidget::change_target(const QString &dn) {
-    // target_dn = dn;
-
-    // object_list->load_children(target_dn);
 }
 
 void ContentsWidget::showEvent(QShowEvent *event) {
