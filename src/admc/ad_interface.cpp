@@ -388,6 +388,8 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Changed attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_values_display, values_display), do_msg);
 
+        emit object_changed(dn);
+
         return true;
     } else {
         const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_values_display, values_display);
@@ -425,6 +427,8 @@ bool AdInterface::attribute_add_value(const QString &dn, const QString &attribut
 
         success_status_message(context, do_msg);
 
+        emit object_changed(dn);
+
         return true;
     } else {
         const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_display_value, attribute, name);
@@ -447,6 +451,8 @@ bool AdInterface::attribute_delete_value(const QString &dn, const QString &attri
         const QString context = QString(tr("Deleted value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
 
         success_status_message(context, do_msg);
+
+        emit object_changed(dn);
 
         return true;
     } else {
@@ -561,7 +567,7 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Renamed object \"%1\" to \"%2\"")).arg(old_name, new_name));
 
-        emit object_changed(dn);
+        emit object_deleted(dn);
         emit object_added(new_dn);
 
         return true;
