@@ -17,36 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONTAINERS_WIDGET_H
-#define CONTAINERS_WIDGET_H
+#ifndef CONTAINERS_PROXY_H
+#define CONTAINERS_PROXY_H
 
-#include <QWidget>
+#include <QSortFilterProxyModel>
 
-class QItemSelection;
-class AdvancedViewProxy;
-class QTreeView;
-class ObjectModel;
 class ContainersProxy;
 
-class ContainersWidget final : public QWidget {
+/**
+ * Filters out objects that aren't containers. If "Show
+ * non-containers" setting is turned on, shows all objects.
+ */
+
+class ContainersProxy final : public QSortFilterProxyModel {
 Q_OBJECT
 
 public:
-    ContainersWidget(ObjectModel *model, QWidget *parent);
-
-signals:
-    void selected_changed(const QModelIndex &source_index);
+    ContainersProxy(QObject *parent);
 
 private slots:
-    void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
-    void on_context_menu(const QPoint pos);
-
+    void on_show_non_containers();
+    
 private:
-    QTreeView *view;
-    AdvancedViewProxy *advanced_view_proxy;
-    ContainersProxy *containers_proxy;
+    bool show_non_containers;
 
-    void showEvent(QShowEvent *event);
+    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
 
-#endif /* CONTAINERS_WIDGET_H */
+#endif /* CONTAINERS_PROXY_H */

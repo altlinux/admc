@@ -19,22 +19,18 @@
 
 #include "containers_widget.h"
 
+#include "object_model.h"
+#include "containers_proxy.h"
+#include "advanced_view_proxy.h"
 #include "object_context_menu.h"
 #include "utils.h"
-#include "settings.h"
 #include "details_dialog.h"
 #include "ad_config.h"
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "filter.h"
-#include "object_model.h"
-#include "advanced_view_proxy.h"
 
 #include <QTreeView>
-#include <QIcon>
-#include <QSet>
-#include <QStack>
-#include <QHeaderView>
 #include <QVBoxLayout>
 #include <QDebug>
 
@@ -56,7 +52,7 @@ ContainersWidget::ContainersWidget(ObjectModel *model, QWidget *parent)
     view->sortByColumn(ADCONFIG()->get_column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
 
     advanced_view_proxy = new AdvancedViewProxy(this);
-    containers_proxy = new ContainersFilterProxy(this);
+    containers_proxy = new ContainersProxy(this);
 
     containers_proxy->setSourceModel(model);
     advanced_view_proxy->setSourceModel(containers_proxy);
@@ -112,31 +108,4 @@ void ContainersWidget::showEvent(QShowEvent *event) {
         {ADCONFIG()->get_column_index(ATTRIBUTE_NAME), 0.5},
         {ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME), 0.5},
     });
-}
-
-ContainersFilterProxy::ContainersFilterProxy(QObject *parent)
-: QSortFilterProxyModel(parent) {
-    const BoolSettingSignal *show_non_containers_signal = SETTINGS()->get_bool_signal(BoolSetting_ShowNonContainersInContainersTree);
-    connect(
-        show_non_containers_signal, &BoolSettingSignal::changed,
-        this, &ContainersFilterProxy::on_show_non_containers);
-    on_show_non_containers();
-}
-
-void ContainersFilterProxy::on_show_non_containers() {
-    // NOTE: get the setting here and save it instead of in
-    // filterAcceptsRow() for better perfomance
-    show_non_containers = SETTINGS()->get_bool(BoolSetting_ShowNonContainersInContainersTree);
-    invalidateFilter();
-}
-
-bool ContainersFilterProxy::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
-    if (show_non_containers) {
-        return true;
-    } else {
-        const QModelIndex index = sourceModel()->index(source_row, 0, source_parent);
-        const bool is_container = index.data(ObjectModel::Roles::IsContainer).toBool();
-
-        return is_container;
-    }
 }

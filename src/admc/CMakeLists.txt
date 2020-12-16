@@ -25,6 +25,7 @@ add_executable(admc
     ad_object.cpp
     details_dialog.cpp
     containers_widget.cpp
+    containers_proxy.cpp
     contents_widget.cpp
     main_window.cpp
     status.cpp
