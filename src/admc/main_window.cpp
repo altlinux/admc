@@ -28,6 +28,7 @@
 #include "policies_widget.h"
 #include "ad_interface.h"
 #include "object_model.h"
+#include "contents_filter_dialog.h"
 
 #include <QApplication>
 #include <QString>
@@ -100,6 +101,8 @@ void MainWindow::on_connected() {
     status_log->clear();
     STATUS()->status_bar->showMessage(tr("Ready"));
 
+    filter_dialog = new ContentsFilterDialog(this);
+
     auto object_model = new ObjectModel(this);
 
     auto containers_widget = new ContainersWidget(object_model, this);
@@ -150,6 +153,14 @@ void MainWindow::on_connected() {
 
     connect_toggle_widget(containers_widget, BoolSetting_ShowContainers);
     connect_toggle_widget(status_log, BoolSetting_ShowStatusLog);
+
+    connect(
+        filter_dialog, &ContentsFilterDialog::filter_changed,
+        object_model, &ObjectModel::on_filter_changed);
+
+    connect(
+        menubar->filter_contents_action, &QAction::triggered,
+        filter_dialog, &QDialog::open);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

@@ -90,7 +90,26 @@ void ObjectModel::fetchMore(const QModelIndex &parent) {
 
     // Add children
     const QList<QString> search_attributes = QList<QString>();
-    const QString filter = QString();
+    const QString filter =
+    [this]() {
+        // NOTE: when filtering, don't apply it to container objects by OR'ing with container filter
+        if (!current_filter.isEmpty()) {
+            const QList<QString> accepted_classes = ADCONFIG()->get_filter_containers();
+
+            QList<QString> class_filters;
+            for (const QString object_class : accepted_classes) {
+                const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
+                class_filters.append(class_filter);
+            }
+
+            const QString containers_filter = filter_OR(class_filters);
+
+            return filter_OR({current_filter, containers_filter});
+        } else {
+            // Return empty string to accept all when filter is not set
+            return QString();
+        }
+    }();
     QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, parent_dn);
 
     // In dev mode, load configuration and schema objects
@@ -223,6 +242,12 @@ void ObjectModel::on_object_changed(const QString &dn) {
     load_row(row, object);
 }
 
+void ObjectModel::on_filter_changed(const QString &filter) {
+    current_filter = filter;
+
+    // reset();    
+}
+
 // Make row in model at given parent based on object with given dn
 void ObjectModel::load_row(const QList<QStandardItem *> row, const AdObject &object) {
     // TODO: duplicated
@@ -265,21 +290,7 @@ void ObjectModel::load_row(const QList<QStandardItem *> row, const AdObject &obj
     // Load item roles
     const bool is_container =
     [object]() {
-        static const QList<QString> accepted_classes =
-        []() {
-            QList<QString> out = ADCONFIG()->get_filter_containers();
-
-            // Make configuration and schema pass filter in dev mode so they are visible and can be fetched
-            const bool dev_mode = SETTINGS()->get_bool(BoolSetting_DevMode);
-            if (dev_mode) {
-                out.append({CLASS_CONFIGURATION, CLASS_dMD});
-            }
-
-            // TODO: domain not included for some reason, so add it ourselves
-            out.append(CLASS_DOMAIN);
-            
-            return out;
-        }();
+        const QList<QString> accepted_classes = ADCONFIG()->get_filter_containers();
 
         // NOTE: compare against all classes of object, not just the most derived one
         const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);

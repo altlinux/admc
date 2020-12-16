@@ -56,12 +56,17 @@ public:
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
 
+public slots:
+    void on_filter_changed(const QString &filter);
+
 private slots:
     void on_object_added(const QString &dn);
     void on_object_deleted(const QString &dn);
     void on_object_changed(const QString &dn);
 
 private:
+    QString current_filter;
+
     void load_row(const QList<QStandardItem *> row, const AdObject &object);
     QStandardItem *find_object(const QString &dn) const;
 };
