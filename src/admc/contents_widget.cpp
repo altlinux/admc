@@ -24,6 +24,7 @@
 #include "ad_config.h"
 #include "object_model.h"
 #include "advanced_view_proxy.h"
+#include "object_context_menu.h"
 #include "utils.h"
 
 #include <QVBoxLayout>
@@ -66,6 +67,20 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg, ContainersWidget *contain
     connect(
         containers_widget, &ContainersWidget::selected_changed,
         this, &ContentsWidget::on_containers_selected_changed);
+
+    QObject::connect(
+        view, &QWidget::customContextMenuRequested,
+        this, &ContentsWidget::on_context_menu);
+}
+
+void ContentsWidget::on_context_menu(const QPoint pos) {
+    const QString dn = get_dn_from_pos(pos, view, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
+    if (dn.isEmpty()) {
+        return;
+    }
+
+    ObjectContextMenu context_menu(dn, view);
+    exec_menu_from_view(&context_menu, view, pos);
 }
 
 void ContentsWidget::on_containers_selected_changed(const QModelIndex &source_index) {

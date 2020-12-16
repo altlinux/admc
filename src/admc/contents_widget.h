@@ -44,6 +44,7 @@ public:
 
 private slots:
     void on_containers_selected_changed(const QModelIndex &source_index);
+    void on_context_menu(const QPoint pos);
 
 private:
     QString target_dn;
