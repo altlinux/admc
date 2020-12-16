@@ -62,15 +62,6 @@ public:
 
     bool connect();
 
-    void refresh();
-
-    // Use this if you are doing a series of AD modifications.
-    // During the batch, modified() signals won't be emitted
-    // and once the batch is complete one modified() signal
-    // is emitted, so that GUI is reloaded only once.
-    void start_batch();
-    void end_batch();
-
     AdConfig *config() const;
     QString domain() const;
     QString domain_head() const;
@@ -115,16 +106,9 @@ public:
 
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
-    void emit_object_changed(const QString &dn);
-
 signals:
     // Emitted when connected successfully to a server
     void connected();
-
-    // Emitted when a f-n that modifies server state is
-    // used. Widgets should connect to this signal and
-    // reload updated server state in the slot.
-    void modified();
 
     void search_has_multiple_pages();
 
@@ -143,8 +127,6 @@ private:
     QString m_schema_dn;
     QString m_host;
 
-    bool batch_in_progress = false;
-        
     AdInterface();
 
     void success_status_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);

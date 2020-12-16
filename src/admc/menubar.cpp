@@ -49,11 +49,6 @@ MenuBar::MenuBar()
             find_dialog->open();
         });
 
-    action_menu->addAction(tr("Refresh"),
-        []() {
-            AD()->refresh();
-        });
-
     action_menu->addAction(tr("Test"),
         []() {
             AD()->object_add("CN=testslot,CN=Users,DC=domain,DC=alt", CLASS_USER);

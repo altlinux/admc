@@ -132,29 +132,6 @@ bool AdInterface::connect() {
     }
 }
 
-void AdInterface::refresh() {
-    // TODO: remove? rework!
-    // emit modified();
-}
-
-void AdInterface::start_batch() {
-    if (batch_in_progress) {
-        printf("Called start_batch() while batch is in progress!\n");
-        return;
-    }
-
-    batch_in_progress = true;
-}
-
-void AdInterface::end_batch() {
-    if (!batch_in_progress) {
-        printf("Called end_batch() before start_batch()!\n");
-        return;
-    }
-
-    batch_in_progress = false;
-}
-
 AdConfig *AdInterface::config() const {
     return m_config;
 }
@@ -584,7 +561,7 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Renamed object \"%1\" to \"%2\"")).arg(old_name, new_name));
 
-        emit object_deleted(dn);
+        emit object_changed(dn);
         emit object_added(new_dn);
 
         return true;
@@ -1097,10 +1074,6 @@ QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
     out = QString("smb://%1/%2").arg(m_host, out);
 
     return out;
-}
-
-void AdInterface::emit_object_changed(const QString &dn) {
-    emit object_changed(dn);
 }
 
 AdInterface::AdInterface()
