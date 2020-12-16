@@ -32,9 +32,11 @@
 #include <QTreeView>
 #include <QHeaderView>
 
-ContentsWidget::ContentsWidget(ObjectModel *model, ContainersWidget *containers_widget, const QAction *filter_contents_action)
+ContentsWidget::ContentsWidget(ObjectModel *model_arg, ContainersWidget *containers_widget, const QAction *filter_contents_action)
 : QWidget()
 {   
+    model = model_arg;
+
     view = new QTreeView(this);
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -67,8 +69,27 @@ ContentsWidget::ContentsWidget(ObjectModel *model, ContainersWidget *containers_
 }
 
 void ContentsWidget::on_containers_selected_changed(const QModelIndex &source_index) {
+    // NOTE: need to fetchMore() before setRootIndex() otherwise header gets messed up
+    model->fetchMore(source_index);
+
+    const bool no_children = !model->hasChildren(source_index);
+
+    // NOTE: MASSIVE BANDAID. setRootIndex() on an object without children causes header to disappear and lose state(column visibility and widths). To fix this, before changing root index, add an empty row, then change root index, header loads normally, remove empty row, header stays there.
+    // NOTE: this seems to be guaranteed to cause problems in the future. Maybe something to do with signals/slots related to model changes, so watch this.
+    if (no_children) {
+        auto item = model->itemFromIndex(source_index);
+        const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
+        item->appendRow(row);
+    }
+
     const QModelIndex proxy_index = advanced_view_proxy->mapFromSource(source_index);
     view->setRootIndex(proxy_index);
+
+    // Remove that empty row we created to fix header
+    if (no_children) {
+        auto item = model->itemFromIndex(source_index);
+        item->removeRow(0);
+    }
 }
 
 void ContentsWidget::showEvent(QShowEvent *event) {

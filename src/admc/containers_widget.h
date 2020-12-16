@@ -22,6 +22,7 @@
 
 #include <QWidget>
 #include <QSortFilterProxyModel>
+#include <QHeaderView>
 
 class QItemSelection;
 class AdvancedViewProxy;

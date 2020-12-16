@@ -40,7 +40,7 @@ class ContentsWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContentsWidget(ObjectModel *model, ContainersWidget *containers_widget, const QAction *filter_contents_action);
+    ContentsWidget(ObjectModel *model_arg, ContainersWidget *containers_widget, const QAction *filter_contents_action);
 
 private slots:
     void on_containers_selected_changed(const QModelIndex &source_index);
@@ -48,6 +48,7 @@ private slots:
 private:
     QString target_dn;
     QTreeView *view;
+    ObjectModel *model;
     AdvancedViewProxy *advanced_view_proxy;
 
     void showEvent(QShowEvent *event);
