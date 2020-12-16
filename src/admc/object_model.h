@@ -69,6 +69,7 @@ private:
 
     void load_row(const QList<QStandardItem *> row, const AdObject &object);
     QStandardItem *find_object(const QString &dn) const;
+    void reset();
 };
 
 #endif /* OBJECT_MODEL_H */

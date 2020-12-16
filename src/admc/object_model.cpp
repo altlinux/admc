@@ -49,14 +49,7 @@ ObjectModel::ObjectModel(QObject *parent)
     }();
     setHorizontalHeaderLabels(header_labels);
 
-    // Make row for head object
-    QStandardItem *invis_root = invisibleRootItem();
-    const QString head_dn = AD()->domain_head();
-    const AdObject head_object = AD()->search_object(head_dn);
-
-    const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
-    invis_root->appendRow(row);
-    load_row(row, head_object);
+    reset();
 
     connect(
         AD(), &AdInterface::object_added,
@@ -245,7 +238,7 @@ void ObjectModel::on_object_changed(const QString &dn) {
 void ObjectModel::on_filter_changed(const QString &filter) {
     current_filter = filter;
 
-    // reset();    
+    reset();    
 }
 
 // Make row in model at given parent based on object with given dn
@@ -327,4 +320,17 @@ QStandardItem *ObjectModel::find_object(const QString &dn) const {
 
         return item;
     }
+}
+
+void ObjectModel::reset() {
+    removeRows(0, rowCount());
+
+    // Make row for head object
+    QStandardItem *invis_root = invisibleRootItem();
+    const QString head_dn = AD()->domain_head();
+    const AdObject head_object = AD()->search_object(head_dn);
+
+    const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
+    invis_root->appendRow(row);
+    load_row(row, head_object);
 }
