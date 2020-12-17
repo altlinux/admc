@@ -24,7 +24,6 @@
 #include <QString>
 
 class ContainersWidget;
-class QAction;
 class ObjectModel;
 class QTreeView;
 class QModelIndex;
@@ -41,7 +40,7 @@ class ContentsWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContentsWidget(ObjectModel *model_arg, ContainersWidget *containers_widget, const QAction *filter_contents_action);
+    ContentsWidget(ObjectModel *model_arg, ContainersWidget *containers_widget);
 
 private slots:
     void on_containers_selected_changed(const QModelIndex &source_index);

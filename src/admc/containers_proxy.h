@@ -25,8 +25,9 @@
 class ContainersProxy;
 
 /**
- * Filters out objects that aren't containers. If "Show
- * non-containers" setting is turned on, shows all objects.
+ * Proxy model for object model. Filters out objects that
+ * aren't containers. If "Show non-containers" setting is
+ * turned on, shows all objects.
  */
 
 class ContainersProxy final : public QSortFilterProxyModel {

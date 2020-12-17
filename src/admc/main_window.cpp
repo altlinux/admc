@@ -110,7 +110,7 @@ void MainWindow::on_connected() {
 
     auto containers_widget = new ContainersWidget(object_model, this);
 
-    auto contents_widget = new ContentsWidget(object_model, containers_widget, menubar->filter_contents_action);
+    auto contents_widget = new ContentsWidget(object_model, containers_widget);
 
     auto details_widget_docked_container = DetailsDialog::get_docked_container();
     auto policies_widget = new PoliciesWidget();
@@ -162,7 +162,7 @@ void MainWindow::on_connected() {
         object_model, &ObjectModel::on_filter_changed);
 
     connect(
-        menubar->filter_contents_action, &QAction::triggered,
+        menubar->filter_action, &QAction::triggered,
         filter_dialog, &QDialog::open);
     connect(
         menubar->find_action, &QAction::triggered,

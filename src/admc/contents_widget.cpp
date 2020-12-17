@@ -29,13 +29,12 @@
 #include "utils.h"
 
 #include <QVBoxLayout>
-#include <QAction>
 #include <QDebug>
 #include <QTreeView>
 #include <QHeaderView>
 #include <QLabel>
 
-ContentsWidget::ContentsWidget(ObjectModel *model_arg, ContainersWidget *containers_widget, const QAction *filter_contents_action)
+ContentsWidget::ContentsWidget(ObjectModel *model_arg, ContainersWidget *containers_widget)
 : QWidget()
 {   
     model = model_arg;

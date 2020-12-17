@@ -30,7 +30,7 @@ class MenuBar final : public QMenuBar {
 Q_OBJECT
 
 public:
-    QAction *filter_contents_action;
+    QAction *filter_action;
     QAction *find_action;
 
     MenuBar();

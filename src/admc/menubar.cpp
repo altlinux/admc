@@ -49,7 +49,7 @@ MenuBar::MenuBar()
             AD()->object_add("CN=testslot,CN=Users,DC=domain,DC=alt", CLASS_USER);
         });
 
-    filter_contents_action = action_menu->addAction(tr("Filter contents"));
+    filter_action = action_menu->addAction(tr("Filter contents"));
 
     auto quit_action = action_menu->addAction(tr("Quit"),
         []() {

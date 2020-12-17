@@ -20,6 +20,12 @@
 #ifndef ADVANCED_VIEW_PROXY_H
 #define ADVANCED_VIEW_PROXY_H
 
+/**
+ * Proxy model for object model. Filters out objects that
+ * are advanced view only if advanced view is turned off. If
+ * advanced view is ON, shows all objects.
+ */
+
 #include <QSortFilterProxyModel>
 
 class AdvancedViewProxy final : public QSortFilterProxyModel {
