@@ -114,8 +114,8 @@ void ObjectModel::fetchMore(const QModelIndex &parent) {
 
     for (const AdObject object : search_results.values()) {
         const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
-        parent_item->appendRow(row);
         load_attributes_row(row, object);
+        parent_item->appendRow(row);
     }
 
     // Unset CanFetch flag since we are done fetching
