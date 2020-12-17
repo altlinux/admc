@@ -26,7 +26,7 @@
 #include "utils.h"
 #include "filter.h"
 #include "filter_widget/filter_widget.h"
-#include "object_list_widget.h"
+#include "find_results.h"
 #include "select_dialog.h"
 
 #include <QString>
@@ -67,7 +67,7 @@ FindDialog::FindDialog(QWidget *parent)
     auto find_button = new QPushButton(tr("Find"));
     find_button->setAutoDefault(false);
 
-    find_results = new ObjectListWidget();
+    find_results = new FindResults();
 
     auto filter_widget_frame = new QFrame();
     filter_widget_frame->setFrameStyle(QFrame::Raised);

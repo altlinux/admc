@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "object_list_widget.h"
+#include "find_results.h"
 #include "object_context_menu.h"
 #include "details_dialog.h"
 #include "utils.h"
@@ -37,7 +37,7 @@
 #include <QStandardItemModel>
 #include <QVBoxLayout>
 
-ObjectListWidget::ObjectListWidget()
+FindResults::FindResults()
 : QWidget()
 {   
     model = new QStandardItemModel(ADCONFIG()->get_columns().count(), ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME), this);
@@ -90,10 +90,10 @@ ObjectListWidget::ObjectListWidget()
 
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
-        this, &ObjectListWidget::on_context_menu);
+        this, &FindResults::on_context_menu);
 }
 
-void ObjectListWidget::on_context_menu(const QPoint pos) {
+void FindResults::on_context_menu(const QPoint pos) {
     const QString dn = get_dn_from_pos(pos, view, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
     if (dn.isEmpty()) {
         return;
@@ -103,7 +103,7 @@ void ObjectListWidget::on_context_menu(const QPoint pos) {
     exec_menu_from_view(&context_menu, view, pos);
 }
 
-void ObjectListWidget::load(const QString &filter, const QString &search_base) {
+void FindResults::load(const QString &filter, const QString &search_base) {
     model->removeRows(0, model->rowCount());
     
     const QList<QString> search_attributes = ADCONFIG()->get_columns();
@@ -124,7 +124,7 @@ void ObjectListWidget::load(const QString &filter, const QString &search_base) {
     object_count_label->setText(label_text);
 }
 
-void ObjectListWidget::showEvent(QShowEvent *event) {
+void FindResults::showEvent(QShowEvent *event) {
     resize_columns(view,
     {
         {ADCONFIG()->get_column_index(ATTRIBUTE_NAME), 0.4},

@@ -36,7 +36,7 @@ add_executable(admc
     password_dialog.cpp
     menubar.cpp
     attribute_display.cpp
-    object_list_widget.cpp
+    find_results.cpp
     toggle_widgets_dialog.cpp
     filter_dialog.cpp
     advanced_view_proxy.cpp

@@ -17,15 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECTS_LIST_WIDGET_H
-#define OBJECTS_LIST_WIDGET_H
+#ifndef FIND_RESULTS_H
+#define FIND_RESULTS_H
 
 /**
- * Displays a detailed list of objects with many optional
- * toggleable columns. Can load children of a parent or load
- * all objects matching a filter. Does NOT update on AD
-   modifications. Intended to be used as a sub-widget
- * in some other widget.
+ * Used by find dialog to display find results as a list of
+ * objects.
  */
 
 #include <QWidget>
@@ -37,11 +34,11 @@ class AdObject;
 class QStandardItemModel;
 class QPoint;
 
-class ObjectListWidget final : public QWidget {
+class FindResults final : public QWidget {
 Q_OBJECT
 
 public:
-    ObjectListWidget();
+    FindResults();
 
     void load(const QString &filter, const QString &search_base);
 
@@ -57,4 +54,4 @@ private:
     void showEvent(QShowEvent *event);
 };
 
-#endif /* OBJECTS_LIST_WIDGET_H */
+#endif /* FIND_RESULTS_H */
