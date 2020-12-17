@@ -21,7 +21,6 @@
 #include "ad_interface.h"
 #include "settings.h"
 #include "confirmation_dialog.h"
-#include "find_dialog.h"
 #include "toggle_widgets_dialog.h"
 #include "status.h"
 
@@ -43,18 +42,9 @@ MenuBar::MenuBar()
             STATUS()->end_error_log(this);
         });
 
-    action_menu->addAction(tr("Find"),
-        [this]() {
-            auto find_dialog = new FindDialog(this);
-            find_dialog->open();
-        });
+    find_action = action_menu->addAction(tr("Find"));
 
-    action_menu->addAction(tr("Refresh"),
-        []() {
-            AD()->refresh();
-        });
-
-    filter_contents_action = action_menu->addAction(tr("Filter contents"));
+    filter_action = action_menu->addAction(tr("Filter contents"));
 
     auto quit_action = action_menu->addAction(tr("Quit"),
         []() {

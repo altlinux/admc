@@ -55,7 +55,6 @@ private slots:
     void reset();
     void on_docked_setting_changed();
     void on_edited();
-    void reload_target();
 
 private:
     static DetailsDialog *docked_instance;

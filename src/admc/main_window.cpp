@@ -27,6 +27,9 @@
 #include "confirmation_dialog.h"
 #include "policies_widget.h"
 #include "ad_interface.h"
+#include "object_model.h"
+#include "filter_dialog.h"
+#include "find_dialog.h"
 
 #include <QApplication>
 #include <QString>
@@ -99,10 +102,16 @@ void MainWindow::on_connected() {
     status_log->clear();
     STATUS()->status_bar->showMessage(tr("Ready"));
 
-    auto containers_widget = new ContainersWidget(this);
+    auto filter_dialog = new FilterDialog(this);
 
-    auto contents_widget = new ContentsWidget(containers_widget, menubar->filter_contents_action);
-    
+    auto find_dialog = new FindDialog(this);
+
+    auto object_model = new ObjectModel(this);
+
+    auto containers_widget = new ContainersWidget(object_model, this);
+
+    auto contents_widget = new ContentsWidget(object_model, containers_widget);
+
     auto details_widget_docked_container = DetailsDialog::get_docked_container();
     auto policies_widget = new PoliciesWidget();
 
@@ -147,6 +156,17 @@ void MainWindow::on_connected() {
 
     connect_toggle_widget(containers_widget, BoolSetting_ShowContainers);
     connect_toggle_widget(status_log, BoolSetting_ShowStatusLog);
+
+    connect(
+        filter_dialog, &FilterDialog::filter_changed,
+        object_model, &ObjectModel::on_filter_changed);
+
+    connect(
+        menubar->filter_action, &QAction::triggered,
+        filter_dialog, &QDialog::open);
+    connect(
+        menubar->find_action, &QAction::triggered,
+        find_dialog, &QDialog::open);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

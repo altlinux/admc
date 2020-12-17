@@ -973,14 +973,14 @@
     </message>
 </context>
 <context>
-    <name>ObjectListWidget</name>
+    <name>FindResults</name>
     <message>
-        <location filename="../src/admc/object_list_widget.cpp" line="90"/>
+        <location filename="../src/admc/find_results.cpp" line="90"/>
         <source>Search: </source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/admc/object_list_widget.cpp" line="199"/>
+        <location filename="../src/admc/find_results.cpp" line="199"/>
         <source>%n object(s)</source>
         <translation type="unfinished">
             <numerusform>%n object</numerusform>

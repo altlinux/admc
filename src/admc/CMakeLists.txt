@@ -25,6 +25,7 @@ add_executable(admc
     ad_object.cpp
     details_dialog.cpp
     containers_widget.cpp
+    containers_proxy.cpp
     contents_widget.cpp
     main_window.cpp
     status.cpp
@@ -35,9 +36,10 @@ add_executable(admc
     password_dialog.cpp
     menubar.cpp
     attribute_display.cpp
-    object_list_widget.cpp
+    find_results.cpp
     toggle_widgets_dialog.cpp
-    contents_filter_dialog.cpp
+    filter_dialog.cpp
+    advanced_view_proxy.cpp
     
     rename_dialog.cpp
     rename_policy_dialog.cpp

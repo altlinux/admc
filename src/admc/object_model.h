@@ -26,24 +26,51 @@
 class QMimeData;
 class QModelIndex;
 class QString;
+class QStandardItem;
+class AdObject;
 
-// Model for objects
-// Requires at least a DN column
-// Implements drag/drop of objects using their DN's
+/**
+ * Model used by containers and contents widgets. Contains
+ * attributes of objects. Doesn't load the whole directory
+ * but instead loads it gradually as user expands objects.
+ */
+
 class ObjectModel : public QStandardItemModel {
 Q_OBJECT
 
 public:
-    const int dn_column;
-    
-    ObjectModel(int column_count, int dn_column_in, QObject *parent);
+    enum Roles {
+        CanFetch = Qt::UserRole + 1,
+        IsContainer = Qt::UserRole + 2,
+        AdvancedViewOnly = Qt::UserRole + 3,
+    };
+
+    ObjectModel(QObject *parent);
+
+    bool canFetchMore(const QModelIndex &parent) const;
+    void fetchMore(const QModelIndex &parent);
+    bool hasChildren(const QModelIndex &parent) const override;
 
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
-    QList<QStandardItem *> find_row(const QString &dn);
-    QStandardItem *find_item(const QString &dn, int col);
 
+public slots:
+    void on_filter_changed(const QString &filter);
+
+private slots:
+    void on_object_added(const QString &dn);
+    void on_object_deleted(const QString &dn);
+    void on_object_changed(const QString &dn);
+
+private:
+    QString current_filter;
+
+    QStandardItem *find_object(const QString &dn) const;
+    void reset();
 };
+
+void load_attributes_row(const QList<QStandardItem *> row, const AdObject &object);
+QList<QString> object_model_header_labels();
 
 #endif /* OBJECT_MODEL_H */

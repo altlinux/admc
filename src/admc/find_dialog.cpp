@@ -26,7 +26,7 @@
 #include "utils.h"
 #include "filter.h"
 #include "filter_widget/filter_widget.h"
-#include "object_list_widget.h"
+#include "find_results.h"
 #include "select_dialog.h"
 
 #include <QString>
@@ -47,8 +47,6 @@
 FindDialog::FindDialog(QWidget *parent)
 : QDialog(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     setWindowTitle(tr("Find objects"));
 
     // TODO: technically, entire directory does NOT equal to the domain. In cases where we're browsing multiple domains at the same time (or maybe some other situations as well), we'd need "Entire directory" AND all of domains. Currently search base is set to domain anyway, so would need to start from reworking that.
@@ -69,7 +67,7 @@ FindDialog::FindDialog(QWidget *parent)
     auto find_button = new QPushButton(tr("Find"));
     find_button->setAutoDefault(false);
 
-    find_results = new ObjectListWidget(ObjectListWidgetType_Find);
+    find_results = new FindResults();
 
     auto filter_widget_frame = new QFrame();
     filter_widget_frame->setFrameStyle(QFrame::Raised);
@@ -155,5 +153,5 @@ void FindDialog::find() {
         return item_data.toString();
     }();
 
-    find_results->load_filter(filter, search_base);
+    find_results->load(filter, search_base);
 }

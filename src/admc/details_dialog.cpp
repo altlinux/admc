@@ -215,9 +215,6 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     connect(
         cancel_button, &QPushButton::clicked,
         this, &DetailsDialog::reject);
-    connect(
-        AD(), &AdInterface::modified,
-        this, &DetailsDialog::reload_target);
 
     const BoolSettingSignal *docked_setting = SETTINGS()->get_bool_signal(BoolSetting_DetailsIsDocked);
     connect(
@@ -243,13 +240,13 @@ void DetailsDialog::on_docked_setting_changed() {
 void DetailsDialog::apply() {
     STATUS()->start_error_log();
 
-    AD()->start_batch();
     for (auto tab : tabs) {
         if (tab_widget->indexOf(tab) != -1) {
             tab->apply(target);
         }
     }
-    AD()->end_batch();
+
+    reset();
 
     STATUS()->end_error_log(this);
 }
@@ -267,17 +264,4 @@ void DetailsDialog::reset() {
 void DetailsDialog::on_edited() {
     apply_button->setEnabled(true);
     reset_button->setEnabled(true);
-}
-
-void DetailsDialog::reload_target() {
-    const AdObject object = AD()->search_object(target);
-
-    if (object.is_empty()) {
-        close();
-        docked_instance = nullptr;
-    } else {
-        for (auto tab : tabs) {
-            tab->load(object);
-        }
-    }
 }

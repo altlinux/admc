@@ -115,26 +115,22 @@ void RenameDialog::accept() {
 
     STATUS()->start_error_log();
 
-    AD()->start_batch();
-    {
-        const QString new_name = name_edit->text();
-        const bool rename_success = AD()->object_rename(target, new_name);
+    const QString new_name = name_edit->text();
+    const bool rename_success = AD()->object_rename(target, new_name);
 
-        if (rename_success) {
-            const QString new_dn = dn_rename(target, new_name);
-            const bool apply_success = edits_apply(all_edits, new_dn);
+    if (rename_success) {
+        const QString new_dn = dn_rename(target, new_name);
+        const bool apply_success = edits_apply(all_edits, new_dn);
 
-            if (apply_success) {
-                success_msg(old_name);
-                QDialog::close();
-            } else {
-                fail_msg(old_name, this);
-            }
+        if (apply_success) {
+            success_msg(old_name);
+            QDialog::close();
         } else {
             fail_msg(old_name, this);
         }
+    } else {
+        fail_msg(old_name, this);
     }
-    AD()->end_batch();
 }
 
 void RenameDialog::on_edited() {

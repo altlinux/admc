@@ -17,31 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MENUBAR_H
-#define MENUBAR_H
+#ifndef CONTAINERS_PROXY_H
+#define CONTAINERS_PROXY_H
 
-#include <QMenuBar>
-#include <QList>
+#include <QSortFilterProxyModel>
 
-class QAction;
-class QMenu;
+class ContainersProxy;
 
-class MenuBar final : public QMenuBar {
+/**
+ * Proxy model for object model. Filters out objects that
+ * aren't containers. If "Show non-containers" setting is
+ * turned on, shows all objects.
+ */
+
+class ContainersProxy final : public QSortFilterProxyModel {
 Q_OBJECT
 
 public:
-    QAction *filter_action;
-    QAction *find_action;
+    ContainersProxy(QObject *parent);
 
-    MenuBar();
-
-signals:
-    void filter_contents_dialog();
-
+private slots:
+    void on_show_non_containers();
+    
 private:
-    QList<QMenu *> menus;
+    bool show_non_containers;
 
-    void enable_actions(const bool enabled);
+    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
 
-#endif /* MENUBAR_H */
+#endif /* CONTAINERS_PROXY_H */

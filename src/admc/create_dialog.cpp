@@ -216,35 +216,31 @@ void CreateDialog::accept() {
 
     STATUS()->start_error_log();
 
-    AD()->start_batch();
-    {   
-        auto fail_msg =
-        [this, class_name, name]() {
-            const QString message = QString(tr("Failed to create %1 \"%2\"")).arg(class_name, name);
-            STATUS()->message(message, StatusType_Error);
-        };
+    auto fail_msg =
+    [this, class_name, name]() {
+        const QString message = QString(tr("Failed to create %1 \"%2\"")).arg(class_name, name);
+        STATUS()->message(message, StatusType_Error);
+    };
 
-        const bool add_success = AD()->object_add(dn, object_class);
+    const bool add_success = AD()->object_add(dn, object_class);
 
-        if (add_success) {
-            const bool apply_if_unmodified = true;
-            const bool apply_success = edits_apply(all_edits, dn, apply_if_unmodified);
+    if (add_success) {
+        const bool apply_if_unmodified = true;
+        const bool apply_success = edits_apply(all_edits, dn, apply_if_unmodified);
 
-            if (apply_success) {
-                const QString message = QString(tr("Created %1 \"%2\"")).arg(class_name, name);
+        if (apply_success) {
+            const QString message = QString(tr("Created %1 \"%2\"")).arg(class_name, name);
 
-                STATUS()->message(message, StatusType_Success);
+            STATUS()->message(message, StatusType_Success);
 
-                QDialog::accept();
-            } else {
-                AD()->object_delete(dn);
-                fail_msg();
-            }
+            QDialog::accept();
         } else {
+            AD()->object_delete(dn);
             fail_msg();
         }
+    } else {
+        fail_msg();
     }
-    AD()->end_batch();
     
     STATUS()->end_error_log(this);
 }

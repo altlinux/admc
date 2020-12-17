@@ -20,24 +20,22 @@
 #ifndef CONTAINERS_WIDGET_H
 #define CONTAINERS_WIDGET_H
 
-#include "object_model.h"
-
 #include <QWidget>
 
 class QItemSelection;
 class AdvancedViewProxy;
 class QTreeView;
-class ContainersModel;
+class ObjectModel;
+class ContainersProxy;
 
 class ContainersWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContainersWidget(QWidget *parent);
-    ContainersModel *model;
+    ContainersWidget(ObjectModel *model, QWidget *parent);
 
 signals:
-    void selected_changed(const QString &dn);
+    void selected_changed(const QModelIndex &source_index);
 
 private slots:
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
@@ -45,26 +43,10 @@ private slots:
 
 private:
     QTreeView *view;
+    AdvancedViewProxy *advanced_view_proxy;
+    ContainersProxy *containers_proxy;
 
-    void reload();
     void showEvent(QShowEvent *event);
-};
-
-class ContainersModel final : public ObjectModel {
-Q_OBJECT
-
-public:
-    enum Roles {
-        CanFetch = Qt::UserRole + 1,
-    };
-
-    ContainersModel(QObject *parent);
-
-    bool canFetchMore(const QModelIndex &parent) const;
-    void fetchMore(const QModelIndex &parent);
-    bool hasChildren(const QModelIndex &parent) const override;
-
-private slots:
 };
 
 #endif /* CONTAINERS_WIDGET_H */

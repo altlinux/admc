@@ -30,7 +30,7 @@
 #include <QDialog>
 
 class FilterWidget;
-class ObjectListWidget;
+class FindResults;
 class QComboBox;
 
 class FindDialog final : public QDialog {
@@ -46,7 +46,7 @@ private slots:
 
 private:
     FilterWidget *filter_widget;
-    ObjectListWidget *find_results;
+    FindResults *find_results;
     QComboBox *search_base_combo;
 };
 

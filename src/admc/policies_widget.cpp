@@ -38,6 +38,8 @@ enum PoliciesColumn {
     PoliciesColumn_COUNT,
 };
 
+// TODO: respond to AD object signals
+
 PoliciesWidget::PoliciesWidget()
 : QWidget()
 {   
@@ -69,9 +71,7 @@ PoliciesWidget::PoliciesWidget()
 
     show_only_in_dev_mode(this);
 
-    connect(
-        AD(), &AdInterface::modified,
-        this, &PoliciesWidget::reload);
+    // TODO: inline if won't use this with ad signals
     reload();
 }
 

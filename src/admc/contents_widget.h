@@ -24,9 +24,11 @@
 #include <QString>
 
 class ContainersWidget;
-class ObjectListWidget;
-class QAction;
-class ContentsFilterDialog;
+class ObjectModel;
+class QTreeView;
+class QModelIndex;
+class AdvancedViewProxy;
+class QLabel;
 
 /**
  * Shows a list of objects, which are children of a target
@@ -38,19 +40,22 @@ class ContentsWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContentsWidget(ContainersWidget *containers_widget, const QAction *filter_contents_action);
+    ContentsWidget(ObjectModel *model_arg, ContainersWidget *containers_widget);
 
 private slots:
-    void on_containers_selected_changed(const QString &dn);
-    void on_ad_modified();
-    void load_filter(const QString &filter);
+    void on_containers_selected_changed(const QModelIndex &source_index);
+    void on_context_menu(const QPoint pos);
+    void on_header_toggled();
 
 private:
     QString target_dn;
-    ObjectListWidget *object_list;
-    ContentsFilterDialog *filter_dialog;
+    QTreeView *view;
+    ObjectModel *model;
+    AdvancedViewProxy *advanced_view_proxy;
+    QWidget *header;
+    QLabel *header_label;
 
-    void change_target(const QString &dn);
+    void showEvent(QShowEvent *event);
 };
 
 #endif /* CONTENTS_WIDGET_H */

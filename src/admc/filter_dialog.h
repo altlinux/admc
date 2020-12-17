@@ -17,31 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MENUBAR_H
-#define MENUBAR_H
+#ifndef FILTER_DIALOG_H
+#define FILTER_DIALOG_H
 
-#include <QMenuBar>
-#include <QList>
+/**
+ * Contains FilterWidget. When a filter is entered and
+ * dialog is accepted, emits filter_changed() signal. Used
+ * for filtering ObjectModel.
+ */
 
-class QAction;
-class QMenu;
+#include <QDialog>
 
-class MenuBar final : public QMenuBar {
+class FilterDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    QAction *filter_action;
-    QAction *find_action;
-
-    MenuBar();
+    FilterDialog(QWidget *parent);
 
 signals:
-    void filter_contents_dialog();
-
-private:
-    QList<QMenu *> menus;
-
-    void enable_actions(const bool enabled);
+    void filter_changed(const QString &filter);
 };
 
-#endif /* MENUBAR_H */
+#endif /* FILTER_DIALOG_H */

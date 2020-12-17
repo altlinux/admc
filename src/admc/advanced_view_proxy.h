@@ -17,31 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MENUBAR_H
-#define MENUBAR_H
+#ifndef ADVANCED_VIEW_PROXY_H
+#define ADVANCED_VIEW_PROXY_H
 
-#include <QMenuBar>
-#include <QList>
+/**
+ * Proxy model for object model. Filters out objects that
+ * are advanced view only if advanced view is turned off. If
+ * advanced view is ON, shows all objects.
+ */
 
-class QAction;
-class QMenu;
+#include <QSortFilterProxyModel>
 
-class MenuBar final : public QMenuBar {
+class AdvancedViewProxy final : public QSortFilterProxyModel {
 Q_OBJECT
 
 public:
-    QAction *filter_action;
-    QAction *find_action;
+    AdvancedViewProxy(QObject *parent);
 
-    MenuBar();
-
-signals:
-    void filter_contents_dialog();
-
+private slots:
+    void on_setting_changed();
+    
 private:
-    QList<QMenu *> menus;
-
-    void enable_actions(const bool enabled);
+    bool advanced_view;
+    
+    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
 
-#endif /* MENUBAR_H */
+#endif /* ADVANCED_VIEW_PROXY_H */

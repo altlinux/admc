@@ -82,6 +82,7 @@ public:
 
     QList<Attribute> get_columns() const;
     QString get_column_display_name(const Attribute &attribute) const;
+    int get_column_index(const QString &attribute) const;
 
     QList<ObjectClass> get_filter_containers() const;
 

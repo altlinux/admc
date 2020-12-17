@@ -132,30 +132,6 @@ bool AdInterface::connect() {
     }
 }
 
-void AdInterface::refresh() {
-    emit modified();
-}
-
-void AdInterface::start_batch() {
-    if (batch_in_progress) {
-        printf("Called start_batch() while batch is in progress!\n");
-        return;
-    }
-
-    batch_in_progress = true;
-}
-
-void AdInterface::end_batch() {
-    if (!batch_in_progress) {
-        printf("Called end_batch() before start_batch()!\n");
-        return;
-    }
-
-    batch_in_progress = false;
-
-    emit_modified();
-}
-
 AdConfig *AdInterface::config() const {
     return m_config;
 }
@@ -412,7 +388,7 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Changed attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_values_display, values_display), do_msg);
 
-        emit_modified();
+        emit object_changed(dn);
 
         return true;
     } else {
@@ -451,7 +427,7 @@ bool AdInterface::attribute_add_value(const QString &dn, const QString &attribut
 
         success_status_message(context, do_msg);
 
-        emit_modified();
+        emit object_changed(dn);
 
         return true;
     } else {
@@ -476,7 +452,7 @@ bool AdInterface::attribute_delete_value(const QString &dn, const QString &attri
 
         success_status_message(context, do_msg);
 
-        emit_modified();
+        emit object_changed(dn);
 
         return true;
     } else {
@@ -517,7 +493,7 @@ bool AdInterface::object_add(const QString &dn, const QString &object_class) {
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Created object \"%1\"")).arg(dn));
 
-        emit_modified();
+        emit object_added(dn);
 
         return true;
     } else {
@@ -538,7 +514,7 @@ bool AdInterface::object_delete(const QString &dn) {
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Deleted object \"%1\"")).arg(name));
 
-        emit_modified();
+        emit object_deleted(dn);
 
         return true;
     } else {
@@ -566,7 +542,8 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Moved object \"%1\" to \"%2\"")).arg(object_name, container_name));
 
-        emit_modified();
+        emit object_deleted(dn);
+        emit object_added(new_dn);
 
         return true;
     } else {
@@ -590,7 +567,8 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     if (result == AD_SUCCESS) {
         success_status_message(QString(tr("Renamed object \"%1\" to \"%2\"")).arg(old_name, new_name));
 
-        emit_modified();
+        emit object_deleted(dn);
+        emit object_added(new_dn);
 
         return true;
     } else {
@@ -613,8 +591,6 @@ bool AdInterface::group_add_member(const QString &group_dn, const QString &user_
     if (success) {
         success_status_message(QString(tr("Added user \"%1\" to group \"%2\"")).arg(user_name, group_name));
 
-        emit_modified();
-
         return true;
     } else {
         const QString context = QString(tr("Failed to add user \"%1\" to group \"%2\"")).arg(user_name, group_name);
@@ -634,8 +610,6 @@ bool AdInterface::group_remove_member(const QString &group_dn, const QString &us
 
     if (success) {
         success_status_message(QString(tr("Removed user \"%1\" from group \"%2\"")).arg(user_name, group_name));
-
-        emit_modified();
 
         return true;
     } else {
@@ -727,8 +701,6 @@ bool AdInterface::user_set_primary_group(const QString &group_dn, const QString 
     if (success) {
         success_status_message(QString(tr("Set primary group for user \"%1\" to \"%2\"")).arg(user_name, group_name));
 
-        emit_modified();
-
         return true;
     } else {
         const QString context = QString(tr("Failed to set primary group for user \"%1\" to \"%2\"")).arg(user_name, group_name);
@@ -759,8 +731,6 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
     
     if (success) {
         success_status_message(QString(tr("Set password for user \"%1\"")).arg(name));
-
-        emit_modified();
 
         return true;
     } else {
@@ -1116,12 +1086,6 @@ AdInterface::AdInterface()
 : QObject()
 {
 
-}
-
-void AdInterface::emit_modified() {
-    if (!batch_in_progress) {
-        emit modified();
-    }
 }
 
 void AdInterface::success_status_message(const QString &msg, const DoStatusMsg do_msg) {

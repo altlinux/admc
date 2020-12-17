@@ -17,19 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONTENTS_FILTER_DIALOG_H
-#define CONTENTS_FILTER_DIALOG_H
+#ifndef FIND_RESULTS_H
+#define FIND_RESULTS_H
 
-#include <QDialog>
+/**
+ * Used by find dialog to display find results as a list of
+ * objects.
+ */
 
-class ContentsFilterDialog final : public QDialog {
+#include <QWidget>
+
+class QTreeView;
+class QLabel;
+class QLineEdit;
+class AdObject;
+class QStandardItemModel;
+class QPoint;
+
+class FindResults final : public QWidget {
 Q_OBJECT
 
 public:
-    ContentsFilterDialog(QWidget *parent);
+    FindResults();
 
-signals:
-    void filter_changed(const QString &filter);
+    void load(const QString &filter, const QString &search_base);
+
+private slots:
+    void on_context_menu(const QPoint pos);
+
+private:
+    QLabel *label;
+    QStandardItemModel *model;
+    QTreeView *view;
+    QLabel *object_count_label;
+
+    void showEvent(QShowEvent *event);
 };
 
-#endif /* CONTENTS_FILTER_DIALOG_H */
+#endif /* FIND_RESULTS_H */
