@@ -68,4 +68,7 @@ const char *cstr(const QString &qstr);
 // about their max width.
 void resize_columns(QTreeView *view, const QHash<int, double> widths);
 
+void show_busy_indicator();
+void hide_busy_indicator();
+
 #endif /* UTILS_H */

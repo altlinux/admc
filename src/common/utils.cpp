@@ -32,6 +32,8 @@
 #include <QtGlobal>
 #include <QStandardItemModel>
 #include <QLineEdit>
+#include <QGuiApplication>
+#include <QCursor>
 
 // Index can be an index of any column in target row and of any proxy in the proxy chain
 QString get_dn_from_index(const QModelIndex &index, int dn_column) {
@@ -211,4 +213,12 @@ void resize_columns(QTreeView *view, const QHash<int, double> widths) {
         
         view->setColumnWidth(col, width);
     }
+}
+
+void show_busy_indicator() {
+    QGuiApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+}
+
+void hide_busy_indicator() {
+    QGuiApplication::restoreOverrideCursor();
 }

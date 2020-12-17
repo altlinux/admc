@@ -65,7 +65,9 @@ bool ObjectModel::canFetchMore(const QModelIndex &parent) const {
 void ObjectModel::fetchMore(const QModelIndex &parent) {
     if (!parent.isValid() || !canFetchMore(parent)) {
         return;
-    }    
+    }
+
+    show_busy_indicator();
 
     const QString parent_dn = get_dn_from_index(parent, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
@@ -120,6 +122,8 @@ void ObjectModel::fetchMore(const QModelIndex &parent) {
 
     // Unset CanFetch flag since we are done fetching
     parent_item->setData(false, ObjectModel::Roles::CanFetch);
+
+    hide_busy_indicator();
 }
 
 // Override this so that unexpanded and unfetched items show the expander even though they technically don't have any children loaded

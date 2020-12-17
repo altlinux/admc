@@ -211,8 +211,6 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
 
     int result;
 
-    bool emitted_search_has_multiple_pages = false;
-
     // Search until received all pages
     while (true) {
         // Create page control
@@ -317,11 +315,8 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
         // There are more pages if the cookie is not empty
         const bool more_pages = (prev_cookie->bv_len > 0);
         if (more_pages) {
-            if (!emitted_search_has_multiple_pages) {
-                emitted_search_has_multiple_pages = false;
-                emit search_has_multiple_pages();
-                QCoreApplication::processEvents();
-            }
+            // NOTE: process events to unfreeze UI during long searches
+            QCoreApplication::processEvents();
         } else {
             break;
         }
