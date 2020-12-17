@@ -31,6 +31,7 @@ Q_OBJECT
 
 public:
     QAction *filter_contents_action;
+    QAction *find_action;
 
     MenuBar();
 
