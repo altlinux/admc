@@ -123,7 +123,7 @@ void ObjectModel::fetchMore(const QModelIndex &parent) {
     for (const AdObject object : search_results.values()) {
         const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
         parent_item->appendRow(row);
-        load_row(row, object);
+        load_attributes_row(row, object);
     }
 
     // Unset CanFetch flag since we are done fetching
@@ -192,7 +192,7 @@ void ObjectModel::on_object_added(const QString &dn) {
     if (parent_fetched) {
         const AdObject object = AD()->search_object(dn);
         const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
-        load_row(row, object);
+        load_attributes_row(row, object);
         parent_item->appendRow(row);
     }
 }
@@ -232,7 +232,7 @@ void ObjectModel::on_object_changed(const QString &dn) {
     }();
 
     const AdObject object = AD()->search_object(dn);
-    load_row(row, object);
+    load_attributes_row(row, object);
 }
 
 void ObjectModel::on_filter_changed(const QString &filter) {
@@ -241,9 +241,7 @@ void ObjectModel::on_filter_changed(const QString &filter) {
     reset();    
 }
 
-// Make row in model at given parent based on object with given dn
-void ObjectModel::load_row(const QList<QStandardItem *> row, const AdObject &object) {
-    // TODO: duplicated
+void load_attributes_row(const QList<QStandardItem *> row, const AdObject &object) {
     // Load attribute columns
     for (int i = 0; i < ADCONFIG()->get_columns().count(); i++) {
         const QString attribute = ADCONFIG()->get_columns()[i];
@@ -332,5 +330,5 @@ void ObjectModel::reset() {
 
     const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
     invis_root->appendRow(row);
-    load_row(row, head_object);
+    load_attributes_row(row, head_object);
 }

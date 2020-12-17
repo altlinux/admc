@@ -28,6 +28,7 @@
 #include "attribute_display.h"
 #include "filter.h"
 #include "settings.h"
+#include "object_model.h"
 
 #include <QTreeView>
 #include <QLabel>
@@ -142,40 +143,8 @@ void ObjectListWidget::load(const QHash<QString, AdObject> &objects) {
         const AdObject object  = objects[child_dn];
         
         const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().count());
-        for (int i = 0; i < ADCONFIG()->get_columns().count(); i++) {
-            const QString attribute = ADCONFIG()->get_columns()[i];
 
-            if (!object.contains(attribute)) {
-                continue;
-            }
-
-            const QString display_value =
-            [attribute, object]() {
-                if (attribute == ATTRIBUTE_OBJECT_CLASS) {
-                    const QString object_class = object.get_string(attribute);
-
-                    if (object_class == CLASS_GROUP) {
-                        const GroupScope scope = object.get_group_scope(); 
-                        const QString scope_string = group_scope_string(scope);
-
-                        const GroupType type = object.get_group_type(); 
-                        const QString type_string = group_type_string(type);
-
-                        return QString("%1 Group - %2").arg(type_string, scope_string);
-                    } else {
-                        return ADCONFIG()->get_class_display_name(object_class);
-                    }
-                } else {
-                    const QByteArray value = object.get_value(attribute);
-                    return attribute_display_value(attribute, value);
-                }
-            }();
-
-            row[i]->setText(display_value);
-        }
-
-        const QIcon icon = object.get_icon();
-        row[0]->setIcon(icon);
+        load_attributes_row(row, object);
 
         model->appendRow(row);
     }

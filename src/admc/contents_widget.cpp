@@ -25,6 +25,7 @@
 #include "object_model.h"
 #include "advanced_view_proxy.h"
 #include "object_context_menu.h"
+#include "details_dialog.h"
 #include "utils.h"
 
 #include <QVBoxLayout>
@@ -51,6 +52,8 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg, ContainersWidget *contain
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
     view->header()->setSectionsMovable(true);
+
+    DetailsDialog::connect_to_open_by_double_click(view, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
 
     advanced_view_proxy = new AdvancedViewProxy(this);
 

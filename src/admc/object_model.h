@@ -67,9 +67,10 @@ private slots:
 private:
     QString current_filter;
 
-    void load_row(const QList<QStandardItem *> row, const AdObject &object);
     QStandardItem *find_object(const QString &dn) const;
     void reset();
 };
+
+void load_attributes_row(const QList<QStandardItem *> row, const AdObject &object);
 
 #endif /* OBJECT_MODEL_H */
