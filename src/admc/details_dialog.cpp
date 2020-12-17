@@ -246,6 +246,8 @@ void DetailsDialog::apply() {
         }
     }
 
+    reset();
+
     STATUS()->end_error_log(this);
 }
 
