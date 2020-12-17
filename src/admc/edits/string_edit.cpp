@@ -62,7 +62,7 @@ void StringEdit::load_internal(const AdObject &object) {
         if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
             // Take "user" from "user@domain.com"
             out = out.split("@")[0];
-        } else if (attribute == ATTRIBUTE_DISTINGUISHED_NAME) {
+        } else if (attribute == ATTRIBUTE_DN) {
             out = dn_canonical(out);
         }
 

@@ -212,7 +212,7 @@ AdConfig::AdConfig(QObject *parent)
             column_display_names[attribute] = display_name;
         };
 
-        add_custom(ATTRIBUTE_DISTINGUISHED_NAME, tr("Distinguished name"));
+        add_custom(ATTRIBUTE_DN, tr("Distinguished name"));
         add_custom(ATTRIBUTE_DESCRIPTION, tr("Description"));
         add_custom(ATTRIBUTE_OBJECT_CLASS, tr("Class"));
         add_custom(ATTRIBUTE_NAME, tr("Name"));
@@ -272,7 +272,7 @@ QString AdConfig::get_attribute_display_name(const Attribute &attribute, const O
     // NOTE: display specifier doesn't cover all attributes for all classes, so need to hardcode some of them here
     static const QHash<Attribute, QString> fallback_display_names = {
         {ATTRIBUTE_NAME, tr("Name")},
-        {ATTRIBUTE_DISTINGUISHED_NAME, tr("Distinguished name")},
+        {ATTRIBUTE_DN, tr("Distinguished name")},
         {ATTRIBUTE_OBJECT_CLASS, tr("Object class")},
         {ATTRIBUTE_WHEN_CREATED, tr("Created")},
         {ATTRIBUTE_WHEN_CHANGED, tr("Changed")},

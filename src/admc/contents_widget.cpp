@@ -52,7 +52,7 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg, ContainersWidget *contain
     view->setSortingEnabled(true);
     view->header()->setSectionsMovable(true);
 
-    DetailsDialog::connect_to_open_by_double_click(view, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
+    DetailsDialog::connect_to_open_by_double_click(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
     advanced_view_proxy = new AdvancedViewProxy(this);
 
@@ -95,7 +95,7 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg, ContainersWidget *contain
 }
 
 void ContentsWidget::on_context_menu(const QPoint pos) {
-    const QString dn = get_dn_from_pos(pos, view, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
+    const QString dn = get_dn_from_pos(pos, view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
     if (dn.isEmpty()) {
         return;
     }

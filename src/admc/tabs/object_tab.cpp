@@ -27,7 +27,7 @@
 // TODO: canonical name in ADUC replaces "CN=" with "/" making it look like a directory path
 
 ObjectTab::ObjectTab() {   
-    new StringEdit(ATTRIBUTE_DISTINGUISHED_NAME, "", &edits, this);
+    new StringEdit(ATTRIBUTE_DN, "", &edits, this);
     new StringEdit(ATTRIBUTE_OBJECT_CLASS, "", &edits, this);
     
     new DateTimeEdit(ATTRIBUTE_WHEN_CREATED, &edits, this);

@@ -93,7 +93,7 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
 }
 
 void ContainersWidget::on_context_menu(const QPoint pos) {
-    const QString dn = get_dn_from_pos(pos, view, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
+    const QString dn = get_dn_from_pos(pos, view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
     if (dn.isEmpty()) {
         return;
     }
@@ -106,6 +106,6 @@ void ContainersWidget::showEvent(QShowEvent *event) {
     resize_columns(view,
     {
         {ADCONFIG()->get_column_index(ATTRIBUTE_NAME), 0.5},
-        {ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME), 0.5},
+        {ADCONFIG()->get_column_index(ATTRIBUTE_DN), 0.5},
     });
 }

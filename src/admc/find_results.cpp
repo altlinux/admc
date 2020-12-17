@@ -40,7 +40,7 @@
 FindResults::FindResults()
 : QWidget()
 {   
-    model = new QStandardItemModel(ADCONFIG()->get_columns().count(), ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME), this);
+    model = new QStandardItemModel(ADCONFIG()->get_columns().count(), ADCONFIG()->get_column_index(ATTRIBUTE_DN), this);
 
     const QList<QString> header_labels = object_model_header_labels();
     model->setHorizontalHeaderLabels(header_labels);
@@ -60,7 +60,7 @@ FindResults::FindResults()
 
     view->setModel(model);
 
-    DetailsDialog::connect_to_open_by_double_click(view, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
+    DetailsDialog::connect_to_open_by_double_click(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
     setup_column_toggle_menu(view, model, 
     {
@@ -85,7 +85,7 @@ FindResults::FindResults()
 }
 
 void FindResults::on_context_menu(const QPoint pos) {
-    const QString dn = get_dn_from_pos(pos, view, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
+    const QString dn = get_dn_from_pos(pos, view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
     if (dn.isEmpty()) {
         return;
     }    

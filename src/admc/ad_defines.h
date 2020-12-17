@@ -78,7 +78,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_POSTAL_CODE           "postalCode"
 #define ATTRIBUTE_STATE                 "st"
 #define ATTRIBUTE_STREET                "streetAddress"
-#define ATTRIBUTE_DISTINGUISHED_NAME    "distinguishedName"
+#define ATTRIBUTE_DN    "distinguishedName"
 #define ATTRIBUTE_OBJECT_CLASS          "objectClass"
 #define ATTRIBUTE_WHEN_CREATED          "whenCreated"
 #define ATTRIBUTE_WHEN_CHANGED          "whenChanged"

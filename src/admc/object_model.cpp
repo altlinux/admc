@@ -67,7 +67,7 @@ void ObjectModel::fetchMore(const QModelIndex &parent) {
         return;
     }    
 
-    const QString parent_dn = get_dn_from_index(parent, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
+    const QString parent_dn = get_dn_from_index(parent, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
     QStandardItem *parent_item = itemFromIndex(parent);
 
@@ -137,7 +137,7 @@ QMimeData *ObjectModel::mimeData(const QModelIndexList &indexes) const {
 
     if (indexes.size() > 0) {
         QModelIndex index = indexes[0];
-        QString dn = get_dn_from_index(index, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
+        QString dn = get_dn_from_index(index, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
         data->setText(dn);
     }
@@ -147,7 +147,7 @@ QMimeData *ObjectModel::mimeData(const QModelIndexList &indexes) const {
 
 bool ObjectModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
     const QString dn = data->text();
-    const QString target_dn = get_dn_from_index(parent, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
+    const QString target_dn = get_dn_from_index(parent, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
     const bool can_drop = AD()->object_can_drop(dn, target_dn);
 
@@ -164,7 +164,7 @@ bool ObjectModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int
     }
 
     const QString dn = data->text();
-    const QString target_dn = get_dn_from_index(parent, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
+    const QString target_dn = get_dn_from_index(parent, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
     AD()->object_drop(dn, target_dn);
 
@@ -296,7 +296,7 @@ void load_attributes_row(const QList<QStandardItem *> row, const AdObject &objec
 }
 
 QStandardItem *ObjectModel::find_object(const QString &dn) const {
-    const QList<QStandardItem *> items = findItems(dn, Qt::MatchFixedString | Qt::MatchRecursive, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
+    const QList<QStandardItem *> items = findItems(dn, Qt::MatchFixedString | Qt::MatchRecursive, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
     if (items.isEmpty()) {
         qDebug() << "ObjectModel failed to find item for object:" << dn;
 
