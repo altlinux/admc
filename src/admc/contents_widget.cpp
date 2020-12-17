@@ -130,7 +130,7 @@ void ContentsWidget::on_containers_selected_changed(const QModelIndex &source_in
 
     const QString label_text =
     [this, source_index]() {
-        const QString object_count_string = tr("%n object(s)", "", model->rowCount());
+        const QString object_count_string = tr("%n object(s)", "", model->rowCount(source_index));
 
         const QString parent_name = source_index.data().toString();
 

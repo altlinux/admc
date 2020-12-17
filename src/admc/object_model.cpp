@@ -82,7 +82,9 @@ void ObjectModel::fetchMore(const QModelIndex &parent) {
     QStandardItem *parent_item = itemFromIndex(parent);
 
     // Add children
-    const QList<QString> search_attributes = QList<QString>();
+    QList<QString> search_attributes = ADCONFIG()->get_columns();
+    search_attributes += ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY;
+    
     const QString filter =
     [this]() {
         // NOTE: when filtering, don't apply it to container objects by OR'ing with container filter
