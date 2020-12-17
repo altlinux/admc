@@ -106,6 +106,8 @@ public:
 
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
+    void stop_search();
+
 signals:
     // Emitted when connected successfully to a server
     void connected();
@@ -124,6 +126,7 @@ private:
     QString m_configuration_dn;
     QString m_schema_dn;
     QString m_host;
+    bool stop_search_flag;
 
     AdInterface();
 

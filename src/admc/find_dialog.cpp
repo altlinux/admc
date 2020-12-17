@@ -67,6 +67,9 @@ FindDialog::FindDialog(QWidget *parent)
     auto find_button = new QPushButton(tr("Find"));
     find_button->setAutoDefault(false);
 
+    auto stop_button = new QPushButton(tr("Stop"));
+    stop_button->setAutoDefault(false);
+
     find_results = new FindResults();
 
     auto filter_widget_frame = new QFrame();
@@ -81,12 +84,17 @@ FindDialog::FindDialog(QWidget *parent)
         auto search_base_row = new QFormLayout();
         search_base_row->addRow(tr("Search in:"), search_base_layout);
 
+        auto buttons_layout = new QHBoxLayout();
+        buttons_layout->addWidget(find_button);
+        buttons_layout->addWidget(stop_button);
+        buttons_layout->addStretch(1);
+
         auto layout = new QVBoxLayout();
         filter_widget_frame->setLayout(layout);
         layout->addLayout(search_base_row);
         layout->addWidget(filter_widget);
         layout->addWidget(quick_find_check);
-        layout->addWidget(find_button);
+        layout->addLayout(buttons_layout);
     }
 
     {
@@ -108,6 +116,9 @@ FindDialog::FindDialog(QWidget *parent)
     connect(
         find_button, &QPushButton::clicked,
         this, &FindDialog::find);
+    connect(
+        stop_button, &QPushButton::clicked,
+        AD(), &AdInterface::stop_search);
     connect(
         filter_widget, &FilterWidget::return_pressed,
         this, &FindDialog::find);

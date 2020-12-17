@@ -156,7 +156,13 @@ QString AdInterface::host() const {
     return m_host;
 }
 
+void AdInterface::stop_search() {
+    stop_search_flag = true;
+}
+
 QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &search_base) {
+    stop_search_flag = false;
+
     QHash<QString, AdObject> out;
 
     const QString base =
@@ -213,6 +219,12 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
 
     // Search until received all pages
     while (true) {
+        if (stop_search_flag) {
+            out.clear();
+
+            break;
+        }
+
         // Create page control
         LDAPControl *page_control = NULL;
         const ber_int_t page_size = 1000;

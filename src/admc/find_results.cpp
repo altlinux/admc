@@ -95,6 +95,8 @@ void FindResults::on_context_menu(const QPoint pos) {
 }
 
 void FindResults::load(const QString &filter, const QString &search_base) {
+    object_count_label->clear();
+
     model->removeRows(0, model->rowCount());
     
     const QList<QString> search_attributes = ADCONFIG()->get_columns();
