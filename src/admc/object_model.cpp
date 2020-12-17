@@ -36,17 +36,7 @@
 ObjectModel::ObjectModel(QObject *parent)
 : QStandardItemModel(0, ADCONFIG()->get_columns().count(), parent)
 {
-    // TODO: duplicated in object list widget
-    const QList<QString> header_labels =
-    [this]() {
-        QList<QString> out;
-        for (const QString attribute : ADCONFIG()->get_columns()) {
-            const QString attribute_display_name = ADCONFIG()->get_column_display_name(attribute);
-
-            out.append(attribute_display_name);
-        }
-        return out;
-    }();
+    const QList<QString> header_labels = object_model_header_labels();
     setHorizontalHeaderLabels(header_labels);
 
     reset();
@@ -333,4 +323,16 @@ void ObjectModel::reset() {
     const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
     invis_root->appendRow(row);
     load_attributes_row(row, head_object);
+}
+
+QList<QString> object_model_header_labels() {
+    QList<QString> out;
+
+    for (const QString attribute : ADCONFIG()->get_columns()) {
+        const QString attribute_display_name = ADCONFIG()->get_column_display_name(attribute);
+
+        out.append(attribute_display_name);
+    }
+    
+    return out;
 }

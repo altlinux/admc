@@ -30,11 +30,10 @@ class QStandardItem;
 class AdObject;
 
 /**
- * TODO: comment
+ * Model used by containers and contents widgets. Contains
+ * attributes of objects. Doesn't load the whole directory
+ * but instead loads it gradually as user expands objects.
  */
-// Model for objects
-// Requires at least a DN column
-// Implements drag/drop of objects using their DN's
 
 class ObjectModel : public QStandardItemModel {
 Q_OBJECT
@@ -72,5 +71,6 @@ private:
 };
 
 void load_attributes_row(const QList<QStandardItem *> row, const AdObject &object);
+QList<QString> object_model_header_labels();
 
 #endif /* OBJECT_MODEL_H */

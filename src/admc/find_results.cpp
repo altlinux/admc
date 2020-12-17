@@ -42,16 +42,7 @@ FindResults::FindResults()
 {   
     model = new QStandardItemModel(ADCONFIG()->get_columns().count(), ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME), this);
 
-    const QList<QString> header_labels =
-    [this]() {
-        QList<QString> out;
-        for (const QString attribute : ADCONFIG()->get_columns()) {
-            const QString attribute_display_name = ADCONFIG()->get_column_display_name(attribute);
-
-            out.append(attribute_display_name);
-        }
-        return out;
-    }();
+    const QList<QString> header_labels = object_model_header_labels();
     model->setHorizontalHeaderLabels(header_labels);
 
     view = new QTreeView(this);
