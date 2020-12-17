@@ -144,6 +144,8 @@ void FindDialog::on_filter_changed() {
 }
 
 void FindDialog::find() {
+    show_busy_indicator();
+
     const QString filter = filter_widget->get_filter();
     const QString search_base =
     [this]() {
@@ -154,4 +156,6 @@ void FindDialog::find() {
     }();
 
     find_results->load(filter, search_base);
+
+    hide_busy_indicator();
 }

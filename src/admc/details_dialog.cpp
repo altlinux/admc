@@ -70,6 +70,8 @@ void DetailsDialog::open_for_target(const QString &target) {
         return;
     }
 
+    show_busy_indicator();
+
     const bool is_docked = SETTINGS()->get_bool(BoolSetting_DetailsIsDocked);
 
     if (is_docked) {
@@ -106,6 +108,8 @@ void DetailsDialog::open_for_target(const QString &target) {
             dialog->show();
         }
     }
+
+    hide_busy_indicator();
 }
 
 void DetailsDialog::connect_to_open_by_double_click(QAbstractItemView *view, const int dn_column) {
@@ -238,6 +242,8 @@ void DetailsDialog::on_docked_setting_changed() {
 }
 
 void DetailsDialog::apply() {
+    show_busy_indicator();
+
     STATUS()->start_error_log();
 
     for (auto tab : tabs) {
@@ -249,6 +255,8 @@ void DetailsDialog::apply() {
     reset();
 
     STATUS()->end_error_log(this);
+
+    hide_busy_indicator();
 }
 
 void DetailsDialog::reset() {
