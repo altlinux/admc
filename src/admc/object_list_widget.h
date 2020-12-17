@@ -29,44 +29,31 @@
  */
 
 #include <QWidget>
-#include <QHash>
-#include <QList>
-#include <QPoint>
 
 class QTreeView;
 class QLabel;
 class QLineEdit;
 class AdObject;
 class QStandardItemModel;
-class QLabel;
-
-enum ObjectListWidgetType {
-    ObjectListWidgetType_Contents,
-    ObjectListWidgetType_Find,
-};
+class QPoint;
 
 class ObjectListWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ObjectListWidget(const ObjectListWidgetType list_type_arg);
+    ObjectListWidget();
 
-    void load_children(const QString &new_parent_dn, const QString &filter = QString());
-    void load_filter(const QString &filter, const QString &search_base);
+    void load(const QString &filter, const QString &search_base);
 
 private slots:
     void on_context_menu(const QPoint pos);
 
 private:
-    ObjectListWidgetType list_type;
-    QString parent_dn;
     QLabel *label;
     QStandardItemModel *model;
     QTreeView *view;
-    QLineEdit *filter_name_edit;
     QLabel *object_count_label;
 
-    void load(const QHash<QString, AdObject> &objects);
     void showEvent(QShowEvent *event);
 };
 

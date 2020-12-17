@@ -34,16 +34,12 @@
 #include <QLabel>
 #include <QHeaderView>
 #include <QDebug>
-#include <QSortFilterProxyModel>
-#include <QLineEdit>
-#include <QGridLayout>
 #include <QStandardItemModel>
+#include <QVBoxLayout>
 
-ObjectListWidget::ObjectListWidget(const ObjectListWidgetType list_type_arg)
+ObjectListWidget::ObjectListWidget()
 : QWidget()
 {   
-    list_type = list_type_arg;
-
     model = new QStandardItemModel(ADCONFIG()->get_columns().count(), ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME), this);
 
     const QList<QString> header_labels =
@@ -97,37 +93,8 @@ ObjectListWidget::ObjectListWidget(const ObjectListWidgetType list_type_arg)
         this, &ObjectListWidget::on_context_menu);
 }
 
-void ObjectListWidget::load_children(const QString &new_parent_dn, const QString &filter) {
-    parent_dn = new_parent_dn;
-
-    const QList<QString> search_attributes = QList<QString>();
-    const QString total_filter = filter_AND({filter, current_advanced_view_filter()});
-    const QHash<QString, AdObject> search_results = AD()->search(total_filter, search_attributes, SearchScope_Children, parent_dn);
-
-    load(search_results);
-}
-
-void ObjectListWidget::load_filter(const QString &filter, const QString &search_base) {
-    const QList<QString> search_attributes = ADCONFIG()->get_columns();
-    const QString filter_and_advanced = filter_AND({filter, current_advanced_view_filter()});
-    const QHash<QString, AdObject> search_results = AD()->search(filter_and_advanced, search_attributes, SearchScope_All, search_base);
-
-    load(search_results);
-}
-
 void ObjectListWidget::on_context_menu(const QPoint pos) {
-    const QString dn =
-    [this, pos]() {
-        const int dn_column = ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME);
-        QString out = get_dn_from_pos(pos, view, dn_column);
-        
-        // Interpret clicks on empty space as clicks on parent (if parent is defined
-        if (out.isEmpty() && !parent_dn.isEmpty()) {
-            out = parent_dn;
-        }
-
-        return out;
-    }();
+    const QString dn = get_dn_from_pos(pos, view, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
     if (dn.isEmpty()) {
         return;
     }    
@@ -136,12 +103,14 @@ void ObjectListWidget::on_context_menu(const QPoint pos) {
     exec_menu_from_view(&context_menu, view, pos);
 }
 
-void ObjectListWidget::load(const QHash<QString, AdObject> &objects) {
+void ObjectListWidget::load(const QString &filter, const QString &search_base) {
     model->removeRows(0, model->rowCount());
+    
+    const QList<QString> search_attributes = ADCONFIG()->get_columns();
+    const QString filter_and_advanced = filter_AND({filter, current_advanced_view_filter()});
+    const QHash<QString, AdObject> search_results = AD()->search(filter_and_advanced, search_attributes, SearchScope_All, search_base);
 
-    for (auto child_dn : objects.keys()) {
-        const AdObject object  = objects[child_dn];
-        
+    for (const AdObject object : search_results) {
         const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().count());
 
         load_attributes_row(row, object);

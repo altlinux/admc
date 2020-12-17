@@ -67,7 +67,7 @@ FindDialog::FindDialog(QWidget *parent)
     auto find_button = new QPushButton(tr("Find"));
     find_button->setAutoDefault(false);
 
-    find_results = new ObjectListWidget(ObjectListWidgetType_Find);
+    find_results = new ObjectListWidget();
 
     auto filter_widget_frame = new QFrame();
     filter_widget_frame->setFrameStyle(QFrame::Raised);
@@ -153,5 +153,5 @@ void FindDialog::find() {
         return item_data.toString();
     }();
 
-    find_results->load_filter(filter, search_base);
+    find_results->load(filter, search_base);
 }
