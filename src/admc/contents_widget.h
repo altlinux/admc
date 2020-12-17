@@ -29,6 +29,7 @@ class ObjectModel;
 class QTreeView;
 class QModelIndex;
 class AdvancedViewProxy;
+class QLabel;
 
 /**
  * Shows a list of objects, which are children of a target
@@ -45,12 +46,15 @@ public:
 private slots:
     void on_containers_selected_changed(const QModelIndex &source_index);
     void on_context_menu(const QPoint pos);
+    void on_header_toggled();
 
 private:
     QString target_dn;
     QTreeView *view;
     ObjectModel *model;
     AdvancedViewProxy *advanced_view_proxy;
+    QWidget *header;
+    QLabel *header_label;
 
     void showEvent(QShowEvent *event);
 };

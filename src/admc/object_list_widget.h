@@ -38,6 +38,7 @@ class QLabel;
 class QLineEdit;
 class AdObject;
 class QStandardItemModel;
+class QLabel;
 
 enum ObjectListWidgetType {
     ObjectListWidgetType_Contents,
@@ -52,11 +53,9 @@ public:
 
     void load_children(const QString &new_parent_dn, const QString &filter = QString());
     void load_filter(const QString &filter, const QString &search_base);
-    void reset_name_filter();
 
 private slots:
     void on_context_menu(const QPoint pos);
-    void on_header_toggled();
 
 private:
     ObjectListWidgetType list_type;
@@ -65,7 +64,7 @@ private:
     QStandardItemModel *model;
     QTreeView *view;
     QLineEdit *filter_name_edit;
-    QWidget *header;
+    QLabel *object_count_label;
 
     void load(const QHash<QString, AdObject> &objects);
     void showEvent(QShowEvent *event);

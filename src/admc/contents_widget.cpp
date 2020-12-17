@@ -32,6 +32,7 @@
 #include <QDebug>
 #include <QTreeView>
 #include <QHeaderView>
+#include <QLabel>
 
 ContentsWidget::ContentsWidget(ObjectModel *model_arg, ContainersWidget *containers_widget, const QAction *filter_contents_action)
 : QWidget()
@@ -58,10 +59,22 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg, ContainersWidget *contain
 
     setup_column_toggle_menu(view, model, {ADCONFIG()->get_column_index(ATTRIBUTE_NAME), ADCONFIG()->get_column_index(ATTRIBUTE_OBJECT_CLASS), ADCONFIG()->get_column_index(ATTRIBUTE_DESCRIPTION)});
 
+    header = new QWidget();
+
+    header_label = new QLabel();
+
+    auto header_layout = new QVBoxLayout();
+    header->setLayout(header_layout);
+    header_layout->setContentsMargins(0, 0, 0, 0);
+    header_layout->setSpacing(0);
+
+    header_layout->addWidget(header_label);
+
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
+    layout->addWidget(header);
     layout->addWidget(view);
 
     connect(
@@ -71,6 +84,12 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg, ContainersWidget *contain
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         this, &ContentsWidget::on_context_menu);
+
+    const BoolSettingSignal *show_header_signal = SETTINGS()->get_bool_signal(BoolSetting_ShowContentsHeader);
+    connect(
+        show_header_signal, &BoolSettingSignal::changed,
+        this, &ContentsWidget::on_header_toggled);
+    on_header_toggled();
 }
 
 void ContentsWidget::on_context_menu(const QPoint pos) {
@@ -97,14 +116,29 @@ void ContentsWidget::on_containers_selected_changed(const QModelIndex &source_in
         item->appendRow(row);
     }
 
-    const QModelIndex proxy_index = advanced_view_proxy->mapFromSource(source_index);
-    view->setRootIndex(proxy_index);
+    const QModelIndex advanced_view_proxy_index = advanced_view_proxy->mapFromSource(source_index);
+    view->setRootIndex(advanced_view_proxy_index);
 
     // Remove that empty row we created to fix header
     if (no_children) {
         auto item = model->itemFromIndex(source_index);
         item->removeRow(0);
     }
+
+    const QString label_text =
+    [this, source_index]() {
+        const QString object_count_string = tr("%n object(s)", "", model->rowCount());
+
+        const QString parent_name = source_index.data().toString();
+
+        return QString("%1: %2").arg(parent_name, object_count_string);
+    }();
+    header_label->setText(label_text);
+}
+
+void ContentsWidget::on_header_toggled() {
+    const bool show_header = SETTINGS()->get_bool(BoolSetting_ShowContentsHeader);
+    header->setVisible(show_header);
 }
 
 void ContentsWidget::showEvent(QShowEvent *event) {

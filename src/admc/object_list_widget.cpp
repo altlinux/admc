@@ -57,9 +57,6 @@ ObjectListWidget::ObjectListWidget(const ObjectListWidgetType list_type_arg)
     }();
     model->setHorizontalHeaderLabels(header_labels);
 
-    auto proxy_name = new QSortFilterProxyModel(this);
-    proxy_name->setFilterKeyColumn(ADCONFIG()->get_column_index(ATTRIBUTE_NAME));
-
     view = new QTreeView(this);
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -73,8 +70,7 @@ ObjectListWidget::ObjectListWidget(const ObjectListWidgetType list_type_arg)
     view->setSortingEnabled(true);
     view->header()->setSectionsMovable(true);
 
-    proxy_name->setSourceModel(model);
-    view->setModel(proxy_name);
+    view->setModel(model);
 
     DetailsDialog::connect_to_open_by_double_click(view, ADCONFIG()->get_column_index(ATTRIBUTE_DISTINGUISHED_NAME));
 
@@ -85,46 +81,19 @@ ObjectListWidget::ObjectListWidget(const ObjectListWidgetType list_type_arg)
         ADCONFIG()->get_column_index(ATTRIBUTE_DESCRIPTION)
     });
 
-    label = new QLabel(this);
-
-    const auto filter_name_label = new QLabel(tr("Search: "), this);
-    filter_name_edit = new QLineEdit(this);
+    object_count_label = new QLabel();
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
 
-    header = new QWidget();
-    auto header_layout = new QHBoxLayout();
-    header_layout->setContentsMargins(0, 0, 0, 0);
-    header_layout->setSpacing(0);
-    header->setLayout(header_layout);
-    header_layout->addWidget(label);
-    header_layout->addStretch(1);
-    header_layout->addWidget(filter_name_label);
-    header_layout->addWidget(filter_name_edit);
-
-    layout->addWidget(header);
+    layout->addWidget(object_count_label);
     layout->addWidget(view);
 
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         this, &ObjectListWidget::on_context_menu);
-
-    connect(
-        filter_name_edit, &QLineEdit::textChanged,
-        [proxy_name](const QString &text) {
-            proxy_name->setFilterRegExp(QRegExp(text, Qt::CaseInsensitive, QRegExp::FixedString));
-        });
-
-    if (list_type == ObjectListWidgetType_Contents) {
-        const BoolSettingSignal *show_header_signal = SETTINGS()->get_bool_signal(BoolSetting_ShowContentsHeader);
-        connect(
-            show_header_signal, &BoolSettingSignal::changed,
-            this, &ObjectListWidget::on_header_toggled);
-        on_header_toggled();
-    }
 }
 
 void ObjectListWidget::load_children(const QString &new_parent_dn, const QString &filter) {
@@ -143,10 +112,6 @@ void ObjectListWidget::load_filter(const QString &filter, const QString &search_
     const QHash<QString, AdObject> search_results = AD()->search(filter_and_advanced, search_attributes, SearchScope_All, search_base);
 
     load(search_results);
-}
-
-void ObjectListWidget::reset_name_filter() {
-    filter_name_edit->clear();
 }
 
 void ObjectListWidget::on_context_menu(const QPoint pos) {
@@ -168,11 +133,6 @@ void ObjectListWidget::on_context_menu(const QPoint pos) {
 
     ObjectContextMenu context_menu(dn, view);
     exec_menu_from_view(&context_menu, view, pos);
-}
-
-void ObjectListWidget::on_header_toggled() {
-    const bool show_header = SETTINGS()->get_bool(BoolSetting_ShowContentsHeader);
-    header->setVisible(show_header);
 }
 
 void ObjectListWidget::load(const QHash<QString, AdObject> &objects) {
@@ -222,23 +182,8 @@ void ObjectListWidget::load(const QHash<QString, AdObject> &objects) {
 
     view->sortByColumn(ADCONFIG()->get_column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
 
-    const QString label_text =
-    [this]() {
-        const int object_count = model->rowCount();
-        const QString object_count_string = tr("%n object(s)", "", object_count);
-
-        if (!parent_dn.isEmpty()) {
-            // "Parent: # objects"
-            const QString parent_rdn = dn_get_name(parent_dn);
-
-            return QString("%1: %2").arg(parent_rdn, object_count_string);
-        } else {
-            // "# objects"
-            return object_count_string;
-        }
-    }();
-
-    label->setText(label_text);
+    const QString label_text = tr("%n object(s)", "", model->rowCount());
+    object_count_label->setText(label_text);
 }
 
 void ObjectListWidget::showEvent(QShowEvent *event) {
