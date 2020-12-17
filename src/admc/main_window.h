@@ -23,7 +23,6 @@
 #include <QMainWindow>
 
 class MenuBar;
-class ContentsFilterDialog;
 
 class MainWindow final : public QMainWindow {
 Q_OBJECT
@@ -39,7 +38,6 @@ private slots:
 
 private:
     MenuBar *menubar;
-    ContentsFilterDialog *filter_dialog;
 
 };
 

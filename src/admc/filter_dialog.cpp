@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "contents_filter_dialog.h"
+#include "filter_dialog.h"
 
 #include "filter_widget/filter_widget.h"
 
 #include <QDialogButtonBox>
 #include <QVBoxLayout>
 
-ContentsFilterDialog::ContentsFilterDialog(QWidget *parent)
+FilterDialog::FilterDialog(QWidget *parent)
 : QDialog(parent)
 {   
     setWindowTitle(tr("Filter contents"));

@@ -38,7 +38,7 @@ add_executable(admc
     attribute_display.cpp
     object_list_widget.cpp
     toggle_widgets_dialog.cpp
-    contents_filter_dialog.cpp
+    filter_dialog.cpp
     advanced_view_proxy.cpp
     
     rename_dialog.cpp

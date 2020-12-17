@@ -17,19 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONTENTS_FILTER_DIALOG_H
-#define CONTENTS_FILTER_DIALOG_H
+#ifndef FILTER_DIALOG_H
+#define FILTER_DIALOG_H
+
+/**
+ * Contains FilterWidget. When a filter is entered and
+ * dialog is accepted, emits filter_changed() signal. Used
+ * for filtering ObjectModel.
+ */
 
 #include <QDialog>
 
-class ContentsFilterDialog final : public QDialog {
+class FilterDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    ContentsFilterDialog(QWidget *parent);
+    FilterDialog(QWidget *parent);
 
 signals:
     void filter_changed(const QString &filter);
 };
 
-#endif /* CONTENTS_FILTER_DIALOG_H */
+#endif /* FILTER_DIALOG_H */
