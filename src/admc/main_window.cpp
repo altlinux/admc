@@ -104,7 +104,7 @@ void MainWindow::on_connected() {
 
     auto containers_widget = new ContainersWidget(object_model, this);
 
-    auto contents_widget = new ContentsWidget(object_model, containers_widget);
+    auto contents_widget = new ContentsWidget(object_model);
 
     auto details_widget_docked_container = DetailsDialog::get_docked_container();
     auto policies_widget = new PoliciesWidget();
@@ -161,6 +161,10 @@ void MainWindow::on_connected() {
     connect(
         menubar->find_action, &QAction::triggered,
         find_dialog, &QDialog::open);
+
+    connect(
+        containers_widget, &ContainersWidget::selected_changed,
+        contents_widget, &ContentsWidget::on_containers_selected_changed);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

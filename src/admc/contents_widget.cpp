@@ -18,7 +18,6 @@
  */
 
 #include "contents_widget.h"
-#include "containers_widget.h"
 #include "settings.h"
 #include "ad_interface.h"
 #include "ad_config.h"
@@ -34,7 +33,7 @@
 #include <QHeaderView>
 #include <QLabel>
 
-ContentsWidget::ContentsWidget(ObjectModel *model_arg, ContainersWidget *containers_widget)
+ContentsWidget::ContentsWidget(ObjectModel *model_arg)
 : QWidget()
 {   
     model = model_arg;
@@ -80,10 +79,6 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg, ContainersWidget *contain
     layout->addWidget(view);
 
     ObjectContextMenu::setup(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-
-    connect(
-        containers_widget, &ContainersWidget::selected_changed,
-        this, &ContentsWidget::on_containers_selected_changed);
 
     const BoolSettingSignal *show_header_signal = SETTINGS()->get_bool_signal(BoolSetting_ShowContentsHeader);
     connect(
