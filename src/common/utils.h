@@ -35,8 +35,10 @@ class QMenu;
 class QTreeView;
 class QLineEdit;
 
+// NOTE: these functions assume that view's proxies don't filter out the DN column and that it is always present.
 QString get_dn_from_index(const QModelIndex &index, int dn_column);
 QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn_column);
+
 QList<QStandardItem *> make_item_row(const int count);
 
 int bit_set(int bitmask, int bit, bool set);

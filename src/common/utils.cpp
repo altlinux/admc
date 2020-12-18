@@ -35,31 +35,12 @@
 #include <QGuiApplication>
 #include <QCursor>
 
-// Index can be an index of any column in target row and of any proxy in the proxy chain
 QString get_dn_from_index(const QModelIndex &index, int dn_column) {
     if (!index.isValid()) {
         return QString();
     }
 
-    // Convert to source index
-    const QModelIndex source_index =
-    [index]() {
-        const QAbstractItemModel *current_model = index.model();
-        QModelIndex current_index = index;
-        while (true) {
-            const QSortFilterProxyModel *current_model_as_proxy = qobject_cast<const QSortFilterProxyModel *>(current_model);
-
-            if (current_model_as_proxy != nullptr) {
-                current_index = current_model_as_proxy->mapToSource(current_index);
-
-                current_model = current_model_as_proxy->sourceModel();
-            } else {
-                return current_index;
-            }
-        }
-    }();
-    
-    const QModelIndex dn_index = source_index.siblingAtColumn(dn_column);
+    const QModelIndex dn_index = index.siblingAtColumn(dn_column);
     const QString dn = dn_index.data().toString();
 
     return dn;
