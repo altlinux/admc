@@ -29,10 +29,7 @@
 
 class QTreeView;
 class QLabel;
-class QLineEdit;
-class AdObject;
 class QStandardItemModel;
-class QPoint;
 
 class FindResults final : public QWidget {
 Q_OBJECT
@@ -42,11 +39,7 @@ public:
 
     void load(const QString &filter, const QString &search_base);
 
-private slots:
-    void on_context_menu(const QPoint pos);
-
 private:
-    QLabel *label;
     QStandardItemModel *model;
     QTreeView *view;
     QLabel *object_count_label;

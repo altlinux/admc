@@ -79,29 +79,17 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg, ContainersWidget *contain
     layout->addWidget(header);
     layout->addWidget(view);
 
+    ObjectContextMenu::setup(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+
     connect(
         containers_widget, &ContainersWidget::selected_changed,
         this, &ContentsWidget::on_containers_selected_changed);
-
-    QObject::connect(
-        view, &QWidget::customContextMenuRequested,
-        this, &ContentsWidget::on_context_menu);
 
     const BoolSettingSignal *show_header_signal = SETTINGS()->get_bool_signal(BoolSetting_ShowContentsHeader);
     connect(
         show_header_signal, &BoolSettingSignal::changed,
         this, &ContentsWidget::on_header_toggled);
     on_header_toggled();
-}
-
-void ContentsWidget::on_context_menu(const QPoint pos) {
-    const QString dn = get_dn_from_pos(pos, view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-    if (dn.isEmpty()) {
-        return;
-    }
-
-    ObjectContextMenu context_menu(dn, view);
-    exec_menu_from_view(&context_menu, view, pos);
 }
 
 void ContentsWidget::on_containers_selected_changed(const QModelIndex &source_index) {

@@ -23,14 +23,17 @@
 #include "tabs/details_tab.h"
 #include "gplink.h"
 
-#include <QPoint>
-
 class QTreeView;
 class QString;
 class QStandardItemModel;
 class QStandardItem;
+class QPoint;
 
-// Tab for displaying, modifying group policy related attributes of an object(not a gpo!), such as gplink and gpoptions
+/**
+ * Tab for displaying, modifying group policy related
+ * attributes of an object(not a gpo!), such as gplink and
+ * gpoptions.
+ */
 
 class GroupPolicyTab final : public DetailsTab {
 Q_OBJECT
@@ -48,8 +51,8 @@ private slots:
     void on_item_changed(QStandardItem *item);
 
 private:
-    QStandardItemModel *model = nullptr;
-    QTreeView *view = nullptr;
+    QStandardItemModel *model;
+    QTreeView *view;
     Gplink gplink;
 
     void add_link(QList<QString> gpos);

@@ -117,6 +117,24 @@ ObjectContextMenu::ObjectContextMenu(const QString &dn, QWidget *parent)
     }
 }
 
+QMenu *make_object_context_menu(const QString dn, QWidget *parent) {
+    return new ObjectContextMenu(dn, parent);
+}
+
+void ObjectContextMenu::setup(QAbstractItemView *view, const int dn_column) {
+    QObject::connect(
+        view, &QWidget::customContextMenuRequested,
+        [=](const QPoint pos) {
+            const QString dn = get_dn_from_pos(pos, view, dn_column);
+            if (dn.isEmpty()) {
+                return;
+            }
+
+            ObjectContextMenu menu(dn, view);
+            exec_menu_from_view(&menu, view, pos);
+        });
+}
+
 void ObjectContextMenu::delete_object(const AdObject &object) {
     const QString name = object.get_string(ATTRIBUTE_NAME);
     const QString text = QString(tr("Are you sure you want to delete object \"%1\"?")).arg(name);

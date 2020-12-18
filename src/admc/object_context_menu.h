@@ -29,6 +29,8 @@ class ObjectContextMenu final : public QMenu {
 Q_OBJECT
 
 public:
+    static void setup(QAbstractItemView *view, const int dn_column);
+
     ObjectContextMenu(const QString &dn, QWidget *parent);
 
 private:
@@ -36,7 +38,6 @@ private:
     void edit_policy(const AdObject &object);
     void move(const AdObject &object);
     void add_to_group(const AdObject &object);
-
 };
 
 #endif /* OBJECT_CONTEXT_MENU_H */

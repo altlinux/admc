@@ -67,13 +67,11 @@ ContainersWidget::ContainersWidget(ObjectModel *model, QWidget *parent)
     layout->setSpacing(0);
     layout->addWidget(view);
 
+    ObjectContextMenu::setup(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+
     connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,
         this, &ContainersWidget::on_selection_changed);
-
-    QObject::connect(
-        view, &QWidget::customContextMenuRequested,
-        this, &ContainersWidget::on_context_menu);
 };
 
 // Transform selected index into source index and pass it on
@@ -90,16 +88,6 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
     const QModelIndex source_index = containers_proxy->mapToSource(containers_proxy_index);
 
     emit selected_changed(source_index);
-}
-
-void ContainersWidget::on_context_menu(const QPoint pos) {
-    const QString dn = get_dn_from_pos(pos, view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-    if (dn.isEmpty()) {
-        return;
-    }
-
-    ObjectContextMenu context_menu(dn, view);
-    exec_menu_from_view(&context_menu, view, pos);
 }
 
 void ContainersWidget::showEvent(QShowEvent *event) {

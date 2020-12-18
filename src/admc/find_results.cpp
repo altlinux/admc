@@ -79,19 +79,7 @@ FindResults::FindResults()
     layout->addWidget(object_count_label);
     layout->addWidget(view);
 
-    QObject::connect(
-        view, &QWidget::customContextMenuRequested,
-        this, &FindResults::on_context_menu);
-}
-
-void FindResults::on_context_menu(const QPoint pos) {
-    const QString dn = get_dn_from_pos(pos, view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-    if (dn.isEmpty()) {
-        return;
-    }    
-
-    ObjectContextMenu context_menu(dn, view);
-    exec_menu_from_view(&context_menu, view, pos);
+    ObjectContextMenu::setup(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 }
 
 void FindResults::load(const QString &filter, const QString &search_base) {
