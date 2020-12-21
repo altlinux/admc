@@ -33,20 +33,20 @@
 
 MenuBar::MenuBar()
 : QMenuBar() {
-    QMenu *action_menu = addMenu(tr("Action"));
+    QMenu *action_menu = addMenu(tr("&Action"));
 
-    auto connect_action = action_menu->addAction(tr("Connect"),
+    auto connect_action = action_menu->addAction(tr("&Connect"),
         [this]() {
             STATUS()->start_error_log();
             AD()->connect();
             STATUS()->end_error_log(this);
         });
 
-    find_action = action_menu->addAction(tr("Find"));
+    find_action = action_menu->addAction(tr("&Find"));
 
-    filter_action = action_menu->addAction(tr("Filter contents"));
+    filter_action = action_menu->addAction(tr("F&ilter contents"));
 
-    auto quit_action = action_menu->addAction(tr("Quit"),
+    auto quit_action = action_menu->addAction(tr("&Quit"),
         []() {
             QApplication::quit();
         });
@@ -57,18 +57,18 @@ MenuBar::MenuBar()
         SETTINGS()->connect_action_to_bool_setting(action, type);
     };
 
-    QMenu *view_menu = addMenu(tr("View"));
-    add_bool_setting_action(view_menu, tr("Advanced view"), BoolSetting_AdvancedView);
-    add_bool_setting_action(view_menu, tr("Dock Details dialog"), BoolSetting_DetailsIsDocked);
-    auto toggle_widgets_action = view_menu->addAction(tr("Toggle widgets"));
+    QMenu *view_menu = addMenu(tr("&View"));
+    add_bool_setting_action(view_menu, tr("&Advanced view"), BoolSetting_AdvancedView);
+    add_bool_setting_action(view_menu, tr("&Dock Details dialog"), BoolSetting_DetailsIsDocked);
+    auto toggle_widgets_action = view_menu->addAction(tr("&Toggle widgets"));
 
-    QMenu *preferences_menu = addMenu(tr("Preferences"));
-    add_bool_setting_action(preferences_menu, tr("Confirm actions"), BoolSetting_ConfirmActions);
-    add_bool_setting_action(preferences_menu, tr("Dev mode"), BoolSetting_DevMode);
-    add_bool_setting_action(preferences_menu, tr("Show non-container objects in Containers tree"), BoolSetting_ShowNonContainersInContainersTree);
-    add_bool_setting_action(preferences_menu, tr("Put last name before first name when creating users"), BoolSetting_LastNameBeforeFirstName);
+    QMenu *preferences_menu = addMenu(tr("&Preferences"));
+    add_bool_setting_action(preferences_menu, tr("&Confirm actions"), BoolSetting_ConfirmActions);
+    add_bool_setting_action(preferences_menu, tr("&Dev mode"), BoolSetting_DevMode);
+    add_bool_setting_action(preferences_menu, tr("&Show non-container objects in Containers tree"), BoolSetting_ShowNonContainersInContainersTree);
+    add_bool_setting_action(preferences_menu, tr("&Put last name before first name when creating users"), BoolSetting_LastNameBeforeFirstName);
 
-    QMenu *language_menu = preferences_menu->addMenu(tr("Language"));
+    QMenu *language_menu = preferences_menu->addMenu(tr("&Language"));
     auto language_group = new QActionGroup(language_menu);
 
     auto add_language_action =
