@@ -103,10 +103,18 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
                 const QString last_name = last_name_edit->get_input(); 
 
                 const bool last_name_first = SETTINGS()->get_bool(BoolSetting_LastNameBeforeFirstName);
-                if (last_name_first) {
-                    return last_name + " " + first_name;
+                if (!first_name.isEmpty() && !last_name.isEmpty()) {
+                    if (last_name_first) {
+                        return last_name + " " + first_name;
+                    } else {
+                        return first_name + " " + last_name;
+                    }
+                } else if (!first_name.isEmpty()) {
+                    return first_name;
+                } else if (!last_name.isEmpty()) {
+                    return last_name;
                 } else {
-                    return first_name + " " + last_name;
+                    return QString();
                 }
             }();
 
