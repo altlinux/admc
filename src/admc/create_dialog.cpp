@@ -75,10 +75,8 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
         AccountOptionEdit::make_many(options, &option_edits, &all_edits, this);
         QWidget *options_widget = AccountOptionEdit::layout_many(options, option_edits);
 
-        // NOTE: initials not required
         required_edits = {
             first_name_edit,
-            last_name_edit,
             upn_edit,
             sama_edit,
             pass_edit
