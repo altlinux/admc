@@ -1104,13 +1104,13 @@
     </message>
     <message>
         <location filename="../src/admc/tabs/membership_tab.cpp" line="254"/>
-        <source>Add member to group</source>
-        <translation>Добавить в группу</translation>
+        <source>Add user</source>
+        <translation>Добавить пользователя</translation>
     </message>
     <message>
         <location filename="../src/admc/tabs/membership_tab.cpp" line="255"/>
-        <source>Add user to group</source>
-        <translation>Добавить в группу</translation>
+        <source>Add group</source>
+        <translation>Добавить группу</translation>
     </message>
 </context>
 <context>

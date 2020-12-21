@@ -1098,12 +1098,12 @@
     </message>
     <message>
         <location filename="../src/admc/tabs/membership_tab.cpp" line="254"/>
-        <source>Add member to group</source>
+        <source>Add user</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../src/admc/tabs/membership_tab.cpp" line="255"/>
-        <source>Add user to group</source>
+        <source>Add group</source>
         <translation></translation>
     </message>
 </context>

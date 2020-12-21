@@ -251,8 +251,8 @@ void MembershipTab::on_add_button() {
     const QString title =
     [=]() {
         switch (type) {
-            case MembershipTabType_Members: return QString(tr("Add member to group"));
-            case MembershipTabType_MemberOf: return QString(tr("Add user to group"));
+            case MembershipTabType_Members: return QString(tr("Add user"));
+            case MembershipTabType_MemberOf: return QString(tr("Add group"));
         }
         return QString();
     }();
