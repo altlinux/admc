@@ -1251,64 +1251,64 @@
     </message>
 </context>
 <context>
-    <name>ObjectContextMenu</name>
+    <name>ObjectMenu</name>
     <message>
-        <location filename="../src/admc/object_context_menu.cpp" line="41"/>
+        <location filename="../src/admc/object_menu.cpp" line="41"/>
         <source>Details</source>
         <translation>Детали</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_context_menu.cpp" line="45"/>
+        <location filename="../src/admc/object_menu.cpp" line="45"/>
         <source>Delete</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_context_menu.cpp" line="49"/>
+        <location filename="../src/admc/object_menu.cpp" line="49"/>
         <source>Rename</source>
         <translation>Переименовать</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_context_menu.cpp" line="54"/>
+        <location filename="../src/admc/object_menu.cpp" line="54"/>
         <source>New</source>
         <translation>Создать</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_context_menu.cpp" line="71"/>
+        <location filename="../src/admc/object_menu.cpp" line="71"/>
         <source>Move</source>
         <translation>Переместить</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_context_menu.cpp" line="79"/>
+        <location filename="../src/admc/object_menu.cpp" line="79"/>
         <source>Add to group</source>
         <translation>Добавить в группу</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_context_menu.cpp" line="86"/>
+        <location filename="../src/admc/object_menu.cpp" line="86"/>
         <source>Reset password</source>
         <translation>Поменять пароль</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_context_menu.cpp" line="95"/>
+        <location filename="../src/admc/object_menu.cpp" line="95"/>
         <source>Enable account</source>
         <translation>Включить учётную запись</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_context_menu.cpp" line="97"/>
+        <location filename="../src/admc/object_menu.cpp" line="97"/>
         <source>Disable account</source>
         <translation>Выключить учётную запись</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_context_menu.cpp" line="140"/>
+        <location filename="../src/admc/object_menu.cpp" line="140"/>
         <source>Are you sure you want to delete object &quot;%1&quot;?</source>
         <translation>Удалить объект &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_context_menu.cpp" line="153"/>
+        <location filename="../src/admc/object_menu.cpp" line="153"/>
         <source>Move object &quot;%1&quot;</source>
         <translation>Перенести объект &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_context_menu.cpp" line="166"/>
+        <location filename="../src/admc/object_menu.cpp" line="166"/>
         <source>Add object &quot;%1&quot; to group</source>
         <translation>Добавить объект &quot;%1&quot; в группу</translation>
     </message>

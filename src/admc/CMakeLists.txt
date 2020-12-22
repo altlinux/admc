@@ -31,7 +31,7 @@ add_executable(admc
     status.cpp
     object_model.cpp
     select_dialog.cpp
-    object_context_menu.cpp
+    object_menu.cpp
     confirmation_dialog.cpp
     password_dialog.cpp
     menubar.cpp

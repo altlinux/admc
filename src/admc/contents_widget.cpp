@@ -23,7 +23,7 @@
 #include "ad_config.h"
 #include "object_model.h"
 #include "advanced_view_proxy.h"
-#include "object_context_menu.h"
+#include "object_menu.h"
 #include "details_dialog.h"
 #include "utils.h"
 
@@ -78,7 +78,7 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg)
     layout->addWidget(header);
     layout->addWidget(view);
 
-    ObjectContextMenu::setup_as_context_menu(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    ObjectMenu::setup_as_context_menu(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
     const BoolSettingSignal *show_header_signal = SETTINGS()->get_bool_signal(BoolSetting_ShowContentsHeader);
     connect(

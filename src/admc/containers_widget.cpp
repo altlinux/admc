@@ -22,7 +22,7 @@
 #include "object_model.h"
 #include "containers_proxy.h"
 #include "advanced_view_proxy.h"
-#include "object_context_menu.h"
+#include "object_menu.h"
 #include "utils.h"
 #include "details_dialog.h"
 #include "ad_config.h"
@@ -67,7 +67,7 @@ ContainersWidget::ContainersWidget(ObjectModel *model, QWidget *parent)
     layout->setSpacing(0);
     layout->addWidget(view);
 
-    ObjectContextMenu::setup_as_context_menu(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    ObjectMenu::setup_as_context_menu(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
     connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,

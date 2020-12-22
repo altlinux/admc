@@ -23,7 +23,7 @@
 #include "confirmation_dialog.h"
 #include "toggle_widgets_dialog.h"
 #include "status.h"
-#include "object_context_menu.h"
+#include "object_menu.h"
 
 #include <QMenu>
 #include <QLocale>
@@ -52,7 +52,7 @@ MenuBar::MenuBar()
             QApplication::quit();
         });
 
-    action_menu = new ObjectContextMenu(this);
+    action_menu = new ObjectMenu(this);
     action_menu->setTitle(tr("&Action"));
     addMenu(action_menu);
 

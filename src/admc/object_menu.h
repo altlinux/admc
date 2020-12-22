@@ -17,20 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_CONTEXT_MENU_H
-#define OBJECT_CONTEXT_MENU_H
+#ifndef OBJECT_MENU_H
+#define OBJECT_MENU_H
 
 /**
- * This menu should be setup to open by right clicking an
- * object. It is also used as the "Action" menu in the
- * menubar. 
+ * This menu is used as a context menu when right clicking
+ * on an object and also as a menu in the menubar. Contains
+ * actions which are can be performed on the target object.
  */
 
 #include <QMenu>
 
 class QAbstractItemView;
 
-class ObjectContextMenu final : public QMenu {
+class ObjectMenu final : public QMenu {
 Q_OBJECT
 
 public:
@@ -56,4 +56,4 @@ private:
     void disable_account() const;
 };
 
-#endif /* OBJECT_CONTEXT_MENU_H */
+#endif /* OBJECT_MENU_H */

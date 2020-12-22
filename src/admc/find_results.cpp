@@ -18,7 +18,7 @@
  */
 
 #include "find_results.h"
-#include "object_context_menu.h"
+#include "object_menu.h"
 #include "details_dialog.h"
 #include "utils.h"
 #include "ad_interface.h"
@@ -79,7 +79,7 @@ FindResults::FindResults()
     layout->addWidget(object_count_label);
     layout->addWidget(view);
 
-    ObjectContextMenu::setup_as_context_menu(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    ObjectMenu::setup_as_context_menu(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 }
 
 void FindResults::load(const QString &filter, const QString &search_base) {

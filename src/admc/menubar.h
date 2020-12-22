@@ -25,7 +25,7 @@
 
 class QAction;
 class QMenu;
-class ObjectContextMenu;
+class ObjectMenu;
 
 class MenuBar final : public QMenuBar {
 Q_OBJECT
@@ -43,7 +43,7 @@ signals:
 
 private:
     QList<QMenu *> menus;
-    ObjectContextMenu *action_menu;
+    ObjectMenu *action_menu;
 
     void enable_actions(const bool enabled);
 };
