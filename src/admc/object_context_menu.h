@@ -20,10 +20,18 @@
 #ifndef OBJECT_CONTEXT_MENU_H
 #define OBJECT_CONTEXT_MENU_H
 
+/**
+ * This menu should be setup to open by right clicking an
+ * object. It is also used as the "Action" menu in the
+ * menubar. 
+ */
+
 #include <QMenu>
 
 class QAbstractItemView;
 class AdObject;
+class QAction;
+class QMenu;
 
 class ObjectContextMenu final : public QMenu {
 Q_OBJECT
@@ -31,13 +39,26 @@ Q_OBJECT
 public:
     static void setup(QAbstractItemView *view, const int dn_column);
 
-    ObjectContextMenu(const QString &dn, QWidget *parent);
+    using QMenu::QMenu;
+    void change_target(const QString &new_target);
+
+protected:
+    void showEvent(QShowEvent *event);
 
 private:
-    void delete_object(const AdObject &object);
-    void edit_policy(const AdObject &object);
-    void move(const AdObject &object);
-    void add_to_group(const AdObject &object);
+    QString target;
+    QAction *add_to_group_action;
+    QMenu *create_menu;
+
+    void details() const;
+    void delete_object() const;
+    void move() const;
+    void add_to_group() const;
+    void rename() const;
+    void create(const QString &object_class) const;
+    void reset_password() const;
+    void enable_account() const;
+    void disable_account() const;
 };
 
 #endif /* OBJECT_CONTEXT_MENU_H */

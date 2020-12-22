@@ -25,6 +25,7 @@
 
 class QAction;
 class QMenu;
+class ObjectContextMenu;
 
 class MenuBar final : public QMenuBar {
 Q_OBJECT
@@ -35,11 +36,14 @@ public:
 
     MenuBar();
 
+    void update_action_menu(const QString &dn);
+
 signals:
     void filter_contents_dialog();
 
 private:
     QList<QMenu *> menus;
+    ObjectContextMenu *action_menu;
 
     void enable_actions(const bool enabled);
 };

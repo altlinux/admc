@@ -33,92 +33,93 @@
 #include <QPoint>
 #include <QAbstractItemView>
 
-ObjectContextMenu::ObjectContextMenu(const QString &dn, QWidget *parent)
-: QMenu(parent)
-{
-    const AdObject object = AD()->search_object(dn);
+// NOTE: for dialogs opened from this menu, the parent of the menu is passed NOT the menu itself, because the menu closes (and gets deleted if this is the context menu) when dialog opens.
 
-    addAction(tr("Details"), [this, dn]() {
-        DetailsDialog::open_for_target(dn);
-    });
+void ObjectContextMenu::change_target(const QString &new_target) {
+    target = new_target;
+}
 
-    auto delete_action = addAction(tr("Delete"), [this, dn, object]() {
-        delete_object(object);
-    });
+void ObjectContextMenu::showEvent(QShowEvent *) {
+    clear();
 
-    auto rename_action = addAction(tr("Rename"), [this, dn]() {
-        auto dialog = new RenameDialog(dn, parentWidget());
-        dialog->open();
-    });
-
-    QMenu *submenu_new = addMenu(tr("New"));
-    static const QList<QString> create_classes = {
-        CLASS_USER,
-        CLASS_COMPUTER,
-        CLASS_OU,
-        CLASS_GROUP,
-    };
-    for (const auto object_class : create_classes) {
-        const QString action_text = ADCONFIG()->get_class_display_name(object_class);
-
-        submenu_new->addAction(action_text,
-            [this, dn, object_class]() {
-            const auto create_dialog = new CreateDialog(dn, object_class, parentWidget());
-            create_dialog->open();
-        });
+    if (target.isEmpty()) {
+        return;
     }
 
-    auto move_action = addAction(tr("Move"));
-    connect(
-        move_action, &QAction::triggered,
-        [this, object]() {
-            move(object);
-        });
+    const AdObject object = AD()->search_object(target);
 
-    if (object.is_class(CLASS_USER)) {
-        QAction *add_to_group_action = addAction(tr("Add to group"));
-        connect(
-            add_to_group_action, &QAction::triggered,
-            [this, object]() {
-                add_to_group(object);
-            });
-
-        addAction(tr("Reset password"),
-            [this, dn]() {
-            const auto password_dialog = new PasswordDialog(dn, parentWidget());
-            password_dialog->open();
-        });
-
-        const bool disabled = object.get_account_option(AccountOption_Disabled);
-        QString disable_text;
-        if (disabled) {
-            disable_text = tr("Enable account");
-        } else {
-            disable_text = tr("Disable account");
-        }
-        addAction(disable_text, [this, dn, disabled]() {
-            AD()->user_set_account_option(dn, AccountOption_Disabled, !disabled);
-        });
+    if (object.is_empty()) {
+        return;
     }
 
-    // Disable certain actions based on system flags
+    addAction(tr("Details"), this, &ObjectContextMenu::details);
+
+    addSeparator();
+
+    auto move_action = addAction(tr("Move"), this, &ObjectContextMenu::move);
     const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
-    const bool cannot_rename = object.get_system_flag(SystemFlagsBit_CannotRename);
-    const bool cannot_delete = object.get_system_flag(SystemFlagsBit_CannotDelete);
-    
     if (cannot_move) {
         move_action->setEnabled(false);
     }
-    if (cannot_delete) {
-        delete_action->setEnabled(false);
-    }
+
+    auto rename_action = addAction(tr("Rename"), this, &ObjectContextMenu::rename);
+    const bool cannot_rename = object.get_system_flag(SystemFlagsBit_CannotRename);
     if (cannot_rename) {
         rename_action->setEnabled(false);
     }
-}
 
-QMenu *make_object_context_menu(const QString dn, QWidget *parent) {
-    return new ObjectContextMenu(dn, parent);
+    auto delete_action = addAction(tr("Delete"), this, &ObjectContextMenu::delete_object);
+    const bool cannot_delete = object.get_system_flag(SystemFlagsBit_CannotDelete);
+    if (cannot_delete) {
+        delete_action->setEnabled(false);
+    }
+
+    addSeparator();
+
+    const bool is_container =
+    [object]() {
+        const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
+        for (const QString object_class : container_classes) {
+            if (object.is_class(object_class)) {
+                return true;
+            }
+        }
+        return false;
+    }();
+
+    if (is_container) {
+        QMenu *submenu_new = addMenu(tr("New"));
+        static const QList<QString> create_classes = {
+            CLASS_USER,
+            CLASS_COMPUTER,
+            CLASS_OU,
+            CLASS_GROUP,
+        };
+        for (const auto object_class : create_classes) {
+            const QString action_text = ADCONFIG()->get_class_display_name(object_class);
+
+            submenu_new->addAction(action_text,
+                [this, object_class]() {
+                    create(object_class);
+                });
+        }
+
+        addSeparator();
+    }
+
+    if (object.is_class(CLASS_USER)) {
+        addAction(tr("Add to group"), this, &ObjectContextMenu::add_to_group);
+        addAction(tr("Reset password"), this, &ObjectContextMenu::reset_password);
+
+        const bool disabled = object.get_account_option(AccountOption_Disabled);
+        if (disabled) {
+            addAction(tr("Enable account"), this, &ObjectContextMenu::enable_account);
+        } else {
+            addAction(tr("Disable account"), this, &ObjectContextMenu::disable_account);
+        }
+    
+        addSeparator();
+    }
 }
 
 void ObjectContextMenu::setup(QAbstractItemView *view, const int dn_column) {
@@ -130,22 +131,29 @@ void ObjectContextMenu::setup(QAbstractItemView *view, const int dn_column) {
                 return;
             }
 
-            ObjectContextMenu menu(dn, view);
+            ObjectContextMenu menu(view);
+            menu.change_target(dn);
             exec_menu_from_view(&menu, view, pos);
         });
 }
 
-void ObjectContextMenu::delete_object(const AdObject &object) {
-    const QString name = object.get_string(ATTRIBUTE_NAME);
+void ObjectContextMenu::details() const {
+    DetailsDialog::open_for_target(target);
+}
+
+void ObjectContextMenu::delete_object() const {
+    const QString name = dn_get_name(target);
     const QString text = QString(tr("Are you sure you want to delete object \"%1\"?")).arg(name);
     const bool confirmed = confirmation_dialog(text, parentWidget());
 
     if (confirmed) {
-        AD()->object_delete(object.get_dn());
+        AD()->object_delete(target);
     }
 }
 
-void ObjectContextMenu::move(const AdObject &object) {
+void ObjectContextMenu::move() const {
+    const AdObject object = AD()->search_object(target);
+
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
     const QList<QString> possible_superiors = ADCONFIG()->get_possible_superiors(object_classes);
 
@@ -160,15 +168,39 @@ void ObjectContextMenu::move(const AdObject &object) {
     }
 }
 
-void ObjectContextMenu::add_to_group(const AdObject &object) {
+void ObjectContextMenu::add_to_group() const {
     const QList<QString> classes = {CLASS_GROUP};
-    const QString name = dn_get_name(object.get_dn());
+    const QString name = dn_get_name(target);
     const QString title = QString(tr("Add object \"%1\" to group")).arg(name);
     const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, title, parentWidget());
 
     if (selected_objects.size() > 0) {
         for (auto group : selected_objects) {
-            AD()->group_add_member(group, object.get_dn());
+            AD()->group_add_member(group, target);
         }
     }
+}
+
+void ObjectContextMenu::rename() const {
+    auto dialog = new RenameDialog(target, parentWidget());
+    dialog->open();
+}
+
+// TODO: only open this for container-likes?
+void ObjectContextMenu::create(const QString &object_class) const {
+    const auto create_dialog = new CreateDialog(target, object_class, parentWidget());
+    create_dialog->open();
+}
+
+void ObjectContextMenu::reset_password() const {
+    const auto password_dialog = new PasswordDialog(target, parentWidget());
+    password_dialog->open();
+}
+
+void ObjectContextMenu::enable_account() const {
+    AD()->user_set_account_option(target, AccountOption_Disabled, false);
+}
+
+void ObjectContextMenu::disable_account() const {
+    AD()->user_set_account_option(target, AccountOption_Disabled, true);
 }

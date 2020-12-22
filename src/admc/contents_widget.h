@@ -41,11 +41,15 @@ Q_OBJECT
 public:
     ContentsWidget(ObjectModel *model_arg);
 
+signals:
+    void current_changed(const QString &dn);
+
 public slots:
     void on_containers_selected_changed(const QModelIndex &source_index);
 
 private slots:
     void on_header_toggled();
+    void emit_current_changed(const QModelIndex &current, const QModelIndex &);
 
 private:
     QString target_dn;

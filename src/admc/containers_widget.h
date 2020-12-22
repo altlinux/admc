@@ -36,9 +36,11 @@ public:
 
 signals:
     void selected_changed(const QModelIndex &source_index);
+    void current_changed(const QString &dn);
 
 private slots:
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
+    void emit_current_changed(const QModelIndex &current, const QModelIndex &);
 
 private:
     QTreeView *view;

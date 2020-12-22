@@ -23,6 +23,7 @@
 #include "confirmation_dialog.h"
 #include "toggle_widgets_dialog.h"
 #include "status.h"
+#include "object_context_menu.h"
 
 #include <QMenu>
 #include <QLocale>
@@ -33,23 +34,27 @@
 
 MenuBar::MenuBar()
 : QMenuBar() {
-    QMenu *action_menu = addMenu(tr("&Action"));
+    QMenu *file_menu = addMenu(tr("&File"));
 
-    auto connect_action = action_menu->addAction(tr("&Connect"),
+    auto connect_action = file_menu->addAction(tr("&Connect"),
         [this]() {
             STATUS()->start_error_log();
             AD()->connect();
             STATUS()->end_error_log(this);
         });
 
-    find_action = action_menu->addAction(tr("&Find"));
+    find_action = file_menu->addAction(tr("&Find"));
 
-    filter_action = action_menu->addAction(tr("F&ilter contents"));
+    filter_action = file_menu->addAction(tr("F&ilter contents"));
 
-    auto quit_action = action_menu->addAction(tr("&Quit"),
+    auto quit_action = file_menu->addAction(tr("&Quit"),
         []() {
             QApplication::quit();
         });
+
+    action_menu = new ObjectContextMenu(this);
+    action_menu->setTitle(tr("&Action"));
+    addMenu(action_menu);
 
     auto add_bool_setting_action = 
     [](QMenu *menu, QString display_text, BoolSetting type) {
@@ -102,7 +107,7 @@ MenuBar::MenuBar()
     add_language_action(QLocale::Russian);
 
     menus = {
-        action_menu,
+        file_menu,
         view_menu,
         preferences_menu,
     };
@@ -115,9 +120,9 @@ MenuBar::MenuBar()
     // Once connected, everything is enabled and connect is removed
     connect(
         AD(), &AdInterface::connected,
-        [this, action_menu, connect_action]() {
+        [this, file_menu, connect_action]() {
             enable_actions(true);
-            action_menu->removeAction(connect_action);
+            file_menu->removeAction(connect_action);
         });
 
     connect(
@@ -126,6 +131,10 @@ MenuBar::MenuBar()
             auto dialog = new ToggleWidgetsDialog(this);
             dialog->open();
         });
+}
+
+void MenuBar::update_action_menu(const QString &dn) {
+    action_menu->change_target(dn);
 }
 
 void MenuBar::enable_actions(const bool enabled) {

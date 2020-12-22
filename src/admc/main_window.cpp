@@ -165,6 +165,13 @@ void MainWindow::on_connected() {
     connect(
         containers_widget, &ContainersWidget::selected_changed,
         contents_widget, &ContentsWidget::on_containers_selected_changed);
+
+    connect(
+        containers_widget, &ContainersWidget::current_changed,
+        menubar, &MenuBar::update_action_menu);
+    connect(
+        contents_widget, &ContentsWidget::current_changed,
+        menubar, &MenuBar::update_action_menu);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
