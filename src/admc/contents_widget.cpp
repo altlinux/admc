@@ -78,7 +78,7 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg)
     layout->addWidget(header);
     layout->addWidget(view);
 
-    ObjectContextMenu::setup(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    ObjectContextMenu::setup_as_context_menu(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
     const BoolSettingSignal *show_header_signal = SETTINGS()->get_bool_signal(BoolSetting_ShowContentsHeader);
     connect(

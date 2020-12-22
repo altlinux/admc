@@ -79,7 +79,7 @@ FindResults::FindResults()
     layout->addWidget(object_count_label);
     layout->addWidget(view);
 
-    ObjectContextMenu::setup(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    ObjectContextMenu::setup_as_context_menu(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 }
 
 void FindResults::load(const QString &filter, const QString &search_base) {

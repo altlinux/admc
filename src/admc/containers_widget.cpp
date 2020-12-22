@@ -67,7 +67,7 @@ ContainersWidget::ContainersWidget(ObjectModel *model, QWidget *parent)
     layout->setSpacing(0);
     layout->addWidget(view);
 
-    ObjectContextMenu::setup(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    ObjectContextMenu::setup_as_context_menu(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
     connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,

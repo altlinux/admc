@@ -29,15 +29,12 @@
 #include <QMenu>
 
 class QAbstractItemView;
-class AdObject;
-class QAction;
-class QMenu;
 
 class ObjectContextMenu final : public QMenu {
 Q_OBJECT
 
 public:
-    static void setup(QAbstractItemView *view, const int dn_column);
+    static void setup_as_context_menu(QAbstractItemView *view, const int dn_column);
 
     using QMenu::QMenu;
     void change_target(const QString &new_target);
@@ -47,8 +44,6 @@ protected:
 
 private:
     QString target;
-    QAction *add_to_group_action;
-    QMenu *create_menu;
 
     void details() const;
     void delete_object() const;

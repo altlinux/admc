@@ -122,7 +122,7 @@ void ObjectContextMenu::showEvent(QShowEvent *) {
     }
 }
 
-void ObjectContextMenu::setup(QAbstractItemView *view, const int dn_column) {
+void ObjectContextMenu::setup_as_context_menu(QAbstractItemView *view, const int dn_column) {
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         [=](const QPoint pos) {
