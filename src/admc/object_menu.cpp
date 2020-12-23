@@ -40,6 +40,16 @@ void ObjectMenu::change_target(const QString &new_target) {
     target = new_target;
 }
 
+void ObjectMenu::setup_as_menubar_menu(QAbstractItemView *view, const int dn_column) {
+    connect(
+        view->selectionModel(), &QItemSelectionModel::currentChanged,
+        [this, dn_column](const QModelIndex &current, const QModelIndex &) {
+            const QString &dn = get_dn_from_index(current, dn_column);
+
+            change_target(dn);
+        });
+}
+
 void ObjectMenu::showEvent(QShowEvent *) {
     clear();
 

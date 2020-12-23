@@ -85,10 +85,6 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg)
         show_header_signal, &BoolSettingSignal::changed,
         this, &ContentsWidget::on_header_toggled);
     on_header_toggled();
-
-    connect(
-        view->selectionModel(), &QItemSelectionModel::currentChanged,
-        this, &ContentsWidget::emit_current_changed);
 }
 
 void ContentsWidget::on_containers_selected_changed(const QModelIndex &source_index) {
@@ -128,12 +124,6 @@ void ContentsWidget::on_containers_selected_changed(const QModelIndex &source_in
 void ContentsWidget::on_header_toggled() {
     const bool show_header = SETTINGS()->get_bool(BoolSetting_ShowContentsHeader);
     header->setVisible(show_header);
-}
-
-void ContentsWidget::emit_current_changed(const QModelIndex &current, const QModelIndex &) {
-    const QString &dn = get_dn_from_index(current, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-
-    emit current_changed(dn);
 }
 
 void ContentsWidget::showEvent(QShowEvent *event) {

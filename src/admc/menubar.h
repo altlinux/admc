@@ -32,6 +32,7 @@ Q_OBJECT
 
 public:
     QAction *filter_action;
+    ObjectMenu *action_menu;
 
     MenuBar();
 
@@ -42,7 +43,6 @@ signals:
 
 private:
     QList<QMenu *> menus;
-    ObjectMenu *action_menu;
 
     void enable_actions(const bool enabled);
 };

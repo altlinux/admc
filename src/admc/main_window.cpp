@@ -27,8 +27,10 @@
 #include "confirmation_dialog.h"
 #include "policies_widget.h"
 #include "ad_interface.h"
+#include "ad_config.h"
 #include "object_model.h"
 #include "filter_dialog.h"
+#include "object_menu.h"
 
 #include <QApplication>
 #include <QString>
@@ -160,12 +162,8 @@ void MainWindow::on_connected() {
         containers_widget, &ContainersWidget::selected_changed,
         contents_widget, &ContentsWidget::on_containers_selected_changed);
 
-    connect(
-        containers_widget, &ContainersWidget::current_changed,
-        menubar, &MenuBar::update_action_menu);
-    connect(
-        contents_widget, &ContentsWidget::current_changed,
-        menubar, &MenuBar::update_action_menu);
+    menubar->action_menu->setup_as_menubar_menu(containers_widget->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    menubar->action_menu->setup_as_menubar_menu(contents_widget->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

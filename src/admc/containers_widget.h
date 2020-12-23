@@ -32,18 +32,17 @@ class ContainersWidget final : public QWidget {
 Q_OBJECT
 
 public:
+    QTreeView *view;
+    
     ContainersWidget(ObjectModel *model, QWidget *parent);
 
 signals:
     void selected_changed(const QModelIndex &source_index);
-    void current_changed(const QString &dn);
 
 private slots:
     void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
-    void emit_current_changed(const QModelIndex &current, const QModelIndex &);
 
 private:
-    QTreeView *view;
     AdvancedViewProxy *advanced_view_proxy;
     ContainersProxy *containers_proxy;
 

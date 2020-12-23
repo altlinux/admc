@@ -72,9 +72,6 @@ ContainersWidget::ContainersWidget(ObjectModel *model, QWidget *parent)
     connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,
         this, &ContainersWidget::on_selection_changed);
-    connect(
-        view->selectionModel(), &QItemSelectionModel::currentChanged,
-        this, &ContainersWidget::emit_current_changed);
 };
 
 // Transform selected index into source index and pass it on
@@ -91,12 +88,6 @@ void ContainersWidget::on_selection_changed(const QItemSelection &selected, cons
     const QModelIndex source_index = containers_proxy->mapToSource(containers_proxy_index);
 
     emit selected_changed(source_index);
-}
-
-void ContainersWidget::emit_current_changed(const QModelIndex &current, const QModelIndex &) {
-    const QString &dn = get_dn_from_index(current, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-
-    emit current_changed(dn);
 }
 
 void ContainersWidget::showEvent(QShowEvent *event) {

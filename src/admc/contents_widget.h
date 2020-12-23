@@ -39,21 +39,18 @@ class ContentsWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    ContentsWidget(ObjectModel *model_arg);
+    QTreeView *view;
 
-signals:
-    void current_changed(const QString &dn);
+    ContentsWidget(ObjectModel *model_arg);
 
 public slots:
     void on_containers_selected_changed(const QModelIndex &source_index);
 
 private slots:
     void on_header_toggled();
-    void emit_current_changed(const QModelIndex &current, const QModelIndex &);
 
 private:
     QString target_dn;
-    QTreeView *view;
     ObjectModel *model;
     AdvancedViewProxy *advanced_view_proxy;
     QWidget *header;

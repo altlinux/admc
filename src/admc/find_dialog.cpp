@@ -82,7 +82,7 @@ FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
 
     auto menubar = new QMenuBar();
 
-    action_menu = new ObjectMenu(this);
+    auto action_menu = new ObjectMenu(this);
     action_menu->setTitle(tr("&Action"));
     menubar->addMenu(action_menu);
 
@@ -139,9 +139,7 @@ FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
 
     SETTINGS()->connect_checkbox_to_bool_setting(quick_find_check, BoolSetting_QuickFind);
 
-    connect(
-        find_results, &FindResults::current_changed,
-        action_menu, &ObjectMenu::change_target);
+    action_menu->setup_as_menubar_menu(find_results->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 }
 
 void FindDialog::select_custom_search_base() {

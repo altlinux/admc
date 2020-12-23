@@ -49,7 +49,6 @@ private:
     FilterWidget *filter_widget;
     FindResults *find_results;
     QComboBox *search_base_combo;
-    ObjectMenu *action_menu;
 };
 
 #endif /* FIND_DIALOG_H */

@@ -38,6 +38,7 @@ public:
 
     using QMenu::QMenu;
     void change_target(const QString &new_target);
+    void setup_as_menubar_menu(QAbstractItemView *view, const int dn_column);
 
 protected:
     void showEvent(QShowEvent *event);
