@@ -43,8 +43,6 @@ MenuBar::MenuBar()
             STATUS()->end_error_log(this);
         });
 
-    find_action = file_menu->addAction(tr("&Find"));
-
     filter_action = file_menu->addAction(tr("F&ilter contents"));
 
     auto quit_action = file_menu->addAction(tr("&Quit"),

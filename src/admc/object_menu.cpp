@@ -29,6 +29,7 @@
 #include "create_dialog.h"
 #include "details_dialog.h"
 #include "utils.h"
+#include "find_dialog.h"
 
 #include <QPoint>
 #include <QAbstractItemView>
@@ -104,6 +105,8 @@ void ObjectMenu::showEvent(QShowEvent *) {
                 });
         }
 
+        addAction(tr("Find"), this, &ObjectMenu::find);
+
         addSeparator();
     }
 
@@ -117,7 +120,7 @@ void ObjectMenu::showEvent(QShowEvent *) {
         } else {
             addAction(tr("Disable account"), this, &ObjectMenu::disable_account);
         }
-    
+
         addSeparator();
     }
 }
@@ -203,4 +206,9 @@ void ObjectMenu::enable_account() const {
 
 void ObjectMenu::disable_account() const {
     AD()->user_set_account_option(target, AccountOption_Disabled, true);
+}
+
+void ObjectMenu::find() const {
+    auto find_dialog = new FindDialog(target, parentWidget());
+    find_dialog->open();
 }

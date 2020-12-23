@@ -54,6 +54,7 @@ private:
     void reset_password() const;
     void enable_account() const;
     void disable_account() const;
+    void find() const;
 };
 
 #endif /* OBJECT_MENU_H */

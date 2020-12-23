@@ -44,18 +44,20 @@
 #include <QDebug>
 #include <QCheckBox>
 
-FindDialog::FindDialog(QWidget *parent)
+FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
 : QDialog(parent)
 {
+    setAttribute(Qt::WA_DeleteOnClose);
+
     setWindowTitle(tr("Find objects"));
 
     // TODO: technically, entire directory does NOT equal to the domain. In cases where we're browsing multiple domains at the same time (or maybe some other situations as well), we'd need "Entire directory" AND all of domains. Currently search base is set to domain anyway, so would need to start from reworking that.
 
     search_base_combo = new QComboBox();
     search_base_combo->addItem(tr("Entire directory"), AD()->domain_head());
-
-    const QString users_dn = "CN=Users," + AD()->domain_head();
-    search_base_combo->addItem("Users", users_dn);
+    const QString default_search_base_name = dn_get_name(default_search_base);
+    search_base_combo->addItem(default_search_base_name, default_search_base);
+    search_base_combo->setCurrentIndex(1);
 
     auto custom_search_base_button = new QPushButton(tr("Browse"));
     custom_search_base_button->setAutoDefault(false);

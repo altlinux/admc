@@ -37,7 +37,7 @@ class FindDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    FindDialog(QWidget *parent);
+    FindDialog(const QString &default_search_base, QWidget *parent);
 
 private slots:
     void select_custom_search_base();

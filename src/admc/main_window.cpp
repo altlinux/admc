@@ -29,7 +29,6 @@
 #include "ad_interface.h"
 #include "object_model.h"
 #include "filter_dialog.h"
-#include "find_dialog.h"
 
 #include <QApplication>
 #include <QString>
@@ -98,8 +97,6 @@ void MainWindow::on_connected() {
 
     auto filter_dialog = new FilterDialog(this);
 
-    auto find_dialog = new FindDialog(this);
-
     auto object_model = new ObjectModel(this);
 
     auto containers_widget = new ContainersWidget(object_model, this);
@@ -158,9 +155,6 @@ void MainWindow::on_connected() {
     connect(
         menubar->filter_action, &QAction::triggered,
         filter_dialog, &QDialog::open);
-    connect(
-        menubar->find_action, &QAction::triggered,
-        find_dialog, &QDialog::open);
 
     connect(
         containers_widget, &ContainersWidget::selected_changed,
