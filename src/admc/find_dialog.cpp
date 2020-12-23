@@ -28,6 +28,7 @@
 #include "filter_widget/filter_widget.h"
 #include "find_results.h"
 #include "select_dialog.h"
+#include "object_menu.h"
 
 #include <QString>
 #include <QList>
@@ -43,6 +44,7 @@
 #include <QStandardItemModel>
 #include <QDebug>
 #include <QCheckBox>
+#include <QMenuBar>
 
 FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
 : QDialog(parent)
@@ -77,7 +79,13 @@ FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
     auto filter_widget_frame = new QFrame();
     filter_widget_frame->setFrameStyle(QFrame::Raised);
     filter_widget_frame->setFrameShape(QFrame::Box);
-    
+
+    auto menubar = new QMenuBar();
+
+    action_menu = new ObjectMenu(this);
+    action_menu->setTitle(tr("&Action"));
+    menubar->addMenu(action_menu);
+
     {
         auto search_base_layout = new QHBoxLayout();
         search_base_layout->addWidget(search_base_combo);
@@ -102,6 +110,7 @@ FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
     {
         auto layout = new QHBoxLayout();
         setLayout(layout);
+        layout->setMenuBar(menubar);
         layout->addWidget(filter_widget_frame);
         layout->addWidget(find_results);
     }
@@ -129,6 +138,10 @@ FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
         this, &FindDialog::on_filter_changed);
 
     SETTINGS()->connect_checkbox_to_bool_setting(quick_find_check, BoolSetting_QuickFind);
+
+    connect(
+        find_results, &FindResults::current_changed,
+        action_menu, &ObjectMenu::change_target);
 }
 
 void FindDialog::select_custom_search_base() {

@@ -80,6 +80,10 @@ FindResults::FindResults()
     layout->addWidget(view);
 
     ObjectMenu::setup_as_context_menu(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+
+    connect(
+        view->selectionModel(), &QItemSelectionModel::currentChanged,
+        this, &FindResults::emit_current_changed);
 }
 
 void FindResults::load(const QString &filter, const QString &search_base) {
@@ -103,6 +107,12 @@ void FindResults::load(const QString &filter, const QString &search_base) {
 
     const QString label_text = tr("%n object(s)", "", model->rowCount());
     object_count_label->setText(label_text);
+}
+
+void FindResults::emit_current_changed(const QModelIndex &current, const QModelIndex &) {
+    const QString &dn = get_dn_from_index(current, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+
+    emit current_changed(dn);
 }
 
 void FindResults::showEvent(QShowEvent *event) {

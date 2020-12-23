@@ -39,6 +39,12 @@ public:
 
     void load(const QString &filter, const QString &search_base);
 
+signals:
+    void current_changed(const QString &dn);
+
+private slots:
+    void emit_current_changed(const QModelIndex &current, const QModelIndex &);
+
 private:
     QStandardItemModel *model;
     QTreeView *view;
