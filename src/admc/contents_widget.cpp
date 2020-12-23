@@ -87,7 +87,7 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg)
     on_header_toggled();
 }
 
-void ContentsWidget::on_containers_selected_changed(const QModelIndex &source_index) {
+void ContentsWidget::set_target(const QModelIndex &source_index) {
     // NOTE: need to fetchMore() before setRootIndex() otherwise header gets messed up
     model->fetchMore(source_index);
 

@@ -44,7 +44,7 @@ public:
     ContentsWidget(ObjectModel *model_arg);
 
 public slots:
-    void on_containers_selected_changed(const QModelIndex &source_index);
+    void set_target(const QModelIndex &source_index);
 
 private slots:
     void on_header_toggled();

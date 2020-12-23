@@ -70,24 +70,27 @@ ContainersWidget::ContainersWidget(ObjectModel *model, QWidget *parent)
     ObjectMenu::setup_as_context_menu(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
     connect(
-        view->selectionModel(), &QItemSelectionModel::selectionChanged,
-        this, &ContainersWidget::on_selection_changed);
-};
+        view->selectionModel(), &QItemSelectionModel::currentChanged,
+        this, &ContainersWidget::emit_current_changed);
+}
 
-// Transform selected index into source index and pass it on
-// to selected_container_changed() signal
-void ContainersWidget::on_selection_changed(const QItemSelection &selected, const QItemSelection &) {
-    const QList<QModelIndex> indexes = selected.indexes();
-    if (indexes.isEmpty()) {
-        return;
-    }
+void ContainersWidget::change_current(const QModelIndex &source_index) {
+    const QModelIndex containers_proxy_index = containers_proxy->mapFromSource(source_index);
+    const QModelIndex advanced_proxy_index = advanced_view_proxy->mapFromSource(containers_proxy_index);
+    const QModelIndex view_index = advanced_proxy_index;
 
+    view->selectionModel()->setCurrentIndex(view_index, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+}
+
+// Transform view index into source index and pass it on
+// to current_changed() signal
+void ContainersWidget::emit_current_changed(const QModelIndex &current, const QModelIndex &) {
     // Convert view's (advanced view proxy) index to source index
-    const QModelIndex advanced_view_proxy_index = indexes[0];
+    const QModelIndex advanced_view_proxy_index = current;
     const QModelIndex containers_proxy_index = advanced_view_proxy->mapToSource(advanced_view_proxy_index);
     const QModelIndex source_index = containers_proxy->mapToSource(containers_proxy_index);
 
-    emit selected_changed(source_index);
+    emit current_changed(source_index);
 }
 
 void ContainersWidget::showEvent(QShowEvent *event) {

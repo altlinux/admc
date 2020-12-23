@@ -36,11 +36,13 @@ public:
     
     ContainersWidget(ObjectModel *model, QWidget *parent);
 
+    void change_current(const QModelIndex &source_index);
+
 signals:
-    void selected_changed(const QModelIndex &source_index);
+    void current_changed(const QModelIndex &source_index);
 
 private slots:
-    void on_selection_changed(const QItemSelection &selected, const QItemSelection &);
+    void emit_current_changed(const QModelIndex &current, const QModelIndex &);
 
 private:
     AdvancedViewProxy *advanced_view_proxy;

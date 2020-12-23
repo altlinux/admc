@@ -101,9 +101,9 @@ void MainWindow::on_connected() {
 
     auto object_model = new ObjectModel(this);
 
-    auto containers_widget = new ContainersWidget(object_model, this);
+    containers_widget = new ContainersWidget(object_model, this);
 
-    auto contents_widget = new ContentsWidget(object_model);
+    contents_widget = new ContentsWidget(object_model);
 
     auto details_widget_docked_container = DetailsDialog::get_docked_container();
     auto policies_widget = new PoliciesWidget();
@@ -159,8 +159,19 @@ void MainWindow::on_connected() {
         filter_dialog, &QDialog::open);
 
     connect(
-        containers_widget, &ContainersWidget::selected_changed,
-        contents_widget, &ContentsWidget::on_containers_selected_changed);
+        containers_widget, &ContainersWidget::current_changed,
+        this, &MainWindow::on_containers_current_changed);
+    connect(
+        menubar->up_one_level_action, &QAction::triggered,
+        this, &MainWindow::navigate_up);
+    connect(
+        menubar->back_action, &QAction::triggered,
+        this, &MainWindow::navigate_back);
+    connect(
+        menubar->forward_action, &QAction::triggered,
+        this, &MainWindow::navigate_forward);
+
+    update_navigation_actions();
 
     menubar->action_menu->setup_as_menubar_menu(containers_widget->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
     menubar->action_menu->setup_as_menubar_menu(contents_widget->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
@@ -170,4 +181,61 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     SETTINGS()->save_geometry(this, VariantSetting_MainWindowGeometry);
 
     QApplication::quit();
+}
+
+// TODO: need to disable navigation options depending on if they are possible to do or not! then won't need all this validity checking
+void MainWindow::on_containers_current_changed(const QModelIndex &source_index) {
+    // NOTE: this can occur when navigation changes selection, which will trigger a signal which will call this slot. If current target is unchanged, we don't want to erase future target history.
+    if (source_index == targets_current) {
+        return;
+    }
+
+    // Erase future target history because current ovewrites it
+    targets_future.clear();
+    if (targets_current.isValid()) {
+        targets_past.append(targets_current);
+    }
+
+    targets_current = source_index;
+    update_navigation_actions();
+
+    contents_widget->set_target(targets_current);
+}
+
+void MainWindow::navigate_up() {
+    targets_future.clear();
+    targets_past.append(targets_current);
+
+    targets_current = targets_current.parent();
+    update_navigation_actions();
+
+    contents_widget->set_target(targets_current);
+    containers_widget->change_current(targets_current);
+}
+
+void MainWindow::navigate_back() {
+    targets_future.prepend(targets_current);
+
+    targets_current = targets_past.takeLast();
+    update_navigation_actions();
+    
+    contents_widget->set_target(targets_current);
+    containers_widget->change_current(targets_current);
+}
+
+void MainWindow::navigate_forward() {
+    targets_past.append(targets_current);
+
+    targets_current = targets_future.takeFirst();
+    update_navigation_actions();
+
+    contents_widget->set_target(targets_current);
+    containers_widget->change_current(targets_current);
+}
+
+// NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
+void MainWindow::update_navigation_actions() {
+    menubar->up_one_level_action->setEnabled(targets_current.isValid());
+    menubar->back_action->setEnabled(!targets_past.isEmpty());
+    menubar->forward_action->setEnabled(!targets_future.isEmpty());
 }

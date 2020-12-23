@@ -32,6 +32,9 @@ Q_OBJECT
 
 public:
     QAction *filter_action;
+    QAction *up_one_level_action;
+    QAction *back_action;
+    QAction *forward_action;
     ObjectMenu *action_menu;
 
     MenuBar();

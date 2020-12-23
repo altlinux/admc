@@ -54,6 +54,11 @@ MenuBar::MenuBar()
     action_menu->setTitle(tr("&Action"));
     addMenu(action_menu);
 
+    auto navigation_menu = addMenu(tr("&Navigation"));
+    up_one_level_action = navigation_menu->addAction(tr("&Up one level"));
+    back_action = navigation_menu->addAction(tr("&Back"));
+    forward_action = navigation_menu->addAction(tr("&Forward"));
+
     auto add_bool_setting_action = 
     [](QMenu *menu, QString display_text, BoolSetting type) {
         QAction *action = menu->addAction(display_text);
