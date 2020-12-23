@@ -45,6 +45,7 @@ private slots:
     void on_add_button();
     void on_remove_button();
     void on_primary_button();
+    void on_details_button();
     void enable_primary_button_on_valid_selection();
 
 protected:
@@ -57,8 +58,8 @@ protected:
 
 private:
     MembershipTabType type;
-    QStandardItemModel *model = nullptr;
-    QTreeView *view = nullptr;
+    QStandardItemModel *model;
+    QTreeView *view;
     QPushButton *primary_button;
 
     QSet<QString> original_values;
