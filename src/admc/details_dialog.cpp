@@ -129,9 +129,6 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
 
     setAttribute(Qt::WA_DeleteOnClose);
     resize(600, 700);
-
-    tab_widget = new QTabWidget(this);
-
     auto button_box = new QDialogButtonBox();
     apply_button = button_box->addButton(QDialogButtonBox::Apply);
     reset_button = button_box->addButton(QDialogButtonBox::Reset);
@@ -163,13 +160,20 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
         layout->addWidget(title_label);
     }
 
-    layout->addWidget(tab_widget);
-    layout->addWidget(button_box);
-
-    // TODO: is this actually possible and what should happen, currently leaving the dialog blank which might be enough.
     if (object.is_empty()) {
+        auto no_object_label = new QLabel(tr("Object could not be found"));
+        layout->addWidget(no_object_label);    
+        layout->addWidget(button_box);
+
+        button_box->setEnabled(false);
+        
         return;
     }
+
+    tab_widget = new QTabWidget(this);
+
+    layout->addWidget(tab_widget);
+    layout->addWidget(button_box);    
 
     // Create new tabs
     const auto add_tab =
