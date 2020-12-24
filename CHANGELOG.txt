@@ -1,0 +1,48 @@
+admc
+CHANGELOG
+
+-----------------------------------------------------------------------
+ VERSION 0.4.0 (In progress)
+-----------------------------------------------------------------------
+- Added more tabs to Details dialog
+    - general
+    - object
+    - account
+    - address
+    - organization
+    - telephones
+    - profile
+    - members
+    - member of
+    - group policy
+    - links to
+- Added traditional way to display Details dialog as a dialog. Docked mode is still available via options.
+- Improved object menu
+    - added most of the actions
+    - added ability to perform actions on multiple objects
+    - duplicated object menu to menubar for accesibility
+- Improved attributes tab in Details dialog
+    - filtering
+    - attribute type column
+    - specialized editors for all attribute types
+- Added new dialogs
+    - rename dialog
+    - find dialog
+    - create dialog
+    - select dialog (not used directly on it's own, but used by other dialogs and menus)
+- Removed login dialog
+    - new usage scheme is to do kinit before starting the app and then use the app
+    - there's also an option to attempt to connect after app has started
+- Added more customization settings
+    - toggle some widgets
+    - toggle columns of object lists
+    - show non-container objects in containers widget
+- Added Navigation menu which allows navigating through history of container targets.
+- Added Contents widget filtering
+- Reduced lag when working with large amounts of objects (1000s)
+- Implemented displaying busy indicator on cursor for long operations
+- Implemented correct dialog modality for all dialogs
+- Improved icons
+- Enabled sorting of most object lists
+- Added extra columns to some object lists
+- Improved default column widths for object lists
