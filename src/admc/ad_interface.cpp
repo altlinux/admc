@@ -400,9 +400,8 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
         return true;
     } else {
         const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_values_display, values_display);
-        const QString error = default_error();
 
-        error_status_message(context, error, do_msg);
+        error_status_message(context, default_error(), do_msg);
 
         return false;
     }
@@ -439,9 +438,8 @@ bool AdInterface::attribute_add_value(const QString &dn, const QString &attribut
         return true;
     } else {
         const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_display_value, attribute, name);
-        const QString error = default_error();
 
-        error_status_message(context, error, do_msg);
+        error_status_message(context, default_error(), do_msg);
 
         return false;
     }
@@ -464,9 +462,8 @@ bool AdInterface::attribute_delete_value(const QString &dn, const QString &attri
         return true;
     } else {
         const QString context = QString(tr("Failed to delete value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
-        const QString error = default_error();
 
-        error_status_message(context, error, do_msg);
+        error_status_message(context, default_error(), do_msg);
 
         return false;
     }
@@ -505,9 +502,8 @@ bool AdInterface::object_add(const QString &dn, const QString &object_class) {
         return true;
     } else {
         const QString context = QString(tr("Failed to create object \"%1\"")).arg(dn);
-        const QString error = default_error();
 
-        error_status_message(context, error);
+        error_status_message(context, default_error());
 
         return false;
     }
@@ -526,9 +522,8 @@ bool AdInterface::object_delete(const QString &dn) {
         return true;
     } else {
         const QString context = QString(tr("Failed to delete object \"%1\"")).arg(name);
-        const QString error = default_error();
 
-        error_status_message(context, error);
+        error_status_message(context, default_error());
 
         return false;
     }
@@ -555,9 +550,8 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
         return true;
     } else {
         const QString context = QString(tr("Failed to move object \"%1\" to \"%2\"")).arg(object_name, container_name);
-        const QString error = default_error();
 
-        error_status_message(context, error);
+        error_status_message(context, default_error());
 
         return false;
     }
@@ -580,9 +574,8 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
         return true;
     } else {
         const QString context = QString(tr("Failed to rename object \"%1\" to \"%2\"")).arg(old_name, new_name);
-        const QString error = default_error();
 
-        error_status_message(context, error);
+        error_status_message(context, default_error());
 
         return false;
     }
@@ -602,7 +595,7 @@ bool AdInterface::group_add_member(const QString &group_dn, const QString &user_
     } else {
         const QString context = QString(tr("Failed to add user \"%1\" to group \"%2\"")).arg(user_name, group_name);
 
-        error_status_message(context, "");
+        error_status_message(context, default_error());
 
         return false;
     }
@@ -622,7 +615,7 @@ bool AdInterface::group_remove_member(const QString &group_dn, const QString &us
     } else {
         const QString context = QString(tr("Failed to remove user \"%1\" from group \"%2\"")).arg(user_name, group_name);
 
-        error_status_message(context, "");
+        error_status_message(context, default_error());
 
         return false;
     }
@@ -655,7 +648,8 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
         return true;
     } else {
         const QString context = QString(tr("Failed to set scope for group \"%1\" to \"%2\"")).arg(name, scope_string);
-        error_status_message(context, "");
+        
+        error_status_message(context, default_error());
 
         return false;
     }
@@ -680,7 +674,7 @@ bool AdInterface::group_set_type(const QString &dn, GroupType type) {
         return true;
     } else {
         const QString context = QString(tr("Failed to set type for group \"%1\" to \"%2\"")).arg(name, type_string);
-        error_status_message(context, "");
+        error_status_message(context, default_error());
 
         return false;
     }
@@ -712,7 +706,7 @@ bool AdInterface::user_set_primary_group(const QString &group_dn, const QString 
     } else {
         const QString context = QString(tr("Failed to set primary group for user \"%1\" to \"%2\"")).arg(user_name, group_name);
 
-        error_status_message(context, "");
+        error_status_message(context, default_error());
 
         return false;
     }
@@ -848,7 +842,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             }
         }();
 
-        error_status_message(context, "");
+        error_status_message(context, default_error());
 
         return false;
     }
@@ -866,7 +860,7 @@ bool AdInterface::user_unlock(const QString &dn) {
     } else {
         const QString context = QString(tr("Failed to unlock user \"%1\"")).arg(name);
 
-        error_status_message(context, "");
+        error_status_message(context, default_error());
 
         return result;
     }
