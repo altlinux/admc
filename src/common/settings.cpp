@@ -119,8 +119,14 @@ void Settings::save_geometry(QWidget *widget, const VariantSetting geometry_sett
     set_variant(VariantSetting_MainWindowGeometry, QVariant(geometry));
 }
 
+// NOTE: DON'T define "default:" branch, want to be warned and forced to define a default value for all settings
 bool bool_default_value(const BoolSetting setting) {
     switch (setting) {
+        case BoolSetting_AdvancedView: return false;
+        case BoolSetting_ConfirmActions: return true;
+        case BoolSetting_DevMode: return false;
+        case BoolSetting_DetailsIsDocked: return false;
+        case BoolSetting_ShowNonContainersInContainersTree: return false;
         case BoolSetting_LastNameBeforeFirstName: {
             const bool locale_is_russian = (QLocale::system().language() == QLocale::Russian);
             if (locale_is_russian) {
@@ -129,13 +135,15 @@ bool bool_default_value(const BoolSetting setting) {
                 return false;
             }
         }
-        case BoolSetting_ConfirmActions: {
-            return true;
-        }
-        default: {
-            return false;
-        }
+        case BoolSetting_QuickFind: return false;
+        case BoolSetting_ShowStatusLog: return false;
+        case BoolSetting_ShowContainers: return true;
+        case BoolSetting_ShowContentsHeader: return true;
+
+        case BoolSetting_COUNT: {}
     }
+
+    return false;
 }
 
 #define CASE_ENUM_TO_STRING(ENUM) case ENUM: return #ENUM
