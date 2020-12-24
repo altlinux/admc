@@ -23,7 +23,7 @@
 /**
  * This menu is used as a context menu when right clicking
  * on an object and also as a menu in the menubar. Contains
- * actions which are can be performed on the target object.
+ * actions which are can be performed on the target object(s).
  */
 
 #include <QMenu>
@@ -34,17 +34,21 @@ class ObjectMenu final : public QMenu {
 Q_OBJECT
 
 public:
+    // NOTE: views connected to menu must be views of an object model
     static void setup_as_context_menu(QAbstractItemView *view, const int dn_column);
+    void setup_as_menubar_menu(QAbstractItemView *view, const int dn_column);
 
     using QMenu::QMenu;
     void change_target(const QString &new_target);
-    void setup_as_menubar_menu(QAbstractItemView *view, const int dn_column);
 
 protected:
     void showEvent(QShowEvent *event);
 
 private:
-    QString target;
+    QList<QString> targets;
+    QList<QString> target_classes;
+
+    void load_targets(QAbstractItemView *view, const int dn_column);
 
     void details() const;
     void delete_object() const;
@@ -56,6 +60,7 @@ private:
     void enable_account() const;
     void disable_account() const;
     void find() const;
+    QString targets_display_string() const;
 };
 
 #endif /* OBJECT_MENU_H */

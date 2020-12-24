@@ -41,7 +41,7 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg)
     view = new QTreeView(this);
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setSelectionMode(QAbstractItemView::SingleSelection);
+    view->setSelectionMode(QAbstractItemView::ExtendedSelection);
     view->setRootIsDecorated(false);
     view->setItemsExpandable(false);
     view->setExpandsOnDoubleClick(false);

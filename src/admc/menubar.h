@@ -39,8 +39,6 @@ public:
 
     MenuBar();
 
-    void update_action_menu(const QString &dn);
-
 signals:
     void filter_contents_dialog();
 

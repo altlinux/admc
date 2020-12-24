@@ -297,6 +297,9 @@ void load_attributes_row(const QList<QStandardItem *> row, const AdObject &objec
 
     const bool advanced_view_only = object.get_bool(ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY);
     row[0]->setData(advanced_view_only, ObjectModel::Roles::AdvancedViewOnly);
+
+    const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
+    row[0]->setData(object_class, ObjectModel::Roles::RawObjectClass);
 }
 
 QStandardItem *ObjectModel::find_object(const QString &dn) const {

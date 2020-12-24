@@ -136,10 +136,6 @@ MenuBar::MenuBar()
         });
 }
 
-void MenuBar::update_action_menu(const QString &dn) {
-    action_menu->change_target(dn);
-}
-
 void MenuBar::enable_actions(const bool enabled) {
     for (auto menu : menus) {
         const QList<QAction *> actions = menu->actions();

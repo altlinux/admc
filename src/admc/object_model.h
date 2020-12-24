@@ -43,6 +43,7 @@ public:
         CanFetch = Qt::UserRole + 1,
         IsContainer = Qt::UserRole + 2,
         AdvancedViewOnly = Qt::UserRole + 3,
+        RawObjectClass = Qt::UserRole + 4,
     };
 
     ObjectModel(QObject *parent);
