@@ -1,3 +1,4 @@
+
 /*
  * ADMC - AD Management Center
  *
@@ -65,7 +66,7 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
-    view->setSelectionMode(QAbstractItemView::ContiguousSelection);
+    view->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     model = new QStandardItemModel(0, MembersColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model, {

@@ -65,7 +65,7 @@ SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection mu
     view->setSortingEnabled(true);
 
     if (multi_selection == SelectDialogMultiSelection_Yes) {
-        view->setSelectionMode(QAbstractItemView::ContiguousSelection);
+        view->setSelectionMode(QAbstractItemView::ExtendedSelection);
     }
 
     auto filter_class_label = new QLabel(tr("Class: "), this);
