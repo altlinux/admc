@@ -26,10 +26,12 @@
 #include "settings.h"
 #include "utils.h"
 #include "attribute_display.h"
+#include "status.h"
 
 #include <QDebug>
 #include <QMimeData>
 #include <QString>
+#include <QUrl>
 
 // TODO: remove dev mode once developing winds down OR extract it better because it adds a lot of confusion
 
@@ -139,38 +141,73 @@ bool ObjectModel::hasChildren(const QModelIndex &parent = QModelIndex()) const {
 QMimeData *ObjectModel::mimeData(const QModelIndexList &indexes) const {
     QMimeData *data = QStandardItemModel::mimeData(indexes);
 
-    if (indexes.size() > 0) {
-        QModelIndex index = indexes[0];
-        QString dn = get_dn_from_index(index, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    const QList<QUrl> dns =
+    [=]() {
+        QSet<QString> dns_set;
+        for (const QModelIndex index : indexes) {
+            const QString dn = get_dn_from_index(index, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
-        data->setText(dn);
-    }
+            dns_set.insert(dn);
+        }
+
+        const QList<QString> dns_list = dns_set.toList();
+
+        QList<QUrl> out;
+        for (const QString dn : dns_list) {
+            out.append(QUrl(dn));
+        }
+
+        return out;
+    }();
+
+    data->setUrls(dns);
 
     return data;
 }
 
 bool ObjectModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
-    const QString dn = data->text();
-    const QString target_dn = get_dn_from_index(parent, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    if (!data->hasUrls()) {
+        return false;
+    }
 
-    const bool can_drop = AD()->object_can_drop(dn, target_dn);
+    const QList<QUrl> dns = data->urls();
 
-    return can_drop;
+    if (dns.size() == 1) {
+        const QString dn = dns[0].toString();
+        const QString target_dn = get_dn_from_index(parent, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+
+        return AD()->object_can_drop(dn, target_dn);
+    } else {
+        // NOTE: no checks are done for whether multiple items can be dropped, for performance reasons
+        return true;
+    }
 }
 
 bool ObjectModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
-    if (row != -1 || column != -1) {
+    // TODO: implement dropping next to parent (which happens if row or column aren't equal to -1). In that case would need to insert within other rows instead of just appending.
+    const bool dropping_onto_parent = (row == -1 && column == -1);
+    if (!dropping_onto_parent) {
         return true;
     }
 
     if (!canDropMimeData(data, action, row, column, parent)) {
+        return false;
+    }
+
+    if (!data->hasUrls()) {
         return true;
     }
 
-    const QString dn = data->text();
+    const QList<QUrl> dns = data->urls();
     const QString target_dn = get_dn_from_index(parent, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
-    AD()->object_drop(dn, target_dn);
+    STATUS()->start_error_log();
+
+    for (const QUrl dn : dns) {
+        AD()->object_drop(dn.toString(), target_dn);
+    }
+
+    STATUS()->end_error_log(nullptr);
 
     return true;
 }
