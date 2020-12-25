@@ -94,133 +94,139 @@ void ObjectMenu::showEvent(QShowEvent *) {
         return;
     }
 
-    const bool one_object = (targets.size() == 1);
+    auto add_new =
+    [this]() {
+        QMenu *submenu_new = addMenu(tr("New"));
+        static const QList<QString> create_classes = {
+            CLASS_USER,
+            CLASS_COMPUTER,
+            CLASS_OU,
+            CLASS_GROUP,
+        };
+        for (const auto object_class : create_classes) {
+            const QString action_text = ADCONFIG()->get_class_display_name(object_class);
 
-    // Searching object to get some attributes used for menu
-    // construction
-    const AdObject the_object = AD()->search_object(targets[0]);
+            submenu_new->addAction(action_text,
+                [this, object_class]() {
+                    create(object_class);
+                });
+        }
+    };
 
-    // NOTE: the logic for order of actions is that they are
-    // arranged in order of specialization: at the bottom
-    // you have actions that are common and top is for more
-    // specialized actions. This is so that user can get
-    // used to their locations.
+    auto add_find =
+    [this]() {
+        addAction(tr("Find"), this, &ObjectMenu::find);
+    };
 
-    //
-    // Container actions - New, Find
-    //
-    if (one_object) {
+    auto add_add_to_group =
+    [this]() {
+        addAction(tr("Add to group"), this, &ObjectMenu::add_to_group);
+    };
+
+    auto add_reset_password =
+    [this]() {
+        addAction(tr("Reset password"), this, &ObjectMenu::reset_password);
+    };
+
+    auto add_disable_account =
+    [this]() {
+        addAction(tr("Disable account"), this, &ObjectMenu::disable_account);
+    };
+
+    auto add_enable_account =
+    [this]() {
+        addAction(tr("Enable account"), this, &ObjectMenu::enable_account);
+    };
+
+    auto add_move =
+    [this](const bool disabled) {
+        auto action = addAction(tr("Move"), this, &ObjectMenu::move);
+        action->setDisabled(disabled);
+    };
+
+    auto add_delete =
+    [this](const bool disabled) {
+        auto action = addAction(tr("Delete"), this, &ObjectMenu::delete_object);
+        action->setDisabled(disabled);
+    };
+
+    auto add_rename =
+    [this](const bool disabled) {
+        auto action = addAction(tr("Rename"), this, &ObjectMenu::rename);
+        action->setDisabled(disabled);
+    };
+
+    // TODO: multi-object details
+    auto add_details =
+    [this]() {
+        addAction(tr("Details"), this, &ObjectMenu::details);
+    };
+
+    const bool single_object = (targets.size() == 1);
+
+    if (single_object) {
+        const AdObject object = AD()->search_object(targets[0]);
+        const QString object_class = target_classes[0];
+
+        // Get info about object that will determine which
+        // actions are present/enabled
         const bool is_container =
-        [this]() {
+        [this, object_class]() {
             const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
-            for (const QString object_class : container_classes) {
-                if (target_classes.contains(object_class)) {
-                    return true;
-                }
-            }
-            return false;
+
+            return container_classes.contains(object_class);
         }();
 
+        const bool is_user = (object_class == CLASS_USER);
+
+        const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
+        const bool cannot_rename = object.get_system_flag(SystemFlagsBit_CannotRename);
+        const bool cannot_delete = object.get_system_flag(SystemFlagsBit_CannotDelete);
+
+        const bool account_disabled = object.get_account_option(AccountOption_Disabled);
+
+        // Add actions
+
         if (is_container) {
-            QMenu *submenu_new = addMenu(tr("New"));
-            static const QList<QString> create_classes = {
-                CLASS_USER,
-                CLASS_COMPUTER,
-                CLASS_OU,
-                CLASS_GROUP,
-            };
-            for (const auto object_class : create_classes) {
-                const QString action_text = ADCONFIG()->get_class_display_name(object_class);
-
-                submenu_new->addAction(action_text,
-                    [this, object_class]() {
-                        create(object_class);
-                    });
-            }
-
-            addAction(tr("Find"), this, &ObjectMenu::find);
+            add_new();
+            add_find();
 
             addSeparator();
         }
-    }
 
-    //
-    // User actions - Add to group, Reset password,
-    // enable/disable account
-    //
-    const bool all_targets_are_users = (target_classes.contains(CLASS_USER) && target_classes.size() == 1);
-    if (all_targets_are_users) {
-        addAction(tr("Add to group"), this, &ObjectMenu::add_to_group);
+        if (is_user) {
+            add_add_to_group();
+            add_reset_password();
 
-        if (one_object) {
-            addAction(tr("Reset password"), this, &ObjectMenu::reset_password);
-        }
-
-        auto add_disable_action =
-        [this]() {
-            addAction(tr("Disable account"), this, &ObjectMenu::disable_account);
-        };
-        auto add_enable_action =
-        [this]() {
-            addAction(tr("Enable account"), this, &ObjectMenu::enable_account);
-        };
-
-        // If one object, show only one applicable action.
-        // If multiple, show both since so that one or the
-        // other can be applied to all
-        if (one_object) {
-            const bool disabled = the_object.get_account_option(AccountOption_Disabled);
-            if (disabled) {
-                add_enable_action();
+            if (account_disabled) {
+                add_enable_account();
             } else {
-                add_disable_action();
+                add_disable_account();
             }
-        } else {
-            add_enable_action();
-            add_disable_action();
+
+            addSeparator();
         }
+
+        add_move(cannot_move);
+        add_delete(cannot_delete);
+        add_rename(cannot_rename);
 
         addSeparator();
-    }
 
-    //
-    // Move, Delete, Rename
-    //
-    auto move_action = addAction(tr("Move"), this, &ObjectMenu::move);
+        add_details();
+    } else {
+        const bool all_users = (target_classes.contains(CLASS_USER) && target_classes.size() == 1);
 
-    auto delete_action = addAction(tr("Delete"), this, &ObjectMenu::delete_object);
+        if (all_users) {
+            add_add_to_group();
+            add_enable_account();
+            add_disable_account();
 
-    if (one_object) {
-        // NOTE: rename action only available for single object
-        auto rename_action = addAction(tr("Rename"), this, &ObjectMenu::rename);
-
-        // Disable move/rename/delete depending on target
-        // object's system flags
-        const QString target = targets[0];
-
-        const bool cannot_move = the_object.get_system_flag(SystemFlagsBit_CannotMove);
-        if (cannot_move) {
-            move_action->setEnabled(false);
+            addSeparator();
         }
 
-        const bool cannot_rename = the_object.get_system_flag(SystemFlagsBit_CannotRename);
-        if (cannot_rename) {
-            rename_action->setEnabled(false);
-        }
-
-        const bool cannot_delete = the_object.get_system_flag(SystemFlagsBit_CannotDelete);
-        if (cannot_delete) {
-            delete_action->setEnabled(false);
-        }
-    }
-
-    addSeparator();
-
-    // TODO: multi-object details
-    if (one_object) {
-        addSeparator();
-
-        addAction(tr("Details"), this, &ObjectMenu::details);
+        add_move(false);
+        add_delete(false);
     }
 }
 
