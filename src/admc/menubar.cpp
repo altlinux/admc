@@ -24,6 +24,7 @@
 #include "toggle_widgets_dialog.h"
 #include "status.h"
 #include "object_menu.h"
+#include "config.h"
 
 #include <QMenu>
 #include <QLocale>
@@ -31,6 +32,10 @@
 #include <QActionGroup>
 #include <QApplication>
 #include <QDebug>
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QDialogButtonBox>
+#include <QPushButton>
 
 MenuBar::MenuBar()
 : QMenuBar() {
@@ -109,16 +114,29 @@ MenuBar::MenuBar()
     add_language_action(QLocale::English);
     add_language_action(QLocale::Russian);
 
+    QMenu *help_menu = addMenu(tr("&Help"));
+    auto manual_action = help_menu->addAction(tr("&Manual"), this, &MenuBar::manual);
+    auto about_action = help_menu->addAction(tr("&About ADMC"), this, &MenuBar::about);
+
     menus = {
         file_menu,
         view_menu,
         preferences_menu,
+        help_menu,
+    };
+
+    const QList<QAction *> actions_enabled_when_offline = {
+        connect_action,
+        quit_action,
+        manual_action,
+        about_action,
     };
 
     // Offline, only "connect" and "exit" are enabled
     enable_actions(false);
-    connect_action->setEnabled(true);
-    quit_action->setEnabled(true);
+    for (auto action : actions_enabled_when_offline) {
+        action->setEnabled(true);
+    }
 
     // Once connected, everything is enabled and connect is removed
     connect(
@@ -134,6 +152,55 @@ MenuBar::MenuBar()
             auto dialog = new ToggleWidgetsDialog(this);
             dialog->open();
         });
+}
+
+void MenuBar::manual() {
+    auto dialog = new QDialog(this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+
+    auto label = new QLabel("Under construction");
+
+    auto button_box = new QDialogButtonBox();
+    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
+
+    auto layout = new QVBoxLayout();
+    dialog->setLayout(layout);
+    layout->addWidget(label);
+    layout->addWidget(button_box);
+
+    connect(
+        ok_button, &QPushButton::clicked,
+        dialog, &QDialog::accept);
+
+    dialog->open();
+}
+
+void MenuBar::about() {
+    auto dialog = new QDialog(this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+
+    auto version_label = new QLabel(QString(tr("Version %1")).arg(ADMC_VERSION));
+    version_label->setAlignment(Qt::AlignHCenter);
+
+    auto description_label = new QLabel(tr("ADMC is a tool for Active Directory administration."));
+
+    auto license_label = new QLabel(tr("Copyright (C) 2020 BaseALT Ltd."));
+
+    auto button_box = new QDialogButtonBox();
+    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
+
+    auto layout = new QVBoxLayout();
+    dialog->setLayout(layout);
+    layout->addWidget(version_label);
+    layout->addWidget(description_label);
+    layout->addWidget(license_label);
+    layout->addWidget(button_box);
+
+    connect(
+        ok_button, &QPushButton::clicked,
+        dialog, &QDialog::accept);
+
+    dialog->open();
 }
 
 void MenuBar::enable_actions(const bool enabled) {

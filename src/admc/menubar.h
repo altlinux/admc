@@ -42,6 +42,10 @@ public:
 signals:
     void filter_contents_dialog();
 
+private slots:
+    void manual();
+    void about();
+
 private:
     QList<QMenu *> menus;
 
