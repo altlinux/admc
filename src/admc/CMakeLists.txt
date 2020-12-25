@@ -45,6 +45,7 @@ add_executable(admc
     rename_policy_dialog.cpp
     create_dialog.cpp
     find_dialog.cpp
+    move_dialog.cpp
     policies_widget.cpp
     gplink.cpp
 

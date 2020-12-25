@@ -28,6 +28,7 @@
 #include "password_dialog.h"
 #include "create_dialog.h"
 #include "details_dialog.h"
+#include "move_dialog.h"
 #include "utils.h"
 #include "find_dialog.h"
 #include "status.h"
@@ -253,23 +254,8 @@ void ObjectMenu::delete_object() const {
 }
 
 void ObjectMenu::move() const {
-    // NOTE: object classes have "possible superiors" in schema which technically means that certain objects have certain sets of possible move targets. Going the simple route and just showing all objects that show up in container tree instead.
-    const QList<QString> move_targets = ADCONFIG()->get_filter_containers();
-
-    const QString title = QString(tr("Move %1")).arg(targets_display_string());
-    const QList<QString> selected_objects = SelectDialog::open(move_targets, SelectDialogMultiSelection_No, title, parentWidget());
-
-    if (selected_objects.size() == 1) {
-        const QString container = selected_objects[0];
-
-        STATUS()->start_error_log();
-
-        for (const QString target : targets) {
-            AD()->object_move(target, container);
-        }
-
-        STATUS()->end_error_log(parentWidget());
-    }
+    auto move_dialog = new MoveDialog(targets, parentWidget());
+    move_dialog->open();
 }
 
 void ObjectMenu::add_to_group() const {

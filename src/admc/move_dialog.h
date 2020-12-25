@@ -17,36 +17,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SELECT_DIALOG_H
-#define SELECT_DIALOG_H
+#ifndef MOVE_DIALOG_H
+#define MOVE_DIALOG_H
+
+/**
+ * Displays a tree of container objects, similarly to
+ * Containers widget. Once user selects a container and
+ * accepts the dialog, targets will be moved to selected
+ * container.
+ */
 
 #include <QDialog>
-#include <QString>
-#include <QList>
 
 class QTreeView;
 
-enum SelectDialogMultiSelection {
-    SelectDialogMultiSelection_Yes,
-    SelectDialogMultiSelection_No
-};
-
-class SelectDialog final : public QDialog {
+class MoveDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    static QList<QString> open(QList<QString> classes, SelectDialogMultiSelection multi_selection, const QString &title, QWidget *parent);
+    MoveDialog(const QList<QString> targets_arg, QWidget *parent);
 
 private slots:
     void accept();
 
 private:
     QTreeView *view;
-    QList<QString> selected_objects;
-
-    SelectDialog(QList<QString> classes, SelectDialogMultiSelection multi_selection, QWidget *parent);
+    QList<QString> targets;
 
     void showEvent(QShowEvent *event);
+
 };
 
-#endif /* SELECT_DIALOG_H */
+#endif /* MOVE_DIALOG_H */
