@@ -872,14 +872,17 @@ enum DropType {
     DropType_None
 };
 
-// Determine what kind of drop type is dropping this object onto target
-// If drop type is none, then can't drop this object on this target
+// Determine what kind of drop type is dropping this object
+// onto target. If drop type is none, then can't drop this
+// object on this target.
 DropType get_drop_type(const QString &dn, const QString &target_dn) {
     if (dn == target_dn) {
         return DropType_None;
     }
 
-    const AdObject dropped = AD()->search_object(dn, {ATTRIBUTE_OBJECT_CLASS});
+    // TODO: doing searches everytime this is called and this will get called while item is getting dragged over potential targets. Each time a new target is hovered over a request to server is made, which seems ... bad? Watch out for possible bad/laggy performance, especially on slow connections. A fix to this would be MESSY though, involving storing system flags/object classes in model and passing them all the way to here.
+    const AdObject dropped = AD()->search_object(dn, {ATTRIBUTE_OBJECT_CLASS, ATTRIBUTE_SYSTEM_FLAGS});
+
     const AdObject target = AD()->search_object(target_dn, {ATTRIBUTE_OBJECT_CLASS});
 
     const bool dropped_is_user = dropped.is_class(CLASS_USER);
@@ -888,10 +891,12 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
     if (dropped_is_user && target_is_group) {
         return DropType_AddToGroup;
     } else {
+        const bool system_flags_forbid_move = dropped.get_system_flag(SystemFlagsBit_CannotMove);
+
         const QList<QString> dropped_classes = dropped.get_strings(ATTRIBUTE_OBJECT_CLASS);
         const QList<QString> dropped_superiors = ADCONFIG()->get_possible_superiors(dropped_classes);
 
-        const bool can_move =
+        const bool target_is_valid_superior =
         [target, dropped_superiors]() {
             const QList<QString> target_classes = target.get_strings(ATTRIBUTE_OBJECT_CLASS);
             for (const auto object_class : dropped_superiors) {
@@ -903,7 +908,9 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
             return false;
         }();
 
-        if (can_move) {
+        if (system_flags_forbid_move) {
+            return DropType_None;
+        } else if (target_is_valid_superior) {
             return DropType_Move;
         } else {
             return DropType_None;
