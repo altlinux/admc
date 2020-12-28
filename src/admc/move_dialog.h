@@ -22,9 +22,7 @@
 
 /**
  * Displays a tree of container objects, similarly to
- * Containers widget. Once user selects a container and
- * accepts the dialog, targets will be moved to selected
- * container.
+ * Containers widget. User can selected a container.
  */
 
 #include <QDialog>
@@ -35,16 +33,12 @@ class MoveDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    MoveDialog(const QList<QString> targets_arg, QWidget *parent);
+    MoveDialog(QWidget *parent);
 
-private slots:
-    void accept();
+    QString get_selected() const;
 
 private:
     QTreeView *view;
-    QList<QString> targets;
-
-    void showEvent(QShowEvent *event);
 
 };
 

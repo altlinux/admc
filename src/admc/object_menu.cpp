@@ -254,8 +254,23 @@ void ObjectMenu::delete_object() const {
 }
 
 void ObjectMenu::move() const {
-    auto move_dialog = new MoveDialog(targets, parentWidget());
-    move_dialog->open();
+    auto dialog = new MoveDialog(parentWidget());
+
+    connect(
+        dialog, &MoveDialog::accepted,
+        [this, dialog]() {
+            const QString selected = dialog->get_selected();
+
+            STATUS()->start_error_log();
+
+            for (const QString target : targets) {
+                AD()->object_move(target, selected);
+            }
+
+            STATUS()->end_error_log(parentWidget());
+        });
+
+    dialog->open();
 }
 
 void ObjectMenu::add_to_group() const {

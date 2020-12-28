@@ -22,22 +22,19 @@
 #include "object_model.h"
 #include "containers_proxy.h"
 #include "advanced_view_proxy.h"
-#include "ad_interface.h"
+#include "utils.h"
 #include "ad_config.h"
 #include "ad_defines.h"
-#include "utils.h"
-#include "status.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
 #include <QDialogButtonBox>
 #include <QPushButton>
+#include <QHeaderView>
 
-MoveDialog::MoveDialog(const QList<QString> targets_arg, QWidget *parent)
+MoveDialog::MoveDialog(QWidget *parent)
 : QDialog(parent)
 {
-    targets = targets_arg;
-    
     setAttribute(Qt::WA_DeleteOnClose);
     
     resize(400, 500);
@@ -50,6 +47,7 @@ MoveDialog::MoveDialog(const QList<QString> targets_arg, QWidget *parent)
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
     view->sortByColumn(ADCONFIG()->get_column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
+    view->setHeaderHidden(true);
 
     auto advanced_view_proxy = new AdvancedViewProxy(this);
     auto containers_proxy = new ContainersProxy(this);
@@ -58,11 +56,17 @@ MoveDialog::MoveDialog(const QList<QString> targets_arg, QWidget *parent)
     advanced_view_proxy->setSourceModel(containers_proxy);
     view->setModel(advanced_view_proxy);
 
-    setup_column_toggle_menu(view, model, {ADCONFIG()->get_column_index(ATTRIBUTE_NAME)});
-
     auto buttonbox = new QDialogButtonBox();
     auto ok_button = buttonbox->addButton(QDialogButtonBox::Ok);
     buttonbox->addButton(QDialogButtonBox::Cancel);
+
+    // Hide all columns except name column
+    // TODO: this seems like it will end up getting duplicated somewhere so make a util f-n like
+    QHeaderView *header = view->header();
+    for (int i = 0; i < header->count(); i++) {
+        header->setSectionHidden(i, true);
+    }
+    header->setSectionHidden(ADCONFIG()->get_column_index(ATTRIBUTE_NAME), false);
 
     connect(
         buttonbox, &QDialogButtonBox::accepted,
@@ -79,25 +83,9 @@ MoveDialog::MoveDialog(const QList<QString> targets_arg, QWidget *parent)
     layout->addWidget(buttonbox);
 }
 
-void MoveDialog::accept() {
-    const QModelIndex selected = view->selectionModel()->currentIndex();
-    const QString container = get_dn_from_index(selected, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+QString MoveDialog::get_selected() const {
+    const QModelIndex selected_index = view->selectionModel()->currentIndex();
+    const QString selected = get_dn_from_index(selected_index, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
-    STATUS()->start_error_log();
-
-    for (const QString target : targets) {
-        AD()->object_move(target, container);
-    }
-
-    STATUS()->end_error_log(parentWidget());
-
-    QDialog::accept();
-}
-
-void MoveDialog::showEvent(QShowEvent *event) {
-    resize_columns(view,
-    {
-        {ADCONFIG()->get_column_index(ATTRIBUTE_NAME), 0.5},
-        {ADCONFIG()->get_column_index(ATTRIBUTE_DN), 0.5},
-    });
+    return selected;
 }
