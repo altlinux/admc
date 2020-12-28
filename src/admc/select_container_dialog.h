@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MOVE_DIALOG_H
-#define MOVE_DIALOG_H
+#ifndef SELECT_CONTAINER_DIALOG_H
+#define SELECT_CONTAINER_DIALOG_H
 
 /**
  * Displays a tree of container objects, similarly to
@@ -29,11 +29,11 @@
 
 class QTreeView;
 
-class MoveDialog final : public QDialog {
+class SelectContainerDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    MoveDialog(QWidget *parent);
+    SelectContainerDialog(QWidget *parent);
 
     QString get_selected() const;
 
@@ -42,4 +42,4 @@ private:
 
 };
 
-#endif /* MOVE_DIALOG_H */
+#endif /* SELECT_CONTAINER_DIALOG_H */

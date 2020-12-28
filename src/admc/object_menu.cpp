@@ -28,7 +28,7 @@
 #include "password_dialog.h"
 #include "create_dialog.h"
 #include "details_dialog.h"
-#include "move_dialog.h"
+#include "select_container_dialog.h"
 #include "utils.h"
 #include "find_dialog.h"
 #include "status.h"
@@ -254,10 +254,10 @@ void ObjectMenu::delete_object() const {
 }
 
 void ObjectMenu::move() const {
-    auto dialog = new MoveDialog(parentWidget());
+    auto dialog = new SelectContainerDialog(parentWidget());
 
     connect(
-        dialog, &MoveDialog::accepted,
+        dialog, &SelectContainerDialog::accepted,
         [this, dialog]() {
             const QString selected = dialog->get_selected();
 

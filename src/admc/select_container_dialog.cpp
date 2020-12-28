@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "move_dialog.h"
+#include "select_container_dialog.h"
 
 #include "object_model.h"
 #include "containers_proxy.h"
@@ -32,7 +32,7 @@
 #include <QPushButton>
 #include <QHeaderView>
 
-MoveDialog::MoveDialog(QWidget *parent)
+SelectContainerDialog::SelectContainerDialog(QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -83,7 +83,7 @@ MoveDialog::MoveDialog(QWidget *parent)
     layout->addWidget(buttonbox);
 }
 
-QString MoveDialog::get_selected() const {
+QString SelectContainerDialog::get_selected() const {
     const QModelIndex selected_index = view->selectionModel()->currentIndex();
     const QString selected = get_dn_from_index(selected_index, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
