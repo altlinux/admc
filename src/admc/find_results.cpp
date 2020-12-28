@@ -42,6 +42,9 @@ FindResults::FindResults()
 {   
     model = new QStandardItemModel(ADCONFIG()->get_columns().count(), ADCONFIG()->get_column_index(ATTRIBUTE_DN), this);
 
+    // NOTE: need to do this, otherwise empty rows are selectable (for some reason)
+    model->clear();
+
     const QList<QString> header_labels = object_model_header_labels();
     model->setHorizontalHeaderLabels(header_labels);
 
