@@ -27,7 +27,7 @@
 #include "filter.h"
 #include "filter_widget/filter_widget.h"
 #include "find_results.h"
-#include "select_dialog.h"
+#include "select_container_dialog.h"
 #include "object_menu.h"
 
 #include <QString>
@@ -143,20 +143,22 @@ FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
 }
 
 void FindDialog::select_custom_search_base() {
-    // TODO: maybe need some other classes?
-    const QString title = QString(tr("Select search base"));
-    const QList<QString> selecteds = SelectDialog::open({CLASS_CONTAINER, CLASS_OU}, SelectDialogMultiSelection_Yes, title, this);
+    auto dialog = new SelectContainerDialog(parentWidget());
 
-    if (!selecteds.isEmpty()) {
-        const QString selected = selecteds[0];
-        const QString name = dn_get_name(selected);
+    connect(
+        dialog, &SelectContainerDialog::accepted,
+        [this, dialog]() {
+            const QString selected = dialog->get_selected();
+            const QString name = dn_get_name(selected);
 
-        search_base_combo->addItem(name, selected);
+            search_base_combo->addItem(name, selected);
 
-        // Select newly added search base in combobox
-        const int new_base_index = search_base_combo->count() - 1;
-        search_base_combo->setCurrentIndex(new_base_index);
-    }
+            // Select newly added search base in combobox
+            const int new_base_index = search_base_combo->count() - 1;
+            search_base_combo->setCurrentIndex(new_base_index);
+        });
+
+    dialog->open();
 }
 
 void FindDialog::on_filter_changed() {
