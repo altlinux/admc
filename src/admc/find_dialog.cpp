@@ -144,6 +144,7 @@ FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
 
 void FindDialog::select_custom_search_base() {
     auto dialog = new SelectContainerDialog(parentWidget());
+    dialog->setWindowTitle(tr("Select custom search base"));
 
     connect(
         dialog, &SelectContainerDialog::accepted,

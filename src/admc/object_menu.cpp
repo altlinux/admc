@@ -256,6 +256,9 @@ void ObjectMenu::delete_object() const {
 void ObjectMenu::move() const {
     auto dialog = new SelectContainerDialog(parentWidget());
 
+    const QString title = QString(tr("Move %1")).arg(targets_display_string());
+    dialog->setWindowTitle(title);
+
     connect(
         dialog, &SelectContainerDialog::accepted,
         [this, dialog]() {
