@@ -40,6 +40,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     resize(400, 500);
 
     auto model = new ObjectModel(this);
+    model->load_head_object();
 
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
