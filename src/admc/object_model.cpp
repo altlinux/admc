@@ -41,8 +41,6 @@ ObjectModel::ObjectModel(QObject *parent)
     const QList<QString> header_labels = object_model_header_labels();
     setHorizontalHeaderLabels(header_labels);
 
-    reset();
-
     connect(
         AD(), &AdInterface::object_added,
         this, &ObjectModel::on_object_added);
@@ -271,7 +269,7 @@ void ObjectModel::on_object_changed(const QString &dn) {
 void ObjectModel::on_filter_changed(const QString &filter) {
     current_filter = filter;
 
-    reset();    
+    load_head_object();    
 }
 
 void load_attributes_row(const QList<QStandardItem *> row, const AdObject &object) {
@@ -356,7 +354,7 @@ QStandardItem *ObjectModel::find_object(const QString &dn) const {
     }
 }
 
-void ObjectModel::reset() {
+void ObjectModel::load_head_object() {
     removeRows(0, rowCount());
 
     // Make row for head object

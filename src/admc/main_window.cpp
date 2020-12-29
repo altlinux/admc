@@ -100,6 +100,7 @@ void MainWindow::on_connected() {
     auto filter_dialog = new FilterDialog(this);
 
     auto object_model = new ObjectModel(this);
+    object_model->load_head_object();
 
     containers_widget = new ContainersWidget(object_model, this);
 
