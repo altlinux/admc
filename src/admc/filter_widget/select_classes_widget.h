@@ -37,7 +37,7 @@ class SelectClassesWidget final : public QWidget {
 Q_OBJECT
     
 public:
-    SelectClassesWidget();
+    SelectClassesWidget(const QList<QString> classes);
 
     // Return a filter that accepts only selected classes
     QString get_filter() const;

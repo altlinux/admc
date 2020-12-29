@@ -29,10 +29,10 @@
 #include <QListWidget>
 #include <QDebug>
 
-FilterWidgetNormalTab::FilterWidgetNormalTab()
+FilterWidgetNormalTab::FilterWidgetNormalTab(const QList<QString> classes)
 : FilterWidgetTab()
 {
-    select_classes = new SelectClassesWidget();
+    select_classes = new SelectClassesWidget(classes);
 
     filter_builder = new FilterBuilder();
 

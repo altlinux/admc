@@ -60,9 +60,10 @@ QList<QString> SelectDialog::open(QList<QString> classes, SelectDialogMultiSelec
     return dialog.get_selected();
 }
 
-SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection multi_selection_arg, QWidget *parent)
+SelectDialog::SelectDialog(QList<QString> classes_arg, SelectDialogMultiSelection multi_selection_arg, QWidget *parent)
 : QDialog(parent)
 {
+    classes = classes_arg;
     multi_selection = multi_selection_arg;
 
     resize(400, 300);
@@ -144,7 +145,7 @@ void SelectDialog::accept() {
 }
 
 void SelectDialog::open_find_dialog() {
-    auto dialog = new FindDialog(FindDialogType_Select, AD()->domain_head(), this);
+    auto dialog = new FindDialog(FindDialogType_Select, classes, AD()->domain_head(), this);
 
     connect(
         dialog, &FindDialog::accepted,

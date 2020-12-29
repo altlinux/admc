@@ -47,7 +47,7 @@
 #include <QMenuBar>
 #include <QDialogButtonBox>
 
-FindDialog::FindDialog(const FindDialogType type_arg, const QString &default_search_base, QWidget *parent)
+FindDialog::FindDialog(const FindDialogType type_arg, const QList<QString> classes, const QString &default_search_base, QWidget *parent)
 : QDialog(parent)
 {
     type = type_arg;
@@ -67,7 +67,7 @@ FindDialog::FindDialog(const FindDialogType type_arg, const QString &default_sea
     auto custom_search_base_button = new QPushButton(tr("Browse"));
     custom_search_base_button->setAutoDefault(false);
 
-    filter_widget = new FilterWidget();
+    filter_widget = new FilterWidget(classes);
 
     auto quick_find_check = new QCheckBox(tr("Quick find"));
 

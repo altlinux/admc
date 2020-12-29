@@ -48,9 +48,10 @@ private slots:
 private:
     QTreeView *view;
     ObjectModel *model;
+    QList<QString> classes;
     SelectDialogMultiSelection multi_selection;
 
-    SelectDialog(QList<QString> classes, SelectDialogMultiSelection multi_selection, QWidget *parent);
+    SelectDialog(QList<QString> classes_arg, SelectDialogMultiSelection multi_selection, QWidget *parent);
 
     void showEvent(QShowEvent *event);
 };

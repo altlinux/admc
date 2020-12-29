@@ -41,7 +41,7 @@ class FilterWidgetNormalTab final : public FilterWidgetTab {
 Q_OBJECT
 
 public:
-    FilterWidgetNormalTab();
+    FilterWidgetNormalTab(const QList<QString> classes);
 
     QString get_filter() const;
 

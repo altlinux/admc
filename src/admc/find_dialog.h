@@ -45,7 +45,7 @@ class FindDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    FindDialog(const FindDialogType type_arg, const QString &default_search_base, QWidget *parent);
+    FindDialog(const FindDialogType type_arg, const QList<QString> classes, const QString &default_search_base, QWidget *parent);
 
     QList<QList<QStandardItem *>> get_selected_rows() const;
 
