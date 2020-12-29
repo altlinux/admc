@@ -31,6 +31,7 @@
 class QLineEdit;
 class QDialog;
 class QCheckBox;
+class QPushButton;
 
 class SelectClassesWidget final : public QWidget {
 Q_OBJECT
@@ -43,11 +44,15 @@ public:
 
 private slots:
     void on_dialog_accepted();
+    void select_all();
+    void clear_selection();
+    void on_check_changed();
 
 private:
     QLineEdit *classes_display;
     QDialog *dialog;
     QHash<QString, QCheckBox *> dialog_checks;
+    QPushButton *ok_button;
 
     QList<QString> get_selected_classes() const;
 };
