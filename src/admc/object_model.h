@@ -48,6 +48,9 @@ public:
 
     ObjectModel(QObject *parent);
 
+    // Clears model and loads head object of current domain
+    void load_head_object();
+
     bool canFetchMore(const QModelIndex &parent) const;
     void fetchMore(const QModelIndex &parent);
     bool hasChildren(const QModelIndex &parent) const override;
@@ -68,7 +71,6 @@ private:
     QString current_filter;
 
     QStandardItem *find_object(const QString &dn) const;
-    void reset();
 };
 
 void load_attributes_row(const QList<QStandardItem *> row, const AdObject &object);

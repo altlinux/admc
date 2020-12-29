@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(admc VERSION 0.1.0)
+project(admc VERSION 0.3.1)
 
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
