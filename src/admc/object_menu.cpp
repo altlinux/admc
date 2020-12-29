@@ -338,7 +338,7 @@ void ObjectMenu::disable_account() const {
 
 void ObjectMenu::find() const {
     if (targets.size() == 1) {
-        auto find_dialog = new FindDialog(targets[0], parentWidget());
+        auto find_dialog = new FindDialog(FindDialogType_Normal, targets[0], parentWidget());
         find_dialog->open();
     }
 }

@@ -33,12 +33,21 @@ class FilterWidget;
 class FindResults;
 class QComboBox;
 class ObjectMenu;
+class QStandardItem;
+template <typename T> class QList;
+
+enum FindDialogType {
+    FindDialogType_Normal,
+    FindDialogType_Select,
+};
 
 class FindDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    FindDialog(const QString &default_search_base, QWidget *parent);
+    FindDialog(const FindDialogType type_arg, const QString &default_search_base, QWidget *parent);
+
+    QList<QList<QStandardItem *>> get_selected_rows() const;
 
 private slots:
     void select_custom_search_base();
@@ -46,6 +55,7 @@ private slots:
     void find();
 
 private:
+    FindDialogType type;
     FilterWidget *filter_widget;
     FindResults *find_results;
     QComboBox *search_base_combo;

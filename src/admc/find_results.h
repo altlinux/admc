@@ -26,10 +26,13 @@
  */
 
 #include <QWidget>
+#include "find_dialog.h"
 
 class QTreeView;
 class QLabel;
 class QStandardItemModel;
+class QStandardItem;
+template <typename T> class QList;
 
 class FindResults final : public QWidget {
 Q_OBJECT
@@ -37,9 +40,12 @@ Q_OBJECT
 public:
     QTreeView *view;
     
-    FindResults();
+    FindResults(const FindDialogType type);
 
     void load(const QString &filter, const QString &search_base);
+
+    // Returns a copy of item's rows, so these items need to become owned by something or deleted
+    QList<QList<QStandardItem *>> get_selected_rows() const;
 
 private:
     QStandardItemModel *model;

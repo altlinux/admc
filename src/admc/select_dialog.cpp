@@ -26,6 +26,8 @@
 #include "containers_widget.h"
 #include "utils.h"
 #include "filter.h"
+#include "object_model.h"
+#include "find_dialog.h"
 
 #include <QLineEdit>
 #include <QGridLayout>
@@ -36,7 +38,10 @@
 #include <QPushButton>
 #include <QItemSelectionModel>
 #include <QStandardItemModel>
-#include <algorithm>
+#include <QDialogButtonBox>
+#include <QMessageBox>
+
+// TODO: switch to object model since will be copying columns from find dialog(results)
 
 enum SelectDialogColumn {
     SelectDialogColumn_Name,
@@ -52,173 +57,129 @@ QList<QString> SelectDialog::open(QList<QString> classes, SelectDialogMultiSelec
     dialog.setWindowTitle(title);
     dialog.exec();
 
-    return dialog.selected_objects;
+    return dialog.get_selected();
 }
 
-SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection multi_selection, QWidget *parent)
+SelectDialog::SelectDialog(QList<QString> classes, SelectDialogMultiSelection multi_selection_arg, QWidget *parent)
 : QDialog(parent)
 {
-    resize(600, 700);
+    multi_selection = multi_selection_arg;
+
+    resize(400, 300);
+
+    model = new ObjectModel(this);
+
+    const QList<QString> header_labels = object_model_header_labels();
+    model->setHorizontalHeaderLabels(header_labels);
 
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setSortingEnabled(true);
+    view->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    view->sortByColumn(SelectDialogColumn_Name, Qt::AscendingOrder);
 
-    if (multi_selection == SelectDialogMultiSelection_Yes) {
-        view->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    }
+    view->setModel(model);
 
-    auto filter_class_label = new QLabel(tr("Class: "), this);
-    auto filter_class_combo = new QComboBox(this);
+    auto add_button = new QPushButton(tr("Add"));
+    auto remove_button = new QPushButton(tr("Remove"));
 
-    const auto filter_name_label = new QLabel(tr("Name: "), this);
-    auto filter_name_edit = new QLineEdit(this);
+    auto button_box = new QDialogButtonBox();
+    button_box->addButton(QDialogButtonBox::Ok);
+    button_box->addButton(QDialogButtonBox::Cancel);
 
-    const auto select_button = new QPushButton(tr("Select"), this);
-    const auto cancel_button = new QPushButton(tr("Cancel"), this);
+    auto list_buttons_layout = new QHBoxLayout();
+    list_buttons_layout->addWidget(add_button);
+    list_buttons_layout->addWidget(remove_button);
+    list_buttons_layout->addStretch(1);
 
-    const auto layout = new QGridLayout();
+    auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->addWidget(filter_class_label, 1, 0, Qt::AlignRight);
-    layout->addWidget(filter_class_combo, 1, 1, 1, 2);
-    layout->addWidget(filter_name_label, 2, 0, Qt::AlignRight);
-    layout->addWidget(filter_name_edit, 2, 1, 1, 2);
-    layout->addWidget(view, 3, 0, 1, 3);
-    layout->addWidget(cancel_button, 4, 0, Qt::AlignLeft);
-    layout->addWidget(select_button, 4, 2, Qt::AlignRight);
-
-    auto proxy_name = new QSortFilterProxyModel(this);
-    proxy_name->setFilterKeyColumn(SelectDialogColumn_Name);
-    proxy_name->setRecursiveFilteringEnabled(true);
-    
-    auto proxy_class = new QSortFilterProxyModel(this);
-    proxy_class->setFilterKeyColumn(SelectDialogColumn_Class);
-    proxy_class->setRecursiveFilteringEnabled(true);
-
-    // Load model
-    auto model = new QStandardItemModel(0, SelectDialogColumn_COUNT, this);
-    set_horizontal_header_labels_from_map(model, {
-        {SelectDialogColumn_Name, tr("Name")},
-        {SelectDialogColumn_Parent, tr("Parent")},
-        {SelectDialogColumn_Class, tr("Class")},
-        {SelectDialogColumn_DN, tr("DN")}
-    });
-
-    const QString filter =
-    [classes]() {
-        QList<QString> subfilters;
-        for (int i = 0; i < classes.size(); i++) {
-            const QString object_class = classes[i];
-            const QString equals_to_class = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
-
-            subfilters.append(equals_to_class);
-        }
-
-        return filter_OR(subfilters);
-    }();
-
-    const QList<QString> attributes = {ATTRIBUTE_OBJECT_CLASS};
-    const QHash<QString, AdObject> search_results = AD()->search(filter, attributes, SearchScope_All);
-
-    for (const AdObject &object : search_results.values()) {
-        // TODO: get name from attribute
-        const QString dn = object.get_dn();
-        const QString name = dn_get_name(dn);
-        const QString parent_canonical = dn_get_parent_canonical(dn);
-
-        const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
-
-        // NOTE: search returns objects if ANY of their classes are equal to given ones, we only want to get objects by their most inherited class(last), so filter out others
-        if (!classes.contains(object_class)) {
-            continue;
-        }
-
-        const QList<QStandardItem *> row = make_item_row(SelectDialogColumn_COUNT);
-        row[SelectDialogColumn_Name]->setText(name);
-        row[SelectDialogColumn_Parent]->setText(parent_canonical);
-        row[SelectDialogColumn_Class]->setText(object_class);
-        row[SelectDialogColumn_DN]->setText(dn);
-
-        model->appendRow(row);
-    }
-
-    model->sort(SelectDialogColumn_Name);
-
-    proxy_name->setSourceModel(model);
-    proxy_class->setSourceModel(proxy_name);
-    view->setModel(proxy_class);
+    layout->addWidget(view);
+    layout->addLayout(list_buttons_layout);
+    layout->addWidget(button_box);
 
     setup_column_toggle_menu(view, model, {SelectDialogColumn_Name, SelectDialogColumn_Parent});
 
-    // Fill class combo box with possible classes
-    filter_class_combo->clear();
-    for (auto object_class : classes) {
-        auto class_name = ADCONFIG()->get_class_display_name(object_class);
-
-        filter_class_combo->addItem(class_name, object_class);
-    }
-
-    // Add "All" class filter if multiple classes possible
-    if (classes.size() > 1) {
-        filter_class_combo->addItem(tr("All"), "");
-
-        // Select "All" class filter by default
-        filter_class_combo->setCurrentIndex(filter_class_combo->count() - 1);
-    }
-
-    // Disable/hide class-related elements if selecting only from one class
-    if (classes.size() == 1) {
-        filter_class_combo->setEnabled(false);
-        view->setColumnHidden(SelectDialogColumn_Class, true);
-    }
-
-    // Disable select button when there's no selection and enable when there is
-    const QItemSelectionModel *selection_model = view->selectionModel();
-    connect(selection_model, &QItemSelectionModel::selectionChanged,
-        [selection_model, select_button]() {
-            const bool enable_select_button = selection_model->hasSelection();
-            select_button->setEnabled(enable_select_button);
-        });
-
-    // Update proxy name when filter name changes
-    connect(
-        filter_name_edit, &QLineEdit::textChanged,
-        [proxy_name](const QString &text) {
-            proxy_name->setFilterRegExp(QRegExp(text, Qt::CaseInsensitive, QRegExp::FixedString));
-        });
-    filter_name_edit->setText("");
-
-    // Update proxy class when filter class changes
-    connect(filter_class_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        [filter_class_combo, proxy_class](const int index) {
-            const QVariant item_data = filter_class_combo->itemData(index);
-            const QString object_class = item_data.toString();
-
-            proxy_class->setFilterRegExp(QRegExp(object_class, Qt::CaseInsensitive, QRegExp::FixedString));
-        });
+    enable_widget_on_selection(remove_button, view);
 
     connect(
-        select_button, &QAbstractButton::clicked,
+        button_box, &QDialogButtonBox::accepted,
         this, &QDialog::accept);
     connect(
-        cancel_button, &QAbstractButton::clicked,
+        button_box, &QDialogButtonBox::rejected,
         this, &QDialog::reject);
+
+    connect(
+        add_button, &QPushButton::clicked,
+        this, &SelectDialog::open_find_dialog);
+    connect(
+        add_button, &QPushButton::clicked,
+        this, &SelectDialog::remove_from_list);
 }
 
-void SelectDialog::accept() {
+QList<QString> SelectDialog::get_selected() const {
     const QItemSelectionModel *selection_model = view->selectionModel();
     const QList<QModelIndex> selected_indexes = selection_model->selectedIndexes();
 
-    selected_objects.clear();
+    QSet<QString> selected_dns;
+
     for (auto index : selected_indexes) {
         const QString dn = get_dn_from_index(index, SelectDialogColumn_DN);
 
-        if (!selected_objects.contains(dn)) {
-            selected_objects.append(dn);
-        }
+        selected_dns.insert(dn);
     }
 
-    QDialog::accept();
+    return selected_dns.toList();
+}
+
+void SelectDialog::accept() {
+    const QList<QString> selected = get_selected();
+
+    const bool selected_multiple_when_single_selection = (multi_selection == SelectDialogMultiSelection_No && selected.size() > 1);
+    if (selected_multiple_when_single_selection) {
+        QMessageBox::warning(this, tr("Error"), tr("This selection accepts only one object. Remove extra objects to proceed."));
+    } else {
+        QDialog::accept();
+    }
+}
+
+void SelectDialog::open_find_dialog() {
+    auto dialog = new FindDialog(FindDialogType_Select, AD()->domain_head(), this);
+
+    connect(
+        dialog, &FindDialog::accepted,
+        [this, dialog]() {
+            // Add objects selected in find dialog to select
+            // objects list
+            const QList<QString> current_selected = get_selected();
+
+            QList<QList<QStandardItem *>> selected_rows = dialog->get_selected_rows();
+
+            for (auto row : selected_rows) {
+                const bool model_contains_object =
+                [=]() {
+                    QStandardItem *dn_item = row[0];
+                    const QString dn = dn_item->text();
+
+                    return current_selected.contains(dn);
+                }();
+                
+                if (!model_contains_object) {
+                    model->appendRow(row);
+                }
+            }
+        });
+
+    dialog->open();
+}
+
+void SelectDialog::remove_from_list() {
+    const QItemSelectionModel *selection_model = view->selectionModel();
+    const QList<QModelIndex> selected = selection_model->selectedIndexes();
+
+    for (auto index : selected) {
+        model->removeRows(index.row(), 1);
+    }
 }
 
 void SelectDialog::showEvent(QShowEvent *event) {
