@@ -260,18 +260,23 @@ void ObjectMenu::move() const {
     const QString title = QString(tr("Move %1")).arg(targets_display_string());
     dialog->setWindowTitle(title);
 
+    // NOTE: can't pass "this" ptr to access member vars
+    // because menu is deleted when dialog is opened, so it
+    // no longer exists by the time dialog is accepted
+    QWidget *parent_widget = parentWidget();
+    const QList<QString> targets_copy = targets;
+
     connect(
         dialog, &SelectContainerDialog::accepted,
-        [this, dialog]() {
+        [dialog, parent_widget, targets_copy]() {
             const QString selected = dialog->get_selected();
-
             STATUS()->start_error_log();
 
-            for (const QString target : targets) {
+            for (const QString target : targets_copy) {
                 AD()->object_move(target, selected);
             }
 
-            STATUS()->end_error_log(parentWidget());
+            STATUS()->end_error_log(parent_widget);
         });
 
     dialog->open();
