@@ -152,9 +152,10 @@ void SelectDialog::open_find_dialog() {
         [this, dialog]() {
             // Add objects selected in find dialog to select
             // objects list
+            // NOTE: adding selected objects could've been done by just getting selected DN's, BUT that would involve performing a search for each of the objects to get necessary attributes to create rows. Object amounts can be potentially huge, so that would really hurt performance. So, instead we're getting raw rows of items even though it's kinda messy. In summary: DN's = simple, very slow; items = messy, fast.
             const QList<QString> current_selected = get_selected();
 
-            QList<QList<QStandardItem *>> selected_rows = dialog->get_selected_rows();
+            const QList<QList<QStandardItem *>> selected_rows = dialog->get_selected_rows();
 
             for (auto row : selected_rows) {
                 const bool model_contains_object =
