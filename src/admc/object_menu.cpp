@@ -287,7 +287,6 @@ void ObjectMenu::add_to_group() const {
     const QList<QString> classes = {CLASS_GROUP};
     const QString title = QString(tr("Add %1 to group")).arg(targets_display_string());
     const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, title, parentWidget());
-
     if (selected_objects.size() > 0) {
         STATUS()->start_error_log();
         

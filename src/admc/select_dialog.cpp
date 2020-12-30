@@ -115,12 +115,10 @@ SelectDialog::SelectDialog(QList<QString> classes_arg, SelectDialogMultiSelectio
 }
 
 QList<QString> SelectDialog::get_selected() const {
-    const QItemSelectionModel *selection_model = view->selectionModel();
-    const QList<QModelIndex> selected_indexes = selection_model->selectedIndexes();
-
     QSet<QString> selected_dns;
 
-    for (auto index : selected_indexes) {
+    for (int row = 0; row < model->rowCount(); row++) {
+        const QModelIndex index = model->index(row, 0);
         const QString dn = get_dn_from_index(index, SelectDialogColumn_DN);
 
         selected_dns.insert(dn);
