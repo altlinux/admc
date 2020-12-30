@@ -22,7 +22,6 @@
 #include "ad_utils.h"
 #include "ad_config.h"
 #include "settings.h"
-#include "containers_widget.h"
 #include "utils.h"
 #include "filter.h"
 #include "filter_widget/filter_widget.h"
@@ -32,16 +31,10 @@
 
 #include <QString>
 #include <QList>
-#include <QLineEdit>
-#include <QFormLayout>
-#include <QGroupBox>
-#include <QLabel>
 #include <QTreeView>
-#include <QSortFilterProxyModel>
+#include <QFormLayout>
 #include <QComboBox>
 #include <QPushButton>
-#include <QItemSelectionModel>
-#include <QStandardItemModel>
 #include <QDebug>
 #include <QCheckBox>
 #include <QMenuBar>

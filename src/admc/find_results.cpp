@@ -21,21 +21,15 @@
 #include "object_menu.h"
 #include "details_dialog.h"
 #include "utils.h"
+#include "filter.h"
 #include "ad_interface.h"
 #include "ad_config.h"
-#include "ad_utils.h"
-#include "ad_object.h"
-#include "attribute_display.h"
-#include "filter.h"
-#include "settings.h"
 #include "object_model.h"
-#include "find_dialog.h"
 
 #include <QTreeView>
 #include <QLabel>
 #include <QHeaderView>
 #include <QDebug>
-#include <QStandardItemModel>
 #include <QVBoxLayout>
 
 FindResults::FindResults(const FindDialogType type)

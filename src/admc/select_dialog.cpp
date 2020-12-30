@@ -29,15 +29,11 @@
 #include "object_model.h"
 #include "find_dialog.h"
 
-#include <QLineEdit>
-#include <QGridLayout>
-#include <QLabel>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QTreeView>
-#include <QSortFilterProxyModel>
-#include <QComboBox>
 #include <QPushButton>
 #include <QItemSelectionModel>
-#include <QStandardItemModel>
 #include <QDialogButtonBox>
 #include <QMessageBox>
 

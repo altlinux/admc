@@ -26,6 +26,8 @@
  */
 
 #include <QWidget>
+
+// TODO: remove when merged with find dialog
 #include "find_dialog.h"
 
 class QTreeView;

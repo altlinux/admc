@@ -32,7 +32,6 @@
 class FilterWidget;
 class FindResults;
 class QComboBox;
-class ObjectMenu;
 class QStandardItem;
 template <typename T> class QList;
 

@@ -25,13 +25,13 @@
  */
 
 #include <QWidget>
-#include <QString>
 #include <QHash>
 
 class QLineEdit;
 class QDialog;
 class QCheckBox;
 class QPushButton;
+class QString;
 
 class SelectClassesWidget final : public QWidget {
 Q_OBJECT

@@ -27,9 +27,9 @@
  */
 
 #include <QWidget>
-#include <QString>
 
 class QTabWidget;
+class QString;
 class FilterWidgetTab;
 
 class FilterWidget final : public QWidget {

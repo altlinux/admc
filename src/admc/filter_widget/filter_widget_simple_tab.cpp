@@ -24,7 +24,6 @@
 
 #include <QLineEdit>
 #include <QFormLayout>
-#include <QLabel>
 
 FilterWidgetSimpleTab::FilterWidgetSimpleTab(const QList<QString> classes)
 : FilterWidgetTab()
