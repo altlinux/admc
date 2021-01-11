@@ -49,13 +49,26 @@ FindDialog::FindDialog(const FindDialogType type_arg, const QList<QString> class
 
     setWindowTitle(tr("Find objects"));
 
-    // TODO: technically, entire directory does NOT equal to the domain. In cases where we're browsing multiple domains at the same time (or maybe some other situations as well), we'd need "Entire directory" AND all of domains. Currently search base is set to domain anyway, so would need to start from reworking that.
+    // TODO: missing "Entire directory" in search base combo. Not 100% sure what it's supposed to be, the tippy-top domain? Definitely need it for work with multiple domains.
 
     search_base_combo = new QComboBox();
-    search_base_combo->addItem(tr("Entire directory"), AD()->domain_head());
-    const QString default_search_base_name = dn_get_name(default_search_base);
-    search_base_combo->addItem(default_search_base_name, default_search_base);
-    search_base_combo->setCurrentIndex(1);
+    {
+        auto add_search_base_to_combo =
+        [this](const QString dn) {
+            const QString name = dn_get_name(dn);
+            search_base_combo->addItem(name, dn);
+        };
+
+        if (default_search_base == AD()->domain_head()) {
+            add_search_base_to_combo(AD()->domain_head());
+        } else {
+            add_search_base_to_combo(AD()->domain_head());
+            add_search_base_to_combo(default_search_base);
+        }
+
+        const int last_index = search_base_combo->count() - 1;
+        search_base_combo->setCurrentIndex(last_index);
+    }
 
     auto custom_search_base_button = new QPushButton(tr("Browse"));
     custom_search_base_button->setAutoDefault(false);
