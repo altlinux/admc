@@ -50,14 +50,16 @@ void ObjectMenu::setup_as_menubar_menu(QAbstractItemView *view, const int dn_col
 }
 
 void ObjectMenu::setup_as_context_menu(QAbstractItemView *view, const int dn_column) {
+    // NOTE: creating this on heap instead of stack in the slot so that menu instance and it's members are accesible in dialog "accepted" slots
+    auto menu = new ObjectMenu(view);
+
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         [=](const QPoint pos) {
-            ObjectMenu menu(view);
-            menu.load_targets(view, dn_column);
+            menu->load_targets(view, dn_column);
 
-            if (!menu.targets.isEmpty()) {
-                exec_menu_from_view(&menu, view, pos);
+            if (!menu->targets.isEmpty()) {
+                exec_menu_from_view(menu, view, pos);
             }
         });
 }
@@ -260,23 +262,17 @@ void ObjectMenu::move() const {
     const QString title = QString(tr("Move %1")).arg(targets_display_string());
     dialog->setWindowTitle(title);
 
-    // NOTE: can't pass "this" ptr to access member vars
-    // because menu is deleted when dialog is opened, so it
-    // no longer exists by the time dialog is accepted
-    QWidget *parent_widget = parentWidget();
-    const QList<QString> targets_copy = targets;
-
     connect(
         dialog, &SelectContainerDialog::accepted,
-        [dialog, parent_widget, targets_copy]() {
+        [this, dialog]() {
             const QString selected = dialog->get_selected();
             STATUS()->start_error_log();
 
-            for (const QString target : targets_copy) {
+            for (const QString target : targets) {
                 AD()->object_move(target, selected);
             }
 
-            STATUS()->end_error_log(parent_widget);
+            STATUS()->end_error_log(parentWidget());
         });
 
     dialog->open();
