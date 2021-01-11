@@ -17,24 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FIND_DIALOG_H
-#define FIND_DIALOG_H
+#ifndef FIND_WIDGET_H
+#define FIND_WIDGET_H
 
 /**
- * Find objects and perform actions on them.
+ * Provides a way for user to find objects. FilterWidget is
+ * used for filter input and FindResults for displaying
+ * objects. Used by FindDialog and SelectDialog.
  */
 
-#include <QDialog>
+#include <QWidget>
 
-class QString;
+class FilterWidget;
+class FindResults;
+class QComboBox;
+class QStandardItem;
 template <typename T> class QList;
 
-class FindDialog final : public QDialog {
+class FindWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    FindDialog(const QList<QString> classes, const QString default_search_base, QWidget *parent);
+    FindResults *find_results;
     
+    FindWidget(const QList<QString> classes, const QString &default_search_base);
+
+    QList<QList<QStandardItem *>> get_selected_rows() const;
+
+private slots:
+    void select_custom_search_base();
+    void on_filter_changed();
+    void find();
+
+private:
+    FilterWidget *filter_widget;
+    QComboBox *search_base_combo;
 };
 
-#endif /* FIND_DIALOG_H */
+#endif /* FIND_WIDGET_H */

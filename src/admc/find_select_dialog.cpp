@@ -17,42 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "find_dialog.h"
+#include "find_select_dialog.h"
 
 #include "find_widget.h"
-#include "find_results.h"
-#include "ad_config.h"
-#include "object_menu.h"
-#include "details_dialog.h"
+#include "ad_interface.h"
 
 #include <QList>
 #include <QVBoxLayout>
 #include <QDialogButtonBox>
-#include <QMenuBar>
-#include <QTreeView>
 
-FindDialog::FindDialog(const QList<QString> classes, const QString default_search_base, QWidget *parent)
+FindSelectDialog::FindSelectDialog(const QList<QString> classes, QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    setWindowTitle(tr("Find objects"));
+    setWindowTitle(tr("Find and select objects"));
 
-    auto menubar = new QMenuBar();
+    find_widget = new FindWidget(classes, AD()->domain_head());
 
-    auto find_widget = new FindWidget(classes, default_search_base);
+    auto buttons = new QDialogButtonBox();
+    buttons->addButton(QDialogButtonBox::Ok);
+    buttons->addButton(QDialogButtonBox::Cancel);
 
-    auto action_menu = new ObjectMenu(this);
-    action_menu->setTitle(tr("&Action"));
-    menubar->addMenu(action_menu);
-
-    QTreeView *results_view = find_widget->find_results->view;
-    action_menu->setup_as_menubar_menu(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-    ObjectMenu::setup_as_context_menu(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-    DetailsDialog::connect_to_open_by_double_click(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-        
     auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->setMenuBar(menubar);
     layout->addWidget(find_widget);
+    layout->addWidget(buttons);
+
+    connect(
+        buttons, &QDialogButtonBox::accepted,
+        this, &FindSelectDialog::accept);
+    connect(
+        buttons, &QDialogButtonBox::rejected,
+        this, &FindSelectDialog::reject);
+}
+
+QList<QList<QStandardItem *>> FindSelectDialog::get_selected_rows() const {
+    return find_widget->get_selected_rows();
 }

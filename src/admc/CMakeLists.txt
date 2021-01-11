@@ -40,11 +40,13 @@ add_executable(admc
     toggle_widgets_dialog.cpp
     filter_dialog.cpp
     advanced_view_proxy.cpp
+    find_widget.cpp
     
     rename_dialog.cpp
     rename_policy_dialog.cpp
     create_dialog.cpp
     find_dialog.cpp
+    find_select_dialog.cpp
     select_container_dialog.cpp
     policies_widget.cpp
     gplink.cpp

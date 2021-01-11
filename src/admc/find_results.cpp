@@ -32,7 +32,7 @@
 #include <QDebug>
 #include <QVBoxLayout>
 
-FindResults::FindResults(const FindDialogType type)
+FindResults::FindResults()
 : QWidget()
 {   
     model = new ObjectModel(this);
@@ -54,12 +54,6 @@ FindResults::FindResults(const FindDialogType type)
     view->header()->setSectionsMovable(true);
 
     view->setModel(model);
-
-    if (type == FindDialogType_Normal) {
-        DetailsDialog::connect_to_open_by_double_click(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-
-        ObjectMenu::setup_as_context_menu(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-    }
 
     setup_column_toggle_menu(view, model, 
     {

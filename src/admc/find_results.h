@@ -27,9 +27,6 @@
 
 #include <QWidget>
 
-// TODO: remove when merged with find dialog
-#include "find_dialog.h"
-
 class QTreeView;
 class QLabel;
 class QStandardItemModel;
@@ -42,7 +39,7 @@ Q_OBJECT
 public:
     QTreeView *view;
     
-    FindResults(const FindDialogType type);
+    FindResults();
 
     void load(const QString &filter, const QString &search_base);
 

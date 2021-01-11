@@ -17,24 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FIND_DIALOG_H
-#define FIND_DIALOG_H
+#ifndef FIND_SELECT_DIALOG_H
+#define FIND_SELECT_DIALOG_H
 
 /**
- * Find objects and perform actions on them.
+ * Find objects and select them. 
  */
 
 #include <QDialog>
 
-class QString;
+class FindWidget;
+class QStandardItem;
 template <typename T> class QList;
 
-class FindDialog final : public QDialog {
+class FindSelectDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    FindDialog(const QList<QString> classes, const QString default_search_base, QWidget *parent);
+    FindSelectDialog(const QList<QString> classes, QWidget *parent);
+
+    QList<QList<QStandardItem *>> get_selected_rows() const;
+
+private:
+    FindWidget *find_widget;
     
 };
 
-#endif /* FIND_DIALOG_H */
+#endif /* FIND_SELECT_DIALOG_H */

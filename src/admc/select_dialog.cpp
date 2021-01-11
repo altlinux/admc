@@ -27,7 +27,7 @@
 #include "utils.h"
 #include "filter.h"
 #include "object_model.h"
-#include "find_dialog.h"
+#include "find_select_dialog.h"
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -36,8 +36,6 @@
 #include <QItemSelectionModel>
 #include <QDialogButtonBox>
 #include <QMessageBox>
-
-// TODO: switch to object model since will be copying columns from find dialog(results)
 
 enum SelectDialogColumn {
     SelectDialogColumn_Name,
@@ -139,10 +137,10 @@ void SelectDialog::accept() {
 }
 
 void SelectDialog::open_find_dialog() {
-    auto dialog = new FindDialog(FindDialogType_Select, classes, AD()->domain_head(), this);
+    auto dialog = new FindSelectDialog(classes, this);
 
     connect(
-        dialog, &FindDialog::accepted,
+        dialog, &FindSelectDialog::accepted,
         [this, dialog]() {
             // Add objects selected in find dialog to select
             // objects list
