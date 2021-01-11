@@ -48,8 +48,6 @@ MenuBar::MenuBar()
             STATUS()->end_error_log(this);
         });
 
-    filter_action = file_menu->addAction(tr("F&ilter contents"));
-
     auto quit_action = file_menu->addAction(tr("&Quit"),
         []() {
             QApplication::quit();
@@ -74,6 +72,7 @@ MenuBar::MenuBar()
     add_bool_setting_action(view_menu, tr("&Advanced view"), BoolSetting_AdvancedView);
     add_bool_setting_action(view_menu, tr("&Dock Details dialog"), BoolSetting_DetailsIsDocked);
     auto toggle_widgets_action = view_menu->addAction(tr("&Toggle widgets"));
+    filter_action = view_menu->addAction(tr("&Filter objects"));
 
     QMenu *preferences_menu = addMenu(tr("&Preferences"));
     add_bool_setting_action(preferences_menu, tr("&Confirm actions"), BoolSetting_ConfirmActions);
