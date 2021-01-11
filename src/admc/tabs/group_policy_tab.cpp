@@ -148,13 +148,18 @@ void GroupPolicyTab::on_context_menu(const QPoint pos) {
 }
 
 void GroupPolicyTab::on_add_button() {
-    const QList<QString> classes = {CLASS_GP_CONTAINER};
-    const QString title = tr("Add policy link");
-    const QList<QString> selected = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, title, this);
+    auto dialog = new SelectDialog({CLASS_GP_CONTAINER}, SelectDialogMultiSelection_Yes, this);
 
-    if (selected.size() > 0) {
-        add_link(selected);
-    }
+    const QString title = tr("Add policy link");
+    dialog->setWindowTitle(title);
+
+    connect(
+        dialog, &SelectDialog::accepted,
+        [this, dialog]() {
+            const QList<QString> selected = dialog->get_selected();
+            
+            add_link(selected);
+        });
 }
 
 void GroupPolicyTab::on_remove_button() {

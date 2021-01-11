@@ -262,20 +262,25 @@ void MembershipTab::on_add_button() {
         return QList<QString>();
     }();
 
+    auto dialog = new SelectDialog(classes, SelectDialogMultiSelection_Yes, this);
+
     const QString title =
     [=]() {
         switch (type) {
-            case MembershipTabType_Members: return QString(tr("Add user"));
-            case MembershipTabType_MemberOf: return QString(tr("Add group"));
+            case MembershipTabType_Members: return tr("Add user");
+            case MembershipTabType_MemberOf: return tr("Add group");
         }
         return QString();
     }();
+    dialog->setWindowTitle(title);
 
-    const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, title, this);
+    connect(
+        dialog, &SelectDialog::accepted,
+        [this, dialog]() {
+            const QList<QString> selected = dialog->get_selected();
 
-    if (selected_objects.size() > 0) {
-        add_values(selected_objects);
-    }
+            add_values(selected);
+        });
 }
 
 void MembershipTab::on_remove_button() {

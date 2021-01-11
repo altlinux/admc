@@ -280,20 +280,26 @@ void ObjectMenu::move() const {
 
 // TODO: aduc also includes "built-in security principals" which equates to groups that are located in builtin container. Those objects are otherwise completely identical to other group objects, same class and everything. Adding this would be convenient but also a massive PITA because that would mean making select classes widget somehow have mixed options for classes and whether parent object is the Builtin
 void ObjectMenu::add_to_group() const {
-    const QList<QString> classes = {CLASS_GROUP};
-    const QString title = QString(tr("Add %1 to group")).arg(targets_display_string());
-    const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, title, parentWidget());
-    if (selected_objects.size() > 0) {
-        STATUS()->start_error_log();
-        
-        for (const QString target : targets) {
-            for (auto group : selected_objects) {
-                AD()->group_add_member(group, target);
-            }
-        }
+    auto dialog = new SelectDialog({CLASS_GROUP}, SelectDialogMultiSelection_Yes, parentWidget());
 
-        STATUS()->end_error_log(parentWidget());
-    }
+    const QString title = QString(tr("Add %1 to group")).arg(targets_display_string());
+    dialog->setWindowTitle(title);
+
+    connect(
+        dialog, &SelectDialog::accepted,
+        [this, dialog]() {
+            const QList<QString> selected = dialog->get_selected();
+
+            STATUS()->start_error_log();
+
+            for (const QString target : targets) {
+                for (auto group : selected) {
+                    AD()->group_add_member(group, target);
+                }
+            }
+
+            STATUS()->end_error_log(parentWidget());
+        });
 }
 
 void ObjectMenu::rename() const {

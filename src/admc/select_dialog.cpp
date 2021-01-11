@@ -45,20 +45,13 @@ enum SelectDialogColumn {
     SelectDialogColumn_COUNT
 };
 
-// NOTE: using exec() instead of open() to return list of selected objects from this f-n
-QList<QString> SelectDialog::open(QList<QString> classes, SelectDialogMultiSelection multi_selection, const QString &title, QWidget *parent) {
-    SelectDialog dialog(classes, multi_selection, parent);
-    dialog.setWindowTitle(title);
-    dialog.exec();
-
-    return dialog.get_selected();
-}
-
 SelectDialog::SelectDialog(QList<QString> classes_arg, SelectDialogMultiSelection multi_selection_arg, QWidget *parent)
 : QDialog(parent)
 {
     classes = classes_arg;
     multi_selection = multi_selection_arg;
+
+    setAttribute(Qt::WA_DeleteOnClose);
 
     resize(400, 300);
 

@@ -80,15 +80,20 @@ bool ManagerEdit::apply(const QString &dn) const {
 }
 
 void ManagerEdit::on_change() {
+    auto dialog = new SelectDialog({CLASS_USER, CLASS_CONTACT}, SelectDialogMultiSelection_No, edit);
+
     const QString title = QString(tr("Select manager"));
-    const QList<QString> classes = {CLASS_USER, CLASS_CONTACT};
-    const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_No, title, edit);
+    dialog->setWindowTitle(title);
 
-    if (selected_objects.size() > 0) {
-        load_value(selected_objects[0]);
+    connect(
+        dialog, &SelectDialog::accepted,
+        [this, dialog]() {
+            const QList<QString> selected = dialog->get_selected();
 
-        emit edited();
-    }
+            load_value(selected[0]);
+
+            emit edited();
+        });
 }
 
 void ManagerEdit::on_details() {
