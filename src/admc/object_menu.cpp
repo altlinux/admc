@@ -307,7 +307,6 @@ void ObjectMenu::rename() const {
     }
 }
 
-// TODO: only open this for container-likes?
 void ObjectMenu::create(const QString &object_class) const {
     if (targets.size() == 1) {
         const auto create_dialog = new CreateDialog(targets[0], object_class, parentWidget());

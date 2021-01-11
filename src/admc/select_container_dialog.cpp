@@ -62,7 +62,6 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     buttonbox->addButton(QDialogButtonBox::Cancel);
 
     // Hide all columns except name column
-    // TODO: this seems like it will end up getting duplicated somewhere so make a util f-n like
     QHeaderView *header = view->header();
     for (int i = 0; i < header->count(); i++) {
         header->setSectionHidden(i, true);
