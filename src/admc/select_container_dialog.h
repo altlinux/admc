@@ -17,43 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FIND_RESULTS_H
-#define FIND_RESULTS_H
+#ifndef SELECT_CONTAINER_DIALOG_H
+#define SELECT_CONTAINER_DIALOG_H
 
 /**
- * Used by find dialog to display find results as a list of
- * objects.
+ * Displays a tree of container objects, similarly to
+ * Containers widget. User can selected a container.
  */
 
-#include <QWidget>
-
-// TODO: remove when merged with find dialog
-#include "find_dialog.h"
+#include <QDialog>
 
 class QTreeView;
-class QLabel;
-class QStandardItemModel;
-class QStandardItem;
-template <typename T> class QList;
 
-class FindResults final : public QWidget {
+class SelectContainerDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    QTreeView *view;
-    
-    FindResults(const FindDialogType type);
+    SelectContainerDialog(QWidget *parent);
 
-    void load(const QString &filter, const QString &search_base);
-
-    // Returns a copy of item's rows, so these items need to become owned by something or deleted
-    QList<QList<QStandardItem *>> get_selected_rows() const;
+    QString get_selected() const;
 
 private:
-    QStandardItemModel *model;
-    QLabel *object_count_label;
+    QTreeView *view;
 
-    void showEvent(QShowEvent *event);
 };
 
-#endif /* FIND_RESULTS_H */
+#endif /* SELECT_CONTAINER_DIALOG_H */

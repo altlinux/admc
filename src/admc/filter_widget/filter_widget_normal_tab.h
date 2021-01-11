@@ -31,8 +31,7 @@
 
 #include "filter_widget/filter_widget.h"
 
-#include <QString>
-
+class QString;
 class QListWidget;
 class SelectClassesWidget;
 class FilterBuilder;
@@ -41,7 +40,7 @@ class FilterWidgetNormalTab final : public FilterWidgetTab {
 Q_OBJECT
 
 public:
-    FilterWidgetNormalTab();
+    FilterWidgetNormalTab(const QList<QString> classes);
 
     QString get_filter() const;
 

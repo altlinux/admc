@@ -27,16 +27,16 @@
  */
 
 #include <QWidget>
-#include <QString>
 
 class QTabWidget;
+class QString;
 class FilterWidgetTab;
 
 class FilterWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    FilterWidget();
+    FilterWidget(const QList<QString> classes);
 
     QString get_filter() const;
 

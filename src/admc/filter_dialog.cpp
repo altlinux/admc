@@ -18,6 +18,8 @@
  */
 
 #include "filter_dialog.h"
+#include "filter.h"
+#include "ad_config.h"
 
 #include "filter_widget/filter_widget.h"
 
@@ -29,7 +31,21 @@ FilterDialog::FilterDialog(QWidget *parent)
 {   
     setWindowTitle(tr("Filter contents"));
 
-    auto filter_widget = new FilterWidget();
+    // NOTE: Can't filter out container objects, because otherwise the whole tree can't be displayed, so only allow filtering by non-container classes.
+    // = all classes - container classes
+    const QList<QString> noncontainer_classes =
+    []() {
+        QList<QString> out = filter_classes;
+
+        const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
+        for (const QString container_class : container_classes) {
+            out.removeAll(container_class);
+        }
+
+        return out;
+    }();
+
+    auto filter_widget = new FilterWidget(noncontainer_classes);
 
     auto buttonbox = new QDialogButtonBox();
     buttonbox->addButton(QDialogButtonBox::Ok);

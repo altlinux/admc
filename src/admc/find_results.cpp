@@ -21,23 +21,18 @@
 #include "object_menu.h"
 #include "details_dialog.h"
 #include "utils.h"
+#include "filter.h"
 #include "ad_interface.h"
 #include "ad_config.h"
-#include "ad_utils.h"
-#include "ad_object.h"
-#include "attribute_display.h"
-#include "filter.h"
-#include "settings.h"
 #include "object_model.h"
 
 #include <QTreeView>
 #include <QLabel>
 #include <QHeaderView>
 #include <QDebug>
-#include <QStandardItemModel>
 #include <QVBoxLayout>
 
-FindResults::FindResults()
+FindResults::FindResults(const FindDialogType type)
 : QWidget()
 {   
     model = new ObjectModel(this);
@@ -48,7 +43,7 @@ FindResults::FindResults()
     view = new QTreeView(this);
     view->setAcceptDrops(true);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setSelectionMode(QAbstractItemView::SingleSelection);
+    view->setSelectionMode(QAbstractItemView::ExtendedSelection);
     view->setRootIsDecorated(false);
     view->setItemsExpandable(false);
     view->setExpandsOnDoubleClick(false);
@@ -60,7 +55,11 @@ FindResults::FindResults()
 
     view->setModel(model);
 
-    DetailsDialog::connect_to_open_by_double_click(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    if (type == FindDialogType_Normal) {
+        DetailsDialog::connect_to_open_by_double_click(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+
+        ObjectMenu::setup_as_context_menu(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    }
 
     setup_column_toggle_menu(view, model, 
     {
@@ -78,8 +77,6 @@ FindResults::FindResults()
 
     layout->addWidget(object_count_label);
     layout->addWidget(view);
-
-    ObjectMenu::setup_as_context_menu(view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 }
 
 void FindResults::load(const QString &filter, const QString &search_base) {
@@ -103,6 +100,28 @@ void FindResults::load(const QString &filter, const QString &search_base) {
 
     const QString label_text = tr("%n object(s)", "", model->rowCount());
     object_count_label->setText(label_text);
+}
+
+QList<QList<QStandardItem *>> FindResults::get_selected_rows() const {
+    const QList<QModelIndex> selected_rows = view->selectionModel()->selectedRows();
+
+    QList<QList<QStandardItem *>> out;
+
+    for (const QModelIndex row_index : selected_rows) {
+        const int row = row_index.row();
+
+        QList<QStandardItem *> row_copy;
+
+        for (int col = 0; col < model->columnCount(); col++) {
+            QStandardItem *item = model->item(row, col);
+            QStandardItem *item_copy = item->clone();
+            row_copy.append(item_copy);
+        }
+
+        out.append(row_copy);
+    }
+
+    return out;
 }
 
 void FindResults::showEvent(QShowEvent *event) {

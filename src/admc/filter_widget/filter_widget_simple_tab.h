@@ -33,7 +33,7 @@ class FilterWidgetSimpleTab final : public FilterWidgetTab {
 Q_OBJECT
 
 public:
-    FilterWidgetSimpleTab();
+    FilterWidgetSimpleTab(const QList<QString> classes);
 
     QString get_filter() const;
 

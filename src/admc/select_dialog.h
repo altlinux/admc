@@ -21,10 +21,11 @@
 #define SELECT_DIALOG_H
 
 #include <QDialog>
-#include <QString>
-#include <QList>
 
 class QTreeView;
+class ObjectModel;
+class QString;
+template <typename T> class QList;
 
 enum SelectDialogMultiSelection {
     SelectDialogMultiSelection_Yes,
@@ -35,18 +36,24 @@ class SelectDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    static QList<QString> open(QList<QString> classes, SelectDialogMultiSelection multi_selection, const QString &title, QWidget *parent);
+    static QList<QString> open(QList<QString> classes, SelectDialogMultiSelection multi_selection_arg, const QString &title, QWidget *parent);
+
+    QList<QString> get_selected() const;
 
 private slots:
     void accept();
+    void open_find_dialog();
+    void remove_from_list();
 
 private:
     QTreeView *view;
-    QList<QString> selected_objects;
+    ObjectModel *model;
+    QList<QString> classes;
+    SelectDialogMultiSelection multi_selection;
 
-    SelectDialog(QList<QString> classes, SelectDialogMultiSelection multi_selection, QWidget *parent);
+    SelectDialog(QList<QString> classes_arg, SelectDialogMultiSelection multi_selection, QWidget *parent);
 
     void showEvent(QShowEvent *event);
 };
 
-#endif /* MOVE_DIALOG_H */
+#endif /* SELECT_DIALOG_H */

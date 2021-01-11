@@ -22,33 +22,29 @@
 #include "ad_utils.h"
 #include "ad_config.h"
 #include "settings.h"
-#include "containers_widget.h"
 #include "utils.h"
 #include "filter.h"
 #include "filter_widget/filter_widget.h"
 #include "find_results.h"
-#include "select_dialog.h"
+#include "select_container_dialog.h"
 #include "object_menu.h"
 
 #include <QString>
 #include <QList>
-#include <QLineEdit>
-#include <QFormLayout>
-#include <QGroupBox>
-#include <QLabel>
 #include <QTreeView>
-#include <QSortFilterProxyModel>
+#include <QFormLayout>
 #include <QComboBox>
 #include <QPushButton>
-#include <QItemSelectionModel>
-#include <QStandardItemModel>
 #include <QDebug>
 #include <QCheckBox>
 #include <QMenuBar>
+#include <QDialogButtonBox>
 
-FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
+FindDialog::FindDialog(const FindDialogType type_arg, const QList<QString> classes, const QString &default_search_base, QWidget *parent)
 : QDialog(parent)
 {
+    type = type_arg;
+
     setAttribute(Qt::WA_DeleteOnClose);
 
     setWindowTitle(tr("Find objects"));
@@ -64,7 +60,7 @@ FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
     auto custom_search_base_button = new QPushButton(tr("Browse"));
     custom_search_base_button->setAutoDefault(false);
 
-    filter_widget = new FilterWidget();
+    filter_widget = new FilterWidget(classes);
 
     auto quick_find_check = new QCheckBox(tr("Quick find"));
 
@@ -74,7 +70,7 @@ FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
     auto stop_button = new QPushButton(tr("Stop"));
     stop_button->setAutoDefault(false);
 
-    find_results = new FindResults();
+    find_results = new FindResults(type);
 
     auto filter_widget_frame = new QFrame();
     filter_widget_frame->setFrameStyle(QFrame::Raised);
@@ -85,6 +81,10 @@ FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
     auto action_menu = new ObjectMenu(this);
     action_menu->setTitle(tr("&Action"));
     menubar->addMenu(action_menu);
+
+    auto select_button_box = new QDialogButtonBox();
+    select_button_box->addButton(QDialogButtonBox::Ok);
+    select_button_box->addButton(QDialogButtonBox::Cancel);
 
     {
         auto search_base_layout = new QHBoxLayout();
@@ -108,11 +108,15 @@ FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
     }
 
     {
-        auto layout = new QHBoxLayout();
+        auto h_layout = new QHBoxLayout();
+        h_layout->addWidget(filter_widget_frame);
+        h_layout->addWidget(find_results);
+
+        auto layout = new QVBoxLayout();
         setLayout(layout);
         layout->setMenuBar(menubar);
-        layout->addWidget(filter_widget_frame);
-        layout->addWidget(find_results);
+        layout->addLayout(h_layout);
+        layout->addWidget(select_button_box);
     }
 
     // Keep filter widget compact, so that when user
@@ -120,6 +124,10 @@ FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
     // keep it's size, find results will get expanded
     filter_widget_frame->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
     find_results->setMinimumSize(500, 0);
+
+    // Change some things based on type
+    select_button_box->setVisible(type == FindDialogType_Select);
+    menubar->setVisible(type == FindDialogType_Normal);
 
     connect(
         custom_search_base_button, &QAbstractButton::clicked,
@@ -137,26 +145,36 @@ FindDialog::FindDialog(const QString &default_search_base, QWidget *parent)
         filter_widget, &FilterWidget::changed,
         this, &FindDialog::on_filter_changed);
 
+    connect(
+        select_button_box, &QDialogButtonBox::accepted,
+        this, &FindDialog::accept);
+    connect(
+        select_button_box, &QDialogButtonBox::rejected,
+        this, &FindDialog::reject);
+
     SETTINGS()->connect_checkbox_to_bool_setting(quick_find_check, BoolSetting_QuickFind);
 
     action_menu->setup_as_menubar_menu(find_results->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 }
 
 void FindDialog::select_custom_search_base() {
-    // TODO: maybe need some other classes?
-    const QString title = QString(tr("Select search base"));
-    const QList<QString> selecteds = SelectDialog::open({CLASS_CONTAINER, CLASS_OU}, SelectDialogMultiSelection_Yes, title, this);
+    auto dialog = new SelectContainerDialog(parentWidget());
+    dialog->setWindowTitle(tr("Select custom search base"));
 
-    if (!selecteds.isEmpty()) {
-        const QString selected = selecteds[0];
-        const QString name = dn_get_name(selected);
+    connect(
+        dialog, &SelectContainerDialog::accepted,
+        [this, dialog]() {
+            const QString selected = dialog->get_selected();
+            const QString name = dn_get_name(selected);
 
-        search_base_combo->addItem(name, selected);
+            search_base_combo->addItem(name, selected);
 
-        // Select newly added search base in combobox
-        const int new_base_index = search_base_combo->count() - 1;
-        search_base_combo->setCurrentIndex(new_base_index);
-    }
+            // Select newly added search base in combobox
+            const int new_base_index = search_base_combo->count() - 1;
+            search_base_combo->setCurrentIndex(new_base_index);
+        });
+
+    dialog->open();
 }
 
 void FindDialog::on_filter_changed() {
@@ -182,4 +200,8 @@ void FindDialog::find() {
     find_results->load(filter, search_base);
 
     hide_busy_indicator();
+}
+
+QList<QList<QStandardItem *>> FindDialog::get_selected_rows() const {
+    return find_results->get_selected_rows();
 }

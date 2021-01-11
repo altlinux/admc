@@ -28,8 +28,10 @@
 #include "password_dialog.h"
 #include "create_dialog.h"
 #include "details_dialog.h"
+#include "select_container_dialog.h"
 #include "utils.h"
 #include "find_dialog.h"
+#include "filter.h"
 #include "status.h"
 #include "object_model.h"
 
@@ -253,30 +255,38 @@ void ObjectMenu::delete_object() const {
 }
 
 void ObjectMenu::move() const {
-    // NOTE: object classes have "possible superiors" in schema which technically means that certain objects have certain sets of possible move targets. Going the simple route and just showing all objects that show up in container tree instead.
-    const QList<QString> move_targets = ADCONFIG()->get_filter_containers();
+    auto dialog = new SelectContainerDialog(parentWidget());
 
     const QString title = QString(tr("Move %1")).arg(targets_display_string());
-    const QList<QString> selected_objects = SelectDialog::open(move_targets, SelectDialogMultiSelection_No, title, parentWidget());
+    dialog->setWindowTitle(title);
 
-    if (selected_objects.size() == 1) {
-        const QString container = selected_objects[0];
+    // NOTE: can't pass "this" ptr to access member vars
+    // because menu is deleted when dialog is opened, so it
+    // no longer exists by the time dialog is accepted
+    QWidget *parent_widget = parentWidget();
+    const QList<QString> targets_copy = targets;
 
-        STATUS()->start_error_log();
+    connect(
+        dialog, &SelectContainerDialog::accepted,
+        [dialog, parent_widget, targets_copy]() {
+            const QString selected = dialog->get_selected();
+            STATUS()->start_error_log();
 
-        for (const QString target : targets) {
-            AD()->object_move(target, container);
-        }
+            for (const QString target : targets_copy) {
+                AD()->object_move(target, selected);
+            }
 
-        STATUS()->end_error_log(parentWidget());
-    }
+            STATUS()->end_error_log(parent_widget);
+        });
+
+    dialog->open();
 }
 
+// TODO: aduc also includes "built-in security principals" which equates to groups that are located in builtin container. Those objects are otherwise completely identical to other group objects, same class and everything. Adding this would be convenient but also a massive PITA because that would mean making select classes widget somehow have mixed options for classes and whether parent object is the Builtin
 void ObjectMenu::add_to_group() const {
     const QList<QString> classes = {CLASS_GROUP};
     const QString title = QString(tr("Add %1 to group")).arg(targets_display_string());
     const QList<QString> selected_objects = SelectDialog::open(classes, SelectDialogMultiSelection_Yes, title, parentWidget());
-
     if (selected_objects.size() > 0) {
         STATUS()->start_error_log();
         
@@ -334,7 +344,7 @@ void ObjectMenu::disable_account() const {
 
 void ObjectMenu::find() const {
     if (targets.size() == 1) {
-        auto find_dialog = new FindDialog(targets[0], parentWidget());
+        auto find_dialog = new FindDialog(FindDialogType_Normal, filter_classes, targets[0], parentWidget());
         find_dialog->open();
     }
 }

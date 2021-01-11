@@ -249,10 +249,14 @@ void MembershipTab::apply(const QString &target) const {
 }
 
 void MembershipTab::on_add_button() {
+    // TODO: aduc has "other objects" section in class selection for adding members to groups. No idea what "other objects" are. No results come up when searching for other objects in current test domain.
+    // TODO: there's also "service account", no idea what that is either.
     const QList<QString> classes =
     [this]() -> QList<QString> {
         switch (type) {
-            case MembershipTabType_Members: return {CLASS_USER};
+            case MembershipTabType_Members: return {
+                CLASS_USER, CLASS_GROUP, CLASS_CONTACT, CLASS_COMPUTER
+            };
             case MembershipTabType_MemberOf: return {CLASS_GROUP};
         }
         return QList<QString>();

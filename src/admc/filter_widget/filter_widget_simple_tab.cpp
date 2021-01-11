@@ -24,12 +24,11 @@
 
 #include <QLineEdit>
 #include <QFormLayout>
-#include <QLabel>
 
-FilterWidgetSimpleTab::FilterWidgetSimpleTab()
+FilterWidgetSimpleTab::FilterWidgetSimpleTab(const QList<QString> classes)
 : FilterWidgetTab()
 {
-    select_classes = new SelectClassesWidget();
+    select_classes = new SelectClassesWidget(classes);
 
     name_edit = new QLineEdit(this);
 
