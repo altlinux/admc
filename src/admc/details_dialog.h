@@ -26,7 +26,6 @@
 #include <QHash>
 
 class QString;
-class QTabWidget;
 class DetailsTab;
 class QAbstractItemView;
 class QPushButton;
@@ -61,7 +60,6 @@ private:
     static QHash<QString, DetailsDialog *> floating_instances;
 
     bool is_floating_instance;
-    QTabWidget *tab_widget = nullptr;
     QList<DetailsTab *> tabs;
     QString target;
     QPushButton *apply_button;

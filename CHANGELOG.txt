@@ -17,6 +17,7 @@ CHANGELOG
     - group policy
     - links to
 - Added traditional way to display Details dialog as a dialog. Docked mode is still available via options.
+- Changed details dialog to display tab titles in a list.
 - Improved object menu
     - added most of the actions
     - added ability to perform actions on multiple objects

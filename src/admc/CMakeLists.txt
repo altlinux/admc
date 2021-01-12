@@ -43,6 +43,7 @@ add_executable(admc
     filter_dialog.cpp
     advanced_view_proxy.cpp
     find_widget.cpp
+    tab_widget.cpp
     
     rename_dialog.cpp
     rename_policy_dialog.cpp

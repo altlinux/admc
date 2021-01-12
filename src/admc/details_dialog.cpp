@@ -36,9 +36,9 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
+#include "tab_widget.h"
 
 #include <QAction>
-#include <QTabWidget>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QDialogButtonBox>
@@ -128,7 +128,7 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     is_floating_instance = is_floating_instance_arg;
 
     setAttribute(Qt::WA_DeleteOnClose);
-    resize(600, 700);
+    setMinimumHeight(700);
     auto button_box = new QDialogButtonBox();
     apply_button = button_box->addButton(QDialogButtonBox::Apply);
     reset_button = button_box->addButton(QDialogButtonBox::Reset);
@@ -170,16 +170,16 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
         return;
     }
 
-    tab_widget = new QTabWidget(this);
-
+    auto tab_widget = new TabWidget();
+    
     layout->addWidget(tab_widget);
     layout->addWidget(button_box);    
 
     // Create new tabs
     const auto add_tab =
-    [this](DetailsTab *tab, const QString &title) {
+    [this, tab_widget](DetailsTab *tab, const QString &title) {
         tabs.append(tab);
-        tab_widget->addTab(tab, title);
+        tab_widget->add_tab(tab, title);
     };
 
     add_tab(new GeneralTab(object), tr("General"));
@@ -251,9 +251,7 @@ void DetailsDialog::apply() {
     STATUS()->start_error_log();
 
     for (auto tab : tabs) {
-        if (tab_widget->indexOf(tab) != -1) {
-            tab->apply(target);
-        }
+        tab->apply(target);
     }
 
     reset();
