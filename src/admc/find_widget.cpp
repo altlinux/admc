@@ -161,8 +161,6 @@ void FindWidget::on_filter_changed() {
 }
 
 void FindWidget::find() {
-    show_busy_indicator();
-
     const QString filter = filter_widget->get_filter();
     const QString search_base =
     [this]() {
@@ -173,8 +171,6 @@ void FindWidget::find() {
     }();
 
     find_results->load(filter, search_base);
-
-    hide_busy_indicator();
 }
 
 QList<QList<QStandardItem *>> FindWidget::get_selected_rows() const {
