@@ -34,11 +34,12 @@ class ObjectMenu final : public QMenu {
 Q_OBJECT
 
 public:
+    ObjectMenu(QWidget *parent);
+
     // NOTE: views connected to menu must be views of an object model
     static void setup_as_context_menu(QAbstractItemView *view, const int dn_column);
     void setup_as_menubar_menu(QAbstractItemView *view, const int dn_column);
 
-    using QMenu::QMenu;
     void change_target(const QString &new_target);
 
 protected:

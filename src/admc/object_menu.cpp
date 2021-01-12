@@ -41,6 +41,13 @@
 
 // NOTE: for dialogs opened from this menu, the parent of the menu is passed NOT the menu itself, because the menu closes (and gets deleted if this is the context menu) when dialog opens.
 
+ObjectMenu::ObjectMenu(QWidget *parent)
+: QMenu(parent)
+{
+    // Start off disabled until menu gets a target
+    setDisabled(true);
+}
+
 void ObjectMenu::setup_as_menubar_menu(QAbstractItemView *view, const int dn_column) {
     connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,
@@ -83,6 +90,8 @@ void ObjectMenu::load_targets(QAbstractItemView *view, const int dn_column) {
 
     targets = selected_dns.toList();
     target_classes = classes.toList();
+
+    setDisabled(targets.isEmpty());
 }
 
 // Construct actions of the menu based on current target(s)
