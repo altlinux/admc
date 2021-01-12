@@ -35,6 +35,9 @@ class QMenu;
 class QTreeView;
 class QLineEdit;
 
+#define debug_print(a, args...) printf("%s(%s:%d) " a,  __func__,__FILE__, __LINE__, ##args)
+#define trace(a, args...) debug_print(a "\n", ##args)
+
 // NOTE: these functions assume that view's proxies don't filter out the DN column and that it is always present.
 QString get_dn_from_index(const QModelIndex &index, int dn_column);
 QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn_column);
