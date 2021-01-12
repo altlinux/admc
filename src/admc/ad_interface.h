@@ -29,8 +29,9 @@
 #include <QDateTime>
 
 /** 
- * Interface to AD server that provides a way to search for
- * objects and modify them.
+ * Interface to AD server. Provides a way to search and
+ * modify objects . Success and error messages resulting
+ * from operations are sent to Status.
  */
 
 enum SearchScope {
@@ -133,6 +134,7 @@ private:
     void success_status_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     void error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     QString default_error() const;
+    int get_ldap_result() const;
 
     AdInterface(const AdInterface&) = delete;
     AdInterface& operator=(const AdInterface&) = delete;

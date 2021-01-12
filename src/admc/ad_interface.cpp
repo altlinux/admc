@@ -18,7 +18,7 @@
  */
 
 #include "ad_interface.h"
-#include "active_directory.h"
+
 #include "ad_utils.h"
 #include "ad_config.h"
 #include "ad_object.h"
@@ -28,15 +28,44 @@
 
 #include <ldap.h>
 #include <lber.h>
+#include <resolv.h>
 #include <libsmbclient.h>
 #include <uuid/uuid.h>
 #include <krb5.h>
+#include <sasl/sasl.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include <QTextCodec>
 #include <QDebug>
 #include <QCoreApplication>
 
+// NOTE: LDAP library char* inputs are non-const in the API
+// but are const for practical purposes so we use forced
+// casts (const char *) -> (char *)
+
+#ifdef __GNUC__
+#  define UNUSED(x) x __attribute__((unused))
+#else
+#  define UNUSED(x) x
+#endif
+
+#define MAX_DN_LENGTH 1024
+#define MAX_PASSWORD_LENGTH 255
+
+typedef struct sasl_defaults_gssapi {
+    char *mech;
+    char *realm;
+    char *authcid;
+    char *passwd;
+    char *authzid;
+} sasl_defaults_gssapi;
+
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
+QList<QString> query_server_for_hosts(const char *dname);
+bool ad_connect(const char* uri, LDAP **ld_out);
+int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 
 AdInterface *AdInterface::instance() {
     static AdInterface ad_interface;
@@ -106,9 +135,9 @@ bool AdInterface::connect() {
     m_configuration_dn = "CN=Configuration," + m_domain_head;
     m_schema_dn = "CN=Schema," + m_configuration_dn;
 
-    const int result = ad_connect(cstr(uri), &ld);
+    const bool success = ad_connect(cstr(uri), &ld);
 
-    if (result == AD_SUCCESS) {
+    if (success) {
         m_config = new AdConfig(this);
 
         // TODO: can this context expire, for example from a disconnect?
@@ -118,7 +147,7 @@ bool AdInterface::connect() {
         smbc_setOptionFallbackAfterKerberos(smbc, true);
         if (!smbc_init_context(smbc)) {
             smbc_free_context(smbc, 0);
-            printf("Could not initialize smbc context\n");
+            qDebug() << "Could not initialize smbc context";
         }
         smbc_set_context(smbc);
 
@@ -334,7 +363,12 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
         }
     };
 
-    ad_array_free(attrs);
+    if (attrs != NULL) {
+        for (int i = 0; attrs[i] != NULL; i++) {
+            free(attrs[i]);
+        }
+        free(attrs);
+    }
 
     ber_bvfree(prev_cookie);
 
@@ -352,10 +386,11 @@ AdObject AdInterface::search_object(const QString &dn, const QList<QString> &att
 }
 
 bool AdInterface::attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg) {
-    int result = AD_SUCCESS;
-    
     const AdObject object = search_object(dn, {attribute});
     const QList<QByteArray> old_values = object.get_values(attribute);
+    const QString name = dn_get_name(dn);
+    const QString values_display = attribute_display_values(attribute, values);
+    const QString old_values_display = attribute_display_values(attribute, old_values);
 
     // Do nothing if both new and old values are empty
     if (old_values.isEmpty() && values.isEmpty()) {
@@ -383,16 +418,9 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
     
     LDAPMod *attrs[] = {&attr, NULL};
 
-    const int result_modify = ldap_modify_ext_s(ld, cstr(dn), attrs, NULL, NULL);
-    if (result_modify != LDAP_SUCCESS) {
-        result = AD_LDAP_ERROR;
-    }
+    const int result = ldap_modify_ext_s(ld, cstr(dn), attrs, NULL, NULL);
 
-    const QString name = dn_get_name(dn);
-    const QString values_display = attribute_display_values(attribute, values);
-    const QString old_values_display = attribute_display_values(attribute, old_values);
-
-    if (result == AD_SUCCESS) {
+    if (result == LDAP_SUCCESS) {
         success_status_message(QString(tr("Changed attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_values_display, values_display), do_msg);
 
         emit object_changed(dn);
@@ -421,14 +449,29 @@ bool AdInterface::attribute_replace_value(const QString &dn, const QString &attr
 }
 
 bool AdInterface::attribute_add_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
-    const int result = ad_attribute_add_value(ld, cstr(dn), cstr(attribute), value.constData(), value.size());
+    char *data_copy = (char *) malloc(value.size());
+    memcpy(data_copy, value.constData(), value.size());
+
+    struct berval ber_data;
+    ber_data.bv_val = data_copy;
+    ber_data.bv_len = value.size();
+
+    struct berval *values[] = {&ber_data, NULL};
+
+    LDAPMod attr;
+    attr.mod_op = LDAP_MOD_ADD | LDAP_MOD_BVALUES;
+    attr.mod_type = (char *)cstr(attribute);
+    attr.mod_bvalues = values;
+    
+    LDAPMod *attrs[] = {&attr, NULL};
+
+    const int result = ldap_modify_ext_s(ld, cstr(dn), attrs, NULL, NULL);
+    free(data_copy);
 
     const QString name = dn_get_name(dn);
-
     const QString new_display_value = attribute_display_value(attribute, value);
-    ;
 
-    if (result == AD_SUCCESS) {
+    if (result == LDAP_SUCCESS) {
         const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_display_value, attribute, name);
 
         success_status_message(context, do_msg);
@@ -446,13 +489,28 @@ bool AdInterface::attribute_add_value(const QString &dn, const QString &attribut
 }
 
 bool AdInterface::attribute_delete_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
-    const int result = ad_attribute_delete_value(ld, cstr(dn), cstr(attribute), value.constData(), value.size());
-
     const QString name = dn_get_name(dn);
-
     const QString value_display = attribute_display_value(attribute, value);
 
-    if (result == AD_SUCCESS) {
+    char *data_copy = (char *) malloc(value.size());
+    memcpy(data_copy, value.constData(), value.size());
+
+    struct berval ber_data;
+    ber_data.bv_val = data_copy;
+    ber_data.bv_len = value.size();
+
+    LDAPMod attr;
+    struct berval *values[] = {&ber_data, NULL};
+    attr.mod_op = LDAP_MOD_DELETE | LDAP_MOD_BVALUES;
+    attr.mod_type = (char *)cstr(attribute);
+    attr.mod_bvalues = values;
+    
+    LDAPMod *attrs[] = {&attr, NULL};
+
+    const int result = ldap_modify_ext_s(ld, cstr(dn), attrs, NULL, NULL);
+    free(data_copy);
+
+    if (result == LDAP_SUCCESS) {
         const QString context = QString(tr("Deleted value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
 
         success_status_message(context, do_msg);
@@ -492,9 +550,16 @@ bool AdInterface::attribute_replace_datetime(const QString &dn, const QString &a
 bool AdInterface::object_add(const QString &dn, const QString &object_class) {
     const char *classes[2] = {cstr(object_class), NULL};
 
-    const int result = ad_add(ld, cstr(dn), classes);
+    LDAPMod attr;
+    attr.mod_op = LDAP_MOD_ADD;
+    attr.mod_type = (char *) "objectClass";
+    attr.mod_values = (char **) classes;
 
-    if (result == AD_SUCCESS) {
+    LDAPMod *attrs[] = {&attr, NULL};
+
+    const int result = ldap_add_ext_s(ld, cstr(dn), attrs, NULL, NULL);
+
+    if (result == LDAP_SUCCESS) {
         success_status_message(QString(tr("Created object \"%1\"")).arg(dn));
 
         emit object_added(dn);
@@ -510,11 +575,11 @@ bool AdInterface::object_add(const QString &dn, const QString &object_class) {
 }
 
 bool AdInterface::object_delete(const QString &dn) {
-    int result = ad_delete(ld, cstr(dn));
-
     const QString name = dn_get_name(dn);
     
-    if (result == AD_SUCCESS) {
+    const int result = ldap_delete_ext_s(ld, cstr(dn), NULL, NULL);
+    
+    if (result == LDAP_SUCCESS) {
         success_status_message(QString(tr("Deleted object \"%1\"")).arg(name));
 
         emit object_deleted(dn);
@@ -530,18 +595,14 @@ bool AdInterface::object_delete(const QString &dn) {
 }
 
 bool AdInterface::object_move(const QString &dn, const QString &new_container) {
-    QList<QString> dn_split = dn.split(',');
-    QString new_dn = dn_split[0] + "," + new_container;
-
-    const int result = ad_move(ld, cstr(dn), cstr(new_container));
-
-    // TODO: drag and drop handles checking move compatibility but need
-    // to do this here as well for CLI?
-    
+    const QString rdn = dn.split(',')[0];
+    const QString new_dn = rdn + "," + new_container;
     const QString object_name = dn_get_name(dn);
     const QString container_name = dn_get_name(new_container);
 
-    if (result == AD_SUCCESS) {
+    const int result = ldap_rename_s(ld, cstr(dn), cstr(rdn), cstr(new_container), 1, NULL, NULL);
+
+    if (result == LDAP_SUCCESS) {
         success_status_message(QString(tr("Moved object \"%1\" to \"%2\"")).arg(object_name, container_name));
 
         emit object_deleted(dn);
@@ -560,12 +621,11 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
 bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     const QString new_dn = dn_rename(dn, new_name);
     const QString new_rdn = new_dn.split(",")[0];
-
-    int result = ad_rename(ld, cstr(dn), cstr(new_rdn));
-
     const QString old_name = dn_get_name(dn);
 
-    if (result == AD_SUCCESS) {
+    const int result = ldap_rename_s(ld, cstr(dn), cstr(new_rdn), NULL, 1, NULL, NULL);
+
+    if (result == LDAP_SUCCESS) {
         success_status_message(QString(tr("Renamed object \"%1\" to \"%2\"")).arg(old_name, new_name));
 
         emit object_deleted(dn);
@@ -739,7 +799,7 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
 
         const QString error =
         [this]() {
-            const int ldap_result = ad_get_ldap_result(ld);
+            const int ldap_result = get_ldap_result();
             if (ldap_result == LDAP_CONSTRAINT_VIOLATION) {
                 return tr("Password doesn't match rules");
             } else {
@@ -1101,7 +1161,7 @@ void AdInterface::success_status_message(const QString &msg, const DoStatusMsg d
         return;
     }
 
-    STATUS()->message(msg, StatusType_Success);
+    Status::instance()->message(msg, StatusType_Success);
 }
 
 void AdInterface::error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg) {
@@ -1114,11 +1174,11 @@ void AdInterface::error_status_message(const QString &context, const QString &er
         msg += QString(tr(". Error: \"%1\"")).arg(error);;
     }
 
-    STATUS()->message(msg, StatusType_Error);
+    Status::instance()->message(msg, StatusType_Error);
 }
 
 QString AdInterface::default_error() const {
-    const int ldap_result = ad_get_ldap_result(ld);
+    const int ldap_result = get_ldap_result();
     switch (ldap_result) {
         case LDAP_NO_SUCH_OBJECT: return tr("No such object");
         case LDAP_CONSTRAINT_VIOLATION: return tr("Constraint violation");
@@ -1132,25 +1192,263 @@ QString AdInterface::default_error() const {
     }
 }
 
+int AdInterface::get_ldap_result() const {
+    int result;
+    ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &result);
+
+    return result;
+}
+
 AdInterface *AD() {
     return AdInterface::instance();
 }
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
-    char **hosts_raw = NULL;
-    int hosts_result = ad_get_domain_hosts(cstr(domain), cstr(site), &hosts_raw);
+    QList<QString> hosts;
 
-    if (hosts_result == AD_SUCCESS) {
-        auto hosts = QList<QString>();
+    // TODO: confirm site query is formatted properly, currently getting no answer back (might be working as intended, since tested on domain without sites?)
 
-        for (int i = 0; hosts_raw[i] != NULL; i++) {
-            auto host = QString(hosts_raw[i]);
-            hosts.append(host);
-        }
-        ad_array_free(hosts_raw);
+    // Query site hosts
+    if (!site.isEmpty()) {
+        char dname[1000];
+        snprintf(dname, sizeof(dname), "_ldap._tcp.%s._sites.%s", cstr(site), cstr(domain));
 
-        return hosts;
-    } else {
-        return QList<QString>();
+        const QList<QString> site_hosts = query_server_for_hosts(dname);
+        hosts.append(site_hosts);
     }
+
+    // Query default hosts
+    char dname_default[1000];
+    snprintf(dname_default, sizeof(dname_default), "_ldap._tcp.%s", cstr(domain));
+
+    const QList<QString> default_hosts = query_server_for_hosts(dname_default);
+    hosts.append(default_hosts);
+
+    hosts.removeDuplicates();
+
+    return hosts;
+}
+
+/**
+ * Perform a query for dname and output hosts
+ * dname is a combination of protocols (ldap, tcp), domain and site
+ * NOTE: this is rewritten from
+ * https://github.com/paleg/libadclient/blob/master/adclient.cpp
+ * which itself is copied from
+ * https://www.ccnx.org/releases/latest/doc/ccode/html/ccndc-srv_8c_source.html
+ * Another example of similar procedure:
+ * https://www.gnu.org/software/shishi/coverage/shishi/lib/resolv.c.gcov.html
+ */
+QList<QString> query_server_for_hosts(const char *dname) {
+    union dns_msg {
+        HEADER header;
+        unsigned char buf[NS_MAXMSG];
+    } msg;
+
+    auto error =
+    []() {
+        return QList<QString>();
+    };
+
+    const long unsigned msg_len = res_search(dname, ns_c_in, ns_t_srv, msg.buf, sizeof(msg.buf));
+
+    const bool message_error = (msg_len < 0 || msg_len < sizeof(HEADER));
+    if (message_error) {
+        error();
+    }
+
+    const int packet_count = ntohs(msg.header.qdcount);
+    const int answer_count = ntohs(msg.header.ancount);
+
+    unsigned char *curr = msg.buf + sizeof(msg.header);
+    const unsigned char *eom = msg.buf + msg_len;
+
+    // Skip over packet records
+    for (int i = packet_count; i > 0 && curr < eom; i--) {
+        const int packet_len = dn_skipname(curr, eom);
+
+        const bool packet_error = (packet_len < 0);
+        if (packet_error) {
+            error();
+        }
+
+        curr = curr + packet_len + QFIXEDSZ;
+    }
+
+    QList<QString> hosts;
+
+    // Process answers by collecting hosts into list
+    for (int i = 0; i < answer_count; i++) {
+        // Get server
+        char server[NS_MAXDNAME];
+        const int server_len = dn_expand(msg.buf, eom, curr, server, sizeof(server));
+        
+        const bool server_error = (server_len < 0);
+        if (server_error) {
+            error();
+        }
+
+        curr = curr + server_len;
+
+        int record_type;
+        int UNUSED(record_class);
+        int UNUSED(ttl);
+        int record_len;
+        GETSHORT(record_type, curr);
+        GETSHORT(record_class, curr);
+        GETLONG(ttl, curr);
+        GETSHORT(record_len, curr);
+        
+        unsigned char *record_end = curr + record_len;
+        if (record_end > eom) {
+            error();
+        }
+
+        // Skip non-server records
+        if (record_type != ns_t_srv) {
+            curr = record_end;
+
+            continue;
+        }
+
+        int UNUSED(priority);
+        int UNUSED(weight);
+        int UNUSED(port);
+        GETSHORT(priority, curr);
+        GETSHORT(weight, curr);
+        GETSHORT(port, curr);
+        // TODO: need to save port field? maybe to incorporate into uri
+
+        // Get host
+        char host[NS_MAXDNAME];
+        const int host_len = dn_expand(msg.buf, eom, curr, host, sizeof(host));
+        const bool host_error = (host_len < 0);
+        if (host_error) {
+            error();
+        }
+
+        hosts.append(QString(host));
+
+        curr = record_end;
+    }
+
+    return hosts;
+}
+
+bool ad_connect(const char* uri, LDAP **ld_out) {
+    int result;
+    LDAP *ld = NULL;
+
+    result = ldap_initialize(&ld, uri);
+    if (result != LDAP_SUCCESS) {
+        ldap_memfree(ld);
+        return false;
+    }
+
+    // Set version
+    const int version = LDAP_VERSION3;
+    result = ldap_set_option(ld, LDAP_OPT_PROTOCOL_VERSION, &version);
+    if (result != LDAP_OPT_SUCCESS) {
+        ldap_memfree(ld);
+        return false;
+    }
+
+    // Disable referrals
+    result =ldap_set_option(ld, LDAP_OPT_REFERRALS, LDAP_OPT_OFF);
+    if (result != LDAP_OPT_SUCCESS) {
+        ldap_memfree(ld);
+        return false;
+    }
+
+    // Set maxssf
+    const char* sasl_secprops = "maxssf=56";
+    result = ldap_set_option(ld, LDAP_OPT_X_SASL_SECPROPS, sasl_secprops);
+    if (result != LDAP_SUCCESS) {
+        ldap_memfree(ld);
+        return false;
+    }
+
+    ldap_set_option(ld, LDAP_OPT_X_SASL_NOCANON, LDAP_OPT_ON);
+
+    // TODO: add option to turn off
+    ldap_set_option(ld, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
+
+    // Setup sasl_defaults_gssapi 
+    struct sasl_defaults_gssapi defaults;
+    defaults.mech = (char *)"GSSAPI";
+    ldap_get_option(ld, LDAP_OPT_X_SASL_REALM, &defaults.realm);
+    ldap_get_option(ld, LDAP_OPT_X_SASL_AUTHCID, &defaults.authcid);
+    ldap_get_option(ld, LDAP_OPT_X_SASL_AUTHZID, &defaults.authzid);
+    defaults.passwd = NULL;
+
+    // Perform bind operation
+    unsigned sasl_flags = LDAP_SASL_QUIET;
+    result = ldap_sasl_interactive_bind_s(ld, NULL,defaults.mech, NULL, NULL, sasl_flags, sasl_interact_gssapi, &defaults);
+    ldap_memfree(defaults.realm);
+    ldap_memfree(defaults.authcid);
+    ldap_memfree(defaults.authzid);
+    if (result != LDAP_SUCCESS) {
+        ldap_memfree(ld);
+        return false;
+    }
+
+    // NOTE: not using this for now but might need later
+    // The Man says: this function is used when an application needs to bind to another server in order to follow a referral or search continuation reference
+    // ldap_set_rebind_proc(ld, sasl_rebind_gssapi, NULL);
+
+    if (ld_out != NULL) {
+        *ld_out = ld;
+    }
+
+    return true;
+}
+
+/**
+ * Callback for ldap_sasl_interactive_bind_s
+ */
+int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in) {
+    sasl_defaults_gssapi *defaults = (sasl_defaults_gssapi *) indefaults;
+    sasl_interact_t *interact = (sasl_interact_t*)in;
+
+    if (ld == NULL) {
+        return LDAP_PARAM_ERROR;
+    }
+
+    while (interact->id != SASL_CB_LIST_END) {
+        const char *dflt = interact->defresult;
+
+        switch (interact->id) {
+            case SASL_CB_GETREALM:
+            if (defaults)
+                dflt = defaults->realm;
+            break;
+            case SASL_CB_AUTHNAME:
+            if (defaults)
+                dflt = defaults->authcid;
+            break;
+            case SASL_CB_PASS:
+            if (defaults)
+                dflt = defaults->passwd;
+            break;
+            case SASL_CB_USER:
+            if (defaults)
+                dflt = defaults->authzid;
+            break;
+            case SASL_CB_NOECHOPROMPT:
+            break;
+            case SASL_CB_ECHOPROMPT:
+            break;
+        }
+
+        if (dflt && !*dflt) {
+            dflt = NULL;
+        }
+
+        /* input must be empty */
+        interact->result = (dflt && *dflt) ? dflt : "";
+        interact->len = strlen((const char *) interact->result);
+        interact++;
+    }
+
+    return LDAP_SUCCESS;
 }

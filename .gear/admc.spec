@@ -62,7 +62,6 @@ cd BUILD
 %files
 %doc README.md
 %_bindir/admc
-%_libdir/libadldap.so
 
 %files gpgui
 %_bindir/gpgui

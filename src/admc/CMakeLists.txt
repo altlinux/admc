@@ -7,6 +7,8 @@ find_package(Qt5 REQUIRED
 find_package(Uuid REQUIRED)
 find_package(Smbclient REQUIRED)
 find_package(Krb5 REQUIRED)
+find_package(Ldap REQUIRED)
+find_package(Resolv REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -111,10 +113,11 @@ target_include_directories(admc
 target_link_libraries(admc
     Qt5::Core
     Qt5::Widgets
-    adldap
     Uuid::Uuid
     Smbclient::Smbclient
     Krb5::Krb5
+    Ldap::Ldap
+    Resolv::Resolv
 )
 
 install(TARGETS admc)
