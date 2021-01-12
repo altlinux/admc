@@ -160,6 +160,8 @@ void GroupPolicyTab::on_add_button() {
             
             add_link(selected);
         });
+
+    dialog->open();
 }
 
 void GroupPolicyTab::on_remove_button() {

@@ -94,6 +94,8 @@ void ManagerEdit::on_change() {
 
             emit edited();
         });
+
+    dialog->open();
 }
 
 void ManagerEdit::on_details() {
