@@ -22,6 +22,7 @@
 #include "utils.h"
 
 #include <algorithm>
+#include <QMap>
 
 AdObject::AdObject()
 {

@@ -29,11 +29,14 @@
 #include <QMenu>
 #include <QTreeView>
 #include <QHeaderView>
-#include <QtGlobal>
 #include <QStandardItemModel>
 #include <QLineEdit>
 #include <QGuiApplication>
 #include <QCursor>
+#include <QList>
+#include <QPoint>
+#include <QMap>
+#include <QHash>
 
 QString get_dn_from_index(const QModelIndex &index, int dn_column) {
     if (!index.isValid()) {

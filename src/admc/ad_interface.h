@@ -20,19 +20,15 @@
 #ifndef AD_INTERFACE_H
 #define AD_INTERFACE_H
 
-#include "ad_defines.h"
-
-#include <QObject>
-#include <QList>
-#include <QString>
-#include <QByteArray>
-#include <QDateTime>
-
 /** 
  * Interface to AD server. Provides a way to search and
  * modify objects . Success and error messages resulting
  * from operations are sent to Status.
  */
+
+#include <QObject>
+
+#include "ad_defines.h"
 
 enum SearchScope {
     SearchScope_Object,
@@ -41,10 +37,14 @@ enum SearchScope {
     SearchScope_All,
 };
 
-typedef struct ldap LDAP;
-typedef struct _SMBCCTX SMBCCTX;
+class QString;
+class QByteArray;
+class QDateTime;
 class AdConfig;
 class AdObject;
+template <typename T> class QList;
+typedef struct ldap LDAP;
+typedef struct _SMBCCTX SMBCCTX;
 
 class AdInterface final : public QObject {
 Q_OBJECT

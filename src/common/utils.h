@@ -20,10 +20,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <QModelIndex>
-#include <QList>
-#include <QPoint>
-
 class QAbstractItemModel;
 class QAbstractItemView;
 class QAbstractProxyModel;
@@ -34,6 +30,12 @@ class QStandardItemModel;
 class QMenu;
 class QTreeView;
 class QLineEdit;
+class QPoint;
+class QWidget;
+class QModelIndex;
+template <typename T> class QList;
+template <typename K, typename T> class QMap;
+template <typename K, typename T> class QHash;
 
 #define debug_print(a, args...) printf("%s(%s:%d) " a,  __func__,__FILE__, __LINE__, ##args)
 #define trace(a, args...) debug_print(a "\n", ##args)
