@@ -176,6 +176,10 @@ void MainWindow::on_connected() {
 
     menubar->action_menu->setup_as_menubar_menu(containers_widget->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
     menubar->action_menu->setup_as_menubar_menu(contents_widget->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+
+    // Select head object at startup
+    const QModelIndex head_index = object_model->index(0, 0);
+    containers_widget->change_current(head_index);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
