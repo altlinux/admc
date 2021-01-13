@@ -29,6 +29,7 @@ add_executable(admc
     containers_widget.cpp
     containers_proxy.cpp
     contents_widget.cpp
+    contents_search_proxy.cpp
     main_window.cpp
     status.cpp
     object_model.cpp

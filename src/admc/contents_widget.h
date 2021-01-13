@@ -27,7 +27,9 @@ class ObjectModel;
 class QTreeView;
 class QModelIndex;
 class AdvancedViewProxy;
+class ContentsSearchProxy;
 class QLabel;
+class QLineEdit;
 
 /**
  * Shows a list of objects, which are children of a target
@@ -50,11 +52,12 @@ private slots:
     void on_header_toggled();
 
 private:
-    QString target_dn;
     ObjectModel *model;
     AdvancedViewProxy *advanced_view_proxy;
+    ContentsSearchProxy *search_proxy;
     QWidget *header;
     QLabel *header_label;
+    QLineEdit *filter_name_edit;
 
     void showEvent(QShowEvent *event);
 };

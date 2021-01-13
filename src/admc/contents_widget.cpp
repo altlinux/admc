@@ -26,17 +26,23 @@
 #include "object_menu.h"
 #include "details_dialog.h"
 #include "utils.h"
+#include "contents_search_proxy.h"
 
 #include <QVBoxLayout>
 #include <QDebug>
 #include <QTreeView>
 #include <QHeaderView>
 #include <QLabel>
+#include <QSortFilterProxyModel>
+#include <QLineEdit>
 
 ContentsWidget::ContentsWidget(ObjectModel *model_arg)
 : QWidget()
 {   
     model = model_arg;
+
+    search_proxy = new ContentsSearchProxy(this);
+    search_proxy->setRecursiveFilteringEnabled(true);
 
     view = new QTreeView(this);
     view->setAcceptDrops(true);
@@ -56,7 +62,8 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg)
     advanced_view_proxy = new AdvancedViewProxy(this);
 
     advanced_view_proxy->setSourceModel(model);
-    view->setModel(advanced_view_proxy);
+    search_proxy->setSourceModel(advanced_view_proxy);
+    view->setModel(search_proxy);
 
     setup_column_toggle_menu(view, model, {ADCONFIG()->get_column_index(ATTRIBUTE_NAME), ADCONFIG()->get_column_index(ATTRIBUTE_OBJECT_CLASS), ADCONFIG()->get_column_index(ATTRIBUTE_DESCRIPTION)});
 
@@ -64,12 +71,17 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg)
 
     header_label = new QLabel();
 
-    auto header_layout = new QVBoxLayout();
+    filter_name_edit = new QLineEdit(this);
+    filter_name_edit->setPlaceholderText(tr("Search contents.."));
+    filter_name_edit->setMinimumWidth(200);
+
+    auto header_layout = new QHBoxLayout();
     header->setLayout(header_layout);
     header_layout->setContentsMargins(0, 0, 0, 0);
     header_layout->setSpacing(0);
 
     header_layout->addWidget(header_label);
+    header_layout->addWidget(filter_name_edit, 0, Qt::AlignRight);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
@@ -85,16 +97,22 @@ ContentsWidget::ContentsWidget(ObjectModel *model_arg)
         show_header_signal, &BoolSettingSignal::changed,
         this, &ContentsWidget::on_header_toggled);
     on_header_toggled();
+
+    connect(
+        filter_name_edit, &QLineEdit::textChanged,
+        search_proxy, &ContentsSearchProxy::update_search_text);
 }
 
 void ContentsWidget::set_target(const QModelIndex &source_index) {
+    // Clear search filter on target change
+    filter_name_edit->setText("");
+
     // NOTE: need to fetchMore() before setRootIndex() otherwise header gets messed up
     model->fetchMore(source_index);
 
-    const bool no_children = !model->hasChildren(source_index);
-
     // NOTE: MASSIVE BANDAID. setRootIndex() on an object without children causes header to disappear and lose state(column visibility and widths). To fix this, before changing root index, add an empty row, then change root index, header loads normally, remove empty row, header stays there.
     // NOTE: this seems to be guaranteed to cause problems in the future. Maybe something to do with signals/slots related to model changes, so watch this.
+    const bool no_children = !model->hasChildren(source_index);
     if (no_children) {
         auto item = model->itemFromIndex(source_index);
         const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
@@ -102,7 +120,9 @@ void ContentsWidget::set_target(const QModelIndex &source_index) {
     }
 
     const QModelIndex advanced_view_proxy_index = advanced_view_proxy->mapFromSource(source_index);
-    view->setRootIndex(advanced_view_proxy_index);
+    const QModelIndex search_proxy_index = search_proxy->mapFromSource(advanced_view_proxy_index);
+    view->setRootIndex(search_proxy_index);
+    search_proxy->update_root_index(search_proxy_index);
 
     // Remove that empty row we created to fix header
     if (no_children) {
