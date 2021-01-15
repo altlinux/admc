@@ -21,6 +21,7 @@
 #define CONTENTS_PROXY_H
 
 #include <QSortFilterProxyModel>
+#include <QString>
 
 /**
  * Proxy model for containers widget that searches by name.
@@ -39,7 +40,7 @@ public:
     
 private:
     QString search_text;
-    QModelIndex root_index;
+    QString root_dn;
 
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };

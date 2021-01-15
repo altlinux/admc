@@ -27,8 +27,8 @@ void ContentsSearchProxy::update_search_text(const QString &search_text_arg) {
     invalidateFilter();
 }
 
-void ContentsSearchProxy::update_root_index(const QModelIndex &root_index_arg) {
-    root_index = root_index_arg;
+void ContentsSearchProxy::update_root_index(const QModelIndex &root_index) {
+    root_dn = get_dn_from_index(root_index, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
     invalidateFilter();
 }
 
@@ -36,11 +36,12 @@ bool ContentsSearchProxy::filterAcceptsRow(int source_row, const QModelIndex &so
     const QModelIndex index = sourceModel()->index(source_row, 0, source_parent);
 
     // NOTE: always match root index. If this is not done and no children match search text, nothing matches in the whole proxy model and it becomes empty, which messes up root index.
-    if (index == root_index) {
+    auto dn = get_dn_from_index(index, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    if (dn == root_dn) {
         return true;
     }
 
     const QString name = get_dn_from_index(index, ADCONFIG()->get_column_index(ATTRIBUTE_NAME));
 
-    return name.contains(search_text);
+    return name.contains(search_text, Qt::CaseInsensitive);
 }
