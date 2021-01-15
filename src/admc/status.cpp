@@ -21,7 +21,10 @@
 
 #include <QStatusBar>
 #include <QTextEdit>
-#include <QMessageBox>
+#include <QDialog>
+#include <QPlainTextEdit>
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
 
 #define MAX_MESSAGES_IN_LOG 200
 
@@ -90,11 +93,25 @@ void Status::end_error_log(QWidget *parent) {
         return;
     }
 
-    const QMessageBox::Icon icon = QMessageBox::Critical;
-    const QString title = tr("Errors occured");
-    const QString text = error_log.join("\n");
-    const QMessageBox::StandardButtons buttons = QMessageBox::Ok;
+    auto dialog = new QDialog(parent);
+    dialog->setWindowTitle(tr("Errors occured"));
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->setMinimumWidth(600);
 
-    auto dialog = new QMessageBox(icon, title, text, buttons, parent);
+    auto log = new QPlainTextEdit();
+    const QString text = error_log.join("\n");
+    log->setPlainText(text);
+
+    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok);
+
+    auto layout = new QVBoxLayout();
+    dialog->setLayout(layout);
+    layout->addWidget(log);
+    layout->addWidget(button_box);
+
+    connect(
+        button_box, &QDialogButtonBox::accepted,
+        dialog, &QDialog::accept);
+
     dialog->open();
 }
