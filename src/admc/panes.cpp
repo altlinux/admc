@@ -40,6 +40,7 @@
 #include <QDebug>
 #include <QStandardItemModel>
 #include <QHeaderView>
+#include <QApplication>
 
 QHash<int, QStandardItemModel *> results_model_map;
 
@@ -99,8 +100,54 @@ Panes::Panes()
         scope_view, &QTreeView::expanded,
         this, &Panes::fetch_scope_item);
 
-    ObjectMenu::setup_as_context_menu(scope_view);
-    ObjectMenu::setup_as_context_menu(results_view);
+    connect(
+        qApp, &QApplication::focusChanged,
+        this, &Panes::on_focus_changed);
+
+    auto connect_context_menu =
+    [this](QTreeView *view) {
+        connect(
+            view, &QWidget::customContextMenuRequested,
+            [=](const QPoint pos) {
+                open_context_menu(view, pos);
+            });
+    };
+    connect_context_menu(scope_view);
+    connect_context_menu(results_view);
+}
+
+void Panes::setup_menubar_menu(ObjectMenu *menu) {
+    connect(
+        menu, &QMenu::aboutToShow,
+        [this, menu]() {
+            menu->load_targets(focused_view);
+        });
+}
+
+void Panes::open_context_menu(QTreeView *view, const QPoint pos) {
+    auto menu = new ObjectMenu(focused_view);
+
+    menu->load_targets(focused_view);
+
+    if (!menu->targets.isEmpty()) {
+        exec_menu_from_view(menu, focused_view, pos);
+    }
+
+    menu->deleteLater();
+}
+
+// NOTE: this is the workaround required to know in which pane selected objects are located
+void Panes::on_focus_changed(QWidget *old, QWidget *now) {
+    const QList<QTreeView *> views = {
+        scope_view, results_view
+    };
+    for (auto view : views) {
+        if (view == now) {
+            focused_view = view;
+            
+            return;
+        }
+    }
 }
 
 void Panes::change_results_target(const QModelIndex &current, const QModelIndex &) {
@@ -145,9 +192,6 @@ void Panes::change_results_target(const QModelIndex &current, const QModelIndex 
     QStandardItemModel *results_model = results_model_map[id];
 
     results_view->setModel(results_model);
-
-    // NOTE: changing model changes selection model so need to reconnect action menu
-    menu->setup_as_menubar_menu(results_view);
 
     // Fetch scope item as well for convenience
     fetch_scope_item(current);
@@ -199,6 +243,8 @@ void Panes::reset() {
 
     // Make head object current
     scope_view->selectionModel()->setCurrentIndex(item->index(), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+
+    focused_view = scope_view;
 }
 
 QStandardItem *make_scope_item(const AdObject &object) {

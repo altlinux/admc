@@ -29,6 +29,7 @@ class QString;
 class FilterDialog;
 class QMenu;
 class ObjectMenu;
+class QPoint;
 
 enum Role {
     Role_Id = Qt::UserRole + 1,
@@ -44,20 +45,22 @@ public:
     FilterDialog *filter_dialog;
     QTreeView *scope_view;
     QTreeView *results_view;
-    ObjectMenu *menu;
     
     Panes();
 
     void reset();
+    void setup_menubar_menu(ObjectMenu *menu);
 
 private slots:
     void change_results_target(const QModelIndex &current, const QModelIndex &);
+    void on_focus_changed(QWidget *old, QWidget *now);
 
 private:
-
     QStandardItemModel *scope_model;
+    QTreeView *focused_view;
 
     void fetch_scope_item(const QModelIndex &index);
+    void open_context_menu(QTreeView *view, const QPoint pos);
 };
 
 #endif /* PANES_H */

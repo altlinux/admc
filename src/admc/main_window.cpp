@@ -153,8 +153,7 @@ void MainWindow::on_connected() {
 
     update_navigation_actions();
 
-    menubar->action_menu->setup_as_menubar_menu(panes->scope_view);
-    panes->menu = menubar->action_menu;
+    panes->setup_menubar_menu(menubar->action_menu);
 
     panes->reset();
 }

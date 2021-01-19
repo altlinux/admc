@@ -34,6 +34,8 @@ class ObjectMenu final : public QMenu {
 Q_OBJECT
 
 public:
+    QList<QString> targets;
+    
     ObjectMenu(QWidget *parent);
 
     // NOTE: views connected to menu must be views of an object model
@@ -41,15 +43,13 @@ public:
     void setup_as_menubar_menu(QAbstractItemView *view);
 
     void change_target(const QString &new_target);
+    void load_targets(QAbstractItemView *view);
 
 protected:
     void showEvent(QShowEvent *event);
 
 private:
-    QList<QString> targets;
     QList<QString> target_classes;
-
-    void load_targets(QAbstractItemView *view);
 
     void details() const;
     void delete_object() const;

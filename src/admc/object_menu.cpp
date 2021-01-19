@@ -45,8 +45,7 @@
 ObjectMenu::ObjectMenu(QWidget *parent)
 : QMenu(parent)
 {
-    // Start off disabled until menu gets a target
-    setDisabled(true);
+
 }
 
 void ObjectMenu::setup_as_menubar_menu(QAbstractItemView *view) {
@@ -96,8 +95,6 @@ void ObjectMenu::load_targets(QAbstractItemView *view) {
 
     targets = selected_dns.toList();
     target_classes = classes.toList();
-
-    setDisabled(targets.isEmpty());
 }
 
 // Construct actions of the menu based on current target(s)
