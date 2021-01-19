@@ -37,8 +37,8 @@ public:
     ObjectMenu(QWidget *parent);
 
     // NOTE: views connected to menu must be views of an object model
-    static void setup_as_context_menu(QAbstractItemView *view, const int dn_column);
-    void setup_as_menubar_menu(QAbstractItemView *view, const int dn_column);
+    static void setup_as_context_menu(QAbstractItemView *view);
+    void setup_as_menubar_menu(QAbstractItemView *view);
 
     void change_target(const QString &new_target);
 
@@ -49,7 +49,7 @@ private:
     QList<QString> targets;
     QList<QString> target_classes;
 
-    void load_targets(QAbstractItemView *view, const int dn_column);
+    void load_targets(QAbstractItemView *view);
 
     void details() const;
     void delete_object() const;

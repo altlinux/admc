@@ -27,25 +27,37 @@ class QStandardItemModel;
 class QModelIndex;
 class QString;
 class FilterDialog;
+class QMenu;
+class ObjectMenu;
+
+enum Role {
+    Role_Id = Qt::UserRole + 1,
+    Role_Fetched = Qt::UserRole + 2,
+    Role_DN = Qt::UserRole + 3,
+    Role_ObjectClass = Qt::UserRole + 4,
+};
 
 class Panes final : public QWidget {
 Q_OBJECT
 
 public:
     FilterDialog *filter_dialog;
+    QTreeView *scope_view;
+    QTreeView *results_view;
+    ObjectMenu *menu;
     
     Panes();
 
+    void reset();
+
 private slots:
-    void on_current_scope_changed(const QModelIndex &current, const QModelIndex &);
+    void change_results_target(const QModelIndex &current, const QModelIndex &);
 
 private:
-    QTreeView *scope_view;
-    QTreeView *results_view;
+
     QStandardItemModel *scope_model;
 
     void fetch_scope_item(const QModelIndex &index);
-    void reset();
 };
 
 #endif /* PANES_H */

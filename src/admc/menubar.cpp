@@ -41,6 +41,12 @@ MenuBar::MenuBar()
 : QMenuBar() {
     QMenu *file_menu = addMenu(tr("&File"));
 
+    connect(
+        file_menu, &QMenu::aboutToShow,
+        [file_menu]() {
+            file_menu->addAction("test");
+        });
+
     auto connect_action = file_menu->addAction(tr("&Connect"),
         [this]() {
             STATUS()->start_error_log();

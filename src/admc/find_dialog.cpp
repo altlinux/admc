@@ -47,8 +47,8 @@ FindDialog::FindDialog(const QList<QString> classes, const QString default_searc
     menubar->addMenu(action_menu);
 
     QTreeView *results_view = find_widget->find_results->view;
-    action_menu->setup_as_menubar_menu(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-    ObjectMenu::setup_as_context_menu(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    // action_menu->setup_as_menubar_menu(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    // ObjectMenu::setup_as_context_menu(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
     DetailsDialog::connect_to_open_by_double_click(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
         
     auto layout = new QVBoxLayout();

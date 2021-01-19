@@ -34,6 +34,7 @@
 #include "filter.h"
 #include "status.h"
 #include "object_model.h"
+#include "panes.h"
 
 #include <QPoint>
 #include <QAbstractItemView>
@@ -48,22 +49,22 @@ ObjectMenu::ObjectMenu(QWidget *parent)
     setDisabled(true);
 }
 
-void ObjectMenu::setup_as_menubar_menu(QAbstractItemView *view, const int dn_column) {
+void ObjectMenu::setup_as_menubar_menu(QAbstractItemView *view) {
     connect(
         view->selectionModel(), &QItemSelectionModel::selectionChanged,
         [=](const QItemSelection &, const QItemSelection &) {
-            load_targets(view, dn_column);
+            load_targets(view);
         });
 }
 
-void ObjectMenu::setup_as_context_menu(QAbstractItemView *view, const int dn_column) {
+void ObjectMenu::setup_as_context_menu(QAbstractItemView *view) {
     // NOTE: creating this on heap instead of stack in the slot so that menu instance and it's members are accesible in dialog "accepted" slots
     auto menu = new ObjectMenu(view);
 
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         [=](const QPoint pos) {
-            menu->load_targets(view, dn_column);
+            menu->load_targets(view);
 
             if (!menu->targets.isEmpty()) {
                 exec_menu_from_view(menu, view, pos);
@@ -74,15 +75,20 @@ void ObjectMenu::setup_as_context_menu(QAbstractItemView *view, const int dn_col
 // Load targets(and their classes), which are the selected
 // objects of given view. Note that menu actions are not
 // made at this point.
-void ObjectMenu::load_targets(QAbstractItemView *view, const int dn_column) {
+void ObjectMenu::load_targets(QAbstractItemView *view) {
     QSet<QString> selected_dns;
     QSet<QString> classes;
 
     const QList<QModelIndex> indexes = view->selectionModel()->selectedIndexes();
 
     for (const QModelIndex index : indexes) {
-        const QString &dn = get_dn_from_index(index, dn_column);
-        const QString object_class = index.siblingAtColumn(0).data(ObjectModel::RawObjectClass).toString();
+        // Need first column to access item data
+        if (index.column() != 0) {
+            continue;
+        }
+
+        const QString dn = index.data(Role_DN).toString();
+        const QString object_class = index.data(Role_ObjectClass).toString();
 
         selected_dns.insert(dn);
         classes.insert(object_class);

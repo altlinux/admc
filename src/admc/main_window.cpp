@@ -32,6 +32,7 @@
 #include "filter_dialog.h"
 #include "object_menu.h"
 #include "panes.h"
+#include "utils.h"
 
 #include <QApplication>
 #include <QString>
@@ -136,7 +137,6 @@ void MainWindow::on_connected() {
 
     // connect_toggle_widget(containers_widget, BoolSetting_ShowContainers);
     connect_toggle_widget(status_log, BoolSetting_ShowStatusLog);
-
     connect(
         menubar->filter_action, &QAction::triggered,
         panes->filter_dialog, &QDialog::open);
@@ -153,12 +153,10 @@ void MainWindow::on_connected() {
 
     update_navigation_actions();
 
-    // menubar->action_menu->setup_as_menubar_menu(containers_widget->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-    // menubar->action_menu->setup_as_menubar_menu(contents_widget->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    menubar->action_menu->setup_as_menubar_menu(panes->scope_view);
+    panes->menu = menubar->action_menu;
 
-    // Select head object at startup
-    // const QModelIndex head_index = object_model->index(0, 0);
-    // containers_widget->change_current(head_index);
+    panes->reset();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
