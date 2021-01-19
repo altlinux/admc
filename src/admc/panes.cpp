@@ -104,6 +104,10 @@ Panes::Panes()
 }
 
 void Panes::change_results_target(const QModelIndex &current, const QModelIndex &) {
+    if (!current.isValid()) {
+        return;
+    }
+    
     const int id = scope_model->data(current, Role_Id).toInt();
 
     // Load results for this scope item if needed
@@ -194,7 +198,6 @@ void Panes::reset() {
     scope_model->appendRow(item);
 
     // Make head object current
-    trace();
     scope_view->selectionModel()->setCurrentIndex(item->index(), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 }
 
