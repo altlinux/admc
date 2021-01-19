@@ -31,6 +31,7 @@
 #include "object_model.h"
 #include "filter_dialog.h"
 #include "object_menu.h"
+#include "panes.h"
 
 #include <QApplication>
 #include <QString>
@@ -97,36 +98,21 @@ void MainWindow::on_connected() {
     status_log->clear();
     STATUS()->status_bar->showMessage(tr("Ready"));
 
-    auto filter_dialog = new FilterDialog(this);
-
-    auto object_model = new ObjectModel(this);
-    object_model->load_head_object();
-
-    containers_widget = new ContainersWidget(object_model, this);
-
-    contents_widget = new ContentsWidget(object_model);
+    auto panes = new Panes();
 
     auto details_widget_docked_container = DetailsDialog::get_docked_container();
-    auto policies_widget = new PoliciesWidget();
+    
+    // TODO: really should show a blank widget when docked details is toggled. Right now, it does nothing until some object's details is opened which is confusing.
 
-    // Layout
-    const auto containers_policies_splitter = new QSplitter(Qt::Vertical);
-    containers_policies_splitter->addWidget(containers_widget);
-    containers_policies_splitter->addWidget(policies_widget);
-    containers_policies_splitter->setStretchFactor(0, 2);
-    containers_policies_splitter->setStretchFactor(1, 1);
-
-    auto horiz_splitter = new QSplitter(Qt::Horizontal);
-    horiz_splitter->addWidget(containers_policies_splitter);
-    horiz_splitter->addWidget(contents_widget);
-    horiz_splitter->addWidget(details_widget_docked_container);
-    horiz_splitter->setStretchFactor(0, 1);
-    horiz_splitter->setStretchFactor(1, 2);
-    horiz_splitter->setStretchFactor(2, 2);
+    auto panes_details_splitter = new QSplitter(Qt::Horizontal);
+    panes_details_splitter->addWidget(panes);
+    panes_details_splitter->addWidget(details_widget_docked_container);
+    panes_details_splitter->setStretchFactor(0, 2);
+    panes_details_splitter->setStretchFactor(1, 1);
 
     auto vert_splitter = new QSplitter(Qt::Vertical);
     vert_splitter->addWidget(status_log);
-    vert_splitter->addWidget(horiz_splitter);
+    vert_splitter->addWidget(panes_details_splitter);
     vert_splitter->setStretchFactor(0, 1);
     vert_splitter->setStretchFactor(1, 3);
 
@@ -148,20 +134,13 @@ void MainWindow::on_connected() {
         on_changed();
     };
 
-    connect_toggle_widget(containers_widget, BoolSetting_ShowContainers);
+    // connect_toggle_widget(containers_widget, BoolSetting_ShowContainers);
     connect_toggle_widget(status_log, BoolSetting_ShowStatusLog);
 
     connect(
-        filter_dialog, &FilterDialog::filter_changed,
-        object_model, &ObjectModel::on_filter_changed);
-
-    connect(
         menubar->filter_action, &QAction::triggered,
-        filter_dialog, &QDialog::open);
+        panes->filter_dialog, &QDialog::open);
 
-    connect(
-        containers_widget, &ContainersWidget::current_changed,
-        this, &MainWindow::on_containers_current_changed);
     connect(
         menubar->up_one_level_action, &QAction::triggered,
         this, &MainWindow::navigate_up);
@@ -174,12 +153,12 @@ void MainWindow::on_connected() {
 
     update_navigation_actions();
 
-    menubar->action_menu->setup_as_menubar_menu(containers_widget->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-    menubar->action_menu->setup_as_menubar_menu(contents_widget->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    // menubar->action_menu->setup_as_menubar_menu(containers_widget->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    // menubar->action_menu->setup_as_menubar_menu(contents_widget->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
     // Select head object at startup
-    const QModelIndex head_index = object_model->index(0, 0);
-    containers_widget->change_current(head_index);
+    // const QModelIndex head_index = object_model->index(0, 0);
+    // containers_widget->change_current(head_index);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

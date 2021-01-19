@@ -45,6 +45,7 @@ add_executable(admc
     advanced_view_proxy.cpp
     find_widget.cpp
     tab_widget.cpp
+    panes.cpp
     
     rename_dialog.cpp
     rename_policy_dialog.cpp

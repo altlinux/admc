@@ -17,26 +17,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FILTER_DIALOG_H
-#define FILTER_DIALOG_H
+#ifndef PANES_H
+#define PANES_H
 
-/**
- * Contains FilterWidget. When a filter is entered and
- * dialog is accepted, emits filter_changed() signal. Used
- * for filtering ObjectModel.
- */
+#include <QWidget>
 
-#include <QDialog>
+class QTreeView;
+class QStandardItemModel;
+class QModelIndex;
+class QString;
+class FilterDialog;
 
-class FilterWidget;
-
-class FilterDialog final : public QDialog {
+class Panes final : public QWidget {
 Q_OBJECT
 
 public:
-    FilterWidget *filter_widget;
+    FilterDialog *filter_dialog;
     
-    FilterDialog(QWidget *parent);
+    Panes();
+
+private slots:
+    void on_current_scope_changed(const QModelIndex &current, const QModelIndex &);
+
+private:
+    QTreeView *scope_view;
+    QTreeView *results_view;
+    QStandardItemModel *scope_model;
+
+    void fetch_scope_item(const QModelIndex &index);
+    void reset();
 };
 
-#endif /* FILTER_DIALOG_H */
+#endif /* PANES_H */
