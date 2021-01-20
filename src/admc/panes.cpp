@@ -41,12 +41,17 @@
 #include <QStandardItemModel>
 #include <QHeaderView>
 #include <QApplication>
+#include <QTreeWidget>
 
-QHash<int, QStandardItemModel *> results_model_map;
-QHash<int, QStandardItem *> id_to_item;
-QHash<QString, int> dn_to_id;
+#define INVALID_ID -1
 
-QStandardItem *make_scope_item(const AdObject &object);
+QHash<QString, int> dn_to_scope_id;
+QHash<int, QStandardItemModel *> scope_id_to_results_model;
+
+// NOTE: these don't include results from queries
+QHash<QString, QStandardItem *> dn_to_scope_item;
+QHash<QString, QStandardItem *> dn_to_results_item;
+
 QString containers_filter();
 
 Panes::Panes()
@@ -69,8 +74,16 @@ Panes::Panes()
     results_view->header()->setSectionsMovable(true);
     results_view->setContextMenuPolicy(Qt::CustomContextMenu);
 
+    auto splitter_a = new QSplitter(Qt::Vertical);
+    auto test = new QTreeWidget();
+    test->setHeaderHidden(true);
+    new QTreeWidgetItem(test, {"test"});
+    new QTreeWidgetItem(test, {"test 2"});
+    splitter_a->addWidget(test);
+    splitter_a->addWidget(scope_view);
+
     auto splitter = new QSplitter(Qt::Horizontal);
-    splitter->addWidget(scope_view);
+    splitter->addWidget(splitter_a);
     splitter->addWidget(results_view);
     splitter->setStretchFactor(0, 1);
     splitter->setStretchFactor(1, 2);
@@ -118,24 +131,124 @@ Panes::Panes()
     connect_context_menu(results_view);
 
     connect(
+        AD(), &AdInterface::object_added,
+        this, &Panes::on_object_added);
+    connect(
+        AD(), &AdInterface::object_deleted,
+        this, &Panes::on_object_deleted);
+    connect(
         AD(), &AdInterface::object_changed,
         this, &Panes::on_object_changed);
 }
 
-void Panes::on_object_changed(const QString &dn) {
-    // NOTE: attribute changes don't matter to scope pane because it doesn't display any attributes
-    // So only need to update results models
+QModelIndex find_object(QStandardItemModel *model, const QString &dn) {
+    for (int row = 0; row < model->rowCount(); row++) {
+        QStandardItem *main_item = model->item(row, 0);
+        const QString this_dn = main_item->data(Role_DN).toString();
+
+        if (this_dn == dn) {
+            return main_item->index();
+        }
+    }
+
+    return QModelIndex();
+}
+
+void Panes::on_object_deleted(const QString &dn) {
+    auto remove_row =
+    [](QStandardItem *item) {
+        if (item != nullptr) {
+            QStandardItemModel *model = item->model();
+            const QModelIndex index = item->index();
+
+            model->removeRow(index.row(), index.parent());
+        }
+    };
+
+
+    QStandardItem *scope_item = dn_to_scope_item.value(dn, nullptr);
+
+    // Remove children of this scope item from internal data structures
+    // NOTE: must do this before removing from model to be able to recurse through descendants
+    if (scope_item != nullptr) {
+        // auto remove_recursively =
+        // [](QStandardItem *item) {
+        //     // Remove this dn
+        //     const QString this_dn = item->data(Role_DN).toString();
+        //     dn_to_scope_id.remove(this_dn);
+        //     dn_to_scope_item.remove(this_dn);
+
+        //     const int this_id = item->data(Role_Id).toInt();
+        //     QStandardItemModel *results_model = scope_id_to_results_model[this_id];
+        //     delete results_model;
+        //     scope_id_to_results_model.remove(this_id);
+
+        //     // Remove children of this dn
+        //     for (int row = 0; row < item->rowCount(); row++) {
+        //         QStandardItem *child = item->child(0);
+
+        //         // remove_recursively(child);
+        //     }
+        // };
+
+        // remove_recursively(scope_item);
+    }
+
+    remove_row(scope_item);
+
+    // Remove from results
+    QStandardItem *results_item = dn_to_results_item.value(dn, nullptr);
+    remove_row(results_item);
+    dn_to_results_item.remove(dn);
+}
+
+void Panes::on_object_added(const QString &dn) {
+    const AdObject object = AD()->search_object(dn);
+
     const QString parent_dn = dn_get_parent(dn);
 
-    if (!dn_to_id.contains(parent_dn)) {
-        return;
-    }
-    const int parent_id = dn_to_id[parent_dn];
+    // Add to scope
+    QStandardItem *scope_parent = dn_to_scope_item.value(parent_dn, nullptr);
+    if (scope_parent != nullptr) {
+        const bool fetched = scope_parent->data(Role_Fetched).toBool();
 
-    if (!results_model_map.contains(parent_id)) {
+        // NOTE: only add if parent was fetched already. If parent wasn't fetched, then this new object will be added when parent is fetched.
+        if (fetched) {
+            make_scope_item(scope_parent, object);
+        }
+    }
+
+    // Add to results
+    const int scope_parent_id = dn_to_scope_id[parent_dn];
+    QStandardItemModel *results_model = scope_id_to_results_model.value(scope_parent_id, nullptr);
+    if (results_model != nullptr) {
+        // TODO: duplicated in change_results_target()
+        make_results_row(results_model, object);
+    }
+}
+
+void Panes::make_results_row(QStandardItemModel * model, const AdObject &object) {
+    const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
+    load_results_row(row, object);
+    dn_to_results_item[object.get_dn()] = row[0];
+    model->appendRow(row);
+}
+
+void Panes::on_object_changed(const QString &dn) {
+    // NOTE: attribute changes don't matter to scope because it doesn't display any attributes
+    // So only need to update results
+    // TODO: map dn's to result models they are in?
+    const QString parent_dn = dn_get_parent(dn);
+
+    if (!dn_to_scope_id.contains(parent_dn)) {
         return;
     }
-    const QStandardItemModel *model = results_model_map[parent_id];
+    const int parent_id = dn_to_scope_id[parent_dn];
+
+    if (!scope_id_to_results_model.contains(parent_id)) {
+        return;
+    }
+    const QStandardItemModel *model = scope_id_to_results_model[parent_id];
 
     for (int row = 0; row < model->rowCount(); row++) {
         QStandardItem *main_item = model->item(row, 0);
@@ -209,7 +322,7 @@ void Panes::change_results_target(const QModelIndex &current, const QModelIndex 
     const int id = scope_model->data(current, Role_Id).toInt();
 
     // Load results for this scope item if needed
-    if (!results_model_map.contains(id)) {
+    if (!scope_id_to_results_model.contains(id)) {
         auto current_item = scope_model->itemFromIndex(current);
 
         auto model = new QStandardItemModel(0, 1, this);
@@ -230,15 +343,13 @@ void Panes::change_results_target(const QModelIndex &current, const QModelIndex 
         const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, parent_dn);
 
         for (const AdObject object : search_results.values()) {
-            const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
-            load_results_row(row, object);
-            model->appendRow(row);
+            make_results_row(model, object);
         }
 
-        results_model_map[id] = model;
+        scope_id_to_results_model[id] = model;
     }
 
-    QStandardItemModel *results_model = results_model_map[id];
+    QStandardItemModel *results_model = scope_id_to_results_model[id];
 
     results_view->setModel(results_model);
 
@@ -276,8 +387,7 @@ void Panes::fetch_scope_item(const QModelIndex &index) {
     QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, parent_dn);
 
     for (const AdObject object : search_results.values()) {
-        auto child = make_scope_item(object);
-        item->appendRow(child);
+        make_scope_item(item, object);
     }
 
     item->setData(true, Role_Fetched);
@@ -293,16 +403,15 @@ void Panes::reset() {
     // Load head object
     const QString head_dn = AD()->domain_head();
     const AdObject head_object = AD()->search_object(head_dn);
-    auto item = make_scope_item(head_object);
-    scope_model->appendRow(item);
+    make_scope_item(scope_model->invisibleRootItem(), head_object);
 
     // Make head object current
-    scope_view->selectionModel()->setCurrentIndex(item->index(), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+    scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 
     focused_view = scope_view;
 }
 
-QStandardItem *make_scope_item(const AdObject &object) {
+void Panes::make_scope_item(QStandardItem *parent, const AdObject &object) {
     auto item = new QStandardItem();
     item->setData(false, Role_Fetched);
 
@@ -323,13 +432,14 @@ QStandardItem *make_scope_item(const AdObject &object) {
     id_max++;
     item->setData(id, Role_Id);
 
-    dn_to_id[dn] = id;
-    id_to_item[id] = item;
+    dn_to_scope_id[dn] = id;
+    // TODO: unmap this when items are destroyed (object deleted, parent deleted, etc)
+    dn_to_scope_item[dn] = item;
 
     const QIcon icon = object.get_icon();
     item->setIcon(icon);
 
-    return item;
+    parent->appendRow(item);
 }
 
 QString containers_filter() {

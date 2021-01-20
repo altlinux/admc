@@ -53,11 +53,13 @@ public:
 
     void reset();
     void setup_menubar_menu(ObjectMenu *menu);
-    void on_object_changed(const QString &dn);
 
 private slots:
     void change_results_target(const QModelIndex &current, const QModelIndex &);
     void on_focus_changed(QWidget *old, QWidget *now);
+    void on_object_added(const QString &dn);
+    void on_object_changed(const QString &dn);
+    void on_object_deleted(const QString &dn);
 
 private:
     QStandardItemModel *scope_model;
@@ -66,6 +68,8 @@ private:
     void fetch_scope_item(const QModelIndex &index);
     void open_context_menu(QTreeView *view, const QPoint pos);
     void load_results_row(QList<QStandardItem *> row, const AdObject &object);
+    void make_results_row(QStandardItemModel * model, const AdObject &object);
+    void make_scope_item(QStandardItem *parent, const AdObject &object);
 };
 
 #endif /* PANES_H */
