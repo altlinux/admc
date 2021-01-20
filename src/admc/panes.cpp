@@ -43,6 +43,8 @@
 #include <QApplication>
 
 QHash<int, QStandardItemModel *> results_model_map;
+QHash<int, QStandardItem *> id_to_item;
+QHash<QString, int> dn_to_id;
 
 QStandardItem *make_scope_item(const AdObject &object);
 QString containers_filter();
@@ -114,6 +116,55 @@ Panes::Panes()
     };
     connect_context_menu(scope_view);
     connect_context_menu(results_view);
+
+    connect(
+        AD(), &AdInterface::object_changed,
+        this, &Panes::on_object_changed);
+}
+
+void Panes::on_object_changed(const QString &dn) {
+    // NOTE: attribute changes don't matter to scope pane because it doesn't display any attributes
+    // So only need to update results models
+    const QString parent_dn = dn_get_parent(dn);
+
+    if (!dn_to_id.contains(parent_dn)) {
+        return;
+    }
+    const int parent_id = dn_to_id[parent_dn];
+
+    if (!results_model_map.contains(parent_id)) {
+        return;
+    }
+    const QStandardItemModel *model = results_model_map[parent_id];
+
+    for (int row = 0; row < model->rowCount(); row++) {
+        QStandardItem *main_item = model->item(row, 0);
+        const QString this_dn = main_item->data(Role_DN).toString();
+
+        if (this_dn == dn) {
+            const QList<QStandardItem *> item_row =
+            [=]() {
+                QList<QStandardItem *> out;
+
+                const QModelIndex main_index = main_item->index();
+
+                for (int col = 0; col < ADCONFIG()->get_columns().size(); col++) {
+                    const QModelIndex index = main_index.siblingAtColumn(col);
+                    QStandardItem *item = model->itemFromIndex(index);
+
+                    out.append(item);
+                }
+
+                return out;
+            }();
+
+            const AdObject object = AD()->search_object(dn);
+
+            load_results_row(item_row, object);
+
+            break;
+        }
+    }
 }
 
 void Panes::setup_menubar_menu(ObjectMenu *menu) {
@@ -180,9 +231,7 @@ void Panes::change_results_target(const QModelIndex &current, const QModelIndex 
 
         for (const AdObject object : search_results.values()) {
             const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
-            load_attributes_row(row, object);
-            row[0]->setData(object.get_dn(), Role_DN);
-            row[0]->setData(object.get_string(ATTRIBUTE_OBJECT_CLASS), Role_ObjectClass);
+            load_results_row(row, object);
             model->appendRow(row);
         }
 
@@ -195,6 +244,12 @@ void Panes::change_results_target(const QModelIndex &current, const QModelIndex 
 
     // Fetch scope item as well for convenience
     fetch_scope_item(current);
+}
+
+void Panes::load_results_row(QList<QStandardItem *> row, const AdObject &object) {
+    load_attributes_row(row, object);
+    row[0]->setData(object.get_dn(), Role_DN);
+    row[0]->setData(object.get_string(ATTRIBUTE_OBJECT_CLASS), Role_ObjectClass);
 }
 
 // Load scope item's children, if haven't done yet
@@ -264,8 +319,12 @@ QStandardItem *make_scope_item(const AdObject &object) {
     item->setData(object_class, Role_ObjectClass);
 
     static int id_max = 0;
-    item->setData(id_max, Role_Id);
+    const int id = id_max;
     id_max++;
+    item->setData(id, Role_Id);
+
+    dn_to_id[dn] = id;
+    id_to_item[id] = item;
 
     const QIcon icon = object.get_icon();
     item->setIcon(icon);

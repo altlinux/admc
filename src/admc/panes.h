@@ -30,6 +30,9 @@ class FilterDialog;
 class QMenu;
 class ObjectMenu;
 class QPoint;
+class QStandardItem;
+class AdObject;
+template <typename T> class QList;
 
 enum Role {
     Role_Id = Qt::UserRole + 1,
@@ -50,6 +53,7 @@ public:
 
     void reset();
     void setup_menubar_menu(ObjectMenu *menu);
+    void on_object_changed(const QString &dn);
 
 private slots:
     void change_results_target(const QModelIndex &current, const QModelIndex &);
@@ -61,6 +65,7 @@ private:
 
     void fetch_scope_item(const QModelIndex &index);
     void open_context_menu(QTreeView *view, const QPoint pos);
+    void load_results_row(QList<QStandardItem *> row, const AdObject &object);
 };
 
 #endif /* PANES_H */
