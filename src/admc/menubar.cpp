@@ -59,9 +59,7 @@ MenuBar::MenuBar()
             QApplication::quit();
         });
 
-    action_menu = new ObjectMenu(this);
-    action_menu->setTitle(tr("&Action"));
-    addMenu(action_menu);
+    action_menu = addMenu(tr("&Action"));
 
     auto navigation_menu = addMenu(tr("&Navigation"));
     up_one_level_action = navigation_menu->addAction(tr("&Up one level"));

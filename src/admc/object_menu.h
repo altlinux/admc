@@ -26,42 +26,11 @@
  * actions which are can be performed on the target object(s).
  */
 
-#include <QMenu>
+class QMenu;
+class QString;
+class QWidget;
+template <typename T> class QList;
 
-class QAbstractItemView;
-
-class ObjectMenu final : public QMenu {
-Q_OBJECT
-
-public:
-    QList<QString> targets;
-    
-    ObjectMenu(QWidget *parent);
-
-    // NOTE: views connected to menu must be views of an object model
-    static void setup_as_context_menu(QAbstractItemView *view);
-    void setup_as_menubar_menu(QAbstractItemView *view);
-
-    void change_target(const QString &new_target);
-    void load_targets(QAbstractItemView *view);
-
-protected:
-    void showEvent(QShowEvent *event);
-
-private:
-    QList<QString> target_classes;
-
-    void details() const;
-    void delete_object() const;
-    void move() const;
-    void add_to_group() const;
-    void rename() const;
-    void create(const QString &object_class) const;
-    void reset_password() const;
-    void enable_account() const;
-    void disable_account() const;
-    void find() const;
-    QString targets_display_string() const;
-};
+void add_object_actions_to_menu(QMenu *menu, const QList<QString> targets, const QList<QString> target_classes, QWidget *parent);
 
 #endif /* OBJECT_MENU_H */

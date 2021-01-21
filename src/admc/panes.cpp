@@ -43,6 +43,7 @@
 #include <QApplication>
 #include <QTreeWidget>
 #include <QStack>
+#include <QMenu>
 
 QHash<int, QStandardItemModel *> scope_id_to_results_model;
 
@@ -267,24 +268,40 @@ void Panes::on_object_changed(const QString &dn) {
     }
 }
 
-void Panes::setup_menubar_menu(ObjectMenu *menu) {
+void Panes::load_menu(QMenu *menu) {
+    QList<QString> targets;
+    QList<QString> target_classes;
+
+    const QList<QModelIndex> indexes = focused_view->selectionModel()->selectedIndexes();
+
+    for (const QModelIndex index : indexes) {
+        // Need first column to access item data
+        if (index.column() != 0) {
+            continue;
+        }
+
+        const QString dn = index.data(Role_DN).toString();
+        const QString object_class = index.data(Role_ObjectClass).toString();
+
+        targets.append(dn);
+        target_classes.append(object_class);
+    }
+
+    add_object_actions_to_menu(menu, targets, target_classes, this);
+}
+
+void Panes::setup_menubar_menu(QMenu *menu) {
     connect(
         menu, &QMenu::aboutToShow,
-        [this, menu]() {
-            menu->load_targets(focused_view);
+        [=]() {
+            load_menu(menu);
         });
 }
 
 void Panes::open_context_menu(QTreeView *view, const QPoint pos) {
-    auto menu = new ObjectMenu(focused_view);
-
-    menu->load_targets(focused_view);
-
-    if (!menu->targets.isEmpty()) {
-        exec_menu_from_view(menu, focused_view, pos);
-    }
-
-    menu->deleteLater();
+    auto menu = new QMenu(this);
+    load_menu(menu);
+    exec_menu_from_view(menu, focused_view, pos);
 }
 
 // NOTE: this is the workaround required to know in which pane selected objects are located

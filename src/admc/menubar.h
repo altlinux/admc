@@ -35,7 +35,7 @@ public:
     QAction *up_one_level_action;
     QAction *back_action;
     QAction *forward_action;
-    ObjectMenu *action_menu;
+    QMenu *action_menu;
 
     MenuBar();
 

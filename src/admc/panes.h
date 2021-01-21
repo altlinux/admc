@@ -52,7 +52,7 @@ public:
     Panes();
 
     void reset();
-    void setup_menubar_menu(ObjectMenu *menu);
+    void setup_menubar_menu(QMenu *menu);
 
 private slots:
     void change_results_target(const QModelIndex &current, const QModelIndex &);
@@ -71,6 +71,8 @@ private:
     void load_results_row(QList<QStandardItem *> row, const AdObject &object);
     void make_results_row(QStandardItemModel * model, const AdObject &object);
     void make_scope_item(QStandardItem *parent, const AdObject &object);
+    void move();
+    void load_menu(QMenu *menu);
 };
 
 #endif /* PANES_H */

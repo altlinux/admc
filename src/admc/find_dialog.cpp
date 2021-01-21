@@ -42,9 +42,9 @@ FindDialog::FindDialog(const QList<QString> classes, const QString default_searc
 
     auto find_widget = new FindWidget(classes, default_search_base);
 
-    auto action_menu = new ObjectMenu(this);
-    action_menu->setTitle(tr("&Action"));
-    menubar->addMenu(action_menu);
+    // auto action_menu = new ObjectMenu(this);
+    // action_menu->setTitle(tr("&Action"));
+    // menubar->addMenu(action_menu);
 
     QTreeView *results_view = find_widget->find_results->view;
     // action_menu->setup_as_menubar_menu(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
