@@ -153,8 +153,12 @@ void MainWindow::on_connected() {
 
     update_navigation_actions();
 
-    panes->setup_menubar_menu(menubar->action_menu);
-    panes->load_head();
+    connect(
+        menubar->action_menu, &QMenu::aboutToShow,
+        [=]() {
+            menubar->action_menu->clear();
+            panes->load_menu(menubar->action_menu);
+        });
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

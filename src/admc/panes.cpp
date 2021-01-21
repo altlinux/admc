@@ -135,6 +135,15 @@ Panes::Panes()
         scope_model, &QStandardItemModel::rowsAboutToBeRemoved,
         this, &Panes::on_scope_rows_about_to_be_removed);
 
+    focused_view = scope_view;
+
+    // Load head object
+    const QString head_dn = AD()->domain_head();
+    const AdObject head_object = AD()->search_object(head_dn);
+    make_scope_item(scope_model->invisibleRootItem(), head_object);
+
+    // Make head object current
+    scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 }
 
 // Delete results attached to all removed scope nodes,
@@ -308,15 +317,6 @@ void Panes::load_menu(QMenu *menu) {
     }
 }
 
-void Panes::setup_menubar_menu(QMenu *menu) {
-    connect(
-        menu, &QMenu::aboutToShow,
-        [=]() {
-            menu->clear();
-            load_menu(menu);
-        });
-}
-
 void Panes::open_context_menu(const QPoint pos) {
     auto menu = new QMenu(this);
     load_menu(menu);
@@ -422,18 +422,6 @@ void Panes::fetch_scope_node(const QModelIndex &index) {
     scope_model->setData(index, true, Role_Fetched);
 
     hide_busy_indicator();
-}
-
-void Panes::load_head() {
-    // Load head object
-    const QString head_dn = AD()->domain_head();
-    const AdObject head_object = AD()->search_object(head_dn);
-    make_scope_item(scope_model->invisibleRootItem(), head_object);
-
-    // Make head object current
-    scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
-
-    focused_view = scope_view;
 }
 
 void Panes::make_scope_item(QStandardItem *parent, const AdObject &object) {
