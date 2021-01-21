@@ -125,6 +125,41 @@ Panes::Panes()
     connect(
         AD(), &AdInterface::object_changed,
         this, &Panes::on_object_changed);
+
+    connect(
+        scope_model, &QStandardItemModel::rowsAboutToBeRemoved,
+        this, &Panes::on_scope_rows_about_to_be_removed);
+
+}
+
+// Delete results attached to all removed scope nodes,
+// including descendants
+void Panes::on_scope_rows_about_to_be_removed(const QModelIndex &parent, int first, int last) {
+    QStack<QModelIndex> stack;
+
+    for (int r = first; r <= last; r++) {
+        const QModelIndex index = scope_model->index(r, 0, parent);
+        stack.push(index);
+    }
+
+    while (!stack.isEmpty()) {
+        const QModelIndex index = stack.pop();
+
+        const int id = index.data(Role_Id).toInt();
+
+        if (scope_id_to_results_model.contains(id)) {
+            QStandardItemModel *results = scope_id_to_results_model[id];
+            scope_id_to_results_model.remove(id);
+            delete results;
+        }
+
+        if (scope_model->hasChildren(index)) {
+            for (int r = 0; r < scope_model->rowCount(index); r++) {
+                const QModelIndex child = scope_model->index(r, 0, index);
+                stack.push(child);
+            }
+        }
+    }
 }
 
 // NOTE: responding to object changes/additions/deletions only in object part of the scope tree. Queries are left unupdated.
@@ -154,31 +189,10 @@ void Panes::on_object_deleted(const QString &dn) {
         }
     }
 
-    // Remove results of this object and it's descendants
-    // TODO: iterate through scope recursively
-    // if node's dn contains
+    // Remove from scope
     const QList<QModelIndex> scope_index_matches = scope_model->match(scope_parent, Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
     if (!scope_index_matches.isEmpty()) {
         const QModelIndex scope_index = scope_index_matches[0];
-
-        QStack<QModelIndex> stack;
-        stack.push(scope_index);
-
-        while (!stack.isEmpty()) {
-            const QModelIndex index = stack.pop();
-
-            const int id = index.data(Role_Id).toInt();
-            scope_id_to_results_model.remove(id);
-
-            if (scope_model->hasChildren(index)) {
-                for (int r = 0; r < scope_model->rowCount(index); r++) {
-                    const QModelIndex child = scope_model->index(r, 0, index);
-                    stack.push(child);
-                }
-            }
-        }
-
-        // Remove from scope
         scope_model->removeRow(scope_index.row(), scope_index.parent());
     }
 }

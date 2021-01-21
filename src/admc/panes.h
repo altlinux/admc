@@ -60,6 +60,7 @@ private slots:
     void on_object_added(const QString &dn);
     void on_object_changed(const QString &dn);
     void on_object_deleted(const QString &dn);
+    void on_scope_rows_about_to_be_removed(const QModelIndex &parent, int first, int last);
 
 private:
     QStandardItemModel *scope_model;
