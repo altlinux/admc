@@ -85,7 +85,10 @@ Panes::Panes()
 
     connect(
         filter_dialog, &QDialog::accepted,
-        this, &Panes::reset);
+        [this]() {
+            const QModelIndex head_index = scope_model->index(0, 0);
+            fetch_scope_node(head_index);
+        });
 
     connect(
         scope_view->selectionModel(), &QItemSelectionModel::currentChanged,
@@ -100,22 +103,23 @@ Panes::Panes()
 
     connect(
         scope_view, &QTreeView::expanded,
-        this, &Panes::fetch_scope_item);
+        [=](const QModelIndex &index) {
+            const bool fetched = index.data(Role_Fetched).toBool();
+            if (!fetched) {
+                fetch_scope_node(index);
+            }
+        });
 
     connect(
         qApp, &QApplication::focusChanged,
         this, &Panes::on_focus_changed);
 
-    auto connect_context_menu =
-    [this](QTreeView *view) {
-        connect(
-            view, &QWidget::customContextMenuRequested,
-            [=](const QPoint pos) {
-                open_context_menu(view, pos);
-            });
-    };
-    connect_context_menu(scope_view);
-    connect_context_menu(results_view);
+    connect(
+        scope_view, &QWidget::customContextMenuRequested,
+        this, &Panes::open_context_menu);
+    connect(
+        results_view, &QWidget::customContextMenuRequested,
+        this, &Panes::open_context_menu);
 
     connect(
         AD(), &AdInterface::object_added,
@@ -288,17 +292,32 @@ void Panes::load_menu(QMenu *menu) {
     }
 
     add_object_actions_to_menu(menu, targets, target_classes, this);
+
+    if (focused_view == scope_view) {
+        const QModelIndex index = scope_view->selectionModel()->currentIndex();
+        const bool was_fetched = index.data(Role_Fetched).toBool();
+
+        if (was_fetched) {
+            menu->addAction(tr("Refresh"),
+                [=]() {
+                    const QModelIndex current_index = scope_view->selectionModel()->currentIndex();
+                    fetch_scope_node(current_index);
+
+                });
+        }
+    }
 }
 
 void Panes::setup_menubar_menu(QMenu *menu) {
     connect(
         menu, &QMenu::aboutToShow,
         [=]() {
+            menu->clear();
             load_menu(menu);
         });
 }
 
-void Panes::open_context_menu(QTreeView *view, const QPoint pos) {
+void Panes::open_context_menu(const QPoint pos) {
     auto menu = new QMenu(this);
     load_menu(menu);
     exec_menu_from_view(menu, focused_view, pos);
@@ -323,16 +342,53 @@ void Panes::change_results_target(const QModelIndex &current, const QModelIndex 
         return;
     }
     
+    // Fetch if needed
+    const bool fetched = current.data(Role_Fetched).toBool();
+    if (!fetched) {
+        fetch_scope_node(current);
+    }
+
     const int id = scope_model->data(current, Role_Id).toInt();
+    QStandardItemModel *results_model = scope_id_to_results_model[id];
 
-    // Load results for this scope item if needed
-    if (!scope_id_to_results_model.contains(id)) {
-        auto current_item = scope_model->itemFromIndex(current);
+    results_view->setModel(results_model);
+}
 
-        auto model = new QStandardItemModel(0, 1, this);
+void Panes::load_results_row(QList<QStandardItem *> row, const AdObject &object) {
+    load_attributes_row(row, object);
+    row[0]->setData(object.get_dn(), Role_DN);
+    row[0]->setData(object.get_string(ATTRIBUTE_OBJECT_CLASS), Role_ObjectClass);
+}
+
+// Load children of this item in scope tree
+// and load results linked to this scope item
+void Panes::fetch_scope_node(const QModelIndex &index) {
+    show_busy_indicator();
+
+    // NOTE: remove old children (which might be a dummy child used for showing child indicator)
+    scope_model->removeRows(0, scope_model->rowCount(index), index);
+
+    const QString parent_dn = index.data(Role_DN).toString();
+
+    // Load scope children
+    {
+        QList<QString> search_attributes = ADCONFIG()->get_columns();
+        
+        const QString filter = containers_filter();
+        
+        QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, parent_dn);
+
+        QStandardItem *item = scope_model->itemFromIndex(index);
+        for (const AdObject object : search_results.values()) {
+            make_scope_item(item, object);
+        }
+
+    }
+
+    // Load results
+    {
+        auto model = new QStandardItemModel(this);
         model->setHorizontalHeaderLabels(object_model_header_labels());
-
-        const QString parent_dn = current_item->data(Role_DN).toString();
 
         // NOTE: don't apply filter from dialog to container objects by OR'ing that filter with one that accepts containers.
         const QString filter =
@@ -342,7 +398,7 @@ void Panes::change_results_target(const QModelIndex &current, const QModelIndex 
 
             return filter_OR({filter_from_dialog, containers});
         }();
-        
+
         const QList<QString> search_attributes = QList<QString>();
         const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, parent_dn);
 
@@ -350,60 +406,25 @@ void Panes::change_results_target(const QModelIndex &current, const QModelIndex 
             make_results_row(model, object);
         }
 
+        const int id = index.data(Role_Id).toInt();
+
+        // Delete old results, if it exists
+        if (scope_id_to_results_model.contains(id)) {
+            auto old_results = scope_id_to_results_model[id];
+            delete old_results;
+        }
+
         scope_id_to_results_model[id] = model;
+
+        results_view->setModel(model);
     }
 
-    QStandardItemModel *results_model = scope_id_to_results_model[id];
-
-    results_view->setModel(results_model);
-
-    // Fetch scope item as well for convenience
-    fetch_scope_item(current);
-}
-
-void Panes::load_results_row(QList<QStandardItem *> row, const AdObject &object) {
-    load_attributes_row(row, object);
-    row[0]->setData(object.get_dn(), Role_DN);
-    row[0]->setData(object.get_string(ATTRIBUTE_OBJECT_CLASS), Role_ObjectClass);
-}
-
-// Load scope item's children, if haven't done yet
-void Panes::fetch_scope_item(const QModelIndex &index) {
-    const bool fetched = index.data(Role_Fetched).toBool();
-    if (fetched) {
-        return;
-    }
-
-    show_busy_indicator();
-
-    QStandardItem *item = scope_model->itemFromIndex(index);
-
-    // NOTE: remove dummy child used for showing child indicator
-    item->removeRow(0);
-
-    const QString parent_dn = item->data(Role_DN).toString();
-
-    // Add children
-    QList<QString> search_attributes = ADCONFIG()->get_columns();
-    
-    const QString filter = containers_filter();
-    
-    QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, parent_dn);
-
-    for (const AdObject object : search_results.values()) {
-        make_scope_item(item, object);
-    }
-
-    item->setData(true, Role_Fetched);
+    scope_model->setData(index, true, Role_Fetched);
 
     hide_busy_indicator();
 }
 
-// TODO: should preserve states like expansion and current
-// TODO: clear results
-void Panes::reset() {
-    scope_model->removeRows(0, scope_model->rowCount());
-
+void Panes::load_head() {
     // Load head object
     const QString head_dn = AD()->domain_head();
     const AdObject head_object = AD()->search_object(head_dn);

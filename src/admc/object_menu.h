@@ -21,9 +21,7 @@
 #define OBJECT_MENU_H
 
 /**
- * This menu is used as a context menu when right clicking
- * on an object and also as a menu in the menubar. Contains
- * actions which are can be performed on the target object(s).
+ * Adds object-related actions to a menu. 
  */
 
 class QMenu;

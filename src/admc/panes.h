@@ -51,7 +51,7 @@ public:
     
     Panes();
 
-    void reset();
+    void load_head();
     void setup_menubar_menu(QMenu *menu);
 
 private slots:
@@ -66,12 +66,11 @@ private:
     QStandardItemModel *scope_model;
     QTreeView *focused_view;
 
-    void fetch_scope_item(const QModelIndex &index);
-    void open_context_menu(QTreeView *view, const QPoint pos);
+    void fetch_scope_node(const QModelIndex &index);
+    void open_context_menu(const QPoint pos);
     void load_results_row(QList<QStandardItem *> row, const AdObject &object);
     void make_results_row(QStandardItemModel * model, const AdObject &object);
     void make_scope_item(QStandardItem *parent, const AdObject &object);
-    void move();
     void load_menu(QMenu *menu);
 };
 

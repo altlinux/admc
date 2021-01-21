@@ -154,8 +154,7 @@ void MainWindow::on_connected() {
     update_navigation_actions();
 
     panes->setup_menubar_menu(menubar->action_menu);
-
-    panes->reset();
+    panes->load_head();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

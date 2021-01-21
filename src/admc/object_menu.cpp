@@ -109,7 +109,6 @@ void add_object_actions_to_menu(QMenu *menu, const QList<QString> targets, const
         }
     };
 
-    // TODO: maybe move single object actions under "if (single_object)" and they can all reference "target"
     auto add_find =
     [=]() {
         menu->addAction(QObject::tr("Find"),
