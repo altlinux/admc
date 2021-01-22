@@ -30,6 +30,7 @@
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "filter.h"
+#include "settings.h"
 #include "filter_dialog.h"
 #include "filter_widget/filter_widget.h"
 #include "object_menu.h"
@@ -46,9 +47,9 @@
 #include <QStack>
 #include <QMenu>
 
-QHash<int, QStandardItemModel *> scope_id_to_results;
+// TODO: currently showing refresh action always for all scope nodes. Could show it in results if node is in scope? Also could not show it if results isn't loaded?
 
-QString containers_filter();
+QHash<int, QStandardItemModel *> scope_id_to_results;
 
 Panes::Panes()
 : QWidget()
@@ -83,13 +84,6 @@ Panes::Panes()
     layout->addWidget(splitter);
 
     filter_dialog = new FilterDialog(this);
-
-    connect(
-        filter_dialog, &QDialog::accepted,
-        [this]() {
-            const QModelIndex head_index = scope_model->index(0, 0);
-            fetch_scope_node(head_index);
-        });
 
     connect(
         scope_view->selectionModel(), &QItemSelectionModel::currentChanged,
@@ -145,6 +139,26 @@ Panes::Panes()
 
     // Make head object current
     scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+
+    // Refresh head when settings affecting the filter
+    // change. This reloads the model with an updated filter
+    const BoolSettingSignal *advanced_view = SETTINGS()->get_bool_signal(BoolSetting_AdvancedView);
+    connect(
+        advanced_view, &BoolSettingSignal::changed,
+        this, &Panes::refresh_head);
+
+    const BoolSettingSignal *show_non_containers = SETTINGS()->get_bool_signal(BoolSetting_ShowNonContainersInContainersTree);
+    connect(
+        show_non_containers, &BoolSettingSignal::changed,
+        this, &Panes::refresh_head);
+
+    connect(
+        filter_dialog, &QDialog::accepted,
+        this, &Panes::refresh_head);
+}
+
+void Panes::refresh_head() {
+    fetch_scope_node(scope_model->index(0, 0));
 }
 
 // Delete results attached to all removed scope nodes,
@@ -180,8 +194,6 @@ void Panes::on_scope_rows_about_to_be_removed(const QModelIndex &parent, int fir
 }
 
 // NOTE: responding to object changes/additions/deletions only in object part of the scope tree. Queries are left unupdated.
-
-// TODO: match() calls need *start* arg to be object tree head. Query tree shouldn't be searched
 
 void Panes::on_object_deleted(const QString &dn) {
     const QString parent_dn = dn_get_parent(dn);
@@ -363,62 +375,96 @@ void Panes::load_results_row(QList<QStandardItem *> row, const AdObject &object)
     row[0]->setData(object.get_string(ATTRIBUTE_OBJECT_CLASS), Role_ObjectClass);
 }
 
+// TODO: should expand node when fetching or no? it seems that in all cases i can think of the node is already expanded.
+
 // Load children of this item in scope tree
 // and load results linked to this scope item
 void Panes::fetch_scope_node(const QModelIndex &index) {
     show_busy_indicator();
 
-    // NOTE: remove old children (which might be a dummy child used for showing child indicator)
+    // NOTE: remove old scope children (which might be a dummy child used for showing child indicator)
     scope_model->removeRows(0, scope_model->rowCount(index), index);
+
+    //
+    // Search object's children
+    //
+    const QString filter =
+    [=]() {
+        const QString user_filter = filter_dialog->filter_widget->get_filter();
+
+        const QString is_container =
+        []() {
+            const QList<QString> accepted_classes = ADCONFIG()->get_filter_containers();
+
+            QList<QString> class_filters;
+            for (const QString object_class : accepted_classes) {
+                const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
+                class_filters.append(class_filter);
+            }
+
+            return filter_OR(class_filters);
+        }();
+
+        const QString is_not_advanced_view_only = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
+
+        QString out;
+        
+        // NOTE: OR user filter with containers filter so that container objects are always shown, even if they are filtered out by user filter
+        out = filter_OR({user_filter, is_container});
+
+        // Hide advanced view only" objects if advanced view setting is off
+        const bool advanced_view_OFF = !SETTINGS()->get_bool(BoolSetting_AdvancedView);
+        if (advanced_view_OFF) {
+            out = filter_AND({out, is_not_advanced_view_only});
+        }
+
+        return out;
+    }();
+
+    const QList<QString> search_attributes = ADCONFIG()->get_columns();
 
     const QString dn = index.data(Role_DN).toString();
 
-    // Load scope children
-    {
-        QList<QString> search_attributes = ADCONFIG()->get_columns();
-        
-        const QString filter = containers_filter();
-        
-        QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, dn);
+    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, dn);
 
-        QStandardItem *item = scope_model->itemFromIndex(index);
-        for (const AdObject object : search_results.values()) {
-            make_scope_item(item, object);
-        }
+    //
+    // Load into scope
+    //
+    QStandardItem *item = scope_model->itemFromIndex(index);
+    const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
+    const bool show_non_containers_ON = SETTINGS()->get_bool(BoolSetting_ShowNonContainersInContainersTree);
+    for (const AdObject object : search_results.values()) {
+        const bool is_container =
+        [=]() {
+            const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
-    }
-
-    // Load results
-    {
-        const int id = index.data(Role_Id).toInt();
-
-        const bool need_to_create_results = (!scope_id_to_results.contains(id));
-        if (need_to_create_results) {
-            auto new_results = new PanesDragModel(this);
-            new_results->setHorizontalHeaderLabels(object_model_header_labels());
-            scope_id_to_results[id] = new_results;
-        }
-
-        QStandardItemModel *results = scope_id_to_results[id];
-
-        // Clear old results
-        results->removeRows(0, results->rowCount());
-
-        // NOTE: don't apply filter from dialog to container objects by OR'ing that filter with one that accepts containers.
-        const QString filter =
-        [this]() {
-            const QString filter_from_dialog = filter_dialog->filter_widget->get_filter();
-            const QString containers = containers_filter();
-
-            return filter_OR({filter_from_dialog, containers});
+            return container_classes.contains(object_class);
         }();
 
-        const QList<QString> search_attributes = QList<QString>();
-        const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, dn);
-
-        for (const AdObject object : search_results.values()) {
-            make_results_row(results, object);
+        if (is_container || show_non_containers_ON) {
+            make_scope_item(item, object);
         }
+    }
+
+    //
+    // Load into results
+    //
+    const int id = index.data(Role_Id).toInt();
+
+    const bool need_to_create_results = (!scope_id_to_results.contains(id));
+    if (need_to_create_results) {
+        auto new_results = new PanesDragModel(this);
+        new_results->setHorizontalHeaderLabels(object_model_header_labels());
+        scope_id_to_results[id] = new_results;
+    }
+
+    QStandardItemModel *results = scope_id_to_results[id];
+
+    // Clear old results
+    results->removeRows(0, results->rowCount());
+
+    for (const AdObject object : search_results.values()) {
+        make_results_row(results, object);
     }
 
     scope_model->setData(index, true, Role_Fetched);
@@ -452,15 +498,3 @@ void Panes::make_scope_item(QStandardItem *parent, const AdObject &object) {
 
     parent->appendRow(item);
 }
-
-QString containers_filter() {
-    const QList<QString> accepted_classes = ADCONFIG()->get_filter_containers();
-
-    QList<QString> class_filters;
-    for (const QString object_class : accepted_classes) {
-        const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
-        class_filters.append(class_filter);
-    }
-
-    return filter_OR(class_filters);
-};

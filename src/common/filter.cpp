@@ -84,13 +84,3 @@ QString filter_OR(const QList<QString> &subfilters) {
         return QString();
     }
 }
-
-QString current_advanced_view_filter() {
-    const bool advanced_view = SETTINGS()->get_bool(BoolSetting_AdvancedView);
-
-    if (advanced_view) {
-        return QString();
-    } else {
-        return filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
-    }
-}

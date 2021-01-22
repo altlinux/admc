@@ -85,8 +85,7 @@ void FindResults::load(const QString &filter, const QString &search_base) {
     model->removeRows(0, model->rowCount());
     
     const QList<QString> search_attributes = ADCONFIG()->get_columns();
-    const QString filter_and_advanced = filter_AND({filter, current_advanced_view_filter()});
-    const QHash<QString, AdObject> search_results = AD()->search(filter_and_advanced, search_attributes, SearchScope_All, search_base);
+    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_All, search_base);
 
 
     for (const AdObject object : search_results) {

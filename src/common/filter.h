@@ -41,6 +41,4 @@ QString filter_CONDITION(const Condition condition, const QString &attribute, co
 QString filter_AND(const QList<QString> &subfilters);
 QString filter_OR(const QList<QString> &subfilters);
 
-QString current_advanced_view_filter();
-
 #endif /* FILTER_H */

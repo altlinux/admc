@@ -70,6 +70,7 @@ private:
     void load_results_row(QList<QStandardItem *> row, const AdObject &object);
     void make_results_row(QStandardItemModel * model, const AdObject &object);
     void make_scope_item(QStandardItem *parent, const AdObject &object);
+    void refresh_head();
 };
 
 #endif /* PANES_H */
