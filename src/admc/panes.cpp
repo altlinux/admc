@@ -45,7 +45,7 @@
 #include <QStack>
 #include <QMenu>
 
-QHash<int, QStandardItemModel *> scope_id_to_results_model;
+QHash<int, QStandardItemModel *> scope_id_to_results;
 
 QString containers_filter();
 
@@ -161,9 +161,9 @@ void Panes::on_scope_rows_about_to_be_removed(const QModelIndex &parent, int fir
 
         const int id = index.data(Role_Id).toInt();
 
-        if (scope_id_to_results_model.contains(id)) {
-            QStandardItemModel *results = scope_id_to_results_model[id];
-            scope_id_to_results_model.remove(id);
+        if (scope_id_to_results.contains(id)) {
+            QStandardItemModel *results = scope_id_to_results[id];
+            scope_id_to_results.remove(id);
             delete results;
         }
 
@@ -193,7 +193,7 @@ void Panes::on_object_deleted(const QString &dn) {
     // Remove from results first(need object to still be in
     // scope tree to do this)
     const int scope_parent_id = scope_parent.data(Role_Id).toInt();
-    QStandardItemModel *results_model = scope_id_to_results_model.value(scope_parent_id, nullptr);
+    QStandardItemModel *results_model = scope_id_to_results.value(scope_parent_id, nullptr);
     if (results_model != nullptr) {
         const QList<QModelIndex> results_index_matches = results_model->match(scope_model->index(0, 0), Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
 
@@ -233,7 +233,7 @@ void Panes::on_object_added(const QString &dn) {
 
     // Add to results
     const int scope_parent_id = scope_parent.data(Role_Id).toInt();
-    QStandardItemModel *results_model = scope_id_to_results_model.value(scope_parent_id, nullptr);
+    QStandardItemModel *results_model = scope_id_to_results.value(scope_parent_id, nullptr);
     if (results_model != nullptr) {
         make_results_row(results_model, object);
     }
@@ -255,7 +255,7 @@ void Panes::on_object_changed(const QString &dn) {
 
     const QModelIndex scope_parent = scope_parent_matches[0];
     const int scope_parent_id = scope_parent.data(Role_Id).toInt();
-    QStandardItemModel *results_model = scope_id_to_results_model.value(scope_parent_id, nullptr);
+    QStandardItemModel *results_model = scope_id_to_results.value(scope_parent_id, nullptr);
     const QList<QModelIndex> results_index_matches = results_model->match(scope_parent, Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
 
     if (!results_index_matches.isEmpty()) {
@@ -349,7 +349,7 @@ void Panes::change_results_target(const QModelIndex &current, const QModelIndex 
     }
 
     const int id = scope_model->data(current, Role_Id).toInt();
-    QStandardItemModel *results_model = scope_id_to_results_model[id];
+    QStandardItemModel *results_model = scope_id_to_results[id];
 
     results_view->setModel(results_model);
 }
@@ -368,7 +368,7 @@ void Panes::fetch_scope_node(const QModelIndex &index) {
     // NOTE: remove old children (which might be a dummy child used for showing child indicator)
     scope_model->removeRows(0, scope_model->rowCount(index), index);
 
-    const QString parent_dn = index.data(Role_DN).toString();
+    const QString dn = index.data(Role_DN).toString();
 
     // Load scope children
     {
@@ -376,7 +376,7 @@ void Panes::fetch_scope_node(const QModelIndex &index) {
         
         const QString filter = containers_filter();
         
-        QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, parent_dn);
+        QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, dn);
 
         QStandardItem *item = scope_model->itemFromIndex(index);
         for (const AdObject object : search_results.values()) {
@@ -387,8 +387,19 @@ void Panes::fetch_scope_node(const QModelIndex &index) {
 
     // Load results
     {
-        auto model = new QStandardItemModel(this);
-        model->setHorizontalHeaderLabels(object_model_header_labels());
+        const int id = index.data(Role_Id).toInt();
+
+        const bool need_to_create_model = (!scope_id_to_results.contains(id))
+        if (need_to_create_model) {
+            auto new_results = new QStandardItemModel(this);
+            new_results->setHorizontalHeaderLabels(object_model_header_labels());
+            scope_id_to_results[id] = new_results;
+        }
+
+        QStandardItemModel *results = scope_id_to_results[id];
+
+        // Clear old results
+        results->removeRows(0, results->rowCount());
 
         // NOTE: don't apply filter from dialog to container objects by OR'ing that filter with one that accepts containers.
         const QString filter =
@@ -400,23 +411,11 @@ void Panes::fetch_scope_node(const QModelIndex &index) {
         }();
 
         const QList<QString> search_attributes = QList<QString>();
-        const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, parent_dn);
+        const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, dn);
 
         for (const AdObject object : search_results.values()) {
-            make_results_row(model, object);
+            make_results_row(results, object);
         }
-
-        const int id = index.data(Role_Id).toInt();
-
-        // Delete old results, if it exists
-        if (scope_id_to_results_model.contains(id)) {
-            auto old_results = scope_id_to_results_model[id];
-            delete old_results;
-        }
-
-        scope_id_to_results_model[id] = model;
-
-        results_view->setModel(model);
     }
 
     scope_model->setData(index, true, Role_Fetched);
