@@ -33,6 +33,7 @@
 #include "filter_dialog.h"
 #include "filter_widget/filter_widget.h"
 #include "object_menu.h"
+#include "panes_drag_model.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -52,14 +53,13 @@ QString containers_filter();
 Panes::Panes()
 : QWidget()
 {
-    scope_model = new QStandardItemModel(0, 1, this);
+    scope_model = new PanesDragModel(0, 1, this);
 
     scope_view = new QTreeView(this);
     scope_view->setHeaderHidden(true);
     scope_view->setExpandsOnDoubleClick(true);
     scope_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     scope_view->setContextMenuPolicy(Qt::CustomContextMenu);
-    // scope_view->setAcceptDrops(true); needed? setDragDropMode might be enough
     scope_view->setDragDropMode(QAbstractItemView::DragDrop);
 
     scope_view->setModel(scope_model);
@@ -68,6 +68,7 @@ Panes::Panes()
     results_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     results_view->header()->setSectionsMovable(true);
     results_view->setContextMenuPolicy(Qt::CustomContextMenu);
+    results_view->setDragDropMode(QAbstractItemView::DragDrop);
 
     auto splitter = new QSplitter(Qt::Horizontal);
     splitter->addWidget(scope_view);
@@ -389,9 +390,9 @@ void Panes::fetch_scope_node(const QModelIndex &index) {
     {
         const int id = index.data(Role_Id).toInt();
 
-        const bool need_to_create_model = (!scope_id_to_results.contains(id))
-        if (need_to_create_model) {
-            auto new_results = new QStandardItemModel(this);
+        const bool need_to_create_results = (!scope_id_to_results.contains(id));
+        if (need_to_create_results) {
+            auto new_results = new PanesDragModel(this);
             new_results->setHorizontalHeaderLabels(object_model_header_labels());
             scope_id_to_results[id] = new_results;
         }
