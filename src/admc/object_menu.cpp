@@ -35,64 +35,52 @@
 #include "status.h"
 #include "object_model.h"
 
+#include <QMenu>
 #include <QPoint>
 #include <QAbstractItemView>
 #include <QDebug>
 
 // NOTE: for dialogs opened from this menu, the parent of the menu is passed NOT the menu itself, because the menu closes (and gets deleted if this is the context menu) when dialog opens.
 
-ObjectMenu::ObjectMenu(QWidget *parent)
-: QMenu(parent)
-{
-    // Start off disabled until menu gets a target
-    setDisabled(true);
-}
+void delete_object(const QList<QString> targets, QWidget *parent);
+void move(const QList<QString> targets, QWidget *parent);
+void add_to_group(const QList<QString> targets, QWidget *parent);
+void enable_account(const QList<QString> targets, QWidget *parent);
+void disable_account(const QList<QString> targets, QWidget *parent);
 
-void ObjectMenu::setup_as_menubar_menu(QAbstractItemView *view, const int dn_column) {
-    connect(
-        view->selectionModel(), &QItemSelectionModel::selectionChanged,
-        [=](const QItemSelection &, const QItemSelection &) {
-            load_targets(view, dn_column);
-        });
-}
+void details(const QString &target, QWidget *parent);
+void rename(const QString &target, QWidget *parent);
+void create(const QString &target, const QString &object_class, QWidget *parent);
+void find(const QString &target, QWidget *parent);
+void reset_password(const QString &target, QWidget *parent);
 
-void ObjectMenu::setup_as_context_menu(QAbstractItemView *view, const int dn_column) {
-    // NOTE: creating this on heap instead of stack in the slot so that menu instance and it's members are accesible in dialog "accepted" slots
-    auto menu = new ObjectMenu(view);
-
-    QObject::connect(
-        view, &QWidget::customContextMenuRequested,
-        [=](const QPoint pos) {
-            menu->load_targets(view, dn_column);
-
-            if (!menu->targets.isEmpty()) {
-                exec_menu_from_view(menu, view, pos);
-            }
-        });
-}
+QString targets_display_string(const QList<QString> targets);
 
 // Load targets(and their classes), which are the selected
 // objects of given view. Note that menu actions are not
 // made at this point.
-void ObjectMenu::load_targets(QAbstractItemView *view, const int dn_column) {
-    QSet<QString> selected_dns;
-    QSet<QString> classes;
+// void load_targets(QAbstractItemView *view) {
+//     QSet<QString> selected_dns;
+//     QSet<QString> classes;
 
-    const QList<QModelIndex> indexes = view->selectionModel()->selectedIndexes();
+//     const QList<QModelIndex> indexes = view->selectionModel()->selectedIndexes();
 
-    for (const QModelIndex index : indexes) {
-        const QString &dn = get_dn_from_index(index, dn_column);
-        const QString object_class = index.siblingAtColumn(0).data(ObjectModel::RawObjectClass).toString();
+//     for (const QModelIndex index : indexes) {
+//         // Need first column to access item data
+//         if (index.column() != 0) {
+//             continue;
+//         }
 
-        selected_dns.insert(dn);
-        classes.insert(object_class);
-    }
+//         const QString dn = index.data(Role_DN).toString();
+//         const QString object_class = index.data(Role_ObjectClass).toString();
 
-    targets = selected_dns.toList();
-    target_classes = classes.toList();
+//         selected_dns.insert(dn);
+//         classes.insert(object_class);
+//     }
 
-    setDisabled(targets.isEmpty());
-}
+//     targets = selected_dns.toList();
+//     target_classes = classes.toList();
+// }
 
 // Construct actions of the menu based on current target(s)
 // NOTE: construct right before showing menu instead of in
@@ -100,16 +88,52 @@ void ObjectMenu::load_targets(QAbstractItemView *view, const int dn_column) {
 // in the span of time when target is selected and menu is
 // opened. Menu needs most up-to-date target attributes to
 // construct actions.
-void ObjectMenu::showEvent(QShowEvent *) {
-    clear();
+void add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent) {
+    // Get info about selected objects from view
+    const QList<QString> targets =
+    [=]() {
+        QList<QString> out;
 
-    if (targets.isEmpty()) {
-        return;
-    }
+        const QList<QModelIndex> indexes = view->selectionModel()->selectedIndexes();
 
+        for (const QModelIndex index : indexes) {
+            // Need first column to access item data
+            if (index.column() != 0) {
+                continue;
+            }
+
+            const QString dn = index.data(Role_DN).toString();
+
+            out.append(dn);
+        }
+
+        return out;  
+    }();
+
+    const QSet<QString> target_classes =
+    [=]() {
+        QSet<QString> out;
+        
+        const QList<QModelIndex> indexes = view->selectionModel()->selectedIndexes();
+
+        for (const QModelIndex index : indexes) {
+            // Need first column to access item data
+            if (index.column() != 0) {
+                continue;
+            }
+
+            const QString object_class = index.data(Role_ObjectClass).toString();
+
+            out.insert(object_class);
+        }
+
+        return out;
+    }();
+
+    // These are f-ns that add menu's
     auto add_new =
-    [this]() {
-        QMenu *submenu_new = addMenu(tr("New"));
+    [=]() {
+        QMenu *submenu_new = menu->addMenu(QObject::tr("New"));
         static const QList<QString> create_classes = {
             CLASS_USER,
             CLASS_COMPUTER,
@@ -120,77 +144,107 @@ void ObjectMenu::showEvent(QShowEvent *) {
             const QString action_text = ADCONFIG()->get_class_display_name(object_class);
 
             submenu_new->addAction(action_text,
-                [this, object_class]() {
-                    create(object_class);
+                [=]() {
+                    create(targets[0], object_class, parent);
                 });
         }
     };
 
     auto add_find =
-    [this]() {
-        addAction(tr("Find"), this, &ObjectMenu::find);
+    [=]() {
+        menu->addAction(QObject::tr("Find"),
+            [=]() {
+                find(targets[0], parent);
+            });
     };
 
     auto add_add_to_group =
-    [this]() {
-        addAction(tr("Add to group"), this, &ObjectMenu::add_to_group);
+    [=]() {
+        menu->addAction(QObject::tr("Add to group"),
+            [=]() {
+                add_to_group(targets, parent);
+            });
     };
 
     auto add_reset_password =
-    [this]() {
-        addAction(tr("Reset password"), this, &ObjectMenu::reset_password);
+    [=]() {
+        menu->addAction(QObject::tr("Reset password"),
+            [=]() {
+                reset_password(targets[0], parent);
+            });
     };
 
     auto add_disable_account =
-    [this]() {
-        addAction(tr("Disable account"), this, &ObjectMenu::disable_account);
+    [=]() {
+        menu->addAction(QObject::tr("Disable account"),
+            [=]() {
+                disable_account(targets, parent);
+            });
     };
 
     auto add_enable_account =
-    [this]() {
-        addAction(tr("Enable account"), this, &ObjectMenu::enable_account);
+    [=]() {
+        menu->addAction(QObject::tr("Enable account"),
+            [=]() {
+                enable_account(targets, parent);
+            });
     };
 
     auto add_move =
-    [this](const bool disabled) {
-        auto action = addAction(tr("Move"), this, &ObjectMenu::move);
+    [=](const bool disabled) {
+        auto action = menu->addAction(QObject::tr("Move"),
+            [=]() {
+                move(targets, parent);
+            });
+
         action->setDisabled(disabled);
     };
 
     auto add_delete =
-    [this](const bool disabled) {
-        auto action = addAction(tr("Delete"), this, &ObjectMenu::delete_object);
+    [=](const bool disabled) {
+        auto action = menu->addAction(QObject::tr("Delete"),
+            [=]() {
+                delete_object(targets, parent);
+            });
         action->setDisabled(disabled);
     };
 
     auto add_rename =
-    [this](const bool disabled) {
-        auto action = addAction(tr("Rename"), this, &ObjectMenu::rename);
+    [=](const bool disabled) {
+        auto action = menu->addAction(QObject::tr("Rename"),
+            [=]() {
+                rename(targets[0], parent);
+            });
         action->setDisabled(disabled);
     };
 
     // TODO: multi-object details
     auto add_details =
-    [this]() {
-        addAction(tr("Details"), this, &ObjectMenu::details);
+    [=]() {
+        menu->addAction(QObject::tr("Details"),
+            [=]() {
+                details(targets[0], parent);
+            });
     };
 
     const bool single_object = (targets.size() == 1);
 
+    // Add menu's
     if (single_object) {
-        const AdObject object = AD()->search_object(targets[0]);
-        const QString object_class = target_classes[0];
+        const QString target = targets[0];
+        const QString target_class = target_classes.values()[0];
+        const AdObject object = AD()->search_object(target);
 
         // Get info about object that will determine which
         // actions are present/enabled
         const bool is_container =
-        [this, object_class]() {
+        [=]() {
             const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
 
-            return container_classes.contains(object_class);
+            return container_classes.contains(target_class);
         }();
 
-        const bool is_user = (object_class == CLASS_USER);
+        const bool is_user = (target_class == CLASS_USER);
 
         const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
         const bool cannot_rename = object.get_system_flag(SystemFlagsBit_CannotRename);
@@ -204,7 +258,7 @@ void ObjectMenu::showEvent(QShowEvent *) {
             add_new();
             add_find();
 
-            addSeparator();
+            menu->addSeparator();
         }
 
         if (is_user) {
@@ -217,14 +271,14 @@ void ObjectMenu::showEvent(QShowEvent *) {
                 add_disable_account();
             }
 
-            addSeparator();
+            menu->addSeparator();
         }
 
         add_move(cannot_move);
         add_delete(cannot_delete);
         add_rename(cannot_rename);
 
-        addSeparator();
+        menu->addSeparator();
 
         add_details();
     } else {
@@ -235,7 +289,7 @@ void ObjectMenu::showEvent(QShowEvent *) {
             add_enable_account();
             add_disable_account();
 
-            addSeparator();
+            menu->addSeparator();
         }
 
         add_move(false);
@@ -243,16 +297,14 @@ void ObjectMenu::showEvent(QShowEvent *) {
     }
 }
 
-void ObjectMenu::details() const {
+void details(const QString &target, QWidget *parent) {
     // TODO: multi-object details
-    if (targets.size() == 1) {
-        DetailsDialog::open_for_target(targets[0]);
-    }
+    DetailsDialog::open_for_target(target);
 }
 
-void ObjectMenu::delete_object() const {
-    const QString text = QString(tr("Are you sure you want to delete %1?")).arg(targets_display_string());
-    const bool confirmed = confirmation_dialog(text, parentWidget());
+void delete_object(const QList<QString> targets, QWidget *parent) {
+    const QString text = QString(QObject::tr("Are you sure you want to delete %1?")).arg(targets_display_string(targets));
+    const bool confirmed = confirmation_dialog(text, parent);
 
     if (confirmed) {
         STATUS()->start_error_log();
@@ -261,19 +313,19 @@ void ObjectMenu::delete_object() const {
             AD()->object_delete(target);
         }
 
-        STATUS()->end_error_log(parentWidget());
+        STATUS()->end_error_log(parent);
     }
 }
 
-void ObjectMenu::move() const {
-    auto dialog = new SelectContainerDialog(parentWidget());
+void move(const QList<QString> targets, QWidget *parent) {
+    auto dialog = new SelectContainerDialog(parent);
 
-    const QString title = QString(tr("Move %1")).arg(targets_display_string());
+    const QString title = QString(QObject::tr("Move %1")).arg(targets_display_string(targets));
     dialog->setWindowTitle(title);
 
-    connect(
+    QObject::connect(
         dialog, &SelectContainerDialog::accepted,
-        [this, dialog]() {
+        [=]() {
             const QString selected = dialog->get_selected();
             STATUS()->start_error_log();
 
@@ -281,22 +333,22 @@ void ObjectMenu::move() const {
                 AD()->object_move(target, selected);
             }
 
-            STATUS()->end_error_log(parentWidget());
+            STATUS()->end_error_log(parent);
         });
 
     dialog->open();
 }
 
 // TODO: aduc also includes "built-in security principals" which equates to groups that are located in builtin container. Those objects are otherwise completely identical to other group objects, same class and everything. Adding this would be convenient but also a massive PITA because that would mean making select classes widget somehow have mixed options for classes and whether parent object is the Builtin
-void ObjectMenu::add_to_group() const {
-    auto dialog = new SelectDialog({CLASS_GROUP}, SelectDialogMultiSelection_Yes, parentWidget());
+void add_to_group(const QList<QString> targets, QWidget *parent) {
+    auto dialog = new SelectDialog({CLASS_GROUP}, SelectDialogMultiSelection_Yes, parent);
 
-    const QString title = QString(tr("Add %1 to group")).arg(targets_display_string());
+    const QString title = QString(QObject::tr("Add %1 to group")).arg(targets_display_string(targets));
     dialog->setWindowTitle(title);
 
-    connect(
+    QObject::connect(
         dialog, &SelectDialog::accepted,
-        [this, dialog]() {
+        [=]() {
             const QList<QString> selected = dialog->get_selected();
 
             STATUS()->start_error_log();
@@ -307,64 +359,80 @@ void ObjectMenu::add_to_group() const {
                 }
             }
 
-            STATUS()->end_error_log(parentWidget());
+            STATUS()->end_error_log(parent);
         });
+
+    dialog->open();
 }
 
-void ObjectMenu::rename() const {
-    if (targets.size() == 1) {
-        auto dialog = new RenameDialog(targets[0], parentWidget());
-        dialog->open();
-    }
+void rename(const QString &target, QWidget *parent) {
+    auto dialog = new RenameDialog(target, parent);
+    dialog->open();
 }
 
-void ObjectMenu::create(const QString &object_class) const {
-    if (targets.size() == 1) {
-        const auto create_dialog = new CreateDialog(targets[0], object_class, parentWidget());
-        create_dialog->open();
-    }
+void create(const QString &target, const QString &object_class, QWidget *parent) {
+    const auto create_dialog = new CreateDialog(target, object_class, parent);
+    create_dialog->open();
 }
 
-void ObjectMenu::reset_password() const {
-    if (targets.size() == 1) {
-        const auto password_dialog = new PasswordDialog(targets[0], parentWidget());
-        password_dialog->open();
-    }
+void reset_password(const QString &target, QWidget *parent) {
+    const auto password_dialog = new PasswordDialog(target, parent);
+    password_dialog->open();
 }
 
-void ObjectMenu::enable_account() const {
+void enable_account(const QList<QString> targets, QWidget *parent) {
     STATUS()->start_error_log();
     
     for (const QString target : targets) {
         AD()->user_set_account_option(target, AccountOption_Disabled, false);
     }
 
-    STATUS()->end_error_log(parentWidget());
+    STATUS()->end_error_log(parent);
 }
 
-void ObjectMenu::disable_account() const {
+void disable_account(const QList<QString> targets, QWidget *parent) {
     STATUS()->start_error_log();
     
     for (const QString target : targets) {
         AD()->user_set_account_option(target, AccountOption_Disabled, true);
     }
 
-    STATUS()->end_error_log(parentWidget());
+    STATUS()->end_error_log(parent);
 }
 
-void ObjectMenu::find() const {
-    if (targets.size() == 1) {
-        auto find_dialog = new FindDialog(filter_classes, targets[0], parentWidget());
-        find_dialog->open();
-    }
+void find(const QString &target, QWidget *parent) {
+    auto find_dialog = new FindDialog(filter_classes, target, parent);
+    find_dialog->open();
 }
 
-QString ObjectMenu::targets_display_string() const {
+QString targets_display_string(const QList<QString> targets) {
     if (targets.size() == 1) {
         const QString dn = targets[0];
         const QString name = dn_get_name(dn);
-        return QString(tr("object \"%1\"")).arg(name);
+        return QString(QObject::tr("object \"%1\"")).arg(name);
     } else {
-        return tr("multiple objects");
+        return QObject::tr("multiple objects");
     }
+}
+
+void move_object(const QList<QString> targets, QWidget *parent) {
+    auto dialog = new SelectContainerDialog(parent);
+
+    const QString title = QString(QObject::tr("Move %1")).arg(targets_display_string(targets));
+    dialog->setWindowTitle(title);
+
+    QObject::connect(
+        dialog, &SelectContainerDialog::accepted,
+        [=]() {
+            const QString selected = dialog->get_selected();
+            STATUS()->start_error_log();
+
+            for (const QString target : targets) {
+                AD()->object_move(target, selected);
+            }
+
+            STATUS()->end_error_log(parent);
+        });
+
+    dialog->open();
 }

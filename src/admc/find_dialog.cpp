@@ -39,20 +39,21 @@ FindDialog::FindDialog(const QList<QString> classes, const QString default_searc
     setWindowTitle(tr("Find objects"));
 
     auto menubar = new QMenuBar();
+    auto action_menu = menubar->addMenu(tr("&Action"));
 
     auto find_widget = new FindWidget(classes, default_search_base);
 
-    auto action_menu = new ObjectMenu(this);
-    action_menu->setTitle(tr("&Action"));
-    menubar->addMenu(action_menu);
-
     QTreeView *results_view = find_widget->find_results->view;
-    action_menu->setup_as_menubar_menu(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-    ObjectMenu::setup_as_context_menu(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
     DetailsDialog::connect_to_open_by_double_click(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-        
+
     auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->setMenuBar(menubar);
     layout->addWidget(find_widget);
+
+    connect(
+        action_menu, &QMenu::aboutToShow,
+        [=]() {
+            find_widget->find_results->load_menu(action_menu);
+        });
 }

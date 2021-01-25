@@ -21,47 +21,13 @@
 #define OBJECT_MENU_H
 
 /**
- * This menu is used as a context menu when right clicking
- * on an object and also as a menu in the menubar. Contains
- * actions which are can be performed on the target object(s).
+ * Adds object-related actions to a menu. 
  */
 
-#include <QMenu>
-
+class QMenu;
+class QWidget;
 class QAbstractItemView;
 
-class ObjectMenu final : public QMenu {
-Q_OBJECT
-
-public:
-    ObjectMenu(QWidget *parent);
-
-    // NOTE: views connected to menu must be views of an object model
-    static void setup_as_context_menu(QAbstractItemView *view, const int dn_column);
-    void setup_as_menubar_menu(QAbstractItemView *view, const int dn_column);
-
-    void change_target(const QString &new_target);
-
-protected:
-    void showEvent(QShowEvent *event);
-
-private:
-    QList<QString> targets;
-    QList<QString> target_classes;
-
-    void load_targets(QAbstractItemView *view, const int dn_column);
-
-    void details() const;
-    void delete_object() const;
-    void move() const;
-    void add_to_group() const;
-    void rename() const;
-    void create(const QString &object_class) const;
-    void reset_password() const;
-    void enable_account() const;
-    void disable_account() const;
-    void find() const;
-    QString targets_display_string() const;
-};
+void add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent);
 
 #endif /* OBJECT_MENU_H */

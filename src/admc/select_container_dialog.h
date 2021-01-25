@@ -28,6 +28,8 @@
 #include <QDialog>
 
 class QTreeView;
+class QModelIndex;
+class QStandardItemModel;
 
 class SelectContainerDialog final : public QDialog {
 Q_OBJECT
@@ -39,7 +41,9 @@ public:
 
 private:
     QTreeView *view;
+    QStandardItemModel *model;
 
+    void fetch_node(const QModelIndex &index);
 };
 
 #endif /* SELECT_CONTAINER_DIALOG_H */

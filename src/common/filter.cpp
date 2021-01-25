@@ -20,6 +20,7 @@
 #include "filter.h"
 #include "settings.h"
 #include "ad_defines.h"
+#include "ad_config.h"
 
 const QList<QString> filter_classes = {
     CLASS_USER,
@@ -85,12 +86,24 @@ QString filter_OR(const QList<QString> &subfilters) {
     }
 }
 
-QString current_advanced_view_filter() {
-    const bool advanced_view = SETTINGS()->get_bool(BoolSetting_AdvancedView);
+QString is_container_filter() {
+    const QList<QString> accepted_classes = ADCONFIG()->get_filter_containers();
 
-    if (advanced_view) {
-        return QString();
-    } else {
+    QList<QString> class_filters;
+    for (const QString object_class : accepted_classes) {
+        const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
+        class_filters.append(class_filter);
+    }
+
+    return filter_OR(class_filters);
+}
+
+QString add_advanced_view_filter(const QString &filter) {
+    // Hide advanced view only" objects if advanced view setting is off
+    const bool advanced_view_OFF = !SETTINGS()->get_bool(BoolSetting_AdvancedView);
+    if (advanced_view_OFF) {
         return filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
+    } else {
+        return filter;
     }
 }

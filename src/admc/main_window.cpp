@@ -19,8 +19,6 @@
 
 #include "main_window.h"
 #include "menubar.h"
-#include "containers_widget.h"
-#include "contents_widget.h"
 #include "details_dialog.h"
 #include "status.h"
 #include "settings.h"
@@ -31,6 +29,8 @@
 #include "object_model.h"
 #include "filter_dialog.h"
 #include "object_menu.h"
+#include "console.h"
+#include "utils.h"
 
 #include <QApplication>
 #include <QString>
@@ -97,36 +97,21 @@ void MainWindow::on_connected() {
     status_log->clear();
     STATUS()->status_bar->showMessage(tr("Ready"));
 
-    auto filter_dialog = new FilterDialog(this);
-
-    auto object_model = new ObjectModel(this);
-    object_model->load_head_object();
-
-    containers_widget = new ContainersWidget(object_model, this);
-
-    contents_widget = new ContentsWidget(object_model);
+    auto console = new Console(menubar);
 
     auto details_widget_docked_container = DetailsDialog::get_docked_container();
-    auto policies_widget = new PoliciesWidget();
+    
+    // TODO: really should show a blank widget when docked details is toggled. Right now, it does nothing until some object's details is opened which is confusing.
 
-    // Layout
-    const auto containers_policies_splitter = new QSplitter(Qt::Vertical);
-    containers_policies_splitter->addWidget(containers_widget);
-    containers_policies_splitter->addWidget(policies_widget);
-    containers_policies_splitter->setStretchFactor(0, 2);
-    containers_policies_splitter->setStretchFactor(1, 1);
-
-    auto horiz_splitter = new QSplitter(Qt::Horizontal);
-    horiz_splitter->addWidget(containers_policies_splitter);
-    horiz_splitter->addWidget(contents_widget);
-    horiz_splitter->addWidget(details_widget_docked_container);
-    horiz_splitter->setStretchFactor(0, 1);
-    horiz_splitter->setStretchFactor(1, 2);
-    horiz_splitter->setStretchFactor(2, 2);
+    auto console_details_splitter = new QSplitter(Qt::Horizontal);
+    console_details_splitter->addWidget(console);
+    console_details_splitter->addWidget(details_widget_docked_container);
+    console_details_splitter->setStretchFactor(0, 2);
+    console_details_splitter->setStretchFactor(1, 1);
 
     auto vert_splitter = new QSplitter(Qt::Vertical);
     vert_splitter->addWidget(status_log);
-    vert_splitter->addWidget(horiz_splitter);
+    vert_splitter->addWidget(console_details_splitter);
     vert_splitter->setStretchFactor(0, 1);
     vert_splitter->setStretchFactor(1, 3);
 
@@ -148,99 +133,14 @@ void MainWindow::on_connected() {
         on_changed();
     };
 
-    connect_toggle_widget(containers_widget, BoolSetting_ShowContainers);
     connect_toggle_widget(status_log, BoolSetting_ShowStatusLog);
-
-    connect(
-        filter_dialog, &FilterDialog::filter_changed,
-        object_model, &ObjectModel::on_filter_changed);
-
     connect(
         menubar->filter_action, &QAction::triggered,
-        filter_dialog, &QDialog::open);
-
-    connect(
-        containers_widget, &ContainersWidget::current_changed,
-        this, &MainWindow::on_containers_current_changed);
-    connect(
-        menubar->up_one_level_action, &QAction::triggered,
-        this, &MainWindow::navigate_up);
-    connect(
-        menubar->back_action, &QAction::triggered,
-        this, &MainWindow::navigate_back);
-    connect(
-        menubar->forward_action, &QAction::triggered,
-        this, &MainWindow::navigate_forward);
-
-    update_navigation_actions();
-
-    menubar->action_menu->setup_as_menubar_menu(containers_widget->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-    menubar->action_menu->setup_as_menubar_menu(contents_widget->view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
-
-    // Select head object at startup
-    const QModelIndex head_index = object_model->index(0, 0);
-    containers_widget->change_current(head_index);
+        console->filter_dialog, &QDialog::open);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
     SETTINGS()->save_geometry(this, VariantSetting_MainWindowGeometry);
 
     QApplication::quit();
-}
-
-// TODO: need to disable navigation options depending on if they are possible to do or not! then won't need all this validity checking
-void MainWindow::on_containers_current_changed(const QModelIndex &source_index) {
-    // NOTE: this can occur when navigation changes selection, which will trigger a signal which will call this slot. If current target is unchanged, we don't want to erase future target history.
-    if (source_index == targets_current) {
-        return;
-    }
-
-    // Erase future target history because current ovewrites it
-    targets_future.clear();
-    if (targets_current.isValid()) {
-        targets_past.append(targets_current);
-    }
-
-    targets_current = source_index;
-    update_navigation_actions();
-
-    contents_widget->set_target(targets_current);
-}
-
-void MainWindow::navigate_up() {
-    targets_future.clear();
-    targets_past.append(targets_current);
-
-    targets_current = targets_current.parent();
-    update_navigation_actions();
-
-    contents_widget->set_target(targets_current);
-    containers_widget->change_current(targets_current);
-}
-
-void MainWindow::navigate_back() {
-    targets_future.prepend(targets_current);
-
-    targets_current = targets_past.takeLast();
-    update_navigation_actions();
-    
-    contents_widget->set_target(targets_current);
-    containers_widget->change_current(targets_current);
-}
-
-void MainWindow::navigate_forward() {
-    targets_past.append(targets_current);
-
-    targets_current = targets_future.takeFirst();
-    update_navigation_actions();
-
-    contents_widget->set_target(targets_current);
-    containers_widget->change_current(targets_current);
-}
-
-// NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
-void MainWindow::update_navigation_actions() {
-    menubar->up_one_level_action->setEnabled(targets_current.isValid());
-    menubar->back_action->setEnabled(!targets_past.isEmpty());
-    menubar->forward_action->setEnabled(!targets_future.isEmpty());
 }

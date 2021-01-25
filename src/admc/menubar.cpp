@@ -41,6 +41,12 @@ MenuBar::MenuBar()
 : QMenuBar() {
     QMenu *file_menu = addMenu(tr("&File"));
 
+    connect(
+        file_menu, &QMenu::aboutToShow,
+        [file_menu]() {
+            file_menu->addAction("test");
+        });
+
     auto connect_action = file_menu->addAction(tr("&Connect"),
         [this]() {
             STATUS()->start_error_log();
@@ -53,9 +59,7 @@ MenuBar::MenuBar()
             QApplication::quit();
         });
 
-    action_menu = new ObjectMenu(this);
-    action_menu->setTitle(tr("&Action"));
-    addMenu(action_menu);
+    action_menu = addMenu(tr("&Action"));
 
     auto navigation_menu = addMenu(tr("&Navigation"));
     up_one_level_action = navigation_menu->addAction(tr("&Up one level"));

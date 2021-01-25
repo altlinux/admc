@@ -45,7 +45,7 @@ FilterDialog::FilterDialog(QWidget *parent)
         return out;
     }();
 
-    auto filter_widget = new FilterWidget(noncontainer_classes);
+    filter_widget = new FilterWidget(noncontainer_classes);
 
     auto buttonbox = new QDialogButtonBox();
     buttonbox->addButton(QDialogButtonBox::Ok);
@@ -62,12 +62,4 @@ FilterDialog::FilterDialog(QWidget *parent)
     setLayout(layout);
     layout->addWidget(filter_widget);
     layout->addWidget(buttonbox);
-
-    connect(
-        this, &QDialog::accepted,
-        [this, filter_widget]() {
-            const QString filter = filter_widget->get_filter();
-
-            emit filter_changed(filter);
-        });
 }

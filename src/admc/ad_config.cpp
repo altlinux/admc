@@ -282,6 +282,8 @@ QString AdConfig::get_attribute_display_name(const Attribute &attribute, const O
         {ATTRIBUTE_OBJECT_CATEGORY, tr("Type")},
         {ATTRIBUTE_PROFILE_PATH, tr("Profile path")},
         {ATTRIBUTE_SCRIPT_PATH, tr("Logon script")},
+        {ATTRIBUTE_SAMACCOUNT_NAME, tr("Logon name (pre-Windows 2000)")},
+        {ATTRIBUTE_MAIL, tr("E-mail")},
     };
 
     return fallback_display_names.value(attribute, attribute);

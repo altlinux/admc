@@ -38,23 +38,9 @@ protected:
 
 private slots:
     void on_connected();
-    void on_containers_current_changed(const QModelIndex &source_index);
-    void navigate_up();
-    void navigate_back();
-    void navigate_forward();
 
 private:
     MenuBar *menubar;
-    ContentsWidget *contents_widget;
-    ContainersWidget *containers_widget;
-
-    // Last is closest to current
-    QList<QModelIndex> targets_past;
-    // First is closest to current
-    QList<QModelIndex> targets_future;
-    QModelIndex targets_current;
-
-    void update_navigation_actions();
 };
 
 #endif /* MAIN_WINDOW_H */

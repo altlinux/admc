@@ -17,32 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONTAINERS_PROXY_H
-#define CONTAINERS_PROXY_H
+#ifndef CONSOLE_DRAG_MODEL_H
+#define CONSOLE_DRAG_MODEL_H
 
-#include <QSortFilterProxyModel>
+#include <QStandardItemModel>
 
-class ContainersProxy;
+class QMimeData;
+class QModelIndex;
 
 /**
- * Proxy model for object model. Filters out objects that
- * aren't containers. If "Show non-containers" setting is
- * turned on, shows all objects.
+ * Implements drag and drop behavior for objects.
  */
 
-class ContainersProxy final : public QSortFilterProxyModel {
+class ConsoleDragModel : public QStandardItemModel {
 Q_OBJECT
 
 public:
-    ContainersProxy(QObject *parent);
+    using QStandardItemModel::QStandardItemModel;
 
-private slots:
-    void on_show_non_containers();
-    
-private:
-    bool show_non_containers;
-
-    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
+    QMimeData *mimeData(const QModelIndexList &indexes) const override;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
 };
 
-#endif /* CONTAINERS_PROXY_H */
+#endif /* CONSOLE_DRAG_MODEL_H */

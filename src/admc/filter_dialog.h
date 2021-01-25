@@ -28,14 +28,15 @@
 
 #include <QDialog>
 
+class FilterWidget;
+
 class FilterDialog final : public QDialog {
 Q_OBJECT
 
 public:
+    FilterWidget *filter_widget;
+    
     FilterDialog(QWidget *parent);
-
-signals:
-    void filter_changed(const QString &filter);
 };
 
 #endif /* FILTER_DIALOG_H */

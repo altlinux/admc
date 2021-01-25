@@ -26,10 +26,6 @@ add_executable(admc
     ad_utils.cpp
     ad_object.cpp
     details_dialog.cpp
-    containers_widget.cpp
-    containers_proxy.cpp
-    contents_widget.cpp
-    contents_search_proxy.cpp
     main_window.cpp
     status.cpp
     object_model.cpp
@@ -42,9 +38,10 @@ add_executable(admc
     find_results.cpp
     toggle_widgets_dialog.cpp
     filter_dialog.cpp
-    advanced_view_proxy.cpp
     find_widget.cpp
     tab_widget.cpp
+    console.cpp
+    console_drag_model.cpp
     
     rename_dialog.cpp
     rename_policy_dialog.cpp

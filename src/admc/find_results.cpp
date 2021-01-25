@@ -32,6 +32,7 @@
 #include <QDebug>
 #include <QVBoxLayout>
 #include <QMessageBox>
+#include <QMenu>
 
 // NOTE: loading unrestricted amount of results (10k for example) causes model destruction to take too long, which freezes the app when find dialog is closed.
 #define RESULTS_COUNT_MAX 999
@@ -39,7 +40,7 @@
 FindResults::FindResults()
 : QWidget()
 {   
-    model = new ObjectModel(this);
+    model = new QStandardItemModel(this);
 
     const QList<QString> header_labels = object_model_header_labels();
     model->setHorizontalHeaderLabels(header_labels);
@@ -75,6 +76,22 @@ FindResults::FindResults()
 
     layout->addWidget(object_count_label);
     layout->addWidget(view);
+
+    connect(
+        view, &QWidget::customContextMenuRequested,
+        this, &FindResults::open_context_menu);
+}
+
+void FindResults::load_menu(QMenu *menu) {
+    menu->clear();
+    add_object_actions_to_menu(menu, view, this);
+}
+
+void FindResults::open_context_menu(const QPoint pos) {
+    auto menu = new QMenu(this);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+    load_menu(menu);
+    exec_menu_from_view(menu, view, pos);
 }
 
 void FindResults::load(const QString &filter, const QString &search_base) {
@@ -85,8 +102,7 @@ void FindResults::load(const QString &filter, const QString &search_base) {
     model->removeRows(0, model->rowCount());
     
     const QList<QString> search_attributes = ADCONFIG()->get_columns();
-    const QString filter_and_advanced = filter_AND({filter, current_advanced_view_filter()});
-    const QHash<QString, AdObject> search_results = AD()->search(filter_and_advanced, search_attributes, SearchScope_All, search_base);
+    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_All, search_base);
 
 
     for (const AdObject object : search_results) {
@@ -96,7 +112,7 @@ void FindResults::load(const QString &filter, const QString &search_base) {
 
         const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().count());
 
-        load_attributes_row(row, object);
+        load_object_row(row, object);
 
         model->appendRow(row);
     }
