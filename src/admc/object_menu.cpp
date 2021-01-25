@@ -361,6 +361,8 @@ void add_to_group(const QList<QString> targets, QWidget *parent) {
 
             STATUS()->end_error_log(parent);
         });
+
+    dialog->open();
 }
 
 void rename(const QString &target, QWidget *parent) {
