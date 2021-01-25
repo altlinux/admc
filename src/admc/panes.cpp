@@ -175,7 +175,8 @@ Panes::Panes(MenuBar *menubar_arg)
     // Load head object
     const QString head_dn = AD()->domain_head();
     const AdObject head_object = AD()->search_object(head_dn);
-    make_scope_item(scope_model->invisibleRootItem(), head_object);
+    auto head_item = make_scope_item(head_object);
+    scope_model->appendRow(head_item);
 
     // Make head object current
     scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
@@ -278,7 +279,8 @@ void Panes::on_object_added(const QString &dn) {
     // NOTE: only add if parent was fetched already. If parent wasn't fetched, then this new object will be added when parent is fetched.
     if (fetched) {
         QStandardItem *parent_item = scope_model->itemFromIndex(scope_parent);
-        make_scope_item(parent_item, object);
+        auto object_item = make_scope_item(object);
+        parent_item->appendRow(object_item);
     }
 
     // Add to results
@@ -501,9 +503,9 @@ void Panes::fetch_scope_node(const QModelIndex &index) {
     //
     // Load into scope
     //
-    QStandardItem *item = scope_model->itemFromIndex(index);
     const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
     const bool show_non_containers_ON = SETTINGS()->get_bool(BoolSetting_ShowNonContainersInContainersTree);
+    QList<QStandardItem *> rows;
     for (const AdObject object : search_results.values()) {
         const bool is_container =
         [=]() {
@@ -513,9 +515,14 @@ void Panes::fetch_scope_node(const QModelIndex &index) {
         }();
 
         if (is_container || show_non_containers_ON) {
-            make_scope_item(item, object);
+            auto child = make_scope_item(object);
+            rows.append(child);
         }
     }
+
+    // NOTE: use appendRows() instead of appendRow() because appendRows() performs MUCH better
+    QStandardItem *item = scope_model->itemFromIndex(index);
+    item->appendRows(rows);
 
     //
     // Load into results
@@ -543,7 +550,7 @@ void Panes::fetch_scope_node(const QModelIndex &index) {
     hide_busy_indicator();
 }
 
-void Panes::make_scope_item(QStandardItem *parent, const AdObject &object) {
+QStandardItem *Panes::make_scope_item(const AdObject &object) {
     auto item = new QStandardItem();
     item->setData(false, ScopeRole_Fetched);
 
@@ -569,7 +576,7 @@ void Panes::make_scope_item(QStandardItem *parent, const AdObject &object) {
     const QIcon icon = object.get_icon();
     item->setIcon(icon);
 
-    parent->appendRow(item);
+    return item;
 }
 
 // NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done

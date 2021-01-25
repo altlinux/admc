@@ -75,7 +75,7 @@ private:
     void open_context_menu(const QPoint pos);
     void load_results_row(QList<QStandardItem *> row, const AdObject &object);
     void make_results_row(QStandardItemModel * model, const AdObject &object);
-    void make_scope_item(QStandardItem *parent, const AdObject &object);
+    QStandardItem *make_scope_item(const AdObject &object);
     void refresh_head();
     void set_current_scope(const QModelIndex &index);
     QModelIndex get_scope_node_from_id(const int id) const;
