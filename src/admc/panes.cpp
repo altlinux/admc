@@ -229,6 +229,54 @@ void Panes::on_scope_rows_about_to_be_removed(const QModelIndex &parent, int fir
     update_navigation_actions();
 }
 
+// NOTE: this is the workaround required to know in which pane selected objects are located
+void Panes::on_focus_changed(QWidget *old, QWidget *now) {
+    const QList<QTreeView *> views = {
+        scope_view, results_view
+    };
+    for (auto view : views) {
+        if (view == now) {
+            focused_view = view;
+            
+            return;
+        }
+    }
+}
+
+void Panes::on_current_scope_changed(const QModelIndex &current, const QModelIndex &) {
+    if (!current.isValid()) {
+        return;
+    }
+
+    // Fetch if needed
+    const bool fetched = current.data(ScopeRole_Fetched).toBool();
+    if (!fetched) {
+        fetch_scope_node(current);
+    }
+
+    const int id = current.data(ScopeRole_Id).toInt();
+
+    QStandardItemModel *results_model = scope_id_to_results[id];
+    results_view->setModel(results_model);
+
+    // Update navigation history
+    // NOTE: by default, this handles the case where current changed due to user selecting a different node in the tree. So erase future history. For cases where current changed due to navigation browsing through history, the navigation f-ns will set correct navigation state after this slot is called.
+
+    // Move current to past, if it is valid
+    // NOTE: current target may be invalid, for example when whole model is refreshed or at startup
+    const QModelIndex old_target_index = get_scope_node_from_id(targets_current);
+    const bool old_target_is_valid = (old_target_index.isValid() && old_target_index != current);
+    if (old_target_is_valid) {
+        targets_past.append(targets_current);
+    }
+
+    targets_future.clear();
+
+    targets_current = id;
+
+    update_navigation_actions();
+}
+
 // NOTE: responding to object changes/additions/deletions only in object part of the scope tree. Queries are left unupdated.
 
 void Panes::on_object_deleted(const QString &dn) {
@@ -291,12 +339,6 @@ void Panes::on_object_added(const QString &dn) {
     }
 }
 
-void Panes::make_results_row(QStandardItemModel * model, const AdObject &object) {
-    const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
-    load_results_row(row, object);
-    model->appendRow(row);
-}
-
 // NOTE: only updating object in results. Attribute changes don't matter to scope because it doesn't display any attributes, so only need to update results.
 void Panes::on_object_changed(const QString &dn) {
     const QString parent_dn = dn_get_parent(dn);
@@ -330,15 +372,6 @@ void Panes::on_object_changed(const QString &dn) {
         const AdObject object = AD()->search_object(dn);
 
         load_results_row(item_row, object);
-    }
-}
-
-QModelIndex Panes::get_scope_node_from_id(const int id) const {
-    const QList<QModelIndex> matches = scope_model->match(scope_model->index(0, 0), ScopeRole_Id, id, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
-    if (!matches.isEmpty()) {
-        return matches[0];
-    } else {
-        return QModelIndex();
     }
 }
 
@@ -417,56 +450,14 @@ void Panes::open_context_menu(const QPoint pos) {
     exec_menu_from_view(menu, focused_view, pos);
 }
 
-// NOTE: this is the workaround required to know in which pane selected objects are located
-void Panes::on_focus_changed(QWidget *old, QWidget *now) {
-    const QList<QTreeView *> views = {
-        scope_view, results_view
-    };
-    for (auto view : views) {
-        if (view == now) {
-            focused_view = view;
-            
-            return;
-        }
-    }
-}
-
-void Panes::on_current_scope_changed(const QModelIndex &current, const QModelIndex &) {
-    if (!current.isValid()) {
-        return;
-    }
-
-    // Fetch if needed
-    const bool fetched = current.data(ScopeRole_Fetched).toBool();
-    if (!fetched) {
-        fetch_scope_node(current);
-    }
-
-    const int id = current.data(ScopeRole_Id).toInt();
-
-    QStandardItemModel *results_model = scope_id_to_results[id];
-    results_view->setModel(results_model);
-
-    // Update navigation history
-    // NOTE: by default, this handles the case where current changed due to user selecting a different node in the tree. So erase future history. For cases where current changed due to navigation browsing through history, the navigation f-ns will set correct navigation state after this slot is called.
-
-    // Move current to past, if it is valid
-    // NOTE: current target may be invalid, for example when whole model is refreshed or at startup
-    const QModelIndex old_target_index = get_scope_node_from_id(targets_current);
-    const bool old_target_is_valid = (old_target_index.isValid() && old_target_index != current);
-    if (old_target_is_valid) {
-        targets_past.append(targets_current);
-    }
-
-    targets_future.clear();
-
-    targets_current = id;
-
-    update_navigation_actions();
-}
-
 void Panes::load_results_row(QList<QStandardItem *> row, const AdObject &object) {
     load_object_row(row, object);
+}
+
+void Panes::make_results_row(QStandardItemModel * model, const AdObject &object) {
+    const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
+    load_results_row(row, object);
+    model->appendRow(row);
 }
 
 // Load children of this item in scope tree
@@ -583,4 +574,13 @@ QStandardItem *Panes::make_scope_item(const AdObject &object) {
 void Panes::update_navigation_actions() {
     menubar->back_action->setEnabled(!targets_past.isEmpty());
     menubar->forward_action->setEnabled(!targets_future.isEmpty());
+}
+
+QModelIndex Panes::get_scope_node_from_id(const int id) const {
+    const QList<QModelIndex> matches = scope_model->match(scope_model->index(0, 0), ScopeRole_Id, id, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+    if (!matches.isEmpty()) {
+        return matches[0];
+    } else {
+        return QModelIndex();
+    }
 }

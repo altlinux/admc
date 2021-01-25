@@ -40,24 +40,26 @@ Q_OBJECT
 
 public:
     FilterDialog *filter_dialog;
-    QTreeView *scope_view;
-    QTreeView *results_view;
     
     Panes(MenuBar *menubar_arg);
 
 private slots:
-    void on_current_scope_changed(const QModelIndex &current, const QModelIndex &);
+    void refresh_head();
+    void on_scope_rows_about_to_be_removed(const QModelIndex &parent, int first, int last);
     void on_focus_changed(QWidget *old, QWidget *now);
+    void on_current_scope_changed(const QModelIndex &current, const QModelIndex &);
+
+    void on_object_deleted(const QString &dn);
     void on_object_added(const QString &dn);
     void on_object_changed(const QString &dn);
-    void on_object_deleted(const QString &dn);
-    void on_scope_rows_about_to_be_removed(const QModelIndex &parent, int first, int last);
 
     void navigate_up();
     void navigate_back();
     void navigate_forward();
 
 private:
+    QTreeView *scope_view;
+    QTreeView *results_view;
     QStandardItemModel *scope_model;
     QTreeView *focused_view;
     MenuBar *menubar;
@@ -71,15 +73,13 @@ private:
     bool navigated_through_history = false;
 
     void load_menu(QMenu *menu);
-    void fetch_scope_node(const QModelIndex &index);
     void open_context_menu(const QPoint pos);
     void load_results_row(QList<QStandardItem *> row, const AdObject &object);
     void make_results_row(QStandardItemModel * model, const AdObject &object);
+    void fetch_scope_node(const QModelIndex &index);
     QStandardItem *make_scope_item(const AdObject &object);
-    void refresh_head();
-    void set_current_scope(const QModelIndex &index);
-    QModelIndex get_scope_node_from_id(const int id) const;
     void update_navigation_actions();
+    QModelIndex get_scope_node_from_id(const int id) const;
 };
 
 #endif /* PANES_H */
