@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "panes_drag_model.h"
+#include "console_drag_model.h"
 
 #include "ad_interface.h"
 #include "status.h"

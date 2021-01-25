@@ -17,15 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PANES_H
-#define PANES_H
+#ifndef CONSOLE_H
+#define CONSOLE_H
 
 /**
  * The central widget of the app through which user can
- * browse the domain. Contains two panes: "scope" and
- * "results". Scope is a tree of objects. Results is a list
- * of objects which are children of currently selected scope
- * node.
+ * browse and manipulate objects. Contains two panes:
+ * "scope" and "results". Scope pane contains a tree of objects.
+ * Results pane contains a list of objects which are children of
+ * currently selected scope node.
  */
 
 #include <QWidget>
@@ -90,4 +90,4 @@ private:
     QModelIndex get_scope_node_from_id(const int id) const;
 };
 
-#endif /* PANES_H */
+#endif /* CONSOLE_H */

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "panes.h"
+#include "console.h"
 
 #include "object_model.h"
 #include "object_menu.h"
@@ -32,7 +32,7 @@
 #include "filter_dialog.h"
 #include "filter_widget/filter_widget.h"
 #include "object_menu.h"
-#include "panes_drag_model.h"
+#include "console_drag_model.h"
 #include "menubar.h"
 
 #include <QTreeView>

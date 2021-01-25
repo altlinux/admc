@@ -29,7 +29,7 @@
 #include "object_model.h"
 #include "filter_dialog.h"
 #include "object_menu.h"
-#include "panes.h"
+#include "console.h"
 #include "utils.h"
 
 #include <QApplication>

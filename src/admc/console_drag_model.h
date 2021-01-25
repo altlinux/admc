@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PANES_DRAG_MODEL_H
-#define PANES_DRAG_MODEL_H
+#ifndef CONSOLE_DRAG_MODEL_H
+#define CONSOLE_DRAG_MODEL_H
 
 #include <QStandardItemModel>
 
@@ -40,4 +40,4 @@ public:
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
 };
 
-#endif /* PANES_DRAG_MODEL_H */
+#endif /* CONSOLE_DRAG_MODEL_H */

@@ -40,8 +40,8 @@ add_executable(admc
     filter_dialog.cpp
     find_widget.cpp
     tab_widget.cpp
-    panes.cpp
-    panes_drag_model.cpp
+    console.cpp
+    console_drag_model.cpp
     
     rename_dialog.cpp
     rename_policy_dialog.cpp
