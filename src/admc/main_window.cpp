@@ -38,60 +38,37 @@
 #include <QStatusBar>
 #include <QTextEdit>
 #include <QAction>
-#include <QTreeWidget>
 
 MainWindow::MainWindow()
 : QMainWindow()
 {
     SETTINGS()->restore_geometry(this, VariantSetting_MainWindowGeometry);
 
+    // Setup menubar, status bar and a dummy central widget
+    // for display in offline state
     menubar = new MenuBar();
     setMenuBar(menubar);
 
     QStatusBar *status_bar = STATUS()->status_bar;
     setStatusBar(status_bar);
 
-    // Setup fake offline versions of widgets for display purposes
-    auto offline_containers = new QTreeWidget();
-    offline_containers->setHeaderLabels({
-        tr("Name"),
-    });
-
-    auto offline_contents = new QTreeWidget();
-    offline_contents->setHeaderLabels({
-        tr("Name"),
-        tr("Class"),
-        tr("Description"),
-    });
-
-    auto splitter = new QSplitter();
-    splitter->addWidget(offline_containers);
-    splitter->addWidget(offline_contents);
-    splitter->setStretchFactor(0, 1);
-    splitter->setStretchFactor(1, 2);
-
-    setCentralWidget(splitter);
+    auto dummy_widget = new QWidget();
+    setCentralWidget(dummy_widget);
 
     connect(
         AD(), &AdInterface::connected,
         this, &MainWindow::on_connected);
 
-    // NOTE: order of operations here is very finnicky. Have
-    // to connect() BEFORE show(), otherwise for the
-    // duration of the connection process, main window will
-    // be black. Have to end_error_log() (show error popup)
-    // AFTER show(), otherwise error popup modality won't
-    // work.
-
     STATUS()->start_error_log();
 
     AD()->connect();
 
-    show();
-
     STATUS()->end_error_log(this);
 }
 
+// NOTE: need to finish creating widgets after connection
+// because some widgets require text strings that need to be
+// obtained from the server
 void MainWindow::on_connected() {
     QTextEdit *status_log = STATUS()->status_log;
     status_log->clear();
