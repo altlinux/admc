@@ -23,7 +23,6 @@
 #include "ad_config.h"
 #include "ad_object.h"
 #include "settings.h"
-#include "containers_widget.h"
 #include "utils.h"
 #include "filter.h"
 #include "object_model.h"
@@ -55,7 +54,7 @@ SelectDialog::SelectDialog(QList<QString> classes_arg, SelectDialogMultiSelectio
 
     resize(400, 300);
 
-    model = new ObjectModel(this);
+    model = new QStandardItemModel(this);
 
     const QList<QString> header_labels = object_model_header_labels();
     model->setHorizontalHeaderLabels(header_labels);

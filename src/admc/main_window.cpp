@@ -19,8 +19,6 @@
 
 #include "main_window.h"
 #include "menubar.h"
-#include "containers_widget.h"
-#include "contents_widget.h"
 #include "details_dialog.h"
 #include "status.h"
 #include "settings.h"
@@ -135,7 +133,6 @@ void MainWindow::on_connected() {
         on_changed();
     };
 
-    // connect_toggle_widget(containers_widget, BoolSetting_ShowContainers);
     connect_toggle_widget(status_log, BoolSetting_ShowStatusLog);
     connect(
         menubar->filter_action, &QAction::triggered,
@@ -156,7 +153,6 @@ void MainWindow::on_connected() {
     connect(
         menubar->action_menu, &QMenu::aboutToShow,
         [=]() {
-            menubar->action_menu->clear();
             panes->load_menu(menubar->action_menu);
         });
 }
@@ -169,52 +165,52 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 
 // TODO: need to disable navigation options depending on if they are possible to do or not! then won't need all this validity checking
 void MainWindow::on_containers_current_changed(const QModelIndex &source_index) {
-    // NOTE: this can occur when navigation changes selection, which will trigger a signal which will call this slot. If current target is unchanged, we don't want to erase future target history.
-    if (source_index == targets_current) {
-        return;
-    }
+    // // NOTE: this can occur when navigation changes selection, which will trigger a signal which will call this slot. If current target is unchanged, we don't want to erase future target history.
+    // if (source_index == targets_current) {
+    //     return;
+    // }
 
-    // Erase future target history because current ovewrites it
-    targets_future.clear();
-    if (targets_current.isValid()) {
-        targets_past.append(targets_current);
-    }
+    // // Erase future target history because current ovewrites it
+    // targets_future.clear();
+    // if (targets_current.isValid()) {
+    //     targets_past.append(targets_current);
+    // }
 
-    targets_current = source_index;
-    update_navigation_actions();
+    // targets_current = source_index;
+    // update_navigation_actions();
 
-    contents_widget->set_target(targets_current);
+    // contents_widget->set_target(targets_current);
 }
 
 void MainWindow::navigate_up() {
-    targets_future.clear();
-    targets_past.append(targets_current);
+    // targets_future.clear();
+    // targets_past.append(targets_current);
 
-    targets_current = targets_current.parent();
-    update_navigation_actions();
+    // targets_current = targets_current.parent();
+    // update_navigation_actions();
 
-    contents_widget->set_target(targets_current);
-    containers_widget->change_current(targets_current);
+    // contents_widget->set_target(targets_current);
+    // containers_widget->change_current(targets_current);
 }
 
 void MainWindow::navigate_back() {
-    targets_future.prepend(targets_current);
+    // targets_future.prepend(targets_current);
 
-    targets_current = targets_past.takeLast();
-    update_navigation_actions();
+    // targets_current = targets_past.takeLast();
+    // update_navigation_actions();
     
-    contents_widget->set_target(targets_current);
-    containers_widget->change_current(targets_current);
+    // contents_widget->set_target(targets_current);
+    // containers_widget->change_current(targets_current);
 }
 
 void MainWindow::navigate_forward() {
-    targets_past.append(targets_current);
+    // targets_past.append(targets_current);
 
-    targets_current = targets_future.takeFirst();
-    update_navigation_actions();
+    // targets_current = targets_future.takeFirst();
+    // update_navigation_actions();
 
-    contents_widget->set_target(targets_current);
-    containers_widget->change_current(targets_current);
+    // contents_widget->set_target(targets_current);
+    // containers_widget->change_current(targets_current);
 }
 
 // NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done

@@ -19,18 +19,26 @@
 
 #include "select_container_dialog.h"
 
-#include "object_model.h"
-#include "containers_proxy.h"
-#include "advanced_view_proxy.h"
 #include "utils.h"
+#include "ad_interface.h"
 #include "ad_config.h"
 #include "ad_defines.h"
+#include "ad_utils.h"
+#include "filter.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QHeaderView>
+#include <QStandardItemModel>
+
+enum ContainerRole {
+    ContainerRole_DN = Qt::UserRole + 1,
+    ContainerRole_Fetched = Qt::UserRole + 2,
+};
+
+QStandardItem *make_container_node(const AdObject &object);
 
 SelectContainerDialog::SelectContainerDialog(QWidget *parent)
 : QDialog(parent)
@@ -39,8 +47,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     
     resize(400, 500);
 
-    auto model = new ObjectModel(this);
-    model->load_head_object();
+    model = new QStandardItemModel(this);
 
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -50,12 +57,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     view->sortByColumn(ADCONFIG()->get_column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
     view->setHeaderHidden(true);
 
-    auto advanced_view_proxy = new AdvancedViewProxy(this);
-    auto containers_proxy = new ContainersProxy(this);
-
-    containers_proxy->setSourceModel(model);
-    advanced_view_proxy->setSourceModel(containers_proxy);
-    view->setModel(advanced_view_proxy);
+    view->setModel(model);
 
     auto buttonbox = new QDialogButtonBox();
     auto ok_button = buttonbox->addButton(QDialogButtonBox::Ok);
@@ -75,17 +77,80 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
         buttonbox, &QDialogButtonBox::rejected,
         this, &QDialog::reject);
 
+    connect(
+        view, &QTreeView::expanded,
+        [=](const QModelIndex &index) {
+            const bool fetched = index.data(ContainerRole_Fetched).toBool();
+            if (!fetched) {
+                fetch_node(index);
+            }
+        });
+
     enable_widget_on_selection(ok_button, view);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(view);
     layout->addWidget(buttonbox);
+
+    // Load head object
+    const QString head_dn = AD()->domain_head();
+    const AdObject head_object = AD()->search_object(head_dn);
+    auto item = make_container_node(head_object);
+    model->appendRow(item);
 }
 
 QString SelectContainerDialog::get_selected() const {
     const QModelIndex selected_index = view->selectionModel()->currentIndex();
-    const QString selected = get_dn_from_index(selected_index, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    const QString dn = selected_index.data(ContainerRole_DN).toString();
 
-    return selected;
+    return dn;
+}
+
+void SelectContainerDialog::fetch_node(const QModelIndex &index) {
+    show_busy_indicator();
+
+    model->removeRows(0, model->rowCount(index), index);
+
+    const QString filter =
+    [=]() {
+        const QString is_container = is_container_filter();
+
+        return add_advanced_view_filter(is_container);
+    }();
+
+    const QList<QString> search_attributes;
+
+    const QString dn = index.data(ContainerRole_DN).toString();
+
+    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, dn);
+
+    QStandardItem *parent = model->itemFromIndex(index);
+    for (const AdObject object : search_results.values()) {
+        auto item = make_container_node(object);
+        parent->appendRow(item);
+    }
+
+    parent->setData(true, ContainerRole_Fetched);
+
+    hide_busy_indicator();
+}
+
+QStandardItem *make_container_node(const AdObject &object) {
+    auto item = new QStandardItem();
+    item->setData(false, ContainerRole_Fetched);
+
+    // NOTE: add fake child to new items, so that the child indicator is shown while they are childless until they are fetched
+    item->appendRow(new QStandardItem());
+
+    const QString dn = object.get_dn();
+    item->setData(dn, ContainerRole_DN);
+
+    const QString name = dn_get_name(dn);
+    item->setText(name);
+
+    const QIcon icon = object.get_icon();
+    item->setIcon(icon);
+
+    return item;
 }

@@ -25,6 +25,7 @@
 class QTreeView;
 class ObjectModel;
 class QString;
+class QStandardItemModel;
 template <typename T> class QList;
 
 enum SelectDialogMultiSelection {
@@ -47,7 +48,7 @@ private slots:
 
 private:
     QTreeView *view;
-    ObjectModel *model;
+    QStandardItemModel *model;
     QList<QString> classes;
     SelectDialogMultiSelection multi_selection;
 

@@ -21,7 +21,7 @@
 
 #include "ad_interface.h"
 #include "status.h"
-#include "panes.h"
+#include "object_model.h"
 
 #include <QMimeData>
 #include <QString>

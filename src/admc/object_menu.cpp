@@ -34,7 +34,6 @@
 #include "filter.h"
 #include "status.h"
 #include "object_model.h"
-#include "panes.h"
 
 #include <QMenu>
 #include <QPoint>
@@ -89,7 +88,49 @@ QString targets_display_string(const QList<QString> targets);
 // in the span of time when target is selected and menu is
 // opened. Menu needs most up-to-date target attributes to
 // construct actions.
-void add_object_actions_to_menu(QMenu *menu, const QList<QString> targets, const QList<QString> target_classes, QWidget *parent) {
+void add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent) {
+    // Get info about selected objects from view
+    const QList<QString> targets =
+    [=]() {
+        QList<QString> out;
+
+        const QList<QModelIndex> indexes = view->selectionModel()->selectedIndexes();
+
+        for (const QModelIndex index : indexes) {
+            // Need first column to access item data
+            if (index.column() != 0) {
+                continue;
+            }
+
+            const QString dn = index.data(Role_DN).toString();
+
+            out.append(dn);
+        }
+
+        return out;  
+    }();
+
+    const QSet<QString> target_classes =
+    [=]() {
+        QSet<QString> out;
+        
+        const QList<QModelIndex> indexes = view->selectionModel()->selectedIndexes();
+
+        for (const QModelIndex index : indexes) {
+            // Need first column to access item data
+            if (index.column() != 0) {
+                continue;
+            }
+
+            const QString object_class = index.data(Role_ObjectClass).toString();
+
+            out.insert(object_class);
+        }
+
+        return out;
+    }();
+
+    // These are f-ns that add menu's
     auto add_new =
     [=]() {
         QMenu *submenu_new = menu->addMenu(QObject::tr("New"));
@@ -188,9 +229,10 @@ void add_object_actions_to_menu(QMenu *menu, const QList<QString> targets, const
 
     const bool single_object = (targets.size() == 1);
 
+    // Add menu's
     if (single_object) {
         const QString target = targets[0];
-        const QString target_class = target_classes[0];
+        const QString target_class = target_classes.values()[0];
         const AdObject object = AD()->search_object(target);
 
         // Get info about object that will determine which

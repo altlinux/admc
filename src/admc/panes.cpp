@@ -20,8 +20,6 @@
 #include "panes.h"
 
 #include "object_model.h"
-#include "containers_proxy.h"
-#include "advanced_view_proxy.h"
 #include "object_menu.h"
 #include "utils.h"
 #include "ad_utils.h"
@@ -46,6 +44,11 @@
 #include <QTreeWidget>
 #include <QStack>
 #include <QMenu>
+
+enum ScopeRole {
+    ScopeRole_Id = Role_ObjectClass + 1,
+    ScopeRole_Fetched = Role_ObjectClass + 2,
+};
 
 // TODO: currently showing refresh action always for all scope nodes. Could show it in results if node is in scope? Also could not show it if results isn't loaded?
 
@@ -99,7 +102,7 @@ Panes::Panes()
     connect(
         scope_view, &QTreeView::expanded,
         [=](const QModelIndex &index) {
-            const bool fetched = index.data(Role_Fetched).toBool();
+            const bool fetched = index.data(ScopeRole_Fetched).toBool();
             if (!fetched) {
                 fetch_scope_node(index);
             }
@@ -177,10 +180,10 @@ void Panes::on_scope_rows_about_to_be_removed(const QModelIndex &parent, int fir
 
         // NOTE: need to avoid processing dummy nodes! So
         // check that node was fetched
-        const bool fetched = item->data(Role_Fetched).toBool();
+        const bool fetched = item->data(ScopeRole_Fetched).toBool();
         if (fetched) {
             // Remove results from hashmap and delete it
-            const int id = item->data(Role_Id).toInt();
+            const int id = item->data(ScopeRole_Id).toInt();
             if (scope_id_to_results.contains(id)) {
                 QStandardItemModel *results = scope_id_to_results.take(id);
                 delete results;
@@ -209,7 +212,7 @@ void Panes::on_object_deleted(const QString &dn) {
 
     // Remove from results first(need object to still be in
     // scope tree to do this)
-    const int scope_parent_id = scope_parent.data(Role_Id).toInt();
+    const int scope_parent_id = scope_parent.data(ScopeRole_Id).toInt();
     QStandardItemModel *results_model = scope_id_to_results.value(scope_parent_id, nullptr);
     if (results_model != nullptr) {
         const QList<QModelIndex> results_index_matches = results_model->match(scope_model->index(0, 0), Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
@@ -240,7 +243,7 @@ void Panes::on_object_added(const QString &dn) {
 
     const AdObject object = AD()->search_object(dn);
 
-    const bool fetched = scope_parent.data(Role_Fetched).toBool();
+    const bool fetched = scope_parent.data(ScopeRole_Fetched).toBool();
 
     // NOTE: only add if parent was fetched already. If parent wasn't fetched, then this new object will be added when parent is fetched.
     if (fetched) {
@@ -249,7 +252,7 @@ void Panes::on_object_added(const QString &dn) {
     }
 
     // Add to results
-    const int scope_parent_id = scope_parent.data(Role_Id).toInt();
+    const int scope_parent_id = scope_parent.data(ScopeRole_Id).toInt();
     QStandardItemModel *results_model = scope_id_to_results.value(scope_parent_id, nullptr);
     if (results_model != nullptr) {
         make_results_row(results_model, object);
@@ -271,7 +274,7 @@ void Panes::on_object_changed(const QString &dn) {
     }
 
     const QModelIndex scope_parent = scope_parent_matches[0];
-    const int scope_parent_id = scope_parent.data(Role_Id).toInt();
+    const int scope_parent_id = scope_parent.data(ScopeRole_Id).toInt();
     QStandardItemModel *results_model = scope_id_to_results.value(scope_parent_id, nullptr);
     const QList<QModelIndex> results_index_matches = results_model->match(scope_parent, Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
 
@@ -299,29 +302,14 @@ void Panes::on_object_changed(const QString &dn) {
 }
 
 void Panes::load_menu(QMenu *menu) {
-    QList<QString> targets;
-    QList<QString> target_classes;
+    menu->clear();
 
-    const QList<QModelIndex> indexes = focused_view->selectionModel()->selectedIndexes();
+    add_object_actions_to_menu(menu, focused_view, this);
 
-    for (const QModelIndex index : indexes) {
-        // Need first column to access item data
-        if (index.column() != 0) {
-            continue;
-        }
-
-        const QString dn = index.data(Role_DN).toString();
-        const QString object_class = index.data(Role_ObjectClass).toString();
-
-        targets.append(dn);
-        target_classes.append(object_class);
-    }
-
-    add_object_actions_to_menu(menu, targets, target_classes, this);
-
+    // Add refresh action if clicked on a fetched scope node
     if (focused_view == scope_view) {
         const QModelIndex index = scope_view->selectionModel()->currentIndex();
-        const bool was_fetched = index.data(Role_Fetched).toBool();
+        const bool was_fetched = index.data(ScopeRole_Fetched).toBool();
 
         if (was_fetched) {
             menu->addAction(tr("Refresh"),
@@ -336,6 +324,7 @@ void Panes::load_menu(QMenu *menu) {
 
 void Panes::open_context_menu(const QPoint pos) {
     auto menu = new QMenu(this);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
     load_menu(menu);
     exec_menu_from_view(menu, focused_view, pos);
 }
@@ -360,21 +349,19 @@ void Panes::change_results_target(const QModelIndex &current, const QModelIndex 
     }
     
     // Fetch if needed
-    const bool fetched = current.data(Role_Fetched).toBool();
+    const bool fetched = current.data(ScopeRole_Fetched).toBool();
     if (!fetched) {
         fetch_scope_node(current);
     }
 
-    const int id = scope_model->data(current, Role_Id).toInt();
+    const int id = scope_model->data(current, ScopeRole_Id).toInt();
     QStandardItemModel *results_model = scope_id_to_results[id];
 
     results_view->setModel(results_model);
 }
 
 void Panes::load_results_row(QList<QStandardItem *> row, const AdObject &object) {
-    load_attributes_row(row, object);
-    row[0]->setData(object.get_dn(), Role_DN);
-    row[0]->setData(object.get_string(ATTRIBUTE_OBJECT_CLASS), Role_ObjectClass);
+    load_object_row(row, object);
 }
 
 // TODO: should expand node when fetching or no? it seems that in all cases i can think of the node is already expanded.
@@ -394,31 +381,12 @@ void Panes::fetch_scope_node(const QModelIndex &index) {
     [=]() {
         const QString user_filter = filter_dialog->filter_widget->get_filter();
 
-        const QString is_container =
-        []() {
-            const QList<QString> accepted_classes = ADCONFIG()->get_filter_containers();
+        const QString is_container = is_container_filter();
 
-            QList<QString> class_filters;
-            for (const QString object_class : accepted_classes) {
-                const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
-                class_filters.append(class_filter);
-            }
-
-            return filter_OR(class_filters);
-        }();
-
-        const QString is_not_advanced_view_only = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
-
-        QString out;
-        
         // NOTE: OR user filter with containers filter so that container objects are always shown, even if they are filtered out by user filter
-        out = filter_OR({user_filter, is_container});
+        QString out = filter_OR({user_filter, is_container});
 
-        // Hide advanced view only" objects if advanced view setting is off
-        const bool advanced_view_OFF = !SETTINGS()->get_bool(BoolSetting_AdvancedView);
-        if (advanced_view_OFF) {
-            out = filter_AND({out, is_not_advanced_view_only});
-        }
+        out = add_advanced_view_filter(out);
 
         return out;
     }();
@@ -451,7 +419,7 @@ void Panes::fetch_scope_node(const QModelIndex &index) {
     //
     // Load into results
     //
-    const int id = index.data(Role_Id).toInt();
+    const int id = index.data(ScopeRole_Id).toInt();
 
     const bool need_to_create_results = (!scope_id_to_results.contains(id));
     if (need_to_create_results) {
@@ -469,14 +437,14 @@ void Panes::fetch_scope_node(const QModelIndex &index) {
         make_results_row(results, object);
     }
 
-    scope_model->setData(index, true, Role_Fetched);
+    scope_model->setData(index, true, ScopeRole_Fetched);
 
     hide_busy_indicator();
 }
 
 void Panes::make_scope_item(QStandardItem *parent, const AdObject &object) {
     auto item = new QStandardItem();
-    item->setData(false, Role_Fetched);
+    item->setData(false, ScopeRole_Fetched);
 
     // NOTE: add fake child to new items, so that the child indicator is shown while they are childless until they are fetched
     item->appendRow(new QStandardItem());
@@ -493,7 +461,7 @@ void Panes::make_scope_item(QStandardItem *parent, const AdObject &object) {
     static int id_max = 0;
     const int id = id_max;
     id_max++;
-    item->setData(id, Role_Id);
+    item->setData(id, ScopeRole_Id);
 
     const QIcon icon = object.get_icon();
     item->setIcon(icon);

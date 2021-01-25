@@ -34,13 +34,6 @@ class QStandardItem;
 class AdObject;
 template <typename T> class QList;
 
-enum Role {
-    Role_Id = Qt::UserRole + 1,
-    Role_Fetched = Qt::UserRole + 2,
-    Role_DN = Qt::UserRole + 3,
-    Role_ObjectClass = Qt::UserRole + 4,
-};
-
 class Panes final : public QWidget {
 Q_OBJECT
 

@@ -31,6 +31,7 @@ class QTreeView;
 class QLabel;
 class QStandardItemModel;
 class QStandardItem;
+class QMenu;
 template <typename T> class QList;
 
 class FindResults final : public QWidget {
@@ -46,11 +47,14 @@ public:
     // Returns a copy of item's rows, so these items need to become owned by something or deleted
     QList<QList<QStandardItem *>> get_selected_rows() const;
 
+    void load_menu(QMenu *menu);
+
 private:
     QStandardItemModel *model;
     QLabel *object_count_label;
 
     void showEvent(QShowEvent *event);
+    void open_context_menu(const QPoint pos);
 };
 
 #endif /* FIND_RESULTS_H */

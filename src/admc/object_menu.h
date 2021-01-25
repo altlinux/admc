@@ -25,10 +25,9 @@
  */
 
 class QMenu;
-class QString;
 class QWidget;
-template <typename T> class QList;
+class QAbstractItemView;
 
-void add_object_actions_to_menu(QMenu *menu, const QList<QString> targets, const QList<QString> target_classes, QWidget *parent);
+void add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent);
 
 #endif /* OBJECT_MENU_H */
