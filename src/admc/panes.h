@@ -20,6 +20,14 @@
 #ifndef PANES_H
 #define PANES_H
 
+/**
+ * The central widget of the app through which user can
+ * browse the domain. Contains two panes: "scope" and
+ * "results". Scope is a tree of objects. Results is a list
+ * of objects which are children of currently selected scope
+ * node.
+ */
+
 #include <QWidget>
 
 class QTreeView;
@@ -35,13 +43,13 @@ class AdObject;
 class MenuBar;
 template <typename T> class QList;
 
-class Panes final : public QWidget {
+class Console final : public QWidget {
 Q_OBJECT
 
 public:
     FilterDialog *filter_dialog;
     
-    Panes(MenuBar *menubar_arg);
+    Console(MenuBar *menubar_arg);
 
 private slots:
     void refresh_head();

@@ -29,7 +29,7 @@ class QModelIndex;
  * Implements drag and drop behavior for objects.
  */
 
-class PanesDragModel : public QStandardItemModel {
+class ConsoleDragModel : public QStandardItemModel {
 Q_OBJECT
 
 public:

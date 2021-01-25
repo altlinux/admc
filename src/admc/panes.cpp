@@ -57,12 +57,12 @@ enum ScopeRole {
 
 QHash<int, QStandardItemModel *> scope_id_to_results;
 
-Panes::Panes(MenuBar *menubar_arg)
+Console::Console(MenuBar *menubar_arg)
 : QWidget()
 {
     menubar = menubar_arg;
 
-    scope_model = new PanesDragModel(0, 1, this);
+    scope_model = new ConsoleDragModel(0, 1, this);
 
     scope_view = new QTreeView(this);
     scope_view->setHeaderHidden(true);
@@ -95,7 +95,7 @@ Panes::Panes(MenuBar *menubar_arg)
 
     connect(
         scope_view->selectionModel(), &QItemSelectionModel::currentChanged,
-        this, &Panes::on_current_scope_changed);
+        this, &Console::on_current_scope_changed);
 
     // TODO: not sure about this... Need to re-sort when items are renamed and maybe in other cases as well.
     connect(
@@ -115,28 +115,28 @@ Panes::Panes(MenuBar *menubar_arg)
 
     connect(
         qApp, &QApplication::focusChanged,
-        this, &Panes::on_focus_changed);
+        this, &Console::on_focus_changed);
 
     connect(
         scope_view, &QWidget::customContextMenuRequested,
-        this, &Panes::open_context_menu);
+        this, &Console::open_context_menu);
     connect(
         results_view, &QWidget::customContextMenuRequested,
-        this, &Panes::open_context_menu);
+        this, &Console::open_context_menu);
 
     connect(
         AD(), &AdInterface::object_added,
-        this, &Panes::on_object_added);
+        this, &Console::on_object_added);
     connect(
         AD(), &AdInterface::object_deleted,
-        this, &Panes::on_object_deleted);
+        this, &Console::on_object_deleted);
     connect(
         AD(), &AdInterface::object_changed,
-        this, &Panes::on_object_changed);
+        this, &Console::on_object_changed);
 
     connect(
         scope_model, &QStandardItemModel::rowsAboutToBeRemoved,
-        this, &Panes::on_scope_rows_about_to_be_removed);
+        this, &Console::on_scope_rows_about_to_be_removed);
 
     focused_view = scope_view;
 
@@ -145,26 +145,26 @@ Panes::Panes(MenuBar *menubar_arg)
     const BoolSettingSignal *advanced_view = SETTINGS()->get_bool_signal(BoolSetting_AdvancedView);
     connect(
         advanced_view, &BoolSettingSignal::changed,
-        this, &Panes::refresh_head);
+        this, &Console::refresh_head);
 
     const BoolSettingSignal *show_non_containers = SETTINGS()->get_bool_signal(BoolSetting_ShowNonContainersInContainersTree);
     connect(
         show_non_containers, &BoolSettingSignal::changed,
-        this, &Panes::refresh_head);
+        this, &Console::refresh_head);
 
     connect(
         filter_dialog, &QDialog::accepted,
-        this, &Panes::refresh_head);
+        this, &Console::refresh_head);
 
     connect(
         menubar->up_one_level_action, &QAction::triggered,
-        this, &Panes::navigate_up);
+        this, &Console::navigate_up);
     connect(
         menubar->back_action, &QAction::triggered,
-        this, &Panes::navigate_back);
+        this, &Console::navigate_back);
     connect(
         menubar->forward_action, &QAction::triggered,
-        this, &Panes::navigate_forward);
+        this, &Console::navigate_forward);
 
     connect(
         menubar->action_menu, &QMenu::aboutToShow,
@@ -182,14 +182,14 @@ Panes::Panes(MenuBar *menubar_arg)
     scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 }
 
-void Panes::refresh_head() {
+void Console::refresh_head() {
     fetch_scope_node(scope_model->index(0, 0));
 }
 
 // When scope nodes are removed, need to delete data associate to them
 // So delete scope node's results
 // and delete scope node from navigation history, if it's there
-void Panes::on_scope_rows_about_to_be_removed(const QModelIndex &parent, int first, int last) {
+void Console::on_scope_rows_about_to_be_removed(const QModelIndex &parent, int first, int last) {
     QStack<QStandardItem *> stack;
 
     for (int r = first; r <= last; r++) {
@@ -230,7 +230,7 @@ void Panes::on_scope_rows_about_to_be_removed(const QModelIndex &parent, int fir
 }
 
 // NOTE: this is the workaround required to know in which pane selected objects are located
-void Panes::on_focus_changed(QWidget *old, QWidget *now) {
+void Console::on_focus_changed(QWidget *old, QWidget *now) {
     const QList<QTreeView *> views = {
         scope_view, results_view
     };
@@ -243,7 +243,7 @@ void Panes::on_focus_changed(QWidget *old, QWidget *now) {
     }
 }
 
-void Panes::on_current_scope_changed(const QModelIndex &current, const QModelIndex &) {
+void Console::on_current_scope_changed(const QModelIndex &current, const QModelIndex &) {
     if (!current.isValid()) {
         return;
     }
@@ -279,7 +279,7 @@ void Panes::on_current_scope_changed(const QModelIndex &current, const QModelInd
 
 // NOTE: responding to object changes/additions/deletions only in object part of the scope tree. Queries are left unupdated.
 
-void Panes::on_object_deleted(const QString &dn) {
+void Console::on_object_deleted(const QString &dn) {
     const QString parent_dn = dn_get_parent(dn);
 
     const QList<QModelIndex> scope_parent_matches = scope_model->match(scope_model->index(0, 0), Role_DN, parent_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
@@ -310,7 +310,7 @@ void Panes::on_object_deleted(const QString &dn) {
     }
 }
 
-void Panes::on_object_added(const QString &dn) {
+void Console::on_object_added(const QString &dn) {
     // Add to scope
     const QString parent_dn = dn_get_parent(dn);
     const QList<QModelIndex> scope_parent_matches = scope_model->match(scope_model->index(0, 0), Role_DN, parent_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
@@ -340,7 +340,7 @@ void Panes::on_object_added(const QString &dn) {
 }
 
 // NOTE: only updating object in results. Attribute changes don't matter to scope because it doesn't display any attributes, so only need to update results.
-void Panes::on_object_changed(const QString &dn) {
+void Console::on_object_changed(const QString &dn) {
     const QString parent_dn = dn_get_parent(dn);
     const QList<QModelIndex> scope_parent_matches = scope_model->match(scope_model->index(0, 0), Role_DN, parent_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive | Qt::MatchWrap));
     if (scope_parent_matches.isEmpty()) {
@@ -376,7 +376,7 @@ void Panes::on_object_changed(const QString &dn) {
 }
 
 // Set target to parent of current target
-void Panes::navigate_up() {
+void Console::navigate_up() {
     const QModelIndex current_index = get_scope_node_from_id(targets_current);
     const QModelIndex new_target_index = current_index.parent();
 
@@ -388,7 +388,7 @@ void Panes::navigate_up() {
 }
 
 // NOTE: for "back" and "forward" navigation, setCurrentIndex() triggers "current changed" slot which by default erases future history, so manually restore correct navigation state afterwards
-void Panes::navigate_back() {
+void Console::navigate_back() {
     targets_future.prepend(targets_current);
     auto new_current = targets_past.takeLast();
 
@@ -405,7 +405,7 @@ void Panes::navigate_back() {
     update_navigation_actions();
 }
 
-void Panes::navigate_forward() {
+void Console::navigate_forward() {
     targets_past.append(targets_current);
     auto new_current = targets_future.takeFirst();
 
@@ -422,7 +422,7 @@ void Panes::navigate_forward() {
     update_navigation_actions();
 }
 
-void Panes::load_menu(QMenu *menu) {
+void Console::load_menu(QMenu *menu) {
     menu->clear();
 
     add_object_actions_to_menu(menu, focused_view, this);
@@ -443,18 +443,18 @@ void Panes::load_menu(QMenu *menu) {
     }
 }
 
-void Panes::open_context_menu(const QPoint pos) {
+void Console::open_context_menu(const QPoint pos) {
     auto menu = new QMenu(this);
     menu->setAttribute(Qt::WA_DeleteOnClose);
     load_menu(menu);
     exec_menu_from_view(menu, focused_view, pos);
 }
 
-void Panes::load_results_row(QList<QStandardItem *> row, const AdObject &object) {
+void Console::load_results_row(QList<QStandardItem *> row, const AdObject &object) {
     load_object_row(row, object);
 }
 
-void Panes::make_results_row(QStandardItemModel * model, const AdObject &object) {
+void Console::make_results_row(QStandardItemModel * model, const AdObject &object) {
     const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().size());
     load_results_row(row, object);
     model->appendRow(row);
@@ -462,7 +462,7 @@ void Panes::make_results_row(QStandardItemModel * model, const AdObject &object)
 
 // Load children of this item in scope tree
 // and load results linked to this scope item
-void Panes::fetch_scope_node(const QModelIndex &index) {
+void Console::fetch_scope_node(const QModelIndex &index) {
     show_busy_indicator();
 
     // NOTE: remove old scope children (which might be a dummy child used for showing child indicator)
@@ -522,7 +522,7 @@ void Panes::fetch_scope_node(const QModelIndex &index) {
 
     const bool need_to_create_results = (!scope_id_to_results.contains(id));
     if (need_to_create_results) {
-        auto new_results = new PanesDragModel(this);
+        auto new_results = new ConsoleDragModel(this);
         new_results->setHorizontalHeaderLabels(object_model_header_labels());
         scope_id_to_results[id] = new_results;
     }
@@ -541,7 +541,7 @@ void Panes::fetch_scope_node(const QModelIndex &index) {
     hide_busy_indicator();
 }
 
-QStandardItem *Panes::make_scope_item(const AdObject &object) {
+QStandardItem *Console::make_scope_item(const AdObject &object) {
     auto item = new QStandardItem();
     item->setData(false, ScopeRole_Fetched);
 
@@ -571,12 +571,12 @@ QStandardItem *Panes::make_scope_item(const AdObject &object) {
 }
 
 // NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
-void Panes::update_navigation_actions() {
+void Console::update_navigation_actions() {
     menubar->back_action->setEnabled(!targets_past.isEmpty());
     menubar->forward_action->setEnabled(!targets_future.isEmpty());
 }
 
-QModelIndex Panes::get_scope_node_from_id(const int id) const {
+QModelIndex Console::get_scope_node_from_id(const int id) const {
     const QList<QModelIndex> matches = scope_model->match(scope_model->index(0, 0), ScopeRole_Id, id, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
     if (!matches.isEmpty()) {
         return matches[0];

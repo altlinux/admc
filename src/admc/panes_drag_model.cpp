@@ -30,7 +30,7 @@
 // TODO: dragging queries and query folders
 // TODO: move object_can_drop() and object_drop() here, shouldnt be in AD() 
 
-QMimeData *PanesDragModel::mimeData(const QModelIndexList &indexes) const {
+QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
     QMimeData *data = QStandardItemModel::mimeData(indexes);
 
     const QList<QUrl> dns =
@@ -51,7 +51,7 @@ QMimeData *PanesDragModel::mimeData(const QModelIndexList &indexes) const {
     return data;
 }
 
-bool PanesDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
+bool ConsoleDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
     if (!data->hasUrls()) {
         return false;
     }
@@ -69,7 +69,7 @@ bool PanesDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int,
     }
 }
 
-bool PanesDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
+bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
     // TODO: implement dropping next to parent (which happens if row or column aren't equal to -1). In that case would need to insert within other rows instead of just appending.
     const bool dropping_onto_parent = (row == -1 && column == -1);
     if (!dropping_onto_parent) {

@@ -97,21 +97,21 @@ void MainWindow::on_connected() {
     status_log->clear();
     STATUS()->status_bar->showMessage(tr("Ready"));
 
-    auto panes = new Panes(menubar);
+    auto console = new Console(menubar);
 
     auto details_widget_docked_container = DetailsDialog::get_docked_container();
     
     // TODO: really should show a blank widget when docked details is toggled. Right now, it does nothing until some object's details is opened which is confusing.
 
-    auto panes_details_splitter = new QSplitter(Qt::Horizontal);
-    panes_details_splitter->addWidget(panes);
-    panes_details_splitter->addWidget(details_widget_docked_container);
-    panes_details_splitter->setStretchFactor(0, 2);
-    panes_details_splitter->setStretchFactor(1, 1);
+    auto console_details_splitter = new QSplitter(Qt::Horizontal);
+    console_details_splitter->addWidget(console);
+    console_details_splitter->addWidget(details_widget_docked_container);
+    console_details_splitter->setStretchFactor(0, 2);
+    console_details_splitter->setStretchFactor(1, 1);
 
     auto vert_splitter = new QSplitter(Qt::Vertical);
     vert_splitter->addWidget(status_log);
-    vert_splitter->addWidget(panes_details_splitter);
+    vert_splitter->addWidget(console_details_splitter);
     vert_splitter->setStretchFactor(0, 1);
     vert_splitter->setStretchFactor(1, 3);
 
@@ -136,7 +136,7 @@ void MainWindow::on_connected() {
     connect_toggle_widget(status_log, BoolSetting_ShowStatusLog);
     connect(
         menubar->filter_action, &QAction::triggered,
-        panes->filter_dialog, &QDialog::open);
+        console->filter_dialog, &QDialog::open);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
