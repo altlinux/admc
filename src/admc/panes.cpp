@@ -161,33 +161,35 @@ void Panes::refresh_head() {
     fetch_scope_node(scope_model->index(0, 0));
 }
 
-// Delete results attached to all removed scope nodes,
-// including descendants. Note that parent's results aren't
-// removed because parent item isn't removed!
+// Delete results attached to all removed scope nodes
+// (including descendants!)
 void Panes::on_scope_rows_about_to_be_removed(const QModelIndex &parent, int first, int last) {
     QStack<QStandardItem *> stack;
 
-    auto parent_item = scope_model->itemFromIndex(parent);
-    stack.push(parent_item);
+    for (int r = first; r <= last; r++) {
+        const QModelIndex removed_index = scope_model->index(r, 0, parent);
+        auto removed_item = scope_model->itemFromIndex(removed_index);
+        stack.push(removed_item);
+    }
 
     while (!stack.isEmpty()) {
         auto item = stack.pop();
 
-        // NOTE: need to only do this if item was fetched, due to the dummy item thing
+        // NOTE: need to avoid processing dummy nodes! So
+        // check that node was fetched
         const bool fetched = item->data(Role_Fetched).toBool();
         if (fetched) {
+            // Remove results from hashmap and delete it
+            const int id = item->data(Role_Id).toInt();
+            if (scope_id_to_results.contains(id)) {
+                QStandardItemModel *results = scope_id_to_results.take(id);
+                delete results;
+            }
+
             // Iterate through children
             for (int r = 0; r < item->rowCount(); r++) {
                 auto child = item->child(r, 0);
                 stack.push(child);
-
-                // Remove results from hashmap and delete it
-                const int id = child->data(Role_Id).toInt();
-                if (scope_id_to_results.contains(id)) {
-                    QStandardItemModel *results = scope_id_to_results[id];
-                    scope_id_to_results.remove(id);
-                    delete results;
-                }
             }
         }
     }
