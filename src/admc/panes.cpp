@@ -33,6 +33,7 @@
 #include "filter_widget/filter_widget.h"
 #include "object_menu.h"
 #include "panes_drag_model.h"
+#include "menubar.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -50,13 +51,17 @@ enum ScopeRole {
     ScopeRole_Fetched = Role_ObjectClass + 2,
 };
 
+#define DUMMY_ITEM_ID -1
+
 // TODO: currently showing refresh action always for all scope nodes. Could show it in results if node is in scope? Also could not show it if results isn't loaded?
 
 QHash<int, QStandardItemModel *> scope_id_to_results;
 
-Panes::Panes()
+Panes::Panes(MenuBar *menubar_arg)
 : QWidget()
 {
+    menubar = menubar_arg;
+
     scope_model = new PanesDragModel(0, 1, this);
 
     scope_view = new QTreeView(this);
@@ -90,7 +95,7 @@ Panes::Panes()
 
     connect(
         scope_view->selectionModel(), &QItemSelectionModel::currentChanged,
-        this, &Panes::change_results_target);
+        this, &Panes::on_current_scope_changed);
 
     // TODO: not sure about this... Need to re-sort when items are renamed and maybe in other cases as well.
     connect(
@@ -135,14 +140,6 @@ Panes::Panes()
 
     focused_view = scope_view;
 
-    // Load head object
-    const QString head_dn = AD()->domain_head();
-    const AdObject head_object = AD()->search_object(head_dn);
-    make_scope_item(scope_model->invisibleRootItem(), head_object);
-
-    // Make head object current
-    scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
-
     // Refresh head when settings affecting the filter
     // change. This reloads the model with an updated filter
     const BoolSettingSignal *advanced_view = SETTINGS()->get_bool_signal(BoolSetting_AdvancedView);
@@ -158,14 +155,39 @@ Panes::Panes()
     connect(
         filter_dialog, &QDialog::accepted,
         this, &Panes::refresh_head);
+
+    connect(
+        menubar->up_one_level_action, &QAction::triggered,
+        this, &Panes::navigate_up);
+    connect(
+        menubar->back_action, &QAction::triggered,
+        this, &Panes::navigate_back);
+    connect(
+        menubar->forward_action, &QAction::triggered,
+        this, &Panes::navigate_forward);
+
+    connect(
+        menubar->action_menu, &QMenu::aboutToShow,
+        [this]() {
+            load_menu(menubar->action_menu);
+        });
+
+    // Load head object
+    const QString head_dn = AD()->domain_head();
+    const AdObject head_object = AD()->search_object(head_dn);
+    make_scope_item(scope_model->invisibleRootItem(), head_object);
+
+    // Make head object current
+    scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 }
 
 void Panes::refresh_head() {
     fetch_scope_node(scope_model->index(0, 0));
 }
 
-// Delete results attached to all removed scope nodes
-// (including descendants!)
+// When scope nodes are removed, need to delete data associate to them
+// So delete scope node's results
+// and delete scope node from navigation history, if it's there
 void Panes::on_scope_rows_about_to_be_removed(const QModelIndex &parent, int first, int last) {
     QStack<QStandardItem *> stack;
 
@@ -178,24 +200,32 @@ void Panes::on_scope_rows_about_to_be_removed(const QModelIndex &parent, int fir
     while (!stack.isEmpty()) {
         auto item = stack.pop();
 
-        // NOTE: need to avoid processing dummy nodes! So
-        // check that node was fetched
-        const bool fetched = item->data(ScopeRole_Fetched).toBool();
-        if (fetched) {
-            // Remove results from hashmap and delete it
-            const int id = item->data(ScopeRole_Id).toInt();
-            if (scope_id_to_results.contains(id)) {
-                QStandardItemModel *results = scope_id_to_results.take(id);
-                delete results;
-            }
+        const int id = item->data(ScopeRole_Id).toInt();
 
-            // Iterate through children
-            for (int r = 0; r < item->rowCount(); r++) {
-                auto child = item->child(r, 0);
-                stack.push(child);
-            }
+        // NOTE: need to avoid processing dummy nodes!
+        if (id == DUMMY_ITEM_ID) {
+            continue;
+        }
+
+        // Remove scope node from navigation history (if it's there)
+        targets_past.removeAll(id);
+        targets_future.removeAll(id);
+
+        // Remove results from hashmap and delete it
+        if (scope_id_to_results.contains(id)) {
+            QStandardItemModel *results = scope_id_to_results.take(id);
+            delete results;
+        }
+
+        // Iterate through children
+        for (int r = 0; r < item->rowCount(); r++) {
+            auto child = item->child(r, 0);
+            stack.push(child);
         }
     }
+
+    // Update navigation since a node in history could've been removed
+    update_navigation_actions();
 }
 
 // NOTE: responding to object changes/additions/deletions only in object part of the scope tree. Queries are left unupdated.
@@ -301,6 +331,62 @@ void Panes::on_object_changed(const QString &dn) {
     }
 }
 
+QModelIndex Panes::get_scope_node_from_id(const int id) const {
+    const QList<QModelIndex> matches = scope_model->match(scope_model->index(0, 0), ScopeRole_Id, id, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+    if (!matches.isEmpty()) {
+        return matches[0];
+    } else {
+        return QModelIndex();
+    }
+}
+
+// Set target to parent of current target
+void Panes::navigate_up() {
+    const QModelIndex current_index = get_scope_node_from_id(targets_current);
+    const QModelIndex new_target_index = current_index.parent();
+
+    // NOTE: parent of target can be invalid, if current is
+    // head node
+    if (new_target_index.isValid()) {
+        scope_view->selectionModel()->setCurrentIndex(new_target_index, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+    }
+}
+
+// NOTE: for "back" and "forward" navigation, setCurrentIndex() triggers "current changed" slot which by default erases future history, so manually restore correct navigation state afterwards
+void Panes::navigate_back() {
+    targets_future.prepend(targets_current);
+    auto new_current = targets_past.takeLast();
+
+    auto saved_past = targets_past;
+    auto saved_future = targets_future;
+
+    const QModelIndex new_current_index = get_scope_node_from_id(new_current);
+    scope_view->selectionModel()->setCurrentIndex(new_current_index, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+
+    targets_future = saved_future;
+    targets_past = saved_past;
+    targets_current = new_current;
+
+    update_navigation_actions();
+}
+
+void Panes::navigate_forward() {
+    targets_past.append(targets_current);
+    auto new_current = targets_future.takeFirst();
+
+    auto saved_past = targets_past;
+    auto saved_future = targets_future;
+
+    const QModelIndex new_current_index = get_scope_node_from_id(new_current);
+    scope_view->selectionModel()->setCurrentIndex(new_current_index, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+
+    targets_future = saved_future;
+    targets_past = saved_past;
+    targets_current = new_current;
+
+    update_navigation_actions();
+}
+
 void Panes::load_menu(QMenu *menu) {
     menu->clear();
 
@@ -343,28 +429,43 @@ void Panes::on_focus_changed(QWidget *old, QWidget *now) {
     }
 }
 
-void Panes::change_results_target(const QModelIndex &current, const QModelIndex &) {
+void Panes::on_current_scope_changed(const QModelIndex &current, const QModelIndex &) {
     if (!current.isValid()) {
         return;
     }
-    
+
     // Fetch if needed
     const bool fetched = current.data(ScopeRole_Fetched).toBool();
     if (!fetched) {
         fetch_scope_node(current);
     }
 
-    const int id = scope_model->data(current, ScopeRole_Id).toInt();
-    QStandardItemModel *results_model = scope_id_to_results[id];
+    const int id = current.data(ScopeRole_Id).toInt();
 
+    QStandardItemModel *results_model = scope_id_to_results[id];
     results_view->setModel(results_model);
+
+    // Update navigation history
+    // NOTE: by default, this handles the case where current changed due to user selecting a different node in the tree. So erase future history. For cases where current changed due to navigation browsing through history, the navigation f-ns will set correct navigation state after this slot is called.
+
+    // Move current to past, if it is valid
+    // NOTE: current target may be invalid, for example when whole model is refreshed or at startup
+    const QModelIndex old_target_index = get_scope_node_from_id(targets_current);
+    const bool old_target_is_valid = (old_target_index.isValid() && old_target_index != current);
+    if (old_target_is_valid) {
+        targets_past.append(targets_current);
+    }
+
+    targets_future.clear();
+
+    targets_current = id;
+
+    update_navigation_actions();
 }
 
 void Panes::load_results_row(QList<QStandardItem *> row, const AdObject &object) {
     load_object_row(row, object);
 }
-
-// TODO: should expand node when fetching or no? it seems that in all cases i can think of the node is already expanded.
 
 // Load children of this item in scope tree
 // and load results linked to this scope item
@@ -447,7 +548,9 @@ void Panes::make_scope_item(QStandardItem *parent, const AdObject &object) {
     item->setData(false, ScopeRole_Fetched);
 
     // NOTE: add fake child to new items, so that the child indicator is shown while they are childless until they are fetched
-    item->appendRow(new QStandardItem());
+    auto dummy_item = new QStandardItem();
+    dummy_item->setData(DUMMY_ITEM_ID, ScopeRole_Id);
+    item->appendRow(dummy_item);
     
     const QString dn = object.get_dn();
     item->setData(dn, Role_DN);
@@ -467,4 +570,10 @@ void Panes::make_scope_item(QStandardItem *parent, const AdObject &object) {
     item->setIcon(icon);
 
     parent->appendRow(item);
+}
+
+// NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
+void Panes::update_navigation_actions() {
+    menubar->back_action->setEnabled(!targets_past.isEmpty());
+    menubar->forward_action->setEnabled(!targets_future.isEmpty());
 }
