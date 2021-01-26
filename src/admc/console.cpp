@@ -287,6 +287,14 @@ void Console::on_current_scope_changed(const QModelIndex &current, const QModelI
     QStandardItemModel *results_model = scope_id_to_results[id];
     results_view->setModel(results_model);
 
+    // TODO: remove this when implementing saved column widths
+    static bool set_column_widths = true;
+    if (set_column_widths) {
+        set_column_widths = false;
+        results_view->setColumnWidth(0, 400);
+        results_view->setColumnWidth(1, 400);
+    }
+
     // Update header with new object counts when rows are added/removed
     connect(
         results_model, &QAbstractItemModel::rowsInserted,
