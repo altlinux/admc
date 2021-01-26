@@ -45,6 +45,7 @@
 #include <QTreeWidget>
 #include <QStack>
 #include <QMenu>
+#include <QLabel>
 
 enum ScopeRole {
     ScopeRole_Id = Role_ObjectClass + 1,
@@ -79,9 +80,28 @@ Console::Console(MenuBar *menubar_arg)
     results_view->setContextMenuPolicy(Qt::CustomContextMenu);
     results_view->setDragDropMode(QAbstractItemView::DragDrop);
 
+    auto results_wrapper = new QWidget();
+
+    results_header = new QWidget();
+
+    results_header_label = new QLabel();
+
+    auto header_layout = new QVBoxLayout();
+    results_header->setLayout(header_layout);
+    header_layout->setContentsMargins(0, 0, 0, 0);
+    header_layout->setSpacing(0);
+    header_layout->addWidget(results_header_label);
+
+    auto results_layout = new QVBoxLayout();
+    results_wrapper->setLayout(results_layout);
+    results_layout->setContentsMargins(0, 0, 0, 0);
+    results_layout->setSpacing(0);
+    results_layout->addWidget(results_header);
+    results_layout->addWidget(results_view);
+
     auto splitter = new QSplitter(Qt::Horizontal);
     splitter->addWidget(scope_view);
-    splitter->addWidget(results_view);
+    splitter->addWidget(results_wrapper);
     splitter->setStretchFactor(0, 1);
     splitter->setStretchFactor(1, 2);
     
@@ -282,6 +302,15 @@ void Console::on_current_scope_changed(const QModelIndex &current, const QModelI
     QStandardItemModel *results_model = scope_id_to_results[id];
     results_view->setModel(results_model);
 
+    // Update header with new object counts when rows are added/removed
+    connect(
+        results_model, &QAbstractItemModel::rowsInserted,
+        this, &Console::update_results_header);
+    connect(
+        results_model, &QAbstractItemModel::rowsRemoved,
+        this, &Console::update_results_header);
+    update_results_header();
+
     // Update navigation history
     // NOTE: by default, this handles the case where current changed due to user selecting a different node in the tree. So erase future history. For cases where current changed due to navigation browsing through history, the navigation f-ns will set correct navigation state after this slot is called.
 
@@ -443,6 +472,30 @@ void Console::navigate_forward() {
     targets_current = new_current;
 
     update_navigation_actions();
+}
+
+// TODO: currently calling this when current scope changes, when object is deleted and when object is added. Might be some other weird unhandled cases?
+void Console::update_results_header() {
+    const QString label_text =
+    [this]() {
+        const QAbstractItemModel *results_model = results_view->model();
+        if (results_model == nullptr) {
+            return QString();
+        }
+        const int object_count = results_model->rowCount();
+        const QString object_count_string = tr("%n object(s)", "", object_count);
+
+        const QModelIndex parent_index = scope_view->selectionModel()->currentIndex();
+        if (!parent_index.isValid()) {
+            return QString();
+        }
+        const QString parent_dn = parent_index.data(Role_DN).toString();
+        const QString parent_name = dn_get_name(parent_dn);
+
+        return QString("%1: %2").arg(parent_name, object_count_string);
+    }();
+
+    results_header_label->setText(label_text);
 }
 
 void Console::load_menu(QMenu *menu) {

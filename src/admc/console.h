@@ -41,6 +41,7 @@ class QPoint;
 class QStandardItem;
 class AdObject;
 class MenuBar;
+class QLabel;
 template <typename T> class QList;
 
 class Console final : public QWidget {
@@ -71,6 +72,8 @@ private:
     QStandardItemModel *scope_model;
     QTreeView *focused_view;
     MenuBar *menubar;
+    QWidget *results_header;
+    QLabel *results_header_label;
 
     // NOTE: store target history as scope node id's
     // Last is closest to current
@@ -88,6 +91,7 @@ private:
     QStandardItem *make_scope_item(const AdObject &object);
     void update_navigation_actions();
     QModelIndex get_scope_node_from_id(const int id) const;
+    void update_results_header();
 };
 
 #endif /* CONSOLE_H */
