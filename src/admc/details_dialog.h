@@ -50,7 +50,8 @@ public:
     static void connect_to_open_by_double_click(QAbstractItemView *view, const int dn_column);
 
 private slots:
-    void apply();
+    void ok();
+    bool apply();
     void reset();
     void on_docked_setting_changed();
     void on_edited();

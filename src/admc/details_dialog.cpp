@@ -130,17 +130,17 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     setAttribute(Qt::WA_DeleteOnClose);
     setMinimumHeight(700);
     auto button_box = new QDialogButtonBox();
+    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
     apply_button = button_box->addButton(QDialogButtonBox::Apply);
     reset_button = button_box->addButton(QDialogButtonBox::Reset);
     auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
 
-    // Make apply button "auto default", which means that
-    // when a tab is edited and apply/reset get enabled,
-    // apply will become focused and if user presses enter,
-    // apply button will be pressed, applying the changes.
+    // Make ok button "auto default", which means that
+    // pressing enter will press ok button
     cancel_button->setAutoDefault(false);
     reset_button->setAutoDefault(false);
-    apply_button->setAutoDefault(true);
+    apply_button->setAutoDefault(false);
+    ok_button->setAutoDefault(true);
 
     const AdObject object = AD()->search_object(target);
 
@@ -215,6 +215,9 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     reset();
 
     connect(
+        ok_button, &QPushButton::clicked,
+        this, &DetailsDialog::ok);
+    connect(
         apply_button, &QPushButton::clicked,
         this, &DetailsDialog::apply);
     connect(
@@ -245,7 +248,15 @@ void DetailsDialog::on_docked_setting_changed() {
     }
 }
 
-void DetailsDialog::apply() {
+void DetailsDialog::ok() {
+    const bool success = apply();
+
+    if (success) {
+        accept();
+    }
+}
+
+bool DetailsDialog::apply() {
     show_busy_indicator();
 
     STATUS()->start_error_log();
@@ -254,11 +265,14 @@ void DetailsDialog::apply() {
         tab->apply(target);
     }
 
-    reset();
+    apply_button->setEnabled(false);
+    reset_button->setEnabled(false);
 
-    STATUS()->end_error_log(this);
+    const bool success = STATUS()->end_error_log(this);
 
     hide_busy_indicator();
+
+    return success;
 }
 
 void DetailsDialog::reset() {

@@ -55,4 +55,6 @@ bool UnlockEdit::apply(const QString &dn) const {
     } else {
         return true;
     }
+
+    check->setChecked(false);
 }

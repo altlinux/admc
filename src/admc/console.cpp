@@ -202,9 +202,6 @@ Console::Console(MenuBar *menubar_arg)
             return out;
         }();
         const QHash<QString, AdObject> search_results = AD()->search(filter, QList<QString>(), SearchScope_Children, schema_dn);
-
-        qInfo() << search_results.size();
-
     }
 }
 

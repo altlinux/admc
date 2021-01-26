@@ -88,9 +88,9 @@ void Status::start_error_log() {
     error_log.clear();
 }
 
-void Status::end_error_log(QWidget *parent) {
+bool Status::end_error_log(QWidget *parent) {
     if (error_log.isEmpty()) {
-        return;
+        return true;
     }
 
     auto dialog = new QDialog(parent);
@@ -114,4 +114,6 @@ void Status::end_error_log(QWidget *parent) {
         dialog, &QDialog::accept);
 
     dialog->open();
+
+    return false;
 }
