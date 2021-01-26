@@ -82,6 +82,7 @@ Console::Console(MenuBar *menubar_arg)
     results_view->setDragDropMode(QAbstractItemView::DragDrop);
     results_view->setSortingEnabled(true);
     results_view->sortByColumn(0, Qt::AscendingOrder);
+    results_view->setSelectionMode(QAbstractItemView::ExtendedSelection);
     
     auto results_wrapper = new QWidget();
 
