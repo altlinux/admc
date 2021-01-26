@@ -83,6 +83,7 @@ public:
 
     QVariant get_variant(const VariantSetting setting) const;
     void set_variant(const VariantSetting setting, const QVariant &value);
+    bool contains_variant(const VariantSetting setting) const;
 
     const BoolSettingSignal *get_bool_signal(const BoolSetting setting) const;
     bool get_bool(const BoolSetting setting) const;

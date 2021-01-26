@@ -63,6 +63,11 @@ void Settings::set_variant(const VariantSetting setting, const QVariant &value) 
     qsettings->setValue(name, value);
 }
 
+bool Settings::contains_variant(const VariantSetting setting) const {
+    const QString name = variant_to_string(setting);
+    return qsettings->contains(name);
+}
+
 Settings::Settings() {
     qsettings = new QSettings(this);
 }
@@ -171,6 +176,7 @@ QString variant_to_string(const VariantSetting setting) {
     switch (setting) {
         CASE_ENUM_TO_STRING(VariantSetting_Domain);
         CASE_ENUM_TO_STRING(VariantSetting_Site);
+        CASE_ENUM_TO_STRING(VariantSetting_MainWindowGeometry);
         CASE_ENUM_TO_STRING(VariantSetting_MainWindowGeometry);
         CASE_ENUM_TO_STRING(VariantSetting_Locale);
         CASE_ENUM_TO_STRING(VariantSetting_COUNT);

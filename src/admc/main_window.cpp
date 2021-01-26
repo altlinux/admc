@@ -38,11 +38,17 @@
 #include <QStatusBar>
 #include <QTextEdit>
 #include <QAction>
+#include <QDesktopWidget>
 
 MainWindow::MainWindow()
 : QMainWindow()
 {
-    SETTINGS()->restore_geometry(this, VariantSetting_MainWindowGeometry);
+    if (SETTINGS()->contains_variant(VariantSetting_MainWindowGeometry)) {
+        SETTINGS()->restore_geometry(this, VariantSetting_MainWindowGeometry);
+    } else {
+        // Make window 70% of desktop size for first startup
+        resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
+    }
 
     // Setup menubar, status bar and a dummy central widget
     // for display in offline state
