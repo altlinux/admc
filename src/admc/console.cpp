@@ -71,6 +71,7 @@ Console::Console(MenuBar *menubar_arg)
     scope_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     scope_view->setContextMenuPolicy(Qt::CustomContextMenu);
     scope_view->setDragDropMode(QAbstractItemView::DragDrop);
+    scope_view->setSortingEnabled(true);
 
     scope_view->setModel(scope_model);
 
@@ -79,7 +80,9 @@ Console::Console(MenuBar *menubar_arg)
     results_view->header()->setSectionsMovable(true);
     results_view->setContextMenuPolicy(Qt::CustomContextMenu);
     results_view->setDragDropMode(QAbstractItemView::DragDrop);
-
+    results_view->setSortingEnabled(true);
+    results_view->sortByColumn(0, Qt::AscendingOrder);
+    
     auto results_wrapper = new QWidget();
 
     results_header = new QWidget();
