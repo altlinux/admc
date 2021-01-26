@@ -42,9 +42,9 @@ ToggleWidgetsDialog::ToggleWidgetsDialog(QWidget *parent)
         SETTINGS()->connect_checkbox_to_bool_setting(checkbox, setting);
     };
 
-    add(tr("Directory tree"), BoolSetting_ShowContainers);
+    add(tr("Console tree"), BoolSetting_ShowConsoleTree);
     add(tr("Status Log"), BoolSetting_ShowStatusLog);
-    add(tr("Contents header"), BoolSetting_ShowContentsHeader);
+    add(tr("Results header"), BoolSetting_ShowResultsHeader);
 
     auto buttonbox = new QDialogButtonBox(QDialogButtonBox::Ok);
     connect(

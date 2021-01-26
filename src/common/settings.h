@@ -61,8 +61,8 @@ enum BoolSetting {
     BoolSetting_QuickFind,
 
     BoolSetting_ShowStatusLog,
-    BoolSetting_ShowContainers,
-    BoolSetting_ShowContentsHeader,
+    BoolSetting_ShowConsoleTree,
+    BoolSetting_ShowResultsHeader,
 
     // GPGUI
 
@@ -100,6 +100,8 @@ public:
 
     void restore_geometry(QWidget *widget, const VariantSetting geometry_setting);
     void save_geometry(QWidget *widget, const VariantSetting geometry_setting);
+
+    void connect_toggle_widget(QWidget *widget, const BoolSetting setting);
 
 private:
     QSettings *qsettings = nullptr;

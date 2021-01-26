@@ -76,9 +76,8 @@ MainWindow::MainWindow()
 // because some widgets require text strings that need to be
 // obtained from the server
 void MainWindow::on_connected() {
-    QTextEdit *status_log = STATUS()->status_log;
-    status_log->clear();
     STATUS()->status_bar->showMessage(tr("Ready"));
+    SETTINGS()->connect_toggle_widget(STATUS()->status_log, BoolSetting_ShowStatusLog);
 
     auto console = new Console(menubar);
 
@@ -93,30 +92,13 @@ void MainWindow::on_connected() {
     console_details_splitter->setStretchFactor(1, 1);
 
     auto vert_splitter = new QSplitter(Qt::Vertical);
-    vert_splitter->addWidget(status_log);
+    vert_splitter->addWidget(STATUS()->status_log);
     vert_splitter->addWidget(console_details_splitter);
     vert_splitter->setStretchFactor(0, 1);
     vert_splitter->setStretchFactor(1, 3);
 
     setCentralWidget(vert_splitter);
 
-    auto connect_toggle_widget =
-    [](QWidget *widget, const BoolSetting setting) {
-        const BoolSettingSignal *signal = SETTINGS()->get_bool_signal(setting);
-
-        auto on_changed =
-        [=]() {
-            const bool visible = SETTINGS()->get_bool(setting);
-            widget->setVisible(visible);
-        };
-
-        connect(
-            signal, &BoolSettingSignal::changed,
-            on_changed);
-        on_changed();
-    };
-
-    connect_toggle_widget(status_log, BoolSetting_ShowStatusLog);
     connect(
         menubar->filter_action, &QAction::triggered,
         console->filter_dialog, &QDialog::open);

@@ -197,6 +197,9 @@ Console::Console(MenuBar *menubar_arg)
         dev_mode_signal, &BoolSettingSignal::changed,
         this, &Console::refresh_head);
 
+    SETTINGS()->connect_toggle_widget(scope_view, BoolSetting_ShowConsoleTree);
+    SETTINGS()->connect_toggle_widget(results_header, BoolSetting_ShowResultsHeader);
+
     // Load head object
     const QString head_dn = AD()->domain_head();
     const AdObject head_object = AD()->search_object(head_dn);

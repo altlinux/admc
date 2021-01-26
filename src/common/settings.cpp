@@ -124,6 +124,21 @@ void Settings::save_geometry(QWidget *widget, const VariantSetting geometry_sett
     set_variant(VariantSetting_MainWindowGeometry, QVariant(geometry));
 }
 
+void Settings::connect_toggle_widget(QWidget *widget, const BoolSetting setting) {
+    const BoolSettingSignal *signal = get_bool_signal(setting);
+
+    auto on_changed =
+    [=]() {
+        const bool visible = SETTINGS()->get_bool(setting);
+        widget->setVisible(visible);
+    };
+
+    connect(
+        signal, &BoolSettingSignal::changed,
+        on_changed);
+    on_changed();
+}
+
 // NOTE: DON'T define "default:" branch, want to be warned and forced to define a default value for all settings
 bool bool_default_value(const BoolSetting setting) {
     switch (setting) {
@@ -142,8 +157,8 @@ bool bool_default_value(const BoolSetting setting) {
         }
         case BoolSetting_QuickFind: return false;
         case BoolSetting_ShowStatusLog: return false;
-        case BoolSetting_ShowContainers: return true;
-        case BoolSetting_ShowContentsHeader: return true;
+        case BoolSetting_ShowConsoleTree: return true;
+        case BoolSetting_ShowResultsHeader: return true;
 
         case BoolSetting_COUNT: {}
     }
@@ -165,8 +180,8 @@ QString bool_to_string(const BoolSetting setting) {
         CASE_ENUM_TO_STRING(BoolSetting_LastNameBeforeFirstName);
         CASE_ENUM_TO_STRING(BoolSetting_QuickFind);
         CASE_ENUM_TO_STRING(BoolSetting_ShowStatusLog);
-        CASE_ENUM_TO_STRING(BoolSetting_ShowContainers);
-        CASE_ENUM_TO_STRING(BoolSetting_ShowContentsHeader);
+        CASE_ENUM_TO_STRING(BoolSetting_ShowConsoleTree);
+        CASE_ENUM_TO_STRING(BoolSetting_ShowResultsHeader);
         CASE_ENUM_TO_STRING(BoolSetting_COUNT);
     }
     return "";
