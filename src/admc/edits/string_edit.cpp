@@ -61,7 +61,8 @@ void StringEdit::load_internal(const AdObject &object) {
         QString out = object.get_string(attribute);
         if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
             // Take "user" from "user@domain.com"
-            out = out.split("@")[0];
+            const int at_index = out.lastIndexOf('@');
+            out = out.left(at_index);
         } else if (attribute == ATTRIBUTE_DN) {
             out = dn_canonical(out);
         }
