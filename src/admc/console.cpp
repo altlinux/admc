@@ -172,6 +172,11 @@ Console::Console(MenuBar *menubar_arg)
             load_menu(menubar->action_menu);
         });
 
+    const BoolSettingSignal *dev_mode_signal = SETTINGS()->get_bool_signal(BoolSetting_DevMode);
+    connect(
+        dev_mode_signal, &BoolSettingSignal::changed,
+        this, &Console::refresh_head);
+
     // Load head object
     const QString head_dn = AD()->domain_head();
     const AdObject head_object = AD()->search_object(head_dn);
@@ -180,6 +185,27 @@ Console::Console(MenuBar *menubar_arg)
 
     // Make head object current
     scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+
+    {
+        const QString schema_dn = "CN=Schema,CN=Configuration,DC=domain,DC=alt";
+        const QString filter =
+        [=]() {
+            const QString user_filter = filter_dialog->filter_widget->get_filter();
+
+            const QString is_container = is_container_filter();
+
+        // NOTE: OR user filter with containers filter so that container objects are always shown, even if they are filtered out by user filter
+            QString out = filter_OR({user_filter, is_container});
+
+            out = add_advanced_view_filter(out);
+
+            return out;
+        }();
+        const QHash<QString, AdObject> search_results = AD()->search(filter, QList<QString>(), SearchScope_Children, schema_dn);
+
+        qInfo() << search_results.size();
+
+    }
 }
 
 void Console::refresh_head() {
@@ -468,6 +494,8 @@ void Console::fetch_scope_node(const QModelIndex &index) {
     // NOTE: remove old scope children (which might be a dummy child used for showing child indicator)
     scope_model->removeRows(0, scope_model->rowCount(index), index);
 
+    const bool dev_mode = SETTINGS()->get_bool(BoolSetting_DevMode);
+
     //
     // Search object's children
     //
@@ -482,6 +510,23 @@ void Console::fetch_scope_node(const QModelIndex &index) {
 
         out = add_advanced_view_filter(out);
 
+        // OR filter with some dev mode object classes, so that they show up no matter what when dev mode is on
+        if (dev_mode) {
+            const QList<QString> schema_classes = {
+                "classSchema",
+                "attributeSchema",
+                "displaySpecifier",
+            };
+
+            QList<QString> class_filters;
+            for (const QString object_class : schema_classes) {
+                const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
+                class_filters.append(class_filter);
+            }
+
+            out = filter_OR({out, filter_OR(class_filters)});
+        }
+
         return out;
     }();
 
@@ -489,7 +534,21 @@ void Console::fetch_scope_node(const QModelIndex &index) {
 
     const QString dn = index.data(Role_DN).toString();
 
-    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, dn);
+    QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, dn);
+
+    // Dev mode
+    // NOTE: configuration and schema objects are hidden so that they don't show up in regular searches. Have to use search_object() and manually add them to search results.
+    if (dev_mode) {
+        const QString search_base = AD()->domain_head();
+        const QString configuration_dn = AD()->configuration_dn();
+        const QString schema_dn = AD()->schema_dn();
+
+        if (dn == search_base) {
+            search_results[configuration_dn] = AD()->search_object(configuration_dn);
+        } else if (dn == configuration_dn) {
+            search_results[schema_dn] = AD()->search_object(schema_dn);
+        }
+    }
 
     //
     // Load into scope
