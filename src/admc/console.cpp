@@ -208,24 +208,6 @@ Console::Console(MenuBar *menubar_arg)
 
     // Make head object current
     scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
-
-    {
-        const QString schema_dn = "CN=Schema,CN=Configuration,DC=domain,DC=alt";
-        const QString filter =
-        [=]() {
-            const QString user_filter = filter_dialog->filter_widget->get_filter();
-
-            const QString is_container = is_container_filter();
-
-        // NOTE: OR user filter with containers filter so that container objects are always shown, even if they are filtered out by user filter
-            QString out = filter_OR({user_filter, is_container});
-
-            out = add_advanced_view_filter(out);
-
-            return out;
-        }();
-        const QHash<QString, AdObject> search_results = AD()->search(filter, QList<QString>(), SearchScope_Children, schema_dn);
-    }
 }
 
 void Console::refresh_head() {
