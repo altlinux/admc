@@ -117,6 +117,7 @@ MenuBar::MenuBar()
 
     menus = {
         file_menu,
+        navigation_menu,
         view_menu,
         preferences_menu,
         help_menu,
