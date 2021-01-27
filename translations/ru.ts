@@ -88,238 +88,248 @@
         <source>Logon script</source>
         <translation>Логон скрипт</translation>
     </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="285"/>
+        <source>Logon name (pre-Windows 2000)</source>
+        <translation>Имя входа (пред-Windows 2000)</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="286"/>
+        <source>E-mail</source>
+        <translation>Электронная почта</translation>
+    </message>
 </context>
 <context>
     <name>AdInterface</name>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="432"/>
+        <location filename="../src/admc/ad_interface.cpp" line="475"/>
         <source>Added value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation>Добавлено значение &quot;%1&quot; для атрибута &quot;%2&quot; объекта &quot;%3&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="440"/>
+        <location filename="../src/admc/ad_interface.cpp" line="483"/>
         <source>Failed to add value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation>Не удалось добавить значение &quot;%1&quot; для атрибута &quot;%2&quot; объекта &quot;%3&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="402"/>
+        <location filename="../src/admc/ad_interface.cpp" line="430"/>
         <source>Failed to change attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
         <translation>Не удалось изменить атрибут &quot;%1&quot; объекта &quot;%2&quot; с &quot;%3&quot; на &quot;%4&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="86"/>
-        <location filename="../src/admc/ad_interface.cpp" line="129"/>
+        <location filename="../src/admc/ad_interface.cpp" line="115"/>
+        <location filename="../src/admc/ad_interface.cpp" line="158"/>
         <source>Failed to connect</source>
         <translation>Не удалось подключиться</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="86"/>
+        <location filename="../src/admc/ad_interface.cpp" line="115"/>
         <source>Not connected to a domain network</source>
         <translation>Нет подключения к доменной сети</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="129"/>
+        <location filename="../src/admc/ad_interface.cpp" line="158"/>
         <source>Authentication failed</source>
         <translation>Ошибка аутентификации</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="396"/>
+        <location filename="../src/admc/ad_interface.cpp" line="424"/>
         <source>Changed attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
         <translation>Атрибут &quot;%1&quot; объекта &quot;%2&quot; изменен с &quot;%3&quot; на &quot;%4&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="456"/>
+        <location filename="../src/admc/ad_interface.cpp" line="514"/>
         <source>Deleted value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation>Удалено значение &quot;%1&quot; для атрибута &quot;%2&quot; объекта &quot;%3&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="464"/>
+        <location filename="../src/admc/ad_interface.cpp" line="522"/>
         <source>Failed to delete value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation>Не удалось удалить значение &quot;%1&quot; для атрибута &quot;%2&quot; объекта &quot;%3&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="498"/>
+        <location filename="../src/admc/ad_interface.cpp" line="563"/>
         <source>Created object &quot;%1&quot;</source>
         <translation>Создан объект &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="504"/>
+        <location filename="../src/admc/ad_interface.cpp" line="569"/>
         <source>Failed to create object &quot;%1&quot;</source>
         <translation>Не удалось создать объект &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="524"/>
+        <location filename="../src/admc/ad_interface.cpp" line="589"/>
         <source>Failed to delete object &quot;%1&quot;</source>
         <translation>Не удалось удалить &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="596"/>
+        <location filename="../src/admc/ad_interface.cpp" line="656"/>
         <source>Failed to add user &quot;%1&quot; to group &quot;%2&quot;</source>
         <translation>Не удалось добавить &quot;%1&quot; в группу &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="616"/>
+        <location filename="../src/admc/ad_interface.cpp" line="676"/>
         <source>Failed to remove user &quot;%1&quot; from group &quot;%2&quot;</source>
         <translation>Не удалось удалить пользователя &quot;%1&quot; из группы &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="646"/>
+        <location filename="../src/admc/ad_interface.cpp" line="706"/>
         <source>Set scope for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translatorcomment>not sure what &quot;scope&quot; is in russian</translatorcomment>
         <translation>Сфера группы %1 установлена на %2</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="650"/>
+        <location filename="../src/admc/ad_interface.cpp" line="710"/>
         <source>Failed to set scope for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Не удалось установить сферу группы %1 на %2</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="672"/>
+        <location filename="../src/admc/ad_interface.cpp" line="732"/>
         <source>Set type for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Тип группы %1 установлен на %2</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="676"/>
+        <location filename="../src/admc/ad_interface.cpp" line="736"/>
         <source>Failed to set type for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Не удалось установить тип группы %1 на %2</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="703"/>
+        <location filename="../src/admc/ad_interface.cpp" line="763"/>
         <source>Set primary group for user &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Основная группа для пользователя%1 установлен на %2</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="707"/>
+        <location filename="../src/admc/ad_interface.cpp" line="767"/>
         <source>Failed to set primary group for user &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Не удалось установить основную группу для пользователя%1 на %2</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="734"/>
+        <location filename="../src/admc/ad_interface.cpp" line="794"/>
         <source>Set password for user &quot;%1&quot;</source>
         <translation>Установлен пароль для пользователя &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="738"/>
+        <location filename="../src/admc/ad_interface.cpp" line="798"/>
         <source>Failed to set password for user &quot;%1&quot;</source>
         <translation>Не удалось установить пароль для пользователя &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="744"/>
+        <location filename="../src/admc/ad_interface.cpp" line="804"/>
         <source>Password doesn&apos;t match rules</source>
         <translation>Пароль не соответствует правилам</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="802"/>
+        <location filename="../src/admc/ad_interface.cpp" line="862"/>
         <source>Disabled account for user - &quot;%1&quot;</source>
         <translation>Учетная запись для пользователя - &quot;%1&quot; была отключена</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="804"/>
+        <location filename="../src/admc/ad_interface.cpp" line="864"/>
         <source>Enabled account for user - &quot;%1&quot;</source>
         <translation>Включена учетная запись для пользователя - &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="545"/>
+        <location filename="../src/admc/ad_interface.cpp" line="606"/>
         <source>Moved object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Объект &quot;%1&quot; перемещен в &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="552"/>
+        <location filename="../src/admc/ad_interface.cpp" line="613"/>
         <source>Failed to move object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Не удалось переместить объект &quot;%1&quot; в &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="569"/>
+        <location filename="../src/admc/ad_interface.cpp" line="629"/>
         <source>Renamed object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Объект &quot;%1&quot; переименован в &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="576"/>
+        <location filename="../src/admc/ad_interface.cpp" line="636"/>
         <source>Failed to rename object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Не удалось переименовать объект &quot;%1&quot; в &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="811"/>
+        <location filename="../src/admc/ad_interface.cpp" line="871"/>
         <source>Turned ON account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation>Включен параметр учетной записи &quot;%1&quot; для пользователя &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="813"/>
+        <location filename="../src/admc/ad_interface.cpp" line="873"/>
         <source>Turned OFF account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation>Выключен параметр учетной записи &quot;%1&quot; для пользователя &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="837"/>
+        <location filename="../src/admc/ad_interface.cpp" line="897"/>
         <source>Failed to turn ON account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation>Не удалось включить параметр учетной записи &quot;%1&quot; для пользователя &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="839"/>
+        <location filename="../src/admc/ad_interface.cpp" line="899"/>
         <source>Failed to turn OFF account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation>Не удалось выключить параметр учетной записи &quot;%1&quot; для пользователя &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="857"/>
+        <location filename="../src/admc/ad_interface.cpp" line="917"/>
         <source>Unlocked user &quot;%1&quot;</source>
         <translation>Открылся пользователь &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="861"/>
+        <location filename="../src/admc/ad_interface.cpp" line="921"/>
         <source>Failed to unlock user &quot;%1&quot;</source>
         <translation>Не удалось открыть пользователя &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1123"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1190"/>
         <source>LDAP error: %1</source>
         <translation>. LDAP Ошибка: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1107"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1174"/>
         <source>. Error: &quot;%1&quot;</source>
         <translation>. Ошибка: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="828"/>
+        <location filename="../src/admc/ad_interface.cpp" line="888"/>
         <source>Failed to disable account for user &quot;%1&quot;</source>
         <translation>Не удалось отключить учетную запись для пользователя &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="830"/>
+        <location filename="../src/admc/ad_interface.cpp" line="890"/>
         <source>Failed to enable account for user &quot;%1&quot;</source>
         <translation>Не удалось включить учетную запись для пользователя &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1116"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1183"/>
         <source>No such object</source>
         <translation>Нет такого объекта</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1117"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1184"/>
         <source>Constraint violation</source>
         <translation>Нарушение ограничений</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1118"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1185"/>
         <source>Server is unwilling to perform</source>
         <translation>Сервер не хочет выполнять</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1119"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1186"/>
         <source>Already exists</source>
         <translation>Объект уже существует</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="518"/>
+        <location filename="../src/admc/ad_interface.cpp" line="583"/>
         <source>Deleted object &quot;%1&quot;</source>
         <translation>Удален объект - &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="592"/>
+        <location filename="../src/admc/ad_interface.cpp" line="652"/>
         <source>Added user &quot;%1&quot; to group &quot;%2&quot;</source>
         <translation>Добавлен пользователь &quot;%1&quot; в группу &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="612"/>
+        <location filename="../src/admc/ad_interface.cpp" line="672"/>
         <source>Removed user &quot;%1&quot; from group &quot;%2&quot;</source>
         <translation>Удален пользователь &quot;%1&quot; из группы &quot;%2&quot;</translation>
     </message>
@@ -335,178 +345,178 @@
 <context>
     <name>AttributesTab</name>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="61"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="63"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="62"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="64"/>
         <source>Value</source>
         <translation>Значение</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="63"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="65"/>
         <source>Type</source>
         <translation>Тип</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="77"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="81"/>
         <source>Edit</source>
         <translation>Изменить</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="78"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="82"/>
         <source>Filter</source>
         <translation>Фильтр</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="142"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="146"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="142"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="146"/>
         <source>No editor is available for this attribute type.</source>
         <translation>Отсутствует редактор для этого типа атрибута.</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="173"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="177"/>
         <source>Unset</source>
         <translation>Без значения</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="174"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="178"/>
         <source>Read-only</source>
         <translation>Не редактируемые</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="175"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="179"/>
         <source>Mandatory</source>
         <translation>Обязательные</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="176"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="180"/>
         <source>Optional</source>
         <translation>Необезятельные</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="177"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="181"/>
         <source>System-only</source>
         <translation>Системные</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="178"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="182"/>
         <source>Constructed</source>
         <translation>Созданные</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="179"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="183"/>
         <source>Backlink</source>
         <translation>Ссылка</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="201"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="205"/>
         <source>Read-only attributes:</source>
         <translation>Не редактируемые атрибуты:</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="364"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="360"/>
         <source>Boolean</source>
         <translation>Булево</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="365"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="361"/>
         <source>Enumeration</source>
         <translation>Перечисление</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="366"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="362"/>
         <source>Integer</source>
         <translation>Целое число</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="367"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="363"/>
         <source>Large Integer</source>
         <translation>Перечисление</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="368"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="364"/>
         <source>String Case</source>
         <translation>Строка</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="369"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="365"/>
         <source>IA5</source>
         <translation>IA5</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="370"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="366"/>
         <source>NT Security Descriptor</source>
         <translation>NT Security Descriptor</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="371"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="367"/>
         <source>Numeric</source>
         <translatorcomment>what&apos;s the difference between this and integer?</translatorcomment>
         <translation>Цифра</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="372"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="368"/>
         <source>Object Identifier</source>
         <translation>Идентификатор объекта</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="373"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="369"/>
         <source>Octet</source>
         <translation>Октет</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="374"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="370"/>
         <source>Replica Link</source>
         <translation>Ссылка реплики</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="375"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="371"/>
         <source>Printable</source>
         <translation>Печатное</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="376"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="372"/>
         <source>SID</source>
         <translation>SID</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="377"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="373"/>
         <source>Teletex</source>
         <translation>Телетекс</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="378"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="374"/>
         <source>Unicode</source>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="379"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="375"/>
         <source>UTC Time</source>
         <translation>Время UTC</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="380"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="376"/>
         <source>Generalized Time</source>
         <translation>Обобщенное время</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="381"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="377"/>
         <source>DN String</source>
         <translation>DN строка</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="382"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="378"/>
         <source>DN Binary</source>
         <translation>DN бинарное</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="383"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="379"/>
         <source>Distinguished Name</source>
         <translation>Уникальное имя</translation>
     </message>
@@ -558,15 +568,20 @@
     </message>
 </context>
 <context>
-    <name>ContentsWidget</name>
+    <name>Console</name>
     <message numerus="yes">
-        <location filename="../src/admc/contents_widget.cpp" line="115"/>
+        <location filename="../src/admc/console.cpp" line="477"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n объект</numerusform>
             <numerusform>%n объектов</numerusform>
             <numerusform>%n объектов</numerusform>
         </translation>
+    </message>
+    <message>
+        <location filename="../src/admc/console.cpp" line="503"/>
+        <source>Refresh</source>
+        <translation>Обновить</translation>
     </message>
 </context>
 <context>
@@ -739,7 +754,7 @@
 <context>
     <name>FilterDialog</name>
     <message>
-        <location filename="../src/admc/filter_dialog.cpp" line="30"/>
+        <location filename="../src/admc/filter_dialog.cpp" line="32"/>
         <source>Filter contents</source>
         <translation>Фильтровать содержимое</translation>
     </message>
@@ -801,12 +816,12 @@
 <context>
     <name>FilterWidgetSimpleTab</name>
     <message>
-        <location filename="../src/admc/filter_widget/filter_widget_simple_tab.cpp" line="38"/>
+        <location filename="../src/admc/filter_widget/filter_widget_simple_tab.cpp" line="37"/>
         <source>Classes:</source>
         <translation>Классы:</translation>
     </message>
     <message>
-        <location filename="../src/admc/filter_widget/filter_widget_simple_tab.cpp" line="39"/>
+        <location filename="../src/admc/filter_widget/filter_widget_simple_tab.cpp" line="38"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
@@ -814,61 +829,72 @@
 <context>
     <name>FindDialog</name>
     <message>
-        <location filename="../src/admc/find_dialog.cpp" line="54"/>
+        <location filename="../src/admc/find_dialog.cpp" line="39"/>
         <source>Find objects</source>
         <translation>Поиск объектов</translation>
     </message>
     <message>
-        <location filename="../src/admc/find_dialog.cpp" line="59"/>
-        <source>Entire directory</source>
-        <translation>Весь каталог</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/find_dialog.cpp" line="64"/>
-        <source>Browse</source>
-        <translation>Выбор</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/find_dialog.cpp" line="69"/>
-        <source>Quick find</source>
-        <translation>Быстрый поиск</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/find_dialog.cpp" line="71"/>
-        <source>Find</source>
-        <translation>Поиск</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/find_dialog.cpp" line="74"/>
-        <source>Stop</source>
-        <translation>Остановить</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/find_dialog.cpp" line="86"/>
+        <location filename="../src/admc/find_dialog.cpp" line="42"/>
         <source>&amp;Action</source>
         <translation>&amp;Действие</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/find_dialog.cpp" line="95"/>
-        <source>Search in:</source>
-        <translation>Искать в:</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/find_dialog.cpp" line="147"/>
-        <source>Select search base</source>
-        <translation>Выбор базы поиска</translation>
     </message>
 </context>
 <context>
     <name>FindResults</name>
     <message numerus="yes">
-        <location filename="../src/admc/find_results.cpp" line="104"/>
+        <location filename="../src/admc/find_results.cpp" line="125"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n объект</numerusform>
             <numerusform>%n объектов</numerusform>
             <numerusform>%n объектов</numerusform>
         </translation>
+    </message>
+    <message>
+        <location filename="../src/admc/find_results.cpp" line="131"/>
+        <source>Warning</source>
+        <translation>Предупреждение</translation>
+    </message>
+</context>
+<context>
+    <name>FindSelectDialog</name>
+    <message>
+        <location filename="../src/admc/find_select_dialog.cpp" line="34"/>
+        <source>Find and select objects</source>
+        <translation>Найдите и выберайте объекты</translation>
+    </message>
+</context>
+<context>
+    <name>FindWidget</name>
+    <message>
+        <location filename="../src/admc/find_widget.cpp" line="63"/>
+        <source>Browse</source>
+        <translation>Выбор</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/find_widget.cpp" line="68"/>
+        <source>Quick find</source>
+        <translation>Быстрый поиск</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/find_widget.cpp" line="70"/>
+        <source>Find</source>
+        <translation>Поиск</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/find_widget.cpp" line="73"/>
+        <source>Stop</source>
+        <translation>Остановить</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/find_widget.cpp" line="88"/>
+        <source>Search in:</source>
+        <translation>Искать в:</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/find_widget.cpp" line="137"/>
+        <source>Select custom search base</source>
+        <translation>Выбeрите базу поиска</translation>
     </message>
 </context>
 <context>
@@ -940,7 +966,7 @@
         <translation>Двинуть вверх</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/group_policy_tab.cpp" line="152"/>
+        <location filename="../src/admc/tabs/group_policy_tab.cpp" line="153"/>
         <source>Add policy link</source>
         <translatorcomment>&quot;линковка&quot;??</translatorcomment>
         <translation>Добавить линковку политики</translation>
@@ -1026,25 +1052,9 @@
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="../src/admc/main_window.cpp" line="57"/>
-        <location filename="../src/admc/main_window.cpp" line="62"/>
-        <source>Name</source>
-        <translation type="unfinished">Имя</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/main_window.cpp" line="63"/>
-        <source>Class</source>
-        <translation type="unfinished">Класс</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/main_window.cpp" line="64"/>
-        <source>Description</source>
-        <translation type="unfinished">Описание</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/main_window.cpp" line="98"/>
+        <location filename="../src/admc/main_window.cpp" line="79"/>
         <source>Ready</source>
-        <translation type="unfinished">Готово</translation>
+        <translation>Готово</translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/MainWindow.cpp" line="197"/>
@@ -1070,7 +1080,7 @@
         <translation>Очистить</translation>
     </message>
     <message>
-        <location filename="../src/admc/edits/manager_edit.cpp" line="83"/>
+        <location filename="../src/admc/edits/manager_edit.cpp" line="85"/>
         <source>Select manager</source>
         <translation>Выбор менеджера</translation>
     </message>
@@ -1118,12 +1128,12 @@
         <translation>Установить основную группу</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/membership_tab.cpp" line="264"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="270"/>
         <source>Add user</source>
         <translation>Добавить пользователя</translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/membership_tab.cpp" line="265"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="271"/>
         <source>Add group</source>
         <translation>Добавить группу</translation>
     </message>
@@ -1131,110 +1141,140 @@
 <context>
     <name>MenuBar</name>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="54"/>
+        <location filename="../src/admc/menubar.cpp" line="56"/>
         <source>&amp;Action</source>
         <translatorcomment>the ampersanded letters have to exclusive withing their grp and you have to do this by looking at the code. This is a MESS</translatorcomment>
         <translation>&amp;Действие</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="39"/>
+        <location filename="../src/admc/menubar.cpp" line="44"/>
         <source>&amp;Connect</source>
         <translation>&amp;Подключится</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="37"/>
+        <location filename="../src/admc/menubar.cpp" line="42"/>
         <source>&amp;File</source>
         <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="46"/>
-        <source>F&amp;ilter contents</source>
-        <translation>&amp;Фильтр содержимого</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/menubar.cpp" line="48"/>
+        <location filename="../src/admc/menubar.cpp" line="51"/>
         <source>&amp;Quit</source>
         <translation>&amp;Выход</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="57"/>
+        <location filename="../src/admc/menubar.cpp" line="58"/>
         <source>&amp;Navigation</source>
         <translation>&amp;Навигация</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="58"/>
+        <location filename="../src/admc/menubar.cpp" line="59"/>
         <source>&amp;Up one level</source>
         <translation>&amp;Вверх на один уровень</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="59"/>
+        <location filename="../src/admc/menubar.cpp" line="60"/>
         <source>&amp;Back</source>
         <translation>&amp;Назад</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="60"/>
+        <location filename="../src/admc/menubar.cpp" line="61"/>
         <source>&amp;Forward</source>
         <translation>В&amp;перед</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="68"/>
+        <location filename="../src/admc/menubar.cpp" line="69"/>
         <source>&amp;View</source>
         <translation>&amp;Вид</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="69"/>
+        <location filename="../src/admc/menubar.cpp" line="70"/>
         <source>&amp;Advanced view</source>
         <translation>&amp;Расширенный вид</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="70"/>
+        <location filename="../src/admc/menubar.cpp" line="71"/>
         <source>&amp;Dock Details dialog</source>
         <translation>&amp;Пристыковать диалог деталей</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="71"/>
+        <location filename="../src/admc/menubar.cpp" line="72"/>
         <source>&amp;Toggle widgets</source>
         <translation>&amp;Отключить виджеты</translation>
     </message>
     <message>
         <location filename="../src/admc/menubar.cpp" line="73"/>
+        <source>&amp;Filter objects</source>
+        <translation>&amp;Фильтровать объекты</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/menubar.cpp" line="75"/>
         <source>&amp;Preferences</source>
         <translation>&amp;Настройки</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="74"/>
+        <location filename="../src/admc/menubar.cpp" line="76"/>
         <source>&amp;Confirm actions</source>
         <translation>Потверждать &amp;действия</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="75"/>
+        <location filename="../src/admc/menubar.cpp" line="77"/>
         <source>&amp;Dev mode</source>
         <translation>&amp;Dev mode</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="76"/>
+        <location filename="../src/admc/menubar.cpp" line="78"/>
         <source>&amp;Show non-container objects in Containers tree</source>
         <translation>&amp;Показывать не контейнеры в дереве</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="77"/>
+        <location filename="../src/admc/menubar.cpp" line="79"/>
         <source>&amp;Put last name before first name when creating users</source>
         <translation>&amp;Ставить фамилию перед именем при создании пользоваетелей</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="79"/>
+        <location filename="../src/admc/menubar.cpp" line="81"/>
         <source>&amp;Language</source>
         <translation>&amp;Язык</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="104"/>
+        <location filename="../src/admc/menubar.cpp" line="106"/>
         <source>Info</source>
         <translation>Информация</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="104"/>
+        <location filename="../src/admc/menubar.cpp" line="106"/>
         <source>App needs to be restarted for the language option to take effect.</source>
         <translation>Язык поменяется при следующем запуске приложения.</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/menubar.cpp" line="114"/>
+        <source>&amp;Help</source>
+        <translation>&amp;Помощь</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/menubar.cpp" line="115"/>
+        <source>&amp;Manual</source>
+        <translation>&amp;Руководство</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/menubar.cpp" line="116"/>
+        <source>&amp;About ADMC</source>
+        <translation>&amp;Об ADMC</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/menubar.cpp" line="180"/>
+        <source>Version %1</source>
+        <translation>Версия %1</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/menubar.cpp" line="183"/>
+        <source>ADMC is a tool for Active Directory administration.</source>
+        <translation>ADMC - это инструмент для администрирования Active Directory.</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/menubar.cpp" line="185"/>
+        <source>Copyright (C) 2020 BaseALT Ltd.</source>
+        <translation>Copyright (C) 2020 BaseALT Ltd.</translation>
     </message>
 </context>
 <context>
@@ -1283,84 +1323,6 @@
         <location filename="../src/admc/editors/multi_editor.cpp" line="78"/>
         <source>Remove</source>
         <translation>Удалить</translation>
-    </message>
-</context>
-<context>
-    <name>ObjectMenu</name>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="223"/>
-        <source>Details</source>
-        <translation>Детали</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="191"/>
-        <source>Delete</source>
-        <translation>Удалить</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="195"/>
-        <source>Rename</source>
-        <translation>Переименовать</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="125"/>
-        <source>New</source>
-        <translation>Создать</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="189"/>
-        <source>Move</source>
-        <translation>Переместить</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="153"/>
-        <source>Add to group</source>
-        <translation>Добавить в группу</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="141"/>
-        <source>Find</source>
-        <translation>Поиск</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="156"/>
-        <source>Reset password</source>
-        <translation>Поменять пароль</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="165"/>
-        <source>Enable account</source>
-        <translation>Включить учётную запись</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="235"/>
-        <source>Are you sure you want to delete %1?</source>
-        <translation>Вы уверены, что хотите удалить%1?</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="253"/>
-        <source>Move %1</source>
-        <translation>Переместить %1</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="271"/>
-        <source>Add %1 to group</source>
-        <translation>Добавить %1 в группу</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="340"/>
-        <source>object &quot;%1&quot;</source>
-        <translation>объект %1</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="342"/>
-        <source>multiple objects</source>
-        <translation>несколько объектов</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="161"/>
-        <source>Disable account</source>
-        <translation>Выключить учётную запись</translation>
     </message>
 </context>
 <context>
@@ -1721,6 +1683,87 @@
         <source>Confirm action</source>
         <translation>Потвердить действие</translation>
     </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="110"/>
+        <source>New</source>
+        <translation>Создать</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="129"/>
+        <source>Find</source>
+        <translation>Поиск</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="137"/>
+        <source>Add to group</source>
+        <translation>Добавить в группу</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="145"/>
+        <source>Reset password</source>
+        <translation>Поменять пароль</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="153"/>
+        <source>Disable account</source>
+        <translation>Выключить учётную запись</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="161"/>
+        <source>Enable account</source>
+        <translation>Включить учётную запись</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="169"/>
+        <source>Move</source>
+        <translation>Переместить</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="179"/>
+        <source>Delete</source>
+        <translation>Удалить</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="188"/>
+        <source>Rename</source>
+        <translation>Переименовать</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="198"/>
+        <source>Details</source>
+        <translation>Детали</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="280"/>
+        <source>Are you sure you want to delete %1?</source>
+        <translation>Вы уверены, что хотите удалить%1?</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="297"/>
+        <location filename="../src/admc/object_menu.cpp" line="395"/>
+        <source>Move %1</source>
+        <translation>Переместить %1</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="320"/>
+        <source>Add %1 to group</source>
+        <translation>Добавить %1 в группу</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="386"/>
+        <source>object &quot;%1&quot;</source>
+        <translation>объект %1</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="388"/>
+        <source>multiple objects</source>
+        <translation>несколько объектов</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_model.cpp" line="54"/>
+        <source>%1 Group - %2</source>
+        <translation>%1 Группа - %2</translation>
+    </message>
 </context>
 <context>
     <name>RenameDialog</name>
@@ -1761,68 +1804,48 @@
 <context>
     <name>SelectClassesWidget</name>
     <message>
-        <location filename="../src/admc/filter_widget/select_classes_widget.cpp" line="38"/>
-        <source>All classes</source>
-        <translation>Все классы</translation>
-    </message>
-    <message>
         <location filename="../src/admc/filter_widget/select_classes_widget.cpp" line="40"/>
         <source>Select</source>
         <translation>Выбрать</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/filter_widget/select_classes_widget.cpp" line="51"/>
+        <source>Select all</source>
+        <translation>Выбрать все</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/filter_widget/select_classes_widget.cpp" line="52"/>
+        <source>Clear selection</source>
+        <translation>Очистить выбор</translation>
     </message>
 </context>
 <context>
     <name>SelectDialog</name>
     <message>
+        <location filename="../src/admc/select_dialog.cpp" line="70"/>
+        <source>Add</source>
+        <translation>Добавить</translation>
+    </message>
+    <message>
         <location filename="../src/admc/select_dialog.cpp" line="71"/>
-        <source>Class: </source>
-        <translation>Класс: </translation>
+        <source>Remove</source>
+        <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/admc/select_dialog.cpp" line="74"/>
-        <source>Name: </source>
-        <translation>Имя: </translation>
+        <location filename="../src/admc/select_dialog.cpp" line="125"/>
+        <source>Error</source>
+        <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/admc/select_dialog.cpp" line="77"/>
-        <source>Select</source>
-        <translation>Выбрать</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/select_dialog.cpp" line="78"/>
-        <source>Cancel</source>
-        <translation>Отмена</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/select_dialog.cpp" line="101"/>
-        <source>Name</source>
-        <translation>Имя</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/select_dialog.cpp" line="102"/>
-        <source>Parent</source>
-        <translation>Родитель</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/select_dialog.cpp" line="103"/>
-        <source>Class</source>
-        <translation>Класс</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/select_dialog.cpp" line="104"/>
-        <source>DN</source>
-        <translation>DN</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/select_dialog.cpp" line="163"/>
-        <source>All</source>
-        <translation>Все</translation>
+        <location filename="../src/admc/select_dialog.cpp" line="125"/>
+        <source>This selection accepts only one object. Remove extra objects to proceed.</source>
+        <translation>Этот выбор принимает только один объект. Чтобы продолжить, уберите лишние объекты.</translation>
     </message>
 </context>
 <context>
     <name>Status</name>
     <message>
-        <location filename="../src/admc/status.cpp" line="94"/>
+        <location filename="../src/admc/status.cpp" line="97"/>
         <source>Errors occured</source>
         <translation>Произошли ошибки</translation>
     </message>
@@ -1867,18 +1890,18 @@
     </message>
     <message>
         <location filename="../src/admc/toggle_widgets_dialog.cpp" line="45"/>
-        <source>Directory tree</source>
-        <translation>Дерево</translation>
+        <source>Console tree</source>
+        <translation>Дерево консоли</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/toggle_widgets_dialog.cpp" line="47"/>
+        <source>Results header</source>
+        <translation>Заголовок результатов</translation>
     </message>
     <message>
         <location filename="../src/admc/toggle_widgets_dialog.cpp" line="46"/>
         <source>Status Log</source>
         <translation>Статус лог</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/toggle_widgets_dialog.cpp" line="47"/>
-        <source>Contents header</source>
-        <translation>Содержимое</translation>
     </message>
 </context>
 <context>
