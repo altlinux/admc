@@ -56,32 +56,6 @@ void reset_password(const QString &target, QWidget *parent);
 
 QString targets_display_string(const QList<QString> targets);
 
-// Load targets(and their classes), which are the selected
-// objects of given view. Note that menu actions are not
-// made at this point.
-// void load_targets(QAbstractItemView *view) {
-//     QSet<QString> selected_dns;
-//     QSet<QString> classes;
-
-//     const QList<QModelIndex> indexes = view->selectionModel()->selectedIndexes();
-
-//     for (const QModelIndex index : indexes) {
-//         // Need first column to access item data
-//         if (index.column() != 0) {
-//             continue;
-//         }
-
-//         const QString dn = index.data(Role_DN).toString();
-//         const QString object_class = index.data(Role_ObjectClass).toString();
-
-//         selected_dns.insert(dn);
-//         classes.insert(object_class);
-//     }
-
-//     targets = selected_dns.toList();
-//     target_classes = classes.toList();
-// }
-
 // Construct actions of the menu based on current target(s)
 // NOTE: construct right before showing menu instead of in
 // load_targets() because target's attributes might change
