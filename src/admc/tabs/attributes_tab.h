@@ -55,6 +55,7 @@ Q_OBJECT
 
 public:
     AttributesTab();
+    ~AttributesTab();
 
     void load(const AdObject &object) override;
     void apply(const QString &target) const override;
@@ -71,7 +72,6 @@ private:
     QHash<QString, QList<QByteArray>> current;
 
     void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
-    void showEvent(QShowEvent *event);
 };
 
 class AttributesTabProxy final : public QSortFilterProxyModel {
