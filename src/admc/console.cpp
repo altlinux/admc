@@ -84,8 +84,12 @@ Console::Console(MenuBar *menubar_arg)
     results_view->sortByColumn(0, Qt::AscendingOrder);
     results_view->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-    auto results_header_width = SETTINGS()->get_variant(VariantSetting_ResultsHeader).toByteArray();
-    results_view->header()->restoreState(results_header_width);
+    if (SETTINGS()->contains_variant(VariantSetting_ResultsHeader)) {
+        auto results_header_width = SETTINGS()->get_variant(VariantSetting_ResultsHeader).toByteArray();
+        results_view->header()->restoreState(results_header_width);
+    } else {
+        results_view->header()->setDefaultSectionSize(200);
+    }
     
     auto results_wrapper = new QWidget();
 
