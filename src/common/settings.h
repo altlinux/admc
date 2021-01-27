@@ -41,6 +41,7 @@ enum VariantSetting {
     VariantSetting_Domain,    
     VariantSetting_Site,    
     VariantSetting_Locale,
+    VariantSetting_ResultsHeader,
 
     // GPGUI
 

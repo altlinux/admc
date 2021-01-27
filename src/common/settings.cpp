@@ -193,6 +193,7 @@ QString variant_to_string(const VariantSetting setting) {
         CASE_ENUM_TO_STRING(VariantSetting_Site);
         CASE_ENUM_TO_STRING(VariantSetting_MainWindowGeometry);
         CASE_ENUM_TO_STRING(VariantSetting_Locale);
+        CASE_ENUM_TO_STRING(VariantSetting_ResultsHeader);
         CASE_ENUM_TO_STRING(VariantSetting_COUNT);
     }
     return "";

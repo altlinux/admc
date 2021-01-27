@@ -51,6 +51,7 @@ public:
     FilterDialog *filter_dialog;
     
     Console(MenuBar *menubar_arg);
+    ~Console();
 
 private slots:
     void refresh_head();
