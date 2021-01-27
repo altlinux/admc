@@ -41,6 +41,7 @@ public:
     QTreeView *view;
     
     FindResults();
+    ~FindResults();
 
     void load(const QString &filter, const QString &search_base);
 
@@ -53,7 +54,6 @@ private:
     QStandardItemModel *model;
     QLabel *object_count_label;
 
-    void showEvent(QShowEvent *event);
     void open_context_menu(const QPoint pos);
 };
 

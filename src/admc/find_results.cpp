@@ -25,6 +25,7 @@
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "object_model.h"
+#include "settings.h"
 
 #include <QTreeView>
 #include <QLabel>
@@ -58,9 +59,11 @@ FindResults::FindResults()
     view->setSortingEnabled(true);
     view->header()->setSectionsMovable(true);
 
+    SETTINGS()->load_header_state(view->header(), VariantSetting_FindResultsHeader);
+
     view->setModel(model);
 
-    setup_column_toggle_menu(view, model, 
+    setup_column_toggle_menu(view, model,
     {
         ADCONFIG()->get_column_index(ATTRIBUTE_NAME),
         ADCONFIG()->get_column_index(ATTRIBUTE_OBJECT_CLASS),
@@ -79,7 +82,11 @@ FindResults::FindResults()
 
     connect(
         view, &QWidget::customContextMenuRequested,
-        this, &FindResults::open_context_menu);
+                this, &FindResults::open_context_menu);
+}
+
+FindResults::~FindResults() {
+    SETTINGS()->set_variant(VariantSetting_FindResultsHeader, view->header()->saveState());
 }
 
 void FindResults::load_menu(QMenu *menu) {
@@ -149,12 +156,4 @@ QList<QList<QStandardItem *>> FindResults::get_selected_rows() const {
     }
 
     return out;
-}
-
-void FindResults::showEvent(QShowEvent *event) {
-    resize_columns(view,
-    {
-        {ADCONFIG()->get_column_index(ATTRIBUTE_NAME), 0.4},
-        {ADCONFIG()->get_column_index(ATTRIBUTE_OBJECT_CLASS), 0.4},
-    });
 }
