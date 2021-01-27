@@ -41,7 +41,8 @@ const BoolSettingSignal *Settings::get_bool_signal(const BoolSetting setting) co
 
 bool Settings::get_bool(const BoolSetting setting) const {
     const QString setting_str = bool_to_string(setting);
-    const bool value = qsettings->value(setting_str, false).toBool();
+    const bool default_value = bool_default_value(setting);
+    const bool value = qsettings->value(setting_str, default_value).toBool();
 
     return value;
 }
@@ -75,38 +76,31 @@ Settings::Settings() {
 void Settings::connect_action_to_bool_setting(QAction *action, const BoolSetting setting) {
     action->setCheckable(true);
 
-    const QString setting_str = bool_to_string(setting);
-
-    const bool default_value = bool_default_value(setting);
-    
     // Init action state to saved value
-    const bool saved_value = qsettings->value(setting_str, default_value).toBool();
+    const bool saved_value = get_bool(setting);
     action->setChecked(saved_value);
 
     // Update saved value when action is toggled
     connect(
         action, &QAction::toggled,
-        [this, setting, setting_str](bool checked) {
-            qsettings->setValue(setting_str, checked);
+        [this, setting](bool checked) {
+            set_bool(setting, checked);
 
             emit bools[setting].changed();
         });
 }
 
 void Settings::connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSetting setting) {
-    const QString setting_str = bool_to_string(setting);
-
-    const bool default_value = bool_default_value(setting);
-    
     // Init action state to saved value
-    const bool saved_value = qsettings->value(setting_str, default_value).toBool();
+    const bool saved_value = get_bool(setting);
     check->setChecked(saved_value);
 
+    // Update saved value when checkbox is toggled
     connect(
         check, &QCheckBox::stateChanged,
-        [this, setting, setting_str, check]() {
+        [this, setting, check]() {
             const bool checked = check->isChecked();
-            qsettings->setValue(setting_str, checked);
+            set_bool(setting, checked);
 
             emit bools[setting].changed();
         });
