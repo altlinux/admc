@@ -55,7 +55,6 @@ Q_OBJECT
 
 public:
     AttributesTab();
-    ~AttributesTab();
 
     void load(const AdObject &object) override;
     void apply(const QString &target) const override;

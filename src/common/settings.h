@@ -105,7 +105,7 @@ public:
     void restore_geometry(QWidget *widget, const VariantSetting geometry_setting);
     void save_geometry(QWidget *widget, const VariantSetting geometry_setting);
 
-    void load_header_state(QHeaderView* header, const VariantSetting setting);
+    void setup_header_state(QHeaderView* header, const VariantSetting setting);
 
     void connect_toggle_widget(QWidget *widget, const BoolSetting setting);
 

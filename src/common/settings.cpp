@@ -125,13 +125,19 @@ void Settings::save_geometry(QWidget *widget, const VariantSetting geometry_sett
     set_variant(VariantSetting_MainWindowGeometry, QVariant(geometry));
 }
 
-void Settings::load_header_state(QHeaderView *header, const VariantSetting setting) {
+void Settings::setup_header_state(QHeaderView *header, const VariantSetting setting) {
     if (contains_variant(setting)) {
         auto header_width = get_variant(setting).toByteArray();
         header->restoreState(header_width);
     } else {
         header->setDefaultSectionSize(200);
     }
+
+    connect(
+        header, &QHeaderView::destroyed,
+        [this, header, setting]() {
+            set_variant(setting, header->saveState());
+        });
 }
 
 void Settings::connect_toggle_widget(QWidget *widget, const BoolSetting setting) {

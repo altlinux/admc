@@ -84,7 +84,7 @@ Console::Console(MenuBar *menubar_arg)
     results_view->sortByColumn(0, Qt::AscendingOrder);
     results_view->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-    SETTINGS()->load_header_state(results_view->header(), VariantSetting_ResultsHeader);
+    SETTINGS()->setup_header_state(results_view->header(), VariantSetting_ResultsHeader);
     
     auto results_wrapper = new QWidget();
 
@@ -214,10 +214,6 @@ Console::Console(MenuBar *menubar_arg)
 
     // Make head object current
     scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
-}
-
-Console::~Console() {
-    SETTINGS()->set_variant(VariantSetting_ResultsHeader, results_view->header()->saveState());
 }
 
 void Console::refresh_head() {

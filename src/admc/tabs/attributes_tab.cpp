@@ -76,7 +76,7 @@ AttributesTab::AttributesTab() {
     proxy->setSourceModel(model);
     view->setModel(proxy);
 
-    SETTINGS()->load_header_state(view->header(), VariantSetting_AttributesHeader);
+    SETTINGS()->setup_header_state(view->header(), VariantSetting_AttributesHeader);
 
     auto edit_button = new QPushButton(tr("Edit"));
     auto filter_button = new QPushButton(tr("Filter"));
@@ -101,10 +101,6 @@ AttributesTab::AttributesTab() {
     connect(
         filter_button, &QAbstractButton::clicked,
                 this, &AttributesTab::open_filter_dialog);
-}
-
-AttributesTab::~AttributesTab() {
-    SETTINGS()->set_variant(VariantSetting_AttributesHeader, view->header()->saveState());
 }
 
 void AttributesTab::edit_attribute() {

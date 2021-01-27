@@ -41,7 +41,6 @@ public:
     QTreeView *view;
     
     FindResults();
-    ~FindResults();
 
     void load(const QString &filter, const QString &search_base);
 

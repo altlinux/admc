@@ -59,7 +59,7 @@ FindResults::FindResults()
     view->setSortingEnabled(true);
     view->header()->setSectionsMovable(true);
 
-    SETTINGS()->load_header_state(view->header(), VariantSetting_FindResultsHeader);
+    SETTINGS()->setup_header_state(view->header(), VariantSetting_FindResultsHeader);
 
     view->setModel(model);
 
@@ -83,10 +83,6 @@ FindResults::FindResults()
     connect(
         view, &QWidget::customContextMenuRequested,
                 this, &FindResults::open_context_menu);
-}
-
-FindResults::~FindResults() {
-    SETTINGS()->set_variant(VariantSetting_FindResultsHeader, view->header()->saveState());
 }
 
 void FindResults::load_menu(QMenu *menu) {
