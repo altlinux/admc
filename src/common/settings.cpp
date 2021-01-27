@@ -25,6 +25,7 @@
 #include <QSettings>
 #include <QLocale>
 #include <QCoreApplication>
+#include <QHeaderView>
 
 bool bool_default_value(const BoolSetting setting);
 QString bool_to_string(const BoolSetting setting);
@@ -118,6 +119,21 @@ void Settings::save_geometry(QWidget *widget, const VariantSetting geometry_sett
     set_variant(VariantSetting_MainWindowGeometry, QVariant(geometry));
 }
 
+void Settings::setup_header_state(QHeaderView *header, const VariantSetting setting) {
+    if (contains_variant(setting)) {
+        auto header_width = get_variant(setting).toByteArray();
+        header->restoreState(header_width);
+    } else {
+        header->setDefaultSectionSize(200);
+    }
+
+    connect(
+        header, &QHeaderView::destroyed,
+        [this, header, setting]() {
+            set_variant(setting, header->saveState());
+        });
+}
+
 void Settings::connect_toggle_widget(QWidget *widget, const BoolSetting setting) {
     const BoolSettingSignal *signal = get_bool_signal(setting);
 
@@ -187,6 +203,9 @@ QString variant_to_string(const VariantSetting setting) {
         CASE_ENUM_TO_STRING(VariantSetting_Site);
         CASE_ENUM_TO_STRING(VariantSetting_MainWindowGeometry);
         CASE_ENUM_TO_STRING(VariantSetting_Locale);
+        CASE_ENUM_TO_STRING(VariantSetting_ResultsHeader);
+        CASE_ENUM_TO_STRING(VariantSetting_FindResultsHeader);
+        CASE_ENUM_TO_STRING(VariantSetting_AttributesHeader);
         CASE_ENUM_TO_STRING(VariantSetting_COUNT);
     }
     return "";

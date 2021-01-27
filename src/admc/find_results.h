@@ -53,7 +53,6 @@ private:
     QStandardItemModel *model;
     QLabel *object_count_label;
 
-    void showEvent(QShowEvent *event);
     void open_context_menu(const QPoint pos);
 };
 

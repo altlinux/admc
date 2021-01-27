@@ -83,6 +83,8 @@ Console::Console(MenuBar *menubar_arg)
     results_view->setSortingEnabled(true);
     results_view->sortByColumn(0, Qt::AscendingOrder);
     results_view->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+    SETTINGS()->setup_header_state(results_view->header(), VariantSetting_ResultsHeader);
     
     auto results_wrapper = new QWidget();
 
@@ -290,14 +292,6 @@ void Console::on_current_scope_changed(const QModelIndex &current, const QModelI
 
     QStandardItemModel *results_model = scope_id_to_results[id];
     results_view->setModel(results_model);
-
-    // TODO: remove this when implementing saved column widths
-    static bool set_column_widths = true;
-    if (set_column_widths) {
-        set_column_widths = false;
-        results_view->setColumnWidth(0, 400);
-        results_view->setColumnWidth(1, 400);
-    }
 
     // Update header with new object counts when rows are added/removed
     connect(

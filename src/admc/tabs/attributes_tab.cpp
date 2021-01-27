@@ -24,6 +24,7 @@
 #include "ad_object.h"
 #include "utils.h"
 #include "attribute_display.h"
+#include "settings.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -35,6 +36,7 @@
 #include <QCheckBox>
 #include <QFrame>
 #include <QLabel>
+#include <QHeaderView>
 
 enum AttributesColumn {
     AttributesColumn_Name,
@@ -74,6 +76,8 @@ AttributesTab::AttributesTab() {
     proxy->setSourceModel(model);
     view->setModel(proxy);
 
+    SETTINGS()->setup_header_state(view->header(), VariantSetting_AttributesHeader);
+
     auto edit_button = new QPushButton(tr("Edit"));
     auto filter_button = new QPushButton(tr("Filter"));
     auto buttons = new QHBoxLayout();
@@ -96,7 +100,7 @@ AttributesTab::AttributesTab() {
         this, &AttributesTab::edit_attribute);
     connect(
         filter_button, &QAbstractButton::clicked,
-        this, &AttributesTab::open_filter_dialog);
+                this, &AttributesTab::open_filter_dialog);
 }
 
 void AttributesTab::edit_attribute() {
@@ -235,14 +239,6 @@ void AttributesTab::open_filter_dialog() {
         });
 
     dialog->open();
-}
-
-void AttributesTab::showEvent(QShowEvent *event) {
-    resize_columns(view,
-    {
-        {AttributesColumn_Name, 0.4},
-        {AttributesColumn_Value, 0.8},
-    });
 }
 
 void AttributesTab::load(const AdObject &object) {
