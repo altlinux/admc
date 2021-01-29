@@ -263,6 +263,13 @@ void DetailsDialog::ok() {
 }
 
 bool DetailsDialog::apply() {
+    for (auto tab : tabs) {
+        const bool verify_success = tab->verify(target);
+        if (!verify_success) {
+            return false;
+        }
+    }
+
     show_busy_indicator();
 
     STATUS()->start_error_log();
