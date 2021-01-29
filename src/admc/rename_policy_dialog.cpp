@@ -94,8 +94,10 @@ void RenamePolicyDialog::accept() {
         RenameDialog::success_msg(old_name);
         QDialog::close();
     } else {
-        RenameDialog::fail_msg(old_name, this);
+        RenameDialog::fail_msg(old_name);
     }
+
+    STATUS()->end_error_log(this);
 }
 
 void RenamePolicyDialog::on_edited() {
