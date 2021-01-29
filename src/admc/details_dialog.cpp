@@ -183,8 +183,14 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     };
 
     add_tab(new GeneralTab(object), tr("General"));
-    add_tab(new ObjectTab(), tr("Object"));
-    add_tab(new AttributesTab(), tr("Attributes"));
+
+    // TODO: security tab(didn't make it yet) is also "advanced", so add it here when it gets made
+    const bool advanced_view_ON = SETTINGS()->get_bool(BoolSetting_AdvancedView);
+    if (advanced_view_ON) {
+        add_tab(new ObjectTab(), tr("Object"));
+        add_tab(new AttributesTab(), tr("Attributes"));
+    }
+
     if (object.is_class(CLASS_USER)) {
         add_tab(new AccountTab(), tr("Account"));
         add_tab(new AddressTab(), tr("Address"));
