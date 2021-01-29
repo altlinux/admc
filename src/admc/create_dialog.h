@@ -32,6 +32,7 @@
 #include <QList>
 
 class AttributeEdit;
+class StringEdit;
 class QLineEdit;
 class QPushButton;
 class PasswordEdit;
@@ -52,7 +53,7 @@ private:
     QLineEdit *name_edit;
     QPushButton *create_button;
     QList<AttributeEdit *> all_edits;
-    QList<AttributeEdit *> required_edits;
+    QList<StringEdit *> required_edits;
     PasswordEdit *pass_edit;
 };
 

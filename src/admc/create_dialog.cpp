@@ -79,7 +79,6 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
             first_name_edit,
             upn_edit,
             sama_edit,
-            pass_edit
         };
 
         first_name_edit->add_to_layout(edits_layout);
@@ -256,7 +255,7 @@ void CreateDialog::on_edited() {
     const bool required_edits_filled =
     [this]() {
         for (auto edit : required_edits) {
-            if (!edit->modified()) {
+            if (edit->is_empty()) {
                 return false;
             }
         }

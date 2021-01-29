@@ -54,8 +54,11 @@ public:
     // AD server
     virtual bool apply(const QString &dn) const = 0;
 
-    // Returns whether edit was edited by user
-    // Resets on load()
+    // Returns whether edit was edited by user. Rsets on
+    // load(). Note that this will be true if user EVER
+    // edited this edit. This won't become false if user
+    // manually undoes changes by retyping original value
+    // for StringEdit for example.
     bool modified() const;
 
 signals:

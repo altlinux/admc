@@ -135,6 +135,12 @@ void StringEdit::set_input(const QString &value) {
     emit edited();
 }
 
+bool StringEdit::is_empty() const {
+    const QString text = edit->text();
+
+    return text.isEmpty();
+}
+
 // "DOMAIN.COM" => "@domain.com"
 QString get_domain_as_email_suffix() {
     const QString domain = AD()->domain();

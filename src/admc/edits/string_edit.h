@@ -38,7 +38,8 @@ public:
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
     QString get_input() const;
-    void set_input(const QString &value);\
+    void set_input(const QString &value);
+    bool is_empty() const;
 
 private:
     QLineEdit *edit;
