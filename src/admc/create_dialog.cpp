@@ -196,14 +196,8 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
     on_edited();
 }
 
+// NOTE: not using edits_verify() and edits_apply() because that f-n processes only modified edits. Since this is a new object, all the edits are in "unmodified" state but still need to be processed.
 void CreateDialog::accept() {
-    if (pass_edit != nullptr) {
-        const bool pass_confirmed = pass_edit->check_confirm();
-        if (!pass_confirmed) {
-            return;
-        }
-    }
-    
     const QString name = name_edit->text();
 
     const QString suffix =
@@ -216,6 +210,22 @@ void CreateDialog::accept() {
     }();
 
     const QString dn = suffix + "=" + name + "," + parent_dn;
+
+    // Verify edits
+    const bool verify_success =
+    [=]() {
+        for (auto edit : all_edits) {
+            const bool success = edit->verify(dn);
+            if (!success) {
+                return false;
+            }
+        }
+
+        return true;
+    }();
+    if (!verify_success) {
+        return;
+    }
 
     const QString class_name = ADCONFIG()->get_class_display_name(object_class);
 
@@ -230,7 +240,6 @@ void CreateDialog::accept() {
     const bool add_success = AD()->object_add(dn, object_class);
 
     if (add_success) {
-        // NOTE: not using edits_apply() because that f-n applies only those edits that were modified. Since this is a new object, all the edits are in "unmodified" state but still need to be applied.
         const bool apply_success =
         [=]() {
             bool out;

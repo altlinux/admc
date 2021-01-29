@@ -111,6 +111,11 @@ void RenameDialog::fail_msg(const QString &old_name) {
 void RenameDialog::accept() {
     const QString old_name = dn_get_name(target);
 
+    const bool verify_success = edits_verify(all_edits, target);
+    if (!verify_success) {
+        return;
+    }
+
     STATUS()->start_error_log();
 
     const QString new_name = name_edit->text();

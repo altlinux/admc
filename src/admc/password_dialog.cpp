@@ -44,7 +44,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
     const QString title = QString(tr("Change password of object \"%1\"")).arg(name);
     setWindowTitle(title);
 
-    pass_edit = new PasswordEdit(&edits, this);
+    new PasswordEdit(&edits, this);
     new AccountOptionEdit(AccountOption_PasswordExpired, &edits, this);
     new UnlockEdit(&edits, this);
 
@@ -71,15 +71,16 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 }
 
 void PasswordDialog::accept() {
-    const bool pass_confirmed = pass_edit->check_confirm();
-
-    if (pass_confirmed) {
-        STATUS()->start_error_log();
-
-        edits_apply(edits, target);
-
-        QDialog::close();
-
-        STATUS()->end_error_log(this);
+    const bool verify_success = edits_verify(edits, target);
+    if (!verify_success) {
+        return;
     }
+
+    STATUS()->start_error_log();
+
+    edits_apply(edits, target);
+
+    QDialog::close();
+
+    STATUS()->end_error_log(this);
 }
