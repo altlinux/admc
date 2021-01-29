@@ -84,7 +84,8 @@ public:\
 // Helper f-ns that iterate over edit lists for you
 void edits_connect_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
 void edits_add_to_layout(QList<AttributeEdit *> edits, QFormLayout *layout);
-bool edits_apply(QList<AttributeEdit *> edits, const QString &dn, const bool apply_if_unmodified = false);
+// Applies all edits that were modified
+bool edits_apply(QList<AttributeEdit *> edits, const QString &dn);
 void edits_load(QList<AttributeEdit *> edits, const AdObject &object);
 
 #endif /* ATTRIBUTE_EDIT_H */

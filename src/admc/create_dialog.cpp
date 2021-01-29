@@ -230,8 +230,19 @@ void CreateDialog::accept() {
     const bool add_success = AD()->object_add(dn, object_class);
 
     if (add_success) {
-        const bool apply_if_unmodified = true;
-        const bool apply_success = edits_apply(all_edits, dn, apply_if_unmodified);
+        // NOTE: not using edits_apply() because that f-n applies only those edits that were modified. Since this is a new object, all the edits are in "unmodified" state but still need to be applied.
+        const bool apply_success =
+        [=]() {
+            bool out;
+            for (auto edit : all_edits) {
+                const bool success = edit->apply(dn);
+                if (!success) {
+                    out = false;
+                }
+            }
+
+            return out;
+        }();
 
         if (apply_success) {
             const QString message = QString(tr("Created %1 \"%2\"")).arg(class_name, name);
