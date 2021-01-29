@@ -50,6 +50,12 @@ public:
     // Layout all widgets that are part of this edit
     virtual void add_to_layout(QFormLayout *layout) = 0;
 
+    // Verify current input. This is for the kinds of errors
+    // that the server doesn't or can't check for. For
+    // example password confirmation matching password.
+    // Should be called before apply().
+    virtual bool verify(const QString &dn) const;
+
     // Apply current input by making a modification to the
     // AD server
     virtual bool apply(const QString &dn) const = 0;
@@ -84,8 +90,15 @@ public:\
 // Helper f-ns that iterate over edit lists for you
 void edits_connect_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
 void edits_add_to_layout(QList<AttributeEdit *> edits, QFormLayout *layout);
+
+// Verify all edits that were modified. Verify process will
+// stop on first failure. This is so that only one failure
+// message is shown at a time.
+bool edits_verify(QList<AttributeEdit *> edits, const QString &dn);
+
 // Applies all edits that were modified
 bool edits_apply(QList<AttributeEdit *> edits, const QString &dn);
+
 void edits_load(QList<AttributeEdit *> edits, const AdObject &object);
 
 #endif /* ATTRIBUTE_EDIT_H */
