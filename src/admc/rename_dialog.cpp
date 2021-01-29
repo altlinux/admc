@@ -106,8 +106,6 @@ void RenameDialog::success_msg(const QString &old_name) {
 void RenameDialog::fail_msg(const QString &old_name, QWidget *parent) {
     const QString message = QString(tr("Failed to rename object \"%1\"")).arg(old_name);
     STATUS()->message(message, StatusType_Error);
-    
-    STATUS()->end_error_log(parent);
 }
 
 void RenameDialog::accept() {
@@ -131,6 +129,8 @@ void RenameDialog::accept() {
     } else {
         fail_msg(old_name, this);
     }
+
+    STATUS()->end_error_log(parent);
 }
 
 void RenameDialog::on_edited() {
