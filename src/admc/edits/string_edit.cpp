@@ -18,13 +18,17 @@
  */
 
 #include "edits/string_edit.h"
+
 #include "utils.h"
+#include "filter.h"
 #include "ad_interface.h"
 #include "ad_utils.h"
 #include "ad_config.h"
 #include "ad_object.h"
+
 #include <QLineEdit>
 #include <QFormLayout>
+#include <QMessageBox>
 
 QString get_domain_as_email_suffix();
 
@@ -109,17 +113,38 @@ void StringEdit::add_to_layout(QFormLayout *layout) {
     }
 }
 
-bool StringEdit::apply(const QString &dn) const {
-    const QString new_value =
-    [this]() {
-        if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
-            // Get "user" from edit and combine into "user@domain.com"
-            return edit->text() + get_domain_as_email_suffix();
-        } else {
-            return edit->text();
-        }
-    }();
+bool StringEdit::verify(const QString &dn) const {
+    const QString new_value = get_new_value();
 
+    if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
+        // Check that new upn is unique
+        // NOTE: filter has to also check that it's not the same object because of attribute edit weirdness. If user edits logon name, then retypes original, then applies, the edit will apply because it was modified by the user, even if the value didn't change. Without "not_object_itself", this check would determine that object's logon name conflicts with itself.
+        const QString filter =
+        [=]() {
+            const QString not_object_itself = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_DN, dn);
+            const QString same_upn = filter_CONDITION(Condition_Equals, ATTRIBUTE_USER_PRINCIPAL_NAME, new_value);
+
+            return filter_AND({same_upn, not_object_itself});
+        }();
+        const QList<QString> search_attributes;
+        const QString base = AD()->domain_head();
+
+        const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_All, base);
+
+        const bool upn_not_unique = (search_results.size() > 0);
+
+        if (upn_not_unique) {
+            const QString text = tr("The specified user logon name already exists.");
+            QMessageBox::warning(edit, tr("Error"), text);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool StringEdit::apply(const QString &dn) const {
+    const QString new_value = get_new_value();
     const bool success = AD()->attribute_replace_string(dn, attribute, new_value);
 
     return success;
@@ -139,6 +164,15 @@ bool StringEdit::is_empty() const {
     const QString text = edit->text();
 
     return text.isEmpty();
+}
+
+QString StringEdit::get_new_value() const {
+    if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
+        // Get "user" from edit and combine into "user@domain.com"
+        return edit->text() + get_domain_as_email_suffix();
+    } else {
+        return edit->text();
+    }
 }
 
 // "DOMAIN.COM" => "@domain.com"
