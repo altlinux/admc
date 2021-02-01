@@ -74,6 +74,9 @@ public:
     // NOTE: this compares for the most derived class, so each object only maps to one class. For example computers have objectClass values of both "user" and "computer" but "computer" is more derived so they are only computers and not users.
     bool is_class(const QString &object_class) const;
 
+    // True if ANY of object's classes equal to given class
+    bool contains_class(const QString &object_class) const;
+
     QIcon get_icon() const;
 
 private:

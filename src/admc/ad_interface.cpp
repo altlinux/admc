@@ -945,10 +945,9 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
 
     const AdObject target = AD()->search_object(target_dn, {ATTRIBUTE_OBJECT_CLASS});
 
-    const bool dropped_is_user = dropped.is_class(CLASS_USER);
-    const bool dropped_is_group = dropped.is_class(CLASS_GROUP);
-    const bool target_is_group = target.is_class(CLASS_GROUP);
-
+    const bool dropped_is_user = dropped.contains_class(CLASS_USER);
+    const bool dropped_is_group = dropped.contains_class(CLASS_GROUP);
+    const bool target_is_group = target.contains_class(CLASS_GROUP);
 
     if (dropped_is_user && target_is_group) {
         return DropType_AddToGroup;

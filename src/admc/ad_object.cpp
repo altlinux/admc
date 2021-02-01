@@ -222,6 +222,12 @@ bool AdObject::is_class(const QString &object_class) const {
     return is_class;
 }
 
+bool AdObject::contains_class(const QString &object_class) const {
+    const QList<QString> object_class_list = get_strings(ATTRIBUTE_OBJECT_CLASS);
+    
+    return object_class_list.contains(object_class);
+}
+
 QIcon AdObject::get_icon() const {
     // TODO: change to custom, good icons, add those icons to installation?
     static const QMap<QString, QString> class_to_icon = {
