@@ -151,6 +151,10 @@ Console::Console(MenuBar *menubar_arg)
         this, &Console::open_context_menu);
 
     connect(
+        results_view, &QTreeView::doubleClicked,
+        this, &Console::on_result_item_double_clicked);
+
+    connect(
         AD(), &AdInterface::object_added,
         this, &Console::on_object_added);
     connect(
@@ -682,5 +686,31 @@ QModelIndex Console::get_scope_node_from_id(const int id) const {
         return matches[0];
     } else {
         return QModelIndex();
+    }
+}
+
+void Console::on_result_item_double_clicked(const QModelIndex &index)
+{
+    const auto objectClass = index.data(Role_ObjectClass);
+
+    const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
+    const bool is_container = container_classes.contains(objectClass.toString());
+
+    const QString dn = index.data(Role_DN).toString();
+    if (is_container) {
+        const QList<QModelIndex> scope_index_matches
+                = scope_model->match(scope_model->index(0, 0), Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+        if (!scope_index_matches.empty()) {
+            auto current_index = scope_index_matches[0];
+            on_current_scope_changed(current_index, current_index);
+            
+            // Expand scope tree to selected object
+            while (current_index.isValid()) {
+                scope_view->expand(current_index);
+                current_index = current_index.parent();
+            }
+        }
+    } else {
+        DetailsDialog::open_for_target(dn);
     }
 }
