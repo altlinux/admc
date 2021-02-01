@@ -30,8 +30,7 @@ public:
     PasswordEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
-    // Checks that password confirmation matches input
-    bool check_confirm() const;
+    bool verify(const QString &dn) const override;
 
 private:
     QLineEdit *edit;

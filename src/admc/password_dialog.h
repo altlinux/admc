@@ -40,7 +40,6 @@ private slots:
 private:
     QString target;
     QList<AttributeEdit *> edits;
-    PasswordEdit *pass_edit;
 
 };
 

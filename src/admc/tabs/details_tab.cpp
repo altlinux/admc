@@ -24,6 +24,10 @@ void DetailsTab::load(const AdObject &object) {
     edits_load(edits, object);
 }
 
+bool DetailsTab::verify(const QString &target) const {
+    return edits_verify(edits, target);
+}
+
 void DetailsTab::apply(const QString &target) const {
     edits_apply(edits, target);
 }
