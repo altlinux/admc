@@ -51,13 +51,8 @@ QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
     return data;
 }
 
-bool ConsoleDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int row, int, const QModelIndex &parent) const {
+bool ConsoleDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
     if (!data->hasUrls()) {
-        return false;
-    }
-
-    const bool dropping_between_rows = (row != -1);
-    if (dropping_between_rows) {
         return false;
     }
 
@@ -74,13 +69,7 @@ bool ConsoleDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, in
     }
 }
 
-bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int, const QModelIndex &parent) {
-    // TODO: implement dropping next to parent (which happens if row or column aren't equal to -1). In that case would need to insert within other rows instead of just appending.
-    const bool dropping_between_rows = (row != -1);
-    if (dropping_between_rows) {
-        return false;
-    }
-
+bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int, int, const QModelIndex &parent) {
     if (!data->hasUrls()) {
         return true;
     }
