@@ -66,6 +66,8 @@ private slots:
     void navigate_back();
     void navigate_forward();
 
+    void on_result_item_double_clicked(const QModelIndex &index);
+
 private:
     QTreeView *scope_view;
     QTreeView *results_view;
