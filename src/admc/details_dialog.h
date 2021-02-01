@@ -20,32 +20,25 @@
 #ifndef DETAILS_DIALOG_H
 #define DETAILS_DIALOG_H
 
+/**
+ * Shows info about object's attributes in multiple tabs.
+ * Targeted at a particular object. Normally, a new dialog
+ * is opened for each target. If a dialog is already opened
+ * for selected target, it is focused.
+ */
+
 #include <QDialog>
-#include <QString>
-#include <QList>
-#include <QHash>
 
 class QString;
 class DetailsTab;
 class QAbstractItemView;
 class QPushButton;
-
-/**
- * Shows info about object's attributes in multiple tabs.
- * Targeted at a particular object. Normally, a new dialog
- * is opened for each target. So can have multiple dialogs
- * open a the same time. If docked setting is turned on,
- * only one dialog is shown, docked to the right side of
- * main window. When a new target is selected, that one
- * docked dialog switches to it.
- */
+template <typename T> class QList;
 
 class DetailsDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    static QWidget *get_docked_container();
-
     static void open_for_target(const QString &target);
     static void connect_to_open_by_double_click(QAbstractItemView *view, const int dn_column);
 
@@ -53,20 +46,15 @@ private slots:
     void ok();
     bool apply();
     void reset();
-    void on_docked_setting_changed();
     void on_edited();
 
 private:
-    static DetailsDialog *docked_instance;
-    static QHash<QString, DetailsDialog *> floating_instances;
-
-    bool is_floating_instance;
     QList<DetailsTab *> tabs;
     QString target;
     QPushButton *apply_button;
     QPushButton *reset_button;
 
-    DetailsDialog(const QString &target_arg, bool is_floating_instance_arg);
+    DetailsDialog(const QString &target_arg);
     
     DetailsDialog(const DetailsDialog&) = delete;
     DetailsDialog& operator=(const DetailsDialog&) = delete;

@@ -46,25 +46,6 @@
 #include <QDebug>
 #include <QAbstractItemView>
 
-DetailsDialog *DetailsDialog::docked_instance = nullptr;
-QHash<QString, DetailsDialog *> DetailsDialog::floating_instances;
-
-QWidget *DetailsDialog::get_docked_container() {
-    static QWidget *docked_container =
-    []() {
-        auto out = new QWidget();
-
-        auto layout = new QVBoxLayout();
-        out->setLayout(layout);
-        layout->setContentsMargins(0, 0, 0, 0);
-        layout->setSpacing(0);
-
-        return out;
-    }();
-
-    return docked_container;
-}
-
 void DetailsDialog::open_for_target(const QString &target) {
     if (target.isEmpty()) {
         return;
@@ -72,41 +53,27 @@ void DetailsDialog::open_for_target(const QString &target) {
 
     show_busy_indicator();
 
-    const bool is_docked = SETTINGS()->get_bool(BoolSetting_DetailsIsDocked);
+    static QHash<QString, DetailsDialog *> instances;
 
-    if (is_docked) {
-        // Close (delete) previous docked instance
-        if (docked_instance != nullptr) {
-            docked_instance->close();
-        }
+    const bool dialog_already_open_for_this_target = instances.contains(target);
 
-        docked_instance = new DetailsDialog(target, false);
-
-        // Add new docked instance to container layout
-        QWidget *docked_container = get_docked_container();
-        QLayout *docked_layout = docked_container->layout();
-        docked_layout->addWidget(docked_instance);
+    if (dialog_already_open_for_this_target) {
+        // Focus already open dialog
+        DetailsDialog *dialog = instances[target];
+        dialog->raise();
+        dialog->setFocus();
     } else {
-        const bool dialog_already_open_for_this_target = floating_instances.contains(target);
+        // Make new dialog for this target
+        auto dialog = new DetailsDialog(target);
 
-        if (dialog_already_open_for_this_target) {
-            // Focus already open dialog
-            DetailsDialog *dialog = floating_instances[target];
-            dialog->raise();
-            dialog->setFocus();
-        } else {
-            // Make new dialog for this target
-            auto dialog = new DetailsDialog(target, true);
+        instances[target] = dialog;
+        connect(
+            dialog, &QDialog::finished,
+            [target]() {
+                instances.remove(target);
+            });
 
-            floating_instances[target] = dialog;
-            connect(
-                dialog, &QDialog::finished,
-                [target]() {
-                    floating_instances.remove(target);
-                });
-
-            dialog->show();
-        }
+        dialog->show();
     }
 
     hide_busy_indicator();
@@ -121,11 +88,10 @@ void DetailsDialog::connect_to_open_by_double_click(QAbstractItemView *view, con
         });
 }
 
-DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_instance_arg)
+DetailsDialog::DetailsDialog(const QString &target_arg)
 : QDialog()
 {
     target = target_arg;
-    is_floating_instance = is_floating_instance_arg;
 
     setAttribute(Qt::WA_DeleteOnClose);
     setMinimumHeight(700);
@@ -150,15 +116,7 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
 
     const QString name = object.get_string(ATTRIBUTE_NAME);
     const QString window_title = name.isEmpty() ? tr("Details") : QString(tr("\"%1\" Details")).arg(name);
-
-    if (is_floating_instance) {
-        setWindowTitle(window_title);
-    } else {
-        // Docked instance is not a window so can't use
-        // window title and have to put it in a label.
-        auto title_label = new QLabel(window_title);
-        layout->addWidget(title_label);
-    }
+    setWindowTitle(window_title);
 
     if (object.is_empty()) {
         auto no_object_label = new QLabel(tr("Object could not be found"));
@@ -232,26 +190,6 @@ DetailsDialog::DetailsDialog(const QString &target_arg, const bool is_floating_i
     connect(
         cancel_button, &QPushButton::clicked,
         this, &DetailsDialog::reject);
-
-    const BoolSettingSignal *docked_setting = SETTINGS()->get_bool_signal(BoolSetting_DetailsIsDocked);
-    connect(
-        docked_setting, &BoolSettingSignal::changed,
-        this, &DetailsDialog::on_docked_setting_changed);
-    on_docked_setting_changed();
-}
-
-void DetailsDialog::on_docked_setting_changed() {
-    const bool is_docked = SETTINGS()->get_bool(BoolSetting_DetailsIsDocked);
-
-    if (is_floating_instance) {
-        // Close dialog if changed to docked
-        if (is_docked) {
-            QDialog::reject();
-        }
-    } else {
-        // Hide/show docked instance depending on docked setting
-        get_docked_container()->setVisible(is_docked);
-    }
 }
 
 void DetailsDialog::ok() {

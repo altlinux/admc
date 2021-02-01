@@ -68,7 +68,6 @@ MenuBar::MenuBar()
 
     QMenu *view_menu = addMenu(tr("&View"));
     add_bool_setting_action(view_menu, tr("&Advanced view"), BoolSetting_AdvancedView);
-    add_bool_setting_action(view_menu, tr("&Dock Details dialog"), BoolSetting_DetailsIsDocked);
     auto toggle_widgets_action = view_menu->addAction(tr("&Toggle widgets"));
     filter_action = view_menu->addAction(tr("&Filter objects"));
 

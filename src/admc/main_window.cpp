@@ -81,19 +81,9 @@ void MainWindow::on_connected() {
 
     auto console = new Console(menubar);
 
-    auto details_widget_docked_container = DetailsDialog::get_docked_container();
-    
-    // TODO: really should show a blank widget when docked details is toggled. Right now, it does nothing until some object's details is opened which is confusing.
-
-    auto console_details_splitter = new QSplitter(Qt::Horizontal);
-    console_details_splitter->addWidget(console);
-    console_details_splitter->addWidget(details_widget_docked_container);
-    console_details_splitter->setStretchFactor(0, 2);
-    console_details_splitter->setStretchFactor(1, 1);
-
     auto vert_splitter = new QSplitter(Qt::Vertical);
     vert_splitter->addWidget(STATUS()->status_log);
-    vert_splitter->addWidget(console_details_splitter);
+    vert_splitter->addWidget(console);
     vert_splitter->setStretchFactor(0, 1);
     vert_splitter->setStretchFactor(1, 3);
 
