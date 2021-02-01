@@ -703,6 +703,8 @@ void Console::on_result_item_double_clicked(const QModelIndex &index)
         if (!scope_item_matches.empty()) {
             auto currentItem = scope_item_matches[0];
             this->on_current_scope_changed(currentItem, currentItem);
+            
+            // Expand scope tree to selected object
             while (currentItem.isValid()) {
                 this->scope_view->expand(currentItem);
                 currentItem = currentItem.parent();
