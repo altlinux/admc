@@ -694,20 +694,20 @@ void Console::on_result_item_double_clicked(const QModelIndex &index)
     const auto objectClass = index.data(Role_ObjectClass);
 
     const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
-    bool is_container = container_classes.contains(objectClass.toString());
+    const bool is_container = container_classes.contains(objectClass.toString());
 
     const QString dn = index.data(Role_DN).toString();
     if (is_container) {
-        const QList<QModelIndex> scope_item_matches
+        const QList<QModelIndex> scope_index_matches
                 = scope_model->match(scope_model->index(0, 0), Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
-        if (!scope_item_matches.empty()) {
-            auto currentItem = scope_item_matches[0];
-            this->on_current_scope_changed(currentItem, currentItem);
+        if (!scope_index_matches.empty()) {
+            auto current_index = scope_index_matches[0];
+            on_current_scope_changed(current_index, current_index);
             
             // Expand scope tree to selected object
-            while (currentItem.isValid()) {
-                this->scope_view->expand(currentItem);
-                currentItem = currentItem.parent();
+            while (current_index.isValid()) {
+                scope_view->expand(current_index);
+                current_index = current_index.parent();
             }
         }
     } else {
