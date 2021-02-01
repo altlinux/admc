@@ -1855,12 +1855,12 @@
     <message>
         <location filename="../src/admc/edits/string_edit.cpp" line="137"/>
         <source>The specified user logon name already exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Указанное имя для входа уже существует</translation>
     </message>
     <message>
         <location filename="../src/admc/edits/string_edit.cpp" line="138"/>
         <source>Error</source>
-        <translation type="unfinished">Ошибка</translation>
+        <translation>Ошибка</translation>
     </message>
 </context>
 <context>
