@@ -60,7 +60,7 @@ enum BoolSetting {
     BoolSetting_ConfirmActions,
     BoolSetting_DevMode,
     BoolSetting_DetailsIsDocked,
-    BoolSetting_ShowNonContainersInContainersTree,
+    BoolSetting_ShowNonContainersInConsoleTree,
     BoolSetting_LastNameBeforeFirstName,
     BoolSetting_QuickFind,
 

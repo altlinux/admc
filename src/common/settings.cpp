@@ -156,7 +156,7 @@ bool bool_default_value(const BoolSetting setting) {
         case BoolSetting_ConfirmActions: return true;
         case BoolSetting_DevMode: return false;
         case BoolSetting_DetailsIsDocked: return false;
-        case BoolSetting_ShowNonContainersInContainersTree: return false;
+        case BoolSetting_ShowNonContainersInConsoleTree: return false;
         case BoolSetting_LastNameBeforeFirstName: {
             const bool locale_is_russian = (QLocale::system().language() == QLocale::Russian);
             if (locale_is_russian) {
@@ -186,7 +186,7 @@ QString bool_to_string(const BoolSetting setting) {
         CASE_ENUM_TO_STRING(BoolSetting_ConfirmActions);
         CASE_ENUM_TO_STRING(BoolSetting_DevMode);
         CASE_ENUM_TO_STRING(BoolSetting_DetailsIsDocked);
-        CASE_ENUM_TO_STRING(BoolSetting_ShowNonContainersInContainersTree);
+        CASE_ENUM_TO_STRING(BoolSetting_ShowNonContainersInConsoleTree);
         CASE_ENUM_TO_STRING(BoolSetting_LastNameBeforeFirstName);
         CASE_ENUM_TO_STRING(BoolSetting_QuickFind);
         CASE_ENUM_TO_STRING(BoolSetting_ShowStatusLog);
