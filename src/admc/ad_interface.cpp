@@ -1056,7 +1056,7 @@ bool AdInterface::create_gpo(const QString &display_name) {
     const int ini_file = smbc_open(cstr(init_file_path), O_WRONLY | O_CREAT, 0);
 
     const char *ini_contents = "[General]\r\nVersion=0\r\n";
-    const int result_write_ini = smbc_write(ini_file, ini_contents, sizeof(ini_contents) / sizeof(char));
+    const int result_write_ini = smbc_write(ini_file, ini_contents, strlen(ini_contents));
     if (result_write_ini < 0) {
         // TODO: handle errors
         return false;
