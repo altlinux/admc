@@ -72,6 +72,9 @@ Console::Console(MenuBar *menubar_arg)
     scope_view->setContextMenuPolicy(Qt::CustomContextMenu);
     scope_view->setDragDropMode(QAbstractItemView::DragDrop);
     scope_view->setSortingEnabled(true);
+    scope_view->setSortingEnabled(true);
+    // NOTE: this makes it so that you can't drag drop between rows (even though name/description don't say anything about that)
+    scope_view->setDragDropOverwriteMode(true);
 
     scope_view->setModel(scope_model);
 
@@ -83,6 +86,7 @@ Console::Console(MenuBar *menubar_arg)
     results_view->setSortingEnabled(true);
     results_view->sortByColumn(0, Qt::AscendingOrder);
     results_view->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    results_view->setDragDropOverwriteMode(true);
 
     SETTINGS()->setup_header_state(results_view->header(), VariantSetting_ResultsHeader);
     
