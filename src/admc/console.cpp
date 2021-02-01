@@ -180,7 +180,7 @@ Console::Console(MenuBar *menubar_arg)
         advanced_view, &BoolSettingSignal::changed,
         this, &Console::refresh_head);
 
-    const BoolSettingSignal *show_non_containers = SETTINGS()->get_bool_signal(BoolSetting_ShowNonContainersInContainersTree);
+    const BoolSettingSignal *show_non_containers = SETTINGS()->get_bool_signal(BoolSetting_ShowNonContainersInConsoleTree);
     connect(
         show_non_containers, &BoolSettingSignal::changed,
         this, &Console::refresh_head);
@@ -602,7 +602,7 @@ void Console::fetch_scope_node(const QModelIndex &index) {
     // Load into scope
     //
     const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
-    const bool show_non_containers_ON = SETTINGS()->get_bool(BoolSetting_ShowNonContainersInContainersTree);
+    const bool show_non_containers_ON = SETTINGS()->get_bool(BoolSetting_ShowNonContainersInConsoleTree);
     QList<QStandardItem *> rows;
     for (const AdObject object : search_results.values()) {
         const bool is_container =

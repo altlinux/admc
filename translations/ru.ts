@@ -279,12 +279,12 @@
         <translation>Не удалось открыть пользователя &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1190"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1193"/>
         <source>LDAP error: %1</source>
         <translation>. LDAP Ошибка: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1174"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1177"/>
         <source>. Error: &quot;%1&quot;</source>
         <translation>. Ошибка: &quot;%1&quot;</translation>
     </message>
@@ -299,22 +299,22 @@
         <translation>Не удалось включить учетную запись для пользователя &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1183"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1186"/>
         <source>No such object</source>
         <translation>Нет такого объекта</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1184"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1187"/>
         <source>Constraint violation</source>
         <translation>Нарушение ограничений</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1185"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1188"/>
         <source>Server is unwilling to perform</source>
         <translation>Сервер не хочет выполнять</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1186"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1189"/>
         <source>Already exists</source>
         <translation>Объект уже существует</translation>
     </message>
@@ -570,7 +570,7 @@
 <context>
     <name>Console</name>
     <message numerus="yes">
-        <location filename="../src/admc/console.cpp" line="477"/>
+        <location filename="../src/admc/console.cpp" line="484"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n объект</numerusform>
@@ -579,7 +579,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../src/admc/console.cpp" line="503"/>
+        <location filename="../src/admc/console.cpp" line="510"/>
         <source>Refresh</source>
         <translation>Обновить</translation>
     </message>
@@ -601,29 +601,29 @@
         <translation>Создать&quot;%1&quot; в &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="87"/>
+        <location filename="../src/admc/create_dialog.cpp" line="86"/>
         <source>Full name:</source>
         <translation>Полное имя:</translation>
     </message>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="146"/>
-        <location filename="../src/admc/create_dialog.cpp" line="161"/>
-        <location filename="../src/admc/create_dialog.cpp" line="172"/>
+        <location filename="../src/admc/create_dialog.cpp" line="145"/>
+        <location filename="../src/admc/create_dialog.cpp" line="160"/>
+        <location filename="../src/admc/create_dialog.cpp" line="171"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="178"/>
+        <location filename="../src/admc/create_dialog.cpp" line="177"/>
         <source>Create</source>
         <translation>Создать</translation>
     </message>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="227"/>
+        <location filename="../src/admc/create_dialog.cpp" line="236"/>
         <source>Failed to create %1 &quot;%2&quot;</source>
         <translation>Не удалось создать&quot;%1&quot; в &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="238"/>
+        <location filename="../src/admc/create_dialog.cpp" line="257"/>
         <source>Created %1 &quot;%2&quot;</source>
         <translation>Создан объект &quot;%1&quot; в &quot;%2&quot;</translation>
     </message>
@@ -659,57 +659,57 @@
         <translation>Общее</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="186"/>
+        <location filename="../src/admc/details_dialog.cpp" line="190"/>
         <source>Object</source>
         <translation>Объект</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="187"/>
+        <location filename="../src/admc/details_dialog.cpp" line="191"/>
         <source>Attributes</source>
         <translation>Атрибуты</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="189"/>
+        <location filename="../src/admc/details_dialog.cpp" line="195"/>
         <source>Account</source>
         <translation>Учётная запись</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="191"/>
+        <location filename="../src/admc/details_dialog.cpp" line="197"/>
         <source>Organization</source>
         <translation>Организация</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="192"/>
+        <location filename="../src/admc/details_dialog.cpp" line="198"/>
         <source>Telephones</source>
         <translation>Телефоны</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="193"/>
+        <location filename="../src/admc/details_dialog.cpp" line="199"/>
         <source>Profile</source>
         <translation>Профиль</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="196"/>
+        <location filename="../src/admc/details_dialog.cpp" line="202"/>
         <source>Members</source>
         <translation>Члены</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="199"/>
+        <location filename="../src/admc/details_dialog.cpp" line="205"/>
         <source>Member of</source>
         <translation>Группы</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="203"/>
+        <location filename="../src/admc/details_dialog.cpp" line="209"/>
         <source>Group policy</source>
         <translation>Групповая политика</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="206"/>
+        <location filename="../src/admc/details_dialog.cpp" line="212"/>
         <source>Links to</source>
         <translation>Линки политик</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="190"/>
+        <location filename="../src/admc/details_dialog.cpp" line="196"/>
         <source>Address</source>
         <translation>Адрес</translation>
     </message>
@@ -1223,8 +1223,8 @@
     </message>
     <message>
         <location filename="../src/admc/menubar.cpp" line="78"/>
-        <source>&amp;Show non-container objects in Containers tree</source>
-        <translation>&amp;Показывать не контейнеры в дереве</translation>
+        <source>&amp;Show non-container objects in Console tree</source>
+        <translation>Показать неконтейнерные объекты в дереве консоли</translation>
     </message>
     <message>
         <location filename="../src/admc/menubar.cpp" line="79"/>
@@ -1848,6 +1848,19 @@
         <location filename="../src/admc/status.cpp" line="97"/>
         <source>Errors occured</source>
         <translation>Произошли ошибки</translation>
+    </message>
+</context>
+<context>
+    <name>StringEdit</name>
+    <message>
+        <location filename="../src/admc/edits/string_edit.cpp" line="137"/>
+        <source>The specified user logon name already exists.</source>
+        <translation>Указанное имя для входа уже существует</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/edits/string_edit.cpp" line="138"/>
+        <source>Error</source>
+        <translation>Ошибка</translation>
     </message>
 </context>
 <context>

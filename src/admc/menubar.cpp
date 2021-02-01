@@ -74,7 +74,7 @@ MenuBar::MenuBar()
     QMenu *preferences_menu = addMenu(tr("&Preferences"));
     add_bool_setting_action(preferences_menu, tr("&Confirm actions"), BoolSetting_ConfirmActions);
     add_bool_setting_action(preferences_menu, tr("&Dev mode"), BoolSetting_DevMode);
-    add_bool_setting_action(preferences_menu, tr("&Show non-container objects in Containers tree"), BoolSetting_ShowNonContainersInContainersTree);
+    add_bool_setting_action(preferences_menu, tr("&Show non-container objects in Console tree"), BoolSetting_ShowNonContainersInConsoleTree);
     add_bool_setting_action(preferences_menu, tr("&Put last name before first name when creating users"), BoolSetting_LastNameBeforeFirstName);
 
     QMenu *language_menu = preferences_menu->addMenu(tr("&Language"));
