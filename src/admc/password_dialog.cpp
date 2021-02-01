@@ -45,7 +45,9 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
     setWindowTitle(title);
 
     new PasswordEdit(&edits, this);
-    new AccountOptionEdit(AccountOption_PasswordExpired, &edits, this);
+    
+    auto pass_expired_check = new AccountOptionEdit(AccountOption_PasswordExpired, &edits, this);
+
     new UnlockEdit(&edits, this);
 
     auto button_box = new QDialogButtonBox();
@@ -61,6 +63,9 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
     layout->addWidget(button_box);
 
     edits_load(edits, object);
+
+    // Turn on "password expired" by default
+    pass_expired_check->set_checked(true);
 
     connect(
         ok_button, &QPushButton::clicked,

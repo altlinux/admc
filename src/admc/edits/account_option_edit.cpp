@@ -139,3 +139,7 @@ bool AccountOptionEdit::apply(const QString &dn) const {
 
     return success;
 }
+
+void AccountOptionEdit::set_checked(const bool checked) {
+    check->setChecked(checked);
+}

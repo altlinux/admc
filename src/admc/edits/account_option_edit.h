@@ -35,6 +35,8 @@ public:
     AccountOptionEdit(const AccountOption option_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
+    void set_checked(const bool checked);
+
 private:
     AccountOption option;
     QCheckBox *check;
