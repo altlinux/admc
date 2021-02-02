@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "details_dialog.h"
-#include "tabs/details_tab.h"
+#include "properties_dialog.h"
+#include "tabs/properties_tab.h"
 #include "tabs/attributes_tab.h"
 #include "tabs/membership_tab.h"
 #include "tabs/account_tab.h"
@@ -46,25 +46,25 @@
 #include <QDebug>
 #include <QAbstractItemView>
 
-void DetailsDialog::open_for_target(const QString &target) {
+void PropertiesDialog::open_for_target(const QString &target) {
     if (target.isEmpty()) {
         return;
     }
 
     show_busy_indicator();
 
-    static QHash<QString, DetailsDialog *> instances;
+    static QHash<QString, PropertiesDialog *> instances;
 
     const bool dialog_already_open_for_this_target = instances.contains(target);
 
     if (dialog_already_open_for_this_target) {
         // Focus already open dialog
-        DetailsDialog *dialog = instances[target];
+        PropertiesDialog *dialog = instances[target];
         dialog->raise();
         dialog->setFocus();
     } else {
         // Make new dialog for this target
-        auto dialog = new DetailsDialog(target);
+        auto dialog = new PropertiesDialog(target);
 
         instances[target] = dialog;
         connect(
@@ -79,7 +79,7 @@ void DetailsDialog::open_for_target(const QString &target) {
     hide_busy_indicator();
 }
 
-void DetailsDialog::connect_to_open_by_double_click(QAbstractItemView *view, const int dn_column) {
+void PropertiesDialog::connect_to_open_by_double_click(QAbstractItemView *view, const int dn_column) {
     connect(
         view, &QAbstractItemView::doubleClicked,
         [dn_column](const QModelIndex &index) {
@@ -88,7 +88,7 @@ void DetailsDialog::connect_to_open_by_double_click(QAbstractItemView *view, con
         });
 }
 
-DetailsDialog::DetailsDialog(const QString &target_arg)
+PropertiesDialog::PropertiesDialog(const QString &target_arg)
 : QDialog()
 {
     target = target_arg;
@@ -115,7 +115,7 @@ DetailsDialog::DetailsDialog(const QString &target_arg)
     layout->setSpacing(0);
 
     const QString name = object.get_string(ATTRIBUTE_NAME);
-    const QString window_title = name.isEmpty() ? tr("Details") : QString(tr("\"%1\" Details")).arg(name);
+    const QString window_title = name.isEmpty() ? tr("Properties") : QString(tr("\"%1\" Properties")).arg(name);
     setWindowTitle(window_title);
 
     if (object.is_empty()) {
@@ -135,7 +135,7 @@ DetailsDialog::DetailsDialog(const QString &target_arg)
 
     // Create new tabs
     const auto add_tab =
-    [this, tab_widget](DetailsTab *tab, const QString &title) {
+    [this, tab_widget](PropertiesTab *tab, const QString &title) {
         tabs.append(tab);
         tab_widget->add_tab(tab, title);
     };
@@ -172,27 +172,27 @@ DetailsDialog::DetailsDialog(const QString &target_arg)
 
     for (auto tab : tabs) {
         connect(
-            tab, &DetailsTab::edited,
-            this, &DetailsDialog::on_edited);
+            tab, &PropertiesTab::edited,
+            this, &PropertiesDialog::on_edited);
     }
 
     reset();
 
     connect(
         ok_button, &QPushButton::clicked,
-        this, &DetailsDialog::ok);
+        this, &PropertiesDialog::ok);
     connect(
         apply_button, &QPushButton::clicked,
-        this, &DetailsDialog::apply);
+        this, &PropertiesDialog::apply);
     connect(
         reset_button, &QPushButton::clicked,
-        this, &DetailsDialog::reset);
+        this, &PropertiesDialog::reset);
     connect(
         cancel_button, &QPushButton::clicked,
-        this, &DetailsDialog::reject);
+        this, &PropertiesDialog::reject);
 }
 
-void DetailsDialog::ok() {
+void PropertiesDialog::ok() {
     const bool success = apply();
 
     if (success) {
@@ -200,7 +200,7 @@ void DetailsDialog::ok() {
     }
 }
 
-bool DetailsDialog::apply() {
+bool PropertiesDialog::apply() {
     for (auto tab : tabs) {
         const bool verify_success = tab->verify(target);
         if (!verify_success) {
@@ -226,7 +226,7 @@ bool DetailsDialog::apply() {
     return success;
 }
 
-void DetailsDialog::reset() {
+void PropertiesDialog::reset() {
     const AdObject object = AD()->search_object(target);
     for (auto tab : tabs) {
         tab->load(object);
@@ -236,7 +236,7 @@ void DetailsDialog::reset() {
     reset_button->setEnabled(false);
 }
 
-void DetailsDialog::on_edited() {
+void PropertiesDialog::on_edited() {
     apply_button->setEnabled(true);
     reset_button->setEnabled(true);
 }

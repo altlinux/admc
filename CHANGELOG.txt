@@ -4,7 +4,8 @@ CHANGELOG
 -----------------------------------------------------------------------
  VERSION 0.4.0 (In progress)
 -----------------------------------------------------------------------
-- Added more tabs to Details dialog
+- Renamed Details dialog to Properties dialog
+- Added more tabs to Properties dialog
     - general
     - object
     - account
@@ -16,13 +17,13 @@ CHANGELOG
     - member of
     - group policy
     - links to
-- Added traditional way to display Details dialog as a dialog. Docked mode is still available via options.
-- Changed details dialog to display tab titles in a list.
+- Added traditional way to display Properties dialog as a dialog. Docked mode is still available via options.
+- Changed Properties dialog to display tab titles in a list.
 - Improved object menu
     - added most of the actions
     - added ability to perform actions on multiple objects
     - duplicated object menu to menubar for accesibility
-- Improved attributes tab in Details dialog
+- Improved attributes tab in Properties dialog
     - filtering
     - attribute type column
     - specialized editors for all attribute types

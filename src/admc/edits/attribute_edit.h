@@ -32,7 +32,7 @@
  * are used to represent different data types. 
  */
 
-class DetailsTab;
+class PropertiesTab;
 class QFormLayout;
 class AdObject;
 
@@ -88,7 +88,7 @@ public:\
 
 
 // Helper f-ns that iterate over edit lists for you
-void edits_connect_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab);
+void edits_connect_to_tab(QList<AttributeEdit *> edits, PropertiesTab *tab);
 void edits_add_to_layout(QList<AttributeEdit *> edits, QFormLayout *layout);
 
 // Verify all edits that were modified. Verify process will

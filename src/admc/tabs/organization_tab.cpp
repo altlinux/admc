@@ -22,7 +22,7 @@
 #include "edits/manager_edit.h"
 #include "ad_utils.h"
 #include "ad_object.h"
-#include "details_dialog.h"
+#include "properties_dialog.h"
 #include "utils.h"
 
 #include <QFormLayout>
@@ -63,7 +63,7 @@ OrganizationTab::OrganizationTab() {
     reports_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     reports_view->setAllColumnsShowFocus(true);
     reports_view->setSortingEnabled(true);
-    DetailsDialog::connect_to_open_by_double_click(reports_view, ReportsColumn_DN);
+    PropertiesDialog::connect_to_open_by_double_click(reports_view, ReportsColumn_DN);
 
     setup_column_toggle_menu(reports_view, reports_model, {ReportsColumn_Name, ReportsColumn_Folder});
 
@@ -90,7 +90,7 @@ void OrganizationTab::load(const AdObject &object) {
         reports_model->appendRow(row);
     }
 
-    DetailsTab::load(object);
+    PropertiesTab::load(object);
 }
 
 void OrganizationTab::showEvent(QShowEvent *event) {

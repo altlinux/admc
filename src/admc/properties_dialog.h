@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DETAILS_DIALOG_H
-#define DETAILS_DIALOG_H
+#ifndef PROPERTIES_DIALOG_H
+#define PROPERTIES_DIALOG_H
 
 /**
  * Shows info about object's attributes in multiple tabs.
@@ -30,12 +30,12 @@
 #include <QDialog>
 
 class QString;
-class DetailsTab;
+class PropertiesTab;
 class QAbstractItemView;
 class QPushButton;
 template <typename T> class QList;
 
-class DetailsDialog final : public QDialog {
+class PropertiesDialog final : public QDialog {
 Q_OBJECT
 
 public:
@@ -49,17 +49,17 @@ private slots:
     void on_edited();
 
 private:
-    QList<DetailsTab *> tabs;
+    QList<PropertiesTab *> tabs;
     QString target;
     QPushButton *apply_button;
     QPushButton *reset_button;
 
-    DetailsDialog(const QString &target_arg);
+    PropertiesDialog(const QString &target_arg);
     
-    DetailsDialog(const DetailsDialog&) = delete;
-    DetailsDialog& operator=(const DetailsDialog&) = delete;
-    DetailsDialog(DetailsDialog&&) = delete;
-    DetailsDialog& operator=(DetailsDialog&&) = delete;
+    PropertiesDialog(const PropertiesDialog&) = delete;
+    PropertiesDialog& operator=(const PropertiesDialog&) = delete;
+    PropertiesDialog(PropertiesDialog&&) = delete;
+    PropertiesDialog& operator=(PropertiesDialog&&) = delete;
 };
 
-#endif /* DETAILS_DIALOG_H */
+#endif /* PROPERTIES_DIALOG_H */

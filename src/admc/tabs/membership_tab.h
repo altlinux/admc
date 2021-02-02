@@ -20,7 +20,7 @@
 #ifndef MEMBERS_TAB_H
 #define MEMBERS_TAB_H
 
-#include "tabs/details_tab.h"
+#include "tabs/properties_tab.h"
 
 #include <QSet>
 #include <QString>
@@ -34,7 +34,7 @@ class QPushButton;
 // 2. groups of user is member of
 // MembersTab and MemberOfTab implement both of those
 
-class MembershipTab : public DetailsTab {
+class MembershipTab : public PropertiesTab {
 Q_OBJECT
 
 public:
@@ -45,7 +45,7 @@ private slots:
     void on_add_button();
     void on_remove_button();
     void on_primary_button();
-    void on_details_button();
+    void on_properties_button();
     void enable_primary_button_on_valid_selection();
 
 protected:

@@ -19,7 +19,7 @@
 
 #include "main_window.h"
 #include "menubar.h"
-#include "details_dialog.h"
+#include "properties_dialog.h"
 #include "status.h"
 #include "settings.h"
 #include "confirmation_dialog.h"

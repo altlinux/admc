@@ -116,14 +116,14 @@ void GroupPolicyTab::load(const AdObject &object) {
     
     reload_gplink();
     
-    DetailsTab::load(object);
+    PropertiesTab::load(object);
 }
 
 void GroupPolicyTab::apply(const QString &target) const {
     const QString gplink_string = gplink.to_string();
     AD()->attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
 
-    DetailsTab::apply(target);
+    PropertiesTab::apply(target);
 }
 
 void GroupPolicyTab::on_context_menu(const QPoint pos) {

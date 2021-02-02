@@ -23,7 +23,7 @@
 #include "object_menu.h"
 #include "utils.h"
 #include "ad_utils.h"
-#include "details_dialog.h"
+#include "properties_dialog.h"
 #include "ad_config.h"
 #include "ad_interface.h"
 #include "ad_object.h"
@@ -724,6 +724,6 @@ void Console::on_result_item_double_clicked(const QModelIndex &index)
             }
         }
     } else {
-        DetailsDialog::open_for_target(dn);
+        PropertiesDialog::open_for_target(dn);
     }
 }

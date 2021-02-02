@@ -23,7 +23,7 @@
 #include "find_results.h"
 #include "ad_config.h"
 #include "object_menu.h"
-#include "details_dialog.h"
+#include "properties_dialog.h"
 
 #include <QList>
 #include <QVBoxLayout>
@@ -44,7 +44,7 @@ FindDialog::FindDialog(const QList<QString> classes, const QString default_searc
     auto find_widget = new FindWidget(classes, default_search_base);
 
     QTreeView *results_view = find_widget->find_results->view;
-    DetailsDialog::connect_to_open_by_double_click(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+    PropertiesDialog::connect_to_open_by_double_click(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
 
     auto layout = new QVBoxLayout();
     setLayout(layout);

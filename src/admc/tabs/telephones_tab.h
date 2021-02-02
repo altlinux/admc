@@ -20,9 +20,9 @@
 #ifndef TELEPHONES_TAB_H
 #define TELEPHONES_TAB_H
 
-#include "tabs/details_tab.h"
+#include "tabs/properties_tab.h"
 
-class TelephonesTab final : public DetailsTab {
+class TelephonesTab final : public PropertiesTab {
 Q_OBJECT
 
 public:

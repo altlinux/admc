@@ -20,10 +20,10 @@
 #ifndef OBJECT_TAB_H
 #define OBJECT_TAB_H
 
-#include "tabs/details_tab.h"
+#include "tabs/properties_tab.h"
 
 // Object attributes, same for all types
-class ObjectTab final : public DetailsTab {
+class ObjectTab final : public PropertiesTab {
 Q_OBJECT
 
 public:

@@ -20,12 +20,12 @@
 #ifndef ORGANIZATION_TAB_H
 #define ORGANIZATION_TAB_H
 
-#include "tabs/details_tab.h"
+#include "tabs/properties_tab.h"
 
 class QStandardItemModel;
 class QTreeView;
 
-class OrganizationTab final : public DetailsTab {
+class OrganizationTab final : public PropertiesTab {
 Q_OBJECT
 
 public:

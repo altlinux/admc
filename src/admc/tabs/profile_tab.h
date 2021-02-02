@@ -20,9 +20,9 @@
 #ifndef PROFILE_TAB_H
 #define PROFILE_TAB_H
 
-#include "tabs/details_tab.h"
+#include "tabs/properties_tab.h"
 
-class ProfileTab final : public DetailsTab {
+class ProfileTab final : public PropertiesTab {
 Q_OBJECT
 
 public:

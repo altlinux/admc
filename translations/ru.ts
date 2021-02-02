@@ -637,79 +637,79 @@
     </message>
 </context>
 <context>
-    <name>DetailsDialog</name>
+    <name>PropertiesDialog</name>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="152"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="152"/>
         <source>Details</source>
         <translation>Детали</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="152"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="152"/>
         <source>&quot;%1&quot; Details</source>
         <translation>&quot;%1&quot; Детали</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="164"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="164"/>
         <source>Object could not be found</source>
         <translation>Невозможно загрузить объект</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="185"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="185"/>
         <source>General</source>
         <translation>Общее</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="190"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="190"/>
         <source>Object</source>
         <translation>Объект</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="191"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="191"/>
         <source>Attributes</source>
         <translation>Атрибуты</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="195"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="195"/>
         <source>Account</source>
         <translation>Учётная запись</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="197"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="197"/>
         <source>Organization</source>
         <translation>Организация</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="198"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="198"/>
         <source>Telephones</source>
         <translation>Телефоны</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="199"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="199"/>
         <source>Profile</source>
         <translation>Профиль</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="202"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="202"/>
         <source>Members</source>
         <translation>Члены</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="205"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="205"/>
         <source>Member of</source>
         <translation>Группы</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="209"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="209"/>
         <source>Group policy</source>
         <translation>Групповая политика</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="212"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="212"/>
         <source>Links to</source>
         <translation>Линки политик</translation>
     </message>
     <message>
-        <location filename="../src/admc/details_dialog.cpp" line="196"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="196"/>
         <source>Address</source>
         <translation>Адрес</translation>
     </message>

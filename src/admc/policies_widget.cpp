@@ -20,7 +20,7 @@
 #include "policies_widget.h"
 #include "ad_interface.h"
 #include "ad_object.h"
-#include "details_dialog.h"
+#include "properties_dialog.h"
 #include "rename_policy_dialog.h"
 #include "utils.h"
 #include "filter.h"
@@ -105,8 +105,8 @@ void PoliciesWidget::on_context_menu(const QPoint pos) {
     const AdObject object = AD()->search_object(dn);
 
     QMenu menu;
-    menu.addAction(tr("Details"), [this, dn]() {
-        DetailsDialog::open_for_target(dn);
+    menu.addAction(tr("Properties"), [this, dn]() {
+        PropertiesDialog::open_for_target(dn);
     });
     menu.addAction(tr("Edit Policy"), [this, dn, object]() {
         edit_policy(object);

@@ -25,7 +25,7 @@ add_executable(admc
     ad_config.cpp
     ad_utils.cpp
     ad_object.cpp
-    details_dialog.cpp
+    properties_dialog.cpp
     main_window.cpp
     status.cpp
     object_model.cpp
@@ -59,7 +59,7 @@ add_executable(admc
     filter_widget/select_classes_widget.cpp
     filter_widget/filter_builder.cpp
     
-    tabs/details_tab.cpp
+    tabs/properties_tab.cpp
     tabs/general_tab.cpp
     tabs/object_tab.cpp
     tabs/attributes_tab.cpp

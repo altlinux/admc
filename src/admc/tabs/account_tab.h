@@ -20,9 +20,9 @@
 #ifndef ACCOUNT_TAB_H
 #define ACCOUNT_TAB_H
 
-#include "tabs/details_tab.h"
+#include "tabs/properties_tab.h"
 
-class AccountTab final : public DetailsTab {
+class AccountTab final : public PropertiesTab {
 Q_OBJECT
 
 public:

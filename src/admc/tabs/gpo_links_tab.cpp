@@ -18,7 +18,7 @@
  */
 
 #include "tabs/gpo_links_tab.h"
-#include "details_dialog.h"
+#include "properties_dialog.h"
 #include "utils.h"
 #include "ad_interface.h"
 #include "ad_object.h"
@@ -58,7 +58,7 @@ GpoLinksTab::GpoLinksTab() {
     setLayout(layout);
     layout->addWidget(view);
 
-    DetailsDialog::connect_to_open_by_double_click(view, GpoLinksColumn_DN);
+    PropertiesDialog::connect_to_open_by_double_click(view, GpoLinksColumn_DN);
 }
 
 void GpoLinksTab::load(const AdObject &policy) {

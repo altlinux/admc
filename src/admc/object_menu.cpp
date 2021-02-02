@@ -27,7 +27,7 @@
 #include "rename_dialog.h"
 #include "password_dialog.h"
 #include "create_dialog.h"
-#include "details_dialog.h"
+#include "properties_dialog.h"
 #include "select_container_dialog.h"
 #include "utils.h"
 #include "find_dialog.h"
@@ -48,7 +48,7 @@ void add_to_group(const QList<QString> targets, QWidget *parent);
 void enable_account(const QList<QString> targets, QWidget *parent);
 void disable_account(const QList<QString> targets, QWidget *parent);
 
-void details(const QString &target, QWidget *parent);
+void properties(const QString &target, QWidget *parent);
 void rename(const QString &target, QWidget *parent);
 void create(const QString &target, const QString &object_class, QWidget *parent);
 void find(const QString &target, QWidget *parent);
@@ -192,12 +192,12 @@ void add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *p
         action->setDisabled(disabled);
     };
 
-    // TODO: multi-object details
-    auto add_details =
+    // TODO: multi-object properties
+    auto add_properties =
     [=]() {
-        menu->addAction(QObject::tr("Details"),
+        menu->addAction(QObject::tr("Properties"),
             [=]() {
-                details(targets[0], parent);
+                properties(targets[0], parent);
             });
     };
 
@@ -254,7 +254,7 @@ void add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *p
 
         menu->addSeparator();
 
-        add_details();
+        add_properties();
     } else if (targets.size() > 1) {
         const bool all_users = (target_classes.contains(CLASS_USER) && target_classes.size() == 1);
 
@@ -271,9 +271,9 @@ void add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *p
     }
 }
 
-void details(const QString &target, QWidget *parent) {
-    // TODO: multi-object details
-    DetailsDialog::open_for_target(target);
+void properties(const QString &target, QWidget *parent) {
+    // TODO: multi-object properties
+    PropertiesDialog::open_for_target(target);
 }
 
 void delete_object(const QList<QString> targets, QWidget *parent) {

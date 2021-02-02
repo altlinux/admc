@@ -20,10 +20,10 @@
 #ifndef ADDRESS_TAB_H
 #define ADDRESS_TAB_H
 
-#include "tabs/details_tab.h"
+#include "tabs/properties_tab.h"
 
 // Address related attributes
-class AddressTab final : public DetailsTab {
+class AddressTab final : public PropertiesTab {
 Q_OBJECT
 
 public:

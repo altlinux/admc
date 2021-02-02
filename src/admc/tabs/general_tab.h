@@ -20,9 +20,9 @@
 #ifndef GENERAL_TAB_H
 #define GENERAL_TAB_H
 
-#include "tabs/details_tab.h"
+#include "tabs/properties_tab.h"
 
-class GeneralTab final : public DetailsTab {
+class GeneralTab final : public PropertiesTab {
 Q_OBJECT
 
 public:

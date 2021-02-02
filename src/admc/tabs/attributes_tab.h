@@ -25,7 +25,7 @@
  * viewing/editing if possible via attribute editor dialogs.
  */
 
-#include "tabs/details_tab.h"
+#include "tabs/properties_tab.h"
 
 #include <QSortFilterProxyModel>
 #include <QSet>
@@ -50,7 +50,7 @@ enum AttributeFilter {
 };
 
 
-class AttributesTab final : public DetailsTab {
+class AttributesTab final : public PropertiesTab {
 Q_OBJECT
 
 public:

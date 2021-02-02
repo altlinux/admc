@@ -17,21 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tabs/details_tab.h"
+#include "tabs/properties_tab.h"
 #include "edits/attribute_edit.h"
 
-void DetailsTab::load(const AdObject &object) {
+void PropertiesTab::load(const AdObject &object) {
     edits_load(edits, object);
 }
 
-bool DetailsTab::verify(const QString &target) const {
+bool PropertiesTab::verify(const QString &target) const {
     return edits_verify(edits, target);
 }
 
-void DetailsTab::apply(const QString &target) const {
+void PropertiesTab::apply(const QString &target) const {
     edits_apply(edits, target);
 }
 
-void DetailsTab::on_edit_edited() {
+void PropertiesTab::on_edit_edited() {
     emit edited();
 }

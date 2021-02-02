@@ -18,7 +18,7 @@
  */
 
 #include "edits/attribute_edit.h"
-#include "tabs/details_tab.h"
+#include "tabs/properties_tab.h"
 
 AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent) {
     if (edits_out != nullptr) {
@@ -90,10 +90,10 @@ void edits_load(QList<AttributeEdit *> edits, const AdObject &object) {
     }
 }
 
-void edits_connect_to_tab(QList<AttributeEdit *> edits, DetailsTab *tab) {
+void edits_connect_to_tab(QList<AttributeEdit *> edits, PropertiesTab *tab) {
     for (auto edit : edits) {
         QObject::connect(
             edit, &AttributeEdit::edited,
-            tab, &DetailsTab::on_edit_edited);
+            tab, &PropertiesTab::on_edit_edited);
     }
 }

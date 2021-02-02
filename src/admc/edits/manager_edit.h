@@ -37,13 +37,13 @@ public:
 
 private slots:
     void on_change();
-    void on_details();
+    void on_properties();
     void on_clear();
 
 private:
     QLineEdit *edit;
     QPushButton *change_button;
-    QPushButton *details_button;
+    QPushButton *properties_button;
     QPushButton *clear_button;
 
     QString current_value;

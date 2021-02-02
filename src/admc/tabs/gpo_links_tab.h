@@ -20,7 +20,7 @@
 #ifndef GPO_LINKS_TAB_H
 #define GPO_LINKS_TAB_H
 
-#include "tabs/details_tab.h"
+#include "tabs/properties_tab.h"
 
 #include <QPoint>
 
@@ -33,7 +33,7 @@ class QStandardItemModel;
  * of objects.
  */
 
-class GpoLinksTab final : public DetailsTab {
+class GpoLinksTab final : public PropertiesTab {
 Q_OBJECT
 
 public:

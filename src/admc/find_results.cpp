@@ -19,7 +19,7 @@
 
 #include "find_results.h"
 #include "object_menu.h"
-#include "details_dialog.h"
+#include "properties_dialog.h"
 #include "utils.h"
 #include "filter.h"
 #include "ad_interface.h"

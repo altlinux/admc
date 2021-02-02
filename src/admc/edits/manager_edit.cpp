@@ -22,7 +22,7 @@
 #include "ad_interface.h"
 #include "ad_utils.h"
 #include "ad_config.h"
-#include "details_dialog.h"
+#include "properties_dialog.h"
 #include "select_dialog.h"
 #include "ad_object.h"
 #include <QLineEdit>
@@ -35,15 +35,15 @@ ManagerEdit::ManagerEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
     edit = new QLineEdit();
 
     change_button = new QPushButton(tr("Change"));
-    details_button = new QPushButton(tr("Details"));
+    properties_button = new QPushButton(tr("Properties"));
     clear_button = new QPushButton(tr("Clear"));
 
     connect(
         change_button, &QPushButton::clicked,
         this, &ManagerEdit::on_change);
     connect(
-        details_button, &QPushButton::clicked,
-        this, &ManagerEdit::on_details);
+        properties_button, &QPushButton::clicked,
+        this, &ManagerEdit::on_properties);
     connect(
         clear_button, &QPushButton::clicked,
         this, &ManagerEdit::on_clear);
@@ -62,7 +62,7 @@ void ManagerEdit::set_read_only(const bool read_only) {
 void ManagerEdit::add_to_layout(QFormLayout *layout) {
     auto buttons_layout = new QHBoxLayout();
     buttons_layout->addWidget(change_button);
-    buttons_layout->addWidget(details_button);
+    buttons_layout->addWidget(properties_button);
     buttons_layout->addWidget(clear_button);
 
     auto sublayout = new QVBoxLayout();
@@ -98,8 +98,8 @@ void ManagerEdit::on_change() {
     dialog->open();
 }
 
-void ManagerEdit::on_details() {
-    DetailsDialog::open_for_target(current_value);
+void ManagerEdit::on_properties() {
+    PropertiesDialog::open_for_target(current_value);
 }
 
 void ManagerEdit::on_clear() {
@@ -115,6 +115,6 @@ void ManagerEdit::load_value(const QString &value) {
     edit->setText(current_value);
 
     const bool have_manager = !current_value.isEmpty();
-    details_button->setEnabled(have_manager);
+    properties_button->setEnabled(have_manager);
     clear_button->setEnabled(have_manager);
 }

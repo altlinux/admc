@@ -19,7 +19,7 @@
  */
 
 #include "tabs/membership_tab.h"
-#include "details_dialog.h"
+#include "properties_dialog.h"
 #include "ad_interface.h"
 #include "ad_utils.h"
 #include "ad_object.h"
@@ -80,11 +80,11 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
 
     setup_column_toggle_menu(view, model, {MembersColumn_Name, MembersColumn_Parent});
 
-    auto details_button = new QPushButton(tr("Details"));
+    auto properties_button = new QPushButton(tr("Properties"));
     auto add_button = new QPushButton(tr("Add"));
     auto remove_button = new QPushButton(tr("Remove"));
     auto button_layout = new QHBoxLayout();
-    button_layout->addWidget(details_button);
+    button_layout->addWidget(properties_button);
     button_layout->addWidget(add_button);
     button_layout->addWidget(remove_button);
 
@@ -109,7 +109,7 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     layout->addLayout(button_layout);
 
     enable_widget_on_selection(remove_button, view);
-    enable_widget_on_selection(details_button, view);
+    enable_widget_on_selection(properties_button, view);
 
     const QItemSelectionModel *selection_model = view->selectionModel();
     connect(
@@ -124,10 +124,10 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
         add_button, &QAbstractButton::clicked,
         this, &MembershipTab::on_add_button);
     connect(
-        details_button, &QAbstractButton::clicked,
-        this, &MembershipTab::on_details_button);
+        properties_button, &QAbstractButton::clicked,
+        this, &MembershipTab::on_properties_button);
 
-    DetailsDialog::connect_to_open_by_double_click(view, MembersColumn_DN);
+    PropertiesDialog::connect_to_open_by_double_click(view, MembersColumn_DN);
 }
 
 void MembershipTab::load(const AdObject &object) {
@@ -318,11 +318,11 @@ void MembershipTab::on_primary_button() {
     emit edited();
 }
 
-void MembershipTab::on_details_button() {
+void MembershipTab::on_properties_button() {
     const QModelIndex current = view->selectionModel()->currentIndex();
     const QString &dn = get_dn_from_index(current, MembersColumn_DN);
 
-    DetailsDialog::open_for_target(dn);
+    PropertiesDialog::open_for_target(dn);
 }
 
 void MembershipTab::enable_primary_button_on_valid_selection() {

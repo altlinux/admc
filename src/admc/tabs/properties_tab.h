@@ -17,15 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DETAILS_TAB_H
-#define DETAILS_TAB_H
+#ifndef PROPERTIES_TAB_H
+#define PROPERTIES_TAB_H
 
 #include <QWidget>
 #include <QString>
 #include <QList>
 
 /**
- * Details tabs are used in DetailsDialog. They are usually
+ * PropertiesTab are used in PropertiesDialog. They are usually
  * a collection of AttributeEdit's and so mirror their
  * behavior. All tab f-ns call f-ns of tab's edits but edits
  * aren't required. If needed, a tab can implement custom
@@ -35,7 +35,7 @@
 class AttributeEdit;
 class AdObject;
 
-class DetailsTab : public QWidget {
+class PropertiesTab : public QWidget {
 Q_OBJECT
 
 public:
@@ -54,4 +54,4 @@ public slots:
     void on_edit_edited();
 };
 
-#endif /* DETAILS_TAB_H */
+#endif /* PROPERTIES_TAB_H */
