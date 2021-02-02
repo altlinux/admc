@@ -166,10 +166,14 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     if (object.is_class(CLASS_USER)) {
         add_tab(new MemberOfTab(), tr("Member of"));
     }
+
+    #ifdef QT_DEBUG
     if (object.is_class(CLASS_OU)) {
         // TODO: not sure which object classes can have gplink, for now only know of OU's.
         add_tab(new GroupPolicyTab(), tr("Group policy"));
     }
+    #endif
+
     if (object.is_class(CLASS_GP_CONTAINER)) {
         add_tab(new GpoLinksTab(), tr("Links to"));
     }

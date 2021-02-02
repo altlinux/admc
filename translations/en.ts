@@ -1434,12 +1434,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="171"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="173"/>
         <source>Group policy</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="174"/>
+        <location filename="../src/admc/properties_dialog.cpp" line="178"/>
         <source>Links to</source>
         <translation></translation>
     </message>
