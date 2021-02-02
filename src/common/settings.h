@@ -59,8 +59,7 @@ enum BoolSetting {
     BoolSetting_AdvancedView,
     BoolSetting_ConfirmActions,
     BoolSetting_DevMode,
-    BoolSetting_DetailsIsDocked,
-    BoolSetting_ShowNonContainersInConsoleTree,
+    BoolSetting_ShowNonContainersInContainersTree,
     BoolSetting_LastNameBeforeFirstName,
     BoolSetting_QuickFind,
 
