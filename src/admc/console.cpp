@@ -578,7 +578,17 @@ void Console::fetch_scope_node(const QModelIndex &index) {
         return out;
     }();
 
-    const QList<QString> search_attributes = ADCONFIG()->get_columns();
+    const QList<QString> search_attributes =
+    []() {
+        QList<QString> out;
+
+        out += ADCONFIG()->get_columns();
+
+        // NOTE: load_object_row() needs this for loading group type/scope
+        out += ATTRIBUTE_GROUP_TYPE;
+
+        return out;
+    }();
 
     const QString dn = index.data(Role_DN).toString();
 
