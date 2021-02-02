@@ -255,7 +255,7 @@ void add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *p
         menu->addSeparator();
 
         add_details();
-    } else {
+    } else if (targets.size() > 1) {
         const bool all_users = (target_classes.contains(CLASS_USER) && target_classes.size() == 1);
 
         if (all_users) {
