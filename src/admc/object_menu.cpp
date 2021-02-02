@@ -56,13 +56,12 @@ void reset_password(const QString &target, QWidget *parent);
 
 QString targets_display_string(const QList<QString> targets);
 
-// Construct actions of the menu based on current target(s)
 // NOTE: construct right before showing menu instead of in
 // load_targets() because target's attributes might change
 // in the span of time when target is selected and menu is
 // opened. Menu needs most up-to-date target attributes to
 // construct actions.
-void add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent) {
+QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent) {
     // Get info about selected objects from view
     const QList<QString> targets =
     [=]() {
@@ -195,7 +194,7 @@ void add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *p
     // TODO: multi-object properties
     auto add_properties =
     [=]() {
-        menu->addAction(PropertiesDialog::display_name(),
+        return menu->addAction(PropertiesDialog::display_name(),
             [=]() {
                 properties(targets[0], parent);
             });
@@ -252,9 +251,11 @@ void add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *p
         add_delete(cannot_delete);
         add_rename(cannot_rename);
 
-        menu->addSeparator();
+        QAction *properties_separator = menu->addSeparator();
 
         add_properties();
+
+        return properties_separator;
     } else if (targets.size() > 1) {
         const bool all_users = (target_classes.contains(CLASS_USER) && target_classes.size() == 1);
 
@@ -269,6 +270,8 @@ void add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *p
         add_move(false);
         add_delete(false);
     }
+
+    return nullptr;
 }
 
 void properties(const QString &target, QWidget *parent) {

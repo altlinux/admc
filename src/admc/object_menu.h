@@ -27,7 +27,9 @@
 class QMenu;
 class QWidget;
 class QAbstractItemView;
+class QAction;
 
-void add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent);
+// Construct object actions of the menu based on current target(s) in the view. If any more custom actions need to be added to this menu, insert them before the action returned from this f-n.
+QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent);
 
 #endif /* OBJECT_MENU_H */

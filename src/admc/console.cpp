@@ -499,7 +499,7 @@ void Console::update_results_header() {
 void Console::load_menu(QMenu *menu) {
     menu->clear();
 
-    add_object_actions_to_menu(menu, focused_view, this);
+    QAction *insert_before_action = add_object_actions_to_menu(menu, focused_view, this);
 
     // Add refresh action if clicked on a fetched scope node
     if (focused_view == scope_view) {
@@ -507,12 +507,14 @@ void Console::load_menu(QMenu *menu) {
         const bool was_fetched = index.data(ScopeRole_Fetched).toBool();
 
         if (was_fetched) {
-            menu->addAction(tr("Refresh"),
+            QAction *refresh = menu->addAction(tr("Refresh"),
                 [=]() {
                     const QModelIndex current_index = scope_view->selectionModel()->currentIndex();
                     fetch_scope_node(current_index);
-
                 });
+
+            menu->removeAction(refresh);
+            menu->insertAction(insert_before_action, refresh);
         }
     }
 }
