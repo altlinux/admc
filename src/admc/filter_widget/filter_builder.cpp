@@ -181,7 +181,6 @@ void FilterBuilder::update_conditions_combo() {
             };
         } else {
             return {
-                Condition_Contains,
                 Condition_StartsWith,
                 Condition_EndsWith,
                 Condition_Equals,
