@@ -229,6 +229,11 @@
         <translation>Включена учетная запись для пользователя - &quot;%1&quot;</translation>
     </message>
     <message>
+        <location filename="../src/admc/ad_interface.cpp" line="1193"/>
+        <source>Server error: %1</source>
+        <translation>Ошибка сервера: %1</translation>
+    </message>
+    <message>
         <location filename="../src/admc/ad_interface.cpp" line="606"/>
         <source>Moved object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Объект &quot;%1&quot; перемещен в &quot;%2&quot;</translation>
@@ -277,11 +282,6 @@
         <location filename="../src/admc/ad_interface.cpp" line="921"/>
         <source>Failed to unlock user &quot;%1&quot;</source>
         <translation>Не удалось открыть пользователя &quot;%1&quot;</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1193"/>
-        <source>LDAP error: %1</source>
-        <translation>. LDAP Ошибка: &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/admc/ad_interface.cpp" line="1177"/>
@@ -387,7 +387,7 @@
     <message>
         <location filename="../src/admc/tabs/attributes_tab.cpp" line="178"/>
         <source>Read-only</source>
-        <translation>Не редактируемые</translation>
+        <translation>Нередактируемые</translation>
     </message>
     <message>
         <location filename="../src/admc/tabs/attributes_tab.cpp" line="179"/>
@@ -412,12 +412,12 @@
     <message>
         <location filename="../src/admc/tabs/attributes_tab.cpp" line="183"/>
         <source>Backlink</source>
-        <translation>Ссылка</translation>
+        <translation>Обратные ссылки</translation>
     </message>
     <message>
         <location filename="../src/admc/tabs/attributes_tab.cpp" line="205"/>
         <source>Read-only attributes:</source>
-        <translation>Не редактируемые атрибуты:</translation>
+        <translation>Нередактируемые атрибуты:</translation>
     </message>
     <message>
         <location filename="../src/admc/tabs/attributes_tab.cpp" line="360"/>
@@ -637,84 +637,6 @@
     </message>
 </context>
 <context>
-    <name>PropertiesDialog</name>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="152"/>
-        <source>Details</source>
-        <translation>Детали</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="152"/>
-        <source>&quot;%1&quot; Details</source>
-        <translation>&quot;%1&quot; Детали</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="164"/>
-        <source>Object could not be found</source>
-        <translation>Невозможно загрузить объект</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="185"/>
-        <source>General</source>
-        <translation>Общее</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="190"/>
-        <source>Object</source>
-        <translation>Объект</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="191"/>
-        <source>Attributes</source>
-        <translation>Атрибуты</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="195"/>
-        <source>Account</source>
-        <translation>Учётная запись</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="197"/>
-        <source>Organization</source>
-        <translation>Организация</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="198"/>
-        <source>Telephones</source>
-        <translation>Телефоны</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="199"/>
-        <source>Profile</source>
-        <translation>Профиль</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="202"/>
-        <source>Members</source>
-        <translation>Члены</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="205"/>
-        <source>Member of</source>
-        <translation>Группы</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="209"/>
-        <source>Group policy</source>
-        <translation>Групповая политика</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="212"/>
-        <source>Links to</source>
-        <translation>Линки политик</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="196"/>
-        <source>Address</source>
-        <translation>Адрес</translation>
-    </message>
-</context>
-<context>
     <name>ExpiryEdit</name>
     <message>
         <location filename="../src/admc/edits/expiry_edit.cpp" line="40"/>
@@ -764,7 +686,7 @@
     <message>
         <location filename="../src/admc/filter_widget/filter_widget.cpp" line="46"/>
         <source>Simple</source>
-        <translation>Простой</translation>
+        <translation>Упрошенный</translation>
     </message>
     <message>
         <location filename="../src/admc/filter_widget/filter_widget.cpp" line="47"/>
@@ -861,7 +783,7 @@
     <message>
         <location filename="../src/admc/find_select_dialog.cpp" line="34"/>
         <source>Find and select objects</source>
-        <translation>Найдите и выберайте объекты</translation>
+        <translation>Найдите и выберите объекты</translation>
     </message>
 </context>
 <context>
@@ -1003,7 +925,7 @@
     <message>
         <location filename="../src/gpgui/gui/MainWindow.cpp" line="96"/>
         <source>Open local xml file</source>
-        <translation>Откройте локальный XML-файл</translation>
+        <translation>Открыть локальный XML-файл</translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/MainWindow.cpp" line="101"/>
@@ -1039,7 +961,7 @@
     <message>
         <location filename="../src/gpgui/gui/MainWindow.cpp" line="253"/>
         <source>POL files (*.pol)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/MainWindow.cpp" line="259"/>
@@ -1068,11 +990,6 @@
         <location filename="../src/admc/edits/manager_edit.cpp" line="37"/>
         <source>Change</source>
         <translation>Изменить</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/edits/manager_edit.cpp" line="38"/>
-        <source>Details</source>
-        <translation>Детали</translation>
     </message>
     <message>
         <location filename="../src/admc/edits/manager_edit.cpp" line="39"/>
@@ -1106,11 +1023,6 @@
         <location filename="../src/admc/tabs/membership_tab.cpp" line="76"/>
         <source>DN</source>
         <translation>DN</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/tabs/membership_tab.cpp" line="83"/>
-        <source>Details</source>
-        <translation>Детали</translation>
     </message>
     <message>
         <location filename="../src/admc/tabs/membership_tab.cpp" line="84"/>
@@ -1159,7 +1071,7 @@
     <message>
         <location filename="../src/admc/menubar.cpp" line="51"/>
         <source>&amp;Quit</source>
-        <translation>&amp;Выход</translation>
+        <translation>&amp;Выйти</translation>
     </message>
     <message>
         <location filename="../src/admc/menubar.cpp" line="58"/>
@@ -1193,86 +1105,81 @@
     </message>
     <message>
         <location filename="../src/admc/menubar.cpp" line="71"/>
-        <source>&amp;Dock Details dialog</source>
-        <translation>&amp;Пристыковать диалог деталей</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/menubar.cpp" line="72"/>
         <source>&amp;Toggle widgets</source>
         <translation>&amp;Отключить виджеты</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="73"/>
+        <location filename="../src/admc/menubar.cpp" line="72"/>
         <source>&amp;Filter objects</source>
         <translation>&amp;Фильтровать объекты</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="75"/>
+        <location filename="../src/admc/menubar.cpp" line="74"/>
         <source>&amp;Preferences</source>
         <translation>&amp;Настройки</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="76"/>
+        <location filename="../src/admc/menubar.cpp" line="75"/>
         <source>&amp;Confirm actions</source>
         <translation>Потверждать &amp;действия</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="77"/>
+        <location filename="../src/admc/menubar.cpp" line="76"/>
         <source>&amp;Dev mode</source>
         <translation>&amp;Dev mode</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="78"/>
+        <location filename="../src/admc/menubar.cpp" line="77"/>
         <source>&amp;Show non-container objects in Console tree</source>
-        <translation>Показать неконтейнерные объекты в дереве консоли</translation>
+        <translation>&amp;Показать неконтейнерные объекты в дереве консоли</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="79"/>
+        <location filename="../src/admc/menubar.cpp" line="78"/>
         <source>&amp;Put last name before first name when creating users</source>
         <translation>&amp;Ставить фамилию перед именем при создании пользоваетелей</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="81"/>
+        <location filename="../src/admc/menubar.cpp" line="80"/>
         <source>&amp;Language</source>
         <translation>&amp;Язык</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="106"/>
+        <location filename="../src/admc/menubar.cpp" line="115"/>
         <source>Info</source>
         <translation>Информация</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="106"/>
+        <location filename="../src/admc/menubar.cpp" line="115"/>
         <source>App needs to be restarted for the language option to take effect.</source>
         <translation>Язык поменяется при следующем запуске приложения.</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="114"/>
+        <location filename="../src/admc/menubar.cpp" line="123"/>
         <source>&amp;Help</source>
         <translation>&amp;Помощь</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="115"/>
+        <location filename="../src/admc/menubar.cpp" line="124"/>
         <source>&amp;Manual</source>
         <translation>&amp;Руководство</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="116"/>
+        <location filename="../src/admc/menubar.cpp" line="125"/>
         <source>&amp;About ADMC</source>
         <translation>&amp;Об ADMC</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="180"/>
+        <location filename="../src/admc/menubar.cpp" line="189"/>
         <source>Version %1</source>
         <translation>Версия %1</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="183"/>
+        <location filename="../src/admc/menubar.cpp" line="192"/>
         <source>ADMC is a tool for Active Directory administration.</source>
         <translation>ADMC - это инструмент для администрирования Active Directory.</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="185"/>
+        <location filename="../src/admc/menubar.cpp" line="194"/>
         <source>Copyright (C) 2020 BaseALT Ltd.</source>
         <translation>Copyright (C) 2020 BaseALT Ltd.</translation>
     </message>
@@ -1456,11 +1363,6 @@
         <translation>Политики</translation>
     </message>
     <message>
-        <location filename="../src/admc/policies_widget.cpp" line="108"/>
-        <source>Details</source>
-        <translation>Детали</translation>
-    </message>
-    <message>
         <location filename="../src/admc/policies_widget.cpp" line="111"/>
         <source>Edit Policy</source>
         <translation>Редактировать политику</translation>
@@ -1477,101 +1379,179 @@
     </message>
 </context>
 <context>
+    <name>PropertiesDialog</name>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="92"/>
+        <source>Properties</source>
+        <translation>Свойства</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="122"/>
+        <source>&quot;%1&quot; Properties</source>
+        <translation>&quot;%1&quot; Свойства</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="126"/>
+        <source>Object could not be found</source>
+        <translation>Невозможно загрузить объект</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="147"/>
+        <source>General</source>
+        <translation>Общее</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="152"/>
+        <source>Object</source>
+        <translation>Объект</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="153"/>
+        <source>Attributes</source>
+        <translation>Атрибуты</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="157"/>
+        <source>Account</source>
+        <translation>Учётная запись</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="159"/>
+        <source>Organization</source>
+        <translation>Организация</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="160"/>
+        <source>Telephones</source>
+        <translation>Телефоны</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="161"/>
+        <source>Profile</source>
+        <translation>Профиль</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="164"/>
+        <source>Members</source>
+        <translation>Члены</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="167"/>
+        <source>Member of</source>
+        <translation>Группы</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="171"/>
+        <source>Group policy</source>
+        <translation>Групповая политика</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="174"/>
+        <source>Links to</source>
+        <translation>Линки политик</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="158"/>
+        <source>Address</source>
+        <translation>Адрес</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="128"/>
         <source>pidl DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="129"/>
         <source>name DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="130"/>
         <source>image DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="131"/>
         <source>targetType DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="132"/>
         <source>action DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="133"/>
         <source>comment DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="134"/>
         <source>shortcutKey DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="135"/>
         <source>startIn DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="136"/>
         <source>arguments DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="137"/>
         <source>iconIndex DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="138"/>
         <source>targetPath DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="139"/>
         <source>iconPath DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="140"/>
         <source>window DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="141"/>
         <source>shortcutPath DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="142"/>
         <source>desc DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="143"/>
         <source>bypassErrors DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="144"/>
         <source>userContext DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="145"/>
         <source>removePolicy DISPLAY_STRING</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_attribute.cpp" line="147"/>
         <source>UNKNOWN XML ATTRIBUTE NAME</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/admc/ad_utils.cpp" line="109"/>
@@ -1644,39 +1624,39 @@
         <translation>(никогда)</translation>
     </message>
     <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="217"/>
-        <source>Equals</source>
-        <translation>Равно</translation>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="216"/>
+        <source>Is (exactly)</source>
+        <translation>Равно (точно)</translation>
     </message>
     <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="218"/>
-        <source>Doesn&apos;t equal</source>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="217"/>
+        <source>Is not</source>
         <translation>Не равно</translation>
     </message>
     <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="219"/>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="218"/>
         <source>Starts with</source>
         <translation>Начинается с</translation>
     </message>
     <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="220"/>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="219"/>
         <source>Ends with</source>
         <translation>Заканчивается на</translation>
     </message>
     <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="221"/>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="220"/>
         <source>Contains</source>
         <translation>Содержит</translation>
     </message>
     <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="222"/>
-        <source>Set</source>
-        <translation>Имеет значение</translation>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="221"/>
+        <source>Present</source>
+        <translation>Существует</translation>
     </message>
     <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="223"/>
-        <source>Unset</source>
-        <translation>Не имеет значения</translation>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="222"/>
+        <source>Not present</source>
+        <translation>Не существует</translation>
     </message>
     <message>
         <location filename="../src/admc/confirmation_dialog.cpp" line="32"/>
@@ -1727,11 +1707,6 @@
         <location filename="../src/admc/object_menu.cpp" line="188"/>
         <source>Rename</source>
         <translation>Переименовать</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="198"/>
-        <source>Details</source>
-        <translation>Детали</translation>
     </message>
     <message>
         <location filename="../src/admc/object_menu.cpp" line="280"/>
@@ -1855,7 +1830,7 @@
     <message>
         <location filename="../src/admc/edits/string_edit.cpp" line="137"/>
         <source>The specified user logon name already exists.</source>
-        <translation>Указанное имя для входа уже существует</translation>
+        <translation>Указанное имя для входа уже существует.</translation>
     </message>
     <message>
         <location filename="../src/admc/edits/string_edit.cpp" line="138"/>
@@ -1930,7 +1905,7 @@
     <message>
         <location filename="../src/gpgui/gui/xml/xml_editor.cpp" line="77"/>
         <source>Editing xml file:</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -1938,7 +1913,7 @@
     <message>
         <location filename="../src/gpgui/gui/xml/xml_ubyte_edit.cpp" line="39"/>
         <source>Attribute &quot;%1&quot; must have values in range of 0-255 (inclusive).</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/gpgui/gui/xml/xml_ubyte_edit.cpp" line="40"/>

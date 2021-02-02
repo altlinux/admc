@@ -268,6 +268,11 @@
         <translation></translation>
     </message>
     <message>
+        <location filename="../src/admc/ad_interface.cpp" line="1193"/>
+        <source>Server error: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/admc/ad_interface.cpp" line="804"/>
         <source>Password doesn&apos;t match rules</source>
         <translation></translation>
@@ -300,11 +305,6 @@
     <message>
         <location filename="../src/admc/ad_interface.cpp" line="921"/>
         <source>Failed to unlock user &quot;%1&quot;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1193"/>
-        <source>LDAP error: %1</source>
         <translation></translation>
     </message>
     <message>
@@ -630,84 +630,6 @@
     <message>
         <location filename="../src/admc/editors/datetime_editor.cpp" line="33"/>
         <source>Edit datetime</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
-    <name>PropertiesDialog</name>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="152"/>
-        <source>Details</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="152"/>
-        <source>&quot;%1&quot; Details</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="164"/>
-        <source>Object could not be found</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="185"/>
-        <source>General</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="190"/>
-        <source>Object</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="191"/>
-        <source>Attributes</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="195"/>
-        <source>Account</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="197"/>
-        <source>Organization</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="198"/>
-        <source>Telephones</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="199"/>
-        <source>Profile</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="202"/>
-        <source>Members</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="205"/>
-        <source>Member of</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="209"/>
-        <source>Group policy</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="212"/>
-        <source>Links to</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/properties_dialog.cpp" line="196"/>
-        <source>Address</source>
         <translation></translation>
     </message>
 </context>
@@ -1064,11 +986,6 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/edits/manager_edit.cpp" line="38"/>
-        <source>Details</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../src/admc/edits/manager_edit.cpp" line="39"/>
         <source>Clear</source>
         <translation></translation>
@@ -1100,11 +1017,6 @@
         <location filename="../src/admc/tabs/membership_tab.cpp" line="76"/>
         <source>DN</source>
         <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/tabs/membership_tab.cpp" line="83"/>
-        <source>Details</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/admc/tabs/membership_tab.cpp" line="84"/>
@@ -1186,86 +1098,81 @@
     </message>
     <message>
         <location filename="../src/admc/menubar.cpp" line="71"/>
-        <source>&amp;Dock Details dialog</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/menubar.cpp" line="72"/>
         <source>&amp;Toggle widgets</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="73"/>
+        <location filename="../src/admc/menubar.cpp" line="72"/>
         <source>&amp;Filter objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="75"/>
+        <location filename="../src/admc/menubar.cpp" line="74"/>
         <source>&amp;Preferences</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="76"/>
+        <location filename="../src/admc/menubar.cpp" line="75"/>
         <source>&amp;Confirm actions</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="77"/>
+        <location filename="../src/admc/menubar.cpp" line="76"/>
         <source>&amp;Dev mode</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="78"/>
+        <location filename="../src/admc/menubar.cpp" line="77"/>
         <source>&amp;Show non-container objects in Console tree</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="79"/>
+        <location filename="../src/admc/menubar.cpp" line="78"/>
         <source>&amp;Put last name before first name when creating users</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="81"/>
+        <location filename="../src/admc/menubar.cpp" line="80"/>
         <source>&amp;Language</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="106"/>
+        <location filename="../src/admc/menubar.cpp" line="115"/>
         <source>Info</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="106"/>
+        <location filename="../src/admc/menubar.cpp" line="115"/>
         <source>App needs to be restarted for the language option to take effect.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="114"/>
+        <location filename="../src/admc/menubar.cpp" line="123"/>
         <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="115"/>
+        <location filename="../src/admc/menubar.cpp" line="124"/>
         <source>&amp;Manual</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="116"/>
+        <location filename="../src/admc/menubar.cpp" line="125"/>
         <source>&amp;About ADMC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="180"/>
+        <location filename="../src/admc/menubar.cpp" line="189"/>
         <source>Version %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="183"/>
+        <location filename="../src/admc/menubar.cpp" line="192"/>
         <source>ADMC is a tool for Active Directory administration.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="185"/>
+        <location filename="../src/admc/menubar.cpp" line="194"/>
         <source>Copyright (C) 2020 BaseALT Ltd.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1449,11 +1356,6 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/policies_widget.cpp" line="108"/>
-        <source>Details</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../src/admc/policies_widget.cpp" line="111"/>
         <source>Edit Policy</source>
         <translation></translation>
@@ -1466,6 +1368,84 @@
     <message>
         <location filename="../src/admc/policies_widget.cpp" line="118"/>
         <source>Delete</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>PropertiesDialog</name>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="92"/>
+        <source>Properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="122"/>
+        <source>&quot;%1&quot; Properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="126"/>
+        <source>Object could not be found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="147"/>
+        <source>General</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="152"/>
+        <source>Object</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="153"/>
+        <source>Attributes</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="157"/>
+        <source>Account</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="159"/>
+        <source>Organization</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="160"/>
+        <source>Telephones</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="161"/>
+        <source>Profile</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="164"/>
+        <source>Members</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="167"/>
+        <source>Member of</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="171"/>
+        <source>Group policy</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="174"/>
+        <source>Links to</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/properties_dialog.cpp" line="158"/>
+        <source>Address</source>
         <translation></translation>
     </message>
 </context>
@@ -1637,39 +1617,39 @@
         <translation></translation>
     </message>
     <message>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="216"/>
+        <source>Is (exactly)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/admc/filter_widget/filter_builder.cpp" line="217"/>
-        <source>Equals</source>
-        <translation></translation>
+        <source>Is not</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/admc/filter_widget/filter_builder.cpp" line="218"/>
-        <source>Doesn&apos;t equal</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="219"/>
         <source>Starts with</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="220"/>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="219"/>
         <source>Ends with</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="221"/>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="220"/>
         <source>Contains</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="222"/>
-        <source>Set</source>
-        <translation></translation>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="221"/>
+        <source>Present</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="223"/>
-        <source>Unset</source>
-        <translation></translation>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="222"/>
+        <source>Not present</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/admc/confirmation_dialog.cpp" line="32"/>
@@ -1719,11 +1699,6 @@
     <message>
         <location filename="../src/admc/object_menu.cpp" line="188"/>
         <source>Rename</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="198"/>
-        <source>Details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
