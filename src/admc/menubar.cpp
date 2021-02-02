@@ -83,7 +83,17 @@ MenuBar::MenuBar()
     auto add_language_action =
     [this, language_menu, language_group] (QLocale::Language language) {
         QLocale locale(language);
-        const QString language_name = locale.nativeLanguageName();
+        const QString language_name =
+        [locale]() {
+            // NOTE: Russian nativeLanguageName starts with lowercase letter for some reason
+            QString out = locale.nativeLanguageName();
+
+            const QChar first_letter_uppercased = out[0].toUpper();
+
+            out.replace(0, 1, first_letter_uppercased);
+
+            return out;
+        }();
 
         const auto action = new QAction(language_name, language_group);
         action->setCheckable(true);
