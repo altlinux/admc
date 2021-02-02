@@ -1124,62 +1124,62 @@
         <translation>Потверждать &amp;действия</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="76"/>
-        <source>&amp;Dev mode</source>
-        <translation>&amp;Dev mode</translation>
+        <location filename="../src/admc/menubar.cpp" line="78"/>
+        <source>Dev mode</source>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="77"/>
+        <location filename="../src/admc/menubar.cpp" line="81"/>
         <source>&amp;Show non-container objects in Console tree</source>
         <translation>&amp;Показать неконтейнерные объекты в дереве консоли</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="78"/>
+        <location filename="../src/admc/menubar.cpp" line="82"/>
         <source>&amp;Put last name before first name when creating users</source>
         <translation>&amp;Ставить фамилию перед именем при создании пользоваетелей</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="80"/>
+        <location filename="../src/admc/menubar.cpp" line="84"/>
         <source>&amp;Language</source>
         <translation>&amp;Язык</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="115"/>
+        <location filename="../src/admc/menubar.cpp" line="119"/>
         <source>Info</source>
         <translation>Информация</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="115"/>
+        <location filename="../src/admc/menubar.cpp" line="119"/>
         <source>App needs to be restarted for the language option to take effect.</source>
         <translation>Язык поменяется при следующем запуске приложения.</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="123"/>
+        <location filename="../src/admc/menubar.cpp" line="127"/>
         <source>&amp;Help</source>
         <translation>&amp;Помощь</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="124"/>
+        <location filename="../src/admc/menubar.cpp" line="128"/>
         <source>&amp;Manual</source>
         <translation>&amp;Руководство</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="125"/>
+        <location filename="../src/admc/menubar.cpp" line="129"/>
         <source>&amp;About ADMC</source>
         <translation>&amp;Об ADMC</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="189"/>
+        <location filename="../src/admc/menubar.cpp" line="193"/>
         <source>Version %1</source>
         <translation>Версия %1</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="192"/>
+        <location filename="../src/admc/menubar.cpp" line="196"/>
         <source>ADMC is a tool for Active Directory administration.</source>
         <translation>ADMC - это инструмент для администрирования Active Directory.</translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="194"/>
+        <location filename="../src/admc/menubar.cpp" line="198"/>
         <source>Copyright (C) 2020 BaseALT Ltd.</source>
         <translation>Copyright (C) 2020 BaseALT Ltd.</translation>
     </message>
