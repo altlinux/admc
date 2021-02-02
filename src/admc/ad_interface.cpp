@@ -1190,7 +1190,7 @@ QString AdInterface::default_error() const {
         default: {
             char *ldap_err = ldap_err2string(ldap_result);
             const QString ldap_err_qstr(ldap_err);
-            return QString(tr("LDAP error: %1")).arg(ldap_err_qstr);
+            return QString(tr("Server error: %1")).arg(ldap_err_qstr);
         }
     }
 }
