@@ -213,13 +213,13 @@ void FilterBuilder::update_value_edit() {
 
 QString condition_to_display_string(const Condition condition) {
     switch (condition) {
-        case Condition_Equals: return QObject::tr("Equals");
-        case Condition_NotEquals: return QObject::tr("Doesn't equal");
+        case Condition_Equals: return QObject::tr("Is (exactly)");
+        case Condition_NotEquals: return QObject::tr("Is not");
         case Condition_StartsWith: return QObject::tr("Starts with");
         case Condition_EndsWith: return QObject::tr("Ends with");
         case Condition_Contains: return QObject::tr("Contains");
-        case Condition_Set: return QObject::tr("Set");
-        case Condition_Unset: return QObject::tr("Unset");
+        case Condition_Set: return QObject::tr("Present");
+        case Condition_Unset: return QObject::tr("Not present");
         case Condition_COUNT: return QString();
     }
     return QString();
