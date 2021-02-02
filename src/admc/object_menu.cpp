@@ -195,7 +195,7 @@ void add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *p
     // TODO: multi-object properties
     auto add_properties =
     [=]() {
-        menu->addAction(QObject::tr("Properties"),
+        menu->addAction(PropertiesDialog::display_name(),
             [=]() {
                 properties(targets[0], parent);
             });

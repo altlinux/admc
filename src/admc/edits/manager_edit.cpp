@@ -35,7 +35,7 @@ ManagerEdit::ManagerEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
     edit = new QLineEdit();
 
     change_button = new QPushButton(tr("Change"));
-    properties_button = new QPushButton(tr("Properties"));
+    properties_button = new QPushButton(PropertiesDialog::display_name());
     clear_button = new QPushButton(tr("Clear"));
 
     connect(

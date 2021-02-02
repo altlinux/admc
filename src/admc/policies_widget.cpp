@@ -105,7 +105,7 @@ void PoliciesWidget::on_context_menu(const QPoint pos) {
     const AdObject object = AD()->search_object(dn);
 
     QMenu menu;
-    menu.addAction(tr("Properties"), [this, dn]() {
+    menu.addAction(PropertiesDialog::display_name(), [this, dn]() {
         PropertiesDialog::open_for_target(dn);
     });
     menu.addAction(tr("Edit Policy"), [this, dn, object]() {

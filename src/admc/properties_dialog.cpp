@@ -88,6 +88,10 @@ void PropertiesDialog::connect_to_open_by_double_click(QAbstractItemView *view, 
         });
 }
 
+QString PropertiesDialog::display_name() {
+    return tr("Properties");
+}
+
 PropertiesDialog::PropertiesDialog(const QString &target_arg)
 : QDialog()
 {
@@ -115,7 +119,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     layout->setSpacing(0);
 
     const QString name = object.get_string(ATTRIBUTE_NAME);
-    const QString window_title = name.isEmpty() ? tr("Properties") : QString(tr("\"%1\" Properties")).arg(name);
+    const QString window_title = name.isEmpty() ? PropertiesDialog::display_name() : QString(tr("\"%1\" Properties")).arg(name);
     setWindowTitle(window_title);
 
     if (object.is_empty()) {

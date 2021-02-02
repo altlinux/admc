@@ -80,7 +80,7 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
 
     setup_column_toggle_menu(view, model, {MembersColumn_Name, MembersColumn_Parent});
 
-    auto properties_button = new QPushButton(tr("Properties"));
+    auto properties_button = new QPushButton(PropertiesDialog::display_name());
     auto add_button = new QPushButton(tr("Add"));
     auto remove_button = new QPushButton(tr("Remove"));
     auto button_layout = new QHBoxLayout();

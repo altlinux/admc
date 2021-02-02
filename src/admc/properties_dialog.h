@@ -41,6 +41,7 @@ Q_OBJECT
 public:
     static void open_for_target(const QString &target);
     static void connect_to_open_by_double_click(QAbstractItemView *view, const int dn_column);
+    static QString display_name();
 
 private slots:
     void ok();
