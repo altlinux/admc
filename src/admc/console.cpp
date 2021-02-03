@@ -389,40 +389,53 @@ void Console::on_object_added(const QString &dn) {
     }
 }
 
-// NOTE: only updating object in results. Attribute changes don't matter to scope because it doesn't display any attributes, so only need to update results.
+// Update object in results by reloading it's row with
+// updated attributes NOTE: only updating object in results.
+// Attribute changes don't matter to scope because it
+// doesn't display any attributes, so only need to update
+// results.
 void Console::on_object_changed(const QString &dn) {
+    // Find parent of this object in scope tree
     const QString parent_dn = dn_get_parent(dn);
     const QList<QModelIndex> scope_parent_matches = scope_model->match(scope_model->index(0, 0), Role_DN, parent_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive | Qt::MatchWrap));
     if (scope_parent_matches.isEmpty()) {
         return;
     }
 
+    // Get results model attached to parent
     const QModelIndex scope_parent = scope_parent_matches[0];
     const int scope_parent_id = scope_parent.data(ScopeRole_Id).toInt();
     QStandardItemModel *results_model = scope_id_to_results.value(scope_parent_id, nullptr);
-    const QList<QModelIndex> results_index_matches = results_model->match(scope_parent, Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
-
-    if (!results_index_matches.isEmpty()) {
-        const QModelIndex results_index = results_index_matches[0];
-
-        const QList<QStandardItem *> item_row =
-        [=]() {
-            QList<QStandardItem *> out;
-
-            for (int c = 0; c < ADCONFIG()->get_columns().size(); c++) {
-                const QModelIndex sibling_index = results_index.siblingAtColumn(c);
-                QStandardItem *sibling_item = results_model->itemFromIndex(sibling_index);
-
-                out.append(sibling_item);
-            }
-
-            return out;
-        }();
-
-        const AdObject object = AD()->search_object(dn);
-
-        load_results_row(item_row, object);
+    if (results_model == nullptr) {
+        return;
     }
+
+    // Find object's row in results model
+    const QList<QModelIndex> results_index_matches = results_model->match(scope_parent, Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+    if (results_index_matches.isEmpty()) {
+        return;
+    }
+
+    // Update object's row
+    const QModelIndex results_index = results_index_matches[0];
+
+    const QList<QStandardItem *> item_row =
+    [=]() {
+        QList<QStandardItem *> out;
+
+        for (int c = 0; c < ADCONFIG()->get_columns().size(); c++) {
+            const QModelIndex sibling_index = results_index.siblingAtColumn(c);
+            QStandardItem *sibling_item = results_model->itemFromIndex(sibling_index);
+
+            out.append(sibling_item);
+        }
+
+        return out;
+    }();
+
+    const AdObject object = AD()->search_object(dn);
+
+    load_results_row(item_row, object);
 }
 
 // Set target to parent of current target
