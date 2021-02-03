@@ -242,15 +242,16 @@ void CreateDialog::accept() {
     if (add_success) {
         const bool apply_success =
         [=]() {
-            bool out;
+            bool total_success = true;
+            
             for (auto edit : all_edits) {
                 const bool success = edit->apply(dn);
                 if (!success) {
-                    out = false;
+                    total_success = false;
                 }
             }
 
-            return out;
+            return total_success;
         }();
 
         if (apply_success) {
