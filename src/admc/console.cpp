@@ -499,7 +499,7 @@ void Console::update_results_header() {
 void Console::load_menu(QMenu *menu) {
     menu->clear();
 
-    QAction *insert_before_action = add_object_actions_to_menu(menu, focused_view, this);
+    QAction *insert_before_action = add_object_actions_to_menu(menu, focused_view, this, true);
 
     // Add refresh action if clicked on a fetched scope node
     if (focused_view == scope_view) {

@@ -61,7 +61,7 @@ QString targets_display_string(const QList<QString> targets);
 // in the span of time when target is selected and menu is
 // opened. Menu needs most up-to-date target attributes to
 // construct actions.
-QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent) {
+QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent, const bool include_find_action) {
     // Get info about selected objects from view
     const QList<QString> targets =
     [=]() {
@@ -229,7 +229,10 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
 
         if (is_container) {
             add_new();
-            add_find();
+
+            if (include_find_action) {
+                add_find();
+            }
 
             menu->addSeparator();
         }
