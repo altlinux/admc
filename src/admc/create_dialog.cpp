@@ -46,8 +46,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
     setAttribute(Qt::WA_DeleteOnClose);
 
     const QString class_name = ADCONFIG()->get_class_display_name(object_class);
-    const QString parent_canonical = dn_canonical(parent_dn);
-    const auto title = QString(tr("Create \"%1\" in \"%2\"")).arg(class_name, parent_canonical);
+    const auto title = QString(tr("Create object - \"%1\"")).arg(class_name);
     setWindowTitle(title);
 
     name_edit = new QLineEdit();
@@ -227,13 +226,11 @@ void CreateDialog::accept() {
         return;
     }
 
-    const QString class_name = ADCONFIG()->get_class_display_name(object_class);
-
     STATUS()->start_error_log();
 
     auto fail_msg =
-    [this, class_name, name]() {
-        const QString message = QString(tr("Failed to create %1 \"%2\"")).arg(class_name, name);
+    [this, name]() {
+        const QString message = QString(tr("Failed to create object \"%1\"")).arg(name);
         STATUS()->message(message, StatusType_Error);
     };
 
@@ -243,7 +240,7 @@ void CreateDialog::accept() {
         const bool apply_success =
         [=]() {
             bool total_success = true;
-            
+
             for (auto edit : all_edits) {
                 const bool success = edit->apply(dn);
                 if (!success) {
@@ -255,7 +252,7 @@ void CreateDialog::accept() {
         }();
 
         if (apply_success) {
-            const QString message = QString(tr("Created %1 \"%2\"")).arg(class_name, name);
+            const QString message = QString(tr("Created object \"%1\"")).arg(name);
 
             STATUS()->message(message, StatusType_Success);
 
