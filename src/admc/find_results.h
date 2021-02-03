@@ -49,9 +49,12 @@ public:
 
     void load_menu(QMenu *menu);
 
+    void setup_context_menu();
+
 private:
     QStandardItemModel *model;
     QLabel *object_count_label;
+    bool context_menu_enabled;
 
     void open_context_menu(const QPoint pos);
 };

@@ -42,6 +42,7 @@ FindDialog::FindDialog(const QList<QString> classes, const QString default_searc
     auto action_menu = menubar->addMenu(tr("&Action"));
 
     auto find_widget = new FindWidget(classes, default_search_base);
+    find_widget->find_results->setup_context_menu();
 
     QTreeView *results_view = find_widget->find_results->view;
     PropertiesDialog::connect_to_open_by_double_click(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));

@@ -79,10 +79,12 @@ FindResults::FindResults()
 
     layout->addWidget(object_count_label);
     layout->addWidget(view);
+}
 
+void FindResults::setup_context_menu() {
     connect(
         view, &QWidget::customContextMenuRequested,
-                this, &FindResults::open_context_menu);
+        this, &FindResults::open_context_menu);
 }
 
 void FindResults::load_menu(QMenu *menu) {
