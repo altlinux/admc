@@ -569,7 +569,7 @@
 <context>
     <name>Console</name>
     <message numerus="yes">
-        <location filename="../src/admc/console.cpp" line="484"/>
+        <location filename="../src/admc/console.cpp" line="497"/>
         <source>%n object(s)</source>
         <translation type="unfinished">
             <numerusform>%n object</numerusform>
@@ -577,7 +577,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../src/admc/console.cpp" line="510"/>
+        <location filename="../src/admc/console.cpp" line="523"/>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
@@ -593,36 +593,36 @@
 <context>
     <name>CreateDialog</name>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="50"/>
-        <source>Create &quot;%1&quot; in &quot;%2&quot;</source>
-        <translation></translation>
+        <location filename="../src/admc/create_dialog.cpp" line="49"/>
+        <source>Create object - &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="86"/>
+        <location filename="../src/admc/create_dialog.cpp" line="85"/>
         <source>Full name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="145"/>
-        <location filename="../src/admc/create_dialog.cpp" line="160"/>
-        <location filename="../src/admc/create_dialog.cpp" line="171"/>
+        <location filename="../src/admc/create_dialog.cpp" line="144"/>
+        <location filename="../src/admc/create_dialog.cpp" line="159"/>
+        <location filename="../src/admc/create_dialog.cpp" line="170"/>
         <source>Name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="177"/>
+        <location filename="../src/admc/create_dialog.cpp" line="176"/>
         <source>Create</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="236"/>
-        <source>Failed to create %1 &quot;%2&quot;</source>
-        <translation></translation>
+        <location filename="../src/admc/create_dialog.cpp" line="233"/>
+        <source>Failed to create object &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="257"/>
-        <source>Created %1 &quot;%2&quot;</source>
-        <translation></translation>
+        <location filename="../src/admc/create_dialog.cpp" line="255"/>
+        <source>Created object &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -760,7 +760,7 @@
 <context>
     <name>FindResults</name>
     <message numerus="yes">
-        <location filename="../src/admc/find_results.cpp" line="125"/>
+        <location filename="../src/admc/find_results.cpp" line="127"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n object</numerusform>
@@ -768,7 +768,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../src/admc/find_results.cpp" line="131"/>
+        <location filename="../src/admc/find_results.cpp" line="133"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1657,73 +1657,73 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="110"/>
+        <location filename="../src/admc/object_menu.cpp" line="109"/>
         <source>New</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="129"/>
+        <location filename="../src/admc/object_menu.cpp" line="128"/>
         <source>Find</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="137"/>
+        <location filename="../src/admc/object_menu.cpp" line="136"/>
         <source>Add to group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="145"/>
+        <location filename="../src/admc/object_menu.cpp" line="144"/>
         <source>Reset password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="153"/>
+        <location filename="../src/admc/object_menu.cpp" line="152"/>
         <source>Disable account</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="161"/>
+        <location filename="../src/admc/object_menu.cpp" line="160"/>
         <source>Enable account</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="169"/>
+        <location filename="../src/admc/object_menu.cpp" line="168"/>
         <source>Move</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="179"/>
+        <location filename="../src/admc/object_menu.cpp" line="178"/>
         <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="188"/>
+        <location filename="../src/admc/object_menu.cpp" line="187"/>
         <source>Rename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="280"/>
+        <location filename="../src/admc/object_menu.cpp" line="286"/>
         <source>Are you sure you want to delete %1?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="297"/>
-        <location filename="../src/admc/object_menu.cpp" line="395"/>
+        <location filename="../src/admc/object_menu.cpp" line="303"/>
+        <location filename="../src/admc/object_menu.cpp" line="401"/>
         <source>Move %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="320"/>
+        <location filename="../src/admc/object_menu.cpp" line="326"/>
         <source>Add %1 to group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="386"/>
+        <location filename="../src/admc/object_menu.cpp" line="392"/>
         <source>object &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="388"/>
+        <location filename="../src/admc/object_menu.cpp" line="394"/>
         <source>multiple objects</source>
         <translation type="unfinished"></translation>
     </message>
