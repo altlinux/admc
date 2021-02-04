@@ -121,30 +121,14 @@ void FilterWidgetNormalTab::add_filter() {
     const QString filter = filter_builder->get_filter();
     const QString filter_display = filter_builder->get_filter_display();
 
-    const bool filter_is_new =
-    [this, filter]() {
-        for (int i = 0; i < filter_list->count(); i++) {
-            const QListWidgetItem *item = filter_list->item(i);
-            const QString this_filter = item->data(Qt::UserRole).toString();
+    auto item = new QListWidgetItem();
+    item->setText(filter_display);
+    item->setData(Qt::UserRole, filter);
+    filter_list->addItem(item);
 
-            if (this_filter == filter) {
-                return false;
-            }
-        }
+    filter_builder->clear();
 
-        return true;
-    }();
-
-    if (filter_is_new) {
-        auto item = new QListWidgetItem();
-        item->setText(filter_display);
-        item->setData(Qt::UserRole, filter);
-        filter_list->addItem(item);
-
-        filter_builder->clear();
-
-        emit changed();
-    }
+    emit changed();
 }
 
 void FilterWidgetNormalTab::remove_filter() {
