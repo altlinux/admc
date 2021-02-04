@@ -43,6 +43,8 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
     parent_dn = parent_dn_arg;
     object_class = object_class_arg;
 
+    setMinimumWidth(400);
+
     setAttribute(Qt::WA_DeleteOnClose);
 
     const QString class_name = ADCONFIG()->get_class_display_name(object_class);
