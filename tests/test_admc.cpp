@@ -64,18 +64,21 @@ void TestADMC::init() {
     QVERIFY2(create_success, "Failed to create test-arena");
 }
 
-void TestADMC::cleanup_recurse(const QString &parent) {
+// NOTE: can't just delete test arena while it has children
+// because LDAP forbids deleting non-leaf objects. So need
+// to delete leaves first.
+void TestADMC::delete_test_arena_recursive(const QString &parent) {
     const QHash<QString, AdObject> search_results = AD()->search(QString(), QList<QString>(), SearchScope_Children, parent);
 
     const bool has_children = (search_results.size() > 0);
     if (has_children) {
         for (const QString child : search_results.keys()) {
-            cleanup_recurse(child);
+            delete_test_arena_recursive(child);
         }
     }
 
     const bool delete_success = AD()->object_delete(parent);
-    QVERIFY2(delete_success, "Failed to delete test-arena or one of it's contents");
+    QVERIFY2(delete_success, "Failed to delete test-arena or it's contents");
 }
 
 void TestADMC::cleanup() {
@@ -85,14 +88,12 @@ void TestADMC::cleanup() {
     }
 
     // Delete test arena, if it exists
-    // Delete all children of test arena recursively and then delete test arena itself
-    // NOTE: can't just delete test arena while it has children because LDAP forbids deleting non-leaf objects
     const QString dn = test_arena_dn();
 
     const QHash<QString, AdObject> search_results = AD()->search(QString(), QList<QString>(), SearchScope_Object, dn);
     const bool test_arena_exists = (search_results.size() == 1);
     if (test_arena_exists) {
-        cleanup_recurse(dn);
+        delete_test_arena_recursive(dn);
     }
 }
 

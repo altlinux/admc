@@ -56,7 +56,6 @@ private slots:
 
     // Run before and after each test
     void init();
-    void cleanup_recurse(const QString &dn);
     void cleanup();
 
     // Tests
@@ -83,8 +82,14 @@ private:
     // test arena. Class is used to determine suffix.
     QString test_object_dn(const QString &name, const QString &object_class);
 
+    // Tests object's existance on the server.
     bool object_exists(const QString &dn);
+
+    // Presses the Tab button. Use to cycle through input
+    // widgets.
     void tab(const int n = 1);
+
+    void delete_test_arena_recursive(const QString &dn);
 };
 
 #endif /* TEST_ADMC_H */
