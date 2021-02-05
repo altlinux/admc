@@ -241,3 +241,17 @@ QString dn_canonical(const QString &dn) {
 
     return canonical;
 }
+
+QString dn_from_name_and_parent(const QString &name, const QString &parent, const QString &object_class) {
+    const QString suffix =
+    [object_class]() {
+        if (object_class == CLASS_OU) {
+            return "ou";
+        } else {
+            return "cn";
+        }
+    }();
+    const QString dn = QString("%1=%2,%3").arg(suffix, name, parent);
+
+    return dn;
+}

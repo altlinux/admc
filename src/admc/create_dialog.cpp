@@ -201,16 +201,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
 void CreateDialog::accept() {
     const QString name = name_edit->text();
 
-    const QString suffix =
-    [this]() {
-        if (object_class == CLASS_OU) {
-            return "OU";
-        } else {
-            return "CN";
-        }
-    }();
-
-    const QString dn = suffix + "=" + name + "," + parent_dn;
+    const QString dn = dn_from_name_and_parent(name, parent_dn, object_class);
 
     // Verify edits
     const bool verify_success =

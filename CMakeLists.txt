@@ -11,3 +11,4 @@ set(LIBRARY_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH})
 
 add_subdirectory(translations)
 add_subdirectory(src)
+add_subdirectory(tests)
