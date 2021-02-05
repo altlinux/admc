@@ -32,7 +32,7 @@
 #include <QDebug>
 
 // Delay between tabbing through input widgets, in milliseconds. Set this to some non-zero value if you want to watch the test play out in real time.
-#define TAB_DELAY 100
+#define TAB_DELAY 0
 
 #define TEST_USER "test-user"
 #define TEST_USER_LOGON "test-user-logon"
