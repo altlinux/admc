@@ -43,8 +43,10 @@ Q_OBJECT
 public:
     CreateDialog(const QString &parent_dn_arg, const QString &object_class_arg, QWidget *parent);
 
-private slots:
+public slots:
     void accept();
+
+private slots:
     void on_edited();
 
 private:

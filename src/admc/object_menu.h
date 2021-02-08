@@ -28,8 +28,24 @@ class QMenu;
 class QWidget;
 class QAbstractItemView;
 class QAction;
+class QString;
+template <typename T> class QList;
 
 // Construct object actions of the menu based on current target(s) in the view. If any more custom actions need to be added to this menu, insert them before the action returned from this f-n.
 QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent, const bool include_find_action);
+
+// The following f-ns are declared in header so that tests
+// can access them
+void delete_object(const QList<QString> targets, QWidget *parent);
+void move(const QList<QString> targets, QWidget *parent);
+void add_to_group(const QList<QString> targets, QWidget *parent);
+void enable_account(const QList<QString> targets, QWidget *parent);
+void disable_account(const QList<QString> targets, QWidget *parent);
+
+void properties(const QString &target, QWidget *parent);
+void rename(const QString &target, QWidget *parent);
+void create(const QString &target, const QString &object_class, QWidget *parent);
+void find(const QString &target, QWidget *parent);
+void reset_password(const QString &target, QWidget *parent);
 
 #endif /* OBJECT_MENU_H */

@@ -42,18 +42,6 @@
 
 // NOTE: for dialogs opened from this menu, the parent of the menu is passed NOT the menu itself, because the menu closes (and gets deleted if this is the context menu) when dialog opens.
 
-void delete_object(const QList<QString> targets, QWidget *parent);
-void move(const QList<QString> targets, QWidget *parent);
-void add_to_group(const QList<QString> targets, QWidget *parent);
-void enable_account(const QList<QString> targets, QWidget *parent);
-void disable_account(const QList<QString> targets, QWidget *parent);
-
-void properties(const QString &target, QWidget *parent);
-void rename(const QString &target, QWidget *parent);
-void create(const QString &target, const QString &object_class, QWidget *parent);
-void find(const QString &target, QWidget *parent);
-void reset_password(const QString &target, QWidget *parent);
-
 QString targets_display_string(const QList<QString> targets);
 
 // NOTE: construct right before showing menu instead of in

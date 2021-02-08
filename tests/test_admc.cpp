@@ -27,6 +27,7 @@
 #include "create_dialog.h"
 #include "utils.h"
 #include "status.h"
+#include "object_menu.h"
 
 #include <QTest>
 #include <QDebug>
@@ -127,8 +128,8 @@ void TestADMC::create_dialog_user() {
     const QString dn = test_object_dn(name, CLASS_USER);
 
     // Create user
-    const auto create_dialog = new CreateDialog(parent, CLASS_USER, parent_widget);
-    create_dialog->open();
+    create(parent, CLASS_USER, parent_widget);
+    auto create_dialog = parent_widget->findChild<CreateDialog *>();
     QApplication::setActiveWindow(create_dialog);
 
     // Enter name
@@ -145,9 +146,7 @@ void TestADMC::create_dialog_user() {
     tab();
     QTest::keyClicks(QApplication::focusWidget(), password);
 
-    // Accept dialog. Need to only tab once since we're at the last line edit. After that focus goes to create button
-    tab();
-    QTest::keyClick(QApplication::focusWidget(), Qt::Key_Enter);
+    create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created user doesn't exist");
 
@@ -160,16 +159,14 @@ void TestADMC::create_dialog_ou() {
     const QString dn = test_object_dn(name, CLASS_OU);
 
     // Create ou
-    const auto create_dialog = new CreateDialog(parent, CLASS_OU, parent_widget);
-    create_dialog->open();
+    create(parent, CLASS_OU, parent_widget);
+    auto create_dialog = parent_widget->findChild<CreateDialog *>();
     QApplication::setActiveWindow(create_dialog);
 
     // Enter name
     QTest::keyClicks(QApplication::focusWidget(), name);
 
-    // Accept dialog. Need to only tab once since we're at the last line edit. After that focus goes to create button
-    tab();
-    QTest::keyClick(QApplication::focusWidget(), Qt::Key_Enter);
+    create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created OU doesn't exist");
 
