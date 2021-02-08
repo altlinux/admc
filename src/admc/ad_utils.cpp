@@ -246,9 +246,9 @@ QString dn_from_name_and_parent(const QString &name, const QString &parent, cons
     const QString suffix =
     [object_class]() {
         if (object_class == CLASS_OU) {
-            return "ou";
+            return "OU";
         } else {
-            return "cn";
+            return "CN";
         }
     }();
     const QString dn = QString("%1=%2,%3").arg(suffix, name, parent);

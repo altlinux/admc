@@ -66,6 +66,7 @@ private slots:
     void object_delete();
     void create_dialog_user();
     void create_dialog_ou();
+    void object_menu_move();
 
 private:
     // Use this as parents for widgets used inside tests.

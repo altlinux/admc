@@ -28,9 +28,13 @@
 #include "utils.h"
 #include "status.h"
 #include "object_menu.h"
+#include "object_model.h"
+#include "select_container_dialog.h"
 
 #include <QTest>
 #include <QDebug>
+#include <QModelIndex>
+#include <QTreeView>
 
 #define TEST_USER "test-user"
 #define TEST_USER_LOGON "test-user-logon"
@@ -127,6 +131,7 @@ void TestADMC::create_dialog_user() {
     // Create user
     create(parent, CLASS_USER, parent_widget);
     auto create_dialog = parent_widget->findChild<CreateDialog *>();
+    QVERIFY2((create_dialog != nullptr), "Failed to find create dialog");
     QApplication::setActiveWindow(create_dialog);
 
     // Enter name
@@ -170,9 +175,81 @@ void TestADMC::create_dialog_ou() {
     QVERIFY(true);
 }
 
+void TestADMC::object_menu_move() {
+    const QString parent = test_arena_dn();
+    
+    const QString user_name = TEST_USER;
+    const QString user_dn = test_object_dn(user_name, CLASS_USER);
+
+    const QString move_target_name = "move-target-ou";
+    const QString move_target_dn = test_object_dn(move_target_name, CLASS_OU);
+
+    const QString user_dn_after_move = dn_from_name_and_parent(user_name, move_target_dn, CLASS_USER);
+
+    // Create test user
+    const bool create_user_success = AD()->object_add(user_dn, CLASS_USER);
+    QVERIFY2(create_user_success, "Failed to create user");
+    QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
+
+    // Create move target
+    const bool create_move_target_success = AD()->object_add(move_target_dn, CLASS_OU);
+    QVERIFY2(create_move_target_success, "Failed to create move target");
+    QVERIFY2(object_exists(move_target_dn), "Created move target doesn't exist");
+
+    // Open move dialog
+    move({user_dn}, parent_widget);
+    auto move_dialog = parent_widget->findChild<SelectContainerDialog *>();
+    QVERIFY2((move_dialog != nullptr), "Failed to find move dialog");
+    QApplication::setActiveWindow(move_dialog);
+
+    QTreeView *move_dialog_view = qobject_cast<QTreeView *>(QApplication::focusWidget());
+    QVERIFY2((move_dialog_view != nullptr), "Failed to cast move_dialog_view");
+
+    // Helper f-ns:
+    // TODO: probably will be reused to extract them
+
+    // Press right to expand view item
+    auto expand_current =
+    []() {
+        QTest::keyClick(QApplication::focusWidget(), Qt::Key_Right);
+    };
+
+    // Go down the list of objects by pressing Down arrow
+    // until current item's dn equals to target dn
+    auto navigate_until_object =
+    [=](const QString &target_dn){
+        QModelIndex current_index = move_dialog_view->selectionModel()->currentIndex();
+        QModelIndex prev_index;
+        while (current_index != prev_index) {
+            QTest::keyClick(QApplication::focusWidget(), Qt::Key_Down);
+
+            current_index = move_dialog_view->selectionModel()->currentIndex();
+
+            const QString current_dn = current_index.data(Role_DN).toString();
+
+            if (current_dn == target_dn) {
+                break;
+            }
+        }
+    };
+
+    // Select move target in the view
+    // First current item is the head
+    expand_current();
+    navigate_until_object(test_arena_dn());
+    expand_current();
+    navigate_until_object(move_target_dn);
+
+    move_dialog->accept();
+
+    QVERIFY2(object_exists(user_dn_after_move), "Moved object doesn't exist");
+
+    QVERIFY(true);
+}
+
 QString TestADMC::test_arena_dn() {
     const QString head_dn = AD()->domain_head();
-    const QString dn = QString("ou=test-arena,%1").arg(head_dn);
+    const QString dn = QString("OU=test-arena,%1").arg(head_dn);
 
     return dn;
 }
