@@ -49,6 +49,9 @@ class TestADMC : public QObject {
     Q_OBJECT
 
 private slots:
+    // NOTE: initTestCase(), cleanupTestCase(), init() and
+    // cleanup() are special slots called by QTest.
+
     // Called before first test
     void initTestCase();
     // Called after last test
