@@ -56,6 +56,8 @@ enum ScopeRole {
 
 // TODO: currently showing refresh action always for all scope nodes. Could show it in results if node is in scope? Also could not show it if results isn't loaded?
 
+bool object_should_be_in_scope(const QString &object_class);
+
 QHash<int, QStandardItemModel *> scope_id_to_results;
 
 Console::Console(MenuBar *menubar_arg)
@@ -386,12 +388,16 @@ void Console::on_object_added(const QString &dn) {
     }
 
     const AdObject object = AD()->search_object(dn);
+    const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
     // Add object to scope
-    QStandardItem *parent_item = scope_model->itemFromIndex(scope_parent);
-    auto object_item = make_scope_item(object);
-    parent_item->appendRow(object_item);
-
+    const bool should_be_in_scope = object_should_be_in_scope(object_class);
+    if (should_be_in_scope) {
+        QStandardItem *parent_item = scope_model->itemFromIndex(scope_parent);
+        auto object_item = make_scope_item(object);
+        parent_item->appendRow(object_item);
+    }
+    
     // Add object to results
     const int scope_parent_id = scope_parent.data(ScopeRole_Id).toInt();
     QStandardItemModel *results_model = scope_id_to_results.value(scope_parent_id, nullptr);
@@ -747,4 +753,16 @@ void Console::on_result_item_double_clicked(const QModelIndex &index)
     } else {
         PropertiesDialog::open_for_target(dn);
     }
+}
+
+// NOTE: "containers" referenced here don't mean objects
+// with "container" object class. Instead it means all the
+// objects that can have children(some of which are not
+// "container" class).
+bool object_should_be_in_scope(const QString &object_class) {
+    const bool show_non_containers_ON = SETTINGS()->get_bool(BoolSetting_ShowNonContainersInConsoleTree);
+
+    const QList<QString> filter_containers = ADCONFIG()->get_filter_containers();
+
+    return (filter_containers.contains(object_class) || show_non_containers_ON);
 }
