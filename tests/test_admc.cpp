@@ -32,9 +32,6 @@
 #include <QTest>
 #include <QDebug>
 
-// Delay between tabbing through input widgets, in milliseconds. Set this to some non-zero value if you want to watch the test play out in real time.
-#define TAB_DELAY 0
-
 #define TEST_USER "test-user"
 #define TEST_USER_LOGON "test-user-logon"
 #define TEST_PASSWORD "pass123!"
@@ -198,10 +195,6 @@ bool TestADMC::object_exists(const QString &dn) {
 void TestADMC::tab(const int n) {
     for (int i = 0; i < n; i++) {
         QTest::keyClick(QApplication::focusWidget(), Qt::Key_Tab);
-
-        if (TAB_DELAY > 0) {
-            QTest::qWait(TAB_DELAY);
-        }
     }
 }
 
