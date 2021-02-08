@@ -361,27 +361,38 @@ void Console::on_object_deleted(const QString &dn) {
 }
 
 void Console::on_object_added(const QString &dn) {
-    // Add to scope
-    const QString parent_dn = dn_get_parent(dn);
-    const QList<QModelIndex> scope_parent_matches = scope_model->match(scope_model->index(0, 0), Role_DN, parent_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
-    if (scope_parent_matches.isEmpty()) {
+    // Find parent of object in scope tree (if it exists)
+    const QModelIndex scope_parent =
+    [=]() {
+        const QString parent_dn = dn_get_parent(dn);
+        const QList<QModelIndex> scope_parent_matches = scope_model->match(scope_model->index(0, 0), Role_DN, parent_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+        
+        if (scope_parent_matches.isEmpty()) {
+            return scope_parent_matches[0];
+        } else {
+            return QModelIndex();
+        }
+    }();
+
+    const bool parent_not_loaded = (!scope_parent.isValid());
+    if (parent_not_loaded) {
         return;
     }
 
-    const QModelIndex scope_parent = scope_parent_matches[0];
+    // NOTE: only need to add object to console if parent was fetched already. If parent wasn't fetched, then this new object will be added when parent is fetched.
+    const bool parent_was_fetched = scope_parent.data(ScopeRole_Fetched).toBool();
+    if (!parent_was_fetched) {
+        return;
+    }
 
     const AdObject object = AD()->search_object(dn);
 
-    const bool fetched = scope_parent.data(ScopeRole_Fetched).toBool();
+    // Add object to scope
+    QStandardItem *parent_item = scope_model->itemFromIndex(scope_parent);
+    auto object_item = make_scope_item(object);
+    parent_item->appendRow(object_item);
 
-    // NOTE: only add if parent was fetched already. If parent wasn't fetched, then this new object will be added when parent is fetched.
-    if (fetched) {
-        QStandardItem *parent_item = scope_model->itemFromIndex(scope_parent);
-        auto object_item = make_scope_item(object);
-        parent_item->appendRow(object_item);
-    }
-
-    // Add to results
+    // Add object to results
     const int scope_parent_id = scope_parent.data(ScopeRole_Id).toInt();
     QStandardItemModel *results_model = scope_id_to_results.value(scope_parent_id, nullptr);
     if (results_model != nullptr) {
