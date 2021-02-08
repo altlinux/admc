@@ -726,17 +726,12 @@ void Console::on_result_item_double_clicked(const QModelIndex &index)
 
     const QString dn = index.data(Role_DN).toString();
     if (is_container) {
-        const QList<QModelIndex> scope_index_matches
-                = scope_model->match(scope_model->index(0, 0), Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+        // Find the scope item that represents this object
+        // and make it the current item of scope tree.
+        const QList<QModelIndex> scope_index_matches = scope_model->match(scope_model->index(0, 0), Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
         if (!scope_index_matches.empty()) {
             auto current_index = scope_index_matches[0];
-            on_current_scope_changed(current_index, current_index);
-            
-            // Expand scope tree to selected object
-            while (current_index.isValid()) {
-                scope_view->expand(current_index);
-                current_index = current_index.parent();
-            }
+            scope_view->selectionModel()->setCurrentIndex(current_index, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
         }
     } else {
         PropertiesDialog::open_for_target(dn);
