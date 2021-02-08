@@ -397,7 +397,7 @@ void Console::on_object_added(const QString &dn) {
         auto object_item = make_scope_item(object);
         parent_item->appendRow(object_item);
     }
-    
+
     // Add object to results
     const int scope_parent_id = scope_parent.data(ScopeRole_Id).toInt();
     QStandardItemModel *results_model = scope_id_to_results.value(scope_parent_id, nullptr);
@@ -643,18 +643,12 @@ void Console::fetch_scope_node(const QModelIndex &index) {
     //
     // Load into scope
     //
-    const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
-    const bool show_non_containers_ON = SETTINGS()->get_bool(BoolSetting_ShowNonContainersInConsoleTree);
     QList<QStandardItem *> rows;
     for (const AdObject object : search_results.values()) {
-        const bool is_container =
-        [=]() {
-            const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
+        const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
+        const bool should_be_in_scope = object_should_be_in_scope(object_class);
 
-            return container_classes.contains(object_class);
-        }();
-
-        if (is_container || show_non_containers_ON) {
+        if (should_be_in_scope) {
             auto child = make_scope_item(object);
             rows.append(child);
         }
@@ -736,13 +730,11 @@ QModelIndex Console::get_scope_node_from_id(const int id) const {
 
 void Console::on_result_item_double_clicked(const QModelIndex &index)
 {
-    const auto objectClass = index.data(Role_ObjectClass);
-
-    const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
-    const bool is_container = container_classes.contains(objectClass.toString());
-
     const QString dn = index.data(Role_DN).toString();
-    if (is_container) {
+    const QString object_class = index.data(Role_DN).toString();
+    const bool should_be_in_scope = object_should_be_in_scope(object_class);
+
+    if (should_be_in_scope) {
         // Find the scope item that represents this object
         // and make it the current item of scope tree.
         const QList<QModelIndex> scope_index_matches = scope_model->match(scope_model->index(0, 0), Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
