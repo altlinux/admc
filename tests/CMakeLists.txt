@@ -25,8 +25,6 @@ set(ADMC_ORGANIZATION_DOMAIN "basealt.ru")
 # TODO: configure_file() call in admc's cmakelists is much cleaner, but doesn't work here. Fix this.
 configure_file(${PROJECT_SOURCE_DIR}/src/admc/config.h.in "config.h")
 
-enable_testing()
-
 # TODO: not sure how to avoid duplicating the list of ADMC sources here. Maybe could make a shared list somehow? Also maybe move "tests" so that it's inside "src/admc".
 add_executable(test_admc
     test_admc.cpp
