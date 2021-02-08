@@ -25,6 +25,7 @@
 #include <QPlainTextEdit>
 #include <QDialogButtonBox>
 #include <QVBoxLayout>
+#include <QDebug>
 
 #define MAX_MESSAGES_IN_LOG 200
 
@@ -82,6 +83,10 @@ void Status::message(const QString &msg, const StatusType &type) {
     QTextCursor end_cursor = status_log->textCursor();
     end_cursor.movePosition(QTextCursor::End);
     status_log->setTextCursor(end_cursor);
+
+    if (print_errors && type == StatusType_Error) {
+        qInfo() << msg;
+    }
 }
 
 void Status::start_error_log() {

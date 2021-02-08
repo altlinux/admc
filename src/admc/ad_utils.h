@@ -54,5 +54,6 @@ QString dn_get_parent(const QString &dn);
 QString dn_get_parent_canonical(const QString &dn);
 QString dn_rename(const QString &dn, const QString &new_name);
 QString dn_canonical(const QString &dn);
+QString dn_from_name_and_parent(const QString &name, const QString &parent, const QString &object_class);
 
 #endif /* AD_UTILS_H */
