@@ -44,6 +44,8 @@
 #include <QTest>
 
 class QString;
+class QTreeView;
+class QPushButton;
 
 class TestADMC : public QObject {
     Q_OBJECT
@@ -62,6 +64,7 @@ private slots:
     void cleanup();
 
     // Tests
+    void object_menu_add_to_group();
     void object_add();
     void object_delete();
     void create_dialog_user();
@@ -94,6 +97,9 @@ private:
     void tab(const int n = 1);
 
     void delete_test_arena_recursive(const QString &dn);
+
+    void navigate_until_object(QTreeView *view, const QString &target_dn);
+    void wait_for_widget_exposed(QWidget *widget);
 };
 
 #endif /* TEST_ADMC_H */

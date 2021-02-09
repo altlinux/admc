@@ -41,8 +41,10 @@ public:
     
     QList<QString> get_selected() const;
 
-private slots:
+public slots:
     void accept();
+
+private slots:
     void open_find_dialog();
     void remove_from_list();
 

@@ -30,16 +30,25 @@
 #include "object_menu.h"
 #include "object_model.h"
 #include "select_container_dialog.h"
+#include "select_dialog.h"
+#include "find_select_dialog.h"
+#include "settings.h"
 
 #include <QTest>
 #include <QDebug>
 #include <QModelIndex>
 #include <QTreeView>
+#include <QPushButton>
+#include <QComboBox>
 
 #define TEST_USER "test-user"
 #define TEST_USER_LOGON "test-user-logon"
 #define TEST_PASSWORD "pass123!"
 #define TEST_OU "test-ou"
+#define TEST_GROUP "test-group"
+
+#define PRINT_FOCUS_WIDGET_BEFORE_TAB false
+#define PRINT_FOCUS_WIDGET_AFTER_TAB false
 
 void TestADMC::initTestCase() {
     const bool connected = AD()->connect();
@@ -205,44 +214,87 @@ void TestADMC::object_menu_move() {
     QTreeView *move_dialog_view = qobject_cast<QTreeView *>(QApplication::focusWidget());
     QVERIFY2((move_dialog_view != nullptr), "Failed to cast move_dialog_view");
 
-    // Helper f-ns:
-    // TODO: probably will be reused to extract them
-
     // Press right to expand view item
     auto expand_current =
     []() {
         QTest::keyClick(QApplication::focusWidget(), Qt::Key_Right);
     };
 
-    // Go down the list of objects by pressing Down arrow
-    // until current item's dn equals to target dn
-    auto navigate_until_object =
-    [=](const QString &target_dn){
-        QModelIndex current_index = move_dialog_view->selectionModel()->currentIndex();
-        QModelIndex prev_index;
-        while (current_index != prev_index) {
-            QTest::keyClick(QApplication::focusWidget(), Qt::Key_Down);
-
-            current_index = move_dialog_view->selectionModel()->currentIndex();
-
-            const QString current_dn = current_index.data(Role_DN).toString();
-
-            if (current_dn == target_dn) {
-                break;
-            }
-        }
-    };
-
     // Select move target in the view
     // First current item is the head
     expand_current();
-    navigate_until_object(test_arena_dn());
+    navigate_until_object(move_dialog_view, test_arena_dn());
     expand_current();
-    navigate_until_object(move_target_dn);
+    navigate_until_object(move_dialog_view, move_target_dn);
 
     move_dialog->accept();
 
     QVERIFY2(object_exists(user_dn_after_move), "Moved object doesn't exist");
+
+    QVERIFY(true);
+}
+
+void TestADMC::object_menu_add_to_group() {
+    const QString parent = test_arena_dn();
+    
+    const QString user_name = TEST_USER;
+    const QString user_dn = test_object_dn(user_name, CLASS_USER);
+
+    const QString group_name = TEST_GROUP;
+    const QString group_dn = test_object_dn(group_name, CLASS_GROUP);
+
+    // Create test user
+    const bool create_user_success = AD()->object_add(user_dn, CLASS_USER);
+    QVERIFY2(create_user_success, "Failed to create user");
+    QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
+
+    // Create test group
+    const bool create_group_success = AD()->object_add(group_dn, CLASS_GROUP);
+    QVERIFY2(create_group_success, "Failed to create group");
+    QVERIFY2(object_exists(group_dn), "Created group doesn't exist");
+
+    // Open add to group dialog
+    add_to_group({user_dn}, parent_widget);
+    auto select_dialog = parent_widget->findChild<SelectDialog *>();
+    QVERIFY2((select_dialog != nullptr), "Failed to find select_dialog");
+    wait_for_widget_exposed(select_dialog);
+
+    // Press "Add" button in select dialog
+    tab();
+    QTest::keyClick(QApplication::focusWidget(), Qt::Key_Space);
+
+    // Find dialog has been opened, so switch to it
+    auto find_select_dialog = select_dialog->findChild<FindSelectDialog *>();
+    QVERIFY2((find_select_dialog != nullptr), "Failed to find find_select_dialog");
+    wait_for_widget_exposed(find_select_dialog);
+
+    // Enter group name in "Name" edit
+    tab(3);
+    QTest::keyClicks(QApplication::focusWidget(), group_name);
+
+    // Press "Find" button
+    tab(4);
+    QTest::keyClick(QApplication::focusWidget(), Qt::Key_Space);
+
+    // Switch to find results
+    tab(2);
+    QTreeView *find_results_view = qobject_cast<QTreeView *>(QApplication::focusWidget());
+    QVERIFY2((find_results_view != nullptr), "Failed to cast find_results_view");
+
+    // Select group in view
+    navigate_until_object(find_results_view, group_dn);
+    const QModelIndex selected_index = find_results_view->selectionModel()->currentIndex();
+    const QString selected_dn = selected_index.data(Role_DN).toString();
+    const QList<QList<QStandardItem *>> selected_rows = find_select_dialog->get_selected_rows();
+
+    find_select_dialog->accept();
+
+    select_dialog->accept();
+
+    const AdObject group = AD()->search_object(group_dn);
+    const QList<QString> group_members = group.get_strings(ATTRIBUTE_MEMBER);
+    const bool user_is_member_of_group = group_members.contains(user_dn);
+    QVERIFY2(user_is_member_of_group, "User did not become member of group");
 
     QVERIFY(true);
 }
@@ -270,9 +322,53 @@ bool TestADMC::object_exists(const QString &dn) {
 }
 
 void TestADMC::tab(const int n) {
+    static int tab_number = 0;
     for (int i = 0; i < n; i++) {
+        if (PRINT_FOCUS_WIDGET_BEFORE_TAB) {
+            qInfo() << tab_number << "=" << QApplication::focusWidget();
+        }
+
         QTest::keyClick(QApplication::focusWidget(), Qt::Key_Tab);
+
+        if (PRINT_FOCUS_WIDGET_AFTER_TAB) {
+            qInfo() << tab_number << "=" << QApplication::focusWidget();
+        }
     }
+}
+
+// Go down the list of objects by pressing Down arrow
+// until current item's dn equals to target dn
+void TestADMC::navigate_until_object(QTreeView *view, const QString &target_dn) {
+    QModelIndex prev_index;
+
+    while (true) {
+        const QModelIndex current_index = view->selectionModel()->currentIndex();
+
+        const QString current_dn = current_index.data(Role_DN).toString();
+        const bool found_object = (current_dn == target_dn);
+        if (found_object) {
+            // NOTE: have to set current to select the row. If the first item in view happens to match and no navigation is done, then that first row won't be "selected". Widgets that select items from views rely on whole rows being selected, like they are when you click on them.
+            view->setCurrentIndex(current_index);
+            break;
+        }
+
+        // NOTE: when reached end of view, current index
+        // will stop changing
+        const bool navigated_to_end_of_view = (prev_index == current_index);
+        QVERIFY2(!navigated_to_end_of_view, "Navigated to end of view and failed to find object");
+        if (navigated_to_end_of_view) {
+            break;
+        }
+
+        QTest::keyClick(QApplication::focusWidget(), Qt::Key_Down);
+
+        prev_index = current_index;
+    }
+}
+
+void TestADMC::wait_for_widget_exposed(QWidget *widget) {
+    const bool window_became_exposed = QTest::qWaitForWindowExposed(widget, 1000);
+    QVERIFY(window_became_exposed);
 }
 
 QTEST_MAIN(TestADMC)
