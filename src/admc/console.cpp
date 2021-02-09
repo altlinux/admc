@@ -390,19 +390,42 @@ void Console::on_object_added(const QString &dn) {
     const AdObject object = AD()->search_object(dn);
     const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
+    //
     // Add object to scope
+    //
     const bool should_be_in_scope = object_should_be_in_scope(object_class);
-    if (should_be_in_scope) {
+
+    // NOTE: Need to check for object already being in scope because this is possible due to complicated drag behavior. When an object is added to a container by dragging, the drop operation sets the drop target as current item of view. For some reason the event for current item change is sent before the event that triggers on_object_added() slot. The current item changed slot fetches the container and loads the new object into it.
+    const bool object_already_in_scope =
+    [=]() {
+        const QList<QModelIndex> scope_match = scope_model->match(scope_model->index(0, 0, scope_parent), Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchWrap));
+
+        return (scope_match.size() == 1);
+    }();
+
+    if (should_be_in_scope && !object_already_in_scope) {
         QStandardItem *parent_item = scope_model->itemFromIndex(scope_parent);
         auto object_item = make_scope_item(object);
         parent_item->appendRow(object_item);
     }
 
+    //
     // Add object to results
+    //
     const int scope_parent_id = scope_parent.data(ScopeRole_Id).toInt();
     QStandardItemModel *results_model = scope_id_to_results.value(scope_parent_id, nullptr);
     if (results_model != nullptr) {
-        make_results_row(results_model, object);
+        // NOTE: see note about about object_already_in_scope. Same thing.
+        const bool object_already_in_results =
+        [=]() {
+            const QList<QModelIndex> results_match = results_model->match(results_model->index(0, 0), Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchWrap));
+            
+            return (results_match.size() == 1);
+        }();
+
+        if (!object_already_in_results) {
+            make_results_row(results_model, object);
+        }
     }
 }
 
