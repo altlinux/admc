@@ -34,7 +34,7 @@ Q_OBJECT
 public:
     PasswordDialog(const QString &target_arg, QWidget *parent);
 
-private slots:
+public slots:
     void accept();
 
 private:
