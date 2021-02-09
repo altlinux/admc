@@ -369,7 +369,7 @@ void Console::on_object_added(const QString &dn) {
         const QString parent_dn = dn_get_parent(dn);
         const QList<QModelIndex> scope_parent_matches = scope_model->match(scope_model->index(0, 0), Role_DN, parent_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
         
-        if (scope_parent_matches.isEmpty()) {
+        if (!scope_parent_matches.isEmpty()) {
             return scope_parent_matches[0];
         } else {
             return QModelIndex();
