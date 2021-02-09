@@ -26,6 +26,7 @@
 
 class QCheckBox;
 class QDateEdit;
+class QFrame;
 
 class ExpiryEdit final : public AttributeEdit {
 Q_OBJECT
@@ -41,6 +42,7 @@ private:
     QCheckBox *never_check;
     QCheckBox *end_of_check;
     QDateEdit *edit;
+    QFrame *frame;
 
     QString get_new_value() const;
 };

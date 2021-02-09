@@ -29,6 +29,7 @@
 #include <QDateTime>
 #include <QButtonGroup>
 #include <QDateEdit>
+#include <QFrame>
 
 // TODO: do end of day by local time or UTC????
 
@@ -40,12 +41,24 @@ ExpiryEdit::ExpiryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
     never_check = new QCheckBox(tr("Never"));
     end_of_check = new QCheckBox(tr("End of:"));
 
+    never_check->setAutoExclusive(true);
+    end_of_check->setAutoExclusive(true);
+
     edit = new QDateEdit();
 
     auto button_group = new QButtonGroup();
-    button_group->setExclusive(true);
     button_group->addButton(never_check);
     button_group->addButton(end_of_check);
+
+    frame = new QFrame();
+    frame->setFrameStyle(QFrame::Raised);
+    frame->setFrameShape(QFrame::Box);
+
+    auto frame_layout = new QVBoxLayout();
+    frame->setLayout(frame_layout);
+    frame_layout->addWidget(never_check);
+    frame_layout->addWidget(end_of_check);
+    frame_layout->addWidget(edit);
 
     connect(
         never_check, &QCheckBox::stateChanged,
@@ -102,12 +115,7 @@ void ExpiryEdit::set_read_only(const bool read_only) {
 void ExpiryEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = ADCONFIG()->get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
 
-    auto sublayout = new QVBoxLayout();
-    sublayout->addWidget(never_check);
-    sublayout->addWidget(end_of_check);
-    sublayout->addWidget(edit);
-
-    layout->addRow(label_text, sublayout);
+    layout->addRow(label_text, frame);
 }
 
 bool ExpiryEdit::apply(const QString &dn) const {
