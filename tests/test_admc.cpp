@@ -144,7 +144,7 @@ void TestADMC::object_menu_new_user() {
     create(parent, CLASS_USER, parent_widget);
     auto create_dialog = parent_widget->findChild<CreateDialog *>();
     QVERIFY2((create_dialog != nullptr), "Failed to find create dialog");
-    QApplication::setActiveWindow(create_dialog);
+    wait_for_widget_exposed(create_dialog);
 
     // Enter name
     QTest::keyClicks(QApplication::focusWidget(), name);
@@ -175,7 +175,7 @@ void TestADMC::object_menu_new_ou() {
     // Create ou
     create(parent, CLASS_OU, parent_widget);
     auto create_dialog = parent_widget->findChild<CreateDialog *>();
-    QApplication::setActiveWindow(create_dialog);
+    wait_for_widget_exposed(create_dialog);
 
     // Enter name
     QTest::keyClicks(QApplication::focusWidget(), name);
@@ -262,7 +262,7 @@ void TestADMC::object_menu_move() {
     move({user_dn}, parent_widget);
     auto move_dialog = parent_widget->findChild<SelectContainerDialog *>();
     QVERIFY2((move_dialog != nullptr), "Failed to find move dialog");
-    QApplication::setActiveWindow(move_dialog);
+    wait_for_widget_exposed(move_dialog);
 
     QTreeView *move_dialog_view = qobject_cast<QTreeView *>(QApplication::focusWidget());
     QVERIFY2((move_dialog_view != nullptr), "Failed to cast move_dialog_view");
