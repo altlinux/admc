@@ -56,6 +56,8 @@ enum ScopeRole {
 
 // TODO: currently showing refresh action always for all scope nodes. Could show it in results if node is in scope? Also could not show it if results isn't loaded?
 
+bool object_should_be_in_scope(const QString &object_class);
+
 QHash<int, QStandardItemModel *> scope_id_to_results;
 
 Console::Console(MenuBar *menubar_arg)
@@ -361,27 +363,42 @@ void Console::on_object_deleted(const QString &dn) {
 }
 
 void Console::on_object_added(const QString &dn) {
-    // Add to scope
-    const QString parent_dn = dn_get_parent(dn);
-    const QList<QModelIndex> scope_parent_matches = scope_model->match(scope_model->index(0, 0), Role_DN, parent_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
-    if (scope_parent_matches.isEmpty()) {
+    // Find parent of object in scope tree (if it exists)
+    const QModelIndex scope_parent =
+    [=]() {
+        const QString parent_dn = dn_get_parent(dn);
+        const QList<QModelIndex> scope_parent_matches = scope_model->match(scope_model->index(0, 0), Role_DN, parent_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+        
+        if (!scope_parent_matches.isEmpty()) {
+            return scope_parent_matches[0];
+        } else {
+            return QModelIndex();
+        }
+    }();
+
+    const bool parent_not_loaded = (!scope_parent.isValid());
+    if (parent_not_loaded) {
         return;
     }
 
-    const QModelIndex scope_parent = scope_parent_matches[0];
+    // NOTE: only need to add object to console if parent was fetched already. If parent wasn't fetched, then this new object will be added when parent is fetched.
+    const bool parent_was_fetched = scope_parent.data(ScopeRole_Fetched).toBool();
+    if (!parent_was_fetched) {
+        return;
+    }
 
     const AdObject object = AD()->search_object(dn);
+    const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
-    const bool fetched = scope_parent.data(ScopeRole_Fetched).toBool();
-
-    // NOTE: only add if parent was fetched already. If parent wasn't fetched, then this new object will be added when parent is fetched.
-    if (fetched) {
+    // Add object to scope
+    const bool should_be_in_scope = object_should_be_in_scope(object_class);
+    if (should_be_in_scope) {
         QStandardItem *parent_item = scope_model->itemFromIndex(scope_parent);
         auto object_item = make_scope_item(object);
         parent_item->appendRow(object_item);
     }
 
-    // Add to results
+    // Add object to results
     const int scope_parent_id = scope_parent.data(ScopeRole_Id).toInt();
     QStandardItemModel *results_model = scope_id_to_results.value(scope_parent_id, nullptr);
     if (results_model != nullptr) {
@@ -626,18 +643,12 @@ void Console::fetch_scope_node(const QModelIndex &index) {
     //
     // Load into scope
     //
-    const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
-    const bool show_non_containers_ON = SETTINGS()->get_bool(BoolSetting_ShowNonContainersInConsoleTree);
     QList<QStandardItem *> rows;
     for (const AdObject object : search_results.values()) {
-        const bool is_container =
-        [=]() {
-            const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
+        const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
+        const bool should_be_in_scope = object_should_be_in_scope(object_class);
 
-            return container_classes.contains(object_class);
-        }();
-
-        if (is_container || show_non_containers_ON) {
+        if (should_be_in_scope) {
             auto child = make_scope_item(object);
             rows.append(child);
         }
@@ -719,13 +730,11 @@ QModelIndex Console::get_scope_node_from_id(const int id) const {
 
 void Console::on_result_item_double_clicked(const QModelIndex &index)
 {
-    const auto objectClass = index.data(Role_ObjectClass);
-
-    const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
-    const bool is_container = container_classes.contains(objectClass.toString());
-
     const QString dn = index.data(Role_DN).toString();
-    if (is_container) {
+    const QString object_class = index.data(Role_ObjectClass).toString();
+    const bool should_be_in_scope = object_should_be_in_scope(object_class);
+
+    if (should_be_in_scope) {
         // Find the scope item that represents this object
         // and make it the current item of scope tree.
         const QList<QModelIndex> scope_index_matches = scope_model->match(scope_model->index(0, 0), Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
@@ -736,4 +745,16 @@ void Console::on_result_item_double_clicked(const QModelIndex &index)
     } else {
         PropertiesDialog::open_for_target(dn);
     }
+}
+
+// NOTE: "containers" referenced here don't mean objects
+// with "container" object class. Instead it means all the
+// objects that can have children(some of which are not
+// "container" class).
+bool object_should_be_in_scope(const QString &object_class) {
+    const bool show_non_containers_ON = SETTINGS()->get_bool(BoolSetting_ShowNonContainersInConsoleTree);
+
+    const QList<QString> filter_containers = ADCONFIG()->get_filter_containers();
+
+    return (filter_containers.contains(object_class) || show_non_containers_ON);
 }
