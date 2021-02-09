@@ -132,7 +132,7 @@ void TestADMC::object_delete() {
     QVERIFY2(!object_exists(dn), "Deleted object exists");
 }
 
-void TestADMC::create_dialog_user() {
+void TestADMC::object_menu_new_user() {
     const QString name = TEST_USER;
     const QString logon_name = TEST_USER_LOGON;
     const QString password = TEST_PASSWORD;
@@ -166,7 +166,7 @@ void TestADMC::create_dialog_user() {
     QVERIFY(true);
 }
 
-void TestADMC::create_dialog_ou() {
+void TestADMC::object_menu_new_ou() {
     const QString name = TEST_OU;
     const QString parent = test_arena_dn();
     const QString dn = test_object_dn(name, CLASS_OU);
@@ -186,7 +186,7 @@ void TestADMC::create_dialog_ou() {
     QVERIFY(true);
 }
 
-void TestADMC::create_dialog_computer() {
+void TestADMC::object_menu_new_computer() {
     const QString object_class = CLASS_COMPUTER;
     const QString name = TEST_COMPUTER;
     const QString parent = test_arena_dn();
@@ -211,7 +211,7 @@ void TestADMC::create_dialog_computer() {
     QVERIFY(true);
 }
 
-void TestADMC::create_dialog_group() {
+void TestADMC::object_menu_new_group() {
     const QString object_class = CLASS_GROUP;
     const QString name = TEST_GROUP;
     const QString parent = test_arena_dn();
