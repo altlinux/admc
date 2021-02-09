@@ -46,6 +46,7 @@
 #define TEST_PASSWORD "pass123!"
 #define TEST_OU "test-ou"
 #define TEST_GROUP "test-group"
+#define TEST_COMPUTER "test-group"
 
 #define PRINT_FOCUS_WIDGET_BEFORE_TAB false
 #define PRINT_FOCUS_WIDGET_AFTER_TAB false
@@ -180,6 +181,56 @@ void TestADMC::create_dialog_ou() {
     create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created OU doesn't exist");
+
+    QVERIFY(true);
+}
+
+void TestADMC::create_dialog_computer() {
+    const QString object_class = CLASS_COMPUTER;
+    const QString name = TEST_COMPUTER;
+    const QString parent = test_arena_dn();
+    const QString dn = test_object_dn(name, object_class);
+
+    // Open create dialog
+    create(parent, object_class, parent_widget);
+    auto create_dialog = parent_widget->findChild<CreateDialog *>();
+    wait_for_widget_exposed(create_dialog);
+
+    // Enter name
+    QTest::keyClicks(QApplication::focusWidget(), name);
+
+    // Enter logon name
+    tab();
+    QTest::keyClicks(QApplication::focusWidget(), name);
+
+    create_dialog->accept();
+
+    QVERIFY2(object_exists(dn), "Created computer doesn't exist");
+
+    QVERIFY(true);
+}
+
+void TestADMC::create_dialog_group() {
+    const QString object_class = CLASS_GROUP;
+    const QString name = TEST_GROUP;
+    const QString parent = test_arena_dn();
+    const QString dn = test_object_dn(name, object_class);
+
+    // Open create dialog
+    create(parent, object_class, parent_widget);
+    auto create_dialog = parent_widget->findChild<CreateDialog *>();
+    wait_for_widget_exposed(create_dialog);
+
+    // Enter name
+    QTest::keyClicks(QApplication::focusWidget(), name);
+
+    // Enter logon name
+    tab();
+    QTest::keyClicks(QApplication::focusWidget(), name);
+
+    create_dialog->accept();
+
+    QVERIFY2(object_exists(dn), "Created group doesn't exist");
 
     QVERIFY(true);
 }

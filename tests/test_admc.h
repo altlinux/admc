@@ -64,6 +64,9 @@ private slots:
     void cleanup();
 
     // Tests
+    void create_dialog_computer();
+    void create_dialog_group();
+    
     void object_menu_add_to_group();
     void object_add();
     void object_delete();
