@@ -465,14 +465,14 @@ void TestADMC::test_object_rename(const QString& oldname, const QString& newname
 
     // Create test object
     const bool create_success = AD()->object_add(dn, object_class);
-    QVERIFY2(create_success, "Failed to create" + object_class.toLatin1());
-    QVERIFY2(object_exists(dn), "Created " + object_class.toLatin1() + " doesn't exist");
+    QVERIFY2(create_success, qPrintable(QString("Failed to create %1").arg(object_class)));
+    QVERIFY2(object_exists(dn), qPrintable(QString("Created %1 doesn't exist").arg(object_class)));
 
     // Open rename dialog
     rename({dn}, parent_widget);
     auto rename_dialog = parent_widget->findChild<RenameDialog *>();
     QVERIFY2((rename_dialog != nullptr), "Failed to find rename dialog");
-    QApplication::setActiveWindow(rename_dialog);
+    wait_for_widget_exposed(rename_dialog);
 
     rename_callback(newname);
 
