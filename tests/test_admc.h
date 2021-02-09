@@ -69,13 +69,18 @@ private slots:
     void object_menu_add_to_group();
     void object_add();
     void object_delete();
-    void create_dialog_user();
-    void create_dialog_ou();
+    
+    void object_menu_new_user();
+    void object_menu_new_ou();
+    void object_menu_new_computer();
+    void object_menu_new_group();
+
     void object_menu_move();
     void object_menu_rename_computer();
     void object_menu_rename_user();
     void object_menu_rename_ou();
     void object_menu_rename_group();
+    void object_menu_reset_password();
 
 private:
     // Use this as parents for widgets used inside tests.

@@ -34,6 +34,7 @@
 #include "find_select_dialog.h"
 #include "settings.h"
 #include "rename_dialog.h"
+#include "password_dialog.h"
 
 #include <QTest>
 #include <QDebug>
@@ -132,7 +133,7 @@ void TestADMC::object_delete() {
     QVERIFY2(!object_exists(dn), "Deleted object exists");
 }
 
-void TestADMC::create_dialog_user() {
+void TestADMC::object_menu_new_user() {
     const QString name = TEST_USER;
     const QString logon_name = TEST_USER_LOGON;
     const QString password = TEST_PASSWORD;
@@ -166,7 +167,7 @@ void TestADMC::create_dialog_user() {
     QVERIFY(true);
 }
 
-void TestADMC::create_dialog_ou() {
+void TestADMC::object_menu_new_ou() {
     const QString name = TEST_OU;
     const QString parent = test_arena_dn();
     const QString dn = test_object_dn(name, CLASS_OU);
@@ -182,6 +183,56 @@ void TestADMC::create_dialog_ou() {
     create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created OU doesn't exist");
+
+    QVERIFY(true);
+}
+
+void TestADMC::object_menu_new_computer() {
+    const QString object_class = CLASS_COMPUTER;
+    const QString name = TEST_COMPUTER;
+    const QString parent = test_arena_dn();
+    const QString dn = test_object_dn(name, object_class);
+
+    // Open create dialog
+    create(parent, object_class, parent_widget);
+    auto create_dialog = parent_widget->findChild<CreateDialog *>();
+    wait_for_widget_exposed(create_dialog);
+
+    // Enter name
+    QTest::keyClicks(QApplication::focusWidget(), name);
+
+    // Enter logon name
+    tab();
+    QTest::keyClicks(QApplication::focusWidget(), name);
+
+    create_dialog->accept();
+
+    QVERIFY2(object_exists(dn), "Created computer doesn't exist");
+
+    QVERIFY(true);
+}
+
+void TestADMC::object_menu_new_group() {
+    const QString object_class = CLASS_GROUP;
+    const QString name = TEST_GROUP;
+    const QString parent = test_arena_dn();
+    const QString dn = test_object_dn(name, object_class);
+
+    // Open create dialog
+    create(parent, object_class, parent_widget);
+    auto create_dialog = parent_widget->findChild<CreateDialog *>();
+    wait_for_widget_exposed(create_dialog);
+
+    // Enter name
+    QTest::keyClicks(QApplication::focusWidget(), name);
+
+    // Enter logon name
+    tab();
+    QTest::keyClicks(QApplication::focusWidget(), name);
+
+    create_dialog->accept();
+
+    QVERIFY2(object_exists(dn), "Created group doesn't exist");
 
     QVERIFY(true);
 }
@@ -234,6 +285,49 @@ void TestADMC::object_menu_move() {
     QVERIFY2(object_exists(user_dn_after_move), "Moved object doesn't exist");
 
     QVERIFY(true);
+}
+
+void TestADMC::object_menu_reset_password() {
+    const QString user_name = TEST_USER;
+    const QString user_dn = test_object_dn(user_name, CLASS_USER);
+    const QString password = "pass123!";
+
+    // Create test user
+    const bool create_user_success = AD()->object_add(user_dn, CLASS_USER);
+    QVERIFY2(create_user_success, "Failed to create user");
+    QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
+
+    const QByteArray pwdLastSet_value_before =
+    [=]() {
+        const AdObject object = AD()->search_object(user_dn);
+
+        return object.get_value(ATTRIBUTE_PWD_LAST_SET);
+    }();
+
+    // Open password dialog
+    reset_password(user_dn, parent_widget);
+    auto password_dialog = parent_widget->findChild<PasswordDialog *>();
+    QVERIFY2((password_dialog != nullptr), "Failed to find password_dialog");
+    wait_for_widget_exposed(password_dialog);
+
+    // Enter password
+    QTest::keyClicks(QApplication::focusWidget(), password);
+
+    // Confirm password
+    tab();
+    QTest::keyClicks(QApplication::focusWidget(), password);
+
+    password_dialog->accept();
+
+    const QByteArray pwdLastSet_value_after =
+    [=]() {
+        const AdObject object = AD()->search_object(user_dn);
+        
+        return object.get_value(ATTRIBUTE_PWD_LAST_SET);
+    }();
+
+    const bool password_changed = (pwdLastSet_value_before != pwdLastSet_value_after);
+    QVERIFY2(password_changed, "Failed to change password");
 }
 
 void TestADMC::object_menu_add_to_group() {
