@@ -731,7 +731,7 @@ QModelIndex Console::get_scope_node_from_id(const int id) const {
 void Console::on_result_item_double_clicked(const QModelIndex &index)
 {
     const QString dn = index.data(Role_DN).toString();
-    const QString object_class = index.data(Role_DN).toString();
+    const QString object_class = index.data(Role_ObjectClass).toString();
     const bool should_be_in_scope = object_should_be_in_scope(object_class);
 
     if (should_be_in_scope) {
