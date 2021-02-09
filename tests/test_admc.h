@@ -43,6 +43,8 @@
 
 #include <QTest>
 
+#include <functional>
+
 class QString;
 class QTreeView;
 class QPushButton;
@@ -70,6 +72,10 @@ private slots:
     void create_dialog_user();
     void create_dialog_ou();
     void object_menu_move();
+    void object_menu_rename_computer();
+    void object_menu_rename_user();
+    void object_menu_rename_ou();
+    void object_menu_rename_group();
 
 private:
     // Use this as parents for widgets used inside tests.
@@ -88,6 +94,13 @@ private:
     // Creates dn for object with given name whose parent is
     // test arena. Class is used to determine suffix.
     QString test_object_dn(const QString &name, const QString &object_class);
+
+    // Creates object of given type with specified name and
+    // runs a specified rename function on this object.
+    void test_object_rename(const QString& oldname, const QString& newname, const QString &object_class, std::function<void(const QString&)> rename_callback);
+
+    // Common renamer for object.
+    static void basic_rename(const QString& newname);
 
     // Tests object's existance on the server.
     bool object_exists(const QString &dn);

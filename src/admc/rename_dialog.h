@@ -37,8 +37,10 @@ public:
     static void success_msg(const QString &old_name);
     static void fail_msg(const QString &old_name);
 
-private slots:
+public slots:
     void accept();
+
+private slots:
     void on_edited();
     void reset();
 
