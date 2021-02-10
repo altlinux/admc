@@ -81,6 +81,7 @@ private slots:
     void object_menu_rename_ou();
     void object_menu_rename_group();
     void object_menu_reset_password();
+    void object_menu_disable_enable_account();
 
 private:
     // Use this as parents for widgets used inside tests.

@@ -330,6 +330,58 @@ void TestADMC::object_menu_reset_password() {
     QVERIFY2(password_changed, "Failed to change password");
 }
 
+void TestADMC::object_menu_disable_enable_account() {
+    auto test_disable_enable =
+    [=](const bool initial_disabled_state) {
+        const QString dn =
+        [=]() {
+            const QString name =
+            [=]() {
+                if (initial_disabled_state) {
+                    return QString("disabled-%1").arg(TEST_USER);
+                } else {
+                    return QString("enabled-%1").arg(TEST_USER);
+                }
+            }();
+
+            return test_object_dn(name, CLASS_USER);
+        }();
+
+        const bool create_success = AD()->object_add(dn, CLASS_USER);
+        QVERIFY2(create_success, qPrintable(QString("Failed to create user - %1").arg(dn)));
+        QVERIFY2(object_exists(dn), qPrintable(QString("Created user doesn't exist - %1").arg(dn)));
+
+        // Setup initial disabled state
+        const bool set_disabled_success = AD()->user_set_account_option(dn, AccountOption_Disabled, initial_disabled_state);
+        QVERIFY2(set_disabled_success, qPrintable(QString("Failed to set disabled account option for user - %1").arg(dn)));
+
+        // Modify state using object menu
+        if (initial_disabled_state) {
+            enable_account({dn}, parent_widget);
+        } else {
+            disable_account({dn}, parent_widget);
+        }
+
+        // Check that final disabled state has changed
+        const AdObject object = AD()->search_object(dn);
+        const bool final_disabled_state = object.get_account_option(AccountOption_Disabled);
+        const bool disabled_state_changed = (final_disabled_state != initial_disabled_state);
+
+        const QString error_text =
+        [=]() {
+            if (initial_disabled_state) {
+                return QString("Failed to enable user - %1").arg(dn);
+            } else {
+                return QString("Failed to disable user - %1").arg(dn);
+            }
+        }();
+        QVERIFY2(disabled_state_changed, qPrintable(error_text));
+    };
+
+    test_disable_enable(true);
+    test_disable_enable(false);
+}
+
 void TestADMC::object_menu_add_to_group() {
     const QString parent = test_arena_dn();
     
