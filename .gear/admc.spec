@@ -38,7 +38,7 @@ Requires: libkrb5
 
 Source0: %name-%version.tar
 
-%package admc-test
+%package test
 Summary: Tests for ADMC
 Group: Other
 
@@ -49,7 +49,7 @@ Group: Other
 %description
 AD editor
 
-%description admc-test
+%description test
 Tests for ADMC
 
 %description gpgui
@@ -70,7 +70,7 @@ cd BUILD
 %doc README.md
 %_bindir/admc
 
-%files admc-test
+%files test
 %_bindir/admc-test
 
 %files gpgui
