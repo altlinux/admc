@@ -42,6 +42,7 @@ class QStandardItem;
 class AdObject;
 class MenuBar;
 class QLabel;
+class QSortFilterProxyModel;
 template <typename T> class QList;
 
 class Console final : public QWidget {
@@ -76,6 +77,7 @@ private:
     MenuBar *menubar;
     QWidget *results_header;
     QLabel *results_header_label;
+    QSortFilterProxyModel *results_proxy_model;
 
     // NOTE: store target history as scope node id's
     // Last is closest to current
