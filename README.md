@@ -1,21 +1,27 @@
+
+# Building
+
+See .gear/admc.spec for required packages.
+- "BuildRequires:" - packages required for building the app.
+- "Requires:" - packages required for running the app.
+
+Once required packages are installed, run this from the admc folder:
+```
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make -j12
+```
+
+# Usage:
+
+This app requires a working Active Directory domain and for the client machine to be connected and logged into the domain. You can find articles about these topics on [ALTLinux wiki](https://www.altlinux.org/%D0%94%D0%BE%D0%BC%D0%B5%D0%BD).
+
+Launch admc from the build directory:
+```
+$ ./admc
+```
+
+# Screenshots
+
 ![image](https://i.imgur.com/GuRmwnq.png)
-
-# How to use:
-
-## ADMC
-Join your machine to the domain. See this [guide](https://www.altlinux.org/%D0%A3%D1%87%D0%B0%D1%81%D1%82%D0%BD%D0%B8%D0%BA:Toga/ADJoin).
-
-Use `kinit` to setup kerberos credentials (if needed).
-
-Launch admc.
-
-## GPGUI
-
-### Remote
-For now only available from ADMC. Turn on "Advanced View" in view options. Expand to domain->System->Policies. Right click on policy folder and select "Edit Policy".
-
-### Local
-Download example policy folders from [here](http://get.srt.basealt.ru/policies/).
-
-For now only browsing the folder and editing Shortcuts xml works.
-Menubar -> File.
