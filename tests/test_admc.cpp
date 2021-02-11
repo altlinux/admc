@@ -35,6 +35,7 @@
 #include "settings.h"
 #include "rename_dialog.h"
 #include "password_dialog.h"
+#include "find_dialog.h"
 
 #include <QTest>
 #include <QDebug>
@@ -380,6 +381,90 @@ void TestADMC::object_menu_disable_enable_account() {
 
     test_disable_enable(true);
     test_disable_enable(false);
+}
+
+void TestADMC::object_menu_find_simple()
+{
+    const QString parent = test_arena_dn();
+
+    const QString user_name = TEST_USER;
+    const QString user_dn = test_object_dn(user_name, CLASS_USER);
+
+    // Create test user
+    const bool create_user_success = AD()->object_add(user_dn, CLASS_USER);
+    QVERIFY2(create_user_success, "Failed to create user");
+    QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
+
+    find(parent, parent_widget);
+
+    auto find_dialog = parent_widget->findChild<FindDialog *>();
+    QVERIFY2((find_dialog != nullptr), "Failed to find find_dialog");
+    wait_for_widget_exposed(find_dialog);
+
+    tab();
+    tab();
+    tab();
+
+    QTest::keyClicks(QApplication::focusWidget(), user_name);
+
+    auto children = find_dialog->findChildren<QPushButton*>();
+    QPushButton* find_button = nullptr;
+    for (const auto& child : children) {
+        if (child->text() == tr("Find")) {
+            find_button = child;
+        }
+    }
+
+    QVERIFY2((find_button != nullptr), "Failed to find find_button");
+
+    QTest::mouseClick(find_button, Qt::LeftButton);
+
+    auto find_results = find_dialog->findChild<QTreeView*>();
+
+    QVERIFY2(find_results->model()->rowCount(), "No results found");
+}
+
+void TestADMC::object_menu_find_advanced()
+{
+    const QString parent = test_arena_dn();
+
+    const QString user_name = TEST_USER;
+    const QString user_dn = test_object_dn(user_name, CLASS_USER);
+
+    // Create test user
+    const bool create_user_success = AD()->object_add(user_dn, CLASS_USER);
+    QVERIFY2(create_user_success, "Failed to create user");
+    QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
+
+    find(parent, parent_widget);
+
+    auto find_dialog = parent_widget->findChild<FindDialog *>();
+    QVERIFY2((find_dialog != nullptr), "Failed to find find_dialog");
+    wait_for_widget_exposed(find_dialog);
+
+    tab();
+    tab();
+    QTest::keyClick(QApplication::focusWidget(), Qt::Key_Right);
+    QTest::keyClick(QApplication::focusWidget(), Qt::Key_Right);
+    tab();
+
+    QTest::keyClicks(QApplication::focusWidget(), QString("(objectClass=*)"));
+
+    auto children = find_dialog->findChildren<QPushButton*>();
+    QPushButton* find_button = nullptr;
+    for (const auto& child : children) {
+        if (child->text() == tr("Find")) {
+            find_button = child;
+        }
+    }
+
+    QVERIFY2((find_button != nullptr), "Failed to find find_button");
+
+    QTest::mouseClick(find_button, Qt::LeftButton);    
+
+    auto find_results = find_dialog->findChild<QTreeView*>();
+
+    QVERIFY2(find_results->model()->rowCount(), "No results found");
 }
 
 void TestADMC::object_menu_add_to_group() {
