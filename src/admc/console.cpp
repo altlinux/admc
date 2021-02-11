@@ -46,6 +46,7 @@
 #include <QStack>
 #include <QMenu>
 #include <QLabel>
+#include <QSortFilterProxyModel>
 
 enum ScopeRole {
     ScopeRole_Id = Role_ObjectClass + 1,
@@ -88,6 +89,9 @@ Console::Console(MenuBar *menubar_arg)
     results_view->sortByColumn(0, Qt::AscendingOrder);
     results_view->setSelectionMode(QAbstractItemView::ExtendedSelection);
     results_view->setDragDropOverwriteMode(true);
+
+    results_proxy_model = new QSortFilterProxyModel(this);
+    results_view->setModel(results_proxy_model);
 
     SETTINGS()->setup_header_state(results_view->header(), VariantSetting_ResultsHeader);
     
@@ -300,7 +304,7 @@ void Console::on_current_scope_changed(const QModelIndex &current, const QModelI
     const int id = current.data(ScopeRole_Id).toInt();
 
     QStandardItemModel *results_model = scope_id_to_results[id];
-    results_view->setModel(results_model);
+    results_proxy_model->setSourceModel(results_model);
 
     // Update header with new object counts when rows are added/removed
     connect(
