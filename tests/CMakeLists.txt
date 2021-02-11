@@ -129,3 +129,5 @@ target_link_libraries(test_admc
     Ldap::Ldap
     Resolv::Resolv
 )
+
+install(TARGETS test_admc)

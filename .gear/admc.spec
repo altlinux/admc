@@ -38,12 +38,19 @@ Requires: libkrb5
 
 Source0: %name-%version.tar
 
+%package admc-test
+Summary: Tests for ADMC
+Group: Other
+
 %package gpgui
 Summary: Group Policy Template Editor
 Group: Other
 
 %description
 AD editor
+
+%description admc-test
+Tests for ADMC
 
 %description gpgui
 Group Policy Template editor GUI
@@ -62,6 +69,9 @@ cd BUILD
 %files
 %doc README.md
 %_bindir/admc
+
+%files admc-test
+%_bindir/test_admc
 
 %files gpgui
 %_bindir/gpgui
