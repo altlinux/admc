@@ -13,6 +13,8 @@ $ cmake ..
 $ make -j12
 ```
 
+Note that currently ADMC is only guaranteed to be buildable on ALTLinux.
+
 # Usage:
 
 This app requires a working Active Directory domain and for the client machine to be connected and logged into the domain. You can find articles about these topics on [ALTLinux wiki](https://www.altlinux.org/%D0%94%D0%BE%D0%BC%D0%B5%D0%BD).
