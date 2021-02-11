@@ -36,6 +36,7 @@
 #include "rename_dialog.h"
 #include "password_dialog.h"
 #include "find_dialog.h"
+#include "find_widget.h"
 
 #include <QTest>
 #include <QDebug>
@@ -410,7 +411,7 @@ void ADMCTest::object_menu_find_simple()
     auto children = find_dialog->findChildren<QPushButton*>();
     QPushButton* find_button = nullptr;
     for (const auto& child : children) {
-        if (child->text() == tr("Find")) {
+        if (child->text() == tr(FIND_BUTTON_LABEL)) {
             find_button = child;
         }
     }
@@ -453,7 +454,7 @@ void ADMCTest::object_menu_find_advanced()
     auto children = find_dialog->findChildren<QPushButton*>();
     QPushButton* find_button = nullptr;
     for (const auto& child : children) {
-        if (child->text() == tr("Find")) {
+        if (child->text() == tr(FIND_BUTTON_LABEL)) {
             find_button = child;
         }
     }

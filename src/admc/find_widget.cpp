@@ -67,7 +67,7 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
 
     auto quick_find_check = new QCheckBox(tr("Quick find"));
 
-    auto find_button = new QPushButton(tr("Find"));
+    auto find_button = new QPushButton(tr(FIND_BUTTON_LABEL));
     find_button->setAutoDefault(false);
 
     auto stop_button = new QPushButton(tr("Stop"));
