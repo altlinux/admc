@@ -22,6 +22,15 @@ Launch admc from the build directory:
 $ ./admc
 ```
 
+# Testing
+
+Tests also require a domain and a connection to the domain.
+
+Launch tests from the build directory:
+```
+$ ./test_admc
+```
+
 # Screenshots
 
 ![image](https://i.imgur.com/GuRmwnq.png)
