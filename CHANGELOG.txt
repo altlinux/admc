@@ -2,11 +2,10 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
- VERSION 0.4.0 (In progress)
+ VERSION 0.4.0 (Released ??-??-2021)
 -----------------------------------------------------------------------
-- Renamed Details dialog to Properties dialog
-- Added more tabs to Properties dialog
-    - general
+- Properties: Added more tabs to Properties dialog:
+    - general 
     - object
     - account
     - address
@@ -15,36 +14,31 @@ CHANGELOG
     - profile
     - members
     - member of
-    - group policy
-    - links to
-- Added traditional way to display Properties dialog as a dialog. Docked mode is still available via options.
-- Changed Properties dialog to display tab titles in a list.
-- Improved object menu
-    - added most of the actions
-    - added ability to perform actions on multiple objects
-    - duplicated object menu to menubar for accesibility
-- Improved attributes tab in Properties dialog
+- Properties: Changed Properties to be a dialog instead of docked widget.
+- Properties: Tab titles are now displayed in a vertical list to the left of tab content.
+- Properties: Renamed from Details to Properties.
+- Attributes Tab: Added new features:
     - filtering
     - attribute type column
     - specialized editors for all attribute types
-- Added new dialogs
+- Object Menu: Added most of the object actions.
+- Object Menu: Actions can now be performed for multiple objects. Select multiple objects to load object menu for all of them. Can move, delete, rename and perform other operations, depending on selection.
+- Object Menu: Now available in menubar for accessibility.
+- Object Menu: Added new dialogs:
     - rename dialog
     - find dialog
     - create dialog
-    - select dialog (not used directly on it's own, but used by other dialogs and menus)
-- Removed login dialog
-    - new usage scheme is to do kinit before starting the app and then use the app
-    - there's also an option to attempt to connect after app has started
-- Added more customization settings
-    - toggle some widgets
-    - toggle columns of object lists
+    - select dialog
+- Settings: Added more customization:
+    - showing/hiding widgets
     - show non-container objects in containers widget
-- Added Navigation menu which allows navigating through history of container targets.
-- Added Contents widget filtering
-- Reduced lag when working with large amounts of objects (1000s)
-- Implemented displaying busy indicator on cursor for long operations
-- Implemented correct dialog modality for all dialogs
-- Improved icons
-- Enabled sorting of most object lists
-- Added extra columns to some object lists
-- Improved default column widths for object lists
+- Settings: Added Contents widget filtering
+- Menubar: Added Navigation menu.
+- Performance: Reduced lag when working with large amounts of objects (1000s)
+- Misc: Removed login dialog. New usage scheme is to do authenticate via kerberos before starting the app using "kinit" and then use the app. There's also an option to attempt to connect after app has started.
+- Misc: Implemented displaying busy indicator on cursor for long operations.
+- Misc: Implemented correct dialog modality for all dialogs.
+- Misc: Selected better object icons.
+- Misc: Enabled sorting of most object lists.
+- Misc: Improved default column widths for object lists.
+- Misc: Implemented saving of column widths between app sessions.
