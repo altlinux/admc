@@ -83,6 +83,9 @@ private slots:
     void object_menu_reset_password();
     void object_menu_disable_enable_account();
 
+    void object_menu_find_simple();
+    void object_menu_find_advanced();
+
 private:
     // Use this as parents for widgets used inside tests.
     // For every test a new parent will be created and after
