@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TEST_ADMC_H
-#define TEST_ADMC_H
+#ifndef ADMC_TEST_H
+#define ADMC_TEST_H
 
 /*
  * ADMC - AD Management Center
@@ -49,7 +49,7 @@ class QString;
 class QTreeView;
 class QPushButton;
 
-class TestADMC : public QObject {
+class ADMCTest : public QObject {
     Q_OBJECT
 
 private slots:
@@ -124,4 +124,4 @@ private:
     void wait_for_widget_exposed(QWidget *widget);
 };
 
-#endif /* TEST_ADMC_H */
+#endif /* ADMC_TEST_H */

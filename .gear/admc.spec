@@ -71,7 +71,7 @@ cd BUILD
 %_bindir/admc
 
 %files admc-test
-%_bindir/test_admc
+%_bindir/admc-test
 
 %files gpgui
 %_bindir/gpgui

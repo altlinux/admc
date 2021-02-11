@@ -26,8 +26,8 @@ set(ADMC_ORGANIZATION_DOMAIN "basealt.ru")
 configure_file(${PROJECT_SOURCE_DIR}/src/admc/config.h.in "config.h")
 
 # TODO: not sure how to avoid duplicating the list of ADMC sources here. Maybe could make a shared list somehow? Also maybe move "tests" so that it's inside "src/admc".
-add_executable(test_admc
-    test_admc.cpp
+add_executable(admc-test
+    admc_test.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/ad_interface.cpp
     
@@ -106,11 +106,11 @@ add_executable(test_admc
     ${PROJECT_SOURCE_DIR}/translations/translations.qrc
 )
 
-add_test(test_admc
-    test_admc
+add_test(admc-test
+    admc-test
 )
 
-target_include_directories(test_admc
+target_include_directories(admc-test
     PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -119,7 +119,7 @@ target_include_directories(test_admc
         ${PROJECT_SOURCE_DIR}/tests
 )
 
-target_link_libraries(test_admc
+target_link_libraries(admc-test
     Qt5::Core
     Qt5::Widgets
     Qt5::Test
@@ -130,4 +130,4 @@ target_link_libraries(test_admc
     Resolv::Resolv
 )
 
-install(TARGETS test_admc)
+install(TARGETS admc-test)

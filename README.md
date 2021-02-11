@@ -30,7 +30,7 @@ Tests also require a domain and a connection to the domain.
 
 Launch tests from the build directory:
 ```
-$ ./test_admc
+$ ./admc-test
 ```
 
 # Screenshots

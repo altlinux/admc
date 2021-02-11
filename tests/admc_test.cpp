@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "test_admc.h"
+#include "admc_test.h"
 
 #include "ad_interface.h"
 #include "ad_defines.h"
@@ -54,7 +54,7 @@
 #define PRINT_FOCUS_WIDGET_BEFORE_TAB false
 #define PRINT_FOCUS_WIDGET_AFTER_TAB false
 
-void TestADMC::initTestCase() {
+void ADMCTest::initTestCase() {
     const bool connected = AD()->connect();
     QVERIFY2(connected, "Failed to connect to AD server");
 
@@ -66,11 +66,11 @@ void TestADMC::initTestCase() {
     cleanup();
 }
 
-void TestADMC::cleanupTestCase() {
+void ADMCTest::cleanupTestCase() {
 
 }
 
-void TestADMC::init() {
+void ADMCTest::init() {
     parent_widget = new QWidget();
     
     const QString dn = test_arena_dn();
@@ -82,7 +82,7 @@ void TestADMC::init() {
 // NOTE: can't just delete test arena while it has children
 // because LDAP forbids deleting non-leaf objects. So need
 // to delete leaves first.
-void TestADMC::delete_test_arena_recursive(const QString &parent) {
+void ADMCTest::delete_test_arena_recursive(const QString &parent) {
     const QHash<QString, AdObject> search_results = AD()->search(QString(), QList<QString>(), SearchScope_Children, parent);
 
     const bool has_children = (search_results.size() > 0);
@@ -96,7 +96,7 @@ void TestADMC::delete_test_arena_recursive(const QString &parent) {
     QVERIFY2(delete_success, "Failed to delete test-arena or it's contents");
 }
 
-void TestADMC::cleanup() {
+void ADMCTest::cleanup() {
     if (parent_widget != nullptr) {
         delete parent_widget;
         parent_widget = nullptr;
@@ -112,7 +112,7 @@ void TestADMC::cleanup() {
     }
 }
 
-void TestADMC::object_add() {
+void ADMCTest::object_add() {
     const QString name = TEST_USER;
     const QString dn = test_object_dn(name, CLASS_USER);
 
@@ -122,7 +122,7 @@ void TestADMC::object_add() {
     QVERIFY2(object_exists(dn), "Created object doesn't exist");
 }
 
-void TestADMC::object_delete() {
+void ADMCTest::object_delete() {
     const QString name = TEST_USER;
     const QString dn = test_object_dn(name, CLASS_USER);
 
@@ -134,7 +134,7 @@ void TestADMC::object_delete() {
     QVERIFY2(!object_exists(dn), "Deleted object exists");
 }
 
-void TestADMC::object_menu_new_user() {
+void ADMCTest::object_menu_new_user() {
     const QString name = TEST_USER;
     const QString logon_name = TEST_USER_LOGON;
     const QString password = TEST_PASSWORD;
@@ -168,7 +168,7 @@ void TestADMC::object_menu_new_user() {
     QVERIFY(true);
 }
 
-void TestADMC::object_menu_new_ou() {
+void ADMCTest::object_menu_new_ou() {
     const QString name = TEST_OU;
     const QString parent = test_arena_dn();
     const QString dn = test_object_dn(name, CLASS_OU);
@@ -188,7 +188,7 @@ void TestADMC::object_menu_new_ou() {
     QVERIFY(true);
 }
 
-void TestADMC::object_menu_new_computer() {
+void ADMCTest::object_menu_new_computer() {
     const QString object_class = CLASS_COMPUTER;
     const QString name = TEST_COMPUTER;
     const QString parent = test_arena_dn();
@@ -213,7 +213,7 @@ void TestADMC::object_menu_new_computer() {
     QVERIFY(true);
 }
 
-void TestADMC::object_menu_new_group() {
+void ADMCTest::object_menu_new_group() {
     const QString object_class = CLASS_GROUP;
     const QString name = TEST_GROUP;
     const QString parent = test_arena_dn();
@@ -238,7 +238,7 @@ void TestADMC::object_menu_new_group() {
     QVERIFY(true);
 }
 
-void TestADMC::object_menu_move() {
+void ADMCTest::object_menu_move() {
     const QString parent = test_arena_dn();
     
     const QString user_name = TEST_USER;
@@ -288,7 +288,7 @@ void TestADMC::object_menu_move() {
     QVERIFY(true);
 }
 
-void TestADMC::object_menu_reset_password() {
+void ADMCTest::object_menu_reset_password() {
     const QString user_name = TEST_USER;
     const QString user_dn = test_object_dn(user_name, CLASS_USER);
     const QString password = "pass123!";
@@ -331,7 +331,7 @@ void TestADMC::object_menu_reset_password() {
     QVERIFY2(password_changed, "Failed to change password");
 }
 
-void TestADMC::object_menu_disable_enable_account() {
+void ADMCTest::object_menu_disable_enable_account() {
     auto test_disable_enable =
     [=](const bool initial_disabled_state) {
         const QString dn =
@@ -383,7 +383,7 @@ void TestADMC::object_menu_disable_enable_account() {
     test_disable_enable(false);
 }
 
-void TestADMC::object_menu_find_simple()
+void ADMCTest::object_menu_find_simple()
 {
     const QString parent = test_arena_dn();
 
@@ -424,7 +424,7 @@ void TestADMC::object_menu_find_simple()
     QVERIFY2(find_results->model()->rowCount(), "No results found");
 }
 
-void TestADMC::object_menu_find_advanced()
+void ADMCTest::object_menu_find_advanced()
 {
     const QString parent = test_arena_dn();
 
@@ -467,7 +467,7 @@ void TestADMC::object_menu_find_advanced()
     QVERIFY2(find_results->model()->rowCount(), "No results found");
 }
 
-void TestADMC::object_menu_add_to_group() {
+void ADMCTest::object_menu_add_to_group() {
     const QString parent = test_arena_dn();
     
     const QString user_name = TEST_USER;
@@ -532,7 +532,7 @@ void TestADMC::object_menu_add_to_group() {
     QVERIFY(true);
 }
 
-void TestADMC::basic_rename(const QString& newname) {
+void ADMCTest::basic_rename(const QString& newname) {
     QTest::keyClicks(QApplication::focusWidget(), "A", Qt::ControlModifier);
 
     QTest::keyClick(QApplication::focusWidget(), Qt::Key_Delete);
@@ -540,14 +540,14 @@ void TestADMC::basic_rename(const QString& newname) {
     QTest::keyClicks(QApplication::focusWidget(), newname);
 };
 
-void TestADMC::object_menu_rename_computer() {
+void ADMCTest::object_menu_rename_computer() {
     const QString computer_name = TEST_COMPUTER;
     const QString computer_renamed = computer_name + "2";
 
     test_object_rename(computer_name, computer_renamed, CLASS_COMPUTER, basic_rename);
 }
 
-void TestADMC::object_menu_rename_user()
+void ADMCTest::object_menu_rename_user()
 {
     const QString user_name = TEST_USER;
     const QString user_renamed = user_name + "2";
@@ -555,7 +555,7 @@ void TestADMC::object_menu_rename_user()
     test_object_rename(user_name, user_renamed, CLASS_USER, basic_rename);
 }
 
-void TestADMC::object_menu_rename_ou()
+void ADMCTest::object_menu_rename_ou()
 {
     const QString ou_name = TEST_OU;
     const QString ou_renamed = ou_name + "2";
@@ -563,22 +563,22 @@ void TestADMC::object_menu_rename_ou()
     test_object_rename(ou_name, ou_renamed, CLASS_OU, basic_rename);
 }
 
-void TestADMC::object_menu_rename_group()
+void ADMCTest::object_menu_rename_group()
 {
     const QString group_name = TEST_GROUP;
     const QString group_renamed = group_name + "2";
 
     auto group_rename =
     [this](const QString& newname) {
-        TestADMC::basic_rename(newname);
+        ADMCTest::basic_rename(newname);
         tab();
-        TestADMC::basic_rename(newname);
+        ADMCTest::basic_rename(newname);
     };
 
     test_object_rename(group_name, group_renamed, CLASS_GROUP, group_rename);
 }
 
-QString TestADMC::test_arena_dn() {
+QString ADMCTest::test_arena_dn() {
     const QString head_dn = AD()->domain_head();
     const QString dn = QString("OU=test-arena,%1").arg(head_dn);
 
@@ -586,14 +586,14 @@ QString TestADMC::test_arena_dn() {
 }
 
 // TODO: for OU's need to change from cn to ou, SO make a f-n in ad_utils.cpp that does what's currently in CreateDialog::accept(). Takes object name, parent dn and object class, returns dn.
-QString TestADMC::test_object_dn(const QString &name, const QString &object_class) {
+QString ADMCTest::test_object_dn(const QString &name, const QString &object_class) {
     const QString parent = test_arena_dn();
     const QString dn = dn_from_name_and_parent(name, parent, object_class);
 
     return dn;
 }
 
-void TestADMC::test_object_rename(const QString& oldname, const QString& newname, const QString &object_class, std::function<void(const QString &)> rename_callback) {
+void ADMCTest::test_object_rename(const QString& oldname, const QString& newname, const QString &object_class, std::function<void(const QString &)> rename_callback) {
     const QString parent = test_arena_dn();
 
     const QString dn = test_object_dn(oldname, object_class);
@@ -618,14 +618,14 @@ void TestADMC::test_object_rename(const QString& oldname, const QString& newname
     QVERIFY2(object_exists(dn_after_rename), "Renamed object doesn't exist");
 }
 
-bool TestADMC::object_exists(const QString &dn) {
+bool ADMCTest::object_exists(const QString &dn) {
     const QHash<QString, AdObject> search_results = AD()->search(QString(), QList<QString>(), SearchScope_Object, dn);
     const bool exists = (search_results.size() == 1);
 
     return exists;
 }
 
-void TestADMC::tab(const int n) {
+void ADMCTest::tab(const int n) {
     static int tab_number = 0;
     for (int i = 0; i < n; i++) {
         if (PRINT_FOCUS_WIDGET_BEFORE_TAB) {
@@ -642,7 +642,7 @@ void TestADMC::tab(const int n) {
 
 // Go down the list of objects by pressing Down arrow
 // until current item's dn equals to target dn
-void TestADMC::navigate_until_object(QTreeView *view, const QString &target_dn) {
+void ADMCTest::navigate_until_object(QTreeView *view, const QString &target_dn) {
     QModelIndex prev_index;
 
     while (true) {
@@ -670,9 +670,9 @@ void TestADMC::navigate_until_object(QTreeView *view, const QString &target_dn) 
     }
 }
 
-void TestADMC::wait_for_widget_exposed(QWidget *widget) {
+void ADMCTest::wait_for_widget_exposed(QWidget *widget) {
     const bool window_became_exposed = QTest::qWaitForWindowExposed(widget, 1000);
     QVERIFY(window_became_exposed);
 }
 
-QTEST_MAIN(TestADMC)
+QTEST_MAIN(ADMCTest)
