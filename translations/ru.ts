@@ -570,7 +570,7 @@
 <context>
     <name>Console</name>
     <message numerus="yes">
-        <location filename="../src/admc/console.cpp" line="497"/>
+        <location filename="../src/admc/console.cpp" line="541"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n объект</numerusform>
@@ -579,7 +579,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../src/admc/console.cpp" line="523"/>
+        <location filename="../src/admc/console.cpp" line="567"/>
         <source>Refresh</source>
         <translation>Обновить</translation>
     </message>
@@ -596,34 +596,34 @@
 <context>
     <name>CreateDialog</name>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="49"/>
+        <location filename="../src/admc/create_dialog.cpp" line="51"/>
         <source>Create object - &quot;%1&quot;</source>
         <translation>Создать обьект - &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="85"/>
+        <location filename="../src/admc/create_dialog.cpp" line="87"/>
         <source>Full name:</source>
         <translation>Полное имя:</translation>
     </message>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="144"/>
-        <location filename="../src/admc/create_dialog.cpp" line="159"/>
-        <location filename="../src/admc/create_dialog.cpp" line="170"/>
+        <location filename="../src/admc/create_dialog.cpp" line="146"/>
+        <location filename="../src/admc/create_dialog.cpp" line="161"/>
+        <location filename="../src/admc/create_dialog.cpp" line="172"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="176"/>
+        <location filename="../src/admc/create_dialog.cpp" line="178"/>
         <source>Create</source>
         <translation>Создать</translation>
     </message>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="233"/>
+        <location filename="../src/admc/create_dialog.cpp" line="226"/>
         <source>Failed to create object &quot;%1&quot;</source>
         <translation>Не удалось создать объект &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/admc/create_dialog.cpp" line="255"/>
+        <location filename="../src/admc/create_dialog.cpp" line="248"/>
         <source>Created object &quot;%1&quot;</source>
         <translation>Создан объект &quot;%1&quot;</translation>
     </message>
@@ -639,12 +639,12 @@
 <context>
     <name>ExpiryEdit</name>
     <message>
-        <location filename="../src/admc/edits/expiry_edit.cpp" line="40"/>
+        <location filename="../src/admc/edits/expiry_edit.cpp" line="41"/>
         <source>Never</source>
         <translation>Никогда</translation>
     </message>
     <message>
-        <location filename="../src/admc/edits/expiry_edit.cpp" line="41"/>
+        <location filename="../src/admc/edits/expiry_edit.cpp" line="42"/>
         <source>End of:</source>
         <translatorcomment>uhhhhh</translatorcomment>
         <translation>Конец:</translation>
@@ -799,7 +799,7 @@
         <translation>Быстрый поиск</translation>
     </message>
     <message>
-        <location filename="../src/admc/find_widget.cpp" line="70"/>
+        <location filename="../src/admc/find_widget.h" line="37"/>
         <source>Find</source>
         <translation>Поиск</translation>
     </message>
@@ -1664,73 +1664,73 @@
         <translation>Потвердить действие</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="109"/>
+        <location filename="../src/admc/object_menu.cpp" line="97"/>
         <source>New</source>
         <translation>Создать</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="128"/>
+        <location filename="../src/admc/object_menu.cpp" line="116"/>
         <source>Find</source>
         <translation>Поиск</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="136"/>
+        <location filename="../src/admc/object_menu.cpp" line="124"/>
         <source>Add to group</source>
         <translation>Добавить в группу</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="144"/>
+        <location filename="../src/admc/object_menu.cpp" line="132"/>
         <source>Reset password</source>
         <translation>Поменять пароль</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="152"/>
+        <location filename="../src/admc/object_menu.cpp" line="140"/>
         <source>Disable account</source>
         <translation>Выключить учётную запись</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="160"/>
+        <location filename="../src/admc/object_menu.cpp" line="148"/>
         <source>Enable account</source>
         <translation>Включить учётную запись</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="168"/>
+        <location filename="../src/admc/object_menu.cpp" line="156"/>
         <source>Move</source>
         <translation>Переместить</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="178"/>
+        <location filename="../src/admc/object_menu.cpp" line="166"/>
         <source>Delete</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="187"/>
+        <location filename="../src/admc/object_menu.cpp" line="175"/>
         <source>Rename</source>
         <translation>Переименовать</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="286"/>
+        <location filename="../src/admc/object_menu.cpp" line="274"/>
         <source>Are you sure you want to delete %1?</source>
         <translation>Вы уверены, что хотите удалить%1?</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="303"/>
-        <location filename="../src/admc/object_menu.cpp" line="401"/>
+        <location filename="../src/admc/object_menu.cpp" line="291"/>
+        <location filename="../src/admc/object_menu.cpp" line="389"/>
         <source>Move %1</source>
         <translation>Переместить %1</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="326"/>
+        <location filename="../src/admc/object_menu.cpp" line="314"/>
         <source>Add %1 to group</source>
         <translation>Добавить %1 в группу</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="392"/>
+        <location filename="../src/admc/object_menu.cpp" line="380"/>
         <source>object &quot;%1&quot;</source>
         <translation>объект %1</translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="394"/>
+        <location filename="../src/admc/object_menu.cpp" line="382"/>
         <source>multiple objects</source>
         <translation>несколько объектов</translation>
     </message>
@@ -1820,7 +1820,7 @@
 <context>
     <name>Status</name>
     <message>
-        <location filename="../src/admc/status.cpp" line="97"/>
+        <location filename="../src/admc/status.cpp" line="102"/>
         <source>Errors occured</source>
         <translation>Произошли ошибки</translation>
     </message>
