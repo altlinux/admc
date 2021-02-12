@@ -87,7 +87,7 @@ bool AdInterface::connect() {
         result = krb5_init_context(&context);
 
         auto cleanup =
-        [=]() {
+        [&]() {
             krb5_free_default_realm(context, realm_cstr);
             krb5_free_context(context);
         };
@@ -205,18 +205,22 @@ bool search_paged(LDAP* ld, const char *filter, char **attrs, const int scope, c
     LDAPMessage *res = NULL;
     LDAPControl *page_control = NULL;
     LDAPControl **returned_controls = NULL;
-
+    struct berval *prev_cookie = *cookie;
+    struct berval *new_cookie = NULL;
+    
     auto cleanup =
-    [=]() {
+    [&]() {
         ldap_msgfree(res);
         ldap_control_free(page_control);
         ldap_controls_free(returned_controls);
+        ber_bvfree(prev_cookie);
+        ber_bvfree(new_cookie);
     };
 
     // Create page control
     const ber_int_t page_size = 1000;
     const int is_critical = 1;
-    result = ldap_create_page_control(ld, page_size, *cookie, is_critical, &page_control);
+    result = ldap_create_page_control(ld, page_size, prev_cookie, is_critical, &page_control);
     if (result != LDAP_SUCCESS) {
         qDebug() << "Failed to create page control: " << ldap_err2string(result);
 
@@ -293,9 +297,9 @@ bool search_paged(LDAP* ld, const char *filter, char **attrs, const int scope, c
 
     // Parse page response control to determine whether
     // there are more pages
-    struct berval new_cookie;
     ber_int_t total_count;
-    result = ldap_parse_pageresponse_control(ld, pageresponse_control, &total_count, &new_cookie);
+    new_cookie = (struct berval *) malloc(sizeof(struct berval));
+    result = ldap_parse_pageresponse_control(ld, pageresponse_control, &total_count, new_cookie);
     if (result != LDAP_SUCCESS) {
         qDebug() << "Failed to parse pageresponse control: " << ldap_err2string(result);
         
@@ -303,13 +307,10 @@ bool search_paged(LDAP* ld, const char *filter, char **attrs, const int scope, c
         return false;
     }
 
-    // Free previous cookie
-    ber_bvfree(*cookie);
-
     // Switch to new cookie if there are more pages
-    const bool more_pages = (new_cookie.bv_len > 0);
+    const bool more_pages = (new_cookie->bv_len > 0);
     if (more_pages) {
-        *cookie = ber_bvdup(&new_cookie);
+        *cookie = ber_bvdup(new_cookie);
     } else {
         *cookie = NULL;
     }
@@ -407,8 +408,6 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
         }
         free(attrs);
     }
-
-    ber_bvfree(cookie);
 
     return out;
 }
