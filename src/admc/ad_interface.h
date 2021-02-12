@@ -72,7 +72,7 @@ public:
     QString schema_dn() const;
 
     // NOTE: If request attributes list is empty, all attributes are returned
-    QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &search_base = QString());
+    QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &search_base_arg = QString());
     AdObject search_object(const QString &dn, const QList<QString> &attributes = QList<QString>());
 
     bool attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg = DoStatusMsg_Yes);
