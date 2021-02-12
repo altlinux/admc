@@ -239,11 +239,6 @@ bool search_paged(LDAP* ld, const char *filter, char **attrs, const int scope, c
         BerElement *berptr;
         for (char *attr = ldap_first_attribute(ld, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ld, entry, berptr)) {
             struct berval **values_ldap = ldap_get_values_len(ld, entry, attr);
-            if (values_ldap == NULL) {
-                ldap_value_free_len(values_ldap);
-
-                continue;
-            }
 
             const QList<QByteArray> values_bytes =
             [=]() {
@@ -260,9 +255,7 @@ bool search_paged(LDAP* ld, const char *filter, char **attrs, const int scope, c
                 return values_bytes_out;
             }();
 
-            const QString attribute(attr);
-
-            object_attributes[attribute] = values_bytes;
+            object_attributes[QString(attr)] = values_bytes;
 
             ldap_value_free_len(values_ldap);
             ldap_memfree(attr);
