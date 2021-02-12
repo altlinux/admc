@@ -355,13 +355,17 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
 
     // Convert attributes list to NULL-terminated array
     char **attrs =
-    [attributes]() {
+    [attributes]() -> char** {
         char **attrs_out;
         if (attributes.isEmpty()) {
             // Pass NULL so LDAP gets all attributes
             attrs_out = NULL;
         } else {
             attrs_out = (char **) malloc((attributes.size() + 1) * sizeof(char *));
+            if (attrs_out == NULL) {
+                return NULL;
+            }
+
             for (int i = 0; i < attributes.size(); i++) {
                 const QString attribute = attributes[i];
                 attrs_out[i] = strdup(cstr(attribute));
@@ -484,6 +488,10 @@ bool AdInterface::attribute_replace_value(const QString &dn, const QString &attr
 
 bool AdInterface::attribute_add_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
     char *data_copy = (char *) malloc(value.size());
+    if (data_copy == NULL) {
+        return false;
+    }
+
     memcpy(data_copy, value.constData(), value.size());
 
     struct berval ber_data;
@@ -527,6 +535,10 @@ bool AdInterface::attribute_delete_value(const QString &dn, const QString &attri
     const QString value_display = attribute_display_value(attribute, value);
 
     char *data_copy = (char *) malloc(value.size());
+    if (data_copy == NULL) {
+        return false;
+    }
+
     memcpy(data_copy, value.constData(), value.size());
 
     struct berval ber_data;
