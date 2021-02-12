@@ -248,33 +248,45 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
 
     // Search until received all pages
     while (true) {
+        LDAPMessage *res = NULL;
+        LDAPControl *page_control = NULL;
+        LDAPControl **returned_controls = NULL;
+
+        auto cleanup =
+        [=]() {
+            ldap_msgfree(res);
+            ldap_control_free(page_control);
+            ldap_controls_free(returned_controls);
+        };
+
         if (stop_search_flag) {
             out.clear();
 
+            cleanup();
             break;
         }
 
         // Create page control
-        LDAPControl *page_control = NULL;
         const ber_int_t page_size = 1000;
         const int is_critical = 1;
         result = ldap_create_page_control(ld, page_size, prev_cookie, is_critical, &page_control);
         if (result != LDAP_SUCCESS) {
             qDebug() << "Failed to create page control: " << ldap_err2string(result);
+
+            cleanup();
             break;
         }
         LDAPControl *server_controls[2] = {page_control, NULL};
         
         // Perform search
-        LDAPMessage *res;
         const int attrsonly = 0;
         result = ldap_search_ext_s(ld, cstr(base), scope, filter_cstr, attrs, attrsonly, server_controls, NULL, NULL, LDAP_NO_LIMIT, &res);
         if ((result != LDAP_SUCCESS) && (result != LDAP_PARTIAL_RESULTS)) {
             qDebug() << "Error in paged ldap_search_ext_s: " << ldap_err2string(result);
+
+            cleanup();
             break;
         }
-
-        ldap_control_free(server_controls[0]);
 
         // Collect results for this search
         for (LDAPMessage *entry = ldap_first_entry(ld, res); entry != NULL; entry = ldap_next_entry(ld, entry)) {
@@ -322,10 +334,11 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
 
         // Parse the results to retrieve returned controls
         int errcodep;
-        LDAPControl **returned_controls = NULL;
         result = ldap_parse_result(ld, res, &errcodep, NULL, NULL, NULL, &returned_controls, false);
         if (result != LDAP_SUCCESS) {
             qDebug() << "Failed to parse result: " << ldap_err2string(result);
+
+            cleanup();
             break;
         }
 
@@ -333,6 +346,8 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
         LDAPControl *pageresponse_control = ldap_control_find(LDAP_CONTROL_PAGEDRESULTS, returned_controls, NULL);
         if (pageresponse_control == NULL) {
             qDebug() << "Failed to find PAGEDRESULTS control";
+
+            cleanup();
             break;
         }
 
@@ -343,15 +358,14 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
         result = ldap_parse_pageresponse_control(ld, pageresponse_control, &total_count, &new_cookie);
         if (result != LDAP_SUCCESS) {
             qDebug() << "Failed to parse pageresponse control: " << ldap_err2string(result);
+            
+            cleanup();
             break;
         }
         ber_bvfree(prev_cookie);
         prev_cookie = ber_bvdup(&new_cookie);
 
-        ldap_controls_free(returned_controls);
-        returned_controls = NULL;
-
-        ldap_msgfree(res);
+        cleanup();
 
         // There are more pages if the cookie is not empty
         const bool more_pages = (prev_cookie->bv_len > 0);
