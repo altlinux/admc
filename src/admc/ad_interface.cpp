@@ -82,27 +82,34 @@ bool AdInterface::connect() {
     []() {
         krb5_error_code result;
         krb5_context context;
+        char *realm_cstr = NULL;
 
         result = krb5_init_context(&context);
+
+        auto cleanup =
+        [=]() {
+            krb5_free_default_realm(context, realm_cstr);
+            krb5_free_context(context);
+        };
+
         if (result) {
             qDebug() << "Failed to init krb5 context";
+            
+            cleanup();
             return QString();
         }
 
-        char *realm_cstr = NULL;
         result = krb5_get_default_realm(context, &realm_cstr);
         if (result) {
             qDebug() << "Failed to get default realm";
 
-            krb5_free_context(context);
-
+            cleanup();
             return QString();
         }
 
         const QString out = QString(realm_cstr);
 
-        krb5_free_default_realm(context, realm_cstr);
-
+        cleanup();
         return out;
     }();
 
