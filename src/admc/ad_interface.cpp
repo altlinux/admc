@@ -192,8 +192,8 @@ void AdInterface::stop_search() {
 // Cookie must be passed between subsequent search_page()
 // calls. For the first call cookie value must be NULL.
 // Returned cookie value is not NULL if there are more pages
-// and NULL if not.
-void search_paged(LDAP* ld, const char *filter, char **attrs, const int scope, const char *search_base, struct berval **cookie, QHash<QString, AdObject> *out) {
+// and NULL if not. Returns false if an error occured.
+bool search_paged(LDAP* ld, const char *filter, char **attrs, const int scope, const char *search_base, struct berval **cookie, QHash<QString, AdObject> *out) {
     int result;
     LDAPMessage *res = NULL;
     LDAPControl *page_control = NULL;
@@ -214,7 +214,7 @@ void search_paged(LDAP* ld, const char *filter, char **attrs, const int scope, c
         qDebug() << "Failed to create page control: " << ldap_err2string(result);
 
         cleanup();
-        return;
+        return false;
     }
 
     // Perform search
@@ -225,7 +225,7 @@ void search_paged(LDAP* ld, const char *filter, char **attrs, const int scope, c
         qDebug() << "Error in paged ldap_search_ext_s: " << ldap_err2string(result);
 
         cleanup();
-        return;
+        return false;
     }
 
     // Collect results for this search
@@ -279,7 +279,7 @@ void search_paged(LDAP* ld, const char *filter, char **attrs, const int scope, c
         qDebug() << "Failed to parse result: " << ldap_err2string(result);
 
         cleanup();
-        return;
+        return false;
     }
 
     // Get page response control
@@ -288,7 +288,7 @@ void search_paged(LDAP* ld, const char *filter, char **attrs, const int scope, c
         qDebug() << "Failed to find PAGEDRESULTS control";
 
         cleanup();
-        return;
+        return false;
     }
 
     // Parse page response control to determine whether
@@ -300,7 +300,7 @@ void search_paged(LDAP* ld, const char *filter, char **attrs, const int scope, c
         qDebug() << "Failed to parse pageresponse control: " << ldap_err2string(result);
         
         cleanup();
-        return;
+        return false;
     }
 
     // Free previous cookie
@@ -315,6 +315,8 @@ void search_paged(LDAP* ld, const char *filter, char **attrs, const int scope, c
     }
 
     cleanup();
+
+    return true;
 }
 
 QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<QString> &attributes, const SearchScope scope_enum, const QString &search_base_arg) {
@@ -376,11 +378,15 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
     while (true) {
         if (stop_search_flag) {
             out.clear();
-
             break;
         }
 
-        search_paged(ld, filter_cstr, attrs, scope, cstr(search_base), &cookie, &out);
+        const bool search_success = search_paged(ld, filter_cstr, attrs, scope, cstr(search_base), &cookie, &out);
+        if (!search_success) {
+            // TODO: handle error. Shouldn't tell the user any details about the nature of the error because it's not useful to the user. BUT still should show something. Maybe a messagebox saying "Operation error". One problem is that searches can be part of larger operations so not sure how to make this not interfere.
+            out.clear();
+            break;
+        }
 
         const bool more_pages = (cookie != NULL);
         if (more_pages) {
