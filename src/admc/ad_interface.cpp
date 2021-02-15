@@ -239,11 +239,14 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
             attrs_out = NULL;
         } else {
             attrs_out = (char **) malloc((attributes.size() + 1) * sizeof(char *));
-            for (int i = 0; i < attributes.size(); i++) {
-                const QString attribute = attributes[i];
-                attrs_out[i] = strdup(cstr(attribute));
+
+            if (attrs_out != NULL) {
+                for (int i = 0; i < attributes.size(); i++) {
+                    const QString attribute = attributes[i];
+                    attrs_out[i] = strdup(cstr(attribute));
+                }
+                attrs_out[attributes.size()] = NULL;
             }
-            attrs_out[attributes.size()] = NULL;
         }
 
         return attrs_out;
@@ -457,6 +460,9 @@ bool AdInterface::attribute_replace_value(const QString &dn, const QString &attr
 
 bool AdInterface::attribute_add_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
     char *data_copy = (char *) malloc(value.size());
+    if (data_copy == NULL) {
+        return false;
+    }
     memcpy(data_copy, value.constData(), value.size());
 
     struct berval ber_data;
@@ -500,6 +506,9 @@ bool AdInterface::attribute_delete_value(const QString &dn, const QString &attri
     const QString value_display = attribute_display_value(attribute, value);
 
     char *data_copy = (char *) malloc(value.size());
+    if (data_copy == NULL) {
+        return false;
+    }
     memcpy(data_copy, value.constData(), value.size());
 
     struct berval ber_data;
