@@ -1,8 +1,8 @@
 %define _unpackaged_files_terminate_build 1
 
 Name: admc
-Version: 0.3.1
-Release: alt2
+Version: 0.4.0
+Release: alt1
 
 Summary: AD editor
 License: GPLv3+
@@ -78,6 +78,9 @@ cd BUILD
 %_libdir/libgptbackend.so
 
 %changelog
+* Mon Feb 15 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.4.0-alt1
+- 0.4.0
+
 * Sun Dec 27 2020 Alexey Shabalin <shaba@altlinux.org> 0.3.1-alt2
 - Delete openldap package from requires.
 
