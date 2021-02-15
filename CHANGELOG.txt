@@ -2,7 +2,7 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
- VERSION 0.4.0 (Released ??-??-2021)
+ VERSION 0.4.0 (Released 15-02-2021)
 -----------------------------------------------------------------------
 - Properties: Added more tabs to Properties dialog:
     - general 
