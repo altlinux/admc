@@ -323,7 +323,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
                 [=]() {
                     QList<QByteArray> values_bytes_out;
 
-                    // if (values_ldap != NULL) {
+                    if (values_ldap != NULL) {
                         const int values_count = ldap_count_values_len(values_ldap);
                         for (int i = 0; i < values_count; i++) {
                             struct berval value_berval = *values_ldap[i];
@@ -331,7 +331,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
 
                             values_bytes_out.append(value_bytes);
                         }
-                    // }
+                    }
 
                     return values_bytes_out;
                 }();
