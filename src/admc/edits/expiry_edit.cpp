@@ -46,7 +46,7 @@ ExpiryEdit::ExpiryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 
     edit = new QDateEdit();
 
-    auto button_group = new QButtonGroup();
+    auto button_group = new QButtonGroup(this);
     button_group->addButton(never_check);
     button_group->addButton(end_of_check);
 

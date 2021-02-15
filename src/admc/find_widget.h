@@ -44,6 +44,7 @@ public:
     
     FindWidget(const QList<QString> classes, const QString &default_search_base);
 
+    // NOTE: returned items need to be re-parented or deleted!
     QList<QList<QStandardItem *>> get_selected_rows() const;
 
 private slots:

@@ -50,11 +50,10 @@ void UnlockEdit::add_to_layout(QFormLayout *layout) {
 bool UnlockEdit::apply(const QString &dn) const {
     if (check->isChecked()) {
         const bool result = AD()->user_unlock(dn);
+        check->setChecked(false);
         
         return result;
     } else {
         return true;
     }
-
-    check->setChecked(false);
 }

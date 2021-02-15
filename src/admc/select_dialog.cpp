@@ -152,6 +152,10 @@ void SelectDialog::open_find_dialog() {
                 
                 if (!model_contains_object) {
                     model->appendRow(row);
+                } else {
+                    for (auto item : row) {
+                        delete item;
+                    }
                 }
             }
         });

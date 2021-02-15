@@ -20,7 +20,9 @@
 #include "edits/attribute_edit.h"
 #include "tabs/properties_tab.h"
 
-AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent) {
+AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
+: QObject(parent)
+{
     if (edits_out != nullptr) {
         if (edits_out->contains(this)) {
             printf("ERROR: attribute edit added twice to list!");

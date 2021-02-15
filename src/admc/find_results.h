@@ -44,7 +44,7 @@ public:
 
     void load(const QString &filter, const QString &search_base);
 
-    // Returns a copy of item's rows, so these items need to become owned by something or deleted
+    // NOTE: returned items need to be re-parented or deleted!
     QList<QList<QStandardItem *>> get_selected_rows() const;
 
     void load_menu(QMenu *menu);
