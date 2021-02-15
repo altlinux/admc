@@ -519,7 +519,6 @@ void ADMCTest::object_menu_add_to_group() {
     navigate_until_object(find_results_view, group_dn);
     const QModelIndex selected_index = find_results_view->selectionModel()->currentIndex();
     const QString selected_dn = selected_index.data(Role_DN).toString();
-    const QList<QList<QStandardItem *>> selected_rows = find_select_dialog->get_selected_rows();
 
     find_select_dialog->accept();
 
