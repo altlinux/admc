@@ -27,12 +27,13 @@
 
 #include <QMimeData>
 #include <QString>
-#include <QUrl>
 
 // TODO: dragging queries and query folders
 // TODO: move object_can_drop() and object_drop() here, shouldnt be in AD() 
 
 const QString MIME_TYPE_OBJECT = "MIME_TYPE_OBJECT";
+
+QModelIndex prev_parent = QModelIndex();
 
 QList<AdObject> mimedata_to_object_list(const QMimeData *data);
 
@@ -66,6 +67,22 @@ QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
 }
 
 bool ConsoleDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
+    // NOTE: this is a bandaid for a Qt bug. The bug causes
+    // canDropMimeData() to stop being called for a given
+    // view if canDropMimeData() returns false for the first
+    // call when drag is entering the view. This results in
+    // the drop indicator being stuck in "can't drop" state
+    // until dragging leaves the view. The bandaid fix is to
+    // always return true from canDropMimeData() when parent
+    // index changes (when hovering over new object). Also
+    // return true for invalid index for cases where drag is
+    // hovered over empty space.
+    // https://bugreports.qt.io/browse/QTBUG-76418
+    if (prev_parent != parent || parent == QModelIndex()) {
+        prev_parent = parent;
+        return true;
+    }
+
     if (!data->hasFormat(MIME_TYPE_OBJECT)) {
         return false;
     }
