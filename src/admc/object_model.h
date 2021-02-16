@@ -36,9 +36,11 @@ class AdObject;
 enum ObjectRole {
     Role_DN = Qt::UserRole + 1,
     Role_ObjectClass = Qt::UserRole + 2,
+    Role_AdObject = Qt::UserRole + 3,
 };
 
 void load_object_row(const QList<QStandardItem *> row, const AdObject &object);
+void load_object_item_data(QStandardItem *item, const AdObject &object);
 QList<QString> object_model_header_labels();
 
 #endif /* OBJECT_MODEL_H */

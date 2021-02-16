@@ -37,15 +37,18 @@
 // afterwards so it WILL become out of date after any
 // AD modification. Therefore, do not keep it around for too long.
 
+class QDataStream;
 typedef QHash<QString, QList<QByteArray>> AdObjectAttributes;
 
 class AdObject {
 
 public:
     AdObject();
-    AdObject(const QString &dn_arg, const AdObjectAttributes &attributes_data_arg);
+    
+    void load(const QString &dn_arg, const AdObjectAttributes &attributes_data_arg);
 
     QString get_dn() const;
+    AdObjectAttributes get_attributes_data() const;
     bool is_empty() const;
     bool contains(const QString &attribute) const;
     QList<QString> attributes() const;
@@ -83,5 +86,9 @@ private:
     QString dn;
     AdObjectAttributes attributes_data;
 };
+
+Q_DECLARE_METATYPE(AdObject);
+QDataStream &operator<<(QDataStream &out, const AdObject &obj);
+QDataStream &operator>>(QDataStream &in, AdObject &obj);
 
 #endif /* AD_OBJECT_H */

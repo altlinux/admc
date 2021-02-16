@@ -49,8 +49,8 @@
 #include <QSortFilterProxyModel>
 
 enum ScopeRole {
-    ScopeRole_Id = Role_ObjectClass + 1,
-    ScopeRole_Fetched = Role_ObjectClass + 2,
+    ScopeRole_Id = Role_AdObject + 1,
+    ScopeRole_Fetched = Role_AdObject + 2,
 };
 
 #define DUMMY_ITEM_ID -1
@@ -646,6 +646,9 @@ void Console::fetch_scope_node(const QModelIndex &index) {
         // NOTE: load_object_row() needs this for loading group type/scope
         out += ATTRIBUTE_GROUP_TYPE;
 
+        // NOTE: system flags are needed for drag and drop logic
+        out += ATTRIBUTE_SYSTEM_FLAGS;
+
         return out;
     }();
 
@@ -720,14 +723,8 @@ QStandardItem *Console::make_scope_item(const AdObject &object) {
     dummy_item->setData(DUMMY_ITEM_ID, ScopeRole_Id);
     item->appendRow(dummy_item);
     
-    const QString dn = object.get_dn();
-    item->setData(dn, Role_DN);
-    
-    const QString name = dn_get_name(dn);
+    const QString name = dn_get_name(object.get_dn());
     item->setText(name);
-
-    const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
-    item->setData(object_class, Role_ObjectClass);
 
     static int id_max = 0;
     const int id = id_max;
@@ -736,6 +733,8 @@ QStandardItem *Console::make_scope_item(const AdObject &object) {
 
     const QIcon icon = object.get_icon();
     item->setIcon(icon);
+
+    load_object_item_data(item, object);
 
     return item;
 }
