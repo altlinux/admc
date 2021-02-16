@@ -20,6 +20,7 @@
 #include "console_drag_model.h"
 
 #include "ad_interface.h"
+#include "ad_object.h"
 #include "status.h"
 #include "object_model.h"
 
@@ -31,6 +32,8 @@
 // TODO: move object_can_drop() and object_drop() here, shouldnt be in AD() 
 
 const QString MIME_TYPE_OBJECT = "MIME_TYPE_OBJECT";
+
+QList<AdObject> mimedata_to_object_list(const QMimeData *data);
 
 QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
     QMimeData *data = QStandardItemModel::mimeData(indexes);
@@ -78,6 +81,8 @@ bool ConsoleDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, in
 
     const QList<QUrl> dns = data->urls();
 
+    const QList<AdObject> object = mimedata_to_object_list(data);
+
     if (dns.size() == 1) {
         const QString dn = dns[0].toString();
         const QString parent_dn = parent.siblingAtColumn(0).data(Role_DN).toString();
@@ -97,6 +102,8 @@ bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action
     const QList<QUrl> dns = data->urls();
     const QString target_dn = parent.siblingAtColumn(0).data(Role_DN).toString();
 
+    const QList<AdObject> object = mimedata_to_object_list(data);
+
     STATUS()->start_error_log();
 
     for (const QUrl dn : dns) {
@@ -106,4 +113,24 @@ bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action
     STATUS()->end_error_log(nullptr);
 
     return true;
+}
+
+QList<AdObject> mimedata_to_object_list(const QMimeData *data) {
+    // Convert from bytes to variant
+    QByteArray objects_as_bytes = data->data(MIME_TYPE_OBJECT);
+    QDataStream stream(&objects_as_bytes, QIODevice::ReadOnly);
+    QVariant objects_as_variant;
+    stream >> objects_as_variant;
+
+    // Convert from variant to list of objects
+    const QList<QVariant> objects_as_variant_list = objects_as_variant.toList();
+
+    QList<AdObject> out;
+
+    for (const QVariant e : objects_as_variant_list) {
+        const AdObject object = e.value<AdObject>();
+        out.append(object);
+    }
+
+    return out;
 }
