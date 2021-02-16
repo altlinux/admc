@@ -34,6 +34,22 @@
 
 const QString MIME_TYPE_OBJECT = "MIME_TYPE_OBJECT";
 
+// NOTE: this is a bandaid for a Qt bug. The bug causes
+// canDropMimeData() to stop being called for the rest of
+// the drag drop session if the first canDropMimeData() call
+// returns false. In our case, canDropMimeData() is always
+// returning false for the first call because at the start
+// of a drag process the object is hovering over itself and
+// you can't move an object onto an object. This results in
+// the "can drop" indicator incorrectly showing "can't drop"
+// for all objects. The bandaid fix is to always return true
+// from the first canDropMimeData() call. Note that this
+// flag has to be shared between different ConsoleDragModel
+// instances because a drag process can cross over between
+// multiple object models. Link:
+// https://bugreports.qt.io/browse/QTBUG-76418
+bool flag_first_canDropMimeData_call = false;
+
 QList<AdObject> mimedata_to_object_list(const QMimeData *data);
 
 QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
@@ -62,10 +78,17 @@ QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
     
     data->setData(MIME_TYPE_OBJECT, objects_as_bytes);
 
+    flag_first_canDropMimeData_call = true;
+
     return data;
 }
 
 bool ConsoleDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
+    if (flag_first_canDropMimeData_call) {
+        flag_first_canDropMimeData_call = false;
+        return true;
+    }
+
     if (!data->hasFormat(MIME_TYPE_OBJECT)) {
         return false;
     }
