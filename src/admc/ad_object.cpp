@@ -29,15 +29,17 @@ AdObject::AdObject()
 
 }
 
-AdObject::AdObject(const QString &dn_arg, const AdObjectAttributes &attributes_data_arg)
-: dn(dn_arg)
-, attributes_data(attributes_data_arg)
-{
-
+void AdObject::load(const QString &dn_arg, const AdObjectAttributes &attributes_data_arg) {
+    dn = dn_arg;
+    attributes_data = attributes_data_arg;
 }
 
 QString AdObject::get_dn() const {
     return dn;
+}
+
+AdObjectAttributes AdObject::get_attributes_data() const {
+    return attributes_data;
 }
 
 bool AdObject::is_empty() const {
@@ -263,4 +265,21 @@ QIcon AdObject::get_icon() const {
     const QIcon icon = QIcon::fromTheme(icon_name);
 
     return icon;
+}
+
+// NOTE: these f-ns are used to serialize adobject's into
+// mimedata for console drag and drop
+QDataStream &operator<<(QDataStream &out, const AdObject &obj) {
+    out << obj.get_dn() << obj.get_attributes_data();
+    return out;
+}
+
+QDataStream &operator>>(QDataStream &in, AdObject &obj) {
+    QString dn;
+    AdObjectAttributes attributes_data;
+    in >> dn >> attributes_data;
+
+    obj.load(dn, attributes_data);
+
+    return in;
 }

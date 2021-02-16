@@ -279,7 +279,10 @@ bool search_paged(LDAP *ld, const char *filter, char **attributes, const int sco
         }
         ber_free(berptr, 0);
 
-        out->insert(dn, AdObject(dn, object_attributes));
+        AdObject object;
+        object.load(dn, object_attributes);
+
+        out->insert(dn, object);
     }
 
     // Parse the results to retrieve returned controls

@@ -20,12 +20,15 @@
 #include "config.h"
 #include "main_window.h"
 #include "settings.h"
+#include "ad_object.h"
 
 #include <QApplication>
 #include <QTranslator>
 #include <QLibraryInfo>
 
 int main(int argc, char **argv) {
+    qRegisterMetaTypeStreamOperators<AdObject>("AdObject");
+
     QApplication app(argc, argv);
     app.setApplicationDisplayName(ADMC_APPLICATION_DISPLAY_NAME);
     app.setApplicationName(ADMC_APPLICATION_NAME);

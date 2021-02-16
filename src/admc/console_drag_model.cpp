@@ -30,6 +30,8 @@
 // TODO: dragging queries and query folders
 // TODO: move object_can_drop() and object_drop() here, shouldnt be in AD() 
 
+const QString MIME_TYPE_OBJECT = "MIME_TYPE_OBJECT";
+
 QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
     QMimeData *data = QStandardItemModel::mimeData(indexes);
 
@@ -47,6 +49,24 @@ QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
     }();
 
     data->setUrls(dns);
+
+    const QList<QVariant> objects =
+    [=]() {
+        QList<QVariant> out;
+        for (const QModelIndex index : indexes) {
+            if (index.column() == 0) {
+                const QVariant object_variant = index.data(Role_AdObject);
+                out.append(object_variant);
+            }
+        }
+
+        return out;
+    }();
+
+    QByteArray objects_as_bytes;
+    QDataStream stream(&objects_as_bytes, QIODevice::WriteOnly);
+    stream << QVariant(objects);
+    data->setData(MIME_TYPE_OBJECT, objects_as_bytes);
 
     return data;
 }
