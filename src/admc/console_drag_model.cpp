@@ -21,7 +21,6 @@
 
 #include "ad_interface.h"
 #include "ad_object.h"
-#include "ad_object.h"
 #include "status.h"
 #include "object_model.h"
 
