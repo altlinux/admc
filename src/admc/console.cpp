@@ -646,6 +646,9 @@ void Console::fetch_scope_node(const QModelIndex &index) {
         // NOTE: load_object_row() needs this for loading group type/scope
         out += ATTRIBUTE_GROUP_TYPE;
 
+        // NOTE: system flags are needed for drag and drop logic
+        out += ATTRIBUTE_SYSTEM_FLAGS;
+
         return out;
     }();
 
