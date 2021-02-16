@@ -84,4 +84,6 @@ private:
     AdObjectAttributes attributes_data;
 };
 
+Q_DECLARE_METATYPE(AdObject);
+
 #endif /* AD_OBJECT_H */
