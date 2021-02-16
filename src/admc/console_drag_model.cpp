@@ -21,6 +21,7 @@
 
 #include "ad_interface.h"
 #include "ad_object.h"
+#include "ad_object.h"
 #include "status.h"
 #include "object_model.h"
 
@@ -36,23 +37,10 @@ const QString MIME_TYPE_OBJECT = "MIME_TYPE_OBJECT";
 QList<AdObject> mimedata_to_object_list(const QMimeData *data);
 
 QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *data = QStandardItemModel::mimeData(indexes);
+    auto data = new QMimeData();
 
-    const QList<QUrl> dns =
-    [=]() {
-        QList<QUrl> out;
-        for (const QModelIndex index : indexes) {
-            if (index.column() == 0) {
-                const QString dn = index.data(Role_DN).toString();
-                out.append(dn);
-            }
-        }
-
-        return out;
-    }();
-
-    data->setUrls(dns);
-
+    // Get adobject's from item data and convert the list to
+    // a variant
     const QList<QVariant> objects =
     [=]() {
         QList<QVariant> out;
@@ -65,49 +53,48 @@ QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
 
         return out;
     }();
+    const QVariant objects_as_variant(objects);
 
+    // Convert objects variant to bytes
     QByteArray objects_as_bytes;
     QDataStream stream(&objects_as_bytes, QIODevice::WriteOnly);
-    stream << QVariant(objects);
+    stream << objects_as_variant;
+    
     data->setData(MIME_TYPE_OBJECT, objects_as_bytes);
 
     return data;
 }
 
 bool ConsoleDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, int, int, const QModelIndex &parent) const {
-    if (!data->hasUrls()) {
+    if (!data->hasFormat(MIME_TYPE_OBJECT)) {
         return false;
     }
 
-    const QList<QUrl> dns = data->urls();
+    const QList<AdObject> dropped_list = mimedata_to_object_list(data);
+    const AdObject target = parent.siblingAtColumn(0).data(Role_AdObject).value<AdObject>();
 
-    const QList<AdObject> object = mimedata_to_object_list(data);
+    // NOTE: only check if object can be dropped if dropping a single object, because when dropping multiple objects it is ok for some objects to successfully drop and some to fail. For example, if you drop users together with OU's onto a group, users will be added to that group while OU will fail to drop.
+    if (dropped_list.size() == 1) {
+        const AdObject dropped = dropped_list[0];
 
-    if (dns.size() == 1) {
-        const QString dn = dns[0].toString();
-        const QString parent_dn = parent.siblingAtColumn(0).data(Role_DN).toString();
-
-        return AD()->object_can_drop(dn, parent_dn);
+        return AD()->object_can_drop(dropped, target);
     } else {
-        // NOTE: no checks are done for whether multiple items can be dropped, for performance reasons
         return true;
     }
 }
 
 bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int, int, const QModelIndex &parent) {
-    if (!data->hasUrls()) {
+    if (!data->hasFormat(MIME_TYPE_OBJECT)) {
         return true;
     }
 
-    const QList<QUrl> dns = data->urls();
-    const QString target_dn = parent.siblingAtColumn(0).data(Role_DN).toString();
-
-    const QList<AdObject> object = mimedata_to_object_list(data);
+    const QList<AdObject> dropped_list = mimedata_to_object_list(data);
+    const AdObject target = parent.siblingAtColumn(0).data(Role_AdObject).value<AdObject>();
 
     STATUS()->start_error_log();
 
-    for (const QUrl dn : dns) {
-        AD()->object_drop(dn.toString(), target_dn);
+    for (const AdObject dropped : dropped_list) {
+        AD()->object_drop(dropped, target);
     }
 
     STATUS()->end_error_log(nullptr);

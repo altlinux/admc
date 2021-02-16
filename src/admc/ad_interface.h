@@ -100,8 +100,8 @@ public:
     bool user_set_account_option(const QString &dn, AccountOption option, bool set);
     bool user_unlock(const QString &dn);
 
-    bool object_can_drop(const QString &dn, const QString &target_dn);
-    void object_drop(const QString &dn, const QString &target_dn);
+    bool object_can_drop(const AdObject &dropped, const AdObject &target);
+    void object_drop(const AdObject &dropped, const AdObject &target);
 
     bool create_gpo(const QString &name);
     bool delete_gpo(const QString &dn);

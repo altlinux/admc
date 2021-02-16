@@ -988,15 +988,10 @@ enum DropType {
 // Determine what kind of drop type is dropping this object
 // onto target. If drop type is none, then can't drop this
 // object on this target.
-DropType get_drop_type(const QString &dn, const QString &target_dn) {
-    if (dn == target_dn) {
+DropType get_drop_type(const AdObject &dropped, const AdObject &target) {
+    if (dropped.get_dn() == target.get_dn()) {
         return DropType_None;
     }
-
-    // TODO: doing searches everytime this is called and this will get called while item is getting dragged over potential targets. Each time a new target is hovered over a request to server is made, which seems ... bad? Watch out for possible bad/laggy performance, especially on slow connections. A fix to this would be MESSY though, involving storing system flags/object classes in model and passing them all the way to here.
-    const AdObject dropped = AD()->search_object(dn, {ATTRIBUTE_OBJECT_CLASS, ATTRIBUTE_SYSTEM_FLAGS});
-
-    const AdObject target = AD()->search_object(target_dn, {ATTRIBUTE_OBJECT_CLASS});
 
     const bool dropped_is_user = dropped.contains_class(CLASS_USER);
     const bool dropped_is_group = dropped.contains_class(CLASS_GROUP);
@@ -1034,8 +1029,8 @@ DropType get_drop_type(const QString &dn, const QString &target_dn) {
     }
 }
 
-bool AdInterface::object_can_drop(const QString &dn, const QString &target_dn) {
-    const DropType drop_type = get_drop_type(dn, target_dn);
+bool AdInterface::object_can_drop(const AdObject &dropped, const AdObject &target) {
+    const DropType drop_type = get_drop_type(dropped, target);
 
     if (drop_type == DropType_None) {
         return false;
@@ -1045,16 +1040,16 @@ bool AdInterface::object_can_drop(const QString &dn, const QString &target_dn) {
 }
 
 // General "drop" operation that can either move, link or change membership depending on which types of objects are involved
-void AdInterface::object_drop(const QString &dn, const QString &target_dn) {
-    DropType drop_type = get_drop_type(dn, target_dn);
+void AdInterface::object_drop(const AdObject &dropped, const AdObject &target) {
+    DropType drop_type = get_drop_type(dropped, target);
 
     switch (drop_type) {
         case DropType_Move: {
-            AD()->object_move(dn, target_dn);
+            AD()->object_move(dropped.get_dn(), target.get_dn());
             break;
         }
         case DropType_AddToGroup: {
-            AD()->group_add_member(target_dn, dn);
+            AD()->group_add_member(target.get_dn(), dropped.get_dn());
             break;
         }
         case DropType_None: {
