@@ -26,10 +26,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-const char *regtype2str(uint32_t &regtype) {
-    return preg::regtype2str(regtype).c_str();
-}
-
 uint32_t str2regtype(const char *regtype) {
     std::string reg_name(regtype);
     return preg::str2regtype(reg_name);

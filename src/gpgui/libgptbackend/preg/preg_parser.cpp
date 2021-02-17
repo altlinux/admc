@@ -44,8 +44,8 @@ preg::preg_parser::preg_parser(std::string &file_path) {
     this->load_regpol(this->file_path);
 }
 
-void preg::preg_parser::load_regpol(std::string &file_path) {
-    this->polfile.open(file_path,
+void preg::preg_parser::load_regpol(std::string &path) {
+    this->polfile.open(path,
                        std::ios::in | std::ios::binary | std::ios::ate);
     if (this->polfile.good()) {
         this->polfile.seekg(0, std::ios::end);       /* Go to the end of file */
@@ -119,7 +119,7 @@ bool is_preg_entry_separator(char symbol) {
 } // namespace
 
 char preg::preg_parser::read_byte(size_t abs_file_start_offset) {
-    char symbol;
+    char symbol = 0;
     if (abs_file_start_offset < this->raw_file_size) {
         this->polfile.seekg(abs_file_start_offset, std::ios::beg);
         this->polfile.read(&symbol, 1);
