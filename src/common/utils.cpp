@@ -101,7 +101,7 @@ void setup_column_toggle_menu(const QTreeView *view, const QStandardItemModel *m
 
     QObject::connect(
         header, &QHeaderView::customContextMenuRequested,
-        [view, header, model](const QPoint pos) {
+        [header, model](const QPoint pos) {
             QMenu menu;
             for (int i = 0; i < header->count(); i++) {
                 const auto header_item = model->horizontalHeaderItem(i);
@@ -113,7 +113,7 @@ void setup_column_toggle_menu(const QTreeView *view, const QStandardItemModel *m
                 action->setChecked(!currently_hidden);
 
                 QObject::connect(action, &QAction::triggered,
-                    [header, i, action]() {
+                    [header, i]() {
                         const bool was_hidden = header->isSectionHidden(i);
                         const bool hidden = !was_hidden;
 

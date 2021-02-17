@@ -47,12 +47,12 @@ void AccountOptionEdit::make_many(const QList<AccountOption> options, QMap<Accou
     // Implement this by connecting to state changes of all options and
     // resetting to previous state if state transition is invalid
     auto setup_conflict =
-    [parent, option_edits](const AccountOption subject, const AccountOption blocker) {
+    [option_edits](const AccountOption subject, const AccountOption blocker) {
         QCheckBox *subject_check = option_edits[subject]->check;
         QCheckBox *blocker_check = option_edits[blocker]->check;
 
         connect(subject_check, &QCheckBox::stateChanged,
-            [subject, blocker, subject_check, blocker_check, parent]() {
+            [subject, blocker, subject_check, blocker_check]() {
                 if (subject_check->isChecked() && blocker_check->isChecked()) {
                     subject_check->setCheckState(Qt::Unchecked);
 

@@ -157,7 +157,7 @@ AdConfig::AdConfig(QObject *parent)
                 }
 
                 find_attributes[object_class] =
-                [this, object_class, display_names]() {
+                [object_class, display_names]() {
                     QList<QString> out;
 
                     for (const auto display_name_pair : display_names) {
@@ -219,7 +219,7 @@ AdConfig::AdConfig(QObject *parent)
     }
 
     filter_containers =
-    [this]() {
+    []() {
         QList<QString> out;
         
         const QString locale_dir = get_locale_dir();

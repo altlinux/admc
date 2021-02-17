@@ -222,7 +222,7 @@ void CreateDialog::accept() {
     STATUS()->start_error_log();
 
     auto fail_msg =
-    [this, name]() {
+    [name]() {
         const QString message = QString(tr("Failed to create object \"%1\"")).arg(name);
         STATUS()->message(message, StatusType_Error);
     };
