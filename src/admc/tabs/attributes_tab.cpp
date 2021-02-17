@@ -251,7 +251,7 @@ void AttributesTab::load(const AdObject &object) {
     // Add attributes without values
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
     const QList<QString> optional_attributes = ADCONFIG()->get_optional_attributes(object_classes);
-    for (const QString attribute : optional_attributes) {
+    for (const QString &attribute : optional_attributes) {
         if (!original.contains(attribute)) {
             original[attribute] = QList<QByteArray>();
         }

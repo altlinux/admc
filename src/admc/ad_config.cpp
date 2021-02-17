@@ -80,7 +80,7 @@ AdConfig::AdConfig(QObject *parent)
 
         const QHash<QString, AdObject> search_results = AD()->search(filter, attributes, SearchScope_Children, schema_dn);
 
-        for (const AdObject object : search_results.values()) {
+        for (const AdObject &object : search_results.values()) {
             const QString attribute = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
             attribute_schemas[attribute] = object;
         }
@@ -106,7 +106,7 @@ AdConfig::AdConfig(QObject *parent)
 
         const QHash<QString, AdObject> search_results = AD()->search(filter, attributes, SearchScope_Children, schema_dn);
 
-        for (const AdObject object : search_results.values()) {
+        for (const AdObject &object : search_results.values()) {
             const QString object_class = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
             class_schemas[object_class] = object;
         }
@@ -126,7 +126,7 @@ AdConfig::AdConfig(QObject *parent)
 
         const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, locale_dir);
 
-        for (const AdObject object : search_results) {
+        for (const AdObject &object : search_results) {
             const QString dn = object.get_dn();
 
             // Display specifier DN is "CN=object-class-Display,CN=..."
@@ -148,7 +148,7 @@ AdConfig::AdConfig(QObject *parent)
             if (object.contains(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES)) {
                 const QList<QString> display_names = object.get_strings(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES);
 
-                for (const auto display_name_pair : display_names) {
+                for (const auto &display_name_pair : display_names) {
                     const QList<QString> split = display_name_pair.split(",");
                     const QString attribute_name = split[0];
                     const QString display_name = split[1];
@@ -160,7 +160,7 @@ AdConfig::AdConfig(QObject *parent)
                 [object_class, display_names]() {
                     QList<QString> out;
 
-                    for (const auto display_name_pair : display_names) {
+                    for (const auto &display_name_pair : display_names) {
                         const QList<QString> split = display_name_pair.split(",");
                         const QString attribute = split[0];
 
@@ -240,7 +240,7 @@ AdConfig::AdConfig(QObject *parent)
         // NOTE: ATTRIBUTE_FILTER_CONTAINERS contains object
         // *categories* not classes, so need to get object
         // class from category object
-        for (const auto object_category : categories) {
+        for (const auto &object_category : categories) {
             const QString category_dn = QString("CN=%1,%2").arg(object_category, AD()->schema_dn());
             const AdObject category_object = AD()->search_object(category_dn, {ATTRIBUTE_LDAP_DISPLAY_NAME});
             const QString object_class = category_object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
@@ -332,7 +332,7 @@ QList<QString> AdConfig::get_optional_attributes(const QList<QString> &object_cl
 
     QList<QString> attributes;
 
-    for (const auto object_class : all_classes) {
+    for (const auto &object_class : all_classes) {
         const AdObject schema = class_schemas[object_class];
         attributes += schema.get_strings(ATTRIBUTE_MAY_CONTAIN);
         attributes += schema.get_strings(ATTRIBUTE_SYSTEM_MAY_CONTAIN);
@@ -348,7 +348,7 @@ QList<QString> AdConfig::get_mandatory_attributes(const QList<QString> &object_c
 
     QList<QString> attributes;
 
-    for (const auto object_class : all_classes) {
+    for (const auto &object_class : all_classes) {
         const AdObject schema = class_schemas[object_class];
         attributes += schema.get_strings(ATTRIBUTE_MUST_CONTAIN);
         attributes += schema.get_strings(ATTRIBUTE_SYSTEM_MUST_CONTAIN);
@@ -497,7 +497,7 @@ QList<QString> AdConfig::add_auxiliary_classes(const QList<QString> &object_clas
 
     out += object_classes;
 
-    for (const auto object_class : object_classes) {
+    for (const auto &object_class : object_classes) {
         const AdObject schema = class_schemas[object_class];
         out += schema.get_strings(ATTRIBUTE_AUXILIARY_CLASS);
         out += schema.get_strings(ATTRIBUTE_SYSTEM_AUXILIARY_CLASS);

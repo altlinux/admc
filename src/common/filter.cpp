@@ -60,7 +60,7 @@ QString filter_CONDITION(const Condition condition, const QString &attribute, co
 QString filter_AND(const QList<QString> &subfilters) {
     if (!subfilters.isEmpty()) {
         QString filter = "(&";
-        for (const QString subfilter : subfilters) {
+        for (const QString &subfilter : subfilters) {
             filter += subfilter;
         }
         filter += ")";
@@ -75,7 +75,7 @@ QString filter_AND(const QList<QString> &subfilters) {
 QString filter_OR(const QList<QString> &subfilters) {
     if (!subfilters.isEmpty()) {
         QString filter = "(|";
-        for (const QString subfilter : subfilters) {
+        for (const QString &subfilter : subfilters) {
             filter += subfilter;
         }
         filter += ")";
@@ -90,7 +90,7 @@ QString is_container_filter() {
     const QList<QString> accepted_classes = ADCONFIG()->get_filter_containers();
 
     QList<QString> class_filters;
-    for (const QString object_class : accepted_classes) {
+    for (const QString &object_class : accepted_classes) {
         const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
         class_filters.append(class_filter);
     }

@@ -76,7 +76,7 @@ QList<QString> AdObject::get_strings(const QString &attribute) const {
     const QList<QByteArray> values = get_values(attribute);
 
     QList<QString> strings;
-    for (const auto value : values) {
+    for (const auto &value : values) {
         const QString string = QString(value);
         strings.append(string);
     }
@@ -103,7 +103,7 @@ QList<int> AdObject::get_ints(const QString &attribute) const {
     const QList<QString> strings = get_strings(attribute);
 
     QList<int> ints;
-    for (const auto string : strings) {
+    for (const auto &string : strings) {
         const int int_value = string.toInt();
         ints.append(int_value);
     }
@@ -132,7 +132,7 @@ QList<bool> AdObject::get_bools(const QString &attribute) const {
     const QList<QString> strings = get_strings(attribute);
 
     QList<bool> bools;
-    for (const auto string : strings) {
+    for (const auto &string : strings) {
         const bool bool_value = ad_string_to_bool(string);
         bools.append(bool_value);
     }

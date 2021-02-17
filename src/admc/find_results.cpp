@@ -110,7 +110,7 @@ void FindResults::load(const QString &filter, const QString &search_base) {
     const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_All, search_base);
 
 
-    for (const AdObject object : search_results) {
+    for (const AdObject &object : search_results) {
         if (model->rowCount() == RESULTS_COUNT_MAX) {
             break;
         }

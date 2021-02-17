@@ -38,7 +38,7 @@ FilterDialog::FilterDialog(QWidget *parent)
         QList<QString> out = filter_classes;
 
         const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
-        for (const QString container_class : container_classes) {
+        for (const QString &container_class : container_classes) {
             out.removeAll(container_class);
         }
 

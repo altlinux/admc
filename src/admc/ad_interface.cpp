@@ -1010,7 +1010,7 @@ DropType get_drop_type(const AdObject &dropped, const AdObject &target) {
         const bool target_is_valid_superior =
         [target, dropped_superiors]() {
             const QList<QString> target_classes = target.get_strings(ATTRIBUTE_OBJECT_CLASS);
-            for (const auto object_class : dropped_superiors) {
+            for (const auto &object_class : dropped_superiors) {
                 if (target_classes.contains(object_class)) {
                     return true;
                 }
@@ -1167,7 +1167,7 @@ bool AdInterface::delete_gpo(const QString &gpo_dn) {
         recurse_stack.append(children.keys());
     }
 
-    for (const auto dn : delete_queue) {
+    for (const auto &dn : delete_queue) {
         object_delete(dn);
     }
 

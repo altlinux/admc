@@ -109,7 +109,7 @@ bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 
     STATUS()->start_error_log();
 
-    for (const AdObject dropped : dropped_list) {
+    for (const AdObject &dropped : dropped_list) {
         AD()->object_drop(dropped, target);
     }
 
@@ -130,7 +130,7 @@ QList<AdObject> mimedata_to_object_list(const QMimeData *data) {
 
     QList<AdObject> out;
 
-    for (const QVariant e : objects_as_variant_list) {
+    for (const QVariant &e : objects_as_variant_list) {
         const AdObject object = e.value<AdObject>();
         out.append(object);
     }

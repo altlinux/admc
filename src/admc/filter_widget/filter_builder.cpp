@@ -33,7 +33,7 @@ FilterBuilder::FilterBuilder()
 : QWidget()
 {
     attribute_class_combo = new QComboBox();
-    for (const QString object_class : filter_classes) {
+    for (const QString &object_class : filter_classes) {
         const QString display = ADCONFIG()->get_class_display_name(object_class);
         attribute_class_combo->addItem(display, object_class);
     }
@@ -127,7 +127,7 @@ void FilterBuilder::update_attributes_combo() {
     [attributes, object_class]() {
         QList<QString> out;
 
-        for (const QString attribute : attributes) {
+        for (const QString &attribute : attributes) {
             const QString display_name = ADCONFIG()->get_attribute_display_name(attribute, object_class);
             out.append(display_name);
         }
@@ -141,7 +141,7 @@ void FilterBuilder::update_attributes_combo() {
     const QHash<QString, QString> display_to_attribute =
     [attributes, object_class]() {
         QHash<QString, QString> out;
-        for (const QString attribute : attributes) {
+        for (const QString &attribute : attributes) {
             const QString display_name = ADCONFIG()->get_attribute_display_name(attribute, object_class);
 
             out[display_name] = attribute;
@@ -150,7 +150,7 @@ void FilterBuilder::update_attributes_combo() {
     }();
 
     // Insert attributes into combobox in the sorted order of display attributes
-    for (const auto display_attribute : display_attributes) {
+    for (const auto &display_attribute : display_attributes) {
         const QString attribute = display_to_attribute[display_attribute];
         attribute_combo->addItem(display_attribute, attribute);
     }
