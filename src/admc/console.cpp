@@ -49,8 +49,8 @@
 #include <QSortFilterProxyModel>
 
 enum ScopeRole {
-    ScopeRole_Id = Role_AdObject + 1,
-    ScopeRole_Fetched = Role_AdObject + 2,
+    ScopeRole_Id = Role_LAST + 1,
+    ScopeRole_Fetched = Role_LAST + 2,
 };
 
 #define DUMMY_ITEM_ID -1
