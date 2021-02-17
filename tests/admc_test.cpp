@@ -518,7 +518,7 @@ void ADMCTest::object_menu_add_to_group() {
     // Select group in view
     navigate_until_object(find_results_view, group_dn);
     const QModelIndex selected_index = find_results_view->selectionModel()->currentIndex();
-    const QString selected_dn = selected_index.data(Role_DN).toString();
+    const QString selected_dn = selected_index.data(ObjectRole_DN).toString();
 
     find_select_dialog->accept();
 
@@ -648,7 +648,7 @@ void ADMCTest::navigate_until_object(QTreeView *view, const QString &target_dn) 
     while (true) {
         const QModelIndex current_index = view->selectionModel()->currentIndex();
 
-        const QString current_dn = current_index.data(Role_DN).toString();
+        const QString current_dn = current_index.data(ObjectRole_DN).toString();
         const bool found_object = (current_dn == target_dn);
         if (found_object) {
             // NOTE: have to set current to select the row. If the first item in view happens to match and no navigation is done, then that first row won't be "selected". Widgets that select items from views rely on whole rows being selected, like they are when you click on them.

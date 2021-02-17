@@ -46,7 +46,7 @@ QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
         QList<QVariant> out;
         for (const QModelIndex index : indexes) {
             if (index.column() == 0) {
-                const QVariant object_variant = index.data(Role_AdObject);
+                const QVariant object_variant = index.data(ObjectRole_AdObject);
                 out.append(object_variant);
             }
         }
@@ -87,7 +87,7 @@ bool ConsoleDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, in
     }
 
     const QList<AdObject> dropped_list = mimedata_to_object_list(data);
-    const AdObject target = parent.siblingAtColumn(0).data(Role_AdObject).value<AdObject>();
+    const AdObject target = parent.siblingAtColumn(0).data(ObjectRole_AdObject).value<AdObject>();
 
     // NOTE: only check if object can be dropped if dropping a single object, because when dropping multiple objects it is ok for some objects to successfully drop and some to fail. For example, if you drop users together with OU's onto a group, users will be added to that group while OU will fail to drop.
     if (dropped_list.size() == 1) {
@@ -105,7 +105,7 @@ bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action
     }
 
     const QList<AdObject> dropped_list = mimedata_to_object_list(data);
-    const AdObject target = parent.siblingAtColumn(0).data(Role_AdObject).value<AdObject>();
+    const AdObject target = parent.siblingAtColumn(0).data(ObjectRole_AdObject).value<AdObject>();
 
     STATUS()->start_error_log();
 

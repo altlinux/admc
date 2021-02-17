@@ -49,8 +49,8 @@
 #include <QSortFilterProxyModel>
 
 enum ScopeRole {
-    ScopeRole_Id = Role_LAST + 1,
-    ScopeRole_Fetched = Role_LAST + 2,
+    ScopeRole_Id = ObjectRole_LAST + 1,
+    ScopeRole_Fetched = ObjectRole_LAST + 2,
 };
 
 #define DUMMY_ITEM_ID -1
@@ -338,7 +338,7 @@ void Console::on_current_scope_changed(const QModelIndex &current, const QModelI
 void Console::on_object_deleted(const QString &dn) {
     const QString parent_dn = dn_get_parent(dn);
 
-    const QList<QModelIndex> scope_parent_matches = scope_model->match(scope_model->index(0, 0), Role_DN, parent_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+    const QList<QModelIndex> scope_parent_matches = scope_model->match(scope_model->index(0, 0), ObjectRole_DN, parent_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
     if (scope_parent_matches.isEmpty()) {
         return;
     }
@@ -350,7 +350,7 @@ void Console::on_object_deleted(const QString &dn) {
     const int scope_parent_id = scope_parent.data(ScopeRole_Id).toInt();
     QStandardItemModel *results_model = scope_id_to_results.value(scope_parent_id, nullptr);
     if (results_model != nullptr) {
-        const QList<QModelIndex> results_index_matches = results_model->match(scope_model->index(0, 0), Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+        const QList<QModelIndex> results_index_matches = results_model->match(scope_model->index(0, 0), ObjectRole_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
 
         if (!results_index_matches.isEmpty()) {
             const QModelIndex results_index = results_index_matches[0];
@@ -359,7 +359,7 @@ void Console::on_object_deleted(const QString &dn) {
     }
 
     // Remove from scope
-    const QList<QModelIndex> scope_index_matches = scope_model->match(scope_parent, Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+    const QList<QModelIndex> scope_index_matches = scope_model->match(scope_parent, ObjectRole_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
     if (!scope_index_matches.isEmpty()) {
         const QModelIndex scope_index = scope_index_matches[0];
         scope_model->removeRow(scope_index.row(), scope_index.parent());
@@ -371,7 +371,7 @@ void Console::on_object_added(const QString &dn) {
     const QModelIndex scope_parent =
     [=]() {
         const QString parent_dn = dn_get_parent(dn);
-        const QList<QModelIndex> scope_parent_matches = scope_model->match(scope_model->index(0, 0), Role_DN, parent_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+        const QList<QModelIndex> scope_parent_matches = scope_model->match(scope_model->index(0, 0), ObjectRole_DN, parent_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
         
         if (!scope_parent_matches.isEmpty()) {
             return scope_parent_matches[0];
@@ -402,7 +402,7 @@ void Console::on_object_added(const QString &dn) {
     // NOTE: Need to check for object already being in scope because this is possible due to complicated drag behavior. When an object is added to a container by dragging, the drop operation sets the drop target as current item of view. For some reason the event for current item change is sent before the event that triggers on_object_added() slot. The current item changed slot fetches the container and loads the new object into it.
     const bool object_already_in_scope =
     [=]() {
-        const QList<QModelIndex> scope_match = scope_model->match(scope_model->index(0, 0, scope_parent), Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchWrap));
+        const QList<QModelIndex> scope_match = scope_model->match(scope_model->index(0, 0, scope_parent), ObjectRole_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchWrap));
 
         return (scope_match.size() == 1);
     }();
@@ -422,7 +422,7 @@ void Console::on_object_added(const QString &dn) {
         // NOTE: see note about about object_already_in_scope. Same thing.
         const bool object_already_in_results =
         [=]() {
-            const QList<QModelIndex> results_match = results_model->match(results_model->index(0, 0), Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchWrap));
+            const QList<QModelIndex> results_match = results_model->match(results_model->index(0, 0), ObjectRole_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchWrap));
             
             return (results_match.size() == 1);
         }();
@@ -441,7 +441,7 @@ void Console::on_object_added(const QString &dn) {
 void Console::on_object_changed(const QString &dn) {
     // Find parent of this object in scope tree
     const QString parent_dn = dn_get_parent(dn);
-    const QList<QModelIndex> scope_parent_matches = scope_model->match(scope_model->index(0, 0), Role_DN, parent_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive | Qt::MatchWrap));
+    const QList<QModelIndex> scope_parent_matches = scope_model->match(scope_model->index(0, 0), ObjectRole_DN, parent_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive | Qt::MatchWrap));
     if (scope_parent_matches.isEmpty()) {
         return;
     }
@@ -455,7 +455,7 @@ void Console::on_object_changed(const QString &dn) {
     }
 
     // Find object's row in results model
-    const QList<QModelIndex> results_index_matches = results_model->match(scope_parent, Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+    const QList<QModelIndex> results_index_matches = results_model->match(scope_parent, ObjectRole_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
     if (results_index_matches.isEmpty()) {
         return;
     }
@@ -544,7 +544,7 @@ void Console::update_results_header() {
         if (!parent_index.isValid()) {
             return QString();
         }
-        const QString parent_dn = parent_index.data(Role_DN).toString();
+        const QString parent_dn = parent_index.data(ObjectRole_DN).toString();
         const QString parent_name = dn_get_name(parent_dn);
 
         return QString("%1: %2").arg(parent_name, object_count_string);
@@ -652,7 +652,7 @@ void Console::fetch_scope_node(const QModelIndex &index) {
         return out;
     }();
 
-    const QString dn = index.data(Role_DN).toString();
+    const QString dn = index.data(ObjectRole_DN).toString();
 
     QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, dn);
 
@@ -756,14 +756,14 @@ QModelIndex Console::get_scope_node_from_id(const int id) const {
 
 void Console::on_result_item_double_clicked(const QModelIndex &index)
 {
-    const QString dn = index.data(Role_DN).toString();
-    const QString object_class = index.data(Role_ObjectClass).toString();
+    const QString dn = index.data(ObjectRole_DN).toString();
+    const QString object_class = index.data(ObjectRole_ObjectClass).toString();
     const bool should_be_in_scope = object_should_be_in_scope(object_class);
 
     if (should_be_in_scope) {
         // Find the scope item that represents this object
         // and make it the current item of scope tree.
-        const QList<QModelIndex> scope_index_matches = scope_model->match(scope_model->index(0, 0), Role_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+        const QList<QModelIndex> scope_index_matches = scope_model->match(scope_model->index(0, 0), ObjectRole_DN, dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
         if (!scope_index_matches.empty()) {
             auto current_index = scope_index_matches[0];
             scope_view->selectionModel()->setCurrentIndex(current_index, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);

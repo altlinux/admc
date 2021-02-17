@@ -63,7 +63,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
                 continue;
             }
 
-            const QString dn = index.data(Role_DN).toString();
+            const QString dn = index.data(ObjectRole_DN).toString();
 
             out.append(dn);
         }
@@ -83,7 +83,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
                 continue;
             }
 
-            const QString object_class = index.data(Role_ObjectClass).toString();
+            const QString object_class = index.data(ObjectRole_ObjectClass).toString();
 
             out.insert(object_class);
         }

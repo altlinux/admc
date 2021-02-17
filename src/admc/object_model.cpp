@@ -71,10 +71,10 @@ void load_object_row(const QList<QStandardItem *> row, const AdObject &object) {
 }
 
 void load_object_item_data(QStandardItem *item, const AdObject &object) {
-    item->setData(object.get_dn(), Role_DN);
-    item->setData(object.get_string(ATTRIBUTE_OBJECT_CLASS), Role_ObjectClass);
+    item->setData(object.get_dn(), ObjectRole_DN);
+    item->setData(object.get_string(ATTRIBUTE_OBJECT_CLASS), ObjectRole_ObjectClass);
 
-    item->setData(QVariant::fromValue(object), Role_AdObject);
+    item->setData(QVariant::fromValue(object), ObjectRole_AdObject);
 }
 
 QList<QString> object_model_header_labels() {

@@ -34,10 +34,10 @@ class AdObject;
  */
 
 enum ObjectRole {
-    Role_DN = Qt::UserRole + 1,
-    Role_ObjectClass = Qt::UserRole + 2,
-    Role_AdObject = Qt::UserRole + 3,
-    Role_LAST = Qt::UserRole + 4,
+    ObjectRole_DN = Qt::UserRole + 1,
+    ObjectRole_ObjectClass = Qt::UserRole + 2,
+    ObjectRole_AdObject = Qt::UserRole + 3,
+    ObjectRole_LAST = Qt::UserRole + 4,
 };
 
 void load_object_row(const QList<QStandardItem *> row, const AdObject &object);
