@@ -80,23 +80,6 @@ void ADMCTest::init() {
     QVERIFY2(create_success, "Failed to create test-arena");
 }
 
-// NOTE: can't just delete test arena while it has children
-// because LDAP forbids deleting non-leaf objects. So need
-// to delete leaves first.
-void ADMCTest::delete_test_arena_recursive(const QString &parent) {
-    const QHash<QString, AdObject> search_results = AD()->search(QString(), QList<QString>(), SearchScope_Children, parent);
-
-    const bool has_children = (search_results.size() > 0);
-    if (has_children) {
-        for (const QString child : search_results.keys()) {
-            delete_test_arena_recursive(child);
-        }
-    }
-
-    const bool delete_success = AD()->object_delete(parent);
-    QVERIFY2(delete_success, "Failed to delete test-arena or it's contents");
-}
-
 void ADMCTest::cleanup() {
     if (parent_widget != nullptr) {
         delete parent_widget;
@@ -109,7 +92,9 @@ void ADMCTest::cleanup() {
     const QHash<QString, AdObject> search_results = AD()->search(QString(), QList<QString>(), SearchScope_Object, dn);
     const bool test_arena_exists = (search_results.size() == 1);
     if (test_arena_exists) {
-        delete_test_arena_recursive(dn);
+        const bool delete_success = AD()->object_delete(dn);
+        QVERIFY2(delete_success, "Failed to delete test-arena or it's contents");
+        QVERIFY2(!object_exists(dn), "Deleted test-arena still exists");
     }
 }
 
