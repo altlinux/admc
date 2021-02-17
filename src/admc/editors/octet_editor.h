@@ -38,7 +38,7 @@ Q_OBJECT
 public:
     OctetEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);
 
-    QList<QByteArray> get_new_values() const;
+    QList<QByteArray> get_new_values() const override;
     void accept() override;
 
 private slots:

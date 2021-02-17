@@ -37,7 +37,7 @@ private:
     QStandardItemModel *reports_model;
     QTreeView *reports_view;
 
-    void showEvent(QShowEvent *event);
+    void showEvent(QShowEvent *event) override;
 };
 
 #endif /* ORGANIZATION_TAB_H */
