@@ -1390,9 +1390,14 @@ bool ad_connect(const char* uri, LDAP **ld_out) {
     int result;
     LDAP *ld = NULL;
 
+    auto cleanup =
+    [ld]() {
+        ldap_memfree(ld);
+    };
+
     result = ldap_initialize(&ld, uri);
     if (result != LDAP_SUCCESS) {
-        ldap_memfree(ld);
+        cleanup();
         return false;
     }
 
@@ -1400,14 +1405,14 @@ bool ad_connect(const char* uri, LDAP **ld_out) {
     const int version = LDAP_VERSION3;
     result = ldap_set_option(ld, LDAP_OPT_PROTOCOL_VERSION, &version);
     if (result != LDAP_OPT_SUCCESS) {
-        ldap_memfree(ld);
+        cleanup();
         return false;
     }
 
     // Disable referrals
     result =ldap_set_option(ld, LDAP_OPT_REFERRALS, LDAP_OPT_OFF);
     if (result != LDAP_OPT_SUCCESS) {
-        ldap_memfree(ld);
+        cleanup();
         return false;
     }
 
@@ -1415,14 +1420,22 @@ bool ad_connect(const char* uri, LDAP **ld_out) {
     const char* sasl_secprops = "maxssf=56";
     result = ldap_set_option(ld, LDAP_OPT_X_SASL_SECPROPS, sasl_secprops);
     if (result != LDAP_SUCCESS) {
-        ldap_memfree(ld);
+        cleanup();
         return false;
     }
 
-    ldap_set_option(ld, LDAP_OPT_X_SASL_NOCANON, LDAP_OPT_ON);
+    result = ldap_set_option(ld, LDAP_OPT_X_SASL_NOCANON, LDAP_OPT_ON);
+    if (result != LDAP_SUCCESS) {
+        cleanup();
+        return false;
+    }
 
     // TODO: add option to turn off
     ldap_set_option(ld, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
+    if (result != LDAP_SUCCESS) {
+        cleanup();
+        return false;
+    }
 
     // Setup sasl_defaults_gssapi 
     struct sasl_defaults_gssapi defaults;
@@ -1434,18 +1447,14 @@ bool ad_connect(const char* uri, LDAP **ld_out) {
 
     // Perform bind operation
     unsigned sasl_flags = LDAP_SASL_QUIET;
-    result = ldap_sasl_interactive_bind_s(ld, NULL,defaults.mech, NULL, NULL, sasl_flags, sasl_interact_gssapi, &defaults);
+    result = ldap_sasl_interactive_bind_s(ld, NULL, defaults.mech, NULL, NULL, sasl_flags, sasl_interact_gssapi, &defaults);
     ldap_memfree(defaults.realm);
     ldap_memfree(defaults.authcid);
     ldap_memfree(defaults.authzid);
     if (result != LDAP_SUCCESS) {
-        ldap_memfree(ld);
+        cleanup();
         return false;
     }
-
-    // NOTE: not using this for now but might need later
-    // The Man says: this function is used when an application needs to bind to another server in order to follow a referral or search continuation reference
-    // ldap_set_rebind_proc(ld, sasl_rebind_gssapi, NULL);
 
     if (ld_out != NULL) {
         *ld_out = ld;
