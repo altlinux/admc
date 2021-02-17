@@ -21,7 +21,6 @@
 #define MENUBAR_H
 
 #include <QMenuBar>
-#include <QList>
 
 class QAction;
 class QMenu;
@@ -47,8 +46,6 @@ private slots:
     void about();
 
 private:
-    QList<QMenu *> menus;
-
     void enable_actions(const bool enabled);
 };
 
