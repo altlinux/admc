@@ -128,7 +128,7 @@ bool OctetEditor::check_input(const OctetDisplayFormat format) {
 
         // Check that all elements of text (separated by
         // space) match the format
-        for (const QString element : text_split) {
+        for (const QString &element : text_split) {
             switch (format) {
                 case OctetDisplayFormat_Hexadecimal: {
                     const QRegExp rx("([0-9a-f]{2})");
@@ -255,7 +255,7 @@ QByteArray octet_string_to_bytes(const QString string, const OctetDisplayFormat 
 
     QByteArray out;
 
-    for (const QString byte_string_padded : string_split) {
+    for (const QString &byte_string_padded : string_split) {
         // NOTE: remove padding because strtol doesn't understand it
         // "005" => "5"
         const QString byte_string =

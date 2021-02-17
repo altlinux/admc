@@ -102,7 +102,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
             CLASS_OU,
             CLASS_GROUP,
         };
-        for (const auto object_class : create_classes) {
+        for (const auto &object_class : create_classes) {
             const QString action_text = ADCONFIG()->get_class_display_name(object_class);
 
             submenu_new->addAction(action_text,
@@ -278,7 +278,7 @@ void delete_object(const QList<QString> targets, QWidget *parent) {
     if (confirmed) {
         STATUS()->start_error_log();
 
-        for (const QString target : targets) {
+        for (const QString &target : targets) {
             AD()->object_delete(target);
         }
 
@@ -298,7 +298,7 @@ void move(const QList<QString> targets, QWidget *parent) {
             const QString selected = dialog->get_selected();
             STATUS()->start_error_log();
 
-            for (const QString target : targets) {
+            for (const QString &target : targets) {
                 AD()->object_move(target, selected);
             }
 
@@ -322,7 +322,7 @@ void add_to_group(const QList<QString> targets, QWidget *parent) {
 
             STATUS()->start_error_log();
 
-            for (const QString target : targets) {
+            for (const QString &target : targets) {
                 for (auto group : selected) {
                     AD()->group_add_member(group, target);
                 }
@@ -352,7 +352,7 @@ void reset_password(const QString &target, QWidget *parent) {
 void enable_account(const QList<QString> targets, QWidget *parent) {
     STATUS()->start_error_log();
     
-    for (const QString target : targets) {
+    for (const QString &target : targets) {
         AD()->user_set_account_option(target, AccountOption_Disabled, false);
     }
 
@@ -362,7 +362,7 @@ void enable_account(const QList<QString> targets, QWidget *parent) {
 void disable_account(const QList<QString> targets, QWidget *parent) {
     STATUS()->start_error_log();
     
-    for (const QString target : targets) {
+    for (const QString &target : targets) {
         AD()->user_set_account_option(target, AccountOption_Disabled, true);
     }
 
@@ -396,7 +396,7 @@ void move_object(const QList<QString> targets, QWidget *parent) {
             const QString selected = dialog->get_selected();
             STATUS()->start_error_log();
 
-            for (const QString target : targets) {
+            for (const QString &target : targets) {
                 AD()->object_move(target, selected);
             }
 

@@ -146,7 +146,7 @@ void MembershipTab::load(const AdObject &object) {
             const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_PRIMARY_GROUP_ID, group_rid);
             const QHash<QString, AdObject> result = AD()->search(filter, QList<QString>(), SearchScope_All);
 
-            for (const QString user : result.keys()) {
+            for (const QString &user : result.keys()) {
                 original_primary_values.insert(user);
             }
 

@@ -126,7 +126,7 @@ void SelectContainerDialog::fetch_node(const QModelIndex &index) {
     const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, dn);
 
     QStandardItem *parent = model->itemFromIndex(index);
-    for (const AdObject object : search_results.values()) {
+    for (const AdObject &object : search_results.values()) {
         auto item = make_container_node(object);
         parent->appendRow(item);
     }

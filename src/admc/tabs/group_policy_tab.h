@@ -62,7 +62,7 @@ private:
 
     void reload_gplink();
 
-    void showEvent(QShowEvent *event);
+    void showEvent(QShowEvent *event) override;
 };
 
 #endif /* GROUP_POLICY_TAB_H */

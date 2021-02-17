@@ -56,7 +56,7 @@ SelectClassesWidget::SelectClassesWidget(const QList<QString> classes)
     dialog_buttons->addButton(QDialogButtonBox::Cancel);
 
     auto checks_layout = new QFormLayout();
-    for (const QString object_class : classes) {
+    for (const QString &object_class : classes) {
         auto check = new QCheckBox();
         check->setChecked(true);
         
@@ -106,7 +106,7 @@ QString SelectClassesWidget::get_filter() const {
 
         const QList<QString> selected_classes = get_selected_classes();
         
-        for (const QString object_class : selected_classes) {
+        for (const QString &object_class : selected_classes) {
             const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
 
             out.append(class_filter);
@@ -127,7 +127,7 @@ void SelectClassesWidget::on_dialog_accepted() {
         const QList<QString> selected_classes = get_selected_classes();
         
         QList<QString> classes_display_strings;
-        for (const QString object_class : selected_classes) {
+        for (const QString &object_class : selected_classes) {
             const QString class_display = ADCONFIG()->get_class_display_name(object_class);
             classes_display_strings.append(class_display);
         }
@@ -173,7 +173,7 @@ void SelectClassesWidget::on_check_changed() {
 QList<QString> SelectClassesWidget::get_selected_classes() const {
     QList<QString> out;
 
-    for (const QString object_class : dialog_checks.keys()) {
+    for (const QString &object_class : dialog_checks.keys()) {
         const QCheckBox *check = dialog_checks[object_class];
 
         if (check->isChecked()) {

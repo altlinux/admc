@@ -78,7 +78,7 @@ void load_object_item_data(QStandardItem *item, const AdObject &object) {
 QList<QString> object_model_header_labels() {
     QList<QString> out;
 
-    for (const QString attribute : ADCONFIG()->get_columns()) {
+    for (const QString &attribute : ADCONFIG()->get_columns()) {
         const QString attribute_display_name = ADCONFIG()->get_column_display_name(attribute);
 
         out.append(attribute_display_name);

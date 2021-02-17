@@ -120,7 +120,7 @@ void BrowseWidget::on_context_menu(const QPoint pos) {
         QAction *edit_action = menu.addAction(tr("Edit"));
         connect(
             edit_action, &QAction::triggered,
-            [this, path, is_pol, is_xml]() {
+            [path, is_pol, is_xml]() {
                 if (is_pol) {
                     auto pol_editor = new PolEditor(path);
                     pol_editor->open();

@@ -71,7 +71,7 @@ private:
     void add_values(QList<QString> values);
     void remove_values(QList<QString> values);
     QString get_membership_attribute();
-    void showEvent(QShowEvent *event);
+    void showEvent(QShowEvent *event) override;
 };
 
 class MembersTab final : public MembershipTab {

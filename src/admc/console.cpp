@@ -625,7 +625,7 @@ void Console::fetch_scope_node(const QModelIndex &index) {
             };
 
             QList<QString> class_filters;
-            for (const QString object_class : schema_classes) {
+            for (const QString &object_class : schema_classes) {
                 const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
                 class_filters.append(class_filter);
             }
@@ -673,7 +673,7 @@ void Console::fetch_scope_node(const QModelIndex &index) {
     // Load into scope
     //
     QList<QStandardItem *> rows;
-    for (const AdObject object : search_results.values()) {
+    for (const AdObject &object : search_results.values()) {
         const bool should_be_in_scope = object_should_be_in_scope(object);
 
         if (should_be_in_scope) {
@@ -703,7 +703,7 @@ void Console::fetch_scope_node(const QModelIndex &index) {
     // Clear old results
     results->removeRows(0, results->rowCount());
 
-    for (const AdObject object : search_results.values()) {
+    for (const AdObject &object : search_results.values()) {
         make_results_row(results, object);
     }
 

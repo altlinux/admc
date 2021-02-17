@@ -79,11 +79,11 @@ private:
 };
 
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
-void set_read_only(const bool read_only);\
-void add_to_layout(QFormLayout *layout);\
-bool apply(const QString &dn) const;\
+void set_read_only(const bool read_only) override;\
+void add_to_layout(QFormLayout *layout) override;\
+bool apply(const QString &dn) const override;\
 protected:\
-void load_internal(const AdObject &object);\
+void load_internal(const AdObject &object) override;\
 public:\
 
 
