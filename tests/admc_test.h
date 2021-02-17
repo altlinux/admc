@@ -118,8 +118,6 @@ private:
     // widgets.
     void tab(const int n = 1);
 
-    void delete_test_arena_recursive(const QString &dn);
-
     void navigate_until_object(QTreeView *view, const QString &target_dn);
     void wait_for_widget_exposed(QWidget *widget);
 };
