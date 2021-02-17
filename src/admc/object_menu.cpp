@@ -83,7 +83,8 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
                 continue;
             }
 
-            const QString object_class = index.data(ObjectRole_ObjectClass).toString();
+            const AdObject object = index.data(ObjectRole_AdObject).value<AdObject>();
+            const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
             out.insert(object_class);
         }

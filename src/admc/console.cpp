@@ -57,7 +57,7 @@ enum ScopeRole {
 
 // TODO: currently showing refresh action always for all scope nodes. Could show it in results if node is in scope? Also could not show it if results isn't loaded?
 
-bool object_should_be_in_scope(const QString &object_class);
+bool object_should_be_in_scope(const AdObject &object);
 
 QHash<int, QStandardItemModel *> scope_id_to_results;
 
@@ -392,12 +392,11 @@ void Console::on_object_added(const QString &dn) {
     }
 
     const AdObject object = AD()->search_object(dn);
-    const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
     //
     // Add object to scope
     //
-    const bool should_be_in_scope = object_should_be_in_scope(object_class);
+    const bool should_be_in_scope = object_should_be_in_scope(object);
 
     // NOTE: Need to check for object already being in scope because this is possible due to complicated drag behavior. When an object is added to a container by dragging, the drop operation sets the drop target as current item of view. For some reason the event for current item change is sent before the event that triggers on_object_added() slot. The current item changed slot fetches the container and loads the new object into it.
     const bool object_already_in_scope =
@@ -675,8 +674,7 @@ void Console::fetch_scope_node(const QModelIndex &index) {
     //
     QList<QStandardItem *> rows;
     for (const AdObject object : search_results.values()) {
-        const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
-        const bool should_be_in_scope = object_should_be_in_scope(object_class);
+        const bool should_be_in_scope = object_should_be_in_scope(object);
 
         if (should_be_in_scope) {
             auto child = make_scope_item(object);
@@ -756,9 +754,9 @@ QModelIndex Console::get_scope_node_from_id(const int id) const {
 
 void Console::on_result_item_double_clicked(const QModelIndex &index)
 {
-    const QString dn = index.data(ObjectRole_DN).toString();
-    const QString object_class = index.data(ObjectRole_ObjectClass).toString();
-    const bool should_be_in_scope = object_should_be_in_scope(object_class);
+    const AdObject object = index.data(ObjectRole_AdObject).value<AdObject>();
+    const QString dn = object.get_dn();
+    const bool should_be_in_scope = object_should_be_in_scope(object);
 
     if (should_be_in_scope) {
         // Find the scope item that represents this object
@@ -777,10 +775,16 @@ void Console::on_result_item_double_clicked(const QModelIndex &index)
 // with "container" object class. Instead it means all the
 // objects that can have children(some of which are not
 // "container" class).
-bool object_should_be_in_scope(const QString &object_class) {
+bool object_should_be_in_scope(const AdObject &object) {
+    const bool is_container =
+    [=]() {
+        const QList<QString> filter_containers = ADCONFIG()->get_filter_containers();
+        const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
+
+        return filter_containers.contains(object_class);
+    }();
+
     const bool show_non_containers_ON = SETTINGS()->get_bool(BoolSetting_ShowNonContainersInConsoleTree);
 
-    const QList<QString> filter_containers = ADCONFIG()->get_filter_containers();
-
-    return (filter_containers.contains(object_class) || show_non_containers_ON);
+    return (is_container || show_non_containers_ON);
 }
