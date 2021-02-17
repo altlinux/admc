@@ -628,10 +628,43 @@ bool AdInterface::object_add(const QString &dn, const QString &object_class) {
 }
 
 bool AdInterface::object_delete(const QString &dn) {
+    int result;
+    LDAPControl *tree_delete_control = NULL;
+
+    auto cleanup =
+    [tree_delete_control]() {
+        ldap_control_free(tree_delete_control);
+    };
+
+    // TODO: figure out whether want to surface
+    // malloc/ldap_control_create errors to user/gui level,
+    // and how to do it best
+
+    // Use a tree delete control to enable recursive delete
+    tree_delete_control = (LDAPControl *) malloc(sizeof(LDAPControl));
+    if (tree_delete_control == NULL) {
+        qDebug() << "Failed to allocate tree delete control";
+
+        cleanup();
+        return false;
+    }
+
+    result = ldap_control_create(LDAP_CONTROL_X_TREE_DELETE, 1, NULL, 0, &tree_delete_control);
+    if (result != LDAP_SUCCESS) {
+        qDebug() << "Failed to create tree delete control";
+
+        cleanup();
+        return false;
+    }
+
+    LDAPControl *server_controls[2] = {tree_delete_control, NULL};
+    
+    result = ldap_delete_ext_s(ld, cstr(dn), server_controls, NULL);
+
+    cleanup();
+
     const QString name = dn_get_name(dn);
-    
-    const int result = ldap_delete_ext_s(ld, cstr(dn), NULL, NULL);
-    
+
     if (result == LDAP_SUCCESS) {
         success_status_message(QString(tr("Deleted object \"%1\"")).arg(name));
 
