@@ -150,7 +150,6 @@ void MainWindow::preg_entry2table(preg::entry &pentry) {
         "REG_QWORD_LITTLE_ENDIAN"
     };
 
-    std::string regtype = std::string(preg::regtype2str(pentry.type));
     std::string val = "0"; //std::to_string(pentry.value);
 
     QComboBox *regtype_box = new QComboBox();
@@ -161,7 +160,6 @@ void MainWindow::preg_entry2table(preg::entry &pentry) {
 
     QTableWidgetItem *vname = new QTableWidgetItem(pentry.value_name.c_str());
     QTableWidgetItem *kname = new QTableWidgetItem(pentry.key_name.c_str());
-    QTableWidgetItem *vtype = new QTableWidgetItem(regtype.c_str());
     QTableWidgetItem *vval = new QTableWidgetItem(val.c_str());
 
     this->regpol_table->insertRow(regpol_table->rowCount());
@@ -211,7 +209,7 @@ void MainWindow::save_preg() {
         std::string file_name = preg_file_name[0].toStdString();
 
         preg::preg_writer pw(file_name);
-        for (size_t rowid = 0; rowid < this->regpol_table->rowCount(); rowid++) {
+        for (int rowid = 0; rowid < this->regpol_table->rowCount(); rowid++) {
             QTableWidgetItem *qvname = this->regpol_table->item(rowid, 0);
             QTableWidgetItem *qkname = this->regpol_table->item(rowid, 1);
             QComboBox *qtype  = qobject_cast<QComboBox*>(this->regpol_table->cellWidget(rowid, 2));
@@ -278,6 +276,6 @@ void MainWindow::open_generic_path(const QString &path) {
     }
 }
 
-void MainWindow::closeEvent(QCloseEvent *event) {
+void MainWindow::closeEvent(QCloseEvent *) {
     SETTINGS()->save_geometry(this, VariantSetting_MainWindowGeometry);
 }
