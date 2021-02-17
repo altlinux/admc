@@ -128,23 +128,15 @@ MenuBar::MenuBar()
     auto manual_action = help_menu->addAction(tr("&Manual"), this, &MenuBar::manual);
     auto about_action = help_menu->addAction(tr("&About ADMC"), this, &MenuBar::about);
 
-    menus = {
-        file_menu,
-        navigation_menu,
-        view_menu,
-        preferences_menu,
-        help_menu,
-    };
-
+    // While offline, most actions are disabled with a few
+    // exceptions
+    enable_actions(false);
     const QList<QAction *> actions_enabled_when_offline = {
         connect_action,
         quit_action,
         manual_action,
         about_action,
     };
-
-    // Offline, only "connect" and "exit" are enabled
-    enable_actions(false);
     for (auto action : actions_enabled_when_offline) {
         action->setEnabled(true);
     }
@@ -215,11 +207,15 @@ void MenuBar::about() {
 }
 
 void MenuBar::enable_actions(const bool enabled) {
-    for (auto menu : menus) {
-        const QList<QAction *> actions = menu->actions();
+    for (auto menu_action : actions()) {
+        QMenu *menu = menu_action->menu();
 
-        for (auto action : actions) {
-            action->setEnabled(enabled);
+        if (menu != nullptr) {
+            const QList<QAction *> actions = menu->actions();
+
+            for (auto action : actions) {
+                action->setEnabled(enabled);
+            }
         }
     }
 }
