@@ -79,11 +79,7 @@ void ADMCTestUnlockEdit::test_emit_edited_signal() {
 
 // Edit should start out as unchecked after loading user
 void ADMCTestUnlockEdit::unchecked_after_load() {
-    // Load loacked test user
-    const bool lock_success = AD()->attribute_replace_string(dn, ATTRIBUTE_LOCKOUT_TIME, LOCKOUT_LOCKED_VALUE);
-    QVERIFY(lock_success);
-    const AdObject object = AD()->search_object(dn);
-    unlock_edit->load(object);
+    load_locked_user_into_edit();
 
     const bool apply_success = unlock_edit->apply(dn);
     QVERIFY(apply_success);
