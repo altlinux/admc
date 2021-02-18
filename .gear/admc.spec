@@ -71,7 +71,8 @@ cd BUILD
 %_bindir/admc
 
 %files test
-%_bindir/admc-test
+%_bindir/admc_test_object_menu
+%_bindir/admc_test_unlock_edit
 
 %files gpgui
 %_bindir/gpgui
