@@ -32,18 +32,6 @@
 #define PRINT_FOCUS_WIDGET_BEFORE_TAB false
 #define PRINT_FOCUS_WIDGET_AFTER_TAB false
 
-// void init_test_case(QObject *o) {
-//     const bool connected = AD()->connect();
-//     QVERIFY2(connected, "Failed to connect to AD server");
-
-//     // NOTE: temporary band-aid until messages are routed correctly throgh AdInterface instance. This makes status error messages be printed to console. I think it's useful to understand why a test failed. When messages are collected in an AdInterface instances, can just print them here ourselves and avoid touching Status.
-//     STATUS()->print_errors = true;
-
-//     // Cleanup before all tests in-case this test suite was
-//     // previously interrupted and a cleanup wasn't performed
-//     // o->cleanup();
-// }
-
 QString test_arena_dn() {
     const QString head_dn = AD()->domain_head();
     const QString dn = QString("OU=test-arena,%1").arg(head_dn);
