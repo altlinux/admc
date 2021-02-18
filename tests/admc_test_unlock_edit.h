@@ -17,39 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADMC_TEST_H
-#define ADMC_TEST_H
+#ifndef ADMC_TEST_UNLOCK_EDIT_H
+#define ADMC_TEST_UNLOCK_EDIT_H
 
-/**
- * Base test class for testing ADMC. Implements init and
- * cleanup f-ns that create a fresh testing environment for
- * each test.
- */
+#include "admc_test.h"
 
-#include <QObject>
-
-#include <QTest>
-
-class ADMCTest : public QObject {
-    Q_OBJECT
+class ADMCTestUnlockEdit : public ADMCTest {
+Q_OBJECT
 
 private slots:
-    // NOTE: initTestCase(), cleanupTestCase(), init() and
-    // cleanup() are special slots called by QTest.
+    void test();
 
-    // Called before first test
-    void initTestCase();
-    // Called after last test
-    void cleanupTestCase();
-
-    // Called before and after each test
-    void init();
-    void cleanup();
-
-protected:
-    QWidget *parent_widget = nullptr;
+private:
 
 };
 
-#endif /* ADMC_TEST_H */
-
+#endif /* ADMC_TEST_UNLOCK_EDIT_H */
