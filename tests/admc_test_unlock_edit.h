@@ -22,14 +22,28 @@
 
 #include "admc_test.h"
 
+class UnlockEdit;
+class QCheckBox;
+
 class ADMCTestUnlockEdit : public ADMCTest {
 Q_OBJECT
 
 private slots:
-    void test();
+    void init() override;
+
+    void test_emit_edited_signal();
+    void unchecked_after_load();
+    void test_apply_unchecked();
+    void test_apply_checked();
+    void uncheck_after_apply();
 
 private:
+    UnlockEdit *unlock_edit;
+    QCheckBox *checkbox;
+    QString dn;
 
+    bool user_is_unlocked();
+    void load_locked_user_into_edit();
 };
 
 #endif /* ADMC_TEST_UNLOCK_EDIT_H */
