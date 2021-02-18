@@ -502,7 +502,7 @@ void ADMCTestObjectMenu::object_menu_rename_group()
     const QString group_renamed = group_name + "2";
 
     auto group_rename =
-    [this](const QString& newname) {
+    [](const QString& newname) {
         ADMCTestObjectMenu::basic_rename(newname);
         tab();
         ADMCTestObjectMenu::basic_rename(newname);
