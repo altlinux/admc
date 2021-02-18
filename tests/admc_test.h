@@ -33,7 +33,7 @@
 class ADMCTest : public QObject {
     Q_OBJECT
 
-private slots:
+public slots:
     // NOTE: initTestCase(), cleanupTestCase(), init() and
     // cleanup() are special slots called by QTest.
 
@@ -43,7 +43,7 @@ private slots:
     void cleanupTestCase();
 
     // Called before and after each test
-    void init();
+    virtual void init();
     void cleanup();
 
 protected:
