@@ -25,12 +25,11 @@ set(ADMC_ORGANIZATION_DOMAIN "basealt.ru")
 # TODO: configure_file() call in admc's cmakelists is much cleaner, but doesn't work here. Fix this.
 configure_file(${PROJECT_SOURCE_DIR}/src/admc/config.h.in "config.h")
 
-# TODO: not sure how to avoid duplicating the list of ADMC sources here. Maybe could make a shared list somehow? Also maybe move "tests" so that it's inside "src/admc".
-add_executable(admc-test
+set(TEST_SOURCES
     admc_test.cpp
+    test_common.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/ad_interface.cpp
-    
     ${PROJECT_SOURCE_DIR}/src/admc/ad_config.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/ad_utils.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/ad_object.cpp
@@ -106,28 +105,44 @@ add_executable(admc-test
     ${PROJECT_SOURCE_DIR}/translations/translations.qrc
 )
 
-add_test(admc-test
-    admc-test
+# NOTE: ADD ALL TESTS TO THIS LIST
+# Target name must equal to it's .cpp name
+# target + target.cpp
+set(TEST_TARGETS
+    admc_test_object_menu
+    admc_test_unlock_edit
 )
 
-target_include_directories(admc-test
-    PRIVATE
-        ${CMAKE_CURRENT_BINARY_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${PROJECT_SOURCE_DIR}/src/common
-        ${PROJECT_SOURCE_DIR}/src/admc
-        ${PROJECT_SOURCE_DIR}/tests
-)
+foreach(target ${TEST_TARGETS})
+    add_executable(${target}
+        ${target}.cpp
 
-target_link_libraries(admc-test
-    Qt5::Core
-    Qt5::Widgets
-    Qt5::Test
-    Uuid::Uuid
-    Smbclient::Smbclient
-    Krb5::Krb5
-    Ldap::Ldap
-    Resolv::Resolv
-)
+        ${TEST_SOURCES}
+    )
 
-install(TARGETS admc-test)
+    add_test(${target}
+        ${target}
+    )
+
+    target_include_directories(${target}
+        PRIVATE
+            ${CMAKE_CURRENT_BINARY_DIR}
+            ${CMAKE_CURRENT_SOURCE_DIR}
+            ${PROJECT_SOURCE_DIR}/src/common
+            ${PROJECT_SOURCE_DIR}/src/admc
+            ${PROJECT_SOURCE_DIR}/tests
+    )
+
+    target_link_libraries(${target}
+        Qt5::Core
+        Qt5::Widgets
+        Qt5::Test
+        Uuid::Uuid
+        Smbclient::Smbclient
+        Krb5::Krb5
+        Ldap::Ldap
+        Resolv::Resolv
+    )
+
+    install(TARGETS ${target})
+endforeach()
