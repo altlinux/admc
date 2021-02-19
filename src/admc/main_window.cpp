@@ -107,5 +107,6 @@ void MainWindow::connect_to_server() {
 
     if (connect_success) {
         init();
+        menubar->go_online();
     }
 }
