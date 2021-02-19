@@ -39,14 +39,9 @@
 
 MenuBar::MenuBar()
 : QMenuBar() {
-    QMenu *file_menu = addMenu(tr("&File"));
+    file_menu = addMenu(tr("&File"));
 
-    auto connect_action = file_menu->addAction(tr("&Connect"),
-        [this]() {
-            STATUS()->start_error_log();
-            AD()->connect();
-            STATUS()->end_error_log(this);
-        });
+    connect_action = file_menu->addAction(tr("&Connect"));
 
     auto quit_action = file_menu->addAction(tr("&Quit"),
         []() {
@@ -141,20 +136,18 @@ MenuBar::MenuBar()
         action->setEnabled(true);
     }
 
-    // Once connected, everything is enabled and connect is removed
-    connect(
-        AD(), &AdInterface::connected,
-        [this, file_menu, connect_action]() {
-            enable_actions(true);
-            file_menu->removeAction(connect_action);
-        });
-
     connect(
         toggle_widgets_action, &QAction::triggered,
         [this]() {
             auto dialog = new ToggleWidgetsDialog(this);
             dialog->open();
         });
+}
+
+// Once connected, everything is enabled and connect is removed
+void MenuBar::go_online() {
+    enable_actions(true);
+    file_menu->removeAction(connect_action);
 }
 
 void MenuBar::manual() {

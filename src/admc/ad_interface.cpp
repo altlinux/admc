@@ -160,8 +160,6 @@ bool AdInterface::connect() {
         }
         smbc_set_context(smbc);
 
-        emit connected();
-
         return true;
     } else {
         error_status_message(tr("Failed to connect"), tr("Authentication failed"));

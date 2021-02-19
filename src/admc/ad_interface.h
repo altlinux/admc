@@ -109,9 +109,6 @@ public:
     void stop_search();
 
 signals:
-    // Emitted when connected successfully to a server
-    void connected();
-
     // These signals are for ObjectModel
     void object_added(const QString &dn);
     void object_deleted(const QString &dn);
