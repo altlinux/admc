@@ -24,12 +24,12 @@
 
 class QAction;
 class QMenu;
-class ObjectMenu;
 
 class MenuBar final : public QMenuBar {
 Q_OBJECT
 
 public:
+    QAction *connect_action;
     QAction *filter_action;
     QAction *up_one_level_action;
     QAction *back_action;
@@ -37,6 +37,8 @@ public:
     QMenu *action_menu;
 
     MenuBar();
+
+    void go_online();
 
 signals:
     void filter_contents_dialog();
@@ -47,6 +49,8 @@ private slots:
 
 private:
     void enable_actions(const bool enabled);
+
+    QMenu *file_menu;
 };
 
 #endif /* MENUBAR_H */

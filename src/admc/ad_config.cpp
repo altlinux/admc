@@ -58,9 +58,25 @@
 QString get_locale_dir();
 QList<QString> add_auxiliary_classes(const QList<QString> &object_classes);
 
-AdConfig::AdConfig(QObject *parent)
-: QObject(parent)
-{
+AdConfig *AdConfig::instance() {
+    static AdConfig m_instance;
+    return &m_instance;
+}
+
+AdConfig::AdConfig() {
+
+}
+
+void AdConfig::load() {
+    filter_containers.clear();
+    columns.clear();
+    column_display_names.clear();
+    class_display_names.clear();
+    find_attributes.clear();
+    attribute_display_names.clear();
+    attribute_schemas.clear();
+    class_schemas.clear();
+
     // Attribute schemas
     {
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_ATTRIBUTE_SCHEMA);
@@ -212,10 +228,10 @@ AdConfig::AdConfig(QObject *parent)
             column_display_names[attribute] = display_name;
         };
 
-        add_custom(ATTRIBUTE_DN, tr("Distinguished name"));
-        add_custom(ATTRIBUTE_DESCRIPTION, tr("Description"));
-        add_custom(ATTRIBUTE_OBJECT_CLASS, tr("Class"));
-        add_custom(ATTRIBUTE_NAME, tr("Name"));
+        add_custom(ATTRIBUTE_DN, QObject::tr("Distinguished name"));
+        add_custom(ATTRIBUTE_DESCRIPTION, QObject::tr("Description"));
+        add_custom(ATTRIBUTE_OBJECT_CLASS, QObject::tr("Class"));
+        add_custom(ATTRIBUTE_NAME, QObject::tr("Name"));
     }
 
     filter_containers =
@@ -259,7 +275,7 @@ AdConfig::AdConfig(QObject *parent)
 }
 
 AdConfig *ADCONFIG() {
-    return AdInterface::instance()->config();
+    return AdConfig::instance();
 }
 
 QString AdConfig::get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const {
@@ -271,19 +287,19 @@ QString AdConfig::get_attribute_display_name(const Attribute &attribute, const O
 
     // NOTE: display specifier doesn't cover all attributes for all classes, so need to hardcode some of them here
     static const QHash<Attribute, QString> fallback_display_names = {
-        {ATTRIBUTE_NAME, tr("Name")},
-        {ATTRIBUTE_DN, tr("Distinguished name")},
-        {ATTRIBUTE_OBJECT_CLASS, tr("Object class")},
-        {ATTRIBUTE_WHEN_CREATED, tr("Created")},
-        {ATTRIBUTE_WHEN_CHANGED, tr("Changed")},
-        {ATTRIBUTE_USN_CREATED, tr("USN created")},
-        {ATTRIBUTE_USN_CHANGED, tr("USN changed")},
-        {ATTRIBUTE_ACCOUNT_EXPIRES, tr("Account expires")},
-        {ATTRIBUTE_OBJECT_CATEGORY, tr("Type")},
-        {ATTRIBUTE_PROFILE_PATH, tr("Profile path")},
-        {ATTRIBUTE_SCRIPT_PATH, tr("Logon script")},
-        {ATTRIBUTE_SAMACCOUNT_NAME, tr("Logon name (pre-Windows 2000)")},
-        {ATTRIBUTE_MAIL, tr("E-mail")},
+        {ATTRIBUTE_NAME, QObject::tr("Name")},
+        {ATTRIBUTE_DN, QObject::tr("Distinguished name")},
+        {ATTRIBUTE_OBJECT_CLASS, QObject::tr("Object class")},
+        {ATTRIBUTE_WHEN_CREATED, QObject::tr("Created")},
+        {ATTRIBUTE_WHEN_CHANGED, QObject::tr("Changed")},
+        {ATTRIBUTE_USN_CREATED, QObject::tr("USN created")},
+        {ATTRIBUTE_USN_CHANGED, QObject::tr("USN changed")},
+        {ATTRIBUTE_ACCOUNT_EXPIRES, QObject::tr("Account expires")},
+        {ATTRIBUTE_OBJECT_CATEGORY, QObject::tr("Type")},
+        {ATTRIBUTE_PROFILE_PATH, QObject::tr("Profile path")},
+        {ATTRIBUTE_SCRIPT_PATH, QObject::tr("Logon script")},
+        {ATTRIBUTE_SAMACCOUNT_NAME, QObject::tr("Logon name (pre-Windows 2000)")},
+        {ATTRIBUTE_MAIL, QObject::tr("E-mail")},
     };
 
     return fallback_display_names.value(attribute, attribute);

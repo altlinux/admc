@@ -26,7 +26,6 @@
 
 #include "ad_object.h"
 
-#include <QObject>
 #include <QString>
 #include <QList>
 #include <QHash>
@@ -70,11 +69,11 @@ typedef QString Attribute;
 class QLineEdit;
 class AdObject;
 
-class AdConfig final : public QObject {
-Q_OBJECT
-
+class AdConfig {
 public:
-    AdConfig(QObject *parent);
+    static AdConfig *instance();
+
+    void load();
 
     QString get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const;
 
@@ -117,6 +116,12 @@ private:
     QHash<ObjectClass, AdObject> class_schemas;
 
     QList<QString> add_auxiliary_classes(const QList<QString> &object_classes) const;
+
+    AdConfig();
+    AdConfig(const AdConfig&) = delete;
+    AdConfig& operator=(const AdConfig&) = delete;
+    AdConfig(AdConfig&&) = delete;
+    AdConfig& operator=(AdConfig&&) = delete;
 };
 
 AdConfig *ADCONFIG();

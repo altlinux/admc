@@ -62,20 +62,15 @@ MainWindow::MainWindow()
     setCentralWidget(dummy_widget);
 
     connect(
-        AD(), &AdInterface::connected,
-        this, &MainWindow::on_connected);
-
-    STATUS()->start_error_log();
-
-    AD()->connect();
-
-    STATUS()->end_error_log(this);
+        menubar->connect_action, &QAction::triggered,
+        this, &MainWindow::connect_to_server);
+    connect_to_server();
 }
 
 // NOTE: need to finish creating widgets after connection
 // because some widgets require text strings that need to be
 // obtained from the server
-void MainWindow::on_connected() {
+void MainWindow::init() {
     STATUS()->status_bar->showMessage(tr("Ready"));
     SETTINGS()->connect_toggle_widget(STATUS()->status_log, BoolSetting_ShowStatusLog);
 
@@ -98,4 +93,20 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     SETTINGS()->save_geometry(this, VariantSetting_MainWindowGeometry);
 
     QApplication::quit();
+}
+
+void MainWindow::connect_to_server() {
+    STATUS()->start_error_log();
+
+    const bool connect_success = AD()->connect();
+
+    // TODO: check for load failure
+    ADCONFIG()->load();
+
+    STATUS()->end_error_log(this);
+
+    if (connect_success) {
+        init();
+        menubar->go_online();
+    }
 }

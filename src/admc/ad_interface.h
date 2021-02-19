@@ -41,7 +41,6 @@ enum SearchScope {
 class QString;
 class QByteArray;
 class QDateTime;
-class AdConfig;
 class AdObject;
 template <typename T> class QList;
 typedef struct ldap LDAP;
@@ -64,7 +63,6 @@ public:
 
     bool connect();
 
-    AdConfig *config() const;
     QString domain() const;
     QString domain_head() const;
     QString host() const;
@@ -111,9 +109,6 @@ public:
     void stop_search();
 
 signals:
-    // Emitted when connected successfully to a server
-    void connected();
-
     // These signals are for ObjectModel
     void object_added(const QString &dn);
     void object_deleted(const QString &dn);
@@ -122,7 +117,6 @@ signals:
 private:
     LDAP *ld;
     SMBCCTX *smbc;
-    AdConfig *m_config;
     QString m_domain;
     QString m_domain_head;
     QString m_configuration_dn;

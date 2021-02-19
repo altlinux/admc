@@ -36,11 +36,11 @@ public:
 protected:
     void closeEvent(QCloseEvent *event);
 
-private slots:
-    void on_connected();
-
 private:
     MenuBar *menubar;
+
+    void init();
+    void connect_to_server();
 };
 
 #endif /* MAIN_WINDOW_H */
