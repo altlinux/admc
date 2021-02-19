@@ -106,5 +106,6 @@ void MainWindow::connect_to_server() {
         STATUS()->end_error_log(this);
 
         init();
+        menubar->go_online();
     }
 }
