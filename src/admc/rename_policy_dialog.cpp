@@ -40,7 +40,17 @@ RenamePolicyDialog::RenamePolicyDialog(const QString &target_arg, QWidget *paren
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    const AdObject object = AD()->search_object(target);
+    // TODO: handle failure, dialog should close
+    const AdObject object =
+    [this]() {
+        AdInterface ad;
+        if (ad_is_connected(ad)) {
+            return ad.search_object(target);
+        } else {
+            return AdObject();
+        }
+    }();
+
     const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
     const QString type_string = ADCONFIG()->get_class_display_name(object_class);
@@ -82,13 +92,18 @@ RenamePolicyDialog::RenamePolicyDialog(const QString &target_arg, QWidget *paren
 }
 
 void RenamePolicyDialog::accept() {
-    const AdObject object = AD()->search_object(target);
+    AdInterface ad;
+    if (ad_is_connected(ad)) {
+        return;
+    }
+
+    const AdObject object = ad.search_object(target);
     const QString old_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
 
     STATUS()->start_error_log();
 
     const QString new_name = name_edit->text();
-    const bool apply_success = AD()->attribute_replace_string(target, ATTRIBUTE_DISPLAY_NAME, new_name);
+    const bool apply_success = ad.attribute_replace_string(target, ATTRIBUTE_DISPLAY_NAME, new_name);
 
     if (apply_success) {
         RenameDialog::success_msg(old_name);
@@ -106,7 +121,12 @@ void RenamePolicyDialog::on_edited() {
 }
 
 void RenamePolicyDialog::reset() {
-    const AdObject object = AD()->search_object(target);
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
+    const AdObject object = ad.search_object(target);
     const QString name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
     name_edit->setText(name);
 

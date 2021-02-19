@@ -112,7 +112,15 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     apply_button->setAutoDefault(false);
     ok_button->setAutoDefault(true);
 
-    const AdObject object = AD()->search_object(target);
+    const AdObject object =
+    [this]() {
+        AdInterface ad;
+        if (ad_is_connected(ad)) {
+            return ad.search_object(target);
+        } else {
+            return AdObject();
+        }
+    }();
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
@@ -209,8 +217,14 @@ void PropertiesDialog::ok() {
 }
 
 bool PropertiesDialog::apply() {
+    // TODO: handle failure
+    AdInterface ad;
+    if (ad_is_connected(ad)) {
+        return false;
+    }
+
     for (auto tab : tabs) {
-        const bool verify_success = tab->verify(target);
+        const bool verify_success = tab->verify(ad, target);
         if (!verify_success) {
             return false;
         }
@@ -221,7 +235,7 @@ bool PropertiesDialog::apply() {
     STATUS()->start_error_log();
 
     for (auto tab : tabs) {
-        tab->apply(target);
+        tab->apply(ad, target);
     }
 
     apply_button->setEnabled(false);
@@ -235,9 +249,15 @@ bool PropertiesDialog::apply() {
 }
 
 void PropertiesDialog::reset() {
-    const AdObject object = AD()->search_object(target);
+    // TODO: handle error
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+
+    }
+    const AdObject object = ad.search_object(target);
+
     for (auto tab : tabs) {
-        tab->load(object);
+        tab->load(ad, object);
     }
 
     apply_button->setEnabled(false);

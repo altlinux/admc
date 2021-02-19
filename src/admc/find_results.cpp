@@ -105,9 +105,15 @@ void FindResults::load(const QString &filter, const QString &search_base) {
     object_count_label->clear();
 
     model->removeRows(0, model->rowCount());
-    
+
+    // TODO: handle search/connect failure
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
     const QList<QString> search_attributes = ADCONFIG()->get_columns();
-    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_All, search_base);
+    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All, search_base);
 
 
     for (const AdObject &object : search_results) {

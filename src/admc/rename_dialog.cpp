@@ -40,7 +40,17 @@ RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    const AdObject object = AD()->search_object(target);
+    // TODO: handle failure, dialog should close
+    const AdObject object =
+    [this]() {
+        AdInterface ad;
+        if (ad_is_connected(ad)) {
+            return ad.search_object(target);
+        } else {
+            return AdObject();
+        }
+    }();
+
     const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
     const QString type_string = ADCONFIG()->get_class_display_name(object_class);
@@ -109,9 +119,15 @@ void RenameDialog::fail_msg(const QString &old_name) {
 }
 
 void RenameDialog::accept() {
+    // Handle failure
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
     const QString old_name = dn_get_name(target);
 
-    const bool verify_success = edits_verify(all_edits, target);
+    const bool verify_success = edits_verify(ad, all_edits, target);
     if (!verify_success) {
         return;
     }
@@ -119,11 +135,11 @@ void RenameDialog::accept() {
     STATUS()->start_error_log();
 
     const QString new_name = name_edit->text();
-    const bool rename_success = AD()->object_rename(target, new_name);
+    const bool rename_success = ad.object_rename(target, new_name);
 
     if (rename_success) {
         const QString new_dn = dn_rename(target, new_name);
-        const bool apply_success = edits_apply(all_edits, new_dn);
+        const bool apply_success = edits_apply(ad, all_edits, new_dn);
 
         if (apply_success) {
             success_msg(old_name);
@@ -144,10 +160,15 @@ void RenameDialog::on_edited() {
 }
 
 void RenameDialog::reset() {
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
     const QString name = dn_get_name(target);
     name_edit->setText(name);
 
-    const AdObject object = AD()->search_object(target);
+    const AdObject object = ad.search_object(target);
     edits_load(all_edits, object);
 
     reset_button->setEnabled(false);

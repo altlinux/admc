@@ -41,6 +41,12 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
 {
     // TODO: missing "Entire directory" in search base combo. Not 100% sure what it's supposed to be, the tippy-top domain? Definitely need it for work with multiple domains.
 
+    // TODO: handle failure. Also this seems a bit too much, connecting just to get domain head?
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
     search_base_combo = new QComboBox();
     {
         auto add_search_base_to_combo =
@@ -49,10 +55,10 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
             search_base_combo->addItem(name, dn);
         };
 
-        if (default_search_base == AD()->domain_head()) {
-            add_search_base_to_combo(AD()->domain_head());
+        if (default_search_base == ad.domain_head()) {
+            add_search_base_to_combo(ad.domain_head());
         } else {
-            add_search_base_to_combo(AD()->domain_head());
+            add_search_base_to_combo(ad.domain_head());
             add_search_base_to_combo(default_search_base);
         }
 
@@ -119,9 +125,10 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
     connect(
         find_button, &QPushButton::clicked,
         this, &FindWidget::find);
-    connect(
-        stop_button, &QPushButton::clicked,
-        AD(), &AdInterface::stop_search);
+    // TODO: reimplement stop search. Not sure how to do it with new non-singleton adinterface
+    // connect(
+    //     stop_button, &QPushButton::clicked,
+    //     ADSIGNALS(), &AdInterface::stop_search);
     connect(
         filter_widget, &FilterWidget::return_pressed,
         this, &FindWidget::find);

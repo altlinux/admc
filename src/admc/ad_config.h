@@ -68,12 +68,13 @@ typedef QString Attribute;
 
 class QLineEdit;
 class AdObject;
+class AdInterface;
 
 class AdConfig {
 public:
     static AdConfig *instance();
 
-    void load();
+    void load(AdInterface &ad);
 
     QString get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const;
 

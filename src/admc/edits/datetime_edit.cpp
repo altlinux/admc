@@ -55,11 +55,11 @@ void DateTimeEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(label_text, edit);
 }
 
-bool DateTimeEdit::apply(const QString &dn) const {
+bool DateTimeEdit::apply(AdInterface &ad, const QString &dn) const {
     const QDateTime datetime_local = edit->dateTime();
     const QDateTime datetime = datetime_local.toUTC();
 
-    const bool success = AD()->attribute_replace_datetime(dn, attribute, datetime);
+    const bool success = ad.attribute_replace_datetime(dn, attribute, datetime);
 
     return success;
 }

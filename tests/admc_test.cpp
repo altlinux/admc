@@ -56,8 +56,7 @@
 #define PRINT_FOCUS_WIDGET_AFTER_TAB false
 
 void ADMCTest::initTestCase() {
-    const bool connected = AD()->connect();
-    QVERIFY2(connected, "Failed to connect to AD server");
+    QVERIFY2(ad.is_connected(), "Failed to connect to AD server");
 
     // NOTE: temporary band-aid until messages are routed correctly throgh AdInterface instance. This makes status error messages be printed to console. I think it's useful to understand why a test failed. When messages are collected in an AdInterface instances, can just print them here ourselves and avoid touching Status.
     STATUS()->print_errors = true;
@@ -75,7 +74,7 @@ void ADMCTest::init() {
     parent_widget = new QWidget();
     
     const QString dn = test_arena_dn();
-    const bool create_success = AD()->object_add(dn, CLASS_OU);
+    const bool create_success = ad.object_add(dn, CLASS_OU);
 
     QVERIFY2(create_success, "Failed to create test-arena");
 }
@@ -89,10 +88,10 @@ void ADMCTest::cleanup() {
     // Delete test arena, if it exists
     const QString dn = test_arena_dn();
 
-    const QHash<QString, AdObject> search_results = AD()->search(QString(), QList<QString>(), SearchScope_Object, dn);
+    const QHash<QString, AdObject> search_results = ad.search(QString(), QList<QString>(), SearchScope_Object, dn);
     const bool test_arena_exists = (search_results.size() == 1);
     if (test_arena_exists) {
-        const bool delete_success = AD()->object_delete(dn);
+        const bool delete_success = ad.object_delete(dn);
         QVERIFY2(delete_success, "Failed to delete test-arena or it's contents");
         QVERIFY2(!object_exists(dn), "Deleted test-arena still exists");
     }
@@ -102,7 +101,7 @@ void ADMCTest::object_add() {
     const QString name = TEST_USER;
     const QString dn = test_object_dn(name, CLASS_USER);
 
-    const bool create_success = AD()->object_add(dn, CLASS_USER);
+    const bool create_success = ad.object_add(dn, CLASS_USER);
 
     QVERIFY2(create_success, "Failed to create object");
     QVERIFY2(object_exists(dn), "Created object doesn't exist");
@@ -112,10 +111,10 @@ void ADMCTest::object_delete() {
     const QString name = TEST_USER;
     const QString dn = test_object_dn(name, CLASS_USER);
 
-    const bool create_success = AD()->object_add(dn, CLASS_USER);
+    const bool create_success = ad.object_add(dn, CLASS_USER);
     QVERIFY2(create_success, "Failed to create object for deletion");
 
-    const bool delete_success = AD()->object_delete(dn);
+    const bool delete_success = ad.object_delete(dn);
     QVERIFY2(delete_success, "Failed to delete object");
     QVERIFY2(!object_exists(dn), "Deleted object exists");
 }
@@ -236,12 +235,12 @@ void ADMCTest::object_menu_move() {
     const QString user_dn_after_move = dn_from_name_and_parent(user_name, move_target_dn, CLASS_USER);
 
     // Create test user
-    const bool create_user_success = AD()->object_add(user_dn, CLASS_USER);
+    const bool create_user_success = ad.object_add(user_dn, CLASS_USER);
     QVERIFY2(create_user_success, "Failed to create user");
     QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
 
     // Create move target
-    const bool create_move_target_success = AD()->object_add(move_target_dn, CLASS_OU);
+    const bool create_move_target_success = ad.object_add(move_target_dn, CLASS_OU);
     QVERIFY2(create_move_target_success, "Failed to create move target");
     QVERIFY2(object_exists(move_target_dn), "Created move target doesn't exist");
 
@@ -280,13 +279,13 @@ void ADMCTest::object_menu_reset_password() {
     const QString password = "pass123!";
 
     // Create test user
-    const bool create_user_success = AD()->object_add(user_dn, CLASS_USER);
+    const bool create_user_success = ad.object_add(user_dn, CLASS_USER);
     QVERIFY2(create_user_success, "Failed to create user");
     QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
 
     const QByteArray pwdLastSet_value_before =
     [=]() {
-        const AdObject object = AD()->search_object(user_dn);
+        const AdObject object = ad.search_object(user_dn);
 
         return object.get_value(ATTRIBUTE_PWD_LAST_SET);
     }();
@@ -308,7 +307,7 @@ void ADMCTest::object_menu_reset_password() {
 
     const QByteArray pwdLastSet_value_after =
     [=]() {
-        const AdObject object = AD()->search_object(user_dn);
+        const AdObject object = ad.search_object(user_dn);
         
         return object.get_value(ATTRIBUTE_PWD_LAST_SET);
     }();
@@ -334,12 +333,12 @@ void ADMCTest::object_menu_disable_enable_account() {
             return test_object_dn(name, CLASS_USER);
         }();
 
-        const bool create_success = AD()->object_add(dn, CLASS_USER);
+        const bool create_success = ad.object_add(dn, CLASS_USER);
         QVERIFY2(create_success, qPrintable(QString("Failed to create user - %1").arg(dn)));
         QVERIFY2(object_exists(dn), qPrintable(QString("Created user doesn't exist - %1").arg(dn)));
 
         // Setup initial disabled state
-        const bool set_disabled_success = AD()->user_set_account_option(dn, AccountOption_Disabled, initial_disabled_state);
+        const bool set_disabled_success = ad.user_set_account_option(dn, AccountOption_Disabled, initial_disabled_state);
         QVERIFY2(set_disabled_success, qPrintable(QString("Failed to set disabled account option for user - %1").arg(dn)));
 
         // Modify state using object menu
@@ -350,7 +349,7 @@ void ADMCTest::object_menu_disable_enable_account() {
         }
 
         // Check that final disabled state has changed
-        const AdObject object = AD()->search_object(dn);
+        const AdObject object = ad.search_object(dn);
         const bool final_disabled_state = object.get_account_option(AccountOption_Disabled);
         const bool disabled_state_changed = (final_disabled_state != initial_disabled_state);
 
@@ -377,7 +376,7 @@ void ADMCTest::object_menu_find_simple()
     const QString user_dn = test_object_dn(user_name, CLASS_USER);
 
     // Create test user
-    const bool create_user_success = AD()->object_add(user_dn, CLASS_USER);
+    const bool create_user_success = ad.object_add(user_dn, CLASS_USER);
     QVERIFY2(create_user_success, "Failed to create user");
     QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
 
@@ -418,7 +417,7 @@ void ADMCTest::object_menu_find_advanced()
     const QString user_dn = test_object_dn(user_name, CLASS_USER);
 
     // Create test user
-    const bool create_user_success = AD()->object_add(user_dn, CLASS_USER);
+    const bool create_user_success = ad.object_add(user_dn, CLASS_USER);
     QVERIFY2(create_user_success, "Failed to create user");
     QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
 
@@ -463,12 +462,12 @@ void ADMCTest::object_menu_add_to_group() {
     const QString group_dn = test_object_dn(group_name, CLASS_GROUP);
 
     // Create test user
-    const bool create_user_success = AD()->object_add(user_dn, CLASS_USER);
+    const bool create_user_success = ad.object_add(user_dn, CLASS_USER);
     QVERIFY2(create_user_success, "Failed to create user");
     QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
 
     // Create test group
-    const bool create_group_success = AD()->object_add(group_dn, CLASS_GROUP);
+    const bool create_group_success = ad.object_add(group_dn, CLASS_GROUP);
     QVERIFY2(create_group_success, "Failed to create group");
     QVERIFY2(object_exists(group_dn), "Created group doesn't exist");
 
@@ -509,7 +508,7 @@ void ADMCTest::object_menu_add_to_group() {
 
     select_dialog->accept();
 
-    const AdObject group = AD()->search_object(group_dn);
+    const AdObject group = ad.search_object(group_dn);
     const QList<QString> group_members = group.get_strings(ATTRIBUTE_MEMBER);
     const bool user_is_member_of_group = group_members.contains(user_dn);
     QVERIFY2(user_is_member_of_group, "User did not become member of group");
@@ -564,7 +563,7 @@ void ADMCTest::object_menu_rename_group()
 }
 
 QString ADMCTest::test_arena_dn() {
-    const QString head_dn = AD()->domain_head();
+    const QString head_dn = ad.domain_head();
     const QString dn = QString("OU=test-arena,%1").arg(head_dn);
 
     return dn;
@@ -586,7 +585,7 @@ void ADMCTest::test_object_rename(const QString& oldname, const QString& newname
     const QString dn_after_rename = dn_rename(dn, newname);
 
     // Create test object
-    const bool create_success = AD()->object_add(dn, object_class);
+    const bool create_success = ad.object_add(dn, object_class);
     QVERIFY2(create_success, qPrintable(QString("Failed to create %1").arg(object_class)));
     QVERIFY2(object_exists(dn), qPrintable(QString("Created %1 doesn't exist").arg(object_class)));
 
@@ -604,7 +603,7 @@ void ADMCTest::test_object_rename(const QString& oldname, const QString& newname
 }
 
 bool ADMCTest::object_exists(const QString &dn) {
-    const QHash<QString, AdObject> search_results = AD()->search(QString(), QList<QString>(), SearchScope_Object, dn);
+    const QHash<QString, AdObject> search_results = ad.search(QString(), QList<QString>(), SearchScope_Object, dn);
     const bool exists = (search_results.size() == 1);
 
     return exists;

@@ -53,7 +53,7 @@ void GpoptionsEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(label_text, check);
 }
 
-bool GpoptionsEdit::apply(const QString &dn) const {
+bool GpoptionsEdit::apply(AdInterface &ad, const QString &dn) const {
     const QString new_value =
     [this]() {
         const bool checked = check->isChecked();
@@ -63,7 +63,7 @@ bool GpoptionsEdit::apply(const QString &dn) const {
             return GPOPTIONS_INHERIT;
         }
     }();
-    const bool success = AD()->attribute_replace_string(dn, ATTRIBUTE_GPOPTIONS, new_value);
+    const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_GPOPTIONS, new_value);
 
     return success;
 }

@@ -80,7 +80,13 @@ void PoliciesWidget::reload() {
 
     const QList<QString> search_attributes = {ATTRIBUTE_DISPLAY_NAME};
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
-    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_All);
+
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
+    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
 
     for (auto dn : search_results.keys()) {
         const AdObject object  = search_results[dn];
@@ -102,7 +108,12 @@ void PoliciesWidget::on_context_menu(const QPoint pos) {
         return;
     }
 
-    const AdObject object = AD()->search_object(dn);
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
+    const AdObject object = ad.search_object(dn);
 
     QMenu menu;
     menu.addAction(PropertiesDialog::display_name(), [dn]() {
@@ -116,7 +127,11 @@ void PoliciesWidget::on_context_menu(const QPoint pos) {
         dialog->open();
     });
     menu.addAction(tr("Delete"), [dn]() {
-        AD()->delete_gpo(dn);
+        AdInterface ad_delete;
+        if (!ad_is_connected(ad_delete)) {
+            return;
+        }
+        ad_delete.delete_gpo(dn);
     });
 
     exec_menu_from_view(&menu, view, pos);
@@ -126,8 +141,13 @@ void PoliciesWidget::edit_policy(const AdObject &object) {
     // Start policy edit process
     const auto process = new QProcess();
 
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
     const QString sysvol_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
-    const QString smb_path = AD()->sysvol_path_to_smb(sysvol_path);
+    const QString smb_path = ad.sysvol_path_to_smb(sysvol_path);
 
     const QString program_name = "/home/kevl/admc/build/gpgui";
 

@@ -199,15 +199,20 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
 
 // NOTE: not using edits_verify() and edits_apply() because that f-n processes only modified edits. Since this is a new object, all the edits are in "unmodified" state but still need to be processed.
 void CreateDialog::accept() {
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
     const QString name = name_edit->text();
 
     const QString dn = dn_from_name_and_parent(name, parent_dn, object_class);
 
     // Verify edits
     const bool verify_success =
-    [=]() {
+    [&]() {
         for (auto edit : all_edits) {
-            const bool success = edit->verify(dn);
+            const bool success = edit->verify(ad, dn);
             if (!success) {
                 return false;
             }
@@ -227,15 +232,15 @@ void CreateDialog::accept() {
         STATUS()->message(message, StatusType_Error);
     };
 
-    const bool add_success = AD()->object_add(dn, object_class);
+    const bool add_success = ad.object_add(dn, object_class);
 
     if (add_success) {
         const bool apply_success =
-        [=]() {
+        [this, &ad, dn]() {
             bool total_success = true;
 
             for (auto edit : all_edits) {
-                const bool success = edit->apply(dn);
+                const bool success = edit->apply(ad, dn);
                 if (!success) {
                     total_success = false;
                 }
@@ -251,7 +256,7 @@ void CreateDialog::accept() {
 
             QDialog::accept();
         } else {
-            AD()->object_delete(dn);
+            ad.object_delete(dn);
             fail_msg();
         }
     } else {

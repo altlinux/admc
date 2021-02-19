@@ -62,7 +62,7 @@ void PasswordEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(tr("Confirm password:"), confirm_edit);
 }
 
-bool PasswordEdit::verify(const QString &) const {
+bool PasswordEdit::verify(AdInterface &ad, const QString &) const {
     const QString pass = edit->text();
     const QString confirm_pass = confirm_edit->text();
     if (pass != confirm_pass) {
@@ -84,10 +84,10 @@ bool PasswordEdit::verify(const QString &) const {
     return true;
 }
 
-bool PasswordEdit::apply(const QString &dn) const {
+bool PasswordEdit::apply(AdInterface &ad, const QString &dn) const {
     const QString new_value = edit->text();
 
-    const bool success = AD()->user_set_pass(dn, new_value);
+    const bool success = ad.user_set_pass(dn, new_value);
 
     return success;
 }

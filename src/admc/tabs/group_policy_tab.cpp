@@ -110,20 +110,20 @@ GroupPolicyTab::GroupPolicyTab() {
         this, &GroupPolicyTab::on_item_changed);
 }
 
-void GroupPolicyTab::load(const AdObject &object) {
+void GroupPolicyTab::load(AdInterface &ad, const AdObject &object) {
     const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
     gplink = Gplink(gplink_string);
     
     reload_gplink();
     
-    PropertiesTab::load(object);
+    PropertiesTab::load(ad, object);
 }
 
-void GroupPolicyTab::apply(const QString &target) const {
+void GroupPolicyTab::apply(AdInterface &ad, const QString &target) const {
     const QString gplink_string = gplink.to_string();
-    AD()->attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
+    ad.attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
 
-    PropertiesTab::apply(target);
+    PropertiesTab::apply(ad, target);
 }
 
 void GroupPolicyTab::on_context_menu(const QPoint pos) {
@@ -217,10 +217,15 @@ void GroupPolicyTab::move_link_down(const QString &gpo) {
 void GroupPolicyTab::reload_gplink() {
     model->removeRows(0, model->rowCount());
 
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
     // TODO: use filter to search only for needed gpo's, not all of them (dn=dn1 or dn=dn2 or ...)
     const QList<QString> search_attributes = {ATTRIBUTE_DISPLAY_NAME};
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
-    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_All);
+    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
 
     const QList<QString> gpos = gplink.get_gpos();
 

@@ -55,7 +55,6 @@
 
 #define FLAG_ATTR_IS_CONSTRUCTED        0x00000004 
 
-QString get_locale_dir();
 QList<QString> add_auxiliary_classes(const QList<QString> &object_classes);
 
 AdConfig *AdConfig::instance() {
@@ -67,7 +66,7 @@ AdConfig::AdConfig() {
 
 }
 
-void AdConfig::load() {
+void AdConfig::load(AdInterface &ad) {
     filter_containers.clear();
     columns.clear();
     column_display_names.clear();
@@ -76,6 +75,25 @@ void AdConfig::load() {
     attribute_display_names.clear();
     attribute_schemas.clear();
     class_schemas.clear();
+
+    const QString locale_dir =
+    [&ad]() {
+        const QString locale_code =
+        []() {
+            const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
+
+            if (saved_locale.language() == QLocale::Russian) {
+                return "419";
+            } else {
+                        // English
+                return "409";
+            }
+        }();
+
+        const QString configuration_dn = ad.configuration_dn();
+
+        return QString("CN=%1,CN=DisplaySpecifiers,%2").arg(locale_code, configuration_dn);
+    }();
 
     // Attribute schemas
     {
@@ -92,9 +110,9 @@ void AdConfig::load() {
             ATTRIBUTE_SYSTEM_FLAGS,
         };
 
-        const QString schema_dn = AD()->schema_dn();
+        const QString schema_dn = ad.schema_dn();
 
-        const QHash<QString, AdObject> search_results = AD()->search(filter, attributes, SearchScope_Children, schema_dn);
+        const QHash<QString, AdObject> search_results = ad.search(filter, attributes, SearchScope_Children, schema_dn);
 
         for (const AdObject &object : search_results.values()) {
             const QString attribute = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
@@ -118,9 +136,9 @@ void AdConfig::load() {
             ATTRIBUTE_SYSTEM_AUXILIARY_CLASS,
         };
 
-        const QString schema_dn = AD()->schema_dn();
+        const QString schema_dn = ad.schema_dn();
 
-        const QHash<QString, AdObject> search_results = AD()->search(filter, attributes, SearchScope_Children, schema_dn);
+        const QHash<QString, AdObject> search_results = ad.search(filter, attributes, SearchScope_Children, schema_dn);
 
         for (const AdObject &object : search_results.values()) {
             const QString object_class = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
@@ -138,9 +156,7 @@ void AdConfig::load() {
             ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES,
         };
 
-        const QString locale_dir = get_locale_dir();
-
-        const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, locale_dir);
+        const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_Children, locale_dir);
 
         for (const AdObject &object : search_results) {
             const QString dn = object.get_dn();
@@ -192,10 +208,9 @@ void AdConfig::load() {
     // Columns
     {
         const QList<QString> columns_values =
-        []() {
-            const QString locale_dir = get_locale_dir();
+        [&] {
             const QString dn = QString("CN=default-Display,%1").arg(locale_dir);
-            const AdObject object = AD()->search_object(dn, {ATTRIBUTE_EXTRA_COLUMNS});
+            const AdObject object = ad.search_object(dn, {ATTRIBUTE_EXTRA_COLUMNS});
 
             // NOTE: order as stored in attribute is reversed. Order is not sorted alphabetically so can't just sort.
             QList<QString> extra_columns = object.get_strings(ATTRIBUTE_EXTRA_COLUMNS);
@@ -223,7 +238,7 @@ void AdConfig::load() {
 
         // Insert some columns manually
         auto add_custom =
-        [this](const Attribute &attribute, const QString &display_name) {
+        [=](const Attribute &attribute, const QString &display_name) {
             columns.prepend(attribute);
             column_display_names[attribute] = display_name;
         };
@@ -235,12 +250,11 @@ void AdConfig::load() {
     }
 
     filter_containers =
-    []() {
+    [&] {
         QList<QString> out;
-        
-        const QString locale_dir = get_locale_dir();
+
         const QString ui_settings_dn = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
-        const AdObject object = AD()->search_object(ui_settings_dn, {ATTRIBUTE_FILTER_CONTAINERS});
+        const AdObject object = ad.search_object(ui_settings_dn, {ATTRIBUTE_FILTER_CONTAINERS});
 
         // TODO: dns-Zone category is mispelled in
         // ATTRIBUTE_FILTER_CONTAINERS, no idea why, might
@@ -257,8 +271,8 @@ void AdConfig::load() {
         // *categories* not classes, so need to get object
         // class from category object
         for (const auto &object_category : categories) {
-            const QString category_dn = QString("CN=%1,%2").arg(object_category, AD()->schema_dn());
-            const AdObject category_object = AD()->search_object(category_dn, {ATTRIBUTE_LDAP_DISPLAY_NAME});
+            const QString category_dn = QString("CN=%1,%2").arg(object_category, ad.schema_dn());
+            const AdObject category_object = ad.search_object(category_dn, {ATTRIBUTE_LDAP_DISPLAY_NAME});
             const QString object_class = category_object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
 
             out.append(object_class);
@@ -522,27 +536,4 @@ QList<QString> AdConfig::add_auxiliary_classes(const QList<QString> &object_clas
     out.removeDuplicates();
 
     return out;
-}
-
-QString get_locale_dir() {
-    static QString locale_dir =
-    []() {
-        const QString locale_code =
-        []() {
-            const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
-
-            if (saved_locale.language() == QLocale::Russian) {
-                return "419";
-            } else {
-                    // English
-                return "409";
-            }
-        }();
-
-        const QString configuration_dn = AD()->configuration_dn();
-
-        return QString("CN=%1,CN=DisplaySpecifiers,%2").arg(locale_code, configuration_dn);
-    }();
-
-    return locale_dir;
 }

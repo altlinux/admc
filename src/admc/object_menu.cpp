@@ -193,9 +193,15 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
 
     // Add menu's
     if (single_object) {
+        // TODO: handle error
+        AdInterface ad;
+        if (!ad_is_connected(ad)) {
+            return nullptr;
+        }
+
         const QString target = targets[0];
         const QString target_class = target_classes.values()[0];
-        const AdObject object = AD()->search_object(target);
+        const AdObject object = ad.search_object(target);
 
         // Get info about object that will determine which
         // actions are present/enabled
@@ -276,13 +282,17 @@ void delete_object(const QList<QString> targets, QWidget *parent) {
     const bool confirmed = confirmation_dialog(text, parent);
 
     if (confirmed) {
-        STATUS()->start_error_log();
+        AdInterface ad;
 
-        for (const QString &target : targets) {
-            AD()->object_delete(target);
+        if (ad_is_connected(ad)) {
+            STATUS()->start_error_log();
+
+            for (const QString &target : targets) {
+                ad.object_delete(target);
+            }
+
+            STATUS()->end_error_log(parent);
         }
-
-        STATUS()->end_error_log(parent);
     }
 }
 
@@ -296,13 +306,17 @@ void move(const QList<QString> targets, QWidget *parent) {
         dialog, &SelectContainerDialog::accepted,
         [=]() {
             const QString selected = dialog->get_selected();
-            STATUS()->start_error_log();
 
-            for (const QString &target : targets) {
-                AD()->object_move(target, selected);
+            AdInterface ad;
+            if (ad_is_connected(ad)) {
+                STATUS()->start_error_log();
+
+                for (const QString &target : targets) {
+                    ad.object_move(target, selected);
+                }
+
+                STATUS()->end_error_log(parent);
             }
-
-            STATUS()->end_error_log(parent);
         });
 
     dialog->open();
@@ -320,15 +334,18 @@ void add_to_group(const QList<QString> targets, QWidget *parent) {
         [=]() {
             const QList<QString> selected = dialog->get_selected();
 
-            STATUS()->start_error_log();
+            AdInterface ad;
+            if (ad_is_connected(ad)) {
+                STATUS()->start_error_log();
 
-            for (const QString &target : targets) {
-                for (auto group : selected) {
-                    AD()->group_add_member(group, target);
+                for (const QString &target : targets) {
+                    for (auto group : selected) {
+                        ad.group_add_member(group, target);
+                    }
                 }
-            }
 
-            STATUS()->end_error_log(parent);
+                STATUS()->end_error_log(parent);
+            }
         });
 
     dialog->open();
@@ -350,23 +367,29 @@ void reset_password(const QString &target, QWidget *parent) {
 }
 
 void enable_account(const QList<QString> targets, QWidget *parent) {
-    STATUS()->start_error_log();
-    
-    for (const QString &target : targets) {
-        AD()->user_set_account_option(target, AccountOption_Disabled, false);
-    }
+    AdInterface ad;
+    if (ad_is_connected(ad)) {
+        STATUS()->start_error_log();
 
-    STATUS()->end_error_log(parent);
+        for (const QString &target : targets) {
+            ad.user_set_account_option(target, AccountOption_Disabled, false);
+        }
+
+        STATUS()->end_error_log(parent);
+    }
 }
 
 void disable_account(const QList<QString> targets, QWidget *parent) {
-    STATUS()->start_error_log();
-    
-    for (const QString &target : targets) {
-        AD()->user_set_account_option(target, AccountOption_Disabled, true);
-    }
+    AdInterface ad;
+    if (ad_is_connected(ad)) {
+        STATUS()->start_error_log();
 
-    STATUS()->end_error_log(parent);
+        for (const QString &target : targets) {
+            ad.user_set_account_option(target, AccountOption_Disabled, true);
+        }
+
+        STATUS()->end_error_log(parent);
+    }
 }
 
 void find(const QString &target, QWidget *parent) {
@@ -394,13 +417,18 @@ void move_object(const QList<QString> targets, QWidget *parent) {
         dialog, &SelectContainerDialog::accepted,
         [=]() {
             const QString selected = dialog->get_selected();
-            STATUS()->start_error_log();
 
-            for (const QString &target : targets) {
-                AD()->object_move(target, selected);
+            AdInterface ad;
+            if (ad_is_connected(ad)) {
+
+                STATUS()->start_error_log();
+
+                for (const QString &target : targets) {
+                    ad.object_move(target, selected);
+                }
+
+                STATUS()->end_error_log(parent);
             }
-
-            STATUS()->end_error_log(parent);
         });
 
     dialog->open();

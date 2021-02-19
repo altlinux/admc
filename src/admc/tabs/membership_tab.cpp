@@ -130,7 +130,7 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     PropertiesDialog::connect_to_open_by_double_click(view, MembersColumn_DN);
 }
 
-void MembershipTab::load(const AdObject &object) {
+void MembershipTab::load(AdInterface &ad, const AdObject &object) {
     const QList<QString> values = object.get_strings(get_membership_attribute());
     original_values = values.toSet();
     current_values = original_values;
@@ -144,7 +144,7 @@ void MembershipTab::load(const AdObject &object) {
             const QString group_rid = extract_rid_from_sid(group_sid);
 
             const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_PRIMARY_GROUP_ID, group_rid);
-            const QHash<QString, AdObject> result = AD()->search(filter, QList<QString>(), SearchScope_All);
+            const QHash<QString, AdObject> result = ad.search(filter, QList<QString>(), SearchScope_All);
 
             for (const QString &user : result.keys()) {
                 original_primary_values.insert(user);
@@ -168,7 +168,7 @@ void MembershipTab::load(const AdObject &object) {
             const QString group_sid = user_sid_string.left(cut_index) + group_rid;
 
             const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, group_sid);
-            const QHash<QString, AdObject> result = AD()->search(filter, QList<QString>(), SearchScope_All);
+            const QHash<QString, AdObject> result = ad.search(filter, QList<QString>(), SearchScope_All);
 
             if (!result.isEmpty()) {
                 const QString group_dn = result.values()[0].get_dn();
@@ -184,7 +184,7 @@ void MembershipTab::load(const AdObject &object) {
     reload_model();
 }
 
-void MembershipTab::apply(const QString &target) const {
+void MembershipTab::apply(AdInterface &ad, const QString &target) const {
     // NOTE: logic is kinda duplicated but switching on behavior within iterations would be very confusing
     switch (type) {
         case MembershipTabType_Members: {
@@ -193,14 +193,14 @@ void MembershipTab::apply(const QString &target) const {
             for (auto user : original_values) {
                 const bool removed = !current_values.contains(user);
                 if (removed) {
-                    AD()->group_remove_member(group, user);
+                    ad.group_remove_member(group, user);
                 }
             }
 
             for (auto user : current_values) {
                 const bool added = !original_values.contains(user);
                 if (added) {
-                    AD()->group_add_member(group, user);
+                    ad.group_add_member(group, user);
                 }
             }
 
@@ -219,14 +219,14 @@ void MembershipTab::apply(const QString &target) const {
 
                 const bool removed = !current_values.contains(group);
                 if (removed) {
-                    AD()->group_remove_member(group, user);
+                    ad.group_remove_member(group, user);
                 }
             }
 
             if (current_primary_values != original_primary_values) {
                 const QString group_dn = current_primary_values.values()[0];
                 
-                AD()->user_set_primary_group(group_dn, target);
+                ad.user_set_primary_group(group_dn, target);
             }
 
             // Add user to groups that were added
@@ -239,7 +239,7 @@ void MembershipTab::apply(const QString &target) const {
 
                 const bool added = !original_values.contains(group);
                 if (added) {
-                    AD()->group_add_member(group, user);
+                    ad.group_add_member(group, user);
                 }
             }
 

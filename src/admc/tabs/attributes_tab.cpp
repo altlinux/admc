@@ -100,7 +100,7 @@ AttributesTab::AttributesTab() {
         this, &AttributesTab::edit_attribute);
     connect(
         filter_button, &QAbstractButton::clicked,
-                this, &AttributesTab::open_filter_dialog);
+        this, &AttributesTab::open_filter_dialog);
 }
 
 void AttributesTab::edit_attribute() {
@@ -241,7 +241,7 @@ void AttributesTab::open_filter_dialog() {
     dialog->open();
 }
 
-void AttributesTab::load(const AdObject &object) {
+void AttributesTab::load(AdInterface &ad, const AdObject &object) {
     original.clear();
 
     for (auto attribute : object.attributes()) {
@@ -274,13 +274,13 @@ void AttributesTab::load(const AdObject &object) {
     view->sortByColumn(AttributesColumn_Name, Qt::AscendingOrder);
 }
 
-void AttributesTab::apply(const QString &target) const {
+void AttributesTab::apply(AdInterface &ad, const QString &target) const {
     for (const QString &attribute : current.keys()) {
         const QList<QByteArray> current_values = current[attribute];
         const QList<QByteArray> original_values = original[attribute];
 
         if (current_values != original_values) {
-            AD()->attribute_replace_values(target, attribute, current_values);
+            ad.attribute_replace_values(target, attribute, current_values);
         }
     }
 }

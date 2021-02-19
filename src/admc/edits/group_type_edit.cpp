@@ -59,9 +59,9 @@ void GroupTypeEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(label_text, combo);
 }
 
-bool GroupTypeEdit::apply(const QString &dn) const {
+bool GroupTypeEdit::apply(AdInterface &ad, const QString &dn) const {
     const GroupType new_value = (GroupType)combo->currentData().toInt();
-    const bool success = AD()->group_set_type(dn, new_value);
+    const bool success = ad.group_set_type(dn, new_value);
 
     return success;
 }

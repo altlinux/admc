@@ -73,8 +73,8 @@ void ManagerEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(label_text, sublayout);
 }
 
-bool ManagerEdit::apply(const QString &dn) const {
-    const bool success = AD()->attribute_replace_string(dn, ATTRIBUTE_MANAGER, current_value);
+bool ManagerEdit::apply(AdInterface &ad, const QString &dn) const {
+    const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_MANAGER, current_value);
 
     return success;
 }

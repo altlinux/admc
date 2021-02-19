@@ -38,8 +38,8 @@ class MembershipTab : public PropertiesTab {
 Q_OBJECT
 
 public:
-    void load(const AdObject &object) override;
-    void apply(const QString &target) const override;
+    void load(AdInterface &ad, const AdObject &object) override;
+    void apply(AdInterface &ad, const QString &target) const override;
 
 private slots:
     void on_add_button();

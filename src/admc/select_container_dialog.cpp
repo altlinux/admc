@@ -93,9 +93,15 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     layout->addWidget(view);
     layout->addWidget(buttonbox);
 
+    // TODO: handle error
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
     // Load head object
-    const QString head_dn = AD()->domain_head();
-    const AdObject head_object = AD()->search_object(head_dn);
+    const QString head_dn = ad.domain_head();
+    const AdObject head_object = ad.search_object(head_dn);
     auto item = make_container_node(head_object);
     model->appendRow(item);
 }
@@ -108,6 +114,12 @@ QString SelectContainerDialog::get_selected() const {
 }
 
 void SelectContainerDialog::fetch_node(const QModelIndex &index) {
+    // TODO: handle error
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
     show_busy_indicator();
 
     model->removeRows(0, model->rowCount(index), index);
@@ -123,7 +135,7 @@ void SelectContainerDialog::fetch_node(const QModelIndex &index) {
 
     const QString dn = index.data(ContainerRole_DN).toString();
 
-    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, dn);
+    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_Children, dn);
 
     QStandardItem *parent = model->itemFromIndex(index);
     for (const AdObject &object : search_results.values()) {

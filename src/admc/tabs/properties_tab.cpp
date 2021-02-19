@@ -20,16 +20,18 @@
 #include "tabs/properties_tab.h"
 #include "edits/attribute_edit.h"
 
-void PropertiesTab::load(const AdObject &object) {
+#include "ad_interface.h"
+
+void PropertiesTab::load(AdInterface &ad, const AdObject &object) {
     edits_load(edits, object);
 }
 
-bool PropertiesTab::verify(const QString &target) const {
-    return edits_verify(edits, target);
+bool PropertiesTab::verify(AdInterface &ad, const QString &target) const {
+    return edits_verify(ad, edits, target);
 }
 
-void PropertiesTab::apply(const QString &target) const {
-    edits_apply(edits, target);
+void PropertiesTab::apply(AdInterface &ad, const QString &target) const {
+    edits_apply(ad, edits, target);
 }
 
 void PropertiesTab::on_edit_edited() {

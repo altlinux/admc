@@ -33,7 +33,13 @@ FindSelectDialog::FindSelectDialog(const QList<QString> classes, QWidget *parent
 
     setWindowTitle(tr("Find and select objects"));
 
-    find_widget = new FindWidget(classes, AD()->domain_head());
+    // TODO: handle failure. Also this seems a bit too much, connecting just to get domain head?
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
+    find_widget = new FindWidget(classes, ad.domain_head());
 
     auto buttons = new QDialogButtonBox();
     buttons->addButton(QDialogButtonBox::Ok);

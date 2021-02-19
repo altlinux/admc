@@ -36,7 +36,17 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 : QDialog(parent)
 {
     target = target_arg;
-    const AdObject object = AD()->search_object(target);
+
+    // TODO: handle failure, dialog should close
+    const AdObject object =
+    [this]() {
+        AdInterface ad;
+        if (ad_is_connected(ad)) {
+            return ad.search_object(target);
+        } else {
+            return AdObject();
+        }
+    }();
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -76,14 +86,19 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 }
 
 void PasswordDialog::accept() {
-    const bool verify_success = edits_verify(edits, target);
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
+    const bool verify_success = edits_verify(ad, edits, target);
     if (!verify_success) {
         return;
     }
 
     STATUS()->start_error_log();
 
-    edits_apply(edits, target);
+    edits_apply(ad, edits, target);
 
     QDialog::close();
 

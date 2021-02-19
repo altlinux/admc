@@ -39,7 +39,7 @@ Q_OBJECT
 public:
     GpoLinksTab();
 
-    void load(const AdObject &policy) override;
+    void load(AdInterface &ad, const AdObject &object) override;
 
 private:
     QTreeView *view;

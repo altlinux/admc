@@ -59,9 +59,9 @@ void GroupScopeEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(label_text, combo);
 }
 
-bool GroupScopeEdit::apply(const QString &dn) const {
+bool GroupScopeEdit::apply(AdInterface &ad, const QString &dn) const {
     const GroupScope new_value = (GroupScope)combo->currentData().toInt();
-    const bool success = AD()->group_set_scope(dn, new_value);
+    const bool success = ad.group_set_scope(dn, new_value);
 
     return success;
 }

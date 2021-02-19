@@ -118,16 +118,16 @@ void ExpiryEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(label_text, frame);
 }
 
-bool ExpiryEdit::apply(const QString &dn) const {
+bool ExpiryEdit::apply(AdInterface &ad, const QString &dn) const {
     const bool never = never_check->isChecked();
 
     if (never) {
-        return AD()->attribute_replace_string(dn, ATTRIBUTE_ACCOUNT_EXPIRES, AD_LARGE_INTEGER_DATETIME_NEVER_2);
+        return ad.attribute_replace_string(dn, ATTRIBUTE_ACCOUNT_EXPIRES, AD_LARGE_INTEGER_DATETIME_NEVER_2);
     } else {
         const QDate date = edit->date();
         const QDateTime datetime(date, END_OF_DAY);
 
-        return AD()->attribute_replace_datetime(dn, ATTRIBUTE_ACCOUNT_EXPIRES, datetime);
+        return ad.attribute_replace_datetime(dn, ATTRIBUTE_ACCOUNT_EXPIRES, datetime);
     }
 }
 

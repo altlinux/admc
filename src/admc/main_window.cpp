@@ -96,16 +96,15 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 }
 
 void MainWindow::connect_to_server() {
-    STATUS()->start_error_log();
+    AdInterface ad;
+    if (ad_is_connected(ad)) {
+        STATUS()->start_error_log();
 
-    const bool connect_success = AD()->connect();
+        // TODO: check for load failure
+        ADCONFIG()->load(ad);
 
-    // TODO: check for load failure
-    ADCONFIG()->load();
+        STATUS()->end_error_log(this);
 
-    STATUS()->end_error_log(this);
-
-    if (connect_success) {
         init();
     }
 }

@@ -164,13 +164,13 @@ Console::Console(MenuBar *menubar_arg)
         this, &Console::on_result_item_double_clicked);
 
     connect(
-        AD(), &AdInterface::object_added,
+        ADSIGNALS(), &AdSignals::object_added,
         this, &Console::on_object_added);
     connect(
-        AD(), &AdInterface::object_deleted,
+        ADSIGNALS(), &AdSignals::object_deleted,
         this, &Console::on_object_deleted);
     connect(
-        AD(), &AdInterface::object_changed,
+        ADSIGNALS(), &AdSignals::object_changed,
         this, &Console::on_object_changed);
 
     connect(
@@ -219,14 +219,19 @@ Console::Console(MenuBar *menubar_arg)
     SETTINGS()->connect_toggle_widget(scope_view, BoolSetting_ShowConsoleTree);
     SETTINGS()->connect_toggle_widget(results_header, BoolSetting_ShowResultsHeader);
 
-    // Load head object
-    const QString head_dn = AD()->domain_head();
-    const AdObject head_object = AD()->search_object(head_dn);
-    auto head_item = make_scope_item(head_object);
-    scope_model->appendRow(head_item);
+    // TODO: handle connect/search failure
 
-    // Make head object current
-    scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+    // Load head object
+    AdInterface ad;
+    if (ad_is_connected(ad)) {
+        const QString head_dn = ad.domain_head();
+        const AdObject head_object = ad.search_object(head_dn);
+        auto head_item = make_scope_item(head_object);
+        scope_model->appendRow(head_item);
+
+        // Make head object current
+        scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+    }
 }
 
 void Console::refresh_head() {
@@ -391,7 +396,13 @@ void Console::on_object_added(const QString &dn) {
         return;
     }
 
-    const AdObject object = AD()->search_object(dn);
+    // TODO: handle error
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
+    const AdObject object = ad.search_object(dn);
 
     //
     // Add object to scope
@@ -476,9 +487,13 @@ void Console::on_object_changed(const QString &dn) {
         return out;
     }();
 
-    const AdObject object = AD()->search_object(dn);
+    // TODO: handle error
+    AdInterface ad;
+    if (ad_is_connected(ad)) {
+        const AdObject object = ad.search_object(dn);
 
-    load_results_row(item_row, object);
+        load_results_row(item_row, object);
+    }
 }
 
 // Set target to parent of current target
@@ -653,19 +668,25 @@ void Console::fetch_scope_node(const QModelIndex &index) {
 
     const QString dn = index.data(ObjectRole_DN).toString();
 
-    QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, dn);
+    // TODO: handle connect/search failure
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        return;
+    }
+
+    QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_Children, dn);
 
     // Dev mode
     // NOTE: configuration and schema objects are hidden so that they don't show up in regular searches. Have to use search_object() and manually add them to search results.
     if (dev_mode) {
-        const QString search_base = AD()->domain_head();
-        const QString configuration_dn = AD()->configuration_dn();
-        const QString schema_dn = AD()->schema_dn();
+        const QString search_base = ad.domain_head();
+        const QString configuration_dn = ad.configuration_dn();
+        const QString schema_dn = ad.schema_dn();
 
         if (dn == search_base) {
-            search_results[configuration_dn] = AD()->search_object(configuration_dn);
+            search_results[configuration_dn] = ad.search_object(configuration_dn);
         } else if (dn == configuration_dn) {
-            search_results[schema_dn] = AD()->search_object(schema_dn);
+            search_results[schema_dn] = ad.search_object(schema_dn);
         }
     }
 

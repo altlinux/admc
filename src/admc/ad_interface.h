@@ -46,6 +46,26 @@ template <typename T> class QList;
 typedef struct ldap LDAP;
 typedef struct _SMBCCTX SMBCCTX;
 
+// TODO: have to put signals in a singleton since
+// adinterface stopped being a singleton. Console needs to
+// connect to these signals forever. Will probably change
+// this to something better, might just remove these
+// signals.
+class AdSignals final : public QObject {
+Q_OBJECT
+
+public:
+    using QObject::QObject;
+
+signals:
+    // These signals are for ObjectModel
+    void object_added(const QString &dn);
+    void object_deleted(const QString &dn);
+    void object_changed(const QString &dn);
+};
+
+AdSignals *ADSIGNALS();
+
 class AdInterface final : public QObject {
 Q_OBJECT
 
@@ -59,10 +79,9 @@ private:
     };
 
 public:
-    static AdInterface *instance();
+    AdInterface(QObject *parent = nullptr);
 
-    bool connect();
-
+    bool is_connected() const;
     QString domain() const;
     QString domain_head() const;
     QString host() const;
@@ -98,7 +117,6 @@ public:
     bool user_set_account_option(const QString &dn, AccountOption option, bool set);
     bool user_unlock(const QString &dn);
 
-    bool object_can_drop(const AdObject &dropped, const AdObject &target);
     void object_drop(const AdObject &dropped, const AdObject &target);
 
     bool create_gpo(const QString &name);
@@ -108,15 +126,10 @@ public:
 
     void stop_search();
 
-signals:
-    // These signals are for ObjectModel
-    void object_added(const QString &dn);
-    void object_deleted(const QString &dn);
-    void object_changed(const QString &dn);
-
 private:
     LDAP *ld;
     SMBCCTX *smbc;
+    bool m_is_connected;
     QString m_domain;
     QString m_domain_head;
     QString m_configuration_dn;
@@ -124,19 +137,21 @@ private:
     QString m_host;
     bool stop_search_flag;
 
-    AdInterface();
-
     void success_status_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     void error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     QString default_error() const;
     int get_ldap_result() const;
-
-    AdInterface(const AdInterface&) = delete;
-    AdInterface& operator=(const AdInterface&) = delete;
-    AdInterface(AdInterface&&) = delete;
-    AdInterface& operator=(AdInterface&&) = delete;
 };
 
-AdInterface *AD();
+// TODO: move this to console drag movel
+bool object_can_drop(const AdObject &dropped, const AdObject &target);
+
+// TODO: haven't found a better place for ad_is_connected()
+// f-n yet. Should move it somewhere i think because
+// adinterface needs to be separate from GUI.
+
+// Wrapper over is_connected() that also opens an error
+// messagebox if failed to connect
+bool ad_is_connected(const AdInterface &ad);
 
 #endif /* AD_INTERFACE_H */

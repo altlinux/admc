@@ -30,6 +30,7 @@
 #include <QString>
 #include <QDateTime>
 #include <QByteArray>
+#include <QMessageBox>
 
 bool large_integer_datetime_is_never(const QString &value);
 QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime);

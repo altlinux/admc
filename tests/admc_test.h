@@ -41,6 +41,8 @@
 
 #include <QObject>
 
+#include "ad_interface.h"
+
 #include <QTest>
 
 #include <functional>
@@ -85,6 +87,9 @@ private slots:
 
     void object_menu_find_simple();
     void object_menu_find_advanced();
+
+protected:
+    AdInterface ad;
 
 private:
     // Use this as parents for widgets used inside tests.

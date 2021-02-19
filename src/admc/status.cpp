@@ -19,6 +19,8 @@
 
 #include "status.h"
 
+#include "ad_interface.h"
+
 #include <QStatusBar>
 #include <QTextEdit>
 #include <QDialog>
@@ -26,6 +28,7 @@
 #include <QDialogButtonBox>
 #include <QVBoxLayout>
 #include <QDebug>
+#include <QMessageBox>
 
 #define MAX_MESSAGES_IN_LOG 200
 
