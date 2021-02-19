@@ -145,7 +145,8 @@ bool AdInterface::connect() {
     const bool success = ad_connect(cstr(uri), &ld);
 
     if (success) {
-        m_config = new AdConfig(this);
+        // TODO: check for adconfig load failure
+        ADCONFIG()->load();
 
         // TODO: can this context expire, for example from a disconnect?
         // NOTE: this doesn't leak memory. False positive.
@@ -167,10 +168,6 @@ bool AdInterface::connect() {
 
         return false;
     }
-}
-
-AdConfig *AdInterface::config() const {
-    return m_config;
 }
 
 QString AdInterface::domain() const {
