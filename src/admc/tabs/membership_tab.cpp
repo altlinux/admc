@@ -184,7 +184,7 @@ void MembershipTab::load(const AdObject &object) {
     reload_model();
 }
 
-void MembershipTab::apply(const QString &target) const {
+void MembershipTab::apply(const QString &target) {
     // NOTE: logic is kinda duplicated but switching on behavior within iterations would be very confusing
     switch (type) {
         case MembershipTabType_Members: {
@@ -193,14 +193,20 @@ void MembershipTab::apply(const QString &target) const {
             for (auto user : original_values) {
                 const bool removed = !current_values.contains(user);
                 if (removed) {
-                    AD()->group_remove_member(group, user);
+                    const bool success = AD()->group_remove_member(group, user);
+                    if (success) {
+                        original_values.remove(user);
+                    }
                 }
             }
 
             for (auto user : current_values) {
                 const bool added = !original_values.contains(user);
                 if (added) {
-                    AD()->group_add_member(group, user);
+                    const bool success = AD()->group_add_member(group, user);
+                    if (success) {
+                        original_values.insert(user);
+                    }
                 }
             }
 
@@ -219,14 +225,20 @@ void MembershipTab::apply(const QString &target) const {
 
                 const bool removed = !current_values.contains(group);
                 if (removed) {
-                    AD()->group_remove_member(group, user);
+                    const bool success = AD()->group_remove_member(group, user);
+                    if (success) {
+                        original_values.remove(group);
+                    }
                 }
             }
 
             if (current_primary_values != original_primary_values) {
                 const QString group_dn = current_primary_values.values()[0];
                 
-                AD()->user_set_primary_group(group_dn, target);
+                const bool success = AD()->user_set_primary_group(group_dn, target);
+                if (success) {
+                    original_primary_values = {group_dn};
+                }
             }
 
             // Add user to groups that were added
@@ -239,7 +251,10 @@ void MembershipTab::apply(const QString &target) const {
 
                 const bool added = !original_values.contains(group);
                 if (added) {
-                    AD()->group_add_member(group, user);
+                    const bool success = AD()->group_add_member(group, user);
+                    if (success) {
+                        original_values.insert(group);
+                    }
                 }
             }
 

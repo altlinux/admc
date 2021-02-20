@@ -41,7 +41,7 @@ Q_OBJECT
 public:
     virtual void load(const AdObject &object);
     virtual bool verify(const QString &target) const;
-    virtual void apply(const QString &target) const;
+    virtual void apply(const QString &target);
 
 protected:
     QList<AttributeEdit *> edits;

@@ -42,7 +42,7 @@ public:
     GroupPolicyTab();
 
     void load(const AdObject &object) override;
-    void apply(const QString &target) const override;
+    void apply(const QString &target) override;
 
 private slots:
     void on_context_menu(const QPoint pos);

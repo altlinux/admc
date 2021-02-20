@@ -28,7 +28,7 @@ bool PropertiesTab::verify(const QString &target) const {
     return edits_verify(edits, target);
 }
 
-void PropertiesTab::apply(const QString &target) const {
+void PropertiesTab::apply(const QString &target) {
     edits_apply(edits, target);
 }
 

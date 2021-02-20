@@ -274,7 +274,7 @@ void AttributesTab::load(const AdObject &object) {
     view->sortByColumn(AttributesColumn_Name, Qt::AscendingOrder);
 }
 
-void AttributesTab::apply(const QString &target) const {
+void AttributesTab::apply(const QString &target) {
     for (const QString &attribute : current.keys()) {
         const QList<QByteArray> current_values = current[attribute];
         const QList<QByteArray> original_values = original[attribute];
