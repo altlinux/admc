@@ -223,7 +223,7 @@ Console::Console(MenuBar *menubar_arg)
 
     // Load head object
     AdInterface ad;
-    if (ad_is_connected(ad)) {
+    if (ad_connected(ad)) {
         const QString head_dn = ADCONFIG()->domain_head();
         const AdObject head_object = ad.search_object(head_dn);
         auto head_item = make_scope_item(head_object);
@@ -398,7 +398,7 @@ void Console::on_object_added(const QString &dn) {
 
     // TODO: handle error
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         return;
     }
 
@@ -489,7 +489,7 @@ void Console::on_object_changed(const QString &dn) {
 
     // TODO: handle error
     AdInterface ad;
-    if (ad_is_connected(ad)) {
+    if (ad_connected(ad)) {
         const AdObject object = ad.search_object(dn);
 
         load_results_row(item_row, object);
@@ -670,7 +670,7 @@ void Console::fetch_scope_node(const QModelIndex &index) {
 
     // TODO: handle connect/search failure
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         return;
     }
 

@@ -46,7 +46,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose);
 
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         close();
     }
     
@@ -115,7 +115,7 @@ QString SelectContainerDialog::get_selected() const {
 void SelectContainerDialog::fetch_node(const QModelIndex &index) {
     // TODO: handle error
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         return;
     }
 

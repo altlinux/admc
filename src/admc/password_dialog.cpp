@@ -40,7 +40,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
     target = target_arg;
 
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         close();
     }
 
@@ -83,7 +83,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 
 void PasswordDialog::accept() {
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         return;
     }
 

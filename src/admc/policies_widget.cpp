@@ -82,7 +82,7 @@ void PoliciesWidget::reload() {
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
 
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         return;
     }
 
@@ -109,7 +109,7 @@ void PoliciesWidget::on_context_menu(const QPoint pos) {
     }
 
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         return;
     }
 
@@ -128,7 +128,7 @@ void PoliciesWidget::on_context_menu(const QPoint pos) {
     });
     menu.addAction(tr("Delete"), [dn]() {
         AdInterface ad_delete;
-        if (!ad_is_connected(ad_delete)) {
+        if (ad_failed(ad_delete)) {
             return;
         }
         ad_delete.delete_gpo(dn);
@@ -142,7 +142,7 @@ void PoliciesWidget::edit_policy(const AdObject &object) {
     const auto process = new QProcess();
 
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         return;
     }
 

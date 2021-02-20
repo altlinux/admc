@@ -150,8 +150,10 @@ bool object_can_drop(const AdObject &dropped, const AdObject &target);
 // f-n yet. Should move it somewhere i think because
 // adinterface needs to be separate from GUI.
 
-// Wrapper over is_connected() that also opens an error
-// messagebox if failed to connect
-bool ad_is_connected(const AdInterface &ad);
+// Wrappers over is_connected() that also open an error
+// messagebox if failed to connect. You should generally use
+// these in GUI code instead of is_connected().
+bool ad_connected(const AdInterface &ad);
+bool ad_failed(const AdInterface &ad);
 
 #endif /* AD_INTERFACE_H */

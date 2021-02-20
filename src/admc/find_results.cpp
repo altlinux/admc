@@ -108,7 +108,7 @@ void FindResults::load(const QString &filter, const QString &search_base) {
 
     // TODO: handle search/connect failure
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         return;
     }
 

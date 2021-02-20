@@ -1480,14 +1480,14 @@ int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in) {
     return LDAP_SUCCESS;
 }
 
-bool ad_is_connected(const AdInterface &ad) {
+bool ad_connected_base(const AdInterface &ad) {
     if (!ad.is_connected()) {
         const QString title = QObject::tr("Connection error");
         const QString text = QObject::tr("Failed to connect to server.");
 
         // TODO: would want a valid parent widget for
-        // message box but ad_is_connected() can be called
-        // from places where there isn't one available,
+        // message box but this f-n can be called from
+        // places where there isn't one available,
         // console_drag_model for example. Good news is that
         // the messagebox appears to be modal even without a
         // parent.
@@ -1495,4 +1495,12 @@ bool ad_is_connected(const AdInterface &ad) {
     }
 
     return ad.is_connected();
+}
+
+bool ad_connected(const AdInterface &ad) {
+    return ad_connected_base(ad);
+}
+
+bool ad_failed(const AdInterface &ad) {
+    return !ad_connected_base(ad);
 }

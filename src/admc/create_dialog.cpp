@@ -200,7 +200,7 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
 // NOTE: not using edits_verify() and edits_apply() because that f-n processes only modified edits. Since this is a new object, all the edits are in "unmodified" state but still need to be processed.
 void CreateDialog::accept() {
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         return;
     }
 

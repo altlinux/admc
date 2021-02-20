@@ -218,7 +218,7 @@ void GroupPolicyTab::reload_gplink() {
     model->removeRows(0, model->rowCount());
 
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         return;
     }
 

@@ -41,7 +41,7 @@ RenamePolicyDialog::RenamePolicyDialog(const QString &target_arg, QWidget *paren
     setAttribute(Qt::WA_DeleteOnClose);
 
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         close();
     }
 
@@ -90,7 +90,7 @@ RenamePolicyDialog::RenamePolicyDialog(const QString &target_arg, QWidget *paren
 
 void RenamePolicyDialog::accept() {
     AdInterface ad;
-    if (ad_is_connected(ad)) {
+    if (ad_connected(ad)) {
         return;
     }
 
@@ -119,7 +119,7 @@ void RenamePolicyDialog::on_edited() {
 
 void RenamePolicyDialog::reset() {
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         return;
     }
 

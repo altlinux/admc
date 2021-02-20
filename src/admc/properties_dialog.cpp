@@ -100,7 +100,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     setAttribute(Qt::WA_DeleteOnClose);
 
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         close();
     }
 
@@ -217,7 +217,7 @@ void PropertiesDialog::ok() {
 bool PropertiesDialog::apply() {
     // TODO: handle failure
     AdInterface ad;
-    if (ad_is_connected(ad)) {
+    if (ad_connected(ad)) {
         return false;
     }
 
@@ -249,7 +249,7 @@ bool PropertiesDialog::apply() {
 void PropertiesDialog::reset() {
     // TODO: handle error
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
 
     }
     const AdObject object = ad.search_object(target);

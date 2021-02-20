@@ -41,7 +41,7 @@ RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose);
 
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         close();
     }
 
@@ -118,7 +118,7 @@ void RenameDialog::fail_msg(const QString &old_name) {
 void RenameDialog::accept() {
     // Handle failure
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         return;
     }
 
@@ -158,7 +158,7 @@ void RenameDialog::on_edited() {
 
 void RenameDialog::reset() {
     AdInterface ad;
-    if (!ad_is_connected(ad)) {
+    if (ad_failed(ad)) {
         return;
     }
 

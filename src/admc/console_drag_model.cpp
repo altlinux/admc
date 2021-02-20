@@ -108,7 +108,7 @@ bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action
     const AdObject target = parent.siblingAtColumn(0).data(ObjectRole_AdObject).value<AdObject>();
 
     AdInterface ad;
-    if (ad_is_connected(ad)) {
+    if (ad_connected(ad)) {
         STATUS()->start_error_log();
 
         for (const AdObject &dropped : dropped_list) {

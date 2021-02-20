@@ -195,7 +195,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
     if (single_object) {
         // TODO: handle error
         AdInterface ad;
-        if (!ad_is_connected(ad)) {
+        if (ad_failed(ad)) {
             return nullptr;
         }
 
@@ -284,7 +284,7 @@ void delete_object(const QList<QString> targets, QWidget *parent) {
     if (confirmed) {
         AdInterface ad;
 
-        if (ad_is_connected(ad)) {
+        if (ad_connected(ad)) {
             STATUS()->start_error_log();
 
             for (const QString &target : targets) {
@@ -308,7 +308,7 @@ void move(const QList<QString> targets, QWidget *parent) {
             const QString selected = dialog->get_selected();
 
             AdInterface ad;
-            if (ad_is_connected(ad)) {
+            if (ad_connected(ad)) {
                 STATUS()->start_error_log();
 
                 for (const QString &target : targets) {
@@ -335,7 +335,7 @@ void add_to_group(const QList<QString> targets, QWidget *parent) {
             const QList<QString> selected = dialog->get_selected();
 
             AdInterface ad;
-            if (ad_is_connected(ad)) {
+            if (ad_connected(ad)) {
                 STATUS()->start_error_log();
 
                 for (const QString &target : targets) {
@@ -368,7 +368,7 @@ void reset_password(const QString &target, QWidget *parent) {
 
 void enable_account(const QList<QString> targets, QWidget *parent) {
     AdInterface ad;
-    if (ad_is_connected(ad)) {
+    if (ad_connected(ad)) {
         STATUS()->start_error_log();
 
         for (const QString &target : targets) {
@@ -381,7 +381,7 @@ void enable_account(const QList<QString> targets, QWidget *parent) {
 
 void disable_account(const QList<QString> targets, QWidget *parent) {
     AdInterface ad;
-    if (ad_is_connected(ad)) {
+    if (ad_connected(ad)) {
         STATUS()->start_error_log();
 
         for (const QString &target : targets) {
@@ -419,7 +419,7 @@ void move_object(const QList<QString> targets, QWidget *parent) {
             const QString selected = dialog->get_selected();
 
             AdInterface ad;
-            if (ad_is_connected(ad)) {
+            if (ad_connected(ad)) {
 
                 STATUS()->start_error_log();
 
