@@ -224,10 +224,12 @@ bool PropertiesDialog::apply() {
         tab->apply(target);
     }
 
-    apply_button->setEnabled(false);
-    reset_button->setEnabled(false);
-
     const bool success = STATUS()->end_error_log(this);
+
+    if (success) {
+        apply_button->setEnabled(false);
+        reset_button->setEnabled(false);
+    }
 
     hide_busy_indicator();
 
