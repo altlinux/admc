@@ -280,7 +280,10 @@ void AttributesTab::apply(const QString &target) {
         const QList<QByteArray> original_values = original[attribute];
 
         if (current_values != original_values) {
-            AD()->attribute_replace_values(target, attribute, current_values);
+            const bool success = AD()->attribute_replace_values(target, attribute, current_values);
+            if (success) {
+                original[attribute] = current_values;
+            }
         }
     }
 }
