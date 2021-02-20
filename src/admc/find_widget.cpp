@@ -19,7 +19,7 @@
 
 #include "find_widget.h"
 
-#include "ad_interface.h"
+#include "ad_config.h"
 #include "ad_utils.h"
 #include "settings.h"
 #include "utils.h"
@@ -41,11 +41,7 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
 {
     // TODO: missing "Entire directory" in search base combo. Not 100% sure what it's supposed to be, the tippy-top domain? Definitely need it for work with multiple domains.
 
-    // TODO: handle failure. Also this seems a bit too much, connecting just to get domain head?
-    AdInterface ad;
-    if (!ad_is_connected(ad)) {
-        return;
-    }
+    const QString domain_head = ADCONFIG()->domain_head();
 
     search_base_combo = new QComboBox();
     {
@@ -55,10 +51,10 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
             search_base_combo->addItem(name, dn);
         };
 
-        if (default_search_base == ad.domain_head()) {
-            add_search_base_to_combo(ad.domain_head());
+        if (default_search_base == domain_head) {
+            add_search_base_to_combo(domain_head);
         } else {
-            add_search_base_to_combo(ad.domain_head());
+            add_search_base_to_combo(domain_head);
             add_search_base_to_combo(default_search_base);
         }
 

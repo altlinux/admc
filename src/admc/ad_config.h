@@ -76,6 +76,11 @@ public:
 
     void load(AdInterface &ad);
 
+    QString domain() const;
+    QString domain_head() const;
+    QString configuration_dn() const;
+    QString schema_dn() const;
+
     QString get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const;
 
     QString get_class_display_name(const ObjectClass &objectClass) const;
@@ -104,6 +109,9 @@ public:
     void limit_edit(QLineEdit *edit, const QString &attribute);
 
 private:
+    QString m_domain;
+    QString m_domain_head;
+
     QList<ObjectClass> filter_containers;
     
     QList<Attribute> columns;

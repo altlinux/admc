@@ -82,41 +82,8 @@ AdInterface::AdInterface(QObject *parent)
     smbc = NULL;
     m_is_connected = false;
 
-    // Get default domain from krb5
-    const QString domain =
-    []() {
-        krb5_error_code result;
-        krb5_context context;
-        char *realm_cstr = NULL;
-
-        auto cleanup =
-        [&]() {
-            krb5_free_default_realm(context, realm_cstr);
-            krb5_free_context(context);
-        };
-
-        result = krb5_init_context(&context);
-        if (result) {
-            qDebug() << "Failed to init krb5 context";
-
-            cleanup();
-            return QString();
-        }
-
-        result = krb5_get_default_realm(context, &realm_cstr);
-        if (result) {
-            qDebug() << "Failed to get default realm";
-
-            cleanup();
-            return QString();
-        }
-
-        const QString out = QString(realm_cstr);
-
-        cleanup();
-
-        return out;
-    }();
+    domain = get_default_domain_from_krb5();
+    domain_head = domain_to_domain_dn(domain);
 
     qDebug() << "domain=" << domain;
 
@@ -131,21 +98,9 @@ AdInterface::AdInterface(QObject *parent)
     qDebug() << "hosts=" << hosts;
 
     // TODO: for now selecting first host, which seems to be fine but investigate what should be selected.
-    m_host = hosts[0];
+    host = hosts[0];
 
-    const QString uri = "ldap://" + m_host;
-
-    m_domain = domain;
-
-    // Transform domain to search base
-    // "DOMAIN.COM" => "DC=domain,DC=com"
-    m_domain_head = m_domain;
-    m_domain_head = m_domain_head.toLower();
-    m_domain_head = "DC=" + m_domain_head;
-    m_domain_head = m_domain_head.replace(".", ",DC=");
-
-    m_configuration_dn = "CN=Configuration," + m_domain_head;
-    m_schema_dn = "CN=Schema," + m_configuration_dn;
+    const QString uri = "ldap://" + host;
 
     const bool success = ad_connect(cstr(uri), &ld);
 
@@ -184,26 +139,6 @@ AdInterface::AdInterface(QObject *parent)
 
 bool AdInterface::is_connected() const {
     return m_is_connected;
-}
-
-QString AdInterface::domain() const {
-    return m_domain;
-}
-
-QString AdInterface::domain_head() const {
-    return m_domain_head;
-}
-
-QString AdInterface::configuration_dn() const {
-    return m_configuration_dn;
-}
-
-QString AdInterface::schema_dn() const {
-    return m_schema_dn;
-}
-
-QString AdInterface::host() const {
-    return m_host;
 }
 
 void AdInterface::stop_search() {
@@ -351,7 +286,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter_arg, const QL
     const char *search_base =
     [this, search_base_arg]() {
         if (search_base_arg.isEmpty()) {
-            return cstr(m_domain_head);
+            return cstr(domain_head);
         } else {
             return cstr(search_base_arg);
         }
@@ -1129,7 +1064,7 @@ bool AdInterface::create_gpo(const QString &display_name) {
 
     // Create main dir
     // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(host(), domain().toLower(), uuid);
+    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(host, domain.toLower(), uuid);
     const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0);
     if (result_mkdir_main != 0) {
         // TODO: handle errors
@@ -1164,14 +1099,14 @@ bool AdInterface::create_gpo(const QString &display_name) {
     // Create AD object for gpo
     //
     // TODO: add all attributes during creation, need to directly create through ldap then
-    const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, m_domain_head);
+    const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, domain_head);
     const bool result_add = object_add(dn, CLASS_GP_CONTAINER);
     if (!result_add) {
         return false;
     }
     attribute_replace_string(dn, ATTRIBUTE_DISPLAY_NAME, display_name);
     // "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(domain().toLower(), uuid);
+    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(domain.toLower(), uuid);
     attribute_replace_string(dn, ATTRIBUTE_GPC_FILE_SYS_PATH, gPCFileSysPath);
     // TODO: samba defaults to 1, ADUC defaults to 0. Figure out what's this supposed to be.
     attribute_replace_string(dn, ATTRIBUTE_FLAGS, "1");
@@ -1243,7 +1178,7 @@ QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
     const int sysvol_i = out.indexOf("sysvol");
     out.remove(0, sysvol_i);
 
-    out = QString("smb://%1/%2").arg(m_host, out);
+    out = QString("smb://%1/%2").arg(host, out);
 
     return out;
 }

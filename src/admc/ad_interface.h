@@ -82,11 +82,6 @@ public:
     AdInterface(QObject *parent = nullptr);
 
     bool is_connected() const;
-    QString domain() const;
-    QString domain_head() const;
-    QString host() const;
-    QString configuration_dn() const;
-    QString schema_dn() const;
 
     // NOTE: If request attributes list is empty, all attributes are returned
     QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope, const QString &search_base = QString());
@@ -130,11 +125,9 @@ private:
     LDAP *ld;
     SMBCCTX *smbc;
     bool m_is_connected;
-    QString m_domain;
-    QString m_domain_head;
-    QString m_configuration_dn;
-    QString m_schema_dn;
-    QString m_host;
+    QString domain;
+    QString domain_head;
+    QString host;
     bool stop_search_flag;
 
     void success_status_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);

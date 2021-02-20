@@ -23,6 +23,9 @@
 #include "utils.h"
 
 #include <ldap.h>
+#include <krb5.h>
+
+#include <QDebug>
 
 #define GENERALIZED_TIME_FORMAT_STRING  "yyyyMMddhhmmss.zZ"
 #define UTC_TIME_FORMAT_STRING          "yyMMddhhmmss.zZ"
@@ -254,4 +257,50 @@ QString dn_from_name_and_parent(const QString &name, const QString &parent, cons
     const QString dn = QString("%1=%2,%3").arg(suffix, name, parent);
 
     return dn;
+}
+
+QString get_default_domain_from_krb5() {
+    krb5_error_code result;
+    krb5_context context;
+    char *realm_cstr = NULL;
+
+    auto cleanup =
+    [&]() {
+        krb5_free_default_realm(context, realm_cstr);
+        krb5_free_context(context);
+    };
+
+    result = krb5_init_context(&context);
+    if (result) {
+        qDebug() << "Failed to init krb5 context";
+
+        cleanup();
+        return QString();
+    }
+
+    result = krb5_get_default_realm(context, &realm_cstr);
+    if (result) {
+        qDebug() << "Failed to get default realm";
+
+        cleanup();
+        return QString();
+    }
+
+    const QString out = QString(realm_cstr);
+
+    cleanup();
+
+    return out;
+}
+
+// Transform domain to domain DN
+// "DOMAIN.COM" => "DC=domain,DC=com"
+QString domain_to_domain_dn(const QString &domain) {
+    QString domain_dn = domain;
+
+    domain_dn = domain_dn.toLower();
+    domain_dn = "DC=" + domain_dn;
+    domain_dn = domain_dn.replace(".", ",DC=");
+
+    return domain_dn;
 }

@@ -100,7 +100,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     }
 
     // Load head object
-    const QString head_dn = ad.domain_head();
+    const QString head_dn = ADCONFIG()->domain_head();
     const AdObject head_object = ad.search_object(head_dn);
     auto item = make_container_node(head_object);
     model->appendRow(item);

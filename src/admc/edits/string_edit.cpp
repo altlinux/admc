@@ -96,16 +96,7 @@ void StringEdit::add_to_layout(QFormLayout *layout) {
 
         layout->addRow(label_text, sublayout);
     } else if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
-        // TODO: using ad to get domain is too much
-        const QString domain =
-        []() {
-            AdInterface ad;
-            if (ad_is_connected(ad)) {
-                return ad.domain();
-            } else {
-                return QString();
-            }
-        }();
+        const QString domain = ADCONFIG()->domain();
         
         const QString domain_name = domain.split(".")[0];
         const QString extra_edit_text = "\\" + domain_name;
@@ -137,7 +128,7 @@ bool StringEdit::verify(AdInterface &ad, const QString &dn) const {
             return filter_AND({same_upn, not_object_itself});
         }();
         const QList<QString> search_attributes;
-        const QString base = ad.domain_head();
+        const QString base = ADCONFIG()->domain_head();
 
         const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All, base);
 
@@ -187,12 +178,6 @@ QString StringEdit::get_new_value() const {
 
 // "DOMAIN.COM" => "@domain.com"
 QString get_domain_as_email_suffix() {
-    // TODO: shouldn't use ad to get domain
-    AdInterface ad;
-    if (ad_is_connected(ad)) {
-        const QString domain = ad.domain();
-        return "@" + domain.toLower();
-    } else {
-        return QString();
-    }
+    const QString domain = ADCONFIG()->domain();
+    return "@" + domain.toLower();
 }

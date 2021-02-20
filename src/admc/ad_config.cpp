@@ -20,6 +20,7 @@
 #include "ad_config.h"
 #include "ad_interface.h"
 #include "ad_object.h"
+#include "ad_utils.h"
 #include "settings.h"
 #include "utils.h"
 #include "filter.h"
@@ -67,6 +68,9 @@ AdConfig::AdConfig() {
 }
 
 void AdConfig::load(AdInterface &ad) {
+    m_domain = get_default_domain_from_krb5();
+    m_domain_head = domain_to_domain_dn(m_domain);
+
     filter_containers.clear();
     columns.clear();
     column_display_names.clear();
@@ -77,9 +81,9 @@ void AdConfig::load(AdInterface &ad) {
     class_schemas.clear();
 
     const QString locale_dir =
-    [&ad]() {
+    [this, &ad]() {
         const QString locale_code =
-        []() {
+        [this]() {
             const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
 
             if (saved_locale.language() == QLocale::Russian) {
@@ -90,9 +94,7 @@ void AdConfig::load(AdInterface &ad) {
             }
         }();
 
-        const QString configuration_dn = ad.configuration_dn();
-
-        return QString("CN=%1,CN=DisplaySpecifiers,%2").arg(locale_code, configuration_dn);
+        return QString("CN=%1,CN=DisplaySpecifiers,%2").arg(locale_code, configuration_dn());
     }();
 
     // Attribute schemas
@@ -110,9 +112,7 @@ void AdConfig::load(AdInterface &ad) {
             ATTRIBUTE_SYSTEM_FLAGS,
         };
 
-        const QString schema_dn = ad.schema_dn();
-
-        const QHash<QString, AdObject> search_results = ad.search(filter, attributes, SearchScope_Children, schema_dn);
+        const QHash<QString, AdObject> search_results = ad.search(filter, attributes, SearchScope_Children, schema_dn());
 
         for (const AdObject &object : search_results.values()) {
             const QString attribute = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
@@ -136,9 +136,7 @@ void AdConfig::load(AdInterface &ad) {
             ATTRIBUTE_SYSTEM_AUXILIARY_CLASS,
         };
 
-        const QString schema_dn = ad.schema_dn();
-
-        const QHash<QString, AdObject> search_results = ad.search(filter, attributes, SearchScope_Children, schema_dn);
+        const QHash<QString, AdObject> search_results = ad.search(filter, attributes, SearchScope_Children, schema_dn());
 
         for (const AdObject &object : search_results.values()) {
             const QString object_class = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
@@ -271,7 +269,7 @@ void AdConfig::load(AdInterface &ad) {
         // *categories* not classes, so need to get object
         // class from category object
         for (const auto &object_category : categories) {
-            const QString category_dn = QString("CN=%1,%2").arg(object_category, ad.schema_dn());
+            const QString category_dn = QString("CN=%1,%2").arg(object_category, schema_dn());
             const AdObject category_object = ad.search_object(category_dn, {ATTRIBUTE_LDAP_DISPLAY_NAME});
             const QString object_class = category_object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
 
@@ -286,6 +284,22 @@ void AdConfig::load(AdInterface &ad) {
 
         return out;
     }();
+}
+
+QString AdConfig::domain() const {
+    return m_domain;
+}
+
+QString AdConfig::domain_head() const {
+    return m_domain_head;
+}
+
+QString AdConfig::configuration_dn() const {
+    return QString("CN=Configuration,%1").arg(m_domain_head);
+}
+
+QString AdConfig::schema_dn() const {
+    return QString("CN=Schema,%1").arg(m_domain_head);
 }
 
 AdConfig *ADCONFIG() {

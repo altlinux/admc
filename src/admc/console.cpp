@@ -224,7 +224,7 @@ Console::Console(MenuBar *menubar_arg)
     // Load head object
     AdInterface ad;
     if (ad_is_connected(ad)) {
-        const QString head_dn = ad.domain_head();
+        const QString head_dn = ADCONFIG()->domain_head();
         const AdObject head_object = ad.search_object(head_dn);
         auto head_item = make_scope_item(head_object);
         scope_model->appendRow(head_item);
@@ -679,9 +679,9 @@ void Console::fetch_scope_node(const QModelIndex &index) {
     // Dev mode
     // NOTE: configuration and schema objects are hidden so that they don't show up in regular searches. Have to use search_object() and manually add them to search results.
     if (dev_mode) {
-        const QString search_base = ad.domain_head();
-        const QString configuration_dn = ad.configuration_dn();
-        const QString schema_dn = ad.schema_dn();
+        const QString search_base = ADCONFIG()->domain_head();
+        const QString configuration_dn = ADCONFIG()->configuration_dn();
+        const QString schema_dn = ADCONFIG()->schema_dn();
 
         if (dn == search_base) {
             search_results[configuration_dn] = ad.search_object(configuration_dn);
