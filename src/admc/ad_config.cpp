@@ -299,7 +299,7 @@ QString AdConfig::configuration_dn() const {
 }
 
 QString AdConfig::schema_dn() const {
-    return QString("CN=Schema,%1").arg(m_domain_head);
+    return QString("CN=Schema,%1").arg(configuration_dn());
 }
 
 AdConfig *ADCONFIG() {
