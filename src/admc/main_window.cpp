@@ -101,7 +101,9 @@ void MainWindow::connect_to_server() {
     const bool connect_success = AD()->connect();
 
     // TODO: check for load failure
-    ADCONFIG()->load();
+    if (connect_success) {
+        ADCONFIG()->load();
+    }
 
     STATUS()->end_error_log(this);
 
