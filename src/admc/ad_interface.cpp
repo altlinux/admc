@@ -76,8 +76,7 @@ AdSignals *ADSIGNALS() {
     return &instance;
 }
 
-AdInterface::AdInterface(QObject *parent)
-: QObject(parent) {
+AdInterface::AdInterface() {
     ld = NULL;
     smbc = NULL;
     m_is_connected = false;
@@ -104,20 +103,6 @@ AdInterface::AdInterface(QObject *parent)
 
     const bool success = ad_connect(cstr(uri), &ld);
 
-    // TODO: can move this do a dtor, but for now this is
-    // easier to do than ovewriting qobject's dtor
-    connect(
-        this, &QObject::destroyed,
-        [this]() {
-            smbc_free_context(smbc, 0);
-
-            if (m_is_connected) {
-                ldap_unbind_ext(ld, NULL, NULL);
-            } else {
-                ldap_memfree(ld);
-            }
-        });
-
     if (success) {
         // TODO: can this context expire, for example from a disconnect?
         // NOTE: this doesn't leak memory. False positive.
@@ -134,6 +119,16 @@ AdInterface::AdInterface(QObject *parent)
         m_is_connected = true;
     } else {
         error_status_message(tr("Failed to connect"), tr("Authentication failed"));
+    }
+}
+
+AdInterface::~AdInterface() {
+    smbc_free_context(smbc, 0);
+
+    if (m_is_connected) {
+        ldap_unbind_ext(ld, NULL, NULL);
+    } else {
+        ldap_memfree(ld);
     }
 }
 

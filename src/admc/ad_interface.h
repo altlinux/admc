@@ -27,6 +27,7 @@
  */
 
 #include <QObject>
+#include <QCoreApplication>
 
 #include "ad_defines.h"
 
@@ -66,8 +67,8 @@ signals:
 
 AdSignals *ADSIGNALS();
 
-class AdInterface final : public QObject {
-Q_OBJECT
+class AdInterface {
+Q_DECLARE_TR_FUNCTIONS(AdInterface)
 
 private:
     // Some f-ns in this class reuse other f-ns and this
@@ -79,7 +80,8 @@ private:
     };
 
 public:
-    AdInterface(QObject *parent = nullptr);
+    AdInterface();
+    ~AdInterface();
 
     bool is_connected() const;
 
