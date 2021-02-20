@@ -30,7 +30,6 @@
 
 class QTextEdit;
 class QStatusBar;
-class AdInterface;
 
 enum StatusType {
     StatusType_Success,
