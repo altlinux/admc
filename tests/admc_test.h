@@ -28,9 +28,9 @@
 
 #include <QObject>
 
-#include "ad_interface.h"
-
 #include <QTest>
+
+#include "ad_interface.h"
 
 class QString;
 class QTreeView;
