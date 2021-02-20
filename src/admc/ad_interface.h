@@ -136,6 +136,11 @@ private:
     void error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     QString default_error() const;
     int get_ldap_result() const;
+
+    AdInterface(const AdInterface&) = delete;
+    AdInterface& operator=(const AdInterface&) = delete;
+    AdInterface(AdInterface&&) = delete;
+    AdInterface& operator=(AdInterface&&) = delete;
 };
 
 // TODO: move this to console drag movel
