@@ -40,16 +40,13 @@ RenamePolicyDialog::RenamePolicyDialog(const QString &target_arg, QWidget *paren
 
     setAttribute(Qt::WA_DeleteOnClose);
 
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        close();
+    }
+
     // TODO: handle failure, dialog should close
-    const AdObject object =
-    [this]() {
-        AdInterface ad;
-        if (ad_is_connected(ad)) {
-            return ad.search_object(target);
-        } else {
-            return AdObject();
-        }
-    }();
+    const AdObject object = ad.search_object(target);
 
     const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 

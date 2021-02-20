@@ -98,6 +98,12 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     target = target_arg;
 
     setAttribute(Qt::WA_DeleteOnClose);
+
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        close();
+    }
+
     setMinimumHeight(700);
     auto button_box = new QDialogButtonBox();
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
@@ -112,15 +118,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     apply_button->setAutoDefault(false);
     ok_button->setAutoDefault(true);
 
-    const AdObject object =
-    [this]() {
-        AdInterface ad;
-        if (ad_is_connected(ad)) {
-            return ad.search_object(target);
-        } else {
-            return AdObject();
-        }
-    }();
+    const AdObject object = ad.search_object(target);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);

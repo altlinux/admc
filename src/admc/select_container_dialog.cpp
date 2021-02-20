@@ -44,6 +44,11 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
+
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        close();
+    }
     
     resize(400, 500);
 
@@ -92,12 +97,6 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     setLayout(layout);
     layout->addWidget(view);
     layout->addWidget(buttonbox);
-
-    // TODO: handle error
-    AdInterface ad;
-    if (!ad_is_connected(ad)) {
-        return;
-    }
 
     // Load head object
     const QString head_dn = ADCONFIG()->domain_head();

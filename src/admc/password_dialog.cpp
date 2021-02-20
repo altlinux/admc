@@ -35,20 +35,16 @@
 PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 : QDialog(parent)
 {
+    setAttribute(Qt::WA_DeleteOnClose);
+    
     target = target_arg;
 
-    // TODO: handle failure, dialog should close
-    const AdObject object =
-    [this]() {
-        AdInterface ad;
-        if (ad_is_connected(ad)) {
-            return ad.search_object(target);
-        } else {
-            return AdObject();
-        }
-    }();
+    AdInterface ad;
+    if (!ad_is_connected(ad)) {
+        close();
+    }
 
-    setAttribute(Qt::WA_DeleteOnClose);
+    const AdObject object = ad.search_object(target);
 
     const QString name = dn_get_name(target);
     const QString title = QString(tr("Change password of object \"%1\"")).arg(name);
