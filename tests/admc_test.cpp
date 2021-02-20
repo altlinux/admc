@@ -19,7 +19,6 @@
 
 #include "admc_test.h"
 
-#include "test_common.h"
 #include "ad_interface.h"
 #include "ad_utils.h"
 #include "ad_object.h"
