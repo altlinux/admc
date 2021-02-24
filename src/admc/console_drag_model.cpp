@@ -23,12 +23,12 @@
 #include "ad_object.h"
 #include "status.h"
 #include "object_model.h"
+#include "object_drag.h"
 
 #include <QMimeData>
 #include <QString>
 
 // TODO: dragging queries and query folders
-// TODO: move object_can_drop() and object_drop() here, shouldnt be in adinterface
 
 const QString MIME_TYPE_OBJECT = "MIME_TYPE_OBJECT";
 
@@ -112,7 +112,7 @@ bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action
         STATUS()->start_error_log();
 
         for (const AdObject &dropped : dropped_list) {
-            ad.object_drop(dropped, target);
+            object_drop(ad, dropped, target);
         }
 
         STATUS()->end_error_log(nullptr);

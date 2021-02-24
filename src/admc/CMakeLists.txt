@@ -42,6 +42,7 @@ add_executable(admc
     tab_widget.cpp
     console.cpp
     console_drag_model.cpp
+    object_drag.cpp
     
     rename_dialog.cpp
     rename_policy_dialog.cpp

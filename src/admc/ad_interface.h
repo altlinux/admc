@@ -114,8 +114,6 @@ public:
     bool user_set_account_option(const QString &dn, AccountOption option, bool set);
     bool user_unlock(const QString &dn);
 
-    void object_drop(const AdObject &dropped, const AdObject &target);
-
     bool create_gpo(const QString &name);
     bool delete_gpo(const QString &dn);
 
@@ -142,9 +140,6 @@ private:
     AdInterface(AdInterface&&) = delete;
     AdInterface& operator=(AdInterface&&) = delete;
 };
-
-// TODO: move this to console drag movel
-bool object_can_drop(const AdObject &dropped, const AdObject &target);
 
 // TODO: haven't found a better place for ad_is_connected()
 // f-n yet. Should move it somewhere i think because
