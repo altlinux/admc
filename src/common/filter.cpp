@@ -22,6 +22,8 @@
 #include "ad_defines.h"
 #include "ad_config.h"
 
+#include <QCoreApplication>
+
 const QList<QString> filter_classes = {
     CLASS_USER,
     CLASS_GROUP,
@@ -106,4 +108,18 @@ QString add_advanced_view_filter(const QString &filter) {
     } else {
         return filter;
     }
+}
+
+QString condition_to_display_string(const Condition condition) {
+    switch (condition) {
+        case Condition_Equals: return QCoreApplication::translate("filter", "Is (exactly)");
+        case Condition_NotEquals: return QCoreApplication::translate("filter", "Is not");
+        case Condition_StartsWith: return QCoreApplication::translate("filter", "Starts with");
+        case Condition_EndsWith: return QCoreApplication::translate("filter", "Ends with");
+        case Condition_Contains: return QCoreApplication::translate("filter", "Contains");
+        case Condition_Set: return QCoreApplication::translate("filter", "Present");
+        case Condition_Unset: return QCoreApplication::translate("filter", "Not present");
+        case Condition_COUNT: return QString();
+    }
+    return QString();
 }

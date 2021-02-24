@@ -26,6 +26,7 @@
 #include <QString>
 #include <QByteArray> 
 #include <QList> 
+#include <QCoreApplication>
 
 const qint64 SECONDS_TO_MILLIS  = 1000LL;
 const qint64 MINUTES_TO_SECONDS = 60LL;
@@ -69,7 +70,7 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
 
 QString attribute_display_values(const QString &attribute, const QList<QByteArray> &values) {
     if (values.isEmpty()) {
-        return QObject::tr("<unset>");
+        return QCoreApplication::translate("attribute_display", "<unset>");
     } else {
         QString out;
 
@@ -132,7 +133,7 @@ QString large_integer_datetime_display_value(const QString &attribute, const QBy
     const QString value_string = QString(value);
     
     if (large_integer_datetime_is_never(value_string)) {
-        return QObject::tr("(never)");
+        return QCoreApplication::translate("attribute_display", "(never)");
     } else {
         QDateTime datetime = datetime_string_to_qdatetime(attribute, value_string);
         const QString display = datetime.toLocalTime().toString(DATETIME_DISPLAY_FORMAT);

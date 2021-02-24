@@ -28,6 +28,7 @@
 #include <QLocale>
 #include <QDebug>
 #include <QLineEdit>
+#include <QCoreApplication>
 #include <algorithm>
 
 #define ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES "attributeDisplayNames"
@@ -241,10 +242,10 @@ void AdConfig::load(AdInterface &ad) {
             column_display_names[attribute] = display_name;
         };
 
-        add_custom(ATTRIBUTE_DN, QObject::tr("Distinguished name"));
-        add_custom(ATTRIBUTE_DESCRIPTION, QObject::tr("Description"));
-        add_custom(ATTRIBUTE_OBJECT_CLASS, QObject::tr("Class"));
-        add_custom(ATTRIBUTE_NAME, QObject::tr("Name"));
+        add_custom(ATTRIBUTE_DN, QCoreApplication::translate("AdConfig", "Distinguished name"));
+        add_custom(ATTRIBUTE_DESCRIPTION, QCoreApplication::translate("AdConfig", "Description"));
+        add_custom(ATTRIBUTE_OBJECT_CLASS, QCoreApplication::translate("AdConfig", "Class"));
+        add_custom(ATTRIBUTE_NAME, QCoreApplication::translate("AdConfig", "Name"));
     }
 
     filter_containers =
@@ -315,19 +316,19 @@ QString AdConfig::get_attribute_display_name(const Attribute &attribute, const O
 
     // NOTE: display specifier doesn't cover all attributes for all classes, so need to hardcode some of them here
     static const QHash<Attribute, QString> fallback_display_names = {
-        {ATTRIBUTE_NAME, QObject::tr("Name")},
-        {ATTRIBUTE_DN, QObject::tr("Distinguished name")},
-        {ATTRIBUTE_OBJECT_CLASS, QObject::tr("Object class")},
-        {ATTRIBUTE_WHEN_CREATED, QObject::tr("Created")},
-        {ATTRIBUTE_WHEN_CHANGED, QObject::tr("Changed")},
-        {ATTRIBUTE_USN_CREATED, QObject::tr("USN created")},
-        {ATTRIBUTE_USN_CHANGED, QObject::tr("USN changed")},
-        {ATTRIBUTE_ACCOUNT_EXPIRES, QObject::tr("Account expires")},
-        {ATTRIBUTE_OBJECT_CATEGORY, QObject::tr("Type")},
-        {ATTRIBUTE_PROFILE_PATH, QObject::tr("Profile path")},
-        {ATTRIBUTE_SCRIPT_PATH, QObject::tr("Logon script")},
-        {ATTRIBUTE_SAMACCOUNT_NAME, QObject::tr("Logon name (pre-Windows 2000)")},
-        {ATTRIBUTE_MAIL, QObject::tr("E-mail")},
+        {ATTRIBUTE_NAME, QCoreApplication::translate("AdConfig", "Name")},
+        {ATTRIBUTE_DN, QCoreApplication::translate("AdConfig", "Distinguished name")},
+        {ATTRIBUTE_OBJECT_CLASS, QCoreApplication::translate("AdConfig", "Object class")},
+        {ATTRIBUTE_WHEN_CREATED, QCoreApplication::translate("AdConfig", "Created")},
+        {ATTRIBUTE_WHEN_CHANGED, QCoreApplication::translate("AdConfig", "Changed")},
+        {ATTRIBUTE_USN_CREATED, QCoreApplication::translate("AdConfig", "USN created")},
+        {ATTRIBUTE_USN_CHANGED, QCoreApplication::translate("AdConfig", "USN changed")},
+        {ATTRIBUTE_ACCOUNT_EXPIRES, QCoreApplication::translate("AdConfig", "Account expires")},
+        {ATTRIBUTE_OBJECT_CATEGORY, QCoreApplication::translate("AdConfig", "Type")},
+        {ATTRIBUTE_PROFILE_PATH, QCoreApplication::translate("AdConfig", "Profile path")},
+        {ATTRIBUTE_SCRIPT_PATH, QCoreApplication::translate("AdConfig", "Logon script")},
+        {ATTRIBUTE_SAMACCOUNT_NAME, QCoreApplication::translate("AdConfig", "Logon name (pre-Windows 2000)")},
+        {ATTRIBUTE_MAIL, QCoreApplication::translate("AdConfig", "E-mail")},
     };
 
     return fallback_display_names.value(attribute, attribute);

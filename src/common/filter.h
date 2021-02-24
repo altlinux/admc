@@ -47,4 +47,6 @@ QString is_container_filter();
 // view setting
 QString add_advanced_view_filter(const QString &filter);
 
+QString condition_to_display_string(const Condition condition);
+
 #endif /* FILTER_H */

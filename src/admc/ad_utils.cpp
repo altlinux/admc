@@ -26,6 +26,7 @@
 #include <krb5.h>
 
 #include <QDebug>
+#include <QCoreApplication>
 
 #define GENERALIZED_TIME_FORMAT_STRING  "yyyyMMddhhmmss.zZ"
 #define UTC_TIME_FORMAT_STRING          "yyMMddhhmmss.zZ"
@@ -109,13 +110,13 @@ QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &
 
 QString account_option_string(const AccountOption &option) {
     switch (option) {
-        case AccountOption_Disabled: return QObject::tr("Account disabled");
-        case AccountOption_PasswordExpired: return QObject::tr("User must change password on next logon");
-        case AccountOption_DontExpirePassword: return QObject::tr("Don't expire password");
-        case AccountOption_UseDesKey: return QObject::tr("Store password using reversible encryption");
-        case AccountOption_SmartcardRequired: return QObject::tr("Smartcard is required for interactive logon");
-        case AccountOption_CantDelegate: return QObject::tr("Account is sensitive and cannot be delegated");
-        case AccountOption_DontRequirePreauth: return QObject::tr("Don't require Kerberos preauthentication");
+        case AccountOption_Disabled: return QCoreApplication::translate("ad_utils", "Account disabled");
+        case AccountOption_PasswordExpired: return QCoreApplication::translate("ad_utils", "User must change password on next logon");
+        case AccountOption_DontExpirePassword: return QCoreApplication::translate("ad_utils", "Don't expire password");
+        case AccountOption_UseDesKey: return QCoreApplication::translate("ad_utils", "Store password using reversible encryption");
+        case AccountOption_SmartcardRequired: return QCoreApplication::translate("ad_utils", "Smartcard is required for interactive logon");
+        case AccountOption_CantDelegate: return QCoreApplication::translate("ad_utils", "Account is sensitive and cannot be delegated");
+        case AccountOption_DontRequirePreauth: return QCoreApplication::translate("ad_utils", "Don't require Kerberos preauthentication");
         case AccountOption_COUNT: return QString("AccountOption_COUNT");
     }
 
@@ -157,9 +158,9 @@ int group_scope_bit(GroupScope scope) {
 
 QString group_scope_string(GroupScope scope) {
     switch (scope) {
-        case GroupScope_Global: return QObject::tr("Global");
-        case GroupScope_DomainLocal: return QObject::tr("Domain Local");
-        case GroupScope_Universal: return QObject::tr("Universal");
+        case GroupScope_Global: return QCoreApplication::translate("ad_utils", "Global");
+        case GroupScope_DomainLocal: return QCoreApplication::translate("ad_utils", "Domain Local");
+        case GroupScope_Universal: return QCoreApplication::translate("ad_utils", "Universal");
         case GroupScope_COUNT: return "COUNT";
     }
     return "";
@@ -167,8 +168,8 @@ QString group_scope_string(GroupScope scope) {
 
 QString group_type_string(GroupType type) {
     switch (type) {
-        case GroupType_Security: return QObject::tr("Security");
-        case GroupType_Distribution: return QObject::tr("Distribution");
+        case GroupType_Security: return QCoreApplication::translate("ad_utils", "Security");
+        case GroupType_Distribution: return QCoreApplication::translate("ad_utils", "Distribution");
         case GroupType_COUNT: return "COUNT";
     }
     return "";
@@ -178,8 +179,8 @@ QString group_type_string(GroupType type) {
 // adjectives get suffixes.
 QString group_type_string_adjective(GroupType type) {
     switch (type) {
-        case GroupType_Security: return QObject::tr("Security Group");
-        case GroupType_Distribution: return QObject::tr("Distribution Group");
+        case GroupType_Security: return QCoreApplication::translate("ad_utils", "Security Group");
+        case GroupType_Distribution: return QCoreApplication::translate("ad_utils", "Distribution Group");
         case GroupType_COUNT: return "COUNT";
     }
     return "";

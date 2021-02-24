@@ -39,6 +39,7 @@
 #include <QPoint>
 #include <QAbstractItemView>
 #include <QDebug>
+#include <QCoreApplication>
 
 // NOTE: for dialogs opened from this menu, the parent of the menu is passed NOT the menu itself, because the menu closes (and gets deleted if this is the context menu) when dialog opens.
 
@@ -95,7 +96,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
     // These are f-ns that add menu's
     auto add_new =
     [=]() {
-        QMenu *submenu_new = menu->addMenu(QObject::tr("New"));
+        QMenu *submenu_new = menu->addMenu(QCoreApplication::translate("object_menu", "New"));
         static const QList<QString> create_classes = {
             CLASS_USER,
             CLASS_COMPUTER,
@@ -114,7 +115,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
 
     auto add_find =
     [=]() {
-        menu->addAction(QObject::tr("Find"),
+        menu->addAction(QCoreApplication::translate("object_menu", "Find"),
             [=]() {
                 find(targets[0], parent);
             });
@@ -122,7 +123,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
 
     auto add_add_to_group =
     [=]() {
-        menu->addAction(QObject::tr("Add to group"),
+        menu->addAction(QCoreApplication::translate("object_menu", "Add to group"),
             [=]() {
                 add_to_group(targets, parent);
             });
@@ -130,7 +131,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
 
     auto add_reset_password =
     [=]() {
-        menu->addAction(QObject::tr("Reset password"),
+        menu->addAction(QCoreApplication::translate("object_menu", "Reset password"),
             [=]() {
                 reset_password(targets[0], parent);
             });
@@ -138,7 +139,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
 
     auto add_disable_account =
     [=]() {
-        menu->addAction(QObject::tr("Disable account"),
+        menu->addAction(QCoreApplication::translate("object_menu", "Disable account"),
             [=]() {
                 disable_account(targets, parent);
             });
@@ -146,7 +147,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
 
     auto add_enable_account =
     [=]() {
-        menu->addAction(QObject::tr("Enable account"),
+        menu->addAction(QCoreApplication::translate("object_menu", "Enable account"),
             [=]() {
                 enable_account(targets, parent);
             });
@@ -154,7 +155,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
 
     auto add_move =
     [=](const bool disabled) {
-        auto action = menu->addAction(QObject::tr("Move"),
+        auto action = menu->addAction(QCoreApplication::translate("object_menu", "Move"),
             [=]() {
                 move(targets, parent);
             });
@@ -164,7 +165,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
 
     auto add_delete =
     [=](const bool disabled) {
-        auto action = menu->addAction(QObject::tr("Delete"),
+        auto action = menu->addAction(QCoreApplication::translate("object_menu", "Delete"),
             [=]() {
                 delete_object(targets, parent);
             });
@@ -173,7 +174,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
 
     auto add_rename =
     [=](const bool disabled) {
-        auto action = menu->addAction(QObject::tr("Rename"),
+        auto action = menu->addAction(QCoreApplication::translate("object_menu", "Rename"),
             [=]() {
                 rename(targets[0], parent);
             });
@@ -278,7 +279,7 @@ void properties(const QString &target, QWidget *parent) {
 }
 
 void delete_object(const QList<QString> targets, QWidget *parent) {
-    const QString text = QString(QObject::tr("Are you sure you want to delete %1?")).arg(targets_display_string(targets));
+    const QString text = QString(QCoreApplication::translate("object_menu", "Are you sure you want to delete %1?")).arg(targets_display_string(targets));
     const bool confirmed = confirmation_dialog(text, parent);
 
     if (confirmed) {
@@ -299,7 +300,7 @@ void delete_object(const QList<QString> targets, QWidget *parent) {
 void move(const QList<QString> targets, QWidget *parent) {
     auto dialog = new SelectContainerDialog(parent);
 
-    const QString title = QString(QObject::tr("Move %1")).arg(targets_display_string(targets));
+    const QString title = QString(QCoreApplication::translate("object_menu", "Move %1")).arg(targets_display_string(targets));
     dialog->setWindowTitle(title);
 
     QObject::connect(
@@ -326,7 +327,7 @@ void move(const QList<QString> targets, QWidget *parent) {
 void add_to_group(const QList<QString> targets, QWidget *parent) {
     auto dialog = new SelectDialog({CLASS_GROUP}, SelectDialogMultiSelection_Yes, parent);
 
-    const QString title = QString(QObject::tr("Add %1 to group")).arg(targets_display_string(targets));
+    const QString title = QString(QCoreApplication::translate("object_menu", "Add %1 to group")).arg(targets_display_string(targets));
     dialog->setWindowTitle(title);
 
     QObject::connect(
@@ -401,16 +402,16 @@ QString targets_display_string(const QList<QString> targets) {
     if (targets.size() == 1) {
         const QString dn = targets[0];
         const QString name = dn_get_name(dn);
-        return QString(QObject::tr("object \"%1\"")).arg(name);
+        return QString(QCoreApplication::translate("object_menu", "object \"%1\"")).arg(name);
     } else {
-        return QObject::tr("multiple objects");
+        return QCoreApplication::translate("object_menu", "multiple objects");
     }
 }
 
 void move_object(const QList<QString> targets, QWidget *parent) {
     auto dialog = new SelectContainerDialog(parent);
 
-    const QString title = QString(QObject::tr("Move %1")).arg(targets_display_string(targets));
+    const QString title = QString(QCoreApplication::translate("object_menu", "Move %1")).arg(targets_display_string(targets));
     dialog->setWindowTitle(title);
 
     QObject::connect(

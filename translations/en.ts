@@ -20,6 +20,86 @@
     </message>
 </context>
 <context>
+    <name>AdConfig</name>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="245"/>
+        <location filename="../src/admc/ad_config.cpp" line="320"/>
+        <source>Distinguished name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="246"/>
+        <source>Description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="247"/>
+        <source>Class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="248"/>
+        <location filename="../src/admc/ad_config.cpp" line="319"/>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="321"/>
+        <source>Object class</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="322"/>
+        <source>Created</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="323"/>
+        <source>Changed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="324"/>
+        <source>USN created</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="325"/>
+        <source>USN changed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="326"/>
+        <source>Account expires</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="327"/>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="328"/>
+        <source>Profile path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="329"/>
+        <source>Logon script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="330"/>
+        <source>Logon name (pre-Windows 2000)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_config.cpp" line="331"/>
+        <source>E-mail</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AdInterface</name>
     <message>
         <location filename="../src/admc/ad_interface.cpp" line="462"/>
@@ -563,22 +643,22 @@
 <context>
     <name>FilterBuilder</name>
     <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="50"/>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="51"/>
         <source>Attribute class:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="51"/>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="52"/>
         <source>Attribute:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="52"/>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="53"/>
         <source>Condition:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="53"/>
+        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="54"/>
         <source>Value:</source>
         <translation></translation>
     </message>
@@ -1461,272 +1541,9 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_utils.cpp" line="112"/>
-        <source>Account disabled</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_utils.cpp" line="113"/>
-        <source>User must change password on next logon</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_utils.cpp" line="114"/>
-        <source>Don&apos;t expire password</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_utils.cpp" line="115"/>
-        <source>Store password using reversible encryption</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_utils.cpp" line="116"/>
-        <source>Smartcard is required for interactive logon</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_utils.cpp" line="117"/>
-        <source>Account is sensitive and cannot be delegated</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_utils.cpp" line="118"/>
-        <source>Don&apos;t require Kerberos preauthentication</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_utils.cpp" line="160"/>
-        <source>Global</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_utils.cpp" line="161"/>
-        <source>Domain Local</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_utils.cpp" line="162"/>
-        <source>Universal</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_utils.cpp" line="170"/>
-        <source>Security</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_utils.cpp" line="171"/>
-        <source>Distribution</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_utils.cpp" line="181"/>
-        <source>Security Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_utils.cpp" line="182"/>
-        <source>Distribution Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/attribute_display.cpp" line="72"/>
-        <source>&lt;unset&gt;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/attribute_display.cpp" line="135"/>
-        <source>(never)</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="216"/>
-        <source>Is (exactly)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="217"/>
-        <source>Is not</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="218"/>
-        <source>Starts with</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="219"/>
-        <source>Ends with</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="220"/>
-        <source>Contains</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="221"/>
-        <source>Present</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/filter_widget/filter_builder.cpp" line="222"/>
-        <source>Not present</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/admc/confirmation_dialog.cpp" line="32"/>
         <source>Confirm action</source>
         <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="98"/>
-        <source>New</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="117"/>
-        <source>Find</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="125"/>
-        <source>Add to group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="133"/>
-        <source>Reset password</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="141"/>
-        <source>Disable account</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="149"/>
-        <source>Enable account</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="157"/>
-        <source>Move</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="167"/>
-        <source>Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="176"/>
-        <source>Rename</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="281"/>
-        <source>Are you sure you want to delete %1?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="302"/>
-        <location filename="../src/admc/object_menu.cpp" line="413"/>
-        <source>Move %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="329"/>
-        <source>Add %1 to group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="404"/>
-        <source>object &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_menu.cpp" line="406"/>
-        <source>multiple objects</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_config.cpp" line="244"/>
-        <location filename="../src/admc/ad_config.cpp" line="319"/>
-        <source>Distinguished name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_config.cpp" line="245"/>
-        <source>Description</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_config.cpp" line="246"/>
-        <source>Class</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_config.cpp" line="247"/>
-        <location filename="../src/admc/ad_config.cpp" line="318"/>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_config.cpp" line="320"/>
-        <source>Object class</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_config.cpp" line="321"/>
-        <source>Created</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_config.cpp" line="322"/>
-        <source>Changed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_config.cpp" line="323"/>
-        <source>USN created</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_config.cpp" line="324"/>
-        <source>USN changed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_config.cpp" line="325"/>
-        <source>Account expires</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_config.cpp" line="326"/>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_config.cpp" line="327"/>
-        <source>Profile path</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_config.cpp" line="328"/>
-        <source>Logon script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_config.cpp" line="329"/>
-        <source>Logon name (pre-Windows 2000)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/ad_config.cpp" line="330"/>
-        <source>E-mail</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/admc/ad_interface.cpp" line="1400"/>
@@ -1918,6 +1735,204 @@
         <location filename="../src/gpgui/gui/xml/xml_ubyte_edit.cpp" line="40"/>
         <source>Error</source>
         <translation></translation>
+    </message>
+</context>
+<context>
+    <name>ad_utils</name>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="113"/>
+        <source>Account disabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="114"/>
+        <source>User must change password on next logon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="115"/>
+        <source>Don&apos;t expire password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="116"/>
+        <source>Store password using reversible encryption</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="117"/>
+        <source>Smartcard is required for interactive logon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="118"/>
+        <source>Account is sensitive and cannot be delegated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="119"/>
+        <source>Don&apos;t require Kerberos preauthentication</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="161"/>
+        <source>Global</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="162"/>
+        <source>Domain Local</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="163"/>
+        <source>Universal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="171"/>
+        <source>Security</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="172"/>
+        <source>Distribution</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="182"/>
+        <source>Security Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="183"/>
+        <source>Distribution Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>attribute_display</name>
+    <message>
+        <location filename="../src/admc/attribute_display.cpp" line="73"/>
+        <source>&lt;unset&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/attribute_display.cpp" line="136"/>
+        <source>(never)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>filter</name>
+    <message>
+        <location filename="../src/common/filter.cpp" line="115"/>
+        <source>Is (exactly)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/common/filter.cpp" line="116"/>
+        <source>Is not</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/common/filter.cpp" line="117"/>
+        <source>Starts with</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/common/filter.cpp" line="118"/>
+        <source>Ends with</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/common/filter.cpp" line="119"/>
+        <source>Contains</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/common/filter.cpp" line="120"/>
+        <source>Present</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/common/filter.cpp" line="121"/>
+        <source>Not present</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>object_menu</name>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="99"/>
+        <source>New</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="118"/>
+        <source>Find</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="126"/>
+        <source>Add to group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="134"/>
+        <source>Reset password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="142"/>
+        <source>Disable account</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="150"/>
+        <source>Enable account</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="158"/>
+        <source>Move</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="168"/>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="177"/>
+        <source>Rename</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="282"/>
+        <source>Are you sure you want to delete %1?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="303"/>
+        <location filename="../src/admc/object_menu.cpp" line="414"/>
+        <source>Move %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="330"/>
+        <source>Add %1 to group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="405"/>
+        <source>object &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/object_menu.cpp" line="407"/>
+        <source>multiple objects</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
