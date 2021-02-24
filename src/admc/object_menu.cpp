@@ -22,7 +22,6 @@
 #include "ad_config.h"
 #include "ad_utils.h"
 #include "ad_object.h"
-#include "confirmation_dialog.h"
 #include "select_dialog.h"
 #include "rename_dialog.h"
 #include "password_dialog.h"

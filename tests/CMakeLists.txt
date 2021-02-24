@@ -38,7 +38,6 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/object_model.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/select_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/object_menu.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/confirmation_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/password_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/menubar.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/attribute_display.cpp

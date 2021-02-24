@@ -20,7 +20,6 @@
 #include "menubar.h"
 #include "ad_interface.h"
 #include "settings.h"
-#include "confirmation_dialog.h"
 #include "toggle_widgets_dialog.h"
 #include "status.h"
 #include "object_menu.h"

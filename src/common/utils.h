@@ -78,4 +78,6 @@ void resize_columns(QTreeView *view, const QHash<int, double> widths);
 void show_busy_indicator();
 void hide_busy_indicator();
 
+bool confirmation_dialog(const QString &text, QWidget *parent);
+
 #endif /* UTILS_H */

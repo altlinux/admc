@@ -37,6 +37,7 @@
 #include <QPoint>
 #include <QMap>
 #include <QHash>
+#include <QMessageBox>
 
 QString get_dn_from_index(const QModelIndex &index, int dn_column) {
     if (!index.isValid()) {
@@ -205,4 +206,20 @@ void show_busy_indicator() {
 
 void hide_busy_indicator() {
     QGuiApplication::restoreOverrideCursor();
+}
+
+bool confirmation_dialog(const QString &text, QWidget *parent) {
+    const bool confirm_actions = SETTINGS()->get_bool(BoolSetting_ConfirmActions);
+    if (!confirm_actions) {
+        return true;
+    }
+
+    const QString title = QObject::tr("Confirm action");
+    const QMessageBox::StandardButton reply = QMessageBox::question(parent, title, text, QMessageBox::Yes|QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        return true;
+    } else {
+        return false;
+    }
 }

@@ -22,7 +22,6 @@
 #include "properties_dialog.h"
 #include "status.h"
 #include "settings.h"
-#include "confirmation_dialog.h"
 #include "policies_widget.h"
 #include "ad_interface.h"
 #include "ad_config.h"
