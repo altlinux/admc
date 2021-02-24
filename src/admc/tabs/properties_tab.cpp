@@ -30,7 +30,7 @@ bool PropertiesTab::verify(AdInterface &ad, const QString &target) const {
     return edits_verify(ad, edits, target);
 }
 
-void PropertiesTab::apply(AdInterface &ad, const QString &target) const {
+void PropertiesTab::apply(AdInterface &ad, const QString &target) {
     edits_apply(ad, edits, target);
 }
 

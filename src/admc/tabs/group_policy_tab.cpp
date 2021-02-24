@@ -119,7 +119,7 @@ void GroupPolicyTab::load(AdInterface &ad, const AdObject &object) {
     PropertiesTab::load(ad, object);
 }
 
-void GroupPolicyTab::apply(AdInterface &ad, const QString &target) const {
+void GroupPolicyTab::apply(AdInterface &ad, const QString &target) {
     const QString gplink_string = gplink.to_string();
     ad.attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
 

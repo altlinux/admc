@@ -184,23 +184,34 @@ void MembershipTab::load(AdInterface &ad, const AdObject &object) {
     reload_model();
 }
 
-void MembershipTab::apply(AdInterface &ad, const QString &target) const {
+void MembershipTab::apply(AdInterface &ad, const QString &target) {
+    // NOTE: need temp copy because can't edit the set
+    // during iteration
+    QSet<QString> new_original_values = original_values;
+    
     // NOTE: logic is kinda duplicated but switching on behavior within iterations would be very confusing
     switch (type) {
         case MembershipTabType_Members: {
             const QString group = target;
 
+
             for (auto user : original_values) {
                 const bool removed = !current_values.contains(user);
                 if (removed) {
-                    ad.group_remove_member(group, user);
+                    const bool success = ad.group_remove_member(group, user);
+                    if (success) {
+                        new_original_values.remove(user);
+                    }
                 }
             }
 
             for (auto user : current_values) {
                 const bool added = !original_values.contains(user);
                 if (added) {
-                    ad.group_add_member(group, user);
+                    const bool success = ad.group_add_member(group, user);
+                    if (success) {
+                        new_original_values.insert(user);
+                    }
                 }
             }
 
@@ -219,14 +230,20 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) const {
 
                 const bool removed = !current_values.contains(group);
                 if (removed) {
-                    ad.group_remove_member(group, user);
+                    const bool success = ad.group_remove_member(group, user);
+                    if (success) {
+                        new_original_values.remove(group);
+                    }
                 }
             }
 
             if (current_primary_values != original_primary_values) {
                 const QString group_dn = current_primary_values.values()[0];
                 
-                ad.user_set_primary_group(group_dn, target);
+                const bool success = ad.user_set_primary_group(group_dn, target);
+                if (success) {
+                    original_primary_values = {group_dn};
+                }
             }
 
             // Add user to groups that were added
@@ -239,13 +256,18 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) const {
 
                 const bool added = !original_values.contains(group);
                 if (added) {
-                    ad.group_add_member(group, user);
+                    const bool success = ad.group_add_member(group, user);
+                    if (success) {
+                        new_original_values.insert(group);
+                    }
                 }
             }
 
             break;
         }
     } 
+
+    original_values = new_original_values;
 }
 
 void MembershipTab::on_add_button() {

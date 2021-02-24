@@ -67,6 +67,8 @@ public:
     // manually undoes changes by retyping original value
     // for StringEdit for example.
     bool modified() const;
+    
+    void reset_modified();
 
 signals:
     // Emitted when edit was edited by user

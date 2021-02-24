@@ -274,13 +274,16 @@ void AttributesTab::load(AdInterface &ad, const AdObject &object) {
     view->sortByColumn(AttributesColumn_Name, Qt::AscendingOrder);
 }
 
-void AttributesTab::apply(AdInterface &ad, const QString &target) const {
+void AttributesTab::apply(AdInterface &ad, const QString &target) {
     for (const QString &attribute : current.keys()) {
         const QList<QByteArray> current_values = current[attribute];
         const QList<QByteArray> original_values = original[attribute];
 
         if (current_values != original_values) {
-            ad.attribute_replace_values(target, attribute, current_values);
+            const bool success = ad.attribute_replace_values(target, attribute, current_values);
+            if (success) {
+                original[attribute] = current_values;
+            }
         }
     }
 }
