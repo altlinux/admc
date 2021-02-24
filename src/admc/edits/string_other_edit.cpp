@@ -76,9 +76,9 @@ void StringOtherEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(label_text, sublayout);
 }
 
-bool StringOtherEdit::apply(const QString &dn) const {
-    const bool main_succcess = main_edit->apply(dn);
-    const bool other_success = AD()->attribute_replace_values(dn, other_attribute, other_values);
+bool StringOtherEdit::apply(AdInterface &ad, const QString &dn) const {
+    const bool main_succcess = main_edit->apply(ad, dn);
+    const bool other_success = ad.attribute_replace_values(dn, other_attribute, other_values);
 
     return (main_succcess && other_success);
 }

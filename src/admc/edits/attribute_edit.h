@@ -34,6 +34,7 @@
 
 class PropertiesTab;
 class QFormLayout;
+class AdInterface;
 class AdObject;
 
 class AttributeEdit : public QObject {
@@ -54,11 +55,11 @@ public:
     // that the server doesn't or can't check for. For
     // example password confirmation matching password.
     // Should be called before apply().
-    virtual bool verify(const QString &dn) const;
+    virtual bool verify(AdInterface &ad, const QString &dn) const;
 
     // Apply current input by making a modification to the
     // AD server
-    virtual bool apply(const QString &dn) const = 0;
+    virtual bool apply(AdInterface &ad, const QString &dn) const = 0;
 
     // Returns whether edit was edited by user. Rsets on
     // load(). Note that this will be true if user EVER
@@ -81,7 +82,7 @@ private:
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
 void set_read_only(const bool read_only) override;\
 void add_to_layout(QFormLayout *layout) override;\
-bool apply(const QString &dn) const override;\
+bool apply(AdInterface &ad, const QString &dn) const override;\
 protected:\
 void load_internal(const AdObject &object) override;\
 public:\
@@ -94,10 +95,10 @@ void edits_add_to_layout(QList<AttributeEdit *> edits, QFormLayout *layout);
 // Verify all edits that were modified. Verify process will
 // stop on first failure. This is so that only one failure
 // message is shown at a time.
-bool edits_verify(QList<AttributeEdit *> edits, const QString &dn);
+bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn);
 
 // Applies all edits that were modified. If one of the edits fails to apply midway, the apply process still continues. This is so that if more errors occur, they are all gathered together and presented to the user together. If process stopped on first error, the user would have to apply multiple times while fixing errors to see all of them.
-bool edits_apply(QList<AttributeEdit *> edits, const QString &dn);
+bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn);
 
 void edits_load(QList<AttributeEdit *> edits, const AdObject &object);
 

@@ -133,9 +133,9 @@ void AccountOptionEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(label_text, check);
 }
 
-bool AccountOptionEdit::apply(const QString &dn) const {
+bool AccountOptionEdit::apply(AdInterface &ad, const QString &dn) const {
     const bool new_value = check->isChecked();
-    const bool success = AD()->user_set_account_option(dn, option, new_value);
+    const bool success = ad.user_set_account_option(dn, option, new_value);
 
     return success;
 }

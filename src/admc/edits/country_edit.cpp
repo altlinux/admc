@@ -128,7 +128,7 @@ void CountryEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(label_text, combo);
 }
 
-bool CountryEdit::apply(const QString &dn) const {
+bool CountryEdit::apply(AdInterface &ad, const QString &dn) const {
     const int code = combo->currentData().toInt();
 
     const QString code_string = QString::number(code);
@@ -136,9 +136,9 @@ bool CountryEdit::apply(const QString &dn) const {
     const QString abbreviation = country_abbreviations[code];
 
     bool success = true;
-    success = success && AD()->attribute_replace_string(dn, ATTRIBUTE_COUNTRY_CODE, code_string);
-    success = success && AD()->attribute_replace_string(dn, ATTRIBUTE_COUNTRY_ABBREVIATION, abbreviation);
-    success = success && AD()->attribute_replace_string(dn, ATTRIBUTE_COUNTRY, country_string);
+    success = success && ad.attribute_replace_string(dn, ATTRIBUTE_COUNTRY_CODE, code_string);
+    success = success && ad.attribute_replace_string(dn, ATTRIBUTE_COUNTRY_ABBREVIATION, abbreviation);
+    success = success && ad.attribute_replace_string(dn, ATTRIBUTE_COUNTRY, country_string);
 
     return success;
 }

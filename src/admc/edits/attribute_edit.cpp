@@ -44,7 +44,7 @@ void AttributeEdit::load(const AdObject &object) {
     m_modified = false;
 }
 
-bool AttributeEdit::verify(const QString &dn) const {
+bool AttributeEdit::verify(AdInterface &ad, const QString &dn) const {
     return true;
 }
 
@@ -58,10 +58,10 @@ void edits_add_to_layout(QList<AttributeEdit *> edits, QFormLayout *layout) {
     }
 }
 
-bool edits_verify(QList<AttributeEdit *> edits, const QString &dn) {
+bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn) {
     for (auto edit : edits) {
         if (edit->modified()) {
-            const bool verify_success = edit->verify(dn);
+            const bool verify_success = edit->verify(ad, dn);
             if (!verify_success) {
                 return false;
             }
@@ -71,12 +71,12 @@ bool edits_verify(QList<AttributeEdit *> edits, const QString &dn) {
     return true;
 }
 
-bool edits_apply(QList<AttributeEdit *> edits, const QString &dn) {
+bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn) {
     bool success = true;
 
     for (auto edit : edits) {
         if (edit->modified()) {
-            const bool apply_success = edit->apply(dn);
+            const bool apply_success = edit->apply(ad, dn);
             if (!apply_success) {
                 success = false;
             }

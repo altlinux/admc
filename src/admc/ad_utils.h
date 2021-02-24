@@ -30,6 +30,7 @@
 #include <QString>
 #include <QDateTime>
 #include <QByteArray>
+#include <QMessageBox>
 
 bool large_integer_datetime_is_never(const QString &value);
 QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime);
@@ -55,5 +56,8 @@ QString dn_get_parent_canonical(const QString &dn);
 QString dn_rename(const QString &dn, const QString &new_name);
 QString dn_canonical(const QString &dn);
 QString dn_from_name_and_parent(const QString &name, const QString &parent, const QString &object_class);
+
+QString get_default_domain_from_krb5();
+QString domain_to_domain_dn(const QString &domain);
 
 #endif /* AD_UTILS_H */

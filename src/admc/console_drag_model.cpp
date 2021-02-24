@@ -28,7 +28,7 @@
 #include <QString>
 
 // TODO: dragging queries and query folders
-// TODO: move object_can_drop() and object_drop() here, shouldnt be in AD() 
+// TODO: move object_can_drop() and object_drop() here, shouldnt be in adinterface
 
 const QString MIME_TYPE_OBJECT = "MIME_TYPE_OBJECT";
 
@@ -93,7 +93,7 @@ bool ConsoleDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, in
     if (dropped_list.size() == 1) {
         const AdObject dropped = dropped_list[0];
 
-        return AD()->object_can_drop(dropped, target);
+        return object_can_drop(dropped, target);
     } else {
         return true;
     }
@@ -107,13 +107,16 @@ bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action
     const QList<AdObject> dropped_list = mimedata_to_object_list(data);
     const AdObject target = parent.siblingAtColumn(0).data(ObjectRole_AdObject).value<AdObject>();
 
-    STATUS()->start_error_log();
+    AdInterface ad;
+    if (ad_connected(ad)) {
+        STATUS()->start_error_log();
 
-    for (const AdObject &dropped : dropped_list) {
-        AD()->object_drop(dropped, target);
+        for (const AdObject &dropped : dropped_list) {
+            ad.object_drop(dropped, target);
+        }
+
+        STATUS()->end_error_log(nullptr);
     }
-
-    STATUS()->end_error_log(nullptr);
 
     return true;
 }

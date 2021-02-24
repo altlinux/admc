@@ -30,7 +30,7 @@ public:
     PasswordEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
-    bool verify(const QString &dn) const override;
+    bool verify(AdInterface &ad, const QString &dn) const override;
 
 private:
     QLineEdit *edit;

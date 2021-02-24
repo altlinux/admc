@@ -19,7 +19,6 @@
 
 #include "admc_test_unlock_edit.h"
 
-#include "test_common.h"
 #include "ad_interface.h"
 #include "ad_defines.h"
 #include "ad_object.h"
@@ -54,7 +53,7 @@ void ADMCTestUnlockEdit::init() {
     // Create test user
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);
-    const bool create_success = AD()->object_add(dn, CLASS_USER);
+    const bool create_success = ad.object_add(dn, CLASS_USER);
     QVERIFY(create_success);
 }
 
@@ -81,7 +80,7 @@ void ADMCTestUnlockEdit::test_emit_edited_signal() {
 void ADMCTestUnlockEdit::unchecked_after_load() {
     load_locked_user_into_edit();
 
-    const bool apply_success = unlock_edit->apply(dn);
+    const bool apply_success = unlock_edit->apply(ad, dn);
     QVERIFY(apply_success);
 
     const bool checkbox_is_unchecked = (!checkbox->isChecked());
@@ -95,7 +94,7 @@ void ADMCTestUnlockEdit::test_apply_unchecked() {
 
     checkbox->setChecked(false);
 
-    const bool apply_success = unlock_edit->apply(dn);
+    const bool apply_success = unlock_edit->apply(ad, dn);
     QVERIFY(apply_success);
     QVERIFY2(!user_is_unlocked(), "Edit unlocked user when the checkbox was unchecked. Edit should've done nothing.");
 }
@@ -106,7 +105,7 @@ void ADMCTestUnlockEdit::test_apply_checked() {
 
     checkbox->setChecked(true);
 
-    const bool apply_success = unlock_edit->apply(dn);
+    const bool apply_success = unlock_edit->apply(ad, dn);
     QVERIFY(apply_success);
     QVERIFY2(user_is_unlocked(), "Edit failed to unlock user.");
 }
@@ -115,7 +114,7 @@ void ADMCTestUnlockEdit::test_apply_checked() {
 void ADMCTestUnlockEdit::uncheck_after_apply() {
     checkbox->setChecked(true);
 
-    const bool apply_success = unlock_edit->apply(dn);
+    const bool apply_success = unlock_edit->apply(ad, dn);
     QVERIFY(apply_success);
 
     const bool checkbox_is_unchecked = (!checkbox->isChecked());
@@ -123,7 +122,7 @@ void ADMCTestUnlockEdit::uncheck_after_apply() {
 }
 
 bool ADMCTestUnlockEdit::user_is_unlocked() {
-    const AdObject object = AD()->search_object(dn);
+    const AdObject object = ad.search_object(dn);
     const QString lockout_time = object.get_string(ATTRIBUTE_LOCKOUT_TIME);
     const bool is_unlocked = (lockout_time == LOCKOUT_UNLOCKED_VALUE);
 
@@ -132,10 +131,10 @@ bool ADMCTestUnlockEdit::user_is_unlocked() {
 
 void ADMCTestUnlockEdit::load_locked_user_into_edit() {
     // Lock test user
-    AD()->attribute_replace_string(dn, ATTRIBUTE_LOCKOUT_TIME, LOCKOUT_LOCKED_VALUE);
+    ad.attribute_replace_string(dn, ATTRIBUTE_LOCKOUT_TIME, LOCKOUT_LOCKED_VALUE);
 
     // Load user into edit
-    const AdObject object = AD()->search_object(dn);
+    const AdObject object = ad.search_object(dn);
     unlock_edit->load(object);
 }
 

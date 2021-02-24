@@ -30,6 +30,18 @@
 
 #include <QTest>
 
+#include "ad_interface.h"
+
+class QString;
+class QTreeView;
+
+#define TEST_USER "test-user"
+#define TEST_USER_LOGON "test-user-logon"
+#define TEST_PASSWORD "pass123!"
+#define TEST_OU "test-ou"
+#define TEST_GROUP "test-group"
+#define TEST_COMPUTER "test-computer"
+
 class ADMCTest : public QObject {
     Q_OBJECT
 
@@ -47,9 +59,37 @@ public slots:
     void cleanup();
 
 protected:
+    AdInterface ad;
+
+    // Use this as parents for widgets used inside tests.
+    // For every test a new parent will be created and after
+    // test completes, parent is deleted which deletes all
+    // child widgets as well.
     QWidget *parent_widget = nullptr;
 
+    void init_test_case();
+
+    // For easy setup and cleanup of each test, we use an
+    // object named "test-arena" which is an OU. It is
+    // created before every test and deleted after every
+    // test. All test activity should happen inside this
+    // object.
+    QString test_arena_dn();
+
+    // Creates dn for object with given name whose parent is
+    // test arena. Class is used to determine suffix.
+    QString test_object_dn(const QString &name, const QString &object_class);
+
+    // Tests object's existance on the server.
+    bool object_exists(const QString &dn);
+
 };
+
+void navigate_until_object(QTreeView *view, const QString &target_dn);
+
+// Presses the Tab button. Use to cycle through input
+// widgets.
+void tab(const int n = 1);
 
 #endif /* ADMC_TEST_H */
 
