@@ -251,15 +251,6 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
                 }
             }
 
-            if (current_primary_values != original_primary_values) {
-                const QString group_dn = current_primary_values.values()[0];
-                
-                const bool success = ad.user_set_primary_group(group_dn, target);
-                if (success) {
-                    original_primary_values = {group_dn};
-                }
-            }
-
             // Add user to groups that were added
             for (auto group : current_values) {
                 // When group stops being primary, normal membership state is updated by server, so don't have to add ourselves
@@ -274,6 +265,16 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
                     if (success) {
                         new_original_values.insert(group);
                     }
+                }
+            }
+
+            // NOTE: must change primary stuff after remove/add operations because setting primary group causes server to perform some add/remove operations on it's end. Groups that stopped being primary are added to normal membership. Groups that become primary are removed from normal membership.
+            if (current_primary_values != original_primary_values) {
+                const QString group_dn = current_primary_values.values()[0];
+                
+                const bool success = ad.user_set_primary_group(group_dn, target);
+                if (success) {
+                    original_primary_values = {group_dn};
                 }
             }
 
