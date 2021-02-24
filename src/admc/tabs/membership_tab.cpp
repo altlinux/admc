@@ -34,6 +34,8 @@
 #include <QMenu>
 #include <QPushButton>
 #include <QDebug>
+#include <QFormLayout>
+#include <QLabel>
 
 // Store members in a set
 // Generate model from current members list
@@ -106,6 +108,17 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(view);
+
+    // Add primary group label to layout
+    if (type == MembershipTabType_MemberOf) {
+        primary_group_label = new QLabel();
+
+        auto primary_group_layout = new QFormLayout();
+        primary_group_layout->addRow(tr("Primary group: "), primary_group_label);
+
+        layout->addLayout(primary_group_layout);
+    }
+
     layout->addLayout(button_layout);
 
     enable_widget_on_selection(remove_button, view);
@@ -380,6 +393,23 @@ void MembershipTab::enable_primary_button_on_valid_selection() {
 }
 
 void MembershipTab::reload_model() {
+    // Load primary group name into label
+    if (type == MembershipTabType_MemberOf) {
+        const QString primary_group_label_text =
+        [this]() {
+            if (!current_primary_values.isEmpty()) {
+                const QString primary_group_dn = current_primary_values.values()[0];
+                const QString primary_group_name = dn_get_name(primary_group_dn);
+
+                return primary_group_name;
+            } else {
+                return QString();
+            }
+        }();
+
+        primary_group_label->setText(primary_group_label_text);
+    }
+
     model->removeRows(0, model->rowCount());
 
     const QSet<QString> all_values = current_values + current_primary_values;
