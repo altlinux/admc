@@ -1525,7 +1525,17 @@
     <message>
         <location filename="../src/admc/ad_utils.cpp" line="171"/>
         <source>Distribution</source>
-        <translation>Распределение</translation>
+        <translation>Рассылка</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="181"/>
+        <source>Security Group</source>
+        <translation>Группа Безопасности</translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="182"/>
+        <source>Distribution Group</source>
+        <translation>Группа Рассылки</translation>
     </message>
     <message>
         <location filename="../src/admc/attribute_display.cpp" line="72"/>
@@ -1647,11 +1657,6 @@
         <location filename="../src/admc/object_menu.cpp" line="406"/>
         <source>multiple objects</source>
         <translation>несколько объектов</translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_model.cpp" line="54"/>
-        <source>%1 Group - %2</source>
-        <translation>%1 Группа - %2</translation>
     </message>
     <message>
         <location filename="../src/admc/ad_config.cpp" line="244"/>

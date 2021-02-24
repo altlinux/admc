@@ -49,9 +49,9 @@ void load_object_row(const QList<QStandardItem *> row, const AdObject &object) {
                     const QString scope_string = group_scope_string(scope);
 
                     const GroupType type = object.get_group_type(); 
-                    const QString type_string = group_type_string(type);
+                    const QString type_string = group_type_string_adjective(type);
 
-                    return QString(QObject::tr("%1 Group - %2")).arg(type_string, scope_string);
+                    return QString("%1 - %2").arg(type_string, scope_string);
                 } else {
                     return ADCONFIG()->get_class_display_name(object_class);
                 }

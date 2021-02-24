@@ -43,6 +43,7 @@ int group_scope_bit(GroupScope scope);
 QString group_scope_string(GroupScope scope);
 
 QString group_type_string(GroupType type);
+QString group_type_string_adjective(GroupType type);
 
 QString sysvol_path_to_smb(const QString &sysvol_path);
 

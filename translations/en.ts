@@ -1521,6 +1521,16 @@
         <translation></translation>
     </message>
     <message>
+        <location filename="../src/admc/ad_utils.cpp" line="181"/>
+        <source>Security Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/ad_utils.cpp" line="182"/>
+        <source>Distribution Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/admc/attribute_display.cpp" line="72"/>
         <source>&lt;unset&gt;</source>
         <translation></translation>
@@ -1639,11 +1649,6 @@
     <message>
         <location filename="../src/admc/object_menu.cpp" line="406"/>
         <source>multiple objects</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/object_model.cpp" line="54"/>
-        <source>%1 Group - %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

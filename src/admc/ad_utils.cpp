@@ -174,6 +174,17 @@ QString group_type_string(GroupType type) {
     return "";
 }
 
+// NOTE: need a special translation for Russian where type
+// adjectives get suffixes.
+QString group_type_string_adjective(GroupType type) {
+    switch (type) {
+        case GroupType_Security: return QObject::tr("Security Group");
+        case GroupType_Distribution: return QObject::tr("Distribution Group");
+        case GroupType_COUNT: return "COUNT";
+    }
+    return "";
+}
+
 QString extract_rid_from_sid(const QByteArray &sid) {
     const QString sid_string = object_sid_display_value(sid);
     const int cut_index = sid_string.lastIndexOf("-") + 1;
