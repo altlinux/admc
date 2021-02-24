@@ -43,6 +43,7 @@ RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
     AdInterface ad;
     if (ad_failed(ad)) {
         close();
+        return;
     }
 
     // TODO: handle failure, dialog should close

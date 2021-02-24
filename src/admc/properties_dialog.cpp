@@ -102,6 +102,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     AdInterface ad;
     if (ad_failed(ad)) {
         close();
+        return;
     }
 
     setMinimumHeight(700);
@@ -250,7 +251,7 @@ void PropertiesDialog::reset() {
     // TODO: handle error
     AdInterface ad;
     if (ad_failed(ad)) {
-
+        return;
     }
     const AdObject object = ad.search_object(target);
 

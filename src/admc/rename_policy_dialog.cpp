@@ -43,6 +43,7 @@ RenamePolicyDialog::RenamePolicyDialog(const QString &target_arg, QWidget *paren
     AdInterface ad;
     if (ad_failed(ad)) {
         close();
+        return;
     }
 
     // TODO: handle failure, dialog should close

@@ -42,6 +42,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
     AdInterface ad;
     if (ad_failed(ad)) {
         close();
+        return;
     }
 
     const AdObject object = ad.search_object(target);

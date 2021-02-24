@@ -48,6 +48,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     AdInterface ad;
     if (ad_failed(ad)) {
         close();
+        return;
     }
     
     resize(400, 500);
