@@ -56,8 +56,8 @@ Q_OBJECT
 public:
     AttributesTab();
 
-    void load(const AdObject &object) override;
-    void apply(const QString &target) override;
+    void load(AdInterface &ad, const AdObject &object) override;
+    void apply(AdInterface &ad, const QString &target) override;
 
 private slots:
     void edit_attribute();

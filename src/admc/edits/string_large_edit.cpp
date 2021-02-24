@@ -70,9 +70,9 @@ void StringLargeEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(label_text, edit);
 }
 
-bool StringLargeEdit::apply(const QString &dn) const {
+bool StringLargeEdit::apply(AdInterface &ad, const QString &dn) const {
     const QString new_value = edit->toPlainText();
-    const bool success = AD()->attribute_replace_string(dn, attribute, new_value);
+    const bool success = ad.attribute_replace_string(dn, attribute, new_value);
 
     return success;
 }

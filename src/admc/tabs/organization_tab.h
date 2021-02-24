@@ -31,7 +31,7 @@ Q_OBJECT
 public:
     OrganizationTab();
 
-    void load(const AdObject &object) override;
+    void load(AdInterface &ad, const AdObject &object) override;
 
 private:
     QStandardItemModel *reports_model;

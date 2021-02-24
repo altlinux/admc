@@ -27,6 +27,7 @@
  */
 
 #include <QObject>
+#include <QCoreApplication>
 
 #include "ad_defines.h"
 
@@ -46,8 +47,28 @@ template <typename T> class QList;
 typedef struct ldap LDAP;
 typedef struct _SMBCCTX SMBCCTX;
 
-class AdInterface final : public QObject {
+// TODO: have to put signals in a singleton since
+// adinterface stopped being a singleton. Console needs to
+// connect to these signals forever. Will probably change
+// this to something better, might just remove these
+// signals.
+class AdSignals final : public QObject {
 Q_OBJECT
+
+public:
+    using QObject::QObject;
+
+signals:
+    // These signals are for ObjectModel
+    void object_added(const QString &dn);
+    void object_deleted(const QString &dn);
+    void object_changed(const QString &dn);
+};
+
+AdSignals *ADSIGNALS();
+
+class AdInterface {
+Q_DECLARE_TR_FUNCTIONS(AdInterface)
 
 private:
     // Some f-ns in this class reuse other f-ns and this
@@ -59,15 +80,10 @@ private:
     };
 
 public:
-    static AdInterface *instance();
+    AdInterface();
+    ~AdInterface();
 
-    bool connect();
-
-    QString domain() const;
-    QString domain_head() const;
-    QString host() const;
-    QString configuration_dn() const;
-    QString schema_dn() const;
+    bool is_connected() const;
 
     // NOTE: If request attributes list is empty, all attributes are returned
     QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope, const QString &search_base = QString());
@@ -98,7 +114,6 @@ public:
     bool user_set_account_option(const QString &dn, AccountOption option, bool set);
     bool user_unlock(const QString &dn);
 
-    bool object_can_drop(const AdObject &dropped, const AdObject &target);
     void object_drop(const AdObject &dropped, const AdObject &target);
 
     bool create_gpo(const QString &name);
@@ -108,23 +123,14 @@ public:
 
     void stop_search();
 
-signals:
-    // These signals are for ObjectModel
-    void object_added(const QString &dn);
-    void object_deleted(const QString &dn);
-    void object_changed(const QString &dn);
-
 private:
     LDAP *ld;
     SMBCCTX *smbc;
-    QString m_domain;
-    QString m_domain_head;
-    QString m_configuration_dn;
-    QString m_schema_dn;
-    QString m_host;
+    bool m_is_connected;
+    QString domain;
+    QString domain_head;
+    QString host;
     bool stop_search_flag;
-
-    AdInterface();
 
     void success_status_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     void error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg = DoStatusMsg_Yes);
@@ -137,6 +143,17 @@ private:
     AdInterface& operator=(AdInterface&&) = delete;
 };
 
-AdInterface *AD();
+// TODO: move this to console drag movel
+bool object_can_drop(const AdObject &dropped, const AdObject &target);
+
+// TODO: haven't found a better place for ad_is_connected()
+// f-n yet. Should move it somewhere i think because
+// adinterface needs to be separate from GUI.
+
+// Wrappers over is_connected() that also open an error
+// messagebox if failed to connect. You should generally use
+// these in GUI code instead of is_connected().
+bool ad_connected(const AdInterface &ad);
+bool ad_failed(const AdInterface &ad);
 
 #endif /* AD_INTERFACE_H */

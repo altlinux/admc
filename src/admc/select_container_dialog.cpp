@@ -44,6 +44,12 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
+
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        close();
+        return;
+    }
     
     resize(400, 500);
 
@@ -94,8 +100,8 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     layout->addWidget(buttonbox);
 
     // Load head object
-    const QString head_dn = AD()->domain_head();
-    const AdObject head_object = AD()->search_object(head_dn);
+    const QString head_dn = ADCONFIG()->domain_head();
+    const AdObject head_object = ad.search_object(head_dn);
     auto item = make_container_node(head_object);
     model->appendRow(item);
 }
@@ -108,6 +114,12 @@ QString SelectContainerDialog::get_selected() const {
 }
 
 void SelectContainerDialog::fetch_node(const QModelIndex &index) {
+    // TODO: handle error
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
     show_busy_indicator();
 
     model->removeRows(0, model->rowCount(index), index);
@@ -123,7 +135,7 @@ void SelectContainerDialog::fetch_node(const QModelIndex &index) {
 
     const QString dn = index.data(ContainerRole_DN).toString();
 
-    const QHash<QString, AdObject> search_results = AD()->search(filter, search_attributes, SearchScope_Children, dn);
+    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_Children, dn);
 
     QStandardItem *parent = model->itemFromIndex(index);
     for (const AdObject &object : search_results.values()) {

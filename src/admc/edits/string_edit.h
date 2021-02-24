@@ -40,7 +40,7 @@ public:
     QString get_input() const;
     void set_input(const QString &value);
     bool is_empty() const;
-    bool verify(const QString &dn) const override;
+    bool verify(AdInterface &ad, const QString &dn) const override;
 
 private:
     QLineEdit *edit;

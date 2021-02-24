@@ -35,10 +35,17 @@
 PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 : QDialog(parent)
 {
-    target = target_arg;
-    const AdObject object = AD()->search_object(target);
-
     setAttribute(Qt::WA_DeleteOnClose);
+    
+    target = target_arg;
+
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        close();
+        return;
+    }
+
+    const AdObject object = ad.search_object(target);
 
     const QString name = dn_get_name(target);
     const QString title = QString(tr("Change password of object \"%1\"")).arg(name);
@@ -76,14 +83,19 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 }
 
 void PasswordDialog::accept() {
-    const bool verify_success = edits_verify(edits, target);
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const bool verify_success = edits_verify(ad, edits, target);
     if (!verify_success) {
         return;
     }
 
     STATUS()->start_error_log();
 
-    edits_apply(edits, target);
+    edits_apply(ad, edits, target);
 
     QDialog::close();
 

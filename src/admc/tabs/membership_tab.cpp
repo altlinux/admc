@@ -130,7 +130,7 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     PropertiesDialog::connect_to_open_by_double_click(view, MembersColumn_DN);
 }
 
-void MembershipTab::load(const AdObject &object) {
+void MembershipTab::load(AdInterface &ad, const AdObject &object) {
     const QList<QString> values = object.get_strings(get_membership_attribute());
     original_values = values.toSet();
     current_values = original_values;
@@ -144,7 +144,7 @@ void MembershipTab::load(const AdObject &object) {
             const QString group_rid = extract_rid_from_sid(group_sid);
 
             const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_PRIMARY_GROUP_ID, group_rid);
-            const QHash<QString, AdObject> result = AD()->search(filter, QList<QString>(), SearchScope_All);
+            const QHash<QString, AdObject> result = ad.search(filter, QList<QString>(), SearchScope_All);
 
             for (const QString &user : result.keys()) {
                 original_primary_values.insert(user);
@@ -168,7 +168,7 @@ void MembershipTab::load(const AdObject &object) {
             const QString group_sid = user_sid_string.left(cut_index) + group_rid;
 
             const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, group_sid);
-            const QHash<QString, AdObject> result = AD()->search(filter, QList<QString>(), SearchScope_All);
+            const QHash<QString, AdObject> result = ad.search(filter, QList<QString>(), SearchScope_All);
 
             if (!result.isEmpty()) {
                 const QString group_dn = result.values()[0].get_dn();
@@ -184,7 +184,7 @@ void MembershipTab::load(const AdObject &object) {
     reload_model();
 }
 
-void MembershipTab::apply(const QString &target) {
+void MembershipTab::apply(AdInterface &ad, const QString &target) {
     // NOTE: need temp copy because can't edit the set
     // during iteration
     QSet<QString> new_original_values = original_values;
@@ -198,7 +198,7 @@ void MembershipTab::apply(const QString &target) {
             for (auto user : original_values) {
                 const bool removed = !current_values.contains(user);
                 if (removed) {
-                    const bool success = AD()->group_remove_member(group, user);
+                    const bool success = ad.group_remove_member(group, user);
                     if (success) {
                         new_original_values.remove(user);
                     }
@@ -208,7 +208,7 @@ void MembershipTab::apply(const QString &target) {
             for (auto user : current_values) {
                 const bool added = !original_values.contains(user);
                 if (added) {
-                    const bool success = AD()->group_add_member(group, user);
+                    const bool success = ad.group_add_member(group, user);
                     if (success) {
                         new_original_values.insert(user);
                     }
@@ -232,7 +232,7 @@ void MembershipTab::apply(const QString &target) {
 
                 const bool removed = !current_values.contains(group);
                 if (removed) {
-                    const bool success = AD()->group_remove_member(group, user);
+                    const bool success = ad.group_remove_member(group, user);
                     if (success) {
                         new_original_values.remove(group);
                     }
@@ -242,7 +242,7 @@ void MembershipTab::apply(const QString &target) {
             if (current_primary_values != original_primary_values) {
                 const QString group_dn = current_primary_values.values()[0];
                 
-                const bool success = AD()->user_set_primary_group(group_dn, target);
+                const bool success = ad.user_set_primary_group(group_dn, target);
                 if (success) {
                     original_primary_values = {group_dn};
                 }
@@ -258,7 +258,7 @@ void MembershipTab::apply(const QString &target) {
 
                 const bool added = !original_values.contains(group);
                 if (added) {
-                    const bool success = AD()->group_add_member(group, user);
+                    const bool success = ad.group_add_member(group, user);
                     if (success) {
                         new_original_values.insert(group);
                     }

@@ -98,6 +98,13 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     target = target_arg;
 
     setAttribute(Qt::WA_DeleteOnClose);
+
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        close();
+        return;
+    }
+
     setMinimumHeight(700);
     auto button_box = new QDialogButtonBox();
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
@@ -112,7 +119,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     apply_button->setAutoDefault(false);
     ok_button->setAutoDefault(true);
 
-    const AdObject object = AD()->search_object(target);
+    const AdObject object = ad.search_object(target);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
@@ -209,8 +216,14 @@ void PropertiesDialog::ok() {
 }
 
 bool PropertiesDialog::apply() {
+    // TODO: handle failure
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return false;
+    }
+
     for (auto tab : tabs) {
-        const bool verify_success = tab->verify(target);
+        const bool verify_success = tab->verify(ad, target);
         if (!verify_success) {
             return false;
         }
@@ -221,7 +234,7 @@ bool PropertiesDialog::apply() {
     STATUS()->start_error_log();
 
     for (auto tab : tabs) {
-        tab->apply(target);
+        tab->apply(ad, target);
     }
 
     const bool success = STATUS()->end_error_log(this);
@@ -237,9 +250,15 @@ bool PropertiesDialog::apply() {
 }
 
 void PropertiesDialog::reset() {
-    const AdObject object = AD()->search_object(target);
+    // TODO: handle error
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+    const AdObject object = ad.search_object(target);
+
     for (auto tab : tabs) {
-        tab->load(object);
+        tab->load(ad, object);
     }
 
     apply_button->setEnabled(false);

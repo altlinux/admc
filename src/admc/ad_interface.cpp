@@ -67,87 +67,40 @@ QList<QString> query_server_for_hosts(const char *dname);
 bool ad_connect(const char* uri, LDAP **ld_out);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 
-AdInterface *AdInterface::instance() {
-    static AdInterface ad_interface;
-    return &ad_interface;
-}
-
 void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgroup, int maxLenWorkgroup, char * pUsername, int maxLenUsername, char * pPassword, int maxLenPassword) {
 
 }
 
-bool AdInterface::connect() {
-    // Get default domain from krb5
-    const QString domain =
-    []() {
-        krb5_error_code result;
-        krb5_context context;
-        char *realm_cstr = NULL;
+AdSignals *ADSIGNALS() {
+    static AdSignals instance;
+    return &instance;
+}
 
-        auto cleanup =
-        [&]() {
-            krb5_free_default_realm(context, realm_cstr);
-            krb5_free_context(context);
-        };
+AdInterface::AdInterface() {
+    ld = NULL;
+    smbc = NULL;
+    m_is_connected = false;
 
-        result = krb5_init_context(&context);
-        if (result) {
-            qDebug() << "Failed to init krb5 context";
-
-            cleanup();
-            return QString();
-        }
-
-        result = krb5_get_default_realm(context, &realm_cstr);
-        if (result) {
-            qDebug() << "Failed to get default realm";
-
-            cleanup();
-            return QString();
-        }
-
-        const QString out = QString(realm_cstr);
-
-        cleanup();
-
-        return out;
-    }();
+    domain = get_default_domain_from_krb5();
+    domain_head = domain_to_domain_dn(domain);
 
     qDebug() << "domain=" << domain;
 
     const QList<QString> hosts = get_domain_hosts(domain, QString());
     if (hosts.isEmpty()) {
         qDebug() << "No hosts found";
-
-        error_status_message(tr("Failed to connect"), tr("Not connected to a domain network"));
-
-        return false;
+        
+        return;
     }
     qDebug() << "hosts=" << hosts;
 
     // TODO: for now selecting first host, which seems to be fine but investigate what should be selected.
-    m_host = hosts[0];
+    host = hosts[0];
 
-    const QString uri = "ldap://" + m_host;
-
-    m_domain = domain;
-
-    // Transform domain to search base
-    // "DOMAIN.COM" => "DC=domain,DC=com"
-    m_domain_head = m_domain;
-    m_domain_head = m_domain_head.toLower();
-    m_domain_head = "DC=" + m_domain_head;
-    m_domain_head = m_domain_head.replace(".", ",DC=");
-
-    m_configuration_dn = "CN=Configuration," + m_domain_head;
-    m_schema_dn = "CN=Schema," + m_configuration_dn;
+    const QString uri = "ldap://" + host;
 
     const bool success = ad_connect(cstr(uri), &ld);
-
     if (success) {
-        // TODO: check for adconfig load failure
-        ADCONFIG()->load();
-
         // TODO: can this context expire, for example from a disconnect?
         // NOTE: this doesn't leak memory. False positive.
         smbc_init(get_auth_data_fn, 0);
@@ -160,32 +113,22 @@ bool AdInterface::connect() {
         }
         smbc_set_context(smbc);
 
-        return true;
-    } else {
-        error_status_message(tr("Failed to connect"), tr("Authentication failed"));
-
-        return false;
+        m_is_connected = true;
     }
 }
 
-QString AdInterface::domain() const {
-    return m_domain;
+AdInterface::~AdInterface() {
+    smbc_free_context(smbc, 0);
+
+    if (m_is_connected) {
+        ldap_unbind_ext(ld, NULL, NULL);
+    } else {
+        ldap_memfree(ld);
+    }
 }
 
-QString AdInterface::domain_head() const {
-    return m_domain_head;
-}
-
-QString AdInterface::configuration_dn() const {
-    return m_configuration_dn;
-}
-
-QString AdInterface::schema_dn() const {
-    return m_schema_dn;
-}
-
-QString AdInterface::host() const {
-    return m_host;
+bool AdInterface::is_connected() const {
+    return m_is_connected;
 }
 
 void AdInterface::stop_search() {
@@ -333,7 +276,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter_arg, const QL
     const char *search_base =
     [this, search_base_arg]() {
         if (search_base_arg.isEmpty()) {
-            return cstr(m_domain_head);
+            return cstr(domain_head);
         } else {
             return cstr(search_base_arg);
         }
@@ -465,7 +408,7 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
     if (result == LDAP_SUCCESS) {
         success_status_message(QString(tr("Changed attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_values_display, values_display), do_msg);
 
-        emit object_changed(dn);
+        emit ADSIGNALS()->object_changed(dn);
 
         return true;
     } else {
@@ -521,7 +464,7 @@ bool AdInterface::attribute_add_value(const QString &dn, const QString &attribut
 
         success_status_message(context, do_msg);
 
-        emit object_changed(dn);
+        emit ADSIGNALS()->object_changed(dn);
 
         return true;
     } else {
@@ -563,7 +506,7 @@ bool AdInterface::attribute_delete_value(const QString &dn, const QString &attri
 
         success_status_message(context, do_msg);
 
-        emit object_changed(dn);
+        emit ADSIGNALS()->object_changed(dn);
 
         return true;
     } else {
@@ -610,7 +553,7 @@ bool AdInterface::object_add(const QString &dn, const QString &object_class) {
     if (result == LDAP_SUCCESS) {
         success_status_message(QString(tr("Created object \"%1\"")).arg(dn));
 
-        emit object_added(dn);
+        emit ADSIGNALS()->object_added(dn);
 
         return true;
     } else {
@@ -666,7 +609,7 @@ bool AdInterface::object_delete(const QString &dn) {
     if (result == LDAP_SUCCESS) {
         success_status_message(QString(tr("Deleted object \"%1\"")).arg(name));
 
-        emit object_deleted(dn);
+        emit ADSIGNALS()->object_deleted(dn);
 
         return true;
     } else {
@@ -687,8 +630,8 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
     if (result == LDAP_SUCCESS) {
         success_status_message(QString(tr("Moved object \"%1\" to \"%2\"")).arg(object_name, container_name));
 
-        emit object_deleted(dn);
-        emit object_added(new_dn);
+        emit ADSIGNALS()->object_deleted(dn);
+        emit ADSIGNALS()->object_added(new_dn);
 
         return true;
     } else {
@@ -710,8 +653,8 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     if (result == LDAP_SUCCESS) {
         success_status_message(QString(tr("Renamed object \"%1\" to \"%2\"")).arg(old_name, new_name));
 
-        emit object_deleted(dn);
-        emit object_added(new_dn);
+        emit ADSIGNALS()->object_deleted(dn);
+        emit ADSIGNALS()->object_added(new_dn);
 
         return true;
     } else {
@@ -824,7 +767,7 @@ bool AdInterface::group_set_type(const QString &dn, GroupType type) {
 
 
 bool AdInterface::user_set_primary_group(const QString &group_dn, const QString &user_dn) {
-    const AdObject group_object = AD()->search_object(group_dn, {ATTRIBUTE_OBJECT_SID, ATTRIBUTE_MEMBER});
+    const AdObject group_object = search_object(group_dn, {ATTRIBUTE_OBJECT_SID, ATTRIBUTE_MEMBER});
 
     // NOTE: need to add user to group before it can become primary
     const QList<QString> group_members = group_object.get_strings(ATTRIBUTE_MEMBER);
@@ -836,7 +779,7 @@ bool AdInterface::user_set_primary_group(const QString &group_dn, const QString 
     const QByteArray group_sid = group_object.get_value(ATTRIBUTE_OBJECT_SID);
     const QString group_rid = extract_rid_from_sid(group_sid);
 
-    const bool success = AD()->attribute_replace_string(user_dn, ATTRIBUTE_PRIMARY_GROUP_ID, group_rid, DoStatusMsg_No);
+    const bool success = attribute_replace_string(user_dn, ATTRIBUTE_PRIMARY_GROUP_ID, group_rid, DoStatusMsg_No);
 
     const QString user_name = dn_get_name(user_dn);
     const QString group_name = dn_get_name(group_dn);
@@ -1058,7 +1001,7 @@ DropType get_drop_type(const AdObject &dropped, const AdObject &target) {
     }
 }
 
-bool AdInterface::object_can_drop(const AdObject &dropped, const AdObject &target) {
+bool object_can_drop(const AdObject &dropped, const AdObject &target) {
     const DropType drop_type = get_drop_type(dropped, target);
 
     if (drop_type == DropType_None) {
@@ -1074,11 +1017,11 @@ void AdInterface::object_drop(const AdObject &dropped, const AdObject &target) {
 
     switch (drop_type) {
         case DropType_Move: {
-            AD()->object_move(dropped.get_dn(), target.get_dn());
+            object_move(dropped.get_dn(), target.get_dn());
             break;
         }
         case DropType_AddToGroup: {
-            AD()->group_add_member(target.get_dn(), dropped.get_dn());
+            group_add_member(target.get_dn(), dropped.get_dn());
             break;
         }
         case DropType_None: {
@@ -1111,7 +1054,7 @@ bool AdInterface::create_gpo(const QString &display_name) {
 
     // Create main dir
     // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(host(), domain().toLower(), uuid);
+    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(host, domain.toLower(), uuid);
     const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0);
     if (result_mkdir_main != 0) {
         // TODO: handle errors
@@ -1146,14 +1089,14 @@ bool AdInterface::create_gpo(const QString &display_name) {
     // Create AD object for gpo
     //
     // TODO: add all attributes during creation, need to directly create through ldap then
-    const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, m_domain_head);
+    const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, domain_head);
     const bool result_add = object_add(dn, CLASS_GP_CONTAINER);
     if (!result_add) {
         return false;
     }
     attribute_replace_string(dn, ATTRIBUTE_DISPLAY_NAME, display_name);
     // "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(domain().toLower(), uuid);
+    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(domain.toLower(), uuid);
     attribute_replace_string(dn, ATTRIBUTE_GPC_FILE_SYS_PATH, gPCFileSysPath);
     // TODO: samba defaults to 1, ADUC defaults to 0. Figure out what's this supposed to be.
     attribute_replace_string(dn, ATTRIBUTE_FLAGS, "1");
@@ -1192,7 +1135,7 @@ bool AdInterface::delete_gpo(const QString &gpo_dn) {
         recurse_stack.removeLast();
         delete_queue.insert(0, dn);
 
-        const QHash<QString, AdObject> children = AD()->search("", {}, SearchScope_Children, dn);
+        const QHash<QString, AdObject> children = search("", {}, SearchScope_Children, dn);
         recurse_stack.append(children.keys());
     }
 
@@ -1225,15 +1168,9 @@ QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
     const int sysvol_i = out.indexOf("sysvol");
     out.remove(0, sysvol_i);
 
-    out = QString("smb://%1/%2").arg(m_host, out);
+    out = QString("smb://%1/%2").arg(host, out);
 
     return out;
-}
-
-AdInterface::AdInterface()
-: QObject()
-{
-
 }
 
 void AdInterface::success_status_message(const QString &msg, const DoStatusMsg do_msg) {
@@ -1277,10 +1214,6 @@ int AdInterface::get_ldap_result() const {
     ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &result);
 
     return result;
-}
-
-AdInterface *AD() {
-    return AdInterface::instance();
 }
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
@@ -1540,4 +1473,29 @@ int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in) {
     }
 
     return LDAP_SUCCESS;
+}
+
+bool ad_connected_base(const AdInterface &ad) {
+    if (!ad.is_connected()) {
+        const QString title = QObject::tr("Connection error");
+        const QString text = QObject::tr("Failed to connect to server.");
+
+        // TODO: would want a valid parent widget for
+        // message box but this f-n can be called from
+        // places where there isn't one available,
+        // console_drag_model for example. Good news is that
+        // the messagebox appears to be modal even without a
+        // parent.
+        QMessageBox::critical(nullptr, title, text);
+    }
+
+    return ad.is_connected();
+}
+
+bool ad_connected(const AdInterface &ad) {
+    return ad_connected_base(ad);
+}
+
+bool ad_failed(const AdInterface &ad) {
+    return !ad_connected_base(ad);
 }

@@ -74,7 +74,7 @@ OrganizationTab::OrganizationTab() {
     layout->addRow(reports_view);
 }
 
-void OrganizationTab::load(const AdObject &object) {
+void OrganizationTab::load(AdInterface &ad, const AdObject &object) {
     const QList<QString> reports = object.get_strings(ATTRIBUTE_DIRECT_REPORTS);
     
     reports_model->removeRows(0, reports_model->rowCount());
@@ -90,7 +90,7 @@ void OrganizationTab::load(const AdObject &object) {
         reports_model->appendRow(row);
     }
 
-    PropertiesTab::load(object);
+    PropertiesTab::load(ad, object);
 }
 
 void OrganizationTab::showEvent(QShowEvent *event) {
