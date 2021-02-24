@@ -220,8 +220,6 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
         case MembershipTabType_MemberOf: {
             const QString user = target;
 
-            QSet<QString> new_original_values = original_values;
-
             // Remove user from groups that were removed
             for (auto group : original_values) {
                 // When group becomes primary, normal membership state is updated by server, so don't have to remove ourselves
