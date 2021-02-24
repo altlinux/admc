@@ -36,6 +36,7 @@
 #include <QDebug>
 #include <QFormLayout>
 #include <QLabel>
+#include <QMessageBox>
 
 // Store members in a set
 // Generate model from current members list
@@ -331,7 +332,31 @@ void MembershipTab::on_remove_button() {
         removed_values.append(dn);
     }
 
-    remove_values(removed_values);    
+    const bool any_selected_are_primary =
+    [this, removed_values]() {
+        for (const QString dn : removed_values) {
+            if (current_primary_values.contains(dn)) {
+                return true;
+            }
+        }
+
+        return false;
+    }();
+
+    if (any_selected_are_primary) {
+        const QString error_text =
+        [this]() {
+            switch (type) {
+                case MembershipTabType_Members: return tr("Can't remove because this group is a primary group to selected user.");
+                case MembershipTabType_MemberOf: return tr("Can't remove because selected group is a primary group to this user.");
+            }
+            return QString();
+        }();
+
+        QMessageBox::warning(this, tr("Error"), error_text);
+    } else {
+        remove_values(removed_values);    
+    }
 }
 
 void MembershipTab::on_primary_button() {
@@ -432,11 +457,6 @@ void MembershipTab::reload_model() {
         row[MembersColumn_Parent]->setText(parent);
         row[MembersColumn_Primary]->setCheckState(check_state);
         row[MembersColumn_DN]->setText(dn);
-
-        // Make primary non selectable so you cant remove them
-        for (int i = 0; i < MembersColumn_COUNT; i++) {
-            row[i]->setSelectable(!primary);
-        }
 
         model->appendRow(row);
     }
