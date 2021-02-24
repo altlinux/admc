@@ -89,9 +89,7 @@ AdInterface::AdInterface() {
     const QList<QString> hosts = get_domain_hosts(domain, QString());
     if (hosts.isEmpty()) {
         qDebug() << "No hosts found";
-
-        error_status_message(tr("Failed to connect"), tr("Not connected to a domain network"));
-
+        
         return;
     }
     qDebug() << "hosts=" << hosts;
@@ -102,7 +100,6 @@ AdInterface::AdInterface() {
     const QString uri = "ldap://" + host;
 
     const bool success = ad_connect(cstr(uri), &ld);
-
     if (success) {
         // TODO: can this context expire, for example from a disconnect?
         // NOTE: this doesn't leak memory. False positive.
@@ -117,8 +114,6 @@ AdInterface::AdInterface() {
         smbc_set_context(smbc);
 
         m_is_connected = true;
-    } else {
-        error_status_message(tr("Failed to connect"), tr("Authentication failed"));
     }
 }
 
