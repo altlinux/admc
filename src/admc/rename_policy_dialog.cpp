@@ -90,7 +90,7 @@ RenamePolicyDialog::RenamePolicyDialog(const QString &target_arg, QWidget *paren
 
 void RenamePolicyDialog::accept() {
     AdInterface ad;
-    if (ad_connected(ad)) {
+    if (ad_failed(ad)) {
         return;
     }
 

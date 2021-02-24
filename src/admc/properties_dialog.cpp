@@ -217,7 +217,7 @@ void PropertiesDialog::ok() {
 bool PropertiesDialog::apply() {
     // TODO: handle failure
     AdInterface ad;
-    if (ad_connected(ad)) {
+    if (ad_failed(ad)) {
         return false;
     }
 
