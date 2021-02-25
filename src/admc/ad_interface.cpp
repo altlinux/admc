@@ -1420,3 +1420,15 @@ bool ad_connected(const AdInterface &ad) {
 bool ad_failed(const AdInterface &ad) {
     return !ad_connected_base(ad);
 }
+
+AdCookie::AdCookie() {
+    cookie = NULL;
+}
+
+bool AdCookie::more_pages() const {
+    return (cookie != NULL);
+}
+
+void AdCookie::free() {
+    ber_bvfree(cookie);
+}

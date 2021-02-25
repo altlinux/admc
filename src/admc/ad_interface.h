@@ -47,6 +47,24 @@ template <typename T> class QList;
 typedef struct ldap LDAP;
 typedef struct _SMBCCTX SMBCCTX;
 
+class AdCookie {
+public:
+    AdCookie();
+
+    bool more_pages() const;
+
+    // Only need to call this if search was interrupted.
+    // If search completes normally, cookie is free'd
+    // automatically.
+    void free();
+
+private:
+    struct berval *cookie;
+
+    friend class AdInterface;
+};
+
+
 // TODO: have to put signals in a singleton since
 // adinterface stopped being a singleton. Console needs to
 // connect to these signals forever. Will probably change
