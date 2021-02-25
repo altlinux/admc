@@ -32,6 +32,7 @@ class FilterWidget;
 class FindResults;
 class QComboBox;
 class QStandardItem;
+class QPushButton;
 template <typename T> class QList;
 
 #define FIND_BUTTON_LABEL QT_TRANSLATE_NOOP("FindWidget", "Find")
@@ -55,6 +56,7 @@ private slots:
 private:
     FilterWidget *filter_widget;
     QComboBox *search_base_combo;
+    QPushButton *find_button;
     bool stop_search_flag;
 };
 
