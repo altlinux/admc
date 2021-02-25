@@ -192,11 +192,11 @@ void FindWidget::find() {
     AdCookie cookie;
 
     while (true) {
-        ad.search_paged(filter, search_attributes, SearchScope_All, search_base, &cookie, &search_results);
+        const bool success = ad.search_paged(filter, search_attributes, SearchScope_All, search_base, &cookie, &search_results);
 
         QCoreApplication::processEvents();
 
-        const bool search_interrupted = (was_destroyed || stop_search_flag);
+        const bool search_interrupted = (was_destroyed || stop_search_flag || !success);
         if (search_interrupted) {
             cookie.free();
 
