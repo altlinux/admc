@@ -354,7 +354,7 @@ void MembershipTab::on_remove_button() {
 
     const bool any_selected_are_primary =
     [this, removed_values]() {
-        for (const QString dn : removed_values) {
+        for (const QString &dn : removed_values) {
             if (current_primary_values.contains(dn)) {
                 return true;
             }
