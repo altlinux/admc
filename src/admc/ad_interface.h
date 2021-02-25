@@ -152,6 +152,7 @@ private:
     void error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     QString default_error() const;
     int get_ldap_result() const;
+    bool search_paged_internal(const char *filter, char **attributes, const int scope, const char *search_base, QHash<QString, AdObject> *out, struct berval **cookie);
 
     AdInterface(const AdInterface&) = delete;
     AdInterface& operator=(const AdInterface&) = delete;

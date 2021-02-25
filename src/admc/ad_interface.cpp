@@ -139,7 +139,7 @@ void AdInterface::stop_search() {
 // loop, it is set to the value returned by
 // ldap_search_ext_s(). At the end cookie is set back to
 // NULL.
-bool search_paged(LDAP *ld, const char *filter, char **attributes, const int scope, const char *search_base, QHash<QString, AdObject> *out, struct berval **cookie) {
+bool AdInterface::search_paged_internal(const char *filter, char **attributes, const int scope, const char *search_base, QHash<QString, AdObject> *out, struct berval **cookie) {
     int result;
     LDAPMessage *res = NULL;
     LDAPControl *page_control = NULL;
@@ -334,7 +334,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter_arg, const QL
             break;
         }
 
-        const bool search_success = search_paged(ld, filter, attributes, scope, search_base, &out, &cookie);
+        const bool search_success = search_paged_internal(filter, attributes, scope, search_base, &out, &cookie);
         if (!search_success) {
             out.clear();
             break;
