@@ -35,7 +35,6 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QDebug>
-#include <QCheckBox>
 
 FindWidget::FindWidget(const QList<QString> classes, const QString &default_search_base)
 : QWidget()
@@ -70,8 +69,6 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
 
     filter_widget = new FilterWidget(classes);
 
-    auto quick_find_check = new QCheckBox(tr("Quick find"));
-
     find_button = new QPushButton(tr(FIND_BUTTON_LABEL));
     find_button->setAutoDefault(false);
 
@@ -101,7 +98,6 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
         filter_widget_frame->setLayout(layout);
         layout->addLayout(search_base_row);
         layout->addWidget(filter_widget);
-        layout->addWidget(quick_find_check);
         layout->addLayout(buttons_layout);
     }
 
@@ -132,11 +128,6 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
     connect(
         filter_widget, &FilterWidget::return_pressed,
         this, &FindWidget::find);
-    connect(
-        filter_widget, &FilterWidget::changed,
-        this, &FindWidget::on_filter_changed);
-
-    SETTINGS()->connect_checkbox_to_bool_setting(quick_find_check, BoolSetting_QuickFind);
 }
 
 void FindWidget::select_custom_search_base() {
@@ -157,14 +148,6 @@ void FindWidget::select_custom_search_base() {
         });
 
     dialog->open();
-}
-
-void FindWidget::on_filter_changed() {
-    const bool quick_find = SETTINGS()->get_bool(BoolSetting_QuickFind);
-
-    if (quick_find) {
-        find();
-    }
 }
 
 void FindWidget::find() {

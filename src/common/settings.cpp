@@ -164,7 +164,6 @@ bool bool_default_value(const BoolSetting setting) {
                 return false;
             }
         }
-        case BoolSetting_QuickFind: return false;
         case BoolSetting_ShowStatusLog: return false;
         case BoolSetting_ShowConsoleTree: return true;
         case BoolSetting_ShowResultsHeader: return true;
@@ -186,7 +185,6 @@ QString bool_to_string(const BoolSetting setting) {
         CASE_ENUM_TO_STRING(BoolSetting_DevMode);
         CASE_ENUM_TO_STRING(BoolSetting_ShowNonContainersInConsoleTree);
         CASE_ENUM_TO_STRING(BoolSetting_LastNameBeforeFirstName);
-        CASE_ENUM_TO_STRING(BoolSetting_QuickFind);
         CASE_ENUM_TO_STRING(BoolSetting_ShowStatusLog);
         CASE_ENUM_TO_STRING(BoolSetting_ShowConsoleTree);
         CASE_ENUM_TO_STRING(BoolSetting_ShowResultsHeader);
