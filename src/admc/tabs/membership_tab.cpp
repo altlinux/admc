@@ -34,6 +34,9 @@
 #include <QMenu>
 #include <QPushButton>
 #include <QDebug>
+#include <QFormLayout>
+#include <QLabel>
+#include <QMessageBox>
 
 // Store members in a set
 // Generate model from current members list
@@ -106,6 +109,17 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(view);
+
+    // Add primary group label to layout
+    if (type == MembershipTabType_MemberOf) {
+        primary_group_label = new QLabel();
+
+        auto primary_group_layout = new QFormLayout();
+        primary_group_layout->addRow(tr("Primary group: "), primary_group_label);
+
+        layout->addLayout(primary_group_layout);
+    }
+
     layout->addLayout(button_layout);
 
     enable_widget_on_selection(remove_button, view);
@@ -188,12 +202,12 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
     // NOTE: need temp copy because can't edit the set
     // during iteration
     QSet<QString> new_original_values = original_values;
+    QSet<QString> new_original_primary_values = original_primary_values;
     
     // NOTE: logic is kinda duplicated but switching on behavior within iterations would be very confusing
     switch (type) {
         case MembershipTabType_Members: {
             const QString group = target;
-
 
             for (auto user : original_values) {
                 const bool removed = !current_values.contains(user);
@@ -220,11 +234,41 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
         case MembershipTabType_MemberOf: {
             const QString user = target;
 
+            // NOTE: must change primary group before
+            // remove/add operations otherwise there will be
+            // conflicts
+
+            // Change primary group
+            if (current_primary_values != original_primary_values) {
+                const QString original_primary_group = original_primary_values.values()[0];
+                const QString group_dn = current_primary_values.values()[0];
+                
+                const bool success = ad.user_set_primary_group(group_dn, target);
+                if (success) {
+                    new_original_primary_values = {group_dn};
+
+                    // Server adds old primary group to
+                    // normal membership
+                    new_original_values.insert(original_primary_group);
+
+                    // Server removes new primary group from
+                    // normal membership
+                    new_original_values.remove(group_dn);
+                }
+            }
+
+            // When setting primary groups, the server
+            // performs some membership modifications on
+            // it's end. Therefore, don't need to do
+            // anything with groups that were or are primary.
+            auto group_is_or_was_primary =
+            [this](const QString &group) {
+                return original_primary_values.contains(group) || current_primary_values.contains(group);
+            };
+
             // Remove user from groups that were removed
             for (auto group : original_values) {
-                // When group becomes primary, normal membership state is updated by server, so don't have to remove ourselves
-                const bool group_became_primary = current_primary_values.contains(group);
-                if (group_became_primary) {
+                if (group_is_or_was_primary(group)) {
                     continue;
                 }
 
@@ -237,20 +281,9 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
                 }
             }
 
-            if (current_primary_values != original_primary_values) {
-                const QString group_dn = current_primary_values.values()[0];
-                
-                const bool success = ad.user_set_primary_group(group_dn, target);
-                if (success) {
-                    original_primary_values = {group_dn};
-                }
-            }
-
             // Add user to groups that were added
             for (auto group : current_values) {
-                // When group stops being primary, normal membership state is updated by server, so don't have to add ourselves
-                const bool group_stopped_being_primary = original_primary_values.contains(group);
-                if (group_stopped_being_primary) {
+                if (group_is_or_was_primary(group)) {
                     continue;
                 }
 
@@ -268,6 +301,7 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
     } 
 
     original_values = new_original_values;
+    original_primary_values = new_original_primary_values;
 }
 
 void MembershipTab::on_add_button() {
@@ -318,7 +352,31 @@ void MembershipTab::on_remove_button() {
         removed_values.append(dn);
     }
 
-    remove_values(removed_values);    
+    const bool any_selected_are_primary =
+    [this, removed_values]() {
+        for (const QString &dn : removed_values) {
+            if (current_primary_values.contains(dn)) {
+                return true;
+            }
+        }
+
+        return false;
+    }();
+
+    if (any_selected_are_primary) {
+        const QString error_text =
+        [this]() {
+            switch (type) {
+                case MembershipTabType_Members: return tr("Can't remove because this group is a primary group to selected user.");
+                case MembershipTabType_MemberOf: return tr("Can't remove because selected group is a primary group to this user.");
+            }
+            return QString();
+        }();
+
+        QMessageBox::warning(this, tr("Error"), error_text);
+    } else {
+        remove_values(removed_values);    
+    }
 }
 
 void MembershipTab::on_primary_button() {
@@ -328,7 +386,7 @@ void MembershipTab::on_primary_button() {
     const QModelIndex selected = selecteds[0];
     const QString group_dn = get_dn_from_index(selected, MembersColumn_DN);
 
-    // Old primary group stops being primary
+    // Old primary group becomes normal
     current_values.unite(current_primary_values);
     // New primary group stops being normal
     current_values.remove(group_dn);
@@ -380,6 +438,23 @@ void MembershipTab::enable_primary_button_on_valid_selection() {
 }
 
 void MembershipTab::reload_model() {
+    // Load primary group name into label
+    if (type == MembershipTabType_MemberOf) {
+        const QString primary_group_label_text =
+        [this]() {
+            if (!current_primary_values.isEmpty()) {
+                const QString primary_group_dn = current_primary_values.values()[0];
+                const QString primary_group_name = dn_get_name(primary_group_dn);
+
+                return primary_group_name;
+            } else {
+                return QString();
+            }
+        }();
+
+        primary_group_label->setText(primary_group_label_text);
+    }
+
     model->removeRows(0, model->rowCount());
 
     const QSet<QString> all_values = current_values + current_primary_values;
@@ -402,11 +477,6 @@ void MembershipTab::reload_model() {
         row[MembersColumn_Parent]->setText(parent);
         row[MembersColumn_Primary]->setCheckState(check_state);
         row[MembersColumn_DN]->setText(dn);
-
-        // Make primary non selectable so you cant remove them
-        for (int i = 0; i < MembersColumn_COUNT; i++) {
-            row[i]->setSelectable(!primary);
-        }
 
         model->appendRow(row);
     }

@@ -28,6 +28,7 @@
 class QTreeView;
 class QStandardItemModel;
 class QPushButton;
+class QLabel;
 
 // Displays and edits membership info which can go both ways
 // 1. users that are members of group
@@ -61,6 +62,7 @@ private:
     QStandardItemModel *model;
     QTreeView *view;
     QPushButton *primary_button;
+    QLabel *primary_group_label;
 
     QSet<QString> original_values;
     QSet<QString> original_primary_values;
