@@ -19,6 +19,7 @@
 
 #include "find_widget.h"
 
+#include "ad_interface.h"
 #include "ad_config.h"
 #include "ad_utils.h"
 #include "settings.h"
@@ -164,6 +165,14 @@ void FindWidget::on_filter_changed() {
 }
 
 void FindWidget::find() {
+    // TODO: handle search/connect failure
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    show_busy_indicator();
+
     const QString filter = filter_widget->get_filter();
     const QString search_base =
     [this]() {
@@ -173,7 +182,24 @@ void FindWidget::find() {
         return item_data.toString();
     }();
 
-    find_results->load(filter, search_base);
+    const QList<QString> search_attributes = ADCONFIG()->get_columns();
+
+    QHash<QString, AdObject> search_results;
+    AdCookie cookie;
+    
+    while (true) {
+        ad.search_paged(filter, search_attributes, SearchScope_All, search_base, &cookie, &search_results);
+
+        QCoreApplication::processEvents();
+
+        if (!cookie.more_pages()) {
+            break;
+        }
+    }
+
+    find_results->load(search_results);
+
+    hide_busy_indicator();
 }
 
 QList<QList<QStandardItem *>> FindWidget::get_selected_rows() const {

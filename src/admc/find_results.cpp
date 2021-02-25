@@ -22,7 +22,6 @@
 #include "properties_dialog.h"
 #include "utils.h"
 #include "filter.h"
-#include "ad_interface.h"
 #include "ad_config.h"
 #include "object_model.h"
 #include "settings.h"
@@ -95,33 +94,10 @@ void FindResults::open_context_menu(const QPoint pos) {
     exec_menu_from_view(menu, view, pos);
 }
 
-void FindResults::load(const QString &filter, const QString &search_base) {
-    show_busy_indicator();
-    
+void FindResults::load(const QHash<QString, AdObject> &search_results) {
     object_count_label->clear();
 
     model->removeRows(0, model->rowCount());
-
-    // TODO: handle search/connect failure
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    const QList<QString> search_attributes = ADCONFIG()->get_columns();
-
-    QHash<QString, AdObject> search_results;
-    AdCookie cookie;
-    
-    while (true) {
-        ad.search_paged(filter, search_attributes, SearchScope_All, search_base, &cookie, &search_results);
-
-        QCoreApplication::processEvents();
-
-        if (!cookie.more_pages()) {
-            break;
-        }
-    }
 
     for (const AdObject &object : search_results) {
         const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().count());
@@ -135,8 +111,6 @@ void FindResults::load(const QString &filter, const QString &search_base) {
 
     const QString label_text = tr("%n object(s)", "", model->rowCount());
     object_count_label->setText(label_text);
-
-    hide_busy_indicator();
 }
 
 QList<QList<QStandardItem *>> FindResults::get_selected_rows() const {
