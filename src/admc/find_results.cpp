@@ -109,8 +109,19 @@ void FindResults::load(const QString &filter, const QString &search_base) {
     }
 
     const QList<QString> search_attributes = ADCONFIG()->get_columns();
-    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All, search_base);
 
+    QHash<QString, AdObject> search_results;
+    AdCookie cookie;
+    
+    while (true) {
+        ad.search_paged(filter, search_attributes, SearchScope_All, search_base, &cookie, &search_results);
+
+        QCoreApplication::processEvents();
+
+        if (!cookie.more_pages()) {
+            break;
+        }
+    }
 
     for (const AdObject &object : search_results) {
         const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().count());
