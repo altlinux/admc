@@ -202,12 +202,12 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
     // NOTE: need temp copy because can't edit the set
     // during iteration
     QSet<QString> new_original_values = original_values;
+    QSet<QString> new_original_primary_values = original_primary_values;
     
     // NOTE: logic is kinda duplicated but switching on behavior within iterations would be very confusing
     switch (type) {
         case MembershipTabType_Members: {
             const QString group = target;
-
 
             for (auto user : original_values) {
                 const bool removed = !current_values.contains(user);
@@ -234,11 +234,41 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
         case MembershipTabType_MemberOf: {
             const QString user = target;
 
+            // NOTE: must change primary group before
+            // remove/add operations otherwise there will be
+            // conflicts
+
+            // Change primary group
+            if (current_primary_values != original_primary_values) {
+                const QString original_primary_group = original_primary_values.values()[0];
+                const QString group_dn = current_primary_values.values()[0];
+                
+                const bool success = ad.user_set_primary_group(group_dn, target);
+                if (success) {
+                    new_original_primary_values = {group_dn};
+
+                    // Server adds old primary group to
+                    // normal membership
+                    new_original_values.insert(original_primary_group);
+
+                    // Server removes new primary group from
+                    // normal membership
+                    new_original_values.remove(group_dn);
+                }
+            }
+
+            // When setting primary groups, the server
+            // performs some membership modifications on
+            // it's end. Therefore, don't need to do
+            // anything with groups that were or are primary.
+            auto group_is_or_was_primary =
+            [this](const QString &group) {
+                return original_primary_values.contains(group) || current_primary_values.contains(group);
+            };
+
             // Remove user from groups that were removed
             for (auto group : original_values) {
-                // When group becomes primary, normal membership state is updated by server, so don't have to remove ourselves
-                const bool group_became_primary = current_primary_values.contains(group);
-                if (group_became_primary) {
+                if (group_is_or_was_primary(group)) {
                     continue;
                 }
 
@@ -253,9 +283,7 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
 
             // Add user to groups that were added
             for (auto group : current_values) {
-                // When group stops being primary, normal membership state is updated by server, so don't have to add ourselves
-                const bool group_stopped_being_primary = original_primary_values.contains(group);
-                if (group_stopped_being_primary) {
+                if (group_is_or_was_primary(group)) {
                     continue;
                 }
 
@@ -268,21 +296,12 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
                 }
             }
 
-            // NOTE: must change primary stuff after remove/add operations because setting primary group causes server to perform some add/remove operations on it's end. Groups that stopped being primary are added to normal membership. Groups that become primary are removed from normal membership.
-            if (current_primary_values != original_primary_values) {
-                const QString group_dn = current_primary_values.values()[0];
-                
-                const bool success = ad.user_set_primary_group(group_dn, target);
-                if (success) {
-                    original_primary_values = {group_dn};
-                }
-            }
-
             break;
         }
     } 
 
     original_values = new_original_values;
+    original_primary_values = new_original_primary_values;
 }
 
 void MembershipTab::on_add_button() {
@@ -367,7 +386,7 @@ void MembershipTab::on_primary_button() {
     const QModelIndex selected = selecteds[0];
     const QString group_dn = get_dn_from_index(selected, MembersColumn_DN);
 
-    // Old primary group stops being primary
+    // Old primary group becomes normal
     current_values.unite(current_primary_values);
     // New primary group stops being normal
     current_values.remove(group_dn);
