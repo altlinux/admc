@@ -82,9 +82,9 @@ void AdConfig::load(AdInterface &ad) {
     class_schemas.clear();
 
     const QString locale_dir =
-    [this, &ad]() {
+    [this]() {
         const QString locale_code =
-        [this]() {
+        []() {
             const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
 
             if (saved_locale.language() == QLocale::Russian) {
