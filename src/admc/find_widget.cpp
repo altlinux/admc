@@ -40,6 +40,9 @@
 FindWidget::FindWidget(const QList<QString> classes, const QString &default_search_base)
 : QWidget()
 {
+    stop_search_flag = false;
+    was_destroyed = false;
+
     // TODO: missing "Entire directory" in search base combo. Not 100% sure what it's supposed to be, the tippy-top domain? Definitely need it for work with multiple domains.
 
     const QString domain_head = ADCONFIG()->domain_head();
@@ -122,16 +125,22 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
     connect(
         find_button, &QPushButton::clicked,
         this, &FindWidget::find);
-    // TODO: reimplement stop search. Not sure how to do it with new non-singleton adinterface
-    // connect(
-    //     stop_button, &QPushButton::clicked,
-    //     ADSIGNALS(), &AdInterface::stop_search);
+    connect(
+        stop_button, &QPushButton::clicked,
+        [this]() {
+            stop_search_flag = true;
+        });
     connect(
         filter_widget, &FilterWidget::return_pressed,
         this, &FindWidget::find);
     connect(
         filter_widget, &FilterWidget::changed,
         this, &FindWidget::on_filter_changed);
+    connect(
+        this, &QObject::destroyed,
+        [this]() {
+            was_destroyed = true;
+        });
 
     SETTINGS()->connect_checkbox_to_bool_setting(quick_find_check, BoolSetting_QuickFind);
 }
@@ -192,9 +201,29 @@ void FindWidget::find() {
 
         QCoreApplication::processEvents();
 
+        const bool search_interrupted = (was_destroyed || stop_search_flag);
+        if (search_interrupted) {
+            cookie.free();
+
+            break;
+        }
+
         if (!cookie.more_pages()) {
             break;
         }
+    }
+
+    // NOTE: parent dialog of this widget can be closed
+    // during search because we call
+    // "QCoreApplication::processEvents();". Closing deletes
+    // dialog and it's children (this object won't be
+    // destroyed until this scope is finished). Therefore
+    // need to exit out of this f-n to avoid a crash due to
+    // using destroyed find_results.
+    if (was_destroyed) {
+        hide_busy_indicator();
+        
+        return;
     }
 
     find_results->load(search_results);
