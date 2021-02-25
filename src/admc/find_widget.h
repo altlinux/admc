@@ -56,7 +56,6 @@ private:
     FilterWidget *filter_widget;
     QComboBox *search_base_combo;
     bool stop_search_flag;
-    bool was_destroyed;
 };
 
 #endif /* FIND_WIDGET_H */

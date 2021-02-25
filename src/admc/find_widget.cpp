@@ -41,7 +41,6 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
 : QWidget()
 {
     stop_search_flag = false;
-    was_destroyed = false;
 
     // TODO: missing "Entire directory" in search base combo. Not 100% sure what it's supposed to be, the tippy-top domain? Definitely need it for work with multiple domains.
 
@@ -136,11 +135,6 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
     connect(
         filter_widget, &FilterWidget::changed,
         this, &FindWidget::on_filter_changed);
-    connect(
-        this, &QObject::destroyed,
-        [this]() {
-            was_destroyed = true;
-        });
 
     SETTINGS()->connect_checkbox_to_bool_setting(quick_find_check, BoolSetting_QuickFind);
 }
@@ -182,6 +176,20 @@ void FindWidget::find() {
 
     show_busy_indicator();
 
+    // NOTE: parent dialog of this widget can be closed
+    // during search because we call
+    // "QCoreApplication::processEvents();" during between
+    // search calls. Closing dialog, deletes it and it's
+    // children (this object won't be destroyed until this
+    // scope is finished). Therefore need to exit out of
+    // this f-n to avoid a crash due to using destroyed
+    // find_results.
+    bool was_destroyed = false;
+    connect(this, &QObject::destroyed,
+        [&was_destroyed]() {
+            was_destroyed = true;
+        });
+
     const QString filter = filter_widget->get_filter();
     const QString search_base =
     [this]() {
@@ -195,7 +203,7 @@ void FindWidget::find() {
 
     QHash<QString, AdObject> search_results;
     AdCookie cookie;
-    
+
     while (true) {
         ad.search_paged(filter, search_attributes, SearchScope_All, search_base, &cookie, &search_results);
 
@@ -213,13 +221,6 @@ void FindWidget::find() {
         }
     }
 
-    // NOTE: parent dialog of this widget can be closed
-    // during search because we call
-    // "QCoreApplication::processEvents();". Closing deletes
-    // dialog and it's children (this object won't be
-    // destroyed until this scope is finished). Therefore
-    // need to exit out of this f-n to avoid a crash due to
-    // using destroyed find_results.
     if (was_destroyed) {
         hide_busy_indicator();
         
@@ -228,6 +229,8 @@ void FindWidget::find() {
 
     find_results->load(search_results);
 
+    find_button->setEnabled(true);
+    
     hide_busy_indicator();
 }
 
