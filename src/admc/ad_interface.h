@@ -151,8 +151,6 @@ public:
 
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
-    void stop_search();
-
 private:
     LDAP *ld;
     SMBCCTX *smbc;
@@ -160,7 +158,6 @@ private:
     QString domain;
     QString domain_head;
     QString host;
-    bool stop_search_flag;
 
     void success_status_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     void error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg = DoStatusMsg_Yes);

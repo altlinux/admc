@@ -130,10 +130,6 @@ bool AdInterface::is_connected() const {
     return m_is_connected;
 }
 
-void AdInterface::stop_search() {
-    stop_search_flag = true;
-}
-
 // Helper f-n for search()
 // NOTE: cookie is starts as NULL. Then after each while
 // loop, it is set to the value returned by
