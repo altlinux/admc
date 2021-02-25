@@ -32,11 +32,7 @@
 #include <QHeaderView>
 #include <QDebug>
 #include <QVBoxLayout>
-#include <QMessageBox>
 #include <QMenu>
-
-// NOTE: loading unrestricted amount of results (10k for example) causes model destruction to take too long, which freezes the app when find dialog is closed.
-#define RESULTS_COUNT_MAX 999
 
 FindResults::FindResults()
 : QWidget()
@@ -117,10 +113,6 @@ void FindResults::load(const QString &filter, const QString &search_base) {
 
 
     for (const AdObject &object : search_results) {
-        if (model->rowCount() == RESULTS_COUNT_MAX) {
-            break;
-        }
-
         const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().count());
 
         load_object_row(row, object);
@@ -134,10 +126,6 @@ void FindResults::load(const QString &filter, const QString &search_base) {
     object_count_label->setText(label_text);
 
     hide_busy_indicator();
-
-    if (search_results.values().count() > RESULTS_COUNT_MAX) {
-        QMessageBox::warning(this, tr("Warning"), "Reached result display limit, refine your filter to reduce result size.");
-    }
 }
 
 QList<QList<QStandardItem *>> FindResults::get_selected_rows() const {
