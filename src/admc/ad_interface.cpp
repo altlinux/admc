@@ -267,11 +267,28 @@ bool AdInterface::search_paged_internal(const char *filter, char **attributes, c
     return true;
 }
 
-QHash<QString, AdObject> AdInterface::search(const QString &filter_arg, const QList<QString> &attributes_arg, const SearchScope scope_arg, const QString &search_base_arg) {
-    stop_search_flag = false;
-
+QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<QString> &attributes, const SearchScope scope, const QString &search_base) {
+    AdCookie cookie;
     QHash<QString, AdObject> out;
 
+    while (true) {
+        const bool success = search_paged(filter, attributes, scope, search_base, &cookie, &out);
+
+        if (!success) {
+            cookie.free();
+
+            break;
+        }
+
+        if (!cookie.more_pages()) {
+            break;
+        }
+    }
+
+    return out;
+}
+
+bool AdInterface::search_paged(const QString &filter_arg, const QList<QString> &attributes_arg, const SearchScope scope_arg, const QString &search_base_arg, AdCookie *cookie, QHash<QString, AdObject> *out) {
     const char *search_base =
     [this, search_base_arg]() {
         if (search_base_arg.isEmpty()) {
@@ -325,28 +342,12 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter_arg, const QL
         return attributes_out;
     }();
 
-    AdCookie cookie;
+    const bool search_success = search_paged_internal(filter, attributes, scope, search_base, out, cookie);
+    if (!search_success) {
+        out->clear();
 
-    // Search until received all pages
-    while (true) {
-        if (stop_search_flag) {
-            out.clear();
-            break;
-        }
-
-        const bool search_success = search_paged_internal(filter, attributes, scope, search_base, &out, &cookie);
-        if (!search_success) {
-            out.clear();
-            break;
-        }
-
-        if (cookie.more_pages()) {
-            // NOTE: process events to unfreeze UI during long searches
-            QCoreApplication::processEvents();
-        } else {
-            break;
-        }
-    };
+        return false;
+    }
 
     if (attributes != NULL) {
         for (int i = 0; attributes[i] != NULL; i++) {
@@ -355,7 +356,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter_arg, const QL
         free(attributes);
     }
 
-    return out;
+    return true;
 }
 
 AdObject AdInterface::search_object(const QString &dn, const QList<QString> &attributes) {

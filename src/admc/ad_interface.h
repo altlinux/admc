@@ -104,7 +104,21 @@ public:
     bool is_connected() const;
 
     // NOTE: If request attributes list is empty, all attributes are returned
+
+    // This is a simplified version that searches all pages
+    // in one go
     QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope, const QString &search_base = QString());
+
+    // This is a more complicated version of search() which
+    // separates the search process by pages as they arrive
+    // from the server. In general you can use the simpler
+    // search(). This version is specifically for cases
+    // where you need to do something between pages, like
+    // processing UI events so it doesn't freeze.
+    bool search_paged(const QString &filter_arg, const QList<QString> &attributes_arg, const SearchScope scope_arg, const QString &search_base_arg, AdCookie *cookie, QHash<QString, AdObject> *out);
+
+    // Simplest search f-n that only searches for attributes
+    // of one object
     AdObject search_object(const QString &dn, const QList<QString> &attributes = QList<QString>());
 
     bool attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg = DoStatusMsg_Yes);
