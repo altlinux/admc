@@ -1277,6 +1277,7 @@ bool ad_connect(const char* uri, LDAP **ld_out) {
         ldap_memfree(ld);
     };
 
+    // NOTE: this doesn't leak memory. False positive.
     result = ldap_initialize(&ld, uri);
     if (result != LDAP_SUCCESS) {
         cleanup();
