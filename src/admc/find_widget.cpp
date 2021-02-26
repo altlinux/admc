@@ -164,22 +164,22 @@ void FindWidget::find() {
     }();
     const QList<QString> search_attributes = ADCONFIG()->get_columns();
 
-    auto find_thread = new FindThread(filter, search_base, search_attributes);
+    auto find_thread = new SearchThread(filter, search_base, search_attributes);
 
     connect(
-        find_thread, &FindThread::results_ready,
+        find_thread, &SearchThread::results_ready,
         this, &FindWidget::handle_find_thread_results);
     connect(
         this, &QObject::destroyed,
-        find_thread, &FindThread::stop);
+        find_thread, &SearchThread::stop);
     connect(
         stop_button, &QPushButton::clicked,
-        find_thread, &FindThread::stop);
+        find_thread, &SearchThread::stop);
     connect(
-        find_thread, &FindThread::finished,
+        find_thread, &SearchThread::finished,
         find_thread, &QObject::deleteLater);
     connect(
-        find_thread, &FindThread::finished,
+        find_thread, &SearchThread::finished,
         this, &FindWidget::on_thread_finished);
 
     show_busy_indicator();
@@ -207,7 +207,7 @@ QList<QList<QStandardItem *>> FindWidget::get_selected_rows() const {
     return find_results->get_selected_rows();
 }
 
-FindThread::FindThread(const QString &filter_arg, const QString search_base_arg, const QList<QString> attrs_arg) {
+SearchThread::SearchThread(const QString &filter_arg, const QString search_base_arg, const QList<QString> attrs_arg) {
     stop_flag = false;
 
     filter = filter_arg;
@@ -215,11 +215,11 @@ FindThread::FindThread(const QString &filter_arg, const QString search_base_arg,
     attrs = attrs_arg;
 }
 
-void FindThread::stop() {
+void SearchThread::stop() {
     stop_flag = true;
 }
 
-void FindThread::run() {
+void SearchThread::run() {
     // TODO: handle search/connect failure
     AdInterface ad;
     if (ad_failed(ad)) {

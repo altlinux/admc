@@ -65,12 +65,12 @@ private:
 };
 
 
-class FindThread final : public QThread
+class SearchThread final : public QThread
 {
     Q_OBJECT
 
 public:
-    FindThread(const QString &filter_arg, const QString search_base_arg, const QList<QString> attrs_arg);
+    SearchThread(const QString &filter_arg, const QString search_base_arg, const QList<QString> attrs_arg);
 
     void stop();
 
