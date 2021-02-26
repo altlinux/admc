@@ -30,6 +30,7 @@
 #include <QCoreApplication>
 
 #include "ad_defines.h"
+#include "utils.h"
 
 enum SearchScope {
     SearchScope_Object,
@@ -135,10 +136,7 @@ private:
     QString default_error() const;
     int get_ldap_result() const;
 
-    AdInterface(const AdInterface&) = delete;
-    AdInterface& operator=(const AdInterface&) = delete;
-    AdInterface(AdInterface&&) = delete;
-    AdInterface& operator=(AdInterface&&) = delete;
+    DISABLE_COPY_MOVE(AdInterface);
 };
 
 // TODO: haven't found a better place for ad_is_connected()

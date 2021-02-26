@@ -40,6 +40,14 @@ template <typename K, typename T> class QHash;
 #define debug_print(a, args...) printf("%s(%s:%d) " a,  __func__,__FILE__, __LINE__, ##args)
 #define trace(a, args...) debug_print(a "\n", ##args)
 
+// NOTE: Qt has Q_DISABLE_COPY_MOVE but it's not available
+// on current Qt version yet (requires 5.13)
+#define DISABLE_COPY_MOVE(ClassName)\
+ClassName(const ClassName&) = delete;\
+ClassName& operator=(const ClassName&) = delete;\
+ClassName(ClassName&&) = delete;\
+ClassName& operator=(ClassName&&) = delete;
+
 // NOTE: these functions assume that view's proxies don't filter out the DN column and that it is always present.
 QString get_dn_from_index(const QModelIndex &index, int dn_column);
 QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn_column);

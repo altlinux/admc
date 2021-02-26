@@ -31,6 +31,8 @@
 #include <QObject>
 #include <QSettings>
 
+#include "utils.h"
+
 class QAction;
 class QSettings;
 class QVariant;
@@ -114,10 +116,7 @@ private:
 
     Settings();
 
-    Settings(const Settings&) = delete;
-    Settings& operator=(const Settings&) = delete;
-    Settings(Settings&&) = delete;
-    Settings& operator=(Settings&&) = delete;
+    DISABLE_COPY_MOVE(Settings);
 };
 
 Settings *SETTINGS();

@@ -28,6 +28,8 @@
 
 #include <QList>
 
+#include "utils.h"
+
 class QTextEdit;
 class QStatusBar;
 class QString;
@@ -63,11 +65,7 @@ private:
     QList<QString> error_log;
 
     Status();
-
-    Status(const Status&) = delete;
-    Status& operator=(const Status&) = delete;
-    Status(Status&&) = delete;
-    Status& operator=(Status&&) = delete;
+    DISABLE_COPY_MOVE(Status);
 };
 
 Status *STATUS();
