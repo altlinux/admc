@@ -55,12 +55,8 @@ private:
     QPushButton *apply_button;
     QPushButton *reset_button;
 
+    // NOTE: ctor is private, use open_for_target() instead
     PropertiesDialog(const QString &target_arg);
-    
-    PropertiesDialog(const PropertiesDialog&) = delete;
-    PropertiesDialog& operator=(const PropertiesDialog&) = delete;
-    PropertiesDialog(PropertiesDialog&&) = delete;
-    PropertiesDialog& operator=(PropertiesDialog&&) = delete;
 };
 
 #endif /* PROPERTIES_DIALOG_H */
