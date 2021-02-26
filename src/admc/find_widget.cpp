@@ -198,8 +198,6 @@ void FindWidget::find() {
 
         const bool search_interrupted = (was_destroyed || stop_search_flag || !success);
         if (search_interrupted) {
-            cookie.free();
-
             break;
         }
 

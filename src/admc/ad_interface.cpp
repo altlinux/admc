@@ -271,8 +271,6 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
         const bool success = search_paged(filter, attributes, scope, search_base, &cookie, &out);
 
         if (!success) {
-            cookie.free();
-
             break;
         }
 
@@ -1425,6 +1423,6 @@ bool AdCookie::more_pages() const {
     return (cookie != NULL);
 }
 
-void AdCookie::free() {
+AdCookie::~AdCookie() {
     ber_bvfree(cookie);
 }

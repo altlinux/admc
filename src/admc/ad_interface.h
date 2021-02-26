@@ -51,18 +51,16 @@ typedef struct _SMBCCTX SMBCCTX;
 class AdCookie {
 public:
     AdCookie();
+    ~AdCookie();
 
     bool more_pages() const;
-
-    // Only need to call this if search was interrupted.
-    // If search completes normally, cookie is free'd
-    // automatically.
-    void free();
 
 private:
     struct berval *cookie;
 
     friend class AdInterface;
+
+    DISABLE_COPY_MOVE(AdCookie);
 };
 
 
