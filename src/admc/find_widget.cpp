@@ -28,6 +28,7 @@
 #include "filter_widget/filter_widget.h"
 #include "find_results.h"
 #include "select_container_dialog.h"
+#include "search_thread.h"
 
 #include <QString>
 #include <QList>
@@ -177,9 +178,6 @@ void FindWidget::find() {
         find_thread, &SearchThread::stop);
     connect(
         find_thread, &SearchThread::finished,
-        find_thread, &QObject::deleteLater);
-    connect(
-        find_thread, &SearchThread::finished,
         this, &FindWidget::on_thread_finished);
 
     show_busy_indicator();
@@ -205,43 +203,4 @@ void FindWidget::on_thread_finished() {
 
 QList<QList<QStandardItem *>> FindWidget::get_selected_rows() const {
     return find_results->get_selected_rows();
-}
-
-SearchThread::SearchThread(const QString &filter_arg, const QString search_base_arg, const QList<QString> attrs_arg) {
-    stop_flag = false;
-
-    filter = filter_arg;
-    search_base = search_base_arg;
-    attrs = attrs_arg;
-}
-
-void SearchThread::stop() {
-    stop_flag = true;
-}
-
-void SearchThread::run() {
-    // TODO: handle search/connect failure
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    AdCookie cookie;
-
-    while (true) {
-        QHash<QString, AdObject> results;
-        
-        const bool success = ad.search_paged(filter, attrs, SearchScope_All, search_base, &cookie, &results);
-
-        emit results_ready(results);
-
-        const bool search_interrupted = (!success || stop_flag);
-        if (search_interrupted) {
-            break;
-        }
-
-        if (!cookie.more_pages()) {
-            break;
-        }
-    }
 }

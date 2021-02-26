@@ -27,7 +27,6 @@
  */
 
 #include <QWidget>
-#include <QThread>
 
 class FilterWidget;
 class FindResults;
@@ -62,28 +61,6 @@ private:
     QComboBox *search_base_combo;
     QPushButton *find_button;
     QPushButton *stop_button;
-};
-
-
-class SearchThread final : public QThread
-{
-    Q_OBJECT
-
-public:
-    SearchThread(const QString &filter_arg, const QString search_base_arg, const QList<QString> attrs_arg);
-
-    void stop();
-
-signals:
-    void results_ready(const QHash<QString, AdObject> &results);
-
-private:
-    QString filter;
-    QString search_base;
-    QList<QString> attrs;
-    bool stop_flag;
-
-    void run() override;
 };
 
 #endif /* FIND_WIDGET_H */
