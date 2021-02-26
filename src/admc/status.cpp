@@ -26,6 +26,7 @@
 #include <QDialogButtonBox>
 #include <QVBoxLayout>
 #include <QDebug>
+#include <QCoreApplication>
 
 #define MAX_MESSAGES_IN_LOG 200
 
@@ -38,9 +39,7 @@ Status *STATUS() {
     return Status::instance();
 }
 
-Status::Status()
-: QObject()
-{
+Status::Status() {
     status_bar = new QStatusBar();
     status_log = new QTextEdit();
     status_log->setReadOnly(true);
@@ -99,7 +98,7 @@ bool Status::end_error_log(QWidget *parent) {
     }
 
     auto dialog = new QDialog(parent);
-    dialog->setWindowTitle(tr("Errors occured"));
+    dialog->setWindowTitle(QCoreApplication::translate("Status", "Errors occured"));
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->setMinimumWidth(600);
 
@@ -114,7 +113,7 @@ bool Status::end_error_log(QWidget *parent) {
     layout->addWidget(log);
     layout->addWidget(button_box);
 
-    connect(
+    QObject::connect(
         button_box, &QDialogButtonBox::accepted,
         dialog, &QDialog::accept);
 

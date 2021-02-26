@@ -26,18 +26,19 @@
  * error messages in a dialog.
  */
 
-#include <QObject>
+#include <QList>
 
 class QTextEdit;
 class QStatusBar;
+class QString;
+class QWidget;
 
 enum StatusType {
     StatusType_Success,
     StatusType_Error
 };
 
-class Status final : public QObject {
-Q_OBJECT
+class Status {
 
 public:   
     bool print_errors = false;
