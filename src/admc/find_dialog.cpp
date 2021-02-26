@@ -57,4 +57,8 @@ FindDialog::FindDialog(const QList<QString> classes, const QString default_searc
         [=]() {
             find_widget->find_results->load_menu(action_menu);
         });
+
+    connect(
+        this, &QDialog::finished,
+        find_widget, &FindWidget::stop_search);
 }

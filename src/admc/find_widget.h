@@ -48,6 +48,12 @@ public:
     // NOTE: returned items need to be re-parented or deleted!
     QList<QList<QStandardItem *>> get_selected_rows() const;
 
+    // NOTE: this MUST be connected to parent dialog's
+    // finished() signal. Otherwise the program will crash
+    // when parent dialog is closed while search is in
+    // progress.
+    void stop_search();
+
 private slots:
     void select_custom_search_base();
     void find();

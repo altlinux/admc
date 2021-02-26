@@ -122,9 +122,7 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
         this, &FindWidget::find);
     connect(
         stop_button, &QPushButton::clicked,
-        [this]() {
-            stop_search_flag = true;
-        });
+        this, &FindWidget::stop_search);
     connect(
         filter_widget, &FilterWidget::return_pressed,
         this, &FindWidget::find);
@@ -163,19 +161,9 @@ void FindWidget::find() {
     // process can start while this one isn't finished!
     find_button->setEnabled(false);
 
-    // NOTE: parent dialog of this widget can be closed
-    // during search because we call
-    // "QCoreApplication::processEvents();" during between
-    // search calls. Closing dialog, deletes it and it's
-    // children (this object won't be destroyed until this
-    // scope is finished). Therefore need to exit out of
-    // this f-n to avoid a crash due to using destroyed
-    // find_results.
-    bool was_destroyed = false;
-    connect(this, &QObject::destroyed,
-        [&was_destroyed]() {
-            was_destroyed = true;
-        });
+    // NOTE: process events so find button is disabled
+    // visually
+    QCoreApplication::processEvents();
 
     const QString filter = filter_widget->get_filter();
     const QString search_base =
@@ -196,7 +184,7 @@ void FindWidget::find() {
 
         QCoreApplication::processEvents();
 
-        const bool search_interrupted = (was_destroyed || stop_search_flag || !success);
+        const bool search_interrupted = (stop_search_flag || !success);
         if (search_interrupted) {
             break;
         }
@@ -204,12 +192,6 @@ void FindWidget::find() {
         if (!cookie.more_pages()) {
             break;
         }
-    }
-
-    if (was_destroyed) {
-        hide_busy_indicator();
-        
-        return;
     }
 
     find_results->load(search_results);
@@ -221,4 +203,8 @@ void FindWidget::find() {
 
 QList<QList<QStandardItem *>> FindWidget::get_selected_rows() const {
     return find_results->get_selected_rows();
+}
+
+void FindWidget::stop_search() {
+    stop_search_flag = true;
 }
