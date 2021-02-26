@@ -95,6 +95,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/edits/gpoptions_edit.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/edits/manager_edit.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/object_drag.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/search_thread.cpp
 
     ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/common/settings.cpp

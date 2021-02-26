@@ -32,7 +32,9 @@ class QLabel;
 class QStandardItemModel;
 class QStandardItem;
 class QMenu;
+class AdObject;
 template <typename T> class QList;
+template <typename K, typename T> class QHash;
 
 class FindResults final : public QWidget {
 Q_OBJECT
@@ -42,7 +44,10 @@ public:
     
     FindResults();
 
-    void load(const QString &filter, const QString &search_base);
+    void clear();
+
+    // Append results to list and re-sort
+    void load(const QHash<QString, AdObject> &search_results);
 
     // NOTE: returned items need to be re-parented or deleted!
     QList<QList<QStandardItem *>> get_selected_rows() const;

@@ -32,7 +32,10 @@ class FilterWidget;
 class FindResults;
 class QComboBox;
 class QStandardItem;
+class QPushButton;
+class AdObject;
 template <typename T> class QList;
+template <typename K, typename V> class QHash;
 
 #define FIND_BUTTON_LABEL QT_TRANSLATE_NOOP("FindWidget", "Find")
 
@@ -49,12 +52,15 @@ public:
 
 private slots:
     void select_custom_search_base();
-    void on_filter_changed();
     void find();
+    void on_thread_finished();
+    void handle_find_thread_results(const QHash<QString, AdObject> &results);
 
 private:
     FilterWidget *filter_widget;
     QComboBox *search_base_combo;
+    QPushButton *find_button;
+    QPushButton *stop_button;
 };
 
 #endif /* FIND_WIDGET_H */

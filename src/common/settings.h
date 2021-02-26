@@ -64,7 +64,6 @@ enum BoolSetting {
     BoolSetting_DevMode,
     BoolSetting_ShowNonContainersInConsoleTree,
     BoolSetting_LastNameBeforeFirstName,
-    BoolSetting_QuickFind,
 
     BoolSetting_ShowStatusLog,
     BoolSetting_ShowConsoleTree,

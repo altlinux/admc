@@ -42,6 +42,7 @@ add_executable(admc
     console.cpp
     console_drag_model.cpp
     object_drag.cpp
+    search_thread.cpp
     
     rename_dialog.cpp
     rename_policy_dialog.cpp

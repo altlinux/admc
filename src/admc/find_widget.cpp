@@ -19,6 +19,7 @@
 
 #include "find_widget.h"
 
+#include "ad_interface.h"
 #include "ad_config.h"
 #include "ad_utils.h"
 #include "settings.h"
@@ -27,6 +28,7 @@
 #include "filter_widget/filter_widget.h"
 #include "find_results.h"
 #include "select_container_dialog.h"
+#include "search_thread.h"
 
 #include <QString>
 #include <QList>
@@ -34,7 +36,6 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QDebug>
-#include <QCheckBox>
 
 FindWidget::FindWidget(const QList<QString> classes, const QString &default_search_base)
 : QWidget()
@@ -67,12 +68,10 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
 
     filter_widget = new FilterWidget(classes);
 
-    auto quick_find_check = new QCheckBox(tr("Quick find"));
-
-    auto find_button = new QPushButton(tr(FIND_BUTTON_LABEL));
+    find_button = new QPushButton(tr(FIND_BUTTON_LABEL));
     find_button->setAutoDefault(false);
 
-    auto stop_button = new QPushButton(tr("Stop"));
+    stop_button = new QPushButton(tr("Stop"));
     stop_button->setAutoDefault(false);
 
     find_results = new FindResults();
@@ -98,7 +97,6 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
         filter_widget_frame->setLayout(layout);
         layout->addLayout(search_base_row);
         layout->addWidget(filter_widget);
-        layout->addWidget(quick_find_check);
         layout->addLayout(buttons_layout);
     }
 
@@ -121,18 +119,18 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
     connect(
         find_button, &QPushButton::clicked,
         this, &FindWidget::find);
-    // TODO: reimplement stop search. Not sure how to do it with new non-singleton adinterface
-    // connect(
-    //     stop_button, &QPushButton::clicked,
-    //     ADSIGNALS(), &AdInterface::stop_search);
     connect(
         filter_widget, &FilterWidget::return_pressed,
         this, &FindWidget::find);
-    connect(
-        filter_widget, &FilterWidget::changed,
-        this, &FindWidget::on_filter_changed);
 
-    SETTINGS()->connect_checkbox_to_bool_setting(quick_find_check, BoolSetting_QuickFind);
+    // NOTE: need this for the case where dialog is closed
+    // while a search is in progress. Without this busy
+    // indicator stays on.
+    connect(
+        this, &QObject::destroyed,
+        []() {
+            hide_busy_indicator();
+        });
 }
 
 void FindWidget::select_custom_search_base() {
@@ -155,15 +153,8 @@ void FindWidget::select_custom_search_base() {
     dialog->open();
 }
 
-void FindWidget::on_filter_changed() {
-    const bool quick_find = SETTINGS()->get_bool(BoolSetting_QuickFind);
-
-    if (quick_find) {
-        find();
-    }
-}
-
 void FindWidget::find() {
+    // Prepare search args
     const QString filter = filter_widget->get_filter();
     const QString search_base =
     [this]() {
@@ -172,8 +163,42 @@ void FindWidget::find() {
 
         return item_data.toString();
     }();
+    const QList<QString> search_attributes = ADCONFIG()->get_columns();
 
-    find_results->load(filter, search_base);
+    auto find_thread = new SearchThread(filter, search_base, search_attributes);
+
+    connect(
+        find_thread, &SearchThread::results_ready,
+        this, &FindWidget::handle_find_thread_results);
+    connect(
+        this, &QObject::destroyed,
+        find_thread, &SearchThread::stop);
+    connect(
+        stop_button, &QPushButton::clicked,
+        find_thread, &SearchThread::stop);
+    connect(
+        find_thread, &SearchThread::finished,
+        this, &FindWidget::on_thread_finished);
+
+    show_busy_indicator();
+
+    // NOTE: disable find button, otherwise another find
+    // process can start while this one isn't finished!
+    find_button->setEnabled(false);
+
+    find_results->clear();
+
+    find_thread->start();
+}
+
+void FindWidget::handle_find_thread_results(const QHash<QString, AdObject> &results) {
+    find_results->load(results);
+}
+
+void FindWidget::on_thread_finished() {
+    find_button->setEnabled(true);
+
+    hide_busy_indicator();
 }
 
 QList<QList<QStandardItem *>> FindWidget::get_selected_rows() const {

@@ -48,6 +48,22 @@ template <typename T> class QList;
 typedef struct ldap LDAP;
 typedef struct _SMBCCTX SMBCCTX;
 
+class AdCookie {
+public:
+    AdCookie();
+    ~AdCookie();
+
+    bool more_pages() const;
+
+private:
+    struct berval *cookie;
+
+    friend class AdInterface;
+
+    DISABLE_COPY_MOVE(AdCookie);
+};
+
+
 // TODO: have to put signals in a singleton since
 // adinterface stopped being a singleton. Console needs to
 // connect to these signals forever. Will probably change
@@ -87,7 +103,21 @@ public:
     bool is_connected() const;
 
     // NOTE: If request attributes list is empty, all attributes are returned
+
+    // This is a simplified version that searches all pages
+    // in one go
     QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope, const QString &search_base = QString());
+
+    // This is a more complicated version of search() which
+    // separates the search process by pages as they arrive
+    // from the server. In general you can use the simpler
+    // search(). This version is specifically for cases
+    // where you need to do something between pages, like
+    // processing UI events so it doesn't freeze.
+    bool search_paged(const QString &filter_arg, const QList<QString> &attributes_arg, const SearchScope scope_arg, const QString &search_base_arg, AdCookie *cookie, QHash<QString, AdObject> *out);
+
+    // Simplest search f-n that only searches for attributes
+    // of one object
     AdObject search_object(const QString &dn, const QList<QString> &attributes = QList<QString>());
 
     bool attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg = DoStatusMsg_Yes);
@@ -120,8 +150,6 @@ public:
 
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
-    void stop_search();
-
 private:
     LDAP *ld;
     SMBCCTX *smbc;
@@ -129,12 +157,12 @@ private:
     QString domain;
     QString domain_head;
     QString host;
-    bool stop_search_flag;
 
     void success_status_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     void error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     QString default_error() const;
     int get_ldap_result() const;
+    bool search_paged_internal(const char *filter, char **attributes, const int scope, const char *search_base, QHash<QString, AdObject> *out, AdCookie *cookie);
 
     DISABLE_COPY_MOVE(AdInterface);
 };

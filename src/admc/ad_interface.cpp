@@ -130,21 +130,17 @@ bool AdInterface::is_connected() const {
     return m_is_connected;
 }
 
-void AdInterface::stop_search() {
-    stop_search_flag = true;
-}
-
 // Helper f-n for search()
 // NOTE: cookie is starts as NULL. Then after each while
 // loop, it is set to the value returned by
 // ldap_search_ext_s(). At the end cookie is set back to
 // NULL.
-bool search_paged(LDAP *ld, const char *filter, char **attributes, const int scope, const char *search_base, QHash<QString, AdObject> *out, struct berval **cookie) {
+bool AdInterface::search_paged_internal(const char *filter, char **attributes, const int scope, const char *search_base, QHash<QString, AdObject> *out, AdCookie *ad_cookie) {
     int result;
     LDAPMessage *res = NULL;
     LDAPControl *page_control = NULL;
     LDAPControl **returned_controls = NULL;
-    struct berval *prev_cookie = *cookie;
+    struct berval *prev_cookie = ad_cookie->cookie;
     struct berval *new_cookie = NULL;
     
     auto cleanup =
@@ -258,20 +254,35 @@ bool search_paged(LDAP *ld, const char *filter, char **attributes, const int sco
     // empty
     const bool more_pages = (new_cookie->bv_len > 0);
     if (more_pages) {
-        *cookie = ber_bvdup(new_cookie);
+        ad_cookie->cookie = ber_bvdup(new_cookie);
     } else {
-        *cookie = NULL;
+        ad_cookie->cookie = NULL;
     }
 
     cleanup();
     return true;
 }
 
-QHash<QString, AdObject> AdInterface::search(const QString &filter_arg, const QList<QString> &attributes_arg, const SearchScope scope_arg, const QString &search_base_arg) {
-    stop_search_flag = false;
-
+QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<QString> &attributes, const SearchScope scope, const QString &search_base) {
+    AdCookie cookie;
     QHash<QString, AdObject> out;
 
+    while (true) {
+        const bool success = search_paged(filter, attributes, scope, search_base, &cookie, &out);
+
+        if (!success) {
+            break;
+        }
+
+        if (!cookie.more_pages()) {
+            break;
+        }
+    }
+
+    return out;
+}
+
+bool AdInterface::search_paged(const QString &filter_arg, const QList<QString> &attributes_arg, const SearchScope scope_arg, const QString &search_base_arg, AdCookie *cookie, QHash<QString, AdObject> *out) {
     const char *search_base =
     [this, search_base_arg]() {
         if (search_base_arg.isEmpty()) {
@@ -325,29 +336,12 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter_arg, const QL
         return attributes_out;
     }();
 
-    struct berval *cookie = NULL;
+    const bool search_success = search_paged_internal(filter, attributes, scope, search_base, out, cookie);
+    if (!search_success) {
+        out->clear();
 
-    // Search until received all pages
-    while (true) {
-        if (stop_search_flag) {
-            out.clear();
-            break;
-        }
-
-        const bool search_success = search_paged(ld, filter, attributes, scope, search_base, &out, &cookie);
-        if (!search_success) {
-            out.clear();
-            break;
-        }
-
-        const bool more_pages = (cookie != NULL);
-        if (more_pages) {
-            // NOTE: process events to unfreeze UI during long searches
-            QCoreApplication::processEvents();
-        } else {
-            break;
-        }
-    };
+        return false;
+    }
 
     if (attributes != NULL) {
         for (int i = 0; attributes[i] != NULL; i++) {
@@ -356,7 +350,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter_arg, const QL
         free(attributes);
     }
 
-    return out;
+    return true;
 }
 
 AdObject AdInterface::search_object(const QString &dn, const QList<QString> &attributes) {
@@ -1419,4 +1413,16 @@ bool ad_connected(const AdInterface &ad) {
 
 bool ad_failed(const AdInterface &ad) {
     return !ad_connected_base(ad);
+}
+
+AdCookie::AdCookie() {
+    cookie = NULL;
+}
+
+bool AdCookie::more_pages() const {
+    return (cookie != NULL);
+}
+
+AdCookie::~AdCookie() {
+    ber_bvfree(cookie);
 }
