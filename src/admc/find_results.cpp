@@ -94,11 +94,12 @@ void FindResults::open_context_menu(const QPoint pos) {
     exec_menu_from_view(menu, view, pos);
 }
 
-void FindResults::load(const QHash<QString, AdObject> &search_results) {
+void FindResults::clear() {
     object_count_label->clear();
-
     model->removeRows(0, model->rowCount());
+}
 
+void FindResults::load(const QHash<QString, AdObject> &search_results) {
     for (const AdObject &object : search_results) {
         const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().count());
 

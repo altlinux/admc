@@ -178,6 +178,9 @@ void FindWidget::find() {
     connect(
         find_thread, &FindThread::finished,
         find_thread, &QObject::deleteLater);
+    connect(
+        find_thread, &FindThread::finished,
+        this, &FindWidget::on_thread_finished);
 
     show_busy_indicator();
 
@@ -185,12 +188,16 @@ void FindWidget::find() {
     // process can start while this one isn't finished!
     find_button->setEnabled(false);
 
+    find_results->clear();
+
     find_thread->start();
 }
 
 void FindWidget::handle_find_thread_results(const QHash<QString, AdObject> &results) {
     find_results->load(results);
+}
 
+void FindWidget::on_thread_finished() {
     find_button->setEnabled(true);
 
     hide_busy_indicator();
@@ -219,11 +226,14 @@ void FindThread::run() {
         return;
     }
 
-    QHash<QString, AdObject> results;
     AdCookie cookie;
 
     while (true) {
+        QHash<QString, AdObject> results;
+        
         const bool success = ad.search_paged(filter, attrs, SearchScope_All, search_base, &cookie, &results);
+
+        emit results_ready(results);
 
         const bool search_interrupted = (!success || stop_flag);
         if (search_interrupted) {
@@ -234,6 +244,4 @@ void FindThread::run() {
             break;
         }
     }
-
-    emit results_ready(results);
 }
