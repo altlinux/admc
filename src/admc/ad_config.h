@@ -25,6 +25,7 @@
 // server requests.
 
 #include "ad_object.h"
+#include "utils.h"
 
 #include <QString>
 #include <QList>
@@ -127,10 +128,7 @@ private:
     QList<QString> add_auxiliary_classes(const QList<QString> &object_classes) const;
 
     AdConfig();
-    AdConfig(const AdConfig&) = delete;
-    AdConfig& operator=(const AdConfig&) = delete;
-    AdConfig(AdConfig&&) = delete;
-    AdConfig& operator=(AdConfig&&) = delete;
+    DISABLE_COPY_MOVE(AdConfig);
 };
 
 AdConfig *ADCONFIG();

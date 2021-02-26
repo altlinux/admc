@@ -30,6 +30,7 @@
 #include <QCoreApplication>
 
 #include "ad_defines.h"
+#include "utils.h"
 
 enum SearchScope {
     SearchScope_Object,
@@ -165,10 +166,7 @@ private:
     int get_ldap_result() const;
     bool search_paged_internal(const char *filter, char **attributes, const int scope, const char *search_base, QHash<QString, AdObject> *out, AdCookie *cookie);
 
-    AdInterface(const AdInterface&) = delete;
-    AdInterface& operator=(const AdInterface&) = delete;
-    AdInterface(AdInterface&&) = delete;
-    AdInterface& operator=(AdInterface&&) = delete;
+    DISABLE_COPY_MOVE(AdInterface);
 };
 
 // TODO: haven't found a better place for ad_is_connected()

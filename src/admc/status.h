@@ -26,18 +26,21 @@
  * error messages in a dialog.
  */
 
-#include <QObject>
+#include <QList>
+
+#include "utils.h"
 
 class QTextEdit;
 class QStatusBar;
+class QString;
+class QWidget;
 
 enum StatusType {
     StatusType_Success,
     StatusType_Error
 };
 
-class Status final : public QObject {
-Q_OBJECT
+class Status {
 
 public:   
     bool print_errors = false;
@@ -62,11 +65,7 @@ private:
     QList<QString> error_log;
 
     Status();
-
-    Status(const Status&) = delete;
-    Status& operator=(const Status&) = delete;
-    Status(Status&&) = delete;
-    Status& operator=(Status&&) = delete;
+    DISABLE_COPY_MOVE(Status);
 };
 
 Status *STATUS();
