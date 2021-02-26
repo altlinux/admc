@@ -225,8 +225,6 @@ void FindThread::run() {
     while (true) {
         const bool success = ad.search_paged(filter, attrs, SearchScope_All, search_base, &cookie, &results);
 
-        QCoreApplication::processEvents();
-
         const bool search_interrupted = (!success || stop_flag);
         if (search_interrupted) {
             break;
