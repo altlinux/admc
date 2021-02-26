@@ -43,35 +43,37 @@ const BoolSettingSignal *Settings::get_bool_signal(const BoolSetting setting) co
 bool Settings::get_bool(const BoolSetting setting) const {
     const QString setting_str = bool_to_string(setting);
     const bool default_value = bool_default_value(setting);
-    const bool value = qsettings->value(setting_str, default_value).toBool();
+    const bool value = qsettings.value(setting_str, default_value).toBool();
 
     return value;
 }
 
 void Settings::set_bool(const BoolSetting setting, const bool value) {
     const QString name = bool_to_string(setting);
-    qsettings->setValue(name, value);
+    qsettings.setValue(name, value);
 }
 
 QVariant Settings::get_variant(const VariantSetting setting) const {
     const QString name = variant_to_string(setting);
-    const QVariant value = qsettings->value(name); 
+    const QVariant value = qsettings.value(name); 
 
     return value;
 }
 
 void Settings::set_variant(const VariantSetting setting, const QVariant &value) {
     const QString name = variant_to_string(setting);
-    qsettings->setValue(name, value);
+    qsettings.setValue(name, value);
 }
 
 bool Settings::contains_variant(const VariantSetting setting) const {
     const QString name = variant_to_string(setting);
-    return qsettings->contains(name);
+    return qsettings.contains(name);
 }
 
-Settings::Settings() {
-    qsettings = new QSettings(this);
+Settings::Settings()
+: qsettings()
+{
+
 }
 
 void Settings::connect_action_to_bool_setting(QAction *action, const BoolSetting setting) {
@@ -82,7 +84,7 @@ void Settings::connect_action_to_bool_setting(QAction *action, const BoolSetting
     action->setChecked(saved_value);
 
     // Update saved value when action is toggled
-    connect(
+    QObject::connect(
         action, &QAction::toggled,
         [this, setting](bool checked) {
             set_bool(setting, checked);
@@ -97,7 +99,7 @@ void Settings::connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSett
     check->setChecked(saved_value);
 
     // Update saved value when checkbox is toggled
-    connect(
+    QObject::connect(
         check, &QCheckBox::stateChanged,
         [this, setting, check]() {
             const bool checked = check->isChecked();
@@ -127,7 +129,7 @@ void Settings::setup_header_state(QHeaderView *header, const VariantSetting sett
         header->setDefaultSectionSize(200);
     }
 
-    connect(
+    QObject::connect(
         header, &QHeaderView::destroyed,
         [this, header, setting]() {
             set_variant(setting, header->saveState());
@@ -143,7 +145,7 @@ void Settings::connect_toggle_widget(QWidget *widget, const BoolSetting setting)
         widget->setVisible(visible);
     };
 
-    connect(
+    QObject::connect(
         signal, &BoolSettingSignal::changed,
         on_changed);
     on_changed();

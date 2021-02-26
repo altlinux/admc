@@ -29,6 +29,7 @@
  */
 
 #include <QObject>
+#include <QSettings>
 
 class QAction;
 class QSettings;
@@ -78,8 +79,7 @@ signals:
     void changed();
 };
 
-class Settings final : public QObject {
-Q_OBJECT
+class Settings {
 
 public:
     static Settings *instance();
@@ -109,7 +109,7 @@ public:
     void connect_toggle_widget(QWidget *widget, const BoolSetting setting);
 
 private:
-    QSettings *qsettings = nullptr;
+    QSettings qsettings;
     BoolSettingSignal bools[BoolSetting_COUNT];
 
     Settings();
