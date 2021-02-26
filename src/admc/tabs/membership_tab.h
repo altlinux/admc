@@ -40,7 +40,7 @@ Q_OBJECT
 
 public:
     void load(AdInterface &ad, const AdObject &object) override;
-    void apply(AdInterface &ad, const QString &target) override;
+    bool apply(AdInterface &ad, const QString &target) override;
 
 private slots:
     void on_add_button();

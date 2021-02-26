@@ -42,7 +42,7 @@ Q_OBJECT
 public:
     virtual void load(AdInterface &ad, const AdObject &object);
     virtual bool verify(AdInterface &ad, const QString &target) const;
-    virtual void apply(AdInterface &ad, const QString &target);
+    virtual bool apply(AdInterface &ad, const QString &target);
 
 protected:
     QList<AttributeEdit *> edits;

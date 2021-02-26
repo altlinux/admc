@@ -59,7 +59,7 @@ public:
     void start_error_log();
     
     // Returns true if there no errors happened
-    bool end_error_log(QWidget *parent);
+    void end_error_log(QWidget *parent);
 
 private:
     QList<QString> error_log;

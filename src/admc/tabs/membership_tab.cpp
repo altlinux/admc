@@ -198,7 +198,9 @@ void MembershipTab::load(AdInterface &ad, const AdObject &object) {
     reload_model();
 }
 
-void MembershipTab::apply(AdInterface &ad, const QString &target) {
+bool MembershipTab::apply(AdInterface &ad, const QString &target) {
+    bool total_success = true;
+
     // NOTE: need temp copy because can't edit the set
     // during iteration
     QSet<QString> new_original_values = original_values;
@@ -215,6 +217,8 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
                     const bool success = ad.group_remove_member(group, user);
                     if (success) {
                         new_original_values.remove(user);
+                    } else {
+                        total_success = false;
                     }
                 }
             }
@@ -225,6 +229,8 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
                     const bool success = ad.group_add_member(group, user);
                     if (success) {
                         new_original_values.insert(user);
+                    } else {
+                        total_success = false;
                     }
                 }
             }
@@ -254,6 +260,8 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
                     // Server removes new primary group from
                     // normal membership
                     new_original_values.remove(group_dn);
+                } else {
+                    total_success = false;
                 }
             }
 
@@ -277,6 +285,8 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
                     const bool success = ad.group_remove_member(group, user);
                     if (success) {
                         new_original_values.remove(group);
+                    } else {
+                        total_success = false;
                     }
                 }
             }
@@ -292,6 +302,8 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
                     const bool success = ad.group_add_member(group, user);
                     if (success) {
                         new_original_values.insert(group);
+                    } else {
+                        total_success = false;
                     }
                 }
             }
@@ -302,6 +314,8 @@ void MembershipTab::apply(AdInterface &ad, const QString &target) {
 
     original_values = new_original_values;
     original_primary_values = new_original_primary_values;
+
+    return total_success;
 }
 
 void MembershipTab::on_add_button() {

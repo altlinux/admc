@@ -233,20 +233,25 @@ bool PropertiesDialog::apply() {
 
     STATUS()->start_error_log();
 
+    bool total_apply_success = true;
+    
     for (auto tab : tabs) {
-        tab->apply(ad, target);
+        const bool apply_success = tab->apply(ad, target);
+        if (!apply_success) {
+            total_apply_success = false;
+        }
     }
 
-    const bool success = STATUS()->end_error_log(this);
+    STATUS()->end_error_log(this);
 
-    if (success) {
+    if (total_apply_success) {
         apply_button->setEnabled(false);
         reset_button->setEnabled(false);
     }
 
     hide_busy_indicator();
 
-    return success;
+    return total_apply_success;
 }
 
 void PropertiesDialog::reset() {

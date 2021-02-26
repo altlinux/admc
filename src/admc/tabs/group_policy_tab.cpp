@@ -119,11 +119,21 @@ void GroupPolicyTab::load(AdInterface &ad, const AdObject &object) {
     PropertiesTab::load(ad, object);
 }
 
-void GroupPolicyTab::apply(AdInterface &ad, const QString &target) {
-    const QString gplink_string = gplink.to_string();
-    ad.attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
+bool GroupPolicyTab::apply(AdInterface &ad, const QString &target) {
+    const bool total_success = true;
 
-    PropertiesTab::apply(ad, target);
+    const QString gplink_string = gplink.to_string();
+    const bool replace_success = ad.attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
+    if (!replace_success) {
+        total_success = false;
+    }
+
+    const bool apply_success = PropertiesTab::apply(ad, target);
+    if (!apply_success) {
+        total_success = false;
+    }
+    
+    return apply_success;
 }
 
 void GroupPolicyTab::on_context_menu(const QPoint pos) {

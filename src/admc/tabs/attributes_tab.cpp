@@ -274,7 +274,9 @@ void AttributesTab::load(AdInterface &ad, const AdObject &object) {
     view->sortByColumn(AttributesColumn_Name, Qt::AscendingOrder);
 }
 
-void AttributesTab::apply(AdInterface &ad, const QString &target) {
+bool AttributesTab::apply(AdInterface &ad, const QString &target) {
+    bool total_success = true;
+
     for (const QString &attribute : current.keys()) {
         const QList<QByteArray> current_values = current[attribute];
         const QList<QByteArray> original_values = original[attribute];
@@ -283,9 +285,13 @@ void AttributesTab::apply(AdInterface &ad, const QString &target) {
             const bool success = ad.attribute_replace_values(target, attribute, current_values);
             if (success) {
                 original[attribute] = current_values;
+            } else {
+                total_success = false;
             }
         }
     }
+
+    return total_success;
 }
 
 void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values) {
