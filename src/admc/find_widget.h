@@ -27,13 +27,16 @@
  */
 
 #include <QWidget>
+#include <QThread>
 
 class FilterWidget;
 class FindResults;
 class QComboBox;
 class QStandardItem;
 class QPushButton;
+class AdObject;
 template <typename T> class QList;
+template <typename K, typename V> class QHash;
 
 #define FIND_BUTTON_LABEL QT_TRANSLATE_NOOP("FindWidget", "Find")
 
@@ -48,21 +51,38 @@ public:
     // NOTE: returned items need to be re-parented or deleted!
     QList<QList<QStandardItem *>> get_selected_rows() const;
 
-    // NOTE: this MUST be connected to parent dialog's
-    // finished() signal. Otherwise the program will crash
-    // when parent dialog is closed while search is in
-    // progress.
-    void stop_search();
-
 private slots:
     void select_custom_search_base();
     void find();
+    void handle_find_thread_results(const QHash<QString, AdObject> &results);
 
 private:
     FilterWidget *filter_widget;
     QComboBox *search_base_combo;
     QPushButton *find_button;
-    bool stop_search_flag;
+    QPushButton *stop_button;
+};
+
+
+class FindThread final : public QThread
+{
+    Q_OBJECT
+
+public:
+    FindThread(const QString &filter_arg, const QString search_base_arg, const QList<QString> attrs_arg);
+
+    void stop();
+
+signals:
+    void results_ready(const QHash<QString, AdObject> &results);
+
+private:
+    QString filter;
+    QString search_base;
+    QList<QString> attrs;
+    bool stop_flag;
+
+    void run() override;
 };
 
 #endif /* FIND_WIDGET_H */

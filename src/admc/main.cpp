@@ -29,6 +29,12 @@
 int main(int argc, char **argv) {
     qRegisterMetaTypeStreamOperators<AdObject>("AdObject");
 
+    // NOTE: this is needed to pass this type from thread's
+    // signal in find_widget.cpp. Without doing this,
+    // passing this type from thread results in a runtime
+    // error.
+    qRegisterMetaType<QHash<QString, AdObject>>("QHash<QString, AdObject>");
+
     QApplication app(argc, argv);
     app.setApplicationDisplayName(ADMC_APPLICATION_DISPLAY_NAME);
     app.setApplicationName(ADMC_APPLICATION_NAME);

@@ -39,8 +39,6 @@
 FindWidget::FindWidget(const QList<QString> classes, const QString &default_search_base)
 : QWidget()
 {
-    stop_search_flag = false;
-
     // TODO: missing "Entire directory" in search base combo. Not 100% sure what it's supposed to be, the tippy-top domain? Definitely need it for work with multiple domains.
 
     const QString domain_head = ADCONFIG()->domain_head();
@@ -72,7 +70,7 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
     find_button = new QPushButton(tr(FIND_BUTTON_LABEL));
     find_button->setAutoDefault(false);
 
-    auto stop_button = new QPushButton(tr("Stop"));
+    stop_button = new QPushButton(tr("Stop"));
     stop_button->setAutoDefault(false);
 
     find_results = new FindResults();
@@ -121,11 +119,17 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
         find_button, &QPushButton::clicked,
         this, &FindWidget::find);
     connect(
-        stop_button, &QPushButton::clicked,
-        this, &FindWidget::stop_search);
-    connect(
         filter_widget, &FilterWidget::return_pressed,
         this, &FindWidget::find);
+
+    // NOTE: need this for the case where dialog is closed
+    // while a search is in progress. Without this busy
+    // indicator stays on.
+    connect(
+        this, &QObject::destroyed,
+        []() {
+            hide_busy_indicator();
+        });
 }
 
 void FindWidget::select_custom_search_base() {
@@ -149,22 +153,7 @@ void FindWidget::select_custom_search_base() {
 }
 
 void FindWidget::find() {
-    // TODO: handle search/connect failure
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    show_busy_indicator();
-
-    // NOTE: disable find button, otherwise another find
-    // process can start while this one isn't finished!
-    find_button->setEnabled(false);
-
-    // NOTE: process events so find button is disabled
-    // visually
-    QCoreApplication::processEvents();
-
+    // Prepare search args
     const QString filter = filter_widget->get_filter();
     const QString search_base =
     [this]() {
@@ -173,18 +162,72 @@ void FindWidget::find() {
 
         return item_data.toString();
     }();
-
     const QList<QString> search_attributes = ADCONFIG()->get_columns();
 
-    QHash<QString, AdObject> search_results;
+    auto find_thread = new FindThread(filter, search_base, search_attributes);
+
+    connect(
+        find_thread, &FindThread::results_ready,
+        this, &FindWidget::handle_find_thread_results);
+    connect(
+        this, &QObject::destroyed,
+        find_thread, &FindThread::stop);
+    connect(
+        stop_button, &QPushButton::clicked,
+        find_thread, &FindThread::stop);
+    connect(
+        find_thread, &FindThread::finished,
+        find_thread, &QObject::deleteLater);
+
+    show_busy_indicator();
+
+    // NOTE: disable find button, otherwise another find
+    // process can start while this one isn't finished!
+    find_button->setEnabled(false);
+
+    find_thread->start();
+}
+
+void FindWidget::handle_find_thread_results(const QHash<QString, AdObject> &results) {
+    find_results->load(results);
+
+    find_button->setEnabled(true);
+
+    hide_busy_indicator();
+}
+
+QList<QList<QStandardItem *>> FindWidget::get_selected_rows() const {
+    return find_results->get_selected_rows();
+}
+
+FindThread::FindThread(const QString &filter_arg, const QString search_base_arg, const QList<QString> attrs_arg) {
+    stop_flag = false;
+
+    filter = filter_arg;
+    search_base = search_base_arg;
+    attrs = attrs_arg;
+}
+
+void FindThread::stop() {
+    stop_flag = true;
+}
+
+void FindThread::run() {
+    // TODO: handle search/connect failure
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    QHash<QString, AdObject> results;
     AdCookie cookie;
 
     while (true) {
-        const bool success = ad.search_paged(filter, search_attributes, SearchScope_All, search_base, &cookie, &search_results);
+        const bool success = ad.search_paged(filter, attrs, SearchScope_All, search_base, &cookie, &results);
 
         QCoreApplication::processEvents();
 
-        const bool search_interrupted = (stop_search_flag || !success);
+        const bool search_interrupted = (!success || stop_flag);
         if (search_interrupted) {
             break;
         }
@@ -194,17 +237,5 @@ void FindWidget::find() {
         }
     }
 
-    find_results->load(search_results);
-
-    find_button->setEnabled(true);
-    
-    hide_busy_indicator();
-}
-
-QList<QList<QStandardItem *>> FindWidget::get_selected_rows() const {
-    return find_results->get_selected_rows();
-}
-
-void FindWidget::stop_search() {
-    stop_search_flag = true;
+    emit results_ready(results);
 }

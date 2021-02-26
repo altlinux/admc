@@ -50,10 +50,6 @@ FindSelectDialog::FindSelectDialog(const QList<QString> classes, QWidget *parent
     connect(
         buttons, &QDialogButtonBox::rejected,
         this, &FindSelectDialog::reject);
-    
-    connect(
-        this, &QDialog::finished,
-        find_widget, &FindWidget::stop_search);
 }
 
 QList<QList<QStandardItem *>> FindSelectDialog::get_selected_rows() const {
