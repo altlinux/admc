@@ -9,6 +9,10 @@ CHANGELOG
 - Member Of/Members tab: Changed primary objects to be selectable. When pressing "Remove" button, a warning opens if any of selected objects are primary, remove action fails.
 - Member Of tab: Added "Primary Group" display.
 - Console: Changed drag and drop process to not make server requests while dragging. Dragging will now be smoother.
+- Find dialog: Moved the find process to a separate thread. This removes all lag.
+- Find dialog: Fixed crashing when closing dialog while a find is in progress.
+- Find dialog: Removed results limit.
+- Find dialog: Removed quick find option. Didn't work well.
 - Misc: Implemented recursive delete so now you can delete objects with children. Before this action caused a server error.
 - Misc: Fixed idle disconnect. The app now opens a new connection to server for every set of operations instead of keeping one connection open.
 - Misc: Added message box that warns about connection failure after trying to perform some operations that require a connection.
