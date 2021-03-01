@@ -120,7 +120,7 @@ void GroupPolicyTab::load(AdInterface &ad, const AdObject &object) {
 }
 
 bool GroupPolicyTab::apply(AdInterface &ad, const QString &target) {
-    const bool total_success = true;
+    bool total_success = true;
 
     const QString gplink_string = gplink.to_string();
     const bool replace_success = ad.attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
@@ -133,7 +133,7 @@ bool GroupPolicyTab::apply(AdInterface &ad, const QString &target) {
         total_success = false;
     }
     
-    return apply_success;
+    return total_success;
 }
 
 void GroupPolicyTab::on_context_menu(const QPoint pos) {
