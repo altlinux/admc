@@ -83,6 +83,10 @@ protected:
     // Tests object's existance on the server.
     bool object_exists(const QString &dn);
 
+    // Call this after pressing "Find" button. Needed
+    // because find results are loaded in separate thread.
+    void wait_for_find_results_to_load(QTreeView *view);
+
 };
 
 void navigate_until_object(QTreeView *view, const QString &target_dn);

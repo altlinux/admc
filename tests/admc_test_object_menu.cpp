@@ -345,6 +345,8 @@ void ADMCTestObjectMenu::object_menu_find_simple()
 
     auto find_results = find_dialog->findChild<QTreeView*>();
 
+    wait_for_find_results_to_load(find_results);
+
     QVERIFY2(find_results->model()->rowCount(), "No results found");
 }
 
@@ -387,6 +389,8 @@ void ADMCTestObjectMenu::object_menu_find_advanced()
     QTest::mouseClick(find_button, Qt::LeftButton);    
 
     auto find_results = find_dialog->findChild<QTreeView*>();
+
+    wait_for_find_results_to_load(find_results);
 
     QVERIFY2(find_results->model()->rowCount(), "No results found");
 }
@@ -451,14 +455,7 @@ void ADMCTestObjectMenu::object_menu_add_to_group() {
     auto find_results_view = find_select_dialog->findChild<QTreeView*>();
     QVERIFY2((find_results_view != nullptr), "Failed to cast find_results_view");
 
-    // NOTE: need to wait for find results to load because
-    // it is done in a separate thread
-    int timer = 0;
-    while (find_results_view->model()->rowCount() == 0) {
-        QTest::qWait(1);
-        timer++;
-        QVERIFY2((timer < 1000), "Find results failed to load, took too long");
-    }
+    wait_for_find_results_to_load(find_results_view);
 
     // Select group in view
     navigate_until_object(find_results_view, group_dn);
