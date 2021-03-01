@@ -7,7 +7,6 @@ CHANGELOG
 - Properties: Fixed "Apply"/"Reset" buttons being incorrectly disabled after apply failure. They now stay enabled if any error occured.
 - Properties: Fixed edits and tabs applying old changes if they were previously applied in the same Properties dialog.
 - Member Of/Members tab: Changed primary objects to be selectable. When pressing "Remove" button, a warning opens if any of selected objects are primary, remove action fails.
-- Member Of/Members tab: Changed primary objects to be selectable. When pressing "Remove" button, a warning opens if any of selected objects are primary, remove action fails.
 - Member Of tab: Added "Primary Group" display.
 - Console: Changed drag and drop process to not make server requests while dragging. Dragging will now be smoother.
 - Misc: Implemented recursive delete so now you can delete objects with children. Before this action caused a server error.
