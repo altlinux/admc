@@ -201,21 +201,12 @@ void ADMCTestObjectMenu::object_menu_move() {
     QTreeView *move_dialog_view = qobject_cast<QTreeView *>(QApplication::focusWidget());
     QVERIFY2((move_dialog_view != nullptr), "Failed to cast move_dialog_view");
 
-    // Press right to expand view item
-    auto expand_current =
-    []() {
-        QTest::keyClick(QApplication::focusWidget(), Qt::Key_Right);
-    };
-
     // Select move target in the view
-    // First current item is the head
-    expand_current();
-    navigate_until_object(move_dialog_view, test_arena_dn());
-    expand_current();
     navigate_until_object(move_dialog_view, move_target_dn);
 
     move_dialog->accept();
 
+    QVERIFY2(object_exists(user_dn_after_move), "Moved object doesn't exist");
     QVERIFY2(object_exists(user_dn_after_move), "Moved object doesn't exist");
 
     QVERIFY(true);
@@ -438,14 +429,36 @@ void ADMCTestObjectMenu::object_menu_add_to_group() {
     tab(3);
     QTest::keyClicks(QApplication::focusWidget(), group_name);
 
+    // TODO: button finding code is duplicated
+
     // Press "Find" button
-    tab(4);
-    QTest::keyClick(QApplication::focusWidget(), Qt::Key_Space);
+    QPushButton *find_button =
+    [=]() -> QPushButton *{
+        auto buttons = find_select_dialog->findChildren<QPushButton*>();
+        for (const auto &button : buttons) {
+            if (button->text() == tr(FIND_BUTTON_LABEL)) {
+                return button;
+            }
+        }
+
+        return nullptr;
+    }();
+    QVERIFY2((find_button != nullptr), "Failed to find Find button");
+    
+    QTest::keyClick(find_button, Qt::Key_Space);
 
     // Switch to find results
-    tab(2);
-    QTreeView *find_results_view = qobject_cast<QTreeView *>(QApplication::focusWidget());
+    auto find_results_view = find_select_dialog->findChild<QTreeView*>();
     QVERIFY2((find_results_view != nullptr), "Failed to cast find_results_view");
+
+    // NOTE: need to wait for find results to load because
+    // it is done in a separate thread
+    int timer = 0;
+    while (find_results_view->model()->rowCount() == 0) {
+        QTest::qWait(1);
+        timer++;
+        QVERIFY2((timer < 1000), "Find results failed to load, took too long");
+    }
 
     // Select group in view
     navigate_until_object(find_results_view, group_dn);

@@ -34,6 +34,8 @@
 #define PRINT_FOCUS_WIDGET_AFTER_TAB false
 
 void ADMCTest::initTestCase() {
+    qRegisterMetaType<QHash<QString, AdObject>>("QHash<QString, AdObject>");
+
     QVERIFY2(ad.is_connected(), "Failed to connect to AD server");
 
     // TODO: check for load failure
@@ -119,27 +121,42 @@ void tab(const int n) {
 void navigate_until_object(QTreeView *view, const QString &target_dn) {
     QModelIndex prev_index;
     
-    while (true) {
-        const QModelIndex current_index = view->selectionModel()->currentIndex();
+    QAbstractItemModel *model = view->model();
 
-        const QString current_dn = current_index.data(ObjectRole_DN).toString();
-        const bool found_object = (current_dn == target_dn);
+    QList<QModelIndex> search_stack;
+    
+    // NOTE: start at invalid index to iterate over top items
+    search_stack.append(QModelIndex());
+
+    bool found_object = false;
+
+    while (!search_stack.isEmpty()) {
+        const QModelIndex index = search_stack.takeFirst();
+
+        const QString dn = index.data(ObjectRole_DN).toString();
+
+        // NOTE: need to expand items because some models
+        // used in ADMC load the model dynamically from
+        // server as items are expanded (for example, the
+        // model used by move dialog)
+        const bool is_parent_of_object = (target_dn.contains(dn));
+        if (is_parent_of_object) {
+            view->expand(index);
+        }
+
+        const bool found_object = (dn == target_dn);
         if (found_object) {
-            // NOTE: have to set current to select the row. If the first item in view happens to match and no navigation is done, then that first row won't be "selected". Widgets that select items from views rely on whole rows being selected, like they are when you click on them.
-            view->setCurrentIndex(current_index);
-            break;
+            view->setCurrentIndex(index);
+
+            return;
         }
 
-        // NOTE: when reached end of view, current index
-        // will stop changing
-        const bool navigated_to_end_of_view = (prev_index == current_index);
-        QVERIFY2(!navigated_to_end_of_view, "Navigated to end of view and failed to find object");
-        if (navigated_to_end_of_view) {
-            break;
+        for (int row = 0; row < model->rowCount(index); row++) {
+            const QModelIndex child = model->index(row, 0, index);
+
+            search_stack.append(child);
         }
-
-        QTest::keyClick(QApplication::focusWidget(), Qt::Key_Down);
-
-        prev_index = current_index;
     }
+
+    QFAIL(qPrintable(QString("Failed to navigate to object %1").arg(target_dn)));
 }
