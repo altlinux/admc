@@ -102,227 +102,227 @@
 <context>
     <name>AdInterface</name>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="462"/>
+        <location filename="../src/admc/ad_interface.cpp" line="456"/>
         <source>Added value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="470"/>
+        <location filename="../src/admc/ad_interface.cpp" line="464"/>
         <source>Failed to add value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="414"/>
+        <location filename="../src/admc/ad_interface.cpp" line="408"/>
         <source>Failed to change attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="504"/>
+        <location filename="../src/admc/ad_interface.cpp" line="498"/>
         <source>Deleted value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="512"/>
+        <location filename="../src/admc/ad_interface.cpp" line="506"/>
         <source>Failed to delete value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="609"/>
+        <location filename="../src/admc/ad_interface.cpp" line="603"/>
         <source>Deleted object &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="580"/>
+        <location filename="../src/admc/ad_interface.cpp" line="574"/>
         <source>Failed to delete object &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="676"/>
+        <location filename="../src/admc/ad_interface.cpp" line="670"/>
         <source>Added user &quot;%1&quot; to group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="680"/>
+        <location filename="../src/admc/ad_interface.cpp" line="674"/>
         <source>Failed to add user &quot;%1&quot; to group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="696"/>
+        <location filename="../src/admc/ad_interface.cpp" line="690"/>
         <source>Removed user &quot;%1&quot; from group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="700"/>
+        <location filename="../src/admc/ad_interface.cpp" line="694"/>
         <source>Failed to remove user &quot;%1&quot; from group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="787"/>
+        <location filename="../src/admc/ad_interface.cpp" line="781"/>
         <source>Set primary group for user &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="791"/>
+        <location filename="../src/admc/ad_interface.cpp" line="785"/>
         <source>Failed to set primary group for user &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="730"/>
+        <location filename="../src/admc/ad_interface.cpp" line="724"/>
         <source>Set scope for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="408"/>
+        <location filename="../src/admc/ad_interface.cpp" line="402"/>
         <source>Changed attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="553"/>
+        <location filename="../src/admc/ad_interface.cpp" line="547"/>
         <source>Created object &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="559"/>
+        <location filename="../src/admc/ad_interface.cpp" line="553"/>
         <source>Failed to create object &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="588"/>
+        <location filename="../src/admc/ad_interface.cpp" line="582"/>
         <source>LDAP Operation error - Failed to allocate tree delete control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="596"/>
+        <location filename="../src/admc/ad_interface.cpp" line="590"/>
         <source>LDAP Operation error - Failed to create tree delete control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="630"/>
+        <location filename="../src/admc/ad_interface.cpp" line="624"/>
         <source>Moved object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="637"/>
+        <location filename="../src/admc/ad_interface.cpp" line="631"/>
         <source>Failed to move object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="653"/>
+        <location filename="../src/admc/ad_interface.cpp" line="647"/>
         <source>Renamed object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="660"/>
+        <location filename="../src/admc/ad_interface.cpp" line="654"/>
         <source>Failed to rename object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="734"/>
+        <location filename="../src/admc/ad_interface.cpp" line="728"/>
         <source>Failed to set scope for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="756"/>
+        <location filename="../src/admc/ad_interface.cpp" line="750"/>
         <source>Set type for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="760"/>
+        <location filename="../src/admc/ad_interface.cpp" line="754"/>
         <source>Failed to set type for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="818"/>
+        <location filename="../src/admc/ad_interface.cpp" line="812"/>
         <source>Set password for user &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="822"/>
+        <location filename="../src/admc/ad_interface.cpp" line="816"/>
         <source>Failed to set password for user &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="912"/>
+        <location filename="../src/admc/ad_interface.cpp" line="906"/>
         <source>Failed to disable account for user &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="914"/>
+        <location filename="../src/admc/ad_interface.cpp" line="908"/>
         <source>Failed to enable account for user &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="921"/>
+        <location filename="../src/admc/ad_interface.cpp" line="915"/>
         <source>Failed to turn ON account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="923"/>
+        <location filename="../src/admc/ad_interface.cpp" line="917"/>
         <source>Failed to turn OFF account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1127"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1121"/>
         <source>Server error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="828"/>
+        <location filename="../src/admc/ad_interface.cpp" line="822"/>
         <source>Password doesn&apos;t match rules</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="886"/>
+        <location filename="../src/admc/ad_interface.cpp" line="880"/>
         <source>Disabled account for user - &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="888"/>
+        <location filename="../src/admc/ad_interface.cpp" line="882"/>
         <source>Enabled account for user - &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="895"/>
+        <location filename="../src/admc/ad_interface.cpp" line="889"/>
         <source>Turned ON account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="897"/>
+        <location filename="../src/admc/ad_interface.cpp" line="891"/>
         <source>Turned OFF account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="941"/>
+        <location filename="../src/admc/ad_interface.cpp" line="935"/>
         <source>Unlocked user &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="945"/>
+        <location filename="../src/admc/ad_interface.cpp" line="939"/>
         <source>Failed to unlock user &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1111"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1105"/>
         <source>. Error: &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1120"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1114"/>
         <source>No such object</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1121"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1115"/>
         <source>Constraint violation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1122"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1116"/>
         <source>Server is unwilling to perform</source>
         <translation>Server is unwilling to perform</translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1123"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1117"/>
         <source>Already exists</source>
         <translatorcomment>add &quot;object&quot; to avoid gendering verb in russian</translatorcomment>
         <translation>Object already exists</translation>
@@ -414,102 +414,102 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="363"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="369"/>
         <source>Boolean</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="364"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="370"/>
         <source>Enumeration</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="365"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="371"/>
         <source>Integer</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="366"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="372"/>
         <source>Large Integer</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="367"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="373"/>
         <source>String Case</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="368"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="374"/>
         <source>IA5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="369"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="375"/>
         <source>NT Security Descriptor</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="370"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="376"/>
         <source>Numeric</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="371"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="377"/>
         <source>Object Identifier</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="372"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="378"/>
         <source>Octet</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="373"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="379"/>
         <source>Replica Link</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="374"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="380"/>
         <source>Printable</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="375"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="381"/>
         <source>SID</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="376"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="382"/>
         <source>Teletex</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="377"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="383"/>
         <source>Unicode</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="378"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="384"/>
         <source>UTC Time</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="379"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="385"/>
         <source>Generalized Time</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="380"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="386"/>
         <source>DN String</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="381"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="387"/>
         <source>DN Binary</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/attributes_tab.cpp" line="382"/>
+        <location filename="../src/admc/tabs/attributes_tab.cpp" line="388"/>
         <source>Distinguished Name</source>
         <translation></translation>
     </message>
@@ -754,17 +754,12 @@
 <context>
     <name>FindResults</name>
     <message numerus="yes">
-        <location filename="../src/admc/find_results.cpp" line="133"/>
+        <location filename="../src/admc/find_results.cpp" line="113"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n object</numerusform>
             <numerusform>%n objects</numerusform>
         </translation>
-    </message>
-    <message>
-        <location filename="../src/admc/find_results.cpp" line="139"/>
-        <source>Warning</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -778,32 +773,27 @@
 <context>
     <name>FindWidget</name>
     <message>
-        <location filename="../src/admc/find_widget.cpp" line="65"/>
+        <location filename="../src/admc/find_widget.cpp" line="66"/>
         <source>Browse</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/find_widget.cpp" line="70"/>
-        <source>Quick find</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/admc/find_widget.h" line="37"/>
+        <location filename="../src/admc/find_widget.h" line="40"/>
         <source>Find</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/find_widget.cpp" line="75"/>
+        <location filename="../src/admc/find_widget.cpp" line="74"/>
         <source>Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/find_widget.cpp" line="90"/>
+        <location filename="../src/admc/find_widget.cpp" line="89"/>
         <source>Search in:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/find_widget.cpp" line="140"/>
+        <location filename="../src/admc/find_widget.cpp" line="138"/>
         <source>Select custom search base</source>
         <translation type="unfinished"></translation>
     </message>
@@ -862,22 +852,22 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/group_policy_tab.cpp" line="136"/>
+        <location filename="../src/admc/tabs/group_policy_tab.cpp" line="146"/>
         <source>Remove link</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/group_policy_tab.cpp" line="140"/>
+        <location filename="../src/admc/tabs/group_policy_tab.cpp" line="150"/>
         <source>Move up</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/group_policy_tab.cpp" line="143"/>
+        <location filename="../src/admc/tabs/group_policy_tab.cpp" line="153"/>
         <source>Move down</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/group_policy_tab.cpp" line="153"/>
+        <location filename="../src/admc/tabs/group_policy_tab.cpp" line="163"/>
         <source>Add policy link</source>
         <translation></translation>
     </message>
@@ -962,7 +952,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/main_window.cpp" line="74"/>
+        <location filename="../src/admc/main_window.cpp" line="78"/>
         <source>Ready</source>
         <translation></translation>
     </message>
@@ -993,180 +983,200 @@
 <context>
     <name>MembershipTab</name>
     <message>
-        <location filename="../src/admc/tabs/membership_tab.cpp" line="73"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="76"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/membership_tab.cpp" line="74"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="77"/>
         <source>Folder</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/membership_tab.cpp" line="75"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="78"/>
         <source>Primary</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/membership_tab.cpp" line="76"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="79"/>
         <source>DN</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/membership_tab.cpp" line="84"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="87"/>
         <source>Add</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/membership_tab.cpp" line="85"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="88"/>
         <source>Remove</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/membership_tab.cpp" line="92"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="95"/>
         <source>Set primary group</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/membership_tab.cpp" line="292"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="118"/>
+        <source>Primary group: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="340"/>
         <source>Add user</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/tabs/membership_tab.cpp" line="293"/>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="341"/>
         <source>Add group</source>
         <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="384"/>
+        <source>Can&apos;t remove because this group is a primary group to selected user.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="385"/>
+        <source>Can&apos;t remove because selected group is a primary group to this user.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/admc/tabs/membership_tab.cpp" line="390"/>
+        <source>Error</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MenuBar</name>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="51"/>
+        <location filename="../src/admc/menubar.cpp" line="50"/>
         <source>&amp;Action</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="44"/>
+        <location filename="../src/admc/menubar.cpp" line="43"/>
         <source>&amp;Connect</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="42"/>
+        <location filename="../src/admc/menubar.cpp" line="41"/>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="46"/>
+        <location filename="../src/admc/menubar.cpp" line="45"/>
         <source>&amp;Quit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="53"/>
+        <location filename="../src/admc/menubar.cpp" line="52"/>
         <source>&amp;Navigation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="54"/>
+        <location filename="../src/admc/menubar.cpp" line="53"/>
         <source>&amp;Up one level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="55"/>
+        <location filename="../src/admc/menubar.cpp" line="54"/>
         <source>&amp;Back</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="56"/>
+        <location filename="../src/admc/menubar.cpp" line="55"/>
         <source>&amp;Forward</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="64"/>
+        <location filename="../src/admc/menubar.cpp" line="63"/>
         <source>&amp;View</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="65"/>
+        <location filename="../src/admc/menubar.cpp" line="64"/>
         <source>&amp;Advanced view</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="66"/>
+        <location filename="../src/admc/menubar.cpp" line="65"/>
         <source>&amp;Toggle widgets</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="67"/>
+        <location filename="../src/admc/menubar.cpp" line="66"/>
         <source>&amp;Filter objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="69"/>
+        <location filename="../src/admc/menubar.cpp" line="68"/>
         <source>&amp;Preferences</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="70"/>
+        <location filename="../src/admc/menubar.cpp" line="69"/>
         <source>&amp;Confirm actions</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="73"/>
+        <location filename="../src/admc/menubar.cpp" line="72"/>
         <source>Dev mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="76"/>
+        <location filename="../src/admc/menubar.cpp" line="75"/>
         <source>&amp;Show non-container objects in Console tree</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="77"/>
+        <location filename="../src/admc/menubar.cpp" line="76"/>
         <source>&amp;Put last name before first name when creating users</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="79"/>
+        <location filename="../src/admc/menubar.cpp" line="78"/>
         <source>&amp;Language</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="114"/>
+        <location filename="../src/admc/menubar.cpp" line="113"/>
         <source>Info</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="114"/>
+        <location filename="../src/admc/menubar.cpp" line="113"/>
         <source>App needs to be restarted for the language option to take effect.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="122"/>
+        <location filename="../src/admc/menubar.cpp" line="121"/>
         <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="123"/>
+        <location filename="../src/admc/menubar.cpp" line="122"/>
         <source>&amp;Manual</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="124"/>
+        <location filename="../src/admc/menubar.cpp" line="123"/>
         <source>&amp;About ADMC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="178"/>
+        <location filename="../src/admc/menubar.cpp" line="177"/>
         <source>Version %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="181"/>
+        <location filename="../src/admc/menubar.cpp" line="180"/>
         <source>ADMC is a tool for Active Directory administration.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/menubar.cpp" line="183"/>
+        <location filename="../src/admc/menubar.cpp" line="182"/>
         <source>Copyright (C) 2020 BaseALT Ltd.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1541,17 +1551,17 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/confirmation_dialog.cpp" line="32"/>
+        <location filename="../src/common/utils.cpp" line="217"/>
         <source>Confirm action</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1400"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1395"/>
         <source>Connection error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/ad_interface.cpp" line="1401"/>
+        <location filename="../src/admc/ad_interface.cpp" line="1396"/>
         <source>Failed to connect to server.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1636,7 +1646,7 @@
 <context>
     <name>Status</name>
     <message>
-        <location filename="../src/admc/status.cpp" line="102"/>
+        <location filename="../src/admc/status.cpp" line="101"/>
         <source>Errors occured</source>
         <translation></translation>
     </message>
@@ -1864,73 +1874,73 @@
 <context>
     <name>object_menu</name>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="99"/>
+        <location filename="../src/admc/object_menu.cpp" line="98"/>
         <source>New</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="118"/>
+        <location filename="../src/admc/object_menu.cpp" line="117"/>
         <source>Find</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="126"/>
+        <location filename="../src/admc/object_menu.cpp" line="125"/>
         <source>Add to group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="134"/>
+        <location filename="../src/admc/object_menu.cpp" line="133"/>
         <source>Reset password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="142"/>
+        <location filename="../src/admc/object_menu.cpp" line="141"/>
         <source>Disable account</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="150"/>
+        <location filename="../src/admc/object_menu.cpp" line="149"/>
         <source>Enable account</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="158"/>
+        <location filename="../src/admc/object_menu.cpp" line="157"/>
         <source>Move</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="168"/>
+        <location filename="../src/admc/object_menu.cpp" line="167"/>
         <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="177"/>
+        <location filename="../src/admc/object_menu.cpp" line="176"/>
         <source>Rename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="282"/>
+        <location filename="../src/admc/object_menu.cpp" line="281"/>
         <source>Are you sure you want to delete %1?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="303"/>
-        <location filename="../src/admc/object_menu.cpp" line="414"/>
+        <location filename="../src/admc/object_menu.cpp" line="302"/>
+        <location filename="../src/admc/object_menu.cpp" line="413"/>
         <source>Move %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="330"/>
+        <location filename="../src/admc/object_menu.cpp" line="329"/>
         <source>Add %1 to group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="405"/>
+        <location filename="../src/admc/object_menu.cpp" line="404"/>
         <source>object &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/object_menu.cpp" line="407"/>
+        <location filename="../src/admc/object_menu.cpp" line="406"/>
         <source>multiple objects</source>
         <translation type="unfinished"></translation>
     </message>
