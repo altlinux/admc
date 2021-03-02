@@ -26,8 +26,6 @@
  * error messages in a dialog.
  */
 
-#include <QList>
-
 #include "utils.h"
 
 class QTextEdit;
@@ -52,21 +50,9 @@ public:
 
     void message(const QString &msg, const StatusType &type);
 
-    // To show an error log for operation(s) that result in
-    // Status messages, call start_error_log() before
-    // performing operation(s) and end_error_log(this) after. If
-    // any errors occured, error log will open when
-    // end_error_log(this) is called.
-    void start_error_log();
-    
-    // Returns true if there no errors happened
-    void end_error_log(QWidget *parent);
-
     void display_ad_messages(const AdInterface &ad, QWidget *parent);
 
 private:
-    QList<QString> error_log;
-
     Status();
     DISABLE_COPY_MOVE(Status);
 };

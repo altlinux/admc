@@ -48,10 +48,6 @@ Status::Status() {
 }
 
 void Status::message(const QString &msg, const StatusType &type) {
-    if (type == StatusType_Error) {
-        error_log.append(msg);
-    }
-
     status_bar->showMessage(msg);
     
     const QColor color =
@@ -88,38 +84,6 @@ void Status::message(const QString &msg, const StatusType &type) {
     if (print_errors && type == StatusType_Error) {
         qInfo() << msg;
     }
-}
-
-void Status::start_error_log() {
-    error_log.clear();
-}
-
-void Status::end_error_log(QWidget *parent) {
-    if (error_log.isEmpty()) {
-        return;
-    }
-
-    auto dialog = new QDialog(parent);
-    dialog->setWindowTitle(QCoreApplication::translate("Status", "Errors occured"));
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->setMinimumWidth(600);
-
-    auto log = new QPlainTextEdit();
-    const QString text = error_log.join("\n");
-    log->setPlainText(text);
-
-    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok);
-
-    auto layout = new QVBoxLayout();
-    dialog->setLayout(layout);
-    layout->addWidget(log);
-    layout->addWidget(button_box);
-
-    QObject::connect(
-        button_box, &QDialogButtonBox::accepted,
-        dialog, &QDialog::accept);
-
-    dialog->open();
 }
 
 void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {

@@ -98,8 +98,6 @@ void RenamePolicyDialog::accept() {
     const AdObject object = ad.search_object(target);
     const QString old_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
 
-    STATUS()->start_error_log();
-
     const QString new_name = name_edit->text();
     const bool apply_success = ad.attribute_replace_string(target, ATTRIBUTE_DISPLAY_NAME, new_name);
 
@@ -110,7 +108,7 @@ void RenamePolicyDialog::accept() {
         RenameDialog::fail_msg(old_name);
     }
 
-    STATUS()->end_error_log(this);
+    STATUS()->display_ad_messages(ad, this);
 }
 
 void RenamePolicyDialog::on_edited() {

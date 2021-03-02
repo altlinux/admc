@@ -109,13 +109,11 @@ bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 
     AdInterface ad;
     if (ad_connected(ad)) {
-        STATUS()->start_error_log();
-
         for (const AdObject &dropped : dropped_list) {
             object_drop(ad, dropped, target);
         }
 
-        STATUS()->end_error_log(nullptr);
+        STATUS()->display_ad_messages(ad, nullptr);
     }
 
     return true;

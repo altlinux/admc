@@ -224,8 +224,6 @@ void CreateDialog::accept() {
         return;
     }
 
-    STATUS()->start_error_log();
-
     auto fail_msg =
     [name]() {
         const QString message = QString(tr("Failed to create object \"%1\"")).arg(name);
@@ -263,7 +261,7 @@ void CreateDialog::accept() {
         fail_msg();
     }
     
-    STATUS()->end_error_log(this);
+    STATUS()->display_ad_messages(ad, this);
 }
 
 // Enable/disable create button if all required edits filled

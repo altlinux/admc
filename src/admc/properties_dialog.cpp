@@ -231,8 +231,6 @@ bool PropertiesDialog::apply() {
 
     show_busy_indicator();
 
-    STATUS()->start_error_log();
-
     bool total_apply_success = true;
     
     for (auto tab : tabs) {
@@ -242,7 +240,7 @@ bool PropertiesDialog::apply() {
         }
     }
 
-    STATUS()->end_error_log(this);
+    STATUS()->display_ad_messages(ad, this);
 
     if (total_apply_success) {
         apply_button->setEnabled(false);

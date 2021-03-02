@@ -130,8 +130,6 @@ void RenameDialog::accept() {
         return;
     }
 
-    STATUS()->start_error_log();
-
     const QString new_name = name_edit->text();
     const bool rename_success = ad.object_rename(target, new_name);
 
@@ -149,7 +147,7 @@ void RenameDialog::accept() {
         fail_msg(old_name);
     }
 
-    STATUS()->end_error_log(this);
+    STATUS()->display_ad_messages(ad, this);
 }
 
 void RenameDialog::on_edited() {
