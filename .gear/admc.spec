@@ -1,7 +1,7 @@
 %define _unpackaged_files_terminate_build 1
 
 Name: admc
-Version: 0.4.0
+Version: 0.4.1
 Release: alt1
 
 Summary: AD editor
@@ -79,6 +79,9 @@ cd BUILD
 %_libdir/libgptbackend.so
 
 %changelog
+* Tue Mar 02 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.4.1-alt1
+- 0.4.1
+
 * Mon Feb 15 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.4.0-alt1
 - 0.4.0
 
