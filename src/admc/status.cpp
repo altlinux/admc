@@ -47,7 +47,7 @@ Status::Status() {
     status_log->setReadOnly(true);
 }
 
-void Status::message(const QString &msg, const StatusType &type) {
+void Status::add_message(const QString &msg, const StatusType &type) {
     status_bar->showMessage(msg);
     
     const QColor color =
@@ -90,31 +90,20 @@ void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
     }
 
     //
-    // Display last message in status bar
-    //
-    const AdMessage last_message = messages.last();
-    status_bar->showMessage(last_message.text());
-
-    //
     // Display all messages in status log
     //
-    const QColor original_status_log_color = status_log->textColor();
-
     for (const auto &message : messages) {
-        const QColor color =
+        const StatusType status_type =
         [message]() {
             switch (message.type()) {
-                case AdMessageType_Success: return Qt::darkGreen;
-                case AdMessageType_Error: return Qt::red;
+                case AdMessageType_Success: return StatusType_Success;
+                case AdMessageType_Error: return StatusType_Error;
             }
-            return Qt::black;
+            return StatusType_Success;
         }();
 
-        status_log->setTextColor(color);
-        status_log->append(message.text());
+        add_message(message.text(), status_type);
     }
-
-    status_log->setTextColor(original_status_log_color);
 
     //
     // Display all error messages in error log

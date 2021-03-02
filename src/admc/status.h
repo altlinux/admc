@@ -47,7 +47,7 @@ public:
 
     static Status *instance();
 
-    void message(const QString &msg, const StatusType &type);
+    void add_message(const QString &msg, const StatusType &type);
 
     void display_ad_messages(const AdInterface &ad, QWidget *parent);
 

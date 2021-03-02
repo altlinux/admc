@@ -227,7 +227,7 @@ void CreateDialog::accept() {
     auto fail_msg =
     [name]() {
         const QString message = QString(tr("Failed to create object \"%1\"")).arg(name);
-        STATUS()->message(message, StatusType_Error);
+        STATUS()->add_message(message, StatusType_Error);
     };
 
     const bool add_success = ad.object_add(dn, object_class);
@@ -250,7 +250,7 @@ void CreateDialog::accept() {
         if (apply_success) {
             const QString message = QString(tr("Created object \"%1\"")).arg(name);
 
-            STATUS()->message(message, StatusType_Success);
+            STATUS()->add_message(message, StatusType_Success);
 
             QDialog::accept();
         } else {
