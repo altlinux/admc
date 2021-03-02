@@ -120,6 +120,8 @@ public:
 
     bool is_connected() const;
     QList<AdMessage> messages() const;
+    bool any_error_messages() const;
+    void clear_messages();
 
     // NOTE: If request attributes list is empty, all attributes are returned
 

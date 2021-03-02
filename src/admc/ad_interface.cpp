@@ -133,6 +133,20 @@ QList<AdMessage> AdInterface::messages() const {
     return m_messages;
 }
 
+bool AdInterface::any_error_messages() const {
+    for (const auto &message : m_messages) {
+        if (message.type() == AdMessageType_Error) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void AdInterface::clear_messages() {
+    m_messages.clear();
+}
+
 // Helper f-n for search()
 // NOTE: cookie is starts as NULL. Then after each while
 // loop, it is set to the value returned by

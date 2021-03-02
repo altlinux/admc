@@ -80,10 +80,6 @@ void Status::message(const QString &msg, const StatusType &type) {
     QTextCursor end_cursor = status_log->textCursor();
     end_cursor.movePosition(QTextCursor::End);
     status_log->setTextCursor(end_cursor);
-
-    if (print_errors && type == StatusType_Error) {
-        qInfo() << msg;
-    }
 }
 
 void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
@@ -123,18 +119,7 @@ void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
     //
     // Display all error messages in error log
     //
-    const bool any_errors =
-    [messages]() {
-        for (const auto &message : messages) {
-            if (message.type() == AdMessageType_Error) {
-                return true;
-            }
-        }
-
-        return false;
-    }();
-
-    if (any_errors) {
+    if (ad.any_error_messages()) {
         auto dialog = new QDialog(parent);
         dialog->setWindowTitle(QCoreApplication::translate("Status", "Errors occured"));
         dialog->setAttribute(Qt::WA_DeleteOnClose);

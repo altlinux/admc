@@ -409,6 +409,8 @@ void ADMCTestObjectMenu::object_menu_add_to_group() {
     const bool create_user_success = ad.object_add(user_dn, CLASS_USER);
     QVERIFY2(create_user_success, "Failed to create user");
     QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
+    const bool create_user_success2 = ad.object_add(user_dn, CLASS_USER);
+    QVERIFY2(create_user_success2, "Failed to create user");
 
     // Create test group
     const bool create_group_success = ad.object_add(group_dn, CLASS_GROUP);

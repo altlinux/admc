@@ -42,7 +42,6 @@ enum StatusType {
 class Status {
 
 public:   
-    bool print_errors = false;
     QStatusBar *status_bar;
     QTextEdit *status_log;
 

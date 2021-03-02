@@ -23,7 +23,6 @@
 #include "ad_utils.h"
 #include "ad_object.h"
 #include "ad_config.h"
-#include "status.h"
 #include "object_model.h"
 
 #include <QTest>
@@ -40,9 +39,6 @@ void ADMCTest::initTestCase() {
 
     // TODO: check for load failure
     ADCONFIG()->load(ad);
-
-    // NOTE: temporary band-aid until messages are routed correctly throgh AdInterface instance. This makes status error messages be printed to console. I think it's useful to understand why a test failed. When messages are collected in an AdInterface instances, can just print them here ourselves and avoid touching Status.
-    STATUS()->print_errors = true;
 
     // Cleanup before all tests in-case this test suite was
     // previously interrupted and a cleanup wasn't performed
@@ -63,6 +59,19 @@ void ADMCTest::init() {
 }
 
 void ADMCTest::cleanup() {
+    // Print AD error messages
+    if (ad.any_error_messages()) {
+        qInfo() << "AD errors:";
+
+        for (const auto &message : ad.messages()) {
+            if (message.type() == AdMessageType_Error) {
+                qInfo() << message.text();
+            }
+        }
+    }
+
+    ad.clear_messages();
+
     if (parent_widget != nullptr) {
         delete parent_widget;
         parent_widget = nullptr;
