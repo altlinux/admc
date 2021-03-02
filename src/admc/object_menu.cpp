@@ -285,13 +285,11 @@ void delete_object(const QList<QString> targets, QWidget *parent) {
         AdInterface ad;
 
         if (ad_connected(ad)) {
-            STATUS()->start_error_log();
-
             for (const QString &target : targets) {
                 ad.object_delete(target);
             }
 
-            STATUS()->end_error_log(parent);
+            STATUS()->display_ad_messages(ad, parent);
         }
     }
 }
@@ -309,13 +307,11 @@ void move(const QList<QString> targets, QWidget *parent) {
 
             AdInterface ad;
             if (ad_connected(ad)) {
-                STATUS()->start_error_log();
-
                 for (const QString &target : targets) {
                     ad.object_move(target, selected);
                 }
 
-                STATUS()->end_error_log(parent);
+                STATUS()->display_ad_messages(ad, parent);
             }
         });
 
@@ -336,15 +332,13 @@ void add_to_group(const QList<QString> targets, QWidget *parent) {
 
             AdInterface ad;
             if (ad_connected(ad)) {
-                STATUS()->start_error_log();
-
                 for (const QString &target : targets) {
                     for (auto group : selected) {
                         ad.group_add_member(group, target);
                     }
                 }
 
-                STATUS()->end_error_log(parent);
+                STATUS()->display_ad_messages(ad, parent);
             }
         });
 
@@ -369,26 +363,22 @@ void reset_password(const QString &target, QWidget *parent) {
 void enable_account(const QList<QString> targets, QWidget *parent) {
     AdInterface ad;
     if (ad_connected(ad)) {
-        STATUS()->start_error_log();
-
         for (const QString &target : targets) {
             ad.user_set_account_option(target, AccountOption_Disabled, false);
         }
 
-        STATUS()->end_error_log(parent);
+        STATUS()->display_ad_messages(ad, parent);
     }
 }
 
 void disable_account(const QList<QString> targets, QWidget *parent) {
     AdInterface ad;
     if (ad_connected(ad)) {
-        STATUS()->start_error_log();
-
         for (const QString &target : targets) {
             ad.user_set_account_option(target, AccountOption_Disabled, true);
         }
 
-        STATUS()->end_error_log(parent);
+        STATUS()->display_ad_messages(ad, parent);
     }
 }
 
@@ -420,14 +410,11 @@ void move_object(const QList<QString> targets, QWidget *parent) {
 
             AdInterface ad;
             if (ad_connected(ad)) {
-
-                STATUS()->start_error_log();
-
                 for (const QString &target : targets) {
                     ad.object_move(target, selected);
                 }
 
-                STATUS()->end_error_log(parent);
+                STATUS()->display_ad_messages(ad, parent);
             }
         });
 

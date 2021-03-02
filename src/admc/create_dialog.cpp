@@ -224,16 +224,15 @@ void CreateDialog::accept() {
         return;
     }
 
-    STATUS()->start_error_log();
-
     auto fail_msg =
     [name]() {
         const QString message = QString(tr("Failed to create object \"%1\"")).arg(name);
-        STATUS()->message(message, StatusType_Error);
+        STATUS()->add_message(message, StatusType_Error);
     };
 
     const bool add_success = ad.object_add(dn, object_class);
 
+    bool final_success = false;
     if (add_success) {
         const bool apply_success =
         [this, &ad, dn]() {
@@ -250,20 +249,23 @@ void CreateDialog::accept() {
         }();
 
         if (apply_success) {
-            const QString message = QString(tr("Created object \"%1\"")).arg(name);
-
-            STATUS()->message(message, StatusType_Success);
+            final_success = true;
 
             QDialog::accept();
         } else {
             ad.object_delete(dn);
-            fail_msg();
         }
+    }
+
+    STATUS()->display_ad_messages(ad, this);
+    
+    if (final_success) {
+        const QString message = QString(tr("Created object \"%1\"")).arg(name);
+
+        STATUS()->add_message(message, StatusType_Success);
     } else {
         fail_msg();
     }
-    
-    STATUS()->end_error_log(this);
 }
 
 // Enable/disable create button if all required edits filled

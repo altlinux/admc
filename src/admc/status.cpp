@@ -19,6 +19,8 @@
 
 #include "status.h"
 
+#include "ad_interface.h"
+
 #include <QStatusBar>
 #include <QTextEdit>
 #include <QDialog>
@@ -45,11 +47,7 @@ Status::Status() {
     status_log->setReadOnly(true);
 }
 
-void Status::message(const QString &msg, const StatusType &type) {
-    if (type == StatusType_Error) {
-        error_log.append(msg);
-    }
-
+void Status::add_message(const QString &msg, const StatusType &type) {
     status_bar->showMessage(msg);
     
     const QColor color =
@@ -82,40 +80,67 @@ void Status::message(const QString &msg, const StatusType &type) {
     QTextCursor end_cursor = status_log->textCursor();
     end_cursor.movePosition(QTextCursor::End);
     status_log->setTextCursor(end_cursor);
-
-    if (print_errors && type == StatusType_Error) {
-        qInfo() << msg;
-    }
 }
 
-void Status::start_error_log() {
-    error_log.clear();
-}
+void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
+    const QList<AdMessage> messages = ad.messages();
 
-void Status::end_error_log(QWidget *parent) {
-    if (error_log.isEmpty()) {
+    if (messages.isEmpty()) {
         return;
     }
 
-    auto dialog = new QDialog(parent);
-    dialog->setWindowTitle(QCoreApplication::translate("Status", "Errors occured"));
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->setMinimumWidth(600);
+    //
+    // Display all messages in status log
+    //
+    for (const auto &message : messages) {
+        const StatusType status_type =
+        [message]() {
+            switch (message.type()) {
+                case AdMessageType_Success: return StatusType_Success;
+                case AdMessageType_Error: return StatusType_Error;
+            }
+            return StatusType_Success;
+        }();
 
-    auto log = new QPlainTextEdit();
-    const QString text = error_log.join("\n");
-    log->setPlainText(text);
+        add_message(message.text(), status_type);
+    }
 
-    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok);
+    //
+    // Display all error messages in error log
+    //
+    if (ad.any_error_messages()) {
+        auto dialog = new QDialog(parent);
+        dialog->setWindowTitle(QCoreApplication::translate("Status", "Errors occured"));
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->setMinimumWidth(600);
 
-    auto layout = new QVBoxLayout();
-    dialog->setLayout(layout);
-    layout->addWidget(log);
-    layout->addWidget(button_box);
+        const QString errors_text =
+        [messages]() {
+            QList<QString> errors;
 
-    QObject::connect(
-        button_box, &QDialogButtonBox::accepted,
-        dialog, &QDialog::accept);
+            for (const auto &message : messages) {
+                if (message.type() == AdMessageType_Error) {
+                    errors.append(message.text());
+                }
+            }
+            
+            return errors.join("\n");
+        }();
 
-    dialog->open();
+        auto errors_display = new QPlainTextEdit();
+        errors_display->setPlainText(errors_text);
+
+        auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok);
+
+        auto layout = new QVBoxLayout();
+        dialog->setLayout(layout);
+        layout->addWidget(errors_display);
+        layout->addWidget(button_box);
+
+        QObject::connect(
+            button_box, &QDialogButtonBox::accepted,
+            dialog, &QDialog::accept);
+
+        dialog->open();
+    }
 }

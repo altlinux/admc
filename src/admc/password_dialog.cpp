@@ -93,11 +93,9 @@ void PasswordDialog::accept() {
         return;
     }
 
-    STATUS()->start_error_log();
-
     edits_apply(ad, edits, target);
 
     QDialog::close();
 
-    STATUS()->end_error_log(this);
+    STATUS()->display_ad_messages(ad, this);
 }

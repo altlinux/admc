@@ -22,7 +22,6 @@
 #include "ad_utils.h"
 #include "ad_object.h"
 #include "attribute_display.h"
-#include "status.h"
 #include "utils.h"
 
 #include <ldap.h>
@@ -128,6 +127,24 @@ AdInterface::~AdInterface() {
 
 bool AdInterface::is_connected() const {
     return m_is_connected;
+}
+
+QList<AdMessage> AdInterface::messages() const {
+    return m_messages;
+}
+
+bool AdInterface::any_error_messages() const {
+    for (const auto &message : m_messages) {
+        if (message.type() == AdMessageType_Error) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void AdInterface::clear_messages() {
+    m_messages.clear();
 }
 
 // Helper f-n for search()
@@ -1092,7 +1109,8 @@ void AdInterface::success_status_message(const QString &msg, const DoStatusMsg d
         return;
     }
 
-    Status::instance()->message(msg, StatusType_Success);
+    const AdMessage message(msg, AdMessageType_Success);
+    m_messages.append(message);
 }
 
 void AdInterface::error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg) {
@@ -1105,7 +1123,8 @@ void AdInterface::error_status_message(const QString &context, const QString &er
         msg += QString(tr(". Error: \"%1\"")).arg(error);;
     }
 
-    Status::instance()->message(msg, StatusType_Error);
+    const AdMessage message(msg, AdMessageType_Error);
+    m_messages.append(message);
 }
 
 QString AdInterface::default_error() const {
@@ -1426,3 +1445,18 @@ bool AdCookie::more_pages() const {
 AdCookie::~AdCookie() {
     ber_bvfree(cookie);
 }
+
+AdMessage::AdMessage(const QString &text, const AdMessageType &type) {
+    m_text = text;
+    m_type = type;
+}
+
+QString AdMessage::text() const {
+    return m_text;
+}
+
+AdMessageType AdMessage::type() const {
+    return m_type;
+}
+
+

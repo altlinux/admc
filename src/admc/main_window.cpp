@@ -102,12 +102,10 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 void MainWindow::connect_to_server() {
     AdInterface ad;
     if (ad_connected(ad)) {
-        STATUS()->start_error_log();
-
         // TODO: check for load failure
         ADCONFIG()->load(ad);
 
-        STATUS()->end_error_log(this);
+        STATUS()->display_ad_messages(ad, this);
 
         init();
     }

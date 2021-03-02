@@ -108,12 +108,12 @@ RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
 
 void RenameDialog::success_msg(const QString &old_name) {
     const QString message = QString(tr("Renamed object \"%1\"")).arg(old_name);
-    STATUS()->message(message, StatusType_Success);
+    STATUS()->add_message(message, StatusType_Success);
 }
 
 void RenameDialog::fail_msg(const QString &old_name) {
     const QString message = QString(tr("Failed to rename object \"%1\"")).arg(old_name);
-    STATUS()->message(message, StatusType_Error);
+    STATUS()->add_message(message, StatusType_Error);
 }
 
 void RenameDialog::accept() {
@@ -130,26 +130,28 @@ void RenameDialog::accept() {
         return;
     }
 
-    STATUS()->start_error_log();
-
     const QString new_name = name_edit->text();
     const bool rename_success = ad.object_rename(target, new_name);
 
+    bool final_success = false;
     if (rename_success) {
         const QString new_dn = dn_rename(target, new_name);
         const bool apply_success = edits_apply(ad, all_edits, new_dn);
 
         if (apply_success) {
-            success_msg(old_name);
+            final_success = true;
+
             QDialog::close();
-        } else {
-            fail_msg(old_name);
         }
+    }
+
+    STATUS()->display_ad_messages(ad, this);
+
+    if (final_success) {
+        success_msg(old_name);
     } else {
         fail_msg(old_name);
     }
-
-    STATUS()->end_error_log(this);
 }
 
 void RenameDialog::on_edited() {
