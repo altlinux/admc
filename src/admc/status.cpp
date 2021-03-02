@@ -19,6 +19,8 @@
 
 #include "status.h"
 
+#include "ad_interface.h"
+
 #include <QStatusBar>
 #include <QTextEdit>
 #include <QDialog>
@@ -118,4 +120,89 @@ void Status::end_error_log(QWidget *parent) {
         dialog, &QDialog::accept);
 
     dialog->open();
+}
+
+void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
+    const QList<AdMessage> messages = ad.messages();
+
+    if (messages.isEmpty()) {
+        return;
+    }
+
+    //
+    // Display last message in status bar
+    //
+    const AdMessage last_message = messages.last();
+    status_bar->showMessage(last_message.text());
+
+    //
+    // Display all messages in status log
+    //
+    const QColor original_status_log_color = status_log->textColor();
+
+    for (const auto &message : messages) {
+        const QColor color =
+        [message]() {
+            switch (message.type()) {
+                case AdMessageType_Success: return Qt::darkGreen;
+                case AdMessageType_Error: return Qt::red;
+            }
+            return Qt::black;
+        }();
+
+        status_log->setTextColor(color);
+        status_log->append(message.text());
+    }
+
+    status_log->setTextColor(original_status_log_color);
+
+    //
+    // Display all error messages in error log
+    //
+    const bool any_errors =
+    [messages]() {
+        for (const auto &message : messages) {
+            if (message.type() == AdMessageType_Error) {
+                return true;
+            }
+        }
+
+        return false;
+    }();
+
+    if (any_errors) {
+        auto dialog = new QDialog(parent);
+        dialog->setWindowTitle(QCoreApplication::translate("Status", "Errors occured"));
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->setMinimumWidth(600);
+
+        const QString errors_text =
+        [messages]() {
+            QList<QString> errors;
+
+            for (const auto &message : messages) {
+                if (message.type() == AdMessageType_Error) {
+                    errors.append(message.text());
+                }
+            }
+            
+            return errors.join("\n");
+        }();
+
+        auto errors_display = new QPlainTextEdit();
+        errors_display->setPlainText(errors_text);
+
+        auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok);
+
+        auto layout = new QVBoxLayout();
+        dialog->setLayout(layout);
+        layout->addWidget(errors_display);
+        layout->addWidget(button_box);
+
+        QObject::connect(
+            button_box, &QDialogButtonBox::accepted,
+            dialog, &QDialog::accept);
+
+        dialog->open();
+    }
 }

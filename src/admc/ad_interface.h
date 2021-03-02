@@ -119,6 +119,7 @@ public:
     ~AdInterface();
 
     bool is_connected() const;
+    QList<AdMessage> messages() const;
 
     // NOTE: If request attributes list is empty, all attributes are returned
 
@@ -175,7 +176,7 @@ private:
     QString domain;
     QString domain_head;
     QString host;
-    QList<AdMessage> messages;
+    QList<AdMessage> m_messages;
 
     void success_status_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     void error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg = DoStatusMsg_Yes);

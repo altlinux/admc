@@ -129,6 +129,10 @@ bool AdInterface::is_connected() const {
     return m_is_connected;
 }
 
+QList<AdMessage> AdInterface::messages() const {
+    return m_messages;
+}
+
 // Helper f-n for search()
 // NOTE: cookie is starts as NULL. Then after each while
 // loop, it is set to the value returned by
@@ -1092,7 +1096,7 @@ void AdInterface::success_status_message(const QString &msg, const DoStatusMsg d
     }
 
     const AdMessage message(msg, AdMessageType_Success);
-    messages.append(message);
+    m_messages.append(message);
 }
 
 void AdInterface::error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg) {
@@ -1106,7 +1110,7 @@ void AdInterface::error_status_message(const QString &context, const QString &er
     }
 
     const AdMessage message(msg, AdMessageType_Error);
-    messages.append(message);
+    m_messages.append(message);
 }
 
 QString AdInterface::default_error() const {

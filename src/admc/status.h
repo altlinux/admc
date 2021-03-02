@@ -34,6 +34,7 @@ class QTextEdit;
 class QStatusBar;
 class QString;
 class QWidget;
+class AdInterface;
 
 enum StatusType {
     StatusType_Success,
@@ -60,6 +61,8 @@ public:
     
     // Returns true if there no errors happened
     void end_error_log(QWidget *parent);
+
+    void display_ad_messages(const AdInterface &ad, QWidget *parent);
 
 private:
     QList<QString> error_log;
