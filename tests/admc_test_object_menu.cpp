@@ -374,7 +374,8 @@ void ADMCTestObjectMenu::object_menu_find_advanced()
     QTest::keyClick(QApplication::focusWidget(), Qt::Key_Right);
     tab();
 
-    QTest::keyClicks(QApplication::focusWidget(), QString("(objectClass=*)"));
+    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DN, user_dn);
+    QTest::keyClicks(QApplication::focusWidget(), filter);
 
     auto children = find_dialog->findChildren<QPushButton*>();
     QPushButton* find_button = nullptr;
