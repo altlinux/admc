@@ -2,7 +2,7 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
- VERSION 0.4.1 (WIP)
+ VERSION 0.4.1 (Released 02-03-2021)
 -----------------------------------------------------------------------
 - Properties: Fixed "Apply"/"Reset" buttons being incorrectly disabled after apply failure. They now stay enabled if any error occured.
 - Properties: Fixed edits and tabs applying old changes if they were previously applied in the same Properties dialog.
