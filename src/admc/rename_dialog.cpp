@@ -133,21 +133,25 @@ void RenameDialog::accept() {
     const QString new_name = name_edit->text();
     const bool rename_success = ad.object_rename(target, new_name);
 
+    bool final_success = false;
     if (rename_success) {
         const QString new_dn = dn_rename(target, new_name);
         const bool apply_success = edits_apply(ad, all_edits, new_dn);
 
         if (apply_success) {
-            success_msg(old_name);
+            final_success = true;
+
             QDialog::close();
-        } else {
-            fail_msg(old_name);
         }
-    } else {
-        fail_msg(old_name);
     }
 
     STATUS()->display_ad_messages(ad, this);
+
+    if (final_success) {
+        success_msg(old_name);
+    } else {
+        fail_msg(old_name);
+    }
 }
 
 void RenameDialog::on_edited() {
