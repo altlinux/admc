@@ -84,6 +84,24 @@ signals:
 
 AdSignals *ADSIGNALS();
 
+enum AdMessageType {
+    AdMessageType_Success,
+    AdMessageType_Error
+};
+
+class AdMessage {
+
+public:
+    AdMessage(const QString &text, const AdMessageType &type);
+
+    QString text() const;
+    AdMessageType type() const;
+
+private:
+    QString m_text;
+    AdMessageType m_type;
+};
+
 class AdInterface {
 Q_DECLARE_TR_FUNCTIONS(AdInterface)
 
@@ -157,6 +175,7 @@ private:
     QString domain;
     QString domain_head;
     QString host;
+    QList<AdMessage> messages;
 
     void success_status_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     void error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg = DoStatusMsg_Yes);
