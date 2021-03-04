@@ -24,6 +24,7 @@
 #include "status.h"
 #include "object_menu.h"
 #include "config.h"
+#include "help_browser.h"
 
 #include <QMenu>
 #include <QLocale>
@@ -35,6 +36,14 @@
 #include <QVBoxLayout>
 #include <QDialogButtonBox>
 #include <QPushButton>
+
+#include <QHelpEngine>
+#include <QHelpContentWidget>
+#include <QHelpIndexWidget>
+#include <QTabWidget>
+#include <QSplitter>
+#include <QVBoxLayout>
+#include <QStandardPaths>
 
 MenuBar::MenuBar()
 : QMenuBar() {
@@ -150,24 +159,59 @@ void MenuBar::go_online() {
 }
 
 void MenuBar::manual() {
-    auto dialog = new QDialog(this);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    const QString help_collection_path = QStandardPaths::writableLocation(QStandardPaths::QStandardPaths::AppDataLocation) + "/admc.qhc";
 
-    auto label = new QLabel("Under construction");
+    // NOTE: load .qch file from sources for
+    // debug/development builds. This is so that you can
+    // edit the help file and see changes on the fly without
+    // having to install it.
+    const QString compressed_help_path =
+    []() {
+        #ifdef QT_DEBUG
+        trace();
+        return QCoreApplication::applicationDirPath() + "/doc/admc.qch";
+        #endif        
 
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
+        return QStandardPaths::locate(QStandardPaths::GenericDataLocation, "admc.qch");
+    }();
 
-    auto layout = new QVBoxLayout();
-    dialog->setLayout(layout);
-    layout->addWidget(label);
-    layout->addWidget(button_box);
+    qDebug() << ".qhc = " << help_collection_path;
+    qDebug() << ".qch = " << compressed_help_path;
 
-    connect(
-        ok_button, &QPushButton::clicked,
-        dialog, &QDialog::accept);
+    auto help_engine = new QHelpEngine(help_collection_path, this);
+    const bool help_setup_success = help_engine->setupData();
+    if (!help_setup_success) {
+        qDebug() << "help_engine setupData() call failed";
+        qDebug() << "Help engine error : " << qPrintable(help_engine->error());
+    }
 
-    dialog->open();
+    // NOTE: unregister previous version of this help file. Not sure about this. This is required for development so that when you make changes to help file the new one is loaded. Maybe just make a new .qhc file everytime?
+    help_engine->unregisterDocumentation("alt.basealt.admc");
+
+    const bool help_register_success = help_engine->registerDocumentation(compressed_help_path);
+    if (!help_register_success) {
+        qDebug() << "help_engine registerDocumentation() call failed";
+        qDebug() << "Help engine error : " << qPrintable(help_engine->error());
+    }
+
+    auto tab_widget = new QTabWidget();
+    tab_widget->addTab(help_engine->contentWidget(), "Contents");
+    tab_widget->addTab(help_engine->indexWidget(), "Index");
+
+    auto help_browser = new HelpBrowser(help_engine);
+    
+    auto splitter = new QSplitter(Qt::Horizontal);
+    splitter->insertWidget(0, tab_widget);
+    splitter->insertWidget(1, help_browser);
+
+    auto help_dialog = new QDialog();
+    help_dialog->setAttribute(Qt::WA_DeleteOnClose);
+    help_dialog->setMinimumSize(800, 600);
+
+    help_dialog->setLayout(new QVBoxLayout());
+    help_dialog->layout()->addWidget(splitter);
+    
+    help_dialog->open();
 }
 
 void MenuBar::about() {

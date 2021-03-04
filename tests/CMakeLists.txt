@@ -4,6 +4,7 @@ find_package(Qt5 REQUIRED
         Core
         Widgets
         Test
+        Help
 )
 
 find_package(Uuid REQUIRED)
@@ -96,6 +97,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/edits/manager_edit.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/object_drag.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/search_thread.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/help_browser.cpp
 
     ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/common/settings.cpp
@@ -137,6 +139,7 @@ foreach(target ${TEST_TARGETS})
         Qt5::Core
         Qt5::Widgets
         Qt5::Test
+        Qt5::Help
         Uuid::Uuid
         Smbclient::Smbclient
         Krb5::Krb5

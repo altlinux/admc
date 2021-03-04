@@ -33,6 +33,7 @@ Requires: libsasl2
 Requires: libsmbclient
 Requires: libuuid
 Requires: qt5-base-common
+Requires: libqt5-help
 Requires: glib2
 Requires: libkrb5
 
@@ -68,6 +69,7 @@ cd BUILD
 
 %files
 %doc README.md
+%_datadir/admc.qch
 %_bindir/admc
 
 %files test
