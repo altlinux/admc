@@ -42,7 +42,7 @@ MenuBar::MenuBar()
 
     connect_action = file_menu->addAction(tr("&Connect"));
 
-    auto quit_action = file_menu->addAction(tr("&Quit"),
+    file_menu->addAction(tr("&Quit"),
         []() {
             QApplication::quit();
         });
@@ -119,21 +119,8 @@ MenuBar::MenuBar()
     add_language_action(QLocale::Russian);
 
     QMenu *help_menu = addMenu(tr("&Help"));
-    auto manual_action = help_menu->addAction(tr("&Manual"), this, &MenuBar::manual);
-    auto about_action = help_menu->addAction(tr("&About ADMC"), this, &MenuBar::about);
-
-    // While offline, most actions are disabled with a few
-    // exceptions
-    enable_actions(false);
-    const QList<QAction *> actions_enabled_when_offline = {
-        connect_action,
-        quit_action,
-        manual_action,
-        about_action,
-    };
-    for (auto action : actions_enabled_when_offline) {
-        action->setEnabled(true);
-    }
+    help_menu->addAction(tr("&Manual"), this, &MenuBar::manual);
+    help_menu->addAction(tr("&About ADMC"), this, &MenuBar::about);
 
     connect(
         toggle_widgets_action, &QAction::triggered,
@@ -143,9 +130,7 @@ MenuBar::MenuBar()
         });
 }
 
-// Once connected, everything is enabled and connect is removed
 void MenuBar::go_online() {
-    enable_actions(true);
     file_menu->removeAction(connect_action);
 }
 
@@ -196,18 +181,4 @@ void MenuBar::about() {
         dialog, &QDialog::accept);
 
     dialog->open();
-}
-
-void MenuBar::enable_actions(const bool enabled) {
-    for (auto menu_action : actions()) {
-        QMenu *menu = menu_action->menu();
-
-        if (menu != nullptr) {
-            const QList<QAction *> actions = menu->actions();
-
-            for (auto action : actions) {
-                action->setEnabled(enabled);
-            }
-        }
-    }
 }

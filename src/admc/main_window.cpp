@@ -70,9 +70,6 @@ MainWindow::MainWindow()
 // because some widgets require text strings that need to be
 // obtained from the server
 void MainWindow::init() {
-    // NOTE: this must be called first there, because the
-    // rest of init() needs to disable some actions and
-    // menubar->go_online() enables all actions
     menubar->go_online();
     
     STATUS()->status_bar->showMessage(tr("Ready"));

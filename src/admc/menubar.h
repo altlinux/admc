@@ -48,8 +48,6 @@ private slots:
     void about();
 
 private:
-    void enable_actions(const bool enabled);
-
     QMenu *file_menu;
 };
 
