@@ -185,9 +185,6 @@ void MenuBar::manual() {
         qDebug() << "Help engine error : " << qPrintable(help_engine->error());
     }
 
-    // NOTE: unregister previous version of this help file. Not sure about this. This is required for development so that when you make changes to help file the new one is loaded. Maybe just make a new .qhc file everytime?
-    help_engine->unregisterDocumentation("alt.basealt.admc");
-
     const bool help_register_success = help_engine->registerDocumentation(compressed_help_path);
     if (!help_register_success) {
         qDebug() << "help_engine registerDocumentation() call failed";
