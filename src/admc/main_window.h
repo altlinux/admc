@@ -26,6 +26,7 @@
 class MenuBar;
 class ContentsWidget;
 class ContainersWidget;
+class Console;
 
 class MainWindow final : public QMainWindow {
 Q_OBJECT
@@ -38,8 +39,8 @@ protected:
 
 private:
     MenuBar *menubar;
+    Console *console;
 
-    void init();
     void connect_to_server();
 };
 

@@ -43,15 +43,19 @@ class AdObject;
 class MenuBar;
 class QLabel;
 class QSortFilterProxyModel;
+class AdInterface;
 template <typename T> class QList;
 
 class Console final : public QWidget {
 Q_OBJECT
 
-public:
-    FilterDialog *filter_dialog;
-    
+public:    
     Console(MenuBar *menubar_arg);
+
+    void go_online(AdInterface &ad);
+
+public slots:
+    void open_filter_dialog();
 
 private slots:
     void refresh_head();
@@ -78,6 +82,7 @@ private:
     QWidget *results_header;
     QLabel *results_header_label;
     QSortFilterProxyModel *results_proxy_model;
+    FilterDialog *filter_dialog;
 
     // NOTE: store target history as scope node id's
     // Last is closest to current

@@ -57,25 +57,10 @@ MainWindow::MainWindow()
     QStatusBar *status_bar = STATUS()->status_bar;
     setStatusBar(status_bar);
 
-    auto dummy_widget = new QWidget();
-    setCentralWidget(dummy_widget);
-
-    connect(
-        menubar->connect_action, &QAction::triggered,
-        this, &MainWindow::connect_to_server);
-    connect_to_server();
-}
-
-// NOTE: need to finish creating widgets after connection
-// because some widgets require text strings that need to be
-// obtained from the server
-void MainWindow::init() {
-    menubar->go_online();
-    
     STATUS()->status_bar->showMessage(tr("Ready"));
     SETTINGS()->connect_toggle_widget(STATUS()->status_log, BoolSetting_ShowStatusLog);
 
-    auto console = new Console(menubar);
+    console = new Console(menubar);
 
     auto vert_splitter = new QSplitter(Qt::Vertical);
     vert_splitter->addWidget(STATUS()->status_log);
@@ -87,7 +72,12 @@ void MainWindow::init() {
 
     connect(
         menubar->filter_action, &QAction::triggered,
-        console->filter_dialog, &QDialog::open);
+        console, &Console::open_filter_dialog);
+    connect(
+        menubar->connect_action, &QAction::triggered,
+        this, &MainWindow::connect_to_server);
+
+    connect_to_server();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -104,6 +94,7 @@ void MainWindow::connect_to_server() {
 
         STATUS()->display_ad_messages(ad, this);
 
-        init();
+        menubar->go_online();
+        console->go_online(ad);
     }
 }

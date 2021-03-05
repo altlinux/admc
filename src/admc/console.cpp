@@ -66,6 +66,8 @@ Console::Console(MenuBar *menubar_arg)
 {
     menubar = menubar_arg;
 
+    filter_dialog = nullptr;
+
     scope_model = new ConsoleDragModel(0, 1, this);
 
     scope_view = new QTreeView(this);
@@ -204,6 +206,8 @@ Console::Console(MenuBar *menubar_arg)
     connect(
         menubar->forward_action, &QAction::triggered,
         this, &Console::navigate_forward);
+    
+    update_navigation_actions();
 
     connect(
         menubar->action_menu, &QMenu::aboutToShow,
@@ -218,19 +222,25 @@ Console::Console(MenuBar *menubar_arg)
 
     SETTINGS()->connect_toggle_widget(scope_view, BoolSetting_ShowConsoleTree);
     SETTINGS()->connect_toggle_widget(results_header, BoolSetting_ShowResultsHeader);
+}
 
-    // TODO: handle connect/search failure
+void Console::go_online(AdInterface &ad) {
+    // NOTE: filter dialog requires a connection to load
+    // display strings from adconfig so create it here
+    filter_dialog = new FilterDialog(this);
 
-    // Load head object
-    AdInterface ad;
-    if (ad_connected(ad)) {
-        const QString head_dn = ADCONFIG()->domain_head();
-        const AdObject head_object = ad.search_object(head_dn);
-        auto head_item = make_scope_item(head_object);
-        scope_model->appendRow(head_item);
+    const QString head_dn = ADCONFIG()->domain_head();
+    const AdObject head_object = ad.search_object(head_dn);
+    auto head_item = make_scope_item(head_object);
+    scope_model->appendRow(head_item);
 
-        // Make head object current
-        scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+    // Make head object current
+    scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+}
+
+void Console::open_filter_dialog() {
+    if (filter_dialog != nullptr) {
+        filter_dialog->open();
     }
 }
 
