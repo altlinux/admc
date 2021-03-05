@@ -19,17 +19,12 @@
 
 #include "main_window.h"
 #include "menubar.h"
-#include "properties_dialog.h"
 #include "status.h"
 #include "settings.h"
-#include "policies_widget.h"
 #include "ad_interface.h"
 #include "ad_config.h"
-#include "object_model.h"
-#include "filter_dialog.h"
-#include "object_menu.h"
 #include "console.h"
-#include "utils.h"
+#include "toggle_widgets_dialog.h"
 
 #include <QApplication>
 #include <QString>
@@ -49,18 +44,13 @@ MainWindow::MainWindow()
         resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
     }
 
-    // Setup menubar, status bar and a dummy central widget
-    // for display in offline state
-    menubar = new MenuBar();
-    setMenuBar(menubar);
-
     QStatusBar *status_bar = STATUS()->status_bar;
     setStatusBar(status_bar);
 
     STATUS()->status_bar->showMessage(tr("Ready"));
     SETTINGS()->connect_toggle_widget(STATUS()->status_log, BoolSetting_ShowStatusLog);
 
-    console = new Console(menubar);
+    console = new Console();
 
     auto vert_splitter = new QSplitter(Qt::Vertical);
     vert_splitter->addWidget(STATUS()->status_log);
@@ -70,14 +60,20 @@ MainWindow::MainWindow()
 
     setCentralWidget(vert_splitter);
 
+    connect_action = new QAction(tr("&Connect"));
+
+    auto menubar = new MenuBar(this, console);
+    setMenuBar(menubar);
+
     connect(
-        menubar->filter_action, &QAction::triggered,
-        console, &Console::open_filter_dialog);
-    connect(
-        menubar->connect_action, &QAction::triggered,
+        connect_action, &QAction::triggered,
         this, &MainWindow::connect_to_server);
 
     connect_to_server();
+}
+
+QAction *MainWindow::get_connect_action() const {
+    return connect_action;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -94,7 +90,7 @@ void MainWindow::connect_to_server() {
 
         STATUS()->display_ad_messages(ad, this);
 
-        menubar->go_online();
         console->go_online(ad);
+        connect_action->setEnabled(false);
     }
 }

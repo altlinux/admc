@@ -40,7 +40,6 @@ class ObjectMenu;
 class QPoint;
 class QStandardItem;
 class AdObject;
-class MenuBar;
 class QLabel;
 class QSortFilterProxyModel;
 class AdInterface;
@@ -50,12 +49,15 @@ class Console final : public QWidget {
 Q_OBJECT
 
 public:    
-    Console(MenuBar *menubar_arg);
+    Console();
 
     void go_online(AdInterface &ad);
+    void load_menu(QMenu *menu);
 
-public slots:
-    void open_filter_dialog();
+    QAction *get_navigate_up_action() const;
+    QAction *get_navigate_back_action() const;
+    QAction *get_navigate_forward_action() const;
+    QAction *get_open_filter_action() const;
 
 private slots:
     void refresh_head();
@@ -72,17 +74,21 @@ private slots:
     void navigate_forward();
 
     void on_result_item_double_clicked(const QModelIndex &index);
+    void open_filter();
 
 private:
     QTreeView *scope_view;
     QTreeView *results_view;
     QStandardItemModel *scope_model;
     QTreeView *focused_view;
-    MenuBar *menubar;
     QWidget *results_header;
     QLabel *results_header_label;
     QSortFilterProxyModel *results_proxy_model;
     FilterDialog *filter_dialog;
+    QAction *navigate_up_action;
+    QAction *navigate_back_action;
+    QAction *navigate_forward_action;
+    QAction *open_filter_action;
 
     // NOTE: store target history as scope node id's
     // Last is closest to current
@@ -92,7 +98,6 @@ private:
     int targets_current;
     bool navigated_through_history = false;
 
-    void load_menu(QMenu *menu);
     void open_context_menu(const QPoint pos);
     void load_results_row(QList<QStandardItem *> row, const AdObject &object);
     void make_results_row(QStandardItemModel * model, const AdObject &object);

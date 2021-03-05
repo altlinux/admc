@@ -21,11 +21,7 @@
 #define MAIN_WINDOW_H
 
 #include <QMainWindow>
-#include <QModelIndex>
 
-class MenuBar;
-class ContentsWidget;
-class ContainersWidget;
 class Console;
 
 class MainWindow final : public QMainWindow {
@@ -34,12 +30,14 @@ Q_OBJECT
 public:
     MainWindow();
 
+    QAction *get_connect_action() const;
+
 protected:
     void closeEvent(QCloseEvent *event);
 
 private:
-    MenuBar *menubar;
     Console *console;
+    QAction *connect_action;
 
     void connect_to_server();
 };

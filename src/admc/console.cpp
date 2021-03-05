@@ -33,7 +33,6 @@
 #include "filter_widget/filter_widget.h"
 #include "object_menu.h"
 #include "console_drag_model.h"
-#include "menubar.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -61,10 +60,13 @@ bool object_should_be_in_scope(const AdObject &object);
 
 QHash<int, QStandardItemModel *> scope_id_to_results;
 
-Console::Console(MenuBar *menubar_arg)
+Console::Console()
 : QWidget()
 {
-    menubar = menubar_arg;
+    navigate_up_action = new QAction(tr("&Up one level"), this);
+    navigate_back_action = new QAction(tr("&Back"), this);
+    navigate_forward_action = new QAction(tr("&Forward"), this);
+    open_filter_action = new QAction(tr("&Filter objects"));
 
     filter_dialog = nullptr;
 
@@ -192,22 +194,16 @@ Console::Console(MenuBar *menubar_arg)
         this, &Console::refresh_head);
 
     connect(
-        menubar->up_one_level_action, &QAction::triggered,
+        navigate_up_action, &QAction::triggered,
         this, &Console::navigate_up);
     connect(
-        menubar->back_action, &QAction::triggered,
+        navigate_back_action, &QAction::triggered,
         this, &Console::navigate_back);
     connect(
-        menubar->forward_action, &QAction::triggered,
+        navigate_forward_action, &QAction::triggered,
         this, &Console::navigate_forward);
     
     update_navigation_actions();
-
-    connect(
-        menubar->action_menu, &QMenu::aboutToShow,
-        [this]() {
-            load_menu(menubar->action_menu);
-        });
 
     const BoolSettingSignal *dev_mode_signal = SETTINGS()->get_bool_signal(BoolSetting_DevMode);
     connect(
@@ -216,6 +212,10 @@ Console::Console(MenuBar *menubar_arg)
 
     SETTINGS()->connect_toggle_widget(scope_view, BoolSetting_ShowConsoleTree);
     SETTINGS()->connect_toggle_widget(results_header, BoolSetting_ShowResultsHeader);
+
+    connect(
+        open_filter_action, &QAction::triggered,
+        this, &Console::open_filter);
 }
 
 void Console::go_online(AdInterface &ad) {
@@ -235,10 +235,26 @@ void Console::go_online(AdInterface &ad) {
     scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 }
 
-void Console::open_filter_dialog() {
+void Console::open_filter() {
     if (filter_dialog != nullptr) {
         filter_dialog->open();
     }
+}
+
+QAction *Console::get_navigate_up_action() const {
+    return navigate_up_action;
+}
+
+QAction *Console::get_navigate_back_action() const {
+    return navigate_back_action;
+}
+
+QAction *Console::get_navigate_forward_action() const {
+    return navigate_forward_action;
+}
+
+QAction *Console::get_open_filter_action() const {
+    return open_filter_action;
 }
 
 void Console::refresh_head() {
@@ -767,8 +783,8 @@ QStandardItem *Console::make_scope_item(const AdObject &object) {
 
 // NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
 void Console::update_navigation_actions() {
-    menubar->back_action->setEnabled(!targets_past.isEmpty());
-    menubar->forward_action->setEnabled(!targets_future.isEmpty());
+    navigate_back_action->setEnabled(!targets_past.isEmpty());
+    navigate_forward_action->setEnabled(!targets_future.isEmpty());
 }
 
 QModelIndex Console::get_scope_node_from_id(const int id) const {

@@ -22,33 +22,25 @@
 
 #include <QMenuBar>
 
-class QAction;
-class QMenu;
+class MainWindow;
+class Console;
 
 class MenuBar final : public QMenuBar {
 Q_OBJECT
 
 public:
-    QAction *connect_action;
-    QAction *filter_action;
-    QAction *up_one_level_action;
-    QAction *back_action;
-    QAction *forward_action;
-    QMenu *action_menu;
-
-    MenuBar();
-
-    void go_online();
-
-signals:
-    void filter_contents_dialog();
+    // NOTE: main window and console have must have finished
+    // creating their actions before MenuBar ctor is called
+    MenuBar(MainWindow *main_window, Console *console);
 
 private slots:
+    void quit();
+    void open_toggle_widgets_dialog();
     void manual();
     void about();
 
 private:
-    QMenu *file_menu;
+
 };
 
 #endif /* MENUBAR_H */
