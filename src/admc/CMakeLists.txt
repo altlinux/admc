@@ -2,6 +2,7 @@ find_package(Qt5 REQUIRED
     COMPONENTS
         Core
         Widgets
+        Help
 )
 
 find_package(Uuid REQUIRED)
@@ -43,6 +44,7 @@ add_executable(admc
     console_drag_model.cpp
     object_drag.cpp
     search_thread.cpp
+    help_browser.cpp
     
     rename_dialog.cpp
     rename_policy_dialog.cpp
@@ -113,6 +115,7 @@ target_include_directories(admc
 target_link_libraries(admc
     Qt5::Core
     Qt5::Widgets
+    Qt5::Help
     Uuid::Uuid
     Smbclient::Smbclient
     Krb5::Krb5
