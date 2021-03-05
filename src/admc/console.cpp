@@ -128,8 +128,6 @@ Console::Console(MenuBar *menubar_arg)
     setLayout(layout);
     layout->addWidget(splitter);
 
-    filter_dialog = new FilterDialog(this);
-
     connect(
         scope_view->selectionModel(), &QItemSelectionModel::currentChanged,
         this, &Console::on_current_scope_changed);
@@ -194,10 +192,6 @@ Console::Console(MenuBar *menubar_arg)
         this, &Console::refresh_head);
 
     connect(
-        filter_dialog, &QDialog::accepted,
-        this, &Console::refresh_head);
-
-    connect(
         menubar->up_one_level_action, &QAction::triggered,
         this, &Console::navigate_up);
     connect(
@@ -228,6 +222,9 @@ void Console::go_online(AdInterface &ad) {
     // NOTE: filter dialog requires a connection to load
     // display strings from adconfig so create it here
     filter_dialog = new FilterDialog(this);
+    connect(
+        filter_dialog, &QDialog::accepted,
+        this, &Console::refresh_head);
 
     const QString head_dn = ADCONFIG()->domain_head();
     const AdObject head_object = ad.search_object(head_dn);
