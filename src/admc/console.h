@@ -53,6 +53,7 @@ public:
     Console(MenuBar *menubar_arg);
 
     void go_online(AdInterface &ad);
+    void load_menu(QMenu *menu);
 
 public slots:
     void open_filter_dialog();
@@ -92,7 +93,6 @@ private:
     int targets_current;
     bool navigated_through_history = false;
 
-    void load_menu(QMenu *menu);
     void open_context_menu(const QPoint pos);
     void load_results_row(QList<QStandardItem *> row, const AdObject &object);
     void make_results_row(QStandardItemModel * model, const AdObject &object);

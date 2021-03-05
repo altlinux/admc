@@ -203,12 +203,6 @@ Console::Console(MenuBar *menubar_arg)
     
     update_navigation_actions();
 
-    connect(
-        menubar->action_menu, &QMenu::aboutToShow,
-        [this]() {
-            load_menu(menubar->action_menu);
-        });
-
     const BoolSettingSignal *dev_mode_signal = SETTINGS()->get_bool_signal(BoolSetting_DevMode);
     connect(
         dev_mode_signal, &BoolSettingSignal::changed,

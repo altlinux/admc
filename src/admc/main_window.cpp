@@ -76,6 +76,11 @@ MainWindow::MainWindow()
     connect(
         menubar->connect_action, &QAction::triggered,
         this, &MainWindow::connect_to_server);
+    connect(
+        menubar->action_menu, &QMenu::aboutToShow,
+        [this]() {
+            console->load_menu(menubar->action_menu);
+        });
 
     connect_to_server();
 }
