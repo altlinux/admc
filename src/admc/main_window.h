@@ -40,8 +40,11 @@ protected:
 private:
     MenuBar *menubar;
     Console *console;
+    QAction *connect_action;
 
     void connect_to_server();
+    void manual();
+    void about();
 };
 
 #endif /* MAIN_WINDOW_H */
