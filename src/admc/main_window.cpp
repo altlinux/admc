@@ -68,94 +68,6 @@ MainWindow::MainWindow()
 
     console = new Console();
 
-    setMenuBar(new QMenuBar());
-
-    auto file_menu = menuBar()->addMenu(tr("&File"));
-
-    connect_action = file_menu->addAction(tr("&Connect"));
-
-    file_menu->addAction(tr("&Quit"),
-        this, &MainWindow::quit);
-
-    auto action_menu = menuBar()->addMenu(tr("&Action"));
-
-    auto navigation_menu = menuBar()->addMenu(tr("&Navigation"));
-    navigation_menu->addAction(console->get_navigate_up_action());
-    navigation_menu->addAction(console->get_navigate_back_action());
-    navigation_menu->addAction(console->get_navigate_forward_action());
-
-    auto add_bool_setting_action = 
-    [](QMenu *menu, QString display_text, BoolSetting type) {
-        QAction *action = menu->addAction(display_text);
-        SETTINGS()->connect_action_to_bool_setting(action, type);
-    };
-
-    QMenu *view_menu = menuBar()->addMenu(tr("&View"));
-    add_bool_setting_action(view_menu, tr("&Advanced view"), BoolSetting_AdvancedView);
-    auto toggle_widgets_action = view_menu->addAction(tr("&Toggle widgets"));
-    view_menu->addAction(console->get_open_filter_action());
-
-    QMenu *preferences_menu = menuBar()->addMenu(tr("&Preferences"));
-    add_bool_setting_action(preferences_menu, tr("&Confirm actions"), BoolSetting_ConfirmActions);
-
-    #ifdef QT_DEBUG
-    add_bool_setting_action(preferences_menu, tr("Dev mode"), BoolSetting_DevMode);
-    #endif
-    
-    add_bool_setting_action(preferences_menu, tr("&Show non-container objects in Console tree"), BoolSetting_ShowNonContainersInConsoleTree);
-    add_bool_setting_action(preferences_menu, tr("&Put last name before first name when creating users"), BoolSetting_LastNameBeforeFirstName);
-
-    QMenu *language_menu = preferences_menu->addMenu(tr("&Language"));
-    auto language_group = new QActionGroup(language_menu);
-
-    auto add_language_action =
-    [this, language_menu, language_group] (QLocale::Language language) {
-        QLocale locale(language);
-        const QString language_name =
-        [locale]() {
-            // NOTE: Russian nativeLanguageName starts with lowercase letter for some reason
-            QString out = locale.nativeLanguageName();
-
-            const QChar first_letter_uppercased = out[0].toUpper();
-
-            out.replace(0, 1, first_letter_uppercased);
-
-            return out;
-        }();
-
-        const auto action = new QAction(language_name, language_group);
-        action->setCheckable(true);
-        language_group->addAction(action);
-        language_menu->addAction(action);
-
-        const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
-        const QLocale::Language saved_language = saved_locale.language();
-        if (language == saved_language) {
-            action->setChecked(true);
-        }
-
-        connect(
-            action, &QAction::toggled,
-            [this, locale](bool checked) {
-                if (checked) {
-                    SETTINGS()->set_variant(VariantSetting_Locale, locale);
-
-                    QMessageBox::information(this, tr("Info"), tr("App needs to be restarted for the language option to take effect."));
-                }
-            });
-    };
-
-    add_language_action(QLocale::English);
-    add_language_action(QLocale::Russian);
-
-    QMenu *help_menu = menuBar()->addMenu(tr("&Help"));
-    help_menu->addAction(tr("&Manual"), this, &MainWindow::manual);
-    help_menu->addAction(tr("&About ADMC"), this, &MainWindow::about);
-
-    connect(
-        toggle_widgets_action, &QAction::triggered,
-        this, &MainWindow::open_toggle_widgets_dialog);
-
     QStatusBar *status_bar = STATUS()->status_bar;
     setStatusBar(status_bar);
 
@@ -170,9 +82,138 @@ MainWindow::MainWindow()
 
     setCentralWidget(vert_splitter);
 
+    setMenuBar(new QMenuBar());
+
+    //
+    // Create actions
+    //
+    connect_action = new QAction(tr("&Connect"));
+    auto quit_action = new QAction(tr("&Quit"));
+
+    auto advanced_view_action = new QAction(tr("&Advanced View"), this);
+    auto toggle_widgets_action = new QAction(tr("&Toggle widgets"), this);
+
+    auto manual_action = new QAction(tr("&Manual"), this);
+    auto about_action = new QAction(tr("&About ADMC"), this);
+
+    auto dev_mode_action = new QAction(tr("Dev mode"), this);
+    auto confirm_actions_action = new QAction(tr("&Confirm actions"), this);
+    auto show_noncontainers_action = new QAction(tr("&Show non-container objects in Console tree"), this);
+    auto last_before_first_name_action = new QAction(tr("&Put last name before first name when creating users"), this);
+
+    const QList<QLocale::Language> language_list = {
+        QLocale::English,
+        QLocale::Russian,
+    };
+    const QHash<QLocale::Language, QAction *> language_actions =
+    [this, language_list]() {
+        QHash<QLocale::Language, QAction *> out;
+
+        auto language_group = new QActionGroup(this);
+        for (const auto language : language_list) {
+            QLocale locale(language);
+            const QString language_name =
+            [locale]() {
+            // NOTE: Russian nativeLanguageName starts with lowercase letter for some reason
+                QString name_out = locale.nativeLanguageName();
+
+                const QChar first_letter_uppercased = name_out[0].toUpper();
+
+                name_out.replace(0, 1, first_letter_uppercased);
+
+                return name_out;
+            }();
+
+            const auto action = new QAction(language_name, language_group);
+            action->setCheckable(true);
+            language_group->addAction(action);
+
+            out[language] = action;
+        }
+
+        return out;
+    }();
+
+    //
+    // Create menus
+    //
+    auto file_menu = menuBar()->addMenu(tr("&File"));
+    auto action_menu = menuBar()->addMenu(tr("&Action"));
+    auto navigation_menu = menuBar()->addMenu(tr("&Navigation"));
+    auto view_menu = menuBar()->addMenu(tr("&View"));
+    auto preferences_menu = menuBar()->addMenu(tr("&Preferences"));
+    auto language_menu = new QMenu(tr("&Language"));
+    auto help_menu = menuBar()->addMenu(tr("&Help"));
+
+    //
+    // Fill menus
+    //
+    file_menu->addAction(connect_action);
+    file_menu->addAction(quit_action);
+
+    navigation_menu->addAction(console->get_navigate_up_action());
+    navigation_menu->addAction(console->get_navigate_back_action());
+    navigation_menu->addAction(console->get_navigate_forward_action());
+
+    view_menu->addAction(advanced_view_action);
+    view_menu->addAction(toggle_widgets_action);
+    view_menu->addAction(console->get_open_filter_action());
+
+    #ifdef QT_DEBUG
+    preferences_menu->addAction(dev_mode_action);
+    #endif
+    preferences_menu->addAction(confirm_actions_action);
+    preferences_menu->addAction(show_noncontainers_action);
+    preferences_menu->addAction(last_before_first_name_action);
+    preferences_menu->addMenu(language_menu);
+
+    for (const auto language : language_list) {
+        QAction *language_action = language_actions[language];
+        language_menu->addAction(language_action);
+    }
+
+    help_menu->addAction(manual_action);
+    help_menu->addAction(about_action);
+    
+    //
+    // Connect actions
+    //
     connect(
         connect_action, &QAction::triggered,
         this, &MainWindow::connect_to_server);
+    connect(
+        quit_action, &QAction::triggered,
+        this, &MainWindow::quit);
+    connect(
+        manual_action, &QAction::triggered,
+        this, &MainWindow::manual);
+    connect(
+        about_action, &QAction::triggered,
+        this, &MainWindow::about);
+    connect(
+        toggle_widgets_action, &QAction::triggered,
+        this, &MainWindow::open_toggle_widgets_dialog);
+    SETTINGS()->connect_action_to_bool_setting(advanced_view_action, BoolSetting_AdvancedView);
+    SETTINGS()->connect_action_to_bool_setting(dev_mode_action, BoolSetting_DevMode);
+    SETTINGS()->connect_action_to_bool_setting(confirm_actions_action, BoolSetting_ConfirmActions);
+    SETTINGS()->connect_action_to_bool_setting(show_noncontainers_action, BoolSetting_ShowNonContainersInConsoleTree);
+    SETTINGS()->connect_action_to_bool_setting(last_before_first_name_action, BoolSetting_LastNameBeforeFirstName);
+    SETTINGS()->connect_action_to_bool_setting(last_before_first_name_action, BoolSetting_LastNameBeforeFirstName);
+
+    for (const auto language : language_actions.keys()) {
+        QAction *action = language_actions[language];
+
+        connect(
+            action, &QAction::toggled,
+            [this, language](bool checked) {
+                if (checked) {
+                    SETTINGS()->set_variant(VariantSetting_Locale, QLocale(language));
+
+                    QMessageBox::information(this, tr("Info"), tr("App needs to be restarted for the language option to take effect."));
+                }
+            });
+    }
+
     connect(
         action_menu, &QMenu::aboutToShow,
         [this, action_menu]() {
