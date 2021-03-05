@@ -60,7 +60,7 @@ MainWindow::MainWindow()
     STATUS()->status_bar->showMessage(tr("Ready"));
     SETTINGS()->connect_toggle_widget(STATUS()->status_log, BoolSetting_ShowStatusLog);
 
-    console = new Console(menubar);
+    console = new Console(menubar->up_one_level_action, menubar->back_action, menubar->forward_action);
 
     auto vert_splitter = new QSplitter(Qt::Vertical);
     vert_splitter->addWidget(STATUS()->status_log);

@@ -33,7 +33,6 @@
 #include "filter_widget/filter_widget.h"
 #include "object_menu.h"
 #include "console_drag_model.h"
-#include "menubar.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -61,10 +60,12 @@ bool object_should_be_in_scope(const AdObject &object);
 
 QHash<int, QStandardItemModel *> scope_id_to_results;
 
-Console::Console(MenuBar *menubar_arg)
+Console::Console(QAction *navigate_up_action_arg, QAction *navigate_back_action_arg, QAction *navigate_forward_action_arg)
 : QWidget()
 {
-    menubar = menubar_arg;
+    navigate_up_action = navigate_up_action_arg;
+    navigate_back_action = navigate_back_action_arg;
+    navigate_forward_action = navigate_forward_action_arg;
 
     filter_dialog = nullptr;
 
@@ -192,13 +193,13 @@ Console::Console(MenuBar *menubar_arg)
         this, &Console::refresh_head);
 
     connect(
-        menubar->up_one_level_action, &QAction::triggered,
+        navigate_up_action, &QAction::triggered,
         this, &Console::navigate_up);
     connect(
-        menubar->back_action, &QAction::triggered,
+        navigate_back_action, &QAction::triggered,
         this, &Console::navigate_back);
     connect(
-        menubar->forward_action, &QAction::triggered,
+        navigate_forward_action, &QAction::triggered,
         this, &Console::navigate_forward);
     
     update_navigation_actions();
@@ -761,8 +762,8 @@ QStandardItem *Console::make_scope_item(const AdObject &object) {
 
 // NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
 void Console::update_navigation_actions() {
-    menubar->back_action->setEnabled(!targets_past.isEmpty());
-    menubar->forward_action->setEnabled(!targets_future.isEmpty());
+    navigate_back_action->setEnabled(!targets_past.isEmpty());
+    navigate_forward_action->setEnabled(!targets_future.isEmpty());
 }
 
 QModelIndex Console::get_scope_node_from_id(const int id) const {

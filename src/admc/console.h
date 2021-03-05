@@ -40,7 +40,6 @@ class ObjectMenu;
 class QPoint;
 class QStandardItem;
 class AdObject;
-class MenuBar;
 class QLabel;
 class QSortFilterProxyModel;
 class AdInterface;
@@ -50,7 +49,7 @@ class Console final : public QWidget {
 Q_OBJECT
 
 public:    
-    Console(MenuBar *menubar_arg);
+    Console(QAction *navigate_up_action_arg, QAction *navigate_back_action_arg, QAction *navigate_forward_action_arg);
 
     void go_online(AdInterface &ad);
     void load_menu(QMenu *menu);
@@ -79,11 +78,13 @@ private:
     QTreeView *results_view;
     QStandardItemModel *scope_model;
     QTreeView *focused_view;
-    MenuBar *menubar;
     QWidget *results_header;
     QLabel *results_header_label;
     QSortFilterProxyModel *results_proxy_model;
     FilterDialog *filter_dialog;
+    QAction *navigate_up_action;
+    QAction *navigate_back_action;
+    QAction *navigate_forward_action;
 
     // NOTE: store target history as scope node id's
     // Last is closest to current
