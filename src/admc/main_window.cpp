@@ -82,6 +82,12 @@ MainWindow::MainWindow()
 
     setCentralWidget(vert_splitter);
 
+    setup_menubar();
+
+    connect_to_server();
+}
+
+void MainWindow::setup_menubar() {
     setMenuBar(new QMenuBar());
 
     //
@@ -219,8 +225,6 @@ MainWindow::MainWindow()
         [this, action_menu]() {
             console->load_menu(action_menu);
         });
-
-    connect_to_server();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

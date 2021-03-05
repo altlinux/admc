@@ -37,6 +37,7 @@ private:
     Console *console;
     QAction *connect_action;
 
+    void setup_menubar();
     void connect_to_server();
     void manual();
     void about();
