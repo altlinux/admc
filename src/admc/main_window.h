@@ -40,6 +40,8 @@ private:
     void connect_to_server();
     void manual();
     void about();
+    void open_toggle_widgets_dialog();
+    void quit();
 };
 
 #endif /* MAIN_WINDOW_H */

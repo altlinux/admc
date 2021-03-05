@@ -75,9 +75,7 @@ MainWindow::MainWindow()
     connect_action = file_menu->addAction(tr("&Connect"));
 
     file_menu->addAction(tr("&Quit"),
-        []() {
-            QApplication::quit();
-        });
+        this, &MainWindow::quit);
 
     auto action_menu = menuBar()->addMenu(tr("&Action"));
 
@@ -156,10 +154,7 @@ MainWindow::MainWindow()
 
     connect(
         toggle_widgets_action, &QAction::triggered,
-        [this]() {
-            auto dialog = new ToggleWidgetsDialog(this);
-            dialog->open();
-        });
+        this, &MainWindow::open_toggle_widgets_dialog);
 
     QStatusBar *status_bar = STATUS()->status_bar;
     setStatusBar(status_bar);
@@ -285,4 +280,13 @@ void MainWindow::about() {
         dialog, &QDialog::accept);
 
     dialog->open();
+}
+
+void MainWindow::open_toggle_widgets_dialog() {
+    auto dialog = new ToggleWidgetsDialog(this);
+    dialog->open();
+}
+
+void MainWindow::quit() {
+    QApplication::quit();
 }
