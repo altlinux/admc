@@ -44,6 +44,7 @@ add_executable(admc
     object_drag.cpp
     search_thread.cpp
     help_browser.cpp
+    menubar.cpp
     
     rename_dialog.cpp
     rename_policy_dialog.cpp

@@ -17,29 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef MENUBAR_H
+#define MENUBAR_H
 
-#include <QMainWindow>
+#include <QMenuBar>
 
+class MainWindow;
 class Console;
 
-class MainWindow final : public QMainWindow {
+class MenuBar final : public QMenuBar {
 Q_OBJECT
 
 public:
-    MainWindow();
+    // NOTE: main window and console have must have finished
+    // creating their actions before MenuBar ctor is called
+    MenuBar(MainWindow *main_window, Console *console);
 
-    QAction *get_connect_action() const;
-
-protected:
-    void closeEvent(QCloseEvent *event);
+private slots:
+    void quit();
+    void open_toggle_widgets_dialog();
+    void manual();
+    void about();
 
 private:
-    Console *console;
-    QAction *connect_action;
 
-    void connect_to_server();
 };
 
-#endif /* MAIN_WINDOW_H */
+#endif /* MENUBAR_H */

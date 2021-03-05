@@ -29,6 +29,7 @@ configure_file(${PROJECT_SOURCE_DIR}/src/admc/config.h.in "config.h")
 set(TEST_SOURCES
     admc_test.cpp
 
+    ${PROJECT_SOURCE_DIR}/src/admc/menubar.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/ad_interface.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/ad_config.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/ad_utils.cpp
