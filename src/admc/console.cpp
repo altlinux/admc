@@ -66,6 +66,7 @@ Console::Console()
     navigate_up_action = new QAction(tr("&Up one level"), this);
     navigate_back_action = new QAction(tr("&Back"), this);
     navigate_forward_action = new QAction(tr("&Forward"), this);
+    open_filter_action = new QAction(tr("&Filter objects"));
 
     filter_dialog = nullptr;
 
@@ -211,6 +212,10 @@ Console::Console()
 
     SETTINGS()->connect_toggle_widget(scope_view, BoolSetting_ShowConsoleTree);
     SETTINGS()->connect_toggle_widget(results_header, BoolSetting_ShowResultsHeader);
+
+    connect(
+        open_filter_action, &QAction::triggered,
+        this, &Console::open_filter);
 }
 
 void Console::go_online(AdInterface &ad) {
@@ -230,7 +235,7 @@ void Console::go_online(AdInterface &ad) {
     scope_view->selectionModel()->setCurrentIndex(scope_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 }
 
-void Console::open_filter_dialog() {
+void Console::open_filter() {
     if (filter_dialog != nullptr) {
         filter_dialog->open();
     }
@@ -246,6 +251,10 @@ QAction *Console::get_navigate_back_action() const {
 
 QAction *Console::get_navigate_forward_action() const {
     return navigate_forward_action;
+}
+
+QAction *Console::get_open_filter_action() const {
+    return open_filter_action;
 }
 
 void Console::refresh_head() {

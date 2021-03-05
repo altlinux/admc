@@ -57,9 +57,7 @@ public:
     QAction *get_navigate_up_action() const;
     QAction *get_navigate_back_action() const;
     QAction *get_navigate_forward_action() const;
-
-public slots:
-    void open_filter_dialog();
+    QAction *get_open_filter_action() const;
 
 private slots:
     void refresh_head();
@@ -76,6 +74,7 @@ private slots:
     void navigate_forward();
 
     void on_result_item_double_clicked(const QModelIndex &index);
+    void open_filter();
 
 private:
     QTreeView *scope_view;
@@ -89,6 +88,7 @@ private:
     QAction *navigate_up_action;
     QAction *navigate_back_action;
     QAction *navigate_forward_action;
+    QAction *open_filter_action;
 
     // NOTE: store target history as scope node id's
     // Last is closest to current

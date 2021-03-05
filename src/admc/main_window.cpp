@@ -95,7 +95,7 @@ MainWindow::MainWindow()
     QMenu *view_menu = menuBar()->addMenu(tr("&View"));
     add_bool_setting_action(view_menu, tr("&Advanced view"), BoolSetting_AdvancedView);
     auto toggle_widgets_action = view_menu->addAction(tr("&Toggle widgets"));
-    auto filter_action = view_menu->addAction(tr("&Filter objects"));
+    view_menu->addAction(console->get_open_filter_action());
 
     QMenu *preferences_menu = menuBar()->addMenu(tr("&Preferences"));
     add_bool_setting_action(preferences_menu, tr("&Confirm actions"), BoolSetting_ConfirmActions);
@@ -175,9 +175,6 @@ MainWindow::MainWindow()
 
     setCentralWidget(vert_splitter);
 
-    connect(
-        filter_action, &QAction::triggered,
-        console, &Console::open_filter_dialog);
     connect(
         connect_action, &QAction::triggered,
         this, &MainWindow::connect_to_server);
