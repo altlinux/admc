@@ -66,6 +66,8 @@ MainWindow::MainWindow()
         resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
     }
 
+    console = new Console();
+
     setMenuBar(new QMenuBar());
 
     auto file_menu = menuBar()->addMenu(tr("&File"));
@@ -80,9 +82,9 @@ MainWindow::MainWindow()
     auto action_menu = menuBar()->addMenu(tr("&Action"));
 
     auto navigation_menu = menuBar()->addMenu(tr("&Navigation"));
-    auto up_one_level_action = navigation_menu->addAction(tr("&Up one level"));
-    auto back_action = navigation_menu->addAction(tr("&Back"));
-    auto forward_action = navigation_menu->addAction(tr("&Forward"));
+    navigation_menu->addAction(console->get_navigate_up_action());
+    navigation_menu->addAction(console->get_navigate_back_action());
+    navigation_menu->addAction(console->get_navigate_forward_action());
 
     auto add_bool_setting_action = 
     [](QMenu *menu, QString display_text, BoolSetting type) {
@@ -164,8 +166,6 @@ MainWindow::MainWindow()
 
     STATUS()->status_bar->showMessage(tr("Ready"));
     SETTINGS()->connect_toggle_widget(STATUS()->status_log, BoolSetting_ShowStatusLog);
-
-    console = new Console(up_one_level_action, back_action, forward_action);
 
     auto vert_splitter = new QSplitter(Qt::Vertical);
     vert_splitter->addWidget(STATUS()->status_log);

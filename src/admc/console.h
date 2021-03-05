@@ -49,10 +49,14 @@ class Console final : public QWidget {
 Q_OBJECT
 
 public:    
-    Console(QAction *navigate_up_action_arg, QAction *navigate_back_action_arg, QAction *navigate_forward_action_arg);
+    Console();
 
     void go_online(AdInterface &ad);
     void load_menu(QMenu *menu);
+
+    QAction *get_navigate_up_action() const;
+    QAction *get_navigate_back_action() const;
+    QAction *get_navigate_forward_action() const;
 
 public slots:
     void open_filter_dialog();

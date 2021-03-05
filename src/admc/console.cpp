@@ -60,12 +60,12 @@ bool object_should_be_in_scope(const AdObject &object);
 
 QHash<int, QStandardItemModel *> scope_id_to_results;
 
-Console::Console(QAction *navigate_up_action_arg, QAction *navigate_back_action_arg, QAction *navigate_forward_action_arg)
+Console::Console()
 : QWidget()
 {
-    navigate_up_action = navigate_up_action_arg;
-    navigate_back_action = navigate_back_action_arg;
-    navigate_forward_action = navigate_forward_action_arg;
+    navigate_up_action = new QAction(tr("&Up one level"), this);
+    navigate_back_action = new QAction(tr("&Back"), this);
+    navigate_forward_action = new QAction(tr("&Forward"), this);
 
     filter_dialog = nullptr;
 
@@ -234,6 +234,18 @@ void Console::open_filter_dialog() {
     if (filter_dialog != nullptr) {
         filter_dialog->open();
     }
+}
+
+QAction *Console::get_navigate_up_action() const {
+    return navigate_up_action;
+}
+
+QAction *Console::get_navigate_back_action() const {
+    return navigate_back_action;
+}
+
+QAction *Console::get_navigate_forward_action() const {
+    return navigate_forward_action;
 }
 
 void Console::refresh_head() {
