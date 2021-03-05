@@ -18,19 +18,19 @@
  */
 
 #include "main_window.h"
+#include "menubar.h"
 #include "status.h"
 #include "settings.h"
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "console.h"
-#include "menubar.h"
 #include "toggle_widgets_dialog.h"
 
 #include <QApplication>
-#include <QTextEdit>
 #include <QString>
 #include <QSplitter>
 #include <QStatusBar>
+#include <QTextEdit>
 #include <QAction>
 #include <QDesktopWidget>
 
@@ -44,13 +44,13 @@ MainWindow::MainWindow()
         resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
     }
 
-    console = new Console();
-
     QStatusBar *status_bar = STATUS()->status_bar;
     setStatusBar(status_bar);
 
     STATUS()->status_bar->showMessage(tr("Ready"));
     SETTINGS()->connect_toggle_widget(STATUS()->status_log, BoolSetting_ShowStatusLog);
+
+    console = new Console();
 
     auto vert_splitter = new QSplitter(Qt::Vertical);
     vert_splitter->addWidget(STATUS()->status_log);

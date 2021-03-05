@@ -33,6 +33,7 @@ add_executable(admc
     select_dialog.cpp
     object_menu.cpp
     password_dialog.cpp
+    menubar.cpp
     attribute_display.cpp
     find_results.cpp
     toggle_widgets_dialog.cpp
@@ -44,7 +45,6 @@ add_executable(admc
     object_drag.cpp
     search_thread.cpp
     help_browser.cpp
-    menubar.cpp
     
     rename_dialog.cpp
     rename_policy_dialog.cpp

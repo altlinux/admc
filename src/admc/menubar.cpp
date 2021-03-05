@@ -25,13 +25,13 @@
 #include "config.h"
 #include "help_browser.h"
 
-#include <QApplication>
 #include <QSplitter>
 #include <QAction>
 #include <QMenu>
 #include <QLocale>
 #include <QMessageBox>
 #include <QActionGroup>
+#include <QApplication>
 #include <QDebug>
 #include <QLabel>
 #include <QVBoxLayout>
