@@ -20,14 +20,17 @@
 #ifndef CONSOLE_DRAG_MODEL_H
 #define CONSOLE_DRAG_MODEL_H
 
+/**
+ * This model doesn't implement specific drag drop behavior
+ * but instead allows the user of the model to implement.
+ * User of the model should set the drop functions as well
+ * as connect to the drop() signal.
+ */
+
 #include <QStandardItemModel>
 
-class QMimeData;
-class QModelIndex;
-
-/**
- * Implements drag and drop behavior for objects.
- */
+typedef QMimeData *(*FunMimeData)(const QList<QModelIndex> &indexes);
+typedef bool (*FunCanDrop)(const QMimeData *data, const QModelIndex &parent);
 
 class ConsoleDragModel : public QStandardItemModel {
 Q_OBJECT
@@ -35,9 +38,26 @@ Q_OBJECT
 public:
     using QStandardItemModel::QStandardItemModel;
 
-    QMimeData *mimeData(const QModelIndexList &indexes) const override;
+    // This function should construct the mimedata from
+    // model indexes
+    void set_fun_mime_data(FunMimeData fun);
+
+    // This function should return whether given mimedata
+    // can be dropped on given model index
+    void set_fun_can_drop(FunCanDrop fun);
+
+    QMimeData *mimeData(const QList<QModelIndex> &indexes) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+
+signals:
+    // Connect to this slot and perform the drop operation
+    // in the slot (if it's possible)
+    void drop(const QMimeData *data, const QModelIndex &parent);
+
+private:
+    FunMimeData fun_mime_data = nullptr; 
+    FunCanDrop fun_can_drop = nullptr; 
 };
 
 #endif /* CONSOLE_DRAG_MODEL_H */

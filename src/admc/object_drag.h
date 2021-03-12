@@ -22,8 +22,15 @@
 
 class AdInterface;
 class AdObject;
+class QMimeData;
+class QModelIndex;
+template <typename T> class QList;
 
-bool object_can_drop(const AdObject &dropped, const AdObject &target);
+#define MIME_TYPE_OBJECT "MIME_TYPE_OBJECT"
+
 void object_drop(AdInterface &ad, const AdObject &dropped, const AdObject &target);
+QMimeData *object_mime_data(const QList<QModelIndex> &indexes);
+bool object_can_drop(const QMimeData *data, const QModelIndex &parent);
+QList<AdObject> mimedata_to_object_list(const QMimeData *data);
 
 #endif /* OBJECT_DRAG_H */

@@ -33,6 +33,8 @@
 #include "filter_widget/filter_widget.h"
 #include "object_menu.h"
 #include "console_drag_model.h"
+#include "object_drag.h"
+#include "status.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -46,6 +48,7 @@
 #include <QMenu>
 #include <QLabel>
 #include <QSortFilterProxyModel>
+#include <QMimeData>
 
 enum ScopeRole {
     ScopeRole_Id = ObjectRole_LAST + 1,
@@ -71,6 +74,7 @@ Console::Console()
     filter_dialog = nullptr;
 
     scope_model = new ConsoleDragModel(0, 1, this);
+    setup_drag_model(scope_model);
 
     scope_view = new QTreeView(this);
     scope_view->setHeaderHidden(true);
@@ -739,6 +743,7 @@ void Console::fetch_scope_node(const QModelIndex &index) {
     if (need_to_create_results) {
         auto new_results = new ConsoleDragModel(this);
         new_results->setHorizontalHeaderLabels(object_model_header_labels());
+        setup_drag_model(new_results);
         scope_id_to_results[id] = new_results;
     }
 
@@ -813,6 +818,36 @@ void Console::on_result_item_double_clicked(const QModelIndex &index)
     } else {
         PropertiesDialog::open_for_target(dn);
     }
+}
+
+void Console::on_drop(const QMimeData *mimedata, const QModelIndex &parent) {
+    if (!mimedata->hasFormat(MIME_TYPE_OBJECT)) {
+        return;
+    }
+
+    const QList<AdObject> dropped_list = mimedata_to_object_list(mimedata);
+    const AdObject target = parent.siblingAtColumn(0).data(ObjectRole_AdObject).value<AdObject>();
+
+    AdInterface ad;
+    if (ad_connected(ad)) {
+        for (const AdObject &dropped : dropped_list) {
+            // TODO: probably inline object_drop() and if
+            // it's a move, directly modify scope and
+            // results models (instead of adsignals)
+            object_drop(ad, dropped, target);
+        }
+
+        STATUS()->display_ad_messages(ad, nullptr);
+    }
+}
+
+void Console::setup_drag_model(ConsoleDragModel *model) {
+    model->set_fun_mime_data(object_mime_data);
+    model->set_fun_can_drop(object_can_drop);
+
+    connect(
+        model, &ConsoleDragModel::drop,
+        this, &Console::on_drop);
 }
 
 // NOTE: "containers" referenced here don't mean objects
