@@ -251,6 +251,8 @@ void Console::on_can_drop(const QMimeData *mimedata, const QModelIndex &parent, 
         *ok = false;
     }
 
+    // NOTE: using sibling at 0th column because we store
+    // item roles in the first item (first column)
     const QList<AdObject> dropped_list = mimedata_to_object_list(mimedata);
     const AdObject target = parent.siblingAtColumn(0).data(ObjectRole_AdObject).value<AdObject>();
 
@@ -269,6 +271,8 @@ void Console::on_drop(const QMimeData *mimedata, const QModelIndex &parent) {
         return;
     }
 
+    // NOTE: using sibling at 0th column because we store
+    // item roles in the first item (first column)
     const QList<AdObject> dropped_list = mimedata_to_object_list(mimedata);
     const AdObject target = parent.siblingAtColumn(0).data(ObjectRole_AdObject).value<AdObject>();
 
