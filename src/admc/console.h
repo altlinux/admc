@@ -44,7 +44,6 @@ class QLabel;
 class QSortFilterProxyModel;
 class AdInterface;
 class ConsoleDragModel;
-class QMimeData;
 template <typename T> class QList;
 
 class Console final : public QWidget {
@@ -78,8 +77,9 @@ private slots:
     void on_result_item_double_clicked(const QModelIndex &index);
     void open_filter();
 
-    void on_can_drop(const QMimeData *mimedata, const QModelIndex &parent, bool *ok);
-    void on_drop(const QMimeData *mimedata, const QModelIndex &parent);
+    void on_start_drag(const QList<QModelIndex> &dropped);
+    void on_can_drop(const QModelIndex &target, bool *ok);
+    void on_drop(const QModelIndex &target);
 
 private:
     QTreeView *scope_view;
@@ -94,6 +94,7 @@ private:
     QAction *navigate_back_action;
     QAction *navigate_forward_action;
     QAction *open_filter_action;
+    QList<QModelIndex> dropped;
 
     // NOTE: store target history as scope node id's
     // Last is closest to current

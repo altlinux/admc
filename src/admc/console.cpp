@@ -48,7 +48,6 @@
 #include <QMenu>
 #include <QLabel>
 #include <QSortFilterProxyModel>
-#include <QMimeData>
 
 enum ScopeRole {
     ScopeRole_Id = ObjectRole_LAST + 1,
@@ -246,40 +245,38 @@ void Console::open_filter() {
     }
 }
 
-void Console::on_can_drop(const QMimeData *mimedata, const QModelIndex &parent, bool *ok) {
-    if (!mimedata->hasFormat(MIME_TYPE_OBJECT)) {
-        *ok = false;
-    }
+void Console::on_start_drag(const QList<QModelIndex> &dropped_arg) {
+    dropped = dropped_arg;
+}
 
+void Console::on_can_drop(const QModelIndex &target, bool *ok) {
     // NOTE: using sibling at 0th column because we store
     // item roles in the first item (first column)
-    const QList<AdObject> dropped_list = mimedata_to_object_list(mimedata);
-    const AdObject target = parent.siblingAtColumn(0).data(ObjectRole_AdObject).value<AdObject>();
 
     // NOTE: only check if object can be dropped if dropping a single object, because when dropping multiple objects it is ok for some objects to successfully drop and some to fail. For example, if you drop users together with OU's onto a group, users will be added to that group while OU will fail to drop.
-    if (dropped_list.size() == 1) {
-        const AdObject dropped = dropped_list[0];
+    if (dropped.size() == 1) {
+        const QModelIndex dropped_index = dropped[0];
+        const AdObject dropped_object = dropped_index.data(ObjectRole_AdObject).value<AdObject>();
 
-        *ok = object_can_drop(dropped, target);
+        const AdObject target_object = target.data(ObjectRole_AdObject).value<AdObject>();
+
+        *ok = object_can_drop(dropped_object, target_object);
     } else {
         *ok = true;
     }
 }
 
-void Console::on_drop(const QMimeData *mimedata, const QModelIndex &parent) {
-    if (!mimedata->hasFormat(MIME_TYPE_OBJECT)) {
-        return;
-    }
-
+void Console::on_drop(const QModelIndex &target) {
     // NOTE: using sibling at 0th column because we store
     // item roles in the first item (first column)
-    const QList<AdObject> dropped_list = mimedata_to_object_list(mimedata);
-    const AdObject target = parent.siblingAtColumn(0).data(ObjectRole_AdObject).value<AdObject>();
+    const AdObject target_object = target.data(ObjectRole_AdObject).value<AdObject>();
 
     AdInterface ad;
     if (ad_connected(ad)) {
-        for (const AdObject &dropped : dropped_list) {
-            object_drop(ad, dropped, target);
+        for (const QModelIndex &dropped_index : dropped) {
+            const AdObject dropped_object = dropped_index.data(ObjectRole_AdObject).value<AdObject>();
+
+            object_drop(ad, dropped_object, target_object);
         }
 
         STATUS()->display_ad_messages(ad, nullptr);
@@ -880,6 +877,9 @@ bool object_should_be_in_scope(const AdObject &object) {
 }
 
 void Console::connect_to_drag_model(ConsoleDragModel *model) {
+    connect(
+        model, &ConsoleDragModel::start_drag,
+        this, &Console::on_start_drag);
     connect(
         model, &ConsoleDragModel::can_drop,
         this, &Console::on_can_drop);

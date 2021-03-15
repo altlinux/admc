@@ -22,15 +22,11 @@
 
 #include <QStandardItemModel>
 
-class QMimeData;
-class QModelIndex;
-class AdObject;
-
 /**
- * Implements drag and drop behavior for objects.
+ * Implements drag and drop. Note that this only implements
+ * the framework for drag and drop. The actual logic is
+ * implemented by console widget.
  */
-
-#define MIME_TYPE_OBJECT "MIME_TYPE_OBJECT"
 
 class ConsoleDragModel : public QStandardItemModel {
 Q_OBJECT
@@ -43,13 +39,14 @@ public:
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
 
 signals:
+    // Save these indexes when drag is started
+    void start_drag(const QList<QModelIndex> &dropped) const;
+
     // Set "ok" to true if can drop and false if can't drop
     // NOTE: "ok" is supposed to be set only once
-    void can_drop(const QMimeData *data, const QModelIndex &parent, bool *ok) const;
+    void can_drop(const QModelIndex &target, bool *ok) const;
 
-    void drop(const QMimeData *data, const QModelIndex &parent);
+    void drop(const QModelIndex &target);
 };
-
-QList<AdObject> mimedata_to_object_list(const QMimeData *data);
 
 #endif /* CONSOLE_DRAG_MODEL_H */
