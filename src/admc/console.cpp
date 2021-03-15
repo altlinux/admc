@@ -32,6 +32,8 @@
 #include "filter_dialog.h"
 #include "filter_widget/filter_widget.h"
 #include "object_menu.h"
+#include "status.h"
+#include "object_drag.h"
 #include "console_drag_model.h"
 
 #include <QTreeView>
@@ -46,6 +48,7 @@
 #include <QMenu>
 #include <QLabel>
 #include <QSortFilterProxyModel>
+#include <QMimeData>
 
 enum ScopeRole {
     ScopeRole_Id = ObjectRole_LAST + 1,
@@ -216,6 +219,8 @@ Console::Console()
     connect(
         open_filter_action, &QAction::triggered,
         this, &Console::open_filter);
+
+    connect_to_drag_model(scope_model);
 }
 
 void Console::go_online(AdInterface &ad) {
@@ -238,6 +243,42 @@ void Console::go_online(AdInterface &ad) {
 void Console::open_filter() {
     if (filter_dialog != nullptr) {
         filter_dialog->open();
+    }
+}
+
+void Console::on_can_drop(const QMimeData *mimedata, const QModelIndex &parent, bool *ok) {
+    if (!mimedata->hasFormat(MIME_TYPE_OBJECT)) {
+        *ok = false;
+    }
+
+    const QList<AdObject> dropped_list = mimedata_to_object_list(mimedata);
+    const AdObject target = parent.siblingAtColumn(0).data(ObjectRole_AdObject).value<AdObject>();
+
+    // NOTE: only check if object can be dropped if dropping a single object, because when dropping multiple objects it is ok for some objects to successfully drop and some to fail. For example, if you drop users together with OU's onto a group, users will be added to that group while OU will fail to drop.
+    if (dropped_list.size() == 1) {
+        const AdObject dropped = dropped_list[0];
+
+        *ok = object_can_drop(dropped, target);
+    } else {
+        *ok = true;
+    }
+}
+
+void Console::on_drop(const QMimeData *mimedata, const QModelIndex &parent) {
+    if (!mimedata->hasFormat(MIME_TYPE_OBJECT)) {
+        return;
+    }
+
+    const QList<AdObject> dropped_list = mimedata_to_object_list(mimedata);
+    const AdObject target = parent.siblingAtColumn(0).data(ObjectRole_AdObject).value<AdObject>();
+
+    AdInterface ad;
+    if (ad_connected(ad)) {
+        for (const AdObject &dropped : dropped_list) {
+            object_drop(ad, dropped, target);
+        }
+
+        STATUS()->display_ad_messages(ad, nullptr);
     }
 }
 
@@ -739,6 +780,7 @@ void Console::fetch_scope_node(const QModelIndex &index) {
     if (need_to_create_results) {
         auto new_results = new ConsoleDragModel(this);
         new_results->setHorizontalHeaderLabels(object_model_header_labels());
+        connect_to_drag_model(new_results);
         scope_id_to_results[id] = new_results;
     }
 
@@ -831,4 +873,13 @@ bool object_should_be_in_scope(const AdObject &object) {
     const bool show_non_containers_ON = SETTINGS()->get_bool(BoolSetting_ShowNonContainersInConsoleTree);
 
     return (is_container || show_non_containers_ON);
+}
+
+void Console::connect_to_drag_model(ConsoleDragModel *model) {
+    connect(
+        model, &ConsoleDragModel::can_drop,
+        this, &Console::on_can_drop);
+    connect(
+        model, &ConsoleDragModel::drop,
+        this, &Console::on_drop);
 }
