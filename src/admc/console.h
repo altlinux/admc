@@ -43,6 +43,8 @@ class AdObject;
 class QLabel;
 class QSortFilterProxyModel;
 class AdInterface;
+class ConsoleDragModel;
+class QMimeData;
 template <typename T> class QList;
 
 class Console final : public QWidget {
@@ -76,10 +78,13 @@ private slots:
     void on_result_item_double_clicked(const QModelIndex &index);
     void open_filter();
 
+    void on_can_drop(const QMimeData *mimedata, const QModelIndex &parent, bool *ok);
+    void on_drop(const QMimeData *mimedata, const QModelIndex &parent);
+
 private:
     QTreeView *scope_view;
     QTreeView *results_view;
-    QStandardItemModel *scope_model;
+    ConsoleDragModel *scope_model;
     QTreeView *focused_view;
     QWidget *results_header;
     QLabel *results_header_label;
@@ -106,6 +111,7 @@ private:
     void update_navigation_actions();
     QModelIndex get_scope_node_from_id(const int id) const;
     void update_results_header();
+    void connect_to_drag_model(ConsoleDragModel *model);
 };
 
 #endif /* CONSOLE_H */

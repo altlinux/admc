@@ -23,19 +23,18 @@
 #include "ad_object.h"
 #include "status.h"
 #include "object_model.h"
-#include "object_drag.h"
 
 #include <QMimeData>
 #include <QString>
 
 // TODO: dragging queries and query folders
 
-const QString MIME_TYPE_OBJECT = "MIME_TYPE_OBJECT";
-
 QModelIndex prev_parent = QModelIndex();
 
-QList<AdObject> mimedata_to_object_list(const QMimeData *data);
-
+// TODO: when implementing console widget, this should be
+// removed. The replacement will be to store node id's in
+// mimedata so that objects can be obtained directly from
+// models
 QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
     auto data = new QMimeData();
 
@@ -82,39 +81,14 @@ bool ConsoleDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, in
         return true;
     }
 
-    if (!data->hasFormat(MIME_TYPE_OBJECT)) {
-        return false;
-    }
+    bool ok;
+    emit can_drop(data, parent, &ok);
 
-    const QList<AdObject> dropped_list = mimedata_to_object_list(data);
-    const AdObject target = parent.siblingAtColumn(0).data(ObjectRole_AdObject).value<AdObject>();
-
-    // NOTE: only check if object can be dropped if dropping a single object, because when dropping multiple objects it is ok for some objects to successfully drop and some to fail. For example, if you drop users together with OU's onto a group, users will be added to that group while OU will fail to drop.
-    if (dropped_list.size() == 1) {
-        const AdObject dropped = dropped_list[0];
-
-        return object_can_drop(dropped, target);
-    } else {
-        return true;
-    }
+    return ok;
 }
 
 bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int, int, const QModelIndex &parent) {
-    if (!data->hasFormat(MIME_TYPE_OBJECT)) {
-        return true;
-    }
-
-    const QList<AdObject> dropped_list = mimedata_to_object_list(data);
-    const AdObject target = parent.siblingAtColumn(0).data(ObjectRole_AdObject).value<AdObject>();
-
-    AdInterface ad;
-    if (ad_connected(ad)) {
-        for (const AdObject &dropped : dropped_list) {
-            object_drop(ad, dropped, target);
-        }
-
-        STATUS()->display_ad_messages(ad, nullptr);
-    }
+    emit drop(data, parent);
 
     return true;
 }
