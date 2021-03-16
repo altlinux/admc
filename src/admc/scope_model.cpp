@@ -17,33 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_MODEL_H
-#define OBJECT_MODEL_H
-
-#include <QStandardItemModel>
-#include <QList>
+#include "scope_model.h"
 
 #include "console_widget.h"
 
-class QMimeData;
-class QModelIndex;
-class QString;
-class QStandardItem;
-class AdObject;
+// This tricks the view into thinking that an item in tree
+// has children while the item is unfetched. This causes the
+// expander to be shown while the item is unfetched. After
+// the item is fetched, normal behavior is restored.
+bool ScopeModel::hasChildren(const QModelIndex &parent) const {
+    const bool was_fetched = parent.data(ConsoleRole_WasFetched).toBool();
+    const bool unfetched = !was_fetched;
 
-/**
- * Some f-ns used for models that store objects.
- */
-
-enum ObjectRole {
-    ObjectRole_DN = ConsoleRole_LAST + 1,
-    ObjectRole_AdObject = ConsoleRole_LAST + 2,
-    ObjectRole_LAST = ConsoleRole_LAST + 3,
-};
-
-void load_object_row(const QList<QStandardItem *> row, const AdObject &object);
-void load_object_item_data(QStandardItem *item, const AdObject &object);
-QList<QString> object_model_header_labels();
-QList<int> object_model_default_columns();
-
-#endif /* OBJECT_MODEL_H */
+    if (unfetched) {
+        return true;
+    } else {
+        return QStandardItemModel::hasChildren(parent);
+    }
+}

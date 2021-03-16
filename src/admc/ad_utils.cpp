@@ -199,6 +199,15 @@ bool ad_string_to_bool(const QString &string) {
     return (string == LDAP_BOOL_TRUE);
 }
 
+// "CN=foo,CN=bar,DC=domain,DC=com"
+// =>
+// "CN=foo"
+QString dn_get_rdn(const QString &dn) {
+    const QStringList exploded_dn = dn.split(',');
+    const QString rdn = exploded_dn[0];
+
+    return rdn;
+}
 
 // "CN=foo,CN=bar,DC=domain,DC=com"
 // =>
@@ -242,6 +251,13 @@ QString dn_rename(const QString &dn, const QString &new_name) {
     new_exploded_dn.replace(0, new_rdn);
 
     const QString new_dn = new_exploded_dn.join(',');
+
+    return new_dn;
+}
+
+QString dn_move(const QString &dn, const QString &new_parent_dn) {
+    const QString rdn = dn_get_rdn(dn);
+    const QString new_dn = QString("%1,%2").arg(rdn,new_parent_dn);
 
     return new_dn;
 }

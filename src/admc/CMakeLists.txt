@@ -45,6 +45,10 @@ add_executable(admc
     object_drag.cpp
     search_thread.cpp
     help_browser.cpp
+    console_widget.cpp
+    scope_model.cpp
+    customize_columns_dialog.cpp
+    results_description.cpp
     
     rename_dialog.cpp
     rename_policy_dialog.cpp

@@ -39,9 +39,14 @@ class PropertiesDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    static void open_for_target(const QString &target);
+    static PropertiesDialog *open_for_target(const QString &target);
     static void connect_to_open_by_double_click(QAbstractItemView *view, const int dn_column);
     static QString display_name();
+
+signals:
+    // Emitted when changes are applide via apply or ok
+    // button
+    void applied();
 
 private slots:
     void ok();

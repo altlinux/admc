@@ -46,9 +46,9 @@
 #include <QDebug>
 #include <QAbstractItemView>
 
-void PropertiesDialog::open_for_target(const QString &target) {
+PropertiesDialog *PropertiesDialog::open_for_target(const QString &target) {
     if (target.isEmpty()) {
-        return;
+        return nullptr;
     }
 
     show_busy_indicator();
@@ -57,14 +57,16 @@ void PropertiesDialog::open_for_target(const QString &target) {
 
     const bool dialog_already_open_for_this_target = instances.contains(target);
 
+    PropertiesDialog *dialog;
+
     if (dialog_already_open_for_this_target) {
         // Focus already open dialog
-        PropertiesDialog *dialog = instances[target];
+        dialog = instances[target];
         dialog->raise();
         dialog->setFocus();
     } else {
         // Make new dialog for this target
-        auto dialog = new PropertiesDialog(target);
+        dialog = new PropertiesDialog(target);
 
         instances[target] = dialog;
         connect(
@@ -77,6 +79,8 @@ void PropertiesDialog::open_for_target(const QString &target) {
     }
 
     hide_busy_indicator();
+
+    return dialog;
 }
 
 void PropertiesDialog::connect_to_open_by_double_click(QAbstractItemView *view, const int dn_column) {
@@ -248,6 +252,8 @@ bool PropertiesDialog::apply() {
     }
 
     hide_busy_indicator();
+
+    emit applied();
 
     return total_apply_success;
 }

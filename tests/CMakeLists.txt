@@ -98,6 +98,10 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/object_drag.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/search_thread.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/help_browser.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_widget.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/scope_model.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/customize_columns_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/results_description.cpp
 
     ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/common/settings.cpp

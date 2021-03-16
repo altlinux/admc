@@ -17,33 +17,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_MODEL_H
-#define OBJECT_MODEL_H
-
-#include <QStandardItemModel>
-#include <QList>
-
-#include "console_widget.h"
-
-class QMimeData;
-class QModelIndex;
-class QString;
-class QStandardItem;
-class AdObject;
+#ifndef CUSTOMIZE_COLUMNS_DIALOG_H
+#define CUSTOMIZE_COLUMNS_DIALOG_H
 
 /**
- * Some f-ns used for models that store objects.
+ * Dialog for customizing columns of a results view in
+ * console widget. Presents a list of checkbox which
+ * correspond to view's columns. When dialog is accepted,
+ * the columns that were unchecked are hidden.
  */
 
-enum ObjectRole {
-    ObjectRole_DN = ConsoleRole_LAST + 1,
-    ObjectRole_AdObject = ConsoleRole_LAST + 2,
-    ObjectRole_LAST = ConsoleRole_LAST + 3,
+#include <QDialog>
+
+#include "results_description.h"
+
+class QTreeView;
+class QCheckBox;
+
+class CustomizeColumnsDialog final : public QDialog {
+Q_OBJECT
+
+public:
+    CustomizeColumnsDialog(const ResultsDescription &results, QWidget *parent);
+
+public slots:
+    void accept() override;
+    void restore_defaults();
+
+private:
+    ResultsDescription results;
+    QList<QCheckBox *> checkbox_list;
 };
 
-void load_object_row(const QList<QStandardItem *> row, const AdObject &object);
-void load_object_item_data(QStandardItem *item, const AdObject &object);
-QList<QString> object_model_header_labels();
-QList<int> object_model_default_columns();
-
-#endif /* OBJECT_MODEL_H */
+#endif /* CUSTOMIZE_COLUMNS_DIALOG_H */

@@ -197,6 +197,13 @@ CreateDialog::CreateDialog(const QString &parent_dn_arg, const QString &object_c
     on_edited();
 }
 
+QString CreateDialog::get_created_dn() const {
+    const QString name = name_edit->text();
+    const QString dn = dn_from_name_and_parent(name, parent_dn, object_class);
+
+    return dn;
+}
+
 // NOTE: not using edits_verify() and edits_apply() because that f-n processes only modified edits. Since this is a new object, all the edits are in "unmodified" state but still need to be processed.
 void CreateDialog::accept() {
     AdInterface ad;
@@ -206,7 +213,7 @@ void CreateDialog::accept() {
 
     const QString name = name_edit->text();
 
-    const QString dn = dn_from_name_and_parent(name, parent_dn, object_class);
+    const QString dn = get_created_dn();
 
     // Verify edits
     const bool verify_success =

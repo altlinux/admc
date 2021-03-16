@@ -17,33 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_MODEL_H
-#define OBJECT_MODEL_H
+#ifndef RESULTS_DESCRIPTION_H
+#define RESULTS_DESCRIPTION_H
 
-#include <QStandardItemModel>
+#include <QTreeView>
 #include <QList>
+#include <QString>
 
-#include "console_widget.h"
+class ResultsDescription {
 
-class QMimeData;
-class QModelIndex;
-class QString;
-class QStandardItem;
-class AdObject;
+public:
+    ResultsDescription();
+    ResultsDescription(QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
-/**
- * Some f-ns used for models that store objects.
- */
+    QTreeView *get_view() const;
+    QList<QString> get_column_labels() const;
+    QList<int> get_default_columns() const;
+    int get_column_count() const;
 
-enum ObjectRole {
-    ObjectRole_DN = ConsoleRole_LAST + 1,
-    ObjectRole_AdObject = ConsoleRole_LAST + 2,
-    ObjectRole_LAST = ConsoleRole_LAST + 3,
+private:
+    QTreeView *view;
+    QList<QString> column_labels;
+    QList<int> default_columns;
 };
 
-void load_object_row(const QList<QStandardItem *> row, const AdObject &object);
-void load_object_item_data(QStandardItem *item, const AdObject &object);
-QList<QString> object_model_header_labels();
-QList<int> object_model_default_columns();
-
-#endif /* OBJECT_MODEL_H */
+#endif /* RESULTS_DESCRIPTION_H */

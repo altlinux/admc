@@ -44,12 +44,18 @@
 
 QString targets_display_string(const QList<QString> targets);
 
+// TODO: console_added_actions is a temporary band-aid. Also
+// need to fix action order afterwards. The problem here is
+// that console has it's object actions and find results has
+// it's own and there is some overlap where they can be
+// shared. Share whatever actions can be shared.
+
 // NOTE: construct right before showing menu instead of in
 // load_targets() because target's attributes might change
 // in the span of time when target is selected and menu is
 // opened. Menu needs most up-to-date target attributes to
 // construct actions.
-QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent, const bool include_find_action) {
+QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent, const bool include_find_action, const bool console_added_actions) {
     // Get info about selected objects from view
     const QList<QString> targets =
     [=]() {
@@ -191,6 +197,8 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
 
     const bool single_object = (targets.size() == 1);
 
+    menu->addSeparator();
+
     // Add menu's
     if (single_object) {
         // TODO: handle error
@@ -223,7 +231,9 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
         // Add actions
 
         if (is_container) {
-            add_new();
+            if (!console_added_actions) {
+                add_new();
+            }
 
             if (include_find_action) {
                 add_find();
@@ -245,9 +255,11 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
             menu->addSeparator();
         }
 
-        add_move(cannot_move);
-        add_delete(cannot_delete);
-        add_rename(cannot_rename);
+        if (!console_added_actions) {
+            add_move(cannot_move);
+            add_delete(cannot_delete);
+            add_rename(cannot_rename);
+        }
 
         QAction *properties_separator = menu->addSeparator();
 
@@ -265,8 +277,10 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
             menu->addSeparator();
         }
 
-        add_move(false);
-        add_delete(false);
+        if (!console_added_actions) {
+            add_move(false);
+            add_delete(false);
+        }
     }
 
     return nullptr;

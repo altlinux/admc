@@ -63,27 +63,6 @@ private:
     DISABLE_COPY_MOVE(AdCookie);
 };
 
-
-// TODO: have to put signals in a singleton since
-// adinterface stopped being a singleton. Console needs to
-// connect to these signals forever. Will probably change
-// this to something better, might just remove these
-// signals.
-class AdSignals final : public QObject {
-Q_OBJECT
-
-public:
-    using QObject::QObject;
-
-signals:
-    // These signals are for ObjectModel
-    void object_added(const QString &dn);
-    void object_deleted(const QString &dn);
-    void object_changed(const QString &dn);
-};
-
-AdSignals *ADSIGNALS();
-
 enum AdMessageType {
     AdMessageType_Success,
     AdMessageType_Error

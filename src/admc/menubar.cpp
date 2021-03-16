@@ -20,6 +20,7 @@
 #include "menubar.h"
 #include "main_window.h"
 #include "console.h"
+#include "console_widget.h"
 #include "settings.h"
 #include "toggle_widgets_dialog.h"
 #include "config.h"
@@ -49,15 +50,12 @@ MenuBar::MenuBar(MainWindow *main_window, Console *console) {
     //
     auto quit_action = new QAction(tr("&Quit"));
 
-    auto advanced_view_action = new QAction(tr("&Advanced View"), this);
     auto toggle_widgets_action = new QAction(tr("&Toggle widgets"), this);
 
     auto manual_action = new QAction(tr("&Manual"), this);
     auto about_action = new QAction(tr("&About ADMC"), this);
 
-    auto dev_mode_action = new QAction(tr("Dev mode"), this);
     auto confirm_actions_action = new QAction(tr("&Confirm actions"), this);
-    auto show_noncontainers_action = new QAction(tr("&Show non-container objects in Console tree"), this);
     auto last_before_first_name_action = new QAction(tr("&Put last name before first name when creating users"), this);
 
     const QList<QLocale::Language> language_list = {
@@ -96,10 +94,23 @@ MenuBar::MenuBar(MainWindow *main_window, Console *console) {
     //
     // Create menus
     //
+    // NOTE: for menu's that are obtained from console, we
+    // don't add actions. Instead the console adds actions
+    // to them.
     auto file_menu = addMenu(tr("&File"));
-    auto action_menu = addMenu(tr("&Action"));
-    auto navigation_menu = addMenu(tr("&Navigation"));
-    auto view_menu = addMenu(tr("&View"));
+    
+    auto action_menu = console->console_widget->get_action_menu();
+    action_menu->setTitle(tr("&Action"));
+    addMenu(action_menu);
+
+    auto navigation_menu = console->console_widget->get_navigation_menu();
+    navigation_menu->setTitle(tr("&Navigation"));
+    addMenu(navigation_menu);
+
+    auto view_menu = console->console_widget->get_view_menu();
+    view_menu->setTitle(tr("&View"));
+    addMenu(view_menu);
+
     auto preferences_menu = addMenu(tr("&Preferences"));
     auto language_menu = new QMenu(tr("&Language"));
     auto help_menu = addMenu(tr("&Help"));
@@ -110,20 +121,9 @@ MenuBar::MenuBar(MainWindow *main_window, Console *console) {
     file_menu->addAction(main_window->get_connect_action());
     file_menu->addAction(quit_action);
 
-    navigation_menu->addAction(console->get_navigate_up_action());
-    navigation_menu->addAction(console->get_navigate_back_action());
-    navigation_menu->addAction(console->get_navigate_forward_action());
-
-    view_menu->addAction(advanced_view_action);
-    view_menu->addAction(toggle_widgets_action);
-    view_menu->addAction(console->get_open_filter_action());
-
-    #ifdef QT_DEBUG
-    preferences_menu->addAction(dev_mode_action);
-    #endif
     preferences_menu->addAction(confirm_actions_action);
-    preferences_menu->addAction(show_noncontainers_action);
     preferences_menu->addAction(last_before_first_name_action);
+    preferences_menu->addAction(toggle_widgets_action);
     preferences_menu->addMenu(language_menu);
 
     for (const auto language : language_list) {
@@ -149,11 +149,7 @@ MenuBar::MenuBar(MainWindow *main_window, Console *console) {
     connect(
         toggle_widgets_action, &QAction::triggered,
         this, &MenuBar::open_toggle_widgets_dialog);
-    SETTINGS()->connect_action_to_bool_setting(advanced_view_action, BoolSetting_AdvancedView);
-    SETTINGS()->connect_action_to_bool_setting(dev_mode_action, BoolSetting_DevMode);
     SETTINGS()->connect_action_to_bool_setting(confirm_actions_action, BoolSetting_ConfirmActions);
-    SETTINGS()->connect_action_to_bool_setting(show_noncontainers_action, BoolSetting_ShowNonContainersInConsoleTree);
-    SETTINGS()->connect_action_to_bool_setting(last_before_first_name_action, BoolSetting_LastNameBeforeFirstName);
     SETTINGS()->connect_action_to_bool_setting(last_before_first_name_action, BoolSetting_LastNameBeforeFirstName);
 
     for (const auto language : language_actions.keys()) {
@@ -169,12 +165,6 @@ MenuBar::MenuBar(MainWindow *main_window, Console *console) {
                 }
             });
     }
-
-    connect(
-        action_menu, &QMenu::aboutToShow,
-        [=]() {
-            console->load_menu(action_menu);
-        });
 }
 
 void MenuBar::manual() {
