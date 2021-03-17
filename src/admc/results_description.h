@@ -27,14 +27,16 @@
 class ResultsDescription {
 
 public:
-    ResultsDescription(QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
+    ResultsDescription(QWidget *widget, QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
+    QWidget *widget() const;
     QTreeView *view() const;
     QList<QString> column_labels() const;
     QList<int> default_columns() const;
     int column_count() const;
 
 private:
+    QWidget *m_widget;
     QTreeView *m_view;
     QList<QString> m_column_labels;
     QList<int> m_default_columns;

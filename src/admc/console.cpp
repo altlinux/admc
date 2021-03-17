@@ -157,7 +157,7 @@ void Console::go_online(AdInterface &ad) {
 
     // NOTE: Header labels are from ADCONFIG, so have to get them
     // after going online
-    object_results_id = console_widget->register_results_view(object_results, object_model_header_labels(), object_model_default_columns());
+    object_results_id = console_widget->register_results(object_results, object_model_header_labels(), object_model_default_columns());
 
     const QString head_dn = ADCONFIG()->domain_head();
     const AdObject head_object = ad.search_object(head_dn);

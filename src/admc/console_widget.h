@@ -117,7 +117,7 @@ public:
     // text, icon and data roles. Pass empty QModelIndex as
     // "parent" to add scope item as top level item. Results
     // id is the id of the results view that must have been
-    // received from a previous register_results_view()
+    // received from a previous register_results()
     // call. Scope items can be dynamic, see comment about
     // ConsoleRole_ScopeIsDynamic for more info.
     QStandardItem *add_scope_item(const int results_id, const bool is_dynamic, const QModelIndex &parent);
@@ -129,12 +129,16 @@ public:
     // can reload them
     void refresh_scope(const QModelIndex &index);
 
-    // Returns the unique id assigned to this results view.
-    // You can later pass this id to add_scope() call so
-    // that the scope node will use this results view.
-    // Default columns are those columns that will be
-    // visible by default, while other columns are hidden.
-    int register_results_view(QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
+    // Register results to be used later for scope items.
+    // Results can be just a widget, a tree view or a widget
+    // that contains a tree view. Returns the unique id
+    // assigned to this results view. You can use this id
+    // when creating scope items to assign this results type
+    // to a scope item. Note that if results is just a
+    // widget, then you can't add or get results rows.
+    int register_results(QWidget *widget);
+    int register_results(QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
+    int register_results(QWidget *widget, QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
     // Add new row of items to results of given scope item.
     // If you want to associate this results row with a

@@ -208,14 +208,17 @@ QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const bool is
 
     parent_item->appendRow(item);
 
-    // Create a results model for this scope item
-    auto new_results = new ConsoleDragModel(this);
-    connect_to_drag_model(new_results);
-    results_models[item->index()] = new_results;
-
+    // Create a results model for this scope item, if
+    // results has a view
     ResultsDescription *results = results_descriptions[results_id];
-    const QList<QString> results_column_labels = results->column_labels();
-    new_results->setHorizontalHeaderLabels(results_column_labels);
+    if (results->view() != nullptr) {
+        auto new_results = new ConsoleDragModel(this);
+        connect_to_drag_model(new_results);
+        results_models[item->index()] = new_results;
+
+        const QList<QString> results_column_labels = results->column_labels();
+        new_results->setHorizontalHeaderLabels(results_column_labels);
+    }
 
     return item;
 }
@@ -232,21 +235,32 @@ void ConsoleWidget::refresh_scope(const QModelIndex &index) {
     scope_model->removeRows(0, scope_model->rowCount(index), index);
 
     QStandardItemModel *results_model = get_results_model_for_scope_item(index);
-    results_model->removeRows(0, results_model->rowCount());
+    if (results_model != nullptr) {
+        results_model->removeRows(0, results_model->rowCount());
+    }
 
     // Emit item_fetched() so that user of console can
     // reload item's results
     emit item_fetched(index);
 }
 
-int ConsoleWidget::register_results_view(QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns) {
+// No view, only widget
+int ConsoleWidget::register_results(QWidget *widget) {
+    return register_results(widget, nullptr, QList<QString>(), QList<int>());
+}
+
+// In this case, view *is* the widget
+int ConsoleWidget::register_results(QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns) {
+    return register_results(view, view, column_labels, default_columns);
+}
+
+// Base register() f-n
+int ConsoleWidget::register_results(QWidget *widget, QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns) {
     static int id_max = 0;
     id_max++;
     const int id = id_max;
 
-    results_descriptions[id] = new ResultsDescription(view, column_labels, default_columns);
-
-    view->setModel(results_proxy_model);
+    results_descriptions[id] = new ResultsDescription(widget, view, column_labels, default_columns);
 
     // TODO: check if also need to call adjustSize() when
     // changing between different results widgets.
@@ -255,28 +269,37 @@ int ConsoleWidget::register_results_view(QTreeView *view, const QList<QString> &
     // for correct sizing, idk why. Seems like a Qt
     // bug/quirk. Without this qstackwidget is too small in
     // the splitter.
-    results_stacked_widget->addWidget(view);
+    results_stacked_widget->addWidget(widget);
     results_stacked_widget->adjustSize();
 
-    // Hide non-default results view columns
-    QHeaderView *header = view->header();
-    for (int i = 0; i < header->count(); i++) {
-        const bool hidden = !default_columns.contains(i);
-        header->setSectionHidden(i, hidden);
-    }
+    if (view != nullptr) {
+        view->setModel(results_proxy_model);
+       
+        // Hide non-default results view columns
+        QHeaderView *header = view->header();
+        for (int i = 0; i < header->count(); i++) {
+            const bool hidden = !default_columns.contains(i);
+            header->setSectionHidden(i, hidden);
+        }
 
-    connect(
-        view, &QTreeView::activated,
-        this, &ConsoleWidget::on_results_activated);
-    connect(
-        view, &QWidget::customContextMenuRequested,
-        this, &ConsoleWidget::open_action_menu_as_context_menu);
+        connect(
+            view, &QTreeView::activated,
+            this, &ConsoleWidget::on_results_activated);
+        connect(
+            view, &QWidget::customContextMenuRequested,
+            this, &ConsoleWidget::open_action_menu_as_context_menu);
+    }
 
     return id;
 }
 
 QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &buddy, const QModelIndex &scope_parent) {
     if (!scope_parent.isValid()) {
+        return QList<QStandardItem *>();
+    }
+
+    QStandardItemModel *results_model = get_results_model_for_scope_item(scope_parent);
+    if (results_model == nullptr) {
         return QList<QStandardItem *>();
     }
 
@@ -296,7 +319,6 @@ QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &buddy, 
         return out;
     }();
 
-    QStandardItemModel *results_model = get_results_model_for_scope_item(scope_parent);
     results_model->appendRow(row);
 
     // Set buddy data role for both this results item and
@@ -355,9 +377,14 @@ QModelIndex ConsoleWidget::get_current_scope_item() const {
 int ConsoleWidget::get_current_results_count() const {
     const QModelIndex current_scope = get_current_scope_item();
     QStandardItemModel *current_results = get_results_model_for_scope_item(current_scope);
-    const int results_count = current_results->rowCount();
 
-    return results_count;
+    if (current_results != nullptr) {
+        const int results_count = current_results->rowCount();
+
+        return results_count;
+    } else {
+        return 0;
+    }
 }
 
 QStandardItem *ConsoleWidget::get_scope_item(const QModelIndex &scope_index) const {
@@ -372,12 +399,16 @@ QList<QStandardItem *> ConsoleWidget::get_results_row(const QModelIndex &results
     const QModelIndex scope_parent = results_index.data(ConsoleRole_ScopeParent).toModelIndex();
     QStandardItemModel *model = get_results_model_for_scope_item(scope_parent);
 
-    for (int col = 0; col < model->columnCount(); col++) {
-        QStandardItem *item = model->item(results_index.row(), col);
-        row.append(item);
-    }
+    if (model != nullptr) {
+        for (int col = 0; col < model->columnCount(); col++) {
+            QStandardItem *item = model->item(results_index.row(), col);
+            row.append(item);
+        }
 
-    return row;
+        return row;
+    } else {
+        return QList<QStandardItem *>();
+    }
 }
 
 QTreeView *ConsoleWidget::get_scope_view() const {
@@ -417,13 +448,15 @@ void ConsoleWidget::on_current_scope_item_changed(const QModelIndex &current, co
 
     update_navigation_actions();
 
-    // Switch to this item's results view
+    // Switch to this item's results widget
     ResultsDescription *results = get_current_results();
-    results_stacked_widget->setCurrentWidget(results->view());
+    results_stacked_widget->setCurrentWidget(results->widget());
 
-    // Switch to this item's results model
-    QStandardItemModel *results_model = get_results_model_for_scope_item(current);
-    results_proxy_model->setSourceModel(results_model);
+    // Switch to results view's model if view exists
+    if (results->view() != nullptr) {
+        QStandardItemModel *results_model = get_results_model_for_scope_item(current);
+        results_proxy_model->setSourceModel(results_model);
+    }
 
     // NOTE: technically (selection != expansion) but for our
     // purposes we consider it to be the same.
@@ -698,9 +731,7 @@ QStandardItemModel *ConsoleWidget::get_results_model_for_scope_item(const QModel
     if (results_models.contains(index)) {
         return results_models[index];
     } else {
-        qDebug() << "get_results_model_for_scope_item() called with invalid index! Creating an empty model to avoid crash.";
-
-        return new ConsoleDragModel();
+        return nullptr;
     }
 }
 

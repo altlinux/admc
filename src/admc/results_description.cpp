@@ -19,10 +19,15 @@
 
 #include "results_description.h"
 
-ResultsDescription::ResultsDescription(QTreeView *view_arg, const QList<QString> &column_labels_arg, const QList<int> &default_columns_arg) {
+ResultsDescription::ResultsDescription(QWidget *widget_arg, QTreeView *view_arg, const QList<QString> &column_labels_arg, const QList<int> &default_columns_arg) {
+    m_widget = widget_arg;
     m_view = view_arg;
     m_column_labels = column_labels_arg;
     m_default_columns = default_columns_arg;
+}
+
+QWidget *ResultsDescription::widget() const {
+    return m_widget;
 }
 
 QTreeView *ResultsDescription::view() const {
