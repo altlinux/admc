@@ -19,6 +19,8 @@
 
 #include "customize_columns_dialog.h"
 
+#include "results_description.h"
+
 #include <QTreeView>
 #include <QHeaderView>
 #include <QDialog>
@@ -30,14 +32,14 @@
 
 #include <QDebug>
 
-CustomizeColumnsDialog::CustomizeColumnsDialog(const ResultsDescription &results_arg, QWidget *parent)
+CustomizeColumnsDialog::CustomizeColumnsDialog(ResultsDescription *results_arg, QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
     results = results_arg;
 
-    QTreeView *view = results.get_view();
+    QTreeView *view = results->get_view();
 
     QHeaderView *header = view->header();
     QAbstractItemModel *model = view->model();
@@ -88,7 +90,7 @@ CustomizeColumnsDialog::CustomizeColumnsDialog(const ResultsDescription &results
 }
 
 void CustomizeColumnsDialog::accept() {
-    QTreeView *view = results.get_view();
+    QTreeView *view = results->get_view();
     QHeaderView *header = view->header();
 
     for (int i = 0; i < checkbox_list.size(); i++) {
@@ -102,7 +104,7 @@ void CustomizeColumnsDialog::accept() {
 }
 
 void CustomizeColumnsDialog::restore_defaults() {
-    const QList<int> defaults = results.get_default_columns();
+    const QList<int> defaults = results->get_default_columns();
 
     for (int i = 0; i < checkbox_list.size(); i++) {
         QCheckBox *checkbox = checkbox_list[i];

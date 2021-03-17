@@ -49,8 +49,6 @@
 #include <QWidget>
 #include <QPersistentModelIndex>
 
-#include "results_description.h"
-
 // NOTE: when implementing custom roles, make sure they do
 // not conflict with console roles, like this:
 //
@@ -105,12 +103,14 @@ class QStandardItem;
 class QStackedWidget;
 class QLabel;
 class QMenu;
+class ResultsDescription;
 
 class ConsoleWidget final : public QWidget {
 Q_OBJECT
 
 public:        
     ConsoleWidget();
+    ~ConsoleWidget();
 
     // Add a new scope item to scope tree at the specified
     // parent. Returned item should be used for setting
@@ -238,7 +238,7 @@ private:
     QSortFilterProxyModel *results_proxy_model;
     
     QStackedWidget *results_stacked_widget;
-    QHash<int, ResultsDescription> results_descriptions;
+    QHash<int, ResultsDescription *> results_descriptions;
     QHash<QPersistentModelIndex, QStandardItemModel *> results_models;
 
     QMenu *action_menu;

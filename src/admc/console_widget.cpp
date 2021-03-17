@@ -22,6 +22,7 @@
 #include "console_drag_model.h"
 #include "scope_model.h"
 #include "customize_columns_dialog.h"
+#include "results_description.h"
 
 #include <QDebug>
 #include <QTreeView>
@@ -151,6 +152,12 @@ ConsoleWidget::ConsoleWidget()
     connect_to_drag_model(scope_model);
 }
 
+ConsoleWidget::~ConsoleWidget() {
+    for (ResultsDescription *e : results_descriptions.values()) {
+        delete e;
+    }
+}
+
 void ConsoleWidget::delete_item(const QModelIndex &index) {
     if (!index.isValid()) {
         return;
@@ -206,8 +213,8 @@ QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const bool is
     connect_to_drag_model(new_results);
     results_models[item->index()] = new_results;
 
-    const ResultsDescription results = results_descriptions[results_id];
-    const QList<QString> results_column_labels = results.get_column_labels();
+    ResultsDescription *results = results_descriptions[results_id];
+    const QList<QString> results_column_labels = results->get_column_labels();
     new_results->setHorizontalHeaderLabels(results_column_labels);
 
     return item;
@@ -237,7 +244,7 @@ int ConsoleWidget::register_results_view(QTreeView *view, const QList<QString> &
     id_max++;
     const int id = id_max;
 
-    results_descriptions[id] = ResultsDescription(view, column_labels, default_columns);
+    results_descriptions[id] = new ResultsDescription(view, column_labels, default_columns);
 
     view->setModel(results_proxy_model);
 
@@ -278,8 +285,8 @@ QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &buddy, 
         QList<QStandardItem *> out;
 
         const int results_id = scope_parent.data(ConsoleRole_ResultsId).toInt();
-        const ResultsDescription results = results_descriptions[results_id];
-        const int column_count = results.get_column_count();
+        ResultsDescription *results = results_descriptions[results_id];
+        const int column_count = results->get_column_count();
 
         for (int i = 0; i < column_count; i++) {
             const auto item = new QStandardItem();
@@ -412,13 +419,12 @@ void ConsoleWidget::on_current_scope_item_changed(const QModelIndex &current, co
 
     // Switch to this item's results view
     const int results_id = current.data(ConsoleRole_ResultsId).toInt();
-    const ResultsDescription results_description = results_descriptions[results_id];
-    QTreeView *results_view = results_description.get_view();
-    results_stacked_widget->setCurrentWidget(results_view);
+    ResultsDescription *results = results_descriptions[results_id];
+    results_stacked_widget->setCurrentWidget(results->get_view());
 
     // Switch to this item's results model
-    QStandardItemModel *results = get_results_for_scope_item(current);
-    results_proxy_model->setSourceModel(results);
+    QStandardItemModel *results_model = get_results_for_scope_item(current);
+    results_proxy_model->setSourceModel(results_model);
 
     // NOTE: technically (selection != expansion) but for our
     // purposes we consider it to be the same.
@@ -552,7 +558,7 @@ void ConsoleWidget::customize_columns() {
     }
 
     const int current_results_id = current_scope.data(ConsoleRole_ResultsId).toInt();
-    const ResultsDescription current_results = results_descriptions[current_results_id];
+    ResultsDescription *current_results = results_descriptions[current_results_id];
 
     auto dialog = new CustomizeColumnsDialog(current_results, this);
     dialog->open();

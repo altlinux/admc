@@ -19,11 +19,6 @@
 
 #include "results_description.h"
 
-// NOTE: empty ctor required by qhash
-ResultsDescription::ResultsDescription() {
-
-}
-
 ResultsDescription::ResultsDescription(QTreeView *view_arg, const QList<QString> &column_labels_arg, const QList<int> &default_columns_arg) {
     view = view_arg;
     column_labels = column_labels_arg;

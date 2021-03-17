@@ -27,7 +27,6 @@
 class ResultsDescription {
 
 public:
-    ResultsDescription();
     ResultsDescription(QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
     QTreeView *get_view() const;
