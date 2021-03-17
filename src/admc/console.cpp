@@ -162,7 +162,7 @@ void Console::go_online(AdInterface &ad) {
     const QString head_dn = ADCONFIG()->domain_head();
     const AdObject head_object = ad.search_object(head_dn);
 
-    QStandardItem *item = console_widget->add_scope_item(object_results_id, QModelIndex());
+    QStandardItem *item = console_widget->add_scope_item(object_results_id, true, QModelIndex());
 
     scope_head_index = QPersistentModelIndex(item->index());
 
@@ -608,7 +608,7 @@ void Console::add_object_to_console(const AdObject &object, const QModelIndex &p
     const bool should_be_in_scope = object_should_be_in_scope(object);
 
     if (should_be_in_scope) {
-        QStandardItem *scope_item = console_widget->add_scope_item(object_results_id, parent);
+        QStandardItem *scope_item = console_widget->add_scope_item(object_results_id, true, parent);
         setup_scope_item(scope_item, object);
 
         const QModelIndex scope_index = scope_item->index();

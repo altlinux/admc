@@ -173,7 +173,7 @@ void ConsoleWidget::delete_item(const QModelIndex &index) {
     ((QAbstractItemModel *)index.model())->removeRows(index.row(), 1, index.parent());
 }
 
-QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const QModelIndex &parent) {
+QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const bool is_dynamic, const QModelIndex &parent) {
     QStandardItem *parent_item =
     [=]() {
         if (parent.isValid()) {
@@ -184,7 +184,16 @@ QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const QModelI
     }();
 
     auto item = new QStandardItem();
-    item->setData(false, ConsoleRole_WasFetched);
+
+    item->setData(is_dynamic, ConsoleRole_ScopeIsDynamic);
+
+    // NOTE: if item is not dynamic, then it's "fetched"
+    // from creation
+    if (is_dynamic) {
+        item->setData(false, ConsoleRole_WasFetched);
+    } else {
+        item->setData(true, ConsoleRole_WasFetched);
+    }
 
     item->setData(results_id, ConsoleRole_ResultsId);
 
@@ -649,7 +658,20 @@ void ConsoleWidget::update_navigation_actions() {
 void ConsoleWidget::add_actions_to_action_menu(QMenu *menu) {
     menu->clear();
 
-    if (focused_view == scope_view) {
+    const bool selected_item_is_dynamic =
+    [=]() {
+        const QList<QModelIndex> selected = get_selected_items();
+        if (selected.size() == 1) {
+            const QModelIndex index = selected[0];
+            const bool is_dynamic = index.data(ConsoleRole_ScopeIsDynamic).toBool();
+
+            return is_dynamic;
+        } else {
+            return false;
+        }
+    }();
+
+    if (selected_item_is_dynamic) {
         menu->addAction(refresh_action);
     }
 

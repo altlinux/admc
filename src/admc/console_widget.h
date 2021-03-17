@@ -84,7 +84,16 @@ enum ConsoleRole {
 
     ConsoleRole_IsScope = Qt::UserRole + 5,
 
-    ConsoleRole_LAST = Qt::UserRole + 6,
+    // Determines whether scope is dynamic. If scope is not
+    // dynamic, then user of console adds children at
+    // startup and they never change. If scope is dynamic,
+    // then the fetching mechanism applies to it. Children
+    // are added when item_fetched() signal is emitted. In
+    // addition, dynamic items get a "Refresh" action.
+    ConsoleRole_ScopeIsDynamic = Qt::UserRole + 6,
+
+
+    ConsoleRole_LAST = Qt::UserRole + 7,
 };
 
 class QTreeView;
@@ -109,8 +118,9 @@ public:
     // "parent" to add scope item as top level item. Results
     // id is the id of the results view that must have been
     // received from a previous register_results_view()
-    // call.
-    QStandardItem *add_scope_item(const int results_id, const QModelIndex &parent);
+    // call. Scope items can be dynamic, see comment about
+    // ConsoleRole_ScopeIsDynamic for more info.
+    QStandardItem *add_scope_item(const int results_id, const bool is_dynamic, const QModelIndex &parent);
 
     void set_current_scope(const QModelIndex &index);
 
