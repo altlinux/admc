@@ -23,6 +23,7 @@
 #include "scope_model.h"
 #include "customize_columns_dialog.h"
 #include "results_description.h"
+#include "results_view.h"
 
 #include <QDebug>
 #include <QTreeView>
@@ -55,6 +56,10 @@ ConsoleWidget::ConsoleWidget()
     navigate_up_action = new QAction(tr("&Up one level"), this);
     navigate_back_action = new QAction(tr("&Back"), this);
     navigate_forward_action = new QAction(tr("&Forward"), this);
+
+    set_results_to_icons_action = new QAction(tr("&Icons"), this);
+    set_results_to_list_action = new QAction(tr("&List"), this);
+    set_results_to_detail_action = new QAction(tr("&Detail"), this);
 
     navigation_menu->addAction(navigate_up_action);
     navigation_menu->addAction(navigate_back_action);
@@ -128,6 +133,15 @@ ConsoleWidget::ConsoleWidget()
     connect(
         navigate_forward_action, &QAction::triggered,
         this, &ConsoleWidget::navigate_forward);
+    connect(
+        set_results_to_icons_action, &QAction::triggered,
+        this, &ConsoleWidget::set_results_to_icons);
+    connect(
+        set_results_to_list_action, &QAction::triggered,
+        this, &ConsoleWidget::set_results_to_list);
+    connect(
+        set_results_to_detail_action, &QAction::triggered,
+        this, &ConsoleWidget::set_results_to_detail);
     
     update_navigation_actions();
 
@@ -250,12 +264,12 @@ int ConsoleWidget::register_results(QWidget *widget) {
 }
 
 // In this case, view *is* the widget
-int ConsoleWidget::register_results(QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns) {
+int ConsoleWidget::register_results(ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns) {
     return register_results(view, view, column_labels, default_columns);
 }
 
 // Base register() f-n
-int ConsoleWidget::register_results(QWidget *widget, QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns) {
+int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns) {
     static int id_max = 0;
     id_max++;
     const int id = id_max;
@@ -273,21 +287,31 @@ int ConsoleWidget::register_results(QWidget *widget, QTreeView *view, const QLis
     results_stacked_widget->adjustSize();
 
     if (view != nullptr) {
-        view->setModel(results_proxy_model);
-       
-        // Hide non-default results view columns
-        QHeaderView *header = view->header();
-        for (int i = 0; i < header->count(); i++) {
-            const bool hidden = !default_columns.contains(i);
-            header->setSectionHidden(i, hidden);
-        }
+        view->set_model(results_proxy_model);
 
         connect(
-            view, &QTreeView::activated,
+            view, &ResultsView::activated,
             this, &ConsoleWidget::on_results_activated);
         connect(
-            view, &QWidget::customContextMenuRequested,
+            view, &ResultsView::context_menu,
             this, &ConsoleWidget::open_action_menu_as_context_menu);
+
+        // Hide non-default results view columns. Note that
+        // at creation, view header doesnt have any
+        // sections. Sections appear once a source model is
+        // set(proxy model doesnt count). Therefore we have
+        // to do this in the slot.
+        QHeaderView *header = view->detail_view()->header();
+        connect(
+            header, &QHeaderView::sectionCountChanged,
+            [header, default_columns](int oldCount, int) {
+                if (oldCount == 0) {
+                    for (int i = 0; i < header->count(); i++) {
+                        const bool hidden = !default_columns.contains(i);
+                        header->setSectionHidden(i, hidden);
+                    }
+                }
+            });
     }
 
     return id;
@@ -530,11 +554,11 @@ void ConsoleWidget::on_results_activated(const QModelIndex &index) {
 
 // NOTE: this is the workaround required to know in which pane selected objects are located
 void ConsoleWidget::on_focus_changed(QWidget *old, QWidget *now) {
-    QTreeView *new_focused_view = qobject_cast<QTreeView *>(now);
+    QAbstractItemView *new_focused_view = qobject_cast<QAbstractItemView *>(now);
 
     if (new_focused_view != nullptr) {
         ResultsDescription *current_results = get_current_results();
-        QTreeView *results_view = current_results->view();
+        QAbstractItemView *results_view = current_results->view()->current_view();
 
         if (new_focused_view == scope_view || new_focused_view == results_view) {
             focused_view = new_focused_view;
@@ -563,14 +587,17 @@ void ConsoleWidget::on_action_menu_show() {
 void ConsoleWidget::on_view_menu_show() {
     view_menu->clear();
 
-    // NOTE: currently all results views are tree views, but
-    // do this anyway for the future
-    QWidget *current_results_widget = results_stacked_widget->currentWidget();
-    QTreeView *current_results_view = qobject_cast<QTreeView *>(current_results_widget);
-    if (current_results_view != nullptr) {
-        view_menu->addAction(customize_columns_action);
+    ResultsDescription *results = get_current_results();
+    if (results->view() != nullptr) {    
+        view_menu->addAction(set_results_to_icons_action);
+        view_menu->addAction(set_results_to_list_action);
+        view_menu->addAction(set_results_to_detail_action);
+
+        view_menu->addSeparator();
     }
-    
+
+    view_menu->addAction(customize_columns_action);
+
     emit view_menu_about_to_open(view_menu);
 }
 
@@ -686,6 +713,18 @@ void ConsoleWidget::on_drop(const QModelIndex &target) {
     emit items_dropped(dropped, target);
 }
 
+void ConsoleWidget::set_results_to_icons() {
+    set_results_to_type(ResultsViewType_Icons);
+}
+
+void ConsoleWidget::set_results_to_list() {
+    set_results_to_type(ResultsViewType_List);
+}
+
+void ConsoleWidget::set_results_to_detail() {
+    set_results_to_type(ResultsViewType_Detail);
+}
+
 // NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
 void ConsoleWidget::update_navigation_actions() {
     navigate_back_action->setEnabled(!targets_past.isEmpty());
@@ -751,4 +790,9 @@ void ConsoleWidget::fetch_scope(const QModelIndex &index) {
 
         emit item_fetched(index);
     }
+}
+
+void ConsoleWidget::set_results_to_type(const ResultsViewType type) {
+    ResultsDescription *results = get_current_results();
+    results->view()->set_view_type(type);
 }

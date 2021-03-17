@@ -20,24 +20,26 @@
 #ifndef RESULTS_DESCRIPTION_H
 #define RESULTS_DESCRIPTION_H
 
-#include <QTreeView>
 #include <QList>
 #include <QString>
+
+class ResultsView;
+class QWidget;
 
 class ResultsDescription {
 
 public:
-    ResultsDescription(QWidget *widget, QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
+    ResultsDescription(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
     QWidget *widget() const;
-    QTreeView *view() const;
+    ResultsView *view() const;
     QList<QString> column_labels() const;
     QList<int> default_columns() const;
     int column_count() const;
 
 private:
     QWidget *m_widget;
-    QTreeView *m_view;
+    ResultsView *m_view;
     QList<QString> m_column_labels;
     QList<int> m_default_columns;
 };

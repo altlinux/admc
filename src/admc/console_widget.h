@@ -49,6 +49,8 @@
 #include <QWidget>
 #include <QPersistentModelIndex>
 
+#include "results_view.h"
+
 // NOTE: when implementing custom roles, make sure they do
 // not conflict with console roles, like this:
 //
@@ -104,6 +106,7 @@ class QStackedWidget;
 class QLabel;
 class QMenu;
 class ResultsDescription;
+class ResultsView;
 
 class ConsoleWidget final : public QWidget {
 Q_OBJECT
@@ -137,8 +140,8 @@ public:
     // to a scope item. Note that if results is just a
     // widget, then you can't add or get results rows.
     int register_results(QWidget *widget);
-    int register_results(QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
-    int register_results(QWidget *widget, QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
+    int register_results(ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
+    int register_results(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
     // Add new row of items to results of given scope item.
     // If you want to associate this results row with a
@@ -195,7 +198,7 @@ signals:
     // view. Action menu can be opened both from menubar or
     // as a context menu. Connect to this signal and add
     // actions to menu in the slot.
-    void action_menu_about_to_open(QMenu *menu, QTreeView *view);
+    void action_menu_about_to_open(QMenu *menu, QAbstractItemView *view);
 
     void view_menu_about_to_open(QMenu *menu);
 
@@ -227,11 +230,14 @@ private slots:
     void on_can_drop(const QModelIndex &target, bool *ok);
     void on_drop(const QModelIndex &target);
     void properties();
+    void set_results_to_icons();
+    void set_results_to_list();
+    void set_results_to_detail();
 
 private:
     ScopeModel *scope_model;
     QTreeView *scope_view;
-    QTreeView *focused_view;
+    QAbstractItemView *focused_view;
     QLabel *description_bar;
     QList<QModelIndex> dropped;
 
@@ -254,6 +260,9 @@ private:
     QAction *navigate_up_action;
     QAction *navigate_back_action;
     QAction *navigate_forward_action;
+    QAction *set_results_to_icons_action;
+    QAction *set_results_to_list_action;
+    QAction *set_results_to_detail_action;
 
     // NOTE: target history stores target items' id's.
     // History lists are in order of ascending time.
@@ -272,6 +281,8 @@ private:
     // widget via the fetch signal. This f-n only emits the
     // signal if needed.
     void fetch_scope(const QModelIndex &index);
+
+    void set_results_to_type(const ResultsViewType type);
 };
 
 #endif /* CONSOLE_WIDGET_H */

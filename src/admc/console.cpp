@@ -39,9 +39,10 @@
 #include "rename_dialog.h"
 #include "select_container_dialog.h"
 #include "create_dialog.h"
+#include "results_view.h"
 
 #include <QDebug>
-#include <QTreeView>
+#include <QAbstractItemView>
 #include <QVBoxLayout>
 #include <QSplitter>
 #include <QDebug>
@@ -71,19 +72,11 @@ Console::Console()
 
     console_widget = new ConsoleWidget();
 
-    object_results = new QTreeView(this);
-    object_results->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    object_results->header()->setSectionsMovable(true);
-    object_results->setContextMenuPolicy(Qt::CustomContextMenu);
-    object_results->setDragDropMode(QAbstractItemView::DragDrop);
-    object_results->setSortingEnabled(true);
-    object_results->sortByColumn(0, Qt::AscendingOrder);
-    object_results->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    object_results->setDragDropOverwriteMode(true);
-
-    // TODO: need to save header state for all views (there
-    // can be more than one, but for now just one)
-    SETTINGS()->setup_header_state(object_results->header(), VariantSetting_ResultsHeader);
+    object_results = new ResultsView(this);
+    // TODO: not sure how to do this. View headers dont even
+    // have sections until their models are loaded.
+    // SETTINGS()->setup_header_state(object_results->header(),
+    // VariantSetting_ResultsHeader);
     
     auto layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
@@ -440,7 +433,7 @@ void Console::update_description_bar() {
     console_widget->set_description_bar_text(text);
 }
 
-void Console::on_action_menu_about_to_open(QMenu *menu, QTreeView *view) {
+void Console::on_action_menu_about_to_open(QMenu *menu, QAbstractItemView *view) {
     menu->addAction(rename_action);
     menu->addAction(move_action);
 

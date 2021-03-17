@@ -20,6 +20,7 @@
 #include "customize_columns_dialog.h"
 
 #include "results_description.h"
+#include "results_view.h"
 
 #include <QTreeView>
 #include <QHeaderView>
@@ -39,7 +40,7 @@ CustomizeColumnsDialog::CustomizeColumnsDialog(ResultsDescription *results_arg, 
 
     results = results_arg;
 
-    QTreeView *view = results->view();
+    QTreeView *view = results->view()->detail_view();
 
     QHeaderView *header = view->header();
     QAbstractItemModel *model = view->model();
@@ -90,7 +91,7 @@ CustomizeColumnsDialog::CustomizeColumnsDialog(ResultsDescription *results_arg, 
 }
 
 void CustomizeColumnsDialog::accept() {
-    QTreeView *view = results->view();
+    QTreeView *view = results->view()->detail_view();
     QHeaderView *header = view->header();
 
     for (int i = 0; i < checkbox_list.size(); i++) {

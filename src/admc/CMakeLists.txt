@@ -49,6 +49,7 @@ add_executable(admc
     scope_model.cpp
     customize_columns_dialog.cpp
     results_description.cpp
+    results_view.cpp
     
     rename_dialog.cpp
     rename_policy_dialog.cpp
