@@ -231,7 +231,7 @@ void ConsoleWidget::refresh_scope(const QModelIndex &index) {
 
     scope_model->removeRows(0, scope_model->rowCount(index), index);
 
-    QStandardItemModel *results_model = get_results_for_scope_item(index);
+    QStandardItemModel *results_model = get_results_model_for_scope_item(index);
     results_model->removeRows(0, results_model->rowCount());
 
     // Emit item_fetched() so that user of console can
@@ -296,7 +296,7 @@ QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &buddy, 
         return out;
     }();
 
-    QStandardItemModel *results_model = get_results_for_scope_item(scope_parent);
+    QStandardItemModel *results_model = get_results_model_for_scope_item(scope_parent);
     results_model->appendRow(row);
 
     // Set buddy data role for both this results item and
@@ -354,7 +354,7 @@ QModelIndex ConsoleWidget::get_current_scope_item() const {
 
 int ConsoleWidget::get_current_results_count() const {
     const QModelIndex current_scope = get_current_scope_item();
-    QStandardItemModel *current_results = get_results_for_scope_item(current_scope);
+    QStandardItemModel *current_results = get_results_model_for_scope_item(current_scope);
     const int results_count = current_results->rowCount();
 
     return results_count;
@@ -370,7 +370,7 @@ QList<QStandardItem *> ConsoleWidget::get_results_row(const QModelIndex &results
     QList<QStandardItem *> row;
 
     const QModelIndex scope_parent = results_index.data(ConsoleRole_ScopeParent).toModelIndex();
-    QStandardItemModel *model = get_results_for_scope_item(scope_parent);
+    QStandardItemModel *model = get_results_model_for_scope_item(scope_parent);
 
     for (int col = 0; col < model->columnCount(); col++) {
         QStandardItem *item = model->item(results_index.row(), col);
@@ -423,7 +423,7 @@ void ConsoleWidget::on_current_scope_item_changed(const QModelIndex &current, co
     results_stacked_widget->setCurrentWidget(results->get_view());
 
     // Switch to this item's results model
-    QStandardItemModel *results_model = get_results_for_scope_item(current);
+    QStandardItemModel *results_model = get_results_model_for_scope_item(current);
     results_proxy_model->setSourceModel(results_model);
 
     // NOTE: technically (selection != expansion) but for our
@@ -697,11 +697,11 @@ void ConsoleWidget::connect_to_drag_model(ConsoleDragModel *model) {
         this, &ConsoleWidget::on_drop);
 }
 
-QStandardItemModel *ConsoleWidget::get_results_for_scope_item(const QModelIndex &index) const {
+QStandardItemModel *ConsoleWidget::get_results_model_for_scope_item(const QModelIndex &index) const {
     if (results_models.contains(index)) {
         return results_models[index];
     } else {
-        qDebug() << "get_results_for_scope_item() called with invalid index! Creating an empty model to avoid crash.";
+        qDebug() << "get_results_model_for_scope_item() called with invalid index! Creating an empty model to avoid crash.";
 
         return new ConsoleDragModel();
     }

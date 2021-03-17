@@ -260,7 +260,7 @@ private:
     void add_actions_to_action_menu(QMenu *menu);
     void update_navigation_actions();
     void connect_to_drag_model(ConsoleDragModel *model);
-    QStandardItemModel *get_results_for_scope_item(const QModelIndex &index) const;
+    QStandardItemModel *get_results_model_for_scope_item(const QModelIndex &index) const;
 
     // Fetches scope if it hasn't been fetched yet. Note
     // that actual fetching is done by the user of console
