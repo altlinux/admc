@@ -239,6 +239,8 @@ int ConsoleWidget::register_results_view(QTreeView *view, const QList<QString> &
 
     results_descriptions[id] = ResultsDescription(view, column_labels, default_columns);
 
+    view->setModel(results_proxy_model);
+
     // TODO: check if also need to call adjustSize() when
     // changing between different results widgets.
 
@@ -417,7 +419,6 @@ void ConsoleWidget::on_current_scope_item_changed(const QModelIndex &current, co
     // Switch to this item's results model
     QStandardItemModel *results = get_results_for_scope_item(current);
     results_proxy_model->setSourceModel(results);
-    results_view->setModel(results_proxy_model);
 
     // NOTE: technically (selection != expansion) but for our
     // purposes we consider it to be the same.
