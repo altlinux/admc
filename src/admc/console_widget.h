@@ -261,6 +261,7 @@ private:
     void update_navigation_actions();
     void connect_to_drag_model(ConsoleDragModel *model);
     QStandardItemModel *get_results_model_for_scope_item(const QModelIndex &index) const;
+    ResultsDescription *get_current_results() const;
 
     // Fetches scope if it hasn't been fetched yet. Note
     // that actual fetching is done by the user of console

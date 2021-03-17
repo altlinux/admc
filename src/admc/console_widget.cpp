@@ -418,8 +418,7 @@ void ConsoleWidget::on_current_scope_item_changed(const QModelIndex &current, co
     update_navigation_actions();
 
     // Switch to this item's results view
-    const int results_id = current.data(ConsoleRole_ResultsId).toInt();
-    ResultsDescription *results = results_descriptions[results_id];
+    ResultsDescription *results = get_current_results();
     results_stacked_widget->setCurrentWidget(results->view());
 
     // Switch to this item's results model
@@ -498,16 +497,14 @@ void ConsoleWidget::on_results_activated(const QModelIndex &index) {
 
 // NOTE: this is the workaround required to know in which pane selected objects are located
 void ConsoleWidget::on_focus_changed(QWidget *old, QWidget *now) {
-    auto current_results_view = results_stacked_widget->currentWidget();
-    const QList<QWidget *> views = {
-        scope_view, current_results_view
-    };
+    QTreeView *new_focused_view = qobject_cast<QTreeView *>(now);
 
-    for (QWidget *view : views) {
-        QTreeView *view_casted = qobject_cast<QTreeView *>(view);
+    if (new_focused_view != nullptr) {
+        ResultsDescription *current_results = get_current_results();
+        QTreeView *results_view = current_results->view();
 
-        if (now == view && view_casted != nullptr) {
-            focused_view = view_casted;
+        if (new_focused_view == scope_view || new_focused_view == results_view) {
+            focused_view = new_focused_view;
         }
     }
 }
@@ -705,6 +702,14 @@ QStandardItemModel *ConsoleWidget::get_results_model_for_scope_item(const QModel
 
         return new ConsoleDragModel();
     }
+}
+
+ResultsDescription *ConsoleWidget::get_current_results() const {
+    const QModelIndex current_scope = get_current_scope_item();
+    const int results_id = current_scope.data(ConsoleRole_ResultsId).toInt();
+    ResultsDescription *results = results_descriptions[results_id];
+
+    return results;
 }
 
 void ConsoleWidget::fetch_scope(const QModelIndex &index) {
