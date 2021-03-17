@@ -39,7 +39,7 @@ CustomizeColumnsDialog::CustomizeColumnsDialog(ResultsDescription *results_arg, 
 
     results = results_arg;
 
-    QTreeView *view = results->get_view();
+    QTreeView *view = results->view();
 
     QHeaderView *header = view->header();
     QAbstractItemModel *model = view->model();
@@ -90,7 +90,7 @@ CustomizeColumnsDialog::CustomizeColumnsDialog(ResultsDescription *results_arg, 
 }
 
 void CustomizeColumnsDialog::accept() {
-    QTreeView *view = results->get_view();
+    QTreeView *view = results->view();
     QHeaderView *header = view->header();
 
     for (int i = 0; i < checkbox_list.size(); i++) {
@@ -104,7 +104,7 @@ void CustomizeColumnsDialog::accept() {
 }
 
 void CustomizeColumnsDialog::restore_defaults() {
-    const QList<int> defaults = results->get_default_columns();
+    const QList<int> defaults = results->default_columns();
 
     for (int i = 0; i < checkbox_list.size(); i++) {
         QCheckBox *checkbox = checkbox_list[i];

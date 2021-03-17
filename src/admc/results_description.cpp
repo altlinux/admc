@@ -20,25 +20,25 @@
 #include "results_description.h"
 
 ResultsDescription::ResultsDescription(QTreeView *view_arg, const QList<QString> &column_labels_arg, const QList<int> &default_columns_arg) {
-    view = view_arg;
-    column_labels = column_labels_arg;
-    default_columns = default_columns_arg;
+    m_view = view_arg;
+    m_column_labels = column_labels_arg;
+    m_default_columns = default_columns_arg;
 }
 
-QTreeView *ResultsDescription::get_view() const {
-    return view;
+QTreeView *ResultsDescription::view() const {
+    return m_view;
 }
 
-QList<QString> ResultsDescription::get_column_labels() const {
-    return column_labels;
+QList<QString> ResultsDescription::column_labels() const {
+    return m_column_labels;
 }
 
-QList<int> ResultsDescription::get_default_columns() const {
-    return default_columns;
+QList<int> ResultsDescription::default_columns() const {
+    return m_default_columns;
 }
 
 // NOTE: this is a bit round-about way of getting column
 // count, but should be fine
-int ResultsDescription::get_column_count() const {
-    return column_labels.size();
+int ResultsDescription::column_count() const {
+    return m_column_labels.size();
 }

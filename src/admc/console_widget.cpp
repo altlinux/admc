@@ -214,7 +214,7 @@ QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const bool is
     results_models[item->index()] = new_results;
 
     ResultsDescription *results = results_descriptions[results_id];
-    const QList<QString> results_column_labels = results->get_column_labels();
+    const QList<QString> results_column_labels = results->column_labels();
     new_results->setHorizontalHeaderLabels(results_column_labels);
 
     return item;
@@ -286,7 +286,7 @@ QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &buddy, 
 
         const int results_id = scope_parent.data(ConsoleRole_ResultsId).toInt();
         ResultsDescription *results = results_descriptions[results_id];
-        const int column_count = results->get_column_count();
+        const int column_count = results->column_count();
 
         for (int i = 0; i < column_count; i++) {
             const auto item = new QStandardItem();
@@ -420,7 +420,7 @@ void ConsoleWidget::on_current_scope_item_changed(const QModelIndex &current, co
     // Switch to this item's results view
     const int results_id = current.data(ConsoleRole_ResultsId).toInt();
     ResultsDescription *results = results_descriptions[results_id];
-    results_stacked_widget->setCurrentWidget(results->get_view());
+    results_stacked_widget->setCurrentWidget(results->view());
 
     // Switch to this item's results model
     QStandardItemModel *results_model = get_results_model_for_scope_item(current);

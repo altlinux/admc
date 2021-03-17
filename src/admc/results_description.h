@@ -29,15 +29,15 @@ class ResultsDescription {
 public:
     ResultsDescription(QTreeView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
-    QTreeView *get_view() const;
-    QList<QString> get_column_labels() const;
-    QList<int> get_default_columns() const;
-    int get_column_count() const;
+    QTreeView *view() const;
+    QList<QString> column_labels() const;
+    QList<int> default_columns() const;
+    int column_count() const;
 
 private:
-    QTreeView *view;
-    QList<QString> column_labels;
-    QList<int> default_columns;
+    QTreeView *m_view;
+    QList<QString> m_column_labels;
+    QList<int> m_default_columns;
 };
 
 #endif /* RESULTS_DESCRIPTION_H */
