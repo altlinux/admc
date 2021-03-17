@@ -286,8 +286,10 @@ QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &buddy, 
     if (buddy.isValid()) {
         const QModelIndex results_index = row[0]->index();
 
-        results_model->setData(results_index, buddy, ConsoleRole_Buddy);
-        scope_model->setData(buddy, results_index, ConsoleRole_Buddy);
+        // NOTE: MUST use QPersistentModelIndex because
+        // QModelIndex's will become incorrect quickly
+        results_model->setData(results_index, QPersistentModelIndex(buddy), ConsoleRole_Buddy);
+        scope_model->setData(buddy, QPersistentModelIndex(results_index), ConsoleRole_Buddy);
     }
 
     row[0]->setData(false, ConsoleRole_IsScope);
