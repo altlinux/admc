@@ -89,7 +89,7 @@ private:
     void update_description_bar();
     void setup_scope_item(QStandardItem *item, const AdObject &object);
     void add_object_to_console(const AdObject &object, const    QModelIndex &parent);
-    void move_object_in_console(AdInterface &ad, const QModelIndex &old_index, const QModelIndex &new_parent_index);
+    void move_object_in_console(AdInterface &ad, const QModelIndex &old_index, const QString &new_parent_dn, const QModelIndex &new_parent_index);
 };
 
 #endif /* CONSOLE_H */

@@ -355,7 +355,7 @@ void Console::move() {
             AdInterface ad;
             if (ad_connected(ad)) {
                 for (const QModelIndex &index : selected_indexes) {
-                    move_object_in_console(ad, index, target);
+                    move_object_in_console(ad, index, selected_dn, target);
                 }
 
                 STATUS()->display_ad_messages(ad, this);
@@ -397,7 +397,7 @@ void Console::on_items_dropped(const QList<QModelIndex> &dropped, const QModelIn
 
         switch (drop_type) {
             case DropType_Move: {
-                move_object_in_console(ad, index, target);
+                move_object_in_console(ad, index, target_object.get_dn(), target);
 
                 break;
             }
@@ -623,9 +623,8 @@ void Console::add_object_to_console(const AdObject &object, const QModelIndex &p
 
 // Moves object on AD server and if that succeeds, also
 // moves it in console
-void Console::move_object_in_console(AdInterface &ad, const QModelIndex &old_index, const QModelIndex &new_parent_index) {
+void Console::move_object_in_console(AdInterface &ad, const QModelIndex &old_index, const QString &new_parent_dn, const QModelIndex &new_parent_index) {
     const QString old_dn = old_index.data(ObjectRole_DN).toString();
-    const QString new_parent_dn = new_parent_index.data(ObjectRole_DN).toString();
     const QString new_dn = dn_move(old_dn, new_parent_dn);
 
     const bool move_success = ad.object_move(old_dn, new_parent_dn);
@@ -633,7 +632,15 @@ void Console::move_object_in_console(AdInterface &ad, const QModelIndex &old_ind
     if (move_success) {
         console_widget->delete_item(old_index);
 
-        const AdObject updated_object = ad.search_object(new_dn);
-        add_object_to_console(updated_object, new_parent_index);
+        // NOTE: new_parent_index may be invalid if it's not
+        // loaded into console but was selected through
+        // SelectContainDialog. In that case we only delete
+        // object from it's old location and do nothing for
+        // new location. The object will be loaded at new
+        // location when it's parent is loaded.
+        if (new_parent_index.isValid()) {
+            const AdObject updated_object = ad.search_object(new_dn);
+            add_object_to_console(updated_object, new_parent_index);
+        }
     }
 }
