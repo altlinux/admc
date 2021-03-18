@@ -33,6 +33,11 @@ Gplink::Gplink(const QString &gplink_string) {
         // =>
         // gpo and option
         const QList<QString> part_split = part.split(';');
+
+        if (part_split.size() != 2) {
+            continue;
+        }
+
         QString gpo = part_split[0];
         gpo.replace(LDAP_PREFIX, "", Qt::CaseSensitive);
 
