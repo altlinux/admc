@@ -91,6 +91,7 @@ private:
     void setup_scope_item(QStandardItem *item, const AdObject &object);
     void add_object_to_console(const AdObject &object, const    QModelIndex &parent);
     void move_object_in_console(AdInterface &ad, const QModelIndex &old_index, const QString &new_parent_dn, const QModelIndex &new_parent_index);
+    void update_console_item(const QModelIndex &index, const AdObject &object);
 };
 
 #endif /* CONSOLE_H */

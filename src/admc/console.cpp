@@ -215,27 +215,7 @@ void Console::on_properties_requested() {
             }
 
             const AdObject updated_object = ad.search_object(dn);
-
-            auto update_console_item =
-            [this, updated_object](const QModelIndex &i) {
-                const bool is_scope = console_widget->is_scope_item(i);
-
-                if (is_scope) {
-                    QStandardItem *scope_item = console_widget->get_scope_item(i);
-                    setup_scope_item(scope_item, updated_object);
-                } else {
-                    QList<QStandardItem *> results_row = console_widget->get_results_row(i);
-                    load_object_row(results_row, updated_object);
-                }
-            };
-
-            update_console_item(index);
-
-            const QModelIndex buddy = console_widget->get_buddy(index);
-            if (buddy.isValid()) {
-                update_console_item(buddy);
-            }
-
+            update_console_item(index, updated_object);
         });
 }
 
@@ -260,26 +240,7 @@ void Console::rename() {
 
             const QString new_dn = dialog->get_new_dn();
             const AdObject updated_object = ad.search_object(new_dn);
-
-            auto update_console_item =
-            [this, updated_object](const QModelIndex &i) {
-                const bool is_scope = console_widget->is_scope_item(i);
-
-                if (is_scope) {
-                    QStandardItem *scope_item = console_widget->get_scope_item(i);
-                    setup_scope_item(scope_item, updated_object);
-                } else {
-                    QList<QStandardItem *> results_row = console_widget->get_results_row(i);
-                    load_object_row(results_row, updated_object);
-                }
-            };
-
-            update_console_item(index);
-
-            const QModelIndex buddy = console_widget->get_buddy(index);
-            if (buddy.isValid()) {
-                update_console_item(buddy);
-            }
+            update_console_item(index, updated_object);
         });
 
     dialog->open();
@@ -634,5 +595,38 @@ void Console::move_object_in_console(AdInterface &ad, const QModelIndex &old_ind
             const AdObject updated_object = ad.search_object(new_dn);
             add_object_to_console(updated_object, new_parent_index);
         }
+    }
+}
+
+void Console::update_console_item(const QModelIndex &index, const AdObject &object) {
+    auto update_helper =
+    [this, object](const QModelIndex &the_index) {
+        const bool is_scope = console_widget->is_scope_item(the_index);
+
+        if (is_scope) {
+            QStandardItem *scope_item = console_widget->get_scope_item(the_index);
+
+            const QString old_dn = scope_item->data(ObjectRole_DN).toString();
+            const bool dn_changed = (old_dn != object.get_dn());
+
+            setup_scope_item(scope_item, object);
+
+            // NOTE: if dn changed, then this change affects
+            // this item's children, so have to refresh to
+            // reload children.
+            if (dn_changed) {
+                console_widget->refresh_scope(the_index);
+            }
+        } else {
+            QList<QStandardItem *> results_row = console_widget->get_results_row(the_index);
+            load_object_row(results_row, object);
+        }
+    };
+
+    update_helper(index);
+
+    const QModelIndex buddy = console_widget->get_buddy(index);
+    if (buddy.isValid()) {
+        update_helper(buddy);
     }
 }
