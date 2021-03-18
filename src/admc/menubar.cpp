@@ -20,7 +20,7 @@
 #include "menubar.h"
 #include "main_window.h"
 #include "console.h"
-#include "console_widget.h"
+#include "console_widget/console_widget.h"
 #include "settings.h"
 #include "toggle_widgets_dialog.h"
 #include "config.h"

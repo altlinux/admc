@@ -34,12 +34,11 @@
 #include "object_menu.h"
 #include "status.h"
 #include "object_drag.h"
-#include "console_drag_model.h"
-#include "console_widget.h"
 #include "rename_dialog.h"
 #include "select_container_dialog.h"
 #include "create_dialog.h"
-#include "results_view.h"
+#include "console_widget/console_widget.h"
+#include "console_widget/results_view.h"
 
 #include <QDebug>
 #include <QAbstractItemView>

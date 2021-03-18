@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_drag_model.h"
+#include "console_widget/console_drag_model.h"
 
 #include <QMimeData>
 

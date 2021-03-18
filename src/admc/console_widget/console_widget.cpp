@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_widget.h"
-#include "console_widget_p.h"
+#include "console_widget/console_widget.h"
+#include "console_widget/console_widget_p.h"
 
-#include "console_drag_model.h"
-#include "scope_model.h"
-#include "customize_columns_dialog.h"
-#include "results_description.h"
-#include "results_view.h"
+#include "console_widget/console_drag_model.h"
+#include "console_widget/scope_model.h"
+#include "console_widget/customize_columns_dialog.h"
+#include "console_widget/results_description.h"
+#include "console_widget/results_view.h"
 
 #include <QDebug>
 #include <QTreeView>

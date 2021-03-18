@@ -17,37 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CUSTOMIZE_COLUMNS_DIALOG_H
-#define CUSTOMIZE_COLUMNS_DIALOG_H
+#ifndef SCOPE_MODEL_H
+#define SCOPE_MODEL_H
+
+#include "console_widget/console_drag_model.h"
 
 /**
- * Dialog for customizing columns of a results view in
- * console widget. Presents a list of checkbox which
- * correspond to view's columns. When dialog is accepted,
- * the columns that were unchecked are hidden.
+ * Implements showing expander for unfetched items.
  */
 
-#include <QDialog>
-
-#include "results_description.h"
-
-class QTreeView;
-class QCheckBox;
-class ResultsDescription;
-
-class CustomizeColumnsDialog final : public QDialog {
+class ScopeModel : public ConsoleDragModel {
 Q_OBJECT
 
 public:
-    CustomizeColumnsDialog(const ResultsDescription &results, QWidget *parent);
+    using ConsoleDragModel::ConsoleDragModel;
 
-public slots:
-    void accept() override;
-    void restore_defaults();
-
-private:
-    ResultsDescription results;
-    QList<QCheckBox *> checkbox_list;
+    bool hasChildren(const QModelIndex &parent) const override;
 };
 
-#endif /* CUSTOMIZE_COLUMNS_DIALOG_H */
+#endif /* SCOPE_MODEL_H */

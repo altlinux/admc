@@ -23,7 +23,7 @@
 #include <QStandardItemModel>
 #include <QList>
 
-#include "console_widget.h"
+#include "console_widget/console_widget.h"
 
 class QMimeData;
 class QModelIndex;

@@ -17,10 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "customize_columns_dialog.h"
+#include "console_widget/customize_columns_dialog.h"
 
-#include "results_description.h"
-#include "results_view.h"
+#include "console_widget/results_description.h"
+#include "console_widget/results_view.h"
 
 #include <QTreeView>
 #include <QHeaderView>

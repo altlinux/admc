@@ -24,7 +24,7 @@
  * Private header for ConsoleWidget.
  */
 
-#include "results_view.h"
+#include "console_widget/results_view.h"
 
 class QLabel;
 class QStackedWidget;

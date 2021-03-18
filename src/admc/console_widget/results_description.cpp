@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "results_description.h"
+#include "console_widget/results_description.h"
 
 // NOTE: empty ctor is needed by QHash
 ResultsDescription::ResultsDescription() {

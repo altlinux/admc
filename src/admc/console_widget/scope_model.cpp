@@ -17,22 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SCOPE_MODEL_H
-#define SCOPE_MODEL_H
+#include "console_widget/scope_model.h"
 
-#include "console_drag_model.h"
+#include "console_widget/console_widget_p.h"
 
-/**
- * Implements showing expander for unfetched items.
- */
+// This tricks the view into thinking that an item in tree
+// has children while the item is unfetched. This causes the
+// expander to be shown while the item is unfetched. After
+// the item is fetched, normal behavior is restored.
+bool ScopeModel::hasChildren(const QModelIndex &parent) const {
+    const bool was_fetched = parent.data(ConsoleRole_WasFetched).toBool();
+    const bool unfetched = !was_fetched;
 
-class ScopeModel : public ConsoleDragModel {
-Q_OBJECT
-
-public:
-    using ConsoleDragModel::ConsoleDragModel;
-
-    bool hasChildren(const QModelIndex &parent) const override;
-};
-
-#endif /* SCOPE_MODEL_H */
+    if (unfetched) {
+        return true;
+    } else {
+        return QStandardItemModel::hasChildren(parent);
+    }
+}

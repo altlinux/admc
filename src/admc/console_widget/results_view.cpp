@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "results_view.h"
+#include "console_widget/results_view.h"
 
 #include <QTreeView>
 #include <QListView>
