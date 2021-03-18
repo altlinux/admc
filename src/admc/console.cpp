@@ -380,15 +380,10 @@ void Console::refresh_head() {
 void Console::update_description_bar() {
     const QString text =
     [this]() {
-        const QModelIndex current_scope = console_widget->get_current_scope_item();
-
-        const QString scope_dn = current_scope.data(ObjectRole_DN).toString();
-        const QString scope_name = dn_get_name(scope_dn);
-
         const int results_count = console_widget->get_current_results_count();
-        const QString results_count_string = tr("%n object(s)", "", results_count);
+        const QString out = tr("%n object(s)", "", results_count);
 
-        return QString("%1: %2").arg(scope_name, results_count_string);
+        return out;
     }();
 
     console_widget->set_description_bar_text(text);

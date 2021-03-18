@@ -385,7 +385,17 @@ void ConsoleWidget::sort_scope() {
 }
 
 void ConsoleWidget::set_description_bar_text(const QString &text) {
-    d->description_bar->setText(text);
+    const QString scope_name =
+    [this]() {
+        const QModelIndex current_scope = get_current_scope_item();
+        const QString out = current_scope.data().toString();
+
+        return out;
+    }();
+
+    const QString description = QString("%1 %2").arg(scope_name, text);
+
+    d->description_bar->setText(description);
 }
 
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
