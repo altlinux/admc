@@ -188,7 +188,7 @@ void ConsoleWidget::delete_item(const QModelIndex &index) {
     // expected since we're deleting it from the modelZZ.
 
     // Remove buddy item
-    const QModelIndex buddy = index.data(ConsoleRole_Buddy).toModelIndex();
+    const QModelIndex buddy = get_buddy(index);
     if (buddy.isValid()) {
         ((QAbstractItemModel *)buddy.model())->removeRows(buddy.row(), 1, buddy.parent());
     }
@@ -442,6 +442,12 @@ QList<QStandardItem *> ConsoleWidget::get_results_row(const QModelIndex &results
     }
 }
 
+QModelIndex ConsoleWidget::get_buddy(const QModelIndex &index) {
+    const QModelIndex buddy = index.data(ConsoleRole_Buddy).toModelIndex();
+
+    return buddy;
+}
+
 QWidget *ConsoleWidget::get_scope_view() const {
     return d->scope_view;
 }
@@ -545,15 +551,11 @@ void ConsoleWidgetPrivate::on_scope_items_about_to_be_removed(const QModelIndex 
 }
 
 void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
-    const QModelIndex buddy = index.data(ConsoleRole_Buddy).toModelIndex();
+    const QModelIndex buddy = q->get_buddy(index);
 
     if (buddy.isValid()) {
         // Set associated scope item as current
-        const QModelIndex scope_index = index.data(ConsoleRole_Buddy).toModelIndex();
-
-        if (scope_index.isValid()) {
-            scope_view->selectionModel()->setCurrentIndex(scope_index, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
-        }
+        scope_view->selectionModel()->setCurrentIndex(buddy, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
     } else {
         emit q->properties_requested();
     }

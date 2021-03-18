@@ -167,6 +167,8 @@ public:
     QStandardItem *get_scope_item(const QModelIndex &scope_index) const;
     QList<QStandardItem *> get_results_row(const QModelIndex &results_index) const;
 
+    QModelIndex get_buddy(const QModelIndex &index);
+
     // These getters are only for showing/hiding these widgets
     QWidget *get_scope_view() const;
     QWidget *get_description_bar() const;

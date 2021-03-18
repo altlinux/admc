@@ -231,7 +231,7 @@ void Console::on_properties_requested() {
 
             update_console_item(index);
 
-            const QModelIndex buddy = index.data(ConsoleRole_Buddy).toModelIndex();
+            const QModelIndex buddy = console_widget->get_buddy(index);
             if (buddy.isValid()) {
                 update_console_item(buddy);
             }
@@ -276,7 +276,7 @@ void Console::rename() {
 
             update_console_item(index);
 
-            const QModelIndex buddy = index.data(ConsoleRole_Buddy).toModelIndex();
+            const QModelIndex buddy = console_widget->get_buddy(index);
             if (buddy.isValid()) {
                 update_console_item(buddy);
             }
