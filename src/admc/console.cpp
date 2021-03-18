@@ -218,7 +218,7 @@ void Console::on_properties_requested() {
 
             auto update_console_item =
             [this, updated_object](const QModelIndex &i) {
-                const bool is_scope = i.data(ConsoleRole_IsScope).toBool();
+                const bool is_scope = console_widget->is_scope_item(i);
 
                 if (is_scope) {
                     QStandardItem *scope_item = console_widget->get_scope_item(i);
@@ -263,7 +263,7 @@ void Console::rename() {
 
             auto update_console_item =
             [this, updated_object](const QModelIndex &i) {
-                const bool is_scope = i.data(ConsoleRole_IsScope).toBool();
+                const bool is_scope = console_widget->is_scope_item(i);
 
                 if (is_scope) {
                     QStandardItem *scope_item = console_widget->get_scope_item(i);

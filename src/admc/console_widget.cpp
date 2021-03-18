@@ -442,10 +442,16 @@ QList<QStandardItem *> ConsoleWidget::get_results_row(const QModelIndex &results
     }
 }
 
-QModelIndex ConsoleWidget::get_buddy(const QModelIndex &index) {
+QModelIndex ConsoleWidget::get_buddy(const QModelIndex &index) const {
     const QModelIndex buddy = index.data(ConsoleRole_Buddy).toModelIndex();
 
     return buddy;
+}
+
+bool ConsoleWidget::is_scope_item(const QModelIndex &index) const {
+    const bool is_scope = index.data(ConsoleRole_IsScope).toBool();
+
+    return is_scope;
 }
 
 QWidget *ConsoleWidget::get_scope_view() const {
