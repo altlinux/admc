@@ -66,58 +66,92 @@ enum ConsoleRoleLast {
     ConsoleRole_LAST = Qt::UserRole + 20,
 };
 
+enum ScopeNodeType {
+    ScopeNodeType_Static,
+    ScopeNodeType_Dynamic,
+};
+
 class ConsoleWidget final : public QWidget {
 Q_OBJECT
 
 public:        
     ConsoleWidget(QWidget *parent = nullptr);
 
-    // Add a new scope item to scope tree at the specified
-    // parent. Returned item should be used for setting
-    // text, icon and data roles. Pass empty QModelIndex as
+    // These f-ns are for adding items to console. There are
+    // two types of items "scope" and "results". Scope is
+    // composed of a single item, while results is a row of
+    // multiple items. Scope and results items can be
+    // "buddies". This is for cases where a results item
+    // also represents a scope item. Buddies are deleted
+    // together. If a scope item is deleted, it’s results
+    // buddy is also deleted and vice versa. When a buddy in
+    // results is activated (double-click or select+enter),
+    // scope’s current item is changed to it’s scope buddy.
+    //
+    // Arguments:
+    // 
+    // "results_id" - id of the results description that
+    // should've been previously registered by calling
+    // register_results().
+    //
+    // "scope_type" - scope items can be static or dynamic.
+    // Static scope items should be loaded at startup and
+    // never change after that. Dynamic scope items should
+    // be loaded when item_fetched() signal is emitted for
+    // that scope item. Note that dynamic scope items can be
+    // fetched again via the refresh_scope() f-n or
+    // "Refresh" action of the item menu.
+    //
+    // "parent" - index of the scope item which will be the
+    // parent of created item. Note that results are also
+    // "parented" by a scope parent, even though they are
+    // not in the scope tree. Pass empty QModelIndex as
+    // parent to add a scope item as top level item.
+    //
+    // Items returned from these f-ns should be used to set
+    // text, icon and your custom data roles.
+
+    //Pass empty QModelIndex as
     // "parent" to add scope item as top level item. Results
     // id is the id of the results view that must have been
     // received from a previous register_results()
     // call. Scope items can be dynamic, see comment about
     // ConsoleRole_ScopeIsDynamic for more info.
-    QStandardItem *add_scope_item(const int results_id, const bool is_dynamic, const QModelIndex &parent);
+    // Add new row of items to results of given scope item.
+    // Use the return row to fill it with your data. 
+    QStandardItem *add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent);
+    QList<QStandardItem *> add_results_row(const QModelIndex &scope_parent);
+    void add_buddy_scope_and_results(const int results_id, const ScopeNodeType scope_type, const QModelIndex &scope_parent, QStandardItem **scope_arg, QList<QStandardItem *> *results_arg);
 
+    // Sets current scope item in the scope tree
     void set_current_scope(const QModelIndex &index);
 
-    // Clears scope children and results of this scope item,
-    // then emits item_fetched() signal so that the snap-in
-    // can reload them
+    // Clears children of this scope item, then emits
+    // item_fetched() signal so that the scope item can be
+    // reloaded.
     void refresh_scope(const QModelIndex &index);
 
     // Register results to be used later for scope items.
     // Results can be just a widget, a tree view or a widget
     // that contains a tree view. Returns the unique id
-    // assigned to this results view. You can use this id
-    // when creating scope items to assign this results type
-    // to a scope item. Note that if results is just a
-    // widget, then you can't add or get results rows.
+    // assigned to this results view, which should be used
+    // when creating scope items. Note that if results is
+    // just a widget, then you can't add or get results
+    // rows.
     int register_results(QWidget *widget);
     int register_results(ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
     int register_results(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
-    // Add new row of items to results of given scope item.
-    // If you want to associate this results row with a
-    // scope item, pass the index of that scope item into
-    // "buddy" arg. See comment about "ConsoleRole_Buddy"
-    // for more info. Returned row of items should be used.
-    QList<QStandardItem *> add_results_row(const QModelIndex &buddy, const QModelIndex &scope_parent);
-
-    // Deletes scope/results item from both scope and/or
-    // results. If this item exists in both scope and
-    // results, deletes from both.
+    // Deletes a scope/results item. If this item has a
+    // buddy, that buddy is also deleted.
     void delete_item(const QModelIndex &index);
 
     // Sorts scope items by name. Note that this can affect
     // performance negatively if overused. For example, when
     // adding multiple scope items, try to call this once
-    // after all items are added. If you called this after
-    // each item is added the whole process would be slowed
-    // down.
+    // after all items are added. If you were to call this
+    // after each item is added the whole process would be
+    // slowed down.
     void sort_scope();
 
     void set_description_bar_text(const QString &text);

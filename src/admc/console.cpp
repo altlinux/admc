@@ -155,7 +155,7 @@ void Console::go_online(AdInterface &ad) {
     const QString head_dn = ADCONFIG()->domain_head();
     const AdObject head_object = ad.search_object(head_dn);
 
-    QStandardItem *item = console_widget->add_scope_item(object_results_id, true, QModelIndex());
+    QStandardItem *item = console_widget->add_scope_item(object_results_id, ScopeNodeType_Dynamic, QModelIndex());
 
     scope_head_index = QPersistentModelIndex(item->index());
 
@@ -601,15 +601,14 @@ void Console::add_object_to_console(const AdObject &object, const QModelIndex &p
     const bool should_be_in_scope = object_should_be_in_scope(object);
 
     if (should_be_in_scope) {
-        QStandardItem *scope_item = console_widget->add_scope_item(object_results_id, true, parent);
+        QStandardItem *scope_item;
+        QList<QStandardItem *> results_row;
+        console_widget->add_buddy_scope_and_results(object_results_id, ScopeNodeType_Dynamic, parent, &scope_item, &results_row);
+
         setup_scope_item(scope_item, object);
-
-        const QModelIndex scope_index = scope_item->index();
-
-        const QList<QStandardItem *> results_row = console_widget->add_results_row(scope_index, parent);
         load_object_row(results_row, object);
     } else {
-        const QList<QStandardItem *> results_row = console_widget->add_results_row(QModelIndex(), parent);
+        const QList<QStandardItem *> results_row = console_widget->add_results_row(parent);
         load_object_row(results_row, object);
     }
 }

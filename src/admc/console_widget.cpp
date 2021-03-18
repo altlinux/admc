@@ -197,7 +197,7 @@ void ConsoleWidget::delete_item(const QModelIndex &index) {
     ((QAbstractItemModel *)index.model())->removeRows(index.row(), 1, index.parent());
 }
 
-QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const bool is_dynamic, const QModelIndex &parent) {
+QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent) {
     QStandardItem *parent_item =
     [=]() {
         if (parent.isValid()) {
@@ -208,6 +208,8 @@ QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const bool is
     }();
 
     auto item = new QStandardItem();
+
+    const bool is_dynamic = (scope_type == ScopeNodeType_Dynamic);
 
     item->setData(is_dynamic, ConsoleRole_ScopeIsDynamic);
 
@@ -325,7 +327,26 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
     return id;
 }
 
-QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &buddy, const QModelIndex &scope_parent) {
+void ConsoleWidget::add_buddy_scope_and_results(const int results_id, const ScopeNodeType scope_type, const QModelIndex &scope_parent, QStandardItem **scope_arg, QList<QStandardItem *> *results_arg) {
+    QStandardItem *scope = add_scope_item(results_id, scope_type, scope_parent);
+
+    QList<QStandardItem *> results = add_results_row(scope_parent);
+
+    const QModelIndex scope_index = scope->index();
+    const QModelIndex results_index = results[0]->index();
+
+    // Set buddy indexes for scope and results so that they
+    // point at each other. MUST use QPersistentModelIndex
+    // because QModelIndex's will become incorrect quickly.
+    QStandardItemModel *results_model = d->get_results_model_for_scope_item(scope_parent);
+    results_model->setData(results_index, QPersistentModelIndex(scope_index), ConsoleRole_Buddy);
+    d->scope_model->setData(scope_index, QPersistentModelIndex(results_index), ConsoleRole_Buddy);
+
+    *scope_arg = scope;
+    *results_arg = results;
+}
+
+QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &scope_parent) {
     if (!scope_parent.isValid()) {
         return QList<QStandardItem *>();
     }
@@ -351,17 +372,6 @@ QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &buddy, 
     }();
 
     results_model->appendRow(row);
-
-    // Set buddy data role for both this results item and
-    // the buddy scope item
-    if (buddy.isValid()) {
-        const QModelIndex results_index = row[0]->index();
-
-        // NOTE: MUST use QPersistentModelIndex because
-        // QModelIndex's will become incorrect quickly
-        results_model->setData(results_index, QPersistentModelIndex(buddy), ConsoleRole_Buddy);
-        d->scope_model->setData(buddy, QPersistentModelIndex(results_index), ConsoleRole_Buddy);
-    }
 
     row[0]->setData(false, ConsoleRole_IsScope);
 
