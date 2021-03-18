@@ -208,6 +208,13 @@ signals:
 
     void properties_requested();
 
+    // Emitted when item count changes in one of results,
+    // due to items getting added or deleted. Note that this
+    // can be emitted for a non-current results as well.
+    // Useful if you want to display results count in
+    // description bar.
+    void results_count_changed();
+
 private:
     ConsoleWidgetPrivate *d;
 };

@@ -237,6 +237,13 @@ QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const ScopeNo
 
         const QList<QString> results_column_labels = results.column_labels();
         new_results->setHorizontalHeaderLabels(results_column_labels);
+
+        connect(
+            new_results, &QAbstractItemModel::rowsInserted,
+            this, &ConsoleWidget::results_count_changed);
+        connect(
+            new_results, &QAbstractItemModel::rowsRemoved,
+            this, &ConsoleWidget::results_count_changed);
     }
 
     return item;

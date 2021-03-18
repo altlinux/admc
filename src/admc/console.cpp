@@ -121,6 +121,9 @@ Console::Console()
         console_widget, &ConsoleWidget::current_scope_item_changed,
         this, &Console::update_description_bar);
     connect(
+        console_widget, &ConsoleWidget::results_count_changed,
+        this, &Console::update_description_bar);
+    connect(
         console_widget, &ConsoleWidget::action_menu_about_to_open,
         this, &Console::on_action_menu_about_to_open);
     connect(
