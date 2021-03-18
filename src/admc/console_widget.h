@@ -47,9 +47,6 @@
  */
 
 #include <QWidget>
-#include <QPersistentModelIndex>
-
-#include "results_view.h"
 
 // NOTE: when implementing custom roles, make sure they do
 // not conflict with console roles, like this:
@@ -96,24 +93,17 @@ enum ConsoleRole {
     ConsoleRole_LAST = Qt::UserRole + 7,
 };
 
-class QTreeView;
-class QStandardItemModel;
-class QSortFilterProxyModel;
-class ConsoleDragModel;
-class ScopeModel;
-class QStandardItem;
-class QStackedWidget;
-class QLabel;
-class QMenu;
-class ResultsDescription;
+class ConsoleWidgetPrivate;
 class ResultsView;
+class QStandardItem;
+class QMenu;
+class QAbstractItemView;
 
 class ConsoleWidget final : public QWidget {
 Q_OBJECT
 
 public:        
-    ConsoleWidget();
-    ~ConsoleWidget();
+    ConsoleWidget(QWidget *parent = nullptr);
 
     // Add a new scope item to scope tree at the specified
     // parent. Returned item should be used for setting
@@ -177,8 +167,9 @@ public:
     QStandardItem *get_scope_item(const QModelIndex &scope_index) const;
     QList<QStandardItem *> get_results_row(const QModelIndex &results_index) const;
 
-    QTreeView *get_scope_view() const;
-    QLabel *get_description_bar() const;
+    // These getters are only for showing/hiding these widgets
+    QWidget *get_scope_view() const;
+    QWidget *get_description_bar() const;
 
     // Insert these into the menubar of your app
     QMenu *get_action_menu() const;
@@ -213,76 +204,8 @@ signals:
 
     void properties_requested();
 
-private slots:
-    void on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &);
-    void on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last);
-    void on_results_activated(const QModelIndex &index);
-    void on_focus_changed(QWidget *old, QWidget *now);
-    void open_action_menu_as_context_menu(const QPoint pos);
-    void on_action_menu_show();
-    void on_view_menu_show();
-    void refresh();
-    void customize_columns();
-    void navigate_up();
-    void navigate_back();
-    void navigate_forward();
-    void on_start_drag(const QList<QModelIndex> &dropped);
-    void on_can_drop(const QModelIndex &target, bool *ok);
-    void on_drop(const QModelIndex &target);
-    void properties();
-    void set_results_to_icons();
-    void set_results_to_list();
-    void set_results_to_detail();
-
 private:
-    ScopeModel *scope_model;
-    QTreeView *scope_view;
-    QAbstractItemView *focused_view;
-    QLabel *description_bar;
-    QList<QModelIndex> dropped;
-
-    // NOTE: a proxy is model is inserted between results
-    // views and results models for more efficient sorting.
-    // If results views and models are connected directly,
-    // deletion of models becomes extremely slow.
-    QSortFilterProxyModel *results_proxy_model;
-    
-    QStackedWidget *results_stacked_widget;
-    QHash<int, ResultsDescription *> results_descriptions;
-    QHash<QPersistentModelIndex, QStandardItemModel *> results_models;
-
-    QMenu *action_menu;
-    QMenu *navigation_menu;
-    QMenu *view_menu;
-    QAction *refresh_action;
-    QAction *customize_columns_action;
-    QAction *properties_action;
-    QAction *navigate_up_action;
-    QAction *navigate_back_action;
-    QAction *navigate_forward_action;
-    QAction *set_results_to_icons_action;
-    QAction *set_results_to_list_action;
-    QAction *set_results_to_detail_action;
-
-    // NOTE: target history stores target items' id's.
-    // History lists are in order of ascending time.
-    // ... past.last() -> current -> future.first() ...
-    QList<QPersistentModelIndex> targets_past;
-    QList<QPersistentModelIndex> targets_future;
-
-    void add_actions_to_action_menu(QMenu *menu);
-    void update_navigation_actions();
-    void connect_to_drag_model(ConsoleDragModel *model);
-    QStandardItemModel *get_results_model_for_scope_item(const QModelIndex &index) const;
-    ResultsDescription *get_current_results() const;
-
-    // Fetches scope if it hasn't been fetched yet. Note
-    // that actual fetching is done by the user of console
-    // widget via the fetch signal. This f-n only emits the
-    // signal if needed.
-    void fetch_scope(const QModelIndex &index);
-
-    void set_results_to_type(const ResultsViewType type);
+    ConsoleWidgetPrivate *d;
 };
 
 #endif /* CONSOLE_WIDGET_H */

@@ -29,6 +29,7 @@ class QWidget;
 class ResultsDescription {
 
 public:
+    ResultsDescription();
     ResultsDescription(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
     QWidget *widget() const;

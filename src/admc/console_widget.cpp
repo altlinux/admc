@@ -18,6 +18,7 @@
  */
 
 #include "console_widget.h"
+#include "console_widget_p.h"
 
 #include "console_drag_model.h"
 #include "scope_model.h"
@@ -43,32 +44,12 @@
 #include <QPushButton>
 #include <QScrollArea>
 
-ConsoleWidget::ConsoleWidget()
-: QWidget()
+ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
+: QObject(q_arg)
 {
-    action_menu = new QMenu(this);
-    navigation_menu = new QMenu(this);
-    view_menu = new QMenu(this);
+    q = q_arg;
 
-    refresh_action = new QAction(tr("&Refresh"), this);
-    customize_columns_action = new QAction(tr("&Customize columns"), this);
-    properties_action = new QAction(tr("&Properties"), this);
-    navigate_up_action = new QAction(tr("&Up one level"), this);
-    navigate_back_action = new QAction(tr("&Back"), this);
-    navigate_forward_action = new QAction(tr("&Forward"), this);
-
-    set_results_to_icons_action = new QAction(tr("&Icons"), this);
-    set_results_to_list_action = new QAction(tr("&List"), this);
-    set_results_to_detail_action = new QAction(tr("&Detail"), this);
-
-    navigation_menu->addAction(navigate_up_action);
-    navigation_menu->addAction(navigate_back_action);
-    navigation_menu->addAction(navigate_forward_action);
-
-    // TODO: how to allow user of scopewidget to implement their own drag logic?
-    scope_model = new ScopeModel(this);
-
-    scope_view = new QTreeView(this);
+    scope_view = new QTreeView();
     scope_view->setHeaderHidden(true);
     scope_view->setExpandsOnDoubleClick(true);
     scope_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -77,13 +58,100 @@ ConsoleWidget::ConsoleWidget()
     // NOTE: this makes it so that you can't drag drop between rows (even though name/description don't say anything about that)
     scope_view->setDragDropOverwriteMode(true);
 
+    scope_model = new ScopeModel(this);
     scope_view->setModel(scope_model);
+
+    focused_view = scope_view;
 
     results_proxy_model = new QSortFilterProxyModel(this);
 
+    description_bar = new QLabel();
+
     results_stacked_widget = new QStackedWidget();
 
-    description_bar = new QLabel();
+    action_menu = new QMenu(q);
+    navigation_menu = new QMenu(q);
+    view_menu = new QMenu(q);
+
+    properties_action = new QAction(QObject::tr("&Properties"), this);
+    navigate_up_action = new QAction(tr("&Up one level"), this);
+    navigate_back_action = new QAction(tr("&Back"), this);
+    navigate_forward_action = new QAction(tr("&Forward"), this);
+    refresh_action = new QAction(tr("&Refresh"), this);
+    customize_columns_action = new QAction(tr("&Customize columns"), this);
+    set_results_to_icons_action = new QAction(tr("&Icons"), this);
+    set_results_to_list_action = new QAction(tr("&List"), this);
+    set_results_to_detail_action = new QAction(tr("&Detail"), this);
+
+    navigation_menu->addAction(navigate_up_action);
+    navigation_menu->addAction(navigate_back_action);
+    navigation_menu->addAction(navigate_forward_action);
+
+    // TODO: for now properties are opened by user of console
+    // widget but in the future it's planned to move this stuff
+    // here, which will make this do more than just emit a
+    // signal.
+
+    connect(
+        scope_view, &QTreeView::expanded,
+        this, &ConsoleWidgetPrivate::fetch_scope);
+    connect(
+        scope_view->selectionModel(), &QItemSelectionModel::currentChanged,
+        this, &ConsoleWidgetPrivate::on_current_scope_item_changed);
+    connect(
+        scope_model, &QStandardItemModel::rowsAboutToBeRemoved,
+        this, &ConsoleWidgetPrivate::on_scope_items_about_to_be_removed);
+    connect(
+        properties_action, &QAction::triggered,
+        q, &ConsoleWidget::properties_requested);
+    connect(
+        navigate_up_action, &QAction::triggered,
+        this, &ConsoleWidgetPrivate::navigate_up);
+    connect(
+        navigate_back_action, &QAction::triggered,
+        this, &ConsoleWidgetPrivate::navigate_back);
+    connect(
+        navigate_forward_action, &QAction::triggered,
+        this, &ConsoleWidgetPrivate::navigate_forward);
+    connect(
+        refresh_action, &QAction::triggered,
+        this, &ConsoleWidgetPrivate::refresh);
+    connect(
+        customize_columns_action, &QAction::triggered,
+        this, &ConsoleWidgetPrivate::customize_columns);
+    connect(
+        set_results_to_icons_action, &QAction::triggered,
+        this, &ConsoleWidgetPrivate::set_results_to_icons);
+    connect(
+        set_results_to_list_action, &QAction::triggered,
+        this, &ConsoleWidgetPrivate::set_results_to_list);
+    connect(
+        set_results_to_detail_action, &QAction::triggered,
+        this, &ConsoleWidgetPrivate::set_results_to_detail);
+
+    connect(
+        scope_view, &QWidget::customContextMenuRequested,
+        this, &ConsoleWidgetPrivate::open_action_menu_as_context_menu);
+    connect(
+        action_menu, &QMenu::aboutToShow,
+        this, &ConsoleWidgetPrivate::on_action_menu_show);
+    connect(
+        view_menu, &QMenu::aboutToShow,
+        this, &ConsoleWidgetPrivate::on_view_menu_show);
+
+    connect(
+        qApp, &QApplication::focusChanged,
+        this, &ConsoleWidgetPrivate::on_focus_changed);
+
+    connect_to_drag_model(scope_model);
+
+    update_navigation_actions();
+}
+
+ConsoleWidget::ConsoleWidget(QWidget *parent)
+: QWidget(parent)
+{
+    d = new ConsoleWidgetPrivate(this);
 
     // NOTE: need results wrapper because layouts can't be inserted into splitter
     auto results_wrapper = new QWidget();
@@ -91,11 +159,11 @@ ConsoleWidget::ConsoleWidget()
     results_wrapper->setLayout(results_layout);
     results_layout->setContentsMargins(0, 0, 0, 0);
     results_layout->setSpacing(0);
-    results_layout->addWidget(description_bar);
-    results_layout->addWidget(results_stacked_widget);
+    results_layout->addWidget(d->description_bar);
+    results_layout->addWidget(d->results_stacked_widget);
 
     auto splitter = new QSplitter(Qt::Horizontal);
-    splitter->addWidget(scope_view);
+    splitter->addWidget(d->scope_view);
     splitter->addWidget(results_wrapper);
     splitter->setStretchFactor(0, 1);
     splitter->setStretchFactor(1, 2);
@@ -105,71 +173,6 @@ ConsoleWidget::ConsoleWidget()
     layout->setSpacing(0);
     setLayout(layout);
     layout->addWidget(splitter);
-
-    focused_view = scope_view;
-
-    connect(
-        scope_view, &QTreeView::expanded,
-        this, &ConsoleWidget::fetch_scope);
-    connect(
-        scope_view->selectionModel(), &QItemSelectionModel::currentChanged,
-        this, &ConsoleWidget::on_current_scope_item_changed);
-
-    connect(
-        refresh_action, &QAction::triggered,
-        this, &ConsoleWidget::refresh);
-    connect(
-        customize_columns_action, &QAction::triggered,
-        this, &ConsoleWidget::customize_columns);
-    connect(
-        properties_action, &QAction::triggered,
-        this, &ConsoleWidget::properties);
-    connect(
-        navigate_up_action, &QAction::triggered,
-        this, &ConsoleWidget::navigate_up);
-    connect(
-        navigate_back_action, &QAction::triggered,
-        this, &ConsoleWidget::navigate_back);
-    connect(
-        navigate_forward_action, &QAction::triggered,
-        this, &ConsoleWidget::navigate_forward);
-    connect(
-        set_results_to_icons_action, &QAction::triggered,
-        this, &ConsoleWidget::set_results_to_icons);
-    connect(
-        set_results_to_list_action, &QAction::triggered,
-        this, &ConsoleWidget::set_results_to_list);
-    connect(
-        set_results_to_detail_action, &QAction::triggered,
-        this, &ConsoleWidget::set_results_to_detail);
-    
-    update_navigation_actions();
-
-    connect(
-        scope_model, &QStandardItemModel::rowsAboutToBeRemoved,
-        this, &ConsoleWidget::on_scope_items_about_to_be_removed);
-
-    connect(
-        scope_view, &QWidget::customContextMenuRequested,
-        this, &ConsoleWidget::open_action_menu_as_context_menu);
-    connect(
-        action_menu, &QMenu::aboutToShow,
-        this, &ConsoleWidget::on_action_menu_show);
-    connect(
-        view_menu, &QMenu::aboutToShow,
-        this, &ConsoleWidget::on_view_menu_show);
-
-    connect(
-        qApp, &QApplication::focusChanged,
-        this, &ConsoleWidget::on_focus_changed);
-
-    connect_to_drag_model(scope_model);
-}
-
-ConsoleWidget::~ConsoleWidget() {
-    for (ResultsDescription *e : results_descriptions.values()) {
-        delete e;
-    }
 }
 
 void ConsoleWidget::delete_item(const QModelIndex &index) {
@@ -198,9 +201,9 @@ QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const bool is
     QStandardItem *parent_item =
     [=]() {
         if (parent.isValid()) {
-            return scope_model->itemFromIndex(parent);
+            return d->scope_model->itemFromIndex(parent);
         } else {
-            return scope_model->invisibleRootItem();
+            return d->scope_model->invisibleRootItem();
         }
     }();
 
@@ -224,13 +227,13 @@ QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const bool is
 
     // Create a results model for this scope item, if
     // results has a view
-    ResultsDescription *results = results_descriptions[results_id];
-    if (results->view() != nullptr) {
+    const ResultsDescription results = d->results_descriptions[results_id];
+    if (results.view() != nullptr) {
         auto new_results = new ConsoleDragModel(this);
-        connect_to_drag_model(new_results);
-        results_models[item->index()] = new_results;
+        d->connect_to_drag_model(new_results);
+        d->results_models[item->index()] = new_results;
 
-        const QList<QString> results_column_labels = results->column_labels();
+        const QList<QString> results_column_labels = results.column_labels();
         new_results->setHorizontalHeaderLabels(results_column_labels);
     }
 
@@ -238,7 +241,7 @@ QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const bool is
 }
 
 void ConsoleWidget::set_current_scope(const QModelIndex &index) {
-    scope_view->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+    d->scope_view->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 }
 
 void ConsoleWidget::refresh_scope(const QModelIndex &index) {
@@ -246,9 +249,9 @@ void ConsoleWidget::refresh_scope(const QModelIndex &index) {
         return;
     }
 
-    scope_model->removeRows(0, scope_model->rowCount(index), index);
+    d->scope_model->removeRows(0, d->scope_model->rowCount(index), index);
 
-    QStandardItemModel *results_model = get_results_model_for_scope_item(index);
+    QStandardItemModel *results_model = d->get_results_model_for_scope_item(index);
     if (results_model != nullptr) {
         results_model->removeRows(0, results_model->rowCount());
     }
@@ -274,7 +277,7 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
     id_max++;
     const int id = id_max;
 
-    results_descriptions[id] = new ResultsDescription(widget, view, column_labels, default_columns);
+    d->results_descriptions[id] = ResultsDescription(widget, view, column_labels, default_columns);
 
     // TODO: check if also need to call adjustSize() when
     // changing between different results widgets.
@@ -283,18 +286,23 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
     // for correct sizing, idk why. Seems like a Qt
     // bug/quirk. Without this qstackwidget is too small in
     // the splitter.
-    results_stacked_widget->addWidget(widget);
-    results_stacked_widget->adjustSize();
+    d->results_stacked_widget->addWidget(widget);
+    d->results_stacked_widget->adjustSize();
 
     if (view != nullptr) {
-        view->set_model(results_proxy_model);
+        // NOTE: a proxy is model is inserted between
+        // results views and results models for more
+        // efficient sorting. If results views and models
+        // are connected directly, deletion of results
+        // models becomes extremely slow.
+        view->set_model(d->results_proxy_model);
 
         connect(
             view, &ResultsView::activated,
-            this, &ConsoleWidget::on_results_activated);
+            d, &ConsoleWidgetPrivate::on_results_activated);
         connect(
             view, &ResultsView::context_menu,
-            this, &ConsoleWidget::open_action_menu_as_context_menu);
+            d, &ConsoleWidgetPrivate::open_action_menu_as_context_menu);
 
         // Hide non-default results view columns. Note that
         // at creation, view header doesnt have any
@@ -322,7 +330,7 @@ QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &buddy, 
         return QList<QStandardItem *>();
     }
 
-    QStandardItemModel *results_model = get_results_model_for_scope_item(scope_parent);
+    QStandardItemModel *results_model = d->get_results_model_for_scope_item(scope_parent);
     if (results_model == nullptr) {
         return QList<QStandardItem *>();
     }
@@ -332,10 +340,9 @@ QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &buddy, 
         QList<QStandardItem *> out;
 
         const int results_id = scope_parent.data(ConsoleRole_ResultsId).toInt();
-        ResultsDescription *results = results_descriptions[results_id];
-        const int column_count = results->column_count();
+        const ResultsDescription results = d->results_descriptions[results_id];
 
-        for (int i = 0; i < column_count; i++) {
+        for (int i = 0; i < results.column_count(); i++) {
             const auto item = new QStandardItem();
             out.append(item);
         }
@@ -353,7 +360,7 @@ QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &buddy, 
         // NOTE: MUST use QPersistentModelIndex because
         // QModelIndex's will become incorrect quickly
         results_model->setData(results_index, QPersistentModelIndex(buddy), ConsoleRole_Buddy);
-        scope_model->setData(buddy, QPersistentModelIndex(results_index), ConsoleRole_Buddy);
+        d->scope_model->setData(buddy, QPersistentModelIndex(results_index), ConsoleRole_Buddy);
     }
 
     row[0]->setData(false, ConsoleRole_IsScope);
@@ -364,15 +371,15 @@ QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &buddy, 
 }
 
 void ConsoleWidget::sort_scope() {
-    scope_model->sort(0, Qt::AscendingOrder);
+    d->scope_model->sort(0, Qt::AscendingOrder);
 }
 
 void ConsoleWidget::set_description_bar_text(const QString &text) {
-    description_bar->setText(text);
+    d->description_bar->setText(text);
 }
 
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
-    const QList<QModelIndex> all_indexes = focused_view->selectionModel()->selectedIndexes();
+    const QList<QModelIndex> all_indexes = d->focused_view->selectionModel()->selectedIndexes();
 
     QList<QModelIndex> indexes;
 
@@ -387,20 +394,20 @@ QList<QModelIndex> ConsoleWidget::get_selected_items() const {
 }
 
 QList<QModelIndex> ConsoleWidget::search_scope_by_role(int role, const QVariant &value) const {
-    const QList<QModelIndex> matches = scope_model->match(scope_model->index(0, 0), role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+    const QList<QModelIndex> matches = d->scope_model->match(d->scope_model->index(0, 0), role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
 
     return matches;
 }
 
 QModelIndex ConsoleWidget::get_current_scope_item() const {
-    const QModelIndex index = scope_view->selectionModel()->currentIndex();
+    const QModelIndex index = d->scope_view->selectionModel()->currentIndex();
 
     return index;
 }
 
 int ConsoleWidget::get_current_results_count() const {
     const QModelIndex current_scope = get_current_scope_item();
-    QStandardItemModel *current_results = get_results_model_for_scope_item(current_scope);
+    QStandardItemModel *current_results = d->get_results_model_for_scope_item(current_scope);
 
     if (current_results != nullptr) {
         const int results_count = current_results->rowCount();
@@ -412,7 +419,7 @@ int ConsoleWidget::get_current_results_count() const {
 }
 
 QStandardItem *ConsoleWidget::get_scope_item(const QModelIndex &scope_index) const {
-    QStandardItem *item = scope_model->itemFromIndex(scope_index);
+    QStandardItem *item = d->scope_model->itemFromIndex(scope_index);
 
     return item;
 }
@@ -421,7 +428,7 @@ QList<QStandardItem *> ConsoleWidget::get_results_row(const QModelIndex &results
     QList<QStandardItem *> row;
 
     const QModelIndex scope_parent = results_index.data(ConsoleRole_ScopeParent).toModelIndex();
-    QStandardItemModel *model = get_results_model_for_scope_item(scope_parent);
+    QStandardItemModel *model = d->get_results_model_for_scope_item(scope_parent);
 
     if (model != nullptr) {
         for (int col = 0; col < model->columnCount(); col++) {
@@ -435,27 +442,27 @@ QList<QStandardItem *> ConsoleWidget::get_results_row(const QModelIndex &results
     }
 }
 
-QTreeView *ConsoleWidget::get_scope_view() const {
-    return scope_view;
+QWidget *ConsoleWidget::get_scope_view() const {
+    return d->scope_view;
 }
 
-QLabel *ConsoleWidget::get_description_bar() const {
-    return description_bar;
+QWidget *ConsoleWidget::get_description_bar() const {
+    return d->description_bar;
 }
 
 QMenu *ConsoleWidget::get_action_menu() const {
-    return action_menu;
+    return d->action_menu;
 }
 
 QMenu *ConsoleWidget::get_navigation_menu() const {
-    return navigation_menu;
+    return d->navigation_menu;
 }
 
 QMenu *ConsoleWidget::get_view_menu() const {
-    return view_menu;
+    return d->view_menu;
 }
 
-void ConsoleWidget::on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &previous) {
+void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &previous) {
     // NOTE: technically this slot should never be called
     // with invalid current index
     if (!current.isValid()) {
@@ -473,11 +480,11 @@ void ConsoleWidget::on_current_scope_item_changed(const QModelIndex &current, co
     update_navigation_actions();
 
     // Switch to this item's results widget
-    ResultsDescription *results = get_current_results();
-    results_stacked_widget->setCurrentWidget(results->widget());
+    const ResultsDescription results = get_current_results();
+    results_stacked_widget->setCurrentWidget(results.widget());
 
     // Switch to results view's model if view exists
-    if (results->view() != nullptr) {
+    if (results.view() != nullptr) {
         QStandardItemModel *results_model = get_results_model_for_scope_item(current);
         results_proxy_model->setSourceModel(results_model);
     }
@@ -486,10 +493,10 @@ void ConsoleWidget::on_current_scope_item_changed(const QModelIndex &current, co
     // purposes we consider it to be the same.
     fetch_scope(current);
 
-    emit current_scope_item_changed(current);
+    emit q->current_scope_item_changed(current);
 }
 
-void ConsoleWidget::on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last) {
+void ConsoleWidgetPrivate::on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last) {
     const QList<QModelIndex> removed_scope_items =
     [=]() {
         QList<QModelIndex> out;
@@ -537,7 +544,7 @@ void ConsoleWidget::on_scope_items_about_to_be_removed(const QModelIndex &parent
     }
 }
 
-void ConsoleWidget::on_results_activated(const QModelIndex &index) {
+void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
     const QModelIndex buddy = index.data(ConsoleRole_Buddy).toModelIndex();
 
     if (buddy.isValid()) {
@@ -548,17 +555,17 @@ void ConsoleWidget::on_results_activated(const QModelIndex &index) {
             scope_view->selectionModel()->setCurrentIndex(scope_index, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
         }
     } else {
-        properties();
+        emit q->properties_requested();
     }
 }
 
 // NOTE: this is the workaround required to know in which pane selected objects are located
-void ConsoleWidget::on_focus_changed(QWidget *old, QWidget *now) {
+void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
     QAbstractItemView *new_focused_view = qobject_cast<QAbstractItemView *>(now);
 
     if (new_focused_view != nullptr) {
-        ResultsDescription *current_results = get_current_results();
-        QAbstractItemView *results_view = current_results->view()->current_view();
+        const ResultsDescription current_results = get_current_results();
+        QAbstractItemView *results_view = current_results.view()->current_view();
 
         if (new_focused_view == scope_view || new_focused_view == results_view) {
             focused_view = new_focused_view;
@@ -566,29 +573,29 @@ void ConsoleWidget::on_focus_changed(QWidget *old, QWidget *now) {
     }
 }
 
-void ConsoleWidget::open_action_menu_as_context_menu(const QPoint pos) {
-    auto menu = new QMenu(this);
+void ConsoleWidgetPrivate::open_action_menu_as_context_menu(const QPoint pos) {
+    auto menu = new QMenu(q);
     menu->setAttribute(Qt::WA_DeleteOnClose);
 
     add_actions_to_action_menu(menu);
 
-    emit action_menu_about_to_open(menu, focused_view);
+    emit q->action_menu_about_to_open(menu, focused_view);
 
     const QPoint global_pos = focused_view->mapToGlobal(pos);
     menu->exec(global_pos);
 }
 
-void ConsoleWidget::on_action_menu_show() {
+void ConsoleWidgetPrivate::on_action_menu_show() {
     add_actions_to_action_menu(action_menu);
 
-    emit action_menu_about_to_open(action_menu, focused_view);
+    emit q->action_menu_about_to_open(action_menu, focused_view);
 }
 
-void ConsoleWidget::on_view_menu_show() {
+void ConsoleWidgetPrivate::on_view_menu_show() {
     view_menu->clear();
 
-    ResultsDescription *results = get_current_results();
-    if (results->view() != nullptr) {    
+    const ResultsDescription results = get_current_results();
+    if (results.view() != nullptr) {    
         view_menu->addAction(set_results_to_icons_action);
         view_menu->addAction(set_results_to_list_action);
         view_menu->addAction(set_results_to_detail_action);
@@ -598,39 +605,31 @@ void ConsoleWidget::on_view_menu_show() {
 
     view_menu->addAction(customize_columns_action);
 
-    emit view_menu_about_to_open(view_menu);
+    emit q->view_menu_about_to_open(view_menu);
 }
 
-void ConsoleWidget::refresh() {
+void ConsoleWidgetPrivate::refresh() {
     const QModelIndex current_index = focused_view->selectionModel()->currentIndex();
 
-    refresh_scope(current_index);
+    q->refresh_scope(current_index);
 }
 
-void ConsoleWidget::customize_columns() {
-    const QModelIndex current_scope = get_current_scope_item();
+void ConsoleWidgetPrivate::customize_columns() {
+    const QModelIndex current_scope = q->get_current_scope_item();
 
     if (!current_scope.isValid()) {
         return;
     }
 
     const int current_results_id = current_scope.data(ConsoleRole_ResultsId).toInt();
-    ResultsDescription *current_results = results_descriptions[current_results_id];
+    const ResultsDescription current_results = results_descriptions[current_results_id];
 
-    auto dialog = new CustomizeColumnsDialog(current_results, this);
+    auto dialog = new CustomizeColumnsDialog(current_results, q);
     dialog->open();
 }
 
-// TODO: for now properties are opened by user of console
-// widget but in the future it's planned to move this stuff
-// here, which will make this do more than just emit a
-// signal.
-void ConsoleWidget::properties() {
-    emit properties_requested();
-}
-
 // Set target to parent of current target
-void ConsoleWidget::navigate_up() {
+void ConsoleWidgetPrivate::navigate_up() {
     const QPersistentModelIndex old_current = QPersistentModelIndex(scope_view->currentIndex());
 
     if (!old_current.isValid()) {
@@ -649,7 +648,7 @@ void ConsoleWidget::navigate_up() {
 }
 
 // NOTE: for "back" and "forward" navigation, setCurrentIndex() triggers "current changed" slot which by default erases future history, so manually restore correct navigation state afterwards
-void ConsoleWidget::navigate_back() {
+void ConsoleWidgetPrivate::navigate_back() {
     const QModelIndex old_current = scope_view->currentIndex();
 
     if (!old_current.isValid()) {
@@ -675,7 +674,7 @@ void ConsoleWidget::navigate_back() {
     update_navigation_actions();
 }
 
-void ConsoleWidget::navigate_forward() {
+void ConsoleWidgetPrivate::navigate_forward() {
     const QModelIndex old_current = scope_view->currentIndex();
     
     if (!old_current.isValid()) {
@@ -701,42 +700,42 @@ void ConsoleWidget::navigate_forward() {
     update_navigation_actions();
 }
 
-void ConsoleWidget::on_start_drag(const QList<QModelIndex> &dropped_arg) {
+void ConsoleWidgetPrivate::on_start_drag(const QList<QModelIndex> &dropped_arg) {
     dropped = dropped_arg;
 }
 
-void ConsoleWidget::on_can_drop(const QModelIndex &target, bool *ok) {
-    emit items_can_drop(dropped, target, ok);
+void ConsoleWidgetPrivate::on_can_drop(const QModelIndex &target, bool *ok) {
+    emit q->items_can_drop(dropped, target, ok);
 }
 
-void ConsoleWidget::on_drop(const QModelIndex &target) {
-    emit items_dropped(dropped, target);
+void ConsoleWidgetPrivate::on_drop(const QModelIndex &target) {
+    emit q->items_dropped(dropped, target);
 }
 
-void ConsoleWidget::set_results_to_icons() {
+void ConsoleWidgetPrivate::set_results_to_icons() {
     set_results_to_type(ResultsViewType_Icons);
 }
 
-void ConsoleWidget::set_results_to_list() {
+void ConsoleWidgetPrivate::set_results_to_list() {
     set_results_to_type(ResultsViewType_List);
 }
 
-void ConsoleWidget::set_results_to_detail() {
+void ConsoleWidgetPrivate::set_results_to_detail() {
     set_results_to_type(ResultsViewType_Detail);
 }
 
 // NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
-void ConsoleWidget::update_navigation_actions() {
+void ConsoleWidgetPrivate::update_navigation_actions() {
     navigate_back_action->setEnabled(!targets_past.isEmpty());
     navigate_forward_action->setEnabled(!targets_future.isEmpty());
 }
 
-void ConsoleWidget::add_actions_to_action_menu(QMenu *menu) {
+void ConsoleWidgetPrivate::add_actions_to_action_menu(QMenu *menu) {
     menu->clear();
 
     const bool selected_item_is_dynamic =
     [=]() {
-        const QList<QModelIndex> selected = get_selected_items();
+        const QList<QModelIndex> selected = q->get_selected_items();
         if (selected.size() == 1) {
             const QModelIndex index = selected[0];
             const bool is_dynamic = index.data(ConsoleRole_ScopeIsDynamic).toBool();
@@ -754,19 +753,19 @@ void ConsoleWidget::add_actions_to_action_menu(QMenu *menu) {
     menu->addAction(properties_action);
 }
 
-void ConsoleWidget::connect_to_drag_model(ConsoleDragModel *model) {
+void ConsoleWidgetPrivate::connect_to_drag_model(ConsoleDragModel *model) {
     connect(
         model, &ConsoleDragModel::start_drag,
-        this, &ConsoleWidget::on_start_drag);
+        this, &ConsoleWidgetPrivate::on_start_drag);
     connect(
         model, &ConsoleDragModel::can_drop,
-        this, &ConsoleWidget::on_can_drop);
+        this, &ConsoleWidgetPrivate::on_can_drop);
     connect(
         model, &ConsoleDragModel::drop,
-        this, &ConsoleWidget::on_drop);
+        this, &ConsoleWidgetPrivate::on_drop);
 }
 
-QStandardItemModel *ConsoleWidget::get_results_model_for_scope_item(const QModelIndex &index) const {
+QStandardItemModel *ConsoleWidgetPrivate::get_results_model_for_scope_item(const QModelIndex &index) const {
     if (results_models.contains(index)) {
         return results_models[index];
     } else {
@@ -774,25 +773,25 @@ QStandardItemModel *ConsoleWidget::get_results_model_for_scope_item(const QModel
     }
 }
 
-ResultsDescription *ConsoleWidget::get_current_results() const {
-    const QModelIndex current_scope = get_current_scope_item();
+const ResultsDescription ConsoleWidgetPrivate::get_current_results() const {
+    const QModelIndex current_scope = q->get_current_scope_item();
     const int results_id = current_scope.data(ConsoleRole_ResultsId).toInt();
-    ResultsDescription *results = results_descriptions[results_id];
+    const ResultsDescription results = results_descriptions[results_id];
 
     return results;
 }
 
-void ConsoleWidget::fetch_scope(const QModelIndex &index) {
+void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
     const bool was_fetched = index.data(ConsoleRole_WasFetched).toBool();
 
     if (!was_fetched) {
         scope_model->setData(index, true, ConsoleRole_WasFetched);
 
-        emit item_fetched(index);
+        emit q->item_fetched(index);
     }
 }
 
-void ConsoleWidget::set_results_to_type(const ResultsViewType type) {
-    ResultsDescription *results = get_current_results();
-    results->view()->set_view_type(type);
+void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
+    const ResultsDescription results = get_current_results();
+    results.view()->set_view_type(type);
 }

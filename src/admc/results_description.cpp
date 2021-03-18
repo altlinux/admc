@@ -19,6 +19,11 @@
 
 #include "results_description.h"
 
+// NOTE: empty ctor is needed by QHash
+ResultsDescription::ResultsDescription() {
+
+}
+
 ResultsDescription::ResultsDescription(QWidget *widget_arg, ResultsView *view_arg, const QList<QString> &column_labels_arg, const QList<int> &default_columns_arg) {
     m_widget = widget_arg;
     m_view = view_arg;
