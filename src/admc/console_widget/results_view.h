@@ -59,6 +59,12 @@ signals:
     void activated(const QModelIndex &index);
     void context_menu(const QPoint pos);
 
+    // Emitted when selection of current view changes
+    void selection_changed();
+
+    // Emitted when current index of current view changes
+    void current_changed();
+
 private:
     QStackedWidget *stacked_widget;
     QHash<ResultsViewType, QAbstractItemView *> views;

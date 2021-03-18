@@ -85,6 +85,16 @@ ResultsView::ResultsView(QWidget *parent)
 void ResultsView::set_model(QAbstractItemModel *model) {
     for (auto view : views.values()) {
         view->setModel(model);
+
+
+        // NOTE: selection model doesn't exist until view's
+        // model is set, so have to connect here
+        connect(
+            view->selectionModel(), &QItemSelectionModel::selectionChanged,
+            this, &ResultsView::selection_changed);
+        connect(
+            view->selectionModel(), &QItemSelectionModel::currentChanged,
+            this, &ResultsView::current_changed);
     }
 }
 
