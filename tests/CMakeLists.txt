@@ -34,21 +34,16 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/ad_utils.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/ad_object.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/properties_dialog.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/main_window.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/status.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/object_model.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/select_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/object_menu.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/password_dialog.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/menubar.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/attribute_display.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/find_results.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/toggle_widgets_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/filter_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/find_widget.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/tab_widget.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/console.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/console_drag_model.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/rename_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/rename_policy_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/create_dialog.cpp
@@ -95,14 +90,8 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/edits/datetime_edit.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/edits/gpoptions_edit.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/edits/manager_edit.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/object_drag.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/search_thread.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/help_browser.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/console_widget.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/scope_model.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/customize_columns_dialog.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/results_description.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/results_view.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/status.cpp
 
     ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/common/settings.cpp
