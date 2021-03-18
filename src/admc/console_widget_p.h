@@ -33,6 +33,45 @@ class ScopeModel;
 class QStandardItemModel;
 class QSortFilterProxyModel;
 class ConsoleDragModel;
+class ConsoleWidget;
+class QMenu;
+
+enum ConsoleRole {
+    // Determines whether scope item was fetched
+    ConsoleRole_WasFetched = Qt::UserRole + 1,
+
+    // Id of results view that should be used for this for
+    // this scope item. Doesn't apply to results items.
+    ConsoleRole_ResultsId = Qt::UserRole + 2,
+
+    // Items can have "buddy" items. This is for cases where
+    // a results item also represents a scope item. In that
+    // case there are two separate items but they are
+    // connected through this role. Buddies are deleted
+    // together. If a scope item is deleted, it’s buddy in
+    // results is also deleted and vice versa. When a buddy
+    // in results is activated (double-click or select and
+    // enter), scope’s current item is changed to it’s scope
+    // buddy.
+    ConsoleRole_Buddy = Qt::UserRole + 3,
+
+    // Scope item parent of a results item. Doesn't apply
+    // to scope items.
+    ConsoleRole_ScopeParent = Qt::UserRole + 4,
+
+    ConsoleRole_IsScope = Qt::UserRole + 5,
+
+    // Determines whether scope is dynamic. If scope is not
+    // dynamic, then user of console adds children at
+    // startup and they never change. If scope is dynamic,
+    // then the fetching mechanism applies to it. Children
+    // are added when item_fetched() signal is emitted. In
+    // addition, dynamic items get a "Refresh" action.
+    ConsoleRole_ScopeIsDynamic = Qt::UserRole + 6,
+
+
+    // ConsoleRole_LAST = Qt::UserRole + 7,
+};
 
 class ConsoleWidgetPrivate : public QObject {
 

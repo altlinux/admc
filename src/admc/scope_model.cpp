@@ -19,7 +19,7 @@
 
 #include "scope_model.h"
 
-#include "console_widget.h"
+#include "console_widget_p.h"
 
 // This tricks the view into thinking that an item in tree
 // has children while the item is unfetched. This causes the
