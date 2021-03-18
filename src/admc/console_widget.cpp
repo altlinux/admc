@@ -69,11 +69,11 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
 
     results_stacked_widget = new QStackedWidget();
 
-    action_menu = new QMenu(q);
-    navigation_menu = new QMenu(q);
-    view_menu = new QMenu(q);
+    action_menu = new QMenu(tr("&Action"), q);
+    navigation_menu = new QMenu(tr("&Navigation"), q);
+    view_menu = new QMenu(tr("&View"), q);
 
-    properties_action = new QAction(QObject::tr("&Properties"), this);
+    properties_action = new QAction(tr("&Properties"), this);
     navigate_up_action = new QAction(tr("&Up one level"), this);
     navigate_back_action = new QAction(tr("&Back"), this);
     navigate_forward_action = new QAction(tr("&Forward"), this);
