@@ -610,16 +610,12 @@ void ConsoleWidgetPrivate::open_action_menu_as_context_menu(const QPoint pos) {
 
     add_actions_to_action_menu(menu);
 
-    emit q->action_menu_about_to_open(menu);
-
     const QPoint global_pos = focused_view->mapToGlobal(pos);
     menu->exec(global_pos);
 }
 
 void ConsoleWidgetPrivate::on_action_menu_show() {
     add_actions_to_action_menu(action_menu);
-
-    emit q->action_menu_about_to_open(action_menu);
 }
 
 void ConsoleWidgetPrivate::on_view_menu_show() {
@@ -764,6 +760,12 @@ void ConsoleWidgetPrivate::update_navigation_actions() {
 void ConsoleWidgetPrivate::add_actions_to_action_menu(QMenu *menu) {
     menu->clear();
 
+    // User of console widget that connects to this signal
+    // will add their actions
+    emit q->action_menu_about_to_open(menu);
+
+    // After that console widget adds it's own actions
+
     // NOTE: the following actions only apply for single
     // selections.
     const QList<QModelIndex> selected_list = q->get_selected_items();
@@ -773,6 +775,7 @@ void ConsoleWidgetPrivate::add_actions_to_action_menu(QMenu *menu) {
         const bool is_dynamic = selected.data(ConsoleRole_ScopeIsDynamic).toBool();
         if (is_dynamic) {
             menu->addAction(refresh_action);
+            menu->addSeparator();
         }
 
         const bool has_properties = selected.data(ConsoleRole_HasProperties).toBool();
