@@ -33,6 +33,7 @@ class QStandardItemModel;
 class QStandardItem;
 class QMenu;
 class AdObject;
+class CustomizeColumnsDialog;
 template <typename T> class QList;
 template <typename K, typename T> class QHash;
 
@@ -41,7 +42,7 @@ Q_OBJECT
 
 public:
     QTreeView *view;
-    
+
     FindResults();
 
     void clear();
@@ -56,12 +57,17 @@ public:
 
     void setup_context_menu();
 
+    QAction *get_customize_columns_action();
+
 private:
     QStandardItemModel *model;
     QLabel *object_count_label;
+    QAction *customize_columns_action;
     bool context_menu_enabled;
+    CustomizeColumnsDialog *customize_columns_dialog;
 
     void open_context_menu(const QPoint pos);
+    void customize_columns();
 };
 
 #endif /* FIND_RESULTS_H */

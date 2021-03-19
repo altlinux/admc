@@ -25,6 +25,7 @@
 #include "ad_config.h"
 #include "object_model.h"
 #include "settings.h"
+#include "console_widget/customize_columns_dialog.h"
 
 #include <QTreeView>
 #include <QLabel>
@@ -58,12 +59,7 @@ FindResults::FindResults()
 
     view->setModel(model);
 
-    setup_column_toggle_menu(view, model,
-    {
-        ADCONFIG()->get_column_index(ATTRIBUTE_NAME),
-        ADCONFIG()->get_column_index(ATTRIBUTE_OBJECT_CLASS),
-        ADCONFIG()->get_column_index(ATTRIBUTE_DESCRIPTION)
-    });
+    customize_columns_dialog = new CustomizeColumnsDialog(view, object_model_default_columns(), this);
 
     object_count_label = new QLabel();
 
@@ -74,12 +70,22 @@ FindResults::FindResults()
 
     layout->addWidget(object_count_label);
     layout->addWidget(view);
+
+    customize_columns_action = new QAction(tr("&Customize columns"), this);
+
+    connect(
+        customize_columns_action, &QAction::triggered,
+        this, &FindResults::customize_columns);
 }
 
 void FindResults::setup_context_menu() {
     connect(
         view, &QWidget::customContextMenuRequested,
         this, &FindResults::open_context_menu);
+}
+
+QAction *FindResults::get_customize_columns_action() {
+    return customize_columns_action;
 }
 
 void FindResults::load_menu(QMenu *menu) {
@@ -137,4 +143,8 @@ QList<QList<QStandardItem *>> FindResults::get_selected_rows() const {
     }
 
     return out;
+}
+
+void FindResults::customize_columns() {
+    customize_columns_dialog->open();
 }
