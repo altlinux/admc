@@ -87,10 +87,13 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
     navigation_menu->addAction(navigate_back_action);
     navigation_menu->addAction(navigate_forward_action);
 
-    // TODO: for now properties are opened by user of console
-    // widget but in the future it's planned to move this stuff
-    // here, which will make this do more than just emit a
-    // signal.
+    // NOTE: need to add a dummy view until a realy view is
+    // added when a scope item is selected. If this is not
+    // done and stacked widget is left empty, it's sizing is
+    // set to minimum which causes an incorrect ratio in the
+    // scope/results splitter
+    auto dummy_view = new QTreeView();
+    results_stacked_widget->addWidget(dummy_view);
 
     connect(
         scope_view, &QTreeView::expanded,
@@ -101,6 +104,10 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
     connect(
         scope_model, &QStandardItemModel::rowsAboutToBeRemoved,
         this, &ConsoleWidgetPrivate::on_scope_items_about_to_be_removed);
+    // TODO: for now properties are opened by user of console
+    // widget but in the future it's planned to move this stuff
+    // here, which will make this do more than just emit a
+    // signal.
     connect(
         properties_action, &QAction::triggered,
         q, &ConsoleWidget::properties_requested);
@@ -346,15 +353,7 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
 
     d->results_descriptions[id] = ResultsDescription(widget, view, column_labels, default_columns);
 
-    // TODO: check if also need to call adjustSize() when
-    // changing between different results widgets.
-
-    // NOTE: necessary to adjust size after adding widget
-    // for correct sizing, idk why. Seems like a Qt
-    // bug/quirk. Without this qstackwidget is too small in
-    // the splitter.
     d->results_stacked_widget->addWidget(widget);
-    d->results_stacked_widget->adjustSize();
 
     if (view != nullptr) {
         // NOTE: a proxy is model is inserted between
