@@ -29,24 +29,22 @@
 
 #include <QDialog>
 
-#include "console_widget/results_description.h"
-
 class QTreeView;
 class QCheckBox;
-class ResultsDescription;
 
 class CustomizeColumnsDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    CustomizeColumnsDialog(const ResultsDescription &results, QWidget *parent);
+    CustomizeColumnsDialog(QTreeView *view, const QList<int> &default_columns, QWidget *parent);
 
 public slots:
     void accept() override;
     void restore_defaults();
 
 private:
-    ResultsDescription results;
+    QTreeView *view;
+    QList<int> default_columns;
     QList<QCheckBox *> checkbox_list;
 };
 

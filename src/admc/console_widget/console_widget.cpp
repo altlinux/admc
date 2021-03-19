@@ -670,7 +670,12 @@ void ConsoleWidgetPrivate::customize_columns() {
     const int current_results_id = current_scope.data(ConsoleRole_ResultsId).toInt();
     const ResultsDescription current_results = results_descriptions[current_results_id];
 
-    auto dialog = new CustomizeColumnsDialog(current_results, q);
+    ResultsView *results_view = current_results.view();
+    if (results_view == nullptr) {
+        return;
+    }
+
+    auto dialog = new CustomizeColumnsDialog(results_view->detail_view(), current_results.default_columns(), q);
     dialog->open();
 }
 

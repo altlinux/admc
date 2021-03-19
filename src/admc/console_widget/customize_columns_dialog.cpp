@@ -19,9 +19,6 @@
 
 #include "console_widget/customize_columns_dialog.h"
 
-#include "console_widget/results_description.h"
-#include "console_widget/results_view.h"
-
 #include <QTreeView>
 #include <QHeaderView>
 #include <QDialog>
@@ -33,14 +30,13 @@
 
 #include <QDebug>
 
-CustomizeColumnsDialog::CustomizeColumnsDialog(const ResultsDescription &results_arg, QWidget *parent)
+CustomizeColumnsDialog::CustomizeColumnsDialog(QTreeView *view_arg, const QList<int> &default_columns_arg, QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    results = results_arg;
-
-    QTreeView *view = results.view()->detail_view();
+    view = view_arg;
+    default_columns = default_columns_arg;
 
     QHeaderView *header = view->header();
     QAbstractItemModel *model = view->model();
@@ -91,7 +87,6 @@ CustomizeColumnsDialog::CustomizeColumnsDialog(const ResultsDescription &results
 }
 
 void CustomizeColumnsDialog::accept() {
-    QTreeView *view = results.view()->detail_view();
     QHeaderView *header = view->header();
 
     for (int i = 0; i < checkbox_list.size(); i++) {
@@ -104,11 +99,9 @@ void CustomizeColumnsDialog::accept() {
 }
 
 void CustomizeColumnsDialog::restore_defaults() {
-    const QList<int> defaults = results.default_columns();
-
     for (int i = 0; i < checkbox_list.size(); i++) {
         QCheckBox *checkbox = checkbox_list[i];
-        const bool hidden = !defaults.contains(i);
+        const bool hidden = !default_columns.contains(i);
         checkbox->setChecked(!hidden);
     }
 }
