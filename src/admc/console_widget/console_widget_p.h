@@ -55,6 +55,8 @@ enum ConsoleRole {
     // Determines whether scope is dynamic. 
     ConsoleRole_ScopeIsDynamic = Qt::UserRole + 6,
 
+    ConsoleRole_HasProperties = Qt::UserRole + 7,
+
     // NOTE: don't go above ConsoleRole_LAST (defined in
     // public header)
     // ConsoleRole_LAST = Qt::UserRole + 20

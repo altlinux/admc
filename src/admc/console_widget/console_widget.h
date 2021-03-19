@@ -123,6 +123,11 @@ public:
     QList<QStandardItem *> add_results_row(const QModelIndex &scope_parent);
     void add_buddy_scope_and_results(const int results_id, const ScopeNodeType scope_type, const QModelIndex &scope_parent, QStandardItem **scope_arg, QList<QStandardItem *> *results_arg);
 
+    // Sets whether a given item should have "Properties"
+    // action in it's menu, which opens the Properties
+    // dialog.
+    void set_has_properties(const QModelIndex &index, const bool has_properties);
+
     // Sets current scope item in the scope tree
     void set_current_scope(const QModelIndex &index);
 

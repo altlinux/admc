@@ -534,7 +534,14 @@ void Console::setup_scope_item(QStandardItem *item, const AdObject &object) {
 
     item->setText(name);
 
+    console_widget->set_has_properties(item->index(), true);
+
     load_object_item_data(item, object);
+}
+
+void Console::setup_results_row(const QList<QStandardItem *> row, const AdObject &object) {
+    console_widget->set_has_properties(row[0]->index(), true);
+    load_object_row(row, object);
 }
 
 // NOTE: "containers" referenced here don't mean objects
@@ -564,10 +571,10 @@ void Console::add_object_to_console(const AdObject &object, const QModelIndex &p
         console_widget->add_buddy_scope_and_results(object_results_id, ScopeNodeType_Dynamic, parent, &scope_item, &results_row);
 
         setup_scope_item(scope_item, object);
-        load_object_row(results_row, object);
+        setup_results_row(results_row, object);
     } else {
         const QList<QStandardItem *> results_row = console_widget->add_results_row(parent);
-        load_object_row(results_row, object);
+        setup_results_row(results_row, object);
     }
 }
 

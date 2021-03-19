@@ -387,6 +387,11 @@ QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &scope_p
     return row;
 }
 
+void ConsoleWidget::set_has_properties(const QModelIndex &index, const bool has_properties) {
+    QAbstractItemModel *model = (QAbstractItemModel *) index.model();
+    model->setData(index, has_properties, ConsoleRole_HasProperties);
+}
+
 void ConsoleWidget::sort_scope() {
     d->scope_model->sort(0, Qt::AscendingOrder);
 }
@@ -768,24 +773,22 @@ void ConsoleWidgetPrivate::update_navigation_actions() {
 void ConsoleWidgetPrivate::add_actions_to_action_menu(QMenu *menu) {
     menu->clear();
 
-    const bool selected_item_is_dynamic =
-    [=]() {
-        const QList<QModelIndex> selected = q->get_selected_items();
-        if (selected.size() == 1) {
-            const QModelIndex index = selected[0];
-            const bool is_dynamic = index.data(ConsoleRole_ScopeIsDynamic).toBool();
-
-            return is_dynamic;
-        } else {
-            return false;
+    // NOTE: the following actions only apply for single
+    // selections.
+    const QList<QModelIndex> selected_list = q->get_selected_items();
+    if (selected_list.size() == 1) {
+        const QModelIndex selected = selected_list[0];
+        
+        const bool is_dynamic = selected.data(ConsoleRole_ScopeIsDynamic).toBool();
+        if (is_dynamic) {
+            menu->addAction(refresh_action);
         }
-    }();
 
-    if (selected_item_is_dynamic) {
-        menu->addAction(refresh_action);
+        const bool has_properties = selected.data(ConsoleRole_HasProperties).toBool();
+        if (has_properties) {
+            menu->addAction(properties_action);
+        }
     }
-
-    menu->addAction(properties_action);
 }
 
 void ConsoleWidgetPrivate::connect_to_drag_model(ConsoleDragModel *model) {
