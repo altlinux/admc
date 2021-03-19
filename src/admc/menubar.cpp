@@ -19,7 +19,6 @@
 
 #include "menubar.h"
 #include "main_window.h"
-#include "console.h"
 #include "console_widget/console_widget.h"
 #include "settings.h"
 #include "toggle_widgets_dialog.h"
@@ -44,7 +43,7 @@
 #include <QTabWidget>
 #include <QStandardPaths>
 
-MenuBar::MenuBar(MainWindow *main_window, Console *console) {
+MenuBar::MenuBar(MainWindow *main_window, ConsoleWidget *console_widget) {
     //
     // Create actions
     //
@@ -98,9 +97,9 @@ MenuBar::MenuBar(MainWindow *main_window, Console *console) {
     // don't add actions. Instead the console adds actions
     // to them.
     auto file_menu = addMenu(tr("&File"));
-    addMenu(console->console_widget->get_action_menu());
-    addMenu(console->console_widget->get_navigation_menu());
-    addMenu(console->console_widget->get_view_menu());
+    addMenu(console_widget->get_action_menu());
+    addMenu(console_widget->get_navigation_menu());
+    addMenu(console_widget->get_view_menu());
     auto preferences_menu = addMenu(tr("&Preferences"));
     auto language_menu = new QMenu(tr("&Language"));
     auto help_menu = addMenu(tr("&Help"));

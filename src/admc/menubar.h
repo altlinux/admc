@@ -23,7 +23,7 @@
 #include <QMenuBar>
 
 class MainWindow;
-class Console;
+class ConsoleWidget;
 
 class MenuBar final : public QMenuBar {
 Q_OBJECT
@@ -31,7 +31,7 @@ Q_OBJECT
 public:
     // NOTE: main window and console have must have finished
     // creating their actions before MenuBar ctor is called
-    MenuBar(MainWindow *main_window, Console *console);
+    MenuBar(MainWindow *main_window, ConsoleWidget *console_widget);
 
 private slots:
     void quit();
