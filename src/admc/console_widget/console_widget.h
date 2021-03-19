@@ -128,6 +128,10 @@ public:
     // dialog.
     void set_has_properties(const QModelIndex &index, const bool has_properties);
 
+    // Deletes a scope/results item. If this item has a
+    // buddy, that buddy is also deleted.
+    void delete_item(const QModelIndex &index);
+
     // Sets current scope item in the scope tree
     void set_current_scope(const QModelIndex &index);
 
@@ -146,10 +150,6 @@ public:
     int register_results(QWidget *widget);
     int register_results(ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
     int register_results(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
-
-    // Deletes a scope/results item. If this item has a
-    // buddy, that buddy is also deleted.
-    void delete_item(const QModelIndex &index);
 
     // Sorts scope items by name. Note that this can affect
     // performance negatively if overused. For example, when

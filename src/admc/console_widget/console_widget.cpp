@@ -175,28 +175,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     layout->addWidget(splitter);
 }
 
-void ConsoleWidget::delete_item(const QModelIndex &index) {
-    if (!index.isValid()) {
-        return;
-    }
-
-    // NOTE: i *think* discarding const from model is fine.
-    // Qt's reason: "A const pointer to the model is
-    // returned because calls to non-const functions of the
-    // model might invalidate the model index and possibly
-    // crash your application.". Index becoming invalid is
-    // expected since we're deleting it from the modelZZ.
-
-    // Remove buddy item
-    const QModelIndex buddy = get_buddy(index);
-    if (buddy.isValid()) {
-        ((QAbstractItemModel *)buddy.model())->removeRows(buddy.row(), 1, buddy.parent());
-    }
-
-    // Remove item from it's own model
-    ((QAbstractItemModel *)index.model())->removeRows(index.row(), 1, index.parent());
-}
-
 QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent) {
     QStandardItem *parent_item =
     [=]() {
@@ -247,6 +225,86 @@ QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const ScopeNo
     }
 
     return item;
+}
+
+QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &scope_parent) {
+    if (!scope_parent.isValid()) {
+        return QList<QStandardItem *>();
+    }
+
+    QStandardItemModel *results_model = d->get_results_model_for_scope_item(scope_parent);
+    if (results_model == nullptr) {
+        return QList<QStandardItem *>();
+    }
+
+    const QList<QStandardItem *> row =
+    [=]() {
+        QList<QStandardItem *> out;
+
+        const int results_id = scope_parent.data(ConsoleRole_ResultsId).toInt();
+        const ResultsDescription results = d->results_descriptions[results_id];
+
+        for (int i = 0; i < results.column_count(); i++) {
+            const auto item = new QStandardItem();
+            out.append(item);
+        }
+
+        return out;
+    }();
+
+    results_model->appendRow(row);
+
+    row[0]->setData(false, ConsoleRole_IsScope);
+
+    row[0]->setData(scope_parent, ConsoleRole_ScopeParent);
+
+    return row;
+}
+
+void ConsoleWidget::add_buddy_scope_and_results(const int results_id, const ScopeNodeType scope_type, const QModelIndex &scope_parent, QStandardItem **scope_arg, QList<QStandardItem *> *results_arg) {
+    QStandardItem *scope = add_scope_item(results_id, scope_type, scope_parent);
+
+    QList<QStandardItem *> results = add_results_row(scope_parent);
+
+    const QModelIndex scope_index = scope->index();
+    const QModelIndex results_index = results[0]->index();
+
+    // Set buddy indexes for scope and results so that they
+    // point at each other. MUST use QPersistentModelIndex
+    // because QModelIndex's will become incorrect quickly.
+    QStandardItemModel *results_model = d->get_results_model_for_scope_item(scope_parent);
+    results_model->setData(results_index, QPersistentModelIndex(scope_index), ConsoleRole_Buddy);
+    d->scope_model->setData(scope_index, QPersistentModelIndex(results_index), ConsoleRole_Buddy);
+
+    *scope_arg = scope;
+    *results_arg = results;
+}
+
+void ConsoleWidget::set_has_properties(const QModelIndex &index, const bool has_properties) {
+    QAbstractItemModel *model = (QAbstractItemModel *) index.model();
+    model->setData(index, has_properties, ConsoleRole_HasProperties);
+}
+
+void ConsoleWidget::delete_item(const QModelIndex &index) {
+    if (!index.isValid()) {
+        return;
+    }
+
+    // NOTE: i *think* discarding const from model is fine.
+    // Qt's reason: "A const pointer to the model is
+    // returned because calls to non-const functions of the
+    // model might invalidate the model index and possibly
+    // crash your application.". Index becoming invalid is
+    // expected since we're deleting it from the modelZZ.
+
+    // Remove buddy item
+    const QModelIndex buddy = get_buddy(index);
+    if (buddy.isValid()) {
+        ((QAbstractItemModel *)buddy.model())->removeRows(buddy.row(), 1, buddy.parent());
+    }
+
+    // Remove item from it's own model
+    ((QAbstractItemModel *)index.model())->removeRows(index.row(), 1, index.parent());
 }
 
 void ConsoleWidget::set_current_scope(const QModelIndex &index) {
@@ -332,64 +390,6 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
     }
 
     return id;
-}
-
-void ConsoleWidget::add_buddy_scope_and_results(const int results_id, const ScopeNodeType scope_type, const QModelIndex &scope_parent, QStandardItem **scope_arg, QList<QStandardItem *> *results_arg) {
-    QStandardItem *scope = add_scope_item(results_id, scope_type, scope_parent);
-
-    QList<QStandardItem *> results = add_results_row(scope_parent);
-
-    const QModelIndex scope_index = scope->index();
-    const QModelIndex results_index = results[0]->index();
-
-    // Set buddy indexes for scope and results so that they
-    // point at each other. MUST use QPersistentModelIndex
-    // because QModelIndex's will become incorrect quickly.
-    QStandardItemModel *results_model = d->get_results_model_for_scope_item(scope_parent);
-    results_model->setData(results_index, QPersistentModelIndex(scope_index), ConsoleRole_Buddy);
-    d->scope_model->setData(scope_index, QPersistentModelIndex(results_index), ConsoleRole_Buddy);
-
-    *scope_arg = scope;
-    *results_arg = results;
-}
-
-QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &scope_parent) {
-    if (!scope_parent.isValid()) {
-        return QList<QStandardItem *>();
-    }
-
-    QStandardItemModel *results_model = d->get_results_model_for_scope_item(scope_parent);
-    if (results_model == nullptr) {
-        return QList<QStandardItem *>();
-    }
-
-    const QList<QStandardItem *> row =
-    [=]() {
-        QList<QStandardItem *> out;
-
-        const int results_id = scope_parent.data(ConsoleRole_ResultsId).toInt();
-        const ResultsDescription results = d->results_descriptions[results_id];
-
-        for (int i = 0; i < results.column_count(); i++) {
-            const auto item = new QStandardItem();
-            out.append(item);
-        }
-
-        return out;
-    }();
-
-    results_model->appendRow(row);
-
-    row[0]->setData(false, ConsoleRole_IsScope);
-
-    row[0]->setData(scope_parent, ConsoleRole_ScopeParent);
-
-    return row;
-}
-
-void ConsoleWidget::set_has_properties(const QModelIndex &index, const bool has_properties) {
-    QAbstractItemModel *model = (QAbstractItemModel *) index.model();
-    model->setData(index, has_properties, ConsoleRole_HasProperties);
 }
 
 void ConsoleWidget::sort_scope() {
@@ -497,6 +497,47 @@ QMenu *ConsoleWidget::get_view_menu() const {
     return d->view_menu;
 }
 
+QStandardItemModel *ConsoleWidgetPrivate::get_results_model_for_scope_item(const QModelIndex &index) const {
+    if (results_models.contains(index)) {
+        return results_models[index];
+    } else {
+        return nullptr;
+    }
+}
+
+void ConsoleWidgetPrivate::open_action_menu_as_context_menu(const QPoint pos) {
+    auto menu = new QMenu(q);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+
+    add_actions_to_action_menu(menu);
+
+    const QPoint global_pos = focused_view->mapToGlobal(pos);
+    menu->exec(global_pos);
+}
+
+void ConsoleWidgetPrivate::connect_to_drag_model(ConsoleDragModel *model) {
+    connect(
+        model, &ConsoleDragModel::start_drag,
+        this, &ConsoleWidgetPrivate::on_start_drag);
+    connect(
+        model, &ConsoleDragModel::can_drop,
+        this, &ConsoleWidgetPrivate::on_can_drop);
+    connect(
+        model, &ConsoleDragModel::drop,
+        this, &ConsoleWidgetPrivate::on_drop);
+}
+
+void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
+    const QModelIndex buddy = q->get_buddy(index);
+
+    if (buddy.isValid()) {
+        // Set associated scope item as current
+        scope_view->selectionModel()->setCurrentIndex(buddy, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+    } else {
+        emit q->properties_requested();
+    }
+}
+
 void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &previous) {
     // NOTE: technically this slot should never be called
     // with invalid current index
@@ -579,17 +620,6 @@ void ConsoleWidgetPrivate::on_scope_items_about_to_be_removed(const QModelIndex 
     }
 }
 
-void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
-    const QModelIndex buddy = q->get_buddy(index);
-
-    if (buddy.isValid()) {
-        // Set associated scope item as current
-        scope_view->selectionModel()->setCurrentIndex(buddy, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
-    } else {
-        emit q->properties_requested();
-    }
-}
-
 // NOTE: this is the workaround required to know in which pane selected objects are located
 void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
     QAbstractItemView *new_focused_view = qobject_cast<QAbstractItemView *>(now);
@@ -602,16 +632,6 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
             focused_view = new_focused_view;
         }
     }
-}
-
-void ConsoleWidgetPrivate::open_action_menu_as_context_menu(const QPoint pos) {
-    auto menu = new QMenu(q);
-    menu->setAttribute(Qt::WA_DeleteOnClose);
-
-    add_actions_to_action_menu(menu);
-
-    const QPoint global_pos = focused_view->mapToGlobal(pos);
-    menu->exec(global_pos);
 }
 
 void ConsoleWidgetPrivate::on_action_menu_show() {
@@ -751,6 +771,11 @@ void ConsoleWidgetPrivate::set_results_to_detail() {
     set_results_to_type(ResultsViewType_Detail);
 }
 
+void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
+    const ResultsDescription results = get_current_results();
+    results.view()->set_view_type(type);
+}
+
 // NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
 void ConsoleWidgetPrivate::update_navigation_actions() {
     navigate_back_action->setEnabled(!targets_past.isEmpty());
@@ -785,26 +810,6 @@ void ConsoleWidgetPrivate::add_actions_to_action_menu(QMenu *menu) {
     }
 }
 
-void ConsoleWidgetPrivate::connect_to_drag_model(ConsoleDragModel *model) {
-    connect(
-        model, &ConsoleDragModel::start_drag,
-        this, &ConsoleWidgetPrivate::on_start_drag);
-    connect(
-        model, &ConsoleDragModel::can_drop,
-        this, &ConsoleWidgetPrivate::on_can_drop);
-    connect(
-        model, &ConsoleDragModel::drop,
-        this, &ConsoleWidgetPrivate::on_drop);
-}
-
-QStandardItemModel *ConsoleWidgetPrivate::get_results_model_for_scope_item(const QModelIndex &index) const {
-    if (results_models.contains(index)) {
-        return results_models[index];
-    } else {
-        return nullptr;
-    }
-}
-
 const ResultsDescription ConsoleWidgetPrivate::get_current_results() const {
     const QModelIndex current_scope = q->get_current_scope_item();
     const int results_id = current_scope.data(ConsoleRole_ResultsId).toInt();
@@ -821,9 +826,4 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
 
         emit q->item_fetched(index);
     }
-}
-
-void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
-    const ResultsDescription results = get_current_results();
-    results.view()->set_view_type(type);
 }
