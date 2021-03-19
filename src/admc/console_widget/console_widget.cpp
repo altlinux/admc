@@ -268,12 +268,11 @@ void ConsoleWidget::add_buddy_scope_and_results(const int results_id, const Scop
 
     QList<QStandardItem *> results = add_results_row(scope_parent);
 
-    const QModelIndex scope_index = scope->index();
-    const QModelIndex results_index = results[0]->index();
-
     // Set buddy indexes for scope and results so that they
     // point at each other. MUST use QPersistentModelIndex
     // because QModelIndex's will become incorrect quickly.
+    const QModelIndex scope_index = scope->index();
+    const QModelIndex results_index = results[0]->index();
     QStandardItemModel *results_model = d->get_results_model_for_scope_item(scope_parent);
     results_model->setData(results_index, QPersistentModelIndex(scope_index), ConsoleRole_Buddy);
     d->scope_model->setData(scope_index, QPersistentModelIndex(results_index), ConsoleRole_Buddy);
@@ -559,8 +558,6 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
         results_proxy_model->setSourceModel(results_model);
     }
 
-    // NOTE: technically (selection != expansion) but for our
-    // purposes we consider it to be the same.
     fetch_scope(current);
 
     emit q->current_scope_item_changed(current);
@@ -578,7 +575,6 @@ void ConsoleWidgetPrivate::on_scope_items_about_to_be_removed(const QModelIndex 
             auto removed_item = scope_model->itemFromIndex(removed_index);
             stack.push(removed_item);
         }
-
 
         while (!stack.isEmpty()) {
             auto item = stack.pop();
