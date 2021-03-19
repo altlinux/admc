@@ -92,6 +92,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/edits/manager_edit.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/search_thread.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/status.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_widget/customize_columns_dialog.cpp
 
     ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/common/settings.cpp
