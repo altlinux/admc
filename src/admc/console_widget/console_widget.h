@@ -194,11 +194,12 @@ signals:
 
     void current_scope_item_changed(const QModelIndex &index);
 
-    // Emitted when action menu is about to open from given
-    // view. Action menu can be opened both from menubar or
-    // as a context menu. Connect to this signal and add
-    // actions to menu in the slot.
-    void action_menu_about_to_open(QMenu *menu, QAbstractItemView *view);
+    // Emitted when action menu is about to open. Action
+    // menu can be opened both from menubar or as a context
+    // menu. Connect to this signal and add actions to menu
+    // in the slot. Use get_selected_items() to get the
+    // items for which this menu should add actions.
+    void action_menu_about_to_open(QMenu *menu);
 
     void view_menu_about_to_open(QMenu *menu);
 

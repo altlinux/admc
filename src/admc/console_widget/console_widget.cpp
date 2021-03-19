@@ -411,16 +411,7 @@ void ConsoleWidget::set_description_bar_text(const QString &text) {
 }
 
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
-    const QList<QModelIndex> all_indexes = d->focused_view->selectionModel()->selectedIndexes();
-
-    QList<QModelIndex> indexes;
-
-    for (const QModelIndex index : all_indexes) {
-        // Need first column to access item data
-        if (index.column() == 0) {
-            indexes.append(index);
-        }
-    }
+    const QList<QModelIndex> indexes = d->focused_view->selectionModel()->selectedRows(0);
 
     return indexes;
 }
@@ -619,7 +610,7 @@ void ConsoleWidgetPrivate::open_action_menu_as_context_menu(const QPoint pos) {
 
     add_actions_to_action_menu(menu);
 
-    emit q->action_menu_about_to_open(menu, focused_view);
+    emit q->action_menu_about_to_open(menu);
 
     const QPoint global_pos = focused_view->mapToGlobal(pos);
     menu->exec(global_pos);
@@ -628,7 +619,7 @@ void ConsoleWidgetPrivate::open_action_menu_as_context_menu(const QPoint pos) {
 void ConsoleWidgetPrivate::on_action_menu_show() {
     add_actions_to_action_menu(action_menu);
 
-    emit q->action_menu_about_to_open(action_menu, focused_view);
+    emit q->action_menu_about_to_open(action_menu);
 }
 
 void ConsoleWidgetPrivate::on_view_menu_show() {

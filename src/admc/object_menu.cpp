@@ -55,20 +55,13 @@ QString targets_display_string(const QList<QString> targets);
 // in the span of time when target is selected and menu is
 // opened. Menu needs most up-to-date target attributes to
 // construct actions.
-QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent, const bool include_find_action, const bool console_added_actions) {
+QAction *add_object_actions_to_menu(QMenu *menu, const QList<QModelIndex> &selected_indexes, QWidget *parent, const bool include_find_action, const ObjectMenuData &data) {
     // Get info about selected objects from view
     const QList<QString> targets =
     [=]() {
         QList<QString> out;
 
-        const QList<QModelIndex> indexes = view->selectionModel()->selectedIndexes();
-
-        for (const QModelIndex index : indexes) {
-            // Need first column to access item data
-            if (index.column() != 0) {
-                continue;
-            }
-
+        for (const QModelIndex index : selected_indexes) {
             const QString dn = index.data(ObjectRole_DN).toString();
 
             out.append(dn);
@@ -81,14 +74,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
     [=]() {
         QSet<QString> out;
         
-        const QList<QModelIndex> indexes = view->selectionModel()->selectedIndexes();
-
-        for (const QModelIndex index : indexes) {
-            // Need first column to access item data
-            if (index.column() != 0) {
-                continue;
-            }
-
+        for (const QModelIndex index : selected_indexes) {
             const AdObject object = index.data(ObjectRole_AdObject).value<AdObject>();
             const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
@@ -101,6 +87,12 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
     // These are f-ns that add menu's
     auto add_new =
     [=]() {
+        if (data.new_menu != nullptr) {
+            menu->addMenu(data.new_menu);
+
+            return;
+        }
+
         QMenu *submenu_new = menu->addMenu(QCoreApplication::translate("object_menu", "New"));
         static const QList<QString> create_classes = {
             CLASS_USER,
@@ -160,39 +152,69 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
 
     auto add_move =
     [=](const bool disabled) {
-        auto action = menu->addAction(QCoreApplication::translate("object_menu", "Move"),
-            [=]() {
-                move(targets, parent);
-            });
+        auto action =
+        [=]() {
+            if (data.move != nullptr) {
+                menu->addAction(data.move);
+                
+                return data.move;
+            } else {
+                return menu->addAction(QCoreApplication::translate("object_menu", "Move"),
+                    [=]() {
+                        move(targets, parent);
+                    });
+            }
+        }();
 
         action->setDisabled(disabled);
     };
 
     auto add_delete =
     [=](const bool disabled) {
-        auto action = menu->addAction(QCoreApplication::translate("object_menu", "Delete"),
-            [=]() {
-                delete_object(targets, parent);
-            });
+        auto action =
+        [=]() {
+            if (data.delete_object != nullptr) {
+                menu->addAction(data.delete_object);
+
+                return data.delete_object;
+            } else {
+                return menu->addAction(QCoreApplication::translate("object_menu", "Delete"),
+                    [=]() {
+                        delete_object(targets, parent);
+                    });
+            }
+        }();
+
         action->setDisabled(disabled);
     };
 
     auto add_rename =
     [=](const bool disabled) {
-        auto action = menu->addAction(QCoreApplication::translate("object_menu", "Rename"),
-            [=]() {
-                rename(targets[0], parent);
-            });
+        auto action =
+        [=]() {
+            if (data.rename != nullptr) {
+                menu->addAction(data.rename);
+
+                return data.rename;
+            } else {
+                return menu->addAction(QCoreApplication::translate("object_menu", "Rename"),
+                    [=]() {
+                        rename(targets[0], parent);
+                    });
+            }
+        }();
         action->setDisabled(disabled);
     };
 
     // TODO: multi-object properties
     auto add_properties =
     [=]() {
-        return menu->addAction(PropertiesDialog::display_name(),
-            [=]() {
-                properties(targets[0], parent);
-            });
+        if (!data.properties_already_added) {
+            menu->addAction(PropertiesDialog::display_name(),
+                [=]() {
+                    properties(targets[0], parent);
+                });
+        }
     };
 
     const bool single_object = (targets.size() == 1);
@@ -231,9 +253,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
         // Add actions
 
         if (is_container) {
-            if (!console_added_actions) {
-                add_new();
-            }
+            add_new();
 
             if (include_find_action) {
                 add_find();
@@ -255,11 +275,9 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
             menu->addSeparator();
         }
 
-        if (!console_added_actions) {
-            add_move(cannot_move);
-            add_delete(cannot_delete);
-            add_rename(cannot_rename);
-        }
+        add_move(cannot_move);
+        add_delete(cannot_delete);
+        add_rename(cannot_rename);
 
         QAction *properties_separator = menu->addSeparator();
 
@@ -277,10 +295,8 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
             menu->addSeparator();
         }
 
-        if (!console_added_actions) {
-            add_move(false);
-            add_delete(false);
-        }
+        add_move(false);
+        add_delete(false);
     }
 
     return nullptr;

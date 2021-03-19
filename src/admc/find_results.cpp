@@ -84,7 +84,10 @@ void FindResults::setup_context_menu() {
 
 void FindResults::load_menu(QMenu *menu) {
     menu->clear();
-    add_object_actions_to_menu(menu, view, this, false);
+
+    const QList<QModelIndex> selected = view->selectionModel()->selectedRows(0);
+
+    add_object_actions_to_menu(menu, selected, this, false);
 }
 
 void FindResults::open_context_menu(const QPoint pos) {

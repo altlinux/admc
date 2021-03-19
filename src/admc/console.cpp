@@ -398,37 +398,8 @@ void Console::update_description_bar() {
     console_widget->set_description_bar_text(text);
 }
 
-void Console::on_action_menu_about_to_open(QMenu *menu, QAbstractItemView *view) {
-    const QList<QString> targets =
-    [=]() {
-        QList<QString> out;
-
-        const QList<QModelIndex> indexes = view->selectionModel()->selectedIndexes();
-
-        for (const QModelIndex index : indexes) {
-            // Need first column to access item data
-            if (index.column() != 0) {
-                continue;
-            }
-
-            const QString dn = index.data(ObjectRole_DN).toString();
-
-            out.append(dn);
-        }
-
-        return out;  
-    }();
-    // TODO: disabled multi-selection actions for now,
-    // reimplement later
-    if (targets.size() != 1) {
-        return;
-    }
-
-    menu->addAction(rename_action);
-    menu->addAction(move_action);
-    menu->addAction(delete_action);
-
-    QMenu *submenu_new = menu->addMenu(tr("New"));
+void Console::on_action_menu_about_to_open(QMenu *menu) {
+    QMenu *submenu_new = new QMenu(tr("New"));
     static const QList<QString> create_classes = {
         CLASS_USER,
         CLASS_COMPUTER,
@@ -443,6 +414,17 @@ void Console::on_action_menu_about_to_open(QMenu *menu, QAbstractItemView *view)
                 create(object_class);
             });
     }
+
+    ObjectMenuData menu_data;
+    menu_data.rename = rename_action;
+    menu_data.move = move_action;
+    menu_data.delete_object = delete_action;
+    menu_data.new_menu = submenu_new;
+    menu_data.properties_already_added = true;
+
+    const QList<QModelIndex> selected = console_widget->get_selected_items();
+
+    add_object_actions_to_menu(menu, selected, this, true, menu_data);
 }
 
 void Console::on_view_menu_about_to_open(QMenu *menu) {
