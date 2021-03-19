@@ -30,7 +30,8 @@ ResultsView::ResultsView(QWidget *parent)
 {
     // Setup child views
     m_detail_view = new QTreeView();
-    m_detail_view->header()->setSectionsMovable(true);
+    QHeaderView *detail_header = m_detail_view->header();
+    detail_header->setSectionsMovable(true);
     // TODO: these sorting f-ns are  only available for
     // tree, what about others? maybe have to sort the model
     m_detail_view->sortByColumn(0, Qt::AscendingOrder);

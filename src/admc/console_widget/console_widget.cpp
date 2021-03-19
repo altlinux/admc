@@ -38,11 +38,6 @@
 #include <QApplication>
 #include <QMenu>
 #include <QHeaderView>
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QCheckBox>
-#include <QPushButton>
-#include <QScrollArea>
 
 ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
 : QObject(q_arg)
