@@ -17,33 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CUSTOMIZE_COLUMNS_DIALOG_H
-#define CUSTOMIZE_COLUMNS_DIALOG_H
+#ifndef CUSTOMIZE_COLUMNS_DIALOG_P_H
+#define CUSTOMIZE_COLUMNS_DIALOG_P_H
 
 /**
- * Dialog for customizing columns of a view. Presents a list
- * of checkbox which correspond to view's columns. When
- * dialog is accepted, the columns that were unchecked are
- * hidden. Used by console widgets for results views but may
- * be used for other views as well.
+ * Private header for CustomizeColumnsDialog.
  */
 
-#include <QDialog>
-
-class CustomizeColumnsDialogPrivate;
+class CustomizeColumnsDialog;
 class QTreeView;
+class QCheckBox;
 
-class CustomizeColumnsDialog final : public QDialog {
-Q_OBJECT
+class CustomizeColumnsDialogPrivate final : public QObject {
 
 public:
-    CustomizeColumnsDialog(QTreeView *view, const QList<int> &default_columns, QWidget *parent);
+    QList<int> default_columns;
+    QList<QCheckBox *> checkbox_list;
+    QTreeView *view;
 
-public slots:
-    void accept() override;
+    CustomizeColumnsDialogPrivate(CustomizeColumnsDialog *q);
 
-private:
-    CustomizeColumnsDialogPrivate *d;
+    void restore_defaults();
 };
 
-#endif /* CUSTOMIZE_COLUMNS_DIALOG_H */
+#endif /* CUSTOMIZE_COLUMNS_DIALOG_P_H */

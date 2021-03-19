@@ -18,6 +18,7 @@
  */
 
 #include "console_widget/customize_columns_dialog.h"
+#include "console_widget/customize_columns_dialog_p.h"
 
 #include <QTreeView>
 #include <QHeaderView>
@@ -30,16 +31,23 @@
 
 #include <QDebug>
 
+CustomizeColumnsDialogPrivate::CustomizeColumnsDialogPrivate(CustomizeColumnsDialog *q)
+: QObject(q) {
+
+}
+
 CustomizeColumnsDialog::CustomizeColumnsDialog(QTreeView *view_arg, const QList<int> &default_columns_arg, QWidget *parent)
 : QDialog(parent)
 {
+    d = new CustomizeColumnsDialogPrivate(this);
+
     setAttribute(Qt::WA_DeleteOnClose);
 
-    view = view_arg;
-    default_columns = default_columns_arg;
+    d->view = view_arg;
+    d->default_columns = default_columns_arg;
 
-    QHeaderView *header = view->header();
-    QAbstractItemModel *model = view->model();
+    QHeaderView *header = d->view->header();
+    QAbstractItemModel *model = d->view->model();
 
     auto checkboxes_widget = new QWidget();
 
@@ -53,11 +61,11 @@ CustomizeColumnsDialog::CustomizeColumnsDialog(QTreeView *view_arg, const QList<
         const bool currently_hidden = header->isSectionHidden(i);
         checkbox->setChecked(!currently_hidden);
 
-        checkbox_list.append(checkbox);
+        d->checkbox_list.append(checkbox);
     }
 
     for (int i = 0; i < header->count(); i++) {
-        auto checkbox = checkbox_list[i];
+        auto checkbox = d->checkbox_list[i];
         checkboxes_layout->addWidget(checkbox);
     }
 
@@ -83,14 +91,14 @@ CustomizeColumnsDialog::CustomizeColumnsDialog(QTreeView *view_arg, const QList<
         this, &QDialog::reject);
     connect(
         restore_defaults_button, &QPushButton::clicked,
-        this, &CustomizeColumnsDialog::restore_defaults);
+        d, &CustomizeColumnsDialogPrivate::restore_defaults);
 }
 
 void CustomizeColumnsDialog::accept() {
-    QHeaderView *header = view->header();
+    QHeaderView *header = d->view->header();
 
-    for (int i = 0; i < checkbox_list.size(); i++) {
-        QCheckBox *checkbox = checkbox_list[i];
+    for (int i = 0; i < d->checkbox_list.size(); i++) {
+        QCheckBox *checkbox = d->checkbox_list[i];
         const bool hidden = !checkbox->isChecked();
         header->setSectionHidden(i, hidden);
     }
@@ -98,7 +106,7 @@ void CustomizeColumnsDialog::accept() {
     QDialog::accept();
 }
 
-void CustomizeColumnsDialog::restore_defaults() {
+void CustomizeColumnsDialogPrivate::restore_defaults() {
     for (int i = 0; i < checkbox_list.size(); i++) {
         QCheckBox *checkbox = checkbox_list[i];
         const bool hidden = !default_columns.contains(i);
