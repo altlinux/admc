@@ -62,7 +62,7 @@ private slots:
     void refresh_head();
 
     void open_filter();
-    void delete_objects(const QList<QModelIndex> &indexes);
+    void delete_objects();
     void on_properties_requested();
     void rename();
     void create(const QString &object_class);
@@ -79,6 +79,7 @@ private:
     int object_results_id;
     QPersistentModelIndex scope_head_index;
     FilterDialog *filter_dialog;
+    QAction *delete_action;
     QAction *rename_action;
     QAction *move_action;
     QAction *open_filter_action;

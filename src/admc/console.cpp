@@ -59,6 +59,7 @@ bool object_should_be_in_scope(const AdObject &object);
 Console::Console()
 : QWidget()
 {
+    delete_action = new QAction(tr("&Delete"));
     rename_action = new QAction(tr("&Rename"));
     move_action = new QAction(tr("&Move"));
     open_filter_action = new QAction(tr("&Filter objects"));
@@ -110,6 +111,9 @@ Console::Console()
     connect(
         open_filter_action, &QAction::triggered,
         this, &Console::open_filter);
+    connect(
+        delete_action, &QAction::triggered,
+        this, &Console::delete_objects);
     connect(
         rename_action, &QAction::triggered,
         this, &Console::rename);
@@ -173,7 +177,9 @@ void Console::open_filter() {
     }
 }
 
-void Console::delete_objects(const QList<QModelIndex> &indexes) {
+void Console::delete_objects() {
+    const QList<QModelIndex> indexes = console_widget->get_selected_items();
+
     const QString text = QString(QCoreApplication::translate("object_menu", "Are you sure you want to delete %1?")).arg("targets_display_string");
     // const QString text = QString(QCoreApplication::translate("object_menu", "Are you sure you want to delete %1?")).arg(targets_display_string(indexes));
     const bool confirmed = confirmation_dialog(text, this);
@@ -392,8 +398,34 @@ void Console::update_description_bar() {
 }
 
 void Console::on_action_menu_about_to_open(QMenu *menu, QAbstractItemView *view) {
+    const QList<QString> targets =
+    [=]() {
+        QList<QString> out;
+
+        const QList<QModelIndex> indexes = view->selectionModel()->selectedIndexes();
+
+        for (const QModelIndex index : indexes) {
+            // Need first column to access item data
+            if (index.column() != 0) {
+                continue;
+            }
+
+            const QString dn = index.data(ObjectRole_DN).toString();
+
+            out.append(dn);
+        }
+
+        return out;  
+    }();
+    // TODO: disabled multi-selection actions for now,
+    // reimplement later
+    if (targets.size() != 1) {
+        return;
+    }
+
     menu->addAction(rename_action);
     menu->addAction(move_action);
+    menu->addAction(delete_action);
 
     QMenu *submenu_new = menu->addMenu(tr("New"));
     static const QList<QString> create_classes = {
@@ -410,8 +442,6 @@ void Console::on_action_menu_about_to_open(QMenu *menu, QAbstractItemView *view)
                 create(object_class);
             });
     }
-
-    add_object_actions_to_menu(menu, view, this, true, true);
 }
 
 void Console::on_view_menu_about_to_open(QMenu *menu) {
