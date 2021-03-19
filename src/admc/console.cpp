@@ -73,6 +73,7 @@ Console::Console()
     console_widget = new ConsoleWidget();
 
     object_results = new ResultsView(this);
+    object_results->detail_view()->header()->setDefaultSectionSize(200);
     // TODO: not sure how to do this. View headers dont even
     // have sections until their models are loaded.
     // SETTINGS()->setup_header_state(object_results->header(),
