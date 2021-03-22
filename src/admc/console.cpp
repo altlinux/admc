@@ -167,9 +167,6 @@ void Console::go_online(AdInterface &ad) {
     scope_head_index = QPersistentModelIndex(item->index());
 
     setup_scope_item(item, head_object);
-
-    // Need to set current since by default views have none
-    console_widget->set_current_scope(scope_head_index);
 }
 
 void Console::open_filter() {

@@ -226,6 +226,11 @@ QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const ScopeNo
             this, &ConsoleWidget::results_count_changed);
     }
 
+    const bool no_current_scope = !d->scope_view->selectionModel()->currentIndex().isValid();
+    if (no_current_scope) {
+        set_current_scope(item->index());
+    }
+
     return item;
 }
 

@@ -118,7 +118,12 @@ public:
     // call. Scope items can be dynamic, see comment about
     // ConsoleRole_ScopeIsDynamic for more info.
     // Add new row of items to results of given scope item.
-    // Use the return row to fill it with your data. 
+    // Use the return row to fill it with your data.
+    //
+    // If this is the first scope item added to console,
+    // then it is set as current scope by default. If you
+    // want another scope item at startup, use
+    // set_current_scope().
     QStandardItem *add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent);
     QList<QStandardItem *> add_results_row(const QModelIndex &scope_parent);
     void add_buddy_scope_and_results(const int results_id, const ScopeNodeType scope_type, const QModelIndex &scope_parent, QStandardItem **scope_arg, QList<QStandardItem *> *results_arg);
