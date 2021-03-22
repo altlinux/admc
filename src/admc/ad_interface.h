@@ -22,8 +22,7 @@
 
 /** 
  * Interface to AD server. Provides a way to search and
- * modify objects . Success and error messages resulting
- * from operations are sent to Status.
+ * modify objects.
  */
 
 #include <QObject>
@@ -35,7 +34,10 @@
 enum SearchScope {
     SearchScope_Object,
     SearchScope_Children,
-    // NOTE: Descendants scope appears to not work, from the ldap_search manual: "Note that the latter requires the server support the LDAP Subordinates Search Scope extension."
+    // NOTE: Descendants scope appears to not work, from the
+    // ldap_search manual: "Note that the latter requires
+    // the server support the LDAP Subordinates Search Scope
+    // extension."
     SearchScope_Descendants,
     SearchScope_All,
 };
@@ -167,10 +169,6 @@ private:
 
     DISABLE_COPY_MOVE(AdInterface);
 };
-
-// TODO: haven't found a better place for ad_is_connected()
-// f-n yet. Should move it somewhere i think because
-// adinterface needs to be separate from GUI.
 
 // Wrappers over is_connected() that also open an error
 // messagebox if failed to connect. You should generally use
