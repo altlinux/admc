@@ -332,3 +332,15 @@ QString domain_to_domain_dn(const QString &domain) {
 
     return domain_dn;
 }
+
+int bit_set(int bitmask, int bit, bool set) {
+    if (set) {
+        return bitmask | bit;
+    } else {
+        return bitmask & ~bit;
+    }
+}
+
+bool bit_is_set(int bitmask, int bit) {
+    return ((bitmask & bit) != 0);
+}

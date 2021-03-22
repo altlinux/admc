@@ -68,18 +68,6 @@ QList<QStandardItem *> make_item_row(const int count) {
     return row;
 }
 
-int bit_set(int bitmask, int bit, bool set) {
-    if (set) {
-        return bitmask | bit;
-    } else {
-        return bitmask & ~bit;
-    }
-}
-
-bool bit_is_set(int bitmask, int bit) {
-    return ((bitmask & bit) != 0);
-}
-
 void exec_menu_from_view(QMenu *menu, const QAbstractItemView *view, const QPoint &pos) {
     const QPoint global_pos = view->mapToGlobal(pos);
     menu->exec(global_pos);
