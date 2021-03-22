@@ -45,6 +45,7 @@ add_executable(admc
     find_dialog.cpp
     find_select_dialog.cpp
     select_container_dialog.cpp
+    about_dialog.cpp
     policies_widget.cpp
     gplink.cpp
 

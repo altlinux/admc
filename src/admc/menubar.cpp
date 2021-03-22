@@ -24,6 +24,7 @@
 #include "toggle_widgets_dialog.h"
 #include "config.h"
 #include "help_browser.h"
+#include "about_dialog.h"
 
 #include <QSplitter>
 #include <QAction>
@@ -209,30 +210,7 @@ void MenuBar::manual() {
 }
 
 void MenuBar::about() {
-    auto dialog = new QDialog(this);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-
-    auto version_label = new QLabel(QString(tr("Version %1")).arg(ADMC_VERSION));
-    version_label->setAlignment(Qt::AlignHCenter);
-
-    auto description_label = new QLabel(tr("ADMC is a tool for Active Directory administration."));
-
-    auto license_label = new QLabel(tr("Copyright (C) 2020 BaseALT Ltd."));
-
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-
-    auto layout = new QVBoxLayout();
-    dialog->setLayout(layout);
-    layout->addWidget(version_label);
-    layout->addWidget(description_label);
-    layout->addWidget(license_label);
-    layout->addWidget(button_box);
-
-    connect(
-        ok_button, &QPushButton::clicked,
-        dialog, &QDialog::accept);
-
+    auto dialog = new AboutDialog(this);
     dialog->open();
 }
 
