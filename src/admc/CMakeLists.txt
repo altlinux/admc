@@ -41,7 +41,6 @@ add_executable(admc
     find_widget.cpp
     tab_widget.cpp
     console.cpp
-    console_drag_model.cpp
     object_drag.cpp
     search_thread.cpp
     help_browser.cpp
@@ -96,6 +95,13 @@ add_executable(admc
     edits/datetime_edit.cpp
     edits/gpoptions_edit.cpp
     edits/manager_edit.cpp
+
+    console_widget/console_widget.cpp
+    console_widget/scope_model.cpp
+    console_widget/customize_columns_dialog.cpp
+    console_widget/results_description.cpp
+    console_widget/results_view.cpp
+    console_widget/console_drag_model.cpp
 
     ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/common/settings.cpp

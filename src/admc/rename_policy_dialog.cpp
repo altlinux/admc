@@ -103,7 +103,7 @@ void RenamePolicyDialog::accept() {
 
     if (apply_success) {
         RenameDialog::success_msg(old_name);
-        QDialog::close();
+        QDialog::accept();
     } else {
         RenameDialog::fail_msg(old_name);
     }

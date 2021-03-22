@@ -26,13 +26,22 @@
 
 class QMenu;
 class QWidget;
-class QAbstractItemView;
 class QAction;
 class QString;
+class QModelIndex;
 template <typename T> class QList;
 
+class ObjectMenuData {
+public:
+    QAction *rename = nullptr;
+    QAction *delete_object = nullptr;
+    QAction *move = nullptr;
+    QMenu *new_menu = nullptr;
+    bool properties_already_added = false;
+};
+
 // Construct object actions of the menu based on current target(s) in the view. If any more custom actions need to be added to this menu, insert them before the action returned from this f-n.
-QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent, const bool include_find_action);
+QAction *add_object_actions_to_menu(QMenu *menu, const QList<QModelIndex> &targets, QWidget *parent, const bool include_find_action, const ObjectMenuData &data = ObjectMenuData());
 
 // The following f-ns are declared in header so that tests
 // can access them

@@ -17,33 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_MODEL_H
-#define OBJECT_MODEL_H
-
-#include <QStandardItemModel>
-#include <QList>
-
-#include "console_widget/console_widget.h"
-
-class QMimeData;
-class QModelIndex;
-class QString;
-class QStandardItem;
-class AdObject;
+#ifndef CUSTOMIZE_COLUMNS_DIALOG_P_H
+#define CUSTOMIZE_COLUMNS_DIALOG_P_H
 
 /**
- * Some f-ns used for models that store objects.
+ * Private header for CustomizeColumnsDialog.
  */
 
-enum ObjectRole {
-    ObjectRole_DN = ConsoleRole_LAST + 1,
-    ObjectRole_AdObject = ConsoleRole_LAST + 2,
-    ObjectRole_LAST = ConsoleRole_LAST + 3,
+class CustomizeColumnsDialog;
+class QTreeView;
+class QCheckBox;
+
+class CustomizeColumnsDialogPrivate final : public QObject {
+
+public:
+    QList<int> default_columns;
+    QList<QCheckBox *> checkbox_list;
+    QTreeView *view;
+
+    CustomizeColumnsDialogPrivate(CustomizeColumnsDialog *q);
+
+    void restore_defaults();
 };
 
-void load_object_row(const QList<QStandardItem *> row, const AdObject &object);
-void load_object_item_data(QStandardItem *item, const AdObject &object);
-QList<QString> object_model_header_labels();
-QList<int> object_model_default_columns();
-
-#endif /* OBJECT_MODEL_H */
+#endif /* CUSTOMIZE_COLUMNS_DIALOG_P_H */

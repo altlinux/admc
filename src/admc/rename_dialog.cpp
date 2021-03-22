@@ -116,6 +116,13 @@ void RenameDialog::fail_msg(const QString &old_name) {
     STATUS()->add_message(message, StatusType_Error);
 }
 
+QString RenameDialog::get_new_dn() const {
+    const QString new_name = name_edit->text();
+    const QString new_dn = dn_rename(target, new_name);
+
+    return new_dn;
+}
+
 void RenameDialog::accept() {
     // Handle failure
     AdInterface ad;
@@ -141,7 +148,7 @@ void RenameDialog::accept() {
         if (apply_success) {
             final_success = true;
 
-            QDialog::close();
+            QDialog::accept();
         }
     }
 

@@ -95,7 +95,7 @@ void PasswordDialog::accept() {
 
     edits_apply(ad, edits, target);
 
-    QDialog::close();
+    QDialog::accept();
 
     STATUS()->display_ad_messages(ad, this);
 }

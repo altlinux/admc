@@ -51,10 +51,12 @@ QString extract_rid_from_sid(const QByteArray &sid);
 
 bool ad_string_to_bool(const QString &string);
 
+QString dn_get_rdn(const QString &dn);
 QString dn_get_name(const QString &dn);
 QString dn_get_parent(const QString &dn);
 QString dn_get_parent_canonical(const QString &dn);
 QString dn_rename(const QString &dn, const QString &new_name);
+QString dn_move(const QString &dn, const QString &new_parent_dn);
 QString dn_canonical(const QString &dn);
 QString dn_from_name_and_parent(const QString &name, const QString &parent, const QString &object_class);
 

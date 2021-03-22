@@ -64,13 +64,13 @@ void load_object_row(const QList<QStandardItem *> row, const AdObject &object) {
         row[i]->setText(display_value);
     }
 
-    const QIcon icon = object.get_icon();
-    row[0]->setIcon(icon);
-
     load_object_item_data(row[0], object);
 }
 
 void load_object_item_data(QStandardItem *item, const AdObject &object) {
+    const QIcon icon = object.get_icon();
+    item->setIcon(icon);
+    
     item->setData(object.get_dn(), ObjectRole_DN);
     item->setData(QVariant::fromValue(object), ObjectRole_AdObject);
 }
@@ -85,4 +85,10 @@ QList<QString> object_model_header_labels() {
     }
     
     return out;
+}
+
+QList<int> object_model_default_columns() {
+    // By default show first 3 columns: name, class and
+    // description
+    return {0, 1, 2};
 }

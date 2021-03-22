@@ -24,6 +24,7 @@
 #include "ad_interface.h"
 #include "ad_config.h"
 #include "console.h"
+#include "console_widget/console_widget.h"
 #include "toggle_widgets_dialog.h"
 
 #include <QApplication>
@@ -62,7 +63,7 @@ MainWindow::MainWindow()
 
     connect_action = new QAction(tr("&Connect"));
 
-    auto menubar = new MenuBar(this, console);
+    auto menubar = new MenuBar(this, console->console_widget);
     setMenuBar(menubar);
 
     connect(

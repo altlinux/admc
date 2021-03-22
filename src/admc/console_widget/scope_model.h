@@ -17,33 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_MODEL_H
-#define OBJECT_MODEL_H
+#ifndef SCOPE_MODEL_H
+#define SCOPE_MODEL_H
 
-#include <QStandardItemModel>
-#include <QList>
-
-#include "console_widget/console_widget.h"
-
-class QMimeData;
-class QModelIndex;
-class QString;
-class QStandardItem;
-class AdObject;
+#include "console_widget/console_drag_model.h"
 
 /**
- * Some f-ns used for models that store objects.
+ * Implements showing expander for unfetched items.
  */
 
-enum ObjectRole {
-    ObjectRole_DN = ConsoleRole_LAST + 1,
-    ObjectRole_AdObject = ConsoleRole_LAST + 2,
-    ObjectRole_LAST = ConsoleRole_LAST + 3,
+class ScopeModel : public ConsoleDragModel {
+Q_OBJECT
+
+public:
+    using ConsoleDragModel::ConsoleDragModel;
+
+    bool hasChildren(const QModelIndex &parent) const override;
 };
 
-void load_object_row(const QList<QStandardItem *> row, const AdObject &object);
-void load_object_item_data(QStandardItem *item, const AdObject &object);
-QList<QString> object_model_header_labels();
-QList<int> object_model_default_columns();
-
-#endif /* OBJECT_MODEL_H */
+#endif /* SCOPE_MODEL_H */

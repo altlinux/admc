@@ -23,7 +23,15 @@
 class AdInterface;
 class AdObject;
 
+enum DropType {
+    DropType_Move,
+    DropType_AddToGroup,
+    DropType_None
+};
+
+// TODO: probably just inline this stuff
 bool object_can_drop(const AdObject &dropped, const AdObject &target);
-void object_drop(AdInterface &ad, const AdObject &dropped, const AdObject &target);
+bool object_drop(AdInterface &ad, const AdObject &dropped, const AdObject &target);
+DropType get_drop_type(const AdObject &dropped, const AdObject &target);
 
 #endif /* OBJECT_DRAG_H */

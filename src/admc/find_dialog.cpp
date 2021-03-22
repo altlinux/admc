@@ -24,6 +24,7 @@
 #include "ad_config.h"
 #include "object_menu.h"
 #include "properties_dialog.h"
+#include "console_widget/customize_columns_dialog.h"
 
 #include <QList>
 #include <QVBoxLayout>
@@ -40,12 +41,15 @@ FindDialog::FindDialog(const QList<QString> classes, const QString default_searc
 
     auto menubar = new QMenuBar();
     auto action_menu = menubar->addMenu(tr("&Action"));
+    auto view_menu = menubar->addMenu(tr("&View"));
 
     auto find_widget = new FindWidget(classes, default_search_base);
     find_widget->find_results->setup_context_menu();
 
     QTreeView *results_view = find_widget->find_results->view;
     PropertiesDialog::connect_to_open_by_double_click(results_view, ADCONFIG()->get_column_index(ATTRIBUTE_DN));
+
+    view_menu->addAction(find_widget->find_results->get_customize_columns_action());
 
     auto layout = new QVBoxLayout();
     setLayout(layout);

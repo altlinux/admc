@@ -44,25 +44,24 @@
 
 QString targets_display_string(const QList<QString> targets);
 
+// TODO: console_added_actions is a temporary band-aid. Also
+// need to fix action order afterwards. The problem here is
+// that console has it's object actions and find results has
+// it's own and there is some overlap where they can be
+// shared. Share whatever actions can be shared.
+
 // NOTE: construct right before showing menu instead of in
 // load_targets() because target's attributes might change
 // in the span of time when target is selected and menu is
 // opened. Menu needs most up-to-date target attributes to
 // construct actions.
-QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidget *parent, const bool include_find_action) {
+QAction *add_object_actions_to_menu(QMenu *menu, const QList<QModelIndex> &selected_indexes, QWidget *parent, const bool include_find_action, const ObjectMenuData &data) {
     // Get info about selected objects from view
     const QList<QString> targets =
     [=]() {
         QList<QString> out;
 
-        const QList<QModelIndex> indexes = view->selectionModel()->selectedIndexes();
-
-        for (const QModelIndex index : indexes) {
-            // Need first column to access item data
-            if (index.column() != 0) {
-                continue;
-            }
-
+        for (const QModelIndex index : selected_indexes) {
             const QString dn = index.data(ObjectRole_DN).toString();
 
             out.append(dn);
@@ -75,14 +74,7 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
     [=]() {
         QSet<QString> out;
         
-        const QList<QModelIndex> indexes = view->selectionModel()->selectedIndexes();
-
-        for (const QModelIndex index : indexes) {
-            // Need first column to access item data
-            if (index.column() != 0) {
-                continue;
-            }
-
+        for (const QModelIndex index : selected_indexes) {
             const AdObject object = index.data(ObjectRole_AdObject).value<AdObject>();
             const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
@@ -95,6 +87,12 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
     // These are f-ns that add menu's
     auto add_new =
     [=]() {
+        if (data.new_menu != nullptr) {
+            menu->addMenu(data.new_menu);
+
+            return;
+        }
+
         QMenu *submenu_new = menu->addMenu(QCoreApplication::translate("object_menu", "New"));
         static const QList<QString> create_classes = {
             CLASS_USER,
@@ -154,42 +152,74 @@ QAction *add_object_actions_to_menu(QMenu *menu, QAbstractItemView *view, QWidge
 
     auto add_move =
     [=](const bool disabled) {
-        auto action = menu->addAction(QCoreApplication::translate("object_menu", "Move"),
-            [=]() {
-                move(targets, parent);
-            });
+        auto action =
+        [=]() {
+            if (data.move != nullptr) {
+                menu->addAction(data.move);
+                
+                return data.move;
+            } else {
+                return menu->addAction(QCoreApplication::translate("object_menu", "Move"),
+                    [=]() {
+                        move(targets, parent);
+                    });
+            }
+        }();
 
         action->setDisabled(disabled);
     };
 
     auto add_delete =
     [=](const bool disabled) {
-        auto action = menu->addAction(QCoreApplication::translate("object_menu", "Delete"),
-            [=]() {
-                delete_object(targets, parent);
-            });
+        auto action =
+        [=]() {
+            if (data.delete_object != nullptr) {
+                menu->addAction(data.delete_object);
+
+                return data.delete_object;
+            } else {
+                return menu->addAction(QCoreApplication::translate("object_menu", "Delete"),
+                    [=]() {
+                        delete_object(targets, parent);
+                    });
+            }
+        }();
+
         action->setDisabled(disabled);
     };
 
     auto add_rename =
     [=](const bool disabled) {
-        auto action = menu->addAction(QCoreApplication::translate("object_menu", "Rename"),
-            [=]() {
-                rename(targets[0], parent);
-            });
+        auto action =
+        [=]() {
+            if (data.rename != nullptr) {
+                menu->addAction(data.rename);
+
+                return data.rename;
+            } else {
+                return menu->addAction(QCoreApplication::translate("object_menu", "Rename"),
+                    [=]() {
+                        rename(targets[0], parent);
+                    });
+            }
+        }();
         action->setDisabled(disabled);
     };
 
     // TODO: multi-object properties
     auto add_properties =
     [=]() {
-        return menu->addAction(PropertiesDialog::display_name(),
-            [=]() {
-                properties(targets[0], parent);
-            });
+        if (!data.properties_already_added) {
+            menu->addAction(PropertiesDialog::display_name(),
+                [=]() {
+                    properties(targets[0], parent);
+                });
+        }
     };
 
     const bool single_object = (targets.size() == 1);
+
+    menu->addSeparator();
 
     // Add menu's
     if (single_object) {

@@ -17,33 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_MODEL_H
-#define OBJECT_MODEL_H
+#ifndef RESULTS_DESCRIPTION_H
+#define RESULTS_DESCRIPTION_H
 
-#include <QStandardItemModel>
 #include <QList>
+#include <QString>
 
-#include "console_widget/console_widget.h"
+class ResultsView;
+class QWidget;
 
-class QMimeData;
-class QModelIndex;
-class QString;
-class QStandardItem;
-class AdObject;
+class ResultsDescription {
 
-/**
- * Some f-ns used for models that store objects.
- */
+public:
+    ResultsDescription();
+    ResultsDescription(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
-enum ObjectRole {
-    ObjectRole_DN = ConsoleRole_LAST + 1,
-    ObjectRole_AdObject = ConsoleRole_LAST + 2,
-    ObjectRole_LAST = ConsoleRole_LAST + 3,
+    QWidget *widget() const;
+    ResultsView *view() const;
+    QList<QString> column_labels() const;
+    QList<int> default_columns() const;
+    int column_count() const;
+
+private:
+    QWidget *m_widget;
+    ResultsView *m_view;
+    QList<QString> m_column_labels;
+    QList<int> m_default_columns;
 };
 
-void load_object_row(const QList<QStandardItem *> row, const AdObject &object);
-void load_object_item_data(QStandardItem *item, const AdObject &object);
-QList<QString> object_model_header_labels();
-QList<int> object_model_default_columns();
-
-#endif /* OBJECT_MODEL_H */
+#endif /* RESULTS_DESCRIPTION_H */

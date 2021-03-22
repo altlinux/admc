@@ -37,6 +37,8 @@ public:
     static void success_msg(const QString &old_name);
     static void fail_msg(const QString &old_name);
 
+    QString get_new_dn() const;
+
 public slots:
     void accept();
 

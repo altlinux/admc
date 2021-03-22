@@ -23,12 +23,6 @@
 #include "ad_config.h"
 #include "ad_object.h"
 
-enum DropType {
-    DropType_Move,
-    DropType_AddToGroup,
-    DropType_None
-};
-
 // Determine what kind of drop type is dropping this object
 // onto target. If drop type is none, then can't drop this
 // object on this target.
@@ -80,24 +74,5 @@ bool object_can_drop(const AdObject &dropped, const AdObject &target) {
         return false;
     } else {
         return true;
-    }
-}
-
-// General "drop" operation that can either move, link or change membership depending on which types of objects are involved
-void object_drop(AdInterface &ad, const AdObject &dropped, const AdObject &target) {
-    DropType drop_type = get_drop_type(dropped, target);
-
-    switch (drop_type) {
-        case DropType_Move: {
-            ad.object_move(dropped.get_dn(), target.get_dn());
-            break;
-        }
-        case DropType_AddToGroup: {
-            ad.group_add_member(target.get_dn(), dropped.get_dn());
-            break;
-        }
-        case DropType_None: {
-            break;
-        }
     }
 }

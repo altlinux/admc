@@ -43,6 +43,8 @@ Q_OBJECT
 public:
     CreateDialog(const QString &parent_dn_arg, const QString &object_class_arg, QWidget *parent);
 
+    QString get_created_dn() const;
+
 public slots:
     void accept();
 
