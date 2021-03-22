@@ -706,3 +706,13 @@ DropType get_object_drop_type(const QModelIndex &dropped, const QModelIndex &tar
         }
     }
 }
+
+QString add_advanced_view_filter(const QString &filter) {
+    // Hide advanced view only" objects if advanced view setting is off
+    const bool advanced_view_OFF = !SETTINGS()->get_bool(BoolSetting_AdvancedView);
+    if (advanced_view_OFF) {
+        return filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
+    } else {
+        return filter;
+    }
+}
