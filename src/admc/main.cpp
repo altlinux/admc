@@ -27,8 +27,6 @@
 #include <QLibraryInfo>
 
 int main(int argc, char **argv) {
-    qRegisterMetaTypeStreamOperators<AdObject>("AdObject");
-
     // NOTE: this is needed to pass this type from thread's
     // signal in find_widget.cpp. Without doing this,
     // passing this type from thread results in a runtime

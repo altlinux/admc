@@ -260,20 +260,3 @@ QIcon AdObject::get_icon() const {
 
     return icon;
 }
-
-// NOTE: these f-ns are used to serialize adobject's into
-// mimedata for console drag and drop
-QDataStream &operator<<(QDataStream &out, const AdObject &obj) {
-    out << obj.get_dn() << obj.get_attributes_data();
-    return out;
-}
-
-QDataStream &operator>>(QDataStream &in, AdObject &obj) {
-    QString dn;
-    AdObjectAttributes attributes_data;
-    in >> dn >> attributes_data;
-
-    obj.load(dn, attributes_data);
-
-    return in;
-}
