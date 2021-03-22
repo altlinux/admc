@@ -25,24 +25,14 @@
 #include "config.h"
 #include "help_browser.h"
 #include "about_dialog.h"
+#include "manual_dialog.h"
 
-#include <QSplitter>
 #include <QAction>
 #include <QMenu>
 #include <QLocale>
 #include <QMessageBox>
 #include <QActionGroup>
 #include <QApplication>
-#include <QDebug>
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QHelpEngine>
-#include <QHelpContentWidget>
-#include <QHelpIndexWidget>
-#include <QTabWidget>
-#include <QStandardPaths>
 
 MenuBar::MenuBar(MainWindow *main_window, ConsoleWidget *console_widget) {
     //
@@ -158,55 +148,8 @@ MenuBar::MenuBar(MainWindow *main_window, ConsoleWidget *console_widget) {
 }
 
 void MenuBar::manual() {
-    const QString help_collection_path = QStandardPaths::writableLocation(QStandardPaths::QStandardPaths::AppDataLocation) + "/admc.qhc";
-
-    // NOTE: load .qch file from sources for
-    // debug/development builds. This is so that you can
-    // edit the help file and see changes on the fly without
-    // having to install it.
-    const QString compressed_help_path =
-    []() {
-        #ifdef QT_DEBUG
-        return QCoreApplication::applicationDirPath() + "/doc/admc.qch";
-        #endif        
-
-        return QStandardPaths::locate(QStandardPaths::GenericDataLocation, "admc.qch");
-    }();
-
-    qDebug() << ".qhc = " << help_collection_path;
-    qDebug() << ".qch = " << compressed_help_path;
-
-    auto help_engine = new QHelpEngine(help_collection_path, this);
-    const bool help_setup_success = help_engine->setupData();
-    if (!help_setup_success) {
-        qDebug() << "help_engine setupData() call failed";
-        qDebug() << "Help engine error : " << qPrintable(help_engine->error());
-    }
-
-    const bool help_register_success = help_engine->registerDocumentation(compressed_help_path);
-    if (!help_register_success) {
-        qDebug() << "help_engine registerDocumentation() call failed";
-        qDebug() << "Help engine error : " << qPrintable(help_engine->error());
-    }
-
-    auto tab_widget = new QTabWidget();
-    tab_widget->addTab(help_engine->contentWidget(), "Contents");
-    tab_widget->addTab(help_engine->indexWidget(), "Index");
-
-    auto help_browser = new HelpBrowser(help_engine);
-    
-    auto splitter = new QSplitter(Qt::Horizontal);
-    splitter->insertWidget(0, tab_widget);
-    splitter->insertWidget(1, help_browser);
-
-    auto help_dialog = new QDialog();
-    help_dialog->setAttribute(Qt::WA_DeleteOnClose);
-    help_dialog->setMinimumSize(800, 600);
-
-    help_dialog->setLayout(new QVBoxLayout());
-    help_dialog->layout()->addWidget(splitter);
-    
-    help_dialog->open();
+    auto dialog = new ManualDialog(this);
+    dialog->open();
 }
 
 void MenuBar::about() {
