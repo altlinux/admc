@@ -128,11 +128,11 @@ Console::Console()
         console_widget, &ConsoleWidget::results_count_changed,
         this, &Console::update_description_bar);
     connect(
-        console_widget, &ConsoleWidget::action_menu_about_to_open,
-        this, &Console::on_action_menu_about_to_open);
+        console_widget, &ConsoleWidget::action_menu,
+        this, &Console::on_action_menu);
     connect(
-        console_widget, &ConsoleWidget::view_menu_about_to_open,
-        this, &Console::on_view_menu_about_to_open);
+        console_widget, &ConsoleWidget::view_menu,
+        this, &Console::on_view_menu);
     connect(
         console_widget, &ConsoleWidget::item_fetched,
         this, &Console::fetch_scope_node);
@@ -395,7 +395,7 @@ void Console::update_description_bar() {
     console_widget->set_description_bar_text(text);
 }
 
-void Console::on_action_menu_about_to_open(QMenu *menu) {
+void Console::on_action_menu(QMenu *menu) {
     QMenu *submenu_new = new QMenu(tr("New"));
     static const QList<QString> create_classes = {
         CLASS_USER,
@@ -424,7 +424,7 @@ void Console::on_action_menu_about_to_open(QMenu *menu) {
     add_object_actions_to_menu(menu, selected, this, true, menu_data);
 }
 
-void Console::on_view_menu_about_to_open(QMenu *menu) {
+void Console::on_view_menu(QMenu *menu) {
     menu->addAction(open_filter_action);
 
     // NOTE: insert separator between non-checkbox actions

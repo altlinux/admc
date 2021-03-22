@@ -199,14 +199,14 @@ signals:
 
     void current_scope_item_changed(const QModelIndex &index);
 
-    // Emitted when action menu is about to open. Action
-    // menu can be opened both from menubar or as a context
-    // menu. Connect to this signal and add actions to menu
-    // in the slot. Use get_selected_items() to get the
-    // items for which this menu should add actions.
-    void action_menu_about_to_open(QMenu *menu);
-
-    void view_menu_about_to_open(QMenu *menu);
+    // These signals are emitted when the action or view
+    // menu are about to open. Connect to these signals and
+    // add actions to menu in the slot. Note that console
+    // widget adds it's own actions after yours. Use
+    // get_selected_items() to determine target items for
+    // the action menu.
+    void action_menu(QMenu *menu);
+    void view_menu(QMenu *menu);
 
     // Emitted while items are dragged to determine whether
     // they can be dropped on target. Set "ok" to true if

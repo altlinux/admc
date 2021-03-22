@@ -647,7 +647,7 @@ void ConsoleWidgetPrivate::on_view_menu_show() {
 
     view_menu->addAction(customize_columns_action);
 
-    emit q->view_menu_about_to_open(view_menu);
+    emit q->view_menu(view_menu);
 }
 
 void ConsoleWidgetPrivate::refresh() {
@@ -787,7 +787,7 @@ void ConsoleWidgetPrivate::add_actions_to_action_menu(QMenu *menu) {
 
     // User of console widget that connects to this signal
     // will add their actions
-    emit q->action_menu_about_to_open(menu);
+    emit q->action_menu(menu);
 
     // After that console widget adds it's own actions
 

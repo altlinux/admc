@@ -69,8 +69,8 @@ private slots:
     void move();
 
     void fetch_scope_node(const QModelIndex &index);
-    void on_action_menu_about_to_open(QMenu *menu);
-    void on_view_menu_about_to_open(QMenu *menu);
+    void on_action_menu(QMenu *menu);
+    void on_view_menu(QMenu *menu);
     
     void on_items_can_drop(const QList<QModelIndex> &dropped, const QModelIndex &target, bool *ok);
     void on_items_dropped(const QList<QModelIndex> &dropped, const QModelIndex &target);
