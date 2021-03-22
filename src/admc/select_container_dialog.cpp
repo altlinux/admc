@@ -25,6 +25,7 @@
 #include "ad/ad_defines.h"
 #include "ad/ad_utils.h"
 #include "ad/ad_filter.h"
+#include "ad/ad_object.h"
 #include "console.h"
 
 #include <QTreeView>

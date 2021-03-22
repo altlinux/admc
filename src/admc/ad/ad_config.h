@@ -26,53 +26,18 @@
  * server requests.
  */
 
-#include "ad/ad_object.h"
+#include "ad_defines.h"
 
-#include <QString>
-#include <QList>
-#include <QHash>
-
+class AdConfigPrivate;
+class AdInterface;
 class QLocale;
-
-enum AttributeType {
-    AttributeType_Boolean,
-    AttributeType_Enumeration,
-    AttributeType_Integer,
-    AttributeType_LargeInteger,
-    AttributeType_StringCase,
-    AttributeType_IA5,
-    AttributeType_NTSecDesc,
-    AttributeType_Numeric,
-    AttributeType_ObjectIdentifier,
-    AttributeType_Octet,
-    AttributeType_ReplicaLink,
-    AttributeType_Printable,
-    AttributeType_Sid,
-    AttributeType_Teletex,
-    AttributeType_Unicode,
-    AttributeType_UTCTime,
-    AttributeType_GeneralizedTime,
-    AttributeType_DNString,
-    AttributeType_DNBinary,
-    AttributeType_DSDN,
-};
-
-// NOTE: large integer type has sub types but AD schema
-// doesn't distinguish between them (from what I've seen).
-// Create enums for subtypes for easier processing.
-enum LargeIntegerSubtype {
-    LargeIntegerSubtype_Integer,
-    LargeIntegerSubtype_Datetime,
-    LargeIntegerSubtype_Timespan,
-};
+class QString;
+class QLineEdit;
+template <typename T> class QList;
 
 // NOTE: name strings to reduce confusion
 typedef QString ObjectClass;
 typedef QString Attribute;
-
-class QLineEdit;
-class AdObject;
-class AdInterface;
 
 class AdConfig {
 public:
@@ -113,24 +78,10 @@ public:
     void limit_edit(QLineEdit *edit, const QString &attribute);
 
 private:
-    QString m_domain;
-    QString m_domain_head;
-
-    QList<ObjectClass> filter_containers;
-    
-    QList<Attribute> columns;
-    QHash<Attribute, QString> column_display_names;
-
-    QHash<ObjectClass, QString> class_display_names;
-    QHash<ObjectClass, QList<Attribute>> find_attributes;
-    QHash<ObjectClass, QHash<Attribute, QString>> attribute_display_names;
-
-    QHash<Attribute, AdObject> attribute_schemas;
-    QHash<ObjectClass, AdObject> class_schemas;
-
-    QList<QString> add_auxiliary_classes(const QList<QString> &object_classes) const;
+    AdConfigPrivate *d;
 
     AdConfig();
+    ~AdConfig();
 };
 
 AdConfig *ADCONFIG();
