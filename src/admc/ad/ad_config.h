@@ -32,6 +32,8 @@
 #include <QList>
 #include <QHash>
 
+class QLocale;
+
 enum AttributeType {
     AttributeType_Boolean,
     AttributeType_Enumeration,

@@ -22,6 +22,8 @@
 #include "ad/ad_interface.h"
 #include "ad/ad_object.h"
 
+#include <QHash>
+
 SearchThread::SearchThread(const QString &filter_arg, const QString search_base_arg, const QList<QString> attrs_arg) {
     stop_flag = false;
 

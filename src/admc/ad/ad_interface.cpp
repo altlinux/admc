@@ -191,7 +191,7 @@ bool AdInterface::search_paged_internal(const char *filter, char **attributes, c
         const QString dn(dn_cstr);
         ldap_memfree(dn_cstr);
 
-        AdObjectAttributes object_attributes;
+        QHash<QString, QList<QByteArray>> object_attributes;
 
         BerElement *berptr;
         for (char *attr = ldap_first_attribute(ld, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ld, entry, berptr)) {
