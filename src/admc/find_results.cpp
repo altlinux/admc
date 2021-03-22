@@ -21,7 +21,7 @@
 #include "object_menu.h"
 #include "properties_dialog.h"
 #include "utils.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 #include "ad/ad_config.h"
 #include "object_model.h"
 #include "settings.h"

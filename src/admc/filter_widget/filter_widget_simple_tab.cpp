@@ -20,7 +20,7 @@
 #include "filter_widget/filter_widget_simple_tab.h"
 #include "filter_widget/select_classes_widget.h"
 #include "ad/ad_defines.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 
 #include <QLineEdit>
 #include <QFormLayout>

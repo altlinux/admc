@@ -23,7 +23,7 @@
 #include "properties_dialog.h"
 #include "rename_policy_dialog.h"
 #include "utils.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 
 #include <QTreeView>
 #include <QLabel>

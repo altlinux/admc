@@ -25,7 +25,7 @@
 #include "utils.h"
 #include "select_dialog.h"
 #include "edits/gpoptions_edit.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>

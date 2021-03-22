@@ -53,6 +53,7 @@ add_executable(admc
     ad/ad_utils.cpp
     ad/ad_object.cpp
     ad/ad_display.cpp
+    ad/ad_filter.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_widget_simple_tab.cpp
@@ -105,7 +106,6 @@ add_executable(admc
 
     ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/common/settings.cpp
-    ${PROJECT_SOURCE_DIR}/src/common/filter.cpp
 
     admc.qrc
     ${PROJECT_SOURCE_DIR}/translations/translations.qrc

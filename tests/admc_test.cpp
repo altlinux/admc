@@ -38,7 +38,7 @@ void ADMCTest::initTestCase() {
     QVERIFY2(ad.is_connected(), "Failed to connect to AD server");
 
     // TODO: check for load failure
-    ADCONFIG()->load(ad);
+    ADCONFIG()->load(ad, QLocale(QLocale::English));
 
     // Cleanup before all tests in-case this test suite was
     // previously interrupted and a cleanup wasn't performed

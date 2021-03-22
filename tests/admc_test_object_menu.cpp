@@ -23,7 +23,7 @@
 #include "ad/ad_defines.h"
 #include "ad/ad_object.h"
 #include "ad/ad_utils.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 #include "create_dialog.h"
 #include "utils.h"
 #include "status.h"

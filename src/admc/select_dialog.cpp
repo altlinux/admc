@@ -24,7 +24,7 @@
 #include "ad/ad_object.h"
 #include "settings.h"
 #include "utils.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 #include "object_model.h"
 #include "find_select_dialog.h"
 

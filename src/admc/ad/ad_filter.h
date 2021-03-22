@@ -17,8 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FILTER_H
-#define FILTER_H
+#ifndef AD_FILTER_H
+#define AD_FILTER_H
+
+/**
+ * Functions for constructing an LDAP filter.
+ */
 
 #include <QString>
 
@@ -49,4 +53,4 @@ QString add_advanced_view_filter(const QString &filter);
 
 QString condition_to_display_string(const Condition condition);
 
-#endif /* FILTER_H */
+#endif /* AD_FILTER_H */

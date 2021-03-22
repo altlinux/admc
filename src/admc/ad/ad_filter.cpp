@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "filter.h"
+#include "ad/ad_filter.h"
 #include "settings.h"
 #include "ad/ad_defines.h"
 #include "ad/ad_config.h"

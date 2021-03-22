@@ -25,7 +25,7 @@
 #include "ad/ad_object.h"
 #include "utils.h"
 #include "select_dialog.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 #include "ad/ad_display.h"
 
 #include <QTreeView>

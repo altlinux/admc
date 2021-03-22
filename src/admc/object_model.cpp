@@ -22,7 +22,7 @@
 #include "ad/ad_object.h"
 #include "ad/ad_config.h"
 #include "ad/ad_utils.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 #include "settings.h"
 #include "utils.h"
 #include "ad/ad_display.h"

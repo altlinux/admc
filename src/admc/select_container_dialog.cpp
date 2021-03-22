@@ -24,7 +24,7 @@
 #include "ad/ad_config.h"
 #include "ad/ad_defines.h"
 #include "ad/ad_utils.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>

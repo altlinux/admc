@@ -27,7 +27,7 @@
 #include "ad/ad_config.h"
 #include "ad/ad_interface.h"
 #include "ad/ad_object.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 #include "settings.h"
 #include "filter_dialog.h"
 #include "filter_widget/filter_widget.h"
