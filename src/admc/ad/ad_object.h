@@ -32,7 +32,11 @@
 
 #include "ad/ad_defines.h"
 
-class AdObjectPrivate;
+#include <QHash>
+#include <QString>
+#include <QList>
+#include <QByteArray>
+
 class QDateTime;
 class QIcon;
 class QByteArray;
@@ -44,8 +48,7 @@ class AdObject {
 
 public:
     AdObject();
-    ~AdObject();
-    
+
     void load(const QString &dn_arg, const QHash<QString, QList<QByteArray>> &attributes_data_arg);
 
     QString get_dn() const;
@@ -81,7 +84,8 @@ public:
     QIcon get_icon() const;
 
 private:
-    AdObjectPrivate *d;
+    QString dn;
+    QHash<QString, QList<QByteArray>> attributes_data;
 };
 
 #endif /* AD_OBJECT_H */

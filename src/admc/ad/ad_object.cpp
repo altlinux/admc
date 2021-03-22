@@ -18,7 +18,6 @@
  */
 
 #include "ad/ad_object.h"
-#include "ad/ad_object_p.h"
 
 #include "ad/ad_utils.h"
 
@@ -31,46 +30,38 @@
 #include <QIcon>
 #include <QDateTime>
 
-AdObjectPrivate::AdObjectPrivate() {
-
-}
-
 AdObject::AdObject() {
-    d = new AdObjectPrivate();
-}
 
-AdObject::~AdObject() {
-    delete d;
 }
 
 void AdObject::load(const QString &dn_arg, const QHash<QString, QList<QByteArray>> &attributes_data_arg) {
-    d->dn = dn_arg;
-    d->attributes_data = attributes_data_arg;
+    dn = dn_arg;
+    attributes_data = attributes_data_arg;
 }
 
 QString AdObject::get_dn() const {
-    return d->dn;
+    return dn;
 }
 
 QHash<QString, QList<QByteArray>> AdObject::get_attributes_data() const {
-    return d->attributes_data;
+    return attributes_data;
 }
 
 bool AdObject::is_empty() const {
-    return d->attributes_data.isEmpty();
+    return attributes_data.isEmpty();
 }
 
 bool AdObject::contains(const QString &attribute) const {
-    return d->attributes_data.contains(attribute);
+    return attributes_data.contains(attribute);
 }
 
 QList<QString> AdObject::attributes() const {
-    return d->attributes_data.keys();
+    return attributes_data.keys();
 }
 
 QList<QByteArray> AdObject::get_values(const QString &attribute) const {
     if (contains(attribute)) {
-        return d->attributes_data[attribute];
+        return attributes_data[attribute];
     } else {
         return QList<QByteArray>();
     }
