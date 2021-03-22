@@ -124,9 +124,9 @@ AdInterfacePrivate::~AdInterfacePrivate() {
     smbc_free_context(smbc, 0);
 
     if (is_connected) {
-        ldap_unbind_ext(d->ld, NULL, NULL);
+        ldap_unbind_ext(ld, NULL, NULL);
     } else {
-        ldap_memfree(d->ld);
+        ldap_memfree(ld);
     }
 }
 
@@ -1133,7 +1133,7 @@ QString AdInterfacePrivate::default_error() const {
 
 int AdInterfacePrivate::get_ldap_result() const {
     int result;
-    ldap_get_option(d->ld, LDAP_OPT_RESULT_CODE, &result);
+    ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &result);
 
     return result;
 }

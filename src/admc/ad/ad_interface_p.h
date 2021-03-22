@@ -34,7 +34,6 @@ public:
     AdInterfacePrivate();
     ~AdInterfacePrivate();
 
-    AdInterfacePrivate *d;
     LDAP *ld;
     SMBCCTX *smbc;
     bool is_connected;
