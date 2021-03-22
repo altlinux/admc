@@ -179,10 +179,10 @@ public:
     QMenu *get_view_menu() const;
 
 signals:
-    // Emitted when a scope item is expanded or selected for
-    // the first time. User of this widget should connect to
-    // this signal and load item's children in the slot
-    // using add_item().
+    // Emitted when a dynamic scope item is expanded or
+    // selected for the first time. User of this widget
+    // should connect to this signal and load item's
+    // children in the slot using add_item().
     void item_fetched(const QModelIndex &index);
 
     // Emitted when current scope item changes.
