@@ -21,7 +21,7 @@
 #define AD_DEFINES_H
 
 /**
- * AD related enums, constants and enums
+ * AD related enums and constants.
  */
 
 enum AccountOption {

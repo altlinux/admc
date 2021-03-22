@@ -20,9 +20,11 @@
 #ifndef AD_CONFIG_H
 #define AD_CONFIG_H
 
-// Provides access to some server configuration data. All of
-// the data is loaded once at startup to avoid unnecessary
-// server requests.
+/**
+ * Provides access to some server configuration data. All of
+ * the data is loaded once at startup to avoid unnecessary
+ * server requests.
+ */
 
 #include "ad/ad_object.h"
 #include "utils.h"

@@ -29,14 +29,15 @@
 #include <QIcon>
 #include <QDateTime>
 
-// This object is returned as a result of some AdInterface
-// functions. It stores AD object's attributes and provides
-// read-only access to them. Modifying attributes can be done
-// through AdInterface.
-// Note that this object is loaded with data once and not updated
-// afterwards so it WILL become out of date after any
-// AD modification. Therefore, do not keep it around for too long.
-
+/**
+ * This object is returned as a result of some AdInterface
+ * functions. It stores AD object's attributes and provides
+ * read-only access to them. Modifying attributes can be
+ * done through AdInterface. Note that this object is loaded
+ * with data once and not updated afterwards so it WILL
+ * become out of date after any AD modification. Therefore,
+ * do not keep it around for too long.
+ */
 typedef QHash<QString, QList<QByteArray>> AdObjectAttributes;
 
 class AdObject {

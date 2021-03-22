@@ -25,7 +25,6 @@
  * modify objects.
  */
 
-#include <QObject>
 #include <QCoreApplication>
 
 #include "ad/ad_defines.h"
