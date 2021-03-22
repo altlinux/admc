@@ -20,16 +20,11 @@
 #ifndef OBJECT_MODEL_H
 #define OBJECT_MODEL_H
 
-#include <QStandardItemModel>
-#include <QList>
-
 #include "console_widget/console_widget.h"
 
-class QMimeData;
-class QModelIndex;
-class QString;
 class QStandardItem;
 class AdObject;
+template <typename T> class QList;
 
 /**
  * Some f-ns used for models that store objects.

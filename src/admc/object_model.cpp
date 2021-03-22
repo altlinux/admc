@@ -28,7 +28,7 @@
 #include "attribute_display.h"
 #include "status.h"
 
-#include <QString>
+#include <QStandardItemModel>
 
 void load_object_row(const QList<QStandardItem *> row, const AdObject &object) {
     // Load attribute columns

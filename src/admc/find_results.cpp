@@ -33,6 +33,7 @@
 #include <QDebug>
 #include <QVBoxLayout>
 #include <QMenu>
+#include <QStandardItemModel>
 
 FindResults::FindResults()
 : QWidget()

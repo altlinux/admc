@@ -35,6 +35,7 @@
 #include <QItemSelectionModel>
 #include <QDialogButtonBox>
 #include <QMessageBox>
+#include <QStandardItemModel>
 
 enum SelectDialogColumn {
     SelectDialogColumn_Name,
