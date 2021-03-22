@@ -114,8 +114,6 @@ private:
     BoolSettingSignal bools[BoolSetting_COUNT];
 
     Settings();
-
-    DISABLE_COPY_MOVE(Settings);
 };
 
 Settings *SETTINGS();

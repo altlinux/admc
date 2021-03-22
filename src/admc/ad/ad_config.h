@@ -27,7 +27,6 @@
  */
 
 #include "ad/ad_object.h"
-#include "utils.h"
 
 #include <QString>
 #include <QList>
@@ -130,7 +129,6 @@ private:
     QList<QString> add_auxiliary_classes(const QList<QString> &object_classes) const;
 
     AdConfig();
-    DISABLE_COPY_MOVE(AdConfig);
 };
 
 AdConfig *ADCONFIG();

@@ -53,7 +53,6 @@ public:
 
 private:
     Status();
-    DISABLE_COPY_MOVE(Status);
 };
 
 Status *STATUS();

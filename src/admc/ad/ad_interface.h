@@ -28,7 +28,6 @@
 #include <QCoreApplication>
 
 #include "ad/ad_defines.h"
-#include "utils.h"
 
 enum SearchScope {
     SearchScope_Object,
@@ -60,8 +59,6 @@ private:
     struct berval *cookie;
 
     friend class AdInterface;
-
-    DISABLE_COPY_MOVE(AdCookie);
 };
 
 enum AdMessageType {
@@ -165,8 +162,6 @@ private:
     QString default_error() const;
     int get_ldap_result() const;
     bool search_paged_internal(const char *filter, char **attributes, const int scope, const char *search_base, QHash<QString, AdObject> *out, AdCookie *cookie);
-
-    DISABLE_COPY_MOVE(AdInterface);
 };
 
 // Wrappers over is_connected() that also open an error
