@@ -29,8 +29,6 @@
 ToggleWidgetsDialog::ToggleWidgetsDialog(QWidget *parent)
 : QDialog(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     setWindowTitle(tr("Toggle widgets"));
 
     auto checks_layout = new QFormLayout();

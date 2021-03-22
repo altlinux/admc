@@ -29,8 +29,6 @@
 AboutDialog::AboutDialog(QWidget *parent)
 : QDialog(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
     auto version_label = new QLabel(QString(tr("Version %1")).arg(ADMC_VERSION));
     version_label->setAlignment(Qt::AlignHCenter);
 

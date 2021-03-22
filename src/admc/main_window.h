@@ -22,6 +22,7 @@
 
 #include <QMainWindow>
 
+class QAction;
 class Console;
 
 class MainWindow final : public QMainWindow {
@@ -30,16 +31,16 @@ Q_OBJECT
 public:
     MainWindow();
 
-    QAction *get_connect_action() const;
-
 protected:
     void closeEvent(QCloseEvent *event);
 
 private:
-    Console *console;
     QAction *connect_action;
+    Console *console;
 
+    void setup_menubar();
     void connect_to_server();
+    void quit();
 };
 
 #endif /* MAIN_WINDOW_H */

@@ -29,7 +29,6 @@ add_executable(admc
     select_dialog.cpp
     object_menu.cpp
     password_dialog.cpp
-    menubar.cpp
     find_results.cpp
     toggle_widgets_dialog.cpp
     filter_dialog.cpp
