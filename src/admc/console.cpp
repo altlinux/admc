@@ -33,7 +33,6 @@
 #include "filter_widget/filter_widget.h"
 #include "object_menu.h"
 #include "status.h"
-#include "object_drag.h"
 #include "rename_dialog.h"
 #include "select_container_dialog.h"
 #include "create_dialog.h"
@@ -54,6 +53,13 @@
 #include <QLabel>
 #include <QSortFilterProxyModel>
 
+enum DropType {
+    DropType_Move,
+    DropType_AddToGroup,
+    DropType_None
+};
+
+DropType get_object_drop_type(const QModelIndex &dropped, const QModelIndex &target);
 bool object_should_be_in_scope(const AdObject &object);
 
 Console::Console()
@@ -330,12 +336,16 @@ void Console::move() {
 // onto a group, users will be added to that group while OU
 // will fail to drop.
 void Console::on_items_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, bool *ok) {
-    if (dropped_list.size() == 1) {
+    if (dropped_list.size() != 1) {
+        *ok = true;
+        return;
+    } else {
         const QModelIndex dropped = dropped_list[0];
 
-        *ok = object_can_drop(dropped, target);
-    } else {
-        *ok = true;
+        const DropType drop_type = get_object_drop_type(dropped, target);
+        const bool can_drop = (drop_type != DropType_None);
+
+        *ok = can_drop;
     }
 }
 
@@ -349,7 +359,7 @@ void Console::on_items_dropped(const QList<QModelIndex> &dropped_list, const QMo
 
     for (const QModelIndex &dropped : dropped_list) {
         const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
-        const DropType drop_type = get_drop_type(dropped, target);
+        const DropType drop_type = get_object_drop_type(dropped, target);
 
         switch (drop_type) {
             case DropType_Move: {
@@ -647,5 +657,52 @@ void Console::disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> 
 
     for (auto item : items) {
         item->setDragEnabled(!cannot_move);
+    }
+}
+
+// Determine what kind of drop type is dropping this object
+// onto target. If drop type is none, then can't drop this
+// object on this target.
+DropType get_object_drop_type(const QModelIndex &dropped, const QModelIndex &target) {
+    const bool dropped_is_target =
+    [&]() {
+        const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
+        const QString target_dn = target.data(ObjectRole_DN).toString();
+
+        return (dropped_dn == target_dn);
+    }();
+
+    const QList<QString> dropped_classes = dropped.data(ObjectRole_ObjectClasses).toStringList();
+    const QList<QString> target_classes = target.data(ObjectRole_ObjectClasses).toStringList();
+
+    const bool dropped_is_user = dropped_classes.contains(CLASS_USER);
+    const bool dropped_is_group = dropped_classes.contains(CLASS_GROUP);
+    const bool target_is_group = target_classes.contains(CLASS_GROUP);
+
+    if (dropped_is_target) {
+        return DropType_None;
+    } else if (dropped_is_user && target_is_group) {
+        return DropType_AddToGroup;
+    } else if (dropped_is_group && target_is_group) {
+        return DropType_AddToGroup;
+    } else {
+        const QList<QString> dropped_superiors = ADCONFIG()->get_possible_superiors(dropped_classes);
+
+        const bool target_is_valid_superior =
+        [&]() {
+            for (const auto &object_class : dropped_superiors) {
+                if (target_classes.contains(object_class)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }();
+
+        if (target_is_valid_superior) {
+            return DropType_Move;
+        } else {
+            return DropType_None;
+        }
     }
 }

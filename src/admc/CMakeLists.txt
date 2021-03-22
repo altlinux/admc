@@ -41,7 +41,6 @@ add_executable(admc
     find_widget.cpp
     tab_widget.cpp
     console.cpp
-    object_drag.cpp
     search_thread.cpp
     help_browser.cpp
     
