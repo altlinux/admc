@@ -21,29 +21,28 @@
 #define CONSOLE_WIDGET_H
 
 /**
- * The central widget of the app through which user can
- * browse and manipulate objects. Contains two panes:
- * "scope" and "results". Scope pane contains a tree of
- * items. Scope items are loaded dynamically as the tree is
- * traversed by the user. When a scope item is first created
- * it is in "unfetched" state. When that scope item is
- * expanded or selected, it is "fetched". Fetching loads
- * scope item's children in scope tree as well as the
- * associated results. Each scope item has it's own
- * "results" which are displayed in the results pane when
- * the scope item is selected. Results can contain items
- * that represent children of the scope item in scope tree.
- * Results can also contain items that do not have an
- * equivalent in the scope tree and are associate to the
- * scope item in some other way, for example - results of a
- * search query, where the scope item represents the query.
- * Each scope item can have it's own results view with a
- * specific set of columns. Implements a navigation system
- * where a history of selected scope items is stored and you
- * can navigate through it using navigation actions. The
- * user widget of the console widget is responsible for
- * loading scope items and results, creating results views
- * and other things.
+ * The central widget of the app through which the user can
+ * browse and manipulate objects. Note that this is just a
+ * framework for the actual console and it doesn't contain
+ * any logic relating to any problem domains. This widget
+ * should be wrapped by a parent widget and the parent
+ * widget should be the one to provide domain logic by
+ * loading data into console widget and determining how it
+ * should be displayed. Contains two panes: "scope" and
+ * "results". Scope pane contains a tree of items. Each
+ * scope item has it's own "results" which are displayed in
+ * the results pane when the scope item is selected. Results
+ * can contain items that represent children of the scope
+ * item in scope tree. Results can also contain items that
+ * do not have an equivalent in the scope tree and are
+ * associated to the scope item in some other way. For
+ * example - a search query, where the scope item represents
+ * the query and results represents the results of the
+ * search. The way results are displayed can be customized
+ * by registering certain types of results views and
+ * assigning them to scope items. The user widget of the
+ * console widget is responsible for loading scope items and
+ * results, creating results views and other things.
  */
 
 #include <QWidget>
@@ -83,10 +82,16 @@ public:
     // multiple items. Scope and results items can be
     // "buddies". This is for cases where a results item
     // also represents a scope item. Buddies are deleted
-    // together. If a scope item is deleted, it’s results
-    // buddy is also deleted and vice versa. When a buddy in
-    // results is activated (double-click or select+enter),
-    // scope’s current item is changed to it’s scope buddy.
+    // together. If a scope item is deleted, it’s buddy in
+    // results is also deleted and vice versa. When a buddy
+    // in results is activated (double-click or
+    // select+enter), scope’s current item is changed to
+    // it’s scope buddy. If this is the first scope item
+    // added to console, then it is set as current scope by
+    // default. If you want another scope item at startup,
+    // use set_current_scope(). Items returned from these
+    // f-ns should be used to set text, icon and your custom
+    // data roles.
     //
     // Arguments:
     // 
@@ -95,10 +100,10 @@ public:
     // register_results().
     //
     // "scope_type" - scope items can be static or dynamic.
-    // Static scope items should be loaded at startup and
-    // never change after that. Dynamic scope items should
-    // be loaded when item_fetched() signal is emitted for
-    // that scope item. Note that dynamic scope items can be
+    // Static scope items should be loaded once and never
+    // change after that. Dynamic scope items should be
+    // loaded when item_fetched() signal is emitted for that
+    // scope item. Note that dynamic scope items can be
     // fetched again via the refresh_scope() f-n or
     // "Refresh" action of the item menu.
     //
@@ -107,23 +112,6 @@ public:
     // "parented" by a scope parent, even though they are
     // not in the scope tree. Pass empty QModelIndex as
     // parent to add a scope item as top level item.
-    //
-    // Items returned from these f-ns should be used to set
-    // text, icon and your custom data roles.
-
-    //Pass empty QModelIndex as
-    // "parent" to add scope item as top level item. Results
-    // id is the id of the results view that must have been
-    // received from a previous register_results()
-    // call. Scope items can be dynamic, see comment about
-    // ConsoleRole_ScopeIsDynamic for more info.
-    // Add new row of items to results of given scope item.
-    // Use the return row to fill it with your data.
-    //
-    // If this is the first scope item added to console,
-    // then it is set as current scope by default. If you
-    // want another scope item at startup, use
-    // set_current_scope().
     QStandardItem *add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent);
     QList<QStandardItem *> add_results_row(const QModelIndex &scope_parent);
     void add_buddy_scope_and_results(const int results_id, const ScopeNodeType scope_type, const QModelIndex &scope_parent, QStandardItem **scope_arg, QList<QStandardItem *> *results_arg);
@@ -197,6 +185,7 @@ signals:
     // using add_item().
     void item_fetched(const QModelIndex &index);
 
+    // Emitted when current scope item changes.
     void current_scope_item_changed(const QModelIndex &index);
 
     // These signals are emitted when the action or view
@@ -217,6 +206,8 @@ signals:
     // scope and results in the slot.
     void items_dropped(const QList<QModelIndex> &dropped, const QModelIndex &target);
 
+    // Emitted when a properties dialog is requested via the
+    // action menu for a scope or results item.
     void properties_requested();
 
     // Emitted when item count changes in one of results,

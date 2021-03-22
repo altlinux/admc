@@ -523,7 +523,6 @@ void Console::fetch_scope_node(const QModelIndex &index) {
     // Add items to scope and results
     //
 
-    QList<QStandardItem *> rows;
     for (const AdObject &object : search_results.values()) {
         add_object_to_console(object, index);
     }

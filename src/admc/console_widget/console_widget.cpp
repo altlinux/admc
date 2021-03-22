@@ -82,7 +82,7 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
     navigation_menu->addAction(navigate_back_action);
     navigation_menu->addAction(navigate_forward_action);
 
-    // NOTE: need to add a dummy view until a realy view is
+    // NOTE: need to add a dummy view until a real view is
     // added when a scope item is selected. If this is not
     // done and stacked widget is left empty, it's sizing is
     // set to minimum which causes an incorrect ratio in the
@@ -155,7 +155,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 {
     d = new ConsoleWidgetPrivate(this);
 
-    // NOTE: need results wrapper because layouts can't be inserted into splitter
     auto results_wrapper = new QWidget();
     auto results_layout = new QVBoxLayout();
     results_wrapper->setLayout(results_layout);
@@ -301,7 +300,7 @@ void ConsoleWidget::delete_item(const QModelIndex &index) {
     // returned because calls to non-const functions of the
     // model might invalidate the model index and possibly
     // crash your application.". Index becoming invalid is
-    // expected since we're deleting it from the modelZZ.
+    // expected since we're deleting it from the model.
 
     // Remove buddy item
     const QModelIndex buddy = get_buddy(index);
@@ -615,7 +614,6 @@ void ConsoleWidgetPrivate::on_scope_items_about_to_be_removed(const QModelIndex 
     }
 }
 
-// NOTE: this is the workaround required to know in which pane selected objects are located
 void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
     QAbstractItemView *new_focused_view = qobject_cast<QAbstractItemView *>(now);
 
