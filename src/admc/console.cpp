@@ -546,11 +546,13 @@ void Console::setup_scope_item(QStandardItem *item, const AdObject &object) {
     console_widget->set_has_properties(item->index(), true);
 
     load_object_item_data(item, object);
+    disable_drag_if_object_cant_be_moved({item}, object);
 }
 
 void Console::setup_results_row(const QList<QStandardItem *> row, const AdObject &object) {
     console_widget->set_has_properties(row[0]->index(), true);
     load_object_row(row, object);
+    disable_drag_if_object_cant_be_moved(row, object);
 }
 
 // NOTE: "containers" referenced here don't mean objects
@@ -641,5 +643,13 @@ void Console::update_console_item(const QModelIndex &index, const AdObject &obje
     const QModelIndex buddy = console_widget->get_buddy(index);
     if (buddy.isValid()) {
         update_helper(buddy);
+    }
+}
+
+void Console::disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object) {
+    const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
+
+    for (auto item : items) {
+        item->setDragEnabled(!cannot_move);
     }
 }

@@ -40,8 +40,6 @@ DropType get_drop_type(const AdObject &dropped, const AdObject &target) {
     } else if (dropped_is_group && target_is_group) {
         return DropType_AddToGroup;
     } else {
-        const bool system_flags_forbid_move = dropped.get_system_flag(SystemFlagsBit_CannotMove);
-
         const QList<QString> dropped_classes = dropped.get_strings(ATTRIBUTE_OBJECT_CLASS);
         const QList<QString> dropped_superiors = ADCONFIG()->get_possible_superiors(dropped_classes);
 
@@ -57,9 +55,7 @@ DropType get_drop_type(const AdObject &dropped, const AdObject &target) {
             return false;
         }();
 
-        if (system_flags_forbid_move) {
-            return DropType_None;
-        } else if (target_is_valid_superior) {
+        if (target_is_valid_superior) {
             return DropType_Move;
         } else {
             return DropType_None;
