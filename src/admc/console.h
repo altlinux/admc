@@ -97,6 +97,4 @@ private:
     void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
 };
 
-QString add_advanced_view_filter(const QString &filter);
-
 #endif /* CONSOLE_H */

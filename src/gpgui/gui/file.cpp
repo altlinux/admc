@@ -166,6 +166,9 @@ QByteArray file_read(const QString &path) {
         case FileLocation_Smb: {
             SMBCCTX *context = make_smbc_context();
 
+            const QByteArray path_bytes = path.toUtf8();
+            const char *path_cstr = path_bytes.constData();
+            
             const int file = smbc_open(path_cstr, O_RDONLY, 0);
 
             const bool open_success = (file > 0);
@@ -214,6 +217,9 @@ void file_write(const QString &path, const QByteArray &bytes) {
         }
         case FileLocation_Smb: {
             SMBCCTX *context = make_smbc_context();
+
+            const QByteArray path_bytes = path.toUtf8();
+            const char *path_cstr = path_bytes.constData();
 
             const int file = smbc_open(path_cstr, O_WRONLY, 0);
 

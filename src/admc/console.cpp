@@ -464,7 +464,13 @@ void Console::fetch_scope_node(const QModelIndex &index) {
         // NOTE: OR user filter with containers filter so that container objects are always shown, even if they are filtered out by user filter
         QString out = filter_OR({user_filter, is_container});
 
-        out = add_advanced_view_filter(out);
+        // Hide advanced view only" objects if advanced view
+        // setting is off
+        const bool advanced_view_OFF = !SETTINGS()->get_bool(BoolSetting_AdvancedView);
+        if (advanced_view_OFF) {
+            const QString advanced_view = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
+            out = filter_OR({out, advanced_view});
+        }
 
         // OR filter with some dev mode object classes, so that they show up no matter what when dev mode is on
         if (dev_mode) {
@@ -704,15 +710,5 @@ DropType get_object_drop_type(const QModelIndex &dropped, const QModelIndex &tar
         } else {
             return DropType_None;
         }
-    }
-}
-
-QString add_advanced_view_filter(const QString &filter) {
-    // Hide advanced view only" objects if advanced view setting is off
-    const bool advanced_view_OFF = !SETTINGS()->get_bool(BoolSetting_AdvancedView);
-    if (advanced_view_OFF) {
-        return filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
-    } else {
-        return filter;
     }
 }
