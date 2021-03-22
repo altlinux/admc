@@ -22,7 +22,6 @@
 #include "ad/ad_utils.h"
 #include "ad/ad_object.h"
 #include "ad/ad_display.h"
-#include "utils.h"
 
 #include <ldap.h>
 #include <lber.h>

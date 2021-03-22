@@ -164,21 +164,6 @@ void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view) {
     do_it();
 }
 
-const char *cstr(const QString &qstr) {
-    static QList<QByteArray> buffer;
-
-    const QByteArray bytes = qstr.toUtf8();
-    buffer.append(bytes);
-
-    // Limit buffer to 100 strings
-    if (buffer.size() > 100) {
-        buffer.removeAt(0);
-    }
-
-    // NOTE: return data of bytes in buffer NOT the temp local bytes
-    return buffer.last().constData();
-}
-
 void resize_columns(QTreeView *view, const QHash<int, double> widths) {
     for (const int col : widths.keys()) {
         const double width_ratio = widths[col];

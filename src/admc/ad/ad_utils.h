@@ -66,4 +66,10 @@ QString domain_to_domain_dn(const QString &domain);
 int bit_set(int bitmask, int bit, bool set);
 bool bit_is_set(int bitmask, int bit);
 
+// NOTE: uses a buffer that is capped at 100 strings, so
+// pointers returned from this become invalid after 99 more
+// calls. Only use this to give cstr args to C routines in
+// the same scope. Keep this far away from any recursion.
+const char *cstr(const QString &qstr);
+
 #endif /* AD_UTILS_H */

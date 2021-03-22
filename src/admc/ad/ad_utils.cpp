@@ -20,7 +20,6 @@
 #include "ad/ad_utils.h"
 #include "ad/ad_config.h"
 #include "ad/ad_display.h"
-#include "utils.h"
 
 #include <ldap.h>
 #include <krb5.h>
@@ -343,4 +342,19 @@ int bit_set(int bitmask, int bit, bool set) {
 
 bool bit_is_set(int bitmask, int bit) {
     return ((bitmask & bit) != 0);
+}
+
+const char *cstr(const QString &qstr) {
+    static QList<QByteArray> buffer;
+
+    const QByteArray bytes = qstr.toUtf8();
+    buffer.append(bytes);
+
+    // Limit buffer to 100 strings
+    if (buffer.size() > 100) {
+        buffer.removeAt(0);
+    }
+
+    // NOTE: return data of bytes in buffer NOT the temp local bytes
+    return buffer.last().constData();
 }

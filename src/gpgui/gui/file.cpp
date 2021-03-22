@@ -76,6 +76,9 @@ FileLocation get_file_location(const QString &path) {
 }
 
 QList<QString> file_get_children(const QString &path) {
+    const QByteArray path_bytes = path.toUtf8();
+    const char *path_cstr = path_bytes.constData();
+
     QList<QString> children;
 
     const FileLocation location = get_file_location(path);
@@ -96,11 +99,11 @@ QList<QString> file_get_children(const QString &path) {
     switch (location) {
         case FileLocation_Local: {
             struct stat filestat;
-            stat(cstr(path), &filestat);
+            stat(path_cstr, &filestat);
 
             const bool is_dir = S_ISDIR(filestat.st_mode);
             if (is_dir) {
-                DIR *dirp = opendir(cstr(path));
+                DIR *dirp = opendir(path_cstr);
 
                 struct dirent *child;
                 while ((child = readdir(dirp)) != NULL) {
@@ -116,11 +119,11 @@ QList<QString> file_get_children(const QString &path) {
             SMBCCTX *context = make_smbc_context();
 
             struct stat filestat;
-            smbc_stat(cstr(path), &filestat);
+            smbc_stat(path_cstr, &filestat);
 
             const bool is_dir = S_ISDIR(filestat.st_mode);
             if (is_dir) {
-                const int dirp = smbc_opendir(cstr(path));
+                const int dirp = smbc_opendir(path_cstr);
 
                 struct smbc_dirent *child;
                 while ((child = smbc_readdir(dirp)) != NULL) {
@@ -163,7 +166,7 @@ QByteArray file_read(const QString &path) {
         case FileLocation_Smb: {
             SMBCCTX *context = make_smbc_context();
 
-            const int file = smbc_open(cstr(path), O_RDONLY, 0);
+            const int file = smbc_open(path_cstr, O_RDONLY, 0);
 
             const bool open_success = (file > 0);
             if (open_success) {
@@ -212,7 +215,7 @@ void file_write(const QString &path, const QByteArray &bytes) {
         case FileLocation_Smb: {
             SMBCCTX *context = make_smbc_context();
 
-            const int file = smbc_open(cstr(path), O_WRONLY, 0);
+            const int file = smbc_open(path_cstr, O_WRONLY, 0);
 
             const bool open_success = (file > 0);
             if (open_success) {
