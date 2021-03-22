@@ -82,9 +82,6 @@ bool ManagerEdit::apply(AdInterface &ad, const QString &dn) const {
 void ManagerEdit::on_change() {
     auto dialog = new SelectDialog({CLASS_USER, CLASS_CONTACT}, SelectDialogMultiSelection_No, edit);
 
-    const QString title = QString(tr("Select manager"));
-    dialog->setWindowTitle(title);
-
     connect(
         dialog, &SelectDialog::accepted,
         [this, dialog]() {

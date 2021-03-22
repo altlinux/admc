@@ -334,16 +334,6 @@ void MembershipTab::on_add_button() {
 
     auto dialog = new SelectDialog(classes, SelectDialogMultiSelection_Yes, this);
 
-    const QString title =
-    [=]() {
-        switch (type) {
-            case MembershipTabType_Members: return tr("Add user");
-            case MembershipTabType_MemberOf: return tr("Add group");
-        }
-        return QString();
-    }();
-    dialog->setWindowTitle(title);
-
     connect(
         dialog, &SelectDialog::accepted,
         [this, dialog]() {

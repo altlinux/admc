@@ -51,6 +51,7 @@ SelectDialog::SelectDialog(QList<QString> classes_arg, SelectDialogMultiSelectio
     multi_selection = multi_selection_arg;
 
     setAttribute(Qt::WA_DeleteOnClose);
+    setWindowTitle("Select dialog");
 
     resize(400, 300);
 

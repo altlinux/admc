@@ -44,7 +44,8 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-
+    setWindowTitle(tr("Select a container"));
+    
     AdInterface ad;
     if (ad_failed(ad)) {
         close();

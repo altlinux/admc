@@ -40,21 +40,11 @@
 #include <QDebug>
 #include <QCoreApplication>
 
-// NOTE: for dialogs opened from this menu, the parent of the menu is passed NOT the menu itself, because the menu closes (and gets deleted if this is the context menu) when dialog opens.
+// NOTE: for dialogs opened from this menu, the parent of
+// the menu is passed NOT the menu itself, because the menu
+// closes (and gets deleted if this is the context menu)
+// when dialog opens.
 
-QString targets_display_string(const QList<QString> targets);
-
-// TODO: console_added_actions is a temporary band-aid. Also
-// need to fix action order afterwards. The problem here is
-// that console has it's object actions and find results has
-// it's own and there is some overlap where they can be
-// shared. Share whatever actions can be shared.
-
-// NOTE: construct right before showing menu instead of in
-// load_targets() because target's attributes might change
-// in the span of time when target is selected and menu is
-// opened. Menu needs most up-to-date target attributes to
-// construct actions.
 QAction *add_object_actions_to_menu(QMenu *menu, const QList<QModelIndex> &selected_indexes, QWidget *parent, const bool include_find_action, const ObjectMenuData &data) {
     // Get info about selected objects from view
     const QList<QString> targets =
@@ -308,7 +298,7 @@ void properties(const QString &target, QWidget *parent) {
 }
 
 void delete_object(const QList<QString> targets, QWidget *parent) {
-    const QString text = QString(QCoreApplication::translate("object_menu", "Are you sure you want to delete %1?")).arg(targets_display_string(targets));
+    const QString text = QString(QCoreApplication::translate("object_menu", "Are you sure you want to delete this object?"));
     const bool confirmed = confirmation_dialog(text, parent);
 
     if (confirmed) {
@@ -326,9 +316,6 @@ void delete_object(const QList<QString> targets, QWidget *parent) {
 
 void move(const QList<QString> targets, QWidget *parent) {
     auto dialog = new SelectContainerDialog(parent);
-
-    const QString title = QString(QCoreApplication::translate("object_menu", "Move %1")).arg(targets_display_string(targets));
-    dialog->setWindowTitle(title);
 
     QObject::connect(
         dialog, &SelectContainerDialog::accepted,
@@ -351,9 +338,6 @@ void move(const QList<QString> targets, QWidget *parent) {
 // TODO: aduc also includes "built-in security principals" which equates to groups that are located in builtin container. Those objects are otherwise completely identical to other group objects, same class and everything. Adding this would be convenient but also a massive PITA because that would mean making select classes widget somehow have mixed options for classes and whether parent object is the Builtin
 void add_to_group(const QList<QString> targets, QWidget *parent) {
     auto dialog = new SelectDialog({CLASS_GROUP}, SelectDialogMultiSelection_Yes, parent);
-
-    const QString title = QString(QCoreApplication::translate("object_menu", "Add %1 to group")).arg(targets_display_string(targets));
-    dialog->setWindowTitle(title);
 
     QObject::connect(
         dialog, &SelectDialog::accepted,
@@ -417,21 +401,8 @@ void find(const QString &target, QWidget *parent) {
     find_dialog->open();
 }
 
-QString targets_display_string(const QList<QString> targets) {
-    if (targets.size() == 1) {
-        const QString dn = targets[0];
-        const QString name = dn_get_name(dn);
-        return QString(QCoreApplication::translate("object_menu", "object \"%1\"")).arg(name);
-    } else {
-        return QCoreApplication::translate("object_menu", "multiple objects");
-    }
-}
-
 void move_object(const QList<QString> targets, QWidget *parent) {
     auto dialog = new SelectContainerDialog(parent);
-
-    const QString title = QString(QCoreApplication::translate("object_menu", "Move %1")).arg(targets_display_string(targets));
-    dialog->setWindowTitle(title);
 
     QObject::connect(
         dialog, &SelectContainerDialog::accepted,
