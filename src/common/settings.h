@@ -31,8 +31,6 @@
 #include <QObject>
 #include <QSettings>
 
-#include "utils.h"
-
 class QAction;
 class QSettings;
 class QVariant;

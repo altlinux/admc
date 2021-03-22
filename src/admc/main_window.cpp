@@ -87,7 +87,8 @@ void MainWindow::connect_to_server() {
     AdInterface ad;
     if (ad_connected(ad)) {
         // TODO: check for load failure
-        ADCONFIG()->load(ad);
+        const QLocale locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
+        ADCONFIG()->load(ad, locale);
 
         STATUS()->display_ad_messages(ad, this);
 

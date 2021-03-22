@@ -76,7 +76,7 @@ class AdConfig {
 public:
     static AdConfig *instance();
 
-    void load(AdInterface &ad);
+    void load(AdInterface &ad, const QLocale &locale);
 
     QString domain() const;
     QString domain_head() const;

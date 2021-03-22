@@ -21,8 +21,6 @@
 #include "ad/ad_interface.h"
 #include "ad/ad_object.h"
 #include "ad/ad_utils.h"
-#include "settings.h"
-#include "utils.h"
 #include "filter.h"
 
 #include <QLocale>
@@ -68,7 +66,7 @@ AdConfig::AdConfig() {
 
 }
 
-void AdConfig::load(AdInterface &ad) {
+void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     m_domain = get_default_domain_from_krb5();
     m_domain_head = domain_to_domain_dn(m_domain);
 
@@ -82,12 +80,10 @@ void AdConfig::load(AdInterface &ad) {
     class_schemas.clear();
 
     const QString locale_dir =
-    [this]() {
+    [this, locale]() {
         const QString locale_code =
-        []() {
-            const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
-
-            if (saved_locale.language() == QLocale::Russian) {
+        [locale]() {
+            if (locale.language() == QLocale::Russian) {
                 return "419";
             } else {
                         // English
