@@ -37,7 +37,7 @@ class AdObject;
 
 enum ObjectRole {
     ObjectRole_DN = ConsoleRole_LAST + 1,
-    ObjectRole_AdObject = ConsoleRole_LAST + 2,
+    ObjectRole_ObjectClasses = ConsoleRole_LAST + 2,
     ObjectRole_LAST = ConsoleRole_LAST + 3,
 };
 

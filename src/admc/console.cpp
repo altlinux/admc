@@ -327,23 +327,34 @@ void Console::move() {
     dialog->open();
 }
 
-void Console::on_items_can_drop(const QList<QModelIndex> &dropped, const QModelIndex &target, bool *ok) {
+void Console::on_items_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, bool *ok) {
     // NOTE: only check if object can be dropped if dropping a single object, because when dropping multiple objects it is ok for some objects to successfully drop and some to fail. For example, if you drop users together with OU's onto a group, users will be added to that group while OU will fail to drop.
-    if (dropped.size() == 1) {
-        const QModelIndex dropped_index = dropped[0];
-        const AdObject dropped_object = dropped_index.data(ObjectRole_AdObject).value<AdObject>();
-        const AdObject target_object = target.data(ObjectRole_AdObject).value<AdObject>();
+    if (dropped_list.size() == 1) {
+        const QModelIndex dropped = dropped_list[0];
 
-        *ok = object_can_drop(dropped_object, target_object);
+        const bool dropped_is_target =
+        [&]() {
+            const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
+            const QString target_dn = target.data(ObjectRole_DN).toString();
+
+            return (dropped_dn == target_dn);
+        }();
+
+        if (dropped_is_target) {
+            *ok = false;
+        } else {
+            const QList<QString> dropped_classes = dropped.data(ObjectRole_ObjectClasses).toStringList();
+            const QList<QString> target_classes = target.data(ObjectRole_ObjectClasses).toStringList();
+
+            *ok = object_can_drop(dropped_classes, target_classes);
+        }
     } else {
         *ok = true;
     }
 }
 
 void Console::on_items_dropped(const QList<QModelIndex> &dropped, const QModelIndex &target) {
-    // NOTE: using sibling at 0th column because we store
-    // item roles in the first item (first column)
-    const AdObject target_object = target.data(ObjectRole_AdObject).value<AdObject>();
+    const QString target_dn = target.data(ObjectRole_DN).toString();
 
     AdInterface ad;
     if (ad_failed(ad)) {
@@ -351,18 +362,20 @@ void Console::on_items_dropped(const QList<QModelIndex> &dropped, const QModelIn
     }
 
     for (const QModelIndex &index : dropped) {
-        const AdObject dropped_object = index.data(ObjectRole_AdObject).value<AdObject>();
+        const QString dropped_dn = index.data(ObjectRole_DN).toString();
+        const QList<QString> dropped_classes = index.data(ObjectRole_ObjectClasses).toStringList();
+        const QList<QString> target_classes = target.data(ObjectRole_ObjectClasses).toStringList();
 
-        const DropType drop_type = get_drop_type(dropped_object, target_object);
+        const DropType drop_type = get_drop_type(dropped_classes, target_classes);
 
         switch (drop_type) {
             case DropType_Move: {
-                move_object_in_console(ad, index, target_object.get_dn(), target);
+                move_object_in_console(ad, index, target_dn, target);
 
                 break;
             }
             case DropType_AddToGroup: {
-                ad.group_add_member(target_object.get_dn(), dropped_object.get_dn());
+                ad.group_add_member(target_dn, dropped_dn);
 
                 break;
             }

@@ -20,8 +20,8 @@
 #ifndef OBJECT_DRAG_H
 #define OBJECT_DRAG_H
 
-class AdInterface;
-class AdObject;
+class QString;
+template <typename T> class QList;
 
 enum DropType {
     DropType_Move,
@@ -30,8 +30,7 @@ enum DropType {
 };
 
 // TODO: probably just inline this stuff
-bool object_can_drop(const AdObject &dropped, const AdObject &target);
-bool object_drop(AdInterface &ad, const AdObject &dropped, const AdObject &target);
-DropType get_drop_type(const AdObject &dropped, const AdObject &target);
+bool object_can_drop(const QList<QString> &dropped_classes, const QList<QString> &target_classes);
+DropType get_drop_type(const QList<QString> &dropped_classes, const QList<QString> &target_classes);
 
 #endif /* OBJECT_DRAG_H */

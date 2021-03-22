@@ -72,7 +72,9 @@ void load_object_item_data(QStandardItem *item, const AdObject &object) {
     item->setIcon(icon);
     
     item->setData(object.get_dn(), ObjectRole_DN);
-    item->setData(QVariant::fromValue(object), ObjectRole_AdObject);
+
+    const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
+    item->setData(QVariant(object_classes), ObjectRole_ObjectClasses);
 }
 
 QList<QString> object_model_header_labels() {

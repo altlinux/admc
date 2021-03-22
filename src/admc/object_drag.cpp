@@ -26,26 +26,20 @@
 // Determine what kind of drop type is dropping this object
 // onto target. If drop type is none, then can't drop this
 // object on this target.
-DropType get_drop_type(const AdObject &dropped, const AdObject &target) {
-    if (dropped.get_dn() == target.get_dn()) {
-        return DropType_None;
-    }
-
-    const bool dropped_is_user = dropped.contains_class(CLASS_USER);
-    const bool dropped_is_group = dropped.contains_class(CLASS_GROUP);
-    const bool target_is_group = target.contains_class(CLASS_GROUP);
+DropType get_drop_type(const QList<QString> &dropped_classes, const QList<QString> &target_classes) {
+    const bool dropped_is_user = dropped_classes.contains(CLASS_USER);
+    const bool dropped_is_group = dropped_classes.contains(CLASS_GROUP);
+    const bool target_is_group = target_classes.contains(CLASS_GROUP);
 
     if (dropped_is_user && target_is_group) {
         return DropType_AddToGroup;
     } else if (dropped_is_group && target_is_group) {
         return DropType_AddToGroup;
     } else {
-        const QList<QString> dropped_classes = dropped.get_strings(ATTRIBUTE_OBJECT_CLASS);
         const QList<QString> dropped_superiors = ADCONFIG()->get_possible_superiors(dropped_classes);
 
         const bool target_is_valid_superior =
-        [target, dropped_superiors]() {
-            const QList<QString> target_classes = target.get_strings(ATTRIBUTE_OBJECT_CLASS);
+        [&]() {
             for (const auto &object_class : dropped_superiors) {
                 if (target_classes.contains(object_class)) {
                     return true;
@@ -63,8 +57,8 @@ DropType get_drop_type(const AdObject &dropped, const AdObject &target) {
     }
 }
 
-bool object_can_drop(const AdObject &dropped, const AdObject &target) {
-    const DropType drop_type = get_drop_type(dropped, target);
+bool object_can_drop(const QList<QString> &dropped_classes, const QList<QString> &target_classes) {
+    const DropType drop_type = get_drop_type(dropped_classes, target_classes);
 
     if (drop_type == DropType_None) {
         return false;

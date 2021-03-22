@@ -75,10 +75,10 @@ QAction *add_object_actions_to_menu(QMenu *menu, const QList<QModelIndex> &selec
         QSet<QString> out;
         
         for (const QModelIndex index : selected_indexes) {
-            const AdObject object = index.data(ObjectRole_AdObject).value<AdObject>();
-            const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
+            const QList<QString> object_classes = index.data(ObjectRole_ObjectClasses).toStringList();
+            const QString main_object_class = object_classes.last();
 
-            out.insert(object_class);
+            out.insert(main_object_class);
         }
 
         return out;
