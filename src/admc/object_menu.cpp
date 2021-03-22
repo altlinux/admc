@@ -30,7 +30,7 @@
 #include "select_container_dialog.h"
 #include "utils.h"
 #include "find_dialog.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 #include "status.h"
 #include "object_model.h"
 

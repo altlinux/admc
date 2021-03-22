@@ -31,8 +31,6 @@
 #include <QObject>
 #include <QSettings>
 
-#include "utils.h"
-
 class QAction;
 class QSettings;
 class QVariant;
@@ -114,8 +112,6 @@ private:
     BoolSettingSignal bools[BoolSetting_COUNT];
 
     Settings();
-
-    DISABLE_COPY_MOVE(Settings);
 };
 
 Settings *SETTINGS();

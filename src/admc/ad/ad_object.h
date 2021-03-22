@@ -20,15 +20,6 @@
 #ifndef AD_OBJECT_H
 #define AD_OBJECT_H
 
-#include "ad/ad_defines.h"
-
-#include <QHash>
-#include <QString>
-#include <QList>
-#include <QByteArray>
-#include <QIcon>
-#include <QDateTime>
-
 /**
  * This object is returned as a result of some AdInterface
  * functions. It stores AD object's attributes and provides
@@ -38,17 +29,27 @@
  * become out of date after any AD modification. Therefore,
  * do not keep it around for too long.
  */
-typedef QHash<QString, QList<QByteArray>> AdObjectAttributes;
+
+#include "ad/ad_defines.h"
+
+class AdObjectPrivate;
+class QDateTime;
+class QIcon;
+class QByteArray;
+class QString;
+template <typename T> class QList;
+template <typename K, typename V> class QHash;
 
 class AdObject {
 
 public:
     AdObject();
+    ~AdObject();
     
-    void load(const QString &dn_arg, const AdObjectAttributes &attributes_data_arg);
+    void load(const QString &dn_arg, const QHash<QString, QList<QByteArray>> &attributes_data_arg);
 
     QString get_dn() const;
-    AdObjectAttributes get_attributes_data() const;
+    QHash<QString, QList<QByteArray>> get_attributes_data() const;
     bool is_empty() const;
     bool contains(const QString &attribute) const;
     QList<QString> attributes() const;
@@ -80,8 +81,7 @@ public:
     QIcon get_icon() const;
 
 private:
-    QString dn;
-    AdObjectAttributes attributes_data;
+    AdObjectPrivate *d;
 };
 
 #endif /* AD_OBJECT_H */

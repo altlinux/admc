@@ -28,7 +28,13 @@
 #include <QCoreApplication>
 
 #include "ad/ad_defines.h"
-#include "utils.h"
+
+class AdInterfacePrivate;
+class QString;
+class QByteArray;
+class QDateTime;
+class AdObject;
+template <typename T> class QList;
 
 enum SearchScope {
     SearchScope_Object,
@@ -41,13 +47,18 @@ enum SearchScope {
     SearchScope_All,
 };
 
-class QString;
-class QByteArray;
-class QDateTime;
-class AdObject;
-template <typename T> class QList;
-typedef struct ldap LDAP;
-typedef struct _SMBCCTX SMBCCTX;
+enum AdMessageType {
+    AdMessageType_Success,
+    AdMessageType_Error
+};
+
+// Some f-ns in this class reuse other f-ns and this
+// enum is used to turn off status messages of child
+// f-ns which are otherwise displayed by default.
+enum DoStatusMsg {
+    DoStatusMsg_Yes,
+    DoStatusMsg_No
+};
 
 class AdCookie {
 public:
@@ -60,13 +71,7 @@ private:
     struct berval *cookie;
 
     friend class AdInterface;
-
-    DISABLE_COPY_MOVE(AdCookie);
-};
-
-enum AdMessageType {
-    AdMessageType_Success,
-    AdMessageType_Error
+    friend class AdInterfacePrivate;
 };
 
 class AdMessage {
@@ -84,15 +89,6 @@ private:
 
 class AdInterface {
 Q_DECLARE_TR_FUNCTIONS(AdInterface)
-
-private:
-    // Some f-ns in this class reuse other f-ns and this
-    // enum is used to turn off status messages of child
-    // f-ns which are otherwise displayed by default.
-    enum DoStatusMsg {
-        DoStatusMsg_Yes,
-        DoStatusMsg_No
-    };
 
 public:
     AdInterface();
@@ -152,21 +148,7 @@ public:
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
 private:
-    LDAP *ld;
-    SMBCCTX *smbc;
-    bool m_is_connected;
-    QString domain;
-    QString domain_head;
-    QString host;
-    QList<AdMessage> m_messages;
-
-    void success_status_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);
-    void error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg = DoStatusMsg_Yes);
-    QString default_error() const;
-    int get_ldap_result() const;
-    bool search_paged_internal(const char *filter, char **attributes, const int scope, const char *search_base, QHash<QString, AdObject> *out, AdCookie *cookie);
-
-    DISABLE_COPY_MOVE(AdInterface);
+    AdInterfacePrivate *d;
 };
 
 // Wrappers over is_connected() that also open an error

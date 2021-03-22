@@ -19,7 +19,7 @@
 
 #include "filter_widget/filter_builder.h"
 #include "ad/ad_config.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 
 #include <QLineEdit>
 #include <QComboBox>

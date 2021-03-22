@@ -20,7 +20,7 @@
 #include "edits/string_edit.h"
 
 #include "utils.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 #include "ad/ad_interface.h"
 #include "ad/ad_utils.h"
 #include "ad/ad_config.h"

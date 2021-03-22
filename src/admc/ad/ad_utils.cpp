@@ -20,7 +20,6 @@
 #include "ad/ad_utils.h"
 #include "ad/ad_config.h"
 #include "ad/ad_display.h"
-#include "utils.h"
 
 #include <ldap.h>
 #include <krb5.h>
@@ -331,4 +330,31 @@ QString domain_to_domain_dn(const QString &domain) {
     domain_dn = domain_dn.replace(".", ",DC=");
 
     return domain_dn;
+}
+
+int bit_set(int bitmask, int bit, bool set) {
+    if (set) {
+        return bitmask | bit;
+    } else {
+        return bitmask & ~bit;
+    }
+}
+
+bool bit_is_set(int bitmask, int bit) {
+    return ((bitmask & bit) != 0);
+}
+
+const char *cstr(const QString &qstr) {
+    static QList<QByteArray> buffer;
+
+    const QByteArray bytes = qstr.toUtf8();
+    buffer.append(bytes);
+
+    // Limit buffer to 100 strings
+    if (buffer.size() > 100) {
+        buffer.removeAt(0);
+    }
+
+    // NOTE: return data of bytes in buffer NOT the temp local bytes
+    return buffer.last().constData();
 }

@@ -17,44 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STATUS_H
-#define STATUS_H
+#ifndef AD_OBJECT_P_H
+#define AD_OBJECT_P_H
 
-/**
- * Collects status messages and displays them in a status
- * bar and status log. Can also display a log of recent
- * error messages in a dialog.
- */
+#include <QString>
+#include <QHash>
+#include <QList>
+#include <QByteArray>
 
-#include "utils.h"
+class AdObjectPrivate {
 
-class QTextEdit;
-class QStatusBar;
-class QString;
-class QWidget;
-class AdInterface;
-
-enum StatusType {
-    StatusType_Success,
-    StatusType_Error
+public:
+    AdObjectPrivate();
+    
+    QString dn;
+    QHash<QString, QList<QByteArray>> attributes_data;
 };
 
-class Status {
-
-public:   
-    QStatusBar *status_bar;
-    QTextEdit *status_log;
-
-    static Status *instance();
-
-    void add_message(const QString &msg, const StatusType &type);
-
-    void display_ad_messages(const AdInterface &ad, QWidget *parent);
-
-private:
-    Status();
-};
-
-Status *STATUS();
-
-#endif /* STATUS_BAR_H */
+#endif /* AD_OBJECT_P_H */

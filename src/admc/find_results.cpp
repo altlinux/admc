@@ -21,8 +21,9 @@
 #include "object_menu.h"
 #include "properties_dialog.h"
 #include "utils.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 #include "ad/ad_config.h"
+#include "ad/ad_object.h"
 #include "object_model.h"
 #include "settings.h"
 #include "console_widget/customize_columns_dialog.h"
@@ -34,6 +35,7 @@
 #include <QVBoxLayout>
 #include <QMenu>
 #include <QStandardItemModel>
+#include <QHash>
 
 FindResults::FindResults()
 : QWidget()

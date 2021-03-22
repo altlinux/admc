@@ -18,12 +18,12 @@
  */
 
 #include "ad/ad_config.h"
+#include "ad/ad_config_p.h"
+
 #include "ad/ad_interface.h"
 #include "ad/ad_object.h"
 #include "ad/ad_utils.h"
-#include "settings.h"
-#include "utils.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 
 #include <QLocale>
 #include <QDebug>
@@ -57,7 +57,9 @@
 
 #define FLAG_ATTR_IS_CONSTRUCTED        0x00000004 
 
-QList<QString> add_auxiliary_classes(const QList<QString> &object_classes);
+AdConfigPrivate::AdConfigPrivate() {
+
+}
 
 AdConfig *AdConfig::instance() {
     static AdConfig m_instance;
@@ -65,29 +67,31 @@ AdConfig *AdConfig::instance() {
 }
 
 AdConfig::AdConfig() {
-
+    d = new AdConfigPrivate();
 }
 
-void AdConfig::load(AdInterface &ad) {
-    m_domain = get_default_domain_from_krb5();
-    m_domain_head = domain_to_domain_dn(m_domain);
+AdConfig::~AdConfig() {
+    delete d;
+}
 
-    filter_containers.clear();
-    columns.clear();
-    column_display_names.clear();
-    class_display_names.clear();
-    find_attributes.clear();
-    attribute_display_names.clear();
-    attribute_schemas.clear();
-    class_schemas.clear();
+void AdConfig::load(AdInterface &ad, const QLocale &locale) {
+    d->domain = get_default_domain_from_krb5();
+    d->domain_head = domain_to_domain_dn(d->domain);
+
+    d->filter_containers.clear();
+    d->columns.clear();
+    d->column_display_names.clear();
+    d->class_display_names.clear();
+    d->find_attributes.clear();
+    d->attribute_display_names.clear();
+    d->attribute_schemas.clear();
+    d->class_schemas.clear();
 
     const QString locale_dir =
-    [this]() {
+    [this, locale]() {
         const QString locale_code =
-        []() {
-            const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
-
-            if (saved_locale.language() == QLocale::Russian) {
+        [locale]() {
+            if (locale.language() == QLocale::Russian) {
                 return "419";
             } else {
                         // English
@@ -117,7 +121,7 @@ void AdConfig::load(AdInterface &ad) {
 
         for (const AdObject &object : search_results.values()) {
             const QString attribute = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
-            attribute_schemas[attribute] = object;
+            d->attribute_schemas[attribute] = object;
         }
     }
 
@@ -141,7 +145,7 @@ void AdConfig::load(AdInterface &ad) {
 
         for (const AdObject &object : search_results.values()) {
             const QString object_class = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
-            class_schemas[object_class] = object;
+            d->class_schemas[object_class] = object;
         }
     }
 
@@ -173,7 +177,7 @@ void AdConfig::load(AdInterface &ad) {
             }();
 
             if (object.contains(ATTRIBUTE_CLASS_DISPLAY_NAME)) {
-                class_display_names[object_class] = object.get_string(ATTRIBUTE_CLASS_DISPLAY_NAME);
+                d->class_display_names[object_class] = object.get_string(ATTRIBUTE_CLASS_DISPLAY_NAME);
             }
 
             if (object.contains(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES)) {
@@ -184,10 +188,10 @@ void AdConfig::load(AdInterface &ad) {
                     const QString attribute_name = split[0];
                     const QString display_name = split[1];
 
-                    attribute_display_names[object_class][attribute_name] = display_name;
+                    d->attribute_display_names[object_class][attribute_name] = display_name;
                 }
 
-                find_attributes[object_class] =
+                d->find_attributes[object_class] =
                 [object_class, display_names]() {
                     QList<QString> out;
 
@@ -231,15 +235,15 @@ void AdConfig::load(AdInterface &ad) {
             const QString attribute = column_split[0];
             const QString attribute_display_name = column_split[1];
 
-            columns.append(attribute);
-            column_display_names[attribute] = attribute_display_name;
+            d->columns.append(attribute);
+            d->column_display_names[attribute] = attribute_display_name;
         }
 
         // Insert some columns manually
         auto add_custom =
         [=](const Attribute &attribute, const QString &display_name) {
-            columns.prepend(attribute);
-            column_display_names[attribute] = display_name;
+            d->columns.prepend(attribute);
+            d->column_display_names[attribute] = display_name;
         };
 
         add_custom(ATTRIBUTE_DN, QCoreApplication::translate("AdConfig", "Distinguished name"));
@@ -248,7 +252,7 @@ void AdConfig::load(AdInterface &ad) {
         add_custom(ATTRIBUTE_NAME, QCoreApplication::translate("AdConfig", "Name"));
     }
 
-    filter_containers =
+    d->filter_containers =
     [&] {
         QList<QString> out;
 
@@ -288,15 +292,15 @@ void AdConfig::load(AdInterface &ad) {
 }
 
 QString AdConfig::domain() const {
-    return m_domain;
+    return d->domain;
 }
 
 QString AdConfig::domain_head() const {
-    return m_domain_head;
+    return d->domain_head;
 }
 
 QString AdConfig::configuration_dn() const {
-    return QString("CN=Configuration,%1").arg(m_domain_head);
+    return QString("CN=Configuration,%1").arg(d->domain_head);
 }
 
 QString AdConfig::schema_dn() const {
@@ -308,8 +312,8 @@ AdConfig *ADCONFIG() {
 }
 
 QString AdConfig::get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const {
-    if (attribute_display_names.contains(objectClass) && attribute_display_names[objectClass].contains(attribute)) {
-        const QString display_name = attribute_display_names[objectClass][attribute];
+    if (d->attribute_display_names.contains(objectClass) && d->attribute_display_names[objectClass].contains(attribute)) {
+        const QString display_name = d->attribute_display_names[objectClass][attribute];
 
         return display_name;
     }
@@ -335,34 +339,34 @@ QString AdConfig::get_attribute_display_name(const Attribute &attribute, const O
 }
 
 QString AdConfig::get_class_display_name(const QString &objectClass) const {
-    return class_display_names.value(objectClass, objectClass);
+    return d->class_display_names.value(objectClass, objectClass);
 }
 
 QList<QString> AdConfig::get_columns() const {
-    return columns;
+    return d->columns;
 }
 
 QString AdConfig::get_column_display_name(const Attribute &attribute) const {
-    return column_display_names.value(attribute, attribute);
+    return d->column_display_names.value(attribute, attribute);
 }
 
 int AdConfig::get_column_index(const QString &attribute) const {
-    if (!columns.contains(attribute)) {
+    if (!d->columns.contains(attribute)) {
         qWarning() << "ADCONFIG columns missing attribute:" << attribute;
     }
 
-    return columns.indexOf(attribute);
+    return d->columns.indexOf(attribute);
 }
 
 QList<QString> AdConfig::get_filter_containers() const {
-    return filter_containers;
+    return d->filter_containers;
 }
 
 QList<QString> AdConfig::get_possible_superiors(const QList<ObjectClass> &object_classes) const {
     QList<QString> out;
 
     for (const QString &object_class : object_classes) {
-        const AdObject schema = class_schemas[object_class];
+        const AdObject schema = d->class_schemas[object_class];
         out += schema.get_strings(ATTRIBUTE_POSSIBLE_SUPERIORS);
         out += schema.get_strings(ATTRIBUTE_SYSTEM_POSSIBLE_SUPERIORS);
     }
@@ -373,12 +377,12 @@ QList<QString> AdConfig::get_possible_superiors(const QList<ObjectClass> &object
 }
 
 QList<QString> AdConfig::get_optional_attributes(const QList<QString> &object_classes) const {
-    const QList<QString> all_classes = add_auxiliary_classes(object_classes);
+    const QList<QString> all_classes = d->add_auxiliary_classes(object_classes);
 
     QList<QString> attributes;
 
     for (const auto &object_class : all_classes) {
-        const AdObject schema = class_schemas[object_class];
+        const AdObject schema = d->class_schemas[object_class];
         attributes += schema.get_strings(ATTRIBUTE_MAY_CONTAIN);
         attributes += schema.get_strings(ATTRIBUTE_SYSTEM_MAY_CONTAIN);
     }
@@ -389,12 +393,12 @@ QList<QString> AdConfig::get_optional_attributes(const QList<QString> &object_cl
 }
 
 QList<QString> AdConfig::get_mandatory_attributes(const QList<QString> &object_classes) const {
-    const QList<QString> all_classes = add_auxiliary_classes(object_classes);
+    const QList<QString> all_classes = d->add_auxiliary_classes(object_classes);
 
     QList<QString> attributes;
 
     for (const auto &object_class : all_classes) {
-        const AdObject schema = class_schemas[object_class];
+        const AdObject schema = d->class_schemas[object_class];
         attributes += schema.get_strings(ATTRIBUTE_MUST_CONTAIN);
         attributes += schema.get_strings(ATTRIBUTE_SYSTEM_MUST_CONTAIN);
     }
@@ -405,7 +409,7 @@ QList<QString> AdConfig::get_mandatory_attributes(const QList<QString> &object_c
 }
 
 QList<QString> AdConfig::get_find_attributes(const QString &object_class) const {
-    return find_attributes.value(object_class, QList<QString>());
+    return d->find_attributes.value(object_class, QList<QString>());
 }
 
 AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
@@ -451,7 +455,7 @@ AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
         {"2.5.5.1", {{"127", AttributeType_DSDN}}},
     };
 
-    const AdObject schema = attribute_schemas[attribute];
+    const AdObject schema = d->attribute_schemas[attribute];
 
     const QString attribute_syntax = schema.get_string(ATTRIBUTE_ATTRIBUTE_SYNTAX);
     const QString om_syntax = schema.get_string(ATTRIBUTE_OM_SYNTAX);
@@ -503,20 +507,20 @@ bool AdConfig::get_attribute_is_number(const QString &attribute) const {
 }
 
 bool AdConfig::get_attribute_is_single_valued(const QString &attribute) const {
-    return attribute_schemas[attribute].get_bool(ATTRIBUTE_IS_SINGLE_VALUED);
+    return d->attribute_schemas[attribute].get_bool(ATTRIBUTE_IS_SINGLE_VALUED);
 }
 
 bool AdConfig::get_attribute_is_system_only(const QString &attribute) const {
-    return attribute_schemas[attribute].get_bool(ATTRIBUTE_SYSTEM_ONLY);
+    return d->attribute_schemas[attribute].get_bool(ATTRIBUTE_SYSTEM_ONLY);
 }
 
 int AdConfig::get_attribute_range_upper(const QString &attribute) const {
-    return attribute_schemas[attribute].get_int(ATTRIBUTE_RANGE_UPPER);
+    return d->attribute_schemas[attribute].get_int(ATTRIBUTE_RANGE_UPPER);
 }
 
 bool AdConfig::get_attribute_is_backlink(const QString &attribute) const {
-    if (attribute_schemas[attribute].contains(ATTRIBUTE_LINK_ID)) {
-        const int link_id = attribute_schemas[attribute].get_int(ATTRIBUTE_LINK_ID);
+    if (d->attribute_schemas[attribute].contains(ATTRIBUTE_LINK_ID)) {
+        const int link_id = d->attribute_schemas[attribute].get_int(ATTRIBUTE_LINK_ID);
         const bool link_id_is_odd = (link_id % 2 != 0);
 
         return link_id_is_odd;
@@ -526,7 +530,7 @@ bool AdConfig::get_attribute_is_backlink(const QString &attribute) const {
 }
 
 bool AdConfig::get_attribute_is_constructed(const QString &attribute) const {
-    const int system_flags = attribute_schemas[attribute].get_int(ATTRIBUTE_SYSTEM_FLAGS);
+    const int system_flags = d->attribute_schemas[attribute].get_int(ATTRIBUTE_SYSTEM_FLAGS);
     return bit_is_set(system_flags, FLAG_ATTR_IS_CONSTRUCTED);   
 }
 
@@ -537,7 +541,7 @@ void AdConfig::limit_edit(QLineEdit *edit, const QString &attribute) {
     }
 }
 
-QList<QString> AdConfig::add_auxiliary_classes(const QList<QString> &object_classes) const {
+QList<QString> AdConfigPrivate::add_auxiliary_classes(const QList<QString> &object_classes) const {
     QList<QString> out;
 
     out += object_classes;

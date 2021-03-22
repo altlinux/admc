@@ -19,12 +19,14 @@
 
 #include "select_container_dialog.h"
 
-#include "utils.h"
 #include "ad/ad_interface.h"
 #include "ad/ad_config.h"
 #include "ad/ad_defines.h"
 #include "ad/ad_utils.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
+#include "ad/ad_object.h"
+#include "settings.h"
+#include "utils.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -127,9 +129,15 @@ void SelectContainerDialog::fetch_node(const QModelIndex &index) {
 
     const QString filter =
     [=]() {
-        const QString is_container = is_container_filter();
+        QString out = is_container_filter();
 
-        return add_advanced_view_filter(is_container);
+        const bool advanced_view_OFF = !SETTINGS()->get_bool(BoolSetting_AdvancedView);
+        if (advanced_view_OFF) {
+            const QString advanced_view = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
+            out = filter_OR({out, advanced_view});
+        }
+
+        return out;
     }();
 
     const QList<QString> search_attributes;

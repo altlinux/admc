@@ -18,11 +18,11 @@
  */
 
 #include "ad/ad_interface.h"
+#include "ad/ad_interface_p.h"
 
 #include "ad/ad_utils.h"
 #include "ad/ad_object.h"
 #include "ad/ad_display.h"
-#include "utils.h"
 
 #include <ldap.h>
 #include <lber.h>
@@ -70,16 +70,18 @@ void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgro
 }
 
 AdInterface::AdInterface() {
-    ld = NULL;
-    smbc = NULL;
-    m_is_connected = false;
+    d = new AdInterfacePrivate();
 
-    domain = get_default_domain_from_krb5();
-    domain_head = domain_to_domain_dn(domain);
+    d->ld = NULL;
+    d->smbc = NULL;
+    d->is_connected = false;
 
-    qDebug() << "domain=" << domain;
+    d->domain = get_default_domain_from_krb5();
+    d->domain_head = domain_to_domain_dn(d->domain);
 
-    const QList<QString> hosts = get_domain_hosts(domain, QString());
+    qDebug() << "domain=" << d->domain;
+
+    const QList<QString> hosts = get_domain_hosts(d->domain, QString());
     if (hosts.isEmpty()) {
         qDebug() << "No hosts found";
         
@@ -88,48 +90,56 @@ AdInterface::AdInterface() {
     qDebug() << "hosts=" << hosts;
 
     // TODO: for now selecting first host, which seems to be fine but investigate what should be selected.
-    host = hosts[0];
+    d->host = hosts[0];
 
-    const QString uri = "ldap://" + host;
+    const QString uri = "ldap://" + d->host;
 
-    const bool success = ad_connect(cstr(uri), &ld);
+    const bool success = ad_connect(cstr(uri), &d->ld);
     if (success) {
         // TODO: can this context expire, for example from a disconnect?
         // NOTE: this doesn't leak memory. False positive.
         smbc_init(get_auth_data_fn, 0);
-        smbc = smbc_new_context();
-        smbc_setOptionUseKerberos(smbc, true);
-        smbc_setOptionFallbackAfterKerberos(smbc, true);
-        if (!smbc_init_context(smbc)) {
-            smbc_free_context(smbc, 0);
+        d->smbc = smbc_new_context();
+        smbc_setOptionUseKerberos(d->smbc, true);
+        smbc_setOptionFallbackAfterKerberos(d->smbc, true);
+        if (!smbc_init_context(d->smbc)) {
+            smbc_free_context(d->smbc, 0);
             qDebug() << "Could not initialize smbc context";
         }
-        smbc_set_context(smbc);
+        smbc_set_context(d->smbc);
 
-        m_is_connected = true;
+        d->is_connected = true;
     }
 }
 
 AdInterface::~AdInterface() {
+    delete d;
+}
+
+AdInterfacePrivate::AdInterfacePrivate() {
+
+}
+
+AdInterfacePrivate::~AdInterfacePrivate() {
     smbc_free_context(smbc, 0);
 
-    if (m_is_connected) {
-        ldap_unbind_ext(ld, NULL, NULL);
+    if (is_connected) {
+        ldap_unbind_ext(d->ld, NULL, NULL);
     } else {
-        ldap_memfree(ld);
+        ldap_memfree(d->ld);
     }
 }
 
 bool AdInterface::is_connected() const {
-    return m_is_connected;
+    return d->is_connected;
 }
 
 QList<AdMessage> AdInterface::messages() const {
-    return m_messages;
+    return d->messages;
 }
 
 bool AdInterface::any_error_messages() const {
-    for (const auto &message : m_messages) {
+    for (const auto &message : d->messages) {
         if (message.type() == AdMessageType_Error) {
             return true;
         }
@@ -139,7 +149,7 @@ bool AdInterface::any_error_messages() const {
 }
 
 void AdInterface::clear_messages() {
-    m_messages.clear();
+    d->messages.clear();
 }
 
 // Helper f-n for search()
@@ -147,7 +157,7 @@ void AdInterface::clear_messages() {
 // loop, it is set to the value returned by
 // ldap_search_ext_s(). At the end cookie is set back to
 // NULL.
-bool AdInterface::search_paged_internal(const char *filter, char **attributes, const int scope, const char *search_base, QHash<QString, AdObject> *out, AdCookie *ad_cookie) {
+bool AdInterfacePrivate::search_paged_internal(const char *filter, char **attributes, const int scope, const char *search_base, QHash<QString, AdObject> *out, AdCookie *ad_cookie) {
     int result;
     LDAPMessage *res = NULL;
     LDAPControl *page_control = NULL;
@@ -192,7 +202,7 @@ bool AdInterface::search_paged_internal(const char *filter, char **attributes, c
         const QString dn(dn_cstr);
         ldap_memfree(dn_cstr);
 
-        AdObjectAttributes object_attributes;
+        QHash<QString, QList<QByteArray>> object_attributes;
 
         BerElement *berptr;
         for (char *attr = ldap_first_attribute(ld, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ld, entry, berptr)) {
@@ -298,7 +308,7 @@ bool AdInterface::search_paged(const QString &filter_arg, const QList<QString> &
     const char *search_base =
     [this, search_base_arg]() {
         if (search_base_arg.isEmpty()) {
-            return cstr(domain_head);
+            return cstr(d->domain_head);
         } else {
             return cstr(search_base_arg);
         }
@@ -348,7 +358,7 @@ bool AdInterface::search_paged(const QString &filter_arg, const QList<QString> &
         return attributes_out;
     }();
 
-    const bool search_success = search_paged_internal(filter, attributes, scope, search_base, out, cookie);
+    const bool search_success = d->search_paged_internal(filter, attributes, scope, search_base, out, cookie);
     if (!search_success) {
         out->clear();
 
@@ -408,16 +418,16 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
     
     LDAPMod *attrs[] = {&attr, NULL};
 
-    const int result = ldap_modify_ext_s(ld, cstr(dn), attrs, NULL, NULL);
+    const int result = ldap_modify_ext_s(d->ld, cstr(dn), attrs, NULL, NULL);
 
     if (result == LDAP_SUCCESS) {
-        success_status_message(QString(tr("Changed attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_values_display, values_display), do_msg);
+        d->success_message(QString(tr("Changed attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_values_display, values_display), do_msg);
 
         return true;
     } else {
         const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_values_display, values_display);
 
-        error_status_message(context, default_error(), do_msg);
+        d->error_message(context, d->default_error(), do_msg);
 
         return false;
     }
@@ -456,7 +466,7 @@ bool AdInterface::attribute_add_value(const QString &dn, const QString &attribut
     
     LDAPMod *attrs[] = {&attr, NULL};
 
-    const int result = ldap_modify_ext_s(ld, cstr(dn), attrs, NULL, NULL);
+    const int result = ldap_modify_ext_s(d->ld, cstr(dn), attrs, NULL, NULL);
     free(data_copy);
 
     const QString name = dn_get_name(dn);
@@ -465,13 +475,13 @@ bool AdInterface::attribute_add_value(const QString &dn, const QString &attribut
     if (result == LDAP_SUCCESS) {
         const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_display_value, attribute, name);
 
-        success_status_message(context, do_msg);
+        d->success_message(context, do_msg);
 
         return true;
     } else {
         const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_display_value, attribute, name);
 
-        error_status_message(context, default_error(), do_msg);
+        d->error_message(context, d->default_error(), do_msg);
 
         return false;
     }
@@ -499,19 +509,19 @@ bool AdInterface::attribute_delete_value(const QString &dn, const QString &attri
     
     LDAPMod *attrs[] = {&attr, NULL};
 
-    const int result = ldap_modify_ext_s(ld, cstr(dn), attrs, NULL, NULL);
+    const int result = ldap_modify_ext_s(d->ld, cstr(dn), attrs, NULL, NULL);
     free(data_copy);
 
     if (result == LDAP_SUCCESS) {
         const QString context = QString(tr("Deleted value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
 
-        success_status_message(context, do_msg);
+        d->success_message(context, do_msg);
 
         return true;
     } else {
         const QString context = QString(tr("Failed to delete value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
 
-        error_status_message(context, default_error(), do_msg);
+        d->error_message(context, d->default_error(), do_msg);
 
         return false;
     }
@@ -547,16 +557,16 @@ bool AdInterface::object_add(const QString &dn, const QString &object_class) {
 
     LDAPMod *attrs[] = {&attr, NULL};
 
-    const int result = ldap_add_ext_s(ld, cstr(dn), attrs, NULL, NULL);
+    const int result = ldap_add_ext_s(d->ld, cstr(dn), attrs, NULL, NULL);
 
     if (result == LDAP_SUCCESS) {
-        success_status_message(QString(tr("Created object \"%1\"")).arg(dn));
+        d->success_message(QString(tr("Created object \"%1\"")).arg(dn));
 
         return true;
     } else {
         const QString context = QString(tr("Failed to create object \"%1\"")).arg(dn);
 
-        error_status_message(context, default_error());
+        d->error_message(context, d->default_error());
 
         return false;
     }
@@ -577,7 +587,7 @@ bool AdInterface::object_delete(const QString &dn) {
     [this, name](const QString &error) {
         const QString context = QString(tr("Failed to delete object \"%1\"")).arg(name);
 
-        error_status_message(context, error);
+        d->error_message(context, error);
     };
 
     // Use a tree delete control to enable recursive delete
@@ -599,16 +609,16 @@ bool AdInterface::object_delete(const QString &dn) {
 
     LDAPControl *server_controls[2] = {tree_delete_control, NULL};
     
-    result = ldap_delete_ext_s(ld, cstr(dn), server_controls, NULL);
+    result = ldap_delete_ext_s(d->ld, cstr(dn), server_controls, NULL);
 
     cleanup();
 
     if (result == LDAP_SUCCESS) {
-        success_status_message(QString(tr("Deleted object \"%1\"")).arg(name));
+        d->success_message(QString(tr("Deleted object \"%1\"")).arg(name));
 
         return true;
     } else {
-        error_message(default_error());
+        error_message(d->default_error());
 
         return false;
     }
@@ -620,16 +630,16 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
     const QString object_name = dn_get_name(dn);
     const QString container_name = dn_get_name(new_container);
 
-    const int result = ldap_rename_s(ld, cstr(dn), cstr(rdn), cstr(new_container), 1, NULL, NULL);
+    const int result = ldap_rename_s(d->ld, cstr(dn), cstr(rdn), cstr(new_container), 1, NULL, NULL);
 
     if (result == LDAP_SUCCESS) {
-        success_status_message(QString(tr("Moved object \"%1\" to \"%2\"")).arg(object_name, container_name));
+        d->success_message(QString(tr("Moved object \"%1\" to \"%2\"")).arg(object_name, container_name));
 
         return true;
     } else {
         const QString context = QString(tr("Failed to move object \"%1\" to \"%2\"")).arg(object_name, container_name);
 
-        error_status_message(context, default_error());
+        d->error_message(context, d->default_error());
 
         return false;
     }
@@ -640,16 +650,16 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     const QString new_rdn = new_dn.split(",")[0];
     const QString old_name = dn_get_name(dn);
 
-    const int result = ldap_rename_s(ld, cstr(dn), cstr(new_rdn), NULL, 1, NULL, NULL);
+    const int result = ldap_rename_s(d->ld, cstr(dn), cstr(new_rdn), NULL, 1, NULL, NULL);
 
     if (result == LDAP_SUCCESS) {
-        success_status_message(QString(tr("Renamed object \"%1\" to \"%2\"")).arg(old_name, new_name));
+        d->success_message(QString(tr("Renamed object \"%1\" to \"%2\"")).arg(old_name, new_name));
 
         return true;
     } else {
         const QString context = QString(tr("Failed to rename object \"%1\" to \"%2\"")).arg(old_name, new_name);
 
-        error_status_message(context, default_error());
+        d->error_message(context, d->default_error());
 
         return false;
     }
@@ -663,13 +673,13 @@ bool AdInterface::group_add_member(const QString &group_dn, const QString &user_
     const QString group_name = dn_get_name(group_dn);
     
     if (success) {
-        success_status_message(QString(tr("Added user \"%1\" to group \"%2\"")).arg(user_name, group_name));
+        d->success_message(QString(tr("Added user \"%1\" to group \"%2\"")).arg(user_name, group_name));
 
         return true;
     } else {
         const QString context = QString(tr("Failed to add user \"%1\" to group \"%2\"")).arg(user_name, group_name);
 
-        error_status_message(context, default_error());
+        d->error_message(context, d->default_error());
 
         return false;
     }
@@ -683,13 +693,13 @@ bool AdInterface::group_remove_member(const QString &group_dn, const QString &us
     const QString group_name = dn_get_name(group_dn);
 
     if (success) {
-        success_status_message(QString(tr("Removed user \"%1\" from group \"%2\"")).arg(user_name, group_name));
+        d->success_message(QString(tr("Removed user \"%1\" from group \"%2\"")).arg(user_name, group_name));
 
         return true;
     } else {
         const QString context = QString(tr("Failed to remove user \"%1\" from group \"%2\"")).arg(user_name, group_name);
 
-        error_status_message(context, default_error());
+        d->error_message(context, d->default_error());
 
         return false;
     }
@@ -717,13 +727,13 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
     
     const bool result = attribute_replace_int(dn, ATTRIBUTE_GROUP_TYPE, group_type);
     if (result) {
-        success_status_message(QString(tr("Set scope for group \"%1\" to \"%2\"")).arg(name, scope_string));
+        d->success_message(QString(tr("Set scope for group \"%1\" to \"%2\"")).arg(name, scope_string));
 
         return true;
     } else {
         const QString context = QString(tr("Failed to set scope for group \"%1\" to \"%2\"")).arg(name, scope_string);
         
-        error_status_message(context, default_error());
+        d->error_message(context, d->default_error());
 
         return false;
     }
@@ -743,12 +753,12 @@ bool AdInterface::group_set_type(const QString &dn, GroupType type) {
     
     const bool result = attribute_replace_string(dn, ATTRIBUTE_GROUP_TYPE, update_group_type_string);
     if (result) {
-        success_status_message(QString(tr("Set type for group \"%1\" to \"%2\"")).arg(name, type_string));
+        d->success_message(QString(tr("Set type for group \"%1\" to \"%2\"")).arg(name, type_string));
 
         return true;
     } else {
         const QString context = QString(tr("Failed to set type for group \"%1\" to \"%2\"")).arg(name, type_string);
-        error_status_message(context, default_error());
+        d->error_message(context, d->default_error());
 
         return false;
     }
@@ -774,13 +784,13 @@ bool AdInterface::user_set_primary_group(const QString &group_dn, const QString 
     const QString group_name = dn_get_name(group_dn);
 
     if (success) {
-        success_status_message(QString(tr("Set primary group for user \"%1\" to \"%2\"")).arg(user_name, group_name));
+        d->success_message(QString(tr("Set primary group for user \"%1\" to \"%2\"")).arg(user_name, group_name));
 
         return true;
     } else {
         const QString context = QString(tr("Failed to set primary group for user \"%1\" to \"%2\"")).arg(user_name, group_name);
 
-        error_status_message(context, default_error());
+        d->error_message(context, d->default_error());
 
         return false;
     }
@@ -805,7 +815,7 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
     const QString name = dn_get_name(dn);
     
     if (success) {
-        success_status_message(QString(tr("Set password for user \"%1\"")).arg(name));
+        d->success_message(QString(tr("Set password for user \"%1\"")).arg(name));
 
         return true;
     } else {
@@ -813,15 +823,15 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
 
         const QString error =
         [this]() {
-            const int ldap_result = get_ldap_result();
+            const int ldap_result = d->get_ldap_result();
             if (ldap_result == LDAP_CONSTRAINT_VIOLATION) {
                 return tr("Password doesn't match rules");
             } else {
-                return default_error();
+                return d->default_error();
             }
         }();
 
-        error_status_message(context, error);
+        d->error_message(context, error);
 
         return false;
     }
@@ -890,7 +900,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             }
         }();
         
-        success_status_message(success_context);
+        d->success_message(success_context);
 
         return true;
     } else {
@@ -916,7 +926,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             }
         }();
 
-        error_status_message(context, default_error());
+        d->error_message(context, d->default_error());
 
         return false;
     }
@@ -928,13 +938,13 @@ bool AdInterface::user_unlock(const QString &dn) {
     const QString name = dn_get_name(dn);
     
     if (result) {
-        success_status_message(QString(tr("Unlocked user \"%1\"")).arg(name));
+        d->success_message(QString(tr("Unlocked user \"%1\"")).arg(name));
         
         return true;
     } else {
         const QString context = QString(tr("Failed to unlock user \"%1\"")).arg(name);
 
-        error_status_message(context, default_error());
+        d->error_message(context, d->default_error());
 
         return result;
     }
@@ -964,7 +974,7 @@ bool AdInterface::create_gpo(const QString &display_name) {
 
     // Create main dir
     // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(host, domain.toLower(), uuid);
+    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(d->host, d->domain.toLower(), uuid);
     const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0);
     if (result_mkdir_main != 0) {
         // TODO: handle errors
@@ -999,14 +1009,14 @@ bool AdInterface::create_gpo(const QString &display_name) {
     // Create AD object for gpo
     //
     // TODO: add all attributes during creation, need to directly create through ldap then
-    const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, domain_head);
+    const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, d->domain_head);
     const bool result_add = object_add(dn, CLASS_GP_CONTAINER);
     if (!result_add) {
         return false;
     }
     attribute_replace_string(dn, ATTRIBUTE_DISPLAY_NAME, display_name);
     // "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(domain.toLower(), uuid);
+    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(d->domain.toLower(), uuid);
     attribute_replace_string(dn, ATTRIBUTE_GPC_FILE_SYS_PATH, gPCFileSysPath);
     // TODO: samba defaults to 1, ADUC defaults to 0. Figure out what's this supposed to be.
     attribute_replace_string(dn, ATTRIBUTE_FLAGS, "1");
@@ -1078,21 +1088,21 @@ QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
     const int sysvol_i = out.indexOf("sysvol");
     out.remove(0, sysvol_i);
 
-    out = QString("smb://%1/%2").arg(host, out);
+    out = QString("smb://%1/%2").arg(d->host, out);
 
     return out;
 }
 
-void AdInterface::success_status_message(const QString &msg, const DoStatusMsg do_msg) {
+void AdInterfacePrivate::success_message(const QString &msg, const DoStatusMsg do_msg) {
     if (do_msg == DoStatusMsg_No) {
         return;
     }
 
     const AdMessage message(msg, AdMessageType_Success);
-    m_messages.append(message);
+    messages.append(message);
 }
 
-void AdInterface::error_status_message(const QString &context, const QString &error, const DoStatusMsg do_msg) {
+void AdInterfacePrivate::error_message(const QString &context, const QString &error, const DoStatusMsg do_msg) {
     if (do_msg == DoStatusMsg_No) {
         return;
     }
@@ -1103,10 +1113,10 @@ void AdInterface::error_status_message(const QString &context, const QString &er
     }
 
     const AdMessage message(msg, AdMessageType_Error);
-    m_messages.append(message);
+    messages.append(message);
 }
 
-QString AdInterface::default_error() const {
+QString AdInterfacePrivate::default_error() const {
     const int ldap_result = get_ldap_result();
     switch (ldap_result) {
         case LDAP_NO_SUCH_OBJECT: return tr("No such object");
@@ -1121,9 +1131,9 @@ QString AdInterface::default_error() const {
     }
 }
 
-int AdInterface::get_ldap_result() const {
+int AdInterfacePrivate::get_ldap_result() const {
     int result;
-    ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &result);
+    ldap_get_option(d->ld, LDAP_OPT_RESULT_CODE, &result);
 
     return result;
 }
@@ -1156,7 +1166,7 @@ QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
 
 /**
  * Perform a query for dname and output hosts
- * dname is a combination of protocols (ldap, tcp), domain and site
+ * dname is a combination of protocols (d->ldap, tcp), domain and site
  * NOTE: this is rewritten from
  * https://github.com/paleg/libadclient/blob/master/adclient.cpp
  * which itself is copied from

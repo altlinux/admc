@@ -24,7 +24,7 @@
 #include "ad/ad_utils.h"
 #include "settings.h"
 #include "utils.h"
-#include "filter.h"
+#include "ad/ad_filter.h"
 #include "filter_widget/filter_widget.h"
 #include "find_results.h"
 #include "select_container_dialog.h"

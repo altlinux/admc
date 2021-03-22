@@ -40,22 +40,11 @@ template <typename K, typename T> class QHash;
 #define debug_print(a, args...) printf("%s(%s:%d) " a,  __func__,__FILE__, __LINE__, ##args)
 #define trace(a, args...) debug_print(a "\n", ##args)
 
-// NOTE: Qt has Q_DISABLE_COPY_MOVE but it's not available
-// on current Qt version yet (requires 5.13)
-#define DISABLE_COPY_MOVE(ClassName)\
-ClassName(const ClassName&) = delete;\
-ClassName& operator=(const ClassName&) = delete;\
-ClassName(ClassName&&) = delete;\
-ClassName& operator=(ClassName&&) = delete;
-
 // NOTE: these functions assume that view's proxies don't filter out the DN column and that it is always present.
 QString get_dn_from_index(const QModelIndex &index, int dn_column);
 QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn_column);
 
 QList<QStandardItem *> make_item_row(const int count);
-
-int bit_set(int bitmask, int bit, bool set);
-bool bit_is_set(int bitmask, int bit);
 
 void exec_menu_from_view(QMenu *menu, const QAbstractItemView *view, const QPoint &pos);
 // NOTE: view must have header items and model before this is called
@@ -72,9 +61,6 @@ void show_only_in_dev_mode(QWidget *widget);
 void set_line_edit_to_numbers_only(QLineEdit *edit);
 
 void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view);
-
-// NOTE: uses a buffer that is capped at 100 strings, so pointers returned from this become invalid after 99 more calls. Only use this to give cstr args to C routines in the same scope. Keep this far away from any recursion.
-const char *cstr(const QString &qstr);
 
 // Provide a mapping of columns to widths as ratio of total
 // view width. For example: {{column 1 => 0.5}, {column 2 =>

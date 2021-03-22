@@ -94,10 +94,10 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_utils.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_object.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_display.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_filter.cpp
 
     ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/common/settings.cpp
-    ${PROJECT_SOURCE_DIR}/src/common/filter.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/admc.qrc
     ${PROJECT_SOURCE_DIR}/translations/translations.qrc

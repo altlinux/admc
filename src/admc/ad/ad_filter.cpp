@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "filter.h"
-#include "settings.h"
+#include "ad/ad_filter.h"
+
 #include "ad/ad_defines.h"
 #include "ad/ad_config.h"
 
@@ -98,16 +98,6 @@ QString is_container_filter() {
     }
 
     return filter_OR(class_filters);
-}
-
-QString add_advanced_view_filter(const QString &filter) {
-    // Hide advanced view only" objects if advanced view setting is off
-    const bool advanced_view_OFF = !SETTINGS()->get_bool(BoolSetting_AdvancedView);
-    if (advanced_view_OFF) {
-        return filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
-    } else {
-        return filter;
-    }
 }
 
 QString condition_to_display_string(const Condition condition) {

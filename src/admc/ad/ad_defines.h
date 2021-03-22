@@ -24,6 +24,38 @@
  * AD related enums and constants.
  */
 
+enum AttributeType {
+    AttributeType_Boolean,
+    AttributeType_Enumeration,
+    AttributeType_Integer,
+    AttributeType_LargeInteger,
+    AttributeType_StringCase,
+    AttributeType_IA5,
+    AttributeType_NTSecDesc,
+    AttributeType_Numeric,
+    AttributeType_ObjectIdentifier,
+    AttributeType_Octet,
+    AttributeType_ReplicaLink,
+    AttributeType_Printable,
+    AttributeType_Sid,
+    AttributeType_Teletex,
+    AttributeType_Unicode,
+    AttributeType_UTCTime,
+    AttributeType_GeneralizedTime,
+    AttributeType_DNString,
+    AttributeType_DNBinary,
+    AttributeType_DSDN,
+};
+
+// NOTE: large integer type has sub types but AD schema
+// doesn't distinguish between them (from what I've seen).
+// Create enums for subtypes for easier processing.
+enum LargeIntegerSubtype {
+    LargeIntegerSubtype_Integer,
+    LargeIntegerSubtype_Datetime,
+    LargeIntegerSubtype_Timespan,
+};
+
 enum AccountOption {
     AccountOption_Disabled,
     AccountOption_PasswordExpired,

@@ -68,18 +68,6 @@ QList<QStandardItem *> make_item_row(const int count) {
     return row;
 }
 
-int bit_set(int bitmask, int bit, bool set) {
-    if (set) {
-        return bitmask | bit;
-    } else {
-        return bitmask & ~bit;
-    }
-}
-
-bool bit_is_set(int bitmask, int bit) {
-    return ((bitmask & bit) != 0);
-}
-
 void exec_menu_from_view(QMenu *menu, const QAbstractItemView *view, const QPoint &pos) {
     const QPoint global_pos = view->mapToGlobal(pos);
     menu->exec(global_pos);
@@ -174,21 +162,6 @@ void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view) {
         selection_model, &QItemSelectionModel::selectionChanged,
         do_it);
     do_it();
-}
-
-const char *cstr(const QString &qstr) {
-    static QList<QByteArray> buffer;
-
-    const QByteArray bytes = qstr.toUtf8();
-    buffer.append(bytes);
-
-    // Limit buffer to 100 strings
-    if (buffer.size() > 100) {
-        buffer.removeAt(0);
-    }
-
-    // NOTE: return data of bytes in buffer NOT the temp local bytes
-    return buffer.last().constData();
 }
 
 void resize_columns(QTreeView *view, const QHash<int, double> widths) {
