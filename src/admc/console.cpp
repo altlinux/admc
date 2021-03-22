@@ -288,10 +288,6 @@ void Console::move() {
 
     auto dialog = new SelectContainerDialog(this);
 
-    // TODO:
-    // const QString title = QString(tr("Move %1")).arg(targets_display_string(targets));
-    // dialog->setWindowTitle(title);
-
     connect(
         dialog, &SelectContainerDialog::accepted,
         [=]() {
@@ -327,33 +323,23 @@ void Console::move() {
     dialog->open();
 }
 
+// NOTE: only check if object can be dropped if dropping a
+// single object, because when dropping multiple objects it
+// is ok for some objects to successfully drop and some to
+// fail. For example, if you drop users together with OU's
+// onto a group, users will be added to that group while OU
+// will fail to drop.
 void Console::on_items_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, bool *ok) {
-    // NOTE: only check if object can be dropped if dropping a single object, because when dropping multiple objects it is ok for some objects to successfully drop and some to fail. For example, if you drop users together with OU's onto a group, users will be added to that group while OU will fail to drop.
     if (dropped_list.size() == 1) {
         const QModelIndex dropped = dropped_list[0];
 
-        const bool dropped_is_target =
-        [&]() {
-            const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
-            const QString target_dn = target.data(ObjectRole_DN).toString();
-
-            return (dropped_dn == target_dn);
-        }();
-
-        if (dropped_is_target) {
-            *ok = false;
-        } else {
-            const QList<QString> dropped_classes = dropped.data(ObjectRole_ObjectClasses).toStringList();
-            const QList<QString> target_classes = target.data(ObjectRole_ObjectClasses).toStringList();
-
-            *ok = object_can_drop(dropped_classes, target_classes);
-        }
+        *ok = object_can_drop(dropped, target);
     } else {
         *ok = true;
     }
 }
 
-void Console::on_items_dropped(const QList<QModelIndex> &dropped, const QModelIndex &target) {
+void Console::on_items_dropped(const QList<QModelIndex> &dropped_list, const QModelIndex &target) {
     const QString target_dn = target.data(ObjectRole_DN).toString();
 
     AdInterface ad;
@@ -361,16 +347,13 @@ void Console::on_items_dropped(const QList<QModelIndex> &dropped, const QModelIn
         return;
     }
 
-    for (const QModelIndex &index : dropped) {
-        const QString dropped_dn = index.data(ObjectRole_DN).toString();
-        const QList<QString> dropped_classes = index.data(ObjectRole_ObjectClasses).toStringList();
-        const QList<QString> target_classes = target.data(ObjectRole_ObjectClasses).toStringList();
-
-        const DropType drop_type = get_drop_type(dropped_classes, target_classes);
+    for (const QModelIndex &dropped : dropped_list) {
+        const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
+        const DropType drop_type = get_drop_type(dropped, target);
 
         switch (drop_type) {
             case DropType_Move: {
-                move_object_in_console(ad, index, target_dn, target);
+                move_object_in_console(ad, dropped, target_dn, target);
 
                 break;
             }
@@ -603,7 +586,13 @@ void Console::add_object_to_console(const AdObject &object, const QModelIndex &p
 }
 
 // Moves object on AD server and if that succeeds, also
-// moves it in console
+// moves it in console. Note that both new parent dn and
+// index are passed because new_parent_index may be invalid.
+// For example if it's not loaded into console but was
+// selected through SelectContainDialog. In that case we
+// only delete object from it's old location and do nothing
+// for new location. The object will be loaded at new
+// location when it's parent is loaded.
 void Console::move_object_in_console(AdInterface &ad, const QModelIndex &old_index, const QString &new_parent_dn, const QModelIndex &new_parent_index) {
     const QString old_dn = old_index.data(ObjectRole_DN).toString();
     const QString new_dn = dn_move(old_dn, new_parent_dn);
@@ -613,12 +602,6 @@ void Console::move_object_in_console(AdInterface &ad, const QModelIndex &old_ind
     if (move_success) {
         console_widget->delete_item(old_index);
 
-        // NOTE: new_parent_index may be invalid if it's not
-        // loaded into console but was selected through
-        // SelectContainDialog. In that case we only delete
-        // object from it's old location and do nothing for
-        // new location. The object will be loaded at new
-        // location when it's parent is loaded.
         if (new_parent_index.isValid()) {
             const AdObject updated_object = ad.search_object(new_dn);
             add_object_to_console(updated_object, new_parent_index);

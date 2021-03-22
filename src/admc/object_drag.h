@@ -20,8 +20,7 @@
 #ifndef OBJECT_DRAG_H
 #define OBJECT_DRAG_H
 
-class QString;
-template <typename T> class QList;
+class QModelIndex;
 
 enum DropType {
     DropType_Move,
@@ -29,8 +28,7 @@ enum DropType {
     DropType_None
 };
 
-// TODO: probably just inline this stuff
-bool object_can_drop(const QList<QString> &dropped_classes, const QList<QString> &target_classes);
-DropType get_drop_type(const QList<QString> &dropped_classes, const QList<QString> &target_classes);
+bool object_can_drop(const QModelIndex &dropped, const QModelIndex &target);
+DropType get_drop_type(const QModelIndex &dropped, const QModelIndex &target);
 
 #endif /* OBJECT_DRAG_H */
