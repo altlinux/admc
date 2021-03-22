@@ -20,8 +20,8 @@
 #include "tabs/gpo_links_tab.h"
 #include "properties_dialog.h"
 #include "utils.h"
-#include "ad_interface.h"
-#include "ad_object.h"
+#include "ad/ad_interface.h"
+#include "ad/ad_object.h"
 #include "filter.h"
 
 #include <algorithm>

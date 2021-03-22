@@ -18,10 +18,10 @@
  */
 
 #include "object_menu.h"
-#include "ad_interface.h"
-#include "ad_config.h"
-#include "ad_utils.h"
-#include "ad_object.h"
+#include "ad/ad_interface.h"
+#include "ad/ad_config.h"
+#include "ad/ad_utils.h"
+#include "ad/ad_object.h"
 #include "select_dialog.h"
 #include "rename_dialog.h"
 #include "password_dialog.h"

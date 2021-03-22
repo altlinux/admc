@@ -19,9 +19,9 @@
 
 #include "editors/octet_editor.h"
 
-#include "ad_config.h"
+#include "ad/ad_config.h"
 #include "utils.h"
-#include "attribute_display.h"
+#include "ad/ad_display.h"
 
 #include <QPlainTextEdit>
 #include <QLabel>

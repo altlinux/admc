@@ -18,8 +18,8 @@
  */
 
 #include "filter_widget/select_classes_widget.h"
-#include "ad_defines.h"
-#include "ad_config.h"
+#include "ad/ad_defines.h"
+#include "ad/ad_config.h"
 #include "filter.h"
 
 #include <QVBoxLayout>

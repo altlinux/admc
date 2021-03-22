@@ -18,9 +18,9 @@
  */
 
 #include "create_dialog.h"
-#include "ad_interface.h"
-#include "ad_utils.h"
-#include "ad_config.h"
+#include "ad/ad_interface.h"
+#include "ad/ad_utils.h"
+#include "ad/ad_config.h"
 #include "status.h"
 #include "settings.h"
 #include "edits/string_edit.h"

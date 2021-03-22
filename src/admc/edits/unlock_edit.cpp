@@ -18,9 +18,9 @@
  */
 
 #include "edits/unlock_edit.h"
-#include "ad_interface.h"
+#include "ad/ad_interface.h"
 #include "utils.h"
-#include "ad_object.h"
+#include "ad/ad_object.h"
 #include <QFormLayout>
 #include <QCheckBox>
 

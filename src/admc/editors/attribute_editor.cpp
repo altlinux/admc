@@ -23,7 +23,7 @@
 #include "editors/octet_editor.h"
 #include "editors/bool_editor.h"
 #include "editors/datetime_editor.h"
-#include "ad_config.h"
+#include "ad/ad_config.h"
 
 #include <QVBoxLayout>
 #include <QFormLayout>

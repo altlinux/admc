@@ -18,10 +18,10 @@
  */
 
 #include "edits/account_option_edit.h"
-#include "ad_interface.h"
-#include "ad_utils.h"
+#include "ad/ad_interface.h"
+#include "ad/ad_utils.h"
 #include "utils.h"
-#include "ad_object.h"
+#include "ad/ad_object.h"
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QComboBox>

@@ -18,11 +18,11 @@
  */
 
 #include "edits/expiry_edit.h"
-#include "ad_interface.h"
-#include "ad_config.h"
-#include "ad_utils.h"
+#include "ad/ad_interface.h"
+#include "ad/ad_config.h"
+#include "ad/ad_utils.h"
 #include "utils.h"
-#include "ad_object.h"
+#include "ad/ad_object.h"
 #include <QVBoxLayout>
 #include <QFormLayout>
 #include <QCheckBox>

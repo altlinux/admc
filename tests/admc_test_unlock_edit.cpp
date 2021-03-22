@@ -19,9 +19,9 @@
 
 #include "admc_test_unlock_edit.h"
 
-#include "ad_interface.h"
-#include "ad_defines.h"
-#include "ad_object.h"
+#include "ad/ad_interface.h"
+#include "ad/ad_defines.h"
+#include "ad/ad_object.h"
 #include "edits/unlock_edit.h"
 
 #include <QFormLayout>

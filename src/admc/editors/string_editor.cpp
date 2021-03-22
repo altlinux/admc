@@ -18,7 +18,7 @@
  */
 
 #include "editors/string_editor.h"
-#include "ad_config.h"
+#include "ad/ad_config.h"
 #include "utils.h"
 
 #include <QLineEdit>

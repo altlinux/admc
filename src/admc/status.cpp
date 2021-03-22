@@ -19,7 +19,7 @@
 
 #include "status.h"
 
-#include "ad_interface.h"
+#include "ad/ad_interface.h"
 
 #include <QStatusBar>
 #include <QTextEdit>

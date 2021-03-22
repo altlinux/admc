@@ -19,8 +19,8 @@
 
 #include "edits/gpoptions_edit.h"
 #include "utils.h"
-#include "ad_interface.h"
-#include "ad_object.h"
+#include "ad/ad_interface.h"
+#include "ad/ad_object.h"
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QHash>

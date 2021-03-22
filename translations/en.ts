@@ -1823,12 +1823,12 @@
 <context>
     <name>attribute_display</name>
     <message>
-        <location filename="../src/admc/attribute_display.cpp" line="73"/>
+        <location filename="../src/admc/ad_display.cpp" line="73"/>
         <source>&lt;unset&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/admc/attribute_display.cpp" line="136"/>
+        <location filename="../src/admc/ad_display.cpp" line="136"/>
         <source>(never)</source>
         <translation type="unfinished"></translation>
     </message>

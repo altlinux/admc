@@ -20,7 +20,7 @@
 #include "find_select_dialog.h"
 
 #include "find_widget.h"
-#include "ad_config.h"
+#include "ad/ad_config.h"
 
 #include <QList>
 #include <QVBoxLayout>

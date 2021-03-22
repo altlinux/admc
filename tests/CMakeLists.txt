@@ -29,16 +29,11 @@ configure_file(${PROJECT_SOURCE_DIR}/src/admc/config.h.in "config.h")
 set(TEST_SOURCES
     admc_test.cpp
 
-    ${PROJECT_SOURCE_DIR}/src/admc/ad_interface.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/ad_config.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/ad_utils.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/ad_object.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/properties_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/object_model.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/select_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/object_menu.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/password_dialog.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/attribute_display.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/find_results.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/toggle_widgets_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/filter_dialog.cpp
@@ -93,6 +88,12 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/search_thread.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/status.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/console_widget/customize_columns_dialog.cpp
+
+    ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_interface.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_config.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_utils.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_object.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_display.cpp
 
     ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/common/settings.cpp

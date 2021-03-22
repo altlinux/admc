@@ -18,8 +18,8 @@
  */
 
 #include "policies_widget.h"
-#include "ad_interface.h"
-#include "ad_object.h"
+#include "ad/ad_interface.h"
+#include "ad/ad_object.h"
 #include "properties_dialog.h"
 #include "rename_policy_dialog.h"
 #include "utils.h"

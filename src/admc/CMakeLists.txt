@@ -22,10 +22,6 @@ configure_file("config.h.in" "config.h")
 
 add_executable(admc
     main.cpp
-    ad_interface.cpp
-    ad_config.cpp
-    ad_utils.cpp
-    ad_object.cpp
     properties_dialog.cpp
     main_window.cpp
     status.cpp
@@ -34,7 +30,6 @@ add_executable(admc
     object_menu.cpp
     password_dialog.cpp
     menubar.cpp
-    attribute_display.cpp
     find_results.cpp
     toggle_widgets_dialog.cpp
     filter_dialog.cpp
@@ -52,6 +47,12 @@ add_executable(admc
     select_container_dialog.cpp
     policies_widget.cpp
     gplink.cpp
+
+    ad/ad_interface.cpp
+    ad/ad_config.cpp
+    ad/ad_utils.cpp
+    ad/ad_object.cpp
+    ad/ad_display.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_widget_simple_tab.cpp

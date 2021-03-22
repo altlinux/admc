@@ -21,7 +21,7 @@
 
 #include "find_widget.h"
 #include "find_results.h"
-#include "ad_config.h"
+#include "ad/ad_config.h"
 #include "object_menu.h"
 #include "properties_dialog.h"
 #include "console_widget/customize_columns_dialog.h"

@@ -20,7 +20,7 @@
 #include "tabs/object_tab.h"
 #include "edits/string_edit.h"
 #include "edits/datetime_edit.h"
-#include "ad_defines.h"
+#include "ad/ad_defines.h"
 
 #include <QFormLayout>
 

@@ -19,8 +19,8 @@
 
 #include "filter.h"
 #include "settings.h"
-#include "ad_defines.h"
-#include "ad_config.h"
+#include "ad/ad_defines.h"
+#include "ad/ad_config.h"
 
 #include <QCoreApplication>
 

@@ -20,7 +20,7 @@
 #include "config.h"
 #include "main_window.h"
 #include "settings.h"
-#include "ad_object.h"
+#include "ad/ad_object.h"
 
 #include <QApplication>
 #include <QTranslator>

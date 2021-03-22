@@ -18,8 +18,8 @@
  */
 
 #include "editors/datetime_editor.h"
-#include "ad_config.h"
-#include "ad_utils.h"
+#include "ad/ad_config.h"
+#include "ad/ad_utils.h"
 #include "utils.h"
 
 #include <QDateTimeEdit>

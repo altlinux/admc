@@ -19,7 +19,7 @@
 
 #include "filter_dialog.h"
 #include "filter.h"
-#include "ad_config.h"
+#include "ad/ad_config.h"
 
 #include "filter_widget/filter_widget.h"
 

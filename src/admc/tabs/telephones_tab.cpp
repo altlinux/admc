@@ -20,7 +20,7 @@
 #include "tabs/telephones_tab.h"
 #include "edits/string_other_edit.h"
 #include "edits/string_large_edit.h"
-#include "ad_defines.h"
+#include "ad/ad_defines.h"
 
 #include <QFormLayout>
 

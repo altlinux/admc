@@ -20,8 +20,8 @@
 #include "tabs/organization_tab.h"
 #include "edits/string_edit.h"
 #include "edits/manager_edit.h"
-#include "ad_utils.h"
-#include "ad_object.h"
+#include "ad/ad_utils.h"
+#include "ad/ad_object.h"
 #include "properties_dialog.h"
 #include "utils.h"
 

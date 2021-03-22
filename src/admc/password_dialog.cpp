@@ -18,9 +18,9 @@
  */
 
 #include "password_dialog.h"
-#include "ad_interface.h"
-#include "ad_utils.h"
-#include "ad_object.h"
+#include "ad/ad_interface.h"
+#include "ad/ad_utils.h"
+#include "ad/ad_object.h"
 #include "edits/password_edit.h"
 #include "edits/unlock_edit.h"
 #include "edits/account_option_edit.h"

@@ -18,9 +18,9 @@
  */
 
 #include "tabs/group_policy_tab.h"
-#include "ad_interface.h"
-#include "ad_utils.h"
-#include "ad_object.h"
+#include "ad/ad_interface.h"
+#include "ad/ad_utils.h"
+#include "ad/ad_object.h"
 #include "object_menu.h"
 #include "utils.h"
 #include "select_dialog.h"
