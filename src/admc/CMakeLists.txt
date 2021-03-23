@@ -30,7 +30,6 @@ add_executable(admc
     object_menu.cpp
     password_dialog.cpp
     find_results.cpp
-    toggle_widgets_dialog.cpp
     filter_dialog.cpp
     find_widget.cpp
     tab_widget.cpp

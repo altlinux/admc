@@ -24,7 +24,6 @@
 #include "ad/ad_config.h"
 #include "console.h"
 #include "console_widget/console_widget.h"
-#include "toggle_widgets_dialog.h"
 #include "about_dialog.h"
 #include "manual_dialog.h"
 
@@ -47,7 +46,6 @@ MainWindow::MainWindow()
     setStatusBar(STATUS()->status_bar());
 
     STATUS()->status_bar()->showMessage(tr("Ready"));
-    SETTINGS()->connect_toggle_widget(STATUS()->message_log(), BoolSetting_ShowStatusLog);
 
     message_log_dock = new QDockWidget();
     message_log_dock->setWindowTitle("Message Log");
@@ -87,7 +85,6 @@ void MainWindow::setup_menubar() {
     // Create dialogs opened from menubar
     auto manual_dialog = new ManualDialog(this);
     auto about_dialog = new AboutDialog(this);
-    auto toggle_widgets_dialog = new ToggleWidgetsDialog(this);
 
     //
     // Create actions
@@ -95,13 +92,13 @@ void MainWindow::setup_menubar() {
     connect_action = new QAction(tr("&Connect"));
     auto quit_action = new QAction(tr("&Quit"));
 
-    auto toggle_widgets_action = new QAction(tr("&Toggle widgets"), this);
-
     auto manual_action = new QAction(tr("&Manual"), this);
     auto about_action = new QAction(tr("&About ADMC"), this);
 
     auto confirm_actions_action = new QAction(tr("&Confirm actions"), this);
     auto last_before_first_name_action = new QAction(tr("&Put last name before first name when creating users"), this);
+    auto toggle_console_tree_action = new QAction(tr("Console Tree"));
+    auto toggle_description_bar_action = new QAction(tr("Description Bar"));
 
     const QList<QLocale::Language> language_list = {
         QLocale::English,
@@ -158,9 +155,11 @@ void MainWindow::setup_menubar() {
 
     preferences_menu->addAction(confirm_actions_action);
     preferences_menu->addAction(last_before_first_name_action);
-    preferences_menu->addAction(toggle_widgets_action);
     preferences_menu->addMenu(language_menu);
+    preferences_menu->addSeparator();
     preferences_menu->addAction(message_log_dock->toggleViewAction());
+    preferences_menu->addAction(toggle_console_tree_action);
+    preferences_menu->addAction(toggle_description_bar_action);
 
     for (const auto language : language_list) {
         QAction *language_action = language_actions[language];
@@ -186,11 +185,10 @@ void MainWindow::setup_menubar() {
     connect(
         about_action, &QAction::triggered,
         about_dialog, &QDialog::open);
-    connect(
-        toggle_widgets_action, &QAction::triggered,
-        toggle_widgets_dialog, &QDialog::open);
     SETTINGS()->connect_action_to_bool_setting(confirm_actions_action, BoolSetting_ConfirmActions);
     SETTINGS()->connect_action_to_bool_setting(last_before_first_name_action, BoolSetting_LastNameBeforeFirstName);
+    SETTINGS()->connect_action_to_bool_setting(toggle_console_tree_action, BoolSetting_ShowConsoleTree);
+    SETTINGS()->connect_action_to_bool_setting(toggle_description_bar_action, BoolSetting_ShowResultsHeader);
 
     for (const auto language : language_actions.keys()) {
         QAction *action = language_actions[language];
