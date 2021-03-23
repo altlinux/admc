@@ -156,9 +156,6 @@ Console::Console()
         console_widget, &ConsoleWidget::results_count_changed,
         this, &Console::update_description_bar);
     connect(
-        console_widget, &ConsoleWidget::view_menu,
-        this, &Console::on_view_menu);
-    connect(
         console_widget, &ConsoleWidget::item_fetched,
         this, &Console::fetch_scope_node);
     connect(
@@ -173,6 +170,9 @@ Console::Console()
     connect(
         console_widget, &ConsoleWidget::selection_changed,
         this, &Console::update_actions_visibility);
+    connect(
+        console_widget, &ConsoleWidget::context_menu,
+        this, &Console::context_menu);
 }
 
 void Console::go_online(AdInterface &ad) {
@@ -532,12 +532,16 @@ void Console::add_actions_to_action_menu(QMenu *menu) {
     console_widget->add_actions_to_action_menu(menu);
 }
 
-void Console::on_view_menu(QMenu *menu) {
-    menu->addAction(open_filter_action);
+void Console::add_actions_to_navigation_menu(QMenu *menu) {
+    console_widget->add_actions_to_navigation_menu(menu);
+}
 
-    // NOTE: insert separator between non-checkbox actions
-    // and checkbox actions
+void Console::add_actions_to_view_menu(QMenu *menu) {
+    console_widget->add_actions_to_view_menu(menu);
+
     menu->addSeparator();
+
+    menu->addAction(open_filter_action);
 
     menu->addAction(show_noncontainers_action);
 

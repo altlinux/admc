@@ -23,7 +23,6 @@
 #include "ad/ad_interface.h"
 #include "ad/ad_config.h"
 #include "console.h"
-#include "console_widget/console_widget.h"
 #include "about_dialog.h"
 #include "manual_dialog.h"
 
@@ -143,7 +142,7 @@ void MainWindow::setup_menubar() {
     auto file_menu = menubar->addMenu(tr("&File"));
     auto action_menu = menubar->addMenu(tr("&Action"));
     auto navigation_menu = menubar->addMenu(tr("&Navigation"));
-    menubar->addMenu(console->console_widget->get_view_menu());
+    auto view_menu = menubar->addMenu(tr("&View"));
     auto preferences_menu = menubar->addMenu(tr("&Preferences"));
     auto language_menu = new QMenu(tr("&Language"));
     auto help_menu = menubar->addMenu(tr("&Help"));
@@ -156,7 +155,9 @@ void MainWindow::setup_menubar() {
 
     console->add_actions_to_action_menu(action_menu);
 
-    console->console_widget->add_actions_to_navigation_menu(navigation_menu);
+    console->add_actions_to_navigation_menu(navigation_menu);
+
+    console->add_actions_to_view_menu(view_menu);
 
     preferences_menu->addAction(advanced_features_action);
     preferences_menu->addAction(confirm_actions_action);
@@ -213,7 +214,7 @@ void MainWindow::setup_menubar() {
 
     // Open action menu as context menu for console widget
     connect(
-        console->console_widget, &ConsoleWidget::context_menu,
+        console, &Console::context_menu,
         [action_menu](const QPoint pos) {
             action_menu->exec(pos);
         });

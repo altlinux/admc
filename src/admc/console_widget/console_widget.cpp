@@ -64,8 +64,6 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
 
     results_stacked_widget = new QStackedWidget();
 
-    view_menu = new QMenu(tr("&View"), q);
-
     properties_action = new QAction(tr("&Properties"), this);
     navigate_up_action = new QAction(tr("&Up one level"), this);
     navigate_back_action = new QAction(tr("&Back"), this);
@@ -131,9 +129,6 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
     connect(
         scope_view, &QWidget::customContextMenuRequested,
         this, &ConsoleWidgetPrivate::on_context_menu);
-    connect(
-        view_menu, &QMenu::aboutToShow,
-        this, &ConsoleWidgetPrivate::on_view_menu_show);
 
     connect(
         qApp, &QApplication::focusChanged,
@@ -489,10 +484,6 @@ QWidget *ConsoleWidget::get_description_bar() const {
     return d->description_bar;
 }
 
-QMenu *ConsoleWidget::get_view_menu() const {
-    return d->view_menu;
-}
-
 QStandardItemModel *ConsoleWidgetPrivate::get_results_model_for_scope_item(const QModelIndex &index) const {
     if (results_models.contains(index)) {
         return results_models[index];
@@ -580,11 +571,17 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
     const ResultsDescription results = get_current_results();
     results_stacked_widget->setCurrentWidget(results.widget());
 
+    const bool results_view_exists = (results.view() != nullptr);
     // Switch to results view's model if view exists
-    if (results.view() != nullptr) {
+    if (results_view_exists) {
         QStandardItemModel *results_model = get_results_model_for_scope_item(current);
         results_proxy_model->setSourceModel(results_model);
     }
+
+    set_results_to_icons_action->setVisible(results_view_exists);
+    set_results_to_list_action->setVisible(results_view_exists);
+    set_results_to_detail_action->setVisible(results_view_exists);
+    customize_columns_action->setVisible(results_view_exists);
 
     fetch_scope(current);
 
@@ -651,23 +648,6 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
             on_selection_changed();
         }
     }
-}
-
-void ConsoleWidgetPrivate::on_view_menu_show() {
-    view_menu->clear();
-
-    const ResultsDescription results = get_current_results();
-    if (results.view() != nullptr) {    
-        view_menu->addAction(set_results_to_icons_action);
-        view_menu->addAction(set_results_to_list_action);
-        view_menu->addAction(set_results_to_detail_action);
-
-        view_menu->addSeparator();
-    }
-
-    view_menu->addAction(customize_columns_action);
-
-    emit q->view_menu(view_menu);
 }
 
 void ConsoleWidgetPrivate::refresh() {
@@ -815,6 +795,16 @@ void ConsoleWidget::add_actions_to_navigation_menu(QMenu *menu) {
     menu->addAction(d->navigate_up_action);
     menu->addAction(d->navigate_back_action);
     menu->addAction(d->navigate_forward_action);
+}
+
+void ConsoleWidget::add_actions_to_view_menu(QMenu *menu) {
+    menu->addAction(d->set_results_to_icons_action);
+    menu->addAction(d->set_results_to_list_action);
+    menu->addAction(d->set_results_to_detail_action);
+
+    menu->addSeparator();
+    
+    menu->addAction(d->customize_columns_action);
 }
 
 const ResultsDescription ConsoleWidgetPrivate::get_current_results() const {

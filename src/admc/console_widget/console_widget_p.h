@@ -76,14 +76,17 @@ public:
     QHash<int, ResultsDescription> results_descriptions;
     QHash<QPersistentModelIndex, QStandardItemModel *> results_models;
 
-    QMenu *view_menu;
-
     QAction *properties_action;
     QAction *refresh_action;
 
     QAction *navigate_up_action;
     QAction *navigate_back_action;
     QAction *navigate_forward_action;
+
+    QAction *set_results_to_icons_action;
+    QAction *set_results_to_list_action;
+    QAction *set_results_to_detail_action;
+    QAction *customize_columns_action;
 
     ConsoleWidgetPrivate(ConsoleWidget *q_arg);
 
@@ -97,11 +100,6 @@ public:
 private:
     QList<QModelIndex> dropped;
 
-    QAction *set_results_to_icons_action;
-    QAction *set_results_to_list_action;
-    QAction *set_results_to_detail_action;
-    QAction *customize_columns_action;
-
     // NOTE: target history stores target items' id's.
     // History lists are in order of ascending time.
     // ... past.last() -> current -> future.first() ...
@@ -111,7 +109,6 @@ private:
     void on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &);
     void on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last);
     void on_focus_changed(QWidget *old, QWidget *now);
-    void on_view_menu_show();
     void refresh();
     void customize_columns();
     void navigate_up();

@@ -58,6 +58,11 @@ public:
 
     void go_online(AdInterface &ad);
     void add_actions_to_action_menu(QMenu *menu);
+    void add_actions_to_navigation_menu(QMenu *menu);
+    void add_actions_to_view_menu(QMenu *menu);
+
+signals:
+    void context_menu(const QPoint pos);
 
 private slots:
     void refresh_head();
@@ -75,7 +80,6 @@ private slots:
     void reset_password();
 
     void fetch_scope_node(const QModelIndex &index);
-    void on_view_menu(QMenu *menu);
     
     void on_items_can_drop(const QList<QModelIndex> &dropped, const QModelIndex &target, bool *ok);
     void on_items_dropped(const QList<QModelIndex> &dropped, const QModelIndex &target);

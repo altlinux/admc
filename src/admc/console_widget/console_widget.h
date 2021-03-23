@@ -173,14 +173,11 @@ public:
 
     void add_actions_to_action_menu(QMenu *menu);
     void add_actions_to_navigation_menu(QMenu *menu);
+    void add_actions_to_view_menu(QMenu *menu);
 
     // These getters are only for showing/hiding these widgets
     QWidget *get_scope_view() const;
     QWidget *get_description_bar() const;
-
-    // Insert these into the menubar of your app
-    QMenu *get_navigation_menu() const;
-    QMenu *get_view_menu() const;
 
 signals:
     // Emitted when a dynamic scope item is expanded or
@@ -191,14 +188,6 @@ signals:
 
     // Emitted when current scope item changes.
     void current_scope_item_changed(const QModelIndex &index);
-
-    // These signals are emitted when the action or view
-    // menu are about to open. Connect to these signals and
-    // add actions to menu in the slot. Note that console
-    // widget adds it's own actions after yours. Use
-    // get_selected_items() to determine target items for
-    // the action menu.
-    void view_menu(QMenu *menu);
 
     // Emitted while items are dragged to determine whether
     // they can be dropped on target. Set "ok" to true if
