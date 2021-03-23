@@ -57,19 +57,24 @@ public:
     Console();
 
     void go_online(AdInterface &ad);
+    void add_actions_to_action_menu(QMenu *menu);
 
 private slots:
     void refresh_head();
 
     void open_filter();
-    void delete_objects();
     void on_properties_requested();
+    void delete_objects();
     void rename();
     void create(const QString &object_class);
     void move();
+    void add_to_group();
+    void enable();
+    void disable();
+    void find();
+    void reset_password();
 
     void fetch_scope_node(const QModelIndex &index);
-    void on_action_menu(QMenu *menu);
     void on_view_menu(QMenu *menu);
     
     void on_items_can_drop(const QList<QModelIndex> &dropped, const QModelIndex &target, bool *ok);
@@ -79,9 +84,18 @@ private:
     int object_results_id;
     QPersistentModelIndex scope_head_index;
     FilterDialog *filter_dialog;
+    
+    QMenu *submenu_new;
+
     QAction *delete_action;
     QAction *rename_action;
     QAction *move_action;
+    QAction *add_to_group_action;
+    QAction *enable_action;
+    QAction *disable_action;
+    QAction *find_action;
+    QAction *reset_password_action;
+
     QAction *open_filter_action;
     QAction *show_noncontainers_action;
     QAction *dev_mode_action;
@@ -94,6 +108,9 @@ private:
     void move_object_in_console(AdInterface &ad, const QModelIndex &old_index, const QString &new_parent_dn, const QModelIndex &new_parent_index);
     void update_console_item(const QModelIndex &index, const AdObject &object);
     void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
+    QList<QString> get_dns(const QList<QModelIndex> &indexes);
+    void enable_disable_helper(const bool disabled);
+    void update_actions_visibility();
 };
 
 #endif /* CONSOLE_H */

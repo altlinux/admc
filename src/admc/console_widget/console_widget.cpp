@@ -64,7 +64,6 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
 
     results_stacked_widget = new QStackedWidget();
 
-    action_menu = new QMenu(tr("&Action"), q);
     navigation_menu = new QMenu(tr("&Navigation"), q);
     view_menu = new QMenu(tr("&View"), q);
 
@@ -96,6 +95,9 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
     connect(
         scope_view->selectionModel(), &QItemSelectionModel::currentChanged,
         this, &ConsoleWidgetPrivate::on_current_scope_item_changed);
+    connect(
+        scope_view->selectionModel(), &QItemSelectionModel::selectionChanged,
+        this, &ConsoleWidgetPrivate::on_selection_changed);
     connect(
         scope_model, &QStandardItemModel::rowsAboutToBeRemoved,
         this, &ConsoleWidgetPrivate::on_scope_items_about_to_be_removed);
@@ -133,10 +135,7 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
 
     connect(
         scope_view, &QWidget::customContextMenuRequested,
-        this, &ConsoleWidgetPrivate::open_action_menu_as_context_menu);
-    connect(
-        action_menu, &QMenu::aboutToShow,
-        this, &ConsoleWidgetPrivate::on_action_menu_show);
+        this, &ConsoleWidgetPrivate::on_context_menu);
     connect(
         view_menu, &QMenu::aboutToShow,
         this, &ConsoleWidgetPrivate::on_view_menu_show);
@@ -225,11 +224,6 @@ QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const ScopeNo
             this, &ConsoleWidget::results_count_changed);
     }
 
-    const bool no_current_scope = !d->scope_view->selectionModel()->currentIndex().isValid();
-    if (no_current_scope) {
-        set_current_scope(item->index());
-    }
-
     return item;
 }
 
@@ -262,7 +256,7 @@ QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &scope_p
 
     row[0]->setData(false, ConsoleRole_IsScope);
 
-    row[0]->setData(scope_parent, ConsoleRole_ScopeParent);
+    row[0]->setData(QPersistentModelIndex(scope_parent), ConsoleRole_ScopeParent);
 
     return row;
 }
@@ -366,7 +360,7 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
             d, &ConsoleWidgetPrivate::on_results_activated);
         connect(
             view, &ResultsView::context_menu,
-            d, &ConsoleWidgetPrivate::open_action_menu_as_context_menu);
+            d, &ConsoleWidgetPrivate::on_context_menu);
 
         // Hide non-default results view columns. Note that
         // at creation, view header doesnt have any
@@ -385,6 +379,10 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
                 }
             });
     }
+
+    connect(
+        view, &ResultsView::selection_changed,
+        d, &ConsoleWidgetPrivate::on_selection_changed);
 
     return id;
 }
@@ -410,7 +408,21 @@ void ConsoleWidget::set_description_bar_text(const QString &text) {
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
     const QList<QModelIndex> indexes = d->focused_view->selectionModel()->selectedRows(0);
 
-    return indexes;
+    // NOTE: need to map from proxy to source indexes if
+    // focused view is results
+    const bool focused_is_results = (d->focused_view != d->scope_view);
+    if (focused_is_results) {
+        QList<QModelIndex> source_indexes;
+        
+        for (const QModelIndex &index : indexes) {
+            const QModelIndex source_index = d->results_proxy_model->mapToSource(index);
+            source_indexes.append(source_index);
+        }
+
+        return source_indexes;
+    } else {
+        return indexes;
+    }
 }
 
 QList<QModelIndex> ConsoleWidget::search_scope_by_role(int role, const QVariant &value) const {
@@ -482,10 +494,6 @@ QWidget *ConsoleWidget::get_description_bar() const {
     return d->description_bar;
 }
 
-QMenu *ConsoleWidget::get_action_menu() const {
-    return d->action_menu;
-}
-
 QMenu *ConsoleWidget::get_navigation_menu() const {
     return d->navigation_menu;
 }
@@ -500,13 +508,6 @@ QStandardItemModel *ConsoleWidgetPrivate::get_results_model_for_scope_item(const
     } else {
         return nullptr;
     }
-}
-
-void ConsoleWidgetPrivate::open_action_menu_as_context_menu(const QPoint pos) {
-    add_actions_to_action_menu(action_menu);
-
-    const QPoint global_pos = focused_view->mapToGlobal(pos);
-    action_menu->exec(global_pos);
 }
 
 void ConsoleWidgetPrivate::connect_to_drag_model(ConsoleDragModel *model) {
@@ -530,6 +531,41 @@ void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
     } else {
         emit q->properties_requested();
     }
+}
+
+// Show/hide actions based on what's selected and emit the
+// signal
+void ConsoleWidgetPrivate::on_selection_changed() {
+    const QList<QModelIndex> selected_list = q->get_selected_items();
+    
+    if (selected_list.isEmpty() || !selected_list[0].isValid()) {
+        return;
+    }
+
+    properties_action->setVisible(false);
+    refresh_action->setVisible(false);
+
+    if (selected_list.size() == 1) {
+        const QModelIndex selected = selected_list[0];
+
+        const bool is_dynamic = selected.data(ConsoleRole_ScopeIsDynamic).toBool();
+        if (is_dynamic) {
+            refresh_action->setVisible(true);
+        }
+
+        const bool has_properties = selected.data(ConsoleRole_HasProperties).toBool();
+        if (has_properties) {
+            properties_action->setVisible(true);
+        }
+    }
+
+    emit q->selection_changed();
+}
+
+void ConsoleWidgetPrivate::on_context_menu(const QPoint pos) {
+    const QPoint global_pos = focused_view->mapToGlobal(pos);
+
+    emit q->context_menu(global_pos);
 }
 
 void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &previous) {
@@ -620,12 +656,10 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
 
         if (new_focused_view == scope_view || new_focused_view == results_view) {
             focused_view = new_focused_view;
+
+            on_selection_changed();
         }
     }
-}
-
-void ConsoleWidgetPrivate::on_action_menu_show() {
-    add_actions_to_action_menu(action_menu);
 }
 
 void ConsoleWidgetPrivate::on_view_menu_show() {
@@ -777,32 +811,13 @@ void ConsoleWidgetPrivate::update_navigation_actions() {
     navigate_forward_action->setEnabled(!targets_future.isEmpty());
 }
 
-void ConsoleWidgetPrivate::add_actions_to_action_menu(QMenu *menu) {
-    menu->clear();
+void ConsoleWidget::add_actions_to_action_menu(QMenu *menu) {
+    menu->addAction(d->refresh_action);
+    menu->addSeparator();
+    menu->addAction(d->properties_action);
 
-    // User of console widget that connects to this signal
-    // will add their actions
-    emit q->action_menu(menu);
-
-    // After that console widget adds it's own actions
-
-    // NOTE: the following actions only apply for single
-    // selections.
-    const QList<QModelIndex> selected_list = q->get_selected_items();
-    if (selected_list.size() == 1) {
-        const QModelIndex selected = selected_list[0];
-        
-        const bool is_dynamic = selected.data(ConsoleRole_ScopeIsDynamic).toBool();
-        if (is_dynamic) {
-            menu->addAction(refresh_action);
-            menu->addSeparator();
-        }
-
-        const bool has_properties = selected.data(ConsoleRole_HasProperties).toBool();
-        if (has_properties) {
-            menu->addAction(properties_action);
-        }
-    }
+    d->properties_action->setVisible(false);
+    d->refresh_action->setVisible(false);
 }
 
 const ResultsDescription ConsoleWidgetPrivate::get_current_results() const {

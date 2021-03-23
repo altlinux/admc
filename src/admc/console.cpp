@@ -20,7 +20,6 @@
 #include "console.h"
 
 #include "object_model.h"
-#include "object_menu.h"
 #include "utils.h"
 #include "ad/ad_utils.h"
 #include "properties_dialog.h"
@@ -36,6 +35,9 @@
 #include "rename_dialog.h"
 #include "select_container_dialog.h"
 #include "create_dialog.h"
+#include "select_dialog.h"
+#include "find_dialog.h"
+#include "password_dialog.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 
@@ -65,9 +67,17 @@ bool object_should_be_in_scope(const AdObject &object);
 Console::Console()
 : QWidget()
 {
+    submenu_new = new QMenu(tr("&New"));
+
     delete_action = new QAction(tr("&Delete"));
     rename_action = new QAction(tr("&Rename"));
     move_action = new QAction(tr("&Move"));
+    add_to_group_action = new QAction(tr("&Add to group"));
+    enable_action = new QAction(tr("&Enable account"));
+    disable_action = new QAction(tr("D&isable account"));
+    reset_password_action = new QAction(tr("Reset &Password"));
+    find_action = new QAction(tr("&Find"));
+
     open_filter_action = new QAction(tr("&Filter objects"));
     dev_mode_action = new QAction(tr("Dev mode"));
     show_noncontainers_action = new QAction(tr("&Show non-container objects in Console tree"));
@@ -125,14 +135,26 @@ Console::Console()
         move_action, &QAction::triggered,
         this, &Console::move);
     connect(
+        add_to_group_action, &QAction::triggered,
+        this, &Console::add_to_group);
+    connect(
+        enable_action, &QAction::triggered,
+        this, &Console::enable);
+    connect(
+        disable_action, &QAction::triggered,
+        this, &Console::disable);
+    connect(
+        reset_password_action, &QAction::triggered,
+        this, &Console::reset_password);
+    connect(
+        find_action, &QAction::triggered,
+        this, &Console::find);
+    connect(
         console_widget, &ConsoleWidget::current_scope_item_changed,
         this, &Console::update_description_bar);
     connect(
         console_widget, &ConsoleWidget::results_count_changed,
         this, &Console::update_description_bar);
-    connect(
-        console_widget, &ConsoleWidget::action_menu,
-        this, &Console::on_action_menu);
     connect(
         console_widget, &ConsoleWidget::view_menu,
         this, &Console::on_view_menu);
@@ -148,9 +170,29 @@ Console::Console()
     connect(
         console_widget, &ConsoleWidget::properties_requested,
         this, &Console::on_properties_requested);
+    connect(
+        console_widget, &ConsoleWidget::selection_changed,
+        this, &Console::update_actions_visibility);
 }
 
 void Console::go_online(AdInterface &ad) {
+    // NOTE: have to create "New" actions here because they
+    // require ADCONFIG
+    static const QList<QString> create_classes = {
+        CLASS_USER,
+        CLASS_COMPUTER,
+        CLASS_OU,
+        CLASS_GROUP,
+    };
+    for (const auto &object_class : create_classes) {
+        const QString action_text = ADCONFIG()->get_class_display_name(object_class);
+
+        submenu_new->addAction(action_text,
+            [=]() {
+                create(object_class);
+            });
+    }
+
     // NOTE: filter dialog requires a connection to load
     // display strings from adconfig so create it here
     filter_dialog = new FilterDialog(this);
@@ -170,6 +212,8 @@ void Console::go_online(AdInterface &ad) {
     scope_head_index = QPersistentModelIndex(item->index());
 
     setup_scope_item(item, head_object);
+
+    console_widget->set_current_scope(item->index());
 }
 
 void Console::open_filter() {
@@ -181,8 +225,7 @@ void Console::open_filter() {
 void Console::delete_objects() {
     const QList<QModelIndex> indexes = console_widget->get_selected_items();
 
-    const QString text = QString(QCoreApplication::translate("object_menu", "Are you sure you want to delete %1?")).arg("targets_display_string");
-    // const QString text = QString(QCoreApplication::translate("object_menu", "Are you sure you want to delete %1?")).arg(targets_display_string(indexes));
+    const QString text = QString(tr("Are you sure you want to delete this object?"));
     const bool confirmed = confirmation_dialog(text, this);
 
     if (confirmed) {
@@ -226,6 +269,8 @@ void Console::on_properties_requested() {
             const AdObject updated_object = ad.search_object(dn);
             update_console_item(index, updated_object);
         });
+
+    update_actions_visibility();
 }
 
 void Console::rename() {
@@ -326,6 +371,69 @@ void Console::move() {
     dialog->open();
 }
 
+void Console::add_to_group() {
+    auto dialog = new SelectDialog({CLASS_GROUP}, SelectDialogMultiSelection_Yes, this);
+
+    QObject::connect(
+        dialog, &SelectDialog::accepted,
+        [=]() {
+            AdInterface ad;
+            if (ad_failed(ad)) {
+                return;
+            }
+
+            const QList<QString> groups = dialog->get_selected();
+            const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
+            const QList<QString> targets = get_dns(selected_indexes);
+
+            for (const QString &target : targets) {
+                for (auto group : groups) {
+                    ad.group_add_member(group, target);
+                }
+            }
+
+            STATUS()->display_ad_messages(ad, this);
+        });
+
+    dialog->open();
+}
+
+void Console::enable() {
+    enable_disable_helper(false);
+}
+
+void Console::disable() {
+    enable_disable_helper(true);
+}
+
+void Console::find() {
+    const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
+    const QList<QString> targets = get_dns(selected_indexes);
+
+    if (targets.size() != 1) {
+        return;
+    }
+
+    const QString target = targets[0];
+
+    auto find_dialog = new FindDialog(filter_classes, target, this);
+    find_dialog->open();
+}
+
+void Console::reset_password() {
+    const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
+    const QList<QString> targets = get_dns(selected_indexes);
+
+    if (targets.size() != 1) {
+        return;
+    }
+
+    const QString target = targets[0];
+
+    const auto password_dialog = new PasswordDialog(target, this);
+    password_dialog->open();
+}
+
 // NOTE: only check if object can be dropped if dropping a
 // single object, because when dropping multiple objects it
 // is ok for some objects to successfully drop and some to
@@ -398,33 +506,30 @@ void Console::update_description_bar() {
     console_widget->set_description_bar_text(text);
 }
 
-void Console::on_action_menu(QMenu *menu) {
-    QMenu *submenu_new = new QMenu(tr("New"));
-    static const QList<QString> create_classes = {
-        CLASS_USER,
-        CLASS_COMPUTER,
-        CLASS_OU,
-        CLASS_GROUP,
-    };
-    for (const auto &object_class : create_classes) {
-        const QString action_text = ADCONFIG()->get_class_display_name(object_class);
+void Console::add_actions_to_action_menu(QMenu *menu) {
+    // Container
+    menu->addMenu(submenu_new);
+    menu->addAction(find_action);
 
-        submenu_new->addAction(action_text,
-            [=]() {
-                create(object_class);
-            });
-    }
+    menu->addSeparator();
 
-    ObjectMenuData menu_data;
-    menu_data.rename = rename_action;
-    menu_data.move = move_action;
-    menu_data.delete_object = delete_action;
-    menu_data.new_menu = submenu_new;
-    menu_data.properties_already_added = true;
+    // User
+    menu->addAction(add_to_group_action);
+    menu->addAction(enable_action);
+    menu->addAction(disable_action);
+    menu->addAction(reset_password_action);
 
-    const QList<QModelIndex> selected = console_widget->get_selected_items();
+    menu->addSeparator();
 
-    add_object_actions_to_menu(menu, selected, this, true, menu_data);
+    // General object
+    menu->addAction(delete_action);
+    menu->addAction(rename_action);
+    menu->addAction(move_action);
+
+    menu->addSeparator();
+
+    // Console
+    console_widget->add_actions_to_action_menu(menu);
 }
 
 void Console::on_view_menu(QMenu *menu) {
@@ -706,5 +811,153 @@ DropType get_object_drop_type(const QModelIndex &dropped, const QModelIndex &tar
         } else {
             return DropType_None;
         }
+    }
+}
+
+QList<QString> Console::get_dns(const QList<QModelIndex> &indexes) {
+    QList<QString> out;
+
+    for (const QModelIndex index : indexes) {
+        const QString dn = index.data(ObjectRole_DN).toString();
+
+        out.append(dn);
+    }
+
+    return out;  
+}
+
+void Console::enable_disable_helper(const bool disabled) {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
+
+    for (const QModelIndex &index : selected_indexes) {
+        const QString dn = index.data(ObjectRole_DN).toString();
+        const bool success = ad.user_set_account_option(dn, AccountOption_Disabled, disabled);
+
+        if (success) {
+            const AdObject updated_object = ad.search_object(dn);
+            update_console_item(index, updated_object);
+        }
+    }
+
+    STATUS()->display_ad_messages(ad, this);
+
+    update_actions_visibility();
+}
+
+// First, hide all actions, then show whichever actions are
+// appropriate for current console selection
+void Console::update_actions_visibility() {
+    const QList<QAction *> all_actions ={
+        submenu_new->menuAction(),
+        find_action,
+        delete_action,
+        rename_action,
+        move_action,
+        add_to_group_action,
+        enable_action,
+        disable_action,
+        reset_password_action,
+    };
+    for (QAction *action : all_actions) {
+        action->setVisible(false);
+    }
+
+    const QList<QModelIndex> selected_list = console_widget->get_selected_items();
+
+    // Get info about selected objects from view
+    const QList<QString> targets =
+    [=]() {
+        QList<QString> out;
+
+        for (const QModelIndex index : selected_list) {
+            const QString dn = index.data(ObjectRole_DN).toString();
+
+            out.append(dn);
+        }
+
+        return out;  
+    }();
+
+    const QSet<QString> target_classes =
+    [=]() {
+        QSet<QString> out;
+        
+        for (const QModelIndex index : selected_list) {
+            const QList<QString> object_classes = index.data(ObjectRole_ObjectClasses).toStringList();
+            const QString main_object_class = object_classes.last();
+
+            out.insert(main_object_class);
+        }
+
+        return out;
+    }();
+
+    const bool single_object = (targets.size() == 1);
+
+    if (single_object) {
+        const QModelIndex index = selected_list[0];
+        const QString target = targets[0];
+        const QString target_class = target_classes.values()[0];
+
+        // Get info about object that will determine which
+        // actions are present/enabled
+        const bool is_container =
+        [=]() {
+            const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
+
+            return container_classes.contains(target_class);
+        }();
+
+        const bool is_user = (target_class == CLASS_USER);
+
+        const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
+        const bool cannot_rename = index.data(ObjectRole_CannotRename).toBool();
+        const bool cannot_delete = index.data(ObjectRole_CannotDelete).toBool();
+        const bool account_disabled = index.data(ObjectRole_AccountDisabled).toBool();
+
+        if (is_container) {
+            submenu_new->menuAction()->setVisible(true);
+            find_action->setVisible(true);
+        }
+
+        if (is_user) {
+            add_to_group_action->setVisible(true);
+            reset_password_action->setVisible(true);
+
+            if (account_disabled) {
+                enable_action->setVisible(true);
+            } else {
+                disable_action->setVisible(true);
+            }
+        }
+
+        move_action->setVisible(true);
+        delete_action->setVisible(true);
+        rename_action->setVisible(true);
+
+        move_action->setEnabled(cannot_move);
+        delete_action->setEnabled(cannot_delete);
+        rename_action->setEnabled(cannot_rename);
+    } else if (targets.size() > 1) {
+        const bool all_users = (target_classes.contains(CLASS_USER) && target_classes.size() == 1);
+
+        if (all_users) {
+            add_to_group_action->setVisible(true);
+
+            // NOTE: show both enable/disable for multiple
+            // users because some users might be disabled,
+            // some enabled and we want to provide a way to
+            // disable all or enable all
+            enable_action->setVisible(true);
+            disable_action->setVisible(true);
+        }
+
+        move_action->setVisible(true);
+        delete_action->setVisible(true);
     }
 }

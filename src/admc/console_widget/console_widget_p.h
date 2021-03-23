@@ -76,9 +76,11 @@ public:
     QHash<int, ResultsDescription> results_descriptions;
     QHash<QPersistentModelIndex, QStandardItemModel *> results_models;
 
-    QMenu *action_menu;
     QMenu *navigation_menu;
     QMenu *view_menu;
+
+    QAction *properties_action;
+    QAction *refresh_action;
 
     ConsoleWidgetPrivate(ConsoleWidget *q_arg);
 
@@ -86,6 +88,8 @@ public:
     void open_action_menu_as_context_menu(const QPoint pos);
     void connect_to_drag_model(ConsoleDragModel *model);
     void on_results_activated(const QModelIndex &index);
+    void on_selection_changed();
+    void on_context_menu(const QPoint pos);
 
 private:
     QList<QModelIndex> dropped;
@@ -93,11 +97,9 @@ private:
     QAction *set_results_to_icons_action;
     QAction *set_results_to_list_action;
     QAction *set_results_to_detail_action;
-    QAction *properties_action;
     QAction *navigate_up_action;
     QAction *navigate_back_action;
     QAction *navigate_forward_action;
-    QAction *refresh_action;
     QAction *customize_columns_action;
 
     // NOTE: target history stores target items' id's.
@@ -109,7 +111,6 @@ private:
     void on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &);
     void on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last);
     void on_focus_changed(QWidget *old, QWidget *now);
-    void on_action_menu_show();
     void on_view_menu_show();
     void refresh();
     void customize_columns();
@@ -124,7 +125,6 @@ private:
     void set_results_to_detail();
     void set_results_to_type(const ResultsViewType type);
     void update_navigation_actions();
-    void add_actions_to_action_menu(QMenu *menu);
     void fetch_scope(const QModelIndex &index);
     const ResultsDescription get_current_results() const;
 };

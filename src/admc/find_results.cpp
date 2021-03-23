@@ -96,7 +96,7 @@ void FindResults::load_menu(QMenu *menu) {
 
     const QList<QModelIndex> selected = view->selectionModel()->selectedRows(0);
 
-    add_object_actions_to_menu(menu, selected, this, false);
+    add_object_actions_to_menu(menu, selected, this);
 }
 
 void FindResults::open_context_menu(const QPoint pos) {

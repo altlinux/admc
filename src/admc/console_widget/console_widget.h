@@ -91,7 +91,9 @@ public:
     // default. If you want another scope item at startup,
     // use set_current_scope(). Items returned from these
     // f-ns should be used to set text, icon and your custom
-    // data roles.
+    // data roles. Note that after adding and setting up the
+    // first scope item you should call set_current_scope()
+    // on it.
     //
     // Arguments:
     // 
@@ -169,12 +171,13 @@ public:
     QModelIndex get_buddy(const QModelIndex &index) const;
     bool is_scope_item(const QModelIndex &index) const;
 
+    void add_actions_to_action_menu(QMenu *menu);
+
     // These getters are only for showing/hiding these widgets
     QWidget *get_scope_view() const;
     QWidget *get_description_bar() const;
 
     // Insert these into the menubar of your app
-    QMenu *get_action_menu() const;
     QMenu *get_navigation_menu() const;
     QMenu *get_view_menu() const;
 
@@ -194,7 +197,6 @@ signals:
     // widget adds it's own actions after yours. Use
     // get_selected_items() to determine target items for
     // the action menu.
-    void action_menu(QMenu *menu);
     void view_menu(QMenu *menu);
 
     // Emitted while items are dragged to determine whether
@@ -216,6 +218,15 @@ signals:
     // Useful if you want to display results count in
     // description bar.
     void results_count_changed();
+
+    // Emitted when selected items changes. Note that this
+    // is also emitted when focus changes between scope and
+    // results panes.
+    void selection_changed();
+
+    // Emitted when a context menu is requested from a scope
+    // or results view
+    void context_menu(const QPoint pos);
 
 private:
     ConsoleWidgetPrivate *d;

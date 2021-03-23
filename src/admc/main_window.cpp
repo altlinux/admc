@@ -141,7 +141,7 @@ void MainWindow::setup_menubar() {
     // don't add actions. Instead the console adds actions
     // to them.
     auto file_menu = menubar->addMenu(tr("&File"));
-    menubar->addMenu(console->console_widget->get_action_menu());
+    auto action_menu = menubar->addMenu(tr("&Action"));
     menubar->addMenu(console->console_widget->get_navigation_menu());
     menubar->addMenu(console->console_widget->get_view_menu());
     auto preferences_menu = menubar->addMenu(tr("&Preferences"));
@@ -153,6 +153,8 @@ void MainWindow::setup_menubar() {
     //
     file_menu->addAction(connect_action);
     file_menu->addAction(quit_action);
+
+    console->add_actions_to_action_menu(action_menu);
 
     preferences_menu->addAction(advanced_features_action);
     preferences_menu->addAction(confirm_actions_action);
@@ -206,6 +208,13 @@ void MainWindow::setup_menubar() {
                 }
             });
     }
+
+    // Open action menu as context menu for console widget
+    connect(
+        console->console_widget, &ConsoleWidget::context_menu,
+        [action_menu](const QPoint pos) {
+            action_menu->exec(pos);
+        });
 }
 
 void MainWindow::connect_to_server() {
