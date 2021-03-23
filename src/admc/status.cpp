@@ -42,13 +42,21 @@ Status *STATUS() {
 }
 
 Status::Status() {
-    status_bar = new QStatusBar();
-    status_log = new QTextEdit();
-    status_log->setReadOnly(true);
+    m_status_bar = new QStatusBar();
+    m_message_log = new QTextEdit();
+    m_message_log->setReadOnly(true);
+}
+
+QStatusBar *Status::status_bar() const {
+    return m_status_bar;
+}
+
+QTextEdit *Status::message_log() const {
+    return m_message_log;
 }
 
 void Status::add_message(const QString &msg, const StatusType &type) {
-    status_bar->showMessage(msg);
+    m_status_bar->showMessage(msg);
     
     const QColor color =
     [type]() {
@@ -59,14 +67,14 @@ void Status::add_message(const QString &msg, const StatusType &type) {
         return Qt::black;
     }();
 
-    const QColor original_color = status_log->textColor();
-    status_log->setTextColor(color);
-    status_log->append(msg);
-    status_log->setTextColor(original_color);
+    const QColor original_color = m_message_log->textColor();
+    m_message_log->setTextColor(color);
+    m_message_log->append(msg);
+    m_message_log->setTextColor(original_color);
 
     // Limit number of messages in log by deleting old ones
     // once over limit
-    QTextCursor cursor = status_log->textCursor();
+    QTextCursor cursor = m_message_log->textCursor();
     const int message_count = cursor.blockNumber();
     if (message_count > MAX_MESSAGES_IN_LOG) {
         cursor.movePosition(QTextCursor::Start);
@@ -77,9 +85,9 @@ void Status::add_message(const QString &msg, const StatusType &type) {
     }
 
     // Move cursor to newest message
-    QTextCursor end_cursor = status_log->textCursor();
+    QTextCursor end_cursor = m_message_log->textCursor();
     end_cursor.movePosition(QTextCursor::End);
-    status_log->setTextCursor(end_cursor);
+    m_message_log->setTextCursor(end_cursor);
 }
 
 void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {

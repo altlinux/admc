@@ -44,15 +44,14 @@
 MainWindow::MainWindow()
 : QMainWindow()
 {
-    QStatusBar *status_bar = STATUS()->status_bar;
-    setStatusBar(status_bar);
+    setStatusBar(STATUS()->status_bar());
 
-    STATUS()->status_bar->showMessage(tr("Ready"));
-    SETTINGS()->connect_toggle_widget(STATUS()->status_log, BoolSetting_ShowStatusLog);
+    STATUS()->status_bar()->showMessage(tr("Ready"));
+    SETTINGS()->connect_toggle_widget(STATUS()->message_log(), BoolSetting_ShowStatusLog);
 
     message_log_dock = new QDockWidget();
     message_log_dock->setWindowTitle("Message Log");
-    message_log_dock->setWidget(STATUS()->status_log);
+    message_log_dock->setWidget(STATUS()->message_log());
     message_log_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
     message_log_dock->setObjectName(MESSAGE_LOG_OBJECT_NAME);
     addDockWidget(Qt::TopDockWidgetArea, message_log_dock);
