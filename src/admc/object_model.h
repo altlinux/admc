@@ -33,7 +33,12 @@ template <typename T> class QList;
 enum ObjectRole {
     ObjectRole_DN = ConsoleRole_LAST + 1,
     ObjectRole_ObjectClasses = ConsoleRole_LAST + 2,
-    ObjectRole_LAST = ConsoleRole_LAST + 3,
+    ObjectRole_CannotMove = ConsoleRole_LAST + 3,
+    ObjectRole_CannotRename = ConsoleRole_LAST + 4,
+    ObjectRole_CannotDelete = ConsoleRole_LAST + 5,
+    ObjectRole_AccountDisabled = ConsoleRole_LAST + 6,
+    
+    ObjectRole_LAST = ConsoleRole_LAST + 7,
 };
 
 void load_object_row(const QList<QStandardItem *> row, const AdObject &object);

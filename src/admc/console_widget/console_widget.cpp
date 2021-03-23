@@ -503,13 +503,10 @@ QStandardItemModel *ConsoleWidgetPrivate::get_results_model_for_scope_item(const
 }
 
 void ConsoleWidgetPrivate::open_action_menu_as_context_menu(const QPoint pos) {
-    auto menu = new QMenu(q);
-    menu->setAttribute(Qt::WA_DeleteOnClose);
-
-    add_actions_to_action_menu(menu);
+    add_actions_to_action_menu(action_menu);
 
     const QPoint global_pos = focused_view->mapToGlobal(pos);
-    menu->exec(global_pos);
+    action_menu->exec(global_pos);
 }
 
 void ConsoleWidgetPrivate::connect_to_drag_model(ConsoleDragModel *model) {

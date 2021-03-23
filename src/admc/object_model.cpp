@@ -75,6 +75,18 @@ void load_object_item_data(QStandardItem *item, const AdObject &object) {
 
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
     item->setData(QVariant(object_classes), ObjectRole_ObjectClasses);
+
+    const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
+    item->setData(cannot_move, ObjectRole_CannotMove);
+
+    const bool cannot_rename = object.get_system_flag(SystemFlagsBit_CannotRename);
+    item->setData(cannot_rename, ObjectRole_CannotRename);
+
+    const bool cannot_delete = object.get_system_flag(SystemFlagsBit_CannotDelete);
+    item->setData(cannot_delete, ObjectRole_CannotDelete);
+
+    const bool account_disabled = object.get_account_option(AccountOption_Disabled);
+    item->setData(account_disabled, ObjectRole_AccountDisabled);
 }
 
 QList<QString> object_model_header_labels() {

@@ -213,15 +213,9 @@ QAction *add_object_actions_to_menu(QMenu *menu, const QList<QModelIndex> &selec
 
     // Add menu's
     if (single_object) {
-        // TODO: handle error
-        AdInterface ad;
-        if (ad_failed(ad)) {
-            return nullptr;
-        }
-
+        const QModelIndex index = selected_indexes[0];
         const QString target = targets[0];
         const QString target_class = target_classes.values()[0];
-        const AdObject object = ad.search_object(target);
 
         // Get info about object that will determine which
         // actions are present/enabled
@@ -234,11 +228,10 @@ QAction *add_object_actions_to_menu(QMenu *menu, const QList<QModelIndex> &selec
 
         const bool is_user = (target_class == CLASS_USER);
 
-        const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
-        const bool cannot_rename = object.get_system_flag(SystemFlagsBit_CannotRename);
-        const bool cannot_delete = object.get_system_flag(SystemFlagsBit_CannotDelete);
-
-        const bool account_disabled = object.get_account_option(AccountOption_Disabled);
+        const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
+        const bool cannot_rename = index.data(ObjectRole_CannotRename).toBool();
+        const bool cannot_delete = index.data(ObjectRole_CannotDelete).toBool();
+        const bool account_disabled = index.data(ObjectRole_AccountDisabled).toBool();
 
         // Add actions
 
