@@ -39,16 +39,11 @@
 #include <QMessageBox>
 #include <QDockWidget>
 
+#define MESSAGE_LOG_OBJECT_NAME "MESSAGE_LOG_OBJECT_NAME"
+
 MainWindow::MainWindow()
 : QMainWindow()
 {
-    if (SETTINGS()->contains_variant(VariantSetting_MainWindowGeometry)) {
-        SETTINGS()->restore_geometry(this, VariantSetting_MainWindowGeometry);
-    } else {
-        // Make window 70% of desktop size for first startup
-        resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
-    }
-
     QStatusBar *status_bar = STATUS()->status_bar;
     setStatusBar(status_bar);
 
@@ -59,6 +54,7 @@ MainWindow::MainWindow()
     message_log_dock->setWindowTitle("Message Log");
     message_log_dock->setWidget(STATUS()->status_log);
     message_log_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+    message_log_dock->setObjectName(MESSAGE_LOG_OBJECT_NAME);
     addDockWidget(Qt::TopDockWidgetArea, message_log_dock);
 
     console = new Console();
@@ -67,10 +63,20 @@ MainWindow::MainWindow()
     setup_menubar();
 
     connect_to_server();
+
+    const QByteArray geometry = SETTINGS()->get_variant(VariantSetting_MainWindowGeometry).toByteArray();
+    restoreGeometry(geometry);
+
+    const QByteArray state = SETTINGS()->get_variant(VariantSetting_MainWindowState).toByteArray();
+    restoreState(state);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-    SETTINGS()->save_geometry(this, VariantSetting_MainWindowGeometry);
+    const QByteArray geometry = saveGeometry();
+    SETTINGS()->set_variant(VariantSetting_MainWindowGeometry, geometry);
+
+    const QByteArray state = saveState();
+    SETTINGS()->set_variant(VariantSetting_MainWindowState, state);
 
     QApplication::quit();
 }

@@ -39,35 +39,27 @@ class QCheckBox;
 class QHeaderView;
 
 enum VariantSetting {
-    // ADMC
     VariantSetting_Domain,    
     VariantSetting_Site,    
     VariantSetting_Locale,
     VariantSetting_ResultsHeader,
     VariantSetting_FindResultsHeader,
     VariantSetting_AttributesHeader,
-
-    // GPGUI
-
-    // Shared
     VariantSetting_MainWindowGeometry,
+    VariantSetting_MainWindowState,
 
     VariantSetting_COUNT,    
 };
 
 enum BoolSetting {
-    // ADMC
     BoolSetting_AdvancedView,
     BoolSetting_ConfirmActions,
     BoolSetting_DevMode,
     BoolSetting_ShowNonContainersInConsoleTree,
     BoolSetting_LastNameBeforeFirstName,
-
     BoolSetting_ShowStatusLog,
     BoolSetting_ShowConsoleTree,
     BoolSetting_ShowResultsHeader,
-
-    // GPGUI
 
     BoolSetting_COUNT,
 };
@@ -99,9 +91,6 @@ public:
     void connect_action_to_bool_setting(QAction *action, const BoolSetting setting);
 
     void connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSetting setting);
-
-    void restore_geometry(QWidget *widget, const VariantSetting geometry_setting);
-    void save_geometry(QWidget *widget, const VariantSetting geometry_setting);
 
     void setup_header_state(QHeaderView* header, const VariantSetting setting);
 

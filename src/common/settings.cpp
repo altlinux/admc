@@ -109,18 +109,6 @@ void Settings::connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSett
         });
 }
 
-void Settings::restore_geometry(QWidget *widget, const VariantSetting geometry_setting) {
-    const QByteArray geometry = get_variant(VariantSetting_MainWindowGeometry).toByteArray();
-    if (!geometry.isEmpty()) {
-        widget->restoreGeometry(geometry);
-    }
-}
-
-void Settings::save_geometry(QWidget *widget, const VariantSetting geometry_setting) {
-    const QByteArray geometry = widget->saveGeometry();
-    set_variant(VariantSetting_MainWindowGeometry, QVariant(geometry));
-}
-
 void Settings::setup_header_state(QHeaderView *header, const VariantSetting setting) {
     if (contains_variant(setting)) {
         auto header_width = get_variant(setting).toByteArray();
@@ -200,6 +188,7 @@ QString variant_to_string(const VariantSetting setting) {
         CASE_ENUM_TO_STRING(VariantSetting_Domain);
         CASE_ENUM_TO_STRING(VariantSetting_Site);
         CASE_ENUM_TO_STRING(VariantSetting_MainWindowGeometry);
+        CASE_ENUM_TO_STRING(VariantSetting_MainWindowState);
         CASE_ENUM_TO_STRING(VariantSetting_Locale);
         CASE_ENUM_TO_STRING(VariantSetting_ResultsHeader);
         CASE_ENUM_TO_STRING(VariantSetting_FindResultsHeader);

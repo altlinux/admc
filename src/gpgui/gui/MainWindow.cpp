@@ -44,8 +44,6 @@
 MainWindow::MainWindow(const QString &path)
 : QMainWindow()
 {
-    SETTINGS()->restore_geometry(this, VariantSetting_MainWindowGeometry);
-
     // this->preg_open_dialog = new QFileDialog(
     //     this, tr("Select PReg file to edit"), QDir::currentPath(),
     //     "PReg files (*.pol);;All files (*.*)");
@@ -277,5 +275,5 @@ void MainWindow::open_generic_path(const QString &path) {
 }
 
 void MainWindow::closeEvent(QCloseEvent *) {
-    SETTINGS()->save_geometry(this, VariantSetting_MainWindowGeometry);
+
 }
