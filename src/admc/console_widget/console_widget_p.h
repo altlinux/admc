@@ -76,11 +76,14 @@ public:
     QHash<int, ResultsDescription> results_descriptions;
     QHash<QPersistentModelIndex, QStandardItemModel *> results_models;
 
-    QMenu *navigation_menu;
     QMenu *view_menu;
 
     QAction *properties_action;
     QAction *refresh_action;
+
+    QAction *navigate_up_action;
+    QAction *navigate_back_action;
+    QAction *navigate_forward_action;
 
     ConsoleWidgetPrivate(ConsoleWidget *q_arg);
 
@@ -97,9 +100,6 @@ private:
     QAction *set_results_to_icons_action;
     QAction *set_results_to_list_action;
     QAction *set_results_to_detail_action;
-    QAction *navigate_up_action;
-    QAction *navigate_back_action;
-    QAction *navigate_forward_action;
     QAction *customize_columns_action;
 
     // NOTE: target history stores target items' id's.

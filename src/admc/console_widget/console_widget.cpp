@@ -64,7 +64,6 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
 
     results_stacked_widget = new QStackedWidget();
 
-    navigation_menu = new QMenu(tr("&Navigation"), q);
     view_menu = new QMenu(tr("&View"), q);
 
     properties_action = new QAction(tr("&Properties"), this);
@@ -76,10 +75,6 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
     set_results_to_icons_action = new QAction(tr("&Icons"), this);
     set_results_to_list_action = new QAction(tr("&List"), this);
     set_results_to_detail_action = new QAction(tr("&Detail"), this);
-
-    navigation_menu->addAction(navigate_up_action);
-    navigation_menu->addAction(navigate_back_action);
-    navigation_menu->addAction(navigate_forward_action);
 
     // NOTE: need to add a dummy view until a real view is
     // added when a scope item is selected. If this is not
@@ -494,10 +489,6 @@ QWidget *ConsoleWidget::get_description_bar() const {
     return d->description_bar;
 }
 
-QMenu *ConsoleWidget::get_navigation_menu() const {
-    return d->navigation_menu;
-}
-
 QMenu *ConsoleWidget::get_view_menu() const {
     return d->view_menu;
 }
@@ -818,6 +809,12 @@ void ConsoleWidget::add_actions_to_action_menu(QMenu *menu) {
 
     d->properties_action->setVisible(false);
     d->refresh_action->setVisible(false);
+}
+
+void ConsoleWidget::add_actions_to_navigation_menu(QMenu *menu) {
+    menu->addAction(d->navigate_up_action);
+    menu->addAction(d->navigate_back_action);
+    menu->addAction(d->navigate_forward_action);
 }
 
 const ResultsDescription ConsoleWidgetPrivate::get_current_results() const {

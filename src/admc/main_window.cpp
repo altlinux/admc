@@ -142,7 +142,7 @@ void MainWindow::setup_menubar() {
     // to them.
     auto file_menu = menubar->addMenu(tr("&File"));
     auto action_menu = menubar->addMenu(tr("&Action"));
-    menubar->addMenu(console->console_widget->get_navigation_menu());
+    auto navigation_menu = menubar->addMenu(tr("&Navigation"));
     menubar->addMenu(console->console_widget->get_view_menu());
     auto preferences_menu = menubar->addMenu(tr("&Preferences"));
     auto language_menu = new QMenu(tr("&Language"));
@@ -155,6 +155,8 @@ void MainWindow::setup_menubar() {
     file_menu->addAction(quit_action);
 
     console->add_actions_to_action_menu(action_menu);
+
+    console->console_widget->add_actions_to_navigation_menu(navigation_menu);
 
     preferences_menu->addAction(advanced_features_action);
     preferences_menu->addAction(confirm_actions_action);
