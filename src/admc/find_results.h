@@ -34,6 +34,7 @@ class QStandardItem;
 class QMenu;
 class AdObject;
 class CustomizeColumnsDialog;
+class ResultsView;
 template <typename T> class QList;
 template <typename K, typename T> class QHash;
 
@@ -41,8 +42,6 @@ class FindResults final : public QWidget {
 Q_OBJECT
 
 public:
-    QTreeView *view;
-
     FindResults();
 
     void clear();
@@ -53,21 +52,45 @@ public:
     // NOTE: returned items need to be re-parented or deleted!
     QList<QList<QStandardItem *>> get_selected_rows() const;
 
-    void load_menu(QMenu *menu);
+    void add_actions_to_action_menu(QMenu *menu);
+    void add_actions_to_view_menu(QMenu *menu);
 
-    void setup_context_menu();
+signals:
+    void context_menu(const QPoint pos);
 
-    QAction *get_customize_columns_action();
+private slots:
+    void properties();
+    void delete_objects();
+    void rename();
+    void create(const QString &object_class);
+    void move();
+    void add_to_group();
+    void enable();
+    void disable();
+    void reset_password();
+
+    void customize_columns();
+    void on_context_menu(const QPoint pos);
 
 private:
+    ResultsView *view;
     QStandardItemModel *model;
     QLabel *object_count_label;
     QAction *customize_columns_action;
     bool context_menu_enabled;
-    CustomizeColumnsDialog *customize_columns_dialog;
 
-    void open_context_menu(const QPoint pos);
-    void customize_columns();
+    QMenu *submenu_new;
+    QAction *properties_action;
+    QAction *delete_action;
+    QAction *rename_action;
+    QAction *move_action;
+    QAction *add_to_group_action;
+    QAction *enable_action;
+    QAction *disable_action;
+    QAction *reset_password_action;
+
+    void enable_disable_helper(const bool disabled);
+    void update_actions_visibility();
 };
 
 #endif /* FIND_RESULTS_H */

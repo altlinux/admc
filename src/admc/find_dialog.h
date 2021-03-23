@@ -27,14 +27,20 @@
 #include <QDialog>
 
 class QString;
+class QMenu;
 template <typename T> class QList;
 
 class FindDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    FindDialog(const QList<QString> classes, const QString default_search_base, QWidget *parent);
-    
+    FindDialog(const QList<QString> classes, const QString 
+        default_search_base, QWidget *parent);
+
+private:
+    QMenu *action_menu;
+
+    void on_context_menu(const QPoint pos);
 };
 
 #endif /* FIND_DIALOG_H */
