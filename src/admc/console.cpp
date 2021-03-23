@@ -295,6 +295,8 @@ void Console::rename() {
             const QString new_dn = dialog->get_new_dn();
             const AdObject updated_object = ad.search_object(new_dn);
             update_console_item(index, updated_object);
+
+            console_widget->sort_scope();
         });
 
     dialog->open();
@@ -323,6 +325,8 @@ void Console::create(const QString &object_class) {
             const AdObject new_object = ad.search_object(new_dn);
 
             add_object_to_console(new_object, selected_index);
+
+            console_widget->sort_scope();
         });
 
     dialog->open();
