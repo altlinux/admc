@@ -142,7 +142,7 @@ void Settings::connect_toggle_widget(QWidget *widget, const BoolSetting setting)
 // NOTE: DON'T define "default:" branch, want to be warned and forced to define a default value for all settings
 bool bool_default_value(const BoolSetting setting) {
     switch (setting) {
-        case BoolSetting_AdvancedView: return false;
+        case BoolSetting_AdvancedFeatures: return false;
         case BoolSetting_ConfirmActions: return true;
         case BoolSetting_DevMode: return false;
         case BoolSetting_ShowNonContainersInConsoleTree: return false;
@@ -169,7 +169,7 @@ bool bool_default_value(const BoolSetting setting) {
 // BoolSetting_Foo => "BoolSetting_Foo"
 QString bool_to_string(const BoolSetting setting) {
     switch (setting) {
-        CASE_ENUM_TO_STRING(BoolSetting_AdvancedView);
+        CASE_ENUM_TO_STRING(BoolSetting_AdvancedFeatures);
         CASE_ENUM_TO_STRING(BoolSetting_ConfirmActions);
         CASE_ENUM_TO_STRING(BoolSetting_DevMode);
         CASE_ENUM_TO_STRING(BoolSetting_ShowNonContainersInConsoleTree);

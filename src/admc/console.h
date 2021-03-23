@@ -83,7 +83,6 @@ private:
     QAction *rename_action;
     QAction *move_action;
     QAction *open_filter_action;
-    QAction *advanced_view_action;
     QAction *show_noncontainers_action;
     QAction *dev_mode_action;
     ResultsView *object_results;

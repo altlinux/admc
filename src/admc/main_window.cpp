@@ -59,13 +59,13 @@ MainWindow::MainWindow()
 
     setup_menubar();
 
-    connect_to_server();
-
     const QByteArray geometry = SETTINGS()->get_variant(VariantSetting_MainWindowGeometry).toByteArray();
     restoreGeometry(geometry);
 
     const QByteArray state = SETTINGS()->get_variant(VariantSetting_MainWindowState).toByteArray();
     restoreState(state);
+
+    connect_to_server();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -95,6 +95,7 @@ void MainWindow::setup_menubar() {
     auto manual_action = new QAction(tr("&Manual"), this);
     auto about_action = new QAction(tr("&About ADMC"), this);
 
+    auto advanced_features_action = new QAction(tr("&Advanced Features"));
     auto confirm_actions_action = new QAction(tr("&Confirm actions"), this);
     auto last_before_first_name_action = new QAction(tr("&Put last name before first name when creating users"), this);
     auto toggle_console_tree_action = new QAction(tr("Console Tree"));
@@ -153,6 +154,7 @@ void MainWindow::setup_menubar() {
     file_menu->addAction(connect_action);
     file_menu->addAction(quit_action);
 
+    preferences_menu->addAction(advanced_features_action);
     preferences_menu->addAction(confirm_actions_action);
     preferences_menu->addAction(last_before_first_name_action);
     preferences_menu->addMenu(language_menu);
@@ -185,6 +187,7 @@ void MainWindow::setup_menubar() {
     connect(
         about_action, &QAction::triggered,
         about_dialog, &QDialog::open);
+    SETTINGS()->connect_action_to_bool_setting(advanced_features_action, BoolSetting_AdvancedFeatures);
     SETTINGS()->connect_action_to_bool_setting(confirm_actions_action, BoolSetting_ConfirmActions);
     SETTINGS()->connect_action_to_bool_setting(last_before_first_name_action, BoolSetting_LastNameBeforeFirstName);
     SETTINGS()->connect_action_to_bool_setting(toggle_console_tree_action, BoolSetting_ShowConsoleTree);

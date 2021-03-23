@@ -69,8 +69,6 @@ Console::Console()
     rename_action = new QAction(tr("&Rename"));
     move_action = new QAction(tr("&Move"));
     open_filter_action = new QAction(tr("&Filter objects"));
-    advanced_view_action = new QAction(tr("&Advanced View"));
-    advanced_view_action = new QAction(tr("&Advanced View"));
     dev_mode_action = new QAction(tr("Dev mode"));
     show_noncontainers_action = new QAction(tr("&Show non-container objects in Console tree"));
 
@@ -93,9 +91,9 @@ Console::Console()
 
     // Refresh head when settings affecting the filter
     // change. This reloads the model with an updated filter
-    const BoolSettingSignal *advanced_view = SETTINGS()->get_bool_signal(BoolSetting_AdvancedView);
+    const BoolSettingSignal *advanced_features = SETTINGS()->get_bool_signal(BoolSetting_AdvancedFeatures);
     connect(
-        advanced_view, &BoolSettingSignal::changed,
+        advanced_features, &BoolSettingSignal::changed,
         this, &Console::refresh_head);
 
     const BoolSettingSignal *show_non_containers = SETTINGS()->get_bool_signal(BoolSetting_ShowNonContainersInConsoleTree);
@@ -111,7 +109,6 @@ Console::Console()
     SETTINGS()->connect_toggle_widget(console_widget->get_scope_view(), BoolSetting_ShowConsoleTree);
     SETTINGS()->connect_toggle_widget(console_widget->get_description_bar(), BoolSetting_ShowResultsHeader);
 
-    SETTINGS()->connect_action_to_bool_setting(advanced_view_action, BoolSetting_AdvancedView);
     SETTINGS()->connect_action_to_bool_setting(dev_mode_action, BoolSetting_DevMode);
     SETTINGS()->connect_action_to_bool_setting(show_noncontainers_action, BoolSetting_ShowNonContainersInConsoleTree);
 
@@ -437,7 +434,6 @@ void Console::on_view_menu(QMenu *menu) {
     // and checkbox actions
     menu->addSeparator();
 
-    menu->addAction(advanced_view_action);
     menu->addAction(show_noncontainers_action);
 
     #ifdef QT_DEBUG
@@ -466,10 +462,10 @@ void Console::fetch_scope_node(const QModelIndex &index) {
 
         // Hide advanced view only" objects if advanced view
         // setting is off
-        const bool advanced_view_OFF = !SETTINGS()->get_bool(BoolSetting_AdvancedView);
-        if (advanced_view_OFF) {
-            const QString advanced_view = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
-            out = filter_OR({out, advanced_view});
+        const bool advanced_features_OFF = !SETTINGS()->get_bool(BoolSetting_AdvancedFeatures);
+        if (advanced_features_OFF) {
+            const QString advanced_features = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
+            out = filter_OR({out, advanced_features});
         }
 
         // OR filter with some dev mode object classes, so that they show up no matter what when dev mode is on

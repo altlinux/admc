@@ -131,7 +131,7 @@ void SelectContainerDialog::fetch_node(const QModelIndex &index) {
     [=]() {
         QString out = is_container_filter();
 
-        const bool advanced_view_OFF = !SETTINGS()->get_bool(BoolSetting_AdvancedView);
+        const bool advanced_view_OFF = !SETTINGS()->get_bool(BoolSetting_AdvancedFeatures);
         if (advanced_view_OFF) {
             const QString advanced_view = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
             out = filter_OR({out, advanced_view});

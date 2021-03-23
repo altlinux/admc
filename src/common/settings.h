@@ -52,7 +52,7 @@ enum VariantSetting {
 };
 
 enum BoolSetting {
-    BoolSetting_AdvancedView,
+    BoolSetting_AdvancedFeatures,
     BoolSetting_ConfirmActions,
     BoolSetting_DevMode,
     BoolSetting_ShowNonContainersInConsoleTree,
