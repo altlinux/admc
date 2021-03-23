@@ -520,7 +520,7 @@ void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
 void ConsoleWidgetPrivate::on_selection_changed() {
     const QList<QModelIndex> selected_list = q->get_selected_items();
     
-    if (selected_list.isEmpty() || !selected_list[0].isValid()) {
+    if (!selected_list.isEmpty() && !selected_list[0].isValid()) {
         return;
     }
 
