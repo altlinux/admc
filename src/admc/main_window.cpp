@@ -30,7 +30,6 @@
 
 #include <QApplication>
 #include <QString>
-#include <QSplitter>
 #include <QStatusBar>
 #include <QTextEdit>
 #include <QAction>
@@ -38,6 +37,7 @@
 #include <QMenuBar>
 #include <QActionGroup>
 #include <QMessageBox>
+#include <QDockWidget>
 
 MainWindow::MainWindow()
 : QMainWindow()
@@ -55,17 +55,16 @@ MainWindow::MainWindow()
     STATUS()->status_bar->showMessage(tr("Ready"));
     SETTINGS()->connect_toggle_widget(STATUS()->status_log, BoolSetting_ShowStatusLog);
 
+    message_log_dock = new QDockWidget();
+    message_log_dock->setWindowTitle("Message Log");
+    message_log_dock->setWidget(STATUS()->status_log);
+    message_log_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+    addDockWidget(Qt::TopDockWidgetArea, message_log_dock);
+
     console = new Console();
+    setCentralWidget(console);
 
     setup_menubar();
-
-    auto vert_splitter = new QSplitter(Qt::Vertical);
-    vert_splitter->addWidget(STATUS()->status_log);
-    vert_splitter->addWidget(console);
-    vert_splitter->setStretchFactor(0, 1);
-    vert_splitter->setStretchFactor(1, 3);
-
-    setCentralWidget(vert_splitter);
 
     connect_to_server();
 }
@@ -156,6 +155,7 @@ void MainWindow::setup_menubar() {
     preferences_menu->addAction(last_before_first_name_action);
     preferences_menu->addAction(toggle_widgets_action);
     preferences_menu->addMenu(language_menu);
+    preferences_menu->addAction(message_log_dock->toggleViewAction());
 
     for (const auto language : language_list) {
         QAction *language_action = language_actions[language];

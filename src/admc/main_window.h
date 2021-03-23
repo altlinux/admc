@@ -24,6 +24,7 @@
 
 class QAction;
 class Console;
+class QDockWidget;
 
 class MainWindow final : public QMainWindow {
 Q_OBJECT
@@ -37,6 +38,7 @@ protected:
 private:
     QAction *connect_action;
     Console *console;
+    QDockWidget *message_log_dock;
 
     void setup_menubar();
     void connect_to_server();
