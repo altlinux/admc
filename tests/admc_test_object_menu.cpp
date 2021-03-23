@@ -319,10 +319,8 @@ void ADMCTestObjectMenu::object_menu_find_simple()
     QVERIFY2(create_user_success, "Failed to create user");
     QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
 
-    find(parent, parent_widget);
-
-    auto find_dialog = parent_widget->findChild<FindDialog *>();
-    QVERIFY2((find_dialog != nullptr), "Failed to find find_dialog");
+    auto find_dialog = new FindDialog(filter_classes, parent, parent_widget);
+    find_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(find_dialog, 1000));
 
     tab();
@@ -362,10 +360,8 @@ void ADMCTestObjectMenu::object_menu_find_advanced()
     QVERIFY2(create_user_success, "Failed to create user");
     QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
 
-    find(parent, parent_widget);
-
-    auto find_dialog = parent_widget->findChild<FindDialog *>();
-    QVERIFY2((find_dialog != nullptr), "Failed to find find_dialog");
+    auto find_dialog = new FindDialog(filter_classes, parent, parent_widget);
+    find_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(find_dialog, 1000));
 
     tab();
