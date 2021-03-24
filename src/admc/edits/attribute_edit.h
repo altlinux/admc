@@ -94,13 +94,24 @@ public:\
 void edits_connect_to_tab(QList<AttributeEdit *> edits, PropertiesTab *tab);
 void edits_add_to_layout(QList<AttributeEdit *> edits, QFormLayout *layout);
 
+// NOTE: "ignore_modified" argument is solely for a edge
+// case in CreateDialog. If it's set to true, then edits are
+// verified/applied regardless or whether they are modified
+// or not
+
 // Verify all edits that were modified. Verify process will
 // stop on first failure. This is so that only one failure
 // message is shown at a time.
-bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn);
+bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn, const bool ignore_modified = false);
 
-// Applies all edits that were modified. If one of the edits fails to apply midway, the apply process still continues. This is so that if more errors occur, they are all gathered together and presented to the user together. If process stopped on first error, the user would have to apply multiple times while fixing errors to see all of them.
-bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn);
+// Applies all edits that were modified. If one of the edits
+// fails to apply midway, the apply process still continues.
+// This is so that if more errors occur, they are all
+// gathered together and presented to the user together. If
+// process stopped on first error, the user would have to
+// apply multiple times while fixing errors to see all of
+// them.
+bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn, const bool ignore_modified = false);
 
 void edits_load(QList<AttributeEdit *> edits, const AdObject &object);
 

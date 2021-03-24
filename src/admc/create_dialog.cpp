@@ -210,7 +210,9 @@ QString CreateDialog::get_created_dn() const {
     return dn;
 }
 
-// NOTE: not using edits_verify() and edits_apply() because that f-n processes only modified edits. Since this is a new object, all the edits are in "unmodified" state but still need to be processed.
+// NOTE: passing "ignore_modified" to verify and apply f-ns
+// because this is a new object, so all the edits are in
+// "unmodified" state but still need to be processed.
 void CreateDialog::accept() {
     AdInterface ad;
     if (ad_failed(ad)) {
@@ -222,17 +224,8 @@ void CreateDialog::accept() {
     const QString dn = get_created_dn();
 
     // Verify edits
-    const bool verify_success =
-    [&]() {
-        for (auto edit : all_edits) {
-            const bool success = edit->verify(ad, dn);
-            if (!success) {
-                return false;
-            }
-        }
+    const bool verify_success = edits_verify(ad, all_edits, dn, true);
 
-        return true;
-    }();
     if (!verify_success) {
         return;
     }
@@ -247,19 +240,8 @@ void CreateDialog::accept() {
 
     bool final_success = false;
     if (add_success) {
-        const bool apply_success =
-        [this, &ad, dn]() {
-            bool total_success = true;
-
-            for (auto edit : all_edits) {
-                const bool success = edit->apply(ad, dn);
-                if (!success) {
-                    total_success = false;
-                }
-            }
-
-            return total_success;
-        }();
+        // NOTE: pass "i
+        const bool apply_success = edits_apply(ad, all_edits, dn, true);
 
         if (apply_success) {
             final_success = true;
