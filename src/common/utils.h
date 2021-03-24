@@ -33,6 +33,7 @@ class QLineEdit;
 class QPoint;
 class QWidget;
 class QModelIndex;
+class QVariant;
 template <typename T> class QList;
 template <typename K, typename T> class QMap;
 template <typename K, typename T> class QHash;
@@ -40,15 +41,9 @@ template <typename K, typename T> class QHash;
 #define debug_print(a, args...) printf("%s(%s:%d) " a,  __func__,__FILE__, __LINE__, ##args)
 #define trace(a, args...) debug_print(a "\n", ##args)
 
-// NOTE: these functions assume that view's proxies don't filter out the DN column and that it is always present.
-QString get_dn_from_index(const QModelIndex &index, int dn_column);
-QString get_dn_from_pos(const QPoint &pos, const QAbstractItemView *view, int dn_column);
-
 QList<QStandardItem *> make_item_row(const int count);
 
 void exec_menu_from_view(QMenu *menu, const QAbstractItemView *view, const QPoint &pos);
-// NOTE: view must have header items and model before this is called
-void setup_column_toggle_menu(const QTreeView *view, const QStandardItemModel *model, const QList<int> &initially_visible_columns);
 
 // Convenience f-n so that you can pass a mapping of
 // column => label
@@ -73,5 +68,7 @@ void show_busy_indicator();
 void hide_busy_indicator();
 
 bool confirmation_dialog(const QString &text, QWidget *parent);
+
+void set_data_for_row(const QList<QStandardItem *> &row, const QVariant &data, const int role);
 
 #endif /* UTILS_H */

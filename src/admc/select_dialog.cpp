@@ -37,14 +37,6 @@
 #include <QMessageBox>
 #include <QStandardItemModel>
 
-enum SelectDialogColumn {
-    SelectDialogColumn_Name,
-    SelectDialogColumn_Parent,
-    SelectDialogColumn_Class,
-    SelectDialogColumn_DN,
-    SelectDialogColumn_COUNT
-};
-
 SelectDialog::SelectDialog(QList<QString> classes_arg, SelectDialogMultiSelection multi_selection_arg, QWidget *parent)
 : QDialog(parent)
 {
@@ -65,7 +57,7 @@ SelectDialog::SelectDialog(QList<QString> classes_arg, SelectDialogMultiSelectio
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setSortingEnabled(true);
     view->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    view->sortByColumn(SelectDialogColumn_Name, Qt::AscendingOrder);
+    view->sortByColumn(0, Qt::AscendingOrder);
 
     view->setModel(model);
 
@@ -86,8 +78,6 @@ SelectDialog::SelectDialog(QList<QString> classes_arg, SelectDialogMultiSelectio
     layout->addWidget(view);
     layout->addLayout(list_buttons_layout);
     layout->addWidget(button_box);
-
-    setup_column_toggle_menu(view, model, {SelectDialogColumn_Name, SelectDialogColumn_Parent});
 
     enable_widget_on_selection(remove_button, view);
 
@@ -111,7 +101,7 @@ QList<QString> SelectDialog::get_selected() const {
 
     for (int row = 0; row < model->rowCount(); row++) {
         const QModelIndex index = model->index(row, 0);
-        const QString dn = get_dn_from_index(index, SelectDialogColumn_DN);
+        const QString dn = index.data(ObjectRole_DN).toString();
 
         selected_dns.insert(dn);
     }
@@ -177,8 +167,7 @@ void SelectDialog::remove_from_list() {
 void SelectDialog::showEvent(QShowEvent *event) {
     resize_columns(view,
     {
-        {SelectDialogColumn_Name, 0.4},
-        {SelectDialogColumn_Parent, 0.4},
-        {SelectDialogColumn_Class, 0.2},
+        {0, 0.4},
+        {1, 0.4},
     });
 }

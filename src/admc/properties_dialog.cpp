@@ -83,11 +83,12 @@ PropertiesDialog *PropertiesDialog::open_for_target(const QString &target) {
     return dialog;
 }
 
-void PropertiesDialog::connect_to_open_by_double_click(QAbstractItemView *view, const int dn_column) {
+void PropertiesDialog::open_when_view_item_activated(QAbstractItemView *view, const int dn_role) {
     connect(
         view, &QAbstractItemView::doubleClicked,
-        [dn_column](const QModelIndex &index) {
-            const QString dn = get_dn_from_index(index, dn_column);
+        [dn_role](const QModelIndex &index) {
+            const QString dn = index.data(dn_role).toString();
+            
             open_for_target(dn);
         });
 }

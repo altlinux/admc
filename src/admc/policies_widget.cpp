@@ -34,8 +34,11 @@
 
 enum PoliciesColumn {
     PoliciesColumn_Name,
-    PoliciesColumn_DN,
     PoliciesColumn_COUNT,
+};
+
+enum PoliciesRole {
+    PoliciesRole_DN = Qt::UserRole + 1,
 };
 
 // TODO: respond to AD object signals
@@ -51,12 +54,9 @@ PoliciesWidget::PoliciesWidget()
     model = new QStandardItemModel(0, PoliciesColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model, {
         {PoliciesColumn_Name, tr("Name")},
-        {PoliciesColumn_DN, tr("DN")}
     });
 
     view->setModel(model);
-
-    setup_column_toggle_menu(view, model, {PoliciesColumn_Name});
 
     const auto label = new QLabel(tr("Policies"), this);
 
@@ -94,7 +94,8 @@ void PoliciesWidget::reload() {
         
         const QList<QStandardItem *> row = make_item_row(PoliciesColumn_COUNT);
         row[PoliciesColumn_Name]->setText(display_name);
-        row[PoliciesColumn_DN]->setText(dn);
+
+        set_data_for_row(row, dn, PoliciesRole_DN);
 
         model->appendRow(row);
     }
@@ -103,11 +104,13 @@ void PoliciesWidget::reload() {
 }
 
 void PoliciesWidget::on_context_menu(const QPoint pos) {
-    const QString dn = get_dn_from_pos(pos, view, PoliciesColumn_DN);
+    const QModelIndex index = view->indexAt(pos);
+    const QString dn = index.data(PoliciesRole_DN).toString();
     if (dn.isEmpty()) {
         return;
     }
 
+    
     AdInterface ad;
     if (ad_failed(ad)) {
         return;

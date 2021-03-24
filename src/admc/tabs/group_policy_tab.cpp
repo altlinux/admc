@@ -38,8 +38,11 @@ enum GplinkColumn {
     GplinkColumn_Name,
     GplinkColumn_Disabled,
     GplinkColumn_Enforced,
-    GplinkColumn_DN,
     GplinkColumn_COUNT
+};
+
+enum GplinkRole {
+    GplinkRole_DN = Qt::UserRole + 1,
 };
 
 const QSet<GplinkColumn> option_columns = {
@@ -66,12 +69,9 @@ GroupPolicyTab::GroupPolicyTab() {
         {GplinkColumn_Name, tr("Name")},
         {GplinkColumn_Disabled, tr("Disabled")},
         {GplinkColumn_Enforced, tr("Enforced")},
-        {GplinkColumn_DN, tr("DN")}
     });
 
     view->setModel(model);
-
-    setup_column_toggle_menu(view, model, {GplinkColumn_Name, GplinkColumn_Disabled, GplinkColumn_Enforced});
 
     const auto edits_layout = new QFormLayout();
 
@@ -136,7 +136,8 @@ bool GroupPolicyTab::apply(AdInterface &ad, const QString &target) {
 }
 
 void GroupPolicyTab::on_context_menu(const QPoint pos) {
-    const QString gpo = get_dn_from_pos(pos, view, GplinkColumn_DN);
+    const QModelIndex index = view->indexAt(pos);
+    const QString gpo = index.data(GplinkRole_DN).toString();
     if (gpo.isEmpty()) {
         return;
     }
@@ -179,7 +180,7 @@ void GroupPolicyTab::on_remove_button() {
 
     QList<QString> selected;
     for (auto index : selected_raw) {
-        const QString gpo = get_dn_from_index(index, GplinkColumn_DN);
+        const QString gpo = index.data(GplinkRole_DN).toString();
 
         selected.append(gpo);
     }
@@ -249,7 +250,7 @@ void GroupPolicyTab::reload_gplink() {
 
         const QList<QStandardItem *> row = make_item_row(GplinkColumn_COUNT);
         row[GplinkColumn_Name]->setText(display_name);
-        row[GplinkColumn_DN]->setText(dn);
+        set_data_for_row(row, dn, GplinkRole_DN);
 
         for (const auto column : option_columns) {
             QStandardItem *item = row[column];
@@ -279,7 +280,7 @@ void GroupPolicyTab::on_item_changed(QStandardItem *item) {
 
     if (option_columns.contains(column)) {
         const QModelIndex index = item->index();
-        const QString gpo = get_dn_from_index(index, GplinkColumn_DN);
+        const QString gpo = index.data(GplinkRole_DN).toString();
         const GplinkOption option = column_to_option[column];
         const bool is_checked = (item->checkState() == Qt::Checked);
 
@@ -287,11 +288,4 @@ void GroupPolicyTab::on_item_changed(QStandardItem *item) {
 
         reload_gplink();
     }
-}
-
-void GroupPolicyTab::showEvent(QShowEvent *event) {
-    resize_columns(view,
-    {
-        {GplinkColumn_Name, 0.5},
-    });
 }

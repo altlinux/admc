@@ -33,8 +33,11 @@
 
 enum GpoLinksColumn {
     GpoLinksColumn_Name,
-    GpoLinksColumn_DN,
-    GpoLinksColumn_COUNT
+    GpoLinksColumn_COUNT,
+};
+
+enum GpoLinksRole {
+    GpoLinksRole_DN = Qt::UserRole + 1,
 };
 
 GpoLinksTab::GpoLinksTab() {   
@@ -47,18 +50,15 @@ GpoLinksTab::GpoLinksTab() {
     model = new QStandardItemModel(0, GpoLinksColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model, {
         {GpoLinksColumn_Name, tr("Name")},
-        {GpoLinksColumn_DN, tr("DN")}
     });
 
     view->setModel(model);
-
-    setup_column_toggle_menu(view, model, {GpoLinksColumn_Name});
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(view);
 
-    PropertiesDialog::connect_to_open_by_double_click(view, GpoLinksColumn_DN);
+    PropertiesDialog::open_when_view_item_activated(view, GpoLinksRole_DN);
 }
 
 void GpoLinksTab::load(AdInterface &ad, const AdObject &object) {
@@ -76,7 +76,8 @@ void GpoLinksTab::load(AdInterface &ad, const AdObject &object) {
 
         const QList<QStandardItem *> row = make_item_row(GpoLinksColumn_COUNT);
         row[GpoLinksColumn_Name]->setText(name);
-        row[GpoLinksColumn_DN]->setText(dn);
+        
+        set_data_for_row(row, dn, GpoLinksRole_DN);
 
         model->appendRow(row);
     }

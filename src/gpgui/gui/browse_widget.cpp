@@ -57,8 +57,6 @@ BrowseWidget::BrowseWidget()
 
     view->setModel(model);
 
-    setup_column_toggle_menu(view, model, {BrowseColumn_Name});
-
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(view);

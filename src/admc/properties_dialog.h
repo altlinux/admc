@@ -40,7 +40,7 @@ Q_OBJECT
 
 public:
     static PropertiesDialog *open_for_target(const QString &target);
-    static void connect_to_open_by_double_click(QAbstractItemView *view, const int dn_column);
+    static void open_when_view_item_activated(QAbstractItemView *view, const int dn_role);
     static QString display_name();
 
 signals:

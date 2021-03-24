@@ -33,8 +33,11 @@
 enum ReportsColumn {
     ReportsColumn_Name,
     ReportsColumn_Folder,
-    ReportsColumn_DN,
     ReportsColumn_COUNT,
+};
+
+enum ReportsRole {
+    ReportsRole_DN = Qt::UserRole + 1,
 };
 
 OrganizationTab::OrganizationTab() {   
@@ -53,7 +56,6 @@ OrganizationTab::OrganizationTab() {
     set_horizontal_header_labels_from_map(reports_model, {
         {ReportsColumn_Name, tr("Name")},
         {ReportsColumn_Folder, tr("Folder")},
-        {ReportsColumn_DN, tr("DN")}
     });
 
     auto reports_label = new QLabel(tr("Reports:"));
@@ -63,9 +65,8 @@ OrganizationTab::OrganizationTab() {
     reports_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     reports_view->setAllColumnsShowFocus(true);
     reports_view->setSortingEnabled(true);
-    PropertiesDialog::connect_to_open_by_double_click(reports_view, ReportsColumn_DN);
 
-    setup_column_toggle_menu(reports_view, reports_model, {ReportsColumn_Name, ReportsColumn_Folder});
+    PropertiesDialog::open_when_view_item_activated(reports_view, ReportsRole_DN);
 
     auto layout = new QFormLayout();
     setLayout(layout);
@@ -85,7 +86,8 @@ void OrganizationTab::load(AdInterface &ad, const AdObject &object) {
         const QList<QStandardItem *> row = make_item_row(ReportsColumn_COUNT);
         row[ReportsColumn_Name]->setText(name);
         row[ReportsColumn_Folder]->setText(parent);
-        row[ReportsColumn_DN]->setText(dn);
+
+        set_data_for_row(row, dn, ReportsRole_DN); 
 
         reports_model->appendRow(row);
     }

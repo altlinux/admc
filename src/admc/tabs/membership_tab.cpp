@@ -46,9 +46,12 @@
 enum MembersColumn {
     MembersColumn_Name,
     MembersColumn_Parent,
-    MembersColumn_Primary,
-    MembersColumn_DN,
     MembersColumn_COUNT,
+};
+
+enum MembersRole {
+    MembersRole_DN = Qt::UserRole + 1,
+    MembersRole_Primary = Qt::UserRole + 2,
 };
 
 MembersTab::MembersTab()
@@ -75,13 +78,9 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     set_horizontal_header_labels_from_map(model, {
         {MembersColumn_Name, tr("Name")},
         {MembersColumn_Parent, tr("Folder")},
-        {MembersColumn_Primary, tr("Primary")},
-        {MembersColumn_DN, tr("DN")}
     });
 
     view->setModel(model);
-
-    setup_column_toggle_menu(view, model, {MembersColumn_Name, MembersColumn_Parent});
 
     auto properties_button = new QPushButton(PropertiesDialog::display_name());
     auto add_button = new QPushButton(tr("Add"));
@@ -141,7 +140,7 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
         properties_button, &QAbstractButton::clicked,
         this, &MembershipTab::on_properties_button);
 
-    PropertiesDialog::connect_to_open_by_double_click(view, MembersColumn_DN);
+    PropertiesDialog::open_when_view_item_activated(view, MembersRole_DN);
 }
 
 void MembershipTab::load(AdInterface &ad, const AdObject &object) {
@@ -351,7 +350,7 @@ void MembershipTab::on_remove_button() {
 
     QList<QString> removed_values;
     for (auto index : selected) {
-        const QString dn = get_dn_from_index(index, MembersColumn_DN);
+        const QString dn = index.data(MembersRole_DN).toString();
 
         removed_values.append(dn);
     }
@@ -388,7 +387,7 @@ void MembershipTab::on_primary_button() {
     const QItemSelectionModel *selection_model = view->selectionModel();
     const QList<QModelIndex> selecteds = selection_model->selectedIndexes();
     const QModelIndex selected = selecteds[0];
-    const QString group_dn = get_dn_from_index(selected, MembersColumn_DN);
+    const QString group_dn = selected.data(MembersRole_DN).toString();
 
     // Old primary group becomes normal
     current_values.unite(current_primary_values);
@@ -404,7 +403,7 @@ void MembershipTab::on_primary_button() {
 
 void MembershipTab::on_properties_button() {
     const QModelIndex current = view->selectionModel()->currentIndex();
-    const QString &dn = get_dn_from_index(current, MembersColumn_DN);
+    const QString dn = current.data(MembersRole_DN).toString();
 
     PropertiesDialog::open_for_target(dn);
 }
@@ -420,12 +419,11 @@ void MembershipTab::enable_primary_button_on_valid_selection() {
     // Enable "set primary group" button if
     // 1) there's a selection
     // 2) the selected group is NOT primary already
-    // NOTE: selectedIndexes contains multiple indexes for each row, so need to convert to set of dn's
     const QSet<QString> selected_dns =
     [selecteds]() {
         QSet<QString> out;
         for (const QModelIndex selected : selecteds) {
-            const QString dn = get_dn_from_index(selected, MembersColumn_DN);
+            const QString dn = selected.data(MembersRole_DN).toString();
             out.insert(dn);
         }
         return out;
@@ -479,8 +477,8 @@ void MembershipTab::reload_model() {
         const QList<QStandardItem *> row = make_item_row(MembersColumn_COUNT);
         row[MembersColumn_Name]->setText(name);
         row[MembersColumn_Parent]->setText(parent);
-        row[MembersColumn_Primary]->setCheckState(check_state);
-        row[MembersColumn_DN]->setText(dn);
+
+        set_data_for_row(row, dn, MembersRole_DN);
 
         model->appendRow(row);
     }
