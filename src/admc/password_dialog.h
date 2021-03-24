@@ -32,7 +32,7 @@ class PasswordDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    PasswordDialog(const QString &target_arg, QWidget *parent);
+    PasswordDialog(const QList<QString> &targets, QWidget *parent);
 
 public slots:
     void accept();

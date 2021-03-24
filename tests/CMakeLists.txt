@@ -32,7 +32,6 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/properties_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/object_model.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/select_dialog.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/object_menu.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/password_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/find_results.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/filter_dialog.cpp
@@ -88,6 +87,8 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/status.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/console_widget/customize_columns_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/console_widget/results_view.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/object_actions.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/move_dialog.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_interface.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_config.cpp

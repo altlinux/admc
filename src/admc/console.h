@@ -37,7 +37,6 @@ class QModelIndex;
 class QString;
 class FilterDialog;
 class QMenu;
-class ObjectMenu;
 class QPoint;
 class QStandardItem;
 class AdObject;
@@ -46,6 +45,7 @@ class QSortFilterProxyModel;
 class AdInterface;
 class ConsoleWidget;
 class ResultsView;
+class ObjectActions;
 template <typename T> class QList;
 
 class Console final : public QWidget {
@@ -71,13 +71,16 @@ private slots:
     void on_properties_requested();
     void delete_objects();
     void rename();
-    void create(const QString &object_class);
     void move();
     void add_to_group();
     void enable();
     void disable();
     void find();
     void reset_password();
+    void create_user();
+    void create_computer();
+    void create_ou();
+    void create_group();
 
     void fetch_scope_node(const QModelIndex &index);
     
@@ -88,17 +91,8 @@ private:
     int object_results_id;
     QPersistentModelIndex scope_head_index;
     FilterDialog *filter_dialog;
-    
-    QMenu *submenu_new;
 
-    QAction *delete_action;
-    QAction *rename_action;
-    QAction *move_action;
-    QAction *add_to_group_action;
-    QAction *enable_action;
-    QAction *disable_action;
-    QAction *find_action;
-    QAction *reset_password_action;
+    ObjectActions *object_actions;
 
     QAction *open_filter_action;
     QAction *show_noncontainers_action;
@@ -109,12 +103,15 @@ private:
     void setup_scope_item(QStandardItem *item, const AdObject &object);
     void setup_results_row(const QList<QStandardItem *> row, const AdObject &object);
     void add_object_to_console(const AdObject &object, const    QModelIndex &parent);
-    void move_object_in_console(AdInterface &ad, const QModelIndex &old_index, const QString &new_parent_dn, const QModelIndex &new_parent_index);
+    void move_object_in_console(AdInterface &ad, const QPersistentModelIndex &old_index, const QString &new_parent_dn, const QPersistentModelIndex &new_parent_index);
     void update_console_item(const QModelIndex &index, const AdObject &object);
     void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
     QList<QString> get_dns(const QList<QModelIndex> &indexes);
     void enable_disable_helper(const bool disabled);
     void update_actions_visibility();
+    void create_helper(const QString &object_class);
+    QHash<QString, QPersistentModelIndex> get_selected_dns_and_indexes();
+    QList<QString> get_selected_dns();
 };
 
 #endif /* CONSOLE_H */

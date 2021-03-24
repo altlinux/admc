@@ -35,6 +35,7 @@ class QMenu;
 class AdObject;
 class CustomizeColumnsDialog;
 class ResultsView;
+class ObjectActions;
 template <typename T> class QList;
 template <typename K, typename T> class QHash;
 
@@ -62,12 +63,15 @@ private slots:
     void properties();
     void delete_objects();
     void rename();
-    void create(const QString &object_class);
     void move();
     void add_to_group();
     void enable();
     void disable();
     void reset_password();
+    void create_user();
+    void create_computer();
+    void create_ou();
+    void create_group();
 
     void customize_columns();
     void on_context_menu(const QPoint pos);
@@ -79,18 +83,13 @@ private:
     QAction *customize_columns_action;
     bool context_menu_enabled;
 
-    QMenu *submenu_new;
+    ObjectActions *object_actions;
     QAction *properties_action;
-    QAction *delete_action;
-    QAction *rename_action;
-    QAction *move_action;
-    QAction *add_to_group_action;
-    QAction *enable_action;
-    QAction *disable_action;
-    QAction *reset_password_action;
 
     void enable_disable_helper(const bool disabled);
     void update_actions_visibility();
+    void create_helper(const QString &object_class);
+    QList<QString> get_selected_dns();
 };
 
 #endif /* FIND_RESULTS_H */

@@ -27,7 +27,6 @@
 #include "create_dialog.h"
 #include "utils.h"
 #include "status.h"
-#include "object_menu.h"
 #include "object_model.h"
 #include "select_container_dialog.h"
 #include "select_dialog.h"
@@ -36,7 +35,10 @@
 #include "rename_dialog.h"
 #include "password_dialog.h"
 #include "find_dialog.h"
+#include "move_dialog.h"
+#include "password_dialog.h"
 #include "find_widget.h"
+#include "object_actions.h"
 
 #include <QTest>
 #include <QDebug>
@@ -75,9 +77,8 @@ void ADMCTestObjectMenu::object_menu_new_user() {
     const QString dn = test_object_dn(name, CLASS_USER);
 
     // Create user
-    create(parent, CLASS_USER, parent_widget);
-    auto create_dialog = parent_widget->findChild<CreateDialog *>();
-    QVERIFY2((create_dialog != nullptr), "Failed to find create dialog");
+    auto create_dialog = new CreateDialog({parent}, CLASS_USER, parent_widget);
+    create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
     // Enter name
@@ -107,8 +108,8 @@ void ADMCTestObjectMenu::object_menu_new_ou() {
     const QString dn = test_object_dn(name, CLASS_OU);
 
     // Create ou
-    create(parent, CLASS_OU, parent_widget);
-    auto create_dialog = parent_widget->findChild<CreateDialog *>();
+    auto create_dialog = new CreateDialog({parent}, CLASS_OU, parent_widget);
+    create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
     // Enter name
@@ -128,8 +129,8 @@ void ADMCTestObjectMenu::object_menu_new_computer() {
     const QString dn = test_object_dn(name, object_class);
 
     // Open create dialog
-    create(parent, object_class, parent_widget);
-    auto create_dialog = parent_widget->findChild<CreateDialog *>();
+    auto create_dialog = new CreateDialog({parent}, CLASS_COMPUTER, parent_widget);
+    create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
     // Enter name
@@ -153,8 +154,8 @@ void ADMCTestObjectMenu::object_menu_new_group() {
     const QString dn = test_object_dn(name, object_class);
 
     // Open create dialog
-    create(parent, object_class, parent_widget);
-    auto create_dialog = parent_widget->findChild<CreateDialog *>();
+    auto create_dialog = new CreateDialog({parent}, CLASS_GROUP, parent_widget);
+    create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
     // Enter name
@@ -193,9 +194,8 @@ void ADMCTestObjectMenu::object_menu_move() {
     QVERIFY2(object_exists(move_target_dn), "Created move target doesn't exist");
 
     // Open move dialog
-    move({user_dn}, parent_widget);
-    auto move_dialog = parent_widget->findChild<SelectContainerDialog *>();
-    QVERIFY2((move_dialog != nullptr), "Failed to find move dialog");
+    auto move_dialog = new MoveDialog({user_dn}, parent_widget);
+    move_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(move_dialog, 1000));
 
     QTreeView *move_dialog_view = qobject_cast<QTreeView *>(QApplication::focusWidget());
@@ -230,9 +230,8 @@ void ADMCTestObjectMenu::object_menu_reset_password() {
     }();
 
     // Open password dialog
-    reset_password(user_dn, parent_widget);
-    auto password_dialog = parent_widget->findChild<PasswordDialog *>();
-    QVERIFY2((password_dialog != nullptr), "Failed to find password_dialog");
+    const auto password_dialog = new PasswordDialog({user_dn}, parent_widget);
+    password_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(password_dialog, 1000));
 
     // Enter password
@@ -281,11 +280,7 @@ void ADMCTestObjectMenu::object_menu_disable_enable_account() {
         QVERIFY2(set_disabled_success, qPrintable(QString("Failed to set disabled account option for user - %1").arg(dn)));
 
         // Modify state using object menu
-        if (initial_disabled_state) {
-            enable_account({dn}, parent_widget);
-        } else {
-            disable_account({dn}, parent_widget);
-        }
+        object_enable_disable({dn}, !initial_disabled_state, parent_widget);
 
         // Check that final disabled state has changed
         const AdObject object = ad.search_object(dn);
@@ -412,7 +407,7 @@ void ADMCTestObjectMenu::object_menu_add_to_group() {
     QVERIFY2(object_exists(group_dn), "Created group doesn't exist");
 
     // Open add to group dialog
-    add_to_group({user_dn}, parent_widget);
+    object_add_to_group({user_dn}, parent_widget);
     auto select_dialog = parent_widget->findChild<SelectDialog *>();
     QVERIFY2((select_dialog != nullptr), "Failed to find select_dialog");
     QVERIFY(QTest::qWaitForWindowExposed(select_dialog, 1000));
@@ -530,9 +525,8 @@ void ADMCTestObjectMenu::test_object_rename(const QString& oldname, const QStrin
     QVERIFY2(object_exists(dn), qPrintable(QString("Created %1 doesn't exist").arg(object_class)));
 
     // Open rename dialog
-    rename({dn}, parent_widget);
-    auto rename_dialog = parent_widget->findChild<RenameDialog *>();
-    QVERIFY2((rename_dialog != nullptr), "Failed to find rename dialog");
+    auto rename_dialog = new RenameDialog({dn}, parent_widget);
+    rename_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(rename_dialog, 1000));
 
     rename_callback(newname);

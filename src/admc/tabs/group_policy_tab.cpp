@@ -21,7 +21,6 @@
 #include "ad/ad_interface.h"
 #include "ad/ad_utils.h"
 #include "ad/ad_object.h"
-#include "object_menu.h"
 #include "utils.h"
 #include "select_dialog.h"
 #include "edits/gpoptions_edit.h"

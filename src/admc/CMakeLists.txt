@@ -27,7 +27,7 @@ add_executable(admc
     status.cpp
     object_model.cpp
     select_dialog.cpp
-    object_menu.cpp
+    object_actions.cpp
     password_dialog.cpp
     find_results.cpp
     filter_dialog.cpp
@@ -37,6 +37,7 @@ add_executable(admc
     search_thread.cpp
     help_browser.cpp
     
+    move_dialog.cpp
     rename_dialog.cpp
     rename_policy_dialog.cpp
     create_dialog.cpp

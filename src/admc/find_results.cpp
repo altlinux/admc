@@ -18,7 +18,7 @@
  */
 
 #include "find_results.h"
-#include "object_menu.h"
+#include "object_actions.h"
 #include "properties_dialog.h"
 #include "utils.h"
 #include "ad/ad_interface.h"
@@ -31,6 +31,7 @@
 #include "console_widget/results_view.h"
 #include "status.h"
 #include "rename_dialog.h"
+#include "move_dialog.h"
 #include "select_container_dialog.h"
 #include "create_dialog.h"
 #include "select_dialog.h"
@@ -45,45 +46,12 @@
 #include <QStandardItemModel>
 #include <QHash>
 
-QList<QString> get_dns(const QList<QModelIndex> &indexes) {
-    QList<QString> out;
-
-    for (const QModelIndex index : indexes) {
-        const QString dn = index.data(ObjectRole_DN).toString();
-
-        out.append(dn);
-    }
-
-    return out;  
-}
-
 FindResults::FindResults()
 : QWidget()
 {   
-    submenu_new = new QMenu(tr("&New"));
-    static const QList<QString> create_classes = {
-        CLASS_USER,
-        CLASS_COMPUTER,
-        CLASS_OU,
-        CLASS_GROUP,
-    };
-    for (const auto &object_class : create_classes) {
-        const QString action_text = ADCONFIG()->get_class_display_name(object_class);
+    object_actions = new ObjectActions(this);
 
-        submenu_new->addAction(action_text,
-            [=]() {
-                create(object_class);
-            });
-    }
-
-    properties_action = new QAction(tr("&Properties"));
-    delete_action = new QAction(tr("&Delete"));
-    rename_action = new QAction(tr("&Rename"));
-    move_action = new QAction(tr("&Move"));
-    add_to_group_action = new QAction(tr("&Add to group"));
-    enable_action = new QAction(tr("&Enable account"));
-    disable_action = new QAction(tr("D&isable account"));
-    reset_password_action = new QAction(tr("Reset &Password"));
+    properties_action = new QAction("&Properties");
 
     model = new QStandardItemModel(this);
 
@@ -119,25 +87,37 @@ FindResults::FindResults()
         properties_action, &QAction::triggered,
         this, &FindResults::properties);
     connect(
-        delete_action, &QAction::triggered,
+        object_actions->get(ObjectAction_NewUser), &QAction::triggered,
+        this, &FindResults::create_user);
+    connect(
+        object_actions->get(ObjectAction_NewComputer), &QAction::triggered,
+        this, &FindResults::create_computer);
+    connect(
+        object_actions->get(ObjectAction_NewOU), &QAction::triggered,
+        this, &FindResults::create_ou);
+    connect(
+        object_actions->get(ObjectAction_NewGroup), &QAction::triggered,
+        this, &FindResults::create_group);
+    connect(
+        object_actions->get(ObjectAction_Delete), &QAction::triggered,
         this, &FindResults::delete_objects);
     connect(
-        rename_action, &QAction::triggered,
+        object_actions->get(ObjectAction_Rename), &QAction::triggered,
         this, &FindResults::rename);
     connect(
-        move_action, &QAction::triggered,
+        object_actions->get(ObjectAction_Move), &QAction::triggered,
         this, &FindResults::move);
     connect(
-        add_to_group_action, &QAction::triggered,
+        object_actions->get(ObjectAction_AddToGroup), &QAction::triggered,
         this, &FindResults::add_to_group);
     connect(
-        enable_action, &QAction::triggered,
+        object_actions->get(ObjectAction_Enable), &QAction::triggered,
         this, &FindResults::enable);
     connect(
-        disable_action, &QAction::triggered,
+        object_actions->get(ObjectAction_Disable), &QAction::triggered,
         this, &FindResults::disable);
     connect(
-        reset_password_action, &QAction::triggered,
+        object_actions->get(ObjectAction_ResetPassword), &QAction::triggered,
         this, &FindResults::reset_password);
 
     connect(
@@ -146,23 +126,7 @@ FindResults::FindResults()
 }
 
 void FindResults::add_actions_to_action_menu(QMenu *menu) {
-    // Container
-    menu->addMenu(submenu_new);
-
-    menu->addSeparator();
-
-    // User
-    menu->addAction(add_to_group_action);
-    menu->addAction(enable_action);
-    menu->addAction(disable_action);
-    menu->addAction(reset_password_action);
-
-    menu->addSeparator();
-
-    // General object
-    menu->addAction(delete_action);
-    menu->addAction(rename_action);
-    menu->addAction(move_action);
+    object_actions->add_to_menu(menu);
 }
 
 void FindResults::add_actions_to_view_menu(QMenu *menu) {
@@ -212,121 +176,44 @@ QList<QList<QStandardItem *>> FindResults::get_selected_rows() const {
 }
 
 void FindResults::delete_objects() {
-    const QList<QModelIndex> indexes = view->current_view()->selectionModel()->selectedRows();
+    const QList<QString> targets = get_selected_dns();
 
-    const QString text = QString(tr("Are you sure you want to delete this object?"));
-    const bool confirmed = confirmation_dialog(text, this);
-
-    if (confirmed) {
-        AdInterface ad;
-        if (ad_failed(ad)) {
-            return;
-        }
-
-        for (const QModelIndex &index : indexes) {
-            const QString dn = index.data(ObjectRole_DN).toString();
-            ad.object_delete(dn);
-        }
-
-        STATUS()->display_ad_messages(ad, this);
-    }
+    object_delete(targets, this);
 }
 
 void FindResults::properties() {
-    const QList<QModelIndex> indexes = view->current_view()->selectionModel()->selectedRows();
-    if (indexes.size() != 1) {
+    const QList<QString> targets = get_selected_dns();
+    if (targets.size() != 1) {
         return;
     }
-    const QModelIndex index = indexes[0];
 
-    const QString dn = index.data(ObjectRole_DN).toString();
+    const QString dn = targets[0];
 
     PropertiesDialog *dialog = PropertiesDialog::open_for_target(dn);
     dialog->open();
-
-    update_actions_visibility();
 }
 
 void FindResults::rename() {
-    const QList<QModelIndex> indexes = view->current_view()->selectionModel()->selectedRows();
-    if (indexes.size() != 1) {
-        return;
-    }
-    const QModelIndex index = indexes[0];
-
-    const QString dn = index.data(ObjectRole_DN).toString();
-
-    auto dialog = new RenameDialog(dn, this);
+    const QList<QString> targets = get_selected_dns();
+    auto dialog = new RenameDialog(targets, this);
     dialog->open();
 }
 
-void FindResults::create(const QString &object_class) {
-    const QList<QModelIndex> selected_indexes = view->current_view()->selectionModel()->selectedRows();
-    if (selected_indexes.size() == 0) {
-        return;
-    }
-
-    const QModelIndex selected_index = selected_indexes[0];
-    const QString selected_dn = selected_index.data(ObjectRole_DN).toString();
-
-    const auto dialog = new CreateDialog(selected_dn, object_class, this);
-
+void FindResults::create_helper(const QString &object_class) {
+    const QList<QString> targets = get_selected_dns();
+    auto dialog = new CreateDialog(targets, object_class, this);
     dialog->open();
 }
 
 void FindResults::move() {
-    const QList<QModelIndex> selected_indexes = view->current_view()->selectionModel()->selectedRows();
-    if (selected_indexes.size() == 0) {
-        return;
-    }
-
-    auto dialog = new SelectContainerDialog(this);
-
-    connect(
-        dialog, &SelectContainerDialog::accepted,
-        [=]() {
-            const QString selected_container_dn = dialog->get_selected();
-
-            AdInterface ad;
-            if (ad_connected(ad)) {
-                for (const QModelIndex &index : selected_indexes) {
-                    const QString dn = index.data(ObjectRole_DN).toString();
-
-                    ad.object_move(dn, selected_container_dn);
-                }
-
-                STATUS()->display_ad_messages(ad, this);
-            }
-        });
-
+    const QList<QString> targets = get_selected_dns();
+    auto dialog = new MoveDialog(targets, this);
     dialog->open();
 }
 
 void FindResults::add_to_group() {
-    auto dialog = new SelectDialog({CLASS_GROUP}, SelectDialogMultiSelection_Yes, this);
-
-    QObject::connect(
-        dialog, &SelectDialog::accepted,
-        [=]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
-                return;
-            }
-
-            const QList<QString> groups = dialog->get_selected();
-            const QList<QModelIndex> selected_indexes = view->current_view()->selectionModel()->selectedRows();
-            const QList<QString> targets = get_dns(selected_indexes);
-
-            for (const QString &target : targets) {
-                for (auto group : groups) {
-                    ad.group_add_member(group, target);
-                }
-            }
-
-            STATUS()->display_ad_messages(ad, this);
-        });
-
-    dialog->open();
+    const QList<QString> targets = get_selected_dns();
+    object_add_to_group(targets, this);
 }
 
 void FindResults::enable() {
@@ -338,17 +225,25 @@ void FindResults::disable() {
 }
 
 void FindResults::reset_password() {
-    const QList<QModelIndex> selected_indexes = view->current_view()->selectionModel()->selectedRows();
-    const QList<QString> targets = get_dns(selected_indexes);
+    const QList<QString> targets = get_selected_dns();
+    const auto dialog = new PasswordDialog(targets, this);
+    dialog->open();
+}
 
-    if (targets.size() != 1) {
-        return;
-    }
+void FindResults::create_user() {
+    create_helper(CLASS_USER);
+}
 
-    const QString target = targets[0];
+void FindResults::create_computer() {
+    create_helper(CLASS_COMPUTER);
+}
 
-    const auto password_dialog = new PasswordDialog(target, this);
-    password_dialog->open();
+void FindResults::create_ou() {
+    create_helper(CLASS_OU);
+}
+
+void FindResults::create_group() {
+    create_helper(CLASS_GROUP);
 }
 
 void FindResults::customize_columns() {
@@ -363,134 +258,32 @@ void FindResults::on_context_menu(const QPoint pos) {
 }
 
 void FindResults::enable_disable_helper(const bool disabled) {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    const QList<QModelIndex> selected_indexes = view->current_view()->selectionModel()->selectedRows();
-
-    for (const QModelIndex &index : selected_indexes) {
-        const QString dn = index.data(ObjectRole_DN).toString();
-        const bool success = ad.user_set_account_option(dn, AccountOption_Disabled, disabled);
-
-        if (success) {
-            model->setData(index, disabled, ObjectRole_AccountDisabled);
-        }
-    }
-
-    STATUS()->display_ad_messages(ad, this);
-
+    const QList<QString> targets = get_selected_dns();
+    object_enable_disable(targets, disabled, this);
+    
     update_actions_visibility();
 }
 
 // First, hide all actions, then show whichever actions are
 // appropriate for current console selection
 void FindResults::update_actions_visibility() {
-    const QList<QAction *> all_actions ={
-        submenu_new->menuAction(),
-        delete_action,
-        rename_action,
-        move_action,
-        add_to_group_action,
-        enable_action,
-        disable_action,
-        reset_password_action,
-    };
-    for (QAction *action : all_actions) {
-        action->setVisible(false);
+    const QList<QModelIndex> selected_indexes = view->current_view()->selectionModel()->selectedRows();
+    object_actions->update_actions_visibility(selected_indexes);
+
+    // Always hide find action because opening a find dialog
+    // from another find dialog is weird
+    object_actions->get(ObjectAction_Find)->setVisible(false);
+}
+
+QList<QString> FindResults::get_selected_dns() {
+    QList<QString> out;
+    
+    const QList<QModelIndex> selected_indexes = view->current_view()->selectionModel()->selectedRows();
+    for (const QModelIndex index : selected_indexes) {
+        const QString dn = index.data(ObjectRole_DN).toString();
+
+        out.append(dn);
     }
 
-    const QList<QModelIndex> selected_list = view->current_view()->selectionModel()->selectedRows();
-
-    // Get info about selected objects from view
-    const QList<QString> targets =
-    [=]() {
-        QList<QString> out;
-
-        for (const QModelIndex index : selected_list) {
-            const QString dn = index.data(ObjectRole_DN).toString();
-
-            out.append(dn);
-        }
-
-        return out;  
-    }();
-
-    const QSet<QString> target_classes =
-    [=]() {
-        QSet<QString> out;
-        
-        for (const QModelIndex index : selected_list) {
-            const QList<QString> object_classes = index.data(ObjectRole_ObjectClasses).toStringList();
-            const QString main_object_class = object_classes.last();
-
-            out.insert(main_object_class);
-        }
-
-        return out;
-    }();
-
-    const bool single_object = (targets.size() == 1);
-
-    if (single_object) {
-        const QModelIndex index = selected_list[0];
-        const QString target = targets[0];
-        const QString target_class = target_classes.values()[0];
-
-        // Get info about object that will determine which
-        // actions are present/enabled
-        const bool is_container =
-        [=]() {
-            const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
-
-            return container_classes.contains(target_class);
-        }();
-
-        const bool is_user = (target_class == CLASS_USER);
-
-        const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
-        const bool cannot_rename = index.data(ObjectRole_CannotRename).toBool();
-        const bool cannot_delete = index.data(ObjectRole_CannotDelete).toBool();
-        const bool account_disabled = index.data(ObjectRole_AccountDisabled).toBool();
-
-        if (is_container) {
-            submenu_new->menuAction()->setVisible(true);
-        }
-
-        if (is_user) {
-            add_to_group_action->setVisible(true);
-            reset_password_action->setVisible(true);
-
-            if (account_disabled) {
-                enable_action->setVisible(true);
-            } else {
-                disable_action->setVisible(true);
-            }
-        }
-
-        move_action->setVisible(true);
-        delete_action->setVisible(true);
-        rename_action->setVisible(true);
-
-        move_action->setEnabled(cannot_move);
-        delete_action->setEnabled(cannot_delete);
-        rename_action->setEnabled(cannot_rename);
-    } else if (targets.size() > 1) {
-        const bool all_users = (target_classes.contains(CLASS_USER) && target_classes.size() == 1);
-
-        if (all_users) {
-            add_to_group_action->setVisible(true);
-
-            // NOTE: show both enable/disable for multiple
-            // users because some users might be disabled,
-            // some enabled and we want to provide a way to
-            // disable all or enable all
-            enable_action->setVisible(true);
-            disable_action->setVisible(true);
-        }
-
-        move_action->setVisible(true);
-        delete_action->setVisible(true);
-    }
+    return out; 
 }

@@ -33,12 +33,18 @@
 #include <QVBoxLayout>
 #include <QFormLayout>
 
-RenameDialog::RenameDialog(const QString &target_arg, QWidget *parent)
+RenameDialog::RenameDialog(const QList<QString> &targets, QWidget *parent)
 : QDialog(parent)
 {
-    target = target_arg;
-
     setAttribute(Qt::WA_DeleteOnClose);
+    
+    if (targets.size() != 1) {
+        close();
+
+        return;
+    }
+
+    target = targets[0];
 
     AdInterface ad;
     if (ad_failed(ad)) {
