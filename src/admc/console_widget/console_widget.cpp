@@ -476,6 +476,10 @@ bool ConsoleWidget::is_scope_item(const QModelIndex &index) const {
     return is_scope;
 }
 
+bool ConsoleWidget::item_was_fetched(const QModelIndex &index) const {
+    return index.data(ConsoleRole_WasFetched).toBool();
+}
+
 QWidget *ConsoleWidget::get_scope_view() const {
     return d->scope_view;
 }

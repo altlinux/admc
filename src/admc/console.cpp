@@ -624,6 +624,14 @@ bool object_should_be_in_scope(const AdObject &object) {
 }
 
 void Console::add_object_to_console(const AdObject &object, const QModelIndex &parent) {
+    // NOTE: don't add if parent wasn't fetched yet. If that
+    // is the case then the object will be added naturally
+    // when parent is fetched.
+    const bool parent_was_fetched = console_widget->item_was_fetched(parent);
+    if (!parent_was_fetched) {
+        return;
+    }
+
     const bool should_be_in_scope = object_should_be_in_scope(object);
 
     if (should_be_in_scope) {
@@ -648,16 +656,26 @@ void Console::add_object_to_console(const AdObject &object, const QModelIndex &p
 // location. The object will be loaded at new location when
 // it's parent is loaded.
 void Console::move_object_in_console(AdInterface &ad, const QPersistentModelIndex &old_index, const QString &new_parent_dn, const QPersistentModelIndex &new_parent_index) {
-    // NOTE: MUST get old dn here before deleting old index
-    const QString old_dn = old_index.data(ObjectRole_DN).toString();
-
-    console_widget->delete_item(old_index);
-
+    // TODO: look for a way to clear up this "have to delete
+    // after adding" thing. Try to express it through
+    // console widget's API. Failing that, at least write a
+    // comment in console_widget.h
+    
+    // NOTE: delete old item AFTER adding new item because.
+    // 1) Need to get old dn from old index. 2) If old item
+    // is deleted first, then it's possible for new parent
+    // to get selected (if they are next to each other in
+    // scope tree). Then what happens is that due to new
+    // parent being selected, it gets fetched and loads new
+    // object. End result is that new object is duplicated.
     if (new_parent_index.isValid()) {
+        const QString old_dn = old_index.data(ObjectRole_DN).toString();
         const QString new_dn = dn_move(old_dn, new_parent_dn);
         const AdObject updated_object = ad.search_object(new_dn);
         add_object_to_console(updated_object, new_parent_index);
     }
+
+    console_widget->delete_item(old_index);
 }
 
 void Console::update_console_item(const QModelIndex &index, const AdObject &object) {

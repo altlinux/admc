@@ -170,6 +170,7 @@ public:
 
     QModelIndex get_buddy(const QModelIndex &index) const;
     bool is_scope_item(const QModelIndex &index) const;
+    bool item_was_fetched(const QModelIndex &index) const;
 
     void add_actions_to_action_menu(QMenu *menu);
     void add_actions_to_navigation_menu(QMenu *menu);
