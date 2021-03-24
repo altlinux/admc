@@ -22,10 +22,7 @@
 
 /**
  * The central widget of the app through which user can
- * browse and manipulate objects. Contains two panes:
- * "scope" and "results". Scope pane contains a tree of objects.
- * Results pane contains a list of objects which are children of
- * currently selected scope item.
+ * browse and manipulate objects. Wraps ConsoleWidget inside it.
  */
 
 #include <QWidget>

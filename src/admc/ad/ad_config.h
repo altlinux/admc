@@ -21,9 +21,9 @@
 #define AD_CONFIG_H
 
 /**
- * Provides access to some server configuration data. All of
- * the data is loaded once at startup to avoid unnecessary
- * server requests.
+ * Provides access to constant server data, which includes
+ * configuration data and some DN's. All of the data is
+ * loaded once to avoid unnecessary server requests.
  */
 
 #include "ad_defines.h"
