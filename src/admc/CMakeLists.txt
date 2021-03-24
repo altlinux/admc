@@ -33,7 +33,7 @@ add_executable(admc
     filter_dialog.cpp
     find_widget.cpp
     tab_widget.cpp
-    console.cpp
+    central_widget.cpp
     search_thread.cpp
     help_browser.cpp
     

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console.h"
+#include "central_widget.h"
 
 #include "object_model.h"
 #include "utils.h"
@@ -63,7 +63,7 @@ enum DropType {
 DropType get_object_drop_type(const QModelIndex &dropped, const QModelIndex &target);
 bool object_should_be_in_scope(const AdObject &object);
 
-Console::Console()
+CentralWidget::CentralWidget()
 : QWidget()
 {
     object_actions = new ObjectActions(this);
@@ -94,17 +94,17 @@ Console::Console()
     const BoolSettingSignal *advanced_features = SETTINGS()->get_bool_signal(BoolSetting_AdvancedFeatures);
     connect(
         advanced_features, &BoolSettingSignal::changed,
-        this, &Console::refresh_head);
+        this, &CentralWidget::refresh_head);
 
     const BoolSettingSignal *show_non_containers = SETTINGS()->get_bool_signal(BoolSetting_ShowNonContainersInConsoleTree);
     connect(
         show_non_containers, &BoolSettingSignal::changed,
-        this, &Console::refresh_head);
+        this, &CentralWidget::refresh_head);
 
     const BoolSettingSignal *dev_mode_signal = SETTINGS()->get_bool_signal(BoolSetting_DevMode);
     connect(
         dev_mode_signal, &BoolSettingSignal::changed,
-        this, &Console::refresh_head);
+        this, &CentralWidget::refresh_head);
 
     SETTINGS()->connect_toggle_widget(console_widget->get_scope_view(), BoolSetting_ShowConsoleTree);
     SETTINGS()->connect_toggle_widget(console_widget->get_description_bar(), BoolSetting_ShowResultsHeader);
@@ -114,78 +114,78 @@ Console::Console()
 
     connect(
         open_filter_action, &QAction::triggered,
-        this, &Console::open_filter);
+        this, &CentralWidget::open_filter);
 
     connect(
         object_actions->get(ObjectAction_NewUser), &QAction::triggered,
-        this, &Console::create_user);
+        this, &CentralWidget::create_user);
     connect(
         object_actions->get(ObjectAction_NewComputer), &QAction::triggered,
-        this, &Console::create_computer);
+        this, &CentralWidget::create_computer);
     connect(
         object_actions->get(ObjectAction_NewOU), &QAction::triggered,
-        this, &Console::create_ou);
+        this, &CentralWidget::create_ou);
     connect(
         object_actions->get(ObjectAction_NewGroup), &QAction::triggered,
-        this, &Console::create_group);
+        this, &CentralWidget::create_group);
     connect(
         object_actions->get(ObjectAction_Delete), &QAction::triggered,
-        this, &Console::delete_objects);
+        this, &CentralWidget::delete_objects);
     connect(
         object_actions->get(ObjectAction_Rename), &QAction::triggered,
-        this, &Console::rename);
+        this, &CentralWidget::rename);
     connect(
         object_actions->get(ObjectAction_Move), &QAction::triggered,
-        this, &Console::move);
+        this, &CentralWidget::move);
     connect(
         object_actions->get(ObjectAction_AddToGroup), &QAction::triggered,
-        this, &Console::add_to_group);
+        this, &CentralWidget::add_to_group);
     connect(
         object_actions->get(ObjectAction_Enable), &QAction::triggered,
-        this, &Console::enable);
+        this, &CentralWidget::enable);
     connect(
         object_actions->get(ObjectAction_Disable), &QAction::triggered,
-        this, &Console::disable);
+        this, &CentralWidget::disable);
     connect(
         object_actions->get(ObjectAction_ResetPassword), &QAction::triggered,
-        this, &Console::reset_password);
+        this, &CentralWidget::reset_password);
     connect(
         object_actions->get(ObjectAction_Find), &QAction::triggered,
-        this, &Console::find);
+        this, &CentralWidget::find);
 
     connect(
         console_widget, &ConsoleWidget::current_scope_item_changed,
-        this, &Console::update_description_bar);
+        this, &CentralWidget::update_description_bar);
     connect(
         console_widget, &ConsoleWidget::results_count_changed,
-        this, &Console::update_description_bar);
+        this, &CentralWidget::update_description_bar);
     connect(
         console_widget, &ConsoleWidget::item_fetched,
-        this, &Console::fetch_scope_node);
+        this, &CentralWidget::fetch_scope_node);
     connect(
         console_widget, &ConsoleWidget::items_can_drop,
-        this, &Console::on_items_can_drop);
+        this, &CentralWidget::on_items_can_drop);
     connect(
         console_widget, &ConsoleWidget::items_dropped,
-        this, &Console::on_items_dropped);
+        this, &CentralWidget::on_items_dropped);
     connect(
         console_widget, &ConsoleWidget::properties_requested,
-        this, &Console::on_properties_requested);
+        this, &CentralWidget::on_properties_requested);
     connect(
         console_widget, &ConsoleWidget::selection_changed,
-        this, &Console::update_actions_visibility);
+        this, &CentralWidget::update_actions_visibility);
     connect(
         console_widget, &ConsoleWidget::context_menu,
-        this, &Console::context_menu);
+        this, &CentralWidget::context_menu);
 }
 
-void Console::go_online(AdInterface &ad) {
+void CentralWidget::go_online(AdInterface &ad) {
     // NOTE: filter dialog requires a connection to load
     // display strings from adconfig so create it here
     filter_dialog = new FilterDialog(this);
     connect(
         filter_dialog, &QDialog::accepted,
-        this, &Console::refresh_head);
+        this, &CentralWidget::refresh_head);
 
     // NOTE: Header labels are from ADCONFIG, so have to get them
     // after going online
@@ -203,13 +203,13 @@ void Console::go_online(AdInterface &ad) {
     console_widget->set_current_scope(item->index());
 }
 
-void Console::open_filter() {
+void CentralWidget::open_filter() {
     if (filter_dialog != nullptr) {
         filter_dialog->open();
     }
 }
 
-void Console::delete_objects() {
+void CentralWidget::delete_objects() {
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
     const QList<QString> deleted_objects = object_delete(selected.keys(), this);
 
@@ -219,7 +219,7 @@ void Console::delete_objects() {
     }
 }
 
-void Console::on_properties_requested() {
+void CentralWidget::on_properties_requested() {
     const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
     if (targets.size() != 1) {
         return;
@@ -245,7 +245,7 @@ void Console::on_properties_requested() {
         });
 }
 
-void Console::rename() {
+void CentralWidget::rename() {
     const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
 
     auto dialog = new RenameDialog(targets.keys(), this);
@@ -268,7 +268,7 @@ void Console::rename() {
         });
 }
 
-void Console::create_helper(const QString &object_class) {
+void CentralWidget::create_helper(const QString &object_class) {
     const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
 
     auto dialog = new CreateDialog(targets.keys(), object_class, this);
@@ -291,7 +291,7 @@ void Console::create_helper(const QString &object_class) {
         });
 }
 
-void Console::move() {
+void CentralWidget::move() {
     const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
 
     auto dialog = new MoveDialog(targets.keys(), this);
@@ -332,20 +332,20 @@ void Console::move() {
         });
 }
 
-void Console::add_to_group() {
+void CentralWidget::add_to_group() {
     const QList<QString> targets = get_selected_dns();
     object_add_to_group(targets, this);
 }
 
-void Console::enable() {
+void CentralWidget::enable() {
     enable_disable_helper(false);
 }
 
-void Console::disable() {
+void CentralWidget::disable() {
     enable_disable_helper(true);
 }
 
-void Console::find() {
+void CentralWidget::find() {
     const QList<QString> targets = get_selected_dns();
 
     if (targets.size() != 1) {
@@ -358,25 +358,25 @@ void Console::find() {
     find_dialog->open();
 }
 
-void Console::reset_password() {
+void CentralWidget::reset_password() {
     const QList<QString> targets = get_selected_dns();
     const auto password_dialog = new PasswordDialog(targets, this);
     password_dialog->open();
 }
 
-void Console::create_user() {
+void CentralWidget::create_user() {
     create_helper(CLASS_USER);
 }
 
-void Console::create_computer() {
+void CentralWidget::create_computer() {
     create_helper(CLASS_COMPUTER);
 }
 
-void Console::create_ou() {
+void CentralWidget::create_ou() {
     create_helper(CLASS_OU);
 }
 
-void Console::create_group() {
+void CentralWidget::create_group() {
     create_helper(CLASS_GROUP);
 }
 
@@ -386,7 +386,7 @@ void Console::create_group() {
 // fail. For example, if you drop users together with OU's
 // onto a group, users will be added to that group while OU
 // will fail to drop.
-void Console::on_items_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, bool *ok) {
+void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, bool *ok) {
     if (dropped_list.size() != 1) {
         *ok = true;
         return;
@@ -400,7 +400,7 @@ void Console::on_items_can_drop(const QList<QModelIndex> &dropped_list, const QM
     }
 }
 
-void Console::on_items_dropped(const QList<QModelIndex> &dropped_list, const QModelIndex &target) {
+void CentralWidget::on_items_dropped(const QList<QModelIndex> &dropped_list, const QModelIndex &target) {
     const QString target_dn = target.data(ObjectRole_DN).toString();
 
     AdInterface ad;
@@ -443,7 +443,7 @@ void Console::on_items_dropped(const QList<QModelIndex> &dropped_list, const QMo
     STATUS()->display_ad_messages(ad, nullptr);
 }
 
-void Console::refresh_head() {
+void CentralWidget::refresh_head() {
     show_busy_indicator();
 
     console_widget->refresh_scope(scope_head_index);
@@ -453,7 +453,7 @@ void Console::refresh_head() {
 
 // TODO: currently calling this when current scope changes,
 // but also need to call this when items are added/deleted
-void Console::update_description_bar() {
+void CentralWidget::update_description_bar() {
     const QString text =
     [this]() {
         const int results_count = console_widget->get_current_results_count();
@@ -465,7 +465,7 @@ void Console::update_description_bar() {
     console_widget->set_description_bar_text(text);
 }
 
-void Console::add_actions_to_action_menu(QMenu *menu) {
+void CentralWidget::add_actions_to_action_menu(QMenu *menu) {
     object_actions->add_to_menu(menu);
 
     menu->addSeparator();
@@ -473,11 +473,11 @@ void Console::add_actions_to_action_menu(QMenu *menu) {
     console_widget->add_actions_to_action_menu(menu);
 }
 
-void Console::add_actions_to_navigation_menu(QMenu *menu) {
+void CentralWidget::add_actions_to_navigation_menu(QMenu *menu) {
     console_widget->add_actions_to_navigation_menu(menu);
 }
 
-void Console::add_actions_to_view_menu(QMenu *menu) {
+void CentralWidget::add_actions_to_view_menu(QMenu *menu) {
     console_widget->add_actions_to_view_menu(menu);
 
     menu->addSeparator();
@@ -493,7 +493,7 @@ void Console::add_actions_to_view_menu(QMenu *menu) {
 
 // Load children of this item in scope tree
 // and load results linked to this scope item
-void Console::fetch_scope_node(const QModelIndex &index) {
+void CentralWidget::fetch_scope_node(const QModelIndex &index) {
     show_busy_indicator();
 
     const bool dev_mode = SETTINGS()->get_bool(BoolSetting_DevMode);
@@ -592,7 +592,7 @@ void Console::fetch_scope_node(const QModelIndex &index) {
     hide_busy_indicator();
 }
 
-void Console::setup_scope_item(QStandardItem *item, const AdObject &object) {
+void CentralWidget::setup_scope_item(QStandardItem *item, const AdObject &object) {
     const QString name =
     [&]() {
         const QString dn = object.get_dn();
@@ -607,7 +607,7 @@ void Console::setup_scope_item(QStandardItem *item, const AdObject &object) {
     disable_drag_if_object_cant_be_moved({item}, object);
 }
 
-void Console::setup_results_row(const QList<QStandardItem *> row, const AdObject &object) {
+void CentralWidget::setup_results_row(const QList<QStandardItem *> row, const AdObject &object) {
     console_widget->set_has_properties(row[0]->index(), true);
     load_object_row(row, object);
     disable_drag_if_object_cant_be_moved(row, object);
@@ -631,7 +631,7 @@ bool object_should_be_in_scope(const AdObject &object) {
     return (is_container || show_non_containers_ON);
 }
 
-void Console::add_object_to_console(const AdObject &object, const QModelIndex &parent) {
+void CentralWidget::add_object_to_console(const AdObject &object, const QModelIndex &parent) {
     // NOTE: don't add if parent wasn't fetched yet. If that
     // is the case then the object will be added naturally
     // when parent is fetched.
@@ -663,7 +663,7 @@ void Console::add_object_to_console(const AdObject &object, const QModelIndex &p
 // object from it's old location and do nothing for new
 // location. The object will be loaded at new location when
 // it's parent is loaded.
-void Console::move_object_in_console(AdInterface &ad, const QPersistentModelIndex &old_index, const QString &new_parent_dn, const QPersistentModelIndex &new_parent_index) {
+void CentralWidget::move_object_in_console(AdInterface &ad, const QPersistentModelIndex &old_index, const QString &new_parent_dn, const QPersistentModelIndex &new_parent_index) {
     // TODO: look for a way to clear up this "have to delete
     // after adding" thing. Try to express it through
     // console widget's API. Failing that, at least write a
@@ -686,7 +686,7 @@ void Console::move_object_in_console(AdInterface &ad, const QPersistentModelInde
     console_widget->delete_item(old_index);
 }
 
-void Console::update_console_item(const QModelIndex &index, const AdObject &object) {
+void CentralWidget::update_console_item(const QModelIndex &index, const AdObject &object) {
     auto update_helper =
     [this, object](const QModelIndex &the_index) {
         const bool is_scope = console_widget->is_scope_item(the_index);
@@ -719,7 +719,7 @@ void Console::update_console_item(const QModelIndex &index, const AdObject &obje
     }
 }
 
-void Console::disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object) {
+void CentralWidget::disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object) {
     const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
 
     for (auto item : items) {
@@ -774,7 +774,7 @@ DropType get_object_drop_type(const QModelIndex &dropped, const QModelIndex &tar
     }
 }
 
-void Console::enable_disable_helper(const bool disabled) {
+void CentralWidget::enable_disable_helper(const bool disabled) {
     const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
 
     show_busy_indicator();
@@ -818,13 +818,13 @@ void Console::enable_disable_helper(const bool disabled) {
 
 // First, hide all actions, then show whichever actions are
 // appropriate for current console selection
-void Console::update_actions_visibility() {
+void CentralWidget::update_actions_visibility() {
     const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
     object_actions->update_actions_visibility(selected_indexes);
 }
 
 // Get selected indexes mapped to their DN's
-QHash<QString, QPersistentModelIndex> Console::get_selected_dns_and_indexes() {
+QHash<QString, QPersistentModelIndex> CentralWidget::get_selected_dns_and_indexes() {
     QHash<QString, QPersistentModelIndex> out;
 
     const QList<QModelIndex> indexes = console_widget->get_selected_items();
@@ -836,7 +836,7 @@ QHash<QString, QPersistentModelIndex> Console::get_selected_dns_and_indexes() {
     return out;
 }
 
-QList<QString> Console::get_selected_dns() {
+QList<QString> CentralWidget::get_selected_dns() {
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
 
     return selected.keys();

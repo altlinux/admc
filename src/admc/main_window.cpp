@@ -22,7 +22,7 @@
 #include "settings.h"
 #include "ad/ad_interface.h"
 #include "ad/ad_config.h"
-#include "console.h"
+#include "central_widget.h"
 #include "about_dialog.h"
 #include "manual_dialog.h"
 
@@ -53,8 +53,8 @@ MainWindow::MainWindow()
     message_log_dock->setObjectName(MESSAGE_LOG_OBJECT_NAME);
     addDockWidget(Qt::TopDockWidgetArea, message_log_dock);
 
-    console = new Console();
-    setCentralWidget(console);
+    central_widget = new CentralWidget();
+    setCentralWidget(central_widget);
 
     setup_menubar();
 
@@ -153,11 +153,9 @@ void MainWindow::setup_menubar() {
     file_menu->addAction(connect_action);
     file_menu->addAction(quit_action);
 
-    console->add_actions_to_action_menu(action_menu);
-
-    console->add_actions_to_navigation_menu(navigation_menu);
-
-    console->add_actions_to_view_menu(view_menu);
+    central_widget->add_actions_to_action_menu(action_menu);
+    central_widget->add_actions_to_navigation_menu(navigation_menu);
+    central_widget->add_actions_to_view_menu(view_menu);
 
     preferences_menu->addAction(advanced_features_action);
     preferences_menu->addAction(confirm_actions_action);
@@ -212,9 +210,9 @@ void MainWindow::setup_menubar() {
             });
     }
 
-    // Open action menu as context menu for console widget
+    // Open action menu as context menu for central widget
     connect(
-        console, &Console::context_menu,
+        central_widget, &CentralWidget::context_menu,
         [action_menu](const QPoint pos) {
             action_menu->exec(pos);
         });
@@ -229,7 +227,7 @@ void MainWindow::connect_to_server() {
 
         STATUS()->display_ad_messages(ad, this);
 
-        console->go_online(ad);
+        central_widget->go_online(ad);
         connect_action->setEnabled(false);
     }
 }

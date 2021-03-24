@@ -23,7 +23,7 @@
 #include <QMainWindow>
 
 class QAction;
-class Console;
+class CentralWidget;
 class QDockWidget;
 
 class MainWindow final : public QMainWindow {
@@ -37,7 +37,7 @@ protected:
 
 private:
     QAction *connect_action;
-    Console *console;
+    CentralWidget *central_widget;
     QDockWidget *message_log_dock;
 
     void setup_menubar();

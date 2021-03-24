@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONSOLE_H
-#define CONSOLE_H
+#ifndef CENTRAL_WIDGET_H
+#define CENTRAL_WIDGET_H
 
 /**
  * The central widget of the app through which user can
@@ -48,13 +48,13 @@ class ResultsView;
 class ObjectActions;
 template <typename T> class QList;
 
-class Console final : public QWidget {
+class CentralWidget final : public QWidget {
 Q_OBJECT
 
 public:    
     ConsoleWidget *console_widget;
     
-    Console();
+    CentralWidget();
 
     void go_online(AdInterface &ad);
     void add_actions_to_action_menu(QMenu *menu);
@@ -114,4 +114,4 @@ private:
     QList<QString> get_selected_dns();
 };
 
-#endif /* CONSOLE_H */
+#endif /* CENTRAL_WIDGET_H */
