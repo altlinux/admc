@@ -105,7 +105,7 @@ AttributesTab::AttributesTab() {
 
 void AttributesTab::edit_attribute() {
     const QItemSelectionModel *selection_model = view->selectionModel();
-    const QList<QModelIndex> selecteds = selection_model->selectedIndexes();
+    const QList<QModelIndex> selecteds = selection_model->selectedRows();
 
     if (selecteds.isEmpty()) {
         return;

@@ -346,7 +346,7 @@ void MembershipTab::on_add_button() {
 
 void MembershipTab::on_remove_button() {
     const QItemSelectionModel *selection_model = view->selectionModel();
-    const QList<QModelIndex> selected = selection_model->selectedIndexes();
+    const QList<QModelIndex> selected = selection_model->selectedRows();
 
     QList<QString> removed_values;
     for (auto index : selected) {
@@ -385,7 +385,7 @@ void MembershipTab::on_remove_button() {
 void MembershipTab::on_primary_button() {
     // Make selected group primary
     const QItemSelectionModel *selection_model = view->selectionModel();
-    const QList<QModelIndex> selecteds = selection_model->selectedIndexes();
+    const QList<QModelIndex> selecteds = selection_model->selectedRows();
     const QModelIndex selected = selecteds[0];
     const QString group_dn = selected.data(MembersRole_DN).toString();
 
@@ -414,7 +414,7 @@ void MembershipTab::enable_primary_button_on_valid_selection() {
     }
 
     const QItemSelectionModel *selection_model = view->selectionModel();
-    const QList<QModelIndex> selecteds = selection_model->selectedIndexes();
+    const QList<QModelIndex> selecteds = selection_model->selectedRows();
 
     // Enable "set primary group" button if
     // 1) there's a selection
@@ -464,15 +464,6 @@ void MembershipTab::reload_model() {
     for (auto dn : all_values) {
         const QString name = dn_get_name(dn);
         const QString parent = dn_get_parent_canonical(dn);
-        const bool primary = current_primary_values.contains(dn);
-        const Qt::CheckState check_state =
-        [primary]() {
-            if (primary) {
-                return Qt::Checked;
-            } else {
-                return Qt::Unchecked;
-            }
-        }();
         
         const QList<QStandardItem *> row = make_item_row(MembersColumn_COUNT);
         row[MembersColumn_Name]->setText(name);

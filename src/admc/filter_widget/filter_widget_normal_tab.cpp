@@ -132,28 +132,13 @@ void FilterWidgetNormalTab::add_filter() {
 }
 
 void FilterWidgetNormalTab::remove_filter() {
-    const QSet<QListWidgetItem *> removed_items =
-    [this]() {
-        QSet<QListWidgetItem *> out;
+    const QList<QListWidgetItem *> selected_items = filter_list->selectedItems();
 
-        const QItemSelectionModel *selection_model = filter_list->selectionModel();
-        const QList<QModelIndex> selecteds = selection_model->selectedIndexes();
-
-        for (const auto selected : selecteds) {
-            const int row = selected.row();
-            QListWidgetItem *item = filter_list->item(row);
-
-            out.insert(item);
-        }
-
-        return out;
-    }();
-
-    for (auto item : removed_items) {
+    for (auto item : selected_items) {
         delete item;
     }
 
-    if (!removed_items.isEmpty()) {
+    if (!selected_items.isEmpty()) {
         emit changed();
     }
 }

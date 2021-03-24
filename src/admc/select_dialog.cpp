@@ -157,7 +157,7 @@ void SelectDialog::open_find_dialog() {
 
 void SelectDialog::remove_from_list() {
     const QItemSelectionModel *selection_model = view->selectionModel();
-    const QList<QModelIndex> selected = selection_model->selectedIndexes();
+    const QList<QModelIndex> selected = selection_model->selectedRows();
 
     for (auto index : selected) {
         model->removeRows(index.row(), 1);

@@ -176,7 +176,7 @@ void GroupPolicyTab::on_add_button() {
 
 void GroupPolicyTab::on_remove_button() {
     const QItemSelectionModel *selection_model = view->selectionModel();
-    const QList<QModelIndex> selected_raw = selection_model->selectedIndexes();
+    const QList<QModelIndex> selected_raw = selection_model->selectedRows();
 
     QList<QString> selected;
     for (auto index : selected_raw) {
