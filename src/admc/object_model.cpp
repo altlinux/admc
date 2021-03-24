@@ -21,6 +21,7 @@
 #include "ad/ad_interface.h"
 #include "ad/ad_object.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "ad/ad_utils.h"
 #include "ad/ad_filter.h"
 #include "settings.h"
@@ -32,8 +33,8 @@
 
 void load_object_row(const QList<QStandardItem *> row, const AdObject &object) {
     // Load attribute columns
-    for (int i = 0; i < ADCONFIG()->get_columns().count(); i++) {
-        const QString attribute = ADCONFIG()->get_columns()[i];
+    for (int i = 0; i < adconfig->get_columns().count(); i++) {
+        const QString attribute = adconfig->get_columns()[i];
 
         if (!object.contains(attribute)) {
             continue;
@@ -53,7 +54,7 @@ void load_object_row(const QList<QStandardItem *> row, const AdObject &object) {
 
                     return QString("%1 - %2").arg(type_string, scope_string);
                 } else {
-                    return ADCONFIG()->get_class_display_name(object_class);
+                    return adconfig->get_class_display_name(object_class);
                 }
             } else {
                 const QByteArray value = object.get_value(attribute);
@@ -92,8 +93,8 @@ void load_object_item_data(QStandardItem *item, const AdObject &object) {
 QList<QString> object_model_header_labels() {
     QList<QString> out;
 
-    for (const QString &attribute : ADCONFIG()->get_columns()) {
-        const QString attribute_display_name = ADCONFIG()->get_column_display_name(attribute);
+    for (const QString &attribute : adconfig->get_columns()) {
+        const QString attribute_display_name = adconfig->get_column_display_name(attribute);
 
         out.append(attribute_display_name);
     }

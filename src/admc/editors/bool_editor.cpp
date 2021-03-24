@@ -20,6 +20,7 @@
 #include "editors/bool_editor.h"
 #include "ad/ad_utils.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 
 #include <QRadioButton>
 #include <QDialogButtonBox>
@@ -61,7 +62,7 @@ BoolEditor::BoolEditor(const QString attribute, const QList<QByteArray> values, 
     layout->addWidget(unset_button);
     layout->addWidget(button_box);
 
-    if (ADCONFIG()->get_attribute_is_system_only(attribute)) {
+    if (adconfig->get_attribute_is_system_only(attribute)) {
         true_button->setEnabled(false);
         false_button->setEnabled(false);
         unset_button->setEnabled(false);

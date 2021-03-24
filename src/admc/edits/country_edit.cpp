@@ -21,6 +21,7 @@
 #include "ad/ad_interface.h"
 #include "status.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "utils.h"
 #include "edits/country_edit.h"
 #include "ad/ad_object.h"
@@ -124,7 +125,7 @@ void CountryEdit::set_read_only(const bool read_only) {
 }
 
 void CountryEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = ADCONFIG()->get_attribute_display_name(ATTRIBUTE_COUNTRY, CLASS_USER) + ":";
+    const QString label_text = adconfig->get_attribute_display_name(ATTRIBUTE_COUNTRY, CLASS_USER) + ":";
     layout->addRow(label_text, combo);
 }
 

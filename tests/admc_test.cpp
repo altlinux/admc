@@ -23,6 +23,7 @@
 #include "ad/ad_utils.h"
 #include "ad/ad_object.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "object_model.h"
 
 #include <QTest>
@@ -38,7 +39,7 @@ void ADMCTest::initTestCase() {
     QVERIFY2(ad.is_connected(), "Failed to connect to AD server");
 
     // TODO: check for load failure
-    ADCONFIG()->load(ad, QLocale(QLocale::English));
+    adconfig->load(ad, QLocale(QLocale::English));
 
     // Cleanup before all tests in-case this test suite was
     // previously interrupted and a cleanup wasn't performed
@@ -90,7 +91,7 @@ void ADMCTest::cleanup() {
 }
 
 QString ADMCTest::test_arena_dn() {
-    const QString head_dn = ADCONFIG()->domain_head();
+    const QString head_dn = adconfig->domain_head();
     const QString dn = QString("OU=test-arena,%1").arg(head_dn);
 
     return dn;

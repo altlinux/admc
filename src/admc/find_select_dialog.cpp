@@ -21,6 +21,7 @@
 
 #include "find_widget.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 
 #include <QList>
 #include <QVBoxLayout>
@@ -33,7 +34,7 @@ FindSelectDialog::FindSelectDialog(const QList<QString> classes, QWidget *parent
 
     setWindowTitle(tr("Find and select objects"));
 
-    find_widget = new FindWidget(classes, ADCONFIG()->domain_head());
+    find_widget = new FindWidget(classes, adconfig->domain_head());
 
     auto buttons = new QDialogButtonBox();
     buttons->addButton(QDialogButtonBox::Ok);

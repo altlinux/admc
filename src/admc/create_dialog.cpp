@@ -21,6 +21,7 @@
 #include "ad/ad_interface.h"
 #include "ad/ad_utils.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "status.h"
 #include "settings.h"
 #include "edits/string_edit.h"
@@ -53,7 +54,7 @@ CreateDialog::CreateDialog(const QList<QString> &targets, const QString &object_
 
     setMinimumWidth(400);
 
-    const QString class_name = ADCONFIG()->get_class_display_name(object_class);
+    const QString class_name = adconfig->get_class_display_name(object_class);
     const auto title = QString(tr("Create object - \"%1\"")).arg(class_name);
     setWindowTitle(title);
 

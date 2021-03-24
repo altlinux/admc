@@ -36,6 +36,7 @@ add_executable(admc
     central_widget.cpp
     search_thread.cpp
     help_browser.cpp
+    globals.cpp
     
     move_dialog.cpp
     rename_dialog.cpp

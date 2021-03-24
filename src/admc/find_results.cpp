@@ -24,6 +24,7 @@
 #include "ad/ad_interface.h"
 #include "ad/ad_filter.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "ad/ad_object.h"
 #include "object_model.h"
 #include "settings.h"
@@ -140,7 +141,7 @@ void FindResults::clear() {
 
 void FindResults::load(const QHash<QString, AdObject> &search_results) {
     for (const AdObject &object : search_results) {
-        const QList<QStandardItem *> row = make_item_row(ADCONFIG()->get_columns().count());
+        const QList<QStandardItem *> row = make_item_row(adconfig->get_columns().count());
 
         load_object_row(row, object);
 

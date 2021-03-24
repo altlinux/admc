@@ -20,6 +20,7 @@
 #include "rename_dialog.h"
 #include "ad/ad_interface.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "ad/ad_utils.h"
 #include "ad/ad_object.h"
 #include "edits/string_edit.h"
@@ -57,7 +58,7 @@ RenameDialog::RenameDialog(const QList<QString> &targets, QWidget *parent)
 
     const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
-    const QString type_string = ADCONFIG()->get_class_display_name(object_class);
+    const QString type_string = adconfig->get_class_display_name(object_class);
     const auto title = QString(tr("Rename object \"%1\"")).arg(type_string);
     setWindowTitle(title);
 

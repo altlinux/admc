@@ -22,6 +22,7 @@
 #include "settings.h"
 #include "ad/ad_interface.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "central_widget.h"
 #include "about_dialog.h"
 #include "manual_dialog.h"
@@ -223,7 +224,7 @@ void MainWindow::connect_to_server() {
     if (ad_connected(ad)) {
         // TODO: check for load failure
         const QLocale locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
-        ADCONFIG()->load(ad, locale);
+        adconfig->load(ad, locale);
 
         STATUS()->display_ad_messages(ad, this);
 

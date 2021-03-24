@@ -19,6 +19,7 @@
 
 #include "edits/datetime_edit.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "ad/ad_interface.h"
 #include "utils.h"
 #include "ad/ad_object.h"
@@ -51,7 +52,7 @@ void DateTimeEdit::set_read_only(const bool read_only) {
 }
 
 void DateTimeEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = ADCONFIG()->get_attribute_display_name(attribute, "") + ":";
+    const QString label_text = adconfig->get_attribute_display_name(attribute, "") + ":";
     layout->addRow(label_text, edit);
 }
 

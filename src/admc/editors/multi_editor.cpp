@@ -24,6 +24,7 @@
 #include "editors/octet_editor.h"
 #include "editors/datetime_editor.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "utils.h"
 
 #include <QLineEdit>
@@ -41,7 +42,7 @@ MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> va
 
     const QString title =
     [this]() {
-        const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
+        const AttributeType type = adconfig->get_attribute_type(attribute);
 
         const QString octet_title = tr("Edit multi-valued octet");
         const QString datetime_title = tr("Edit multi-valued datetime");
@@ -87,7 +88,7 @@ MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> va
     top_layout->addWidget(remove_button);
     top_layout->addWidget(button_box);
 
-    const bool read_only = ADCONFIG()->get_attribute_is_system_only(attribute);
+    const bool read_only = adconfig->get_attribute_is_system_only(attribute);
     if (read_only) {
         add_button->setEnabled(false);
         remove_button->setEnabled(false);
@@ -109,7 +110,7 @@ MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> va
 void MultiEditor::add() {
     AttributeEditor *editor =
     [this]() -> AttributeEditor * {
-        const bool is_bool = (ADCONFIG()->get_attribute_type(attribute) == AttributeType_Boolean);
+        const bool is_bool = (adconfig->get_attribute_type(attribute) == AttributeType_Boolean);
         if (is_bool) {
             return new BoolEditor(attribute, QList<QByteArray>(), this);
         } else {
@@ -196,7 +197,7 @@ void MultiEditor::add_value(const QByteArray value) {
 }
 
 MultiEditorType MultiEditor::get_editor_type() const {
-    const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
+    const AttributeType type = adconfig->get_attribute_type(attribute);
 
     switch (type) {
         case AttributeType_Octet: return MultiEditorType_Octet;

@@ -21,6 +21,7 @@
 
 #include "ad/ad_interface.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "ad/ad_defines.h"
 #include "ad/ad_utils.h"
 #include "ad/ad_filter.h"
@@ -63,7 +64,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     view->setExpandsOnDoubleClick(true);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
-    view->sortByColumn(ADCONFIG()->get_column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
+    view->sortByColumn(adconfig->get_column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
     view->setHeaderHidden(true);
 
     view->setModel(model);
@@ -77,7 +78,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     for (int i = 0; i < header->count(); i++) {
         header->setSectionHidden(i, true);
     }
-    header->setSectionHidden(ADCONFIG()->get_column_index(ATTRIBUTE_NAME), false);
+    header->setSectionHidden(adconfig->get_column_index(ATTRIBUTE_NAME), false);
 
     connect(
         buttonbox, &QDialogButtonBox::accepted,
@@ -103,7 +104,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     layout->addWidget(buttonbox);
 
     // Load head object
-    const QString head_dn = ADCONFIG()->domain_head();
+    const QString head_dn = adconfig->domain_head();
     const AdObject head_object = ad.search_object(head_dn);
     auto item = make_container_node(head_object);
     model->appendRow(item);

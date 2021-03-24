@@ -21,6 +21,7 @@
 #include "editors/attribute_editor.h"
 #include "ad/ad_interface.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "ad/ad_object.h"
 #include "utils.h"
 #include "ad/ad_display.h"
@@ -250,7 +251,7 @@ void AttributesTab::load(AdInterface &ad, const AdObject &object) {
 
     // Add attributes without values
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-    const QList<QString> optional_attributes = ADCONFIG()->get_optional_attributes(object_classes);
+    const QList<QString> optional_attributes = adconfig->get_optional_attributes(object_classes);
     for (const QString &attribute : optional_attributes) {
         if (!original.contains(attribute)) {
             original[attribute] = QList<QByteArray>();
@@ -296,7 +297,7 @@ bool AttributesTab::apply(AdInterface &ad, const QString &target) {
 
 void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values) {
     const QString display_values = attribute_display_values(attribute, values);
-    const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
+    const AttributeType type = adconfig->get_attribute_type(attribute);
     const QString type_display = attribute_type_display_string(type);
 
     row[AttributesColumn_Name]->setText(attribute);
@@ -313,8 +314,8 @@ AttributesTabProxy::AttributesTabProxy(QObject *parent)
 
 void AttributesTabProxy::load(const AdObject &object) {
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-    mandatory_attributes = ADCONFIG()->get_mandatory_attributes(object_classes).toSet();
-    optional_attributes = ADCONFIG()->get_optional_attributes(object_classes).toSet();
+    mandatory_attributes = adconfig->get_mandatory_attributes(object_classes).toSet();
+    optional_attributes = adconfig->get_optional_attributes(object_classes).toSet();
 
     set_attributes = object.attributes().toSet();
 }
@@ -323,7 +324,7 @@ bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &sou
     auto source = sourceModel();
     const QString attribute = source->index(source_row, AttributesColumn_Name, source_parent).data().toString();
     
-    const bool system_only = ADCONFIG()->get_attribute_is_system_only(attribute);
+    const bool system_only = adconfig->get_attribute_is_system_only(attribute);
     const bool unset = !set_attributes.contains(attribute);
     const bool mandatory = mandatory_attributes.contains(attribute);
     const bool optional = optional_attributes.contains(attribute);
@@ -341,8 +342,8 @@ bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &sou
     }
 
     if (filters[AttributeFilter_ReadOnly] && system_only) {
-        const bool constructed = ADCONFIG()->get_attribute_is_constructed(attribute);
-        const bool backlink = ADCONFIG()->get_attribute_is_backlink(attribute);
+        const bool constructed = adconfig->get_attribute_is_constructed(attribute);
+        const bool backlink = adconfig->get_attribute_is_backlink(attribute);
 
         if (!filters[AttributeFilter_SystemOnly] && !constructed && !backlink) {
             return false;

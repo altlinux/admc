@@ -19,6 +19,7 @@
 
 #include "editors/string_editor.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "utils.h"
 
 #include <QLineEdit>
@@ -32,7 +33,7 @@ StringEditor::StringEditor(const QString attribute, const QList<QByteArray> valu
 {
     const QString title =
     [attribute]() {
-        const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
+        const AttributeType type = adconfig->get_attribute_type(attribute);
 
         switch (type) {
             case AttributeType_Integer: return tr("Edit integer");
@@ -49,11 +50,11 @@ StringEditor::StringEditor(const QString attribute, const QList<QByteArray> valu
 
     edit = new QLineEdit();
 
-    if (ADCONFIG()->get_attribute_is_number(attribute)) {
+    if (adconfig->get_attribute_is_number(attribute)) {
         set_line_edit_to_numbers_only(edit);
     }
 
-    ADCONFIG()->limit_edit(edit, attribute);
+    adconfig->limit_edit(edit, attribute);
 
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = QString(value);
@@ -67,7 +68,7 @@ StringEditor::StringEditor(const QString attribute, const QList<QByteArray> valu
     layout->addWidget(edit);
     layout->addWidget(button_box);
 
-    const bool system_only = ADCONFIG()->get_attribute_is_system_only(attribute);
+    const bool system_only = adconfig->get_attribute_is_system_only(attribute);
     if (system_only) {
         edit->setReadOnly(true);
     }

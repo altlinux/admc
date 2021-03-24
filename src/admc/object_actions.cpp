@@ -19,13 +19,9 @@
 
 #include "object_actions.h"
 
-#include "ad/ad_interface.h"
-#include "ad/ad_config.h"
+#include "globals.h"
 #include "utils.h"
 #include "object_model.h"
-
-#include "object_model.h"
-#include "utils.h"
 #include "ad/ad_utils.h"
 #include "properties_dialog.h"
 #include "ad/ad_config.h"
@@ -35,7 +31,6 @@
 #include "settings.h"
 #include "filter_dialog.h"
 #include "filter_widget/filter_widget.h"
-#include "object_actions.h"
 #include "status.h"
 #include "rename_dialog.h"
 #include "select_container_dialog.h"
@@ -164,7 +159,7 @@ void ObjectActions::update_actions_visibility(const QList<QModelIndex> &selected
         // actions are present/enabled
         const bool is_container =
         [=]() {
-            const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
+            const QList<QString> container_classes = adconfig->get_filter_containers();
 
             return container_classes.contains(target_class);
         }();

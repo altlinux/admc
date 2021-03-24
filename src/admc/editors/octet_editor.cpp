@@ -20,6 +20,7 @@
 #include "editors/octet_editor.h"
 
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "utils.h"
 #include "ad/ad_display.h"
 
@@ -60,7 +61,7 @@ OctetEditor::OctetEditor(const QString attribute, const QList<QByteArray> values
     const QString value_string = octet_bytes_to_string(value, current_format(format_combo));
     edit->setPlainText(value_string);
 
-    if (ADCONFIG()->get_attribute_is_system_only(attribute)) {
+    if (adconfig->get_attribute_is_system_only(attribute)) {
         edit->setReadOnly(true);
     }
 

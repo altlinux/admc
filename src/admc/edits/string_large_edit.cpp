@@ -20,6 +20,7 @@
 #include "edits/string_large_edit.h"
 #include "ad/ad_interface.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "ad/ad_object.h"
 #include <QPlainTextEdit>
 #include <QFormLayout>
@@ -32,7 +33,7 @@ StringLargeEdit::StringLargeEdit(const QString &attribute_arg, const QString &ob
     
     edit = new QPlainTextEdit();
 
-    const int range_upper = ADCONFIG()->get_attribute_range_upper(attribute);
+    const int range_upper = adconfig->get_attribute_range_upper(attribute);
     if (range_upper > 0) {
         // NOTE: QPlainTextEdit doesn't have a straightforward setMaxLength() so have to do it ourselves
         connect(
@@ -66,7 +67,7 @@ void StringLargeEdit::set_read_only(const bool read_only) {
 }
 
 void StringLargeEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = ADCONFIG()->get_attribute_display_name(attribute, objectClass) + ":";
+    const QString label_text = adconfig->get_attribute_display_name(attribute, objectClass) + ":";
     layout->addRow(label_text, edit);
 }
 

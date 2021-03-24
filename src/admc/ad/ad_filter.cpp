@@ -21,6 +21,7 @@
 
 #include "ad/ad_defines.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 
 #include <QCoreApplication>
 
@@ -89,7 +90,7 @@ QString filter_OR(const QList<QString> &subfilters) {
 }
 
 QString is_container_filter() {
-    const QList<QString> accepted_classes = ADCONFIG()->get_filter_containers();
+    const QList<QString> accepted_classes = adconfig->get_filter_containers();
 
     QList<QString> class_filters;
     for (const QString &object_class : accepted_classes) {

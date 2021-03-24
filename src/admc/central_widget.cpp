@@ -24,6 +24,7 @@
 #include "ad/ad_utils.h"
 #include "properties_dialog.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "ad/ad_interface.h"
 #include "ad/ad_object.h"
 #include "ad/ad_filter.h"
@@ -191,7 +192,7 @@ void CentralWidget::go_online(AdInterface &ad) {
     // after going online
     object_results_id = console_widget->register_results(object_results, object_model_header_labels(), object_model_default_columns());
 
-    const QString head_dn = ADCONFIG()->domain_head();
+    const QString head_dn = adconfig->domain_head();
     const AdObject head_object = ad.search_object(head_dn);
 
     QStandardItem *item = console_widget->add_scope_item(object_results_id, ScopeNodeType_Dynamic, QModelIndex());
@@ -542,7 +543,7 @@ void CentralWidget::fetch_scope_node(const QModelIndex &index) {
     []() {
         QList<QString> out;
 
-        out += ADCONFIG()->get_columns();
+        out += adconfig->get_columns();
 
         // NOTE: load_object_row() needs this for loading group type/scope
         out += ATTRIBUTE_GROUP_TYPE;
@@ -566,9 +567,9 @@ void CentralWidget::fetch_scope_node(const QModelIndex &index) {
     // Dev mode
     // NOTE: configuration and schema objects are hidden so that they don't show up in regular searches. Have to use search_object() and manually add them to search results.
     if (dev_mode) {
-        const QString search_base = ADCONFIG()->domain_head();
-        const QString configuration_dn = ADCONFIG()->configuration_dn();
-        const QString schema_dn = ADCONFIG()->schema_dn();
+        const QString search_base = adconfig->domain_head();
+        const QString configuration_dn = adconfig->configuration_dn();
+        const QString schema_dn = adconfig->schema_dn();
 
         if (dn == search_base) {
             search_results[configuration_dn] = ad.search_object(configuration_dn);
@@ -620,7 +621,7 @@ void CentralWidget::setup_results_row(const QList<QStandardItem *> row, const Ad
 bool object_should_be_in_scope(const AdObject &object) {
     const bool is_container =
     [=]() {
-        const QList<QString> filter_containers = ADCONFIG()->get_filter_containers();
+        const QList<QString> filter_containers = adconfig->get_filter_containers();
         const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
         return filter_containers.contains(object_class);
@@ -753,7 +754,7 @@ DropType get_object_drop_type(const QModelIndex &dropped, const QModelIndex &tar
     } else if (dropped_is_group && target_is_group) {
         return DropType_AddToGroup;
     } else {
-        const QList<QString> dropped_superiors = ADCONFIG()->get_possible_superiors(dropped_classes);
+        const QList<QString> dropped_superiors = adconfig->get_possible_superiors(dropped_classes);
 
         const bool target_is_valid_superior =
         [&]() {

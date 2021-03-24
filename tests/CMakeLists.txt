@@ -89,6 +89,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/console_widget/results_view.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/object_actions.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/move_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/globals.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_interface.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_config.cpp

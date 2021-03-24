@@ -24,6 +24,7 @@
 #include "ad/ad_interface.h"
 #include "ad/ad_utils.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "ad/ad_object.h"
 
 #include <QLineEdit>
@@ -46,11 +47,11 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
     
     edit = new QLineEdit();
     
-    if (ADCONFIG()->get_attribute_is_number(attribute)) {
+    if (adconfig->get_attribute_is_number(attribute)) {
         set_line_edit_to_numbers_only(edit);
     }
     
-    ADCONFIG()->limit_edit(edit, attribute);
+    adconfig->limit_edit(edit, attribute);
 
     QObject::connect(
         edit, &QLineEdit::textChanged,
@@ -82,7 +83,7 @@ void StringEdit::set_read_only(const bool read_only) {
 }
 
 void StringEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = ADCONFIG()->get_attribute_display_name(attribute, objectClass) + ":";
+    const QString label_text = adconfig->get_attribute_display_name(attribute, objectClass) + ":";
     
     if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
         const QString extra_edit_text = get_domain_as_email_suffix();
@@ -96,7 +97,7 @@ void StringEdit::add_to_layout(QFormLayout *layout) {
 
         layout->addRow(label_text, sublayout);
     } else if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
-        const QString domain = ADCONFIG()->domain();
+        const QString domain = adconfig->domain();
         
         const QString domain_name = domain.split(".")[0];
         const QString extra_edit_text = "\\" + domain_name;
@@ -128,7 +129,7 @@ bool StringEdit::verify(AdInterface &ad, const QString &dn) const {
             return filter_AND({same_upn, not_object_itself});
         }();
         const QList<QString> search_attributes;
-        const QString base = ADCONFIG()->domain_head();
+        const QString base = adconfig->domain_head();
 
         const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All, base);
 
@@ -178,6 +179,6 @@ QString StringEdit::get_new_value() const {
 
 // "DOMAIN.COM" => "@domain.com"
 QString get_domain_as_email_suffix() {
-    const QString domain = ADCONFIG()->domain();
+    const QString domain = adconfig->domain();
     return "@" + domain.toLower();
 }

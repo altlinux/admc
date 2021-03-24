@@ -41,8 +41,9 @@ typedef QString Attribute;
 
 class AdConfig {
 public:
-    static AdConfig *instance();
-
+    AdConfig();
+    ~AdConfig();
+    
     void load(AdInterface &ad, const QLocale &locale);
 
     QString domain() const;
@@ -79,11 +80,6 @@ public:
 
 private:
     AdConfigPrivate *d;
-
-    AdConfig();
-    ~AdConfig();
 };
-
-AdConfig *ADCONFIG();
 
 #endif /* AD_CONFIG_H */

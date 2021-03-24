@@ -20,6 +20,7 @@
 #include "edits/expiry_edit.h"
 #include "ad/ad_interface.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "ad/ad_utils.h"
 #include "utils.h"
 #include "ad/ad_object.h"
@@ -113,7 +114,7 @@ void ExpiryEdit::set_read_only(const bool read_only) {
 }
 
 void ExpiryEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = ADCONFIG()->get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
+    const QString label_text = adconfig->get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
 
     layout->addRow(label_text, frame);
 }

@@ -20,6 +20,7 @@
 #include "filter_widget/select_classes_widget.h"
 #include "ad/ad_defines.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "ad/ad_filter.h"
 
 #include <QVBoxLayout>
@@ -62,7 +63,7 @@ SelectClassesWidget::SelectClassesWidget(const QList<QString> classes)
         
         dialog_checks[object_class] = check;
 
-        const QString class_display = ADCONFIG()->get_class_display_name(object_class);
+        const QString class_display = adconfig->get_class_display_name(object_class);
         checks_layout->addRow(class_display, check);
 
         connect(
@@ -128,7 +129,7 @@ void SelectClassesWidget::on_dialog_accepted() {
         
         QList<QString> classes_display_strings;
         for (const QString &object_class : selected_classes) {
-            const QString class_display = ADCONFIG()->get_class_display_name(object_class);
+            const QString class_display = adconfig->get_class_display_name(object_class);
             classes_display_strings.append(class_display);
         }
 

@@ -19,6 +19,7 @@
 
 #include "editors/datetime_editor.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "ad/ad_utils.h"
 #include "utils.h"
 
@@ -49,7 +50,7 @@ DateTimeEditor::DateTimeEditor(const QString attribute, const QList<QByteArray> 
     layout->addWidget(edit);
     layout->addWidget(button_box);
 
-    const bool system_only = ADCONFIG()->get_attribute_is_system_only(attribute);
+    const bool system_only = adconfig->get_attribute_is_system_only(attribute);
     if (system_only) {
         edit->setReadOnly(true);
     }

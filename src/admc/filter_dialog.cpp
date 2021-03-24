@@ -20,6 +20,7 @@
 #include "filter_dialog.h"
 #include "ad/ad_filter.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 
 #include "filter_widget/filter_widget.h"
 
@@ -37,7 +38,7 @@ FilterDialog::FilterDialog(QWidget *parent)
     []() {
         QList<QString> out = filter_classes;
 
-        const QList<QString> container_classes = ADCONFIG()->get_filter_containers();
+        const QList<QString> container_classes = adconfig->get_filter_containers();
         for (const QString &container_class : container_classes) {
             out.removeAll(container_class);
         }

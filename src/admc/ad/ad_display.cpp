@@ -22,6 +22,7 @@
 #include "ad/ad_defines.h"
 #include "ad/ad_utils.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 
 #include <QString>
 #include <QByteArray> 
@@ -40,11 +41,11 @@ QString octet_display_value(const QByteArray &bytes);
 QString guid_to_display_value(const QByteArray &bytes);
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value) {
-    const AttributeType type = ADCONFIG()->get_attribute_type(attribute);
+    const AttributeType type = adconfig->get_attribute_type(attribute);
 
     switch (type) {
         case AttributeType_LargeInteger: {
-            const LargeIntegerSubtype subtype = ADCONFIG()->get_attribute_large_integer_subtype(attribute);
+            const LargeIntegerSubtype subtype = adconfig->get_attribute_large_integer_subtype(attribute);
 
             switch (subtype) {
                 case LargeIntegerSubtype_Datetime: return large_integer_datetime_display_value(attribute, value);

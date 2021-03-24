@@ -22,6 +22,7 @@
 #include "ad/ad_interface.h"
 #include "ad/ad_utils.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "properties_dialog.h"
 #include "select_dialog.h"
 #include "ad/ad_object.h"
@@ -69,7 +70,7 @@ void ManagerEdit::add_to_layout(QFormLayout *layout) {
     sublayout->addWidget(edit);
     sublayout->addLayout(buttons_layout);
 
-    const QString label_text = ADCONFIG()->get_attribute_display_name(ATTRIBUTE_MANAGER, CLASS_USER) + ":";
+    const QString label_text = adconfig->get_attribute_display_name(ATTRIBUTE_MANAGER, CLASS_USER) + ":";
     layout->addRow(label_text, sublayout);
 }
 

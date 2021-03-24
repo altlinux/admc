@@ -61,11 +61,6 @@ AdConfigPrivate::AdConfigPrivate() {
 
 }
 
-AdConfig *AdConfig::instance() {
-    static AdConfig m_instance;
-    return &m_instance;
-}
-
 AdConfig::AdConfig() {
     d = new AdConfigPrivate();
 }
@@ -305,10 +300,6 @@ QString AdConfig::configuration_dn() const {
 
 QString AdConfig::schema_dn() const {
     return QString("CN=Schema,%1").arg(configuration_dn());
-}
-
-AdConfig *ADCONFIG() {
-    return AdConfig::instance();
 }
 
 QString AdConfig::get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const {

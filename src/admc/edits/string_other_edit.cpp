@@ -23,6 +23,7 @@
 #include "utils.h"
 #include "ad/ad_interface.h"
 #include "ad/ad_config.h"
+#include "globals.h"
 #include "ad/ad_object.h"
 #include <QLineEdit>
 #include <QFormLayout>
@@ -72,7 +73,7 @@ void StringOtherEdit::add_to_layout(QFormLayout *layout) {
     sublayout->addWidget(main_edit->edit);
     sublayout->addWidget(other_button);
 
-    const QString label_text = ADCONFIG()->get_attribute_display_name(main_edit->attribute, main_edit->objectClass) + ":";
+    const QString label_text = adconfig->get_attribute_display_name(main_edit->attribute, main_edit->objectClass) + ":";
     layout->addRow(label_text, sublayout);
 }
 
