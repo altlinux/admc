@@ -408,6 +408,8 @@ void Console::on_items_dropped(const QList<QModelIndex> &dropped_list, const QMo
         return;
     }
 
+    show_busy_indicator();
+
     for (const QModelIndex &dropped : dropped_list) {
         const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
         const DropType drop_type = get_object_drop_type(dropped, target);
@@ -434,13 +436,19 @@ void Console::on_items_dropped(const QList<QModelIndex> &dropped_list, const QMo
         }
     }
 
-    STATUS()->display_ad_messages(ad, nullptr);
-
     console_widget->sort_scope();
+
+    hide_busy_indicator();
+
+    STATUS()->display_ad_messages(ad, nullptr);
 }
 
 void Console::refresh_head() {
+    show_busy_indicator();
+
     console_widget->refresh_scope(scope_head_index);
+
+    hide_busy_indicator();
 }
 
 // TODO: currently calling this when current scope changes,
@@ -769,6 +777,8 @@ DropType get_object_drop_type(const QModelIndex &dropped, const QModelIndex &tar
 void Console::enable_disable_helper(const bool disabled) {
     const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
 
+    show_busy_indicator();
+
     const QList<QString> changed_objects = object_enable_disable(targets.keys(), disabled, this);
 
     AdInterface ad;
@@ -783,6 +793,8 @@ void Console::enable_disable_helper(const bool disabled) {
     }
 
     update_actions_visibility();
+
+    hide_busy_indicator();
 }
 
 // First, hide all actions, then show whichever actions are

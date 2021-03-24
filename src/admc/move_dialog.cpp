@@ -57,6 +57,8 @@ void MoveDialog::accept() {
         return;
     }
 
+    show_busy_indicator();
+
     const QString new_parent_dn = get_selected();
 
     for (const QString &dn : targets) {
@@ -66,6 +68,10 @@ void MoveDialog::accept() {
             moved_objects.append(dn);
         }
     }
+
+    hide_busy_indicator();
+
+    STATUS()->display_ad_messages(ad, nullptr);
 
     QDialog::accept();
 }

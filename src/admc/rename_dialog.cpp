@@ -143,6 +143,8 @@ void RenameDialog::accept() {
         return;
     }
 
+    show_busy_indicator();
+
     const QString new_name = name_edit->text();
     const bool rename_success = ad.object_rename(target, new_name);
 
@@ -157,6 +159,8 @@ void RenameDialog::accept() {
             QDialog::accept();
         }
     }
+
+    hide_busy_indicator();
 
     STATUS()->display_ad_messages(ad, this);
 

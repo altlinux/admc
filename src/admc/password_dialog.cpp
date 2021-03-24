@@ -94,12 +94,16 @@ void PasswordDialog::accept() {
         return;
     }
 
+    show_busy_indicator();
+
     const bool verify_success = edits_verify(ad, edits, target);
     if (!verify_success) {
         return;
     }
 
     const bool apply_success = edits_apply(ad, edits, target);
+
+    hide_busy_indicator();
 
     STATUS()->display_ad_messages(ad, this);
 

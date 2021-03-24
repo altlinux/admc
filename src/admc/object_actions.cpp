@@ -234,6 +234,8 @@ QList<QString> object_delete(const QList<QString> &targets, QWidget *parent) {
         return QList<QString>();
     }
 
+    show_busy_indicator();
+
     for (const QString &dn : targets) {
         const bool success = ad.object_delete(dn);
 
@@ -241,6 +243,8 @@ QList<QString> object_delete(const QList<QString> &targets, QWidget *parent) {
             deleted_objects.append(dn);
         }
     }
+
+    hide_busy_indicator();
 
     STATUS()->display_ad_messages(ad, parent);
 
@@ -253,6 +257,8 @@ QList<QString> object_enable_disable(const QList<QString> &targets, const bool d
         return QList<QString>();
     }
 
+    show_busy_indicator();
+
     QList<QString> changed_objects;
 
     for (const QString &dn : targets) {
@@ -262,6 +268,8 @@ QList<QString> object_enable_disable(const QList<QString> &targets, const bool d
             changed_objects.append(dn);
         }
     }
+
+    hide_busy_indicator();
 
     STATUS()->display_ad_messages(ad, parent);
 
@@ -279,6 +287,8 @@ void object_add_to_group(const QList<QString> &targets, QWidget *parent) {
                 return;
             }
 
+            show_busy_indicator();
+
             const QList<QString> groups = dialog->get_selected();
 
             for (const QString &target : targets) {
@@ -286,6 +296,8 @@ void object_add_to_group(const QList<QString> &targets, QWidget *parent) {
                     ad.group_add_member(group, target);
                 }
             }
+
+            hide_busy_indicator();
 
             STATUS()->display_ad_messages(ad, parent);
         });
