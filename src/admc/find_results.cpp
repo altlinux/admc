@@ -259,7 +259,15 @@ void FindResults::on_context_menu(const QPoint pos) {
 
 void FindResults::enable_disable_helper(const bool disabled) {
     const QList<QString> targets = get_selected_dns();
-    object_enable_disable(targets, disabled, this);
+    const QList<QString> changed_objects = object_enable_disable(targets, disabled, this);
+
+    const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
+
+    for (const QString &dn : changed_objects) {
+        const QPersistentModelIndex index = selected[dn];
+
+        model->setData(index, disabled, ObjectRole_AccountDisabled);
+    }
     
     update_actions_visibility();
 }
@@ -275,15 +283,20 @@ void FindResults::update_actions_visibility() {
     object_actions->get(ObjectAction_Find)->setVisible(false);
 }
 
-QList<QString> FindResults::get_selected_dns() {
-    QList<QString> out;
-    
-    const QList<QModelIndex> selected_indexes = view->current_view()->selectionModel()->selectedRows();
-    for (const QModelIndex index : selected_indexes) {
-        const QString dn = index.data(ObjectRole_DN).toString();
+QHash<QString, QPersistentModelIndex> FindResults::get_selected_dns_and_indexes() {
+    QHash<QString, QPersistentModelIndex> out;
 
-        out.append(dn);
+    const QList<QModelIndex> indexes = view->current_view()->selectionModel()->selectedRows();
+    for (const QModelIndex &index : indexes) {
+        const QString dn = index.data(ObjectRole_DN).toString();
+        out[dn] = QPersistentModelIndex(index);
     }
 
-    return out; 
+    return out;
+}
+
+QList<QString> FindResults::get_selected_dns() {
+    const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
+
+    return selected.keys();
 }
