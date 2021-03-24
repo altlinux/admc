@@ -161,6 +161,7 @@ public:
     QList<QModelIndex> get_selected_items() const;
 
     QList<QModelIndex> search_scope_by_role(int role, const QVariant &value) const;
+    QList<QModelIndex> search_results_by_role(int role, const QVariant &value) const;
 
     QModelIndex get_current_scope_item() const;
     int get_current_results_count() const;
