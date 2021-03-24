@@ -668,7 +668,7 @@ void Console::move_object_in_console(AdInterface &ad, const QPersistentModelInde
     // after adding" thing. Try to express it through
     // console widget's API. Failing that, at least write a
     // comment in console_widget.h
-    
+
     // NOTE: delete old item AFTER adding new item because.
     // 1) Need to get old dn from old index. 2) If old item
     // is deleted first, then it's possible for new parent
@@ -787,9 +787,28 @@ void Console::enable_disable_helper(const bool disabled) {
     }
 
     for (const QString &dn : changed_objects) {
-        const QModelIndex index = targets[dn];
-        const AdObject updated_object = ad.search_object(dn);
-        update_console_item(index, updated_object);
+        const QPersistentModelIndex index = targets[dn];
+
+        auto update_helper =
+        [=](const QPersistentModelIndex &the_index) {
+            const bool is_scope = console_widget->is_scope_item(the_index);
+
+            if (is_scope) {
+                QStandardItem *scope_item = console_widget->get_scope_item(the_index);
+
+                scope_item->setData(disabled, ObjectRole_AccountDisabled);
+            } else {
+                QList<QStandardItem *> results_row = console_widget->get_results_row(the_index);
+                results_row[0]->setData(disabled, ObjectRole_AccountDisabled);
+            }
+        };
+
+        update_helper(index);
+
+        const QPersistentModelIndex buddy = console_widget->get_buddy(index);
+        if (buddy.isValid()) {
+            update_helper(buddy);
+        }
     }
 
     update_actions_visibility();
