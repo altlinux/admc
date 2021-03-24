@@ -99,9 +99,11 @@ void PasswordDialog::accept() {
         return;
     }
 
-    edits_apply(ad, edits, target);
-
-    QDialog::accept();
+    const bool apply_success = edits_apply(ad, edits, target);
 
     STATUS()->display_ad_messages(ad, this);
+
+    if (apply_success) {
+        QDialog::accept();
+    }
 }

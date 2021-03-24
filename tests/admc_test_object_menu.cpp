@@ -33,7 +33,6 @@
 #include "find_select_dialog.h"
 #include "settings.h"
 #include "rename_dialog.h"
-#include "password_dialog.h"
 #include "find_dialog.h"
 #include "move_dialog.h"
 #include "password_dialog.h"
