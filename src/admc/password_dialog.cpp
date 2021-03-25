@@ -26,6 +26,7 @@
 #include "edits/account_option_edit.h"
 #include "status.h"
 #include "utils.h"
+#include "globals.h"
 
 #include <QFormLayout>
 #include <QLabel>

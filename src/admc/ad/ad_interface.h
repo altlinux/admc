@@ -34,6 +34,7 @@ class QString;
 class QByteArray;
 class QDateTime;
 class AdObject;
+class AdConfig;
 template <typename T> class QList;
 
 enum SearchScope {
@@ -91,8 +92,23 @@ class AdInterface {
 Q_DECLARE_TR_FUNCTIONS(AdInterface)
 
 public:
-    AdInterface();
+    /**
+     * Pass an loaded AdConfig instance to ctor to enable
+     * attribute display values in messages. Without an
+     * AdConfig instance AdInterface defaults to outputting
+     * raw attribute values. Note that AdInterface is not
+     * responsible for deleting AdConfig instance.
+     */
+    AdInterface(AdConfig *adconfig = nullptr);
     ~AdInterface();
+
+    /**
+     * If you wish to use the same AdConfig instance for all
+     * connections, you can setup a permanent one here. Note
+     * that if you pass another adconfig to ctor that will
+     * override the permanent adconfig.
+     */
+    static void set_permanent_adconfig(AdConfig *adconfig);
 
     bool is_connected() const;
     QList<AdMessage> messages() const;

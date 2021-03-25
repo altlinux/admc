@@ -21,14 +21,16 @@
 
 /**
  * Functions for converting raw attribute values (bytes)
- * into strings fit for displaying to user.
+ * into strings fit for displaying to user. If no adconfig
+ * is given, then raw attribute values are returned.
  */
 
+class AdConfig;
 class QString;
 class QByteArray;
 template <typename T> class QList;
 
-QString attribute_display_value(const QString &attribute, const QByteArray &value);
-QString attribute_display_values(const QString &attribute, const QList<QByteArray> &values);
+QString attribute_display_value(const QString &attribute, const QByteArray &value, const AdConfig *adconfig = nullptr);
+QString attribute_display_values(const QString &attribute, const QList<QByteArray> &values, const AdConfig *adconfig = nullptr);
 
 #endif /* ATTRIBUTE_DISPLAY_H */

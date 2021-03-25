@@ -58,7 +58,7 @@ void load_object_row(const QList<QStandardItem *> row, const AdObject &object) {
                 }
             } else {
                 const QByteArray value = object.get_value(attribute);
-                return attribute_display_value(attribute, value);
+                return attribute_display_value(attribute, value, adconfig);
             }
         }();
 

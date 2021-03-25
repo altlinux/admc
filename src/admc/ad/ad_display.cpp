@@ -22,7 +22,6 @@
 #include "ad/ad_defines.h"
 #include "ad/ad_utils.h"
 #include "ad/ad_config.h"
-#include "globals.h"
 
 #include <QString>
 #include <QDateTime>
@@ -42,7 +41,11 @@ QString timespan_display_value(const QByteArray &bytes);
 QString octet_display_value(const QByteArray &bytes);
 QString guid_to_display_value(const QByteArray &bytes);
 
-QString attribute_display_value(const QString &attribute, const QByteArray &value) {
+QString attribute_display_value(const QString &attribute, const QByteArray &value, const AdConfig *adconfig) {
+    if (adconfig == nullptr) {
+        return value;
+    }
+
     const AttributeType type = adconfig->get_attribute_type(attribute);
 
     switch (type) {
@@ -71,7 +74,7 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
     }
 }
 
-QString attribute_display_values(const QString &attribute, const QList<QByteArray> &values) {
+QString attribute_display_values(const QString &attribute, const QList<QByteArray> &values, const AdConfig *adconfig) {
     if (values.isEmpty()) {
         return QCoreApplication::translate("attribute_display", "<unset>");
     } else {
@@ -85,7 +88,7 @@ QString attribute_display_values(const QString &attribute, const QList<QByteArra
             }
 
             const QByteArray value = values[i];
-            const QString display_value = attribute_display_value(attribute, value);
+            const QString display_value = attribute_display_value(attribute, value, adconfig);
 
             out += display_value;
         }

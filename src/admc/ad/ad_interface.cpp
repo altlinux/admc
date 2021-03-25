@@ -64,12 +64,22 @@ QList<QString> query_server_for_hosts(const char *dname);
 bool ad_connect(const char* uri, LDAP **ld_out);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 
+AdConfig *AdInterfacePrivate::s_adconfig = nullptr;
+
 void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgroup, int maxLenWorkgroup, char * pUsername, int maxLenUsername, char * pPassword, int maxLenPassword) {
 
 }
 
-AdInterface::AdInterface() {
+AdInterface::AdInterface(AdConfig *adconfig) {
     d = new AdInterfacePrivate();
+
+    if (adconfig != nullptr) {
+        d->adconfig = adconfig;
+    } else if (AdInterfacePrivate::s_adconfig != nullptr) {
+        d->adconfig = AdInterfacePrivate::s_adconfig;
+    } else {
+        d->adconfig = nullptr;
+    }
 
     d->ld = NULL;
     d->smbc = NULL;
@@ -113,6 +123,10 @@ AdInterface::AdInterface() {
 
 AdInterface::~AdInterface() {
     delete d;
+}
+
+void AdInterface::set_permanent_adconfig(AdConfig *adconfig) {
+    AdInterfacePrivate::s_adconfig = adconfig;
 }
 
 AdInterfacePrivate::AdInterfacePrivate() {
@@ -388,8 +402,8 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
     const AdObject object = search_object(dn, {attribute});
     const QList<QByteArray> old_values = object.get_values(attribute);
     const QString name = dn_get_name(dn);
-    const QString values_display = attribute_display_values(attribute, values);
-    const QString old_values_display = attribute_display_values(attribute, old_values);
+    const QString values_display = attribute_display_values(attribute, values, d->adconfig);
+    const QString old_values_display = attribute_display_values(attribute, old_values, d->adconfig);
 
     // Do nothing if both new and old values are empty
     if (old_values.isEmpty() && values.isEmpty()) {
@@ -469,7 +483,7 @@ bool AdInterface::attribute_add_value(const QString &dn, const QString &attribut
     free(data_copy);
 
     const QString name = dn_get_name(dn);
-    const QString new_display_value = attribute_display_value(attribute, value);
+    const QString new_display_value = attribute_display_value(attribute, value, d->adconfig);
 
     if (result == LDAP_SUCCESS) {
         const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_display_value, attribute, name);
@@ -488,7 +502,7 @@ bool AdInterface::attribute_add_value(const QString &dn, const QString &attribut
 
 bool AdInterface::attribute_delete_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
     const QString name = dn_get_name(dn);
-    const QString value_display = attribute_display_value(attribute, value);
+    const QString value_display = attribute_display_value(attribute, value, d->adconfig);
 
     char *data_copy = (char *) malloc(value.size());
     if (data_copy == NULL) {

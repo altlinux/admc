@@ -226,6 +226,8 @@ void MainWindow::connect_to_server() {
         const QLocale locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
         adconfig->load(ad, locale);
 
+        AdInterface::set_permanent_adconfig(adconfig);
+
         STATUS()->display_ad_messages(ad, this);
 
         central_widget->go_online(ad);

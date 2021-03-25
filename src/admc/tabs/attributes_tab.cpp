@@ -296,7 +296,7 @@ bool AttributesTab::apply(AdInterface &ad, const QString &target) {
 }
 
 void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values) {
-    const QString display_values = attribute_display_values(attribute, values);
+    const QString display_values = attribute_display_values(attribute, values, adconfig);
     const AttributeType type = adconfig->get_attribute_type(attribute);
     const QString type_display = attribute_type_display_string(type);
 

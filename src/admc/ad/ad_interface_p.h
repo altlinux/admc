@@ -23,6 +23,7 @@
 #include <QList>
 #include <QCoreApplication>
 
+class AdConfig;
 class QString;
 typedef struct ldap LDAP;
 typedef struct _SMBCCTX SMBCCTX;
@@ -34,6 +35,8 @@ public:
     AdInterfacePrivate();
     ~AdInterfacePrivate();
 
+    static AdConfig *s_adconfig;
+    AdConfig *adconfig;
     LDAP *ld;
     SMBCCTX *smbc;
     bool is_connected;
