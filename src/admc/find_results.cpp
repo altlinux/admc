@@ -42,6 +42,7 @@
 #include <QVBoxLayout>
 #include <QMenu>
 #include <QStandardItemModel>
+#include <QSortFilterProxyModel>
 #include <QHash>
 
 FindResults::FindResults()
@@ -56,8 +57,12 @@ FindResults::FindResults()
     const QList<QString> header_labels = object_model_header_labels();
     model->setHorizontalHeaderLabels(header_labels);
 
+    auto proxy_model = new QSortFilterProxyModel(this);
+
     view = new ResultsView(this);
-    view->set_model(model);
+    view->set_model(proxy_model);
+
+    proxy_model->setSourceModel(model);
 
     object_count_label = new QLabel();
 
@@ -144,8 +149,6 @@ void FindResults::load(const QHash<QString, AdObject> &search_results) {
 
         model->appendRow(row);
     }
-
-    model->sort(0, Qt::AscendingOrder);
 
     const QString label_text = tr("%n object(s)", "", model->rowCount());
     object_count_label->setText(label_text);
