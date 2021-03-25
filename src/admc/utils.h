@@ -78,4 +78,6 @@ void set_data_for_row(const QList<QStandardItem *> &row, const QVariant &data, c
 bool ad_connected(const AdInterface &ad);
 bool ad_failed(const AdInterface &ad);
 
+QString is_container_filter();
+
 #endif /* UTILS_H */

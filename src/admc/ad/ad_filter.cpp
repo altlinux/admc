@@ -20,8 +20,6 @@
 #include "ad/ad_filter.h"
 
 #include "ad/ad_defines.h"
-#include "ad/ad_config.h"
-#include "globals.h"
 
 #include <QCoreApplication>
 
@@ -87,18 +85,6 @@ QString filter_OR(const QList<QString> &subfilters) {
     } else {
         return QString();
     }
-}
-
-QString is_container_filter() {
-    const QList<QString> accepted_classes = adconfig->get_filter_containers();
-
-    QList<QString> class_filters;
-    for (const QString &object_class : accepted_classes) {
-        const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
-        class_filters.append(class_filter);
-    }
-
-    return filter_OR(class_filters);
 }
 
 QString condition_to_display_string(const Condition condition) {

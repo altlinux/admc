@@ -45,8 +45,6 @@ QString filter_CONDITION(const Condition condition, const QString &attribute, co
 QString filter_AND(const QList<QString> &subfilters);
 QString filter_OR(const QList<QString> &subfilters);
 
-QString is_container_filter();
-
 // Adds advanced view filter, depending on current advanced
 // view setting
 QString add_advanced_view_filter(const QString &filter);
