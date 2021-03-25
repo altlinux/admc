@@ -673,7 +673,7 @@
     <message>
         <location filename="main_window.cpp" line="97"/>
         <source>&amp;Put last name before first name when creating users</source>
-        <translation>&amp;Ставить фамилию перед именем при создании пользоваетелей</translation>
+        <translation>&amp;Ставить фамилию перед именем при создании пользователей</translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="98"/>
