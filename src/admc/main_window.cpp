@@ -125,6 +125,14 @@ void MainWindow::setup_menubar() {
             action->setCheckable(true);
             language_group->addAction(action);
 
+            const bool is_checked =
+            [=]() {
+                const QLocale current_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
+
+                return (current_locale == locale);
+            }();
+            action->setChecked(is_checked);
+
             out[language] = action;
         }
 
