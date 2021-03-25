@@ -18,13 +18,11 @@
  */
 
 #include "tabs/address_tab.h"
-#include "ad/ad_interface.h"
+#include "ad/adldap.h"
 #include "status.h"
-#include "ad/ad_config.h"
 #include "globals.h"
 #include "utils.h"
 #include "edits/country_edit.h"
-#include "ad/ad_object.h"
 #include <QVBoxLayout>
 #include <QFormLayout>
 #include <QComboBox>

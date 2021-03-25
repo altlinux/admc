@@ -18,7 +18,7 @@
  */
 
 #include "editors/string_editor.h"
-#include "ad/ad_config.h"
+#include "ad/adldap.h"
 #include "globals.h"
 #include "utils.h"
 

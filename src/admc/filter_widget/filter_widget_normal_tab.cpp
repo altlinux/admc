@@ -20,7 +20,7 @@
 #include "filter_widget/filter_widget_normal_tab.h"
 #include "filter_widget/select_classes_widget.h"
 #include "filter_widget/filter_builder.h"
-#include "ad/ad_filter.h"
+#include "ad/adldap.h"
 
 #include <QLabel>
 #include <QFormLayout>

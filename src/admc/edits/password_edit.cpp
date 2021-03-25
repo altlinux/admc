@@ -19,10 +19,8 @@
 
 #include "edits/password_edit.h"
 #include "utils.h"
-#include "ad/ad_interface.h"
-#include "ad/ad_config.h"
+#include "ad/adldap.h"
 #include "globals.h"
-#include "ad/ad_object.h"
 #include <QLineEdit>
 #include <QFormLayout>
 #include <QMessageBox>

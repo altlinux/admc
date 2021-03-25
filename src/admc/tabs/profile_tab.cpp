@@ -19,7 +19,7 @@
 
 #include "tabs/profile_tab.h"
 #include "edits/string_edit.h"
-#include "ad/ad_defines.h"
+#include "ad/adldap.h"
 
 #include <QFormLayout>
 

@@ -18,15 +18,10 @@
  */
 
 #include "object_model.h"
-#include "ad/ad_interface.h"
-#include "ad/ad_object.h"
-#include "ad/ad_config.h"
+#include "ad/adldap.h"
 #include "globals.h"
-#include "ad/ad_utils.h"
-#include "ad/ad_filter.h"
 #include "settings.h"
 #include "utils.h"
-#include "ad/ad_display.h"
 #include "status.h"
 
 #include <QStandardItemModel>

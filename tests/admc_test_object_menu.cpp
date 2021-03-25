@@ -19,11 +19,7 @@
 
 #include "admc_test_object_menu.h"
 
-#include "ad/ad_interface.h"
-#include "ad/ad_defines.h"
-#include "ad/ad_object.h"
-#include "ad/ad_utils.h"
-#include "ad/ad_filter.h"
+#include "ad/adldap.h"
 #include "create_dialog.h"
 #include "utils.h"
 #include "status.h"

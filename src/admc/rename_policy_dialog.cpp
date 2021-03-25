@@ -19,11 +19,8 @@
 
 #include "rename_policy_dialog.h"
 #include "rename_dialog.h"
-#include "ad/ad_interface.h"
-#include "ad/ad_config.h"
+#include "ad/adldap.h"
 #include "globals.h"
-#include "ad/ad_object.h"
-#include "ad/ad_utils.h"
 #include "status.h"
 #include "utils.h"
 

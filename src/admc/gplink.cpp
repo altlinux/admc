@@ -1,6 +1,6 @@
 
 #include "gplink.h"
-#include "ad/ad_utils.h"
+#include "ad/adldap.h"
 
 #include <QObject>
 

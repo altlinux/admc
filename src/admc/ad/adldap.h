@@ -17,31 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tabs/address_tab.h"
-#include "edits/string_edit.h"
-#include "edits/string_large_edit.h"
-#include "edits/country_edit.h"
-#include "ad/adldap.h"
+#ifndef ADLDAP_H
+#define ADLDAP_H
 
-#include <QVBoxLayout>
-#include <QFormLayout>
+#include "ad/ad_config.h"
+#include "ad/ad_defines.h"
+#include "ad/ad_display.h"
+#include "ad/ad_interface.h"
+#include "ad/ad_object.h"
+#include "ad/ad_utils.h"
+#include "ad/ad_filter.h"
 
-AddressTab::AddressTab() {
-    new StringLargeEdit(ATTRIBUTE_STREET, CLASS_USER, &edits, this);
-
-    const QList<QString> attributes = {
-        ATTRIBUTE_PO_BOX,
-        ATTRIBUTE_CITY,
-        ATTRIBUTE_STATE,
-        ATTRIBUTE_POSTAL_CODE
-    };
-    StringEdit::make_many(attributes, CLASS_USER, &edits, this);
-
-    new CountryEdit(&edits, this);
-
-    edits_connect_to_tab(edits, this);
-
-    const auto layout = new QFormLayout();
-    setLayout(layout);
-    edits_add_to_layout(edits, layout);
-}
+#endif /* ADLDAP_H */

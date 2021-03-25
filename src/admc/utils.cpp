@@ -20,9 +20,7 @@
 #include "utils.h"
 
 #include "settings.h"
-#include "ad/ad_interface.h"
-#include "ad/ad_filter.h"
-#include "ad/ad_config.h"
+#include "ad/adldap.h"
 #include "globals.h"
 
 #include <QAbstractItemModel>

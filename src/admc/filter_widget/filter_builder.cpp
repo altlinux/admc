@@ -18,9 +18,8 @@
  */
 
 #include "filter_widget/filter_builder.h"
-#include "ad/ad_config.h"
+#include "ad/adldap.h"
 #include "globals.h"
-#include "ad/ad_filter.h"
 
 #include <QLineEdit>
 #include <QComboBox>

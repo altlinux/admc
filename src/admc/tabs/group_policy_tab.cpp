@@ -18,13 +18,10 @@
  */
 
 #include "tabs/group_policy_tab.h"
-#include "ad/ad_interface.h"
-#include "ad/ad_utils.h"
-#include "ad/ad_object.h"
+#include "ad/adldap.h"
 #include "utils.h"
 #include "select_dialog.h"
 #include "edits/gpoptions_edit.h"
-#include "ad/ad_filter.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>

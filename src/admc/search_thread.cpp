@@ -19,8 +19,7 @@
 
 #include "search_thread.h"
 
-#include "ad/ad_interface.h"
-#include "ad/ad_object.h"
+#include "ad/adldap.h"
 #include "utils.h"
 
 #include <QHash>

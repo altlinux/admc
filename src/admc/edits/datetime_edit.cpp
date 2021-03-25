@@ -19,9 +19,7 @@
 
 #include "edits/datetime_edit.h"
 
-#include "ad/ad_interface.h"
-#include "ad/ad_config.h"
-#include "ad/ad_object.h"
+#include "ad/adldap.h"
 #include "globals.h"
 #include "utils.h"
 

@@ -18,10 +18,8 @@
  */
 
 #include "edits/group_scope_edit.h"
-#include "ad/ad_interface.h"
-#include "ad/ad_utils.h"
+#include "ad/adldap.h"
 #include "utils.h"
-#include "ad/ad_object.h"
 #include <QComboBox>
 #include <QFormLayout>
 

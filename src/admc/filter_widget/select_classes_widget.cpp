@@ -18,10 +18,8 @@
  */
 
 #include "filter_widget/select_classes_widget.h"
-#include "ad/ad_defines.h"
-#include "ad/ad_config.h"
+#include "ad/adldap.h"
 #include "globals.h"
-#include "ad/ad_filter.h"
 
 #include <QVBoxLayout>
 #include <QFormLayout>

@@ -19,6 +19,6 @@
 
 #include "globals.h"
 
-#include "ad/ad_config.h"
+#include "ad/adldap.h"
 
 AdConfig *adconfig = new AdConfig();

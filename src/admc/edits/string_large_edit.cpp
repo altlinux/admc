@@ -18,10 +18,8 @@
  */
 
 #include "edits/string_large_edit.h"
-#include "ad/ad_interface.h"
-#include "ad/ad_config.h"
+#include "ad/adldap.h"
 #include "globals.h"
-#include "ad/ad_object.h"
 #include <QPlainTextEdit>
 #include <QFormLayout>
 

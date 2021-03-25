@@ -30,7 +30,7 @@
 
 #include <QTest>
 
-#include "ad/ad_interface.h"
+#include "ad/adldap.h"
 
 class QString;
 class QTreeView;

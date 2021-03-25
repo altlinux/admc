@@ -18,13 +18,11 @@
  */
 
 #include "policies_widget.h"
-#include "ad/ad_interface.h"
-#include "ad/ad_object.h"
+#include "ad/adldap.h"
 #include "properties_dialog.h"
 #include "rename_policy_dialog.h"
 #include "globals.h"
 #include "utils.h"
-#include "ad/ad_filter.h"
 
 #include <QTreeView>
 #include <QLabel>
