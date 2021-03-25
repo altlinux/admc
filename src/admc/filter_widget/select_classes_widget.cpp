@@ -18,7 +18,7 @@
  */
 
 #include "filter_widget/select_classes_widget.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 
 #include <QVBoxLayout>

@@ -18,7 +18,7 @@
  */
 
 #include "policies_widget.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "properties_dialog.h"
 #include "rename_policy_dialog.h"
 #include "globals.h"

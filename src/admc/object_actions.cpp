@@ -22,7 +22,7 @@
 #include "globals.h"
 #include "utils.h"
 #include "object_model.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "properties_dialog.h"
 #include "settings.h"
 #include "filter_dialog.h"

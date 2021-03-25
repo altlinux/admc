@@ -20,7 +20,7 @@
 #include "find_select_dialog.h"
 
 #include "find_widget.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 
 #include <QList>

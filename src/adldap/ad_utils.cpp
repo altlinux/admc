@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ad/ad_utils.h"
-#include "ad/ad_config.h"
-#include "ad/ad_display.h"
+#include "ad_utils.h"
+#include "ad_config.h"
+#include "ad_display.h"
 
 #include <ldap.h>
 #include <krb5.h>
@@ -29,6 +29,8 @@
 #include <QString>
 #include <QDateTime>
 #include <QByteArray>
+#include <QTranslator>
+#include <QLocale>
 
 #define GENERALIZED_TIME_FORMAT_STRING  "yyyyMMddhhmmss.zZ"
 #define UTC_TIME_FORMAT_STRING          "yyMMddhhmmss.zZ"
@@ -364,4 +366,8 @@ const char *cstr(const QString &qstr) {
 
     // NOTE: return data of bytes in buffer NOT the temp local bytes
     return buffer.last().constData();
+}
+
+bool load_adldap_translation(QTranslator &translator, const QLocale &locale) {
+    return translator.load(locale, "adldap", "_", ":/adldap");
 }

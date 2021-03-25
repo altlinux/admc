@@ -20,12 +20,12 @@
 #ifndef ADLDAP_H
 #define ADLDAP_H
 
-#include "ad/ad_config.h"
-#include "ad/ad_defines.h"
-#include "ad/ad_display.h"
-#include "ad/ad_interface.h"
-#include "ad/ad_object.h"
-#include "ad/ad_utils.h"
-#include "ad/ad_filter.h"
+#include "ad_config.h"
+#include "ad_defines.h"
+#include "ad_display.h"
+#include "ad_interface.h"
+#include "ad_object.h"
+#include "ad_utils.h"
+#include "ad_filter.h"
 
 #endif /* ADLDAP_H */

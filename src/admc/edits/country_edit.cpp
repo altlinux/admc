@@ -18,7 +18,7 @@
  */
 
 #include "tabs/address_tab.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "status.h"
 #include "globals.h"
 #include "utils.h"

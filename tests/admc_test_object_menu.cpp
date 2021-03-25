@@ -19,7 +19,7 @@
 
 #include "admc_test_object_menu.h"
 
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "create_dialog.h"
 #include "utils.h"
 #include "status.h"

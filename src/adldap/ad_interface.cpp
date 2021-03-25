@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ad/ad_interface.h"
-#include "ad/ad_interface_p.h"
+#include "ad_interface.h"
+#include "ad_interface_p.h"
 
-#include "ad/ad_utils.h"
-#include "ad/ad_object.h"
-#include "ad/ad_display.h"
+#include "ad_utils.h"
+#include "ad_object.h"
+#include "ad_display.h"
 
 #include <ldap.h>
 #include <lber.h>

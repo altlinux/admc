@@ -18,7 +18,7 @@
  */
 
 #include "password_dialog.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "edits/password_edit.h"
 #include "edits/unlock_edit.h"
 #include "edits/account_option_edit.h"

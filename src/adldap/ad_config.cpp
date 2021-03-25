@@ -17,17 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ad/ad_config.h"
-#include "ad/ad_config_p.h"
+#include "ad_config.h"
+#include "ad_config_p.h"
 
-#include "ad/ad_interface.h"
-#include "ad/ad_object.h"
-#include "ad/ad_utils.h"
-#include "ad/ad_filter.h"
+#include "ad_interface.h"
+#include "ad_object.h"
+#include "ad_utils.h"
+#include "ad_filter.h"
 
 #include <QLocale>
 #include <QDebug>
-#include <QLineEdit>
 #include <QCoreApplication>
 #include <algorithm>
 
@@ -523,13 +522,6 @@ bool AdConfig::get_attribute_is_backlink(const QString &attribute) const {
 bool AdConfig::get_attribute_is_constructed(const QString &attribute) const {
     const int system_flags = d->attribute_schemas[attribute].get_int(ATTRIBUTE_SYSTEM_FLAGS);
     return bit_is_set(system_flags, FLAG_ATTR_IS_CONSTRUCTED);   
-}
-
-void AdConfig::limit_edit(QLineEdit *edit, const QString &attribute) {
-    const int range_upper = get_attribute_range_upper(attribute);
-    if (range_upper > 0) {
-        edit->setMaxLength(range_upper);
-    }
 }
 
 QList<QString> AdConfigPrivate::add_auxiliary_classes(const QList<QString> &object_classes) const {

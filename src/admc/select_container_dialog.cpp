@@ -19,7 +19,7 @@
 
 #include "select_container_dialog.h"
 
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
@@ -166,7 +166,7 @@ QStandardItem *make_container_node(const AdObject &object) {
     const QString name = dn_get_name(dn);
     item->setText(name);
 
-    const QIcon icon = object.get_icon();
+    const QIcon icon = get_object_icon(object);
     item->setIcon(icon);
 
     return item;

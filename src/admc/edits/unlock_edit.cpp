@@ -18,7 +18,7 @@
  */
 
 #include "edits/unlock_edit.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "utils.h"
 #include <QFormLayout>
 #include <QCheckBox>

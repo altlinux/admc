@@ -18,7 +18,7 @@
  */
 
 #include "edits/account_option_edit.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "utils.h"
 #include <QCheckBox>
 #include <QLineEdit>

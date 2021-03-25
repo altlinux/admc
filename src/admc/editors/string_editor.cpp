@@ -18,7 +18,7 @@
  */
 
 #include "editors/string_editor.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include "utils.h"
 
@@ -54,7 +54,7 @@ StringEditor::StringEditor(const QString attribute, const QList<QByteArray> valu
         set_line_edit_to_numbers_only(edit);
     }
 
-    adconfig->limit_edit(edit, attribute);
+    limit_edit(edit, attribute);
 
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = QString(value);

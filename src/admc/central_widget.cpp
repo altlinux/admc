@@ -21,7 +21,7 @@
 
 #include "object_model.h"
 #include "utils.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "properties_dialog.h"
 #include "globals.h"
 #include "settings.h"

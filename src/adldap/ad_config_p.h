@@ -20,7 +20,7 @@
 #ifndef AD_CONFIG_P_H
 #define AD_CONFIG_P_H
 
-#include "ad/ad_object.h"
+#include "ad_object.h"
 
 #include <QHash>
 #include <QList>

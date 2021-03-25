@@ -20,7 +20,7 @@
 #include "edits/string_edit.h"
 
 #include "utils.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 
 #include <QLineEdit>
@@ -47,7 +47,7 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
         set_line_edit_to_numbers_only(edit);
     }
     
-    adconfig->limit_edit(edit, attribute);
+    limit_edit(edit, attribute);
 
     QObject::connect(
         edit, &QLineEdit::textChanged,

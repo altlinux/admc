@@ -19,7 +19,7 @@
 
 #include "edits/datetime_edit.h"
 
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include "utils.h"
 

@@ -19,7 +19,7 @@
 
 #include "edits/group_type_edit.h"
 #include "utils.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include <QComboBox>
 #include <QFormLayout>
 

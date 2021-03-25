@@ -18,7 +18,7 @@
  */
 
 #include "tabs/group_policy_tab.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "utils.h"
 #include "select_dialog.h"
 #include "edits/gpoptions_edit.h"

@@ -20,7 +20,7 @@
 
 #include "tabs/membership_tab.h"
 #include "properties_dialog.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "utils.h"
 #include "select_dialog.h"
 

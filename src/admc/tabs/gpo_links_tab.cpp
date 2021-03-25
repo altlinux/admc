@@ -20,7 +20,7 @@
 #include "tabs/gpo_links_tab.h"
 #include "properties_dialog.h"
 #include "utils.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 
 #include <algorithm>
 

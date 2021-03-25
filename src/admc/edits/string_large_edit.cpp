@@ -18,7 +18,7 @@
  */
 
 #include "edits/string_large_edit.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include <QPlainTextEdit>
 #include <QFormLayout>

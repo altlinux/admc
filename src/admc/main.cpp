@@ -20,13 +20,15 @@
 #include "config.h"
 #include "main_window.h"
 #include "settings.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 
 #include <QApplication>
 #include <QTranslator>
 #include <QLibraryInfo>
 
 int main(int argc, char **argv) {
+    Q_INIT_RESOURCE(adldap);
+    
     // NOTE: this is needed to pass this type from thread's
     // signal in find_widget.cpp. Without doing this,
     // passing this type from thread results in a runtime
@@ -43,6 +45,7 @@ int main(int argc, char **argv) {
     QTranslator translator;
     const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
     translator.load(saved_locale, QString(), QString(), ":/translations");
+    load_adldap_translation(translator, saved_locale);
     app.installTranslator(&translator);
 
     // NOTE: these translations are for qt-defined text, like standard dialog buttons

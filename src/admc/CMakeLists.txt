@@ -5,12 +5,6 @@ find_package(Qt5 REQUIRED
         Help
 )
 
-find_package(Uuid REQUIRED)
-find_package(Smbclient REQUIRED)
-find_package(Krb5 REQUIRED)
-find_package(Ldap REQUIRED)
-find_package(Resolv REQUIRED)
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
@@ -51,13 +45,6 @@ add_executable(admc
     manual_dialog.cpp
     policies_widget.cpp
     gplink.cpp
-
-    ad/ad_interface.cpp
-    ad/ad_config.cpp
-    ad/ad_utils.cpp
-    ad/ad_object.cpp
-    ad/ad_display.cpp
-    ad/ad_filter.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_widget_simple_tab.cpp
@@ -116,17 +103,14 @@ target_include_directories(admc
     PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
+        ${PROJECT_SOURCE_DIR}/src/adldap
 )
 
 target_link_libraries(admc
     Qt5::Core
     Qt5::Widgets
     Qt5::Help
-    Uuid::Uuid
-    Smbclient::Smbclient
-    Krb5::Krb5
-    Ldap::Ldap
-    Resolv::Resolv
+    adldap
 )
 
 install(TARGETS admc)

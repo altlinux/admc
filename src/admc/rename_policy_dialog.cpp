@@ -19,7 +19,7 @@
 
 #include "rename_policy_dialog.h"
 #include "rename_dialog.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include "status.h"
 #include "utils.h"

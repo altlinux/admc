@@ -19,7 +19,7 @@
 
 #include "find_widget.h"
 
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"

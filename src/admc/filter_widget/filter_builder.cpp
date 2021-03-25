@@ -18,7 +18,7 @@
  */
 
 #include "filter_widget/filter_builder.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 
 #include <QLineEdit>

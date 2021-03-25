@@ -27,7 +27,7 @@
 
 #include <QCoreApplication>
 
-#include "ad/ad_defines.h"
+#include "ad_defines.h"
 
 class AdInterfacePrivate;
 class QString;

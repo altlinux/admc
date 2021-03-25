@@ -17,10 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ad/ad_object.h"
+#include "ad_object.h"
 
-#include "ad/ad_utils.h"
-#include "ad/ad_config.h"
+#include "ad_utils.h"
+#include "ad_config.h"
 
 #include <algorithm>
 #include <QMap>
@@ -28,7 +28,6 @@
 #include <QString>
 #include <QList>
 #include <QByteArray>
-#include <QIcon>
 #include <QDateTime>
 
 AdObject::AdObject() {
@@ -228,41 +227,4 @@ bool AdObject::is_class(const QString &object_class) const {
     const bool is_class = (this_object_class == object_class);
 
     return is_class;
-}
-
-QIcon AdObject::get_icon() const {
-    // TODO: change to custom, good icons, add those icons to installation?
-    static const QMap<QString, QString> class_to_icon = {
-        {CLASS_DOMAIN, "network-server"},
-        {CLASS_CONTAINER, "folder"},
-        {CLASS_OU, "folder-documents"},
-        {CLASS_GROUP, "application-x-smb-workgroup"},
-        {CLASS_PERSON, "avatar-default"},
-        {CLASS_COMPUTER, "computer"},
-        {CLASS_GP_CONTAINER, "folder-templates"},
-
-        // Some custom icons for one-off objects
-        {"builtinDomain", "emblem-system"},
-        {"configuration", "emblem-system"},
-        {"lostAndFound", "emblem-system"},
-    };
-
-    // Iterate over object classes in reverse, starting from most inherited class
-    QList<QString> object_classes = get_strings(ATTRIBUTE_OBJECT_CLASS);
-    std::reverse(object_classes.begin(), object_classes.end());
-
-    const QString icon_name =
-    [object_classes]() -> QString {
-        for (auto object_class : object_classes) {
-            if (class_to_icon.contains(object_class)) {
-                return class_to_icon[object_class];
-            }
-        }
-
-        return "dialog-question";
-    }();
-
-    const QIcon icon = QIcon::fromTheme(icon_name);
-
-    return icon;
 }

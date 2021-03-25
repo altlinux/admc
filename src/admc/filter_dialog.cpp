@@ -18,7 +18,7 @@
  */
 
 #include "filter_dialog.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 
 #include "filter_widget/filter_widget.h"

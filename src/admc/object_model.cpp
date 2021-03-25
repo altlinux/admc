@@ -18,7 +18,7 @@
  */
 
 #include "object_model.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
@@ -64,7 +64,7 @@ void load_object_row(const QList<QStandardItem *> row, const AdObject &object) {
 }
 
 void load_object_item_data(QStandardItem *item, const AdObject &object) {
-    const QIcon icon = object.get_icon();
+    const QIcon icon = get_object_icon(object);
     item->setIcon(icon);
     
     item->setData(object.get_dn(), ObjectRole_DN);

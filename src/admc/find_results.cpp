@@ -21,7 +21,7 @@
 #include "object_actions.h"
 #include "properties_dialog.h"
 #include "utils.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include "object_model.h"
 #include "settings.h"

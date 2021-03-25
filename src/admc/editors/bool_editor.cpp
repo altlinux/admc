@@ -18,7 +18,7 @@
  */
 
 #include "editors/bool_editor.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 
 #include <QRadioButton>

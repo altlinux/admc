@@ -25,12 +25,14 @@
  * interact with the server.
  */
 
-#include "ad/ad_defines.h"
+#include "ad_defines.h"
 
 class QString;
 class QDateTime;
 class QByteArray;
 class AdConfig;
+class QTranslator;
+class QLocale;
 
 bool large_integer_datetime_is_never(const QString &value);
 QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime, const AdConfig *adconfig);
@@ -71,5 +73,9 @@ bool bit_is_set(int bitmask, int bit);
 // calls. Only use this to give cstr args to C routines in
 // the same scope. Keep this far away from any recursion.
 const char *cstr(const QString &qstr);
+
+// NOTE: you must call Q_INIT_RESOURCE(adldap) before
+// calling this
+bool load_adldap_translation(QTranslator &translator, const QLocale &locale);
 
 #endif /* AD_UTILS_H */

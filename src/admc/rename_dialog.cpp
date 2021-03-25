@@ -18,7 +18,7 @@
  */
 
 #include "rename_dialog.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include "edits/string_edit.h"
 #include "status.h"

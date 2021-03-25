@@ -7,12 +7,6 @@ find_package(Qt5 REQUIRED
         Help
 )
 
-find_package(Uuid REQUIRED)
-find_package(Smbclient REQUIRED)
-find_package(Krb5 REQUIRED)
-find_package(Ldap REQUIRED)
-find_package(Resolv REQUIRED)
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
@@ -91,12 +85,6 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/move_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/globals.cpp
 
-    ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_interface.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_config.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_utils.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_object.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_display.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_filter.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/settings.cpp
 
@@ -129,6 +117,7 @@ foreach(target ${TEST_TARGETS})
             ${CMAKE_CURRENT_SOURCE_DIR}
             ${PROJECT_SOURCE_DIR}/src/admc
             ${PROJECT_SOURCE_DIR}/tests
+            ${PROJECT_SOURCE_DIR}/src/adldap
     )
 
     target_link_libraries(${target}
@@ -136,11 +125,7 @@ foreach(target ${TEST_TARGETS})
         Qt5::Widgets
         Qt5::Test
         Qt5::Help
-        Uuid::Uuid
-        Smbclient::Smbclient
-        Krb5::Krb5
-        Ldap::Ldap
-        Resolv::Resolv
+        adldap
     )
 
     install(TARGETS ${target})

@@ -20,7 +20,7 @@
 #include "tabs/organization_tab.h"
 #include "edits/string_edit.h"
 #include "edits/manager_edit.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "properties_dialog.h"
 #include "utils.h"
 

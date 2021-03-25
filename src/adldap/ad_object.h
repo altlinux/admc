@@ -30,7 +30,7 @@
  * do not keep it around for too long.
  */
 
-#include "ad/ad_defines.h"
+#include "ad_defines.h"
 
 #include <QHash>
 #include <QString>
@@ -38,7 +38,6 @@
 #include <QByteArray>
 
 class QDateTime;
-class QIcon;
 class AdConfig;
 
 class AdObject {
@@ -77,8 +76,6 @@ public:
 
     // NOTE: this compares for the most derived class, so each object only maps to one class. For example computers have objectClass values of both "user" and "computer" but "computer" is more derived so they are only computers and not users.
     bool is_class(const QString &object_class) const;
-
-    QIcon get_icon() const;
 
 private:
     QString dn;

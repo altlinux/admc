@@ -18,7 +18,7 @@
  */
 
 #include "editors/datetime_editor.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include "utils.h"
 

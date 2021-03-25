@@ -40,6 +40,7 @@ typedef QString ObjectClass;
 typedef QString Attribute;
 
 class AdConfig {
+    
 public:
     AdConfig();
     ~AdConfig();

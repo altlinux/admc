@@ -20,7 +20,7 @@
 #include "tabs/properties_tab.h"
 #include "edits/attribute_edit.h"
 
-#include "ad/adldap.h"
+#include "adldap.h"
 
 void PropertiesTab::load(AdInterface &ad, const AdObject &object) {
     edits_load(edits, object);

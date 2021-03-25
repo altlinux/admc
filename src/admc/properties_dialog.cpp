@@ -30,7 +30,7 @@
 #include "tabs/organization_tab.h"
 #include "tabs/telephones_tab.h"
 #include "tabs/profile_tab.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include "settings.h"
 #include "status.h"

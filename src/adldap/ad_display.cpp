@@ -17,11 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ad/ad_display.h"
+#include "ad_display.h"
 
-#include "ad/ad_defines.h"
-#include "ad/ad_utils.h"
-#include "ad/ad_config.h"
+#include "ad_defines.h"
+#include "ad_utils.h"
+#include "ad_config.h"
 
 #include <QString>
 #include <QDateTime>

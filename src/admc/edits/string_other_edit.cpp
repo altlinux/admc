@@ -21,7 +21,7 @@
 #include "edits/string_edit.h"
 #include "editors/multi_editor.h"
 #include "utils.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include <QLineEdit>
 #include <QFormLayout>

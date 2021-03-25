@@ -20,7 +20,7 @@
 #include "main_window.h"
 #include "status.h"
 #include "settings.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include "central_widget.h"
 #include "about_dialog.h"

@@ -19,7 +19,7 @@
 
 #include "tabs/attributes_tab.h"
 #include "editors/attribute_editor.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include "utils.h"
 #include "settings.h"

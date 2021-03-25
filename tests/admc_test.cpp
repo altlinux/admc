@@ -19,7 +19,7 @@
 
 #include "admc_test.h"
 
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include "object_model.h"
 

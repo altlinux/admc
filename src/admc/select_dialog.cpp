@@ -18,7 +18,7 @@
  */
 
 #include "select_dialog.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"

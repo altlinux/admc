@@ -19,7 +19,7 @@
 
 #include "edits/password_edit.h"
 #include "utils.h"
-#include "ad/adldap.h"
+#include "adldap.h"
 #include "globals.h"
 #include <QLineEdit>
 #include <QFormLayout>
@@ -36,8 +36,8 @@ PasswordEdit::PasswordEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
     edit->setEchoMode(QLineEdit::Password);
     confirm_edit->setEchoMode(QLineEdit::Password);
 
-    adconfig->limit_edit(edit, ATTRIBUTE_PASSWORD);
-    adconfig->limit_edit(confirm_edit, ATTRIBUTE_PASSWORD);
+    limit_edit(edit, ATTRIBUTE_PASSWORD);
+    limit_edit(confirm_edit, ATTRIBUTE_PASSWORD);
 
     QObject::connect(
         edit, &QLineEdit::textChanged,
