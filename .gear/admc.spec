@@ -71,6 +71,7 @@ cd BUILD
 %doc README.md
 %_datadir/admc.qch
 %_bindir/admc
+%_libdir/libadldap.so
 
 %files test
 %_bindir/admc_test_object_menu
