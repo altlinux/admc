@@ -39,7 +39,7 @@ DateTimeEditor::DateTimeEditor(const QString attribute, const QList<QByteArray> 
 
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = QString(value);
-    const QDateTime value_datetime = datetime_string_to_qdatetime(attribute, value_string);
+    const QDateTime value_datetime = datetime_string_to_qdatetime(attribute, value_string, adconfig);
     edit->setDateTime(value_datetime);
 
     QDialogButtonBox *button_box = make_button_box(attribute);;

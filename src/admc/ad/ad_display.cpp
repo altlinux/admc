@@ -35,8 +35,8 @@ const qint64 HOURS_TO_SECONDS   = MINUTES_TO_SECONDS * 60LL;
 const qint64 DAYS_TO_SECONDS    = HOURS_TO_SECONDS * 24LL;
 
 QString object_sid_display_value(const QByteArray &sid);
-QString large_integer_datetime_display_value(const QString &attribute, const QByteArray &bytes);
-QString datetime_display_value(const QString &attribute, const QByteArray &bytes);
+QString large_integer_datetime_display_value(const QString &attribute, const QByteArray &bytes, const AdConfig *adconfig);
+QString datetime_display_value(const QString &attribute, const QByteArray &bytes, const AdConfig *adconfig);
 QString timespan_display_value(const QByteArray &bytes);
 QString octet_display_value(const QByteArray &bytes);
 QString guid_to_display_value(const QByteArray &bytes);
@@ -53,13 +53,13 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
             const LargeIntegerSubtype subtype = adconfig->get_attribute_large_integer_subtype(attribute);
 
             switch (subtype) {
-                case LargeIntegerSubtype_Datetime: return large_integer_datetime_display_value(attribute, value);
+                case LargeIntegerSubtype_Datetime: return large_integer_datetime_display_value(attribute, value, adconfig);
                 case LargeIntegerSubtype_Timespan: return timespan_display_value(value);
                 case LargeIntegerSubtype_Integer: return QString(value);
             }
         }
-        case AttributeType_UTCTime: return datetime_display_value(attribute, value);
-        case AttributeType_GeneralizedTime: return datetime_display_value(attribute, value);
+        case AttributeType_UTCTime: return datetime_display_value(attribute, value, adconfig);
+        case AttributeType_GeneralizedTime: return datetime_display_value(attribute, value, adconfig);
         case AttributeType_Sid: return object_sid_display_value(value);
         case AttributeType_Octet: {
             if (attribute == ATTRIBUTE_OBJECT_GUID) {
@@ -135,22 +135,22 @@ QString object_sid_display_value(const QByteArray &sid) {
     return string;
 }
 
-QString large_integer_datetime_display_value(const QString &attribute, const QByteArray &value) {
+QString large_integer_datetime_display_value(const QString &attribute, const QByteArray &value, const AdConfig *adconfig) {
     const QString value_string = QString(value);
     
     if (large_integer_datetime_is_never(value_string)) {
         return QCoreApplication::translate("attribute_display", "(never)");
     } else {
-        QDateTime datetime = datetime_string_to_qdatetime(attribute, value_string);
+        QDateTime datetime = datetime_string_to_qdatetime(attribute, value_string, adconfig);
         const QString display = datetime.toLocalTime().toString(DATETIME_DISPLAY_FORMAT);
 
         return display;
     }
 }
 
-QString datetime_display_value(const QString &attribute, const QByteArray &bytes) {
+QString datetime_display_value(const QString &attribute, const QByteArray &bytes, const AdConfig *adconfig) {
     const QString value_string = QString(bytes);
-    const QDateTime datetime = datetime_string_to_qdatetime(attribute, value_string);
+    const QDateTime datetime = datetime_string_to_qdatetime(attribute, value_string, adconfig);
     const QDateTime datetime_local = datetime.toLocalTime();
     const QString display = datetime_local.toString(DATETIME_DISPLAY_FORMAT) + datetime.toLocalTime().timeZoneAbbreviation();
 

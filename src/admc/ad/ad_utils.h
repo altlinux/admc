@@ -30,10 +30,11 @@
 class QString;
 class QDateTime;
 class QByteArray;
+class AdConfig;
 
 bool large_integer_datetime_is_never(const QString &value);
-QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime);
-QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &raw_value);
+QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime, const AdConfig *adconfig);
+QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &raw_value, const AdConfig *adconfig);
 
 QString account_option_string(const AccountOption &option);
 int account_option_bit(const AccountOption &option);

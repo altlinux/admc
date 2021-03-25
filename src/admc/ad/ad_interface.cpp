@@ -554,7 +554,7 @@ bool AdInterface::attribute_replace_int(const QString &dn, const QString &attrib
 }
 
 bool AdInterface::attribute_replace_datetime(const QString &dn, const QString &attribute, const QDateTime &datetime) {
-    const QString datetime_string = datetime_qdatetime_to_string(attribute, datetime);
+    const QString datetime_string = datetime_qdatetime_to_string(attribute, datetime, d->adconfig);
     const bool result = attribute_replace_string(dn, attribute, datetime_string);
 
     return result;

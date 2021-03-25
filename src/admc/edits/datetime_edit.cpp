@@ -18,11 +18,13 @@
  */
 
 #include "edits/datetime_edit.h"
-#include "ad/ad_config.h"
-#include "globals.h"
+
 #include "ad/ad_interface.h"
-#include "utils.h"
+#include "ad/ad_config.h"
 #include "ad/ad_object.h"
+#include "globals.h"
+#include "utils.h"
+
 #include <QFormLayout>
 #include <QDateTimeEdit>
 
@@ -41,7 +43,7 @@ DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QList<AttributeEdit *> 
 }
 
 void DateTimeEdit::load_internal(const AdObject &object) {
-    const QDateTime datetime = object.get_datetime(attribute);
+    const QDateTime datetime = object.get_datetime(attribute, adconfig);
     const QDateTime datetime_local = datetime.toLocalTime();
 
     edit->setDateTime(datetime_local);

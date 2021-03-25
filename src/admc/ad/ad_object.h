@@ -39,6 +39,7 @@
 
 class QDateTime;
 class QIcon;
+class AdConfig;
 
 class AdObject {
 
@@ -65,7 +66,7 @@ public:
     QList<bool> get_bools(const QString &attribute) const;
     bool get_bool(const QString &attribute) const;
 
-    QDateTime get_datetime(const QString &attribute) const;
+    QDateTime get_datetime(const QString &attribute, const AdConfig *adconfig) const;
 
     bool get_system_flag(const SystemFlagsBit bit) const;
 

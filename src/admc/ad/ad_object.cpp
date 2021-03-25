@@ -20,6 +20,7 @@
 #include "ad/ad_object.h"
 
 #include "ad/ad_utils.h"
+#include "ad/ad_config.h"
 
 #include <algorithm>
 #include <QMap>
@@ -126,9 +127,9 @@ int AdObject::get_int(const QString &attribute) const {
     }
 }
 
-QDateTime AdObject::get_datetime(const QString &attribute) const {
+QDateTime AdObject::get_datetime(const QString &attribute, const AdConfig *adconfig) const {
     const QString datetime_string = get_string(attribute);
-    const QDateTime datetime = datetime_string_to_qdatetime(attribute, datetime_string);
+    const QDateTime datetime = datetime_string_to_qdatetime(attribute, datetime_string, adconfig);
 
     return datetime;
 }

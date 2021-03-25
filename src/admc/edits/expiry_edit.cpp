@@ -18,12 +18,14 @@
  */
 
 #include "edits/expiry_edit.h"
+
 #include "ad/ad_interface.h"
 #include "ad/ad_config.h"
-#include "globals.h"
 #include "ad/ad_utils.h"
-#include "utils.h"
 #include "ad/ad_object.h"
+#include "globals.h"
+#include "utils.h"
+
 #include <QVBoxLayout>
 #include <QFormLayout>
 #include <QCheckBox>
@@ -99,7 +101,7 @@ void ExpiryEdit::load_internal(const AdObject &object) {
             // Default to current date when expiry is never
             return QDate::currentDate();
         } else {
-            const QDateTime datetime = object.get_datetime(ATTRIBUTE_ACCOUNT_EXPIRES);
+            const QDateTime datetime = object.get_datetime(ATTRIBUTE_ACCOUNT_EXPIRES, adconfig);
             return datetime.date();
         }
     }();

@@ -19,7 +19,6 @@
 
 #include "ad/ad_utils.h"
 #include "ad/ad_config.h"
-#include "globals.h"
 #include "ad/ad_display.h"
 
 #include <ldap.h>
@@ -42,18 +41,19 @@ bool large_integer_datetime_is_never(const QString &value) {
     return is_never;
 }
 
-QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime) {
+QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime, const AdConfig *adconfig) {
+    if (adconfig == nullptr) {
+        return QString();
+    }
+
     const AttributeType type = adconfig->get_attribute_type(attribute);
 
     switch (type) {
         case AttributeType_LargeInteger: {
-            const LargeIntegerSubtype subtype = adconfig->get_attribute_large_integer_subtype(attribute);
-            if (subtype == LargeIntegerSubtype_Datetime) {
-                const qint64 millis = QDateTime(ntfs_epoch).msecsTo(datetime);
-                const qint64 hundred_nanos = millis * MILLIS_TO_100_NANOS;
-                
-                return QString::number(hundred_nanos);
-            }
+            const qint64 millis = QDateTime(ntfs_epoch).msecsTo(datetime);
+            const qint64 hundred_nanos = millis * MILLIS_TO_100_NANOS;
+            
+            return QString::number(hundred_nanos);
 
             break;
         }
@@ -73,7 +73,10 @@ QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &
     return "";
 }
 
-QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &raw_value) {
+QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &raw_value, const AdConfig *adconfig) {
+    if (adconfig == nullptr) {
+        return QDateTime();
+    }
 
     const AttributeType type = adconfig->get_attribute_type(attribute);
 
