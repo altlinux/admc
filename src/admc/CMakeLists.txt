@@ -37,7 +37,9 @@ add_executable(admc
     search_thread.cpp
     help_browser.cpp
     globals.cpp
-    
+    utils.cpp
+    settings.cpp
+
     move_dialog.cpp
     rename_dialog.cpp
     rename_policy_dialog.cpp
@@ -106,9 +108,6 @@ add_executable(admc
     console_widget/results_view.cpp
     console_widget/console_drag_model.cpp
 
-    ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
-    ${PROJECT_SOURCE_DIR}/src/common/settings.cpp
-
     admc.qrc
     ${PROJECT_SOURCE_DIR}/translations/translations.qrc
 )
@@ -117,7 +116,6 @@ target_include_directories(admc
     PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${PROJECT_SOURCE_DIR}/src/common
 )
 
 target_link_libraries(admc

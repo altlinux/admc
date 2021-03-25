@@ -97,9 +97,8 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_object.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_display.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/ad/ad_filter.cpp
-
-    ${PROJECT_SOURCE_DIR}/src/common/utils.cpp
-    ${PROJECT_SOURCE_DIR}/src/common/settings.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/utils.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/settings.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/admc.qrc
     ${PROJECT_SOURCE_DIR}/translations/translations.qrc
@@ -128,7 +127,6 @@ foreach(target ${TEST_TARGETS})
         PRIVATE
             ${CMAKE_CURRENT_BINARY_DIR}
             ${CMAKE_CURRENT_SOURCE_DIR}
-            ${PROJECT_SOURCE_DIR}/src/common
             ${PROJECT_SOURCE_DIR}/src/admc
             ${PROJECT_SOURCE_DIR}/tests
     )
