@@ -13,20 +13,6 @@ find_package(Resolv REQUIRED)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(TS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-
-set(TS_FILES
-    ${TS_DIR}/adldap_ru.ts
-    ${TS_DIR}/adldap_en.ts
-)
-
-set(QM_FILES
-    ${TS_DIR}/adldap_ru.qm
-    ${TS_DIR}/adldap_en.qm
-)
-
-
-
 add_library(adldap SHARED
     ad_interface.cpp
     ad_config.cpp
@@ -51,20 +37,23 @@ target_link_libraries(adldap
     Resolv::Resolv
 )
 
-# Generate translation binaries (.qm) from sources (.ts)
-set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION ${TS_DIR})
-qt5_add_translation(QM_FILES ${TS_FILES})
+set(TS_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/adldap_ru.ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/adldap_en.ts
+)
 
-# NOTE: updating translations(.cpp -> .ts) is in a separate target so that it's not run every time source changes. When you do need to update translations, do `make update_translations`. *Generating* translations IS done every time (.ts -> .qm).
-
-add_custom_target(update_adldap_translations
+# NOTE: custom target to update translation sources (.ts).
+# By default, translation sources aren't updated so you have
+# to manually make this target to commit translation
+# changes.
+add_custom_target(adldap_ts
     DEPENDS ${TS_FILES}
     COMMAND ${Qt5_LUPDATE_EXECUTABLE} -recursive ${CMAKE_CURRENT_SOURCE_DIR} -ts ${TS_FILES} -noobsolete
 )
 
-add_custom_target(adldap_translations
-    ALL
-    DEPENDS ${QM_FILES}
-)
+# Generate translation binaries (.qm) from sources (.ts)
+set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION ${CMAKE_CURRENT_SOURCE_DIR})
+qt5_create_translation(QM_FILES ${CMAKE_CURRENT_SOURCE_DIR} ${TS_FILES})
+
 
 install(TARGETS adldap)

@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
 
     QTranslator translator;
     const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
-    translator.load(saved_locale, QString(), QString(), ":/translations");
+    translator.load(saved_locale, QString(), QString(), ":/admc");
     load_adldap_translation(translator, saved_locale);
     app.installTranslator(&translator);
 

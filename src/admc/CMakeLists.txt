@@ -3,6 +3,7 @@ find_package(Qt5 REQUIRED
         Core
         Widgets
         Help
+        LinguistTools
 )
 
 set(CMAKE_AUTOMOC ON)
@@ -96,7 +97,6 @@ add_executable(admc
     console_widget/console_drag_model.cpp
 
     admc.qrc
-    ${PROJECT_SOURCE_DIR}/translations/translations.qrc
 )
 
 target_include_directories(admc
@@ -112,5 +112,23 @@ target_link_libraries(admc
     Qt5::Help
     adldap
 )
+
+set(TS_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/admc_ru.ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/admc_en.ts
+)
+
+# NOTE: custom target to update translation sources (.ts).
+# By default, translation sources aren't updated so you have
+# to manually make this target to commit translation
+# changes.
+add_custom_target(admc_ts
+    DEPENDS ${TS_FILES}
+    COMMAND ${Qt5_LUPDATE_EXECUTABLE} -recursive ${CMAKE_CURRENT_SOURCE_DIR} -ts ${TS_FILES} -noobsolete
+)
+
+# Generate translation binaries (.qm) from sources (.ts)
+set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION ${CMAKE_CURRENT_SOURCE_DIR})
+qt5_create_translation(QM_FILES ${CMAKE_CURRENT_SOURCE_DIR} ${TS_FILES})
 
 install(TARGETS admc)

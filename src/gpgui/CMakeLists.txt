@@ -43,7 +43,6 @@ add_executable(gpgui
     gui/xml/xml_ubyte_edit.cpp
 
     gpgui.qrc
-    ${PROJECT_SOURCE_DIR}/translations/translations.qrc
 )
 
 if(SYSTEM_NAME STREQUAL "FreeBSD")

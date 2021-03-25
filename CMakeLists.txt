@@ -25,7 +25,6 @@ set(LIBRARY_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH})
 
 enable_testing()
 
-add_subdirectory(translations)
 add_subdirectory(src)
 add_subdirectory(tests)
 add_subdirectory(doc)

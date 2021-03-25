@@ -1,5 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
-<qresource>
+<qresource prefix="/admc/">
     <file alias="countries.csv">data/countries.csv</file>
+    <file>admc_ru.qm</file>
+    <file>admc_en.qm</file>
 </qresource>
 </RCC>

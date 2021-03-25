@@ -89,7 +89,6 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/settings.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/admc.qrc
-    ${PROJECT_SOURCE_DIR}/translations/translations.qrc
 )
 
 # NOTE: ADD ALL TESTS TO THIS LIST
