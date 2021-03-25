@@ -74,8 +74,6 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 
     const QByteArray state = saveState();
     SETTINGS()->set_variant(VariantSetting_MainWindowState, state);
-
-    QApplication::quit();
 }
 
 void MainWindow::setup_menubar() {
@@ -236,5 +234,5 @@ void MainWindow::connect_to_server() {
 }
 
 void MainWindow::quit() {
-    QApplication::quit();
+    close();
 }
