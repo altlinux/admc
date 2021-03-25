@@ -102,7 +102,11 @@ void ResultsView::set_model(QAbstractItemModel *model) {
 void ResultsView::set_view_type(const ResultsViewType type) {
     QAbstractItemView *view = views[type];
     stacked_widget->setCurrentWidget(view);
-    m_current_view = view;
+
+    // Clear selection since view type changed
+    for (auto the_view : views.values()) {
+        the_view->clearSelection();
+    }
 }
 
 QAbstractItemView *ResultsView::current_view() const {
