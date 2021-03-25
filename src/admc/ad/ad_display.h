@@ -28,11 +28,7 @@ class QString;
 class QByteArray;
 template <typename T> class QList;
 
-const long long MILLIS_TO_100_NANOS = 10000LL;
-
 QString attribute_display_value(const QString &attribute, const QByteArray &value);
 QString attribute_display_values(const QString &attribute, const QList<QByteArray> &values);
-
-QString object_sid_display_value(const QByteArray &bytes);
 
 #endif /* ATTRIBUTE_DISPLAY_H */

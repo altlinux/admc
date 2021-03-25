@@ -187,7 +187,7 @@ QString group_type_string_adjective(GroupType type) {
 }
 
 QString extract_rid_from_sid(const QByteArray &sid) {
-    const QString sid_string = object_sid_display_value(sid);
+    const QString sid_string = attribute_display_value(ATTRIBUTE_OBJECT_SID, sid);
     const int cut_index = sid_string.lastIndexOf("-") + 1;
     const QString rid = sid_string.mid(cut_index);
 

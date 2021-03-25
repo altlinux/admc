@@ -176,7 +176,7 @@ void MembershipTab::load(AdInterface &ad, const AdObject &object) {
             // group sid = "S-foo-bar-baz-xyz"
             const QString group_rid = object.get_string(ATTRIBUTE_PRIMARY_GROUP_ID);
             const QByteArray user_sid = object.get_value(ATTRIBUTE_OBJECT_SID);
-            const QString user_sid_string = object_sid_display_value(user_sid);
+            const QString user_sid_string = attribute_display_value(ATTRIBUTE_OBJECT_SID, user_sid);
             const int cut_index = user_sid_string.lastIndexOf("-") + 1;
             const QString group_sid = user_sid_string.left(cut_index) + group_rid;
 

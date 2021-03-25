@@ -34,6 +34,7 @@ const qint64 MINUTES_TO_SECONDS = 60LL;
 const qint64 HOURS_TO_SECONDS   = MINUTES_TO_SECONDS * 60LL;
 const qint64 DAYS_TO_SECONDS    = HOURS_TO_SECONDS * 24LL;
 
+QString object_sid_display_value(const QByteArray &sid);
 QString large_integer_datetime_display_value(const QString &attribute, const QByteArray &bytes);
 QString datetime_display_value(const QString &attribute, const QByteArray &bytes);
 QString timespan_display_value(const QByteArray &bytes);

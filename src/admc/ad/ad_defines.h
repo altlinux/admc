@@ -211,4 +211,6 @@ enum SystemFlagsBit {
 
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm UTCt"
 
+const long long MILLIS_TO_100_NANOS = 10000LL;
+
 #endif /* AD_DEFINES_H */
