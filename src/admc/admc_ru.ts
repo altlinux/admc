@@ -6,17 +6,17 @@
     <message>
         <location filename="about_dialog.cpp" line="32"/>
         <source>Version %1</source>
-        <translation type="unfinished">Версия %1</translation>
+        <translation>Версия %1</translation>
     </message>
     <message>
         <location filename="about_dialog.cpp" line="35"/>
         <source>ADMC is a tool for Active Directory administration.</source>
-        <translation type="unfinished">ADMC - это инструмент для администрирования Active Directory.</translation>
+        <translation>ADMC - это инструмент для администрирования Active Directory.</translation>
     </message>
     <message>
         <location filename="about_dialog.cpp" line="37"/>
         <source>Copyright (C) 2020 BaseALT Ltd.</source>
-        <translation type="unfinished">Copyright (C) 2020 BaseALT Ltd.</translation>
+        <translation>Copyright (C) 2020 BaseALT Ltd.</translation>
     </message>
 </context>
 <context>
@@ -252,22 +252,22 @@
     <message>
         <location filename="central_widget.cpp" line="68"/>
         <source>&amp;Filter objects</source>
-        <translation type="unfinished">&amp;Фильтровать объекты</translation>
+        <translation>&amp;Фильтровать объекты</translation>
     </message>
     <message>
         <location filename="central_widget.cpp" line="69"/>
         <source>Dev mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Dev mode</translation>
     </message>
     <message>
         <location filename="central_widget.cpp" line="70"/>
         <source>&amp;Show non-container objects in Console tree</source>
-        <translation type="unfinished">&amp;Показать неконтейнерные объекты в дереве консоли</translation>
+        <translation>&amp;Показать неконтейнерные объекты в дереве консоли</translation>
     </message>
     <message numerus="yes">
         <location filename="central_widget.cpp" line="457"/>
         <source>%n object(s)</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%n объект</numerusform>
             <numerusform>%n объектов</numerusform>
             <numerusform>%n объектов</numerusform>
@@ -279,47 +279,47 @@
     <message>
         <location filename="console_widget/console_widget.cpp" line="67"/>
         <source>&amp;Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Свойства</translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="68"/>
         <source>&amp;Up one level</source>
-        <translation type="unfinished">&amp;Вверх на один уровень</translation>
+        <translation>&amp;Вверх на один уровень</translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="69"/>
         <source>&amp;Back</source>
-        <translation type="unfinished">&amp;Назад</translation>
+        <translation>&amp;Назад</translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="70"/>
         <source>&amp;Forward</source>
-        <translation type="unfinished">В&amp;перед</translation>
+        <translation>В&amp;перед</translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="71"/>
         <source>&amp;Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Обновить</translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="72"/>
         <source>&amp;Customize columns</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Выбрать колонки</translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="73"/>
         <source>&amp;Icons</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Иконки</translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="74"/>
         <source>&amp;List</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Лист</translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="75"/>
         <source>&amp;Detail</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Детали</translation>
     </message>
 </context>
 <context>
@@ -501,7 +501,7 @@
     <message>
         <location filename="find_dialog.cpp" line="44"/>
         <source>&amp;View</source>
-        <translation type="unfinished">&amp;Вид</translation>
+        <translation>&amp;Вид</translation>
     </message>
 </context>
 <context>
@@ -509,7 +509,7 @@
     <message>
         <location filename="find_results.cpp" line="72"/>
         <source>&amp;Customize columns</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Выбрать колонки</translation>
     </message>
     <message numerus="yes">
         <location filename="find_results.cpp" line="150"/>
@@ -643,92 +643,92 @@
     <message>
         <location filename="main_window.cpp" line="89"/>
         <source>&amp;Connect</source>
-        <translation type="unfinished">&amp;Подключится</translation>
+        <translation>&amp;Подключится</translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="90"/>
         <source>&amp;Quit</source>
-        <translation type="unfinished">&amp;Выйти</translation>
+        <translation>&amp;Выйти</translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="92"/>
         <source>&amp;Manual</source>
-        <translation type="unfinished">&amp;Руководство</translation>
+        <translation>&amp;Руководство</translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="93"/>
         <source>&amp;About ADMC</source>
-        <translation type="unfinished">&amp;Об ADMC</translation>
+        <translation>&amp;Об ADMC</translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="95"/>
         <source>&amp;Advanced Features</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Дополнительные возможности</translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="96"/>
         <source>&amp;Confirm actions</source>
-        <translation type="unfinished">Потверждать &amp;действия</translation>
+        <translation>Потверждать &amp;действия</translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="97"/>
         <source>&amp;Put last name before first name when creating users</source>
-        <translation type="unfinished">&amp;Ставить фамилию перед именем при создании пользоваетелей</translation>
+        <translation>&amp;Ставить фамилию перед именем при создании пользоваетелей</translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="98"/>
         <source>Console Tree</source>
-        <translation type="unfinished"></translation>
+        <translation>Дерево консоли</translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="99"/>
         <source>Description Bar</source>
-        <translation type="unfinished"></translation>
+        <translation>Описание</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="140"/>
+        <location filename="main_window.cpp" line="148"/>
         <source>&amp;File</source>
-        <translation type="unfinished">&amp;Файл</translation>
+        <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="141"/>
+        <location filename="main_window.cpp" line="149"/>
         <source>&amp;Action</source>
-        <translation type="unfinished">&amp;Действие</translation>
+        <translation>&amp;Действие</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="142"/>
+        <location filename="main_window.cpp" line="150"/>
         <source>&amp;Navigation</source>
-        <translation type="unfinished">&amp;Навигация</translation>
+        <translation>&amp;Навигация</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="143"/>
+        <location filename="main_window.cpp" line="151"/>
         <source>&amp;View</source>
-        <translation type="unfinished">&amp;Вид</translation>
+        <translation>&amp;Вид</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="144"/>
+        <location filename="main_window.cpp" line="152"/>
         <source>&amp;Preferences</source>
-        <translation type="unfinished">&amp;Настройки</translation>
+        <translation>&amp;Настройки</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="145"/>
+        <location filename="main_window.cpp" line="153"/>
         <source>&amp;Language</source>
-        <translation type="unfinished">&amp;Язык</translation>
+        <translation>&amp;Язык</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="146"/>
+        <location filename="main_window.cpp" line="154"/>
         <source>&amp;Help</source>
-        <translation type="unfinished">&amp;Помощь</translation>
+        <translation>&amp;Помощь</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="206"/>
+        <location filename="main_window.cpp" line="214"/>
         <source>Info</source>
-        <translation type="unfinished">Информация</translation>
+        <translation>Информация</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="206"/>
+        <location filename="main_window.cpp" line="214"/>
         <source>App needs to be restarted for the language option to take effect.</source>
-        <translation type="unfinished">Язык поменяется при следующем запуске приложения.</translation>
+        <translation>Язык поменяется при следующем запуске приложения.</translation>
     </message>
 </context>
 <context>
@@ -845,67 +845,67 @@
     <message>
         <location filename="object_actions.cpp" line="54"/>
         <source>&amp;User</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Пользователь</translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="55"/>
         <source>&amp;Computer</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Компьютер</translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="56"/>
         <source>&amp;Organization</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Организация</translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="57"/>
         <source>&amp;Group</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Группа</translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="58"/>
         <source>&amp;Find</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Поиск</translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="59"/>
         <source>&amp;Add to group</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Добавить в группу</translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="60"/>
         <source>&amp;Enable account</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Включить учетную запись</translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="61"/>
         <source>D&amp;isable account</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Выключить учетную запись</translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="62"/>
         <source>Reset &amp;Password</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Поменять пароль</translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="63"/>
         <source>&amp;Rename</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Переименовать</translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="64"/>
         <source>&amp;Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Удалить</translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="65"/>
         <source>&amp;Move</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Переместить</translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="75"/>
         <source>&amp;New</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Создать</translation>
     </message>
 </context>
 <context>
@@ -1199,7 +1199,7 @@
     <message>
         <location filename="select_container_dialog.cpp" line="45"/>
         <source>Select a container</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите контейнер</translation>
     </message>
 </context>
 <context>

@@ -26,6 +26,8 @@
 
 #include "console_widget/results_view.h"
 
+#include <QCoreApplication>
+
 class QLabel;
 class QStackedWidget;
 class ResultsDescription;
@@ -63,6 +65,7 @@ enum ConsoleRole {
 };
 
 class ConsoleWidgetPrivate : public QObject {
+Q_DECLARE_TR_FUNCTIONS(ConsoleWidgetPrivate)
 
 public:
     ConsoleWidget *q;

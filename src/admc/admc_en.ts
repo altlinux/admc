@@ -6,17 +6,17 @@
     <message>
         <location filename="about_dialog.cpp" line="32"/>
         <source>Version %1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="about_dialog.cpp" line="35"/>
         <source>ADMC is a tool for Active Directory administration.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="about_dialog.cpp" line="37"/>
         <source>Copyright (C) 2020 BaseALT Ltd.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -251,22 +251,22 @@
     <message>
         <location filename="central_widget.cpp" line="68"/>
         <source>&amp;Filter objects</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="central_widget.cpp" line="69"/>
         <source>Dev mode</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="central_widget.cpp" line="70"/>
         <source>&amp;Show non-container objects in Console tree</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message numerus="yes">
         <location filename="central_widget.cpp" line="457"/>
         <source>%n object(s)</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%n object</numerusform>
             <numerusform>%n objects</numerusform>
         </translation>
@@ -277,47 +277,47 @@
     <message>
         <location filename="console_widget/console_widget.cpp" line="67"/>
         <source>&amp;Properties</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="68"/>
         <source>&amp;Up one level</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="69"/>
         <source>&amp;Back</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="70"/>
         <source>&amp;Forward</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="71"/>
         <source>&amp;Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="72"/>
         <source>&amp;Customize columns</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="73"/>
         <source>&amp;Icons</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="74"/>
         <source>&amp;List</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="75"/>
         <source>&amp;Detail</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -333,7 +333,7 @@
     <message>
         <location filename="create_dialog.cpp" line="56"/>
         <source>Create object - &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="create_dialog.cpp" line="92"/>
@@ -355,12 +355,12 @@
     <message>
         <location filename="create_dialog.cpp" line="234"/>
         <source>Failed to create object &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="create_dialog.cpp" line="257"/>
         <source>Created object &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -492,12 +492,12 @@
     <message>
         <location filename="find_dialog.cpp" line="43"/>
         <source>&amp;Action</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="find_dialog.cpp" line="44"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -505,7 +505,7 @@
     <message>
         <location filename="find_results.cpp" line="72"/>
         <source>&amp;Customize columns</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message numerus="yes">
         <location filename="find_results.cpp" line="150"/>
@@ -521,7 +521,7 @@
     <message>
         <location filename="find_select_dialog.cpp" line="35"/>
         <source>Find and select objects</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -529,22 +529,22 @@
     <message>
         <location filename="find_widget.cpp" line="64"/>
         <source>Browse</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="find_widget.h" line="40"/>
         <source>Find</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="find_widget.cpp" line="72"/>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="find_widget.cpp" line="87"/>
         <source>Search in:</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -637,92 +637,92 @@
     <message>
         <location filename="main_window.cpp" line="89"/>
         <source>&amp;Connect</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="90"/>
         <source>&amp;Quit</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="92"/>
         <source>&amp;Manual</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="93"/>
         <source>&amp;About ADMC</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="95"/>
         <source>&amp;Advanced Features</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="96"/>
         <source>&amp;Confirm actions</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="97"/>
         <source>&amp;Put last name before first name when creating users</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="98"/>
         <source>Console Tree</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="99"/>
         <source>Description Bar</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="140"/>
+        <location filename="main_window.cpp" line="148"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="141"/>
+        <location filename="main_window.cpp" line="149"/>
         <source>&amp;Action</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="142"/>
+        <location filename="main_window.cpp" line="150"/>
         <source>&amp;Navigation</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="143"/>
+        <location filename="main_window.cpp" line="151"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="144"/>
+        <location filename="main_window.cpp" line="152"/>
         <source>&amp;Preferences</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="145"/>
+        <location filename="main_window.cpp" line="153"/>
         <source>&amp;Language</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="146"/>
+        <location filename="main_window.cpp" line="154"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="206"/>
+        <location filename="main_window.cpp" line="214"/>
         <source>Info</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="206"/>
+        <location filename="main_window.cpp" line="214"/>
         <source>App needs to be restarted for the language option to take effect.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -768,22 +768,22 @@
     <message>
         <location filename="tabs/membership_tab.cpp" line="113"/>
         <source>Primary group: </source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="tabs/membership_tab.cpp" line="369"/>
         <source>Can&apos;t remove because this group is a primary group to selected user.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="tabs/membership_tab.cpp" line="370"/>
         <source>Can&apos;t remove because selected group is a primary group to this user.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="tabs/membership_tab.cpp" line="375"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -839,67 +839,67 @@
     <message>
         <location filename="object_actions.cpp" line="54"/>
         <source>&amp;User</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="55"/>
         <source>&amp;Computer</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="56"/>
         <source>&amp;Organization</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="57"/>
         <source>&amp;Group</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="58"/>
         <source>&amp;Find</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="59"/>
         <source>&amp;Add to group</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="60"/>
         <source>&amp;Enable account</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="61"/>
         <source>D&amp;isable account</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="62"/>
         <source>Reset &amp;Password</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="63"/>
         <source>&amp;Rename</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="64"/>
         <source>&amp;Delete</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="65"/>
         <source>&amp;Move</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="object_actions.cpp" line="75"/>
         <source>&amp;New</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -1043,17 +1043,17 @@
     <message>
         <location filename="properties_dialog.cpp" line="96"/>
         <source>Properties</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="properties_dialog.cpp" line="133"/>
         <source>&quot;%1&quot; Properties</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="properties_dialog.cpp" line="137"/>
         <source>Object could not be found</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="properties_dialog.cpp" line="158"/>
@@ -1126,12 +1126,12 @@
     <message>
         <location filename="utils.cpp" line="153"/>
         <source>Connection error</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="utils.cpp" line="154"/>
         <source>Failed to connect to server.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -1180,12 +1180,12 @@
     <message>
         <location filename="filter_widget/select_classes_widget.cpp" line="50"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="filter_widget/select_classes_widget.cpp" line="51"/>
         <source>Clear selection</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -1193,7 +1193,7 @@
     <message>
         <location filename="select_container_dialog.cpp" line="45"/>
         <source>Select a container</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -1201,22 +1201,22 @@
     <message>
         <location filename="select_dialog.cpp" line="61"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="select_dialog.cpp" line="62"/>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="select_dialog.cpp" line="114"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="select_dialog.cpp" line="114"/>
         <source>This selection accepts only one object. Remove extra objects to proceed.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -1232,12 +1232,12 @@
     <message>
         <location filename="edits/string_edit.cpp" line="135"/>
         <source>The specified user logon name already exists.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="edits/string_edit.cpp" line="136"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>

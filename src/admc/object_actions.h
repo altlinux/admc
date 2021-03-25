@@ -52,6 +52,7 @@ enum ObjectAction {
 };
 
 class ObjectActions final : public QObject {
+Q_DECLARE_TR_FUNCTIONS(ObjectActions)
 
 public:
     ObjectActions(QObject *parent);
