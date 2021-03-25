@@ -34,6 +34,7 @@ class QPoint;
 class QWidget;
 class QModelIndex;
 class QVariant;
+class AdInterface;
 template <typename T> class QList;
 template <typename K, typename T> class QMap;
 template <typename K, typename T> class QHash;
@@ -70,5 +71,11 @@ void hide_busy_indicator();
 bool confirmation_dialog(const QString &text, QWidget *parent);
 
 void set_data_for_row(const QList<QStandardItem *> &row, const QVariant &data, const int role);
+
+// Wrappers over is_connected() that also open an error
+// messagebox if failed to connect. You should generally use
+// these in GUI code instead of is_connected().
+bool ad_connected(const AdInterface &ad);
+bool ad_failed(const AdInterface &ad);
 
 #endif /* UTILS_H */

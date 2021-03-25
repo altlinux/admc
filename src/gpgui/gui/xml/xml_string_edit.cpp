@@ -18,7 +18,6 @@
  */
 
 #include "xml_string_edit.h"
-#include "utils.h"
 
 #include <QLineEdit>
 #include <QLabel>

@@ -19,6 +19,7 @@
 
 #include "utils.h"
 #include "settings.h"
+#include "ad/ad_interface.h"
 
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
@@ -143,4 +144,29 @@ void set_data_for_row(const QList<QStandardItem *> &row, const QVariant &data, c
     for (QStandardItem *item : row) {
         item->setData(data, role);
     }
+}
+
+bool ad_connected_base(const AdInterface &ad) {
+    if (!ad.is_connected()) {
+        const QString title = QObject::tr("Connection error");
+        const QString text = QObject::tr("Failed to connect to server.");
+
+        // TODO: would want a valid parent widget for
+        // message box but this f-n can be called from
+        // places where there isn't one available,
+        // console_drag_model for example. Good news is that
+        // the messagebox appears to be modal even without a
+        // parent.
+        QMessageBox::critical(nullptr, title, text);
+    }
+
+    return ad.is_connected();
+}
+
+bool ad_connected(const AdInterface &ad) {
+    return ad_connected_base(ad);
+}
+
+bool ad_failed(const AdInterface &ad) {
+    return !ad_connected_base(ad);
 }

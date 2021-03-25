@@ -151,10 +151,4 @@ private:
     AdInterfacePrivate *d;
 };
 
-// Wrappers over is_connected() that also open an error
-// messagebox if failed to connect. You should generally use
-// these in GUI code instead of is_connected().
-bool ad_connected(const AdInterface &ad);
-bool ad_failed(const AdInterface &ad);
-
 #endif /* AD_INTERFACE_H */

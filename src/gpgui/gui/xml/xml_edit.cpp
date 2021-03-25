@@ -18,7 +18,6 @@
  */
 
 #include "xml_edit.h"
-#include "utils.h"
 
 #include <QDomDocument>
 #include <QLabel>

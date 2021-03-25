@@ -19,7 +19,6 @@
 #include "config.h"
 #include "browse_widget.h"
 #include "xml_editor.h"
-#include "settings.h"
 
 #include <QAction>
 #include <QCloseEvent>

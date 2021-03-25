@@ -21,7 +21,6 @@
 #include "pol_editor.h"
 #include "xml_editor.h"
 #include "file.h"
-#include "utils.h"
 
 #include <QTreeView>
 #include <QString>
@@ -44,10 +43,10 @@ BrowseWidget::BrowseWidget()
 : QWidget()
 {   
     model = new QStandardItemModel(0, BrowseColumn_COUNT, this);
-    set_horizontal_header_labels_from_map(model, {
-        {BrowseColumn_Name, tr("Name")},
-        {BrowseColumn_Path, tr("Path")}
-    });
+    // set_horizontal_header_labels_from_map(model, {
+    //     {BrowseColumn_Name, tr("Name")},
+    //     {BrowseColumn_Path, tr("Path")}
+    // });
 
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -84,20 +83,20 @@ void BrowseWidget::add_entry_recursively(const QString &path, QStandardItem *par
     const char *path_cstr = path_bytes.constData();
     const QString name = basename(path_cstr);
 
-    const QList<QStandardItem *> row = make_item_row(BrowseColumn_COUNT);
-    row[BrowseColumn_Name]->setText(name);
-    row[BrowseColumn_Path]->setText(path);
+    // const QList<QStandardItem *> row = make_item_row(BrowseColumn_COUNT);
+    // row[BrowseColumn_Name]->setText(name);
+    // row[BrowseColumn_Path]->setText(path);
 
-    if (parent == nullptr) {
-        model->appendRow(row);
-    } else {
-        parent->appendRow(row);
-    }
+    // if (parent == nullptr) {
+    //     model->appendRow(row);
+    // } else {
+    //     parent->appendRow(row);
+    // }
 
-    const QList<QString> children = file_get_children(path);
-    for (auto child : children) {
-        add_entry_recursively(child, row[0]);
-    }
+    // const QList<QString> children = file_get_children(path);
+    // for (auto child : children) {
+    //     add_entry_recursively(child, row[0]);
+    // }
 }
 
 void BrowseWidget::on_context_menu(const QPoint pos) {

@@ -18,7 +18,6 @@
  */
 
 #include "xml_bool_edit.h"
-#include "utils.h"
 
 #include <QLabel>
 #include <QCheckBox>

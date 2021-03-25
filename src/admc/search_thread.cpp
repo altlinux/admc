@@ -21,6 +21,7 @@
 
 #include "ad/ad_interface.h"
 #include "ad/ad_object.h"
+#include "utils.h"
 
 #include <QHash>
 
