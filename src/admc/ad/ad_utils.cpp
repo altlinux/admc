@@ -27,6 +27,9 @@
 
 #include <QDebug>
 #include <QCoreApplication>
+#include <QString>
+#include <QDateTime>
+#include <QByteArray>
 
 #define GENERALIZED_TIME_FORMAT_STRING  "yyyyMMddhhmmss.zZ"
 #define UTC_TIME_FORMAT_STRING          "yyMMddhhmmss.zZ"

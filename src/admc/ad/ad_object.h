@@ -39,10 +39,6 @@
 
 class QDateTime;
 class QIcon;
-class QByteArray;
-class QString;
-template <typename T> class QList;
-template <typename K, typename V> class QHash;
 
 class AdObject {
 

@@ -21,16 +21,15 @@
 #define AD_UTILS_H
 
 /**
- * Varioues f-ns related to AD attributes which do not
+ * Various f-ns related to AD attributes which do not
  * interact with the server.
  */
 
 #include "ad/ad_defines.h"
 
-#include <QString>
-#include <QDateTime>
-#include <QByteArray>
-#include <QMessageBox>
+class QString;
+class QDateTime;
+class QByteArray;
 
 bool large_integer_datetime_is_never(const QString &value);
 QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime);

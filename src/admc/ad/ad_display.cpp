@@ -25,6 +25,7 @@
 #include "globals.h"
 
 #include <QString>
+#include <QDateTime>
 #include <QByteArray> 
 #include <QList> 
 #include <QCoreApplication>

@@ -38,6 +38,7 @@
 #include <QTextCodec>
 #include <QDebug>
 #include <QCoreApplication>
+#include <QMessageBox>
 
 // NOTE: LDAP library char* inputs are non-const in the API
 // but are const for practical purposes so we use forced
