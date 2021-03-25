@@ -115,6 +115,7 @@ void ObjectActions::update_actions_visibility(const QList<QModelIndex> &selected
     for (QAction *action : actions.values()) {
         action->setVisible(false);
     }
+    new_menu->menuAction()->setVisible(false);
 
     // Get info about selected objects from view
     const QList<QString> targets =
