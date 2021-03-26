@@ -42,7 +42,7 @@ GroupScopeEdit::GroupScopeEdit(QList<AttributeEdit *> *edits_out, QObject *paren
         });
 }
 
-void GroupScopeEdit::load_internal(const AdObject &object) {
+void GroupScopeEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const GroupScope scope = object.get_group_scope();
 
     combo->setCurrentIndex((int) scope);

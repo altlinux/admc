@@ -117,7 +117,7 @@ AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QList<Attri
         });
 }
 
-void AccountOptionEdit::load_internal(const AdObject &object) {
+void AccountOptionEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const bool option_is_set = object.get_account_option(option);
     check->setChecked(option_is_set);
 }

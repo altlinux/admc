@@ -56,7 +56,7 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
         });
 }
 
-void StringEdit::load_internal(const AdObject &object) {
+void StringEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const QString value =
     [=]() {
         QString out = object.get_string(attribute);

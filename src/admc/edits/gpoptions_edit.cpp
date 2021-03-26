@@ -36,7 +36,7 @@ GpoptionsEdit::GpoptionsEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
         });
 }
 
-void GpoptionsEdit::load_internal(const AdObject &object) {
+void GpoptionsEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const QString value = object.get_string(ATTRIBUTE_GPOPTIONS);
     const bool checked = (value == GPOPTIONS_BLOCK_INHERITANCE);
 

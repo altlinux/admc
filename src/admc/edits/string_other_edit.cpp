@@ -56,8 +56,8 @@ StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &o
         });
 }
 
-void StringOtherEdit::load_internal(const AdObject &object) {
-    main_edit->load(object);
+void StringOtherEdit::load_internal(AdInterface &ad, const AdObject &object) {
+    main_edit->load(ad, object);
     
     other_values = object.get_values(other_attribute);
 }

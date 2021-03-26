@@ -40,7 +40,7 @@ DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QList<AttributeEdit *> 
         });
 }
 
-void DateTimeEdit::load_internal(const AdObject &object) {
+void DateTimeEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const QDateTime datetime = object.get_datetime(attribute, adconfig);
     const QDateTime datetime_local = datetime.toLocalTime();
 

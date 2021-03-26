@@ -23,7 +23,7 @@
 #include "adldap.h"
 
 void PropertiesTab::load(AdInterface &ad, const AdObject &object) {
-    edits_load(edits, object);
+    edits_load(edits, ad, object);
 }
 
 bool PropertiesTab::verify(AdInterface &ad, const QString &target) const {
