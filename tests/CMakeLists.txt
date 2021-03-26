@@ -96,6 +96,7 @@ set(TEST_SOURCES
 set(TEST_TARGETS
     admc_test_object_menu
     admc_test_unlock_edit
+    admc_test_upn_edit
 )
 
 foreach(target ${TEST_TARGETS})
