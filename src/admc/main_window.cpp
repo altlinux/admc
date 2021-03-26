@@ -55,6 +55,7 @@ MainWindow::MainWindow()
 
     central_widget = new CentralWidget();
     setCentralWidget(central_widget);
+    central_widget->setEnabled(false);
 
     setup_menubar();
 
@@ -236,6 +237,7 @@ void MainWindow::connect_to_server() {
         STATUS()->display_ad_messages(ad, this);
 
         central_widget->go_online(ad);
+        central_widget->setEnabled(true);
         connect_action->setEnabled(false);
     }
 }
