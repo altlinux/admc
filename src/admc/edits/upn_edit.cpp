@@ -26,52 +26,80 @@
 #include <QLineEdit>
 #include <QFormLayout>
 #include <QMessageBox>
-
-QString get_domain_as_email_suffix();
+#include <QComboBox>
 
 UpnEdit::UpnEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
 {
-    edit = new QLineEdit();
-    
-    limit_edit(edit, ATTRIBUTE_USER_PRINCIPAL_NAME);
+    prefix_edit = new QLineEdit();
+    suffix_combo = new QComboBox();
+
+    limit_edit(prefix_edit, ATTRIBUTE_USER_PRINCIPAL_NAME);
 
     QObject::connect(
-        edit, &QLineEdit::textChanged,
+        prefix_edit, &QLineEdit::textChanged,
+        [this]() {
+            emit edited();
+        });
+    QObject::connect(
+        suffix_combo, &QComboBox::currentTextChanged,
         [this]() {
             emit edited();
         });
 }
 
 void UpnEdit::load_internal(AdInterface &ad, const AdObject &object) {
-    const QString value =
-    [=]() {
-        QString out = object.get_string(ATTRIBUTE_USER_PRINCIPAL_NAME);
-        // Take "user" from "user@domain.com"
-        const int at_index = out.lastIndexOf('@');
-        out = out.left(at_index);
+    const QString upn = object.get_string(ATTRIBUTE_USER_PRINCIPAL_NAME);
+    const int split_index = upn.lastIndexOf('@');
+    const QString prefix = upn.left(split_index);
+    const QString current_suffix = upn.mid(split_index + 1);
+
+    const QList<QString> suffixes =
+    [&]() {
+        QList<QString> out;
+
+        const QString partitions_dn = adconfig->partitions_dn();
+        const AdObject partitions_object = ad.search_object(partitions_dn);
+
+        out = partitions_object.get_strings(ATTRIBUTE_UPN_SUFFIXES);
+
+        // NOTE: current suffix not being in suffix list is
+        // a possible case, for example due to a suffix
+        // being deleted. Just add it to the list.
+        if (!out.contains(current_suffix)) {
+            out.append(current_suffix);
+        }
+
+        const QString domain = adconfig->domain();
+        const QString domain_suffix = domain.toLower();
+        if (!out.contains(domain_suffix)) {
+            out.append(domain_suffix);
+        }
 
         return out;
     }();
+
+    suffix_combo->clear();
+    for (const QString &suffix : suffixes) {
+        suffix_combo->addItem(suffix);
+    }
+
+    const int current_suffix_index = suffixes.indexOf(current_suffix);
+    suffix_combo->setCurrentIndex(current_suffix_index);
     
-    edit->setText(value);
+    prefix_edit->setText(prefix);
 }
 
 void UpnEdit::set_read_only(const bool read_only) {
-    edit->setReadOnly(read_only);
+    prefix_edit->setReadOnly(read_only);
 }
 
 void UpnEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = adconfig->get_attribute_display_name(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER) + ":";
     
-    const QString extra_edit_text = get_domain_as_email_suffix();
-    auto extra_edit = new QLineEdit();
-    extra_edit->setEnabled(false);
-    extra_edit->setText(extra_edit_text);
-
     auto sublayout = new QHBoxLayout();
-    sublayout->addWidget(edit);
-    sublayout->addWidget(extra_edit);
+    sublayout->addWidget(prefix_edit);
+    sublayout->addWidget(suffix_combo);
 
     layout->addRow(label_text, sublayout);
 }
@@ -81,7 +109,7 @@ bool UpnEdit::verify(AdInterface &ad, const QString &dn) const {
 
     if (new_value.isEmpty()) {
         const QString text = tr("UPN may not be empty.");
-        QMessageBox::warning(edit, tr("Error"), text);
+        QMessageBox::warning(prefix_edit, tr("Error"), text);
 
         return false;
     }
@@ -104,7 +132,7 @@ bool UpnEdit::verify(AdInterface &ad, const QString &dn) const {
 
     if (upn_not_unique) {
         const QString text = tr("The specified user logon name already exists.");
-        QMessageBox::warning(edit, tr("Error"), text);
+        QMessageBox::warning(prefix_edit, tr("Error"), text);
 
         return false;
     }
@@ -120,16 +148,11 @@ bool UpnEdit::apply(AdInterface &ad, const QString &dn) const {
 }
 
 QString UpnEdit::get_input() const {
-    return edit->text();
+    return prefix_edit->text();
 }
 
 QString UpnEdit::get_new_value() const {
-    // Get "user" from edit and combine into "user@domain.com"
-    return edit->text() + get_domain_as_email_suffix();
-}
-
-// "DOMAIN.COM" => "@domain.com"
-QString get_domain_as_email_suffix() {
-    const QString domain = adconfig->domain();
-    return "@" + domain.toLower();
+    const QString prefix = prefix_edit->text();
+    const QString suffix = suffix_combo->currentText();
+    return QString("%1@%2").arg(prefix, suffix);
 }

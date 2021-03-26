@@ -23,7 +23,7 @@
 #include "attribute_edit.h"
 
 class QLineEdit;
-class QLabel;
+class QComboBox;
 
 class UpnEdit final : public AttributeEdit {
 Q_OBJECT
@@ -35,7 +35,8 @@ public:
     bool verify(AdInterface &ad, const QString &dn) const override;
 
 private:
-    QLineEdit *edit;
+    QLineEdit *prefix_edit;
+    QComboBox *suffix_combo;
 
     friend class StringOtherEdit;
 
