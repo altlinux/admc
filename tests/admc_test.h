@@ -89,7 +89,7 @@ protected:
 
 };
 
-void navigate_until_object(QTreeView *view, const QString &target_dn);
+void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role);
 
 // Presses the Tab button. Use to cycle through input
 // widgets.

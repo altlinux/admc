@@ -125,7 +125,7 @@ void tab(const int n) {
 
 // Go down the list of objects by pressing Down arrow
 // until current item's dn equals to target dn
-void navigate_until_object(QTreeView *view, const QString &target_dn) {
+void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role) {
     QModelIndex prev_index;
     
     QAbstractItemModel *model = view->model();
@@ -140,7 +140,7 @@ void navigate_until_object(QTreeView *view, const QString &target_dn) {
     while (!search_stack.isEmpty()) {
         const QModelIndex index = search_stack.takeFirst();
 
-        const QString dn = index.data(ObjectRole_DN).toString();
+        const QString dn = index.data(dn_role).toString();
 
         // NOTE: need to expand items because some models
         // used in ADMC load the model dynamically from
@@ -160,7 +160,6 @@ void navigate_until_object(QTreeView *view, const QString &target_dn) {
 
         for (int row = 0; row < model->rowCount(index); row++) {
             const QModelIndex child = model->index(row, 0, index);
-
             search_stack.append(child);
         }
     }

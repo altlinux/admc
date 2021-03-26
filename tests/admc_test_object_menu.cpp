@@ -197,7 +197,7 @@ void ADMCTestObjectMenu::object_menu_move() {
     QVERIFY2((move_dialog_view != nullptr), "Failed to cast move_dialog_view");
 
     // Select move target in the view
-    navigate_until_object(move_dialog_view, move_target_dn);
+    navigate_until_object(move_dialog_view, move_target_dn, ContainerRole_DN);
 
     move_dialog->accept();
 
@@ -445,7 +445,7 @@ void ADMCTestObjectMenu::object_menu_add_to_group() {
     wait_for_find_results_to_load(find_results_view);
 
     // Select group in view
-    navigate_until_object(find_results_view, group_dn);
+    navigate_until_object(find_results_view, group_dn, ObjectRole_DN);
     const QModelIndex selected_index = find_results_view->selectionModel()->currentIndex();
     const QString selected_dn = selected_index.data(ObjectRole_DN).toString();
 
