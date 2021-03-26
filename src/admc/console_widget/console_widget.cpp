@@ -794,6 +794,15 @@ void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
 
 // NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
 void ConsoleWidgetPrivate::update_navigation_actions() {
+    const bool can_navigate_up =
+    [this]() {
+        const QModelIndex current = scope_view->currentIndex();
+        const QModelIndex current_parent = current.parent();
+
+        return (current.isValid() && current_parent.isValid());
+    }();
+
+    navigate_up_action->setEnabled(can_navigate_up);
     navigate_back_action->setEnabled(!targets_past.isEmpty());
     navigate_forward_action->setEnabled(!targets_future.isEmpty());
 }
