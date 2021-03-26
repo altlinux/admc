@@ -36,6 +36,10 @@
 
 // TODO: implement checkbox for account option "User cannot change password". Can't just do it through UAC attribute bits.
 
+// TODO: not sure about how required_edits are done, maybe
+// just do this through verify()? Had to remove upnedit from
+// required_edits because that's a list of stringedits. Now upnedit checks that it's not empty in verify();
+
 CreateDialog::CreateDialog(const QList<QString> &targets, const QString &object_class_arg, QWidget *parent)
 : QDialog(parent)
 {
@@ -83,7 +87,6 @@ CreateDialog::CreateDialog(const QList<QString> &targets, const QString &object_
 
         required_edits = {
             first_name_edit,
-            upn_edit,
             sama_edit,
         };
 

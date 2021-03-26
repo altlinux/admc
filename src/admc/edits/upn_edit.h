@@ -17,36 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STRING_EDIT_H
-#define STRING_EDIT_H
+#ifndef UPN_EDIT_H
+#define UPN_EDIT_H
 
 #include "attribute_edit.h"
-
-#include <QString>
-#include <QMap>
-#include <QList>
 
 class QLineEdit;
 class QLabel;
 
-class StringEdit final : public AttributeEdit {
+class UpnEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    static void make_many(const QList<QString> attributes, const QString &objectClass, QList<AttributeEdit *> *edits_out, QObject *parent);
-
-    StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
+    UpnEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
     QString get_input() const;
-    void set_input(const QString &value);
-    bool is_empty() const;
+    bool verify(AdInterface &ad, const QString &dn) const override;
 
 private:
     QLineEdit *edit;
-    QString attribute;
-    QString objectClass;
 
     friend class StringOtherEdit;
+
+    QString get_new_value() const;
 };
 
-#endif /* STRING_EDIT_H */
+#endif /* UPN_EDIT_H */

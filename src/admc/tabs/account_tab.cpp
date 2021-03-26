@@ -21,6 +21,7 @@
 #include "edits/string_edit.h"
 #include "edits/expiry_edit.h"
 #include "edits/unlock_edit.h"
+#include "edits/upn_edit.h"
 #include "edits/account_option_edit.h"
 
 #include <QFormLayout>
@@ -28,7 +29,7 @@
 // TODO: logon hours, logon computers
 
 AccountTab::AccountTab() {
-    auto upn_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER, &edits, this);
+    auto upn_edit = new UpnEdit(&edits, this);
 
     auto unlock_edit = new UnlockEdit(&edits, this);
 
