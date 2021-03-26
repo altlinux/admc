@@ -398,8 +398,7 @@ void CentralWidget::edit_upn_suffixes() {
 
     // Open editor for upn suffixes attribute of partitions
     // object
-    const QString head_dn = adconfig->domain_head();
-    const QString partitions_dn = QString("%1,%2").arg(PARTITIONS_DN_PREFIX, head_dn);
+    const QString partitions_dn = adconfig->partitions_dn();
     const AdObject partitions_object = ad.search_object(partitions_dn);
     const QList<QByteArray> current_values = partitions_object.get_values(ATTRIBUTE_UPN_SUFFIXES);
 

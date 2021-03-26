@@ -214,6 +214,4 @@ enum SystemFlagsBit {
 
 const long long MILLIS_TO_100_NANOS = 10000LL;
 
-#define PARTITIONS_DN_PREFIX "CN=Partitions,CN=Configuration"
-
 #endif /* AD_DEFINES_H */
