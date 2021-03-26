@@ -47,7 +47,7 @@ MainWindow::MainWindow()
     STATUS()->status_bar()->showMessage(tr("Ready"));
 
     message_log_dock = new QDockWidget();
-    message_log_dock->setWindowTitle("Message Log");
+    message_log_dock->setWindowTitle(tr("Message Log"));
     message_log_dock->setWidget(STATUS()->message_log());
     message_log_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
     message_log_dock->setObjectName(MESSAGE_LOG_OBJECT_NAME);

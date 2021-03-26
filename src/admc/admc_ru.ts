@@ -265,7 +265,7 @@
         <translation>&amp;Показать неконтейнерные объекты в дереве консоли</translation>
     </message>
     <message numerus="yes">
-        <location filename="central_widget.cpp" line="457"/>
+        <location filename="central_widget.cpp" line="461"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n объект</numerusform>
@@ -507,12 +507,12 @@
 <context>
     <name>FindResults</name>
     <message>
-        <location filename="find_results.cpp" line="72"/>
+        <location filename="find_results.cpp" line="77"/>
         <source>&amp;Customize columns</source>
         <translation>&amp;Выбрать колонки</translation>
     </message>
     <message numerus="yes">
-        <location filename="find_results.cpp" line="150"/>
+        <location filename="find_results.cpp" line="153"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n объект</numerusform>
@@ -641,92 +641,97 @@
         <translation>Готово</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="89"/>
+        <location filename="main_window.cpp" line="50"/>
+        <source>Message Log</source>
+        <translation>Журнал сообщений</translation>
+    </message>
+    <message>
+        <location filename="main_window.cpp" line="90"/>
         <source>&amp;Connect</source>
         <translation>&amp;Подключится</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="90"/>
+        <location filename="main_window.cpp" line="91"/>
         <source>&amp;Quit</source>
         <translation>&amp;Выйти</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="92"/>
+        <location filename="main_window.cpp" line="93"/>
         <source>&amp;Manual</source>
         <translation>&amp;Руководство</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="93"/>
+        <location filename="main_window.cpp" line="94"/>
         <source>&amp;About ADMC</source>
         <translation>&amp;Об ADMC</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="95"/>
+        <location filename="main_window.cpp" line="96"/>
         <source>&amp;Advanced Features</source>
         <translation>&amp;Дополнительные возможности</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="96"/>
+        <location filename="main_window.cpp" line="97"/>
         <source>&amp;Confirm actions</source>
         <translation>Потверждать &amp;действия</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="97"/>
+        <location filename="main_window.cpp" line="98"/>
         <source>&amp;Put last name before first name when creating users</source>
         <translation>&amp;Ставить фамилию перед именем при создании пользователей</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="98"/>
+        <location filename="main_window.cpp" line="99"/>
         <source>Console Tree</source>
         <translation>Дерево консоли</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="99"/>
+        <location filename="main_window.cpp" line="100"/>
         <source>Description Bar</source>
         <translation>Описание</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="148"/>
+        <location filename="main_window.cpp" line="149"/>
         <source>&amp;File</source>
         <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="149"/>
+        <location filename="main_window.cpp" line="150"/>
         <source>&amp;Action</source>
         <translation>&amp;Действие</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="150"/>
+        <location filename="main_window.cpp" line="151"/>
         <source>&amp;Navigation</source>
         <translation>&amp;Навигация</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="151"/>
+        <location filename="main_window.cpp" line="152"/>
         <source>&amp;View</source>
         <translation>&amp;Вид</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="152"/>
+        <location filename="main_window.cpp" line="153"/>
         <source>&amp;Preferences</source>
         <translation>&amp;Настройки</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="153"/>
+        <location filename="main_window.cpp" line="154"/>
         <source>&amp;Language</source>
         <translation>&amp;Язык</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="154"/>
+        <location filename="main_window.cpp" line="155"/>
         <source>&amp;Help</source>
         <translation>&amp;Помощь</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="214"/>
+        <location filename="main_window.cpp" line="215"/>
         <source>Info</source>
         <translation>Информация</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="214"/>
+        <location filename="main_window.cpp" line="215"/>
         <source>App needs to be restarted for the language option to take effect.</source>
         <translation>Язык поменяется при следующем запуске приложения.</translation>
     </message>

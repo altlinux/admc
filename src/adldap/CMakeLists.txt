@@ -53,7 +53,6 @@ add_custom_target(adldap_ts
 
 # Generate translation binaries (.qm) from sources (.ts)
 set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION ${CMAKE_CURRENT_SOURCE_DIR})
-qt5_create_translation(QM_FILES ${CMAKE_CURRENT_SOURCE_DIR} ${TS_FILES})
-
+qt5_add_translation(QM_FILES ${TS_FILES})
 
 install(TARGETS adldap)
