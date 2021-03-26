@@ -135,8 +135,6 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
         this, &ConsoleWidgetPrivate::on_focus_changed);
 
     connect_to_drag_model(scope_model);
-
-    update_navigation_actions();
 }
 
 ConsoleWidget::ConsoleWidget(QWidget *parent)
@@ -163,6 +161,9 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     layout->setSpacing(0);
     setLayout(layout);
     layout->addWidget(splitter);
+
+    d->update_navigation_actions();
+    d->update_view_actions();
 }
 
 QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent) {
@@ -581,23 +582,19 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
     // When a new current is selected, a new future begins
     targets_future.clear();
 
-    update_navigation_actions();
-
     // Switch to this item's results widget
     const ResultsDescription results = get_current_results();
     results_stacked_widget->setCurrentWidget(results.widget());
 
-    const bool results_view_exists = (results.view() != nullptr);
     // Switch to results view's model if view exists
+    const bool results_view_exists = (results.view() != nullptr);
     if (results_view_exists) {
         QStandardItemModel *results_model = get_results_model_for_scope_item(current);
         results_proxy_model->setSourceModel(results_model);
     }
 
-    set_results_to_icons_action->setVisible(results_view_exists);
-    set_results_to_list_action->setVisible(results_view_exists);
-    set_results_to_detail_action->setVisible(results_view_exists);
-    customize_columns_action->setVisible(results_view_exists);
+    update_navigation_actions();
+    update_view_actions();
 
     fetch_scope(current);
 
@@ -805,6 +802,16 @@ void ConsoleWidgetPrivate::update_navigation_actions() {
     navigate_up_action->setEnabled(can_navigate_up);
     navigate_back_action->setEnabled(!targets_past.isEmpty());
     navigate_forward_action->setEnabled(!targets_future.isEmpty());
+}
+
+void ConsoleWidgetPrivate::update_view_actions() {
+    const ResultsDescription results = get_current_results();
+    const bool results_view_exists = (results.view() != nullptr);
+
+    set_results_to_icons_action->setVisible(results_view_exists);
+    set_results_to_list_action->setVisible(results_view_exists);
+    set_results_to_detail_action->setVisible(results_view_exists);
+    customize_columns_action->setVisible(results_view_exists);
 }
 
 void ConsoleWidget::add_actions_to_action_menu(QMenu *menu) {

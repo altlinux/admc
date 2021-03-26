@@ -99,6 +99,8 @@ public:
     void on_results_activated(const QModelIndex &index);
     void on_selection_changed();
     void on_context_menu(const QPoint pos);
+    void update_navigation_actions();
+    void update_view_actions();
 
 private:
     QList<QModelIndex> dropped;
@@ -124,7 +126,6 @@ private:
     void set_results_to_list();
     void set_results_to_detail();
     void set_results_to_type(const ResultsViewType type);
-    void update_navigation_actions();
     void fetch_scope(const QModelIndex &index);
     const ResultsDescription get_current_results() const;
 };

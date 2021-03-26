@@ -70,6 +70,7 @@ CentralWidget::CentralWidget()
     show_noncontainers_action = new QAction(tr("&Show non-container objects in Console tree"));
 
     filter_dialog = nullptr;
+    open_filter_action->setEnabled(false);
 
     console_widget = new ConsoleWidget();
 
@@ -174,6 +175,8 @@ CentralWidget::CentralWidget()
     connect(
         console_widget, &ConsoleWidget::context_menu,
         this, &CentralWidget::context_menu);
+
+    update_actions_visibility();
 }
 
 void CentralWidget::go_online(AdInterface &ad) {
@@ -183,6 +186,7 @@ void CentralWidget::go_online(AdInterface &ad) {
     connect(
         filter_dialog, &QDialog::accepted,
         this, &CentralWidget::refresh_head);
+    open_filter_action->setEnabled(true);
 
     // NOTE: Header labels are from ADCONFIG, so have to get them
     // after going online
