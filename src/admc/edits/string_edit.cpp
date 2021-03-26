@@ -53,7 +53,7 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
         });
 }
 
-void StringEdit::load_internal(const AdObject &object) {
+void StringEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const QString value =
     [=]() {
         const QString raw_value = object.get_string(attribute);

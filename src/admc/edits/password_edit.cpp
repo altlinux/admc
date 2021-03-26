@@ -46,7 +46,7 @@ PasswordEdit::PasswordEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
         });
 }
 
-void PasswordEdit::load_internal(const AdObject &object) {
+void PasswordEdit::load_internal(AdInterface &ad, const AdObject &object) {
     edit->clear();
     confirm_edit->clear();
 }

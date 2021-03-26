@@ -184,7 +184,7 @@ void RenameDialog::reset() {
     name_edit->setText(name);
 
     const AdObject object = ad.search_object(target);
-    edits_load(all_edits, object);
+    edits_load(all_edits, ad, object);
 
     reset_button->setEnabled(false);
     ok_button->setEnabled(false);

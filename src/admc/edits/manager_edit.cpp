@@ -47,7 +47,7 @@ ManagerEdit::ManagerEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
         this, &ManagerEdit::on_clear);
 }
 
-void ManagerEdit::load_internal(const AdObject &object) {
+void ManagerEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const QString manager = object.get_string(ATTRIBUTE_MANAGER);
     
     load_value(manager);

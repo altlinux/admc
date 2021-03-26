@@ -54,7 +54,7 @@ StringLargeEdit::StringLargeEdit(const QString &attribute_arg, const QString &ob
         });
 }
 
-void StringLargeEdit::load_internal(const AdObject &object) {
+void StringLargeEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const QString value = object.get_string(attribute);
     
     edit->setPlainText(value);

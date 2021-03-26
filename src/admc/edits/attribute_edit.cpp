@@ -39,8 +39,8 @@ AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
         });
 }
 
-void AttributeEdit::load(const AdObject &object) {
-    load_internal(object);
+void AttributeEdit::load(AdInterface &ad, const AdObject &object) {
+    load_internal(ad, object);
     m_modified = false;
 }
 
@@ -92,9 +92,9 @@ bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &d
     return success;
 }
 
-void edits_load(QList<AttributeEdit *> edits, const AdObject &object) {
+void edits_load(QList<AttributeEdit *> edits, AdInterface &ad, const AdObject &object) {
     for (auto edit : edits) {
-        edit->load(object);
+        edit->load(ad, object);
     }
 }
 

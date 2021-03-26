@@ -73,7 +73,7 @@ ExpiryEdit::ExpiryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
         });
 }
 
-void ExpiryEdit::load_internal(const AdObject &object) {
+void ExpiryEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const bool never =
     [object]() {
         const QString expiry_string = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);

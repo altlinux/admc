@@ -74,7 +74,7 @@ PasswordDialog::PasswordDialog(const QList<QString> &targets, QWidget *parent)
     layout->addLayout(edits_layout);
     layout->addWidget(button_box);
 
-    edits_load(edits, object);
+    edits_load(edits, ad, object);
 
     // Turn on "password expired" by default
     pass_expired_check->set_checked(true);

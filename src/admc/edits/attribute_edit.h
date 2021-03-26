@@ -44,7 +44,7 @@ public:
 
     // Load state from object, used to initialize or reset edit
     // Calls load_internal() implemented by subclasses
-    void load(const AdObject &object);
+    void load(AdInterface &ad, const AdObject &object);
 
     virtual void set_read_only(const bool read_only) = 0;
 
@@ -75,7 +75,7 @@ signals:
     void edited();
 
 protected:
-    virtual void load_internal(const AdObject &object) = 0;
+    virtual void load_internal(AdInterface &ad, const AdObject &object) = 0;
 
 private:
     bool m_modified;
@@ -86,7 +86,7 @@ void set_read_only(const bool read_only) override;\
 void add_to_layout(QFormLayout *layout) override;\
 bool apply(AdInterface &ad, const QString &dn) const override;\
 protected:\
-void load_internal(const AdObject &object) override;\
+void load_internal(AdInterface &ad, const AdObject &object) override;\
 public:\
 
 
@@ -113,6 +113,6 @@ bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &
 // them.
 bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn, const bool ignore_modified = false);
 
-void edits_load(QList<AttributeEdit *> edits, const AdObject &object);
+void edits_load(QList<AttributeEdit *> edits, AdInterface &ad, const AdObject &object);
 
 #endif /* ATTRIBUTE_EDIT_H */

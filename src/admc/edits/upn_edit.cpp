@@ -43,7 +43,7 @@ UpnEdit::UpnEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
         });
 }
 
-void UpnEdit::load_internal(const AdObject &object) {
+void UpnEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const QString value =
     [=]() {
         QString out = object.get_string(ATTRIBUTE_USER_PRINCIPAL_NAME);
