@@ -112,6 +112,12 @@ void ObjectActions::add_to_menu(QMenu *menu) {
 }
 
 void ObjectActions::update_actions_visibility(const QList<QModelIndex> &selected_indexes) {
+    auto show_action =
+    [this](const ObjectAction action_enum) {
+        QAction *action = get(action_enum);
+        action->setVisible(true);
+    };
+
     for (QAction *action : actions.values()) {
         action->setVisible(false);
     }
@@ -174,23 +180,23 @@ void ObjectActions::update_actions_visibility(const QList<QModelIndex> &selected
                 new_action->setVisible(true);
             }
 
-            get(ObjectAction_Find)->setVisible(true);
+            show_action(ObjectAction_Find);
         }
 
         if (is_user) {
-            get(ObjectAction_AddToGroup)->setVisible(true);
-            get(ObjectAction_ResetPassword)->setVisible(true);
+            show_action(ObjectAction_AddToGroup);
+            show_action(ObjectAction_ResetPassword);
 
             if (account_disabled) {
-                get(ObjectAction_Enable)->setVisible(true);
+                show_action(ObjectAction_Enable);
             } else {
-                get(ObjectAction_Disable)->setVisible(true);
+                show_action(ObjectAction_Disable);
             }
         }
 
-        get(ObjectAction_Move)->setVisible(true);
-        get(ObjectAction_Delete)->setVisible(true);
-        get(ObjectAction_Rename)->setVisible(true);
+        show_action(ObjectAction_Move);
+        show_action(ObjectAction_Delete);
+        show_action(ObjectAction_Rename);
 
         get(ObjectAction_Move)->setDisabled(cannot_move);
         get(ObjectAction_Delete)->setDisabled(cannot_delete);
@@ -199,18 +205,18 @@ void ObjectActions::update_actions_visibility(const QList<QModelIndex> &selected
         const bool all_users = (target_classes.contains(CLASS_USER) && target_classes.size() == 1);
 
         if (all_users) {
-            get(ObjectAction_AddToGroup)->setVisible(true);
+            show_action(ObjectAction_AddToGroup);
 
             // NOTE: show both enable/disable for multiple
             // users because some users might be disabled,
             // some enabled and we want to provide a way to
             // disable all or enable all
-            get(ObjectAction_Enable)->setVisible(true);
-            get(ObjectAction_Disable)->setVisible(true);
+            show_action(ObjectAction_Enable);
+            show_action(ObjectAction_Disable);
         }
 
-        get(ObjectAction_Move)->setVisible(true);
-        get(ObjectAction_Delete)->setVisible(true);
+        show_action(ObjectAction_Move);
+        show_action(ObjectAction_Delete);
     }
 }
 
