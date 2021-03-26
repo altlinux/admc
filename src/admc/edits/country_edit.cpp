@@ -45,7 +45,7 @@ CountryEdit::CountryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
     QHash<QString, int> string_to_code;
 
     // TODO: cache this
-    QFile file(":/countries.csv");
+    QFile file(":/admc/countries.csv");
     if (!file.open(QIODevice::ReadOnly)) {
         printf("ERROR: Failed to load countries file!\n");
     } else {

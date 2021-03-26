@@ -133,7 +133,7 @@ void ADMCTestUnlockEdit::load_locked_user_into_edit() {
 
     // Load user into edit
     const AdObject object = ad.search_object(dn);
-    unlock_edit->load(object);
+    unlock_edit->load(ad, object);
 }
 
 QTEST_MAIN(ADMCTestUnlockEdit)
