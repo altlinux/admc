@@ -164,6 +164,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_OTHER_FAX_NUMBER      "otherFacsimileTelephoneNumber"
 #define ATTRIBUTE_IP_PHONE              "ipPhone"
 #define ATTRIBUTE_OTHER_IP_PHONE        "otherIpPhone"
+#define ATTRIBUTE_UPN_SUFFIXES          "uPNSuffixes"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
@@ -212,5 +213,7 @@ enum SystemFlagsBit {
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm UTCt"
 
 const long long MILLIS_TO_100_NANOS = 10000LL;
+
+#define PARTITIONS_DN_PREFIX "CN=Partitions,CN=Configuration"
 
 #endif /* AD_DEFINES_H */

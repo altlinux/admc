@@ -63,6 +63,7 @@ ObjectActions::ObjectActions(QObject *parent)
                 case ObjectAction_Rename: return tr("&Rename");
                 case ObjectAction_Delete: return tr("&Delete");
                 case ObjectAction_Move: return tr("&Move");
+                case ObjectAction_EditUpnSuffixes: return tr("Edit &Upn Suffixes");
 
                 case ObjectAction_LAST: break;
             }
@@ -102,6 +103,9 @@ void ObjectActions::add_to_menu(QMenu *menu) {
     menu->addAction(get(ObjectAction_Enable));
     menu->addAction(get(ObjectAction_Disable));
     menu->addAction(get(ObjectAction_ResetPassword));
+
+    // Other
+    menu->addAction(get(ObjectAction_EditUpnSuffixes));
 
     menu->addSeparator();
 
@@ -168,6 +172,7 @@ void ObjectActions::update_actions_visibility(const QList<QModelIndex> &selected
         }();
 
         const bool is_user = (target_class == CLASS_USER);
+        const bool is_domain = (target_class == CLASS_DOMAIN);
 
         const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
         const bool cannot_rename = index.data(ObjectRole_CannotRename).toBool();
@@ -192,6 +197,10 @@ void ObjectActions::update_actions_visibility(const QList<QModelIndex> &selected
             } else {
                 show_action(ObjectAction_Disable);
             }
+        }
+
+        if (is_domain) {
+            get(ObjectAction_EditUpnSuffixes)->setVisible(true);
         }
 
         show_action(ObjectAction_Move);

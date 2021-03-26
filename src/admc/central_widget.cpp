@@ -36,6 +36,7 @@
 #include "password_dialog.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
+#include "editors/multi_editor.h"
 
 #include <QDebug>
 #include <QAbstractItemView>
@@ -150,6 +151,9 @@ CentralWidget::CentralWidget()
     connect(
         object_actions->get(ObjectAction_Find), &QAction::triggered,
         this, &CentralWidget::find);
+    connect(
+        object_actions->get(ObjectAction_EditUpnSuffixes), &QAction::triggered,
+        this, &CentralWidget::edit_upn_suffixes);
 
     connect(
         console_widget, &ConsoleWidget::current_scope_item_changed,
@@ -379,6 +383,43 @@ void CentralWidget::create_ou() {
 
 void CentralWidget::create_group() {
     create_helper(CLASS_GROUP);
+}
+
+// TODO: not sure if partitions dn is always this.
+// Technically, should get the Configuration from
+// namingcontexts from rootdse because it might be
+// different? idk. Haven't figured out how to access
+// namingcontexts yet
+void CentralWidget::edit_upn_suffixes() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    // Open editor for upn suffixes attribute of partitions
+    // object
+    const QString head_dn = adconfig->domain_head();
+    const QString partitions_dn = QString("%1,%2").arg(PARTITIONS_DN_PREFIX, head_dn);
+    const AdObject partitions_object = ad.search_object(partitions_dn);
+    const QList<QByteArray> current_values = partitions_object.get_values(ATTRIBUTE_UPN_SUFFIXES);
+
+    auto editor = new MultiEditor(ATTRIBUTE_UPN_SUFFIXES, current_values, this);
+    editor->open();
+
+    // When editor is accepted, update values of upn
+    // suffixes
+    connect(editor, &QDialog::accepted,
+    [this, editor, partitions_dn]() {
+            AdInterface ad2;
+            if (ad_failed(ad2)) {
+                return;
+            }
+
+            const QList<QByteArray> new_values = editor->get_new_values();
+
+            ad2.attribute_replace_values(partitions_dn, ATTRIBUTE_UPN_SUFFIXES, new_values);
+            STATUS()->display_ad_messages(ad2, this);
+        });
 }
 
 // NOTE: only check if object can be dropped if dropping a
