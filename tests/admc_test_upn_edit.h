@@ -38,6 +38,7 @@ private slots:
     void test_apply_prefix();
     void test_apply_prefix_and_suffix();
     void test_reset();
+    void test_verify();
 
 private:
     UpnEdit *upn_edit;
@@ -46,6 +47,7 @@ private:
     QString dn;
 
     QString get_upn();
+    QString get_current_upn();
     bool edit_state_equals_to_server_state();
     void change_suffix_in_edit();
 };

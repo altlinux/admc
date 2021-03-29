@@ -141,15 +141,18 @@ void ADMCTestUpnEdit::test_reset() {
     QVERIFY2(edit_state_equals_to_server_state(), "Failed to reset");
 }
 
+QString ADMCTestUpnEdit::get_current_upn() {
+    const QString prefix = prefix_edit->text();
+    const QString suffix = suffix_edit->currentText();
+    const QString upn = QString("%1@%2").arg(prefix, suffix);
+
+    return upn;
+}
+
 bool ADMCTestUpnEdit::edit_state_equals_to_server_state() {
     const AdObject object = ad.search_object(dn);
     const QString server_upn = object.get_string(ATTRIBUTE_USER_PRINCIPAL_NAME);
-    const QString edit_upn =
-    [this]() {
-        const QString prefix = prefix_edit->text();
-        const QString suffix = suffix_edit->currentText();
-        return QString("%1@%2").arg(prefix, suffix);
-    }();
+    const QString edit_upn = get_current_upn();
 
     return (edit_upn == server_upn);
 }
@@ -172,6 +175,24 @@ void ADMCTestUpnEdit::change_suffix_in_edit() {
     QVERIFY2((new_suffix_index != -1), "Failed to find different suffix");
 
     suffix_edit->setCurrentIndex(new_suffix_index);
+}
+
+// verify() must return false if there's a user with the
+// same upn
+void ADMCTestUpnEdit::test_verify() {
+    // Create user with conflicting upn
+    const QString conflict_name = "conflicting-upn-test-user";
+    const QString conflict_dn = test_object_dn(conflict_name, CLASS_USER);
+    const bool create_success = ad.object_add(conflict_dn, CLASS_USER);
+    QVERIFY(create_success);
+    const QString conflicting_upn = get_current_upn();
+    ad.attribute_replace_string(conflict_dn, ATTRIBUTE_USER_PRINCIPAL_NAME, conflicting_upn);
+
+    // Verify should fail
+    close_message_box_later();
+    const bool verify_success = upn_edit->verify(ad, dn);
+
+    QVERIFY2(!verify_success, "verify() didn't notice upn conflict");
 }
 
 QTEST_MAIN(ADMCTestUpnEdit)

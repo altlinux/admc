@@ -87,6 +87,15 @@ protected:
     // because find results are loaded in separate thread.
     void wait_for_find_results_to_load(QTreeView *view);
 
+    // Message boxes block executation because they are
+    // opened using exec(). Therefore when testing f-ns that
+    // can open messageboxes, call this to to close
+    // messageboxes later.
+    void close_message_box_later();
+
+private:
+    void close_message_box_slot();
+
 };
 
 void navigate_until_object(QTreeView *view, const QString &target_dn);
