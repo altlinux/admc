@@ -539,20 +539,7 @@ void CentralWidget::fetch_scope_node(const QModelIndex &index) {
         return out;
     }();
 
-    const QList<QString> search_attributes =
-    []() {
-        QList<QString> out;
-
-        out += adconfig->get_columns();
-
-        // NOTE: load_object_row() needs this for loading group type/scope
-        out += ATTRIBUTE_GROUP_TYPE;
-
-        // NOTE: system flags are needed for drag and drop logic
-        out += ATTRIBUTE_SYSTEM_FLAGS;
-
-        return out;
-    }();
+    const QList<QString> search_attributes = object_model_search_attributes();
 
     const QString dn = index.data(ObjectRole_DN).toString();
 

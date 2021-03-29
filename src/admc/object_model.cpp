@@ -102,3 +102,20 @@ QList<int> object_model_default_columns() {
     // description
     return {0, 1, 2};
 }
+
+QList<QString> object_model_search_attributes() {
+    QList<QString> attributes;
+
+    attributes += adconfig->get_columns();
+
+    // NOTE: needed for loading group type/scope into "type"
+    // column
+    attributes += ATTRIBUTE_GROUP_TYPE;
+
+    // NOTE: system flags are needed to disable
+    // delete/move/rename for objects that can't do those
+    // actions
+    attributes += ATTRIBUTE_SYSTEM_FLAGS;
+
+    return attributes;
+}
