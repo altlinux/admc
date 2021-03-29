@@ -28,13 +28,35 @@
 #include <QMessageBox>
 #include <QComboBox>
 
-UpnEdit::UpnEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
+UpnEdit::UpnEdit(QList<AttributeEdit *> *edits_out, AdInterface &ad, QObject *parent)
 : AttributeEdit(edits_out, parent)
 {
     prefix_edit = new QLineEdit();
     suffix_combo = new QComboBox();
 
     limit_edit(prefix_edit, ATTRIBUTE_USER_PRINCIPAL_NAME);
+
+    const QList<QString> suffixes =
+    [&]() {
+        QList<QString> out;
+
+        const QString partitions_dn = adconfig->partitions_dn();
+        const AdObject partitions_object = ad.search_object(partitions_dn);
+
+        out = partitions_object.get_strings(ATTRIBUTE_UPN_SUFFIXES);
+
+        const QString domain = adconfig->domain();
+        const QString domain_suffix = domain.toLower();
+        if (!out.contains(domain_suffix)) {
+            out.append(domain_suffix);
+        }
+
+        return out;
+    }();
+
+    for (const QString &suffix : suffixes) {
+        suffix_combo->addItem(suffix);
+    }
 
     QObject::connect(
         prefix_edit, &QLineEdit::textChanged,
@@ -54,38 +76,17 @@ void UpnEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const QString prefix = upn.left(split_index);
     const QString current_suffix = upn.mid(split_index + 1);
 
-    const QList<QString> suffixes =
-    [&]() {
-        QList<QString> out;
-
-        const QString partitions_dn = adconfig->partitions_dn();
-        const AdObject partitions_object = ad.search_object(partitions_dn);
-
-        out = partitions_object.get_strings(ATTRIBUTE_UPN_SUFFIXES);
-
-        // NOTE: current suffix not being in suffix list is
-        // a possible case, for example due to a suffix
-        // being deleted. Just add it to the list.
-        if (!out.contains(current_suffix)) {
-            out.append(current_suffix);
-        }
-
-        const QString domain = adconfig->domain();
-        const QString domain_suffix = domain.toLower();
-        if (!out.contains(domain_suffix)) {
-            out.append(domain_suffix);
-        }
-
-        return out;
-    }();
-
-    suffix_combo->clear();
-    for (const QString &suffix : suffixes) {
-        suffix_combo->addItem(suffix);
+    // Select current suffix in suffix combo. Add current
+    // suffix to combo if it's not there already.
+    const int current_suffix_index = suffix_combo->findText(current_suffix);
+    if (current_suffix_index != -1) {
+        suffix_combo->setCurrentIndex(current_suffix_index);
+    } else {
+        suffix_combo->addItem(current_suffix);
+        
+        const int added_index = suffix_combo->findText(current_suffix);
+        suffix_combo->setCurrentIndex(added_index);
     }
-
-    const int current_suffix_index = suffixes.indexOf(current_suffix);
-    suffix_combo->setCurrentIndex(current_suffix_index);
     
     prefix_edit->setText(prefix);
 }

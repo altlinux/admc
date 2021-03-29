@@ -28,8 +28,8 @@
 
 // TODO: logon hours, logon computers
 
-AccountTab::AccountTab() {
-    auto upn_edit = new UpnEdit(&edits, this);
+AccountTab::AccountTab(AdInterface &ad) {
+    auto upn_edit = new UpnEdit(&edits, ad, this);
 
     auto unlock_edit = new UnlockEdit(&edits, this);
 

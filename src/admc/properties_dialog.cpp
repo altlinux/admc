@@ -165,7 +165,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     }
 
     if (object.is_class(CLASS_USER)) {
-        add_tab(new AccountTab(), tr("Account"));
+        add_tab(new AccountTab(ad), tr("Account"));
         add_tab(new AddressTab(), tr("Address"));
         add_tab(new OrganizationTab(), tr("Organization"));
         add_tab(new TelephonesTab(), tr("Telephones"));

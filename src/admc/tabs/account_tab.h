@@ -22,11 +22,13 @@
 
 #include "tabs/properties_tab.h"
 
+class AdInterface;
+
 class AccountTab final : public PropertiesTab {
 Q_OBJECT
 
 public:
-    AccountTab();
+    AccountTab(AdInterface &ad);
     
 };
 

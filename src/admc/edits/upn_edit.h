@@ -24,11 +24,12 @@
 
 class QLineEdit;
 class QComboBox;
+class AdInterface;
 
 class UpnEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    UpnEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
+    UpnEdit(QList<AttributeEdit *> *edits_out, AdInterface &ad, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
     QString get_input() const;
