@@ -28,6 +28,7 @@
 #include <QByteArray> 
 #include <QList> 
 #include <QCoreApplication>
+#include <algorithm>
 
 const qint64 SECONDS_TO_MILLIS  = 1000LL;
 const qint64 MINUTES_TO_SECONDS = 60LL;
@@ -217,31 +218,42 @@ QString timespan_display_value(const QByteArray &bytes) {
     return display;
 }
 
-// To match how ADUC displays GUID's, need to swap
-// some bytes and insert hyphens
-// TODO: no idea what the logic behind these byte swaps is, figure it out
 QString guid_to_display_value(const QByteArray &bytes) {
-    QByteArray out = bytes;
+    // NOTE: have to do some weird pre-processing to match
+    // how Windows displays GUID's. The GUID is broken down
+    // into 5 segments, each separated by '-':
+    // "0000-11-22-33-444444". Byte order for first 3
+    // segments is also reversed (why?), so reverse it again
+    // for display.
+    const int segments_count = 5;
+    QByteArray segments[segments_count];
+    segments[0] = bytes.mid(0, 4);
+    segments[1] = bytes.mid(4, 2);
+    segments[2] = bytes.mid(6, 2);
+    segments[3] = bytes.mid(8, 2);
+    segments[4] = bytes.mid(10, 6);
+    std::reverse(segments[0].begin(), segments[0].end());
+    std::reverse(segments[1].begin(), segments[1].end());
+    std::reverse(segments[2].begin(), segments[2].end());
 
-    const auto swap_bytes =
-    [&out, bytes](const int a, const int b) {
-        out[a] = bytes[b];
-        out[b] = bytes[a];
-    };
+    const QString guid_display_string =
+    [&]() {
+        QString out;
 
-    swap_bytes(0, 3);
-    swap_bytes(1, 2);
-    swap_bytes(4, 5);
-    swap_bytes(6, 7);
+        for (int i = 0; i < segments_count; i++) {
+            const QByteArray segment = segments[i];
 
-    out = out.toHex();
+            if (i > 0) {
+                out += '-';
+            }
 
-    out.insert(20, '-');
-    out.insert(16, '-');
-    out.insert(12, '-');
-    out.insert(8, '-');
+            out += segment.toHex();
+        }
 
-    return QString(out);
+        return out;
+    }();
+
+    return guid_display_string;
 }
 
 QString octet_display_value(const QByteArray &bytes) {
