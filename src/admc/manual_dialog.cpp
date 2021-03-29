@@ -30,6 +30,7 @@
 #include <QStandardPaths>
 #include <QSplitter>
 #include <QVBoxLayout>
+#include <QCoreApplication>
 
 ManualDialog::ManualDialog(QWidget *parent)
 : QDialog(parent)
