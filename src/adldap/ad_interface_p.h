@@ -33,7 +33,6 @@ Q_DECLARE_TR_FUNCTIONS(AdInterfacePrivate)
     
 public:
     AdInterfacePrivate();
-    ~AdInterfacePrivate();
 
     static AdConfig *s_adconfig;
     AdConfig *adconfig;
