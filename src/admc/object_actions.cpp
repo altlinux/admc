@@ -225,6 +225,11 @@ QList<QString> object_delete(const QList<QString> &targets, QWidget *parent) {
         return QList<QString>();
     }
 
+    const bool confirmed = confirmation_dialog(QCoreApplication::translate("ObjectActions", "Are you sure you want to delete this object?"), parent);
+    if (!confirmed) {
+        return QList<QString>();
+    }
+
     QList<QString> deleted_objects;
 
     AdInterface ad;
