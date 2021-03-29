@@ -385,11 +385,6 @@ void CentralWidget::create_group() {
     create_helper(CLASS_GROUP);
 }
 
-// TODO: not sure if partitions dn is always this.
-// Technically, should get the Configuration from
-// namingcontexts from rootdse because it might be
-// different? idk. Haven't figured out how to access
-// namingcontexts yet
 void CentralWidget::edit_upn_suffixes() {
     AdInterface ad;
     if (ad_failed(ad)) {
@@ -408,7 +403,7 @@ void CentralWidget::edit_upn_suffixes() {
     // When editor is accepted, update values of upn
     // suffixes
     connect(editor, &QDialog::accepted,
-    [this, editor, partitions_dn]() {
+        [this, editor, partitions_dn]() {
             AdInterface ad2;
             if (ad_failed(ad2)) {
                 return;
