@@ -52,6 +52,12 @@ ManualDialog::ManualDialog(QWidget *parent)
         return QStandardPaths::locate(QStandardPaths::GenericDataLocation, "admc.qch");
     }();
 
+    if (compressed_help_path.isEmpty()) {
+        qInfo() << "Failed to find manual file. Check that program was installed correctly. (If you are a developer and want to load uninstalled help file from source, set build type to debug.";
+
+        return;
+    }
+
     qDebug() << ".qhc = " << help_collection_path;
     qDebug() << ".qch = " << compressed_help_path;
 
