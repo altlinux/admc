@@ -787,7 +787,7 @@ bool AdInterface::user_set_primary_group(const QString &group_dn, const QString 
     }
 
     const QByteArray group_sid = group_object.get_value(ATTRIBUTE_OBJECT_SID);
-    const QString group_rid = extract_rid_from_sid(group_sid);
+    const QString group_rid = extract_rid_from_sid(group_sid, d->adconfig);
 
     const bool success = attribute_replace_string(user_dn, ATTRIBUTE_PRIMARY_GROUP_ID, group_rid, DoStatusMsg_No);
 
