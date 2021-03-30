@@ -164,6 +164,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_OTHER_FAX_NUMBER      "otherFacsimileTelephoneNumber"
 #define ATTRIBUTE_IP_PHONE              "ipPhone"
 #define ATTRIBUTE_OTHER_IP_PHONE        "otherIpPhone"
+#define ATTRIBUTE_UPN_SUFFIXES          "uPNSuffixes"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"

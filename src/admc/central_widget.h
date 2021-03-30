@@ -78,6 +78,7 @@ private slots:
     void create_computer();
     void create_ou();
     void create_group();
+    void edit_upn_suffixes();
 
     void fetch_scope_node(const QModelIndex &index);
     

@@ -51,6 +51,7 @@ public:
     QString domain_head() const;
     QString configuration_dn() const;
     QString schema_dn() const;
+    QString partitions_dn() const;
 
     QString get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const;
 

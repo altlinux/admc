@@ -76,6 +76,7 @@ cd BUILD
 %files test
 %_bindir/admc_test_object_menu
 %_bindir/admc_test_unlock_edit
+%_bindir/admc_test_upn_edit
 
 %files gpgui
 %_bindir/gpgui

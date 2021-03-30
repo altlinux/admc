@@ -77,6 +77,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/edits/datetime_edit.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/edits/gpoptions_edit.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/edits/manager_edit.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/edits/upn_edit.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/search_thread.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/status.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/console_widget/customize_columns_dialog.cpp
@@ -95,6 +96,7 @@ set(TEST_SOURCES
 set(TEST_TARGETS
     admc_test_object_menu
     admc_test_unlock_edit
+    admc_test_upn_edit
 )
 
 foreach(target ${TEST_TARGETS})

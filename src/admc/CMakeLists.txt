@@ -88,6 +88,7 @@ add_executable(admc
     edits/datetime_edit.cpp
     edits/gpoptions_edit.cpp
     edits/manager_edit.cpp
+    edits/upn_edit.cpp
 
     console_widget/console_widget.cpp
     console_widget/scope_model.cpp

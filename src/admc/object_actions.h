@@ -47,6 +47,7 @@ enum ObjectAction {
     ObjectAction_Rename,
     ObjectAction_Delete,
     ObjectAction_Move,
+    ObjectAction_EditUpnSuffixes,
 
     ObjectAction_LAST,
 };

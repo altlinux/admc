@@ -26,6 +26,8 @@
 #include <QTest>
 #include <QModelIndex>
 #include <QTreeView>
+#include <QMessageBox>
+#include <QTimer>
 
 #define PRINT_FOCUS_WIDGET_BEFORE_TAB false
 #define PRINT_FOCUS_WIDGET_AFTER_TAB false
@@ -173,5 +175,19 @@ void ADMCTest::wait_for_find_results_to_load(QTreeView *view) {
         QTest::qWait(1);
         timer++;
         QVERIFY2((timer < 1000), "Find results failed to load, took too long");
+    }
+}
+
+void ADMCTest::close_message_box_later() {
+    QTimer::singleShot(100, this, &ADMCTest::close_message_box_slot);
+}
+
+void ADMCTest::close_message_box_slot() {
+    const QList<QWidget *> top_widgets = QApplication::topLevelWidgets();
+    for (QWidget *widget : top_widgets) {
+        QMessageBox *message_box = qobject_cast<QMessageBox *>(widget);
+        if (message_box != nullptr) {
+            QTest::keyClick(message_box, Qt::Key_Enter);
+        }
     }
 }

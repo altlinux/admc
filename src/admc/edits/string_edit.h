@@ -40,7 +40,6 @@ public:
     QString get_input() const;
     void set_input(const QString &value);
     bool is_empty() const;
-    bool verify(AdInterface &ad, const QString &dn) const override;
 
 private:
     QLineEdit *edit;
@@ -48,8 +47,6 @@ private:
     QString objectClass;
 
     friend class StringOtherEdit;
-
-    QString get_new_value() const;
 };
 
 #endif /* STRING_EDIT_H */
