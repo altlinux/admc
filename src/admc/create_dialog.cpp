@@ -27,6 +27,7 @@
 #include "edits/group_type_edit.h"
 #include "edits/account_option_edit.h"
 #include "edits/password_edit.h"
+#include "edits/upn_edit.h"
 
 #include <QDebug>
 #include <QLineEdit>
@@ -36,10 +37,21 @@
 
 // TODO: implement checkbox for account option "User cannot change password". Can't just do it through UAC attribute bits.
 
+// TODO: not sure about how required_edits are done, maybe
+// just do this through verify()? Had to remove upnedit from
+// required_edits because that's a list of stringedits. Now upnedit checks that it's not empty in verify();
+
 CreateDialog::CreateDialog(const QList<QString> &targets, const QString &object_class_arg, QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
+
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        close();
+        
+        return;
+    }
     
     if (targets.size() != 1) {
         QDialog::close();
@@ -66,7 +78,7 @@ CreateDialog::CreateDialog(const QList<QString> &targets, const QString &object_
         auto first_name_edit = new StringEdit(ATTRIBUTE_FIRST_NAME, object_class, &all_edits, this);
         auto last_name_edit = new StringEdit(ATTRIBUTE_LAST_NAME, object_class, &all_edits, this);
         auto initials_edit = new StringEdit(ATTRIBUTE_INITIALS, object_class, &all_edits, this);
-        auto upn_edit = new StringEdit(ATTRIBUTE_USER_PRINCIPAL_NAME, object_class, &all_edits, this);
+        auto upn_edit = new UpnEdit(&all_edits, ad, this);
         auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
 
         pass_edit = new PasswordEdit(&all_edits, this);
@@ -83,7 +95,6 @@ CreateDialog::CreateDialog(const QList<QString> &targets, const QString &object_
 
         required_edits = {
             first_name_edit,
-            upn_edit,
             sama_edit,
         };
 
@@ -133,7 +144,7 @@ CreateDialog::CreateDialog(const QList<QString> &targets, const QString &object_
 
         // upn -> samaccount name
         QObject::connect(
-            upn_edit, &StringEdit::edited,
+            upn_edit, &UpnEdit::edited,
             [=] () {
                 const QString upn_input = upn_edit->get_input();
                 sama_edit->set_input(upn_input);

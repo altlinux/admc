@@ -25,9 +25,6 @@
 
 #include <QLineEdit>
 #include <QFormLayout>
-#include <QMessageBox>
-
-QString get_domain_as_email_suffix();
 
 void StringEdit::make_many(const QList<QString> attributes, const QString &objectClass, QList<AttributeEdit *> *edits_out, QObject *parent) {
     for (auto attribute : attributes) {
@@ -59,16 +56,13 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
 void StringEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const QString value =
     [=]() {
-        QString out = object.get_string(attribute);
-        if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
-            // Take "user" from "user@domain.com"
-            const int at_index = out.lastIndexOf('@');
-            out = out.left(at_index);
-        } else if (attribute == ATTRIBUTE_DN) {
-            out = dn_canonical(out);
-        }
+        const QString raw_value = object.get_string(attribute);
 
-        return out;
+        if (attribute == ATTRIBUTE_DN) {
+            return dn_canonical(raw_value);
+        } else {
+            return raw_value;
+        }
     }();
     
     edit->setText(value);
@@ -81,18 +75,7 @@ void StringEdit::set_read_only(const bool read_only) {
 void StringEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = adconfig->get_attribute_display_name(attribute, objectClass) + ":";
     
-    if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
-        const QString extra_edit_text = get_domain_as_email_suffix();
-        auto extra_edit = new QLineEdit();
-        extra_edit->setEnabled(false);
-        extra_edit->setText(extra_edit_text);
-
-        auto sublayout = new QHBoxLayout();
-        sublayout->addWidget(edit);
-        sublayout->addWidget(extra_edit);
-
-        layout->addRow(label_text, sublayout);
-    } else if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
+    if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
         const QString domain = adconfig->domain();
         
         const QString domain_name = domain.split(".")[0];
@@ -111,38 +94,8 @@ void StringEdit::add_to_layout(QFormLayout *layout) {
     }
 }
 
-bool StringEdit::verify(AdInterface &ad, const QString &dn) const {
-    const QString new_value = get_new_value();
-
-    if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
-        // Check that new upn is unique
-        // NOTE: filter has to also check that it's not the same object because of attribute edit weirdness. If user edits logon name, then retypes original, then applies, the edit will apply because it was modified by the user, even if the value didn't change. Without "not_object_itself", this check would determine that object's logon name conflicts with itself.
-        const QString filter =
-        [=]() {
-            const QString not_object_itself = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_DN, dn);
-            const QString same_upn = filter_CONDITION(Condition_Equals, ATTRIBUTE_USER_PRINCIPAL_NAME, new_value);
-
-            return filter_AND({same_upn, not_object_itself});
-        }();
-        const QList<QString> search_attributes;
-        const QString base = adconfig->domain_head();
-
-        const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All, base);
-
-        const bool upn_not_unique = (search_results.size() > 0);
-
-        if (upn_not_unique) {
-            const QString text = tr("The specified user logon name already exists.");
-            QMessageBox::warning(edit, tr("Error"), text);
-            return false;
-        }
-    }
-
-    return true;
-}
-
 bool StringEdit::apply(AdInterface &ad, const QString &dn) const {
-    const QString new_value = get_new_value();
+    const QString new_value = edit->text();
     const bool success = ad.attribute_replace_string(dn, attribute, new_value);
 
     return success;
@@ -162,19 +115,4 @@ bool StringEdit::is_empty() const {
     const QString text = edit->text();
 
     return text.isEmpty();
-}
-
-QString StringEdit::get_new_value() const {
-    if (attribute == ATTRIBUTE_USER_PRINCIPAL_NAME) {
-        // Get "user" from edit and combine into "user@domain.com"
-        return edit->text() + get_domain_as_email_suffix();
-    } else {
-        return edit->text();
-    }
-}
-
-// "DOMAIN.COM" => "@domain.com"
-QString get_domain_as_email_suffix() {
-    const QString domain = adconfig->domain();
-    return "@" + domain.toLower();
 }

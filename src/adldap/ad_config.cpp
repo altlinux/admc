@@ -294,11 +294,15 @@ QString AdConfig::domain_head() const {
 }
 
 QString AdConfig::configuration_dn() const {
-    return QString("CN=Configuration,%1").arg(d->domain_head);
+    return QString("CN=Configuration,%1").arg(domain_head());
 }
 
 QString AdConfig::schema_dn() const {
     return QString("CN=Schema,%1").arg(configuration_dn());
+}
+
+QString AdConfig::partitions_dn() const {
+    return QString("CN=Partitions,CN=Configuration,%1").arg(domain_head());
 }
 
 QString AdConfig::get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const {

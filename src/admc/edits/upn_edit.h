@@ -17,19 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACCOUNT_TAB_H
-#define ACCOUNT_TAB_H
+#ifndef UPN_EDIT_H
+#define UPN_EDIT_H
 
-#include "tabs/properties_tab.h"
+#include "attribute_edit.h"
 
+class QLineEdit;
+class QComboBox;
 class AdInterface;
 
-class AccountTab final : public PropertiesTab {
+class UpnEdit final : public AttributeEdit {
 Q_OBJECT
-
 public:
-    AccountTab(AdInterface &ad);
-    
+    UpnEdit(QList<AttributeEdit *> *edits_out, AdInterface &ad, QObject *parent);
+    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+
+    QString get_input() const;
+    bool verify(AdInterface &ad, const QString &dn) const override;
+
+private:
+    QLineEdit *prefix_edit;
+    QComboBox *suffix_combo;
+
+    friend class StringOtherEdit;
+
+    QString get_new_value() const;
 };
 
-#endif /* ACCOUNT_TAB_H */
+#endif /* UPN_EDIT_H */

@@ -17,19 +17,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACCOUNT_TAB_H
-#define ACCOUNT_TAB_H
+#ifndef ADMC_TEST_UPN_EDIT_H
+#define ADMC_TEST_UPN_EDIT_H
 
-#include "tabs/properties_tab.h"
+#include "admc_test.h"
 
-class AdInterface;
+class UpnEdit;
+class QLineEdit;
+class QComboBox;
 
-class AccountTab final : public PropertiesTab {
+class ADMCTestUpnEdit : public ADMCTest {
 Q_OBJECT
 
-public:
-    AccountTab(AdInterface &ad);
-    
+private slots:
+    void init() override;
+
+    void test_load();
+    void test_emit_edited();
+    void test_apply_suffix();
+    void test_apply_prefix();
+    void test_apply_prefix_and_suffix();
+    void test_reset();
+    void test_verify();
+
+private:
+    UpnEdit *upn_edit;
+    QLineEdit *prefix_edit;
+    QComboBox *suffix_edit;
+    QString dn;
+
+    QString get_upn();
+    QString get_current_upn();
+    bool edit_state_equals_to_server_state();
+    void change_suffix_in_edit();
 };
 
-#endif /* ACCOUNT_TAB_H */
+#endif /* ADMC_TEST_UPN_EDIT_H */
