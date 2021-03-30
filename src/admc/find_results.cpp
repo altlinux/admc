@@ -130,6 +130,10 @@ FindResults::FindResults()
 
 void FindResults::add_actions_to_action_menu(QMenu *menu) {
     object_actions->add_to_menu(menu);
+
+    menu->addSeparator();
+
+    menu->addAction(properties_action);
 }
 
 void FindResults::add_actions_to_view_menu(QMenu *menu) {

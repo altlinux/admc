@@ -31,11 +31,6 @@
 #include <QHeaderView>
 #include <QStandardItemModel>
 
-enum ContainerRole {
-    ContainerRole_DN = Qt::UserRole + 1,
-    ContainerRole_Fetched = Qt::UserRole + 2,
-};
-
 QStandardItem *make_container_node(const AdObject &object);
 
 SelectContainerDialog::SelectContainerDialog(QWidget *parent)

@@ -122,6 +122,14 @@ AdInterface::AdInterface(AdConfig *adconfig) {
 }
 
 AdInterface::~AdInterface() {
+    smbc_free_context(d->smbc, 0);
+
+    if (d->is_connected) {
+        ldap_unbind_ext(d->ld, NULL, NULL);
+    } else {
+        ldap_memfree(d->ld);
+    }
+
     delete d;
 }
 
@@ -131,16 +139,6 @@ void AdInterface::set_permanent_adconfig(AdConfig *adconfig) {
 
 AdInterfacePrivate::AdInterfacePrivate() {
 
-}
-
-AdInterfacePrivate::~AdInterfacePrivate() {
-    smbc_free_context(smbc, 0);
-
-    if (is_connected) {
-        ldap_unbind_ext(ld, NULL, NULL);
-    } else {
-        ldap_memfree(ld);
-    }
 }
 
 bool AdInterface::is_connected() const {

@@ -31,6 +31,11 @@ class QTreeView;
 class QModelIndex;
 class QStandardItemModel;
 
+enum ContainerRole {
+    ContainerRole_DN = Qt::UserRole + 1,
+    ContainerRole_Fetched = Qt::UserRole + 2,
+};
+
 class SelectContainerDialog : public QDialog {
 Q_OBJECT
 

@@ -45,5 +45,6 @@ void load_object_row(const QList<QStandardItem *> row, const AdObject &object);
 void load_object_item_data(QStandardItem *item, const AdObject &object);
 QList<QString> object_model_header_labels();
 QList<int> object_model_default_columns();
+QList<QString> object_model_search_attributes();
 
 #endif /* OBJECT_MODEL_H */

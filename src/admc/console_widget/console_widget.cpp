@@ -43,36 +43,42 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
 : QObject(q_arg)
 {
     q = q_arg;
+}
 
-    scope_view = new QTreeView();
-    scope_view->setHeaderHidden(true);
-    scope_view->setExpandsOnDoubleClick(true);
-    scope_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    scope_view->setContextMenuPolicy(Qt::CustomContextMenu);
-    scope_view->setDragDropMode(QAbstractItemView::DragDrop);
+ConsoleWidget::ConsoleWidget(QWidget *parent)
+: QWidget(parent)
+{
+    d = new ConsoleWidgetPrivate(this);
+
+    d->scope_view = new QTreeView();
+    d->scope_view->setHeaderHidden(true);
+    d->scope_view->setExpandsOnDoubleClick(true);
+    d->scope_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    d->scope_view->setContextMenuPolicy(Qt::CustomContextMenu);
+    d->scope_view->setDragDropMode(QAbstractItemView::DragDrop);
     // NOTE: this makes it so that you can't drag drop between rows (even though name/description don't say anything about that)
-    scope_view->setDragDropOverwriteMode(true);
+    d->scope_view->setDragDropOverwriteMode(true);
 
-    scope_model = new ScopeModel(this);
-    scope_view->setModel(scope_model);
+    d->scope_model = new ScopeModel(this);
+    d->scope_view->setModel(d->scope_model);
 
-    focused_view = scope_view;
+    d->focused_view = d->scope_view;
 
-    results_proxy_model = new QSortFilterProxyModel(this);
+    d->results_proxy_model = new QSortFilterProxyModel(this);
 
-    description_bar = new QLabel();
+    d->description_bar = new QLabel();
 
-    results_stacked_widget = new QStackedWidget();
+    d->results_stacked_widget = new QStackedWidget();
 
-    properties_action = new QAction(tr("&Properties"), this);
-    navigate_up_action = new QAction(tr("&Up one level"), this);
-    navigate_back_action = new QAction(tr("&Back"), this);
-    navigate_forward_action = new QAction(tr("&Forward"), this);
-    refresh_action = new QAction(tr("&Refresh"), this);
-    customize_columns_action = new QAction(tr("&Customize columns"), this);
-    set_results_to_icons_action = new QAction(tr("&Icons"), this);
-    set_results_to_list_action = new QAction(tr("&List"), this);
-    set_results_to_detail_action = new QAction(tr("&Detail"), this);
+    d->properties_action = new QAction(tr("&Properties"), this);
+    d->navigate_up_action = new QAction(tr("&Up one level"), this);
+    d->navigate_back_action = new QAction(tr("&Back"), this);
+    d->navigate_forward_action = new QAction(tr("&Forward"), this);
+    d->refresh_action = new QAction(tr("&Refresh"), this);
+    d->customize_columns_action = new QAction(tr("&Customize columns"), this);
+    d->set_results_to_icons_action = new QAction(tr("&Icons"), this);
+    d->set_results_to_list_action = new QAction(tr("&List"), this);
+    d->set_results_to_detail_action = new QAction(tr("&Detail"), this);
 
     // NOTE: need to add a dummy view until a real view is
     // added when a scope item is selected. If this is not
@@ -80,67 +86,7 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
     // set to minimum which causes an incorrect ratio in the
     // scope/results splitter
     auto dummy_view = new QTreeView();
-    results_stacked_widget->addWidget(dummy_view);
-
-    connect(
-        scope_view, &QTreeView::expanded,
-        this, &ConsoleWidgetPrivate::fetch_scope);
-    connect(
-        scope_view->selectionModel(), &QItemSelectionModel::currentChanged,
-        this, &ConsoleWidgetPrivate::on_current_scope_item_changed);
-    connect(
-        scope_view->selectionModel(), &QItemSelectionModel::selectionChanged,
-        this, &ConsoleWidgetPrivate::on_selection_changed);
-    connect(
-        scope_model, &QStandardItemModel::rowsAboutToBeRemoved,
-        this, &ConsoleWidgetPrivate::on_scope_items_about_to_be_removed);
-    // TODO: for now properties are opened by user of console
-    // widget but in the future it's planned to move this stuff
-    // here, which will make this do more than just emit a
-    // signal.
-    connect(
-        properties_action, &QAction::triggered,
-        q, &ConsoleWidget::properties_requested);
-    connect(
-        navigate_up_action, &QAction::triggered,
-        this, &ConsoleWidgetPrivate::navigate_up);
-    connect(
-        navigate_back_action, &QAction::triggered,
-        this, &ConsoleWidgetPrivate::navigate_back);
-    connect(
-        navigate_forward_action, &QAction::triggered,
-        this, &ConsoleWidgetPrivate::navigate_forward);
-    connect(
-        refresh_action, &QAction::triggered,
-        this, &ConsoleWidgetPrivate::refresh);
-    connect(
-        customize_columns_action, &QAction::triggered,
-        this, &ConsoleWidgetPrivate::customize_columns);
-    connect(
-        set_results_to_icons_action, &QAction::triggered,
-        this, &ConsoleWidgetPrivate::set_results_to_icons);
-    connect(
-        set_results_to_list_action, &QAction::triggered,
-        this, &ConsoleWidgetPrivate::set_results_to_list);
-    connect(
-        set_results_to_detail_action, &QAction::triggered,
-        this, &ConsoleWidgetPrivate::set_results_to_detail);
-
-    connect(
-        scope_view, &QWidget::customContextMenuRequested,
-        this, &ConsoleWidgetPrivate::on_context_menu);
-
-    connect(
-        qApp, &QApplication::focusChanged,
-        this, &ConsoleWidgetPrivate::on_focus_changed);
-
-    connect_to_drag_model(scope_model);
-}
-
-ConsoleWidget::ConsoleWidget(QWidget *parent)
-: QWidget(parent)
-{
-    d = new ConsoleWidgetPrivate(this);
+    d->results_stacked_widget->addWidget(dummy_view);
 
     auto results_wrapper = new QWidget();
     auto results_layout = new QVBoxLayout();
@@ -161,6 +107,60 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     layout->setSpacing(0);
     setLayout(layout);
     layout->addWidget(splitter);
+
+    connect(
+        d->scope_view, &QTreeView::expanded,
+        d, &ConsoleWidgetPrivate::fetch_scope);
+    connect(
+        d->scope_view->selectionModel(), &QItemSelectionModel::currentChanged,
+        d, &ConsoleWidgetPrivate::on_current_scope_item_changed);
+    connect(
+        d->scope_view->selectionModel(), &QItemSelectionModel::selectionChanged,
+        d, &ConsoleWidgetPrivate::on_selection_changed);
+    connect(
+        d->scope_model, &QStandardItemModel::rowsAboutToBeRemoved,
+        d, &ConsoleWidgetPrivate::on_scope_items_about_to_be_removed);
+    // TODO: for now properties are opened by user of console
+    // widget but in the future it's planned to move this stuff
+    // here, which will make this do more than just emit a
+    // signal.
+    connect(
+        d->properties_action, &QAction::triggered,
+        this, &ConsoleWidget::properties_requested);
+    connect(
+        d->navigate_up_action, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::navigate_up);
+    connect(
+        d->navigate_back_action, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::navigate_back);
+    connect(
+        d->navigate_forward_action, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::navigate_forward);
+    connect(
+        d->refresh_action, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::refresh);
+    connect(
+        d->customize_columns_action, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::customize_columns);
+    connect(
+        d->set_results_to_icons_action, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::set_results_to_icons);
+    connect(
+        d->set_results_to_list_action, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::set_results_to_list);
+    connect(
+        d->set_results_to_detail_action, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::set_results_to_detail);
+
+    connect(
+        d->scope_view, &QWidget::customContextMenuRequested,
+        d, &ConsoleWidgetPrivate::on_context_menu);
+
+    connect(
+        qApp, &QApplication::focusChanged,
+        d, &ConsoleWidgetPrivate::on_focus_changed);
+
+    d->connect_to_drag_model(d->scope_model);
 
     d->update_navigation_actions();
     d->update_view_actions();

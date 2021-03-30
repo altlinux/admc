@@ -27,6 +27,7 @@
 #include "find_results.h"
 #include "select_container_dialog.h"
 #include "search_thread.h"
+#include "object_model.h"
 
 #include <QString>
 #include <QList>
@@ -160,7 +161,7 @@ void FindWidget::find() {
 
         return item_data.toString();
     }();
-    const QList<QString> search_attributes = adconfig->get_columns();
+    const QList<QString> search_attributes = object_model_search_attributes();
 
     auto find_thread = new SearchThread(filter, search_base, search_attributes);
 

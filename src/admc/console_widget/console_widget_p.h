@@ -91,6 +91,14 @@ public:
     QAction *set_results_to_detail_action;
     QAction *customize_columns_action;
 
+    QList<QModelIndex> dropped;
+
+    // NOTE: target history stores target items' id's.
+    // History lists are in order of ascending time.
+    // ... past.last() -> current -> future.first() ...
+    QList<QPersistentModelIndex> targets_past;
+    QList<QPersistentModelIndex> targets_future;
+
     ConsoleWidgetPrivate(ConsoleWidget *q_arg);
 
     QStandardItemModel *get_results_model_for_scope_item(const QModelIndex &index) const;
@@ -101,16 +109,6 @@ public:
     void on_context_menu(const QPoint pos);
     void update_navigation_actions();
     void update_view_actions();
-
-private:
-    QList<QModelIndex> dropped;
-
-    // NOTE: target history stores target items' id's.
-    // History lists are in order of ascending time.
-    // ... past.last() -> current -> future.first() ...
-    QList<QPersistentModelIndex> targets_past;
-    QList<QPersistentModelIndex> targets_future;
-
     void on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &);
     void on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last);
     void on_focus_changed(QWidget *old, QWidget *now);
