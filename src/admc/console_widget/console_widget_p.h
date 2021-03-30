@@ -33,7 +33,6 @@ class QStackedWidget;
 class ResultsDescription;
 class ScopeModel;
 class QStandardItemModel;
-class QSortFilterProxyModel;
 class ConsoleDragModel;
 class ConsoleWidget;
 class QMenu;
@@ -74,7 +73,6 @@ public:
     ScopeModel *scope_model;
     QLabel *description_bar;
     QAbstractItemView *focused_view;
-    QSortFilterProxyModel *results_proxy_model;
     QStackedWidget *results_stacked_widget;
     QHash<int, ResultsDescription> results_descriptions;
     QHash<QPersistentModelIndex, QStandardItemModel *> results_models;

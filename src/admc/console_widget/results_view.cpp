@@ -24,6 +24,7 @@
 #include <QHeaderView>
 #include <QVBoxLayout>
 #include <QStackedWidget>
+#include <QSortFilterProxyModel>
 
 ResultsView::ResultsView(QWidget *parent)
 : QWidget(parent)
@@ -50,6 +51,8 @@ ResultsView::ResultsView(QWidget *parent)
     views[ResultsViewType_List] = list_view;
     views[ResultsViewType_Detail] = m_detail_view;
 
+    proxy_model = new QSortFilterProxyModel(this);
+
     // Perform common setup on child views
     for (auto view : views.values()) {
         view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -57,6 +60,13 @@ ResultsView::ResultsView(QWidget *parent)
         view->setSelectionMode(QAbstractItemView::ExtendedSelection);
         view->setDragDropMode(QAbstractItemView::DragDrop);
         view->setDragDropOverwriteMode(true);
+
+        // NOTE: a proxy is model is inserted between
+        // results views and results models for more
+        // efficient sorting. If results views and models
+        // are connected directly, deletion of results
+        // models becomes extremely slow.
+        view->setModel(proxy_model);
     }
 
     stacked_widget = new QStackedWidget();
@@ -78,18 +88,10 @@ ResultsView::ResultsView(QWidget *parent)
         connect(
             view, &QWidget::customContextMenuRequested,
             this, &ResultsView::context_menu);
-    }
 
-    set_view_type(ResultsViewType_Detail);
-}
-
-void ResultsView::set_model(QAbstractItemModel *model) {
-    for (auto view : views.values()) {
-        view->setModel(model);
-
-
-        // NOTE: selection model doesn't exist until view's
-        // model is set, so have to connect here
+        // NOTE: this must be called after view model is set
+        // to proxy. Before that selectionModel() doesn't
+        // exist
         connect(
             view->selectionModel(), &QItemSelectionModel::selectionChanged,
             this, &ResultsView::selection_changed);
@@ -97,15 +99,21 @@ void ResultsView::set_model(QAbstractItemModel *model) {
             view->selectionModel(), &QItemSelectionModel::currentChanged,
             this, &ResultsView::current_changed);
     }
+
+    set_view_type(ResultsViewType_Detail);
+}
+
+void ResultsView::set_model(QAbstractItemModel *model) {
+    proxy_model->setSourceModel(model);
 }
 
 void ResultsView::set_view_type(const ResultsViewType type) {
     QAbstractItemView *view = views[type];
 
-    // NOTE: m_current_view must be changed before
+    // NOTE: current view must be changed before
     // setCurrentWidget(), because that causes a focus
     // change
-    m_current_view = view;
+    m_current_view_type = type;
 
     stacked_widget->setCurrentWidget(view);
 
@@ -116,9 +124,36 @@ void ResultsView::set_view_type(const ResultsViewType type) {
 }
 
 QAbstractItemView *ResultsView::current_view() const {
-    return m_current_view;
+    return views[m_current_view_type];
+}
+
+ResultsViewType ResultsView::current_view_type() const {
+    return m_current_view_type;
 }
 
 QTreeView *ResultsView::detail_view() const {
     return m_detail_view;
+}
+
+QList<QModelIndex> ResultsView::get_selected_indexes() const {
+    const QList<QModelIndex> proxy_indexes =
+    [this]() {
+        QItemSelectionModel *selection_model = current_view()->selectionModel();
+
+        if (current_view_type() == ResultsViewType_Detail) {
+            return selection_model->selectedRows();
+        } else {
+            return selection_model->selectedIndexes();
+        }
+    }();
+
+    // NOTE: need to map from proxy to source indexes if
+    // focused view is results
+    QList<QModelIndex> source_indexes;
+    for (const QModelIndex &index : proxy_indexes) {
+        const QModelIndex source_index = proxy_model->mapToSource(index);
+        source_indexes.append(source_index);
+    }
+
+    return source_indexes;
 }

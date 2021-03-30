@@ -32,7 +32,6 @@
 #include <QAction>
 #include <QStack>
 #include <QSplitter>
-#include <QSortFilterProxyModel>
 #include <QStackedWidget>
 #include <QLabel>
 #include <QApplication>
@@ -63,8 +62,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->scope_view->setModel(d->scope_model);
 
     d->focused_view = d->scope_view;
-
-    d->results_proxy_model = new QSortFilterProxyModel(this);
 
     d->description_bar = new QLabel();
 
@@ -339,13 +336,6 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
     d->results_stacked_widget->addWidget(widget);
 
     if (view != nullptr) {
-        // NOTE: a proxy is model is inserted between
-        // results views and results models for more
-        // efficient sorting. If results views and models
-        // are connected directly, deletion of results
-        // models becomes extremely slow.
-        view->set_model(d->results_proxy_model);
-
         connect(
             view, &ResultsView::activated,
             d, &ConsoleWidgetPrivate::on_results_activated);
@@ -355,9 +345,8 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
 
         // Hide non-default results view columns. Note that
         // at creation, view header doesnt have any
-        // sections. Sections appear once a source model is
-        // set(proxy model doesnt count). Therefore we have
-        // to do this in the slot.
+        // sections. Sections appear once a model is set.
+        // Therefore we have to do this in the slot.
         QHeaderView *header = view->detail_view()->header();
         connect(
             header, &QHeaderView::sectionCountChanged,
@@ -397,22 +386,17 @@ void ConsoleWidget::set_description_bar_text(const QString &text) {
 }
 
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
-    const QList<QModelIndex> indexes = d->focused_view->selectionModel()->selectedRows(0);
+    ResultsView *results_view = d->get_current_results().view();
 
-    // NOTE: need to map from proxy to source indexes if
-    // focused view is results
-    const bool focused_is_results = (d->focused_view != d->scope_view);
-    if (focused_is_results) {
-        QList<QModelIndex> source_indexes;
-        
-        for (const QModelIndex &index : indexes) {
-            const QModelIndex source_index = d->results_proxy_model->mapToSource(index);
-            source_indexes.append(source_index);
-        }
+    const bool focused_scope = (d->focused_view == d->scope_view);
+    const bool focused_results = (results_view != nullptr && d->focused_view == results_view->current_view());
 
-        return source_indexes;
+    if (focused_scope) {
+        return d->scope_view->selectionModel()->selectedIndexes();
+    } else if (focused_results) {
+        return results_view->get_selected_indexes();
     } else {
-        return indexes;
+        return QList<QModelIndex>();
     }
 }
 
@@ -590,7 +574,7 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
     const bool results_view_exists = (results.view() != nullptr);
     if (results_view_exists) {
         QStandardItemModel *results_model = get_results_model_for_scope_item(current);
-        results_proxy_model->setSourceModel(results_model);
+        results.view()->set_model(results_model);
     }
 
     update_navigation_actions();
@@ -670,22 +654,12 @@ void ConsoleWidgetPrivate::refresh() {
 }
 
 void ConsoleWidgetPrivate::customize_columns() {
-    const QModelIndex current_scope = q->get_current_scope_item();
-
-    if (!current_scope.isValid()) {
-        return;
-    }
-
-    const int current_results_id = current_scope.data(ConsoleRole_ResultsId).toInt();
-    const ResultsDescription current_results = results_descriptions[current_results_id];
-
+    const ResultsDescription current_results = get_current_results();
     ResultsView *results_view = current_results.view();
-    if (results_view == nullptr) {
-        return;
+    if (results_view != nullptr) {
+        auto dialog = new CustomizeColumnsDialog(results_view->detail_view(), current_results.default_columns(), q);
+        dialog->open();
     }
-
-    auto dialog = new CustomizeColumnsDialog(results_view->detail_view(), current_results.default_columns(), q);
-    dialog->open();
 }
 
 // Set target to parent of current target
@@ -786,7 +760,10 @@ void ConsoleWidgetPrivate::set_results_to_detail() {
 
 void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
     const ResultsDescription results = get_current_results();
-    results.view()->set_view_type(type);
+    
+    if (results.view() != nullptr) {
+        results.view()->set_view_type(type);
+    }
 }
 
 // NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
@@ -841,10 +818,15 @@ void ConsoleWidget::add_actions_to_view_menu(QMenu *menu) {
 
 const ResultsDescription ConsoleWidgetPrivate::get_current_results() const {
     const QModelIndex current_scope = q->get_current_scope_item();
-    const int results_id = current_scope.data(ConsoleRole_ResultsId).toInt();
-    const ResultsDescription results = results_descriptions[results_id];
 
-    return results;
+    if (current_scope.isValid()) {
+        const int results_id = current_scope.data(ConsoleRole_ResultsId).toInt();
+        const ResultsDescription results = results_descriptions[results_id];
+
+        return results;
+    } else {
+        return ResultsDescription();
+    }
 }
 
 void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {

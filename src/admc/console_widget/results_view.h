@@ -37,6 +37,8 @@ class ResultsDescription;
 class QStackedWidget;
 class QAbstractItemView;
 class QAbstractItemModel;
+class QSortFilterProxyModel;
+class QModelIndex;
 
 enum ResultsViewType {
     ResultsViewType_Icons,
@@ -53,7 +55,13 @@ public:
     void set_model(QAbstractItemModel *model);
     void set_view_type(const ResultsViewType type);
     QAbstractItemView *current_view() const;
+    ResultsViewType current_view_type() const;
     QTreeView *detail_view() const;
+    
+    // Returns selected indexes in current view. If current
+    // view type is detail (QTreeView), then returns one
+    // index per selected row at column 0
+    QList<QModelIndex> get_selected_indexes() const;
 
 signals:
     void activated(const QModelIndex &index);
@@ -68,7 +76,8 @@ signals:
 private:
     QStackedWidget *stacked_widget;
     QHash<ResultsViewType, QAbstractItemView *> views;
-    QAbstractItemView *m_current_view;
+    QSortFilterProxyModel *proxy_model;
+    ResultsViewType m_current_view_type;
     QTreeView *m_detail_view;
 };
 

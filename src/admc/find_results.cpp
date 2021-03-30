@@ -57,12 +57,8 @@ FindResults::FindResults()
     const QList<QString> header_labels = object_model_header_labels();
     model->setHorizontalHeaderLabels(header_labels);
 
-    auto proxy_model = new QSortFilterProxyModel(this);
-
     view = new ResultsView(this);
-    view->set_model(proxy_model);
-
-    proxy_model->setSourceModel(model);
+    view->set_model(model);
 
     object_count_label = new QLabel();
 
