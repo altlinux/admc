@@ -101,6 +101,12 @@ void ResultsView::set_model(QAbstractItemModel *model) {
 
 void ResultsView::set_view_type(const ResultsViewType type) {
     QAbstractItemView *view = views[type];
+
+    // NOTE: m_current_view must be changed before
+    // setCurrentWidget(), because that causes a focus
+    // change
+    m_current_view = view;
+
     stacked_widget->setCurrentWidget(view);
 
     // Clear selection since view type changed
@@ -110,7 +116,7 @@ void ResultsView::set_view_type(const ResultsViewType type) {
 }
 
 QAbstractItemView *ResultsView::current_view() const {
-    return m_detail_view;
+    return m_current_view;
 }
 
 QTreeView *ResultsView::detail_view() const {
