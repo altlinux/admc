@@ -33,7 +33,7 @@ void ADMCTestUpnEdit::init() {
 
     // Embed unlock edit in parent widget
     QList<AttributeEdit *> edits;
-    upn_edit = new UpnEdit(&edits, parent_widget);
+    upn_edit = new UpnEdit(&edits, ad, parent_widget);
     auto layout = new QFormLayout();
     parent_widget->setLayout(layout);
     upn_edit->add_to_layout(layout);
