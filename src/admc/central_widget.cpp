@@ -73,6 +73,10 @@ CentralWidget::CentralWidget()
     auto rename_policy_action = new QAction(tr("Rename"));
     auto delete_policy_action = new QAction(tr("Delete"));
 
+    // NOTE: create policy action is not added to list
+    // because it is shown for the policies container, not
+    // for gpo's themselves.
+    
     // NOTE: add policy actions to this list so that they
     // are processed
     policy_actions = {
