@@ -88,6 +88,7 @@ private slots:
     void edit_upn_suffixes();
 
     void rename_policy();
+    void delete_policy();
 
     void fetch_scope_node(const QModelIndex &index);
     
@@ -103,7 +104,7 @@ private:
 
     ObjectActions *object_actions;
 
-    QAction *rename_policy_action;
+    QList<QAction *> policy_actions;
 
     QAction *open_filter_action;
     QAction *show_noncontainers_action;

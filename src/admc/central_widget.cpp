@@ -39,6 +39,7 @@
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 #include "editors/multi_editor.h"
+#include "gplink.h"
 
 #include <QDebug>
 #include <QAbstractItemView>
@@ -68,7 +69,15 @@ CentralWidget::CentralWidget()
 {
     object_actions = new ObjectActions(this);
 
-    rename_policy_action = new QAction(tr("Rename"));
+    auto rename_policy_action = new QAction(tr("Rename"));
+    auto delete_policy_action = new QAction(tr("Delete"));
+    
+    // NOTE: add policy actions to this list so that they
+    // are processed
+    policy_actions = {
+        rename_policy_action,
+        delete_policy_action,
+    };
 
     open_filter_action = new QAction(tr("&Filter objects"));
     dev_mode_action = new QAction(tr("Dev mode"));
@@ -165,6 +174,9 @@ CentralWidget::CentralWidget()
     connect(
         rename_policy_action, &QAction::triggered,
         this, &CentralWidget::rename_policy);
+    connect(
+        delete_policy_action, &QAction::triggered,
+        this, &CentralWidget::delete_policy);
 
     connect(
         console_widget, &ConsoleWidget::current_scope_item_changed,
@@ -478,6 +490,55 @@ void CentralWidget::rename_policy() {
         });
 }
 
+void CentralWidget::delete_policy() {
+    const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
+
+    if (selected.size() == 0) {
+        return;
+    }
+
+    const bool confirmed = confirmation_dialog(tr("Are you sure you want to delete this policy and all of it's links?"), this);
+    if (!confirmed) {
+        return;
+    }
+
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    for (const QModelIndex &index : selected) {
+        const QString dn = index.data(PolicyRole_DN).toString();
+        const bool success = ad.object_delete(dn);
+
+        if (success) {
+            // Remove deleted policy from console
+            console_widget->delete_item(index);
+
+            // Remove links to delete policy
+            const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, dn);
+            const QList<QString> search_attributes = {
+                ATTRIBUTE_GPLINK,
+            };
+            const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
+            for (const AdObject &object : search_results.values()) {
+                const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
+                Gplink gplink = Gplink(gplink_string);
+                gplink.remove(dn);
+
+                const QString updated_gplink_string = gplink.to_string();
+                ad.attribute_replace_string(object.get_dn(), ATTRIBUTE_GPLINK, updated_gplink_string);
+            }
+        }
+    }
+
+    hide_busy_indicator();
+
+    STATUS()->display_ad_messages(ad, this);
+}
+
 // NOTE: only check if object can be dropped if dropping a
 // single object, because when dropping multiple objects it
 // is ok for some objects to successfully drop and some to
@@ -566,7 +627,9 @@ void CentralWidget::update_description_bar() {
 void CentralWidget::add_actions_to_action_menu(QMenu *menu) {
     object_actions->add_to_menu(menu);
 
-    menu->addAction(rename_policy_action);
+    for (QAction *action : policy_actions) {
+        menu->addAction(action);
+    }
 
     menu->addSeparator();
 
@@ -928,12 +991,16 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
 // First, hide all actions, then show whichever actions are
 // appropriate for current console selection
 void CentralWidget::update_actions_visibility() {
-    rename_policy_action->setVisible(false);
+    for (QAction *action : policy_actions) {
+        action->setVisible(false);
+    }
 
     const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
     
     if (indexes_are_of_type(selected_indexes, ItemType_Policy)) {
-        rename_policy_action->setVisible(true);
+        for (QAction *action : policy_actions) {
+            action->setVisible(true);
+        }
     }
 
     object_actions->update_actions_visibility(selected_indexes);
