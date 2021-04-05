@@ -87,6 +87,7 @@ private slots:
     void create_group();
     void edit_upn_suffixes();
 
+    void create_policy();
     void rename_policy();
     void delete_policy();
 
@@ -104,6 +105,7 @@ private:
 
     ObjectActions *object_actions;
 
+    QAction *create_policy_action;
     QList<QAction *> policy_actions;
 
     QAction *open_filter_action;

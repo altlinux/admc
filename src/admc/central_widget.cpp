@@ -69,9 +69,10 @@ CentralWidget::CentralWidget()
 {
     object_actions = new ObjectActions(this);
 
+    create_policy_action = new QAction(tr("New policy"));
     auto rename_policy_action = new QAction(tr("Rename"));
     auto delete_policy_action = new QAction(tr("Delete"));
-    
+
     // NOTE: add policy actions to this list so that they
     // are processed
     policy_actions = {
@@ -172,6 +173,9 @@ CentralWidget::CentralWidget()
         this, &CentralWidget::edit_upn_suffixes);
 
     connect(
+        create_policy_action, &QAction::triggered,
+        this, &CentralWidget::create_policy);
+    connect(
         rename_policy_action, &QAction::triggered,
         this, &CentralWidget::rename_policy);
     connect(
@@ -234,7 +238,7 @@ void CentralWidget::go_online(AdInterface &ad) {
     // Add top policies item
     QStandardItem *policies_item = console_widget->add_scope_item(policies_results_id, ScopeNodeType_Static, QModelIndex());
     policies_item->setText(tr("Group Policy Objects"));
-    policies_index = QPersistentModelIndex(item->index());
+    policies_index = QPersistentModelIndex(policies_item->index());
     policies_item->setDragEnabled(false);
     policies_item->setIcon(QIcon::fromTheme("folder"));
 
@@ -460,6 +464,11 @@ void CentralWidget::edit_upn_suffixes() {
         });
 }
 
+void CentralWidget::create_policy() {
+    // TODO: implement using ad.create_gpo() (which is
+    // unfinished)
+}
+
 void CentralWidget::rename_policy() {
     const QList<QModelIndex> indexes = console_widget->get_selected_items();
     if (indexes.size() != 1) {
@@ -623,6 +632,8 @@ void CentralWidget::update_description_bar() {
 
 void CentralWidget::add_actions_to_action_menu(QMenu *menu) {
     object_actions->add_to_menu(menu);
+
+    menu->addAction(create_policy_action);
 
     for (QAction *action : policy_actions) {
         menu->addAction(action);
@@ -988,12 +999,27 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
 // First, hide all actions, then show whichever actions are
 // appropriate for current console selection
 void CentralWidget::update_actions_visibility() {
+    const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
+
+    // Show create policy action if clicked on "Policies"
+    // scope item
+    const bool create_policy_action_is_visible =
+    [&]() {
+        if (selected_indexes.size() != 1) {
+            return false;
+        }
+
+        const QModelIndex index = selected_indexes[0];
+        const bool is_policies_item = (index == policies_index);
+
+        return is_policies_item;
+    }();;
+    create_policy_action->setVisible(create_policy_action_is_visible);
+
     for (QAction *action : policy_actions) {
         action->setVisible(false);
     }
 
-    const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
-    
     if (indexes_are_of_type(selected_indexes, ItemType_Policy)) {
         for (QAction *action : policy_actions) {
             action->setVisible(true);
