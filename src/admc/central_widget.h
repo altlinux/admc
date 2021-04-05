@@ -45,6 +45,13 @@ class ResultsView;
 class ObjectActions;
 template <typename T> class QList;
 
+enum ItemType {
+    ItemType_DomainObject,
+    ItemType_Policy,
+
+    ItemType_LAST,
+};
+
 class CentralWidget final : public QWidget {
 Q_OBJECT
 
@@ -87,7 +94,9 @@ private slots:
 
 private:
     int object_results_id;
+    int policies_results_id;
     QPersistentModelIndex scope_head_index;
+    QPersistentModelIndex policies_index;
     FilterDialog *filter_dialog;
 
     ObjectActions *object_actions;

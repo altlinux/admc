@@ -23,6 +23,7 @@
 #include "settings.h"
 #include "utils.h"
 #include "status.h"
+#include "central_widget.h"
 
 #include <QStandardItemModel>
 
@@ -64,6 +65,8 @@ void load_object_row(const QList<QStandardItem *> row, const AdObject &object) {
 }
 
 void load_object_item_data(QStandardItem *item, const AdObject &object) {
+    item->setData(ItemType_DomainObject, ConsoleRole_Type);
+
     const QIcon icon = get_object_icon(object);
     item->setIcon(icon);
     

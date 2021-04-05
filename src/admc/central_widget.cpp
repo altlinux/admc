@@ -61,6 +61,10 @@ enum DropType {
 DropType get_object_drop_type(const QModelIndex &dropped, const QModelIndex &target);
 bool object_should_be_in_scope(const AdObject &object);
 
+void setup_policy_scope_item(QStandardItem *item, const AdObject &object);
+void setup_policy_results_row(const QList<QStandardItem *> &row, const AdObject &object);
+void setup_policy_item_data(QStandardItem *item, const AdObject &object);
+
 CentralWidget::CentralWidget()
 : QWidget()
 {
@@ -76,11 +80,16 @@ CentralWidget::CentralWidget()
     console_widget = new ConsoleWidget();
 
     object_results = new ResultsView(this);
-    object_results->detail_view()->header()->setDefaultSectionSize(200);
     // TODO: not sure how to do this. View headers dont even
     // have sections until their models are loaded.
     // SETTINGS()->setup_header_state(object_results->header(),
     // VariantSetting_ResultsHeader);
+
+    auto policies_results = new ResultsView(this);
+    policies_results->detail_view()->header()->setDefaultSectionSize(200);
+    const QList<QString> policies_results_columns = {{tr("Name")}};
+    const QList<int> policies_results_default_columns = {0};
+    policies_results_id = console_widget->register_results(policies_results, policies_results_columns, policies_results_default_columns);
     
     auto layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
@@ -196,6 +205,7 @@ void CentralWidget::go_online(AdInterface &ad) {
     // after going online
     object_results_id = console_widget->register_results(object_results, object_model_header_labels(), object_model_default_columns());
 
+    // Add top domain item
     const QString head_dn = adconfig->domain_head();
     const AdObject head_object = ad.search_object(head_dn);
 
@@ -206,6 +216,29 @@ void CentralWidget::go_online(AdInterface &ad) {
     setup_scope_item(item, head_object);
 
     console_widget->set_current_scope(item->index());
+
+    // Add top policies item
+    QStandardItem *policies_item = console_widget->add_scope_item(policies_results_id, ScopeNodeType_Static, QModelIndex());
+    policies_item->setText(tr("Group Policy Objects"));
+    policies_index = QPersistentModelIndex(item->index());
+    policies_item->setDragEnabled(false);
+
+    // Load policies items
+    const QList<QString> search_attributes = {ATTRIBUTE_DISPLAY_NAME};
+    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
+
+    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
+
+    for (const AdObject object : search_results.values()) {
+        QStandardItem *scope_item;
+        QList<QStandardItem *> results_row;
+        console_widget->add_buddy_scope_and_results(policies_results_id, ScopeNodeType_Static, policies_item->index(), &scope_item, &results_row);
+
+        setup_policy_scope_item(scope_item, object);
+        setup_policy_results_row(results_row, object);
+    }
+
+    console_widget->sort_scope();
 }
 
 void CentralWidget::open_filter() {
@@ -863,4 +896,29 @@ QList<QString> CentralWidget::get_selected_dns() {
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
 
     return selected.keys();
+}
+
+void setup_policy_scope_item(QStandardItem *item, const AdObject &object) {
+    const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
+
+    item->setText(display_name);
+
+    setup_policy_item_data(item, object);
+}
+
+void setup_policy_results_row(const QList<QStandardItem *> &row, const AdObject &object) {
+    const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
+
+    row[0]->setText(display_name);
+
+    setup_policy_item_data(row[0], object);
+
+    for (QStandardItem *item : row) {
+        item->setDragEnabled(false);
+    }
+}
+
+void setup_policy_item_data(QStandardItem *item, const AdObject &object) {
+    item->setIcon(QIcon::fromTheme("folder-templates"));
+    item->setData(ItemType_Policy, ConsoleRole_Type);
 }

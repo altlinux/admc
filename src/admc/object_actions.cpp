@@ -36,6 +36,7 @@
 #include "password_dialog.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
+#include "central_widget.h"
 
 #include <QMenu>
 #include <QModelIndex>
@@ -126,6 +127,10 @@ void ObjectActions::update_actions_visibility(const QList<QModelIndex> &selected
         action->setVisible(false);
     }
     new_menu->menuAction()->setVisible(false);
+
+    if (!indexes_are_of_type(selected_indexes, ItemType_DomainObject)) {
+        return;
+    }
 
     // Get info about selected objects from view
     const QList<QString> targets =

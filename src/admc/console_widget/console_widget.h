@@ -53,15 +53,18 @@ class QStandardItem;
 class QMenu;
 class QAbstractItemView;
 
-// NOTE: when implementing custom roles, make sure they do
-// not conflict with console roles, like this:
-//
-// enum YourRole {
-//     YourRole_First = ConsoleRole_LAST + 1,
-//     YourRole_Second = ConsoleRole_LAST + 2,
-//     ... 
-// };
 enum ConsoleRoleLast {
+    // Use this role to set and get item types
+    ConsoleRole_Type = Qt::UserRole + 19,
+
+    // NOTE: when implementing custom roles, make sure they do
+    // not conflict with console roles, like this:
+    //
+    // enum YourRole {
+    //     YourRole_First = ConsoleRole_LAST + 1,
+    //     YourRole_Second = ConsoleRole_LAST + 2,
+    //     ... 
+    // };
     ConsoleRole_LAST = Qt::UserRole + 20,
 };
 
@@ -223,5 +226,9 @@ signals:
 private:
     ConsoleWidgetPrivate *d;
 };
+
+// Returns true if all given indexes are of given type.
+// Returns false for empty lists.
+bool indexes_are_of_type(const QList<QModelIndex> &indexes, const int type);
 
 #endif /* CONSOLE_WIDGET_H */

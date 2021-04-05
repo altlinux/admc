@@ -838,3 +838,23 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
         emit q->item_fetched(index);
     }
 }
+
+bool indexes_are_of_type(const QList<QModelIndex> &indexes, const int type) {
+    if (indexes.isEmpty()) {
+        return false;
+    }
+
+    for (const QModelIndex &index : indexes) {
+        const QVariant type_variant = index.data(ConsoleRole_Type);
+        if (!type_variant.isValid()) {
+            return false;
+        }
+
+        const int this_type = type_variant.toInt();
+        if (this_type != type) {
+            return false;
+        }
+    }
+
+    return true;
+}

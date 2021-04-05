@@ -58,8 +58,10 @@ enum ConsoleRole {
 
     ConsoleRole_HasProperties = Qt::UserRole + 7,
 
-    // NOTE: don't go above ConsoleRole_LAST (defined in
-    // public header)
+    // NOTE: don't go above ConsoleRole_Type and
+    // ConsoleRole_LAST (defined in public header)
+    
+    // ConsoleRole_Type = Qt::UserRole + 19,
     // ConsoleRole_LAST = Qt::UserRole + 20
 };
 
