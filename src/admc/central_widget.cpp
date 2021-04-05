@@ -621,10 +621,17 @@ void CentralWidget::refresh_head() {
 void CentralWidget::update_description_bar() {
     const QString text =
     [this]() {
-        const int results_count = console_widget->get_current_results_count();
-        const QString out = tr("%n object(s)", "", results_count);
+        const QModelIndex current_scope = console_widget->get_current_scope_item();
+        const ItemType type = (ItemType) current_scope.data(ConsoleRole_Type).toInt();
 
-        return out;
+        if (type == ItemType_DomainObject) {
+            const int results_count = console_widget->get_current_results_count();
+            const QString out = tr("%n object(s)", "", results_count);
+
+            return out;
+        } else {
+            return QString();
+        }
     }();
 
     console_widget->set_description_bar_text(text);

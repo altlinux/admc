@@ -73,7 +73,9 @@ public:
 
     QTreeView *scope_view;
     ScopeModel *scope_model;
-    QLabel *description_bar;
+    QWidget *description_bar;
+    QLabel *description_bar_left;
+    QLabel *description_bar_right;
     QAbstractItemView *focused_view;
     QStackedWidget *results_stacked_widget;
     QHash<int, ResultsDescription> results_descriptions;

@@ -46,6 +46,7 @@ class ObjectActions;
 template <typename T> class QList;
 
 enum ItemType {
+    ItemType_Unassigned,
     ItemType_DomainObject,
     ItemType_Policy,
 

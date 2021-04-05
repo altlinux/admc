@@ -65,7 +65,10 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 
     d->focused_view = d->scope_view;
 
-    d->description_bar = new QLabel();
+    d->description_bar = new QWidget();
+    d->description_bar_left = new QLabel();
+    d->description_bar_right = new QLabel();
+    d->description_bar_left->setStyleSheet("font-weight: bold");
 
     d->results_stacked_widget = new QStackedWidget();
 
@@ -86,6 +89,15 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     // scope/results splitter
     auto dummy_view = new QTreeView();
     d->results_stacked_widget->addWidget(dummy_view);
+
+    auto description_layout = new QHBoxLayout();
+    description_layout->setContentsMargins(0, 0, 0, 0);
+    description_layout->setSpacing(0);
+    d->description_bar->setLayout(description_layout);
+    description_layout->addWidget(d->description_bar_left);
+    description_layout->addSpacing(10);
+    description_layout->addWidget(d->description_bar_right);
+    description_layout->addStretch(1);
 
     auto results_wrapper = new QWidget();
     auto results_layout = new QVBoxLayout();
@@ -382,9 +394,8 @@ void ConsoleWidget::set_description_bar_text(const QString &text) {
         return out;
     }();
 
-    const QString description = QString("%1 %2").arg(scope_name, text);
-
-    d->description_bar->setText(description);
+    d->description_bar_left->setText(scope_name);
+    d->description_bar_right->setText(text);
 }
 
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
