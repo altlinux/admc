@@ -80,8 +80,12 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/edits/upn_edit.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/search_thread.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/status.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_widget/console_widget.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_widget/scope_model.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/console_widget/customize_columns_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_widget/results_description.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/console_widget/results_view.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_widget/console_drag_model.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/object_actions.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/move_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/globals.cpp
