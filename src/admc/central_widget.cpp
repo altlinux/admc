@@ -20,6 +20,7 @@
 #include "central_widget.h"
 
 #include "object_model.h"
+#include "policy_model.h"
 #include "utils.h"
 #include "adldap.h"
 #include "properties_dialog.h"
@@ -34,6 +35,7 @@
 #include "move_dialog.h"
 #include "find_dialog.h"
 #include "password_dialog.h"
+#include "rename_policy_dialog.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 #include "editors/multi_editor.h"
@@ -61,14 +63,12 @@ enum DropType {
 DropType get_object_drop_type(const QModelIndex &dropped, const QModelIndex &target);
 bool object_should_be_in_scope(const AdObject &object);
 
-void setup_policy_scope_item(QStandardItem *item, const AdObject &object);
-void setup_policy_results_row(const QList<QStandardItem *> &row, const AdObject &object);
-void setup_policy_item_data(QStandardItem *item, const AdObject &object);
-
 CentralWidget::CentralWidget()
 : QWidget()
 {
     object_actions = new ObjectActions(this);
+
+    rename_policy_action = new QAction(tr("Rename"));
 
     open_filter_action = new QAction(tr("&Filter objects"));
     dev_mode_action = new QAction(tr("Dev mode"));
@@ -87,9 +87,7 @@ CentralWidget::CentralWidget()
 
     auto policies_results = new ResultsView(this);
     policies_results->detail_view()->header()->setDefaultSectionSize(200);
-    const QList<QString> policies_results_columns = {{tr("Name")}};
-    const QList<int> policies_results_default_columns = {0};
-    policies_results_id = console_widget->register_results(policies_results, policies_results_columns, policies_results_default_columns);
+    policies_results_id = console_widget->register_results(policies_results, policy_model_header_labels(), policy_model_default_columns());
     
     auto layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
@@ -165,6 +163,10 @@ CentralWidget::CentralWidget()
         this, &CentralWidget::edit_upn_suffixes);
 
     connect(
+        rename_policy_action, &QAction::triggered,
+        this, &CentralWidget::rename_policy);
+
+    connect(
         console_widget, &ConsoleWidget::current_scope_item_changed,
         this, &CentralWidget::update_description_bar);
     connect(
@@ -224,7 +226,7 @@ void CentralWidget::go_online(AdInterface &ad) {
     policies_item->setDragEnabled(false);
 
     // Load policies items
-    const QList<QString> search_attributes = {ATTRIBUTE_DISPLAY_NAME};
+    const QList<QString> search_attributes = policy_model_search_attributes();
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
 
     const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
@@ -449,6 +451,33 @@ void CentralWidget::edit_upn_suffixes() {
         });
 }
 
+void CentralWidget::rename_policy() {
+    const QList<QModelIndex> indexes = console_widget->get_selected_items();
+    if (indexes.size() != 1) {
+        return;
+    }
+
+    const QModelIndex index = indexes[0];
+    const QString dn = index.data(PolicyRole_DN).toString();
+
+    auto dialog = new RenamePolicyDialog(dn, this);
+    dialog->open();
+
+    connect(
+        dialog, &RenamePolicyDialog::accepted,
+        [=]() {
+            AdInterface ad;
+            if (ad_failed(ad)) {
+                return;
+            }
+
+            const AdObject updated_object = ad.search_object(dn);
+            update_policy_item(index, updated_object);
+
+            console_widget->sort_scope();
+        });
+}
+
 // NOTE: only check if object can be dropped if dropping a
 // single object, because when dropping multiple objects it
 // is ok for some objects to successfully drop and some to
@@ -536,6 +565,8 @@ void CentralWidget::update_description_bar() {
 
 void CentralWidget::add_actions_to_action_menu(QMenu *menu) {
     object_actions->add_to_menu(menu);
+
+    menu->addAction(rename_policy_action);
 
     menu->addSeparator();
 
@@ -775,6 +806,28 @@ void CentralWidget::update_console_item(const QModelIndex &index, const AdObject
     }
 }
 
+void CentralWidget::update_policy_item(const QModelIndex &index, const AdObject &object) {
+    auto update_helper =
+    [this, object](const QModelIndex &the_index) {
+        const bool is_scope = console_widget->is_scope_item(the_index);
+
+        if (is_scope) {
+            QStandardItem *scope_item = console_widget->get_scope_item(the_index);
+            setup_policy_scope_item(scope_item, object);
+        } else {
+            QList<QStandardItem *> results_row = console_widget->get_results_row(the_index);
+            setup_policy_results_row(results_row, object);
+        }
+    };
+
+    update_helper(index);
+
+    const QModelIndex buddy = console_widget->get_buddy(index);
+    if (buddy.isValid()) {
+        update_helper(buddy);
+    }
+}
+
 void CentralWidget::disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object) {
     const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
 
@@ -875,7 +928,14 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
 // First, hide all actions, then show whichever actions are
 // appropriate for current console selection
 void CentralWidget::update_actions_visibility() {
+    rename_policy_action->setVisible(false);
+
     const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
+    
+    if (indexes_are_of_type(selected_indexes, ItemType_Policy)) {
+        rename_policy_action->setVisible(true);
+    }
+
     object_actions->update_actions_visibility(selected_indexes);
 }
 
@@ -896,29 +956,4 @@ QList<QString> CentralWidget::get_selected_dns() {
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
 
     return selected.keys();
-}
-
-void setup_policy_scope_item(QStandardItem *item, const AdObject &object) {
-    const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
-
-    item->setText(display_name);
-
-    setup_policy_item_data(item, object);
-}
-
-void setup_policy_results_row(const QList<QStandardItem *> &row, const AdObject &object) {
-    const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
-
-    row[0]->setText(display_name);
-
-    setup_policy_item_data(row[0], object);
-
-    for (QStandardItem *item : row) {
-        item->setDragEnabled(false);
-    }
-}
-
-void setup_policy_item_data(QStandardItem *item, const AdObject &object) {
-    item->setIcon(QIcon::fromTheme("folder-templates"));
-    item->setData(ItemType_Policy, ConsoleRole_Type);
 }

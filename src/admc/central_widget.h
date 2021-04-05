@@ -87,6 +87,8 @@ private slots:
     void create_group();
     void edit_upn_suffixes();
 
+    void rename_policy();
+
     void fetch_scope_node(const QModelIndex &index);
     
     void on_items_can_drop(const QList<QModelIndex> &dropped, const QModelIndex &target, bool *ok);
@@ -101,6 +103,8 @@ private:
 
     ObjectActions *object_actions;
 
+    QAction *rename_policy_action;
+
     QAction *open_filter_action;
     QAction *show_noncontainers_action;
     QAction *dev_mode_action;
@@ -112,6 +116,7 @@ private:
     void add_object_to_console(const AdObject &object, const    QModelIndex &parent);
     void move_object_in_console(AdInterface &ad, const QPersistentModelIndex &old_index, const QString &new_parent_dn, const QPersistentModelIndex &new_parent_index);
     void update_console_item(const QModelIndex &index, const AdObject &object);
+    void update_policy_item(const QModelIndex &index, const AdObject &object);
     void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
     QList<QString> get_dns(const QList<QModelIndex> &indexes);
     void enable_disable_helper(const bool disabled);
