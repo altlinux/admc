@@ -361,12 +361,8 @@ void CentralWidget::move() {
             const QString new_parent_dn = dialog->get_selected();
             const QModelIndex new_parent_index =
             [=]() {
-                const QList<QModelIndex> search_results = console_widget->search_scope_by_role(ObjectRole_DN, new_parent_dn);
+                const QList<QModelIndex> search_results = console_widget->search_scope_by_role(ObjectRole_DN, new_parent_dn, ItemType_DomainObject);
 
-                // NOTE: there's a crazy bug possible here
-                // where a query item has some role with
-                // same index as ObjectRole_DN and it's
-                // value is also set to the same dn as target.
                 if (search_results.size() == 1) {
                     return search_results[0];
                 } else {

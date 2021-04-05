@@ -38,6 +38,8 @@
 #include <QMenu>
 #include <QHeaderView>
 
+QList<QModelIndex> filter_indexes_by_type(const QList<QModelIndex> &indexes, const int type);
+
 ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
 : QObject(q_arg)
 {
@@ -400,13 +402,15 @@ QList<QModelIndex> ConsoleWidget::get_selected_items() const {
     }
 }
 
-QList<QModelIndex> ConsoleWidget::search_scope_by_role(int role, const QVariant &value) const {
-    const QList<QModelIndex> matches = d->scope_model->match(d->scope_model->index(0, 0), role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+QList<QModelIndex> ConsoleWidget::search_scope_by_role(int role, const QVariant &value, const int type) const {
+    const QList<QModelIndex> all_matches = d->scope_model->match(d->scope_model->index(0, 0), role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+
+    const QList<QModelIndex> matches = filter_indexes_by_type(all_matches, type);
 
     return matches;
 }
 
-QList<QModelIndex> ConsoleWidget::search_results_by_role(int role, const QVariant &value) const {
+QList<QModelIndex> ConsoleWidget::search_results_by_role(int role, const QVariant &value, const int type) const {
     QList<QModelIndex> all_matches;
 
     for (QStandardItemModel *model : d->results_models.values()) {
@@ -415,7 +419,9 @@ QList<QModelIndex> ConsoleWidget::search_results_by_role(int role, const QVarian
         all_matches.append(matches);
     }
 
-    return all_matches;
+    const QList<QModelIndex> matches = filter_indexes_by_type(all_matches, type);
+
+    return matches;
 }
 
 QModelIndex ConsoleWidget::get_current_scope_item() const {
@@ -857,4 +863,25 @@ bool indexes_are_of_type(const QList<QModelIndex> &indexes, const int type) {
     }
 
     return true;
+}
+
+QList<QModelIndex> filter_indexes_by_type(const QList<QModelIndex> &indexes, const int type) {
+    if (type == -1) {
+        return indexes;
+    }
+
+    QList<QModelIndex> out;
+
+    for (const QModelIndex &index : indexes) {
+        const QVariant type_variant = index.data(ConsoleRole_Type);
+        if (type_variant.isValid()) {
+            const int this_type = type_variant.toInt();
+
+            if (this_type == type) {
+                out.append(index);
+            }
+        }
+    }
+
+    return out;
 }
