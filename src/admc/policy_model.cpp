@@ -55,7 +55,7 @@ void setup_policy_item_data(QStandardItem *item, const AdObject &object) {
 }
 
 QList<QString> policy_model_header_labels() {
-    return {QCoreApplication::tr("policy_model", "Name")};
+    return {QCoreApplication::translate("policy_model", "Name")};
 }
 
 QList<int> policy_model_default_columns() {

@@ -89,6 +89,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/object_actions.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/move_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/globals.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/select_policy_dialog.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/settings.cpp

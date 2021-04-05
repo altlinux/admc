@@ -20,7 +20,7 @@
 #include "tabs/group_policy_tab.h"
 #include "adldap.h"
 #include "utils.h"
-#include "select_dialog.h"
+#include "select_policy_dialog.h"
 #include "edits/gpoptions_edit.h"
 
 #include <QTreeView>
@@ -155,15 +155,12 @@ void GroupPolicyTab::on_context_menu(const QPoint pos) {
 }
 
 void GroupPolicyTab::on_add_button() {
-    auto dialog = new SelectDialog({CLASS_GP_CONTAINER}, SelectDialogMultiSelection_Yes, this);
-
-    const QString title = tr("Add policy link");
-    dialog->setWindowTitle(title);
+    auto dialog = new SelectPolicyDialog(this);
 
     connect(
-        dialog, &SelectDialog::accepted,
+        dialog, &SelectPolicyDialog::accepted,
         [this, dialog]() {
-            const QList<QString> selected = dialog->get_selected();
+            const QList<QString> selected = dialog->get_selected_dns();
             
             add_link(selected);
         });
