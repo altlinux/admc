@@ -109,6 +109,7 @@ GroupPolicyTab::GroupPolicyTab() {
 void GroupPolicyTab::load(AdInterface &ad, const AdObject &object) {
     const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
     gplink = Gplink(gplink_string);
+    original_gplink_string = gplink_string;
     
     reload_gplink();
     
@@ -119,9 +120,18 @@ bool GroupPolicyTab::apply(AdInterface &ad, const QString &target) {
     bool total_success = true;
 
     const QString gplink_string = gplink.to_string();
-    const bool replace_success = ad.attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
-    if (!replace_success) {
-        total_success = false;
+    
+    const bool gplink_changed = (gplink_string != original_gplink_string);
+    if (gplink_changed) {
+        const bool replace_success = ad.attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
+
+        if (!replace_success) {
+            total_success = false;
+        }
+
+        if (replace_success) {
+            original_gplink_string = gplink_string;
+        }
     }
 
     const bool apply_success = PropertiesTab::apply(ad, target);
