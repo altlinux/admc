@@ -236,6 +236,7 @@ void CentralWidget::go_online(AdInterface &ad) {
     policies_item->setText(tr("Group Policy Objects"));
     policies_index = QPersistentModelIndex(item->index());
     policies_item->setDragEnabled(false);
+    policies_item->setIcon(QIcon::fromTheme("folder"));
 
     // Load policies items
     const QList<QString> search_attributes = policy_model_search_attributes();
