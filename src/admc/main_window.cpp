@@ -87,17 +87,17 @@ void MainWindow::setup_menubar() {
     //
     // Create actions
     //
-    connect_action = new QAction(tr("&Connect"));
-    auto quit_action = new QAction(tr("&Quit"));
+    connect_action = new QAction(tr("&Connect"), this);
+    auto quit_action = new QAction(tr("&Quit"), this);
 
     auto manual_action = new QAction(tr("&Manual"), this);
     auto about_action = new QAction(tr("&About ADMC"), this);
 
-    auto advanced_features_action = new QAction(tr("&Advanced Features"));
+    auto advanced_features_action = new QAction(tr("&Advanced Features"), this);
     auto confirm_actions_action = new QAction(tr("&Confirm actions"), this);
     auto last_before_first_name_action = new QAction(tr("&Put last name before first name when creating users"), this);
-    auto toggle_console_tree_action = new QAction(tr("Console Tree"));
-    auto toggle_description_bar_action = new QAction(tr("Description Bar"));
+    auto toggle_console_tree_action = new QAction(tr("Console Tree"), this);
+    auto toggle_description_bar_action = new QAction(tr("Description Bar"), this);
 
     const QList<QLocale::Language> language_list = {
         QLocale::English,

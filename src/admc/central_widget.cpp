@@ -70,9 +70,9 @@ CentralWidget::CentralWidget()
 {
     object_actions = new ObjectActions(this);
 
-    create_policy_action = new QAction(tr("New policy"));
-    auto rename_policy_action = new QAction(tr("Rename"));
-    auto delete_policy_action = new QAction(tr("Delete"));
+    create_policy_action = new QAction(tr("New policy"), this);
+    auto rename_policy_action = new QAction(tr("Rename"), this);
+    auto delete_policy_action = new QAction(tr("Delete"), this);
 
     // NOTE: create policy action is not added to list
     // because it is shown for the policies container, not
@@ -85,9 +85,9 @@ CentralWidget::CentralWidget()
         delete_policy_action,
     };
 
-    open_filter_action = new QAction(tr("&Filter objects"));
-    dev_mode_action = new QAction(tr("Dev mode"));
-    show_noncontainers_action = new QAction(tr("&Show non-container objects in Console tree"));
+    open_filter_action = new QAction(tr("&Filter objects"), this);
+    dev_mode_action = new QAction(tr("Dev mode"), this);
+    show_noncontainers_action = new QAction(tr("&Show non-container objects in Console tree"), this);
 
     filter_dialog = nullptr;
     open_filter_action->setEnabled(false);

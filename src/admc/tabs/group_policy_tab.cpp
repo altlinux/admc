@@ -291,5 +291,7 @@ void GroupPolicyTab::on_item_changed(QStandardItem *item) {
         gplink.set_option(gpo, option, is_checked);
 
         reload_gplink();
+
+        emit edited();
     }
 }
