@@ -50,7 +50,7 @@ FindResults::FindResults()
 {   
     object_actions = new ObjectActions(this);
 
-    properties_action = new QAction("&Properties");
+    properties_action = new QAction(tr("&Properties"), this);
 
     model = new QStandardItemModel(this);
 
