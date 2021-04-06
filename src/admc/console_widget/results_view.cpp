@@ -37,7 +37,8 @@ ResultsView::ResultsView(QWidget *parent)
     // tree, what about others? maybe have to sort the model
     m_detail_view->sortByColumn(0, Qt::AscendingOrder);
     m_detail_view->setSortingEnabled(true);
-
+    m_detail_view->header()->setDefaultSectionSize(200);
+    
     auto list_view = new QListView();
     list_view->setViewMode(QListView::ListMode);
 
