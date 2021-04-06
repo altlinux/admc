@@ -25,8 +25,12 @@
  */
 
 #include <QWidget>
+#include <QString>
 
 class QModelIndex;
+class QTreeView;
+class QStandardItemModel;
+class QStandardItem;
 
 class PolicyResultsWidget final : public QWidget {
 Q_OBJECT
@@ -34,9 +38,16 @@ Q_OBJECT
 public:
     PolicyResultsWidget();
 
+    // Loads links for this policy. Nothing is done if given
+    // index is not a policy.
     void update(const QModelIndex &scope_index);
 
 private:
+    QTreeView *view;
+    QStandardItemModel *model;
+    QString gpo;
+
+    void on_item_changed(QStandardItem *item);
 
 };
 
