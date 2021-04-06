@@ -40,6 +40,7 @@
 #include "console_widget/results_view.h"
 #include "editors/multi_editor.h"
 #include "gplink.h"
+#include "policy_results_widget.h"
 
 #include <QDebug>
 #include <QAbstractItemView>
@@ -102,6 +103,9 @@ CentralWidget::CentralWidget()
     auto policies_results = new ResultsView(this);
     policies_results->detail_view()->header()->setDefaultSectionSize(200);
     policies_results_id = console_widget->register_results(policies_results, policy_model_header_labels(), policy_model_default_columns());
+    
+    policy_results_widget = new PolicyResultsWidget();
+    policy_links_results_id = console_widget->register_results(policy_results_widget);
     
     auto layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
@@ -188,7 +192,7 @@ CentralWidget::CentralWidget()
 
     connect(
         console_widget, &ConsoleWidget::current_scope_item_changed,
-        this, &CentralWidget::update_description_bar);
+        this, &CentralWidget::on_current_scope_changed);
     connect(
         console_widget, &ConsoleWidget::results_count_changed,
         this, &CentralWidget::update_description_bar);
@@ -255,7 +259,7 @@ void CentralWidget::go_online(AdInterface &ad) {
     for (const AdObject &object : search_results.values()) {
         QStandardItem *scope_item;
         QList<QStandardItem *> results_row;
-        console_widget->add_buddy_scope_and_results(policies_results_id, ScopeNodeType_Static, policies_item->index(), &scope_item, &results_row);
+        console_widget->add_buddy_scope_and_results(policy_links_results_id, ScopeNodeType_Static, policies_item->index(), &scope_item, &results_row);
 
         setup_policy_scope_item(scope_item, object);
         setup_policy_results_row(results_row, object);
@@ -610,6 +614,13 @@ void CentralWidget::on_items_dropped(const QList<QModelIndex> &dropped_list, con
     hide_busy_indicator();
 
     STATUS()->display_ad_messages(ad, nullptr);
+}
+
+void CentralWidget::on_current_scope_changed() {
+    const QModelIndex current_scope = console_widget->get_current_scope_item();
+    policy_results_widget->update(current_scope);
+
+    update_description_bar();
 }
 
 void CentralWidget::refresh_head() {

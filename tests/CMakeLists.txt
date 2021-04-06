@@ -41,6 +41,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/settings.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/policy_model.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/policy_results_widget.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/move_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/rename_dialog.cpp
