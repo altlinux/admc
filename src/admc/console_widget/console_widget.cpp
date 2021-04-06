@@ -654,7 +654,14 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
 
     if (new_focused_view != nullptr) {
         const ResultsDescription current_results = get_current_results();
-        QAbstractItemView *results_view = current_results.view()->current_view();
+        QAbstractItemView *results_view =
+        [=]() -> QAbstractItemView * {
+            if (current_results.view() != nullptr) {
+                return current_results.view()->current_view();
+            } else {
+                return nullptr;
+            }
+        }();
 
         if (new_focused_view == scope_view || new_focused_view == results_view) {
             focused_view = new_focused_view;
