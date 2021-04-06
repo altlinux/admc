@@ -38,8 +38,12 @@ Gplink::Gplink(const QString &gplink_string) {
             continue;
         }
 
-        QString gpo = part_split[0];
-        gpo.replace(LDAP_PREFIX, "", Qt::CaseSensitive);
+        QString gpo_case = part_split[0];
+        gpo_case.replace(LDAP_PREFIX, "", Qt::CaseSensitive);
+
+        const QString gpo = gpo_case.toLower();
+
+        gpo_case_map[gpo] = gpo_case;
 
         const QString option_string = part_split[1];
         const int option = option_string.toInt();
@@ -53,10 +57,11 @@ QString Gplink::to_string() const {
     QString gplink_string;
 
     for (auto gpo : gpos_in_order) {
+        const QString gpo_case = gpo_case_map[gpo];
         const int option = options[gpo];
         const QString option_string = QString::number(option);
 
-        const QString part = QString("[%1%2;%3]").arg(LDAP_PREFIX, gpo, option_string);
+        const QString part = QString("[%1%2;%3]").arg(LDAP_PREFIX, gpo_case, option_string);
         
         gplink_string += part;
     }
@@ -65,24 +70,35 @@ QString Gplink::to_string() const {
 }
 
 QList<QString> Gplink::get_gpos() const {
-    return gpos_in_order;
+    QList<QString> out;
+
+    for (const QString &gpo : gpos_in_order) {
+        const QString gpo_case = gpo_case_map[gpo];
+        out.append(gpo_case);
+    }
+
+    return out;
 }
 
-bool Gplink::contains(const QString &gpo) const {
-    return gpos_in_order.contains(gpo);
-}
-
-void Gplink::add(const QString &gpo) {
+void Gplink::add(const QString &gpo_case) {
+    const QString gpo = gpo_case.toLower();
+    
     gpos_in_order.append(gpo);
     options[gpo] = 0;
+    gpo_case_map[gpo] == gpo;
 }
 
-void Gplink::remove(const QString &gpo) {
+void Gplink::remove(const QString &gpo_case) {
+    const QString gpo = gpo_case.toLower();
+
     gpos_in_order.removeAll(gpo);
     options.remove(gpo);
+    gpo_case_map.remove(gpo);
 }
 
-void Gplink::move_up(const QString &gpo) {
+void Gplink::move_up(const QString &gpo_case) {
+    const QString gpo = gpo_case.toLower();
+    
     const int current_index = gpos_in_order.indexOf(gpo);
 
     if (current_index > 0) {
@@ -91,7 +107,9 @@ void Gplink::move_up(const QString &gpo) {
     }
 }
 
-void Gplink::move_down(const QString &gpo) {
+void Gplink::move_down(const QString &gpo_case) {
+    const QString gpo = gpo_case.toLower();
+    
     const int current_index = gpos_in_order.indexOf(gpo);
     
     if (current_index < gpos_in_order.size() - 1) {
@@ -101,15 +119,30 @@ void Gplink::move_down(const QString &gpo) {
     }
 }
 
-bool Gplink::get_option(const QString &gpo, const GplinkOption option) const {
+bool Gplink::get_option(const QString &gpo_case, const GplinkOption option) const {
+    const QString gpo = gpo_case.toLower();
+
     const int option_bits = options[gpo];
     const bool is_set = bit_is_set(option_bits, (int) option);
 
     return is_set;
 }
 
-void Gplink::set_option(const QString &gpo, const GplinkOption option, const bool value) {
+void Gplink::set_option(const QString &gpo_case, const GplinkOption option, const bool value) {
+    const QString gpo = gpo_case.toLower();
+
     const int option_bits = options[gpo];
     const int option_bits_new = bit_set(option_bits, (int) option, value);
     options[gpo] = option_bits_new;
+}
+
+bool Gplink::equals(const QString &other_string) const {
+    const QString a = to_string().toLower();
+    const QString b = other_string.toLower();
+
+    return (a == b);
+}
+
+bool Gplink::equals(const Gplink &other) const {
+    return equals(other.to_string());
 }
