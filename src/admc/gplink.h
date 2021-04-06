@@ -29,10 +29,14 @@ enum GplinkOption {
     GplinkOption_Enforced = 2
 };
 
-// Class to store a gplink attribute for easy manipulation.
-// Gplink attribute primer: an ordered list of GPO container DN's
-// with each GPO being assigned an "option" value.
-// Options specify whether policy is disabled and/or enforced
+/**
+ * Class to store a gplink attribute for easy manipulation.
+ * Gplink attribute primer: an ordered list of GPO container
+ * DN's with each GPO being assigned an "option" value.
+ * Options specify whether policy is disabled and/or
+ * enforced. Internal handling of DN's is case insensitive,
+ * but case is preserved for all output.
+ */
 
 class Gplink {
 public:
@@ -42,9 +46,6 @@ public:
     QString to_string() const;
     QList<QString> get_gpos() const;
     
-    // Call this before calling modify f-ns unless you're 100% sure gpo is there
-    bool contains(const QString &gpo) const;
-
     void add(const QString &gpo);
     void remove(const QString &gpo);
     void move_up(const QString &gpo);
@@ -53,9 +54,15 @@ public:
     bool get_option(const QString &gpo, const GplinkOption option) const;
     void set_option(const QString &gpo, const GplinkOption option, const bool value);
 
+    // NOTE: these must be used for comparison! Don't
+    // compare plain gplink strings!
+    bool equals(const QString &other_string) const;
+    bool equals(const Gplink &other) const;
+
 private:
     QList<QString> gpos_in_order;
     QHash<QString, int> options;
+    QHash<QString, QString> gpo_case_map;
 };
 
 #endif /* GPLINK_H */
