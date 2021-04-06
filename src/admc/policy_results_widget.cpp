@@ -170,7 +170,7 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
     gplink.set_option(gpo, option, is_checked);
     const QString updated_gplink_string = gplink.to_string();
 
-    const bool gplink_didnt_change = (updated_gplink_string == gplink_string);
+    const bool gplink_didnt_change = gplink.equals(gplink_string);
     if (gplink_didnt_change) {
         return;
     }
