@@ -20,6 +20,7 @@
 #include "central_widget.h"
 
 #include "object_model.h"
+#include "policy_model.h"
 #include "utils.h"
 #include "adldap.h"
 #include "properties_dialog.h"
@@ -34,9 +35,11 @@
 #include "move_dialog.h"
 #include "find_dialog.h"
 #include "password_dialog.h"
+#include "rename_policy_dialog.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 #include "editors/multi_editor.h"
+#include "gplink.h"
 
 #include <QDebug>
 #include <QAbstractItemView>
@@ -66,6 +69,21 @@ CentralWidget::CentralWidget()
 {
     object_actions = new ObjectActions(this);
 
+    create_policy_action = new QAction(tr("New policy"));
+    auto rename_policy_action = new QAction(tr("Rename"));
+    auto delete_policy_action = new QAction(tr("Delete"));
+
+    // NOTE: create policy action is not added to list
+    // because it is shown for the policies container, not
+    // for gpo's themselves.
+    
+    // NOTE: add policy actions to this list so that they
+    // are processed
+    policy_actions = {
+        rename_policy_action,
+        delete_policy_action,
+    };
+
     open_filter_action = new QAction(tr("&Filter objects"));
     dev_mode_action = new QAction(tr("Dev mode"));
     show_noncontainers_action = new QAction(tr("&Show non-container objects in Console tree"));
@@ -76,11 +94,14 @@ CentralWidget::CentralWidget()
     console_widget = new ConsoleWidget();
 
     object_results = new ResultsView(this);
-    object_results->detail_view()->header()->setDefaultSectionSize(200);
     // TODO: not sure how to do this. View headers dont even
     // have sections until their models are loaded.
     // SETTINGS()->setup_header_state(object_results->header(),
     // VariantSetting_ResultsHeader);
+
+    auto policies_results = new ResultsView(this);
+    policies_results->detail_view()->header()->setDefaultSectionSize(200);
+    policies_results_id = console_widget->register_results(policies_results, policy_model_header_labels(), policy_model_default_columns());
     
     auto layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
@@ -156,6 +177,16 @@ CentralWidget::CentralWidget()
         this, &CentralWidget::edit_upn_suffixes);
 
     connect(
+        create_policy_action, &QAction::triggered,
+        this, &CentralWidget::create_policy);
+    connect(
+        rename_policy_action, &QAction::triggered,
+        this, &CentralWidget::rename_policy);
+    connect(
+        delete_policy_action, &QAction::triggered,
+        this, &CentralWidget::delete_policy);
+
+    connect(
         console_widget, &ConsoleWidget::current_scope_item_changed,
         this, &CentralWidget::update_description_bar);
     connect(
@@ -196,6 +227,7 @@ void CentralWidget::go_online(AdInterface &ad) {
     // after going online
     object_results_id = console_widget->register_results(object_results, object_model_header_labels(), object_model_default_columns());
 
+    // Add top domain item
     const QString head_dn = adconfig->domain_head();
     const AdObject head_object = ad.search_object(head_dn);
 
@@ -206,6 +238,30 @@ void CentralWidget::go_online(AdInterface &ad) {
     setup_scope_item(item, head_object);
 
     console_widget->set_current_scope(item->index());
+
+    // Add top policies item
+    QStandardItem *policies_item = console_widget->add_scope_item(policies_results_id, ScopeNodeType_Static, QModelIndex());
+    policies_item->setText(tr("Group Policy Objects"));
+    policies_index = QPersistentModelIndex(policies_item->index());
+    policies_item->setDragEnabled(false);
+    policies_item->setIcon(QIcon::fromTheme("folder"));
+
+    // Load policies items
+    const QList<QString> search_attributes = policy_model_search_attributes();
+    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
+
+    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
+
+    for (const AdObject &object : search_results.values()) {
+        QStandardItem *scope_item;
+        QList<QStandardItem *> results_row;
+        console_widget->add_buddy_scope_and_results(policies_results_id, ScopeNodeType_Static, policies_item->index(), &scope_item, &results_row);
+
+        setup_policy_scope_item(scope_item, object);
+        setup_policy_results_row(results_row, object);
+    }
+
+    console_widget->sort_scope();
 }
 
 void CentralWidget::open_filter() {
@@ -313,12 +369,8 @@ void CentralWidget::move() {
             const QString new_parent_dn = dialog->get_selected();
             const QModelIndex new_parent_index =
             [=]() {
-                const QList<QModelIndex> search_results = console_widget->search_scope_by_role(ObjectRole_DN, new_parent_dn);
+                const QList<QModelIndex> search_results = console_widget->search_scope_by_role(ObjectRole_DN, new_parent_dn, ItemType_DomainObject);
 
-                // NOTE: there's a crazy bug possible here
-                // where a query item has some role with
-                // same index as ObjectRole_DN and it's
-                // value is also set to the same dn as target.
                 if (search_results.size() == 1) {
                     return search_results[0];
                 } else {
@@ -416,6 +468,87 @@ void CentralWidget::edit_upn_suffixes() {
         });
 }
 
+void CentralWidget::create_policy() {
+    // TODO: implement using ad.create_gpo() (which is
+    // unfinished)
+}
+
+void CentralWidget::rename_policy() {
+    const QList<QModelIndex> indexes = console_widget->get_selected_items();
+    if (indexes.size() != 1) {
+        return;
+    }
+
+    const QModelIndex index = indexes[0];
+    const QString dn = index.data(PolicyRole_DN).toString();
+
+    auto dialog = new RenamePolicyDialog(dn, this);
+    dialog->open();
+
+    connect(
+        dialog, &RenamePolicyDialog::accepted,
+        [=]() {
+            AdInterface ad;
+            if (ad_failed(ad)) {
+                return;
+            }
+
+            const AdObject updated_object = ad.search_object(dn);
+            update_policy_item(index, updated_object);
+
+            console_widget->sort_scope();
+        });
+}
+
+void CentralWidget::delete_policy() {
+    const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
+
+    if (selected.size() == 0) {
+        return;
+    }
+
+    const bool confirmed = confirmation_dialog(tr("Are you sure you want to delete this policy and all of it's links?"), this);
+    if (!confirmed) {
+        return;
+    }
+
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    for (const QModelIndex &index : selected) {
+        const QString dn = index.data(PolicyRole_DN).toString();
+        const bool success = ad.object_delete(dn);
+
+        if (success) {
+            // Remove deleted policy from console
+            console_widget->delete_item(index);
+
+            // Remove links to delete policy
+            const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, dn);
+            const QList<QString> search_attributes = {
+                ATTRIBUTE_GPLINK,
+            };
+            const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
+            for (const AdObject &object : search_results.values()) {
+                const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
+                Gplink gplink = Gplink(gplink_string);
+                gplink.remove(dn);
+
+                const QString updated_gplink_string = gplink.to_string();
+                ad.attribute_replace_string(object.get_dn(), ATTRIBUTE_GPLINK, updated_gplink_string);
+            }
+        }
+    }
+
+    hide_busy_indicator();
+
+    STATUS()->display_ad_messages(ad, this);
+}
+
 // NOTE: only check if object can be dropped if dropping a
 // single object, because when dropping multiple objects it
 // is ok for some objects to successfully drop and some to
@@ -492,10 +625,17 @@ void CentralWidget::refresh_head() {
 void CentralWidget::update_description_bar() {
     const QString text =
     [this]() {
-        const int results_count = console_widget->get_current_results_count();
-        const QString out = tr("%n object(s)", "", results_count);
+        const QModelIndex current_scope = console_widget->get_current_scope_item();
+        const ItemType type = (ItemType) current_scope.data(ConsoleRole_Type).toInt();
 
-        return out;
+        if (type == ItemType_DomainObject) {
+            const int results_count = console_widget->get_current_results_count();
+            const QString out = tr("%n object(s)", "", results_count);
+
+            return out;
+        } else {
+            return QString();
+        }
     }();
 
     console_widget->set_description_bar_text(text);
@@ -503,6 +643,12 @@ void CentralWidget::update_description_bar() {
 
 void CentralWidget::add_actions_to_action_menu(QMenu *menu) {
     object_actions->add_to_menu(menu);
+
+    menu->addAction(create_policy_action);
+
+    for (QAction *action : policy_actions) {
+        menu->addAction(action);
+    }
 
     menu->addSeparator();
 
@@ -742,6 +888,28 @@ void CentralWidget::update_console_item(const QModelIndex &index, const AdObject
     }
 }
 
+void CentralWidget::update_policy_item(const QModelIndex &index, const AdObject &object) {
+    auto update_helper =
+    [this, object](const QModelIndex &the_index) {
+        const bool is_scope = console_widget->is_scope_item(the_index);
+
+        if (is_scope) {
+            QStandardItem *scope_item = console_widget->get_scope_item(the_index);
+            setup_policy_scope_item(scope_item, object);
+        } else {
+            QList<QStandardItem *> results_row = console_widget->get_results_row(the_index);
+            setup_policy_results_row(results_row, object);
+        }
+    };
+
+    update_helper(index);
+
+    const QModelIndex buddy = console_widget->get_buddy(index);
+    if (buddy.isValid()) {
+        update_helper(buddy);
+    }
+}
+
 void CentralWidget::disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object) {
     const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
 
@@ -843,6 +1011,32 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
 // appropriate for current console selection
 void CentralWidget::update_actions_visibility() {
     const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
+
+    // Show create policy action if clicked on "Policies"
+    // scope item
+    const bool create_policy_action_is_visible =
+    [&]() {
+        if (selected_indexes.size() != 1) {
+            return false;
+        }
+
+        const QModelIndex index = selected_indexes[0];
+        const bool is_policies_item = (index == policies_index);
+
+        return is_policies_item;
+    }();;
+    create_policy_action->setVisible(create_policy_action_is_visible);
+
+    for (QAction *action : policy_actions) {
+        action->setVisible(false);
+    }
+
+    if (indexes_are_of_type(selected_indexes, ItemType_Policy)) {
+        for (QAction *action : policy_actions) {
+            action->setVisible(true);
+        }
+    }
+
     object_actions->update_actions_visibility(selected_indexes);
 }
 

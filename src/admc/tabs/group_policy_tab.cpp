@@ -20,7 +20,7 @@
 #include "tabs/group_policy_tab.h"
 #include "adldap.h"
 #include "utils.h"
-#include "select_dialog.h"
+#include "select_policy_dialog.h"
 #include "edits/gpoptions_edit.h"
 
 #include <QTreeView>
@@ -109,6 +109,7 @@ GroupPolicyTab::GroupPolicyTab() {
 void GroupPolicyTab::load(AdInterface &ad, const AdObject &object) {
     const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
     gplink = Gplink(gplink_string);
+    original_gplink_string = gplink_string;
     
     reload_gplink();
     
@@ -119,9 +120,18 @@ bool GroupPolicyTab::apply(AdInterface &ad, const QString &target) {
     bool total_success = true;
 
     const QString gplink_string = gplink.to_string();
-    const bool replace_success = ad.attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
-    if (!replace_success) {
-        total_success = false;
+    
+    const bool gplink_changed = (gplink_string != original_gplink_string);
+    if (gplink_changed) {
+        const bool replace_success = ad.attribute_replace_string(target, ATTRIBUTE_GPLINK, gplink_string);
+
+        if (!replace_success) {
+            total_success = false;
+        }
+
+        if (replace_success) {
+            original_gplink_string = gplink_string;
+        }
     }
 
     const bool apply_success = PropertiesTab::apply(ad, target);
@@ -155,15 +165,12 @@ void GroupPolicyTab::on_context_menu(const QPoint pos) {
 }
 
 void GroupPolicyTab::on_add_button() {
-    auto dialog = new SelectDialog({CLASS_GP_CONTAINER}, SelectDialogMultiSelection_Yes, this);
-
-    const QString title = tr("Add policy link");
-    dialog->setWindowTitle(title);
+    auto dialog = new SelectPolicyDialog(this);
 
     connect(
-        dialog, &SelectDialog::accepted,
+        dialog, &SelectPolicyDialog::accepted,
         [this, dialog]() {
-            const QList<QString> selected = dialog->get_selected();
+            const QList<QString> selected = dialog->get_selected_dns();
             
             add_link(selected);
         });

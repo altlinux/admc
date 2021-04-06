@@ -45,6 +45,14 @@ class ResultsView;
 class ObjectActions;
 template <typename T> class QList;
 
+enum ItemType {
+    ItemType_Unassigned,
+    ItemType_DomainObject,
+    ItemType_Policy,
+
+    ItemType_LAST,
+};
+
 class CentralWidget final : public QWidget {
 Q_OBJECT
 
@@ -80,6 +88,10 @@ private slots:
     void create_group();
     void edit_upn_suffixes();
 
+    void create_policy();
+    void rename_policy();
+    void delete_policy();
+
     void fetch_scope_node(const QModelIndex &index);
     
     void on_items_can_drop(const QList<QModelIndex> &dropped, const QModelIndex &target, bool *ok);
@@ -87,10 +99,15 @@ private slots:
 
 private:
     int object_results_id;
+    int policies_results_id;
     QPersistentModelIndex scope_head_index;
+    QPersistentModelIndex policies_index;
     FilterDialog *filter_dialog;
 
     ObjectActions *object_actions;
+
+    QAction *create_policy_action;
+    QList<QAction *> policy_actions;
 
     QAction *open_filter_action;
     QAction *show_noncontainers_action;
@@ -103,6 +120,7 @@ private:
     void add_object_to_console(const AdObject &object, const    QModelIndex &parent);
     void move_object_in_console(AdInterface &ad, const QPersistentModelIndex &old_index, const QString &new_parent_dn, const QPersistentModelIndex &new_parent_index);
     void update_console_item(const QModelIndex &index, const AdObject &object);
+    void update_policy_item(const QModelIndex &index, const AdObject &object);
     void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
     QList<QString> get_dns(const QList<QModelIndex> &indexes);
     void enable_disable_helper(const bool disabled);

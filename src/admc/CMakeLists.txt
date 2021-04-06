@@ -34,6 +34,7 @@ add_executable(admc
     globals.cpp
     utils.cpp
     settings.cpp
+    policy_model.cpp
 
     move_dialog.cpp
     rename_dialog.cpp
@@ -44,7 +45,7 @@ add_executable(admc
     select_container_dialog.cpp
     about_dialog.cpp
     manual_dialog.cpp
-    policies_widget.cpp
+    select_policy_dialog.cpp
     gplink.cpp
 
     filter_widget/filter_widget.cpp

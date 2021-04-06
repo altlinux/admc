@@ -38,6 +38,8 @@
 #include <QMenu>
 #include <QHeaderView>
 
+QList<QModelIndex> filter_indexes_by_type(const QList<QModelIndex> &indexes, const int type);
+
 ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
 : QObject(q_arg)
 {
@@ -63,7 +65,10 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 
     d->focused_view = d->scope_view;
 
-    d->description_bar = new QLabel();
+    d->description_bar = new QWidget();
+    d->description_bar_left = new QLabel();
+    d->description_bar_right = new QLabel();
+    d->description_bar_left->setStyleSheet("font-weight: bold");
 
     d->results_stacked_widget = new QStackedWidget();
 
@@ -84,6 +89,15 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     // scope/results splitter
     auto dummy_view = new QTreeView();
     d->results_stacked_widget->addWidget(dummy_view);
+
+    auto description_layout = new QHBoxLayout();
+    description_layout->setContentsMargins(0, 0, 0, 0);
+    description_layout->setSpacing(0);
+    d->description_bar->setLayout(description_layout);
+    description_layout->addWidget(d->description_bar_left);
+    description_layout->addSpacing(10);
+    description_layout->addWidget(d->description_bar_right);
+    description_layout->addStretch(1);
 
     auto results_wrapper = new QWidget();
     auto results_layout = new QVBoxLayout();
@@ -380,9 +394,8 @@ void ConsoleWidget::set_description_bar_text(const QString &text) {
         return out;
     }();
 
-    const QString description = QString("%1 %2").arg(scope_name, text);
-
-    d->description_bar->setText(description);
+    d->description_bar_left->setText(scope_name);
+    d->description_bar_right->setText(text);
 }
 
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
@@ -400,13 +413,15 @@ QList<QModelIndex> ConsoleWidget::get_selected_items() const {
     }
 }
 
-QList<QModelIndex> ConsoleWidget::search_scope_by_role(int role, const QVariant &value) const {
-    const QList<QModelIndex> matches = d->scope_model->match(d->scope_model->index(0, 0), role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+QList<QModelIndex> ConsoleWidget::search_scope_by_role(int role, const QVariant &value, const int type) const {
+    const QList<QModelIndex> all_matches = d->scope_model->match(d->scope_model->index(0, 0), role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+
+    const QList<QModelIndex> matches = filter_indexes_by_type(all_matches, type);
 
     return matches;
 }
 
-QList<QModelIndex> ConsoleWidget::search_results_by_role(int role, const QVariant &value) const {
+QList<QModelIndex> ConsoleWidget::search_results_by_role(int role, const QVariant &value, const int type) const {
     QList<QModelIndex> all_matches;
 
     for (QStandardItemModel *model : d->results_models.values()) {
@@ -415,7 +430,9 @@ QList<QModelIndex> ConsoleWidget::search_results_by_role(int role, const QVarian
         all_matches.append(matches);
     }
 
-    return all_matches;
+    const QList<QModelIndex> matches = filter_indexes_by_type(all_matches, type);
+
+    return matches;
 }
 
 QModelIndex ConsoleWidget::get_current_scope_item() const {
@@ -844,4 +861,45 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
 
         emit q->item_fetched(index);
     }
+}
+
+bool indexes_are_of_type(const QList<QModelIndex> &indexes, const int type) {
+    if (indexes.isEmpty()) {
+        return false;
+    }
+
+    for (const QModelIndex &index : indexes) {
+        const QVariant type_variant = index.data(ConsoleRole_Type);
+        if (!type_variant.isValid()) {
+            return false;
+        }
+
+        const int this_type = type_variant.toInt();
+        if (this_type != type) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+QList<QModelIndex> filter_indexes_by_type(const QList<QModelIndex> &indexes, const int type) {
+    if (type == -1) {
+        return indexes;
+    }
+
+    QList<QModelIndex> out;
+
+    for (const QModelIndex &index : indexes) {
+        const QVariant type_variant = index.data(ConsoleRole_Type);
+        if (type_variant.isValid()) {
+            const int this_type = type_variant.toInt();
+
+            if (this_type == type) {
+                out.append(index);
+            }
+        }
+    }
+
+    return out;
 }

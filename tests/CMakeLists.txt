@@ -24,27 +24,43 @@ set(TEST_SOURCES
     admc_test.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/properties_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/main_window.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/status.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/object_model.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/select_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/object_actions.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/password_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/find_results.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/filter_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/find_widget.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/tab_widget.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/central_widget.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/search_thread.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/help_browser.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/globals.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/utils.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/settings.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/policy_model.cpp
+
+    ${PROJECT_SOURCE_DIR}/src/admc/move_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/rename_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/rename_policy_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/create_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/find_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/find_select_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/select_container_dialog.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/policies_widget.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/about_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/manual_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/select_policy_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/gplink.cpp
+
     ${PROJECT_SOURCE_DIR}/src/admc/filter_widget/filter_widget.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/filter_widget/filter_widget_simple_tab.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/filter_widget/filter_widget_normal_tab.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/filter_widget/filter_widget_advanced_tab.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/filter_widget/select_classes_widget.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/filter_widget/filter_builder.cpp
+    
     ${PROJECT_SOURCE_DIR}/src/admc/tabs/properties_tab.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/tabs/general_tab.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/tabs/object_tab.cpp
@@ -57,12 +73,14 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/tabs/organization_tab.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/tabs/telephones_tab.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/tabs/profile_tab.cpp
+
     ${PROJECT_SOURCE_DIR}/src/admc/editors/attribute_editor.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/editors/multi_editor.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/editors/string_editor.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/editors/octet_editor.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/editors/bool_editor.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/editors/datetime_editor.cpp
+
     ${PROJECT_SOURCE_DIR}/src/admc/edits/attribute_edit.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/edits/string_edit.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/edits/string_other_edit.cpp
@@ -78,16 +96,13 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/edits/gpoptions_edit.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/edits/manager_edit.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/edits/upn_edit.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/search_thread.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/status.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/console_widget/customize_columns_dialog.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/console_widget/results_view.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/object_actions.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/move_dialog.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/globals.cpp
 
-    ${PROJECT_SOURCE_DIR}/src/admc/utils.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/settings.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_widget/console_widget.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_widget/scope_model.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_widget/customize_columns_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_widget/results_description.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_widget/results_view.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_widget/console_drag_model.cpp
 )
 
 # NOTE: ADD ALL TESTS TO THIS LIST

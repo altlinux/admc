@@ -58,8 +58,10 @@ enum ConsoleRole {
 
     ConsoleRole_HasProperties = Qt::UserRole + 7,
 
-    // NOTE: don't go above ConsoleRole_LAST (defined in
-    // public header)
+    // NOTE: don't go above ConsoleRole_Type and
+    // ConsoleRole_LAST (defined in public header)
+    
+    // ConsoleRole_Type = Qt::UserRole + 19,
     // ConsoleRole_LAST = Qt::UserRole + 20
 };
 
@@ -71,7 +73,9 @@ public:
 
     QTreeView *scope_view;
     ScopeModel *scope_model;
-    QLabel *description_bar;
+    QWidget *description_bar;
+    QLabel *description_bar_left;
+    QLabel *description_bar_right;
     QAbstractItemView *focused_view;
     QStackedWidget *results_stacked_widget;
     QHash<int, ResultsDescription> results_descriptions;

@@ -17,34 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef POLICIES_WIDGET_H
-#define POLICIES_WIDGET_H
+#ifndef SELECT_POLICY_DIALOG_H
+#define SELECT_POLICY_DIALOG_H
 
-#include <QWidget>
-#include <QPoint>
+#include <QDialog>
 #include <QString>
+#include <QList>
 
-class QStandardItemModel;
 class QTreeView;
-class AdObject;
 
-// Shows member objects of targeted group
-class PoliciesWidget final : public QWidget {
+class SelectPolicyDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    PoliciesWidget();
+    SelectPolicyDialog(QWidget *parent);
 
-private slots:
-    void reload();
-    void on_context_menu(const QPoint pos);
+    QList<QString> get_selected_dns() const;
 
 private:
-    QStandardItemModel *model;
     QTreeView *view;
-
-    void edit_policy(const AdObject &object);
 
 };
 
-#endif /* POLICIES_TAB_H */
+
+
+#endif /* SELECT_POLICY_DIALOG_H */

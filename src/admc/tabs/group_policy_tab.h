@@ -54,6 +54,7 @@ private:
     QStandardItemModel *model;
     QTreeView *view;
     Gplink gplink;
+    QString original_gplink_string;
 
     void add_link(QList<QString> gpos);
     void remove_link(QList<QString> gpos);
