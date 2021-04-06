@@ -69,7 +69,7 @@ SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
 
     const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
 
-    for (const AdObject object : search_results.values()) {
+    for (const AdObject &object : search_results.values()) {
         auto item = new QStandardItem();
         model->appendRow(item);
 
