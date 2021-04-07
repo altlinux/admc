@@ -35,6 +35,7 @@ add_executable(admc
     utils.cpp
     settings.cpp
     policy_model.cpp
+    policy_results_widget.cpp
 
     move_dialog.cpp
     rename_dialog.cpp

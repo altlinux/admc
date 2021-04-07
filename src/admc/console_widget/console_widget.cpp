@@ -356,6 +356,9 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
         connect(
             view, &ResultsView::context_menu,
             d, &ConsoleWidgetPrivate::on_context_menu);
+        connect(
+            view, &ResultsView::selection_changed,
+            d, &ConsoleWidgetPrivate::on_selection_changed);
 
         // Hide non-default results view columns. Note that
         // at creation, view header doesnt have any
@@ -373,10 +376,6 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
                 }
             });
     }
-
-    connect(
-        view, &ResultsView::selection_changed,
-        d, &ConsoleWidgetPrivate::on_selection_changed);
 
     return id;
 }
