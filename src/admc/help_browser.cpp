@@ -34,7 +34,7 @@ HelpBrowser::HelpBrowser(QHelpEngine *help_engine_arg) {
         this, &HelpBrowser::setSource);
     connect(
         help_engine->indexWidget(), &QHelpIndexWidget::linkActivated,
-        this, &HelpBrowser::setSource);
+        this, QOverload<const QUrl &>::of(&HelpBrowser::setSource));
 }
 
 // Need to override this f-n to load file data from help
