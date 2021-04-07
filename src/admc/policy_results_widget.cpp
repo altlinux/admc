@@ -40,6 +40,7 @@ enum PolicyResultsColumn {
     PolicyResultsColumn_Name,
     PolicyResultsColumn_Enforced,
     PolicyResultsColumn_Disabled,
+    PolicyResultsColumn_Path,
 
     PolicyResultsColumn_COUNT,
 };
@@ -81,6 +82,7 @@ PolicyResultsWidget::PolicyResultsWidget() {
         {PolicyResultsColumn_Name, tr("Location")},
         {PolicyResultsColumn_Enforced, tr("Enforced")},
         {PolicyResultsColumn_Disabled, tr("Disabled")},
+        {PolicyResultsColumn_Path, tr("Path")},
     });
 
     view->setModel(model);
@@ -127,6 +129,8 @@ void PolicyResultsWidget::update(const QModelIndex &scope_index) {
         const QString dn = object.get_dn();
         const QString name = dn_get_name(dn);
         row[PolicyResultsColumn_Name]->setText(name);
+        
+        row[PolicyResultsColumn_Path]->setText(dn_get_parent_canonical(dn));
 
         const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
         const Gplink gplink = Gplink(gplink_string);
