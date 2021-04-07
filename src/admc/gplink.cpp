@@ -85,7 +85,7 @@ void Gplink::add(const QString &gpo_case) {
     
     gpos_in_order.append(gpo);
     options[gpo] = 0;
-    gpo_case_map[gpo] = gpo;
+    gpo_case_map[gpo] = gpo_case;
 }
 
 void Gplink::remove(const QString &gpo_case) {
