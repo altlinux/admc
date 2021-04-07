@@ -1111,8 +1111,6 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     // Set descriptor
     const int result = smbc_setxattr(cstr(main_dir), "", sysvol_sd_cstr, sysvol_sd_string_bytes.size(), 0);
 
-    qInfo() << "smbc_setxattr result = " << result;
-
     talloc_free(tmp_ctx);
 
     return true;
