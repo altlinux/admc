@@ -1109,7 +1109,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     const char *sysvol_sd_cstr = sysvol_sd_string_bytes.constData();
 
     // Set descriptor
-    const int result = smbc_setxattr(cstr(main_dir), "", sysvol_sd_cstr, sysvol_sd_string_bytes.size(), 0);
+    smbc_setxattr(cstr(main_dir), "", sysvol_sd_cstr, sysvol_sd_string_bytes.size(), 0);
 
     talloc_free(tmp_ctx);
 
