@@ -35,6 +35,7 @@
 #include <QVBoxLayout>
 #include <QAction>
 #include <QMenu>
+#include <QHeaderView>
 
 enum PolicyResultsColumn {
     PolicyResultsColumn_Name,
@@ -86,6 +87,11 @@ PolicyResultsWidget::PolicyResultsWidget() {
     });
 
     view->setModel(model);
+
+    view->header()->resizeSection(0, 300);
+    view->header()->resizeSection(1, 100);
+    view->header()->resizeSection(2, 100);
+    view->header()->resizeSection(3, 500);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
