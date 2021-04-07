@@ -36,6 +36,7 @@
 #include "find_dialog.h"
 #include "password_dialog.h"
 #include "rename_policy_dialog.h"
+#include "select_dialog.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 #include "editors/multi_editor.h"
@@ -71,6 +72,7 @@ CentralWidget::CentralWidget()
     object_actions = new ObjectActions(this);
 
     create_policy_action = new QAction(tr("New policy"), this);
+    auto add_link_action = new QAction(tr("Add link"), this);
     auto rename_policy_action = new QAction(tr("Rename"), this);
     auto delete_policy_action = new QAction(tr("Delete"), this);
 
@@ -81,6 +83,7 @@ CentralWidget::CentralWidget()
     // NOTE: add policy actions to this list so that they
     // are processed
     policy_actions = {
+        add_link_action,
         rename_policy_action,
         delete_policy_action,
     };
@@ -183,6 +186,9 @@ CentralWidget::CentralWidget()
     connect(
         create_policy_action, &QAction::triggered,
         this, &CentralWidget::create_policy);
+    connect(
+        add_link_action, &QAction::triggered,
+        this, &CentralWidget::add_link);
     connect(
         rename_policy_action, &QAction::triggered,
         this, &CentralWidget::rename_policy);
@@ -475,6 +481,62 @@ void CentralWidget::edit_upn_suffixes() {
 void CentralWidget::create_policy() {
     // TODO: implement using ad.create_gpo() (which is
     // unfinished)
+}
+
+void CentralWidget::add_link() {
+    const QList<QModelIndex> selected = console_widget->get_selected_items();
+    if (selected.size() == 0) {
+        return;
+    }
+
+    auto dialog = new SelectDialog({CLASS_OU}, SelectDialogMultiSelection_Yes, this);
+
+    QObject::connect(
+        dialog, &SelectDialog::accepted,
+        [=]() {           
+            AdInterface ad;
+            if (ad_failed(ad)) {
+                return;
+            }
+
+            show_busy_indicator();
+
+            const QList<QString> gpos =
+            [selected]() {
+                QList<QString> out;
+
+                for (const QModelIndex &index : selected) {
+                    const QString gpo = index.data(PolicyRole_DN).toString();
+                    out.append(gpo);
+                }
+
+                return out;
+            }();
+
+            const QList<QString> ou_list = dialog->get_selected();
+
+            for (const QString &ou_dn : ou_list) {
+                const QHash<QString, AdObject> results = ad.search(QString(), {ATTRIBUTE_GPLINK}, SearchScope_Object, ou_dn);
+                const AdObject ou_object = results[ou_dn];
+                const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
+                Gplink gplink = Gplink(gplink_string);
+
+                for (const QString &gpo : gpos) {
+                    gplink.add(gpo);
+                }
+
+                ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink.to_string());
+            }
+
+            const QModelIndex current_scope = console_widget->get_current_scope_item();
+            policy_results_widget->update(current_scope);
+
+            hide_busy_indicator();
+
+            STATUS()->display_ad_messages(ad, this);
+        });
+
+    dialog->open();
 }
 
 void CentralWidget::rename_policy() {

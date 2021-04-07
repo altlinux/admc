@@ -90,6 +90,7 @@ private slots:
     void edit_upn_suffixes();
 
     void create_policy();
+    void add_link();
     void rename_policy();
     void delete_policy();
 
