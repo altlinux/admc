@@ -155,11 +155,11 @@ void FindResults::load(const QHash<QString, AdObject> &search_results) {
 }
 
 QList<QList<QStandardItem *>> FindResults::get_selected_rows() const {
-    const QList<QModelIndex> selected_rows = view->current_view()->selectionModel()->selectedRows();
+    const QList<QModelIndex> selected_indexes = view->get_selected_indexes();
 
     QList<QList<QStandardItem *>> out;
 
-    for (const QModelIndex row_index : selected_rows) {
+    for (const QModelIndex row_index : selected_indexes) {
         const int row = row_index.row();
 
         QList<QStandardItem *> row_copy;
@@ -276,7 +276,7 @@ void FindResults::enable_disable_helper(const bool disabled) {
 // First, hide all actions, then show whichever actions are
 // appropriate for current console selection
 void FindResults::update_actions_visibility() {
-    const QList<QModelIndex> selected_indexes = view->current_view()->selectionModel()->selectedRows();
+    const QList<QModelIndex> selected_indexes = view->get_selected_indexes();
     object_actions->update_actions_visibility(selected_indexes);
 
     // Always hide find action because opening a find dialog
@@ -287,8 +287,8 @@ void FindResults::update_actions_visibility() {
 QHash<QString, QPersistentModelIndex> FindResults::get_selected_dns_and_indexes() {
     QHash<QString, QPersistentModelIndex> out;
 
-    const QList<QModelIndex> indexes = view->current_view()->selectionModel()->selectedRows();
-    for (const QModelIndex &index : indexes) {
+    const QList<QModelIndex> selected_indexes = view->get_selected_indexes();
+    for (const QModelIndex &index : selected_indexes) {
         const QString dn = index.data(ObjectRole_DN).toString();
         out[dn] = QPersistentModelIndex(index);
     }
