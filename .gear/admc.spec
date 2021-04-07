@@ -17,6 +17,7 @@ BuildRequires(pre): qt5-tools-devel
 BuildRequires(pre): catch2-devel
 BuildRequires(pre): cmake-modules
 
+BuildRequires: samba-devel
 BuildRequires: libldap-devel
 BuildRequires: libsasl2-devel
 BuildRequires: libsmbclient-devel
