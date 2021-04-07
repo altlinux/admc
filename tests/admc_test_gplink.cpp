@@ -80,6 +80,8 @@ void ADMCTestGplink::test_remove() {
 
     gplink.remove("b");
 
+    gplink.remove("non existing gpo");
+
     const QString correct_gplink_string = "[LDAP://a;0][LDAP://c;0][LDAP://UPPER;0]";
 
     test_gplink_equality(gplink, correct_gplink_string);
@@ -91,6 +93,8 @@ void ADMCTestGplink::test_move_up() {
 
     gplink.move_up("b");
 
+    gplink.move_up("non existing gpo");
+
     const QString correct_gplink_string = "[LDAP://b;0][LDAP://a;0][LDAP://c;0][LDAP://UPPER;0]";
 
     test_gplink_equality(gplink, correct_gplink_string);
@@ -101,6 +105,8 @@ void ADMCTestGplink::test_move_down() {
     Gplink gplink(gplink_string);
 
     gplink.move_down("b");
+
+    gplink.move_down("non existing gpo");
 
     const QString correct_gplink_string = "[LDAP://a;0][LDAP://c;0][LDAP://b;0][LDAP://UPPER;0]";
 
@@ -116,6 +122,10 @@ void ADMCTestGplink::test_get_option() {
 
     const bool c_option = gplink.get_option("c", GplinkOption_Disabled);
     QVERIFY(c_option == true);
+
+    // Should return for non-existing gpo
+    const bool non_existing_option = gplink.get_option("non_existing_option", GplinkOption_Disabled);
+    QVERIFY(non_existing_option == false);
 }
 
 void ADMCTestGplink::test_set_option() {
