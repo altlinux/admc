@@ -33,6 +33,8 @@
 #include <QTreeView>
 #include <QStandardItemModel>
 #include <QVBoxLayout>
+#include <QAction>
+#include <QMenu>
 
 enum PolicyResultsColumn {
     PolicyResultsColumn_Name,
@@ -63,10 +65,16 @@ const QHash<PolicyResultsColumn, GplinkOption> column_to_option = {
 // policy tab (just call load after properties is closed?)
 
 PolicyResultsWidget::PolicyResultsWidget() {   
+    auto delete_link_action = new QAction(tr("Delete link"), this);
+
+    context_menu = new QMenu(this);
+    context_menu->addAction(delete_link_action);
+
     view = new QTreeView(this);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
+    view->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     model = new QStandardItemModel(0, PolicyResultsColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model, {
@@ -86,6 +94,12 @@ PolicyResultsWidget::PolicyResultsWidget() {
     connect(
         model, &QStandardItemModel::itemChanged,
         this, &PolicyResultsWidget::on_item_changed);
+    connect(
+        view, &QWidget::customContextMenuRequested,
+        this, &PolicyResultsWidget::open_context_menu);
+    connect(
+        delete_link_action, &QAction::triggered,
+        this, &PolicyResultsWidget::delete_link);
 }
 
 void PolicyResultsWidget::update(const QModelIndex &scope_index) {
@@ -148,6 +162,7 @@ void PolicyResultsWidget::update(const QModelIndex &scope_index) {
 
         row[0]->setData(dn, PolicyResultsRole_DN);
         row[0]->setData(gplink_string, PolicyResultsRole_GplinkString);
+        row[0]->setIcon(QIcon::fromTheme("folder-documents"));
 
         model->appendRow(row);
     }
@@ -198,6 +213,58 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
         item->setCheckState(undo_check_state);
     }
 
+    STATUS()->display_ad_messages(ad, this);
+
+    hide_busy_indicator();
+}
+
+void PolicyResultsWidget::open_context_menu(const QPoint &pos) {
+    const QModelIndex index = view->indexAt(pos);
+    if (!index.isValid()) {
+        return;
+    }
+
+    const QPoint global_pos = view->mapToGlobal(pos);
+    context_menu->popup(global_pos);
+}
+
+void PolicyResultsWidget::delete_link() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+
+    const QList<QModelIndex> selected = view->selectionModel()->selectedRows();
+
+    QList<QPersistentModelIndex> removed_indexes;
+
+    for (const QModelIndex &index : selected) {
+        const QString dn = index.data(PolicyResultsRole_DN).toString();
+
+        const QString gplink_string = index.data(PolicyResultsRole_GplinkString).toString();
+        Gplink gplink = Gplink(gplink_string);
+        gplink.remove(gpo);
+        const QString updated_gplink_string = gplink.to_string();
+
+        const bool gplink_didnt_change = gplink.equals(gplink_string);
+        if (gplink_didnt_change) {
+            continue;
+        }
+
+        const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_GPLINK, updated_gplink_string);
+
+        if (success) {
+            removed_indexes.append(QPersistentModelIndex(index));
+        }
+    }
+
+    for (const QPersistentModelIndex &index : removed_indexes) {
+        model->removeRow(index.row());
+    }
+    
     STATUS()->display_ad_messages(ad, this);
 
     hide_busy_indicator();

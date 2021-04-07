@@ -31,6 +31,7 @@ class QModelIndex;
 class QTreeView;
 class QStandardItemModel;
 class QStandardItem;
+class QMenu;
 
 class PolicyResultsWidget final : public QWidget {
 Q_OBJECT
@@ -46,8 +47,11 @@ private:
     QTreeView *view;
     QStandardItemModel *model;
     QString gpo;
+    QMenu *context_menu;
 
     void on_item_changed(QStandardItem *item);
+    void open_context_menu(const QPoint &pos);
+    void delete_link();
 
 };
 
