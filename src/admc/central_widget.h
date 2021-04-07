@@ -43,6 +43,7 @@ class AdInterface;
 class ConsoleWidget;
 class ResultsView;
 class ObjectActions;
+class PolicyResultsWidget;
 template <typename T> class QList;
 
 enum ItemType {
@@ -89,6 +90,7 @@ private slots:
     void edit_upn_suffixes();
 
     void create_policy();
+    void add_link();
     void rename_policy();
     void delete_policy();
 
@@ -97,12 +99,16 @@ private slots:
     void on_items_can_drop(const QList<QModelIndex> &dropped, const QModelIndex &target, bool *ok);
     void on_items_dropped(const QList<QModelIndex> &dropped, const QModelIndex &target);
 
+    void on_current_scope_changed();
+
 private:
     int object_results_id;
     int policies_results_id;
+    int policy_links_results_id;
     QPersistentModelIndex scope_head_index;
     QPersistentModelIndex policies_index;
     FilterDialog *filter_dialog;
+    PolicyResultsWidget *policy_results_widget;
 
     ObjectActions *object_actions;
 
