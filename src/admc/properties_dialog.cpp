@@ -178,7 +178,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         add_tab(new MemberOfTab(), tr("Member of"));
     }
 
-    if (object.is_class(CLASS_OU)) {
+    if (object.is_class(CLASS_OU) || object.is_class(CLASS_DOMAIN)) {
         // TODO: not sure which object classes can have gplink, for now only know of OU's.
         add_tab(new GroupPolicyTab(), tr("Group policy"));
     }
