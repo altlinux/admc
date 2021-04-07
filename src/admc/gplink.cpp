@@ -82,7 +82,12 @@ QList<QString> Gplink::get_gpos() const {
 
 void Gplink::add(const QString &gpo_case) {
     const QString gpo = gpo_case.toLower();
-    
+
+    const bool gpo_already_in_link = gpo_case_map.contains(gpo);
+    if (gpo_already_in_link) {
+        return;
+    }
+
     gpos_in_order.append(gpo);
     options[gpo] = 0;
     gpo_case_map[gpo] = gpo_case;
@@ -90,6 +95,9 @@ void Gplink::add(const QString &gpo_case) {
 
 void Gplink::remove(const QString &gpo_case) {
     const QString gpo = gpo_case.toLower();
+    if (!gpo_case_map.contains(gpo)) {
+        return;
+    }
 
     gpos_in_order.removeAll(gpo);
     options.remove(gpo);
@@ -98,6 +106,9 @@ void Gplink::remove(const QString &gpo_case) {
 
 void Gplink::move_up(const QString &gpo_case) {
     const QString gpo = gpo_case.toLower();
+    if (!gpo_case_map.contains(gpo)) {
+        return;
+    }
     
     const int current_index = gpos_in_order.indexOf(gpo);
 
@@ -109,6 +120,9 @@ void Gplink::move_up(const QString &gpo_case) {
 
 void Gplink::move_down(const QString &gpo_case) {
     const QString gpo = gpo_case.toLower();
+    if (!gpo_case_map.contains(gpo)) {
+        return;
+    }
     
     const int current_index = gpos_in_order.indexOf(gpo);
     
@@ -121,6 +135,9 @@ void Gplink::move_down(const QString &gpo_case) {
 
 bool Gplink::get_option(const QString &gpo_case, const GplinkOption option) const {
     const QString gpo = gpo_case.toLower();
+    if (!gpo_case_map.contains(gpo)) {
+        return false;
+    }
 
     const int option_bits = options[gpo];
     const bool is_set = bit_is_set(option_bits, (int) option);
@@ -130,6 +147,9 @@ bool Gplink::get_option(const QString &gpo_case, const GplinkOption option) cons
 
 void Gplink::set_option(const QString &gpo_case, const GplinkOption option, const bool value) {
     const QString gpo = gpo_case.toLower();
+    if (!gpo_case_map.contains(gpo)) {
+        return;
+    }
 
     const int option_bits = options[gpo];
     const int option_bits_new = bit_set(option_bits, (int) option, value);
