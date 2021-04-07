@@ -61,10 +61,11 @@ void ADMCTestGplink::test_add() {
     Gplink gplink(gplink_string);
 
     gplink.add("added gpo");
+    gplink.add("added gpo UPPERCASE");
 
-    const QString correct_gplink_string = "[LDAP://a;0][LDAP://b;0][LDAP://c;0][LDAP://UPPER;0][LDAP://added gpo;0]";
+    const QString correct_gplink_string = "[LDAP://a;0][LDAP://b;0][LDAP://c;0][LDAP://UPPER;0][LDAP://added gpo;0][LDAP://added gpo UPPERCASE;0]";
 
-    QVERIFY((gplink.to_string() == correct_gplink_string));
+    test_gplink_equality(gplink, correct_gplink_string);
 }
 
 void ADMCTestGplink::test_remove() {
