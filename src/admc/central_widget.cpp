@@ -32,6 +32,7 @@
 #include "status.h"
 #include "rename_dialog.h"
 #include "create_dialog.h"
+#include "create_policy_dialog.h"
 #include "move_dialog.h"
 #include "find_dialog.h"
 #include "password_dialog.h"
@@ -253,12 +254,7 @@ void CentralWidget::go_online(AdInterface &ad) {
     const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
 
     for (const AdObject &object : search_results.values()) {
-        QStandardItem *scope_item;
-        QList<QStandardItem *> results_row;
-        console_widget->add_buddy_scope_and_results(policies_results_id, ScopeNodeType_Static, policies_item->index(), &scope_item, &results_row);
-
-        setup_policy_scope_item(scope_item, object);
-        setup_policy_results_row(results_row, object);
+        add_policy_to_console(object);
     }
 
     console_widget->sort_scope();
@@ -471,6 +467,30 @@ void CentralWidget::edit_upn_suffixes() {
 void CentralWidget::create_policy() {
     // TODO: implement using ad.create_gpo() (which is
     // unfinished)
+
+    auto dialog = new CreatePolicyDialog(this);
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog]() {
+            AdInterface ad;
+            if (ad_failed(ad)) {
+                return;
+            }
+
+            const QString dn = dialog->get_created_dn();
+
+            const QList<QString> search_attributes = policy_model_search_attributes();
+            const QHash<QString, AdObject> search_results = ad.search(QString(), search_attributes, SearchScope_Object, dn);
+            const AdObject object = search_results[dn];
+
+            add_policy_to_console(object);
+
+            // NOTE: not adding policy object to the domain
+            // tree, but i think it's ok?
+        });
+
+    dialog->open();
 }
 
 void CentralWidget::rename_policy() {
@@ -1057,4 +1077,13 @@ QList<QString> CentralWidget::get_selected_dns() {
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
 
     return selected.keys();
+}
+
+void CentralWidget::add_policy_to_console(const AdObject &object) {
+    QStandardItem *scope_item;
+    QList<QStandardItem *> results_row;
+    console_widget->add_buddy_scope_and_results(policies_results_id, ScopeNodeType_Static, policies_index, &scope_item, &results_row);
+
+    setup_policy_scope_item(scope_item, object);
+    setup_policy_results_row(results_row, object);
 }

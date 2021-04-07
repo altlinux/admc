@@ -128,6 +128,7 @@ private:
     void create_helper(const QString &object_class);
     QHash<QString, QPersistentModelIndex> get_selected_dns_and_indexes();
     QList<QString> get_selected_dns();
+    void add_policy_to_console(const AdObject &object);
 };
 
 #endif /* CENTRAL_WIDGET_H */

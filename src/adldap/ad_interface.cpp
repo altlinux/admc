@@ -964,7 +964,7 @@ bool AdInterface::user_unlock(const QString &dn) {
     }
 }
 
-bool AdInterface::create_gpo(const QString &display_name) {
+bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     //
     // Generate UUID used for directory and object names
     //
@@ -1025,6 +1025,7 @@ bool AdInterface::create_gpo(const QString &display_name) {
     //
     // TODO: add all attributes during creation, need to directly create through ldap then
     const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, d->domain_head);
+    dn_out = dn;
     const bool result_add = object_add(dn, CLASS_GP_CONTAINER);
     if (!result_add) {
         return false;
