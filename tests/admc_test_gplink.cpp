@@ -60,8 +60,14 @@ void ADMCTestGplink::test_add() {
     const QString gplink_string = "[LDAP://a;0][LDAP://b;0][LDAP://c;0][LDAP://UPPER;0]";
     Gplink gplink(gplink_string);
 
+    // Simple add
     gplink.add("added gpo");
+
+    // Test that case is preserved
     gplink.add("added gpo UPPERCASE");
+
+    // Test that duplicates are ignored
+    gplink.add("a");
 
     const QString correct_gplink_string = "[LDAP://a;0][LDAP://b;0][LDAP://c;0][LDAP://UPPER;0][LDAP://added gpo;0][LDAP://added gpo UPPERCASE;0]";
 

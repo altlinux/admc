@@ -82,7 +82,12 @@ QList<QString> Gplink::get_gpos() const {
 
 void Gplink::add(const QString &gpo_case) {
     const QString gpo = gpo_case.toLower();
-    
+
+    const bool gpo_already_in_link = gpo_case_map.contains(gpo);
+    if (gpo_already_in_link) {
+        return;
+    }
+
     gpos_in_order.append(gpo);
     options[gpo] = 0;
     gpo_case_map[gpo] = gpo_case;
