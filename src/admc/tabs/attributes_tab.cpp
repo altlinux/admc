@@ -43,16 +43,6 @@ enum AttributesColumn {
     AttributesColumn_COUNT,
 };
 
-QHash<AttributeFilter, bool> AttributesTabProxy::default_filters = {
-    {AttributeFilter_Unset, true},
-    {AttributeFilter_ReadOnly, true},
-    {AttributeFilter_Mandatory, true},
-    {AttributeFilter_Optional, true},
-    {AttributeFilter_SystemOnly, true},
-    {AttributeFilter_Constructed, true},
-    {AttributeFilter_Backlink, true},
-};
-
 QString attribute_type_display_string(const AttributeType type);
 
 AttributesTab::AttributesTab() {
@@ -229,11 +219,21 @@ void AttributesTab::open_filter_dialog() {
 
             proxy->invalidate();
 
-            // Save selected filters as defaults
-            for (const AttributeFilter filter : checks.keys()) {
-                const QCheckBox *check = checks[filter];
-                AttributesTabProxy::default_filters[filter] = check->isChecked();
-            }
+            // Save filters to settings
+            const QVariant filters_variant =
+            [=]() {
+                QList<QVariant> filters_list;
+
+                for (int filter_i = 0; filter_i < AttributeFilter_COUNT; filter_i++) {
+                    const AttributeFilter filter = (AttributeFilter) filter_i;
+                    const bool filter_is_set = checks[filter]->isChecked();
+
+                    filters_list.append(QVariant(filter_is_set));
+                }
+
+                return QVariant(filters_list);
+            }();
+            SETTINGS()->set_variant(VariantSetting_AttributesTabFilter, filters_variant);
         });
 
     dialog->open();
@@ -304,9 +304,23 @@ void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &a
 
 AttributesTabProxy::AttributesTabProxy(QObject *parent)
 : QSortFilterProxyModel(parent) {
-    // Load default filters once on creation, after that
-    // filters are unrelated to defaults
-    filters = default_filters;
+    // Load filters from settings
+    const QVariant filters_variant = SETTINGS()->get_variant(VariantSetting_AttributesTabFilter);
+    const QList<QVariant> filters_list = filters_variant.toList();
+    for (int filter_i = 0; filter_i < AttributeFilter_COUNT; filter_i++) {
+        const AttributeFilter filter = (AttributeFilter) filter_i;
+
+        const bool filter_is_set =
+        [&]() {
+            if (filter_i < filters_list.size()) {
+                return filters_list[filter_i].toBool();
+            } else {
+                return true;
+            }
+        }();
+
+        filters[filter] = filter_is_set;
+    }
 }
 
 void AttributesTabProxy::load(const AdObject &object) {

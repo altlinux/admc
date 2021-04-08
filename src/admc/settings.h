@@ -47,6 +47,7 @@ enum VariantSetting {
     VariantSetting_AttributesHeader,
     VariantSetting_MainWindowGeometry,
     VariantSetting_MainWindowState,
+    VariantSetting_AttributesTabFilter,
 
     VariantSetting_COUNT,    
 };
