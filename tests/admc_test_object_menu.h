@@ -25,11 +25,14 @@
 #include <functional>
 
 class QString;
+class QPushButton;
 
 class ADMCTestObjectMenu : public ADMCTest {
     Q_OBJECT
 
 private slots:
+    void select_dialog_correct_object_added();
+
     void object_menu_add_to_group();
     void object_add();
     void object_delete();
@@ -63,6 +66,8 @@ private:
 
     // Common renamer for object.
     static void basic_rename(const QString& newname);
+
+    QPushButton *find_button_by_name(const QString& name, QWidget *parent);
 };
 
 #endif /* ADMC_TEST_OBJECT_MENU_H */

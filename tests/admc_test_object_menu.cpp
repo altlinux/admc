@@ -42,6 +42,76 @@
 #include <QPushButton>
 #include <QComboBox>
 
+// Test that when adding an object from find dialog to
+// select dialog, the correct object is added.
+void ADMCTestObjectMenu::select_dialog_correct_object_added() {
+    const QString parent = test_arena_dn();
+    
+    // Create 5 different users
+    const QList<QString> names = {
+        "test-user-1",
+        "test-user-2",
+        "test-user-3",
+        "test-user-4",
+        "test-user-5"
+    };
+    for (const QString &name : names) {
+        const QString dn = test_object_dn(name, CLASS_USER);
+
+        const bool create_success = ad.object_add(dn, CLASS_USER);
+        QVERIFY2(create_success, "Failed to create test user");
+    }
+
+    const QString select_dn = test_object_dn("test-user-3", CLASS_USER);
+
+    auto select_dialog = new SelectDialog({CLASS_USER}, SelectDialogMultiSelection_Yes, parent_widget);
+    select_dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(select_dialog, 1000));
+
+    // Press "Add" button in select dialog
+    tab();
+    QTest::keyClick(QApplication::focusWidget(), Qt::Key_Space);
+    
+    // Find dialog has been opened, so switch to it
+    auto find_select_dialog = select_dialog->findChild<FindSelectDialog *>();
+    QVERIFY2((find_select_dialog != nullptr), "Failed to find find_select_dialog");
+    QVERIFY(QTest::qWaitForWindowExposed(find_select_dialog, 1000));
+
+    // Enter "test-user" in "Name" edit to filter out extra users
+    tab(3);
+    QTest::keyClicks(QApplication::focusWidget(), "test-user");
+
+    // Press "Find" button
+    QPushButton *find_button = find_button_by_name("Find", find_select_dialog);
+    QVERIFY(find_button != nullptr);
+    QTest::mouseClick(find_button, Qt::LeftButton);    
+
+    // Switch to find results
+    auto find_results_view = find_select_dialog->findChild<QTreeView*>();
+    QVERIFY2((find_results_view != nullptr), "Failed to cast find_results_view");
+
+    wait_for_find_results_to_load(find_results_view);
+
+    // Select user in results
+    navigate_until_object(find_results_view, select_dn, ObjectRole_DN);
+
+    find_select_dialog->accept();
+
+    // Switch to view containing selected object
+    auto select_dialog_view = select_dialog->findChild<QTreeView*>();
+    QVERIFY(select_dialog_view != nullptr);
+
+    // Verify that user added from find dialog is in
+    // selected list
+    auto select_dialog_model = select_dialog_view->model();
+
+    QVERIFY(select_dialog_model->rowCount() == 1);
+    const QModelIndex index = select_dialog_model->index(0, 0);
+    const QString index_dn = index.data(ObjectRole_DN).toString();
+
+    QVERIFY(index_dn == select_dn);
+}
+
 void ADMCTestObjectMenu::object_add() {
     const QString name = TEST_USER;
     const QString dn = test_object_dn(name, CLASS_USER);
@@ -319,14 +389,7 @@ void ADMCTestObjectMenu::object_menu_find_simple()
 
     QTest::keyClicks(QApplication::focusWidget(), user_name);
 
-    auto children = find_dialog->findChildren<QPushButton*>();
-    QPushButton* find_button = nullptr;
-    for (const auto& child : children) {
-        if (child->text() == tr(FIND_BUTTON_LABEL)) {
-            find_button = child;
-        }
-    }
-
+    QPushButton* find_button = find_button_by_name(FIND_BUTTON_LABEL, find_dialog);
     QVERIFY2((find_button != nullptr), "Failed to find find_button");
 
     QTest::mouseClick(find_button, Qt::LeftButton);
@@ -363,14 +426,7 @@ void ADMCTestObjectMenu::object_menu_find_advanced()
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DN, user_dn);
     QTest::keyClicks(QApplication::focusWidget(), filter);
 
-    auto children = find_dialog->findChildren<QPushButton*>();
-    QPushButton* find_button = nullptr;
-    for (const auto& child : children) {
-        if (child->text() == tr(FIND_BUTTON_LABEL)) {
-            find_button = child;
-        }
-    }
-
+    QPushButton* find_button = find_button_by_name(FIND_BUTTON_LABEL, find_dialog);
     QVERIFY2((find_button != nullptr), "Failed to find find_button");
 
     QTest::mouseClick(find_button, Qt::LeftButton);    
@@ -420,22 +476,9 @@ void ADMCTestObjectMenu::object_menu_add_to_group() {
     tab(3);
     QTest::keyClicks(QApplication::focusWidget(), group_name);
 
-    // TODO: button finding code is duplicated
-
     // Press "Find" button
-    QPushButton *find_button =
-    [=]() -> QPushButton *{
-        auto buttons = find_select_dialog->findChildren<QPushButton*>();
-        for (const auto &button : buttons) {
-            if (button->text() == tr(FIND_BUTTON_LABEL)) {
-                return button;
-            }
-        }
-
-        return nullptr;
-    }();
-    QVERIFY2((find_button != nullptr), "Failed to find Find button");
-    
+    QPushButton *find_button = find_button_by_name("Find", find_select_dialog);
+    QVERIFY(find_button != nullptr);
     QTest::keyClick(find_button, Qt::Key_Space);
 
     // Switch to find results
@@ -529,6 +572,17 @@ void ADMCTestObjectMenu::test_object_rename(const QString& oldname, const QStrin
     rename_dialog->accept();
 
     QVERIFY2(object_exists(dn_after_rename), "Renamed object doesn't exist");
+}
+
+QPushButton *ADMCTestObjectMenu::find_button_by_name(const QString& name, QWidget *parent) {
+    auto buttons = parent->findChildren<QPushButton*>();
+    for (const auto &button : buttons) {
+        if (button->text() == name) {
+            return button;
+        }
+    }
+
+    return nullptr;
 }
 
 QTEST_MAIN(ADMCTestObjectMenu)
