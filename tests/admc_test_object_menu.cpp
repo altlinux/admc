@@ -84,7 +84,7 @@ void ADMCTestObjectMenu::object_menu_new_user() {
     QTest::keyClicks(QApplication::focusWidget(), logon_name);
 
     // Enter password
-    tab(2);
+    tab(3);
     QTest::keyClicks(QApplication::focusWidget(), password);
     // Confirm password
     tab();
