@@ -27,6 +27,7 @@
 #include "gplink.h"
 #include "status.h"
 #include "globals.h"
+#include "console_widget/results_view.h"
 
 #include <QModelIndex>
 #include <QTreeView>
@@ -73,11 +74,7 @@ PolicyResultsWidget::PolicyResultsWidget() {
     context_menu = new QMenu(this);
     context_menu->addAction(delete_link_action);
 
-    view = new QTreeView(this);
-    view->setContextMenuPolicy(Qt::CustomContextMenu);
-    view->setAllColumnsShowFocus(true);
-    view->setSortingEnabled(true);
-    view->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    view = new ResultsView(this);
 
     model = new QStandardItemModel(0, PolicyResultsColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model, {
@@ -87,12 +84,12 @@ PolicyResultsWidget::PolicyResultsWidget() {
         {PolicyResultsColumn_Path, tr("Path")},
     });
 
-    view->setModel(model);
+    view->set_model(model);
 
-    view->header()->resizeSection(0, 300);
-    view->header()->resizeSection(1, 100);
-    view->header()->resizeSection(2, 100);
-    view->header()->resizeSection(3, 500);
+    view->detail_view()->header()->resizeSection(0, 300);
+    view->detail_view()->header()->resizeSection(1, 100);
+    view->detail_view()->header()->resizeSection(2, 100);
+    view->detail_view()->header()->resizeSection(3, 500);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
@@ -104,7 +101,7 @@ PolicyResultsWidget::PolicyResultsWidget() {
         model, &QStandardItemModel::itemChanged,
         this, &PolicyResultsWidget::on_item_changed);
     connect(
-        view, &QWidget::customContextMenuRequested,
+        view, &ResultsView::context_menu,
         this, &PolicyResultsWidget::open_context_menu);
     connect(
         delete_link_action, &QAction::triggered,
@@ -230,12 +227,12 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
 }
 
 void PolicyResultsWidget::open_context_menu(const QPoint &pos) {
-    const QModelIndex index = view->indexAt(pos);
+    const QModelIndex index = view->current_view()->indexAt(pos);
     if (!index.isValid()) {
         return;
     }
 
-    const QPoint global_pos = view->mapToGlobal(pos);
+    const QPoint global_pos = view->current_view()->mapToGlobal(pos);
     context_menu->popup(global_pos);
 }
 
@@ -248,7 +245,7 @@ void PolicyResultsWidget::delete_link() {
     show_busy_indicator();
 
 
-    const QList<QModelIndex> selected = view->selectionModel()->selectedRows();
+    const QList<QModelIndex> selected = view->get_selected_indexes();
 
     QList<QPersistentModelIndex> removed_indexes;
 

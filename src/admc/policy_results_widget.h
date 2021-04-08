@@ -32,6 +32,7 @@ class QTreeView;
 class QStandardItemModel;
 class QStandardItem;
 class QMenu;
+class ResultsView;
 
 class PolicyResultsWidget final : public QWidget {
 Q_OBJECT
@@ -44,7 +45,7 @@ public:
     void update(const QModelIndex &scope_index);
 
 private:
-    QTreeView *view;
+    ResultsView *view;
     QStandardItemModel *model;
     QString gpo;
     QMenu *context_menu;
