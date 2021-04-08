@@ -5,7 +5,7 @@
     <name>AdConfig</name>
     <message>
         <location filename="ad_config.cpp" line="243"/>
-        <location filename="ad_config.cpp" line="314"/>
+        <location filename="ad_config.cpp" line="318"/>
         <source>Distinguished name</source>
         <translation>Уникальное имя</translation>
     </message>
@@ -21,62 +21,62 @@
     </message>
     <message>
         <location filename="ad_config.cpp" line="246"/>
-        <location filename="ad_config.cpp" line="313"/>
+        <location filename="ad_config.cpp" line="317"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="ad_config.cpp" line="315"/>
+        <location filename="ad_config.cpp" line="319"/>
         <source>Object class</source>
         <translation>Класс объекта</translation>
     </message>
     <message>
-        <location filename="ad_config.cpp" line="316"/>
+        <location filename="ad_config.cpp" line="320"/>
         <source>Created</source>
         <translation>Создан</translation>
     </message>
     <message>
-        <location filename="ad_config.cpp" line="317"/>
+        <location filename="ad_config.cpp" line="321"/>
         <source>Changed</source>
         <translation>Изменён</translation>
     </message>
     <message>
-        <location filename="ad_config.cpp" line="318"/>
+        <location filename="ad_config.cpp" line="322"/>
         <source>USN created</source>
         <translation>USN создан</translation>
     </message>
     <message>
-        <location filename="ad_config.cpp" line="319"/>
+        <location filename="ad_config.cpp" line="323"/>
         <source>USN changed</source>
         <translation>USN изменен</translation>
     </message>
     <message>
-        <location filename="ad_config.cpp" line="320"/>
+        <location filename="ad_config.cpp" line="324"/>
         <source>Account expires</source>
         <translation>Срок действия учетной записи</translation>
     </message>
     <message>
-        <location filename="ad_config.cpp" line="321"/>
+        <location filename="ad_config.cpp" line="325"/>
         <source>Type</source>
         <translation>Тип</translation>
     </message>
     <message>
-        <location filename="ad_config.cpp" line="322"/>
+        <location filename="ad_config.cpp" line="326"/>
         <source>Profile path</source>
         <translation>Путь профиля</translation>
     </message>
     <message>
-        <location filename="ad_config.cpp" line="323"/>
+        <location filename="ad_config.cpp" line="327"/>
         <source>Logon script</source>
         <translation>Логон скрипт</translation>
     </message>
     <message>
-        <location filename="ad_config.cpp" line="324"/>
+        <location filename="ad_config.cpp" line="328"/>
         <source>Logon name (pre-Windows 2000)</source>
         <translation>Имя входа (пред-Windows 2000)</translation>
     </message>
     <message>
-        <location filename="ad_config.cpp" line="325"/>
+        <location filename="ad_config.cpp" line="329"/>
         <source>E-mail</source>
         <translation>Электронная почта</translation>
     </message>
@@ -84,197 +84,197 @@
 <context>
     <name>AdInterface</name>
     <message>
-        <location filename="ad_interface.cpp" line="437"/>
+        <location filename="ad_interface.cpp" line="438"/>
         <source>Changed attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
         <translation>Атрибут &quot;%1&quot; объекта &quot;%2&quot; изменен с &quot;%3&quot; на &quot;%4&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="441"/>
+        <location filename="ad_interface.cpp" line="442"/>
         <source>Failed to change attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
         <translation>Не удалось изменить атрибут &quot;%1&quot; объекта &quot;%2&quot; с &quot;%3&quot; на &quot;%4&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="489"/>
+        <location filename="ad_interface.cpp" line="490"/>
         <source>Added value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation>Добавлено значение &quot;%1&quot; для атрибута &quot;%2&quot; объекта &quot;%3&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="495"/>
+        <location filename="ad_interface.cpp" line="496"/>
         <source>Failed to add value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation>Не удалось добавить значение &quot;%1&quot; для атрибута &quot;%2&quot; объекта &quot;%3&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="529"/>
+        <location filename="ad_interface.cpp" line="530"/>
         <source>Deleted value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation>Удалено значение &quot;%1&quot; для атрибута &quot;%2&quot; объекта &quot;%3&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="535"/>
+        <location filename="ad_interface.cpp" line="536"/>
         <source>Failed to delete value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation>Не удалось удалить значение &quot;%1&quot; для атрибута &quot;%2&quot; объекта &quot;%3&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="576"/>
+        <location filename="ad_interface.cpp" line="577"/>
         <source>Created object &quot;%1&quot;</source>
         <translation>Создан объект &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="580"/>
+        <location filename="ad_interface.cpp" line="581"/>
         <source>Failed to create object &quot;%1&quot;</source>
         <translation>Не удалось создать объект &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="601"/>
+        <location filename="ad_interface.cpp" line="602"/>
         <source>Failed to delete object &quot;%1&quot;</source>
         <translation>Не удалось удалить &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="609"/>
+        <location filename="ad_interface.cpp" line="610"/>
         <source>LDAP Operation error - Failed to allocate tree delete control</source>
         <translation>LDAP Operation error - Failed to allocate tree delete control</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="617"/>
+        <location filename="ad_interface.cpp" line="618"/>
         <source>LDAP Operation error - Failed to create tree delete control</source>
         <translation>LDAP Operation error - Failed to create tree delete control</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="630"/>
+        <location filename="ad_interface.cpp" line="631"/>
         <source>Deleted object &quot;%1&quot;</source>
         <translation>Удален объект - &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="649"/>
+        <location filename="ad_interface.cpp" line="650"/>
         <source>Moved object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Объект &quot;%1&quot; перемещен в &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="653"/>
+        <location filename="ad_interface.cpp" line="654"/>
         <source>Failed to move object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Не удалось переместить объект &quot;%1&quot; в &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="669"/>
+        <location filename="ad_interface.cpp" line="670"/>
         <source>Renamed object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Объект &quot;%1&quot; переименован в &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="673"/>
+        <location filename="ad_interface.cpp" line="674"/>
         <source>Failed to rename object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Не удалось переименовать объект &quot;%1&quot; в &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="689"/>
+        <location filename="ad_interface.cpp" line="690"/>
         <source>Added user &quot;%1&quot; to group &quot;%2&quot;</source>
         <translation>Добавлен пользователь &quot;%1&quot; в группу &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="693"/>
+        <location filename="ad_interface.cpp" line="694"/>
         <source>Failed to add user &quot;%1&quot; to group &quot;%2&quot;</source>
         <translation>Не удалось добавить &quot;%1&quot; в группу &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="709"/>
+        <location filename="ad_interface.cpp" line="710"/>
         <source>Removed user &quot;%1&quot; from group &quot;%2&quot;</source>
         <translation>Удален пользователь &quot;%1&quot; из группы &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="713"/>
+        <location filename="ad_interface.cpp" line="714"/>
         <source>Failed to remove user &quot;%1&quot; from group &quot;%2&quot;</source>
         <translation>Не удалось удалить пользователя &quot;%1&quot; из группы &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="743"/>
+        <location filename="ad_interface.cpp" line="744"/>
         <source>Set scope for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Сфера группы %1 установлена на %2</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="747"/>
+        <location filename="ad_interface.cpp" line="748"/>
         <source>Failed to set scope for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Не удалось установить сферу группы %1 на %2</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="769"/>
+        <location filename="ad_interface.cpp" line="770"/>
         <source>Set type for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Тип группы %1 установлен на %2</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="773"/>
+        <location filename="ad_interface.cpp" line="774"/>
         <source>Failed to set type for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Не удалось установить тип группы %1 на %2</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="800"/>
+        <location filename="ad_interface.cpp" line="801"/>
         <source>Set primary group for user &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Изменена основная группа пользователя &quot;%1&quot; на &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="804"/>
+        <location filename="ad_interface.cpp" line="805"/>
         <source>Failed to set primary group for user &quot;%1&quot; to &quot;%2&quot;</source>
         <translation>Не удалось изменить основную группу пользователя %1 на %2</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="831"/>
+        <location filename="ad_interface.cpp" line="832"/>
         <source>Set password for user &quot;%1&quot;</source>
         <translation>Установлен пароль для пользователя &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="835"/>
+        <location filename="ad_interface.cpp" line="836"/>
         <source>Failed to set password for user &quot;%1&quot;</source>
         <translation>Не удалось установить пароль для пользователя &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="841"/>
+        <location filename="ad_interface.cpp" line="842"/>
         <source>Password doesn&apos;t match rules</source>
         <translation>Пароль не соответствует правилам</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="899"/>
+        <location filename="ad_interface.cpp" line="900"/>
         <source>Disabled account for user - &quot;%1&quot;</source>
         <translation>Учетная запись для пользователя - &quot;%1&quot; была отключена</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="901"/>
+        <location filename="ad_interface.cpp" line="902"/>
         <source>Enabled account for user - &quot;%1&quot;</source>
         <translation>Включена учетная запись для пользователя - &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="908"/>
+        <location filename="ad_interface.cpp" line="909"/>
         <source>Turned ON account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation>Включен параметр учетной записи &quot;%1&quot; для пользователя &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="910"/>
+        <location filename="ad_interface.cpp" line="911"/>
         <source>Turned OFF account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation>Выключен параметр учетной записи &quot;%1&quot; для пользователя &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="925"/>
+        <location filename="ad_interface.cpp" line="926"/>
         <source>Failed to disable account for user &quot;%1&quot;</source>
         <translation>Не удалось отключить учетную запись для пользователя &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="927"/>
+        <location filename="ad_interface.cpp" line="928"/>
         <source>Failed to enable account for user &quot;%1&quot;</source>
         <translation>Не удалось включить учетную запись для пользователя &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="934"/>
+        <location filename="ad_interface.cpp" line="935"/>
         <source>Failed to turn ON account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation>Не удалось включить параметр учетной записи &quot;%1&quot; для пользователя &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="936"/>
+        <location filename="ad_interface.cpp" line="937"/>
         <source>Failed to turn OFF account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation>Не удалось выключить параметр учетной записи &quot;%1&quot; для пользователя &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="954"/>
+        <location filename="ad_interface.cpp" line="955"/>
         <source>Unlocked user &quot;%1&quot;</source>
         <translation>Открылся пользователь &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="958"/>
+        <location filename="ad_interface.cpp" line="959"/>
         <source>Failed to unlock user &quot;%1&quot;</source>
         <translation>Не удалось открыть пользователя &quot;%1&quot;</translation>
     </message>
@@ -282,32 +282,32 @@
 <context>
     <name>AdInterfacePrivate</name>
     <message>
-        <location filename="ad_interface.cpp" line="1125"/>
+        <location filename="ad_interface.cpp" line="1190"/>
         <source>. Error: &quot;%1&quot;</source>
         <translation>. Ошибка: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1135"/>
+        <location filename="ad_interface.cpp" line="1200"/>
         <source>No such object</source>
         <translation>Нет такого объекта</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1136"/>
+        <location filename="ad_interface.cpp" line="1201"/>
         <source>Constraint violation</source>
         <translation>Нарушение ограничений</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1137"/>
+        <location filename="ad_interface.cpp" line="1202"/>
         <source>Server is unwilling to perform</source>
         <translation>Сервер не хочет выполнять</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1138"/>
+        <location filename="ad_interface.cpp" line="1203"/>
         <source>Already exists</source>
         <translation>Объект уже существует</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1142"/>
+        <location filename="ad_interface.cpp" line="1207"/>
         <source>Server error: %1</source>
         <translation>Ошибка сервера: %1</translation>
     </message>
@@ -388,12 +388,12 @@
 <context>
     <name>attribute_display</name>
     <message>
-        <location filename="ad_display.cpp" line="79"/>
+        <location filename="ad_display.cpp" line="80"/>
         <source>&lt;unset&gt;</source>
         <translation>&lt;без значения&gt;</translation>
     </message>
     <message>
-        <location filename="ad_display.cpp" line="142"/>
+        <location filename="ad_display.cpp" line="143"/>
         <source>(never)</source>
         <translation>(никогда)</translation>
     </message>
