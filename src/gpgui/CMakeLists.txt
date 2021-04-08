@@ -17,7 +17,9 @@ find_package(Qt5 REQUIRED
         Widgets
         Xml
 )
-find_package(Smbclient REQUIRED)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(Smbclient REQUIRED IMPORTED_TARGET smbclient)
 if(NOT Iconv_IS_BUILT_IN)
 	find_package(Iconv) # For libgptbackend
 endif()
@@ -57,7 +59,7 @@ target_link_libraries(gpgui
         Qt5::Widgets
     	Qt5::Xml
     	gptbackend
-        Smbclient::Smbclient
+        PkgConfig::Smbclient
 )
 
 target_include_directories(gpgui

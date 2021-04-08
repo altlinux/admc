@@ -4,14 +4,14 @@ find_package(Qt5 REQUIRED
         LinguistTools
 )
 
-find_package(Uuid REQUIRED)
-find_package(Smbclient REQUIRED)
-find_package(Krb5 REQUIRED)
 find_package(Ldap REQUIRED)
-find_package(Resolv REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(NdrStandard REQUIRED IMPORTED_TARGET ndr_standard)
+pkg_check_modules(Smbclient REQUIRED IMPORTED_TARGET smbclient)
+pkg_check_modules(Krb5 REQUIRED IMPORTED_TARGET krb5)
+pkg_check_modules(Glib REQUIRED IMPORTED_TARGET glib-2.0)
+pkg_check_modules(Uuid REQUIRED IMPORTED_TARGET uuid)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -38,11 +38,11 @@ target_include_directories(adldap PRIVATE
 
 target_link_libraries(adldap
     Qt5::Core
-    Uuid::Uuid
-    Smbclient::Smbclient
-    Krb5::Krb5
+    PkgConfig::Uuid
+    PkgConfig::Smbclient
+    PkgConfig::Smbclient
+    PkgConfig::Krb5
     Ldap::Ldap
-    Resolv::Resolv
     PkgConfig::NdrStandard
 )
 
