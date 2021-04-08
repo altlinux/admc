@@ -60,7 +60,7 @@ OctetEditor::OctetEditor(const QString attribute, const QList<QByteArray> values
     const QString value_string = octet_bytes_to_string(value, current_format(format_combo));
     edit->setPlainText(value_string);
 
-    if (adconfig->get_attribute_is_system_only(attribute)) {
+    if (g_adconfig->get_attribute_is_system_only(attribute)) {
         edit->setReadOnly(true);
     }
 

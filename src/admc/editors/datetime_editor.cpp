@@ -38,7 +38,7 @@ DateTimeEditor::DateTimeEditor(const QString attribute, const QList<QByteArray> 
 
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = QString(value);
-    const QDateTime value_datetime = datetime_string_to_qdatetime(attribute, value_string, adconfig);
+    const QDateTime value_datetime = datetime_string_to_qdatetime(attribute, value_string, g_adconfig);
     edit->setDateTime(value_datetime);
 
     QDialogButtonBox *button_box = make_button_box(attribute);;
@@ -49,7 +49,7 @@ DateTimeEditor::DateTimeEditor(const QString attribute, const QList<QByteArray> 
     layout->addWidget(edit);
     layout->addWidget(button_box);
 
-    const bool system_only = adconfig->get_attribute_is_system_only(attribute);
+    const bool system_only = g_adconfig->get_attribute_is_system_only(attribute);
     if (system_only) {
         edit->setReadOnly(true);
     }

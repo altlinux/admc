@@ -35,7 +35,7 @@ FilterBuilder::FilterBuilder()
 {
     attribute_class_combo = new QComboBox();
     for (const QString &object_class : filter_classes) {
-        const QString display = adconfig->get_class_display_name(object_class);
+        const QString display = g_adconfig->get_class_display_name(object_class);
         attribute_class_combo->addItem(display, object_class);
     }
 
@@ -122,14 +122,14 @@ void FilterBuilder::update_attributes_combo() {
         return item_data.toString();
     }();
     
-    const QList<QString> attributes = adconfig->get_find_attributes(object_class);
+    const QList<QString> attributes = g_adconfig->get_find_attributes(object_class);
 
     const QList<QString> display_attributes =
     [attributes, object_class]() {
         QList<QString> out;
 
         for (const QString &attribute : attributes) {
-            const QString display_name = adconfig->get_attribute_display_name(attribute, object_class);
+            const QString display_name = g_adconfig->get_attribute_display_name(attribute, object_class);
             out.append(display_name);
         }
 
@@ -143,7 +143,7 @@ void FilterBuilder::update_attributes_combo() {
     [attributes, object_class]() {
         QHash<QString, QString> out;
         for (const QString &attribute : attributes) {
-            const QString display_name = adconfig->get_attribute_display_name(attribute, object_class);
+            const QString display_name = g_adconfig->get_attribute_display_name(attribute, object_class);
 
             out[display_name] = attribute;
         }
@@ -167,7 +167,7 @@ void FilterBuilder::update_conditions_combo() {
             const QVariant item_data = attribute_combo->itemData(index);
             const QString attribute = item_data.toString();
 
-            return adconfig->get_attribute_type(attribute);
+            return g_adconfig->get_attribute_type(attribute);
         }();
 
         // NOTE: extra conditions don't work on DSDN type

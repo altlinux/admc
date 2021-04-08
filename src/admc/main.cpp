@@ -21,6 +21,7 @@
 #include "main_window.h"
 #include "settings.h"
 #include "adldap.h"
+#include "globals.h"
 
 #include <QApplication>
 #include <QTranslator>
@@ -43,7 +44,7 @@ int main(int argc, char **argv) {
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
 
     QTranslator translator;
-    const QLocale saved_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
+    const QLocale saved_locale = g_settings->get_variant(VariantSetting_Locale).toLocale();
     translator.load(saved_locale, QString(), QString(), ":/admc");
     load_adldap_translation(translator, saved_locale);
     app.installTranslator(&translator);

@@ -31,9 +31,10 @@ bool bool_default_value(const BoolSetting setting);
 QString bool_to_string(const BoolSetting setting);
 QString variant_to_string(const VariantSetting setting);
 
-Settings *Settings::instance() {
-    static Settings settings;
-    return &settings;
+Settings::Settings()
+: qsettings()
+{
+
 }
 
 const BoolSettingSignal *Settings::get_bool_signal(const BoolSetting setting) const {
@@ -68,12 +69,6 @@ void Settings::set_variant(const VariantSetting setting, const QVariant &value) 
 bool Settings::contains_variant(const VariantSetting setting) const {
     const QString name = variant_to_string(setting);
     return qsettings.contains(name);
-}
-
-Settings::Settings()
-: qsettings()
-{
-
 }
 
 void Settings::connect_action_to_bool_setting(QAction *action, const BoolSetting setting) {
@@ -129,7 +124,7 @@ void Settings::connect_toggle_widget(QWidget *widget, const BoolSetting setting)
 
     auto on_changed =
     [=]() {
-        const bool visible = SETTINGS()->get_bool(setting);
+        const bool visible = get_bool(setting);
         widget->setVisible(visible);
     };
 
@@ -195,8 +190,4 @@ QString variant_to_string(const VariantSetting setting) {
         CASE_ENUM_TO_STRING(VariantSetting_COUNT);
     }
     return "";
-}
-
-Settings *SETTINGS() {
-    return Settings::instance();
 }

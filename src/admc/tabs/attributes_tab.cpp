@@ -64,7 +64,7 @@ AttributesTab::AttributesTab() {
     proxy->setSourceModel(model);
     view->setModel(proxy);
 
-    SETTINGS()->setup_header_state(view->header(), VariantSetting_AttributesHeader);
+    g_settings->setup_header_state(view->header(), VariantSetting_AttributesHeader);
 
     auto edit_button = new QPushButton(tr("Edit"));
     auto filter_button = new QPushButton(tr("Filter"));
@@ -233,7 +233,7 @@ void AttributesTab::open_filter_dialog() {
 
                 return QVariant(filters_list);
             }();
-            SETTINGS()->set_variant(VariantSetting_AttributesTabFilter, filters_variant);
+            g_settings->set_variant(VariantSetting_AttributesTabFilter, filters_variant);
         });
 
     dialog->open();
@@ -248,7 +248,7 @@ void AttributesTab::load(AdInterface &ad, const AdObject &object) {
 
     // Add attributes without values
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-    const QList<QString> optional_attributes = adconfig->get_optional_attributes(object_classes);
+    const QList<QString> optional_attributes = g_adconfig->get_optional_attributes(object_classes);
     for (const QString &attribute : optional_attributes) {
         if (!original.contains(attribute)) {
             original[attribute] = QList<QByteArray>();
@@ -293,8 +293,8 @@ bool AttributesTab::apply(AdInterface &ad, const QString &target) {
 }
 
 void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values) {
-    const QString display_values = attribute_display_values(attribute, values, adconfig);
-    const AttributeType type = adconfig->get_attribute_type(attribute);
+    const QString display_values = attribute_display_values(attribute, values, g_adconfig);
+    const AttributeType type = g_adconfig->get_attribute_type(attribute);
     const QString type_display = attribute_type_display_string(type);
 
     row[AttributesColumn_Name]->setText(attribute);
@@ -305,7 +305,7 @@ void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &a
 AttributesTabProxy::AttributesTabProxy(QObject *parent)
 : QSortFilterProxyModel(parent) {
     // Load filters from settings
-    const QVariant filters_variant = SETTINGS()->get_variant(VariantSetting_AttributesTabFilter);
+    const QVariant filters_variant = g_settings->get_variant(VariantSetting_AttributesTabFilter);
     const QList<QVariant> filters_list = filters_variant.toList();
     for (int filter_i = 0; filter_i < AttributeFilter_COUNT; filter_i++) {
         const AttributeFilter filter = (AttributeFilter) filter_i;
@@ -325,8 +325,8 @@ AttributesTabProxy::AttributesTabProxy(QObject *parent)
 
 void AttributesTabProxy::load(const AdObject &object) {
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-    mandatory_attributes = adconfig->get_mandatory_attributes(object_classes).toSet();
-    optional_attributes = adconfig->get_optional_attributes(object_classes).toSet();
+    mandatory_attributes = g_adconfig->get_mandatory_attributes(object_classes).toSet();
+    optional_attributes = g_adconfig->get_optional_attributes(object_classes).toSet();
 
     set_attributes = object.attributes().toSet();
 }
@@ -335,7 +335,7 @@ bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &sou
     auto source = sourceModel();
     const QString attribute = source->index(source_row, AttributesColumn_Name, source_parent).data().toString();
     
-    const bool system_only = adconfig->get_attribute_is_system_only(attribute);
+    const bool system_only = g_adconfig->get_attribute_is_system_only(attribute);
     const bool unset = !set_attributes.contains(attribute);
     const bool mandatory = mandatory_attributes.contains(attribute);
     const bool optional = optional_attributes.contains(attribute);
@@ -353,8 +353,8 @@ bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &sou
     }
 
     if (filters[AttributeFilter_ReadOnly] && system_only) {
-        const bool constructed = adconfig->get_attribute_is_constructed(attribute);
-        const bool backlink = adconfig->get_attribute_is_backlink(attribute);
+        const bool constructed = g_adconfig->get_attribute_is_constructed(attribute);
+        const bool backlink = g_adconfig->get_attribute_is_backlink(attribute);
 
         if (!filters[AttributeFilter_SystemOnly] && !constructed && !backlink) {
             return false;

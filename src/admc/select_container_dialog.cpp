@@ -54,7 +54,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     view->setExpandsOnDoubleClick(true);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
-    view->sortByColumn(adconfig->get_column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
+    view->sortByColumn(g_adconfig->get_column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
     view->setHeaderHidden(true);
 
     view->setModel(model);
@@ -68,7 +68,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     for (int i = 0; i < header->count(); i++) {
         header->setSectionHidden(i, true);
     }
-    header->setSectionHidden(adconfig->get_column_index(ATTRIBUTE_NAME), false);
+    header->setSectionHidden(g_adconfig->get_column_index(ATTRIBUTE_NAME), false);
 
     connect(
         buttonbox, &QDialogButtonBox::accepted,
@@ -94,7 +94,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     layout->addWidget(buttonbox);
 
     // Load head object
-    const QString head_dn = adconfig->domain_head();
+    const QString head_dn = g_adconfig->domain_head();
     const AdObject head_object = ad.search_object(head_dn);
     auto item = make_container_node(head_object);
     model->appendRow(item);
@@ -122,7 +122,7 @@ void SelectContainerDialog::fetch_node(const QModelIndex &index) {
     [=]() {
         QString out = is_container_filter();
 
-        const bool advanced_view_OFF = !SETTINGS()->get_bool(BoolSetting_AdvancedFeatures);
+        const bool advanced_view_OFF = !g_settings->get_bool(BoolSetting_AdvancedFeatures);
         if (advanced_view_OFF) {
             const QString advanced_view = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
             out = filter_OR({out, advanced_view});

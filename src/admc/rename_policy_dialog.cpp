@@ -49,7 +49,7 @@ RenamePolicyDialog::RenamePolicyDialog(const QString &target_arg, QWidget *paren
 
     const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
-    const QString type_string = adconfig->get_class_display_name(object_class);
+    const QString type_string = g_adconfig->get_class_display_name(object_class);
     const auto title = QString(tr("Rename object \"%1\"")).arg(type_string);
     setWindowTitle(title);
 
@@ -106,7 +106,7 @@ void RenamePolicyDialog::accept() {
         RenameDialog::fail_msg(old_name);
     }
 
-    STATUS()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 }
 
 void RenamePolicyDialog::on_edited() {

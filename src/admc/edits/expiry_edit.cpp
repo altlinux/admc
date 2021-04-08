@@ -98,7 +98,7 @@ void ExpiryEdit::load_internal(AdInterface &ad, const AdObject &object) {
             // Default to current date when expiry is never
             return QDate::currentDate();
         } else {
-            const QDateTime datetime = object.get_datetime(ATTRIBUTE_ACCOUNT_EXPIRES, adconfig);
+            const QDateTime datetime = object.get_datetime(ATTRIBUTE_ACCOUNT_EXPIRES, g_adconfig);
             return datetime.date();
         }
     }();
@@ -113,7 +113,7 @@ void ExpiryEdit::set_read_only(const bool read_only) {
 }
 
 void ExpiryEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = adconfig->get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
+    const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
 
     layout->addRow(label_text, frame);
 }

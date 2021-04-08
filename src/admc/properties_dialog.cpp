@@ -158,7 +158,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     add_tab(new GeneralTab(object), tr("General"));
 
     // TODO: security tab(didn't make it yet) is also "advanced", so add it here when it gets made
-    const bool advanced_view_ON = SETTINGS()->get_bool(BoolSetting_AdvancedFeatures);
+    const bool advanced_view_ON = g_settings->get_bool(BoolSetting_AdvancedFeatures);
     if (advanced_view_ON) {
         add_tab(new ObjectTab(), tr("Object"));
         add_tab(new AttributesTab(), tr("Attributes"));
@@ -242,7 +242,7 @@ bool PropertiesDialog::apply() {
         }
     }
 
-    STATUS()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     if (total_apply_success) {
         apply_button->setEnabled(false);

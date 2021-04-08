@@ -38,7 +38,7 @@ AttributeEditor::AttributeEditor(QWidget *parent)
 }
 
 AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByteArray> values, QWidget *parent) {
-    const bool single_valued = adconfig->get_attribute_is_single_valued(attribute);
+    const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
 
     auto octet_dialog =
     [=]() -> AttributeEditor * {
@@ -77,7 +77,7 @@ AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByt
         } 
     };
 
-    const AttributeType type = adconfig->get_attribute_type(attribute);
+    const AttributeType type = g_adconfig->get_attribute_type(attribute);
     switch (type) {
         case AttributeType_Octet: return octet_dialog();
         case AttributeType_Sid: return octet_dialog();
@@ -114,7 +114,7 @@ QLabel *AttributeEditor::make_attribute_label(const QString &attribute) {
 QDialogButtonBox *AttributeEditor::make_button_box(const QString attribute) {
     auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
-    const bool system_only = adconfig->get_attribute_is_system_only(attribute);
+    const bool system_only = g_adconfig->get_attribute_is_system_only(attribute);
     if (system_only) {
         button_box->setEnabled(false);
     }

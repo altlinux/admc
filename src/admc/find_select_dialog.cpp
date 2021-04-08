@@ -34,7 +34,7 @@ FindSelectDialog::FindSelectDialog(const QList<QString> classes, QWidget *parent
 
     setWindowTitle(tr("Find and select objects"));
 
-    find_widget = new FindWidget(classes, adconfig->domain_head());
+    find_widget = new FindWidget(classes, g_adconfig->domain_head());
 
     auto buttons = new QDialogButtonBox();
     buttons->addButton(QDialogButtonBox::Ok);

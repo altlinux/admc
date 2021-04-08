@@ -20,5 +20,9 @@
 #include "globals.h"
 
 #include "adldap.h"
+#include "settings.h"
+#include "status.h"
 
-AdConfig *adconfig = new AdConfig();
+AdConfig *g_adconfig = new AdConfig();
+Settings *g_settings = new Settings();
+Status *g_status = new Status();

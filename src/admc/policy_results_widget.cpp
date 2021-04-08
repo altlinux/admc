@@ -26,6 +26,7 @@
 #include "utils.h"
 #include "gplink.h"
 #include "status.h"
+#include "globals.h"
 
 #include <QModelIndex>
 #include <QTreeView>
@@ -223,7 +224,7 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
         item->setCheckState(undo_check_state);
     }
 
-    STATUS()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     hide_busy_indicator();
 }
@@ -275,7 +276,7 @@ void PolicyResultsWidget::delete_link() {
         model->removeRow(index.row());
     }
     
-    STATUS()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     hide_busy_indicator();
 }

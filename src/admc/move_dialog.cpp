@@ -69,7 +69,7 @@ void MoveDialog::accept() {
 
     hide_busy_indicator();
 
-    STATUS()->display_ad_messages(ad, nullptr);
+    g_status->display_ad_messages(ad, nullptr);
 
     QDialog::accept();
 }

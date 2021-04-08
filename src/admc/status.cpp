@@ -32,15 +32,6 @@
 
 #define MAX_MESSAGES_IN_LOG 200
 
-Status *Status::instance() {
-    static Status status;
-    return &status;
-}
-
-Status *STATUS() {
-    return Status::instance();
-}
-
 Status::Status() {
     m_status_bar = new QStatusBar();
     m_message_log = new QTextEdit();

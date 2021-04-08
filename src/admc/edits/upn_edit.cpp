@@ -40,12 +40,12 @@ UpnEdit::UpnEdit(QList<AttributeEdit *> *edits_out, AdInterface &ad, QObject *pa
     [&]() {
         QList<QString> out;
 
-        const QString partitions_dn = adconfig->partitions_dn();
+        const QString partitions_dn = g_adconfig->partitions_dn();
         const AdObject partitions_object = ad.search_object(partitions_dn);
 
         out = partitions_object.get_strings(ATTRIBUTE_UPN_SUFFIXES);
 
-        const QString domain = adconfig->domain();
+        const QString domain = g_adconfig->domain();
         const QString domain_suffix = domain.toLower();
         if (!out.contains(domain_suffix)) {
             out.append(domain_suffix);
@@ -96,7 +96,7 @@ void UpnEdit::set_read_only(const bool read_only) {
 }
 
 void UpnEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = adconfig->get_attribute_display_name(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER) + ":";
+    const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER) + ":";
     
     auto sublayout = new QHBoxLayout();
     sublayout->addWidget(prefix_edit);
@@ -125,7 +125,7 @@ bool UpnEdit::verify(AdInterface &ad, const QString &dn) const {
         return filter_AND({same_upn, not_object_itself});
     }();
     const QList<QString> search_attributes;
-    const QString base = adconfig->domain_head();
+    const QString base = g_adconfig->domain_head();
 
     const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All, base);
 

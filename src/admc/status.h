@@ -41,9 +41,9 @@ enum StatusType {
 
 class Status {
 
-public:   
-    static Status *instance();
-
+public:
+    Status();
+    
     QStatusBar *status_bar() const;
     QTextEdit *message_log() const;
 
@@ -54,10 +54,6 @@ public:
 private:
     QStatusBar *m_status_bar;
     QTextEdit *m_message_log;
-
-    Status();
 };
-
-Status *STATUS();
 
 #endif /* STATUS_BAR_H */

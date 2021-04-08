@@ -151,7 +151,7 @@ void MembershipTab::load(AdInterface &ad, const AdObject &object) {
         case MembershipTabType_Members: {
             // Get users who have this group as primary group
             const QByteArray group_sid = object.get_value(ATTRIBUTE_OBJECT_SID);
-            const QString group_rid = extract_rid_from_sid(group_sid, adconfig);
+            const QString group_rid = extract_rid_from_sid(group_sid, g_adconfig);
 
             const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_PRIMARY_GROUP_ID, group_rid);
             const QHash<QString, AdObject> result = ad.search(filter, QList<QString>(), SearchScope_All);
@@ -173,7 +173,7 @@ void MembershipTab::load(AdInterface &ad, const AdObject &object) {
             // group sid = "S-foo-bar-baz-xyz"
             const QString group_rid = object.get_string(ATTRIBUTE_PRIMARY_GROUP_ID);
             const QByteArray user_sid = object.get_value(ATTRIBUTE_OBJECT_SID);
-            const QString user_sid_string = attribute_display_value(ATTRIBUTE_OBJECT_SID, user_sid, adconfig);
+            const QString user_sid_string = attribute_display_value(ATTRIBUTE_OBJECT_SID, user_sid, g_adconfig);
             const int cut_index = user_sid_string.lastIndexOf("-") + 1;
             const QString group_sid = user_sid_string.left(cut_index) + group_rid;
 

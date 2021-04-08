@@ -55,7 +55,7 @@ RenameDialog::RenameDialog(const QList<QString> &targets, QWidget *parent)
 
     const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
-    const QString type_string = adconfig->get_class_display_name(object_class);
+    const QString type_string = g_adconfig->get_class_display_name(object_class);
     const auto title = QString(tr("Rename object \"%1\"")).arg(type_string);
     setWindowTitle(title);
 
@@ -112,12 +112,12 @@ RenameDialog::RenameDialog(const QList<QString> &targets, QWidget *parent)
 
 void RenameDialog::success_msg(const QString &old_name) {
     const QString message = QString(tr("Renamed object \"%1\"")).arg(old_name);
-    STATUS()->add_message(message, StatusType_Success);
+    g_status->add_message(message, StatusType_Success);
 }
 
 void RenameDialog::fail_msg(const QString &old_name) {
     const QString message = QString(tr("Failed to rename object \"%1\"")).arg(old_name);
-    STATUS()->add_message(message, StatusType_Error);
+    g_status->add_message(message, StatusType_Error);
 }
 
 QString RenameDialog::get_new_dn() const {
@@ -160,7 +160,7 @@ void RenameDialog::accept() {
 
     hide_busy_indicator();
 
-    STATUS()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     if (final_success) {
         success_msg(old_name);

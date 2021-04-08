@@ -74,11 +74,11 @@ void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap
 }
 
 void show_only_in_dev_mode(QWidget *widget) {
-    const BoolSettingSignal *dev_mode_signal = SETTINGS()->get_bool_signal(BoolSetting_DevMode);
+    const BoolSettingSignal *dev_mode_signal = g_settings->get_bool_signal(BoolSetting_DevMode);
 
     const auto do_it =
     [widget]() {
-        const bool dev_mode = SETTINGS()->get_bool(BoolSetting_DevMode);
+        const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
         widget->setVisible(dev_mode);
     };
     do_it();
@@ -127,7 +127,7 @@ void hide_busy_indicator() {
 }
 
 bool confirmation_dialog(const QString &text, QWidget *parent) {
-    const bool confirm_actions = SETTINGS()->get_bool(BoolSetting_ConfirmActions);
+    const bool confirm_actions = g_settings->get_bool(BoolSetting_ConfirmActions);
     if (!confirm_actions) {
         return true;
     }
@@ -174,7 +174,7 @@ bool ad_failed(const AdInterface &ad) {
 }
 
 QString is_container_filter() {
-    const QList<QString> accepted_classes = adconfig->get_filter_containers();
+    const QList<QString> accepted_classes = g_adconfig->get_filter_containers();
 
     QList<QString> class_filters;
     for (const QString &object_class : accepted_classes) {
@@ -186,7 +186,7 @@ QString is_container_filter() {
 }
 
 void limit_edit(QLineEdit *edit, const QString &attribute) {
-    const int range_upper = adconfig->get_attribute_range_upper(attribute);
+    const int range_upper = g_adconfig->get_attribute_range_upper(attribute);
     if (range_upper > 0) {
         edit->setMaxLength(range_upper);
     }

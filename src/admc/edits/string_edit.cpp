@@ -40,7 +40,7 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
     
     edit = new QLineEdit();
     
-    if (adconfig->get_attribute_is_number(attribute)) {
+    if (g_adconfig->get_attribute_is_number(attribute)) {
         set_line_edit_to_numbers_only(edit);
     }
     
@@ -73,10 +73,10 @@ void StringEdit::set_read_only(const bool read_only) {
 }
 
 void StringEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = adconfig->get_attribute_display_name(attribute, objectClass) + ":";
+    const QString label_text = g_adconfig->get_attribute_display_name(attribute, objectClass) + ":";
     
     if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
-        const QString domain = adconfig->domain();
+        const QString domain = g_adconfig->domain();
         
         const QString domain_name = domain.split(".")[0];
         const QString extra_edit_text = "\\" + domain_name;

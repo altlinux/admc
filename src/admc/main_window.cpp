@@ -42,13 +42,13 @@
 MainWindow::MainWindow()
 : QMainWindow()
 {
-    setStatusBar(STATUS()->status_bar());
+    setStatusBar(g_status->status_bar());
 
-    STATUS()->status_bar()->showMessage(tr("Ready"));
+    g_status->status_bar()->showMessage(tr("Ready"));
 
     message_log_dock = new QDockWidget();
     message_log_dock->setWindowTitle(tr("Message Log"));
-    message_log_dock->setWidget(STATUS()->message_log());
+    message_log_dock->setWidget(g_status->message_log());
     message_log_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
     message_log_dock->setObjectName(MESSAGE_LOG_OBJECT_NAME);
     addDockWidget(Qt::TopDockWidgetArea, message_log_dock);
@@ -59,10 +59,10 @@ MainWindow::MainWindow()
 
     setup_menubar();
 
-    const QByteArray geometry = SETTINGS()->get_variant(VariantSetting_MainWindowGeometry).toByteArray();
+    const QByteArray geometry = g_settings->get_variant(VariantSetting_MainWindowGeometry).toByteArray();
     restoreGeometry(geometry);
 
-    const QByteArray state = SETTINGS()->get_variant(VariantSetting_MainWindowState).toByteArray();
+    const QByteArray state = g_settings->get_variant(VariantSetting_MainWindowState).toByteArray();
     restoreState(state);
 
     connect_to_server();
@@ -70,10 +70,10 @@ MainWindow::MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event) {
     const QByteArray geometry = saveGeometry();
-    SETTINGS()->set_variant(VariantSetting_MainWindowGeometry, geometry);
+    g_settings->set_variant(VariantSetting_MainWindowGeometry, geometry);
 
     const QByteArray state = saveState();
-    SETTINGS()->set_variant(VariantSetting_MainWindowState, state);
+    g_settings->set_variant(VariantSetting_MainWindowState, state);
 }
 
 void MainWindow::setup_menubar() {
@@ -128,7 +128,7 @@ void MainWindow::setup_menubar() {
 
             const bool is_checked =
             [=]() {
-                const QLocale current_locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
+                const QLocale current_locale = g_settings->get_variant(VariantSetting_Locale).toLocale();
 
                 return (current_locale == locale);
             }();
@@ -197,11 +197,11 @@ void MainWindow::setup_menubar() {
     connect(
         about_action, &QAction::triggered,
         about_dialog, &QDialog::open);
-    SETTINGS()->connect_action_to_bool_setting(advanced_features_action, BoolSetting_AdvancedFeatures);
-    SETTINGS()->connect_action_to_bool_setting(confirm_actions_action, BoolSetting_ConfirmActions);
-    SETTINGS()->connect_action_to_bool_setting(last_before_first_name_action, BoolSetting_LastNameBeforeFirstName);
-    SETTINGS()->connect_action_to_bool_setting(toggle_console_tree_action, BoolSetting_ShowConsoleTree);
-    SETTINGS()->connect_action_to_bool_setting(toggle_description_bar_action, BoolSetting_ShowResultsHeader);
+    g_settings->connect_action_to_bool_setting(advanced_features_action, BoolSetting_AdvancedFeatures);
+    g_settings->connect_action_to_bool_setting(confirm_actions_action, BoolSetting_ConfirmActions);
+    g_settings->connect_action_to_bool_setting(last_before_first_name_action, BoolSetting_LastNameBeforeFirstName);
+    g_settings->connect_action_to_bool_setting(toggle_console_tree_action, BoolSetting_ShowConsoleTree);
+    g_settings->connect_action_to_bool_setting(toggle_description_bar_action, BoolSetting_ShowResultsHeader);
 
     for (const auto language : language_actions.keys()) {
         QAction *action = language_actions[language];
@@ -210,7 +210,7 @@ void MainWindow::setup_menubar() {
             action, &QAction::toggled,
             [this, language](bool checked) {
                 if (checked) {
-                    SETTINGS()->set_variant(VariantSetting_Locale, QLocale(language));
+                    g_settings->set_variant(VariantSetting_Locale, QLocale(language));
 
                     QMessageBox::information(this, tr("Info"), tr("App needs to be restarted for the language option to take effect."));
                 }
@@ -229,12 +229,12 @@ void MainWindow::connect_to_server() {
     AdInterface ad;
     if (ad_connected(ad)) {
         // TODO: check for load failure
-        const QLocale locale = SETTINGS()->get_variant(VariantSetting_Locale).toLocale();
-        adconfig->load(ad, locale);
+        const QLocale locale = g_settings->get_variant(VariantSetting_Locale).toLocale();
+        g_adconfig->load(ad, locale);
 
-        AdInterface::set_permanent_adconfig(adconfig);
+        AdInterface::set_permanent_adconfig(g_adconfig);
 
-        STATUS()->display_ad_messages(ad, this);
+        g_status->display_ad_messages(ad, this);
 
         central_widget->go_online(ad);
         central_widget->setEnabled(true);

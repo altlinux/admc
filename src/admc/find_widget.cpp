@@ -41,7 +41,7 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
 {
     // TODO: missing "Entire directory" in search base combo. Not 100% sure what it's supposed to be, the tippy-top domain? Definitely need it for work with multiple domains.
 
-    const QString domain_head = adconfig->domain_head();
+    const QString domain_head = g_adconfig->domain_head();
 
     search_base_combo = new QComboBox();
     {

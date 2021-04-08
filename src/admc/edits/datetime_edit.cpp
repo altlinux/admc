@@ -41,7 +41,7 @@ DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QList<AttributeEdit *> 
 }
 
 void DateTimeEdit::load_internal(AdInterface &ad, const AdObject &object) {
-    const QDateTime datetime = object.get_datetime(attribute, adconfig);
+    const QDateTime datetime = object.get_datetime(attribute, g_adconfig);
     const QDateTime datetime_local = datetime.toLocalTime();
 
     edit->setDateTime(datetime_local);
@@ -52,7 +52,7 @@ void DateTimeEdit::set_read_only(const bool read_only) {
 }
 
 void DateTimeEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = adconfig->get_attribute_display_name(attribute, "") + ":";
+    const QString label_text = g_adconfig->get_attribute_display_name(attribute, "") + ":";
     layout->addRow(label_text, edit);
 }
 

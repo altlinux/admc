@@ -73,7 +73,7 @@ signals:
 class Settings {
 
 public:
-    static Settings *instance();
+    Settings();
 
     QVariant get_variant(const VariantSetting setting) const;
     void set_variant(const VariantSetting setting, const QVariant &value);
@@ -99,10 +99,6 @@ public:
 private:
     QSettings qsettings;
     BoolSettingSignal bools[BoolSetting_COUNT];
-
-    Settings();
 };
-
-Settings *SETTINGS();
 
 #endif /* SETTINGS_H */

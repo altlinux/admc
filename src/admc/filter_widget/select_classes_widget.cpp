@@ -61,7 +61,7 @@ SelectClassesWidget::SelectClassesWidget(const QList<QString> classes)
         
         dialog_checks[object_class] = check;
 
-        const QString class_display = adconfig->get_class_display_name(object_class);
+        const QString class_display = g_adconfig->get_class_display_name(object_class);
         checks_layout->addRow(class_display, check);
 
         connect(
@@ -127,7 +127,7 @@ void SelectClassesWidget::on_dialog_accepted() {
         
         QList<QString> classes_display_strings;
         for (const QString &object_class : selected_classes) {
-            const QString class_display = adconfig->get_class_display_name(object_class);
+            const QString class_display = g_adconfig->get_class_display_name(object_class);
             classes_display_strings.append(class_display);
         }
 

@@ -64,7 +64,7 @@ CreateDialog::CreateDialog(const QList<QString> &targets, const QString &object_
 
     setMinimumWidth(400);
 
-    const QString class_name = adconfig->get_class_display_name(object_class);
+    const QString class_name = g_adconfig->get_class_display_name(object_class);
     const auto title = QString(tr("Create object - \"%1\"")).arg(class_name);
     setWindowTitle(title);
 
@@ -116,7 +116,7 @@ CreateDialog::CreateDialog(const QList<QString> &targets, const QString &object_
                 const QString first_name = first_name_edit->get_input(); 
                 const QString last_name = last_name_edit->get_input(); 
 
-                const bool last_name_first = SETTINGS()->get_bool(BoolSetting_LastNameBeforeFirstName);
+                const bool last_name_first = g_settings->get_bool(BoolSetting_LastNameBeforeFirstName);
                 if (!first_name.isEmpty() && !last_name.isEmpty()) {
                     if (last_name_first) {
                         return last_name + " " + first_name;
@@ -243,7 +243,7 @@ void CreateDialog::accept() {
     auto fail_msg =
     [name]() {
         const QString message = QString(tr("Failed to create object \"%1\"")).arg(name);
-        STATUS()->add_message(message, StatusType_Error);
+        g_status->add_message(message, StatusType_Error);
     };
 
     const bool add_success = ad.object_add(dn, object_class);
@@ -262,12 +262,12 @@ void CreateDialog::accept() {
         }
     }
 
-    STATUS()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
     
     if (final_success) {
         const QString message = QString(tr("Created object \"%1\"")).arg(name);
 
-        STATUS()->add_message(message, StatusType_Success);
+        g_status->add_message(message, StatusType_Success);
     } else {
         fail_msg();
     }

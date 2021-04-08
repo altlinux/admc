@@ -101,7 +101,7 @@ CentralWidget::CentralWidget()
     object_results = new ResultsView(this);
     // TODO: not sure how to do this. View headers dont even
     // have sections until their models are loaded.
-    // SETTINGS()->setup_header_state(object_results->header(),
+    // g_settings->setup_header_state(object_results->header(),
     // VariantSetting_ResultsHeader);
 
     auto policies_results = new ResultsView(this);
@@ -119,26 +119,26 @@ CentralWidget::CentralWidget()
 
     // Refresh head when settings affecting the filter
     // change. This reloads the model with an updated filter
-    const BoolSettingSignal *advanced_features = SETTINGS()->get_bool_signal(BoolSetting_AdvancedFeatures);
+    const BoolSettingSignal *advanced_features = g_settings->get_bool_signal(BoolSetting_AdvancedFeatures);
     connect(
         advanced_features, &BoolSettingSignal::changed,
         this, &CentralWidget::refresh_head);
 
-    const BoolSettingSignal *show_non_containers = SETTINGS()->get_bool_signal(BoolSetting_ShowNonContainersInConsoleTree);
+    const BoolSettingSignal *show_non_containers = g_settings->get_bool_signal(BoolSetting_ShowNonContainersInConsoleTree);
     connect(
         show_non_containers, &BoolSettingSignal::changed,
         this, &CentralWidget::refresh_head);
 
-    const BoolSettingSignal *dev_mode_signal = SETTINGS()->get_bool_signal(BoolSetting_DevMode);
+    const BoolSettingSignal *dev_mode_signal = g_settings->get_bool_signal(BoolSetting_DevMode);
     connect(
         dev_mode_signal, &BoolSettingSignal::changed,
         this, &CentralWidget::refresh_head);
 
-    SETTINGS()->connect_toggle_widget(console_widget->get_scope_view(), BoolSetting_ShowConsoleTree);
-    SETTINGS()->connect_toggle_widget(console_widget->get_description_bar(), BoolSetting_ShowResultsHeader);
+    g_settings->connect_toggle_widget(console_widget->get_scope_view(), BoolSetting_ShowConsoleTree);
+    g_settings->connect_toggle_widget(console_widget->get_description_bar(), BoolSetting_ShowResultsHeader);
 
-    SETTINGS()->connect_action_to_bool_setting(dev_mode_action, BoolSetting_DevMode);
-    SETTINGS()->connect_action_to_bool_setting(show_noncontainers_action, BoolSetting_ShowNonContainersInConsoleTree);
+    g_settings->connect_action_to_bool_setting(dev_mode_action, BoolSetting_DevMode);
+    g_settings->connect_action_to_bool_setting(show_noncontainers_action, BoolSetting_ShowNonContainersInConsoleTree);
 
     connect(
         open_filter_action, &QAction::triggered,
@@ -239,7 +239,7 @@ void CentralWidget::go_online(AdInterface &ad) {
     object_results_id = console_widget->register_results(object_results, object_model_header_labels(), object_model_default_columns());
 
     // Add top domain item
-    const QString head_dn = adconfig->domain_head();
+    const QString head_dn = g_adconfig->domain_head();
     const AdObject head_object = ad.search_object(head_dn);
 
     QStandardItem *item = console_widget->add_scope_item(object_results_id, ScopeNodeType_Dynamic, QModelIndex());
@@ -451,7 +451,7 @@ void CentralWidget::edit_upn_suffixes() {
 
     // Open editor for upn suffixes attribute of partitions
     // object
-    const QString partitions_dn = adconfig->partitions_dn();
+    const QString partitions_dn = g_adconfig->partitions_dn();
     const AdObject partitions_object = ad.search_object(partitions_dn);
     const QList<QByteArray> current_values = partitions_object.get_values(ATTRIBUTE_UPN_SUFFIXES);
 
@@ -470,7 +470,7 @@ void CentralWidget::edit_upn_suffixes() {
             const QList<QByteArray> new_values = editor->get_new_values();
 
             ad2.attribute_replace_values(partitions_dn, ATTRIBUTE_UPN_SUFFIXES, new_values);
-            STATUS()->display_ad_messages(ad2, this);
+            g_status->display_ad_messages(ad2, this);
         });
 }
 
@@ -553,7 +553,7 @@ void CentralWidget::add_link() {
 
             hide_busy_indicator();
 
-            STATUS()->display_ad_messages(ad, this);
+            g_status->display_ad_messages(ad, this);
         });
 
     dialog->open();
@@ -632,7 +632,7 @@ void CentralWidget::delete_policy() {
 
     hide_busy_indicator();
 
-    STATUS()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 }
 
 // NOTE: only check if object can be dropped if dropping a
@@ -695,7 +695,7 @@ void CentralWidget::on_items_dropped(const QList<QModelIndex> &dropped_list, con
 
     hide_busy_indicator();
 
-    STATUS()->display_ad_messages(ad, nullptr);
+    g_status->display_ad_messages(ad, nullptr);
 }
 
 void CentralWidget::on_current_scope_changed() {
@@ -771,7 +771,7 @@ void CentralWidget::add_actions_to_view_menu(QMenu *menu) {
 void CentralWidget::fetch_scope_node(const QModelIndex &index) {
     show_busy_indicator();
 
-    const bool dev_mode = SETTINGS()->get_bool(BoolSetting_DevMode);
+    const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
 
     //
     // Search object's children
@@ -787,7 +787,7 @@ void CentralWidget::fetch_scope_node(const QModelIndex &index) {
 
         // Hide advanced view only" objects if advanced view
         // setting is off
-        const bool advanced_features_OFF = !SETTINGS()->get_bool(BoolSetting_AdvancedFeatures);
+        const bool advanced_features_OFF = !g_settings->get_bool(BoolSetting_AdvancedFeatures);
         if (advanced_features_OFF) {
             const QString advanced_features = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
             out = filter_OR({out, advanced_features});
@@ -828,9 +828,9 @@ void CentralWidget::fetch_scope_node(const QModelIndex &index) {
     // Dev mode
     // NOTE: configuration and schema objects are hidden so that they don't show up in regular searches. Have to use search_object() and manually add them to search results.
     if (dev_mode) {
-        const QString search_base = adconfig->domain_head();
-        const QString configuration_dn = adconfig->configuration_dn();
-        const QString schema_dn = adconfig->schema_dn();
+        const QString search_base = g_adconfig->domain_head();
+        const QString configuration_dn = g_adconfig->configuration_dn();
+        const QString schema_dn = g_adconfig->schema_dn();
 
         if (dn == search_base) {
             search_results[configuration_dn] = ad.search_object(configuration_dn);
@@ -861,13 +861,13 @@ void CentralWidget::fetch_scope_node(const QModelIndex &index) {
 bool object_should_be_in_scope(const AdObject &object) {
     const bool is_container =
     [=]() {
-        const QList<QString> filter_containers = adconfig->get_filter_containers();
+        const QList<QString> filter_containers = g_adconfig->get_filter_containers();
         const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
         return filter_containers.contains(object_class);
     }();
 
-    const bool show_non_containers_ON = SETTINGS()->get_bool(BoolSetting_ShowNonContainersInConsoleTree);
+    const bool show_non_containers_ON = g_settings->get_bool(BoolSetting_ShowNonContainersInConsoleTree);
 
     return (is_container || show_non_containers_ON);
 }
@@ -1008,7 +1008,7 @@ DropType get_object_drop_type(const QModelIndex &dropped, const QModelIndex &tar
     } else if (dropped_is_group && target_is_group) {
         return DropType_AddToGroup;
     } else {
-        const QList<QString> dropped_superiors = adconfig->get_possible_superiors(dropped_classes);
+        const QList<QString> dropped_superiors = g_adconfig->get_possible_superiors(dropped_classes);
 
         const bool target_is_valid_superior =
         [&]() {

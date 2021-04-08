@@ -21,6 +21,7 @@
 
 #include "adldap.h"
 #include "status.h"
+#include "globals.h"
 
 #include <QLineEdit>
 #include <QFormLayout>
@@ -96,7 +97,7 @@ void CreatePolicyDialog::accept() {
 
     hide_busy_indicator();
 
-    STATUS()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     if (success) {
         QDialog::accept();

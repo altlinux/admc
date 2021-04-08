@@ -61,7 +61,7 @@ BoolEditor::BoolEditor(const QString attribute, const QList<QByteArray> values, 
     layout->addWidget(unset_button);
     layout->addWidget(button_box);
 
-    if (adconfig->get_attribute_is_system_only(attribute)) {
+    if (g_adconfig->get_attribute_is_system_only(attribute)) {
         true_button->setEnabled(false);
         false_button->setEnabled(false);
         unset_button->setEnabled(false);
