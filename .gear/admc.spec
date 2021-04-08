@@ -73,6 +73,7 @@ cd BUILD
 %_datadir/admc.qch
 %_bindir/admc
 %_libdir/libadldap.so
+%_man1dir/admc*
 
 %files test
 %_bindir/admc_test_object_menu
