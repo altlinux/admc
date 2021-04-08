@@ -53,7 +53,9 @@ class QStandardItem;
 class QMenu;
 class QAbstractItemView;
 
-enum ConsoleRoleLast {
+enum ConsoleRolePublic {
+    ConsoleRole_HasProperties = Qt::UserRole + 18,
+    
     // Use this role to set and get item types
     ConsoleRole_Type = Qt::UserRole + 19,
 

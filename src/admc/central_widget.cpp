@@ -245,7 +245,7 @@ void CentralWidget::go_online(AdInterface &ad) {
 
     scope_head_index = QPersistentModelIndex(item->index());
 
-    setup_scope_item(item, head_object);
+    setup_object_scope_item(item, head_object);
 
     console_widget->set_current_scope(item->index());
 
@@ -834,27 +834,6 @@ void CentralWidget::fetch_scope_node(const QModelIndex &index) {
     hide_busy_indicator();
 }
 
-void CentralWidget::setup_scope_item(QStandardItem *item, const AdObject &object) {
-    const QString name =
-    [&]() {
-        const QString dn = object.get_dn();
-        return dn_get_name(dn);
-    }();
-
-    item->setText(name);
-
-    console_widget->set_has_properties(item->index(), true);
-
-    load_object_item_data(item, object);
-    disable_drag_if_object_cant_be_moved({item}, object);
-}
-
-void CentralWidget::setup_results_row(const QList<QStandardItem *> row, const AdObject &object) {
-    console_widget->set_has_properties(row[0]->index(), true);
-    load_object_row(row, object);
-    disable_drag_if_object_cant_be_moved(row, object);
-}
-
 // NOTE: "containers" referenced here don't mean objects
 // with "container" object class. Instead it means all the
 // objects that can have children(some of which are not
@@ -889,11 +868,11 @@ void CentralWidget::add_object_to_console(const AdObject &object, const QModelIn
         QList<QStandardItem *> results_row;
         console_widget->add_buddy_scope_and_results(object_results_id, ScopeNodeType_Dynamic, parent, &scope_item, &results_row);
 
-        setup_scope_item(scope_item, object);
-        setup_results_row(results_row, object);
+        setup_object_scope_item(scope_item, object);
+        setup_object_results_row(results_row, object);
     } else {
         const QList<QStandardItem *> results_row = console_widget->add_results_row(parent);
-        setup_results_row(results_row, object);
+        setup_object_results_row(results_row, object);
     }
 }
 
@@ -939,7 +918,7 @@ void CentralWidget::update_console_item(const QModelIndex &index, const AdObject
             const QString old_dn = scope_item->data(ObjectRole_DN).toString();
             const bool dn_changed = (old_dn != object.get_dn());
 
-            setup_scope_item(scope_item, object);
+            setup_object_scope_item(scope_item, object);
 
             // NOTE: if dn changed, then this change affects
             // this item's children, so have to refresh to
@@ -980,14 +959,6 @@ void CentralWidget::update_policy_item(const QModelIndex &index, const AdObject 
     const QModelIndex buddy = console_widget->get_buddy(index);
     if (buddy.isValid()) {
         update_helper(buddy);
-    }
-}
-
-void CentralWidget::disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object) {
-    const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
-
-    for (auto item : items) {
-        item->setDragEnabled(!cannot_move);
     }
 }
 

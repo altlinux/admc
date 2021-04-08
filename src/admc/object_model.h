@@ -46,5 +46,8 @@ void load_object_item_data(QStandardItem *item, const AdObject &object);
 QList<QString> object_model_header_labels();
 QList<int> object_model_default_columns();
 QList<QString> object_model_search_attributes();
+void setup_object_scope_item(QStandardItem *item, const AdObject &object);
+void setup_object_results_row(const QList<QStandardItem *> row, const AdObject &object);
+void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
 
 #endif /* OBJECT_MODEL_H */

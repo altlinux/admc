@@ -121,13 +121,10 @@ private:
     ResultsView *object_results;
 
     void update_description_bar();
-    void setup_scope_item(QStandardItem *item, const AdObject &object);
-    void setup_results_row(const QList<QStandardItem *> row, const AdObject &object);
     void add_object_to_console(const AdObject &object, const    QModelIndex &parent);
     void move_object_in_console(AdInterface &ad, const QPersistentModelIndex &old_index, const QString &new_parent_dn, const QPersistentModelIndex &new_parent_index);
     void update_console_item(const QModelIndex &index, const AdObject &object);
     void update_policy_item(const QModelIndex &index, const AdObject &object);
-    void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
     QList<QString> get_dns(const QList<QModelIndex> &indexes);
     void enable_disable_helper(const bool disabled);
     void update_actions_visibility();

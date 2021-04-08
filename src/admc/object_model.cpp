@@ -65,6 +65,8 @@ void load_object_row(const QList<QStandardItem *> row, const AdObject &object) {
 }
 
 void load_object_item_data(QStandardItem *item, const AdObject &object) {
+    item->setData(true, ConsoleRole_HasProperties);
+
     item->setData(ItemType_DomainObject, ConsoleRole_Type);
 
     const QIcon icon = get_object_icon(object);
@@ -121,4 +123,30 @@ QList<QString> object_model_search_attributes() {
     attributes += ATTRIBUTE_SYSTEM_FLAGS;
 
     return attributes;
+}
+
+void setup_object_scope_item(QStandardItem *item, const AdObject &object) {
+    const QString name =
+    [&]() {
+        const QString dn = object.get_dn();
+        return dn_get_name(dn);
+    }();
+
+    item->setText(name);
+
+    load_object_item_data(item, object);
+    disable_drag_if_object_cant_be_moved({item}, object);
+}
+
+void setup_object_results_row(const QList<QStandardItem *> row, const AdObject &object) {
+    load_object_row(row, object);
+    disable_drag_if_object_cant_be_moved(row, object);
+}
+
+void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object) {
+    const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
+
+    for (auto item : items) {
+        item->setDragEnabled(!cannot_move);
+    }
 }
