@@ -158,7 +158,8 @@ public:
     bool user_set_account_option(const QString &dn, AccountOption option, bool set);
     bool user_unlock(const QString &dn);
 
-    bool create_gpo(const QString &name);
+    // "dn_out" is set to the dn of created gpo
+    bool create_gpo(const QString &name, QString &dn_out);
     bool delete_gpo(const QString &dn);
 
     QString sysvol_path_to_smb(const QString &sysvol_path) const;

@@ -53,6 +53,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/about_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/manual_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/select_policy_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/create_policy_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/gplink.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/filter_widget/filter_widget.cpp

@@ -23,6 +23,9 @@
 #include "ad_utils.h"
 #include "ad_object.h"
 #include "ad_display.h"
+#include "samba/ndr_security.h"
+#include "samba/gp_manage.h"
+#include "samba/dom_sid.h"
 
 #include <ldap.h>
 #include <lber.h>
@@ -961,7 +964,7 @@ bool AdInterface::user_unlock(const QString &dn) {
     }
 }
 
-bool AdInterface::create_gpo(const QString &display_name) {
+bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     //
     // Generate UUID used for directory and object names
     //
@@ -1022,6 +1025,7 @@ bool AdInterface::create_gpo(const QString &display_name) {
     //
     // TODO: add all attributes during creation, need to directly create through ldap then
     const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, d->domain_head);
+    dn_out = dn;
     const bool result_add = object_add(dn, CLASS_GP_CONTAINER);
     if (!result_add) {
         return false;
@@ -1052,7 +1056,62 @@ bool AdInterface::create_gpo(const QString &display_name) {
         return false;
     }
 
-    // TODO: security descriptor. Samba does this: get nTSecurityDescriptor attribute from the gpo object as raw bytes, then sets the security descriptor of the sysvol dir to that value. Currently not doing that, so security descriptor of sysvol dir is the default one, which is ... bad? Not sure. Problem is, libsmbclient only provides a way to set security descriptor using key/value strings, not the raw bytes basically. So to do it that way would need to decode object security descriptor. Samba source has that implemented internally but not exposed as a usable lib. Probably SHOULD set security descriptor because who knows what the default is, what if it's just randomly modifiable by any user. Also, the security descriptor functionality will be needed for "Security" tab in ADMC at some point. So should either implement all of that stuff (it's a lot...) or hopefully find some lib to use (unlikely). On Windows you would just use Microsoft's lib.
+    //
+    // Set security descriptor for sysvol dir
+    //
+
+    // First get descriptor of the GPO
+    const QHash<QString, AdObject> search_results = search(QString(), {ATTRIBUTE_SECURITY_DESCRIPTOR}, SearchScope_Object, dn);
+    const AdObject object = search_results[dn];
+    const QByteArray descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
+
+    // Transform descriptor bytes into descriptor struct
+    TALLOC_CTX *tmp_ctx = talloc_new(NULL);
+    
+    DATA_BLOB blob;
+    blob.data = (uint8_t *)descriptor_bytes.data();
+    blob.length = descriptor_bytes.size();
+
+    struct ndr_pull *ndr_pull = ndr_pull_init_blob(&blob, tmp_ctx);
+
+    struct security_descriptor domain_sd;
+    ndr_security_pull_security_descriptor(ndr_pull, NDR_SCALARS|NDR_BUFFERS, &domain_sd);
+
+    // Create sysvol descriptor from domain descriptor (not
+    // one to one, some modifications are needed)
+    struct security_descriptor *sysvol_sd;
+    gp_create_gpt_security_descriptor(tmp_ctx, &domain_sd, &sysvol_sd); 
+
+    const QString sysvol_sd_string =
+    [tmp_ctx, &sysvol_sd]() {
+        QString out;
+
+        out += QString("REVISION:%1,OWNER:%2,GROUP:%3,").arg(QString::number(sysvol_sd->revision), dom_sid_string(tmp_ctx, sysvol_sd->owner_sid), dom_sid_string(tmp_ctx, sysvol_sd->group_sid));
+
+        // NOTE: don't need sacl
+
+        for (uint32_t i = 0; i < sysvol_sd->dacl->num_aces; i++) {
+            struct security_ace ace = sysvol_sd->dacl->aces[i];
+
+            char access_mask_buffer[100];
+            snprintf(access_mask_buffer, sizeof(access_mask_buffer), "0x%08x", ace.access_mask);
+
+            if (i > 0) {
+                out += ",";
+            }
+
+            out += QString("ACL:%1:%2/%3/%4").arg(dom_sid_string(tmp_ctx, &ace.trustee), QString::number(ace.type), QString::number(ace.flags), access_mask_buffer);
+        }
+
+        return out;
+    }();
+    const QByteArray sysvol_sd_string_bytes = sysvol_sd_string.toUtf8();
+    const char *sysvol_sd_cstr = sysvol_sd_string_bytes.constData();
+
+    // Set descriptor
+    smbc_setxattr(cstr(main_dir), "", sysvol_sd_cstr, sysvol_sd_string_bytes.size(), 0);
+
+    talloc_free(tmp_ctx);
 
     return true;
 }

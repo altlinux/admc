@@ -165,6 +165,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_IP_PHONE              "ipPhone"
 #define ATTRIBUTE_OTHER_IP_PHONE        "otherIpPhone"
 #define ATTRIBUTE_UPN_SUFFIXES          "uPNSuffixes"
+#define ATTRIBUTE_SECURITY_DESCRIPTOR   "nTSecurityDescriptor"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"

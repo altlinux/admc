@@ -47,6 +47,7 @@ add_executable(admc
     about_dialog.cpp
     manual_dialog.cpp
     select_policy_dialog.cpp
+    create_policy_dialog.cpp
     gplink.cpp
 
     filter_widget/filter_widget.cpp

@@ -10,6 +10,9 @@ find_package(Krb5 REQUIRED)
 find_package(Ldap REQUIRED)
 find_package(Resolv REQUIRED)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(NdrStandard REQUIRED IMPORTED_TARGET ndr_standard)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
@@ -20,6 +23,11 @@ add_library(adldap SHARED
     ad_object.cpp
     ad_display.cpp
     ad_filter.cpp
+
+    samba/gp_manage.cpp
+    samba/ndr_security.c
+    samba/dom_sid.c
+    samba/replace.c
 
     adldap.qrc
 )
@@ -35,6 +43,7 @@ target_link_libraries(adldap
     Krb5::Krb5
     Ldap::Ldap
     Resolv::Resolv
+    PkgConfig::NdrStandard
 )
 
 set(TS_FILES
