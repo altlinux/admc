@@ -1077,6 +1077,13 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     struct security_descriptor domain_sd;
     ndr_security_pull_security_descriptor(ndr_pull, NDR_SCALARS|NDR_BUFFERS, &domain_sd);
 
+    // TODO: not sure why but my
+    // gp_create_gpt_security_descriptor() call creates an
+    // sd that has 1 extra ace than samba's version
+    // (ACL:S-1-5-11:5/3/0x00000000)
+    // sid = S-1-5-11 = SID_NT_AUTHENTICATED_USERS
+    // type = 5 = SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT
+
     // Create sysvol descriptor from domain descriptor (not
     // one to one, some modifications are needed)
     struct security_descriptor *sysvol_sd;
