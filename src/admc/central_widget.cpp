@@ -470,7 +470,7 @@ void CentralWidget::edit_upn_suffixes() {
             const QList<QByteArray> new_values = editor->get_new_values();
 
             ad2.attribute_replace_values(partitions_dn, ATTRIBUTE_UPN_SUFFIXES, new_values);
-            g_status->display_ad_messages(ad2, this);
+            g_status()->display_ad_messages(ad2, this);
         });
 }
 
@@ -553,7 +553,7 @@ void CentralWidget::add_link() {
 
             hide_busy_indicator();
 
-            g_status->display_ad_messages(ad, this);
+            g_status()->display_ad_messages(ad, this);
         });
 
     dialog->open();
@@ -632,7 +632,7 @@ void CentralWidget::delete_policy() {
 
     hide_busy_indicator();
 
-    g_status->display_ad_messages(ad, this);
+    g_status()->display_ad_messages(ad, this);
 }
 
 // NOTE: only check if object can be dropped if dropping a
@@ -695,7 +695,7 @@ void CentralWidget::on_items_dropped(const QList<QModelIndex> &dropped_list, con
 
     hide_busy_indicator();
 
-    g_status->display_ad_messages(ad, nullptr);
+    g_status()->display_ad_messages(ad, nullptr);
 }
 
 void CentralWidget::on_current_scope_changed() {

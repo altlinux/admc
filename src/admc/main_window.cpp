@@ -42,13 +42,13 @@
 MainWindow::MainWindow()
 : QMainWindow()
 {
-    setStatusBar(g_status->status_bar());
+    setStatusBar(g_status()->status_bar());
 
-    g_status->status_bar()->showMessage(tr("Ready"));
+    g_status()->status_bar()->showMessage(tr("Ready"));
 
     message_log_dock = new QDockWidget();
     message_log_dock->setWindowTitle(tr("Message Log"));
-    message_log_dock->setWidget(g_status->message_log());
+    message_log_dock->setWidget(g_status()->message_log());
     message_log_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
     message_log_dock->setObjectName(MESSAGE_LOG_OBJECT_NAME);
     addDockWidget(Qt::TopDockWidgetArea, message_log_dock);
@@ -234,7 +234,7 @@ void MainWindow::connect_to_server() {
 
         AdInterface::set_permanent_adconfig(g_adconfig);
 
-        g_status->display_ad_messages(ad, this);
+        g_status()->display_ad_messages(ad, this);
 
         central_widget->go_online(ad);
         central_widget->setEnabled(true);

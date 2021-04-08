@@ -242,7 +242,7 @@ bool PropertiesDialog::apply() {
         }
     }
 
-    g_status->display_ad_messages(ad, this);
+    g_status()->display_ad_messages(ad, this);
 
     if (total_apply_success) {
         apply_button->setEnabled(false);

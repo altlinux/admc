@@ -26,6 +26,6 @@ class Status;
 
 extern AdConfig *g_adconfig;
 extern Settings *g_settings;
-extern Status *g_status;
+Status *g_status();
 
 #endif /* GLOBALS_H */

@@ -263,7 +263,7 @@ QList<QString> object_delete(const QList<QString> &targets, QWidget *parent) {
 
     hide_busy_indicator();
 
-    g_status->display_ad_messages(ad, parent);
+    g_status()->display_ad_messages(ad, parent);
 
     return deleted_objects;
 }
@@ -288,7 +288,7 @@ QList<QString> object_enable_disable(const QList<QString> &targets, const bool d
 
     hide_busy_indicator();
 
-    g_status->display_ad_messages(ad, parent);
+    g_status()->display_ad_messages(ad, parent);
 
     return changed_objects;
 }
@@ -316,7 +316,7 @@ void object_add_to_group(const QList<QString> &targets, QWidget *parent) {
 
             hide_busy_indicator();
 
-            g_status->display_ad_messages(ad, parent);
+            g_status()->display_ad_messages(ad, parent);
         });
 
     dialog->open();

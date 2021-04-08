@@ -106,7 +106,7 @@ void RenamePolicyDialog::accept() {
         RenameDialog::fail_msg(old_name);
     }
 
-    g_status->display_ad_messages(ad, this);
+    g_status()->display_ad_messages(ad, this);
 }
 
 void RenamePolicyDialog::on_edited() {

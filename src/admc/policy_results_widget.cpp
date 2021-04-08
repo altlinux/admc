@@ -224,7 +224,7 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
         item->setCheckState(undo_check_state);
     }
 
-    g_status->display_ad_messages(ad, this);
+    g_status()->display_ad_messages(ad, this);
 
     hide_busy_indicator();
 }
@@ -276,7 +276,7 @@ void PolicyResultsWidget::delete_link() {
         model->removeRow(index.row());
     }
     
-    g_status->display_ad_messages(ad, this);
+    g_status()->display_ad_messages(ad, this);
 
     hide_busy_indicator();
 }

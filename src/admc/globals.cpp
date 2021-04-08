@@ -25,4 +25,11 @@
 
 AdConfig *g_adconfig = new AdConfig();
 Settings *g_settings = new Settings();
-Status *g_status = new Status();
+
+// NOTE: status has to be in a function because it creates a
+// widget so needs to be created after app is created
+Status *g_status() {
+    static Status instance;
+
+    return &instance;
+}
