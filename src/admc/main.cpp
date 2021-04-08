@@ -43,11 +43,15 @@ int main(int argc, char **argv) {
     app.setOrganizationName(ADMC_ORGANIZATION);
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
 
-    QTranslator translator;
     const QLocale saved_locale = g_settings->get_variant(VariantSetting_Locale).toLocale();
-    translator.load(saved_locale, QString(), QString(), ":/admc");
-    load_adldap_translation(translator, saved_locale);
+
+    QTranslator translator;
+    translator.load(saved_locale, "admc", "_", ":/admc");
     app.installTranslator(&translator);
+
+    QTranslator adldap_translator;
+    load_adldap_translation(adldap_translator, saved_locale);
+    app.installTranslator(&adldap_translator);
 
     // NOTE: these translations are for qt-defined text, like standard dialog buttons
     QTranslator qt_translator;
