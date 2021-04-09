@@ -1110,7 +1110,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     // one to one, some modifications are needed)
     struct security_descriptor *sysvol_sd;
     const bool create_sd_success = gp_create_gpt_security_descriptor(tmp_ctx, &domain_sd, &sysvol_sd);
-    if (create_sd_success) {
+    if (!create_sd_success) {
         qDebug() << "Failed to create gpo sd";
         return false;
     }
@@ -1142,9 +1142,9 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     const char *sysvol_sd_cstr = sysvol_sd_string_bytes.constData();
 
     // Set descriptor
-    const int set_sd_result = smbc_setxattr(cstr(main_dir), "", sysvol_sd_cstr, sysvol_sd_string_bytes.size(), 0);
+    const int set_sd_result = smbc_setxattr(cstr(main_dir), "system.nt_sec_desc.*", sysvol_sd_cstr, sysvol_sd_string_bytes.size(), 0);
     if (set_sd_result != 0) {
-        qDebug() << "Failed to set gpo sd";
+        qDebug() << "Failed to set gpo sd. Error:" << strerror(errno);
         return false;
     }
 

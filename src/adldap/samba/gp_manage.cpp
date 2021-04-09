@@ -184,24 +184,22 @@ struct security_acl *security_acl_dup(TALLOC_CTX *mem_ctx,
 
 bool gp_create_gpt_security_descriptor(TALLOC_CTX *mem_ctx, struct security_descriptor *ds_sd, struct security_descriptor **ret) {
     struct security_descriptor *fs_sd;
-//     uint32_t i;
 
     /* Allocate the file system security descriptor */
     fs_sd = talloc(mem_ctx, struct security_descriptor);
-    // NT_STATUS_HAVE_NO_MEMORY(fs_sd);
 
     /* Copy the basic information from the directory server security descriptor */
     fs_sd->owner_sid = (dom_sid *) talloc_memdup(fs_sd, ds_sd->owner_sid, sizeof(struct dom_sid));
     if (fs_sd->owner_sid == NULL) {
         TALLOC_FREE(fs_sd);
-        // return NT_STATUS_NO_MEMORY;
+        qDebug() << "Failed to allocated owner sid";
         return false;
     }
 
     fs_sd->group_sid = (dom_sid *) talloc_memdup(fs_sd, ds_sd->group_sid, sizeof(struct dom_sid));
     if (fs_sd->group_sid == NULL) {
         TALLOC_FREE(fs_sd);
-        // return NT_STATUS_NO_MEMORY;
+        qDebug() << "Failed to allocated group sid";
         return false;
     }
 
@@ -212,7 +210,7 @@ bool gp_create_gpt_security_descriptor(TALLOC_CTX *mem_ctx, struct security_desc
     fs_sd->sacl = security_acl_dup(fs_sd, ds_sd->sacl);
     if (fs_sd->sacl == NULL) {
         TALLOC_FREE(fs_sd);
-        // return NT_STATUS_NO_MEMORY;
+        qDebug() << "Failed to allocated sacl";
         return false;
     }
 
@@ -220,7 +218,7 @@ bool gp_create_gpt_security_descriptor(TALLOC_CTX *mem_ctx, struct security_desc
     fs_sd->dacl = talloc_zero(fs_sd, struct security_acl);
     if (fs_sd->dacl == NULL) {
         TALLOC_FREE(fs_sd);
-        // return NT_STATUS_NO_MEMORY;
+        qDebug() << "Failed to allocated dacl";
         return false;
     }
 
@@ -238,7 +236,7 @@ bool gp_create_gpt_security_descriptor(TALLOC_CTX *mem_ctx, struct security_desc
         ace = (security_ace *) talloc_memdup(fs_sd, &ds_sd->dacl->aces[i], sizeof(struct security_ace));
         if (ace == NULL) {
             TALLOC_FREE(fs_sd);
-            // return NT_STATUS_NO_MEMORY;
+            qDebug() << "Failed to allocated ace";
             return false;
         }
 
@@ -254,9 +252,7 @@ bool gp_create_gpt_security_descriptor(TALLOC_CTX *mem_ctx, struct security_desc
         /* Add the ace to the security descriptor DACL */
         const bool dacl_add_success = security_descriptor_dacl_add(fs_sd, ace);
         if (!dacl_add_success) {
-        // if (!NT_STATUS_IS_OK(status)) {
-            // DEBUG(0, ("Failed to add a dacl to file system security descriptor\n"));
-            // return status;
+            qDebug() << "Failed to add a dacl to file system security descriptor";
             return false;
         }
 
