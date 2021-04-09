@@ -31,7 +31,7 @@ HelpBrowser::HelpBrowser(QHelpEngine *help_engine_arg) {
     // setSource() causes a call to loadResource()
     connect(
         help_engine->contentWidget(), &QHelpContentWidget::linkActivated,
-        this, &HelpBrowser::setSource);
+        this, QOverload<const QUrl &>::of(&HelpBrowser::setSource));
     connect(
         help_engine->indexWidget(), &QHelpIndexWidget::linkActivated,
         this, QOverload<const QUrl &>::of(&HelpBrowser::setSource));
