@@ -719,8 +719,27 @@ bool AdInterface::group_remove_member(const QString &group_dn, const QString &us
     }
 }
 
-// TODO: are there side-effects on group members from this?...
 bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
+    // TODO: Switching scope global<->domainlocal might have
+    // some requirements. Might need to check in UI whether
+    // the switch is possible. See:
+    // https://serverfault.com/questions/701016/why-cant-we-directly-change-a-group-from-global-scope-to-domain-local-or-vice-v
+
+    // NOTE: it is not possible to change scope from
+    // global<->domainlocal directly, so have to switch to
+    // universal first.
+    const bool need_to_switch_to_universal =
+    [=]() {
+        const AdObject object = search_object(dn, {ATTRIBUTE_GROUP_TYPE});
+        const GroupScope current_scope = object.get_group_scope();
+
+        return (current_scope == GroupScope_Global && scope == GroupScope_DomainLocal) || (current_scope == GroupScope_DomainLocal && scope == GroupScope_Global) ;
+    }();
+
+    if (need_to_switch_to_universal) {
+        group_set_scope(dn, GroupScope_Universal);
+    }
+
     const AdObject object = search_object(dn, {ATTRIBUTE_GROUP_TYPE});
     int group_type = object.get_int(ATTRIBUTE_GROUP_TYPE);
 
