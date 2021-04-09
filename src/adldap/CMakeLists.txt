@@ -44,6 +44,7 @@ target_link_libraries(adldap
     PkgConfig::Krb5
     Ldap::Ldap
     PkgConfig::NdrStandard
+    resolv
 )
 
 set(TS_FILES

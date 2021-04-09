@@ -144,6 +144,7 @@ foreach(target ${TEST_TARGETS})
         Qt5::Test
         Qt5::Help
         adldap
+        resolv
     )
 
     install(TARGETS ${target})

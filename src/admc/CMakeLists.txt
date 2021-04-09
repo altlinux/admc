@@ -115,6 +115,7 @@ target_link_libraries(admc
     Qt5::Widgets
     Qt5::Help
     adldap
+    resolv
 )
 
 set(TS_FILES
