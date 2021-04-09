@@ -150,7 +150,7 @@ public:
 
     bool group_add_member(const QString &group_dn, const QString &user_dn);
     bool group_remove_member(const QString &group_dn, const QString &user_dn);
-    bool group_set_scope(const QString &dn, GroupScope scope);
+    bool group_set_scope(const QString &dn, GroupScope scope, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool group_set_type(const QString &dn, GroupType type);
 
     bool user_set_primary_group(const QString &group_dn, const QString &user_dn);

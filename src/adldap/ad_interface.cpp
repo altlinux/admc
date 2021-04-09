@@ -719,7 +719,7 @@ bool AdInterface::group_remove_member(const QString &group_dn, const QString &us
     }
 }
 
-bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
+bool AdInterface::group_set_scope(const QString &dn, GroupScope scope, const DoStatusMsg do_msg) {
     // TODO: Switching scope global<->domainlocal might have
     // some requirements. Might need to check in UI whether
     // the switch is possible. See:
@@ -737,7 +737,7 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
     }();
 
     if (need_to_switch_to_universal) {
-        group_set_scope(dn, GroupScope_Universal);
+        group_set_scope(dn, GroupScope_Universal, DoStatusMsg_No);
     }
 
     const AdObject object = search_object(dn, {ATTRIBUTE_GROUP_TYPE});
@@ -760,13 +760,13 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope) {
     
     const bool result = attribute_replace_int(dn, ATTRIBUTE_GROUP_TYPE, group_type);
     if (result) {
-        d->success_message(QString(tr("Set scope for group \"%1\" to \"%2\"")).arg(name, scope_string));
+        d->success_message(QString(tr("Set scope for group \"%1\" to \"%2\"")).arg(name, scope_string), do_msg);
 
         return true;
     } else {
         const QString context = QString(tr("Failed to set scope for group \"%1\" to \"%2\"")).arg(name, scope_string);
         
-        d->error_message(context, d->default_error());
+        d->error_message(context, d->default_error(), do_msg);
 
         return false;
     }
