@@ -125,7 +125,7 @@ foreach(target ${TEST_TARGETS})
     )
 
     add_test(${target}
-        ${target}
+        ${PROJECT_BINARY_DIR}/${target}
     )
 
     target_include_directories(${target}
