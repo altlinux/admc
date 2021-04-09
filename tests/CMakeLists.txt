@@ -111,6 +111,7 @@ set(TEST_SOURCES
 # Target name must equal to it's .cpp name
 # target + target.cpp
 set(TEST_TARGETS
+    admc_test_ad_interface
     admc_test_object_menu
     admc_test_unlock_edit
     admc_test_upn_edit

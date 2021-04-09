@@ -112,28 +112,6 @@ void ADMCTestObjectMenu::select_dialog_correct_object_added() {
     QVERIFY(index_dn == select_dn);
 }
 
-void ADMCTestObjectMenu::object_add() {
-    const QString name = TEST_USER;
-    const QString dn = test_object_dn(name, CLASS_USER);
-
-    const bool create_success = ad.object_add(dn, CLASS_USER);
-
-    QVERIFY2(create_success, "Failed to create object");
-    QVERIFY2(object_exists(dn), "Created object doesn't exist");
-}
-
-void ADMCTestObjectMenu::object_delete() {
-    const QString name = TEST_USER;
-    const QString dn = test_object_dn(name, CLASS_USER);
-
-    const bool create_success = ad.object_add(dn, CLASS_USER);
-    QVERIFY2(create_success, "Failed to create object for deletion");
-
-    const bool delete_success = ad.object_delete(dn);
-    QVERIFY2(delete_success, "Failed to delete object");
-    QVERIFY2(!object_exists(dn), "Deleted object exists");
-}
-
 void ADMCTestObjectMenu::object_menu_new_user() {
     const QString name = TEST_USER;
     const QString logon_name = TEST_USER_LOGON;

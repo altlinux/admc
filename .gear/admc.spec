@@ -80,6 +80,7 @@ cd BUILD
 %_bindir/admc_test_unlock_edit
 %_bindir/admc_test_upn_edit
 %_bindir/admc_test_gplink
+%_bindir/admc_test_ad_interface
 
 %files gpgui
 %_bindir/gpgui
