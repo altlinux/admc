@@ -53,6 +53,7 @@ ResultsView::ResultsView(QWidget *parent)
     views[ResultsViewType_Detail] = m_detail_view;
 
     proxy_model = new QSortFilterProxyModel(this);
+    proxy_model->setSortCaseSensitivity(Qt::CaseInsensitive);
 
     // Perform common setup on child views
     for (auto view : views.values()) {

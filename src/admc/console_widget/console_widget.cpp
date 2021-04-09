@@ -57,11 +57,20 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->scope_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     d->scope_view->setContextMenuPolicy(Qt::CustomContextMenu);
     d->scope_view->setDragDropMode(QAbstractItemView::DragDrop);
+    d->scope_view->sortByColumn(0, Qt::AscendingOrder);
+    d->scope_view->setSortingEnabled(true);
     // NOTE: this makes it so that you can't drag drop between rows (even though name/description don't say anything about that)
     d->scope_view->setDragDropOverwriteMode(true);
 
-    d->scope_model = new ScopeModel(this);
-    d->scope_view->setModel(d->scope_model);
+    d->scope_model = new ConsoleDragModel(this);
+
+    // NOTE: using a proxy model for scope to be able to do
+    // case insensitive sorting
+    d->scope_proxy_model = new ScopeModel(this);
+    d->scope_proxy_model->setSourceModel(d->scope_model);
+    d->scope_proxy_model->setSortCaseSensitivity(Qt::CaseInsensitive);
+    
+    d->scope_view->setModel(d->scope_proxy_model);
 
     d->focused_view = d->scope_view;
 
@@ -121,7 +130,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 
     connect(
         d->scope_view, &QTreeView::expanded,
-        d, &ConsoleWidgetPrivate::fetch_scope);
+        d, &ConsoleWidgetPrivate::on_scope_expanded);
     connect(
         d->scope_view->selectionModel(), &QItemSelectionModel::currentChanged,
         d, &ConsoleWidgetPrivate::on_current_scope_item_changed);
@@ -309,7 +318,8 @@ void ConsoleWidget::delete_item(const QModelIndex &index) {
 }
 
 void ConsoleWidget::set_current_scope(const QModelIndex &index) {
-    d->scope_view->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+    const QModelIndex index_proxy = d->scope_proxy_model->mapFromSource(index);
+    d->scope_view->selectionModel()->setCurrentIndex(index_proxy, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 }
 
 void ConsoleWidget::refresh_scope(const QModelIndex &index) {
@@ -404,7 +414,15 @@ QList<QModelIndex> ConsoleWidget::get_selected_items() const {
     const bool focused_results = (results_view != nullptr && d->focused_view == results_view->current_view());
 
     if (focused_scope) {
-        return d->scope_view->selectionModel()->selectedIndexes();
+        QList<QModelIndex> selected;
+        
+        const QList<QModelIndex> selected_proxy = d->scope_view->selectionModel()->selectedIndexes();
+        for (const QModelIndex &index : selected_proxy) {
+            const QModelIndex source_index = d->scope_proxy_model->mapToSource(index);
+            selected.append(source_index);
+        }
+
+        return selected;
     } else if (focused_results) {
         return results_view->get_selected_indexes();
     } else {
@@ -436,8 +454,14 @@ QList<QModelIndex> ConsoleWidget::search_results_by_role(int role, const QVarian
 
 QModelIndex ConsoleWidget::get_current_scope_item() const {
     const QModelIndex index = d->scope_view->selectionModel()->currentIndex();
+    
+    if (index.isValid()) {
+        const QModelIndex source_index = d->scope_proxy_model->mapToSource(index);
 
-    return index;
+        return source_index;
+    } else {
+        return QModelIndex();
+    }
 }
 
 int ConsoleWidget::get_current_results_count() const {
@@ -521,12 +545,16 @@ void ConsoleWidgetPrivate::connect_to_drag_model(ConsoleDragModel *model) {
         this, &ConsoleWidgetPrivate::on_drop);
 }
 
+void ConsoleWidgetPrivate::on_scope_expanded(const QModelIndex &index_proxy) {
+    const QModelIndex index = scope_proxy_model->mapToSource(index_proxy);
+    fetch_scope(index);
+}
+
 void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
     const QModelIndex buddy = q->get_buddy(index);
 
     if (buddy.isValid()) {
-        // Set associated scope item as current
-        scope_view->selectionModel()->setCurrentIndex(buddy, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+        q->set_current_scope(buddy);
     } else {
         emit q->properties_requested();
     }
@@ -567,12 +595,15 @@ void ConsoleWidgetPrivate::on_context_menu(const QPoint pos) {
     emit q->context_menu(global_pos);
 }
 
-void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &previous) {
+void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &current_proxy, const QModelIndex &previous_proxy) {
     // NOTE: technically this slot should never be called
     // with invalid current index
-    if (!current.isValid()) {
+    if (!current_proxy.isValid()) {
         return;
     }
+
+    const QModelIndex current = scope_proxy_model->mapToSource(current_proxy);
+    const QModelIndex previous = scope_proxy_model->mapToSource(previous_proxy);
 
     // Move current to past, if current changed and is valid
     if (previous.isValid() && (previous != current)) {
@@ -671,9 +702,9 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
 }
 
 void ConsoleWidgetPrivate::refresh() {
-    const QModelIndex current_index = focused_view->selectionModel()->currentIndex();
+    const QModelIndex current_scope = q->get_current_scope_item();
 
-    q->refresh_scope(current_index);
+    q->refresh_scope(current_scope);
 }
 
 void ConsoleWidgetPrivate::customize_columns() {
@@ -687,7 +718,7 @@ void ConsoleWidgetPrivate::customize_columns() {
 
 // Set target to parent of current target
 void ConsoleWidgetPrivate::navigate_up() {
-    const QPersistentModelIndex old_current = QPersistentModelIndex(scope_view->currentIndex());
+    const QPersistentModelIndex old_current = q->get_current_scope_item();
 
     if (!old_current.isValid()) {
         return;
@@ -700,13 +731,13 @@ void ConsoleWidgetPrivate::navigate_up() {
     // can't go up higher
     const bool can_go_up = (!new_current.isValid());
     if (!can_go_up) {
-        scope_view->selectionModel()->setCurrentIndex(new_current, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+        q->set_current_scope(new_current);
     }
 }
 
 // NOTE: for "back" and "forward" navigation, setCurrentIndex() triggers "current changed" slot which by default erases future history, so manually restore correct navigation state afterwards
 void ConsoleWidgetPrivate::navigate_back() {
-    const QModelIndex old_current = scope_view->currentIndex();
+    const QPersistentModelIndex old_current = q->get_current_scope_item();
 
     if (!old_current.isValid()) {
         return;
@@ -720,7 +751,7 @@ void ConsoleWidgetPrivate::navigate_back() {
     auto saved_future = targets_future;
 
     const QPersistentModelIndex new_current = targets_past.last();
-    scope_view->selectionModel()->setCurrentIndex(new_current, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+    q->set_current_scope(new_current);
 
     targets_past = saved_past;
     targets_future = saved_future;
@@ -732,8 +763,8 @@ void ConsoleWidgetPrivate::navigate_back() {
 }
 
 void ConsoleWidgetPrivate::navigate_forward() {
-    const QModelIndex old_current = scope_view->currentIndex();
-    
+    const QPersistentModelIndex old_current = q->get_current_scope_item();
+
     if (!old_current.isValid()) {
         return;
     }
@@ -746,7 +777,7 @@ void ConsoleWidgetPrivate::navigate_forward() {
     auto saved_future = targets_future;
 
     const QPersistentModelIndex new_current = targets_future.first();
-    scope_view->selectionModel()->setCurrentIndex(new_current, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+    q->set_current_scope(new_current);
 
     targets_past = saved_past;
     targets_future = saved_future;
@@ -793,7 +824,7 @@ void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
 void ConsoleWidgetPrivate::update_navigation_actions() {
     const bool can_navigate_up =
     [this]() {
-        const QModelIndex current = scope_view->currentIndex();
+        const QModelIndex current = q->get_current_scope_item();
         const QModelIndex current_parent = current.parent();
 
         return (current.isValid() && current_parent.isValid());

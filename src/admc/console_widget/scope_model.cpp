@@ -32,6 +32,6 @@ bool ScopeModel::hasChildren(const QModelIndex &parent) const {
     if (unfetched) {
         return true;
     } else {
-        return QStandardItemModel::hasChildren(parent);
+        return QSortFilterProxyModel::hasChildren(parent);
     }
 }

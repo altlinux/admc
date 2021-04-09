@@ -32,6 +32,7 @@ class QLabel;
 class QStackedWidget;
 class ResultsDescription;
 class ScopeModel;
+class ConsoleDragModel;
 class QStandardItemModel;
 class ConsoleDragModel;
 class ConsoleWidget;
@@ -71,7 +72,8 @@ public:
     ConsoleWidget *q;
 
     QTreeView *scope_view;
-    ScopeModel *scope_model;
+    ConsoleDragModel *scope_model;
+    ScopeModel *scope_proxy_model;
     QWidget *description_bar;
     QLabel *description_bar_left;
     QLabel *description_bar_right;
@@ -105,6 +107,7 @@ public:
     QStandardItemModel *get_results_model_for_scope_item(const QModelIndex &index) const;
     void open_action_menu_as_context_menu(const QPoint pos);
     void connect_to_drag_model(ConsoleDragModel *model);
+    void on_scope_expanded(const QModelIndex &index);
     void on_results_activated(const QModelIndex &index);
     void on_selection_changed();
     void on_context_menu(const QPoint pos);

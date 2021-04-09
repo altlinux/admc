@@ -20,17 +20,17 @@
 #ifndef SCOPE_MODEL_H
 #define SCOPE_MODEL_H
 
-#include "console_widget/console_drag_model.h"
+#include <QSortFilterProxyModel>
 
 /**
  * Implements showing expander for unfetched items.
  */
 
-class ScopeModel : public ConsoleDragModel {
+class ScopeModel : public QSortFilterProxyModel {
 Q_OBJECT
 
 public:
-    using ConsoleDragModel::ConsoleDragModel;
+    using QSortFilterProxyModel::QSortFilterProxyModel;
 
     bool hasChildren(const QModelIndex &parent) const override;
 };
