@@ -106,6 +106,8 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/console_widget/results_description.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/console_widget/results_view.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/console_widget/console_drag_model.cpp
+
+    ${PROJECT_SOURCE_DIR}/src/admc/admc.qrc
 )
 
 # NOTE: ADD ALL TESTS TO THIS LIST
@@ -117,6 +119,7 @@ set(TEST_TARGETS
     admc_test_unlock_edit
     admc_test_upn_edit
     admc_test_string_edit
+    admc_test_country_edit
     admc_test_gplink
 )
 

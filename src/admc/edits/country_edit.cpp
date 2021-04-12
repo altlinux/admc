@@ -23,12 +23,14 @@
 #include "globals.h"
 #include "utils.h"
 #include "edits/country_edit.h"
+
 #include <QVBoxLayout>
 #include <QFormLayout>
 #include <QComboBox>
 #include <QHash>
 #include <QFile>
 #include <algorithm>
+#include <QDebug>
 
 // TODO: translate country strings to Russian (qt doesn't have it)
 
@@ -47,7 +49,7 @@ CountryEdit::CountryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
     // TODO: cache this
     QFile file(":/admc/countries.csv");
     if (!file.open(QIODevice::ReadOnly)) {
-        printf("ERROR: Failed to load countries file!\n");
+        qDebug() << "ERROR: Failed to load countries file!\n";
     } else {
         // Load countries csv into maps
         // Map country code to country string and country abbreviation
