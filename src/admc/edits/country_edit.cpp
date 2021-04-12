@@ -105,8 +105,8 @@ CountryEdit::CountryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 void CountryEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const int country_code =
     [object]() {
-        if (object.contains(ATTRIBUTE_COUNTRY)) {
-            return object.get_int(ATTRIBUTE_COUNTRY);
+        if (object.contains(ATTRIBUTE_COUNTRY_CODE)) {
+            return object.get_int(ATTRIBUTE_COUNTRY_CODE);
         } else {
             return COUNTRY_CODE_NONE;
         }
