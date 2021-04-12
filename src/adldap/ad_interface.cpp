@@ -208,7 +208,13 @@ bool AdInterfacePrivate::search_paged_internal(const char *filter, char **attrib
     const int attrsonly = 0;
     result = ldap_search_ext_s(ld, search_base, scope, filter, attributes, attrsonly, server_controls, NULL, NULL, LDAP_NO_LIMIT, &res);
     if ((result != LDAP_SUCCESS) && (result != LDAP_PARTIAL_RESULTS)) {
-        qDebug() << "Error in paged ldap_search_ext_s: " << ldap_err2string(result);
+        // TODO: it's not really an error for an object to
+        // not exist. For example, sometimes it's needed to
+        // check whether an object exists. Not sure how to
+        // distinguish this error type from others
+        if (result != LDAP_NO_SUCH_OBJECT) {
+            qDebug() << "Error in paged ldap_search_ext_s: " << ldap_err2string(result);
+        }
 
         cleanup();
         return false;
