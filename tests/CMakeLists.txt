@@ -115,6 +115,7 @@ set(TEST_TARGETS
     admc_test_object_menu
     admc_test_unlock_edit
     admc_test_upn_edit
+    admc_test_string_edit
     admc_test_gplink
 )
 

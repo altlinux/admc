@@ -79,6 +79,7 @@ cd BUILD
 %_bindir/admc_test_object_menu
 %_bindir/admc_test_unlock_edit
 %_bindir/admc_test_upn_edit
+%_bindir/admc_test_string_edit
 %_bindir/admc_test_gplink
 %_bindir/admc_test_ad_interface
 
