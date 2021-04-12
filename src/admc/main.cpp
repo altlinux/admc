@@ -26,6 +26,7 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QLibraryInfo>
+#include <QDebug>
 
 int main(int argc, char **argv) {
     Q_INIT_RESOURCE(adldap);
@@ -46,17 +47,29 @@ int main(int argc, char **argv) {
     const QLocale saved_locale = g_settings->get_variant(VariantSetting_Locale).toLocale();
 
     QTranslator translator;
-    translator.load(saved_locale, "admc", "_", ":/admc");
+    const bool loaded_admc_translation = translator.load(saved_locale, "admc", "_", ":/admc");
     app.installTranslator(&translator);
 
+    if (!loaded_admc_translation) {
+        qDebug() << "Failed to load admc translation";
+    }
+
     QTranslator adldap_translator;
-    load_adldap_translation(adldap_translator, saved_locale);
+    const bool loaded_adldap_translation = load_adldap_translation(adldap_translator, saved_locale);
     app.installTranslator(&adldap_translator);
+
+    if (!loaded_adldap_translation) {
+        qDebug() << "Failed to load adldap translation";
+    }
 
     // NOTE: these translations are for qt-defined text, like standard dialog buttons
     QTranslator qt_translator;
-    qt_translator.load("qt_" + saved_locale.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    const bool loaded_qt_translation = qt_translator.load("qt_" + saved_locale.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     app.installTranslator(&qt_translator);
+
+    if (!loaded_qt_translation) {
+        qDebug() << "Failed to load qt translation";
+    }
 
     MainWindow main_window;
     main_window.show();
