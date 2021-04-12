@@ -30,6 +30,7 @@
 #include "tabs/organization_tab.h"
 #include "tabs/telephones_tab.h"
 #include "tabs/profile_tab.h"
+#include "tabs/managed_by_tab.h"
 #include "adldap.h"
 #include "globals.h"
 #include "settings.h"
@@ -176,6 +177,10 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     }
     if (object.is_class(CLASS_USER)) {
         add_tab(new MemberOfTab(), tr("Member of"));
+    }
+
+    if (object.is_class(CLASS_OU)) {
+        add_tab(new ManagedByTab(), tr("Managed by"));
     }
 
     if (object.is_class(CLASS_OU) || object.is_class(CLASS_DOMAIN)) {

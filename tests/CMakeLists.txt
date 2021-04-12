@@ -75,6 +75,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/tabs/organization_tab.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/tabs/telephones_tab.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/tabs/profile_tab.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/tabs/managed_by_tab.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/editors/attribute_editor.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/editors/multi_editor.cpp

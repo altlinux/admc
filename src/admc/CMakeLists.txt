@@ -69,6 +69,7 @@ add_executable(admc
     tabs/organization_tab.cpp
     tabs/telephones_tab.cpp
     tabs/profile_tab.cpp
+    tabs/managed_by_tab.cpp
 
     editors/attribute_editor.cpp
     editors/multi_editor.cpp

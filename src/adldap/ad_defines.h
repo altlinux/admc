@@ -149,6 +149,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_OBJECT_GUID           "objectGUID"
 #define ATTRIBUTE_PRIMARY_GROUP_ID      "primaryGroupID"
 #define ATTRIBUTE_MANAGER               "manager"
+#define ATTRIBUTE_MANAGED_BY            "managedBy"
 #define ATTRIBUTE_DIRECT_REPORTS        "directReports"
 #define ATTRIBUTE_PROFILE_PATH          "profilePath"
 #define ATTRIBUTE_SCRIPT_PATH           "scriptPath"

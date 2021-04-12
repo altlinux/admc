@@ -20,6 +20,14 @@
 #ifndef MANAGER_EDIT_H
 #define MANAGER_EDIT_H
 
+/**
+ * Edit for editing manager. Displays current manager and
+ * allows changing manager, opening manager properties and
+ * clearing manager. Accepts manager attribute argument
+ * because there are two manager attributes: "manager" and
+ * "managedBy".
+ */
+
 #include "attribute_edit.h"
 
 #include <QString>
@@ -32,8 +40,10 @@ class QPushButton;
 class ManagerEdit final : public AttributeEdit {
 Q_OBJECT
 public:
-    ManagerEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
+    ManagerEdit(const QString &manager_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
+
+    QString get_manager() const;
 
 private slots:
     void on_change();
@@ -45,6 +55,7 @@ private:
     QPushButton *change_button;
     QPushButton *properties_button;
     QPushButton *clear_button;
+    QString manager_attribute;
 
     QString current_value;
 

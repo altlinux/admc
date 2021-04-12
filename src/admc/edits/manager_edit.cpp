@@ -27,9 +27,11 @@
 #include <QFormLayout>
 #include <QPushButton>
 
-ManagerEdit::ManagerEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
+ManagerEdit::ManagerEdit(const QString &manager_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
 {
+    manager_attribute = manager_attribute_arg;
+
     edit = new QLineEdit();
 
     change_button = new QPushButton(tr("Change"));
@@ -48,7 +50,7 @@ ManagerEdit::ManagerEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 }
 
 void ManagerEdit::load_internal(AdInterface &ad, const AdObject &object) {
-    const QString manager = object.get_string(ATTRIBUTE_MANAGER);
+    const QString manager = object.get_string(manager_attribute);
     
     load_value(manager);
 }
@@ -67,14 +69,18 @@ void ManagerEdit::add_to_layout(QFormLayout *layout) {
     sublayout->addWidget(edit);
     sublayout->addLayout(buttons_layout);
 
-    const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_MANAGER, CLASS_USER) + ":";
+    const QString label_text = g_adconfig->get_attribute_display_name(manager_attribute, CLASS_USER) + ":";
     layout->addRow(label_text, sublayout);
 }
 
 bool ManagerEdit::apply(AdInterface &ad, const QString &dn) const {
-    const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_MANAGER, current_value);
+    const bool success = ad.attribute_replace_string(dn, manager_attribute, current_value);
 
     return success;
+}
+
+QString ManagerEdit::get_manager() const {
+    return current_value;
 }
 
 void ManagerEdit::on_change() {

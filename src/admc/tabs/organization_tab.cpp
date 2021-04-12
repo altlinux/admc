@@ -47,7 +47,7 @@ OrganizationTab::OrganizationTab() {
     };
     StringEdit::make_many(attributes, CLASS_USER, &edits, this);
 
-    new ManagerEdit(&edits, this);
+    new ManagerEdit(ATTRIBUTE_MANAGER, &edits, this);
 
     edits_connect_to_tab(edits, this);
 
