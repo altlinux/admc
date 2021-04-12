@@ -111,6 +111,7 @@ public:
     static void set_permanent_adconfig(AdConfig *adconfig);
 
     bool is_connected() const;
+    QString host() const;
     QList<AdMessage> messages() const;
     bool any_error_messages() const;
     void clear_messages();

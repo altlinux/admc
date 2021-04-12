@@ -148,6 +148,10 @@ bool AdInterface::is_connected() const {
     return d->is_connected;
 }
 
+QString AdInterface::host() const {
+    return d->host;
+}
+
 QList<AdMessage> AdInterface::messages() const {
     return d->messages;
 }

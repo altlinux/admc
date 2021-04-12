@@ -248,6 +248,15 @@ void CentralWidget::go_online(AdInterface &ad) {
 
     setup_object_scope_item(item, head_object);
 
+    const QString domain_text =
+    [&]() {
+        const QString name = item->text();
+        const QString host = ad.host();
+
+        return QString("%1 [%2]").arg(name, host);
+    }();
+    item->setText(domain_text);
+
     console_widget->set_current_scope(item->index());
 
     // Add top policies item
