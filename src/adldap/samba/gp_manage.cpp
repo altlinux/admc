@@ -28,6 +28,8 @@
 
 #include <string.h>
 
+#include <QDebug>
+
 /*
  * This file is a copy of private samba sources. Parts of it
  * were removed or edited.
