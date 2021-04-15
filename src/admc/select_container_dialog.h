@@ -30,6 +30,7 @@
 class QTreeView;
 class QModelIndex;
 class QStandardItemModel;
+class QSortFilterProxyModel;
 
 enum ContainerRole {
     ContainerRole_DN = Qt::UserRole + 1,
@@ -47,8 +48,9 @@ public:
 private:
     QTreeView *view;
     QStandardItemModel *model;
+    QSortFilterProxyModel *proxy_model;
 
-    void fetch_node(const QModelIndex &index);
+    void fetch_node(const QModelIndex &proxy_index);
 };
 
 #endif /* SELECT_CONTAINER_DIALOG_H */

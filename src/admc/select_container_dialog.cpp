@@ -30,6 +30,7 @@
 #include <QPushButton>
 #include <QHeaderView>
 #include <QStandardItemModel>
+#include <QSortFilterProxyModel>
 
 QStandardItem *make_container_node(const AdObject &object);
 
@@ -47,8 +48,6 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     
     resize(400, 500);
 
-    model = new QStandardItemModel(this);
-
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setExpandsOnDoubleClick(true);
@@ -57,7 +56,13 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     view->sortByColumn(g_adconfig->get_column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
     view->setHeaderHidden(true);
 
-    view->setModel(model);
+    model = new QStandardItemModel(this);
+
+    proxy_model = new QSortFilterProxyModel(this);
+    proxy_model->setSourceModel(model);
+    proxy_model->setSortCaseSensitivity(Qt::CaseInsensitive);
+    
+    view->setModel(proxy_model);
 
     auto buttonbox = new QDialogButtonBox();
     auto ok_button = buttonbox->addButton(QDialogButtonBox::Ok);
@@ -107,7 +112,9 @@ QString SelectContainerDialog::get_selected() const {
     return dn;
 }
 
-void SelectContainerDialog::fetch_node(const QModelIndex &index) {
+void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
+    const QModelIndex index = proxy_model->mapToSource(proxy_index);
+
     // TODO: handle error
     AdInterface ad;
     if (ad_failed(ad)) {
