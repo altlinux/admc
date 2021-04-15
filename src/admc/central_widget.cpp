@@ -372,9 +372,18 @@ void CentralWidget::delete_objects() {
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
     const QList<QString> deleted_objects = object_delete(selected.keys(), this);
 
+    // NOTE: have to search instead of just using deleted
+    // index because can delete objects from query tree
     for (const QString &dn : deleted_objects) {
-        const QModelIndex index = selected[dn];
-        console_widget->delete_item(index);
+        const QList<QPersistentModelIndex> scope_indexes = get_persistent_indexes(console_widget->search_scope_by_role(ObjectRole_DN, dn, ItemType_DomainObject));
+        for (const QPersistentModelIndex &index : scope_indexes) {
+            console_widget->delete_item(index);
+        }
+
+        const QList<QPersistentModelIndex> results_indexes = get_persistent_indexes(console_widget->search_results_by_role(ObjectRole_DN, dn, ItemType_DomainObject));
+        for (const QPersistentModelIndex &index : results_indexes) {
+            console_widget->delete_item(index);
+        }
     }
 }
 

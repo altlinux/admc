@@ -37,6 +37,7 @@ class QVariant;
 class QIcon;
 class AdInterface;
 class AdObject;
+class QPersistentModelIndex;
 template <typename T> class QList;
 template <typename K, typename T> class QMap;
 template <typename K, typename T> class QHash;
@@ -85,5 +86,7 @@ QString is_container_filter();
 void limit_edit(QLineEdit *edit, const QString &attribute);
 
 QIcon get_object_icon(const AdObject &object);
+
+QList<QPersistentModelIndex> get_persistent_indexes(const QList<QModelIndex> &indexes);
 
 #endif /* UTILS_H */

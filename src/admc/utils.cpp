@@ -27,6 +27,7 @@
 #include <QSortFilterProxyModel>
 #include <QAbstractItemView>
 #include <QModelIndex>
+#include <QPersistentModelIndex>
 #include <QCheckBox>
 #include <QStandardItem>
 #include <QMenu>
@@ -227,4 +228,14 @@ QIcon get_object_icon(const AdObject &object) {
     const QIcon icon = QIcon::fromTheme(icon_name);
 
     return icon;
+}
+
+QList<QPersistentModelIndex> get_persistent_indexes(const QList<QModelIndex> &indexes) {
+    QList<QPersistentModelIndex> out;
+
+    for (const QModelIndex &index : indexes) {
+        out.append(QPersistentModelIndex(index));
+    }
+
+    return out;
 }
