@@ -300,6 +300,13 @@ void ConsoleWidget::delete_item(const QModelIndex &index) {
         return;
     }
 
+    // NOTE: select parent of index, if index is currently
+    // selected. Qt crashes otherwise, not sure why.
+    const QModelIndex current_scope = get_current_scope_item();
+    if (current_scope == index) {
+        set_current_scope(index.parent());
+    }
+
     // NOTE: i *think* discarding const from model is fine.
     // Qt's reason: "A const pointer to the model is
     // returned because calls to non-const functions of the
