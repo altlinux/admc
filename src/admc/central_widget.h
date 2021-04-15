@@ -41,7 +41,6 @@ class QLabel;
 class QSortFilterProxyModel;
 class AdInterface;
 class ConsoleWidget;
-class ResultsView;
 class ObjectActions;
 class PolicyResultsWidget;
 template <typename T> class QList;
@@ -107,9 +106,9 @@ private slots:
 
 private:
     ConsoleWidget *console;
-    QPersistentModelIndex scope_head_index;
-    QPersistentModelIndex policies_index;
-    QPersistentModelIndex queries_index;
+    QPersistentModelIndex object_tree_head;
+    QPersistentModelIndex policy_tree_head;
+    QPersistentModelIndex query_tree_head;
     FilterDialog *filter_dialog;
     PolicyResultsWidget *policy_results_widget;
 
@@ -120,7 +119,6 @@ private:
     QAction *open_filter_action;
     QAction *show_noncontainers_action;
     QAction *dev_mode_action;
-    ResultsView *object_results;
 
     void update_description_bar();
     QList<QString> get_dns(const QList<QModelIndex> &indexes);
@@ -130,7 +128,6 @@ private:
     QHash<QString, QPersistentModelIndex> get_selected_dns_and_indexes();
     QList<QString> get_selected_dns();
     void fetch_scope_node(const QModelIndex &index);
-    void save_queries();
 };
 
 #endif /* CENTRAL_WIDGET_H */

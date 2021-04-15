@@ -189,3 +189,113 @@ void fetch_query(ConsoleWidget *console, const QModelIndex &index) {
 
     hide_busy_indicator();
 }
+
+QModelIndex init_query_tree(ConsoleWidget *console) {
+    // Add head item
+    QStandardItem *head_item = console->add_scope_item(query_folder_results_id, ScopeNodeType_Static, QModelIndex());
+    head_item->setText(QCoreApplication::translate("query", "Saved Queries"));
+    head_item->setIcon(QIcon::fromTheme("folder"));
+    head_item->setData(ItemType_QueriesRoot, ConsoleRole_Type);
+
+    // Add rest of tree
+    const QHash<QString, QVariant> folders_map = g_settings->get_variant(VariantSetting_QueryFolders).toHash();
+    const QHash<QString, QVariant> info_map = g_settings->get_variant(VariantSetting_QueryInfo).toHash();
+
+    QStack<QModelIndex> query_stack;
+    query_stack.append(head_item->index());
+    while (!query_stack.isEmpty()) {
+        const QModelIndex index = query_stack.pop();
+        const QString path = query_folder_path(index);
+
+        // Go through children and add them as folders or
+        // query items
+        const QList<QString> children = folders_map[path].toStringList();
+        for (const QString &child_path : children) {
+            const QHash<QString, QVariant> info = info_map[child_path].toHash();
+            const bool is_query_item = info["is_query_item"].toBool();
+
+            if (is_query_item) {
+                // Query item
+                const QString description = info["description"].toString();
+                const QString filter = info["filter"].toString();
+                const QString search_base = info["search_base"].toString();
+                const QString name = path_to_name(child_path);
+                add_query_item(console, name, description, filter, search_base, index);
+            } else {
+                // Query folder
+                const QString name = path_to_name(child_path);
+                const QString description = info["description"].toString();
+                const QModelIndex child_scope_index = add_query_folder(console, name, description, index);
+
+                query_stack.append(child_scope_index);
+            }
+        }
+    }
+
+    return head_item->index();
+}
+
+// Saves current state of queries tree to settings. Should
+// be called after every modication to queries tree
+void save_queries(const QModelIndex &query_tree_head) {
+    // folder path = {list of children}
+    // data = {path => data map containing info about
+    // query folder/item}
+    QHash<QString, QVariant> folders;
+    QHash<QString, QVariant> info_map;
+
+    QStack<QModelIndex> stack;
+    stack.append(query_tree_head);
+
+    const QAbstractItemModel *model = query_tree_head.model();
+
+    while (!stack.isEmpty()) {
+        const QModelIndex index = stack.pop();
+
+        // Add children to stack
+        for (int i = 0; i < model->rowCount(index); i++) {
+            const QModelIndex child = model->index(i, 0, index);
+
+            stack.append(child);
+        }
+
+        // NOTE: don't save head item, it's created manually
+        const bool is_query_root = !index.parent().isValid();
+        if (is_query_root) {
+            continue;
+        }
+
+        const QString path = query_folder_path(index);
+        const QString parent_path = query_folder_path(index.parent());
+        const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
+
+        QList<QString> child_folders = folders[parent_path].toStringList();
+        child_folders.append(path);
+        folders[parent_path] = QVariant(child_folders);
+
+        const QString description = index.data(QueryItemRole_Description).toString();
+
+        if (type == ItemType_QueryFolder) {
+            QHash<QString, QVariant> info;
+            info["is_query_item"] = QVariant(false);
+            info["description"] = QVariant(description);
+            info_map[path] = QVariant(info);
+        } else {
+            const QString filter = index.data(QueryItemRole_Filter).toString();
+            const QString search_base = index.data(QueryItemRole_SearchBase).toString();
+
+            QHash<QString, QVariant> info;
+            info["is_query_item"] = QVariant(true);
+            info["description"] = QVariant(description);
+            info["filter"] = QVariant(filter);
+            info["search_base"] = QVariant(search_base);
+            info_map[path] = QVariant(info);
+        }
+    }
+
+    const QVariant folders_variant = QVariant(folders);
+    const QVariant info_map_variant = QVariant(info_map);
+
+    g_settings->set_variant(VariantSetting_QueryFolders, folders_variant);
+    g_settings->set_variant(VariantSetting_QueryInfo, info_map_variant);
+}

@@ -27,6 +27,7 @@
 
 #include <QStandardItem>
 #include <QList>
+#include <QCoreApplication>
 
 int policy_container_results_id;
 int policy_results_id;
@@ -98,4 +99,25 @@ void console_update_policy(ConsoleWidget *console, const QModelIndex &index, con
     if (buddy.isValid()) {
         update_helper(buddy);
     }
+}
+
+QModelIndex init_policy_tree(ConsoleWidget *console, AdInterface &ad) {
+    // Add head item
+    QStandardItem *head_item = console->add_scope_item(policy_container_results_id, ScopeNodeType_Static, QModelIndex());
+    head_item->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
+    head_item->setDragEnabled(false);
+    head_item->setIcon(QIcon::fromTheme("folder"));
+    head_item->setData(ItemType_PoliciesRoot, ConsoleRole_Type);
+
+    // Add children
+    const QList<QString> policy_search_attributes = policy_model_search_attributes();
+    const QString policy_search_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
+
+    const QHash<QString, AdObject> policy_search_results = ad.search(policy_search_filter, policy_search_attributes, SearchScope_All);
+
+    for (const AdObject &object : policy_search_results.values()) {
+        console_add_policy(console, head_item->index(), object);
+    }
+
+    return head_item->index();
 }

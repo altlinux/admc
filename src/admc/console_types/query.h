@@ -53,5 +53,7 @@ QModelIndex add_query_folder(ConsoleWidget *console, const QString &name, const 
 void add_query_item(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QString &search_base, const QModelIndex &parent);
 QList<QString> get_sibling_names(const QModelIndex &parent);
 void fetch_query(ConsoleWidget *console, const QModelIndex &index);
+QModelIndex init_query_tree(ConsoleWidget *console);
+void save_queries(const QModelIndex &query_tree_head);
 
 #endif /* QUERY_H */

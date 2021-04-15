@@ -411,3 +411,24 @@ void fetch_object(ConsoleWidget *console, FilterDialog *filter_dialog, const QMo
 
     hide_busy_indicator();
 }
+
+QModelIndex init_object_tree(ConsoleWidget *console, AdInterface &ad) {
+    // Create tree head
+    const QString head_dn = g_adconfig->domain_head();
+    const AdObject head_object = ad.search_object(head_dn);
+
+    QStandardItem *head_item = console->add_scope_item(object_results_id, ScopeNodeType_Dynamic, QModelIndex());
+
+    setup_object_scope_item(head_item, head_object);
+
+    const QString domain_text =
+    [&]() {
+        const QString name = head_item->text();
+        const QString host = ad.host();
+
+        return QString("%1 [%2]").arg(name, host);
+    }();
+    head_item->setText(domain_text);
+
+    return head_item->index();
+}

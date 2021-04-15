@@ -24,6 +24,7 @@
 
 class QStandardItem;
 class AdObject;
+class AdInterface;
 template <typename T> class QList;
 
 /**
@@ -47,5 +48,6 @@ QList<int> policy_model_default_columns();
 QList<QString> policy_model_search_attributes();
 void console_add_policy(ConsoleWidget *console, const QModelIndex &policies_index, const AdObject &object);
 void console_update_policy(ConsoleWidget *console, const QModelIndex &index, const AdObject &object);
+QModelIndex init_policy_tree(ConsoleWidget *console, AdInterface &ad);
 
 #endif /* POLICY_H */
