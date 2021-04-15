@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "object_model.h"
+#include "console_types/object.h"
 #include "adldap.h"
 #include "globals.h"
 #include "settings.h"

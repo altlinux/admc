@@ -23,7 +23,7 @@
 #include "utils.h"
 #include "adldap.h"
 #include "globals.h"
-#include "object_model.h"
+#include "console_types/object.h"
 #include "settings.h"
 #include "console_widget/customize_columns_dialog.h"
 #include "console_widget/results_view.h"

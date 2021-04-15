@@ -23,7 +23,7 @@
 #include "create_dialog.h"
 #include "utils.h"
 #include "status.h"
-#include "object_model.h"
+#include "console_types/object.h"
 #include "select_container_dialog.h"
 #include "select_dialog.h"
 #include "find_select_dialog.h"

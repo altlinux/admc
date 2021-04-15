@@ -20,7 +20,6 @@ add_executable(admc
     properties_dialog.cpp
     main_window.cpp
     status.cpp
-    object_model.cpp
     select_dialog.cpp
     object_actions.cpp
     password_dialog.cpp
@@ -34,8 +33,10 @@ add_executable(admc
     globals.cpp
     utils.cpp
     settings.cpp
-    policy_model.cpp
     policy_results_widget.cpp
+    
+    console_types/object.cpp
+    console_types/policy.cpp
     console_types/query.cpp
 
     move_dialog.cpp

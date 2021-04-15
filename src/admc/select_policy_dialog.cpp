@@ -24,7 +24,7 @@
 #include "edits/string_edit.h"
 #include "status.h"
 #include "utils.h"
-#include "policy_model.h"
+#include "console_types/policy.h"
 
 #include <QDialog>
 #include <QLineEdit>

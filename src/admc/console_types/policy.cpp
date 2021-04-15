@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "policy_model.h"
+#include "console_types/policy.h"
 
 #include "adldap.h"
 #include "globals.h"

@@ -19,8 +19,9 @@
 
 #include "central_widget.h"
 
-#include "object_model.h"
-#include "policy_model.h"
+#include "console_types/object.h"
+#include "console_types/policy.h"
+#include "console_types/query.h"
 #include "utils.h"
 #include "adldap.h"
 #include "properties_dialog.h"
@@ -45,7 +46,6 @@
 #include "editors/multi_editor.h"
 #include "gplink.h"
 #include "policy_results_widget.h"
-#include "console_types/query.h"
 
 #include <QDebug>
 #include <QAbstractItemView>

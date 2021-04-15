@@ -1361,7 +1361,7 @@
 <context>
     <name>policy_model</name>
     <message>
-        <location filename="policy_model.cpp" line="58"/>
+        <location filename="console_types/policy.cpp" line="58"/>
         <source>Name</source>
         <translation></translation>
     </message>

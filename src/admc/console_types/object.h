@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_MODEL_H
-#define OBJECT_MODEL_H
+#ifndef OBJECT_H
+#define OBJECT_H
 
 #include "console_widget/console_widget.h"
 
@@ -50,4 +50,4 @@ void setup_object_scope_item(QStandardItem *item, const AdObject &object);
 void setup_object_results_row(const QList<QStandardItem *> row, const AdObject &object);
 void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
 
-#endif /* OBJECT_MODEL_H */
+#endif /* OBJECT_H */

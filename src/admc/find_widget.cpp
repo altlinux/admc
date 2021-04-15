@@ -27,7 +27,7 @@
 #include "filter_widget/search_base_widget.h"
 #include "find_results.h"
 #include "search_thread.h"
-#include "object_model.h"
+#include "console_types/object.h"
 
 #include <QString>
 #include <QList>

@@ -22,7 +22,7 @@
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
-#include "object_model.h"
+#include "console_types/object.h"
 #include "find_select_dialog.h"
 
 #include <QHBoxLayout>

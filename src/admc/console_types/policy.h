@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef POLICY_MODEL_H
-#define POLICY_MODEL_H
+#ifndef POLICY_H
+#define POLICY_H
 
 #include "console_widget/console_widget.h"
 
@@ -43,4 +43,4 @@ QList<QString> policy_model_header_labels();
 QList<int> policy_model_default_columns();
 QList<QString> policy_model_search_attributes();
 
-#endif /* POLICY_MODEL_H */
+#endif /* POLICY_H */
