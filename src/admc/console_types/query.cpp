@@ -24,6 +24,7 @@
 #include "utils.h"
 #include "globals.h"
 #include "settings.h"
+#include "adldap.h"
 
 #include <QCoreApplication>
 #include <QStandardItem>
@@ -166,4 +167,25 @@ QList<QString> get_sibling_names(const QModelIndex &parent) {
     }
 
     return out;
+}
+
+void fetch_query(ConsoleWidget *console, const QModelIndex &index) {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    const QString filter = index.data(QueryItemRole_Filter).toString();
+    const QString search_base = index.data(QueryItemRole_SearchBase).toString();
+    const QList<QString> search_attributes = object_model_search_attributes();
+
+    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All, search_base);
+    for (const AdObject &object : search_results.values()) {
+        const QList<QStandardItem *> results_row = console->add_results_row(index);
+        setup_object_results_row(results_row, object);
+    }
+
+    hide_busy_indicator();
 }

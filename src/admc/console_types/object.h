@@ -25,6 +25,7 @@
 class QStandardItem;
 class AdObject;
 class AdInterface;
+class FilterDialog;
 template <typename T> class QList;
 
 /**
@@ -59,5 +60,6 @@ void console_move_objects(ConsoleWidget *console, AdInterface &ad, const QList<Q
 bool console_add_objects_check(ConsoleWidget *console, const QModelIndex &parent);
 void console_add_objects(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
 void console_add_objects(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
+void fetch_object(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index);
 
 #endif /* OBJECT_H */

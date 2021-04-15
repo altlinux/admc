@@ -130,8 +130,6 @@ private:
     QHash<QString, QPersistentModelIndex> get_selected_dns_and_indexes();
     QList<QString> get_selected_dns();
     void fetch_scope_node(const QModelIndex &index);
-    void fetch_query(const QModelIndex &index);
-    void fetch_object(const QModelIndex &index);
     void save_queries();
 };
 

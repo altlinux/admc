@@ -52,5 +52,6 @@ QString path_to_name(const QString &path);
 QModelIndex add_query_folder(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent);
 void add_query_item(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QString &search_base, const QModelIndex &parent);
 QList<QString> get_sibling_names(const QModelIndex &parent);
+void fetch_query(ConsoleWidget *console, const QModelIndex &index);
 
 #endif /* QUERY_H */
