@@ -177,6 +177,7 @@ public:
     QList<QStandardItem *> get_results_row(const QModelIndex &results_index) const;
 
     QModelIndex get_buddy(const QModelIndex &index) const;
+    QModelIndex get_scope_parent(const QModelIndex &index) const;
     bool is_scope_item(const QModelIndex &index) const;
     bool item_was_fetched(const QModelIndex &index) const;
     

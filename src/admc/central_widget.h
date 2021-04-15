@@ -129,7 +129,7 @@ private:
 
     void update_description_bar();
     void add_object_to_console(const AdObject &object, const    QModelIndex &parent);
-    void move_object_in_console(AdInterface &ad, const QPersistentModelIndex &old_index, const QString &new_parent_dn, const QPersistentModelIndex &new_parent_index);
+    void move_objects_in_console(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
     void update_console_item(const QModelIndex &index, const AdObject &object);
     void update_policy_item(const QModelIndex &index, const AdObject &object);
     QList<QString> get_dns(const QList<QModelIndex> &indexes);

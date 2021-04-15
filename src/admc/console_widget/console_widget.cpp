@@ -507,6 +507,12 @@ QModelIndex ConsoleWidget::get_buddy(const QModelIndex &index) const {
     return buddy;
 }
 
+QModelIndex ConsoleWidget::get_scope_parent(const QModelIndex &index) const {
+    const QModelIndex scope_parent = index.data(ConsoleRole_ScopeParent).toModelIndex();
+
+    return scope_parent;
+}
+
 bool ConsoleWidget::is_scope_item(const QModelIndex &index) const {
     const bool is_scope = index.data(ConsoleRole_IsScope).toBool();
 
