@@ -27,6 +27,8 @@
 
 #include <QStandardItemModel>
 
+int object_results_id;
+
 void load_object_row(const QList<QStandardItem *> row, const AdObject &object) {
     // Load attribute columns
     for (int i = 0; i < g_adconfig->get_columns().count(); i++) {
@@ -148,5 +150,182 @@ void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, c
 
     for (auto item : items) {
         item->setDragEnabled(!cannot_move);
+    }
+}
+
+// NOTE: have to search instead of just using deleted
+// index because can delete objects from query tree
+void console_delete_objects(ConsoleWidget *console_widget, const QList<QString> &dn_list, const bool ignore_query_tree) {
+    for (const QString &dn : dn_list) {
+        // Delete in scope
+        const QList<QPersistentModelIndex> scope_indexes = get_persistent_indexes(console_widget->search_scope_by_role(ObjectRole_DN, dn, ItemType_DomainObject));
+        for (const QPersistentModelIndex &index : scope_indexes) {
+            console_widget->delete_item(index);
+        }
+
+        // Delete in results
+        const QList<QPersistentModelIndex> results_indexes = get_persistent_indexes(console_widget->search_results_by_role(ObjectRole_DN, dn, ItemType_DomainObject));
+        for (const QPersistentModelIndex &index : results_indexes) {
+            // NOTE: don't touch query tree indexes, they
+            // stay around and just go out of date
+            const bool index_is_in_query_tree =
+            [=]() {
+                const QModelIndex scope_parent = console_widget->get_scope_parent(index);
+                const ItemType scope_parent_type = (ItemType) scope_parent.data(ConsoleRole_Type).toInt();
+
+                return (scope_parent_type == ItemType_QueryItem);
+            }();
+
+            if (index_is_in_query_tree && ignore_query_tree) {
+                continue;
+            }
+
+            console_widget->delete_item(index);
+        }
+    }
+}
+
+void console_update_object(ConsoleWidget *console_widget, const AdObject &object) {
+    auto update_helper =
+    [&](const QModelIndex &the_index) {
+        const bool is_scope = console_widget->is_scope_item(the_index);
+
+        if (is_scope) {
+            QStandardItem *scope_item = console_widget->get_scope_item(the_index);
+            setup_object_scope_item(scope_item, object);
+        } else {
+            QList<QStandardItem *> results_row = console_widget->get_results_row(the_index);
+            load_object_row(results_row, object);
+        }
+    };
+
+    // Update in scope
+    const QList<QPersistentModelIndex> scope_indexes = get_persistent_indexes(console_widget->search_scope_by_role(ObjectRole_DN, object.get_dn(), ItemType_DomainObject));
+    for (const QPersistentModelIndex &index : scope_indexes) {
+        update_helper(index);
+    }
+
+    // Update in results
+    const QList<QPersistentModelIndex> results_indexes = get_persistent_indexes(console_widget->search_results_by_role(ObjectRole_DN, object.get_dn(), ItemType_DomainObject));
+    for (const QPersistentModelIndex &index : results_indexes) {
+        update_helper(index);
+    }
+}
+
+void console_add_objects(ConsoleWidget *console_widget, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {
+    if (!console_add_objects_check(console_widget, parent)) {
+        return;
+    }
+
+    const QList<AdObject> object_list =
+    [&]() {
+        QList<AdObject> out;
+
+        for (const QString &dn : dn_list) {
+            const AdObject object = ad.search_object(dn);
+            out.append(object);
+        }
+
+        return out;
+    }();
+
+    console_add_objects(console_widget, object_list, parent);
+}
+
+void console_move_objects(ConsoleWidget *console_widget, AdInterface &ad, const QList<QString> &old_dn_list, const QList<QString> &new_dn_list, const QString &new_parent_dn) {
+    // NOTE: delete old item AFTER adding new item because:
+    // If old item is deleted first, then it's possible for
+    // new parent to get selected (if they are next to each
+    // other in scope tree). Then what happens is that due
+    // to new parent being selected, it gets fetched and
+    // loads new object. End result is that new object is
+    // duplicated.
+    const QModelIndex new_parent_index =
+    [=]() {
+        const QList<QModelIndex> search_results = console_widget->search_scope_by_role(ObjectRole_DN, new_parent_dn, ItemType_DomainObject);
+
+        if (search_results.size() == 1) {
+            return search_results[0];
+        } else {
+            return QModelIndex();
+        }
+    }();
+
+    console_add_objects(console_widget, ad, new_dn_list, new_parent_index);
+    console_delete_objects(console_widget, old_dn_list, true);
+
+    console_widget->sort_scope();
+}
+
+void console_move_objects(ConsoleWidget *console_widget, AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn) {
+    const QList<QString> new_dn_list =
+    [&]() {
+        QList<QString> out;
+
+        for (const QString &old_dn : old_dn_list) {
+            const QString new_dn = dn_move(old_dn, new_parent_dn);
+            out.append(new_dn);
+        }
+
+        return out;
+    }();
+
+    console_move_objects(console_widget, ad, old_dn_list, new_dn_list, new_parent_dn);
+}
+
+// Check parent index before adding objects to console
+bool console_add_objects_check(ConsoleWidget *console_widget, const QModelIndex &parent) {
+    if (!parent.isValid()) {
+        return false;
+    }
+
+    // NOTE: don't add if parent wasn't fetched yet. If that
+    // is the case then the object will be added naturally
+    // when parent is fetched.
+    const bool parent_was_fetched = console_widget->item_was_fetched(parent);
+    if (!parent_was_fetched) {
+        return false;
+    }
+
+    return true;
+}
+
+void console_add_objects(ConsoleWidget *console_widget, const QList<AdObject> &object_list, const QModelIndex &parent) {
+    if (!console_add_objects_check(console_widget, parent)) {
+        return;
+    }
+
+    for (const AdObject &object : object_list) {
+        const bool should_be_in_scope =
+        [&]() {
+            // NOTE: "containers" referenced here don't mean
+            // objects with "container" object class.
+            // Instead it means all the objects that can
+            // have children(some of which are not
+            // "container" class).
+            const bool is_container =
+            [=]() {
+                const QList<QString> filter_containers = g_adconfig->get_filter_containers();
+                const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
+
+                return filter_containers.contains(object_class);
+            }();
+
+            const bool show_non_containers_ON = g_settings->get_bool(BoolSetting_ShowNonContainersInConsoleTree);
+
+            return (is_container || show_non_containers_ON);
+        }();
+
+        if (should_be_in_scope) {
+            QStandardItem *scope_item;
+            QList<QStandardItem *> results_row;
+            console_widget->add_buddy_scope_and_results(object_results_id, ScopeNodeType_Dynamic, parent, &scope_item, &results_row);
+
+            setup_object_scope_item(scope_item, object);
+            setup_object_results_row(results_row, object);
+        } else {
+            const QList<QStandardItem *> results_row = console_widget->add_results_row(parent);
+            setup_object_results_row(results_row, object);
+        }
     }
 }

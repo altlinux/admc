@@ -19,6 +19,7 @@
 
 #include "console_types/query.h"
 
+#include "console_types/object.h"
 #include "central_widget.h"
 #include "utils.h"
 #include "globals.h"
@@ -37,6 +38,8 @@ enum QueryColumn {
 
     QueryColumn_COUNT,
 };
+
+int query_folder_results_id;
 
 QList<QString> query_folder_header_labels() {
     return {
@@ -107,7 +110,7 @@ QString path_to_name(const QString &path) {
     return name;
 }
 
-QModelIndex add_query_folder(ConsoleWidget *console, const int query_folder_results_id, const QString &name, const QString &description, const QModelIndex &parent) {
+QModelIndex add_query_folder(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent) {
     auto load_main_item =
     [&](QStandardItem *item) {
         item->setData(description, QueryItemRole_Description);
@@ -129,7 +132,7 @@ QModelIndex add_query_folder(ConsoleWidget *console, const int query_folder_resu
     return scope_item->index();
 }
 
-void add_query_item(ConsoleWidget *console, const int object_results_id, const QString &name, const QString &description, const QString &filter, const QString &search_base, const QModelIndex &parent) {
+void add_query_item(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QString &search_base, const QModelIndex &parent) {
     auto load_main_item =
     [&](QStandardItem *item) {
         item->setData(ItemType_QueryItem, ConsoleRole_Type);

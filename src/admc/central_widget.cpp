@@ -68,7 +68,6 @@ enum DropType {
 };
 
 DropType get_object_drop_type(const QModelIndex &dropped, const QModelIndex &target);
-bool object_should_be_in_scope(const AdObject &object);
 
 CentralWidget::CentralWidget()
 : QWidget()
@@ -130,12 +129,12 @@ CentralWidget::CentralWidget()
     // g_settings->setup_header_state(object_results->header(),
     // VariantSetting_ResultsHeader);
 
-    auto policies_results = new ResultsView(this);
-    policies_results->detail_view()->header()->setDefaultSectionSize(200);
-    policies_results_id = console_widget->register_results(policies_results, policy_model_header_labels(), policy_model_default_columns());
+    auto policy_container_results = new ResultsView(this);
+    policy_container_results->detail_view()->header()->setDefaultSectionSize(200);
+    policy_container_results_id = console_widget->register_results(policy_container_results, policy_model_header_labels(), policy_model_default_columns());
     
     policy_results_widget = new PolicyResultsWidget();
-    policy_links_results_id = console_widget->register_results(policy_results_widget);
+    policy_results_id = console_widget->register_results(policy_results_widget);
 
     auto query_results = new ResultsView(this);
     query_results->detail_view()->header()->setDefaultSectionSize(200);
@@ -300,7 +299,7 @@ void CentralWidget::go_online(AdInterface &ad) {
     console_widget->set_current_scope(item->index());
 
     // Add top policies item
-    QStandardItem *policies_item = console_widget->add_scope_item(policies_results_id, ScopeNodeType_Static, QModelIndex());
+    QStandardItem *policies_item = console_widget->add_scope_item(policy_container_results_id, ScopeNodeType_Static, QModelIndex());
     policies_item->setText(tr("Group Policy Objects"));
     policies_index = QPersistentModelIndex(policies_item->index());
     policies_item->setDragEnabled(false);
@@ -314,7 +313,7 @@ void CentralWidget::go_online(AdInterface &ad) {
     const QHash<QString, AdObject> policy_search_results = ad.search(policy_search_filter, policy_search_attributes, SearchScope_All);
 
     for (const AdObject &object : policy_search_results.values()) {
-        console_add_policy(object);
+        console_add_policy(console_widget, policies_index, object);
     }
 
     // Add top queries item
@@ -347,12 +346,12 @@ void CentralWidget::go_online(AdInterface &ad) {
                 const QString filter = info["filter"].toString();
                 const QString search_base = info["search_base"].toString();
                 const QString name = path_to_name(child_path);
-                add_query_item(console_widget, object_results_id, name, description, filter, search_base, index);
+                add_query_item(console_widget, name, description, filter, search_base, index);
             } else {
                 // Query folder
                 const QString name = path_to_name(child_path);
                 const QString description = info["description"].toString();
-                const QModelIndex child_scope_index = add_query_folder(console_widget, query_folder_results_id, name, description, index);
+                const QModelIndex child_scope_index = add_query_folder(console_widget, name, description, index);
 
                 query_stack.append(child_scope_index);
             }
@@ -372,7 +371,7 @@ void CentralWidget::delete_objects() {
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
     const QList<QString> deleted_objects = object_delete(selected.keys(), this);
 
-    console_delete_objects(deleted_objects);
+    console_delete_objects(console_widget, deleted_objects);
 }
 
 void CentralWidget::on_properties_requested() {
@@ -394,7 +393,7 @@ void CentralWidget::on_properties_requested() {
             }
 
             const AdObject updated_object = ad.search_object(target);
-            console_update_object(updated_object);
+            console_update_object(console_widget, updated_object);
 
             update_actions_visibility();
         });
@@ -417,7 +416,7 @@ void CentralWidget::rename() {
             const QString old_dn = targets.keys()[0];
             const QString new_dn = dialog->get_new_dn();
             const QString parent_dn = dn_get_parent(old_dn);
-            console_move_objects(ad, {old_dn}, {new_dn}, parent_dn);
+            console_move_objects(console_widget, ad, {old_dn}, {new_dn}, parent_dn);
         });
 }
 
@@ -451,7 +450,7 @@ void CentralWidget::create_helper(const QString &object_class) {
 
             const QModelIndex scope_parent_index = search_parent[0];
             const QString created_dn = dialog->get_created_dn();
-            console_add_objects(ad, {created_dn}, scope_parent_index);
+            console_add_objects(console_widget, ad, {created_dn}, scope_parent_index);
 
             console_widget->sort_scope();
 
@@ -475,7 +474,7 @@ void CentralWidget::move() {
 
             const QList<QString> old_dn_list = dialog->get_moved_objects();
             const QString new_parent_dn = dialog->get_selected();
-            console_move_objects(ad, old_dn_list, new_parent_dn);
+            console_move_objects(console_widget, ad, old_dn_list, new_parent_dn);
 
             console_widget->sort_scope();
         });
@@ -580,7 +579,7 @@ void CentralWidget::create_policy() {
             const QHash<QString, AdObject> search_results = ad.search(QString(), search_attributes, SearchScope_Object, dn);
             const AdObject object = search_results[dn];
 
-            console_add_policy(object);
+            console_add_policy(console_widget, policies_index, object);
 
             // NOTE: not adding policy object to the domain
             // tree, but i think it's ok?
@@ -666,7 +665,7 @@ void CentralWidget::rename_policy() {
             }
 
             const AdObject updated_object = ad.search_object(dn);
-            console_update_policy(index, updated_object);
+            console_update_policy(console_widget, index, updated_object);
 
             console_widget->sort_scope();
         });
@@ -739,7 +738,7 @@ void CentralWidget::new_query_folder() {
         [=]() {
             const QString name = dialog->get_name();
             const QString description = dialog->get_description();
-            add_query_folder(console_widget, query_folder_results_id, name, description, parent_index);
+            add_query_folder(console_widget, name, description, parent_index);
 
             save_queries();
         });
@@ -767,7 +766,7 @@ void CentralWidget::new_query() {
             const QString description = dialog->get_description();
             const QString filter = dialog->get_filter();
             const QString search_base = dialog->get_search_base();
-            add_query_item(console_widget, object_results_id, name, description, filter, search_base, parent_index);
+            add_query_item(console_widget, name, description, filter, search_base, parent_index);
 
             save_queries();
         });
@@ -828,7 +827,7 @@ void CentralWidget::on_items_dropped(const QList<QModelIndex> &dropped_list, con
                     target_dn);
 
                 if (move_success) {
-                    console_move_objects(ad, QList<QString>({dropped_dn}), target_dn);
+                    console_move_objects(console_widget, ad, QList<QString>({dropped_dn}), target_dn);
                 }
 
                 break;
@@ -1023,177 +1022,10 @@ void CentralWidget::fetch_object(const QModelIndex &index) {
         }
     }
 
-    console_add_objects(search_results.values(), index);
+    console_add_objects(console_widget, search_results.values(), index);
     console_widget->sort_scope();
 
     hide_busy_indicator();
-}
-
-// NOTE: "containers" referenced here don't mean objects
-// with "container" object class. Instead it means all the
-// objects that can have children(some of which are not
-// "container" class).
-bool object_should_be_in_scope(const AdObject &object) {
-    const bool is_container =
-    [=]() {
-        const QList<QString> filter_containers = g_adconfig->get_filter_containers();
-        const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
-
-        return filter_containers.contains(object_class);
-    }();
-
-    const bool show_non_containers_ON = g_settings->get_bool(BoolSetting_ShowNonContainersInConsoleTree);
-
-    return (is_container || show_non_containers_ON);
-}
-
-// Check parent index before adding objects to console
-bool CentralWidget::console_add_objects_check(const QModelIndex &parent) {
-    if (!parent.isValid()) {
-        return false;
-    }
-
-    // NOTE: don't add if parent wasn't fetched yet. If that
-    // is the case then the object will be added naturally
-    // when parent is fetched.
-    const bool parent_was_fetched = console_widget->item_was_fetched(parent);
-    if (!parent_was_fetched) {
-        return false;
-    }
-
-    return true;
-}
-
-void CentralWidget::console_add_objects(const QList<AdObject> &object_list, const QModelIndex &parent) {
-    if (!console_add_objects_check(parent)) {
-        return;
-    }
-
-    for (const AdObject &object : object_list) {
-        const bool should_be_in_scope = object_should_be_in_scope(object);
-
-        if (should_be_in_scope) {
-            QStandardItem *scope_item;
-            QList<QStandardItem *> results_row;
-            console_widget->add_buddy_scope_and_results(object_results_id, ScopeNodeType_Dynamic, parent, &scope_item, &results_row);
-
-            setup_object_scope_item(scope_item, object);
-            setup_object_results_row(results_row, object);
-        } else {
-            const QList<QStandardItem *> results_row = console_widget->add_results_row(parent);
-            setup_object_results_row(results_row, object);
-        }
-    }
-}
-
-void CentralWidget::console_add_objects(AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {
-    if (!console_add_objects_check(parent)) {
-        return;
-    }
-
-    const QList<AdObject> object_list =
-    [&]() {
-        QList<AdObject> out;
-
-        for (const QString &dn : dn_list) {
-            const AdObject object = ad.search_object(dn);
-            out.append(object);
-        }
-
-        return out;
-    }();
-
-    console_add_objects(object_list, parent);
-}
-
-void CentralWidget::console_move_objects(AdInterface &ad, const QList<QString> &old_dn_list, const QList<QString> &new_dn_list, const QString &new_parent_dn) {
-    // NOTE: delete old item AFTER adding new item because:
-    // If old item is deleted first, then it's possible for
-    // new parent to get selected (if they are next to each
-    // other in scope tree). Then what happens is that due
-    // to new parent being selected, it gets fetched and
-    // loads new object. End result is that new object is
-    // duplicated.
-    const QModelIndex new_parent_index =
-    [=]() {
-        const QList<QModelIndex> search_results = console_widget->search_scope_by_role(ObjectRole_DN, new_parent_dn, ItemType_DomainObject);
-
-        if (search_results.size() == 1) {
-            return search_results[0];
-        } else {
-            return QModelIndex();
-        }
-    }();
-
-    console_add_objects(ad, new_dn_list, new_parent_index);
-    console_delete_objects(old_dn_list, true);
-
-    console_widget->sort_scope();
-}
-
-void CentralWidget::console_move_objects(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn) {
-    const QList<QString> new_dn_list =
-    [&]() {
-        QList<QString> out;
-
-        for (const QString &old_dn : old_dn_list) {
-            const QString new_dn = dn_move(old_dn, new_parent_dn);
-            out.append(new_dn);
-        }
-
-        return out;
-    }();
-
-    console_move_objects(ad, old_dn_list, new_dn_list, new_parent_dn);
-}
-
-void CentralWidget::console_update_object(const AdObject &object) {
-    auto update_helper =
-    [this, &object](const QModelIndex &the_index) {
-        const bool is_scope = console_widget->is_scope_item(the_index);
-
-        if (is_scope) {
-            QStandardItem *scope_item = console_widget->get_scope_item(the_index);
-            setup_object_scope_item(scope_item, object);
-        } else {
-            QList<QStandardItem *> results_row = console_widget->get_results_row(the_index);
-            load_object_row(results_row, object);
-        }
-    };
-
-    // Update in scope
-    const QList<QPersistentModelIndex> scope_indexes = get_persistent_indexes(console_widget->search_scope_by_role(ObjectRole_DN, object.get_dn(), ItemType_DomainObject));
-    for (const QPersistentModelIndex &index : scope_indexes) {
-        update_helper(index);
-    }
-
-    // Update in results
-    const QList<QPersistentModelIndex> results_indexes = get_persistent_indexes(console_widget->search_results_by_role(ObjectRole_DN, object.get_dn(), ItemType_DomainObject));
-    for (const QPersistentModelIndex &index : results_indexes) {
-        update_helper(index);
-    }
-}
-
-void CentralWidget::console_update_policy(const QModelIndex &index, const AdObject &object) {
-    auto update_helper =
-    [this, object](const QModelIndex &the_index) {
-        const bool is_scope = console_widget->is_scope_item(the_index);
-
-        if (is_scope) {
-            QStandardItem *scope_item = console_widget->get_scope_item(the_index);
-            setup_policy_scope_item(scope_item, object);
-        } else {
-            QList<QStandardItem *> results_row = console_widget->get_results_row(the_index);
-            setup_policy_results_row(results_row, object);
-        }
-    };
-
-    update_helper(index);
-
-    const QModelIndex buddy = console_widget->get_buddy(index);
-    if (buddy.isValid()) {
-        update_helper(buddy);
-    }
 }
 
 // Determine what kind of drop type is dropping this object
@@ -1351,15 +1183,6 @@ QList<QString> CentralWidget::get_selected_dns() {
     return selected.keys();
 }
 
-void CentralWidget::console_add_policy(const AdObject &object) {
-    QStandardItem *scope_item;
-    QList<QStandardItem *> results_row;
-    console_widget->add_buddy_scope_and_results(policy_links_results_id, ScopeNodeType_Static, policies_index, &scope_item, &results_row);
-
-    setup_policy_scope_item(scope_item, object);
-    setup_policy_results_row(results_row, object);
-}
-
 // Saves current state of queries tree to settings. Should
 // be called after every modication to queries tree
 void CentralWidget::save_queries() {
@@ -1423,36 +1246,4 @@ void CentralWidget::save_queries() {
 
     g_settings->set_variant(VariantSetting_QueryFolders, folders_variant);
     g_settings->set_variant(VariantSetting_QueryInfo, info_map_variant);
-}
-
-// NOTE: have to search instead of just using deleted
-// index because can delete objects from query tree
-void CentralWidget::console_delete_objects(const QList<QString> &dn_list, const bool ignore_query_tree) {
-    for (const QString &dn : dn_list) {
-        // Delete in scope
-        const QList<QPersistentModelIndex> scope_indexes = get_persistent_indexes(console_widget->search_scope_by_role(ObjectRole_DN, dn, ItemType_DomainObject));
-        for (const QPersistentModelIndex &index : scope_indexes) {
-            console_widget->delete_item(index);
-        }
-
-        // Delete in results
-        const QList<QPersistentModelIndex> results_indexes = get_persistent_indexes(console_widget->search_results_by_role(ObjectRole_DN, dn, ItemType_DomainObject));
-        for (const QPersistentModelIndex &index : results_indexes) {
-            // NOTE: don't touch query tree indexes, they
-            // stay around and just go out of date
-            const bool index_is_in_query_tree =
-            [=]() {
-                const QModelIndex scope_parent = console_widget->get_scope_parent(index);
-                const ItemType scope_parent_type = (ItemType) scope_parent.data(ConsoleRole_Type).toInt();
-
-                return (scope_parent_type == ItemType_QueryItem);
-            }();
-
-            if (index_is_in_query_tree && ignore_query_tree) {
-                continue;
-            }
-
-            console_widget->delete_item(index);
-        }
-    }
 }
