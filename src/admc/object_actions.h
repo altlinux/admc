@@ -60,6 +60,7 @@ public:
 
     QAction *get(const ObjectAction action) const;
     void add_to_menu(QMenu *menu);
+    void hide_actions();
     void update_actions_visibility(const QList<QModelIndex> &selected_indexes);
 
 private:

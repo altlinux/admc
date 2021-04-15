@@ -116,6 +116,13 @@ void ObjectActions::add_to_menu(QMenu *menu) {
     menu->addAction(get(ObjectAction_Move));
 }
 
+void ObjectActions::hide_actions() {
+    for (QAction *action : actions.values()) {
+        action->setVisible(false);
+    }
+    new_menu->menuAction()->setVisible(false);
+}
+
 void ObjectActions::update_actions_visibility(const QList<QModelIndex> &selected_indexes) {
     auto show_action =
     [this](const ObjectAction action_enum) {
@@ -123,10 +130,7 @@ void ObjectActions::update_actions_visibility(const QList<QModelIndex> &selected
         action->setVisible(true);
     };
 
-    for (QAction *action : actions.values()) {
-        action->setVisible(false);
-    }
-    new_menu->menuAction()->setVisible(false);
+    hide_actions();
 
     if (!indexes_are_of_type(selected_indexes, ItemType_DomainObject)) {
         return;

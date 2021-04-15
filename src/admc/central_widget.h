@@ -49,7 +49,11 @@ template <typename T> class QList;
 enum ItemType {
     ItemType_Unassigned,
     ItemType_DomainObject,
+    ItemType_PoliciesRoot,
     ItemType_Policy,
+    ItemType_QueriesRoot,
+    ItemType_QueryFolder,
+    ItemType_QueryItem,
 
     ItemType_LAST,
 };
@@ -94,7 +98,9 @@ private slots:
     void rename_policy();
     void delete_policy();
 
-    void fetch_scope_node(const QModelIndex &index);
+    void new_query_folder();
+    void new_query();
+    void delete_query_item_or_folder();
     
     void on_items_can_drop(const QList<QModelIndex> &dropped, const QModelIndex &target, bool *ok);
     void on_items_dropped(const QList<QModelIndex> &dropped, const QModelIndex &target);
@@ -105,16 +111,17 @@ private:
     int object_results_id;
     int policies_results_id;
     int policy_links_results_id;
+    int query_folder_results_id;
     QPersistentModelIndex scope_head_index;
     QPersistentModelIndex policies_index;
+    QPersistentModelIndex queries_index;
     FilterDialog *filter_dialog;
     PolicyResultsWidget *policy_results_widget;
 
     ObjectActions *object_actions;
 
-    QAction *create_policy_action;
-    QList<QAction *> policy_actions;
-
+    QHash<ItemType, QList<QAction *>> item_actions;
+    
     QAction *open_filter_action;
     QAction *show_noncontainers_action;
     QAction *dev_mode_action;
@@ -132,6 +139,10 @@ private:
     QHash<QString, QPersistentModelIndex> get_selected_dns_and_indexes();
     QList<QString> get_selected_dns();
     void add_policy_to_console(const AdObject &object);
+    void fetch_scope_node(const QModelIndex &index);
+    void fetch_query(const QModelIndex &index);
+    void fetch_object(const QModelIndex &index);
+    void save_queries();
 };
 
 #endif /* CENTRAL_WIDGET_H */

@@ -187,6 +187,8 @@ QString variant_to_string(const VariantSetting setting) {
         CASE_ENUM_TO_STRING(VariantSetting_FindResultsHeader);
         CASE_ENUM_TO_STRING(VariantSetting_AttributesHeader);
         CASE_ENUM_TO_STRING(VariantSetting_AttributesTabFilter);
+        CASE_ENUM_TO_STRING(VariantSetting_QueryFolders);
+        CASE_ENUM_TO_STRING(VariantSetting_QueryInfo);
         CASE_ENUM_TO_STRING(VariantSetting_COUNT);
     }
     return "";

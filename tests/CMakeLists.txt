@@ -42,6 +42,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/settings.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/policy_model.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/policy_results_widget.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_types/query.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/move_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/rename_dialog.cpp
@@ -54,6 +55,8 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/manual_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/select_policy_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/create_policy_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/create_query_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/create_query_folder_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/gplink.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/filter_widget/filter_widget.cpp
@@ -62,6 +65,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/filter_widget/filter_widget_advanced_tab.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/filter_widget/select_classes_widget.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/filter_widget/filter_builder.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/filter_widget/search_base_widget.cpp
     
     ${PROJECT_SOURCE_DIR}/src/admc/tabs/properties_tab.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/tabs/general_tab.cpp

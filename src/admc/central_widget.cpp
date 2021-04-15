@@ -33,6 +33,8 @@
 #include "rename_dialog.h"
 #include "create_dialog.h"
 #include "create_policy_dialog.h"
+#include "create_query_dialog.h"
+#include "create_query_folder_dialog.h"
 #include "move_dialog.h"
 #include "find_dialog.h"
 #include "password_dialog.h"
@@ -43,6 +45,7 @@
 #include "editors/multi_editor.h"
 #include "gplink.h"
 #include "policy_results_widget.h"
+#include "console_types/query.h"
 
 #include <QDebug>
 #include <QAbstractItemView>
@@ -72,7 +75,7 @@ CentralWidget::CentralWidget()
 {
     object_actions = new ObjectActions(this);
 
-    create_policy_action = new QAction(tr("New policy"), this);
+    auto create_policy_action = new QAction(tr("New policy"), this);
     auto add_link_action = new QAction(tr("Add link"), this);
     auto rename_policy_action = new QAction(tr("Rename"), this);
     auto delete_policy_action = new QAction(tr("Delete"), this);
@@ -80,13 +83,36 @@ CentralWidget::CentralWidget()
     // NOTE: create policy action is not added to list
     // because it is shown for the policies container, not
     // for gpo's themselves.
+
+    item_actions[ItemType_PoliciesRoot] = {
+        create_policy_action,
+    };
     
     // NOTE: add policy actions to this list so that they
     // are processed
-    policy_actions = {
+    item_actions[ItemType_Policy] = {
         add_link_action,
         rename_policy_action,
         delete_policy_action,
+    };
+
+    auto delete_query_item_or_folder_action = new QAction(tr("Delete"), this);
+
+    auto new_query_folder_action = new QAction(tr("New folder"), this);
+    auto new_query_action = new QAction(tr("New query"), this);
+    item_actions[ItemType_QueryFolder] = {
+        new_query_folder_action,
+        new_query_action,
+        delete_query_item_or_folder_action,
+    };
+
+    item_actions[ItemType_QueryItem] = {
+        delete_query_item_or_folder_action,
+    };
+
+    item_actions[ItemType_QueriesRoot] = {
+        new_query_folder_action,
+        new_query_action,
     };
 
     open_filter_action = new QAction(tr("&Filter objects"), this);
@@ -110,6 +136,10 @@ CentralWidget::CentralWidget()
     
     policy_results_widget = new PolicyResultsWidget();
     policy_links_results_id = console_widget->register_results(policy_results_widget);
+
+    auto query_results = new ResultsView(this);
+    query_results->detail_view()->header()->setDefaultSectionSize(200);
+    query_folder_results_id = console_widget->register_results(query_results, query_folder_header_labels(), query_folder_default_columns());
     
     auto layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
@@ -198,6 +228,16 @@ CentralWidget::CentralWidget()
         this, &CentralWidget::delete_policy);
 
     connect(
+        new_query_folder_action, &QAction::triggered,
+        this, &CentralWidget::new_query_folder);
+    connect(
+        new_query_action, &QAction::triggered,
+        this, &CentralWidget::new_query);
+    connect(
+        delete_query_item_or_folder_action, &QAction::triggered,
+        this, &CentralWidget::delete_query_item_or_folder);
+
+    connect(
         console_widget, &ConsoleWidget::current_scope_item_changed,
         this, &CentralWidget::on_current_scope_changed);
     connect(
@@ -265,15 +305,58 @@ void CentralWidget::go_online(AdInterface &ad) {
     policies_index = QPersistentModelIndex(policies_item->index());
     policies_item->setDragEnabled(false);
     policies_item->setIcon(QIcon::fromTheme("folder"));
+    policies_item->setData(ItemType_PoliciesRoot, ConsoleRole_Type);
 
     // Load policies items
-    const QList<QString> search_attributes = policy_model_search_attributes();
-    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
+    const QList<QString> policy_search_attributes = policy_model_search_attributes();
+    const QString policy_search_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
 
-    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
+    const QHash<QString, AdObject> policy_search_results = ad.search(policy_search_filter, policy_search_attributes, SearchScope_All);
 
-    for (const AdObject &object : search_results.values()) {
+    for (const AdObject &object : policy_search_results.values()) {
         add_policy_to_console(object);
+    }
+
+    // Add top queries item
+    QStandardItem *queries_item = console_widget->add_scope_item(query_folder_results_id, ScopeNodeType_Static, QModelIndex());
+    queries_index = QPersistentModelIndex(queries_item->index());
+    queries_item->setText(tr("Saved Queries"));
+    queries_item->setIcon(QIcon::fromTheme("folder"));
+    queries_item->setData(ItemType_QueriesRoot, ConsoleRole_Type);
+
+    // Load queries item
+    const QHash<QString, QVariant> folders_map = g_settings->get_variant(VariantSetting_QueryFolders).toHash();
+    const QHash<QString, QVariant> info_map = g_settings->get_variant(VariantSetting_QueryInfo).toHash();
+
+    QStack<QModelIndex> query_stack;
+    query_stack.append(queries_index);
+    while (!query_stack.isEmpty()) {
+        const QModelIndex index = query_stack.pop();
+        const QString path = query_folder_path(index);
+
+        // Go through children and add them as folders or
+        // query items
+        const QList<QString> children = folders_map[path].toStringList();
+        for (const QString &child_path : children) {
+            const QHash<QString, QVariant> info = info_map[child_path].toHash();
+            const bool is_query_item = info["is_query_item"].toBool();
+
+            if (is_query_item) {
+                // Query item
+                const QString description = info["description"].toString();
+                const QString filter = info["filter"].toString();
+                const QString search_base = info["search_base"].toString();
+                const QString name = path_to_name(child_path);
+                add_query_item(console_widget, object_results_id, name, description, filter, search_base, index);
+            } else {
+                // Query folder
+                const QString name = path_to_name(child_path);
+                const QString description = info["description"].toString();
+                const QModelIndex child_scope_index = add_query_folder(console_widget, query_folder_results_id, name, description, index);
+
+                query_stack.append(child_scope_index);
+            }
+        }
     }
 
     console_widget->sort_scope();
@@ -644,6 +727,73 @@ void CentralWidget::delete_policy() {
     g_status()->display_ad_messages(ad, this);
 }
 
+void CentralWidget::new_query_folder() {
+    const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
+    
+    if (selected_indexes.size() != 1) {
+        return;
+    }
+
+    const QModelIndex parent_index = console_widget->convert_to_scope_index(selected_indexes[0]);
+
+    const QList<QString> sibling_names = get_sibling_names(parent_index);
+
+    auto dialog = new CreateQueryFolderDialog(sibling_names, this);
+
+    connect(
+        dialog, &QDialog::accepted,
+        [=]() {
+            const QString name = dialog->get_name();
+            const QString description = dialog->get_description();
+            add_query_folder(console_widget, query_folder_results_id, name, description, parent_index);
+
+            save_queries();
+        });
+
+    dialog->open();
+}
+
+void CentralWidget::new_query() {
+    const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
+    
+    if (selected_indexes.size() != 1) {
+        return;
+    }
+
+    const QModelIndex parent_index = console_widget->convert_to_scope_index(selected_indexes[0]);
+
+    const QList<QString> sibling_names = get_sibling_names(parent_index);
+
+    auto dialog = new CreateQueryDialog(sibling_names, this);
+
+    connect(
+        dialog, &QDialog::accepted,
+        [=]() {
+            const QString name = dialog->get_name();
+            const QString description = dialog->get_description();
+            const QString filter = dialog->get_filter();
+            const QString search_base = dialog->get_search_base();
+            add_query_item(console_widget, object_results_id, name, description, filter, search_base, parent_index);
+
+            save_queries();
+        });
+
+    dialog->open();
+}
+
+void CentralWidget::delete_query_item_or_folder() {
+    const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
+    
+    if (selected_indexes.size() != 1) {
+        return;
+    }
+
+    const QModelIndex index = selected_indexes[0];
+    console_widget->delete_item(index);
+
+    save_queries();
+}
+
 // NOTE: only check if object can be dropped if dropping a
 // single object, because when dropping multiple objects it
 // is ok for some objects to successfully drop and some to
@@ -746,10 +896,10 @@ void CentralWidget::update_description_bar() {
 void CentralWidget::add_actions_to_action_menu(QMenu *menu) {
     object_actions->add_to_menu(menu);
 
-    menu->addAction(create_policy_action);
-
-    for (QAction *action : policy_actions) {
-        menu->addAction(action);
+    for (const QList<QAction *> actions : item_actions.values()) {
+        for (QAction *action : actions) {
+            menu->addAction(action);
+        }
     }
 
     menu->addSeparator();
@@ -775,9 +925,39 @@ void CentralWidget::add_actions_to_view_menu(QMenu *menu) {
     #endif
 }
 
+void CentralWidget::fetch_scope_node(const QModelIndex &index) {
+    const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
+
+    if (type == ItemType_DomainObject) {
+        fetch_object(index);
+    } else if (type == ItemType_QueryItem) {
+        fetch_query(index);
+    }
+}
+
+void CentralWidget::fetch_query(const QModelIndex &index) {
+    const QString filter = index.data(QueryItemRole_Filter).toString();
+    const QString search_base = index.data(QueryItemRole_SearchBase).toString();
+    const QList<QString> search_attributes = object_model_search_attributes();
+
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All, search_base);
+    for (const AdObject &object : search_results.values()) {
+        add_object_to_console(object, index);
+    }
+
+    hide_busy_indicator();
+}
+
 // Load children of this item in scope tree
 // and load results linked to this scope item
-void CentralWidget::fetch_scope_node(const QModelIndex &index) {
+void CentralWidget::fetch_object(const QModelIndex &index) {
     show_busy_indicator();
 
     const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
@@ -1083,34 +1263,48 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
 // First, hide all actions, then show whichever actions are
 // appropriate for current console selection
 void CentralWidget::update_actions_visibility() {
+    // Hide all actions
+    object_actions->hide_actions();
+
+    for (const QList<QAction *> actions : item_actions.values()) {
+        for (QAction *action : actions) {
+            action->setVisible(false);
+        }
+    }
+
+    // Figure out what kind of types of items are selected
     const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
-
-    // Show create policy action if clicked on "Policies"
-    // scope item
-    const bool create_policy_action_is_visible =
-    [&]() {
-        if (selected_indexes.size() != 1) {
-            return false;
-        }
-
-        const QModelIndex index = selected_indexes[0];
-        const bool is_policies_item = (index == policies_index);
-
-        return is_policies_item;
-    }();;
-    create_policy_action->setVisible(create_policy_action_is_visible);
-
-    for (QAction *action : policy_actions) {
-        action->setVisible(false);
+    if (selected_indexes.isEmpty()) {
+        return;
     }
 
-    if (indexes_are_of_type(selected_indexes, ItemType_Policy)) {
-        for (QAction *action : policy_actions) {
-            action->setVisible(true);
+    const QSet<ItemType> selected_types =
+    [&selected_indexes]() {
+        QSet<ItemType> out;
+
+        for (const QModelIndex &index : selected_indexes) {
+            const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
+            out.insert(type);
         }
+
+        return out;
+    }();
+
+    if (selected_types.size() != 1) {
+        return;
     }
 
-    object_actions->update_actions_visibility(selected_indexes);
+    const ItemType type = selected_types.toList()[0];
+
+    // Show actions of selected type
+    const QList<QAction *> type_actions = item_actions[type];
+    for (QAction *action : type_actions) {
+        action->setVisible(true);
+    }
+
+    if (type == ItemType_DomainObject) {
+        object_actions->update_actions_visibility(selected_indexes);
+    }
 }
 
 // Get selected indexes mapped to their DN's
@@ -1139,4 +1333,69 @@ void CentralWidget::add_policy_to_console(const AdObject &object) {
 
     setup_policy_scope_item(scope_item, object);
     setup_policy_results_row(results_row, object);
+}
+
+// Saves current state of queries tree to settings. Should
+// be called after every modication to queries tree
+void CentralWidget::save_queries() {
+    // folder path = {list of children}
+    // data = {path => data map containing info about
+    // query folder/item}
+    QHash<QString, QVariant> folders;
+    QHash<QString, QVariant> info_map;
+
+    QStack<QModelIndex> stack;
+    stack.append(queries_index);
+
+    const QAbstractItemModel *model = queries_index.model();
+
+    while (!stack.isEmpty()) {
+        const QModelIndex index = stack.pop();
+
+        // Add children to stack
+        for (int i = 0; i < model->rowCount(index); i++) {
+            const QModelIndex child = model->index(i, 0, index);
+
+            stack.append(child);
+        }
+
+        // NOTE: don't save head item, it's created manually
+        const bool is_query_root = !index.parent().isValid();
+        if (is_query_root) {
+            continue;
+        }
+
+        const QString path = query_folder_path(index);
+        const QString parent_path = query_folder_path(index.parent());
+        const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
+
+        QList<QString> child_folders = folders[parent_path].toStringList();
+        child_folders.append(path);
+        folders[parent_path] = QVariant(child_folders);
+
+        const QString description = index.data(QueryItemRole_Description).toString();
+
+        if (type == ItemType_QueryFolder) {
+            QHash<QString, QVariant> info;
+            info["is_query_item"] = QVariant(false);
+            info["description"] = QVariant(description);
+            info_map[path] = QVariant(info);
+        } else {
+            const QString filter = index.data(QueryItemRole_Filter).toString();
+            const QString search_base = index.data(QueryItemRole_SearchBase).toString();
+
+            QHash<QString, QVariant> info;
+            info["is_query_item"] = QVariant(true);
+            info["description"] = QVariant(description);
+            info["filter"] = QVariant(filter);
+            info["search_base"] = QVariant(search_base);
+            info_map[path] = QVariant(info);
+        }
+    }
+
+    const QVariant folders_variant = QVariant(folders);
+    const QVariant info_map_variant = QVariant(info_map);
+
+    g_settings->set_variant(VariantSetting_QueryFolders, folders_variant);
+    g_settings->set_variant(VariantSetting_QueryInfo, info_map_variant);
 }

@@ -30,10 +30,10 @@
 
 class FilterWidget;
 class FindResults;
-class QComboBox;
 class QStandardItem;
 class QPushButton;
 class AdObject;
+class SearchBaseWidget;
 template <typename T> class QList;
 template <typename K, typename V> class QHash;
 
@@ -51,16 +51,15 @@ public:
     QList<QList<QStandardItem *>> get_selected_rows() const;
 
 private slots:
-    void select_custom_search_base();
     void find();
     void on_thread_finished();
     void handle_find_thread_results(const QHash<QString, AdObject> &results);
 
 private:
     FilterWidget *filter_widget;
-    QComboBox *search_base_combo;
     QPushButton *find_button;
     QPushButton *stop_button;
+    SearchBaseWidget *search_base_widget;
 };
 
 #endif /* FIND_WIDGET_H */

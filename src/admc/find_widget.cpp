@@ -24,46 +24,22 @@
 #include "settings.h"
 #include "utils.h"
 #include "filter_widget/filter_widget.h"
+#include "filter_widget/search_base_widget.h"
 #include "find_results.h"
-#include "select_container_dialog.h"
 #include "search_thread.h"
 #include "object_model.h"
 
 #include <QString>
 #include <QList>
 #include <QFormLayout>
-#include <QComboBox>
 #include <QPushButton>
+#include <QFrame>
 #include <QDebug>
 
 FindWidget::FindWidget(const QList<QString> classes, const QString &default_search_base)
 : QWidget()
 {
-    // TODO: missing "Entire directory" in search base combo. Not 100% sure what it's supposed to be, the tippy-top domain? Definitely need it for work with multiple domains.
-
-    const QString domain_head = g_adconfig->domain_head();
-
-    search_base_combo = new QComboBox();
-    {
-        auto add_search_base_to_combo =
-        [this](const QString dn) {
-            const QString name = dn_get_name(dn);
-            search_base_combo->addItem(name, dn);
-        };
-
-        if (default_search_base == domain_head) {
-            add_search_base_to_combo(domain_head);
-        } else {
-            add_search_base_to_combo(domain_head);
-            add_search_base_to_combo(default_search_base);
-        }
-
-        const int last_index = search_base_combo->count() - 1;
-        search_base_combo->setCurrentIndex(last_index);
-    }
-
-    auto custom_search_base_button = new QPushButton(tr("Browse"));
-    custom_search_base_button->setAutoDefault(false);
+    search_base_widget = new SearchBaseWidget(default_search_base);
 
     filter_widget = new FilterWidget(classes);
 
@@ -80,12 +56,8 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
     filter_widget_frame->setFrameShape(QFrame::Box);
 
     {
-        auto search_base_layout = new QHBoxLayout();
-        search_base_layout->addWidget(search_base_combo);
-        search_base_layout->addWidget(custom_search_base_button);
-
-        auto search_base_row = new QFormLayout();
-        search_base_row->addRow(tr("Search in:"), search_base_layout);
+        auto search_base_layout = new QFormLayout();
+        search_base_layout->addRow(tr("Search in:"), search_base_widget);
 
         auto buttons_layout = new QHBoxLayout();
         buttons_layout->addWidget(find_button);
@@ -94,7 +66,7 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
 
         auto layout = new QVBoxLayout();
         filter_widget_frame->setLayout(layout);
-        layout->addLayout(search_base_row);
+        layout->addLayout(search_base_layout);
         layout->addWidget(filter_widget);
         layout->addLayout(buttons_layout);
     }
@@ -113,9 +85,6 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
     find_results->setMinimumSize(500, 0);
 
     connect(
-        custom_search_base_button, &QAbstractButton::clicked,
-        this, &FindWidget::select_custom_search_base);
-    connect(
         find_button, &QPushButton::clicked,
         this, &FindWidget::find);
     connect(
@@ -132,35 +101,10 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
         });
 }
 
-void FindWidget::select_custom_search_base() {
-    auto dialog = new SelectContainerDialog(parentWidget());
-
-    connect(
-        dialog, &SelectContainerDialog::accepted,
-        [this, dialog]() {
-            const QString selected = dialog->get_selected();
-            const QString name = dn_get_name(selected);
-
-            search_base_combo->addItem(name, selected);
-
-            // Select newly added search base in combobox
-            const int new_base_index = search_base_combo->count() - 1;
-            search_base_combo->setCurrentIndex(new_base_index);
-        });
-
-    dialog->open();
-}
-
 void FindWidget::find() {
     // Prepare search args
     const QString filter = filter_widget->get_filter();
-    const QString search_base =
-    [this]() {
-        const int index = search_base_combo->currentIndex();
-        const QVariant item_data = search_base_combo->itemData(index);
-
-        return item_data.toString();
-    }();
+    const QString search_base = search_base_widget->get_search_base();
     const QList<QString> search_attributes = object_model_search_attributes();
 
     auto find_thread = new SearchThread(filter, search_base, search_attributes);

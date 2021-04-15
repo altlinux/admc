@@ -517,6 +517,17 @@ bool ConsoleWidget::item_was_fetched(const QModelIndex &index) const {
     return index.data(ConsoleRole_WasFetched).toBool();
 }
 
+// TODO: rename
+QModelIndex ConsoleWidget::convert_to_scope_index(const QModelIndex &index) const {
+    if (is_scope_item(index)) {
+        return index;
+    } else {
+        const QModelIndex buddy = get_buddy(index);
+
+        return buddy;
+    }
+}
+
 QWidget *ConsoleWidget::get_scope_view() const {
     return d->scope_view;
 }

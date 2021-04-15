@@ -179,6 +179,10 @@ public:
     QModelIndex get_buddy(const QModelIndex &index) const;
     bool is_scope_item(const QModelIndex &index) const;
     bool item_was_fetched(const QModelIndex &index) const;
+    
+    // If index is already scope, returns index, otherwise
+    // returns scope buddy, if it exists
+    QModelIndex convert_to_scope_index(const QModelIndex &index) const;
 
     void add_actions_to_action_menu(QMenu *menu);
     void add_actions_to_navigation_menu(QMenu *menu);
