@@ -128,25 +128,25 @@ private:
     ResultsView *object_results;
 
     void update_description_bar();
-    bool add_objects_to_console_check(const QModelIndex &parent);
-    void add_objects_to_console(const QList<AdObject> &object_list, const QModelIndex &parent);
-    void add_objects_to_console(AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
-    void move_objects_in_console(AdInterface &ad, const QList<QString> &old_dn_list, const QList<QString> &new_dn_list, const QString &new_parent_dn);
-    void move_objects_in_console(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
+    bool console_add_objects_check(const QModelIndex &parent);
+    void console_add_objects(const QList<AdObject> &object_list, const QModelIndex &parent);
+    void console_add_objects(AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
+    void console_move_objects(AdInterface &ad, const QList<QString> &old_dn_list, const QList<QString> &new_dn_list, const QString &new_parent_dn);
+    void console_move_objects(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
     void console_update_object(const AdObject &object);
-    void update_policy_item(const QModelIndex &index, const AdObject &object);
+    void console_update_policy(const QModelIndex &index, const AdObject &object);
     QList<QString> get_dns(const QList<QModelIndex> &indexes);
     void enable_disable_helper(const bool disabled);
     void update_actions_visibility();
     void create_helper(const QString &object_class);
     QHash<QString, QPersistentModelIndex> get_selected_dns_and_indexes();
     QList<QString> get_selected_dns();
-    void add_policy_to_console(const AdObject &object);
+    void console_add_policy(const AdObject &object);
     void fetch_scope_node(const QModelIndex &index);
     void fetch_query(const QModelIndex &index);
     void fetch_object(const QModelIndex &index);
     void save_queries();
-    void delete_objects_in_console(const QList<QString> &dn_list, const bool ignore_query_tree = false);
+    void console_delete_objects(const QList<QString> &dn_list, const bool ignore_query_tree = false);
 };
 
 #endif /* CENTRAL_WIDGET_H */
