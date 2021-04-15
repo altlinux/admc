@@ -69,32 +69,32 @@ QList<QString> policy_model_search_attributes() {
     return {ATTRIBUTE_DISPLAY_NAME};
 }
 
-void console_add_policy(ConsoleWidget *console_widget, const QModelIndex &policies_index, const AdObject &object) {
+void console_add_policy(ConsoleWidget *console, const QModelIndex &policies_index, const AdObject &object) {
     QStandardItem *scope_item;
     QList<QStandardItem *> results_row;
-    console_widget->add_buddy_scope_and_results(policy_results_id, ScopeNodeType_Static, policies_index, &scope_item, &results_row);
+    console->add_buddy_scope_and_results(policy_results_id, ScopeNodeType_Static, policies_index, &scope_item, &results_row);
 
     setup_policy_scope_item(scope_item, object);
     setup_policy_results_row(results_row, object);
 }
 
-void console_update_policy(ConsoleWidget *console_widget, const QModelIndex &index, const AdObject &object) {
+void console_update_policy(ConsoleWidget *console, const QModelIndex &index, const AdObject &object) {
     auto update_helper =
     [&](const QModelIndex &the_index) {
-        const bool is_scope = console_widget->is_scope_item(the_index);
+        const bool is_scope = console->is_scope_item(the_index);
 
         if (is_scope) {
-            QStandardItem *scope_item = console_widget->get_scope_item(the_index);
+            QStandardItem *scope_item = console->get_scope_item(the_index);
             setup_policy_scope_item(scope_item, object);
         } else {
-            QList<QStandardItem *> results_row = console_widget->get_results_row(the_index);
+            QList<QStandardItem *> results_row = console->get_results_row(the_index);
             setup_policy_results_row(results_row, object);
         }
     };
 
     update_helper(index);
 
-    const QModelIndex buddy = console_widget->get_buddy(index);
+    const QModelIndex buddy = console->get_buddy(index);
     if (buddy.isValid()) {
         update_helper(buddy);
     }

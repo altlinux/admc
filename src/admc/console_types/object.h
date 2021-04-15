@@ -52,12 +52,12 @@ QList<QString> object_model_search_attributes();
 void setup_object_scope_item(QStandardItem *item, const AdObject &object);
 void setup_object_results_row(const QList<QStandardItem *> row, const AdObject &object);
 void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
-void console_delete_objects(ConsoleWidget *console_widget, const QList<QString> &dn_list, const bool ignore_query_tree = false);
-void console_update_object(ConsoleWidget *console_widget, const AdObject &object);
-void console_move_objects(ConsoleWidget *console_widget, AdInterface &ad, const QList<QString> &old_dn_list, const QList<QString> &new_dn_list, const QString &new_parent_dn);
-void console_move_objects(ConsoleWidget *console_widget, AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
-bool console_add_objects_check(ConsoleWidget *console_widget, const QModelIndex &parent);
-void console_add_objects(ConsoleWidget *console_widget, const QList<AdObject> &object_list, const QModelIndex &parent);
-void console_add_objects(ConsoleWidget *console_widget, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
+void console_delete_objects(ConsoleWidget *console, const QList<QString> &dn_list, const bool ignore_query_tree = false);
+void console_update_object(ConsoleWidget *console, const AdObject &object);
+void console_move_objects(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QList<QString> &new_dn_list, const QString &new_parent_dn);
+void console_move_objects(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
+bool console_add_objects_check(ConsoleWidget *console, const QModelIndex &parent);
+void console_add_objects(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
+void console_add_objects(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 
 #endif /* OBJECT_H */

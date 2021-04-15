@@ -45,7 +45,7 @@ void setup_policy_item_data(QStandardItem *item, const AdObject &object);
 QList<QString> policy_model_header_labels();
 QList<int> policy_model_default_columns();
 QList<QString> policy_model_search_attributes();
-void console_add_policy(ConsoleWidget *console_widget, const QModelIndex &policies_index, const AdObject &object);
-void console_update_policy(ConsoleWidget *console_widget, const QModelIndex &index, const AdObject &object);
+void console_add_policy(ConsoleWidget *console, const QModelIndex &policies_index, const AdObject &object);
+void console_update_policy(ConsoleWidget *console, const QModelIndex &index, const AdObject &object);
 
 #endif /* POLICY_H */

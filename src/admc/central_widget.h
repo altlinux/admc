@@ -61,9 +61,7 @@ enum ItemType {
 class CentralWidget final : public QWidget {
 Q_OBJECT
 
-public:    
-    ConsoleWidget *console_widget;
-    
+public:        
     CentralWidget();
 
     void go_online(AdInterface &ad);
@@ -108,6 +106,7 @@ private slots:
     void on_current_scope_changed();
 
 private:
+    ConsoleWidget *console;
     QPersistentModelIndex scope_head_index;
     QPersistentModelIndex policies_index;
     QPersistentModelIndex queries_index;

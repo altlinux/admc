@@ -121,7 +121,7 @@ CentralWidget::CentralWidget()
     filter_dialog = nullptr;
     open_filter_action->setEnabled(false);
 
-    console_widget = new ConsoleWidget();
+    console = new ConsoleWidget();
 
     object_results = new ResultsView(this);
     // TODO: not sure how to do this. View headers dont even
@@ -131,20 +131,20 @@ CentralWidget::CentralWidget()
 
     auto policy_container_results = new ResultsView(this);
     policy_container_results->detail_view()->header()->setDefaultSectionSize(200);
-    policy_container_results_id = console_widget->register_results(policy_container_results, policy_model_header_labels(), policy_model_default_columns());
+    policy_container_results_id = console->register_results(policy_container_results, policy_model_header_labels(), policy_model_default_columns());
     
     policy_results_widget = new PolicyResultsWidget();
-    policy_results_id = console_widget->register_results(policy_results_widget);
+    policy_results_id = console->register_results(policy_results_widget);
 
     auto query_results = new ResultsView(this);
     query_results->detail_view()->header()->setDefaultSectionSize(200);
-    query_folder_results_id = console_widget->register_results(query_results, query_folder_header_labels(), query_folder_default_columns());
+    query_folder_results_id = console->register_results(query_results, query_folder_header_labels(), query_folder_default_columns());
     
     auto layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     setLayout(layout);
-    layout->addWidget(console_widget);
+    layout->addWidget(console);
 
     // Refresh head when settings affecting the filter
     // change. This reloads the model with an updated filter
@@ -163,8 +163,8 @@ CentralWidget::CentralWidget()
         dev_mode_signal, &BoolSettingSignal::changed,
         this, &CentralWidget::refresh_head);
 
-    g_settings->connect_toggle_widget(console_widget->get_scope_view(), BoolSetting_ShowConsoleTree);
-    g_settings->connect_toggle_widget(console_widget->get_description_bar(), BoolSetting_ShowResultsHeader);
+    g_settings->connect_toggle_widget(console->get_scope_view(), BoolSetting_ShowConsoleTree);
+    g_settings->connect_toggle_widget(console->get_description_bar(), BoolSetting_ShowResultsHeader);
 
     g_settings->connect_action_to_bool_setting(dev_mode_action, BoolSetting_DevMode);
     g_settings->connect_action_to_bool_setting(show_noncontainers_action, BoolSetting_ShowNonContainersInConsoleTree);
@@ -237,28 +237,28 @@ CentralWidget::CentralWidget()
         this, &CentralWidget::delete_query_item_or_folder);
 
     connect(
-        console_widget, &ConsoleWidget::current_scope_item_changed,
+        console, &ConsoleWidget::current_scope_item_changed,
         this, &CentralWidget::on_current_scope_changed);
     connect(
-        console_widget, &ConsoleWidget::results_count_changed,
+        console, &ConsoleWidget::results_count_changed,
         this, &CentralWidget::update_description_bar);
     connect(
-        console_widget, &ConsoleWidget::item_fetched,
+        console, &ConsoleWidget::item_fetched,
         this, &CentralWidget::fetch_scope_node);
     connect(
-        console_widget, &ConsoleWidget::items_can_drop,
+        console, &ConsoleWidget::items_can_drop,
         this, &CentralWidget::on_items_can_drop);
     connect(
-        console_widget, &ConsoleWidget::items_dropped,
+        console, &ConsoleWidget::items_dropped,
         this, &CentralWidget::on_items_dropped);
     connect(
-        console_widget, &ConsoleWidget::properties_requested,
+        console, &ConsoleWidget::properties_requested,
         this, &CentralWidget::on_properties_requested);
     connect(
-        console_widget, &ConsoleWidget::selection_changed,
+        console, &ConsoleWidget::selection_changed,
         this, &CentralWidget::update_actions_visibility);
     connect(
-        console_widget, &ConsoleWidget::context_menu,
+        console, &ConsoleWidget::context_menu,
         this, &CentralWidget::context_menu);
 
     update_actions_visibility();
@@ -275,13 +275,13 @@ void CentralWidget::go_online(AdInterface &ad) {
 
     // NOTE: Header labels are from ADCONFIG, so have to get them
     // after going online
-    object_results_id = console_widget->register_results(object_results, object_model_header_labels(), object_model_default_columns());
+    object_results_id = console->register_results(object_results, object_model_header_labels(), object_model_default_columns());
 
     // Add top domain item
     const QString head_dn = g_adconfig->domain_head();
     const AdObject head_object = ad.search_object(head_dn);
 
-    QStandardItem *item = console_widget->add_scope_item(object_results_id, ScopeNodeType_Dynamic, QModelIndex());
+    QStandardItem *item = console->add_scope_item(object_results_id, ScopeNodeType_Dynamic, QModelIndex());
 
     scope_head_index = QPersistentModelIndex(item->index());
 
@@ -296,10 +296,10 @@ void CentralWidget::go_online(AdInterface &ad) {
     }();
     item->setText(domain_text);
 
-    console_widget->set_current_scope(item->index());
+    console->set_current_scope(item->index());
 
     // Add top policies item
-    QStandardItem *policies_item = console_widget->add_scope_item(policy_container_results_id, ScopeNodeType_Static, QModelIndex());
+    QStandardItem *policies_item = console->add_scope_item(policy_container_results_id, ScopeNodeType_Static, QModelIndex());
     policies_item->setText(tr("Group Policy Objects"));
     policies_index = QPersistentModelIndex(policies_item->index());
     policies_item->setDragEnabled(false);
@@ -313,11 +313,11 @@ void CentralWidget::go_online(AdInterface &ad) {
     const QHash<QString, AdObject> policy_search_results = ad.search(policy_search_filter, policy_search_attributes, SearchScope_All);
 
     for (const AdObject &object : policy_search_results.values()) {
-        console_add_policy(console_widget, policies_index, object);
+        console_add_policy(console, policies_index, object);
     }
 
     // Add top queries item
-    QStandardItem *queries_item = console_widget->add_scope_item(query_folder_results_id, ScopeNodeType_Static, QModelIndex());
+    QStandardItem *queries_item = console->add_scope_item(query_folder_results_id, ScopeNodeType_Static, QModelIndex());
     queries_index = QPersistentModelIndex(queries_item->index());
     queries_item->setText(tr("Saved Queries"));
     queries_item->setIcon(QIcon::fromTheme("folder"));
@@ -346,19 +346,19 @@ void CentralWidget::go_online(AdInterface &ad) {
                 const QString filter = info["filter"].toString();
                 const QString search_base = info["search_base"].toString();
                 const QString name = path_to_name(child_path);
-                add_query_item(console_widget, name, description, filter, search_base, index);
+                add_query_item(console, name, description, filter, search_base, index);
             } else {
                 // Query folder
                 const QString name = path_to_name(child_path);
                 const QString description = info["description"].toString();
-                const QModelIndex child_scope_index = add_query_folder(console_widget, name, description, index);
+                const QModelIndex child_scope_index = add_query_folder(console, name, description, index);
 
                 query_stack.append(child_scope_index);
             }
         }
     }
 
-    console_widget->sort_scope();
+    console->sort_scope();
 }
 
 void CentralWidget::open_filter() {
@@ -371,7 +371,7 @@ void CentralWidget::delete_objects() {
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
     const QList<QString> deleted_objects = object_delete(selected.keys(), this);
 
-    console_delete_objects(console_widget, deleted_objects);
+    console_delete_objects(console, deleted_objects);
 }
 
 void CentralWidget::on_properties_requested() {
@@ -393,7 +393,7 @@ void CentralWidget::on_properties_requested() {
             }
 
             const AdObject updated_object = ad.search_object(target);
-            console_update_object(console_widget, updated_object);
+            console_update_object(console, updated_object);
 
             update_actions_visibility();
         });
@@ -416,7 +416,7 @@ void CentralWidget::rename() {
             const QString old_dn = targets.keys()[0];
             const QString new_dn = dialog->get_new_dn();
             const QString parent_dn = dn_get_parent(old_dn);
-            console_move_objects(console_widget, ad, {old_dn}, {new_dn}, parent_dn);
+            console_move_objects(console, ad, {old_dn}, {new_dn}, parent_dn);
         });
 }
 
@@ -441,7 +441,7 @@ void CentralWidget::create_helper(const QString &object_class) {
             show_busy_indicator();
 
             const QString parent_dn = targets.keys()[0];
-            const QList<QModelIndex> search_parent = console_widget->search_scope_by_role(ObjectRole_DN, parent_dn, ItemType_DomainObject);
+            const QList<QModelIndex> search_parent = console->search_scope_by_role(ObjectRole_DN, parent_dn, ItemType_DomainObject);
 
             if (search_parent.isEmpty()) {
                 hide_busy_indicator();
@@ -450,9 +450,9 @@ void CentralWidget::create_helper(const QString &object_class) {
 
             const QModelIndex scope_parent_index = search_parent[0];
             const QString created_dn = dialog->get_created_dn();
-            console_add_objects(console_widget, ad, {created_dn}, scope_parent_index);
+            console_add_objects(console, ad, {created_dn}, scope_parent_index);
 
-            console_widget->sort_scope();
+            console->sort_scope();
 
             hide_busy_indicator();
         });
@@ -474,9 +474,9 @@ void CentralWidget::move() {
 
             const QList<QString> old_dn_list = dialog->get_moved_objects();
             const QString new_parent_dn = dialog->get_selected();
-            console_move_objects(console_widget, ad, old_dn_list, new_parent_dn);
+            console_move_objects(console, ad, old_dn_list, new_parent_dn);
 
-            console_widget->sort_scope();
+            console->sort_scope();
         });
 }
 
@@ -579,7 +579,7 @@ void CentralWidget::create_policy() {
             const QHash<QString, AdObject> search_results = ad.search(QString(), search_attributes, SearchScope_Object, dn);
             const AdObject object = search_results[dn];
 
-            console_add_policy(console_widget, policies_index, object);
+            console_add_policy(console, policies_index, object);
 
             // NOTE: not adding policy object to the domain
             // tree, but i think it's ok?
@@ -589,7 +589,7 @@ void CentralWidget::create_policy() {
 }
 
 void CentralWidget::add_link() {
-    const QList<QModelIndex> selected = console_widget->get_selected_items();
+    const QList<QModelIndex> selected = console->get_selected_items();
     if (selected.size() == 0) {
         return;
     }
@@ -633,7 +633,7 @@ void CentralWidget::add_link() {
                 ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink.to_string());
             }
 
-            const QModelIndex current_scope = console_widget->get_current_scope_item();
+            const QModelIndex current_scope = console->get_current_scope_item();
             policy_results_widget->update(current_scope);
 
             hide_busy_indicator();
@@ -645,7 +645,7 @@ void CentralWidget::add_link() {
 }
 
 void CentralWidget::rename_policy() {
-    const QList<QModelIndex> indexes = console_widget->get_selected_items();
+    const QList<QModelIndex> indexes = console->get_selected_items();
     if (indexes.size() != 1) {
         return;
     }
@@ -665,9 +665,9 @@ void CentralWidget::rename_policy() {
             }
 
             const AdObject updated_object = ad.search_object(dn);
-            console_update_policy(console_widget, index, updated_object);
+            console_update_policy(console, index, updated_object);
 
-            console_widget->sort_scope();
+            console->sort_scope();
         });
 }
 
@@ -696,7 +696,7 @@ void CentralWidget::delete_policy() {
 
         if (success) {
             // Remove deleted policy from console
-            console_widget->delete_item(index);
+            console->delete_item(index);
 
             // Remove links to delete policy
             const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, dn);
@@ -721,13 +721,13 @@ void CentralWidget::delete_policy() {
 }
 
 void CentralWidget::new_query_folder() {
-    const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
+    const QList<QModelIndex> selected_indexes = console->get_selected_items();
     
     if (selected_indexes.size() != 1) {
         return;
     }
 
-    const QModelIndex parent_index = console_widget->convert_to_scope_index(selected_indexes[0]);
+    const QModelIndex parent_index = console->convert_to_scope_index(selected_indexes[0]);
 
     const QList<QString> sibling_names = get_sibling_names(parent_index);
 
@@ -738,7 +738,7 @@ void CentralWidget::new_query_folder() {
         [=]() {
             const QString name = dialog->get_name();
             const QString description = dialog->get_description();
-            add_query_folder(console_widget, name, description, parent_index);
+            add_query_folder(console, name, description, parent_index);
 
             save_queries();
         });
@@ -747,13 +747,13 @@ void CentralWidget::new_query_folder() {
 }
 
 void CentralWidget::new_query() {
-    const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
+    const QList<QModelIndex> selected_indexes = console->get_selected_items();
     
     if (selected_indexes.size() != 1) {
         return;
     }
 
-    const QModelIndex parent_index = console_widget->convert_to_scope_index(selected_indexes[0]);
+    const QModelIndex parent_index = console->convert_to_scope_index(selected_indexes[0]);
 
     const QList<QString> sibling_names = get_sibling_names(parent_index);
 
@@ -766,7 +766,7 @@ void CentralWidget::new_query() {
             const QString description = dialog->get_description();
             const QString filter = dialog->get_filter();
             const QString search_base = dialog->get_search_base();
-            add_query_item(console_widget, name, description, filter, search_base, parent_index);
+            add_query_item(console, name, description, filter, search_base, parent_index);
 
             save_queries();
         });
@@ -775,14 +775,14 @@ void CentralWidget::new_query() {
 }
 
 void CentralWidget::delete_query_item_or_folder() {
-    const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
+    const QList<QModelIndex> selected_indexes = console->get_selected_items();
     
     if (selected_indexes.size() != 1) {
         return;
     }
 
     const QModelIndex index = selected_indexes[0];
-    console_widget->delete_item(index);
+    console->delete_item(index);
 
     save_queries();
 }
@@ -827,7 +827,7 @@ void CentralWidget::on_items_dropped(const QList<QModelIndex> &dropped_list, con
                     target_dn);
 
                 if (move_success) {
-                    console_move_objects(console_widget, ad, QList<QString>({dropped_dn}), target_dn);
+                    console_move_objects(console, ad, QList<QString>({dropped_dn}), target_dn);
                 }
 
                 break;
@@ -843,7 +843,7 @@ void CentralWidget::on_items_dropped(const QList<QModelIndex> &dropped_list, con
         }
     }
 
-    console_widget->sort_scope();
+    console->sort_scope();
 
     hide_busy_indicator();
 
@@ -851,7 +851,7 @@ void CentralWidget::on_items_dropped(const QList<QModelIndex> &dropped_list, con
 }
 
 void CentralWidget::on_current_scope_changed() {
-    const QModelIndex current_scope = console_widget->get_current_scope_item();
+    const QModelIndex current_scope = console->get_current_scope_item();
     policy_results_widget->update(current_scope);
 
     update_description_bar();
@@ -860,7 +860,7 @@ void CentralWidget::on_current_scope_changed() {
 void CentralWidget::refresh_head() {
     show_busy_indicator();
 
-    console_widget->refresh_scope(scope_head_index);
+    console->refresh_scope(scope_head_index);
 
     hide_busy_indicator();
 }
@@ -870,11 +870,11 @@ void CentralWidget::refresh_head() {
 void CentralWidget::update_description_bar() {
     const QString text =
     [this]() {
-        const QModelIndex current_scope = console_widget->get_current_scope_item();
+        const QModelIndex current_scope = console->get_current_scope_item();
         const ItemType type = (ItemType) current_scope.data(ConsoleRole_Type).toInt();
 
         if (type == ItemType_DomainObject) {
-            const int results_count = console_widget->get_current_results_count();
+            const int results_count = console->get_current_results_count();
             const QString out = tr("%n object(s)", "", results_count);
 
             return out;
@@ -883,7 +883,7 @@ void CentralWidget::update_description_bar() {
         }
     }();
 
-    console_widget->set_description_bar_text(text);
+    console->set_description_bar_text(text);
 }
 
 void CentralWidget::add_actions_to_action_menu(QMenu *menu) {
@@ -897,15 +897,15 @@ void CentralWidget::add_actions_to_action_menu(QMenu *menu) {
 
     menu->addSeparator();
 
-    console_widget->add_actions_to_action_menu(menu);
+    console->add_actions_to_action_menu(menu);
 }
 
 void CentralWidget::add_actions_to_navigation_menu(QMenu *menu) {
-    console_widget->add_actions_to_navigation_menu(menu);
+    console->add_actions_to_navigation_menu(menu);
 }
 
 void CentralWidget::add_actions_to_view_menu(QMenu *menu) {
-    console_widget->add_actions_to_view_menu(menu);
+    console->add_actions_to_view_menu(menu);
 
     menu->addSeparator();
 
@@ -942,7 +942,7 @@ void CentralWidget::fetch_query(const QModelIndex &index) {
 
     const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All, search_base);
     for (const AdObject &object : search_results.values()) {
-        const QList<QStandardItem *> results_row = console_widget->add_results_row(index);
+        const QList<QStandardItem *> results_row = console->add_results_row(index);
         setup_object_results_row(results_row, object);
     }
 
@@ -1022,8 +1022,8 @@ void CentralWidget::fetch_object(const QModelIndex &index) {
         }
     }
 
-    console_add_objects(console_widget, search_results.values(), index);
-    console_widget->sort_scope();
+    console_add_objects(console, search_results.values(), index);
+    console->sort_scope();
 
     hide_busy_indicator();
 }
@@ -1092,21 +1092,21 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
 
         auto update_helper =
         [=](const QPersistentModelIndex &the_index) {
-            const bool is_scope = console_widget->is_scope_item(the_index);
+            const bool is_scope = console->is_scope_item(the_index);
 
             if (is_scope) {
-                QStandardItem *scope_item = console_widget->get_scope_item(the_index);
+                QStandardItem *scope_item = console->get_scope_item(the_index);
 
                 scope_item->setData(disabled, ObjectRole_AccountDisabled);
             } else {
-                QList<QStandardItem *> results_row = console_widget->get_results_row(the_index);
+                QList<QStandardItem *> results_row = console->get_results_row(the_index);
                 results_row[0]->setData(disabled, ObjectRole_AccountDisabled);
             }
         };
 
         update_helper(index);
 
-        const QPersistentModelIndex buddy = console_widget->get_buddy(index);
+        const QPersistentModelIndex buddy = console->get_buddy(index);
         if (buddy.isValid()) {
             update_helper(buddy);
         }
@@ -1130,7 +1130,7 @@ void CentralWidget::update_actions_visibility() {
     }
 
     // Figure out what kind of types of items are selected
-    const QList<QModelIndex> selected_indexes = console_widget->get_selected_items();
+    const QList<QModelIndex> selected_indexes = console->get_selected_items();
     if (selected_indexes.isEmpty()) {
         return;
     }
@@ -1168,7 +1168,7 @@ void CentralWidget::update_actions_visibility() {
 QHash<QString, QPersistentModelIndex> CentralWidget::get_selected_dns_and_indexes() {
     QHash<QString, QPersistentModelIndex> out;
 
-    const QList<QModelIndex> indexes = console_widget->get_selected_items();
+    const QList<QModelIndex> indexes = console->get_selected_items();
     for (const QModelIndex &index : indexes) {
         const QString dn = index.data(ObjectRole_DN).toString();
         out[dn] = QPersistentModelIndex(index);
