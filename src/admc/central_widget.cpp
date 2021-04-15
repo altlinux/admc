@@ -433,6 +433,10 @@ void CentralWidget::create_helper(const QString &object_class) {
     auto dialog = new CreateDialog(targets.keys(), object_class, this);
     dialog->open();
 
+    // NOTE: can't just add new object to console by adding
+    // to selected index, because you can create an object
+    // by using action menu of an object in a query tree.
+    // Therefore need to search for parent in domain tree.
     connect(
         dialog, &CreateDialog::accepted,
         [=]() {
@@ -441,12 +445,26 @@ void CentralWidget::create_helper(const QString &object_class) {
                 return;
             }
 
+            show_busy_indicator();
+
+            const QString parent_dn = targets.keys()[0];
+            const QList<QModelIndex> search_parent = console_widget->search_scope_by_role(ObjectRole_DN, parent_dn, ItemType_DomainObject);
+
+            if (search_parent.isEmpty()) {
+                hide_busy_indicator();
+                return;
+            }
+
+            const QModelIndex scope_parent_index = search_parent[0];
+
             const QString created_dn = dialog->get_created_dn();
-            const AdObject new_object = ad.search_object(created_dn);
-            const QModelIndex parent_index = targets.values()[0];
-            add_object_to_console(new_object, parent_index);
+            const AdObject created_object = ad.search_object(created_dn);
+
+            add_object_to_console(created_object, scope_parent_index);
 
             console_widget->sort_scope();
+
+            hide_busy_indicator();
         });
 }
 
@@ -949,7 +967,8 @@ void CentralWidget::fetch_query(const QModelIndex &index) {
 
     const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All, search_base);
     for (const AdObject &object : search_results.values()) {
-        add_object_to_console(object, index);
+        const QList<QStandardItem *> results_row = console_widget->add_results_row(index);
+        setup_object_results_row(results_row, object);
     }
 
     hide_busy_indicator();
