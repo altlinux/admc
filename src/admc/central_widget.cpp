@@ -394,8 +394,7 @@ void CentralWidget::on_properties_requested() {
             }
 
             const AdObject updated_object = ad.search_object(target);
-            const QModelIndex index = targets.values()[0];
-            update_console_item(index, updated_object);
+            console_update_object(updated_object);
 
             update_actions_visibility();
         });
@@ -1148,36 +1147,30 @@ void CentralWidget::move_objects_in_console(AdInterface &ad, const QList<QString
     move_objects_in_console(ad, old_dn_list, new_dn_list, new_parent_dn);
 }
 
-void CentralWidget::update_console_item(const QModelIndex &index, const AdObject &object) {
+void CentralWidget::console_update_object(const AdObject &object) {
     auto update_helper =
-    [this, object](const QModelIndex &the_index) {
+    [this, &object](const QModelIndex &the_index) {
         const bool is_scope = console_widget->is_scope_item(the_index);
 
         if (is_scope) {
             QStandardItem *scope_item = console_widget->get_scope_item(the_index);
-
-            const QString old_dn = scope_item->data(ObjectRole_DN).toString();
-            const bool dn_changed = (old_dn != object.get_dn());
-
             setup_object_scope_item(scope_item, object);
-
-            // NOTE: if dn changed, then this change affects
-            // this item's children, so have to refresh to
-            // reload children.
-            if (dn_changed) {
-                console_widget->refresh_scope(the_index);
-            }
         } else {
             QList<QStandardItem *> results_row = console_widget->get_results_row(the_index);
             load_object_row(results_row, object);
         }
     };
 
-    update_helper(index);
+    // Update in scope
+    const QList<QPersistentModelIndex> scope_indexes = get_persistent_indexes(console_widget->search_scope_by_role(ObjectRole_DN, object.get_dn(), ItemType_DomainObject));
+    for (const QPersistentModelIndex &index : scope_indexes) {
+        update_helper(index);
+    }
 
-    const QModelIndex buddy = console_widget->get_buddy(index);
-    if (buddy.isValid()) {
-        update_helper(buddy);
+    // Update in results
+    const QList<QPersistentModelIndex> results_indexes = get_persistent_indexes(console_widget->search_results_by_role(ObjectRole_DN, object.get_dn(), ItemType_DomainObject));
+    for (const QPersistentModelIndex &index : results_indexes) {
+        update_helper(index);
     }
 }
 

@@ -133,7 +133,7 @@ private:
     void add_objects_to_console(AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
     void move_objects_in_console(AdInterface &ad, const QList<QString> &old_dn_list, const QList<QString> &new_dn_list, const QString &new_parent_dn);
     void move_objects_in_console(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
-    void update_console_item(const QModelIndex &index, const AdObject &object);
+    void console_update_object(const AdObject &object);
     void update_policy_item(const QModelIndex &index, const AdObject &object);
     QList<QString> get_dns(const QList<QModelIndex> &indexes);
     void enable_disable_helper(const bool disabled);
