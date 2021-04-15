@@ -128,7 +128,10 @@ private:
     ResultsView *object_results;
 
     void update_description_bar();
-    void add_object_to_console(const AdObject &object, const    QModelIndex &parent);
+    bool add_objects_to_console_check(const QModelIndex &parent);
+    void add_objects_to_console(const QList<AdObject> &object_list, const QModelIndex &parent);
+    void add_objects_to_console(AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
+    void move_objects_in_console(AdInterface &ad, const QList<QString> &old_dn_list, const QList<QString> &new_dn_list, const QString &new_parent_dn);
     void move_objects_in_console(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
     void update_console_item(const QModelIndex &index, const AdObject &object);
     void update_policy_item(const QModelIndex &index, const AdObject &object);
@@ -143,6 +146,7 @@ private:
     void fetch_query(const QModelIndex &index);
     void fetch_object(const QModelIndex &index);
     void save_queries();
+    void delete_objects_in_console(const QList<QString> &dn_list, const bool ignore_query_tree = false);
 };
 
 #endif /* CENTRAL_WIDGET_H */
