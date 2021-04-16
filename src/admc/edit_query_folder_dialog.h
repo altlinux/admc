@@ -43,8 +43,6 @@ private:
     QLineEdit *name_edit;
     QLineEdit *description_edit;
     ConsoleWidget *console;
-    QModelIndex scope_index;
-    QModelIndex results_index;
 
     void accept() override;
 };

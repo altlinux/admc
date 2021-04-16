@@ -638,25 +638,7 @@ void CentralWidget::delete_policy() {
 }
 
 void CentralWidget::new_query_folder() {
-    const QList<QModelIndex> selected_indexes = console->get_selected_items();
-    
-    if (selected_indexes.size() != 1) {
-        return;
-    }
-
-    const QModelIndex parent_index = console->convert_to_scope_index(selected_indexes[0]);
-    auto dialog = new CreateQueryFolderDialog(parent_index, this);
-
-    connect(
-        dialog, &QDialog::accepted,
-        [=]() {
-            const QString name = dialog->get_name();
-            const QString description = dialog->get_description();
-            add_query_folder(console, name, description, parent_index);
-
-            save_queries();
-        });
-
+    auto dialog = new CreateQueryFolderDialog(console, this);
     dialog->open();
 }
 
@@ -667,27 +649,7 @@ void CentralWidget::edit_query_folder() {
 
 
 void CentralWidget::new_query() {
-    const QList<QModelIndex> selected_indexes = console->get_selected_items();
-    
-    if (selected_indexes.size() != 1) {
-        return;
-    }
-
-    const QModelIndex parent_index = console->convert_to_scope_index(selected_indexes[0]);
-    auto dialog = new CreateQueryDialog(parent_index, this);
-
-    connect(
-        dialog, &QDialog::accepted,
-        [=]() {
-            const QString name = dialog->get_name();
-            const QString description = dialog->get_description();
-            const QString filter = dialog->get_filter();
-            const QString search_base = dialog->get_search_base();
-            add_query_item(console, name, description, filter, search_base, parent_index);
-
-            save_queries();
-        });
-
+    auto dialog = new CreateQueryDialog(console, this);
     dialog->open();
 }
 

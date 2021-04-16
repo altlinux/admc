@@ -26,22 +26,18 @@
 #include <QModelIndex>
 
 class QLineEdit;
-class FilterWidget;
-class SearchBaseWidget;
+class ConsoleWidget;
 
 class CreateQueryFolderDialog : public QDialog {
 Q_OBJECT
 
 public:
-    CreateQueryFolderDialog(const QModelIndex &parent_index_arg, QWidget *parent);
-
-    QString get_name() const;
-    QString get_description() const;
+    CreateQueryFolderDialog(ConsoleWidget *console_arg, QWidget *parent);
 
 private:
     QLineEdit *name_edit;
     QLineEdit *description_edit;
-    QModelIndex parent_index;
+    ConsoleWidget *console;
 
     void accept() override;
 };

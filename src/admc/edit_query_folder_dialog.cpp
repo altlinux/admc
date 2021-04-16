@@ -36,16 +36,6 @@ EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg, QWidget
     setAttribute(Qt::WA_DeleteOnClose);
 
     console = console_arg;
-    const QList<QModelIndex> selected_indexes = console->get_selected_items();
-    if (selected_indexes.size() != 1) {
-        QDialog::close();
-
-        return;
-    }
-    const QModelIndex index = selected_indexes[0];
-
-    scope_index = console->convert_to_scope_index(index);
-    results_index = console->get_buddy(scope_index);
 
     const auto title = QString(tr("Edit query folder"));
     setWindowTitle(title);
@@ -81,12 +71,14 @@ QString EditQueryFolderDialog::get_description() const {
 }
 
 void EditQueryFolderDialog::accept() {
+    const QModelIndex scope_index = get_selected_scope_index(console);
+    const QModelIndex results_index = console->get_buddy(scope_index);
     const QString name = get_name();
+    const QString description = get_description();
+
     if (!query_name_is_good(name, scope_index.parent(), this, scope_index)) {
         return;
     }
-
-    const QString description = get_description();
 
     QStandardItem *scope_item = console->get_scope_item(scope_index);
     const QList<QStandardItem *> results_row = console->get_results_row(results_index);

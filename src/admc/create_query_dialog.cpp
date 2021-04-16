@@ -31,12 +31,12 @@
 #include <QPushButton>
 #include <QMessageBox>
 
-CreateQueryDialog::CreateQueryDialog(const QModelIndex &parent_index_arg, QWidget *parent)
+CreateQueryDialog::CreateQueryDialog(ConsoleWidget *console_arg, QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    parent_index = parent_index_arg;
+    console = console_arg;
 
     const auto title = QString(tr("Create Query"));
     setWindowTitle(title);
@@ -69,27 +69,20 @@ CreateQueryDialog::CreateQueryDialog(const QModelIndex &parent_index_arg, QWidge
         this, &QDialog::accept);
 }
 
-QString CreateQueryDialog::get_name() const {
-    return name_edit->text();
-}
-
-QString CreateQueryDialog::get_description() const {
-    return description_edit->text();
-}
-
-QString CreateQueryDialog::get_filter() const {
-    return filter_widget->get_filter();
-}
-
-QString CreateQueryDialog::get_search_base() const {
-    return search_base_widget->get_search_base();
-}
-
 void CreateQueryDialog::accept() {
-    const QString name = get_name();
+    const QModelIndex parent_index = get_selected_scope_index(console);
+    const QString name = name_edit->text();
+    const QString description = description_edit->text();
+    const QString filter = filter_widget->get_filter();
+    const QString search_base = search_base_widget->get_search_base();
+
     if (!query_name_is_good(name, parent_index, this, QModelIndex())) {
         return;
     }
+
+    add_query_item(console, name, description, filter, search_base, parent_index);
+
+    save_queries();
 
     QDialog::accept();
 }

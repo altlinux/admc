@@ -22,6 +22,7 @@
 #include "settings.h"
 #include "adldap.h"
 #include "globals.h"
+#include "console_widget/console_widget.h"
 
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
@@ -238,4 +239,17 @@ QList<QPersistentModelIndex> get_persistent_indexes(const QList<QModelIndex> &in
     }
 
     return out;
+}
+
+QModelIndex get_selected_scope_index(ConsoleWidget *console) {
+    const QList<QModelIndex> selected_indexes = console->get_selected_items();
+    
+    if (selected_indexes.size() == 1) {
+        const QModelIndex index = selected_indexes[0];
+        const QModelIndex scope_index = console->convert_to_scope_index(index);
+
+        return scope_index;
+    } else {
+        return QModelIndex();
+    }
 }

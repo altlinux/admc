@@ -31,12 +31,12 @@
 #include <QPushButton>
 #include <QMessageBox>
 
-CreateQueryFolderDialog::CreateQueryFolderDialog(const QModelIndex &parent_index_arg, QWidget *parent)
+CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg, QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    parent_index = parent_index_arg;
+    console = console_arg;
 
     const auto title = QString(tr("Create query folder"));
     setWindowTitle(title);
@@ -63,19 +63,18 @@ CreateQueryFolderDialog::CreateQueryFolderDialog(const QModelIndex &parent_index
         this, &CreateQueryFolderDialog::accept);
 }
 
-QString CreateQueryFolderDialog::get_name() const {
-    return name_edit->text();
-}
-
-QString CreateQueryFolderDialog::get_description() const {
-    return description_edit->text();
-}
-
 void CreateQueryFolderDialog::accept() {
-    const QString name = get_name();
+    const QModelIndex parent_index = get_selected_scope_index(console);
+    const QString name = name_edit->text();
+    const QString description = description_edit->text();
+
     if (!query_name_is_good(name, parent_index, this, QModelIndex())) {
         return;
     }
+
+    add_query_folder(console, name, description, parent_index);
+
+    save_queries();
 
     QDialog::accept();
 }

@@ -38,6 +38,7 @@ class QIcon;
 class AdInterface;
 class AdObject;
 class QPersistentModelIndex;
+class ConsoleWidget;
 template <typename T> class QList;
 template <typename K, typename T> class QMap;
 template <typename K, typename T> class QHash;
@@ -88,5 +89,9 @@ void limit_edit(QLineEdit *edit, const QString &attribute);
 QIcon get_object_icon(const AdObject &object);
 
 QList<QPersistentModelIndex> get_persistent_indexes(const QList<QModelIndex> &indexes);
+
+// Returns selected scope index. If selected item is in
+// results, returns it's scope buddy.
+QModelIndex get_selected_scope_index(ConsoleWidget *console);
 
 #endif /* UTILS_H */
