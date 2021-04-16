@@ -121,7 +121,6 @@ private:
     QAction *dev_mode_action;
 
     void update_description_bar();
-    QList<QString> get_dns(const QList<QModelIndex> &indexes);
     void enable_disable_helper(const bool disabled);
     void update_actions_visibility();
     void create_helper(const QString &object_class);

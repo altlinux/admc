@@ -60,14 +60,6 @@
 #include <QLabel>
 #include <QSortFilterProxyModel>
 
-enum DropType {
-    DropType_Move,
-    DropType_AddToGroup,
-    DropType_None
-};
-
-DropType get_object_drop_type(const QModelIndex &dropped, const QModelIndex &target);
-
 CentralWidget::CentralWidget()
 : QWidget()
 {
@@ -706,67 +698,51 @@ void CentralWidget::delete_query_item_or_folder() {
     save_queries(query_tree_head);
 }
 
-// NOTE: only check if object can be dropped if dropping a
-// single object, because when dropping multiple objects it
-// is ok for some objects to successfully drop and some to
-// fail. For example, if you drop users together with OU's
-// onto a group, users will be added to that group while OU
-// will fail to drop.
 void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, bool *ok) {
-    if (dropped_list.size() != 1) {
-        *ok = true;
-        return;
-    } else {
-        const QModelIndex dropped = dropped_list[0];
+    const ItemType target_type = (ItemType) target.data(ConsoleRole_Type).toInt();
+    const QSet<ItemType> dropped_types =
+    [&]() {
+        QSet<ItemType> out;
 
-        const DropType drop_type = get_object_drop_type(dropped, target);
-        const bool can_drop = (drop_type != DropType_None);
+        for (const QModelIndex &index : dropped_list) {
+            const ItemType type = (ItemType) target.data(ConsoleRole_Type).toInt();
+            out.insert(type);
+        }
 
-        *ok = can_drop;
+        return out;
+    }();
+
+    switch (target_type) {
+        case ItemType_Unassigned: break;
+        case ItemType_DomainObject: {
+            object_can_drop(dropped_list, target, dropped_types,ok);
+            break;
+        }
+        case ItemType_PoliciesRoot: break;
+        case ItemType_Policy: break;
+        case ItemType_QueriesRoot: break;
+        case ItemType_QueryFolder: break;
+        case ItemType_QueryItem: break;
+        case ItemType_LAST: break;
     }
 }
 
 void CentralWidget::on_items_dropped(const QList<QModelIndex> &dropped_list, const QModelIndex &target) {
-    const QString target_dn = target.data(ObjectRole_DN).toString();
+    const ItemType target_type = (ItemType) target.data(ConsoleRole_Type).toInt();
 
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    show_busy_indicator();
-
-    for (const QModelIndex &dropped : dropped_list) {
-        const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
-        const DropType drop_type = get_object_drop_type(dropped, target);
-
-        switch (drop_type) {
-            case DropType_Move: {
-                const bool move_success = ad.object_move(dropped_dn, 
-                    target_dn);
-
-                if (move_success) {
-                    console_move_objects(console, ad, QList<QString>({dropped_dn}), target_dn);
-                }
-
-                break;
-            }
-            case DropType_AddToGroup: {
-                ad.group_add_member(target_dn, dropped_dn);
-
-                break;
-            }
-            case DropType_None: {
-                break;
-            }
+    switch (target_type) {
+        case ItemType_Unassigned: break;
+        case ItemType_DomainObject: {
+            object_drop(console, dropped_list, target);
+            break;
         }
+        case ItemType_PoliciesRoot: break;
+        case ItemType_Policy: break;
+        case ItemType_QueriesRoot: break;
+        case ItemType_QueryFolder: break;
+        case ItemType_QueryItem: break;
+        case ItemType_LAST: break;
     }
-
-    console->sort_scope();
-
-    hide_busy_indicator();
-
-    g_status()->display_ad_messages(ad, nullptr);
 }
 
 void CentralWidget::on_current_scope_changed() {
@@ -844,53 +820,6 @@ void CentralWidget::fetch_scope_node(const QModelIndex &index) {
         fetch_object(console, filter_dialog, index);
     } else if (type == ItemType_QueryItem) {
         fetch_query(console, index);
-    }
-}
-
-// Determine what kind of drop type is dropping this object
-// onto target. If drop type is none, then can't drop this
-// object on this target.
-DropType get_object_drop_type(const QModelIndex &dropped, const QModelIndex &target) {
-    const bool dropped_is_target =
-    [&]() {
-        const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
-        const QString target_dn = target.data(ObjectRole_DN).toString();
-
-        return (dropped_dn == target_dn);
-    }();
-
-    const QList<QString> dropped_classes = dropped.data(ObjectRole_ObjectClasses).toStringList();
-    const QList<QString> target_classes = target.data(ObjectRole_ObjectClasses).toStringList();
-
-    const bool dropped_is_user = dropped_classes.contains(CLASS_USER);
-    const bool dropped_is_group = dropped_classes.contains(CLASS_GROUP);
-    const bool target_is_group = target_classes.contains(CLASS_GROUP);
-
-    if (dropped_is_target) {
-        return DropType_None;
-    } else if (dropped_is_user && target_is_group) {
-        return DropType_AddToGroup;
-    } else if (dropped_is_group && target_is_group) {
-        return DropType_AddToGroup;
-    } else {
-        const QList<QString> dropped_superiors = g_adconfig->get_possible_superiors(dropped_classes);
-
-        const bool target_is_valid_superior =
-        [&]() {
-            for (const auto &object_class : dropped_superiors) {
-                if (target_classes.contains(object_class)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }();
-
-        if (target_is_valid_superior) {
-            return DropType_Move;
-        } else {
-            return DropType_None;
-        }
     }
 }
 

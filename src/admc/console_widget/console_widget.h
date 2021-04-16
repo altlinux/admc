@@ -205,7 +205,8 @@ signals:
 
     // Emitted while items are dragged to determine whether
     // they can be dropped on target. Set "ok" to true if
-    // items can be dropped, false if can't be dropped.
+    // items can be dropped, false if can't be dropped. "ok"
+    // is set to false by default.
     void items_can_drop(const QList<QModelIndex> &dropped, const QModelIndex &target, bool *ok);
 
     // Emitted when items are dropped onto target. Modify

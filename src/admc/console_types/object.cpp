@@ -29,8 +29,17 @@
 #include "filter_widget/filter_widget.h"
 
 #include <QStandardItemModel>
+#include <QSet>
 
 int object_results_id;
+
+enum DropType {
+    DropType_Move,
+    DropType_AddToGroup,
+    DropType_None
+};
+
+DropType object_get_drop_type(const QModelIndex &dropped, const QModelIndex &target);
 
 void load_object_row(const QList<QStandardItem *> row, const AdObject &object) {
     // Load attribute columns
@@ -431,4 +440,116 @@ QModelIndex init_object_tree(ConsoleWidget *console, AdInterface &ad) {
     head_item->setText(domain_text);
 
     return head_item->index();
+}
+
+void object_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
+    const bool dropped_are_all_objects = (dropped_types.size() == 1 && dropped_types.contains(ItemType_DomainObject));
+    if (!dropped_are_all_objects) {
+        return;
+    }
+
+    // NOTE: always allow dropping when dragging multiple
+    // objects. This way, whatever objects can drop will be
+    // dropped and if others fail to drop it's not a big
+    // deal.
+    if (dropped_list.size() != 1) {
+        *ok = true;
+    } else {
+        const QModelIndex dropped = dropped_list[0];
+
+        const DropType drop_type = object_get_drop_type(dropped, target);
+        const bool can_drop = (drop_type != DropType_None);
+
+        *ok = can_drop;
+    }
+}
+
+void object_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target) {
+    const QString target_dn = target.data(ObjectRole_DN).toString();
+
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    for (const QModelIndex &dropped : dropped_list) {
+        const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
+        const DropType drop_type = object_get_drop_type(dropped, target);
+
+        switch (drop_type) {
+            case DropType_Move: {
+                const bool move_success = ad.object_move(dropped_dn, 
+                    target_dn);
+
+                if (move_success) {
+                    console_move_objects(console, ad, QList<QString>({dropped_dn}), target_dn);
+                }
+
+                break;
+            }
+            case DropType_AddToGroup: {
+                ad.group_add_member(target_dn, dropped_dn);
+
+                break;
+            }
+            case DropType_None: {
+                break;
+            }
+        }
+    }
+
+    console->sort_scope();
+
+    hide_busy_indicator();
+
+    g_status()->display_ad_messages(ad, console);
+}
+
+// Determine what kind of drop type is dropping this object
+// onto target. If drop type is none, then can't drop this
+// object on this target.
+DropType object_get_drop_type(const QModelIndex &dropped, const QModelIndex &target) {
+    const bool dropped_is_target =
+    [&]() {
+        const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
+        const QString target_dn = target.data(ObjectRole_DN).toString();
+
+        return (dropped_dn == target_dn);
+    }();
+
+    const QList<QString> dropped_classes = dropped.data(ObjectRole_ObjectClasses).toStringList();
+    const QList<QString> target_classes = target.data(ObjectRole_ObjectClasses).toStringList();
+
+    const bool dropped_is_user = dropped_classes.contains(CLASS_USER);
+    const bool dropped_is_group = dropped_classes.contains(CLASS_GROUP);
+    const bool target_is_group = target_classes.contains(CLASS_GROUP);
+
+    if (dropped_is_target) {
+        return DropType_None;
+    } else if (dropped_is_user && target_is_group) {
+        return DropType_AddToGroup;
+    } else if (dropped_is_group && target_is_group) {
+        return DropType_AddToGroup;
+    } else {
+        const QList<QString> dropped_superiors = g_adconfig->get_possible_superiors(dropped_classes);
+
+        const bool target_is_valid_superior =
+        [&]() {
+            for (const auto &object_class : dropped_superiors) {
+                if (target_classes.contains(object_class)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }();
+
+        if (target_is_valid_superior) {
+            return DropType_Move;
+        } else {
+            return DropType_None;
+        }
+    }
 }

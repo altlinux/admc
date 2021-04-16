@@ -21,6 +21,7 @@
 #define OBJECT_H
 
 #include "console_widget/console_widget.h"
+#include "central_widget.h"
 
 class QStandardItem;
 class AdObject;
@@ -62,5 +63,7 @@ void console_add_objects(ConsoleWidget *console, const QList<AdObject> &object_l
 void console_add_objects(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 void fetch_object(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index);
 QModelIndex init_object_tree(ConsoleWidget *console, AdInterface &ad);
+void object_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
+void object_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target);
 
 #endif /* OBJECT_H */

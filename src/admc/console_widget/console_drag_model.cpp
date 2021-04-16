@@ -68,7 +68,7 @@ bool ConsoleDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, in
     // has the item roles
     const QModelIndex target = parent.siblingAtColumn(0);
 
-    bool ok;
+    bool ok = false;
     emit can_drop(target, &ok);
 
     return ok;
