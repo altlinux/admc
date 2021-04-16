@@ -40,6 +40,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/settings.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/policy_results_widget.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/gplink.cpp
     
     ${PROJECT_SOURCE_DIR}/src/admc/console_types/object.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/console_types/policy.cpp
@@ -59,7 +60,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/create_query_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/create_query_folder_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/edit_query_folder_dialog.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/gplink.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/move_query_dialog.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/filter_widget/filter_widget.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/filter_widget/filter_widget_simple_tab.cpp

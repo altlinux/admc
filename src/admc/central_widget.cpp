@@ -34,6 +34,7 @@
 #include "create_dialog.h"
 #include "create_policy_dialog.h"
 #include "create_query_dialog.h"
+#include "move_query_dialog.h"
 #include "create_query_folder_dialog.h"
 #include "move_dialog.h"
 #include "find_dialog.h"
@@ -79,6 +80,7 @@ CentralWidget::CentralWidget()
     auto create_query_folder_dialog = new CreateQueryFolderDialog(console);
     auto edit_query_folder_dialog = new EditQueryFolderDialog(console);
     auto rename_policy_dialog = new RenamePolicyDialog(console);
+    auto move_query_dialog = new MoveQueryDialog(console);
 
     auto policy_container_results = new ResultsView(this);
     policy_container_results->detail_view()->header()->setDefaultSectionSize(200);
@@ -186,6 +188,9 @@ CentralWidget::CentralWidget()
     connect(
         console_actions->get(ObjectAction_QueryEditFolder), &QAction::triggered,
         edit_query_folder_dialog, &QDialog::open);
+    connect(
+        console_actions->get(ObjectAction_QueryMoveItemOrFolder), &QAction::triggered,
+        move_query_dialog, &QDialog::open);
     connect(
         console_actions->get(ObjectAction_QueryDeleteItemOrFolder), &QAction::triggered,
         this, &CentralWidget::delete_query_item_or_folder);

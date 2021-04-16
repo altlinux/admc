@@ -59,6 +59,7 @@ ConsoleActions::ConsoleActions(QObject *parent)
                 case ObjectAction_QueryCreateItem: return tr("&Query");
                 case ObjectAction_QueryEditFolder: return tr("&Edit");
                 case ObjectAction_QueryDeleteItemOrFolder: return tr("&Delete");
+                case ObjectAction_QueryMoveItemOrFolder: return tr("&Move");
 
                 case ObjectAction_LAST: break;
             }

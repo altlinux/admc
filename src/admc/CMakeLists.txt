@@ -34,6 +34,7 @@ add_executable(admc
     utils.cpp
     settings.cpp
     policy_results_widget.cpp
+    gplink.cpp
     
     console_types/object.cpp
     console_types/policy.cpp
@@ -53,7 +54,7 @@ add_executable(admc
     create_query_dialog.cpp
     create_query_folder_dialog.cpp
     edit_query_folder_dialog.cpp
-    gplink.cpp
+    move_query_dialog.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_widget_simple_tab.cpp

@@ -346,6 +346,7 @@ bool query_name_is_good(const QString &name, const QModelIndex &parent_index, QW
 
 void query_add_actions_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ObjectAction_QueryEditFolder));
+    menu->addAction(actions->get(ObjectAction_QueryMoveItemOrFolder));
     menu->addAction(actions->get(ObjectAction_QueryDeleteItemOrFolder));
 }
 
@@ -361,10 +362,13 @@ void query_show_hide_actions(ConsoleActions *actions, const QList<QModelIndex> &
             actions->show(ObjectAction_QueryCreateItem);
             actions->show(ObjectAction_QueryEditFolder);
         }
+        actions->show(ObjectAction_QueryMoveItemOrFolder);
         actions->show(ObjectAction_QueryDeleteItemOrFolder);
     } else if (indexes_are_of_type(indexes, QSet<int>({ItemType_QueryItem}))) {
+        actions->show(ObjectAction_QueryMoveItemOrFolder);
         actions->show(ObjectAction_QueryDeleteItemOrFolder);
     } else if (indexes_are_of_type(indexes, QSet<int>({ItemType_QueryItem, ItemType_QueryFolder}))) {
+        actions->show(ObjectAction_QueryMoveItemOrFolder);
         actions->show(ObjectAction_QueryDeleteItemOrFolder);
     }
 }

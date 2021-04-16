@@ -21,12 +21,10 @@
 #define CONSOLE_ACTIONS_H
 
 /**
- * Helper storage class for managing object-related actions.
- * This header also contains some object operation f-ns
- * which are not represented by any dialog.
+ * Helper storage class for managing console actions.
  */
 
-#include <QCoreApplication>
+#include <QObject>
 #include <QHash>
 
 class QMenu;
@@ -58,12 +56,12 @@ enum ObjectAction {
     ObjectAction_QueryCreateItem,
     ObjectAction_QueryEditFolder,
     ObjectAction_QueryDeleteItemOrFolder,
+    ObjectAction_QueryMoveItemOrFolder,
 
     ObjectAction_LAST,
 };
 
 class ConsoleActions final : public QObject {
-Q_DECLARE_TR_FUNCTIONS(ConsoleActions)
 
 public:
     ConsoleActions(QObject *parent);
