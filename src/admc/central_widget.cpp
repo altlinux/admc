@@ -75,10 +75,10 @@ CentralWidget::CentralWidget()
 
     console = new ConsoleWidget();
 
-    create_query_dialog = new CreateQueryDialog(console);
-    create_query_folder_dialog = new CreateQueryFolderDialog(console);
-    edit_query_folder_dialog = new EditQueryFolderDialog(console);
-    rename_policy_dialog = new RenamePolicyDialog(console);
+    auto create_query_dialog = new CreateQueryDialog(console);
+    auto create_query_folder_dialog = new CreateQueryFolderDialog(console);
+    auto edit_query_folder_dialog = new EditQueryFolderDialog(console);
+    auto rename_policy_dialog = new RenamePolicyDialog(console);
 
     auto policy_container_results = new ResultsView(this);
     policy_container_results->detail_view()->header()->setDefaultSectionSize(200);

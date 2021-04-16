@@ -43,10 +43,6 @@ class AdInterface;
 class ConsoleWidget;
 class ConsoleActions;
 class PolicyResultsWidget;
-class CreateQueryDialog;
-class CreateQueryFolderDialog;
-class EditQueryFolderDialog;
-class RenamePolicyDialog;
 template <typename T> class QList;
 
 enum ItemType {
@@ -111,10 +107,6 @@ private:
     QPersistentModelIndex policy_tree_head;
     FilterDialog *filter_dialog;
     PolicyResultsWidget *policy_results_widget;
-    CreateQueryDialog *create_query_dialog;
-    CreateQueryFolderDialog *create_query_folder_dialog;
-    EditQueryFolderDialog *edit_query_folder_dialog;
-    RenamePolicyDialog *rename_policy_dialog;
     
     ConsoleActions *console_actions;
 
