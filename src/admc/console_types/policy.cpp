@@ -38,6 +38,8 @@ void setup_policy_scope_item(QStandardItem *item, const AdObject &object) {
     item->setText(display_name);
 
     setup_policy_item_data(item, object);
+
+    item->setDragEnabled(false);
 }
 
 void setup_policy_results_row(const QList<QStandardItem *> &row, const AdObject &object) {

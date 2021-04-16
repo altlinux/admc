@@ -125,10 +125,14 @@ QModelIndex add_query_folder(ConsoleWidget *console, const QString &name, const 
 
     load_main_item(scope_item);
     scope_item->setText(name);
+    scope_item->setDragEnabled(false);
 
     load_main_item(results_row[0]);
     results_row[QueryColumn_Name]->setText(name);
     results_row[QueryColumn_Description]->setText(description);
+    for (QStandardItem *item : results_row) {
+        item->setDragEnabled(false);
+    }
 
     return scope_item->index();
 }
@@ -149,10 +153,14 @@ void add_query_item(ConsoleWidget *console, const QString &name, const QString &
 
     load_main_item(scope_item);
     scope_item->setText(name);
+    scope_item->setDragEnabled(false);
 
     load_main_item(results_row[0]);
     results_row[QueryColumn_Name]->setText(name);
     results_row[QueryColumn_Description]->setText(description);
+    for (QStandardItem *item : results_row) {
+        item->setDragEnabled(false);
+    }
 }
 
 QList<QString> get_sibling_names(const QModelIndex &parent) {
