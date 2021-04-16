@@ -43,6 +43,9 @@ class AdInterface;
 class ConsoleWidget;
 class ObjectActions;
 class PolicyResultsWidget;
+class CreateQueryDialog;
+class CreateQueryFolderDialog;
+class EditQueryFolderDialog;
 template <typename T> class QList;
 
 enum ItemType {
@@ -95,9 +98,6 @@ private slots:
     void rename_policy();
     void delete_policy();
 
-    void new_query_folder();
-    void edit_query_folder();
-    void new_query();
     void delete_query_item_or_folder();
     
     void on_items_can_drop(const QList<QModelIndex> &dropped, const QModelIndex &target, bool *ok);
@@ -111,6 +111,9 @@ private:
     QPersistentModelIndex policy_tree_head;
     FilterDialog *filter_dialog;
     PolicyResultsWidget *policy_results_widget;
+    CreateQueryDialog *create_query_dialog;
+    CreateQueryFolderDialog *create_query_folder_dialog;
+    EditQueryFolderDialog *edit_query_folder_dialog;
 
     ObjectActions *object_actions;
 

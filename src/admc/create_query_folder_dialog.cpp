@@ -31,8 +31,8 @@
 #include <QPushButton>
 #include <QMessageBox>
 
-CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg, QWidget *parent)
-: QDialog(parent)
+CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg)
+: QDialog(console_arg)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 

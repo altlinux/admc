@@ -34,10 +34,9 @@ class EditQueryFolderDialog : public QDialog {
 Q_OBJECT
 
 public:
-    EditQueryFolderDialog(ConsoleWidget *console_arg, QWidget *parent);
+    EditQueryFolderDialog(ConsoleWidget *console_arg);
 
-    QString get_name() const;
-    QString get_description() const;
+    void open() override;
 
 private:
     QLineEdit *name_edit;

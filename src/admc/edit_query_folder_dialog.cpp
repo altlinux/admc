@@ -30,8 +30,8 @@
 #include <QPushButton>
 #include <QMessageBox>
 
-EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg, QWidget *parent)
-: QDialog(parent)
+EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg)
+: QDialog(console_arg)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -40,15 +40,8 @@ EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg, QWidget
     const auto title = QString(tr("Edit query folder"));
     setWindowTitle(title);
 
-    const QModelIndex scope_index = get_selected_scope_index(console);
-    const QString current_name = scope_index.data(Qt::DisplayRole).toString();
-    const QString current_description = scope_index.data(QueryItemRole_Description).toString();
-
     name_edit = new QLineEdit();
-    name_edit->setText(current_name);
-
     description_edit = new QLineEdit();
-    description_edit->setText(current_description);
 
     auto form_layout = new QFormLayout();
 
@@ -67,19 +60,22 @@ EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg, QWidget
         this, &EditQueryFolderDialog::accept);
 }
 
-QString EditQueryFolderDialog::get_name() const {
-    return name_edit->text();
-}
+void EditQueryFolderDialog::open() {
+    const QModelIndex scope_index = get_selected_scope_index(console);
+    const QString current_name = scope_index.data(Qt::DisplayRole).toString();
+    const QString current_description = scope_index.data(QueryItemRole_Description).toString();
 
-QString EditQueryFolderDialog::get_description() const {
-    return description_edit->text();
+    name_edit->setText(current_name);
+    description_edit->setText(current_description);
+
+    QDialog::open();
 }
 
 void EditQueryFolderDialog::accept() {
     const QModelIndex scope_index = get_selected_scope_index(console);
     const QModelIndex results_index = console->get_buddy(scope_index);
-    const QString name = get_name();
-    const QString description = get_description();
+    const QString name = name_edit->text();
+    const QString description = description_edit->text();
 
     if (!query_name_is_good(name, scope_index.parent(), this, scope_index)) {
         return;

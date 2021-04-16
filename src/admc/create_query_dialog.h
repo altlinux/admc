@@ -34,7 +34,7 @@ class CreateQueryDialog : public QDialog {
 Q_OBJECT
 
 public:
-    CreateQueryDialog(ConsoleWidget *console_arg, QWidget *parent);
+    CreateQueryDialog(ConsoleWidget *console_arg);
 
 private:
     QLineEdit *name_edit;

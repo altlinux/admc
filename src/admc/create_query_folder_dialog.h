@@ -32,7 +32,7 @@ class CreateQueryFolderDialog : public QDialog {
 Q_OBJECT
 
 public:
-    CreateQueryFolderDialog(ConsoleWidget *console_arg, QWidget *parent);
+    CreateQueryFolderDialog(ConsoleWidget *console_arg);
 
 private:
     QLineEdit *name_edit;

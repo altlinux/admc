@@ -89,12 +89,12 @@ CentralWidget::CentralWidget()
 
     auto delete_query_item_or_folder_action = new QAction(tr("Delete"), this);
 
-    auto new_query_folder_action = new QAction(tr("New folder"), this);
+    auto create_query_folder_action = new QAction(tr("New folder"), this);
     auto edit_query_folder_action = new QAction(tr("Edit"), this);
-    auto new_query_action = new QAction(tr("New query"), this);
+    auto create_query_action = new QAction(tr("New query"), this);
     item_actions[ItemType_QueryFolder] = {
-        new_query_folder_action,
-        new_query_action,
+        create_query_folder_action,
+        create_query_action,
         edit_query_folder_action,
         delete_query_item_or_folder_action,
     };
@@ -104,8 +104,8 @@ CentralWidget::CentralWidget()
     };
 
     item_actions[ItemType_QueriesRoot] = {
-        new_query_folder_action,
-        new_query_action,
+        create_query_folder_action,
+        create_query_action,
     };
 
     open_filter_action = new QAction(tr("&Filter objects"), this);
@@ -116,6 +116,10 @@ CentralWidget::CentralWidget()
     open_filter_action->setEnabled(false);
 
     console = new ConsoleWidget();
+
+    create_query_dialog = new CreateQueryDialog(console);
+    create_query_folder_dialog = new CreateQueryFolderDialog(console);
+    edit_query_folder_dialog = new EditQueryFolderDialog(console);
 
     auto policy_container_results = new ResultsView(this);
     policy_container_results->detail_view()->header()->setDefaultSectionSize(200);
@@ -215,14 +219,14 @@ CentralWidget::CentralWidget()
         this, &CentralWidget::delete_policy);
 
     connect(
-        new_query_folder_action, &QAction::triggered,
-        this, &CentralWidget::new_query_folder);
+        create_query_folder_action, &QAction::triggered,
+        create_query_folder_dialog, &QDialog::open);
     connect(
-        new_query_action, &QAction::triggered,
-        this, &CentralWidget::new_query);
+        create_query_action, &QAction::triggered,
+        create_query_dialog, &QDialog::open);
     connect(
         edit_query_folder_action, &QAction::triggered,
-        this, &CentralWidget::edit_query_folder);
+        edit_query_folder_dialog, &QDialog::open);
     connect(
         delete_query_item_or_folder_action, &QAction::triggered,
         this, &CentralWidget::delete_query_item_or_folder);
@@ -635,22 +639,6 @@ void CentralWidget::delete_policy() {
     hide_busy_indicator();
 
     g_status()->display_ad_messages(ad, this);
-}
-
-void CentralWidget::new_query_folder() {
-    auto dialog = new CreateQueryFolderDialog(console, this);
-    dialog->open();
-}
-
-void CentralWidget::edit_query_folder() {    
-    auto dialog = new EditQueryFolderDialog(console, this);
-    dialog->open();
-}
-
-
-void CentralWidget::new_query() {
-    auto dialog = new CreateQueryDialog(console, this);
-    dialog->open();
 }
 
 void CentralWidget::delete_query_item_or_folder() {

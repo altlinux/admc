@@ -31,8 +31,8 @@
 #include <QPushButton>
 #include <QMessageBox>
 
-CreateQueryDialog::CreateQueryDialog(ConsoleWidget *console_arg, QWidget *parent)
-: QDialog(parent)
+CreateQueryDialog::CreateQueryDialog(ConsoleWidget *console_arg)
+: QDialog(console_arg)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
