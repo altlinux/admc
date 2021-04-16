@@ -705,7 +705,7 @@ void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, co
         QSet<ItemType> out;
 
         for (const QModelIndex &index : dropped_list) {
-            const ItemType type = (ItemType) target.data(ConsoleRole_Type).toInt();
+            const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
             out.insert(type);
         }
 
