@@ -54,7 +54,7 @@ FindResults::FindResults()
 
     model = new QStandardItemModel(this);
 
-    const QList<QString> header_labels = object_model_header_labels();
+    const QList<QString> header_labels = object_header_labels();
     model->setHorizontalHeaderLabels(header_labels);
 
     view = new ResultsView(this);
@@ -145,7 +145,7 @@ void FindResults::load(const QHash<QString, AdObject> &search_results) {
     for (const AdObject &object : search_results) {
         const QList<QStandardItem *> row = make_item_row(g_adconfig->get_columns().count());
 
-        load_object_row(row, object);
+        object_results_load(row, object);
 
         model->appendRow(row);
     }
@@ -248,7 +248,7 @@ void FindResults::create_group() {
 }
 
 void FindResults::customize_columns() {
-    auto dialog = new CustomizeColumnsDialog(view->detail_view(), object_model_default_columns(), this);
+    auto dialog = new CustomizeColumnsDialog(view->detail_view(), object_default_columns(), this);
     dialog->open();
 }
 

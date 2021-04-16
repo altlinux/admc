@@ -132,7 +132,7 @@ void ObjectActions::update_actions_visibility(const QList<QModelIndex> &selected
 
     hide_actions();
 
-    if (!indexes_are_of_type(selected_indexes, ItemType_DomainObject)) {
+    if (!indexes_are_of_type(selected_indexes, ItemType_Object)) {
         return;
     }
 

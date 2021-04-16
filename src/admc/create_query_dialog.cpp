@@ -80,9 +80,9 @@ void CreateQueryDialog::accept() {
         return;
     }
 
-    add_query_item(console, name, description, filter, search_base, parent_index);
+    query_item_create(console, name, description, filter, search_base, parent_index);
 
-    save_queries();
+    query_tree_save();
 
     QDialog::accept();
 }

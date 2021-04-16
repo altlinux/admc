@@ -32,7 +32,10 @@
 int policy_container_results_id;
 int policy_results_id;
 
-void setup_policy_scope_item(QStandardItem *item, const AdObject &object) {
+void setup_policy_item_data(QStandardItem *item, const AdObject &object);
+void policy_results_load(const QList<QStandardItem *> &row, const AdObject &object);
+
+void policy_scope_load(QStandardItem *item, const AdObject &object) {
     const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
 
     item->setText(display_name);
@@ -42,7 +45,7 @@ void setup_policy_scope_item(QStandardItem *item, const AdObject &object) {
     item->setDragEnabled(false);
 }
 
-void setup_policy_results_row(const QList<QStandardItem *> &row, const AdObject &object) {
+void policy_results_load(const QList<QStandardItem *> &row, const AdObject &object) {
     const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
 
     row[0]->setText(display_name);
@@ -72,38 +75,16 @@ QList<QString> policy_model_search_attributes() {
     return {ATTRIBUTE_DISPLAY_NAME};
 }
 
-void console_add_policy(ConsoleWidget *console, const QModelIndex &policies_index, const AdObject &object) {
+void policy_create(ConsoleWidget *console, const QModelIndex &policies_index, const AdObject &object) {
     QStandardItem *scope_item;
     QList<QStandardItem *> results_row;
     console->add_buddy_scope_and_results(policy_results_id, ScopeNodeType_Static, policies_index, &scope_item, &results_row);
 
-    setup_policy_scope_item(scope_item, object);
-    setup_policy_results_row(results_row, object);
+    policy_scope_load(scope_item, object);
+    policy_results_load(results_row, object);
 }
 
-void console_update_policy(ConsoleWidget *console, const QModelIndex &index, const AdObject &object) {
-    auto update_helper =
-    [&](const QModelIndex &the_index) {
-        const bool is_scope = console->is_scope_item(the_index);
-
-        if (is_scope) {
-            QStandardItem *scope_item = console->get_scope_item(the_index);
-            setup_policy_scope_item(scope_item, object);
-        } else {
-            QList<QStandardItem *> results_row = console->get_results_row(the_index);
-            setup_policy_results_row(results_row, object);
-        }
-    };
-
-    update_helper(index);
-
-    const QModelIndex buddy = console->get_buddy(index);
-    if (buddy.isValid()) {
-        update_helper(buddy);
-    }
-}
-
-QModelIndex init_policy_tree(ConsoleWidget *console, AdInterface &ad) {
+QModelIndex policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
     // Add head item
     QStandardItem *head_item = console->add_scope_item(policy_container_results_id, ScopeNodeType_Static, QModelIndex());
     head_item->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
@@ -118,7 +99,7 @@ QModelIndex init_policy_tree(ConsoleWidget *console, AdInterface &ad) {
     const QHash<QString, AdObject> policy_search_results = ad.search(policy_search_filter, policy_search_attributes, SearchScope_All);
 
     for (const AdObject &object : policy_search_results.values()) {
-        console_add_policy(console, head_item->index(), object);
+        policy_create(console, head_item->index(), object);
     }
 
     return head_item->index();

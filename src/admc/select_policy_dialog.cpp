@@ -73,7 +73,7 @@ SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
         auto item = new QStandardItem();
         model->appendRow(item);
 
-        setup_policy_scope_item(item, object);
+        policy_scope_load(item, object);
     }
 
     const auto top_layout = new QVBoxLayout();

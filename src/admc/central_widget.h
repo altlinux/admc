@@ -50,7 +50,7 @@ template <typename T> class QList;
 
 enum ItemType {
     ItemType_Unassigned,
-    ItemType_DomainObject,
+    ItemType_Object,
     ItemType_PoliciesRoot,
     ItemType_Policy,
     ItemType_QueriesRoot,

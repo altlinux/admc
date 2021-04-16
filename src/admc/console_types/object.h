@@ -46,23 +46,18 @@ enum ObjectRole {
 
 extern int object_results_id;
 
-void load_object_row(const QList<QStandardItem *> row, const AdObject &object);
-void load_object_item_data(QStandardItem *item, const AdObject &object);
-QList<QString> object_model_header_labels();
-QList<int> object_model_default_columns();
-QList<QString> object_model_search_attributes();
-void setup_object_scope_item(QStandardItem *item, const AdObject &object);
-void setup_object_results_row(const QList<QStandardItem *> row, const AdObject &object);
-void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
-void console_delete_objects(ConsoleWidget *console, const QList<QString> &dn_list, const bool ignore_query_tree = false);
-void console_update_object(ConsoleWidget *console, const AdObject &object);
-void console_move_objects(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QList<QString> &new_dn_list, const QString &new_parent_dn);
-void console_move_objects(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
-bool console_add_objects_check(ConsoleWidget *console, const QModelIndex &parent);
-void console_add_objects(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
-void console_add_objects(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
-void fetch_object(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index);
-QModelIndex init_object_tree(ConsoleWidget *console, AdInterface &ad);
+void object_scope_load(QStandardItem *item, const AdObject &object);
+void object_results_load(const QList<QStandardItem *> row, const AdObject &object);
+QList<QString> object_header_labels();
+QList<int> object_default_columns();
+QList<QString> object_search_attributes();
+void object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const bool ignore_query_tree = false);
+void object_move(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QList<QString> &new_dn_list, const QString &new_parent_dn);
+void object_move(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
+void object_create(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
+void object_create(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
+void object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index);
+QModelIndex object_tree_init(ConsoleWidget *console, AdInterface &ad);
 void object_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
 void object_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target);
 

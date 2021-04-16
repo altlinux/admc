@@ -272,11 +272,11 @@ void CentralWidget::go_online(AdInterface &ad) {
     // requires header labels which come from ADCONFIG, so
     // need to be online
     auto object_results = new ResultsView(this);
-    object_results_id = console->register_results(object_results, object_model_header_labels(), object_model_default_columns());
+    object_results_id = console->register_results(object_results, object_header_labels(), object_default_columns());
 
-    object_tree_head = init_object_tree(console, ad);
-    policy_tree_head = init_policy_tree(console, ad);
-    init_query_tree(console);
+    object_tree_head = object_tree_init(console, ad);
+    policy_tree_head = policy_tree_init(console, ad);
+    query_tree_init(console);
 
     console->sort_scope();
     console->set_current_scope(object_tree_head);
@@ -292,7 +292,7 @@ void CentralWidget::delete_objects() {
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
     const QList<QString> deleted_objects = object_delete(selected.keys(), this);
 
-    console_delete_objects(console, deleted_objects);
+    object_delete(console, deleted_objects);
 }
 
 void CentralWidget::on_properties_requested() {
@@ -313,8 +313,15 @@ void CentralWidget::on_properties_requested() {
                 return;
             }
 
-            const AdObject updated_object = ad.search_object(target);
-            console_update_object(console, updated_object);
+            const AdObject object = ad.search_object(target);
+
+            const QModelIndex scope_index = get_selected_scope_index(console);
+            QStandardItem *scope_item = console->get_scope_item(scope_index);
+            object_scope_load(scope_item, object);
+            
+            const QModelIndex results_index = console->get_buddy(scope_index);
+            const QList<QStandardItem *> results_row = console->get_results_row(results_index);
+            object_results_load(results_row, object);
 
             update_actions_visibility();
         });
@@ -337,7 +344,7 @@ void CentralWidget::rename() {
             const QString old_dn = targets.keys()[0];
             const QString new_dn = dialog->get_new_dn();
             const QString parent_dn = dn_get_parent(old_dn);
-            console_move_objects(console, ad, {old_dn}, {new_dn}, parent_dn);
+            object_move(console, ad, {old_dn}, {new_dn}, parent_dn);
         });
 }
 
@@ -362,7 +369,7 @@ void CentralWidget::create_helper(const QString &object_class) {
             show_busy_indicator();
 
             const QString parent_dn = targets.keys()[0];
-            const QList<QModelIndex> search_parent = console->search_scope_by_role(ObjectRole_DN, parent_dn, ItemType_DomainObject);
+            const QList<QModelIndex> search_parent = console->search_scope_by_role(ObjectRole_DN, parent_dn, ItemType_Object);
 
             if (search_parent.isEmpty()) {
                 hide_busy_indicator();
@@ -371,7 +378,7 @@ void CentralWidget::create_helper(const QString &object_class) {
 
             const QModelIndex scope_parent_index = search_parent[0];
             const QString created_dn = dialog->get_created_dn();
-            console_add_objects(console, ad, {created_dn}, scope_parent_index);
+            object_create(console, ad, {created_dn}, scope_parent_index);
 
             console->sort_scope();
 
@@ -395,7 +402,7 @@ void CentralWidget::move() {
 
             const QList<QString> old_dn_list = dialog->get_moved_objects();
             const QString new_parent_dn = dialog->get_selected();
-            console_move_objects(console, ad, old_dn_list, new_parent_dn);
+            object_move(console, ad, old_dn_list, new_parent_dn);
 
             console->sort_scope();
         });
@@ -500,7 +507,7 @@ void CentralWidget::create_policy() {
             const QHash<QString, AdObject> search_results = ad.search(QString(), search_attributes, SearchScope_Object, dn);
             const AdObject object = search_results[dn];
 
-            console_add_policy(console, policy_tree_head, object);
+            policy_create(console, policy_tree_head, object);
 
             // NOTE: not adding policy object to the domain
             // tree, but i think it's ok?
@@ -585,8 +592,15 @@ void CentralWidget::rename_policy() {
                 return;
             }
 
-            const AdObject updated_object = ad.search_object(dn);
-            console_update_policy(console, index, updated_object);
+            const AdObject object = ad.search_object(dn);
+
+            const QModelIndex scope_index = get_selected_scope_index(console);
+            QStandardItem *scope_item = console->get_scope_item(scope_index);
+            policy_scope_load(scope_item, object);
+            
+            const QModelIndex results_index = console->get_buddy(scope_index);
+            const QList<QStandardItem *> results_row = console->get_results_row(results_index);
+            policy_results_load(results_row, object);
 
             console->sort_scope();
         });
@@ -651,7 +665,7 @@ void CentralWidget::delete_query_item_or_folder() {
     const QModelIndex index = selected_indexes[0];
     console->delete_item(index);
 
-    save_queries();
+    query_tree_save();
 }
 
 void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, bool *ok) {
@@ -670,7 +684,7 @@ void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, co
 
     switch (target_type) {
         case ItemType_Unassigned: break;
-        case ItemType_DomainObject: {
+        case ItemType_Object: {
             object_can_drop(dropped_list, target, dropped_types,ok);
             break;
         }
@@ -688,7 +702,7 @@ void CentralWidget::on_items_dropped(const QList<QModelIndex> &dropped_list, con
 
     switch (target_type) {
         case ItemType_Unassigned: break;
-        case ItemType_DomainObject: {
+        case ItemType_Object: {
             object_drop(console, dropped_list, target);
             break;
         }
@@ -724,7 +738,7 @@ void CentralWidget::update_description_bar() {
         const QModelIndex current_scope = console->get_current_scope_item();
         const ItemType type = (ItemType) current_scope.data(ConsoleRole_Type).toInt();
 
-        if (type == ItemType_DomainObject) {
+        if (type == ItemType_Object) {
             const int results_count = console->get_current_results_count();
             const QString out = tr("%n object(s)", "", results_count);
 
@@ -772,10 +786,10 @@ void CentralWidget::add_actions_to_view_menu(QMenu *menu) {
 void CentralWidget::fetch_scope_node(const QModelIndex &index) {
     const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
 
-    if (type == ItemType_DomainObject) {
-        fetch_object(console, filter_dialog, index);
+    if (type == ItemType_Object) {
+        object_fetch(console, filter_dialog, index);
     } else if (type == ItemType_QueryItem) {
-        fetch_query(console, index);
+        query_item_fetch(console, index);
     }
 }
 
@@ -863,7 +877,7 @@ void CentralWidget::update_actions_visibility() {
         action->setVisible(true);
     }
 
-    if (type == ItemType_DomainObject) {
+    if (type == ItemType_Object) {
         object_actions->update_actions_visibility(selected_indexes);
     }
 }

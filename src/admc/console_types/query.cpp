@@ -44,6 +44,8 @@ enum QueryColumn {
 int query_folder_results_id;
 QPersistentModelIndex query_tree_head;
 
+QString query_folder_path(const QModelIndex &index);
+
 QList<QString> query_folder_header_labels() {
     return {
         QCoreApplication::translate("query_folder.cpp", "Name"),
@@ -106,14 +108,7 @@ QString query_folder_path(const QModelIndex &index) {
     return path;
 }
 
-QString path_to_name(const QString &path) {
-    const int separator_i = path.lastIndexOf("/");
-    const QString name = path.mid(separator_i + 1);
-
-    return name;
-}
-
-void load_query_folder(QStandardItem *scope_item, const QList<QStandardItem *> &results_row, const QString &name, const QString &description) {
+void query_folder_load(QStandardItem *scope_item, const QList<QStandardItem *> &results_row, const QString &name, const QString &description) {
     auto load_main_item =
     [&](QStandardItem *item) {
         item->setData(description, QueryItemRole_Description);
@@ -133,16 +128,16 @@ void load_query_folder(QStandardItem *scope_item, const QList<QStandardItem *> &
     }
 }
 
-QModelIndex add_query_folder(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent) {
+QModelIndex query_folder_create(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent) {
     QStandardItem *scope_item;
     QList<QStandardItem *> results_row;
     console->add_buddy_scope_and_results(query_folder_results_id, ScopeNodeType_Static, parent, &scope_item, &results_row);
-    load_query_folder(scope_item, results_row, name, description);
+    query_folder_load(scope_item, results_row, name, description);
 
     return scope_item->index();
 }
 
-void add_query_item(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QString &search_base, const QModelIndex &parent) {
+void query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QString &search_base, const QModelIndex &parent) {
     auto load_main_item =
     [&](QStandardItem *item) {
         item->setData(ItemType_QueryItem, ConsoleRole_Type);
@@ -168,7 +163,7 @@ void add_query_item(ConsoleWidget *console, const QString &name, const QString &
     }
 }
 
-void fetch_query(ConsoleWidget *console, const QModelIndex &index) {
+void query_item_fetch(ConsoleWidget *console, const QModelIndex &index) {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -178,18 +173,26 @@ void fetch_query(ConsoleWidget *console, const QModelIndex &index) {
 
     const QString filter = index.data(QueryItemRole_Filter).toString();
     const QString search_base = index.data(QueryItemRole_SearchBase).toString();
-    const QList<QString> search_attributes = object_model_search_attributes();
+    const QList<QString> search_attributes = object_search_attributes();
 
     const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All, search_base);
     for (const AdObject &object : search_results.values()) {
         const QList<QStandardItem *> results_row = console->add_results_row(index);
-        setup_object_results_row(results_row, object);
+        object_results_load(results_row, object);
     }
 
     hide_busy_indicator();
 }
 
-void init_query_tree(ConsoleWidget *console) {
+void query_tree_init(ConsoleWidget *console) {
+    auto path_to_name =
+    [](const QString &path) {
+        const int separator_i = path.lastIndexOf("/");
+        const QString name = path.mid(separator_i + 1);
+
+        return name;
+    };
+
     // Add head item
     QStandardItem *head_item = console->add_scope_item(query_folder_results_id, ScopeNodeType_Static, QModelIndex());
     head_item->setText(QCoreApplication::translate("query", "Saved Queries"));
@@ -219,12 +222,12 @@ void init_query_tree(ConsoleWidget *console) {
                 const QString filter = info["filter"].toString();
                 const QString search_base = info["search_base"].toString();
                 const QString name = path_to_name(child_path);
-                add_query_item(console, name, description, filter, search_base, index);
+                query_item_create(console, name, description, filter, search_base, index);
             } else {
                 // Query folder
                 const QString name = path_to_name(child_path);
                 const QString description = info["description"].toString();
-                const QModelIndex child_scope_index = add_query_folder(console, name, description, index);
+                const QModelIndex child_scope_index = query_folder_create(console, name, description, index);
 
                 query_stack.append(child_scope_index);
             }
@@ -236,7 +239,7 @@ void init_query_tree(ConsoleWidget *console) {
 
 // Saves current state of queries tree to settings. Should
 // be called after every modication to queries tree
-void save_queries() {
+void query_tree_save() {
     // folder path = {list of children}
     // data = {path => data map containing info about
     // query folder/item}

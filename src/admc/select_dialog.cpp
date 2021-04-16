@@ -47,7 +47,7 @@ SelectDialog::SelectDialog(QList<QString> classes_arg, SelectDialogMultiSelectio
 
     model = new QStandardItemModel(this);
 
-    const QList<QString> header_labels = object_model_header_labels();
+    const QList<QString> header_labels = object_header_labels();
     model->setHorizontalHeaderLabels(header_labels);
 
     view = new QTreeView(this);

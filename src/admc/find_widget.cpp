@@ -105,7 +105,7 @@ void FindWidget::find() {
     // Prepare search args
     const QString filter = filter_widget->get_filter();
     const QString search_base = search_base_widget->get_search_base();
-    const QList<QString> search_attributes = object_model_search_attributes();
+    const QList<QString> search_attributes = object_search_attributes();
 
     auto find_thread = new SearchThread(filter, search_base, search_attributes);
 

@@ -39,9 +39,12 @@ enum DropType {
     DropType_None
 };
 
+void object_item_data_load(QStandardItem *item, const AdObject &object);
 DropType object_get_drop_type(const QModelIndex &dropped, const QModelIndex &target);
+void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
+bool object_scope_and_results_add_check(ConsoleWidget *console, const QModelIndex &parent);
 
-void load_object_row(const QList<QStandardItem *> row, const AdObject &object) {
+void object_results_load(const QList<QStandardItem *> row, const AdObject &object) {
     // Load attribute columns
     for (int i = 0; i < g_adconfig->get_columns().count(); i++) {
         const QString attribute = g_adconfig->get_columns()[i];
@@ -75,13 +78,15 @@ void load_object_row(const QList<QStandardItem *> row, const AdObject &object) {
         row[i]->setText(display_value);
     }
 
-    load_object_item_data(row[0], object);
+    object_item_data_load(row[0], object);
+
+    disable_drag_if_object_cant_be_moved(row, object);
 }
 
-void load_object_item_data(QStandardItem *item, const AdObject &object) {
+void object_item_data_load(QStandardItem *item, const AdObject &object) {
     item->setData(true, ConsoleRole_HasProperties);
 
-    item->setData(ItemType_DomainObject, ConsoleRole_Type);
+    item->setData(ItemType_Object, ConsoleRole_Type);
 
     const QIcon icon = get_object_icon(object);
     item->setIcon(icon);
@@ -104,7 +109,7 @@ void load_object_item_data(QStandardItem *item, const AdObject &object) {
     item->setData(account_disabled, ObjectRole_AccountDisabled);
 }
 
-QList<QString> object_model_header_labels() {
+QList<QString> object_header_labels() {
     QList<QString> out;
 
     for (const QString &attribute : g_adconfig->get_columns()) {
@@ -116,13 +121,13 @@ QList<QString> object_model_header_labels() {
     return out;
 }
 
-QList<int> object_model_default_columns() {
+QList<int> object_default_columns() {
     // By default show first 3 columns: name, class and
     // description
     return {0, 1, 2};
 }
 
-QList<QString> object_model_search_attributes() {
+QList<QString> object_search_attributes() {
     QList<QString> attributes;
 
     attributes += g_adconfig->get_columns();
@@ -139,7 +144,7 @@ QList<QString> object_model_search_attributes() {
     return attributes;
 }
 
-void setup_object_scope_item(QStandardItem *item, const AdObject &object) {
+void object_scope_load(QStandardItem *item, const AdObject &object) {
     const QString name =
     [&]() {
         const QString dn = object.get_dn();
@@ -148,13 +153,8 @@ void setup_object_scope_item(QStandardItem *item, const AdObject &object) {
 
     item->setText(name);
 
-    load_object_item_data(item, object);
+    object_item_data_load(item, object);
     disable_drag_if_object_cant_be_moved({item}, object);
-}
-
-void setup_object_results_row(const QList<QStandardItem *> row, const AdObject &object) {
-    load_object_row(row, object);
-    disable_drag_if_object_cant_be_moved(row, object);
 }
 
 void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object) {
@@ -167,16 +167,16 @@ void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, c
 
 // NOTE: have to search instead of just using deleted
 // index because can delete objects from query tree
-void console_delete_objects(ConsoleWidget *console, const QList<QString> &dn_list, const bool ignore_query_tree) {
+void object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const bool ignore_query_tree) {
     for (const QString &dn : dn_list) {
         // Delete in scope
-        const QList<QPersistentModelIndex> scope_indexes = get_persistent_indexes(console->search_scope_by_role(ObjectRole_DN, dn, ItemType_DomainObject));
+        const QList<QPersistentModelIndex> scope_indexes = get_persistent_indexes(console->search_scope_by_role(ObjectRole_DN, dn, ItemType_Object));
         for (const QPersistentModelIndex &index : scope_indexes) {
             console->delete_item(index);
         }
 
         // Delete in results
-        const QList<QPersistentModelIndex> results_indexes = get_persistent_indexes(console->search_results_by_role(ObjectRole_DN, dn, ItemType_DomainObject));
+        const QList<QPersistentModelIndex> results_indexes = get_persistent_indexes(console->search_results_by_role(ObjectRole_DN, dn, ItemType_Object));
         for (const QPersistentModelIndex &index : results_indexes) {
             // NOTE: don't touch query tree indexes, they
             // stay around and just go out of date
@@ -197,35 +197,8 @@ void console_delete_objects(ConsoleWidget *console, const QList<QString> &dn_lis
     }
 }
 
-void console_update_object(ConsoleWidget *console, const AdObject &object) {
-    auto update_helper =
-    [&](const QModelIndex &the_index) {
-        const bool is_scope = console->is_scope_item(the_index);
-
-        if (is_scope) {
-            QStandardItem *scope_item = console->get_scope_item(the_index);
-            setup_object_scope_item(scope_item, object);
-        } else {
-            QList<QStandardItem *> results_row = console->get_results_row(the_index);
-            load_object_row(results_row, object);
-        }
-    };
-
-    // Update in scope
-    const QList<QPersistentModelIndex> scope_indexes = get_persistent_indexes(console->search_scope_by_role(ObjectRole_DN, object.get_dn(), ItemType_DomainObject));
-    for (const QPersistentModelIndex &index : scope_indexes) {
-        update_helper(index);
-    }
-
-    // Update in results
-    const QList<QPersistentModelIndex> results_indexes = get_persistent_indexes(console->search_results_by_role(ObjectRole_DN, object.get_dn(), ItemType_DomainObject));
-    for (const QPersistentModelIndex &index : results_indexes) {
-        update_helper(index);
-    }
-}
-
-void console_add_objects(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {
-    if (!console_add_objects_check(console, parent)) {
+void object_create(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {
+    if (!object_scope_and_results_add_check(console, parent)) {
         return;
     }
 
@@ -241,10 +214,10 @@ void console_add_objects(ConsoleWidget *console, AdInterface &ad, const QList<QS
         return out;
     }();
 
-    console_add_objects(console, object_list, parent);
+    object_create(console, object_list, parent);
 }
 
-void console_move_objects(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QList<QString> &new_dn_list, const QString &new_parent_dn) {
+void object_move(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QList<QString> &new_dn_list, const QString &new_parent_dn) {
     // NOTE: delete old item AFTER adding new item because:
     // If old item is deleted first, then it's possible for
     // new parent to get selected (if they are next to each
@@ -254,7 +227,7 @@ void console_move_objects(ConsoleWidget *console, AdInterface &ad, const QList<Q
     // duplicated.
     const QModelIndex new_parent_index =
     [=]() {
-        const QList<QModelIndex> search_results = console->search_scope_by_role(ObjectRole_DN, new_parent_dn, ItemType_DomainObject);
+        const QList<QModelIndex> search_results = console->search_scope_by_role(ObjectRole_DN, new_parent_dn, ItemType_Object);
 
         if (search_results.size() == 1) {
             return search_results[0];
@@ -263,13 +236,13 @@ void console_move_objects(ConsoleWidget *console, AdInterface &ad, const QList<Q
         }
     }();
 
-    console_add_objects(console, ad, new_dn_list, new_parent_index);
-    console_delete_objects(console, old_dn_list, true);
+    object_create(console, ad, new_dn_list, new_parent_index);
+    object_delete(console, old_dn_list, true);
 
     console->sort_scope();
 }
 
-void console_move_objects(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn) {
+void object_move(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn) {
     const QList<QString> new_dn_list =
     [&]() {
         QList<QString> out;
@@ -282,11 +255,11 @@ void console_move_objects(ConsoleWidget *console, AdInterface &ad, const QList<Q
         return out;
     }();
 
-    console_move_objects(console, ad, old_dn_list, new_dn_list, new_parent_dn);
+    object_move(console, ad, old_dn_list, new_dn_list, new_parent_dn);
 }
 
 // Check parent index before adding objects to console
-bool console_add_objects_check(ConsoleWidget *console, const QModelIndex &parent) {
+bool object_scope_and_results_add_check(ConsoleWidget *console, const QModelIndex &parent) {
     if (!parent.isValid()) {
         return false;
     }
@@ -302,8 +275,8 @@ bool console_add_objects_check(ConsoleWidget *console, const QModelIndex &parent
     return true;
 }
 
-void console_add_objects(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {
-    if (!console_add_objects_check(console, parent)) {
+void object_create(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {
+    if (!object_scope_and_results_add_check(console, parent)) {
         return;
     }
 
@@ -333,18 +306,18 @@ void console_add_objects(ConsoleWidget *console, const QList<AdObject> &object_l
             QList<QStandardItem *> results_row;
             console->add_buddy_scope_and_results(object_results_id, ScopeNodeType_Dynamic, parent, &scope_item, &results_row);
 
-            setup_object_scope_item(scope_item, object);
-            setup_object_results_row(results_row, object);
+            object_scope_load(scope_item, object);
+            object_results_load(results_row, object);
         } else {
             const QList<QStandardItem *> results_row = console->add_results_row(parent);
-            setup_object_results_row(results_row, object);
+            object_results_load(results_row, object);
         }
     }
 }
 
 // Load children of this item in scope tree
 // and load results linked to this scope item
-void fetch_object(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index) {
+void object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index) {
     // TODO: handle connect/search failure
     AdInterface ad;
     if (ad_failed(ad)) {
@@ -395,7 +368,7 @@ void fetch_object(ConsoleWidget *console, FilterDialog *filter_dialog, const QMo
         return out;
     }();
 
-    const QList<QString> search_attributes = object_model_search_attributes();
+    const QList<QString> search_attributes = object_search_attributes();
 
     const QString dn = index.data(ObjectRole_DN).toString();
 
@@ -415,20 +388,20 @@ void fetch_object(ConsoleWidget *console, FilterDialog *filter_dialog, const QMo
         }
     }
 
-    console_add_objects(console, search_results.values(), index);
+    object_create(console, search_results.values(), index);
     console->sort_scope();
 
     hide_busy_indicator();
 }
 
-QModelIndex init_object_tree(ConsoleWidget *console, AdInterface &ad) {
+QModelIndex object_tree_init(ConsoleWidget *console, AdInterface &ad) {
     // Create tree head
     const QString head_dn = g_adconfig->domain_head();
     const AdObject head_object = ad.search_object(head_dn);
 
     QStandardItem *head_item = console->add_scope_item(object_results_id, ScopeNodeType_Dynamic, QModelIndex());
 
-    setup_object_scope_item(head_item, head_object);
+    object_scope_load(head_item, head_object);
 
     const QString domain_text =
     [&]() {
@@ -443,7 +416,7 @@ QModelIndex init_object_tree(ConsoleWidget *console, AdInterface &ad) {
 }
 
 void object_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
-    const bool dropped_are_all_objects = (dropped_types.size() == 1 && dropped_types.contains(ItemType_DomainObject));
+    const bool dropped_are_all_objects = (dropped_types.size() == 1 && dropped_types.contains(ItemType_Object));
     if (!dropped_are_all_objects) {
         return;
     }
@@ -484,7 +457,7 @@ void object_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list,
                     target_dn);
 
                 if (move_success) {
-                    console_move_objects(console, ad, QList<QString>({dropped_dn}), target_dn);
+                    object_move(console, ad, QList<QString>({dropped_dn}), target_dn);
                 }
 
                 break;

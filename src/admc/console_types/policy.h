@@ -40,14 +40,12 @@ enum PolicyRole {
 extern int policy_container_results_id;
 extern int policy_results_id;
 
-void setup_policy_scope_item(QStandardItem *item, const AdObject &object);
-void setup_policy_results_row(const QList<QStandardItem *> &row, const AdObject &object);
-void setup_policy_item_data(QStandardItem *item, const AdObject &object);
+void policy_scope_load(QStandardItem *item, const AdObject &object);
+void policy_results_load(const QList<QStandardItem *> &row, const AdObject &object);
 QList<QString> policy_model_header_labels();
 QList<int> policy_model_default_columns();
 QList<QString> policy_model_search_attributes();
-void console_add_policy(ConsoleWidget *console, const QModelIndex &policies_index, const AdObject &object);
-void console_update_policy(ConsoleWidget *console, const QModelIndex &index, const AdObject &object);
-QModelIndex init_policy_tree(ConsoleWidget *console, AdInterface &ad);
+void policy_create(ConsoleWidget *console, const QModelIndex &policies_index, const AdObject &object);
+QModelIndex policy_tree_init(ConsoleWidget *console, AdInterface &ad);
 
 #endif /* POLICY_H */

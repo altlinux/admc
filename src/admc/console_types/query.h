@@ -37,23 +37,17 @@ enum QueryItemRole {
     QueryItemRole_LAST = ConsoleRole_LAST + 7,
 };
 
-/**
- * Some f-ns used for models that store queries.
- */
-
 extern int query_folder_results_id;
 
 QList<QString> query_folder_header_labels();
 QList<int> query_folder_default_columns();
-void load_query_folder(QStandardItem *scope_item, const QList<QStandardItem *> &results_row, const QString &name, const QString &description);
-QString query_folder_path(const QModelIndex &index);
-QString path_to_name(const QString &path);
+void query_folder_load(QStandardItem *scope_item, const QList<QStandardItem *> &results_row, const QString &name, const QString &description);
 // Returns index of the scope item
-QModelIndex add_query_folder(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent);
-void add_query_item(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QString &search_base, const QModelIndex &parent);
-void fetch_query(ConsoleWidget *console, const QModelIndex &index);
-void init_query_tree(ConsoleWidget *console);
-void save_queries();
+QModelIndex query_folder_create(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent);
+void query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QString &search_base, const QModelIndex &parent);
+void query_item_fetch(ConsoleWidget *console, const QModelIndex &index);
+void query_tree_init(ConsoleWidget *console);
+void query_tree_save();
 bool query_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index);
 
 #endif /* QUERY_H */
