@@ -28,6 +28,7 @@
 #include "filter_dialog.h"
 #include "filter_widget/filter_widget.h"
 #include "console_actions.h"
+#include "select_dialog.h"
 
 #include <QStandardItemModel>
 #include <QSet>
@@ -657,4 +658,92 @@ void object_show_hide_actions(ConsoleActions *actions, const QList<QModelIndex> 
         actions->show(ObjectAction_Move);
         actions->show(ObjectAction_Delete);
     }
+}
+
+QList<QString> object_delete(const QList<QString> &targets, QWidget *parent) {
+    if (targets.size() == 0) {
+        return QList<QString>();
+    }
+
+    const bool confirmed = confirmation_dialog(QCoreApplication::translate("ConsoleActions", "Are you sure you want to delete this object?"), parent);
+    if (!confirmed) {
+        return QList<QString>();
+    }
+
+    QList<QString> deleted_objects;
+
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return QList<QString>();
+    }
+
+    show_busy_indicator();
+
+    for (const QString &dn : targets) {
+        const bool success = ad.object_delete(dn);
+
+        if (success) {
+            deleted_objects.append(dn);
+        }
+    }
+
+    hide_busy_indicator();
+
+    g_status()->display_ad_messages(ad, parent);
+
+    return deleted_objects;
+}
+
+QList<QString> object_enable_disable(const QList<QString> &targets, const bool disabled, QWidget *parent) {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return QList<QString>();
+    }
+
+    show_busy_indicator();
+
+    QList<QString> changed_objects;
+
+    for (const QString &dn : targets) {
+        const bool success = ad.user_set_account_option(dn, AccountOption_Disabled, disabled);
+
+        if (success) {
+            changed_objects.append(dn);
+        }
+    }
+
+    hide_busy_indicator();
+
+    g_status()->display_ad_messages(ad, parent);
+
+    return changed_objects;
+}
+
+void object_add_to_group(const QList<QString> &targets, QWidget *parent) {
+    auto dialog = new SelectDialog({CLASS_GROUP}, SelectDialogMultiSelection_Yes, parent);
+
+    QObject::connect(
+        dialog, &SelectDialog::accepted,
+        [=]() {
+            AdInterface ad;
+            if (ad_failed(ad)) {
+                return;
+            }
+
+            show_busy_indicator();
+
+            const QList<QString> groups = dialog->get_selected();
+
+            for (const QString &target : targets) {
+                for (auto group : groups) {
+                    ad.group_add_member(group, target);
+                }
+            }
+
+            hide_busy_indicator();
+
+            g_status()->display_ad_messages(ad, parent);
+        });
+
+    dialog->open();
 }

@@ -79,13 +79,4 @@ private:
     QList<ObjectAction> new_actions;
 };
 
-// Targets list may be of any size, but the operation will
-// be performed only if the size is appropriate. Return a
-// list of object DN's contains those objects for which the
-// operation succeeded.
-QList<QString> object_delete(const QList<QString> &targets, QWidget *parent);
-QList<QString> object_enable_disable(const QList<QString> &targets, const bool disabled, QWidget *parent);
-
-void object_add_to_group(const QList<QString> &targets, QWidget *parent);
-
 #endif /* CONSOLE_ACTIONS_H */

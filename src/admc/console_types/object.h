@@ -65,4 +65,8 @@ void object_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list,
 void object_add_actions_to_menu(ConsoleActions *actions, QMenu *menu);
 void object_show_hide_actions(ConsoleActions *actions, const QList<QModelIndex> &indexes);
 
+QList<QString> object_delete(const QList<QString> &targets, QWidget *parent);
+QList<QString> object_enable_disable(const QList<QString> &targets, const bool disabled, QWidget *parent);
+void object_add_to_group(const QList<QString> &targets, QWidget *parent);
+
 #endif /* OBJECT_H */
