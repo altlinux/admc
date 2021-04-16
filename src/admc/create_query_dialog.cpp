@@ -24,18 +24,19 @@
 #include "globals.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/search_base_widget.h"
+#include "console_types/query.h"
 
 #include <QLineEdit>
 #include <QFormLayout>
 #include <QPushButton>
 #include <QMessageBox>
 
-CreateQueryDialog::CreateQueryDialog(const QList<QString> &sibling_names_arg, QWidget *parent)
+CreateQueryDialog::CreateQueryDialog(const QModelIndex &parent_index_arg, QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    sibling_names = sibling_names_arg;
+    parent_index = parent_index_arg;
 
     const auto title = QString(tr("Create Query"));
     setWindowTitle(title);
@@ -86,20 +87,9 @@ QString CreateQueryDialog::get_search_base() const {
 
 void CreateQueryDialog::accept() {
     const QString name = get_name();
-    const bool name_conflict = sibling_names.contains(name);
-    const bool name_contains_slash = name.contains("/");
-
-    if (name_conflict) {
-        const QString error_text = QString(tr("There's already a query with this name."));
-        QMessageBox::warning(this, tr("Error"), error_text);
-    } else if (name_contains_slash) {
-        const QString error_text = QString(tr("Query names cannot contain \"/\"."));
-        QMessageBox::warning(this, tr("Error"), error_text);
+    if (!query_name_is_good(name, parent_index, this, QModelIndex())) {
+        return;
     }
 
-    const bool name_is_good = (!name_conflict && !name_contains_slash);
-
-    if (name_is_good) {
-        QDialog::accept();
-    }
+    QDialog::accept();
 }

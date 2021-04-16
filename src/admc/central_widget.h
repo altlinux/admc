@@ -96,6 +96,7 @@ private slots:
     void delete_policy();
 
     void new_query_folder();
+    void edit_query_folder();
     void new_query();
     void delete_query_item_or_folder();
     
@@ -108,7 +109,6 @@ private:
     ConsoleWidget *console;
     QPersistentModelIndex object_tree_head;
     QPersistentModelIndex policy_tree_head;
-    QPersistentModelIndex query_tree_head;
     FilterDialog *filter_dialog;
     PolicyResultsWidget *policy_results_widget;
 

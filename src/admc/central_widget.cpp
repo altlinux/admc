@@ -45,6 +45,7 @@
 #include "editors/multi_editor.h"
 #include "gplink.h"
 #include "policy_results_widget.h"
+#include "edit_query_folder_dialog.h"
 
 #include <QDebug>
 #include <QAbstractItemView>
@@ -89,10 +90,12 @@ CentralWidget::CentralWidget()
     auto delete_query_item_or_folder_action = new QAction(tr("Delete"), this);
 
     auto new_query_folder_action = new QAction(tr("New folder"), this);
+    auto edit_query_folder_action = new QAction(tr("Edit"), this);
     auto new_query_action = new QAction(tr("New query"), this);
     item_actions[ItemType_QueryFolder] = {
         new_query_folder_action,
         new_query_action,
+        edit_query_folder_action,
         delete_query_item_or_folder_action,
     };
 
@@ -218,6 +221,9 @@ CentralWidget::CentralWidget()
         new_query_action, &QAction::triggered,
         this, &CentralWidget::new_query);
     connect(
+        edit_query_folder_action, &QAction::triggered,
+        this, &CentralWidget::edit_query_folder);
+    connect(
         delete_query_item_or_folder_action, &QAction::triggered,
         this, &CentralWidget::delete_query_item_or_folder);
 
@@ -266,7 +272,7 @@ void CentralWidget::go_online(AdInterface &ad) {
 
     object_tree_head = init_object_tree(console, ad);
     policy_tree_head = init_policy_tree(console, ad);
-    query_tree_head = init_query_tree(console);
+    init_query_tree(console);
 
     console->sort_scope();
     console->set_current_scope(object_tree_head);
@@ -639,10 +645,7 @@ void CentralWidget::new_query_folder() {
     }
 
     const QModelIndex parent_index = console->convert_to_scope_index(selected_indexes[0]);
-
-    const QList<QString> sibling_names = get_sibling_names(parent_index);
-
-    auto dialog = new CreateQueryFolderDialog(sibling_names, this);
+    auto dialog = new CreateQueryFolderDialog(parent_index, this);
 
     connect(
         dialog, &QDialog::accepted,
@@ -651,11 +654,17 @@ void CentralWidget::new_query_folder() {
             const QString description = dialog->get_description();
             add_query_folder(console, name, description, parent_index);
 
-            save_queries(query_tree_head);
+            save_queries();
         });
 
     dialog->open();
 }
+
+void CentralWidget::edit_query_folder() {    
+    auto dialog = new EditQueryFolderDialog(console, this);
+    dialog->open();
+}
+
 
 void CentralWidget::new_query() {
     const QList<QModelIndex> selected_indexes = console->get_selected_items();
@@ -665,10 +674,7 @@ void CentralWidget::new_query() {
     }
 
     const QModelIndex parent_index = console->convert_to_scope_index(selected_indexes[0]);
-
-    const QList<QString> sibling_names = get_sibling_names(parent_index);
-
-    auto dialog = new CreateQueryDialog(sibling_names, this);
+    auto dialog = new CreateQueryDialog(parent_index, this);
 
     connect(
         dialog, &QDialog::accepted,
@@ -679,7 +685,7 @@ void CentralWidget::new_query() {
             const QString search_base = dialog->get_search_base();
             add_query_item(console, name, description, filter, search_base, parent_index);
 
-            save_queries(query_tree_head);
+            save_queries();
         });
 
     dialog->open();
@@ -695,7 +701,7 @@ void CentralWidget::delete_query_item_or_folder() {
     const QModelIndex index = selected_indexes[0];
     console->delete_item(index);
 
-    save_queries(query_tree_head);
+    save_queries();
 }
 
 void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, bool *ok) {

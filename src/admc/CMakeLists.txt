@@ -52,6 +52,7 @@ add_executable(admc
     create_policy_dialog.cpp
     create_query_dialog.cpp
     create_query_folder_dialog.cpp
+    edit_query_folder_dialog.cpp
     gplink.cpp
 
     filter_widget/filter_widget.cpp

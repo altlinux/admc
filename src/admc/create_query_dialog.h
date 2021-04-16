@@ -23,6 +23,7 @@
 #include <QDialog>
 #include <QString>
 #include <QList>
+#include <QModelIndex>
 
 class QLineEdit;
 class FilterWidget;
@@ -32,7 +33,7 @@ class CreateQueryDialog : public QDialog {
 Q_OBJECT
 
 public:
-    CreateQueryDialog(const QList<QString> &sibling_names_arg, QWidget *parent);
+    CreateQueryDialog(const QModelIndex &parent_index_arg, QWidget *parent);
 
     QString get_name() const;
     QString get_description() const;
@@ -45,6 +46,7 @@ private:
     FilterWidget *filter_widget;
     SearchBaseWidget *search_base_widget;
     QList<QString> sibling_names;
+    QModelIndex parent_index;
 
     void accept() override;
 };

@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATE_QUERY_FOLDER_DIALOG_H
-#define CREATE_QUERY_FOLDER_DIALOG_H
+#ifndef EDIT_QUERY_FOLDER_DIALOG_H
+#define EDIT_QUERY_FOLDER_DIALOG_H
 
 #include <QDialog>
 #include <QString>
@@ -28,12 +28,13 @@
 class QLineEdit;
 class FilterWidget;
 class SearchBaseWidget;
+class ConsoleWidget;
 
-class CreateQueryFolderDialog : public QDialog {
+class EditQueryFolderDialog : public QDialog {
 Q_OBJECT
 
 public:
-    CreateQueryFolderDialog(const QModelIndex &parent_index_arg, QWidget *parent);
+    EditQueryFolderDialog(ConsoleWidget *console_arg, QWidget *parent);
 
     QString get_name() const;
     QString get_description() const;
@@ -41,9 +42,11 @@ public:
 private:
     QLineEdit *name_edit;
     QLineEdit *description_edit;
-    QModelIndex parent_index;
+    ConsoleWidget *console;
+    QModelIndex scope_index;
+    QModelIndex results_index;
 
     void accept() override;
 };
 
-#endif /* CREATE_QUERY_FOLDER_DIALOG_H */
+#endif /* EDIT_QUERY_FOLDER_DIALOG_H */

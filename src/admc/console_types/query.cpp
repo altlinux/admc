@@ -30,6 +30,7 @@
 #include <QStandardItem>
 #include <QStack>
 #include <QDebug>
+#include <QMessageBox>
 
 #define QUERY_ROOT "QUERY_ROOT"
 
@@ -41,6 +42,7 @@ enum QueryColumn {
 };
 
 int query_folder_results_id;
+QPersistentModelIndex query_tree_head;
 
 QList<QString> query_folder_header_labels() {
     return {
@@ -111,17 +113,13 @@ QString path_to_name(const QString &path) {
     return name;
 }
 
-QModelIndex add_query_folder(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent) {
+void load_query_folder(QStandardItem *scope_item, const QList<QStandardItem *> &results_row, const QString &name, const QString &description) {
     auto load_main_item =
     [&](QStandardItem *item) {
         item->setData(description, QueryItemRole_Description);
         item->setData(ItemType_QueryFolder, ConsoleRole_Type);
         item->setIcon(QIcon::fromTheme("folder"));
     };
-
-    QStandardItem *scope_item;
-    QList<QStandardItem *> results_row;
-    console->add_buddy_scope_and_results(query_folder_results_id, ScopeNodeType_Static, parent, &scope_item, &results_row);
 
     load_main_item(scope_item);
     scope_item->setText(name);
@@ -133,6 +131,13 @@ QModelIndex add_query_folder(ConsoleWidget *console, const QString &name, const 
     for (QStandardItem *item : results_row) {
         item->setDragEnabled(false);
     }
+}
+
+QModelIndex add_query_folder(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent) {
+    QStandardItem *scope_item;
+    QList<QStandardItem *> results_row;
+    console->add_buddy_scope_and_results(query_folder_results_id, ScopeNodeType_Static, parent, &scope_item, &results_row);
+    load_query_folder(scope_item, results_row, name, description);
 
     return scope_item->index();
 }
@@ -163,20 +168,6 @@ void add_query_item(ConsoleWidget *console, const QString &name, const QString &
     }
 }
 
-QList<QString> get_sibling_names(const QModelIndex &parent) {
-    QList<QString> out;
-
-    QAbstractItemModel *model = (QAbstractItemModel *) parent.model();
-
-    for (int row = 0; row < model->rowCount(parent); row++) {
-        const QModelIndex sibling = model->index(row, 0, parent);
-        const QString name = sibling.data(Qt::DisplayRole).toString();
-        out.append(name);
-    }
-
-    return out;
-}
-
 void fetch_query(ConsoleWidget *console, const QModelIndex &index) {
     AdInterface ad;
     if (ad_failed(ad)) {
@@ -198,7 +189,7 @@ void fetch_query(ConsoleWidget *console, const QModelIndex &index) {
     hide_busy_indicator();
 }
 
-QModelIndex init_query_tree(ConsoleWidget *console) {
+void init_query_tree(ConsoleWidget *console) {
     // Add head item
     QStandardItem *head_item = console->add_scope_item(query_folder_results_id, ScopeNodeType_Static, QModelIndex());
     head_item->setText(QCoreApplication::translate("query", "Saved Queries"));
@@ -240,12 +231,12 @@ QModelIndex init_query_tree(ConsoleWidget *console) {
         }
     }
 
-    return head_item->index();
+    query_tree_head = head_item->index();
 }
 
 // Saves current state of queries tree to settings. Should
 // be called after every modication to queries tree
-void save_queries(const QModelIndex &query_tree_head) {
+void save_queries() {
     // folder path = {list of children}
     // data = {path => data map containing info about
     // query folder/item}
@@ -306,4 +297,44 @@ void save_queries(const QModelIndex &query_tree_head) {
 
     g_settings->set_variant(VariantSetting_QueryFolders, folders_variant);
     g_settings->set_variant(VariantSetting_QueryInfo, info_map_variant);
+}
+
+bool query_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index) {
+    const QString current_name = current_index.data(Qt::DisplayRole).toString();
+
+    const QList<QString> sibling_names =
+    [&]() {
+        QList<QString> out;
+
+        QAbstractItemModel *model = (QAbstractItemModel *) parent_index.model();
+
+        for (int row = 0; row < model->rowCount(parent_index); row++) {
+            const QModelIndex sibling = model->index(row, 0, parent_index);
+            const QString sibling_name = sibling.data(Qt::DisplayRole).toString();
+
+            const bool this_is_query_itself = (sibling_name == current_name);
+            if (this_is_query_itself) {
+                continue;
+            }
+            
+            out.append(sibling_name);
+        }
+
+        return out;
+    }();
+
+    const bool name_conflict = sibling_names.contains(name);
+    const bool name_contains_slash = name.contains("/");
+
+    if (name_conflict) {
+        const QString error_text = QString(QCoreApplication::translate("query.cpp", "There's already a folder with this name."));
+        QMessageBox::warning(parent_widget, QCoreApplication::translate("query.cpp", "Error"), error_text);
+    } else if (name_contains_slash) {
+        const QString error_text = QString(QCoreApplication::translate("query.cpp", "Folder names cannot contain \"/\"."));
+        QMessageBox::warning(parent_widget, QCoreApplication::translate("query.cpp", "Error"), error_text);
+    }
+
+    const bool name_is_good = (!name_conflict && !name_contains_slash);
+
+    return name_is_good;
 }

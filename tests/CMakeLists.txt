@@ -58,6 +58,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/create_policy_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/create_query_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/create_query_folder_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/edit_query_folder_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/gplink.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/filter_widget/filter_widget.cpp
