@@ -40,10 +40,15 @@ EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg, QWidget
     const auto title = QString(tr("Edit query folder"));
     setWindowTitle(title);
 
+    const QModelIndex scope_index = get_selected_scope_index(console);
+    const QString current_name = scope_index.data(Qt::DisplayRole).toString();
+    const QString current_description = scope_index.data(QueryItemRole_Description).toString();
+
     name_edit = new QLineEdit();
-    name_edit->setText("New folder");
+    name_edit->setText(current_name);
 
     description_edit = new QLineEdit();
+    description_edit->setText(current_description);
 
     auto form_layout = new QFormLayout();
 
