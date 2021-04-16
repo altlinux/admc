@@ -24,10 +24,13 @@
 #include "settings.h"
 #include "utils.h"
 #include "central_widget.h"
+#include "object_actions.h"
 
 #include <QStandardItem>
 #include <QList>
 #include <QCoreApplication>
+#include <QMenu>
+#include <QDebug>
 
 int policy_container_results_id;
 int policy_results_id;
@@ -90,7 +93,7 @@ QModelIndex policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
     head_item->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
     head_item->setDragEnabled(false);
     head_item->setIcon(QIcon::fromTheme("folder"));
-    head_item->setData(ItemType_PoliciesRoot, ConsoleRole_Type);
+    head_item->setData(ItemType_PolicyRoot, ConsoleRole_Type);
 
     // Add children
     const QList<QString> policy_search_attributes = policy_model_search_attributes();
@@ -103,4 +106,31 @@ QModelIndex policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
     }
 
     return head_item->index();
+}
+
+void policy_add_actions_to_menu(ObjectActions *actions, QMenu *menu) {
+    menu->addAction(actions->get(ObjectAction_PolicyAddLink));
+    
+    menu->addSeparator();
+    
+    menu->addAction(actions->get(ObjectAction_PolicyRename));
+    menu->addAction(actions->get(ObjectAction_PolicyDelete));
+}
+
+void policy_show_hide_actions(ObjectActions *actions, const QList<QModelIndex> &indexes) {
+    const bool single_selection = (indexes.size() == 1);
+
+    if (indexes_are_of_type(indexes, QSet<int>({ItemType_PolicyRoot}))) {
+        if (single_selection) {
+            actions->show(ObjectAction_PolicyCreate);
+        }
+    } else if (indexes_are_of_type(indexes, QSet<int>({ItemType_Policy}))) {
+        if (single_selection) {
+            actions->show(ObjectAction_PolicyAddLink);
+            actions->show(ObjectAction_PolicyRename);
+            actions->show(ObjectAction_PolicyDelete);
+        } else {
+            actions->show(ObjectAction_PolicyDelete);
+        }
+    }
 }

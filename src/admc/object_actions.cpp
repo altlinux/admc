@@ -21,7 +21,6 @@
 
 #include "globals.h"
 #include "utils.h"
-#include "console_types/object.h"
 #include "adldap.h"
 #include "properties_dialog.h"
 #include "settings.h"
@@ -37,6 +36,9 @@
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 #include "central_widget.h"
+#include "console_types/object.h"
+#include "console_types/policy.h"
+#include "console_types/query.h"
 
 #include <QMenu>
 #include <QModelIndex>
@@ -66,6 +68,16 @@ ObjectActions::ObjectActions(QObject *parent)
                 case ObjectAction_Move: return tr("&Move");
                 case ObjectAction_EditUpnSuffixes: return tr("Edit &Upn Suffixes");
 
+                case ObjectAction_PolicyCreate: return tr("&Policy");
+                case ObjectAction_PolicyAddLink: return tr("&Add link");
+                case ObjectAction_PolicyRename: return tr("&Rename");
+                case ObjectAction_PolicyDelete: return tr("&Delete");
+
+                case ObjectAction_QueryCreateFolder: return tr("&Folder");
+                case ObjectAction_QueryCreateItem: return tr("&Query");
+                case ObjectAction_QueryEditFolder: return tr("&Edit");
+                case ObjectAction_QueryDeleteItemOrFolder: return tr("&Delete");
+
                 case ObjectAction_LAST: break;
             }
             return QString();
@@ -76,11 +88,16 @@ ObjectActions::ObjectActions(QObject *parent)
 
     new_menu = new QMenu(tr("&New"));
 
-    const QList<ObjectAction> new_actions = {
+    new_actions = {
         ObjectAction_NewUser,
         ObjectAction_NewComputer,
         ObjectAction_NewOU,
         ObjectAction_NewGroup,
+
+        ObjectAction_PolicyCreate,
+
+        ObjectAction_QueryCreateFolder,
+        ObjectAction_QueryCreateItem,
     };
     for (const ObjectAction action_enum : new_actions) {
         QAction *action = get(action_enum);
@@ -92,150 +109,48 @@ QAction *ObjectActions::get(const ObjectAction action) const {
     return actions[action];
 }
 
-void ObjectActions::add_to_menu(QMenu *menu) {
-    // Container
-    menu->addMenu(new_menu);
-    menu->addAction(get(ObjectAction_Find));
-
-    menu->addSeparator();
-
-    // User
-    menu->addAction(get(ObjectAction_AddToGroup));
-    menu->addAction(get(ObjectAction_Enable));
-    menu->addAction(get(ObjectAction_Disable));
-    menu->addAction(get(ObjectAction_ResetPassword));
-
-    // Other
-    menu->addAction(get(ObjectAction_EditUpnSuffixes));
-
-    menu->addSeparator();
-
-    // General object
-    menu->addAction(get(ObjectAction_Delete));
-    menu->addAction(get(ObjectAction_Rename));
-    menu->addAction(get(ObjectAction_Move));
+void ObjectActions::show(const ObjectAction action_enum) {
+    QAction *action = get(action_enum);
+    action->setVisible(true);
 }
 
-void ObjectActions::hide_actions() {
+void ObjectActions::add_to_menu(QMenu *menu) {
+    menu->addMenu(new_menu);
+
+    menu->addSeparator();
+
+    object_add_actions_to_menu(this, menu);
+    policy_add_actions_to_menu(this, menu);
+    query_add_actions_to_menu(this, menu);
+}
+
+void ObjectActions::update_actions_visibility(const QList<QModelIndex> &indexes) {
+    // Hide all actions first
     for (QAction *action : actions.values()) {
         action->setVisible(false);
     }
     new_menu->menuAction()->setVisible(false);
-}
 
-void ObjectActions::update_actions_visibility(const QList<QModelIndex> &selected_indexes) {
-    auto show_action =
-    [this](const ObjectAction action_enum) {
-        QAction *action = get(action_enum);
-        action->setVisible(true);
-    };
+    // Show actions which need to be shown
+    object_show_hide_actions(this, indexes);
+    policy_show_hide_actions(this, indexes);
+    query_show_hide_actions(this, indexes);
 
-    hide_actions();
+    // Show "New" menu if any new actions are visible
+    const bool any_new_action_visible =
+    [&]() {
+        for (const ObjectAction action_enum : new_actions) {
+            QAction *action = get(action_enum);
 
-    if (!indexes_are_of_type(selected_indexes, ItemType_Object)) {
-        return;
-    }
-
-    // Get info about selected objects from view
-    const QList<QString> targets =
-    [=]() {
-        QList<QString> out;
-
-        for (const QModelIndex index : selected_indexes) {
-            const QString dn = index.data(ObjectRole_DN).toString();
-
-            out.append(dn);
-        }
-
-        return out;  
-    }();
-
-    const QSet<QString> target_classes =
-    [=]() {
-        QSet<QString> out;
-        
-        for (const QModelIndex index : selected_indexes) {
-            const QList<QString> object_classes = index.data(ObjectRole_ObjectClasses).toStringList();
-            const QString main_object_class = object_classes.last();
-
-            out.insert(main_object_class);
-        }
-
-        return out;
-    }();
-
-    const bool single_object = (targets.size() == 1);
-
-    if (single_object) {
-        const QModelIndex index = selected_indexes[0];
-        const QString target = targets[0];
-        const QString target_class = target_classes.values()[0];
-
-        // Get info about object that will determine which
-        // actions are present/enabled
-        const bool is_container =
-        [=]() {
-            const QList<QString> container_classes = g_adconfig->get_filter_containers();
-
-            return container_classes.contains(target_class);
-        }();
-
-        const bool is_user = (target_class == CLASS_USER);
-        const bool is_domain = (target_class == CLASS_DOMAIN);
-
-        const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
-        const bool cannot_rename = index.data(ObjectRole_CannotRename).toBool();
-        const bool cannot_delete = index.data(ObjectRole_CannotDelete).toBool();
-        const bool account_disabled = index.data(ObjectRole_AccountDisabled).toBool();
-
-        if (is_container) {
-            new_menu->menuAction()->setVisible(true);
-            for (QAction *new_action : new_menu->actions()) {
-                new_action->setVisible(true);
-            }
-
-            show_action(ObjectAction_Find);
-        }
-
-        if (is_user) {
-            show_action(ObjectAction_AddToGroup);
-            show_action(ObjectAction_ResetPassword);
-
-            if (account_disabled) {
-                show_action(ObjectAction_Enable);
-            } else {
-                show_action(ObjectAction_Disable);
+            if (action->isVisible()) {
+                return true;
             }
         }
 
-        if (is_domain) {
-            get(ObjectAction_EditUpnSuffixes)->setVisible(true);
-        }
+        return false;
+    }();
 
-        show_action(ObjectAction_Move);
-        show_action(ObjectAction_Delete);
-        show_action(ObjectAction_Rename);
-
-        get(ObjectAction_Move)->setDisabled(cannot_move);
-        get(ObjectAction_Delete)->setDisabled(cannot_delete);
-        get(ObjectAction_Rename)->setDisabled(cannot_rename);
-    } else if (targets.size() > 1) {
-        const bool all_users = (target_classes.contains(CLASS_USER) && target_classes.size() == 1);
-
-        if (all_users) {
-            show_action(ObjectAction_AddToGroup);
-
-            // NOTE: show both enable/disable for multiple
-            // users because some users might be disabled,
-            // some enabled and we want to provide a way to
-            // disable all or enable all
-            show_action(ObjectAction_Enable);
-            show_action(ObjectAction_Disable);
-        }
-
-        show_action(ObjectAction_Move);
-        show_action(ObjectAction_Delete);
-    }
+    new_menu->menuAction()->setVisible(any_new_action_visible);
 }
 
 QList<QString> object_delete(const QList<QString> &targets, QWidget *parent) {

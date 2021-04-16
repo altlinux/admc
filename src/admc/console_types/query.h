@@ -27,6 +27,7 @@ class QModelIndex;
 class QStandardItem;
 class QString;
 class ConsoleWidget;
+class ObjectActions;
 template <typename T> class QList;
 
 enum QueryItemRole {
@@ -49,5 +50,7 @@ void query_item_fetch(ConsoleWidget *console, const QModelIndex &index);
 void query_tree_init(ConsoleWidget *console);
 void query_tree_save();
 bool query_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index);
+void query_add_actions_to_menu(ObjectActions *actions, QMenu *menu);
+void query_show_hide_actions(ObjectActions *actions, const QList<QModelIndex> &indexes);
 
 #endif /* QUERY_H */

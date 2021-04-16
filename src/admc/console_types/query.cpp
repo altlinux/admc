@@ -25,12 +25,14 @@
 #include "globals.h"
 #include "settings.h"
 #include "adldap.h"
+#include "object_actions.h"
 
 #include <QCoreApplication>
 #include <QStandardItem>
 #include <QStack>
 #include <QDebug>
 #include <QMessageBox>
+#include <QMenu>
 
 #define QUERY_ROOT "QUERY_ROOT"
 
@@ -197,7 +199,7 @@ void query_tree_init(ConsoleWidget *console) {
     QStandardItem *head_item = console->add_scope_item(query_folder_results_id, ScopeNodeType_Static, QModelIndex());
     head_item->setText(QCoreApplication::translate("query", "Saved Queries"));
     head_item->setIcon(QIcon::fromTheme("folder"));
-    head_item->setData(ItemType_QueriesRoot, ConsoleRole_Type);
+    head_item->setData(ItemType_QueryRoot, ConsoleRole_Type);
 
     // Add rest of tree
     const QHash<QString, QVariant> folders_map = g_settings->get_variant(VariantSetting_QueryFolders).toHash();
@@ -340,4 +342,29 @@ bool query_name_is_good(const QString &name, const QModelIndex &parent_index, QW
     const bool name_is_good = (!name_conflict && !name_contains_slash);
 
     return name_is_good;
+}
+
+void query_add_actions_to_menu(ObjectActions *actions, QMenu *menu) {
+    menu->addAction(actions->get(ObjectAction_QueryEditFolder));
+    menu->addAction(actions->get(ObjectAction_QueryDeleteItemOrFolder));
+}
+
+void query_show_hide_actions(ObjectActions *actions, const QList<QModelIndex> &indexes) {
+    const bool single_selection = (indexes.size() == 1);
+
+    if (indexes_are_of_type(indexes, QSet<int>({ItemType_QueryRoot}))) {
+        actions->show(ObjectAction_QueryCreateFolder);
+        actions->show(ObjectAction_QueryCreateItem);
+    } else if (indexes_are_of_type(indexes, QSet<int>({ItemType_QueryFolder}))) {
+        if (single_selection) {
+            actions->show(ObjectAction_QueryCreateFolder);
+            actions->show(ObjectAction_QueryCreateItem);
+            actions->show(ObjectAction_QueryEditFolder);
+        }
+        actions->show(ObjectAction_QueryDeleteItemOrFolder);
+    } else if (indexes_are_of_type(indexes, QSet<int>({ItemType_QueryItem}))) {
+        actions->show(ObjectAction_QueryDeleteItemOrFolder);
+    } else if (indexes_are_of_type(indexes, QSet<int>({ItemType_QueryItem, ItemType_QueryFolder}))) {
+        actions->show(ObjectAction_QueryDeleteItemOrFolder);
+    }
 }

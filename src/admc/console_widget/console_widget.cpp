@@ -917,24 +917,23 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
     }
 }
 
-bool indexes_are_of_type(const QList<QModelIndex> &indexes, const int type) {
-    if (indexes.isEmpty()) {
-        return false;
-    }
+bool indexes_are_of_type(const QList<QModelIndex> &indexes, const QSet<int> &types) {
+    const QSet<int> this_types =
+    [&]() {
+        QSet<int> out;
 
-    for (const QModelIndex &index : indexes) {
-        const QVariant type_variant = index.data(ConsoleRole_Type);
-        if (!type_variant.isValid()) {
-            return false;
+        for (const QModelIndex &index : indexes) {
+            const QVariant type_variant = index.data(ConsoleRole_Type);
+            if (type_variant.isValid()) {
+                const int type = type_variant.toInt();
+                out.insert(type);
+            }
         }
 
-        const int this_type = type_variant.toInt();
-        if (this_type != type) {
-            return false;
-        }
-    }
+        return out;
+    }();
 
-    return true;
+    return (this_types == types);
 }
 
 QList<QModelIndex> filter_indexes_by_type(const QList<QModelIndex> &indexes, const int type) {

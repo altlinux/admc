@@ -49,6 +49,16 @@ enum ObjectAction {
     ObjectAction_Move,
     ObjectAction_EditUpnSuffixes,
 
+    ObjectAction_PolicyCreate,
+    ObjectAction_PolicyAddLink,
+    ObjectAction_PolicyRename,
+    ObjectAction_PolicyDelete,
+
+    ObjectAction_QueryCreateFolder,
+    ObjectAction_QueryCreateItem,
+    ObjectAction_QueryEditFolder,
+    ObjectAction_QueryDeleteItemOrFolder,
+
     ObjectAction_LAST,
 };
 
@@ -59,13 +69,14 @@ public:
     ObjectActions(QObject *parent);
 
     QAction *get(const ObjectAction action) const;
+    void show(const ObjectAction action);
     void add_to_menu(QMenu *menu);
-    void hide_actions();
-    void update_actions_visibility(const QList<QModelIndex> &selected_indexes);
+    void update_actions_visibility(const QList<QModelIndex> &indexes);
 
 private:
     QHash<ObjectAction, QAction *> actions;
     QMenu *new_menu;
+    QList<ObjectAction> new_actions;
 };
 
 // Targets list may be of any size, but the operation will

@@ -66,48 +66,6 @@ CentralWidget::CentralWidget()
 {
     object_actions = new ObjectActions(this);
 
-    auto create_policy_action = new QAction(tr("New policy"), this);
-    auto add_link_action = new QAction(tr("Add link"), this);
-    auto rename_policy_action = new QAction(tr("Rename"), this);
-    auto delete_policy_action = new QAction(tr("Delete"), this);
-
-    // NOTE: create policy action is not added to list
-    // because it is shown for the policies container, not
-    // for gpo's themselves.
-
-    item_actions[ItemType_PoliciesRoot] = {
-        create_policy_action,
-    };
-    
-    // NOTE: add policy actions to this list so that they
-    // are processed
-    item_actions[ItemType_Policy] = {
-        add_link_action,
-        rename_policy_action,
-        delete_policy_action,
-    };
-
-    auto delete_query_item_or_folder_action = new QAction(tr("Delete"), this);
-
-    auto create_query_folder_action = new QAction(tr("New folder"), this);
-    auto edit_query_folder_action = new QAction(tr("Edit"), this);
-    auto create_query_action = new QAction(tr("New query"), this);
-    item_actions[ItemType_QueryFolder] = {
-        create_query_folder_action,
-        create_query_action,
-        edit_query_folder_action,
-        delete_query_item_or_folder_action,
-    };
-
-    item_actions[ItemType_QueryItem] = {
-        delete_query_item_or_folder_action,
-    };
-
-    item_actions[ItemType_QueriesRoot] = {
-        create_query_folder_action,
-        create_query_action,
-    };
-
     open_filter_action = new QAction(tr("&Filter objects"), this);
     dev_mode_action = new QAction(tr("Dev mode"), this);
     show_noncontainers_action = new QAction(tr("&Show non-container objects in Console tree"), this);
@@ -207,29 +165,29 @@ CentralWidget::CentralWidget()
         this, &CentralWidget::edit_upn_suffixes);
 
     connect(
-        create_policy_action, &QAction::triggered,
+        object_actions->get(ObjectAction_PolicyCreate), &QAction::triggered,
         this, &CentralWidget::create_policy);
     connect(
-        add_link_action, &QAction::triggered,
+        object_actions->get(ObjectAction_PolicyAddLink), &QAction::triggered,
         this, &CentralWidget::add_link);
     connect(
-        rename_policy_action, &QAction::triggered,
+        object_actions->get(ObjectAction_PolicyRename), &QAction::triggered,
         rename_policy_dialog, &QDialog::open);
     connect(
-        delete_policy_action, &QAction::triggered,
+        object_actions->get(ObjectAction_PolicyDelete), &QAction::triggered,
         this, &CentralWidget::delete_policy);
 
     connect(
-        create_query_folder_action, &QAction::triggered,
+        object_actions->get(ObjectAction_QueryCreateFolder), &QAction::triggered,
         create_query_folder_dialog, &QDialog::open);
     connect(
-        create_query_action, &QAction::triggered,
+        object_actions->get(ObjectAction_QueryCreateItem), &QAction::triggered,
         create_query_dialog, &QDialog::open);
     connect(
-        edit_query_folder_action, &QAction::triggered,
+        object_actions->get(ObjectAction_QueryEditFolder), &QAction::triggered,
         edit_query_folder_dialog, &QDialog::open);
     connect(
-        delete_query_item_or_folder_action, &QAction::triggered,
+        object_actions->get(ObjectAction_QueryDeleteItemOrFolder), &QAction::triggered,
         this, &CentralWidget::delete_query_item_or_folder);
 
     connect(
@@ -655,9 +613,9 @@ void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, co
             object_can_drop(dropped_list, target, dropped_types,ok);
             break;
         }
-        case ItemType_PoliciesRoot: break;
+        case ItemType_PolicyRoot: break;
         case ItemType_Policy: break;
-        case ItemType_QueriesRoot: break;
+        case ItemType_QueryRoot: break;
         case ItemType_QueryFolder: break;
         case ItemType_QueryItem: break;
         case ItemType_LAST: break;
@@ -673,9 +631,9 @@ void CentralWidget::on_items_dropped(const QList<QModelIndex> &dropped_list, con
             object_drop(console, dropped_list, target);
             break;
         }
-        case ItemType_PoliciesRoot: break;
+        case ItemType_PolicyRoot: break;
         case ItemType_Policy: break;
-        case ItemType_QueriesRoot: break;
+        case ItemType_QueryRoot: break;
         case ItemType_QueryFolder: break;
         case ItemType_QueryItem: break;
         case ItemType_LAST: break;
@@ -805,48 +763,13 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
 // First, hide all actions, then show whichever actions are
 // appropriate for current console selection
 void CentralWidget::update_actions_visibility() {
-    // Hide all actions
-    object_actions->hide_actions();
-
-    for (const QList<QAction *> actions : item_actions.values()) {
-        for (QAction *action : actions) {
-            action->setVisible(false);
-        }
-    }
-
     // Figure out what kind of types of items are selected
     const QList<QModelIndex> selected_indexes = console->get_selected_items();
     if (selected_indexes.isEmpty()) {
         return;
     }
 
-    const QSet<ItemType> selected_types =
-    [&selected_indexes]() {
-        QSet<ItemType> out;
-
-        for (const QModelIndex &index : selected_indexes) {
-            const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
-            out.insert(type);
-        }
-
-        return out;
-    }();
-
-    if (selected_types.size() != 1) {
-        return;
-    }
-
-    const ItemType type = selected_types.toList()[0];
-
-    // Show actions of selected type
-    const QList<QAction *> type_actions = item_actions[type];
-    for (QAction *action : type_actions) {
-        action->setVisible(true);
-    }
-
-    if (type == ItemType_Object) {
-        object_actions->update_actions_visibility(selected_indexes);
-    }
+    object_actions->update_actions_visibility(selected_indexes);
 }
 
 // Get selected indexes mapped to their DN's

@@ -27,9 +27,11 @@
 #include "central_widget.h"
 #include "filter_dialog.h"
 #include "filter_widget/filter_widget.h"
+#include "object_actions.h"
 
 #include <QStandardItemModel>
 #include <QSet>
+#include <QMenu>
 
 int object_results_id;
 
@@ -524,5 +526,135 @@ DropType object_get_drop_type(const QModelIndex &dropped, const QModelIndex &tar
         } else {
             return DropType_None;
         }
+    }
+}
+
+void object_add_actions_to_menu(ObjectActions *actions, QMenu *menu) {
+    // Container
+    menu->addAction(actions->get(ObjectAction_Find));
+
+    menu->addSeparator();
+
+    // User
+    menu->addAction(actions->get(ObjectAction_AddToGroup));
+    menu->addAction(actions->get(ObjectAction_Enable));
+    menu->addAction(actions->get(ObjectAction_Disable));
+    menu->addAction(actions->get(ObjectAction_ResetPassword));
+
+    // Other
+    menu->addAction(actions->get(ObjectAction_EditUpnSuffixes));
+
+    menu->addSeparator();
+
+    // General object
+    menu->addAction(actions->get(ObjectAction_Delete));
+    menu->addAction(actions->get(ObjectAction_Rename));
+    menu->addAction(actions->get(ObjectAction_Move));
+}
+
+void object_show_hide_actions(ObjectActions *actions, const QList<QModelIndex> &indexes) {
+    if (!indexes_are_of_type(indexes, QSet<int>({ItemType_Object}))) {
+        return;
+    }
+
+    // Get info about selected objects from view
+    const QList<QString> targets =
+    [=]() {
+        QList<QString> out;
+
+        for (const QModelIndex index : indexes) {
+            const QString dn = index.data(ObjectRole_DN).toString();
+
+            out.append(dn);
+        }
+
+        return out;  
+    }();
+
+    const QSet<QString> target_classes =
+    [=]() {
+        QSet<QString> out;
+        
+        for (const QModelIndex index : indexes) {
+            const QList<QString> object_classes = index.data(ObjectRole_ObjectClasses).toStringList();
+            const QString main_object_class = object_classes.last();
+
+            out.insert(main_object_class);
+        }
+
+        return out;
+    }();
+
+    const bool single_object = (targets.size() == 1);
+
+    if (single_object) {
+        const QModelIndex index = indexes[0];
+        const QString target = targets[0];
+        const QString target_class = target_classes.values()[0];
+
+        // Get info about object that will determine which
+        // actions are present/enabled
+        const bool is_container =
+        [=]() {
+            const QList<QString> container_classes = g_adconfig->get_filter_containers();
+
+            return container_classes.contains(target_class);
+        }();
+
+        const bool is_user = (target_class == CLASS_USER);
+        const bool is_domain = (target_class == CLASS_DOMAIN);
+
+        const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
+        const bool cannot_rename = index.data(ObjectRole_CannotRename).toBool();
+        const bool cannot_delete = index.data(ObjectRole_CannotDelete).toBool();
+        const bool account_disabled = index.data(ObjectRole_AccountDisabled).toBool();
+
+        if (is_container) {
+            actions->show(ObjectAction_NewUser);
+            actions->show(ObjectAction_NewComputer);
+            actions->show(ObjectAction_NewOU);
+            actions->show(ObjectAction_NewGroup);
+
+            actions->show(ObjectAction_Find);
+        }
+
+        if (is_user) {
+            actions->show(ObjectAction_AddToGroup);
+            actions->show(ObjectAction_ResetPassword);
+
+            if (account_disabled) {
+                actions->show(ObjectAction_Enable);
+            } else {
+                actions->show(ObjectAction_Disable);
+            }
+        }
+
+        if (is_domain) {
+            actions->get(ObjectAction_EditUpnSuffixes)->setVisible(true);
+        }
+
+        actions->show(ObjectAction_Move);
+        actions->show(ObjectAction_Delete);
+        actions->show(ObjectAction_Rename);
+
+        actions->get(ObjectAction_Move)->setDisabled(cannot_move);
+        actions->get(ObjectAction_Delete)->setDisabled(cannot_delete);
+        actions->get(ObjectAction_Rename)->setDisabled(cannot_rename);
+    } else if (targets.size() > 1) {
+        const bool all_users = (target_classes.contains(CLASS_USER) && target_classes.size() == 1);
+
+        if (all_users) {
+            actions->show(ObjectAction_AddToGroup);
+
+            // NOTE: show both enable/disable for multiple
+            // users because some users might be disabled,
+            // some enabled and we want to provide a way to
+            // disable all or enable all
+            actions->show(ObjectAction_Enable);
+            actions->show(ObjectAction_Disable);
+        }
+
+        actions->show(ObjectAction_Move);
+        actions->show(ObjectAction_Delete);
     }
 }
