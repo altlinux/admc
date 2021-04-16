@@ -33,7 +33,7 @@
 #include "move_dialog.h"
 #include "password_dialog.h"
 #include "find_widget.h"
-#include "object_actions.h"
+#include "console_actions.h"
 
 #include <QTest>
 #include <QDebug>

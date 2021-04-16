@@ -27,7 +27,7 @@
 #include "central_widget.h"
 #include "filter_dialog.h"
 #include "filter_widget/filter_widget.h"
-#include "object_actions.h"
+#include "console_actions.h"
 
 #include <QStandardItemModel>
 #include <QSet>
@@ -529,7 +529,7 @@ DropType object_get_drop_type(const QModelIndex &dropped, const QModelIndex &tar
     }
 }
 
-void object_add_actions_to_menu(ObjectActions *actions, QMenu *menu) {
+void object_add_actions_to_menu(ConsoleActions *actions, QMenu *menu) {
     // Container
     menu->addAction(actions->get(ObjectAction_Find));
 
@@ -552,7 +552,7 @@ void object_add_actions_to_menu(ObjectActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ObjectAction_Move));
 }
 
-void object_show_hide_actions(ObjectActions *actions, const QList<QModelIndex> &indexes) {
+void object_show_hide_actions(ConsoleActions *actions, const QList<QModelIndex> &indexes) {
     if (!indexes_are_of_type(indexes, QSet<int>({ItemType_Object}))) {
         return;
     }

@@ -18,7 +18,7 @@
  */
 
 #include "find_results.h"
-#include "object_actions.h"
+#include "console_actions.h"
 #include "properties_dialog.h"
 #include "utils.h"
 #include "adldap.h"
@@ -48,7 +48,7 @@
 FindResults::FindResults()
 : QWidget()
 {   
-    object_actions = new ObjectActions(this);
+    object_actions = new ConsoleActions(this);
 
     properties_action = new QAction(tr("&Properties"), this);
 

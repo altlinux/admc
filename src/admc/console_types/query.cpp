@@ -25,7 +25,7 @@
 #include "globals.h"
 #include "settings.h"
 #include "adldap.h"
-#include "object_actions.h"
+#include "console_actions.h"
 
 #include <QCoreApplication>
 #include <QStandardItem>
@@ -344,12 +344,12 @@ bool query_name_is_good(const QString &name, const QModelIndex &parent_index, QW
     return name_is_good;
 }
 
-void query_add_actions_to_menu(ObjectActions *actions, QMenu *menu) {
+void query_add_actions_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ObjectAction_QueryEditFolder));
     menu->addAction(actions->get(ObjectAction_QueryDeleteItemOrFolder));
 }
 
-void query_show_hide_actions(ObjectActions *actions, const QList<QModelIndex> &indexes) {
+void query_show_hide_actions(ConsoleActions *actions, const QList<QModelIndex> &indexes) {
     const bool single_selection = (indexes.size() == 1);
 
     if (indexes_are_of_type(indexes, QSet<int>({ItemType_QueryRoot}))) {

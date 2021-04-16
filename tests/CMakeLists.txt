@@ -27,7 +27,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/main_window.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/status.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/select_dialog.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/object_actions.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_actions.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/password_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/find_results.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/filter_dialog.cpp

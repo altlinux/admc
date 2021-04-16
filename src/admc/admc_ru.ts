@@ -903,79 +903,79 @@
     </message>
 </context>
 <context>
-    <name>ObjectActions</name>
+    <name>ConsoleActions</name>
     <message>
-        <location filename="object_actions.cpp" line="55"/>
+        <location filename="console_actions.cpp" line="55"/>
         <source>&amp;User</source>
         <translation>&amp;Пользователь</translation>
     </message>
     <message>
-        <location filename="object_actions.cpp" line="56"/>
+        <location filename="console_actions.cpp" line="56"/>
         <source>&amp;Computer</source>
         <translation>&amp;Компьютер</translation>
     </message>
     <message>
-        <location filename="object_actions.cpp" line="57"/>
+        <location filename="console_actions.cpp" line="57"/>
         <source>&amp;Organization</source>
         <translation>&amp;Организация</translation>
     </message>
     <message>
-        <location filename="object_actions.cpp" line="58"/>
+        <location filename="console_actions.cpp" line="58"/>
         <source>&amp;Group</source>
         <translation>&amp;Группа</translation>
     </message>
     <message>
-        <location filename="object_actions.cpp" line="59"/>
+        <location filename="console_actions.cpp" line="59"/>
         <source>&amp;Find</source>
         <translation>&amp;Поиск</translation>
     </message>
     <message>
-        <location filename="object_actions.cpp" line="60"/>
+        <location filename="console_actions.cpp" line="60"/>
         <source>&amp;Add to group</source>
         <translation>&amp;Добавить в группу</translation>
     </message>
     <message>
-        <location filename="object_actions.cpp" line="61"/>
+        <location filename="console_actions.cpp" line="61"/>
         <source>&amp;Enable account</source>
         <translation>&amp;Включить учетную запись</translation>
     </message>
     <message>
-        <location filename="object_actions.cpp" line="62"/>
+        <location filename="console_actions.cpp" line="62"/>
         <source>D&amp;isable account</source>
         <translation>&amp;Выключить учетную запись</translation>
     </message>
     <message>
-        <location filename="object_actions.cpp" line="63"/>
+        <location filename="console_actions.cpp" line="63"/>
         <source>Reset &amp;Password</source>
         <translation>&amp;Поменять пароль</translation>
     </message>
     <message>
-        <location filename="object_actions.cpp" line="64"/>
+        <location filename="console_actions.cpp" line="64"/>
         <source>&amp;Rename</source>
         <translation>&amp;Переименовать</translation>
     </message>
     <message>
-        <location filename="object_actions.cpp" line="65"/>
+        <location filename="console_actions.cpp" line="65"/>
         <source>&amp;Delete</source>
         <translation>&amp;Удалить</translation>
     </message>
     <message>
-        <location filename="object_actions.cpp" line="66"/>
+        <location filename="console_actions.cpp" line="66"/>
         <source>&amp;Move</source>
         <translation>&amp;Переместить</translation>
     </message>
     <message>
-        <location filename="object_actions.cpp" line="67"/>
+        <location filename="console_actions.cpp" line="67"/>
         <source>Edit &amp;Upn Suffixes</source>
         <translation>&amp;Редактировать upn суффиксы</translation>
     </message>
     <message>
-        <location filename="object_actions.cpp" line="77"/>
+        <location filename="console_actions.cpp" line="77"/>
         <source>&amp;New</source>
         <translation>&amp;Создать</translation>
     </message>
     <message>
-        <location filename="object_actions.cpp" line="242"/>
+        <location filename="console_actions.cpp" line="242"/>
         <source>Are you sure you want to delete this object?</source>
         <translation>Вы уверены, что хотите удалить этот объект?</translation>
     </message>

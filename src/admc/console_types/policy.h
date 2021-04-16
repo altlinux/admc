@@ -25,7 +25,7 @@
 class QStandardItem;
 class AdObject;
 class AdInterface;
-class ObjectActions;
+class ConsoleActions;
 template <typename T> class QList;
 
 /**
@@ -48,7 +48,7 @@ QList<int> policy_model_default_columns();
 QList<QString> policy_model_search_attributes();
 void policy_create(ConsoleWidget *console, const QModelIndex &policies_index, const AdObject &object);
 QModelIndex policy_tree_init(ConsoleWidget *console, AdInterface &ad);
-void policy_add_actions_to_menu(ObjectActions *actions, QMenu *menu);
-void policy_show_hide_actions(ObjectActions *actions, const QList<QModelIndex> &indexes);
+void policy_add_actions_to_menu(ConsoleActions *actions, QMenu *menu);
+void policy_show_hide_actions(ConsoleActions *actions, const QList<QModelIndex> &indexes);
 
 #endif /* POLICY_H */

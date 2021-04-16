@@ -28,7 +28,7 @@
 #include "globals.h"
 #include "settings.h"
 #include "filter_dialog.h"
-#include "object_actions.h"
+#include "console_actions.h"
 #include "status.h"
 #include "rename_dialog.h"
 #include "create_dialog.h"
@@ -64,7 +64,7 @@
 CentralWidget::CentralWidget()
 : QWidget()
 {
-    object_actions = new ObjectActions(this);
+    console_actions = new ConsoleActions(this);
 
     open_filter_action = new QAction(tr("&Filter objects"), this);
     dev_mode_action = new QAction(tr("Dev mode"), this);
@@ -125,69 +125,69 @@ CentralWidget::CentralWidget()
         this, &CentralWidget::open_filter);
 
     connect(
-        object_actions->get(ObjectAction_NewUser), &QAction::triggered,
+        console_actions->get(ObjectAction_NewUser), &QAction::triggered,
         this, &CentralWidget::create_user);
     connect(
-        object_actions->get(ObjectAction_NewComputer), &QAction::triggered,
+        console_actions->get(ObjectAction_NewComputer), &QAction::triggered,
         this, &CentralWidget::create_computer);
     connect(
-        object_actions->get(ObjectAction_NewOU), &QAction::triggered,
+        console_actions->get(ObjectAction_NewOU), &QAction::triggered,
         this, &CentralWidget::create_ou);
     connect(
-        object_actions->get(ObjectAction_NewGroup), &QAction::triggered,
+        console_actions->get(ObjectAction_NewGroup), &QAction::triggered,
         this, &CentralWidget::create_group);
     connect(
-        object_actions->get(ObjectAction_Delete), &QAction::triggered,
+        console_actions->get(ObjectAction_Delete), &QAction::triggered,
         this, &CentralWidget::delete_objects);
     connect(
-        object_actions->get(ObjectAction_Rename), &QAction::triggered,
+        console_actions->get(ObjectAction_Rename), &QAction::triggered,
         this, &CentralWidget::rename);
     connect(
-        object_actions->get(ObjectAction_Move), &QAction::triggered,
+        console_actions->get(ObjectAction_Move), &QAction::triggered,
         this, &CentralWidget::move);
     connect(
-        object_actions->get(ObjectAction_AddToGroup), &QAction::triggered,
+        console_actions->get(ObjectAction_AddToGroup), &QAction::triggered,
         this, &CentralWidget::add_to_group);
     connect(
-        object_actions->get(ObjectAction_Enable), &QAction::triggered,
+        console_actions->get(ObjectAction_Enable), &QAction::triggered,
         this, &CentralWidget::enable);
     connect(
-        object_actions->get(ObjectAction_Disable), &QAction::triggered,
+        console_actions->get(ObjectAction_Disable), &QAction::triggered,
         this, &CentralWidget::disable);
     connect(
-        object_actions->get(ObjectAction_ResetPassword), &QAction::triggered,
+        console_actions->get(ObjectAction_ResetPassword), &QAction::triggered,
         this, &CentralWidget::reset_password);
     connect(
-        object_actions->get(ObjectAction_Find), &QAction::triggered,
+        console_actions->get(ObjectAction_Find), &QAction::triggered,
         this, &CentralWidget::find);
     connect(
-        object_actions->get(ObjectAction_EditUpnSuffixes), &QAction::triggered,
+        console_actions->get(ObjectAction_EditUpnSuffixes), &QAction::triggered,
         this, &CentralWidget::edit_upn_suffixes);
 
     connect(
-        object_actions->get(ObjectAction_PolicyCreate), &QAction::triggered,
+        console_actions->get(ObjectAction_PolicyCreate), &QAction::triggered,
         this, &CentralWidget::create_policy);
     connect(
-        object_actions->get(ObjectAction_PolicyAddLink), &QAction::triggered,
+        console_actions->get(ObjectAction_PolicyAddLink), &QAction::triggered,
         this, &CentralWidget::add_link);
     connect(
-        object_actions->get(ObjectAction_PolicyRename), &QAction::triggered,
+        console_actions->get(ObjectAction_PolicyRename), &QAction::triggered,
         rename_policy_dialog, &QDialog::open);
     connect(
-        object_actions->get(ObjectAction_PolicyDelete), &QAction::triggered,
+        console_actions->get(ObjectAction_PolicyDelete), &QAction::triggered,
         this, &CentralWidget::delete_policy);
 
     connect(
-        object_actions->get(ObjectAction_QueryCreateFolder), &QAction::triggered,
+        console_actions->get(ObjectAction_QueryCreateFolder), &QAction::triggered,
         create_query_folder_dialog, &QDialog::open);
     connect(
-        object_actions->get(ObjectAction_QueryCreateItem), &QAction::triggered,
+        console_actions->get(ObjectAction_QueryCreateItem), &QAction::triggered,
         create_query_dialog, &QDialog::open);
     connect(
-        object_actions->get(ObjectAction_QueryEditFolder), &QAction::triggered,
+        console_actions->get(ObjectAction_QueryEditFolder), &QAction::triggered,
         edit_query_folder_dialog, &QDialog::open);
     connect(
-        object_actions->get(ObjectAction_QueryDeleteItemOrFolder), &QAction::triggered,
+        console_actions->get(ObjectAction_QueryDeleteItemOrFolder), &QAction::triggered,
         this, &CentralWidget::delete_query_item_or_folder);
 
     connect(
@@ -677,7 +677,7 @@ void CentralWidget::update_description_bar() {
 }
 
 void CentralWidget::add_actions_to_action_menu(QMenu *menu) {
-    object_actions->add_to_menu(menu);
+    console_actions->add_to_menu(menu);
 
     for (const QList<QAction *> actions : item_actions.values()) {
         for (QAction *action : actions) {
@@ -769,7 +769,7 @@ void CentralWidget::update_actions_visibility() {
         return;
     }
 
-    object_actions->update_actions_visibility(selected_indexes);
+    console_actions->update_actions_visibility(selected_indexes);
 }
 
 // Get selected indexes mapped to their DN's

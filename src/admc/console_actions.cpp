@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "object_actions.h"
+#include "console_actions.h"
 
 #include "globals.h"
 #include "utils.h"
@@ -45,7 +45,7 @@
 #include <QSet>
 #include <QString>
 
-ObjectActions::ObjectActions(QObject *parent)
+ConsoleActions::ConsoleActions(QObject *parent)
 : QObject(parent)
 {
     for (int action_i = ObjectAction_NewUser; action_i < ObjectAction_LAST; action_i++) {
@@ -105,16 +105,16 @@ ObjectActions::ObjectActions(QObject *parent)
     }
 }
 
-QAction *ObjectActions::get(const ObjectAction action) const {
+QAction *ConsoleActions::get(const ObjectAction action) const {
     return actions[action];
 }
 
-void ObjectActions::show(const ObjectAction action_enum) {
+void ConsoleActions::show(const ObjectAction action_enum) {
     QAction *action = get(action_enum);
     action->setVisible(true);
 }
 
-void ObjectActions::add_to_menu(QMenu *menu) {
+void ConsoleActions::add_to_menu(QMenu *menu) {
     menu->addMenu(new_menu);
 
     menu->addSeparator();
@@ -124,7 +124,7 @@ void ObjectActions::add_to_menu(QMenu *menu) {
     query_add_actions_to_menu(this, menu);
 }
 
-void ObjectActions::update_actions_visibility(const QList<QModelIndex> &indexes) {
+void ConsoleActions::update_actions_visibility(const QList<QModelIndex> &indexes) {
     // Hide all actions first
     for (QAction *action : actions.values()) {
         action->setVisible(false);
@@ -158,7 +158,7 @@ QList<QString> object_delete(const QList<QString> &targets, QWidget *parent) {
         return QList<QString>();
     }
 
-    const bool confirmed = confirmation_dialog(QCoreApplication::translate("ObjectActions", "Are you sure you want to delete this object?"), parent);
+    const bool confirmed = confirmation_dialog(QCoreApplication::translate("ConsoleActions", "Are you sure you want to delete this object?"), parent);
     if (!confirmed) {
         return QList<QString>();
     }

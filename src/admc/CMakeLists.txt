@@ -21,7 +21,7 @@ add_executable(admc
     main_window.cpp
     status.cpp
     select_dialog.cpp
-    object_actions.cpp
+    console_actions.cpp
     password_dialog.cpp
     find_results.cpp
     filter_dialog.cpp

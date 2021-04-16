@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_ACTIONS_H
-#define OBJECT_ACTIONS_H
+#ifndef CONSOLE_ACTIONS_H
+#define CONSOLE_ACTIONS_H
 
 /**
  * Helper storage class for managing object-related actions.
@@ -62,11 +62,11 @@ enum ObjectAction {
     ObjectAction_LAST,
 };
 
-class ObjectActions final : public QObject {
-Q_DECLARE_TR_FUNCTIONS(ObjectActions)
+class ConsoleActions final : public QObject {
+Q_DECLARE_TR_FUNCTIONS(ConsoleActions)
 
 public:
-    ObjectActions(QObject *parent);
+    ConsoleActions(QObject *parent);
 
     QAction *get(const ObjectAction action) const;
     void show(const ObjectAction action);
@@ -88,4 +88,4 @@ QList<QString> object_enable_disable(const QList<QString> &targets, const bool d
 
 void object_add_to_group(const QList<QString> &targets, QWidget *parent);
 
-#endif /* OBJECT_ACTIONS_H */
+#endif /* CONSOLE_ACTIONS_H */

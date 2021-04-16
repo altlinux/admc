@@ -27,7 +27,7 @@ class QStandardItem;
 class AdObject;
 class AdInterface;
 class FilterDialog;
-class ObjectActions;
+class ConsoleActions;
 class QMenu;
 template <typename T> class QList;
 
@@ -62,7 +62,7 @@ void object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, const QMo
 QModelIndex object_tree_init(ConsoleWidget *console, AdInterface &ad);
 void object_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
 void object_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target);
-void object_add_actions_to_menu(ObjectActions *actions, QMenu *menu);
-void object_show_hide_actions(ObjectActions *actions, const QList<QModelIndex> &indexes);
+void object_add_actions_to_menu(ConsoleActions *actions, QMenu *menu);
+void object_show_hide_actions(ConsoleActions *actions, const QList<QModelIndex> &indexes);
 
 #endif /* OBJECT_H */

@@ -41,7 +41,7 @@ class QLabel;
 class QSortFilterProxyModel;
 class AdInterface;
 class ConsoleWidget;
-class ObjectActions;
+class ConsoleActions;
 class PolicyResultsWidget;
 class CreateQueryDialog;
 class CreateQueryFolderDialog;
@@ -116,7 +116,7 @@ private:
     EditQueryFolderDialog *edit_query_folder_dialog;
     RenamePolicyDialog *rename_policy_dialog;
     
-    ObjectActions *object_actions;
+    ConsoleActions *console_actions;
 
     QHash<ItemType, QList<QAction *>> item_actions;
     

@@ -24,7 +24,7 @@
 #include "settings.h"
 #include "utils.h"
 #include "central_widget.h"
-#include "object_actions.h"
+#include "console_actions.h"
 
 #include <QStandardItem>
 #include <QList>
@@ -108,7 +108,7 @@ QModelIndex policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
     return head_item->index();
 }
 
-void policy_add_actions_to_menu(ObjectActions *actions, QMenu *menu) {
+void policy_add_actions_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ObjectAction_PolicyAddLink));
     
     menu->addSeparator();
@@ -117,7 +117,7 @@ void policy_add_actions_to_menu(ObjectActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ObjectAction_PolicyDelete));
 }
 
-void policy_show_hide_actions(ObjectActions *actions, const QList<QModelIndex> &indexes) {
+void policy_show_hide_actions(ConsoleActions *actions, const QList<QModelIndex> &indexes) {
     const bool single_selection = (indexes.size() == 1);
 
     if (indexes_are_of_type(indexes, QSet<int>({ItemType_PolicyRoot}))) {

@@ -35,7 +35,7 @@ class QMenu;
 class AdObject;
 class CustomizeColumnsDialog;
 class ResultsView;
-class ObjectActions;
+class ConsoleActions;
 template <typename T> class QList;
 template <typename K, typename T> class QHash;
 
@@ -83,7 +83,7 @@ private:
     QAction *customize_columns_action;
     bool context_menu_enabled;
 
-    ObjectActions *object_actions;
+    ConsoleActions *object_actions;
     QAction *properties_action;
 
     void enable_disable_helper(const bool disabled);
