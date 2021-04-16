@@ -120,6 +120,7 @@ CentralWidget::CentralWidget()
     create_query_dialog = new CreateQueryDialog(console);
     create_query_folder_dialog = new CreateQueryFolderDialog(console);
     edit_query_folder_dialog = new EditQueryFolderDialog(console);
+    rename_policy_dialog = new RenamePolicyDialog(console);
 
     auto policy_container_results = new ResultsView(this);
     policy_container_results->detail_view()->header()->setDefaultSectionSize(200);
@@ -213,7 +214,7 @@ CentralWidget::CentralWidget()
         this, &CentralWidget::add_link);
     connect(
         rename_policy_action, &QAction::triggered,
-        this, &CentralWidget::rename_policy);
+        rename_policy_dialog, &QDialog::open);
     connect(
         delete_policy_action, &QAction::triggered,
         this, &CentralWidget::delete_policy);
@@ -570,40 +571,6 @@ void CentralWidget::add_link() {
         });
 
     dialog->open();
-}
-
-void CentralWidget::rename_policy() {
-    const QList<QModelIndex> indexes = console->get_selected_items();
-    if (indexes.size() != 1) {
-        return;
-    }
-
-    const QModelIndex index = indexes[0];
-    const QString dn = index.data(PolicyRole_DN).toString();
-
-    auto dialog = new RenamePolicyDialog(dn, this);
-    dialog->open();
-
-    connect(
-        dialog, &RenamePolicyDialog::accepted,
-        [=]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
-                return;
-            }
-
-            const AdObject object = ad.search_object(dn);
-
-            const QModelIndex scope_index = get_selected_scope_index(console);
-            QStandardItem *scope_item = console->get_scope_item(scope_index);
-            policy_scope_load(scope_item, object);
-            
-            const QModelIndex results_index = console->get_buddy(scope_index);
-            const QList<QStandardItem *> results_row = console->get_results_row(results_index);
-            policy_results_load(results_row, object);
-
-            console->sort_scope();
-        });
 }
 
 void CentralWidget::delete_policy() {

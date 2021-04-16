@@ -46,6 +46,7 @@ class PolicyResultsWidget;
 class CreateQueryDialog;
 class CreateQueryFolderDialog;
 class EditQueryFolderDialog;
+class RenamePolicyDialog;
 template <typename T> class QList;
 
 enum ItemType {
@@ -95,7 +96,6 @@ private slots:
 
     void create_policy();
     void add_link();
-    void rename_policy();
     void delete_policy();
 
     void delete_query_item_or_folder();
@@ -114,7 +114,8 @@ private:
     CreateQueryDialog *create_query_dialog;
     CreateQueryFolderDialog *create_query_folder_dialog;
     EditQueryFolderDialog *edit_query_folder_dialog;
-
+    RenamePolicyDialog *rename_policy_dialog;
+    
     ObjectActions *object_actions;
 
     QHash<ItemType, QList<QAction *>> item_actions;
