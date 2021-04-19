@@ -117,20 +117,20 @@ void policy_add_actions_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ObjectAction_PolicyDelete));
 }
 
-void policy_show_hide_actions(ConsoleActions *actions, const QList<QModelIndex> &indexes) {
-    const bool single_selection = (indexes.size() == 1);
+void policy_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ObjectAction> *visible_actions, QSet<ObjectAction> *disabled_actions) {
+    const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
 
-    if (indexes_are_of_type(indexes, QSet<int>({ItemType_PolicyRoot}))) {
+    if (type == ItemType_PolicyRoot) {
+        visible_actions->insert(ObjectAction_PolicyCreate);
+    }
+
+    if (type == ItemType_Policy) {
         if (single_selection) {
-            actions->show(ObjectAction_PolicyCreate);
-        }
-    } else if (indexes_are_of_type(indexes, QSet<int>({ItemType_Policy}))) {
-        if (single_selection) {
-            actions->show(ObjectAction_PolicyAddLink);
-            actions->show(ObjectAction_PolicyRename);
-            actions->show(ObjectAction_PolicyDelete);
+            visible_actions->insert(ObjectAction_PolicyAddLink);
+            visible_actions->insert(ObjectAction_PolicyRename);
+            visible_actions->insert(ObjectAction_PolicyDelete);
         } else {
-            actions->show(ObjectAction_PolicyDelete);
+            visible_actions->insert(ObjectAction_PolicyDelete);
         }
     }
 }

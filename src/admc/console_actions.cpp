@@ -92,11 +92,6 @@ QAction *ConsoleActions::get(const ObjectAction action) const {
     return actions[action];
 }
 
-void ConsoleActions::show(const ObjectAction action_enum) {
-    QAction *action = get(action_enum);
-    action->setVisible(true);
-}
-
 void ConsoleActions::add_to_menu(QMenu *menu) {
     menu->addMenu(new_menu);
 
@@ -108,22 +103,49 @@ void ConsoleActions::add_to_menu(QMenu *menu) {
 }
 
 void ConsoleActions::update_actions_visibility(const QList<QModelIndex> &indexes) {
-    // Hide all actions first
-    for (QAction *action : actions.values()) {
-        action->setVisible(false);
-    }
-    new_menu->menuAction()->setVisible(false);
+    // Figure out action state for current selection. For
+    // single selections this is trivial. For multi
+    // selections have to get the intersection of visiblity
+    // states so that only actions that can apply to all
+    // selected items are visible.
+    QSet<ObjectAction> visible_actions;
+    QSet<ObjectAction> disabled_actions;
 
-    // Show actions which need to be shown
-    object_show_hide_actions(this, indexes);
-    policy_show_hide_actions(this, indexes);
-    query_show_hide_actions(this, indexes);
+    const bool single_selection = (indexes.size() == 1);
+
+    for (int i = 0; i < indexes.size(); i++) {
+        const QModelIndex index = indexes[i];
+        QSet<ObjectAction> this_visible_actions;
+
+        object_get_action_state(index, single_selection, &this_visible_actions, &disabled_actions);
+        query_get_action_state(index, single_selection, &this_visible_actions, &disabled_actions);
+        policy_get_action_state(index, single_selection, &this_visible_actions, &disabled_actions);
+
+        if (i == 0) {
+            // NOTE: for first index, add the whole set
+            // instead of intersecting, otherwise total set
+            // would just stay empty
+            visible_actions = this_visible_actions;
+        } else {
+            visible_actions.intersect(this_visible_actions);
+        }
+    }
+
+    for (const ObjectAction action_enum : actions.keys()) {
+        QAction *action = actions[action_enum];
+
+        const bool is_visible = visible_actions.contains(action_enum);
+        action->setVisible(is_visible);
+
+        const bool is_disabled = disabled_actions.contains(action_enum);
+        action->setDisabled(is_disabled);
+    }
 
     // Show "New" menu if any new actions are visible
     const bool any_new_action_visible =
     [&]() {
         for (const ObjectAction action_enum : new_actions) {
-            QAction *action = get(action_enum);
+            QAction *action = actions[action_enum];
 
             if (action->isVisible()) {
                 return true;

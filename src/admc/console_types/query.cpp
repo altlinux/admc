@@ -350,25 +350,22 @@ void query_add_actions_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ObjectAction_QueryDeleteItemOrFolder));
 }
 
-void query_show_hide_actions(ConsoleActions *actions, const QList<QModelIndex> &indexes) {
-    const bool single_selection = (indexes.size() == 1);
+void query_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ObjectAction> *visible_actions, QSet<ObjectAction> *disabled_actions) {
+    const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
 
-    if (indexes_are_of_type(indexes, QSet<int>({ItemType_QueryRoot}))) {
-        actions->show(ObjectAction_QueryCreateFolder);
-        actions->show(ObjectAction_QueryCreateItem);
-    } else if (indexes_are_of_type(indexes, QSet<int>({ItemType_QueryFolder}))) {
-        if (single_selection) {
-            actions->show(ObjectAction_QueryCreateFolder);
-            actions->show(ObjectAction_QueryCreateItem);
-            actions->show(ObjectAction_QueryEditFolder);
+    if (single_selection) {
+        if (type == ItemType_QueryRoot || type == ItemType_QueryFolder) {
+            visible_actions->insert(ObjectAction_QueryCreateFolder);
+            visible_actions->insert(ObjectAction_QueryCreateItem);
         }
-        actions->show(ObjectAction_QueryMoveItemOrFolder);
-        actions->show(ObjectAction_QueryDeleteItemOrFolder);
-    } else if (indexes_are_of_type(indexes, QSet<int>({ItemType_QueryItem}))) {
-        actions->show(ObjectAction_QueryMoveItemOrFolder);
-        actions->show(ObjectAction_QueryDeleteItemOrFolder);
-    } else if (indexes_are_of_type(indexes, QSet<int>({ItemType_QueryItem, ItemType_QueryFolder}))) {
-        actions->show(ObjectAction_QueryMoveItemOrFolder);
-        actions->show(ObjectAction_QueryDeleteItemOrFolder);
+
+        if (type == ItemType_QueryFolder) {
+            visible_actions->insert(ObjectAction_QueryEditFolder);
+        }
+    }
+
+    if (type == ItemType_QueryItem || type == ItemType_QueryFolder) {
+        visible_actions->insert(ObjectAction_QueryMoveItemOrFolder);
+        visible_actions->insert(ObjectAction_QueryDeleteItemOrFolder);
     }
 }

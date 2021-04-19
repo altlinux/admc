@@ -21,6 +21,7 @@
 #define QUERY_H
 
 #include "console_widget/console_widget.h"
+#include "console_actions.h"
 
 class QStandardItem;
 class QModelIndex;
@@ -51,6 +52,6 @@ void query_tree_init(ConsoleWidget *console);
 void query_tree_save();
 bool query_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index);
 void query_add_actions_to_menu(ConsoleActions *actions, QMenu *menu);
-void query_show_hide_actions(ConsoleActions *actions, const QList<QModelIndex> &indexes);
+void query_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ObjectAction> *visible_actions, QSet<ObjectAction> *disabled_actions);
 
 #endif /* QUERY_H */

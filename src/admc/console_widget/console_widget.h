@@ -237,8 +237,4 @@ private:
     ConsoleWidgetPrivate *d;
 };
 
-// Returns true if all given indexes are of given type.
-// Returns false for empty lists.
-bool indexes_are_of_type(const QList<QModelIndex> &indexes, const QSet<int> &types);
-
 #endif /* CONSOLE_WIDGET_H */

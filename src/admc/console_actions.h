@@ -67,7 +67,6 @@ public:
     ConsoleActions(QObject *parent);
 
     QAction *get(const ObjectAction action) const;
-    void show(const ObjectAction action);
     void add_to_menu(QMenu *menu);
     void update_actions_visibility(const QList<QModelIndex> &indexes);
 

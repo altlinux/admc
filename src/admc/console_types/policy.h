@@ -21,6 +21,7 @@
 #define POLICY_H
 
 #include "console_widget/console_widget.h"
+#include "console_actions.h"
 
 class QStandardItem;
 class AdObject;
@@ -50,5 +51,6 @@ void policy_create(ConsoleWidget *console, const QModelIndex &policies_index, co
 QModelIndex policy_tree_init(ConsoleWidget *console, AdInterface &ad);
 void policy_add_actions_to_menu(ConsoleActions *actions, QMenu *menu);
 void policy_show_hide_actions(ConsoleActions *actions, const QList<QModelIndex> &indexes);
+void policy_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ObjectAction> *visible_actions, QSet<ObjectAction> *disabled_actions);
 
 #endif /* POLICY_H */

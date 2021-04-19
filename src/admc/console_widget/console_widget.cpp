@@ -917,25 +917,6 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
     }
 }
 
-bool indexes_are_of_type(const QList<QModelIndex> &indexes, const QSet<int> &types) {
-    const QSet<int> this_types =
-    [&]() {
-        QSet<int> out;
-
-        for (const QModelIndex &index : indexes) {
-            const QVariant type_variant = index.data(ConsoleRole_Type);
-            if (type_variant.isValid()) {
-                const int type = type_variant.toInt();
-                out.insert(type);
-            }
-        }
-
-        return out;
-    }();
-
-    return (this_types == types);
-}
-
 QList<QModelIndex> filter_indexes_by_type(const QList<QModelIndex> &indexes, const int type) {
     if (type == -1) {
         return indexes;
