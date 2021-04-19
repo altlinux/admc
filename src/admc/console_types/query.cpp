@@ -46,8 +46,6 @@ enum QueryColumn {
 int query_folder_results_id;
 QPersistentModelIndex query_tree_head;
 
-QString query_folder_path(const QModelIndex &index);
-
 QList<QString> query_folder_header_labels() {
     return {
         QCoreApplication::translate("query_folder.cpp", "Name"),

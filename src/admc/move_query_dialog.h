@@ -27,14 +27,25 @@
 
 #include <QDialog>
 
+class QTreeView;
+class QStandardItemModel;
+class QSortFilterProxyModel;
+class ConsoleWidget;
+
 class MoveQueryDialog : public QDialog {
 Q_OBJECT
 
 public:
-    MoveQueryDialog(QWidget *parent);
+    MoveQueryDialog(ConsoleWidget *console_arg);
+
+    void open() override;
+    void accept() override;
     
 private:
-
+    QTreeView *view;
+    QStandardItemModel *model;
+    QSortFilterProxyModel *proxy_model;
+    ConsoleWidget *console;
 };
 
 #endif /* MOVE_QUERY_DIALOG_H */
