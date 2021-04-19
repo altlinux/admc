@@ -315,7 +315,7 @@ bool query_name_is_good(const QString &name, const QModelIndex &parent_index, QW
             const QModelIndex sibling = model->index(row, 0, parent_index);
             const QString sibling_name = sibling.data(Qt::DisplayRole).toString();
 
-            const bool this_is_query_itself = (sibling_name == current_name);
+            const bool this_is_query_itself = (sibling == current_index);
             if (this_is_query_itself) {
                 continue;
             }

@@ -185,9 +185,18 @@ void MoveQueryDialog::accept() {
         return;
     }
 
+    const QModelIndex old_index = get_selected_scope_index(console);
+    
+    // Check that moved item doesn't have a name conflict at
+    // new location
+    QStandardItem *old_item = console->get_scope_item(old_index);
+    const QString moved_name = old_item->text();
+    if (!query_name_is_good(moved_name, new_parent_index, this, old_index)) {
+        return;
+    }
+
     // Create a copy of the tree branch at new location. Go
     // down the branch and replicate all of the children.
-    const QModelIndex old_index = get_selected_scope_index(console);
 
     QHash<QModelIndex, QModelIndex> old_to_new_index;
     old_to_new_index[old_index.parent()] = new_parent_index;
