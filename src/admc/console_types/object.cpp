@@ -532,28 +532,28 @@ DropType object_get_drop_type(const QModelIndex &dropped, const QModelIndex &tar
 
 void object_add_actions_to_menu(ConsoleActions *actions, QMenu *menu) {
     // Container
-    menu->addAction(actions->get(ObjectAction_Find));
+    menu->addAction(actions->get(ConsoleAction_Find));
 
     menu->addSeparator();
 
     // User
-    menu->addAction(actions->get(ObjectAction_AddToGroup));
-    menu->addAction(actions->get(ObjectAction_Enable));
-    menu->addAction(actions->get(ObjectAction_Disable));
-    menu->addAction(actions->get(ObjectAction_ResetPassword));
+    menu->addAction(actions->get(ConsoleAction_AddToGroup));
+    menu->addAction(actions->get(ConsoleAction_Enable));
+    menu->addAction(actions->get(ConsoleAction_Disable));
+    menu->addAction(actions->get(ConsoleAction_ResetPassword));
 
     // Other
-    menu->addAction(actions->get(ObjectAction_EditUpnSuffixes));
+    menu->addAction(actions->get(ConsoleAction_EditUpnSuffixes));
 
     menu->addSeparator();
 
     // General object
-    menu->addAction(actions->get(ObjectAction_Delete));
-    menu->addAction(actions->get(ObjectAction_Rename));
-    menu->addAction(actions->get(ObjectAction_Move));
+    menu->addAction(actions->get(ConsoleAction_Delete));
+    menu->addAction(actions->get(ConsoleAction_Rename));
+    menu->addAction(actions->get(ConsoleAction_Move));
 }
 
-void object_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ObjectAction> *visible_actions, QSet<ObjectAction> *disabled_actions) {
+void object_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
     const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
     if (type != ItemType_Object) {
         return;
@@ -579,54 +579,54 @@ void object_get_action_state(const QModelIndex &index, const bool single_selecti
     if (single_selection) {
         // Single selection only
         if (is_container) {
-            visible_actions->insert(ObjectAction_NewUser);
-            visible_actions->insert(ObjectAction_NewComputer);
-            visible_actions->insert(ObjectAction_NewOU);
-            visible_actions->insert(ObjectAction_NewGroup);
+            visible_actions->insert(ConsoleAction_NewUser);
+            visible_actions->insert(ConsoleAction_NewComputer);
+            visible_actions->insert(ConsoleAction_NewOU);
+            visible_actions->insert(ConsoleAction_NewGroup);
 
-            visible_actions->insert(ObjectAction_Find);
+            visible_actions->insert(ConsoleAction_Find);
         }
 
         if (is_user) {
-            visible_actions->insert(ObjectAction_ResetPassword);
+            visible_actions->insert(ConsoleAction_ResetPassword);
 
             if (account_disabled) {
-                visible_actions->insert(ObjectAction_Enable);
+                visible_actions->insert(ConsoleAction_Enable);
             } else {
-                visible_actions->insert(ObjectAction_Disable);
+                visible_actions->insert(ConsoleAction_Disable);
             }
         }
 
         if (is_domain) {
-            visible_actions->insert(ObjectAction_EditUpnSuffixes);
+            visible_actions->insert(ConsoleAction_EditUpnSuffixes);
         }
 
-        visible_actions->insert(ObjectAction_Rename);
+        visible_actions->insert(ConsoleAction_Rename);
 
         if (cannot_move) {
-            disabled_actions->insert(ObjectAction_Move);
+            disabled_actions->insert(ConsoleAction_Move);
         }
         if (cannot_delete) {
-            disabled_actions->insert(ObjectAction_Delete);
+            disabled_actions->insert(ConsoleAction_Delete);
         }
         if (cannot_rename) {
-            disabled_actions->insert(ObjectAction_Rename);
+            disabled_actions->insert(ConsoleAction_Rename);
         }
     } else {
         // Multi selection only
         if (is_user) {
-            visible_actions->insert(ObjectAction_Enable);
-            visible_actions->insert(ObjectAction_Disable);
+            visible_actions->insert(ConsoleAction_Enable);
+            visible_actions->insert(ConsoleAction_Disable);
         }
     }
 
     // Single OR multi selection
     if (is_user) {
-        visible_actions->insert(ObjectAction_AddToGroup);
+        visible_actions->insert(ConsoleAction_AddToGroup);
     }
 
-    visible_actions->insert(ObjectAction_Move);
-    visible_actions->insert(ObjectAction_Delete);
+    visible_actions->insert(ConsoleAction_Move);
+    visible_actions->insert(ConsoleAction_Delete);
 }
 
 QList<QString> object_delete(const QList<QString> &targets, QWidget *parent) {

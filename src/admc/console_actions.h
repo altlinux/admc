@@ -32,33 +32,33 @@ class QAction;
 class QModelIndex;
 template <typename T> class QList;
 
-enum ObjectAction {
-    ObjectAction_NewUser,
-    ObjectAction_NewComputer,
-    ObjectAction_NewOU,
-    ObjectAction_NewGroup,
-    ObjectAction_Find,
-    ObjectAction_AddToGroup,
-    ObjectAction_Enable,
-    ObjectAction_Disable,
-    ObjectAction_ResetPassword,
-    ObjectAction_Rename,
-    ObjectAction_Delete,
-    ObjectAction_Move,
-    ObjectAction_EditUpnSuffixes,
+enum ConsoleAction {
+    ConsoleAction_NewUser,
+    ConsoleAction_NewComputer,
+    ConsoleAction_NewOU,
+    ConsoleAction_NewGroup,
+    ConsoleAction_Find,
+    ConsoleAction_AddToGroup,
+    ConsoleAction_Enable,
+    ConsoleAction_Disable,
+    ConsoleAction_ResetPassword,
+    ConsoleAction_Rename,
+    ConsoleAction_Delete,
+    ConsoleAction_Move,
+    ConsoleAction_EditUpnSuffixes,
 
-    ObjectAction_PolicyCreate,
-    ObjectAction_PolicyAddLink,
-    ObjectAction_PolicyRename,
-    ObjectAction_PolicyDelete,
+    ConsoleAction_PolicyCreate,
+    ConsoleAction_PolicyAddLink,
+    ConsoleAction_PolicyRename,
+    ConsoleAction_PolicyDelete,
 
-    ObjectAction_QueryCreateFolder,
-    ObjectAction_QueryCreateItem,
-    ObjectAction_QueryEditFolder,
-    ObjectAction_QueryDeleteItemOrFolder,
-    ObjectAction_QueryMoveItemOrFolder,
+    ConsoleAction_QueryCreateFolder,
+    ConsoleAction_QueryCreateItem,
+    ConsoleAction_QueryEditFolder,
+    ConsoleAction_QueryDeleteItemOrFolder,
+    ConsoleAction_QueryMoveItemOrFolder,
 
-    ObjectAction_LAST,
+    ConsoleAction_LAST,
 };
 
 class ConsoleActions final : public QObject {
@@ -66,14 +66,14 @@ class ConsoleActions final : public QObject {
 public:
     ConsoleActions(QObject *parent);
 
-    QAction *get(const ObjectAction action) const;
+    QAction *get(const ConsoleAction action) const;
     void add_to_menu(QMenu *menu);
     void update_actions_visibility(const QList<QModelIndex> &indexes);
 
 private:
-    QHash<ObjectAction, QAction *> actions;
+    QHash<ConsoleAction, QAction *> actions;
     QMenu *new_menu;
-    QList<ObjectAction> new_actions;
+    QList<ConsoleAction> new_actions;
 };
 
 #endif /* CONSOLE_ACTIONS_H */

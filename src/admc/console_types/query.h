@@ -52,6 +52,6 @@ void query_tree_init(ConsoleWidget *console);
 void query_tree_save();
 bool query_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index);
 void query_add_actions_to_menu(ConsoleActions *actions, QMenu *menu);
-void query_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ObjectAction> *visible_actions, QSet<ObjectAction> *disabled_actions);
+void query_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);
 
 #endif /* QUERY_H */

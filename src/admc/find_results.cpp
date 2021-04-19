@@ -86,37 +86,37 @@ FindResults::FindResults()
         properties_action, &QAction::triggered,
         this, &FindResults::properties);
     connect(
-        object_actions->get(ObjectAction_NewUser), &QAction::triggered,
+        object_actions->get(ConsoleAction_NewUser), &QAction::triggered,
         this, &FindResults::create_user);
     connect(
-        object_actions->get(ObjectAction_NewComputer), &QAction::triggered,
+        object_actions->get(ConsoleAction_NewComputer), &QAction::triggered,
         this, &FindResults::create_computer);
     connect(
-        object_actions->get(ObjectAction_NewOU), &QAction::triggered,
+        object_actions->get(ConsoleAction_NewOU), &QAction::triggered,
         this, &FindResults::create_ou);
     connect(
-        object_actions->get(ObjectAction_NewGroup), &QAction::triggered,
+        object_actions->get(ConsoleAction_NewGroup), &QAction::triggered,
         this, &FindResults::create_group);
     connect(
-        object_actions->get(ObjectAction_Delete), &QAction::triggered,
+        object_actions->get(ConsoleAction_Delete), &QAction::triggered,
         this, &FindResults::delete_objects);
     connect(
-        object_actions->get(ObjectAction_Rename), &QAction::triggered,
+        object_actions->get(ConsoleAction_Rename), &QAction::triggered,
         this, &FindResults::rename);
     connect(
-        object_actions->get(ObjectAction_Move), &QAction::triggered,
+        object_actions->get(ConsoleAction_Move), &QAction::triggered,
         this, &FindResults::move);
     connect(
-        object_actions->get(ObjectAction_AddToGroup), &QAction::triggered,
+        object_actions->get(ConsoleAction_AddToGroup), &QAction::triggered,
         this, &FindResults::add_to_group);
     connect(
-        object_actions->get(ObjectAction_Enable), &QAction::triggered,
+        object_actions->get(ConsoleAction_Enable), &QAction::triggered,
         this, &FindResults::enable);
     connect(
-        object_actions->get(ObjectAction_Disable), &QAction::triggered,
+        object_actions->get(ConsoleAction_Disable), &QAction::triggered,
         this, &FindResults::disable);
     connect(
-        object_actions->get(ObjectAction_ResetPassword), &QAction::triggered,
+        object_actions->get(ConsoleAction_ResetPassword), &QAction::triggered,
         this, &FindResults::reset_password);
 
     connect(
@@ -281,7 +281,7 @@ void FindResults::update_actions_visibility() {
 
     // Always hide find action because opening a find dialog
     // from another find dialog is weird
-    object_actions->get(ObjectAction_Find)->setVisible(false);
+    object_actions->get(ConsoleAction_Find)->setVisible(false);
 }
 
 QHash<QString, QPersistentModelIndex> FindResults::get_selected_dns_and_indexes() {

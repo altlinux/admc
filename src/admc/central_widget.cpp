@@ -127,72 +127,72 @@ CentralWidget::CentralWidget()
         this, &CentralWidget::open_filter);
 
     connect(
-        console_actions->get(ObjectAction_NewUser), &QAction::triggered,
+        console_actions->get(ConsoleAction_NewUser), &QAction::triggered,
         this, &CentralWidget::create_user);
     connect(
-        console_actions->get(ObjectAction_NewComputer), &QAction::triggered,
+        console_actions->get(ConsoleAction_NewComputer), &QAction::triggered,
         this, &CentralWidget::create_computer);
     connect(
-        console_actions->get(ObjectAction_NewOU), &QAction::triggered,
+        console_actions->get(ConsoleAction_NewOU), &QAction::triggered,
         this, &CentralWidget::create_ou);
     connect(
-        console_actions->get(ObjectAction_NewGroup), &QAction::triggered,
+        console_actions->get(ConsoleAction_NewGroup), &QAction::triggered,
         this, &CentralWidget::create_group);
     connect(
-        console_actions->get(ObjectAction_Delete), &QAction::triggered,
+        console_actions->get(ConsoleAction_Delete), &QAction::triggered,
         this, &CentralWidget::delete_objects);
     connect(
-        console_actions->get(ObjectAction_Rename), &QAction::triggered,
+        console_actions->get(ConsoleAction_Rename), &QAction::triggered,
         this, &CentralWidget::rename);
     connect(
-        console_actions->get(ObjectAction_Move), &QAction::triggered,
+        console_actions->get(ConsoleAction_Move), &QAction::triggered,
         this, &CentralWidget::move);
     connect(
-        console_actions->get(ObjectAction_AddToGroup), &QAction::triggered,
+        console_actions->get(ConsoleAction_AddToGroup), &QAction::triggered,
         this, &CentralWidget::add_to_group);
     connect(
-        console_actions->get(ObjectAction_Enable), &QAction::triggered,
+        console_actions->get(ConsoleAction_Enable), &QAction::triggered,
         this, &CentralWidget::enable);
     connect(
-        console_actions->get(ObjectAction_Disable), &QAction::triggered,
+        console_actions->get(ConsoleAction_Disable), &QAction::triggered,
         this, &CentralWidget::disable);
     connect(
-        console_actions->get(ObjectAction_ResetPassword), &QAction::triggered,
+        console_actions->get(ConsoleAction_ResetPassword), &QAction::triggered,
         this, &CentralWidget::reset_password);
     connect(
-        console_actions->get(ObjectAction_Find), &QAction::triggered,
+        console_actions->get(ConsoleAction_Find), &QAction::triggered,
         this, &CentralWidget::find);
     connect(
-        console_actions->get(ObjectAction_EditUpnSuffixes), &QAction::triggered,
+        console_actions->get(ConsoleAction_EditUpnSuffixes), &QAction::triggered,
         this, &CentralWidget::edit_upn_suffixes);
 
     connect(
-        console_actions->get(ObjectAction_PolicyCreate), &QAction::triggered,
+        console_actions->get(ConsoleAction_PolicyCreate), &QAction::triggered,
         this, &CentralWidget::create_policy);
     connect(
-        console_actions->get(ObjectAction_PolicyAddLink), &QAction::triggered,
+        console_actions->get(ConsoleAction_PolicyAddLink), &QAction::triggered,
         this, &CentralWidget::add_link);
     connect(
-        console_actions->get(ObjectAction_PolicyRename), &QAction::triggered,
+        console_actions->get(ConsoleAction_PolicyRename), &QAction::triggered,
         rename_policy_dialog, &QDialog::open);
     connect(
-        console_actions->get(ObjectAction_PolicyDelete), &QAction::triggered,
+        console_actions->get(ConsoleAction_PolicyDelete), &QAction::triggered,
         this, &CentralWidget::delete_policy);
 
     connect(
-        console_actions->get(ObjectAction_QueryCreateFolder), &QAction::triggered,
+        console_actions->get(ConsoleAction_QueryCreateFolder), &QAction::triggered,
         create_query_folder_dialog, &QDialog::open);
     connect(
-        console_actions->get(ObjectAction_QueryCreateItem), &QAction::triggered,
+        console_actions->get(ConsoleAction_QueryCreateItem), &QAction::triggered,
         create_query_dialog, &QDialog::open);
     connect(
-        console_actions->get(ObjectAction_QueryEditFolder), &QAction::triggered,
+        console_actions->get(ConsoleAction_QueryEditFolder), &QAction::triggered,
         edit_query_folder_dialog, &QDialog::open);
     connect(
-        console_actions->get(ObjectAction_QueryMoveItemOrFolder), &QAction::triggered,
+        console_actions->get(ConsoleAction_QueryMoveItemOrFolder), &QAction::triggered,
         move_query_dialog, &QDialog::open);
     connect(
-        console_actions->get(ObjectAction_QueryDeleteItemOrFolder), &QAction::triggered,
+        console_actions->get(ConsoleAction_QueryDeleteItemOrFolder), &QAction::triggered,
         this, &CentralWidget::delete_query_item_or_folder);
 
     connect(

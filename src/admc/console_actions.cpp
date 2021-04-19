@@ -30,38 +30,38 @@
 ConsoleActions::ConsoleActions(QObject *parent)
 : QObject(parent)
 {
-    for (int action_i = ObjectAction_NewUser; action_i < ObjectAction_LAST; action_i++) {
-        const ObjectAction action_enum = (ObjectAction) action_i;
+    for (int action_i = ConsoleAction_NewUser; action_i < ConsoleAction_LAST; action_i++) {
+        const ConsoleAction action_enum = (ConsoleAction) action_i;
 
         const QString action_text =
         [action_enum]() {
             switch(action_enum) {
-                case ObjectAction_NewUser: return tr("&User");
-                case ObjectAction_NewComputer: return tr("&Computer");
-                case ObjectAction_NewOU: return tr("&Organization");
-                case ObjectAction_NewGroup: return tr("&Group");
-                case ObjectAction_Find: return tr("&Find");
-                case ObjectAction_AddToGroup: return tr("&Add to group");
-                case ObjectAction_Enable: return tr("&Enable account");
-                case ObjectAction_Disable: return tr("D&isable account");
-                case ObjectAction_ResetPassword: return tr("Reset &Password");
-                case ObjectAction_Rename: return tr("&Rename");
-                case ObjectAction_Delete: return tr("&Delete");
-                case ObjectAction_Move: return tr("&Move");
-                case ObjectAction_EditUpnSuffixes: return tr("Edit &Upn Suffixes");
+                case ConsoleAction_NewUser: return tr("&User");
+                case ConsoleAction_NewComputer: return tr("&Computer");
+                case ConsoleAction_NewOU: return tr("&Organization");
+                case ConsoleAction_NewGroup: return tr("&Group");
+                case ConsoleAction_Find: return tr("&Find");
+                case ConsoleAction_AddToGroup: return tr("&Add to group");
+                case ConsoleAction_Enable: return tr("&Enable account");
+                case ConsoleAction_Disable: return tr("D&isable account");
+                case ConsoleAction_ResetPassword: return tr("Reset &Password");
+                case ConsoleAction_Rename: return tr("&Rename");
+                case ConsoleAction_Delete: return tr("&Delete");
+                case ConsoleAction_Move: return tr("&Move");
+                case ConsoleAction_EditUpnSuffixes: return tr("Edit &Upn Suffixes");
 
-                case ObjectAction_PolicyCreate: return tr("&Policy");
-                case ObjectAction_PolicyAddLink: return tr("&Add link");
-                case ObjectAction_PolicyRename: return tr("&Rename");
-                case ObjectAction_PolicyDelete: return tr("&Delete");
+                case ConsoleAction_PolicyCreate: return tr("&Policy");
+                case ConsoleAction_PolicyAddLink: return tr("&Add link");
+                case ConsoleAction_PolicyRename: return tr("&Rename");
+                case ConsoleAction_PolicyDelete: return tr("&Delete");
 
-                case ObjectAction_QueryCreateFolder: return tr("&Folder");
-                case ObjectAction_QueryCreateItem: return tr("&Query");
-                case ObjectAction_QueryEditFolder: return tr("&Edit");
-                case ObjectAction_QueryDeleteItemOrFolder: return tr("&Delete");
-                case ObjectAction_QueryMoveItemOrFolder: return tr("&Move");
+                case ConsoleAction_QueryCreateFolder: return tr("&Folder");
+                case ConsoleAction_QueryCreateItem: return tr("&Query");
+                case ConsoleAction_QueryEditFolder: return tr("&Edit");
+                case ConsoleAction_QueryDeleteItemOrFolder: return tr("&Delete");
+                case ConsoleAction_QueryMoveItemOrFolder: return tr("&Move");
 
-                case ObjectAction_LAST: break;
+                case ConsoleAction_LAST: break;
             }
             return QString();
         }();
@@ -72,23 +72,23 @@ ConsoleActions::ConsoleActions(QObject *parent)
     new_menu = new QMenu(tr("&New"));
 
     new_actions = {
-        ObjectAction_NewUser,
-        ObjectAction_NewComputer,
-        ObjectAction_NewOU,
-        ObjectAction_NewGroup,
+        ConsoleAction_NewUser,
+        ConsoleAction_NewComputer,
+        ConsoleAction_NewOU,
+        ConsoleAction_NewGroup,
 
-        ObjectAction_PolicyCreate,
+        ConsoleAction_PolicyCreate,
 
-        ObjectAction_QueryCreateFolder,
-        ObjectAction_QueryCreateItem,
+        ConsoleAction_QueryCreateFolder,
+        ConsoleAction_QueryCreateItem,
     };
-    for (const ObjectAction action_enum : new_actions) {
+    for (const ConsoleAction action_enum : new_actions) {
         QAction *action = get(action_enum);
         new_menu->addAction(action);
     }
 }
 
-QAction *ConsoleActions::get(const ObjectAction action) const {
+QAction *ConsoleActions::get(const ConsoleAction action) const {
     return actions[action];
 }
 
@@ -108,14 +108,14 @@ void ConsoleActions::update_actions_visibility(const QList<QModelIndex> &indexes
     // selections have to get the intersection of visiblity
     // states so that only actions that can apply to all
     // selected items are visible.
-    QSet<ObjectAction> visible_actions;
-    QSet<ObjectAction> disabled_actions;
+    QSet<ConsoleAction> visible_actions;
+    QSet<ConsoleAction> disabled_actions;
 
     const bool single_selection = (indexes.size() == 1);
 
     for (int i = 0; i < indexes.size(); i++) {
         const QModelIndex index = indexes[i];
-        QSet<ObjectAction> this_visible_actions;
+        QSet<ConsoleAction> this_visible_actions;
 
         object_get_action_state(index, single_selection, &this_visible_actions, &disabled_actions);
         query_get_action_state(index, single_selection, &this_visible_actions, &disabled_actions);
@@ -131,7 +131,7 @@ void ConsoleActions::update_actions_visibility(const QList<QModelIndex> &indexes
         }
     }
 
-    for (const ObjectAction action_enum : actions.keys()) {
+    for (const ConsoleAction action_enum : actions.keys()) {
         QAction *action = actions[action_enum];
 
         const bool is_visible = visible_actions.contains(action_enum);
@@ -144,7 +144,7 @@ void ConsoleActions::update_actions_visibility(const QList<QModelIndex> &indexes
     // Show "New" menu if any new actions are visible
     const bool any_new_action_visible =
     [&]() {
-        for (const ObjectAction action_enum : new_actions) {
+        for (const ConsoleAction action_enum : new_actions) {
             QAction *action = actions[action_enum];
 
             if (action->isVisible()) {

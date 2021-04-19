@@ -109,28 +109,28 @@ QModelIndex policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
 }
 
 void policy_add_actions_to_menu(ConsoleActions *actions, QMenu *menu) {
-    menu->addAction(actions->get(ObjectAction_PolicyAddLink));
+    menu->addAction(actions->get(ConsoleAction_PolicyAddLink));
     
     menu->addSeparator();
     
-    menu->addAction(actions->get(ObjectAction_PolicyRename));
-    menu->addAction(actions->get(ObjectAction_PolicyDelete));
+    menu->addAction(actions->get(ConsoleAction_PolicyRename));
+    menu->addAction(actions->get(ConsoleAction_PolicyDelete));
 }
 
-void policy_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ObjectAction> *visible_actions, QSet<ObjectAction> *disabled_actions) {
+void policy_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
     const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
 
     if (type == ItemType_PolicyRoot) {
-        visible_actions->insert(ObjectAction_PolicyCreate);
+        visible_actions->insert(ConsoleAction_PolicyCreate);
     }
 
     if (type == ItemType_Policy) {
         if (single_selection) {
-            visible_actions->insert(ObjectAction_PolicyAddLink);
-            visible_actions->insert(ObjectAction_PolicyRename);
-            visible_actions->insert(ObjectAction_PolicyDelete);
+            visible_actions->insert(ConsoleAction_PolicyAddLink);
+            visible_actions->insert(ConsoleAction_PolicyRename);
+            visible_actions->insert(ConsoleAction_PolicyDelete);
         } else {
-            visible_actions->insert(ObjectAction_PolicyDelete);
+            visible_actions->insert(ConsoleAction_PolicyDelete);
         }
     }
 }

@@ -345,27 +345,27 @@ bool query_name_is_good(const QString &name, const QModelIndex &parent_index, QW
 }
 
 void query_add_actions_to_menu(ConsoleActions *actions, QMenu *menu) {
-    menu->addAction(actions->get(ObjectAction_QueryEditFolder));
-    menu->addAction(actions->get(ObjectAction_QueryMoveItemOrFolder));
-    menu->addAction(actions->get(ObjectAction_QueryDeleteItemOrFolder));
+    menu->addAction(actions->get(ConsoleAction_QueryEditFolder));
+    menu->addAction(actions->get(ConsoleAction_QueryMoveItemOrFolder));
+    menu->addAction(actions->get(ConsoleAction_QueryDeleteItemOrFolder));
 }
 
-void query_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ObjectAction> *visible_actions, QSet<ObjectAction> *disabled_actions) {
+void query_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
     const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
 
     if (single_selection) {
         if (type == ItemType_QueryRoot || type == ItemType_QueryFolder) {
-            visible_actions->insert(ObjectAction_QueryCreateFolder);
-            visible_actions->insert(ObjectAction_QueryCreateItem);
+            visible_actions->insert(ConsoleAction_QueryCreateFolder);
+            visible_actions->insert(ConsoleAction_QueryCreateItem);
         }
 
         if (type == ItemType_QueryFolder) {
-            visible_actions->insert(ObjectAction_QueryEditFolder);
+            visible_actions->insert(ConsoleAction_QueryEditFolder);
         }
     }
 
     if (type == ItemType_QueryItem || type == ItemType_QueryFolder) {
-        visible_actions->insert(ObjectAction_QueryMoveItemOrFolder);
-        visible_actions->insert(ObjectAction_QueryDeleteItemOrFolder);
+        visible_actions->insert(ConsoleAction_QueryMoveItemOrFolder);
+        visible_actions->insert(ConsoleAction_QueryDeleteItemOrFolder);
     }
 }

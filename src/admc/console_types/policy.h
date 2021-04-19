@@ -51,6 +51,6 @@ void policy_create(ConsoleWidget *console, const QModelIndex &policies_index, co
 QModelIndex policy_tree_init(ConsoleWidget *console, AdInterface &ad);
 void policy_add_actions_to_menu(ConsoleActions *actions, QMenu *menu);
 void policy_show_hide_actions(ConsoleActions *actions, const QList<QModelIndex> &indexes);
-void policy_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ObjectAction> *visible_actions, QSet<ObjectAction> *disabled_actions);
+void policy_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);
 
 #endif /* POLICY_H */

@@ -64,7 +64,7 @@ QModelIndex object_tree_init(ConsoleWidget *console, AdInterface &ad);
 void object_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
 void object_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target);
 void object_add_actions_to_menu(ConsoleActions *actions, QMenu *menu);
-void object_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ObjectAction> *visible_actions, QSet<ObjectAction> *disabled_actions);
+void object_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);
 
 QList<QString> object_delete(const QList<QString> &targets, QWidget *parent);
 QList<QString> object_enable_disable(const QList<QString> &targets, const bool disabled, QWidget *parent);
