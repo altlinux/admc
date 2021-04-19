@@ -1,11 +1,15 @@
 
 # Building
 
-See .gear/admc.spec for required packages.
-- "BuildRequires:" - packages required for building the app.
-- "Requires:" - packages required for running the app.
+Dependencies:
+* qt (core, widgets, help, linguist tools)
+* samba (smbclient, ndr)
+* glib2 (resolv)
+* ldap
+* krb5
+* uuid
 
-Once required packages are installed, run this from the admc folder:
+Once dependencies are installed, run this from the admc folder:
 ```
 $ mkdir build
 $ cd build
@@ -13,7 +17,7 @@ $ cmake ..
 $ make -j12
 ```
 
-Note that currently ADMC is only guaranteed to be buildable on ALTLinux.
+If the build fails, check build output for missing dependencies.
 
 # Usage:
 
