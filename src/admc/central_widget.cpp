@@ -280,14 +280,18 @@ void CentralWidget::on_properties_requested() {
 
             const AdObject object = ad.search_object(target);
 
-            const QModelIndex scope_index = get_selected_scope_index(console);
-            QStandardItem *scope_item = console->get_scope_item(scope_index);
-            object_scope_load(scope_item, object);
-            
-            const QModelIndex results_index = console->get_buddy(scope_index);
-            const QList<QStandardItem *> results_row = console->get_results_row(results_index);
-            object_results_load(results_row, object);
+            const QList<QModelIndex> scope_indexes = console->search_scope_by_role(ObjectRole_DN, target, ItemType_Object);
+            for (const QModelIndex &index : scope_indexes) {
+                QStandardItem *scope_item = console->get_scope_item(index);
+                object_scope_load(scope_item, object);
+            }
 
+            const QList<QModelIndex> results_indexes = console->search_results_by_role(ObjectRole_DN, target, ItemType_Object);
+            for (const QModelIndex &index : results_indexes) {
+                const QList<QStandardItem *> results_row = console->get_results_row(index);
+                object_results_load(results_row, object);
+            }
+            
             update_actions_visibility();
         });
 }
