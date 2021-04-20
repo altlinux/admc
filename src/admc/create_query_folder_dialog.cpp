@@ -24,7 +24,7 @@
 #include "globals.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/search_base_widget.h"
-#include "console_types/query.h"
+#include "console_types/console_query.h"
 
 #include <QLineEdit>
 #include <QFormLayout>
@@ -66,13 +66,13 @@ void CreateQueryFolderDialog::accept() {
     const QString name = name_edit->text();
     const QString description = description_edit->text();
 
-    if (!query_name_is_good(name, parent_index, this, QModelIndex())) {
+    if (!console_query_name_is_good(name, parent_index, this, QModelIndex())) {
         return;
     }
 
-    query_folder_create(console, name, description, parent_index);
+    console_query_folder_create(console, name, description, parent_index);
 
-    query_tree_save(console);
+    console_query_tree_save(console);
 
     QDialog::accept();
 }

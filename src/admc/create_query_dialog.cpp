@@ -24,7 +24,7 @@
 #include "globals.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/search_base_widget.h"
-#include "console_types/query.h"
+#include "console_types/console_query.h"
 
 #include <QLineEdit>
 #include <QFormLayout>
@@ -74,13 +74,13 @@ void CreateQueryDialog::accept() {
     const QString filter = filter_widget->get_filter();
     const QString search_base = search_base_widget->get_search_base();
 
-    if (!query_name_is_good(name, parent_index, this, QModelIndex())) {
+    if (!console_query_name_is_good(name, parent_index, this, QModelIndex())) {
         return;
     }
 
-    query_item_create(console, name, description, filter, search_base, parent_index);
+    console_query_item_create(console, name, description, filter, search_base, parent_index);
 
-    query_tree_save(console);
+    console_query_tree_save(console);
 
     QDialog::accept();
 }

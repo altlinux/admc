@@ -36,9 +36,9 @@ add_executable(admc
     policy_results_widget.cpp
     gplink.cpp
     
-    console_types/object.cpp
-    console_types/policy.cpp
-    console_types/query.cpp
+    console_types/console_object.cpp
+    console_types/console_policy.cpp
+    console_types/console_query.cpp
 
     move_dialog.cpp
     rename_dialog.cpp

@@ -27,7 +27,7 @@
 #include "filter_widget/search_base_widget.h"
 #include "find_results.h"
 #include "search_thread.h"
-#include "console_types/object.h"
+#include "console_types/console_object.h"
 
 #include <QString>
 #include <QList>
@@ -105,7 +105,7 @@ void FindWidget::find() {
     // Prepare search args
     const QString filter = filter_widget->get_filter();
     const QString search_base = search_base_widget->get_search_base();
-    const QList<QString> search_attributes = object_search_attributes();
+    const QList<QString> search_attributes = console_object_search_attributes();
 
     auto find_thread = new SearchThread(filter, search_base, search_attributes);
 

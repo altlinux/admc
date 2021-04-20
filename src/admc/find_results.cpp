@@ -23,7 +23,7 @@
 #include "utils.h"
 #include "adldap.h"
 #include "globals.h"
-#include "console_types/object.h"
+#include "console_types/console_object.h"
 #include "settings.h"
 #include "console_widget/customize_columns_dialog.h"
 #include "console_widget/results_view.h"
@@ -54,7 +54,7 @@ FindResults::FindResults()
 
     model = new QStandardItemModel(this);
 
-    const QList<QString> header_labels = object_header_labels();
+    const QList<QString> header_labels = console_object_header_labels();
     model->setHorizontalHeaderLabels(header_labels);
 
     view = new ResultsView(this);
@@ -145,7 +145,7 @@ void FindResults::load(const QHash<QString, AdObject> &search_results) {
     for (const AdObject &object : search_results) {
         const QList<QStandardItem *> row = make_item_row(g_adconfig->get_columns().count());
 
-        object_results_load(row, object);
+        console_object_results_load(row, object);
 
         model->appendRow(row);
     }
@@ -179,7 +179,7 @@ QList<QList<QStandardItem *>> FindResults::get_selected_rows() const {
 void FindResults::delete_objects() {
     const QList<QString> targets = get_selected_dns();
 
-    object_delete(targets, this);
+    console_object_delete(targets, this);
 }
 
 void FindResults::properties() {
@@ -214,7 +214,7 @@ void FindResults::move() {
 
 void FindResults::add_to_group() {
     const QList<QString> targets = get_selected_dns();
-    object_add_to_group(targets, this);
+    console_object_add_to_group(targets, this);
 }
 
 void FindResults::enable() {
@@ -248,7 +248,7 @@ void FindResults::create_group() {
 }
 
 void FindResults::customize_columns() {
-    auto dialog = new CustomizeColumnsDialog(view->detail_view(), object_default_columns(), this);
+    auto dialog = new CustomizeColumnsDialog(view->detail_view(), console_object_default_columns(), this);
     dialog->open();
 }
 
@@ -260,7 +260,7 @@ void FindResults::on_context_menu(const QPoint pos) {
 
 void FindResults::enable_disable_helper(const bool disabled) {
     const QList<QString> targets = get_selected_dns();
-    const QList<QString> changed_objects = object_enable_disable(targets, disabled, this);
+    const QList<QString> changed_objects = console_object_set_disabled(targets, disabled, this);
 
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
 

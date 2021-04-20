@@ -19,9 +19,9 @@
 
 #include "central_widget.h"
 
-#include "console_types/object.h"
-#include "console_types/policy.h"
-#include "console_types/query.h"
+#include "console_types/console_object.h"
+#include "console_types/console_policy.h"
+#include "console_types/console_query.h"
 #include "utils.h"
 #include "adldap.h"
 #include "properties_dialog.h"
@@ -85,14 +85,14 @@ CentralWidget::CentralWidget()
 
     auto policy_container_results = new ResultsView(this);
     policy_container_results->detail_view()->header()->setDefaultSectionSize(200);
-    policy_container_results_id = console->register_results(policy_container_results, policy_model_header_labels(), policy_model_default_columns());
+    policy_container_results_id = console->register_results(policy_container_results, console_policy_header_labels(), console_policy_default_columns());
     
     policy_results_widget = new PolicyResultsWidget();
     policy_results_id = console->register_results(policy_results_widget);
 
     auto query_results = new ResultsView(this);
     query_results->detail_view()->header()->setDefaultSectionSize(200);
-    query_folder_results_id = console->register_results(query_results, query_folder_header_labels(), query_folder_default_columns());
+    console_query_folder_results_id = console->register_results(query_results, console_query_folder_header_labels(), console_query_folder_default_columns());
     
     auto layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
@@ -237,11 +237,11 @@ void CentralWidget::go_online(AdInterface &ad) {
     // requires header labels which come from ADCONFIG, so
     // need to be online
     auto object_results = new ResultsView(this);
-    object_results_id = console->register_results(object_results, object_header_labels(), object_default_columns());
+    console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
 
-    object_tree_head = object_tree_init(console, ad);
-    policy_tree_init(console, ad);
-    query_tree_init(console);
+    object_tree_head = console_object_tree_init(console, ad);
+    console_policy_tree_init(console, ad);
+    console_query_tree_init(console);
 
     console->sort_scope();
     console->set_current_scope(object_tree_head);
@@ -255,9 +255,9 @@ void CentralWidget::open_filter() {
 
 void CentralWidget::delete_objects() {
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
-    const QList<QString> deleted_objects = object_delete(selected.keys(), this);
+    const QList<QString> deleted_objects = console_object_delete(selected.keys(), this);
 
-    object_delete(console, deleted_objects);
+    console_object_delete(console, deleted_objects);
 }
 
 void CentralWidget::on_properties_requested() {
@@ -283,13 +283,13 @@ void CentralWidget::on_properties_requested() {
             const QList<QModelIndex> scope_indexes = console->search_scope_by_role(ObjectRole_DN, target, ItemType_Object);
             for (const QModelIndex &index : scope_indexes) {
                 QStandardItem *scope_item = console->get_scope_item(index);
-                object_scope_load(scope_item, object);
+                console_object_scope_load(scope_item, object);
             }
 
             const QList<QModelIndex> results_indexes = console->search_results_by_role(ObjectRole_DN, target, ItemType_Object);
             for (const QModelIndex &index : results_indexes) {
                 const QList<QStandardItem *> results_row = console->get_results_row(index);
-                object_results_load(results_row, object);
+                console_object_results_load(results_row, object);
             }
             
             update_actions_visibility();
@@ -313,7 +313,7 @@ void CentralWidget::rename() {
             const QString old_dn = targets.keys()[0];
             const QString new_dn = dialog->get_new_dn();
             const QString parent_dn = dn_get_parent(old_dn);
-            object_move(console, ad, {old_dn}, {new_dn}, parent_dn);
+            console_object_move(console, ad, {old_dn}, {new_dn}, parent_dn);
         });
 }
 
@@ -347,7 +347,7 @@ void CentralWidget::create_helper(const QString &object_class) {
 
             const QModelIndex scope_parent_index = search_parent[0];
             const QString created_dn = dialog->get_created_dn();
-            object_create(console, ad, {created_dn}, scope_parent_index);
+            console_object_create(console, ad, {created_dn}, scope_parent_index);
 
             console->sort_scope();
 
@@ -371,7 +371,7 @@ void CentralWidget::move() {
 
             const QList<QString> old_dn_list = dialog->get_moved_objects();
             const QString new_parent_dn = dialog->get_selected();
-            object_move(console, ad, old_dn_list, new_parent_dn);
+            console_object_move(console, ad, old_dn_list, new_parent_dn);
 
             console->sort_scope();
         });
@@ -379,7 +379,7 @@ void CentralWidget::move() {
 
 void CentralWidget::add_to_group() {
     const QList<QString> targets = get_selected_dns();
-    object_add_to_group(targets, this);
+    console_object_add_to_group(targets, this);
 }
 
 void CentralWidget::enable() {
@@ -571,7 +571,7 @@ void CentralWidget::delete_query_item_or_folder() {
     const QModelIndex index = selected_indexes[0];
     console->delete_item(index);
 
-    query_tree_save(console);
+    console_query_tree_save(console);
 }
 
 void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, bool *ok) {
@@ -591,7 +591,7 @@ void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, co
     switch (target_type) {
         case ItemType_Unassigned: break;
         case ItemType_Object: {
-            object_can_drop(dropped_list, target, dropped_types,ok);
+            console_object_can_drop(dropped_list, target, dropped_types,ok);
             break;
         }
         case ItemType_PolicyRoot: break;
@@ -609,7 +609,7 @@ void CentralWidget::on_items_dropped(const QList<QModelIndex> &dropped_list, con
     switch (target_type) {
         case ItemType_Unassigned: break;
         case ItemType_Object: {
-            object_drop(console, dropped_list, target);
+            console_object_drop(console, dropped_list, target);
             break;
         }
         case ItemType_PolicyRoot: break;
@@ -693,9 +693,9 @@ void CentralWidget::fetch_scope_node(const QModelIndex &index) {
     const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
 
     if (type == ItemType_Object) {
-        object_fetch(console, filter_dialog, index);
+        console_object_fetch(console, filter_dialog, index);
     } else if (type == ItemType_QueryItem) {
-        query_item_fetch(console, index);
+        console_query_item_fetch(console, index);
     }
 }
 
@@ -704,7 +704,7 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
 
     show_busy_indicator();
 
-    const QList<QString> changed_objects = object_enable_disable(targets.keys(), disabled, this);
+    const QList<QString> changed_objects = console_object_set_disabled(targets.keys(), disabled, this);
 
     AdInterface ad;
     if (ad_failed(ad)) {

@@ -24,7 +24,7 @@
 #include "edits/string_edit.h"
 #include "status.h"
 #include "utils.h"
-#include "console_types/policy.h"
+#include "console_types/console_policy.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -62,9 +62,9 @@ SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
     auto model = new QStandardItemModel(this);
     view->setModel(model);
 
-    model->setHorizontalHeaderLabels(policy_model_header_labels());
+    model->setHorizontalHeaderLabels(console_policy_header_labels());
 
-    const QList<QString> search_attributes = policy_model_search_attributes();
+    const QList<QString> search_attributes = console_policy_search_attributes();
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
 
     const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
@@ -73,7 +73,7 @@ SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
         auto item = new QStandardItem();
         model->appendRow(item);
 
-        policy_scope_load(item, object);
+        console_policy_scope_load(item, object);
     }
 
     const auto top_layout = new QVBoxLayout();

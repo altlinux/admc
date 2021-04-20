@@ -23,7 +23,7 @@
 #include "status.h"
 #include "globals.h"
 #include "console_widget/console_widget.h"
-#include "console_types/query.h"
+#include "console_types/console_query.h"
 
 #include <QLineEdit>
 #include <QFormLayout>
@@ -75,15 +75,15 @@ void EditQueryFolderDialog::accept() {
     const QString name = name_edit->text();
     const QString description = description_edit->text();
 
-    if (!query_name_is_good(name, scope_index.parent(), this, scope_index)) {
+    if (!console_query_name_is_good(name, scope_index.parent(), this, scope_index)) {
         return;
     }
 
     QStandardItem *scope_item = console->get_scope_item(scope_index);
     const QList<QStandardItem *> results_row = console->get_results_row(results_index);
-    query_folder_load(scope_item, results_row, name, description);
+    console_query_folder_load(scope_item, results_row, name, description);
 
-    query_tree_save(console);
+    console_query_tree_save(console);
 
     QDialog::accept();
 }

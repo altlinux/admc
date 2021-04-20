@@ -19,9 +19,9 @@
 
 #include "console_actions.h"
 
-#include "console_types/object.h"
-#include "console_types/policy.h"
-#include "console_types/query.h"
+#include "console_types/console_object.h"
+#include "console_types/console_policy.h"
+#include "console_types/console_query.h"
 
 #include <QMenu>
 #include <QModelIndex>
@@ -97,9 +97,9 @@ void ConsoleActions::add_to_menu(QMenu *menu) {
 
     menu->addSeparator();
 
-    object_add_actions_to_menu(this, menu);
-    policy_add_actions_to_menu(this, menu);
-    query_add_actions_to_menu(this, menu);
+    console_object_actions_add_to_menu(this, menu);
+    console_policy_actions_add_to_menu(this, menu);
+    console_query_actions_add_to_menu(this, menu);
 }
 
 void ConsoleActions::update_actions_visibility(const QList<QModelIndex> &indexes) {
@@ -117,9 +117,9 @@ void ConsoleActions::update_actions_visibility(const QList<QModelIndex> &indexes
         const QModelIndex index = indexes[i];
         QSet<ConsoleAction> this_visible_actions;
 
-        object_get_action_state(index, single_selection, &this_visible_actions, &disabled_actions);
-        query_get_action_state(index, single_selection, &this_visible_actions, &disabled_actions);
-        policy_get_action_state(index, single_selection, &this_visible_actions, &disabled_actions);
+        console_object_actions_get_state(index, single_selection, &this_visible_actions, &disabled_actions);
+        console_query_actions_get_state(index, single_selection, &this_visible_actions, &disabled_actions);
+        console_policy_actions_get_state(index, single_selection, &this_visible_actions, &disabled_actions);
 
         if (i == 0) {
             // NOTE: for first index, add the whole set

@@ -21,7 +21,7 @@
 
 #include "adldap.h"
 #include "globals.h"
-#include "console_types/object.h"
+#include "console_types/console_object.h"
 
 #include <QTest>
 #include <QModelIndex>

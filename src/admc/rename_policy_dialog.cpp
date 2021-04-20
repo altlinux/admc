@@ -24,7 +24,7 @@
 #include "globals.h"
 #include "status.h"
 #include "utils.h"
-#include "console_types/policy.h"
+#include "console_types/console_policy.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -105,11 +105,11 @@ void RenamePolicyDialog::accept() {
     const AdObject object = ad.search_object(dn);
 
     QStandardItem *scope_item = console->get_scope_item(scope_index);
-    policy_scope_load(scope_item, object);
+    console_policy_scope_load(scope_item, object);
     
     const QModelIndex results_index = console->get_buddy(scope_index);
     const QList<QStandardItem *> results_row = console->get_results_row(results_index);
-    policy_results_load(results_row, object);
+    console_policy_results_load(results_row, object);
 
     console->sort_scope();
 }

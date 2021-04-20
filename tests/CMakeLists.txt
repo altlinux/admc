@@ -42,9 +42,9 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/policy_results_widget.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/gplink.cpp
     
-    ${PROJECT_SOURCE_DIR}/src/admc/console_types/object.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/console_types/policy.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/console_types/query.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_types/console_object.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_types/console_policy.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/console_types/console_query.cpp
 
     ${PROJECT_SOURCE_DIR}/src/admc/move_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/rename_dialog.cpp

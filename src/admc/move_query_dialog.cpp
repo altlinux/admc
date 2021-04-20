@@ -25,7 +25,7 @@
 #include "utils.h"
 #include "central_widget.h"
 #include "console_widget/console_widget.h"
-#include "console_types/query.h"
+#include "console_types/console_query.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -79,7 +79,7 @@ MoveQueryDialog::MoveQueryDialog(ConsoleWidget *console_arg)
         this, &QDialog::reject);
 }
 
-// TODO: duplicating query_tree_init()
+// TODO: duplicating console_query_tree_init()
 void MoveQueryDialog::open() {
     auto path_to_name =
     [](const QString &path) {
@@ -104,7 +104,7 @@ void MoveQueryDialog::open() {
     query_stack.append(head_item->index());
     while (!query_stack.isEmpty()) {
         const QModelIndex index = query_stack.pop();
-        const QString path = query_folder_path(index);
+        const QString path = console_query_folder_path(index);
 
         // Go through children and add them as folders or
         // query items
@@ -134,20 +134,20 @@ void MoveQueryDialog::accept() {
     // tree
     const QModelIndex new_parent_index =
     [&]() {
-        const QModelIndex query_root_index = get_query_root_index(console);
+        const QModelIndex query_root_index = console_query_get_root_index(console);
         if (!query_root_index.isValid()) {
             return QModelIndex();
         }
         
         const QModelIndex selected_index = view->selectionModel()->currentIndex();
-        const QString selected_path = query_folder_path(selected_index);
+        const QString selected_path = console_query_folder_path(selected_index);
 
         QStack<QModelIndex> stack;
         stack.append(query_root_index);
         while (!stack.isEmpty()) {
             const QModelIndex index = stack.pop();
             const QStandardItem *item = console->get_scope_item(index);
-            const QString path = query_folder_path(index);
+            const QString path = console_query_folder_path(index);
 
             if (path == selected_path) {
                 return index;
@@ -179,7 +179,7 @@ void MoveQueryDialog::accept() {
     // new location
     QStandardItem *old_item = console->get_scope_item(old_index);
     const QString moved_name = old_item->text();
-    if (!query_name_is_good(moved_name, new_parent_index, this, old_index)) {
+    if (!console_query_name_is_good(moved_name, new_parent_index, this, old_index)) {
         return;
     }
 
@@ -204,11 +204,11 @@ void MoveQueryDialog::accept() {
             const QString search_base = item->data(QueryItemRole_SearchBase).toString();
             const QString name = item->text();
 
-            query_item_create(console, name, description, filter, search_base, new_parent);
+            console_query_item_create(console, name, description, filter, search_base, new_parent);
         } else if (type == ItemType_QueryFolder) {
             const QString name = item->text();
             const QString description = item->data(QueryItemRole_Description).toString();
-            query_folder_create(console, name, description, new_parent);
+            console_query_folder_create(console, name, description, new_parent);
         }
 
         for (int row = 0; row < item->rowCount(); row++) {
@@ -222,7 +222,7 @@ void MoveQueryDialog::accept() {
 
     console->sort_scope();
 
-    query_tree_save(console);
+    console_query_tree_save(console);
 
     QDialog::accept();
 }

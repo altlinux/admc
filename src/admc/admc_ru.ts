@@ -1366,7 +1366,7 @@
 <context>
     <name>policy_model</name>
     <message>
-        <location filename="console_types/policy.cpp" line="58"/>
+        <location filename="console_types/console_policy.cpp" line="58"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>

@@ -22,7 +22,7 @@
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
-#include "console_types/object.h"
+#include "console_types/console_object.h"
 #include "find_select_dialog.h"
 
 #include <QHBoxLayout>
@@ -47,7 +47,7 @@ SelectDialog::SelectDialog(QList<QString> classes_arg, SelectDialogMultiSelectio
 
     model = new QStandardItemModel(this);
 
-    const QList<QString> header_labels = object_header_labels();
+    const QList<QString> header_labels = console_object_header_labels();
     model->setHorizontalHeaderLabels(header_labels);
 
     view = new QTreeView(this);

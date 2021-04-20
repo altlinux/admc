@@ -23,7 +23,7 @@
 #include "create_dialog.h"
 #include "utils.h"
 #include "status.h"
-#include "console_types/object.h"
+#include "console_types/console_object.h"
 #include "select_container_dialog.h"
 #include "select_dialog.h"
 #include "find_select_dialog.h"
@@ -323,7 +323,7 @@ void ADMCTestObjectMenu::object_menu_disable_enable_account() {
         QVERIFY2(set_disabled_success, qPrintable(QString("Failed to set disabled account option for user - %1").arg(dn)));
 
         // Modify state using object menu
-        object_enable_disable({dn}, !initial_disabled_state, parent_widget);
+        console_object_set_disabled({dn}, !initial_disabled_state, parent_widget);
 
         // Check that final disabled state has changed
         const AdObject object = ad.search_object(dn);
@@ -436,7 +436,7 @@ void ADMCTestObjectMenu::object_menu_add_to_group() {
     QVERIFY2(object_exists(group_dn), "Created group doesn't exist");
 
     // Open add to group dialog
-    object_add_to_group({user_dn}, parent_widget);
+    console_object_add_to_group({user_dn}, parent_widget);
     auto select_dialog = parent_widget->findChild<SelectDialog *>();
     QVERIFY2((select_dialog != nullptr), "Failed to find select_dialog");
     QVERIFY(QTest::qWaitForWindowExposed(select_dialog, 1000));

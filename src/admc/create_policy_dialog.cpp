@@ -23,7 +23,7 @@
 #include "status.h"
 #include "globals.h"
 #include "console_widget/console_widget.h"
-#include "console_types/policy.h"
+#include "console_types/console_policy.h"
 
 #include <QLineEdit>
 #include <QFormLayout>
@@ -106,11 +106,11 @@ void CreatePolicyDialog::accept() {
 
     if (success) {
         // Create policy in console
-        const QList<QString> search_attributes = policy_model_search_attributes();
+        const QList<QString> search_attributes = console_policy_search_attributes();
         const QHash<QString, AdObject> search_results = ad.search(QString(), search_attributes, SearchScope_Object, created_dn);
         const AdObject object = search_results[created_dn];
 
-        policy_create(console, object);
+        console_policy_create(console, object);
 
         // NOTE: not adding policy object to the domain
         // tree, but i think it's ok?
