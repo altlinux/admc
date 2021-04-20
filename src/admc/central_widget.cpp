@@ -79,6 +79,7 @@ CentralWidget::CentralWidget()
     auto create_query_dialog = new CreateQueryDialog(console);
     auto create_query_folder_dialog = new CreateQueryFolderDialog(console);
     auto edit_query_folder_dialog = new EditQueryFolderDialog(console);
+    auto create_policy_dialog = new CreatePolicyDialog(console);
     auto rename_policy_dialog = new RenamePolicyDialog(console);
     auto move_query_dialog = new MoveQueryDialog(console);
 
@@ -168,7 +169,7 @@ CentralWidget::CentralWidget()
 
     connect(
         console_actions->get(ConsoleAction_PolicyCreate), &QAction::triggered,
-        this, &CentralWidget::create_policy);
+        create_policy_dialog, &QDialog::open);
     connect(
         console_actions->get(ConsoleAction_PolicyAddLink), &QAction::triggered,
         this, &CentralWidget::add_link);
@@ -449,32 +450,6 @@ void CentralWidget::edit_upn_suffixes() {
             ad2.attribute_replace_values(partitions_dn, ATTRIBUTE_UPN_SUFFIXES, new_values);
             g_status()->display_ad_messages(ad2, this);
         });
-}
-
-void CentralWidget::create_policy() {
-    auto dialog = new CreatePolicyDialog(this);
-
-    connect(
-        dialog, &QDialog::accepted,
-        [this, dialog]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
-                return;
-            }
-
-            const QString dn = dialog->get_created_dn();
-
-            const QList<QString> search_attributes = policy_model_search_attributes();
-            const QHash<QString, AdObject> search_results = ad.search(QString(), search_attributes, SearchScope_Object, dn);
-            const AdObject object = search_results[dn];
-
-            policy_create(console, object);
-
-            // NOTE: not adding policy object to the domain
-            // tree, but i think it's ok?
-        });
-
-    dialog->open();
 }
 
 void CentralWidget::add_link() {

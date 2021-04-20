@@ -22,6 +22,8 @@
 #include "adldap.h"
 #include "status.h"
 #include "globals.h"
+#include "console_widget/console_widget.h"
+#include "console_types/policy.h"
 
 #include <QLineEdit>
 #include <QFormLayout>
@@ -34,10 +36,10 @@
 // just do this through verify()? Had to remove upnedit from
 // required_edits because that's a list of stringedits. Now upnedit checks that it's not empty in verify();
 
-CreatePolicyDialog::CreatePolicyDialog(QWidget *parent)
-: QDialog(parent)
+CreatePolicyDialog::CreatePolicyDialog(ConsoleWidget *console_arg)
+: QDialog(console_arg)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
+    console = console_arg;
 
     setMinimumWidth(400);
 
@@ -62,8 +64,10 @@ CreatePolicyDialog::CreatePolicyDialog(QWidget *parent)
         this, &CreatePolicyDialog::accept);
 }
 
-QString CreatePolicyDialog::get_created_dn() const {
-    return created_dn;
+void CreatePolicyDialog::open() {
+    name_edit->setText("");
+
+    QDialog::open();
 }
 
 void CreatePolicyDialog::accept() {
@@ -93,6 +97,7 @@ void CreatePolicyDialog::accept() {
         return;
     }
 
+    QString created_dn;
     const bool success = ad.create_gpo(name, created_dn);
 
     hide_busy_indicator();
@@ -100,6 +105,16 @@ void CreatePolicyDialog::accept() {
     g_status()->display_ad_messages(ad, this);
 
     if (success) {
+        // Create policy in console
+        const QList<QString> search_attributes = policy_model_search_attributes();
+        const QHash<QString, AdObject> search_results = ad.search(QString(), search_attributes, SearchScope_Object, created_dn);
+        const AdObject object = search_results[created_dn];
+
+        policy_create(console, object);
+
+        // NOTE: not adding policy object to the domain
+        // tree, but i think it's ok?
+
         QDialog::accept();
     }
 }

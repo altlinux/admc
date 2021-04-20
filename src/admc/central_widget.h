@@ -90,7 +90,6 @@ private slots:
     void create_group();
     void edit_upn_suffixes();
 
-    void create_policy();
     void add_link();
     void delete_policy();
 
