@@ -134,19 +134,7 @@ void MoveQueryDialog::accept() {
     // tree
     const QModelIndex new_parent_index =
     [&]() {
-        const QModelIndex query_root_index =
-        [&]() {
-            const QList<QModelIndex> search_results = console->search_scope_by_role(ConsoleRole_Type, ItemType_QueryRoot);
-
-            if (!search_results.isEmpty()) {
-                return search_results[0];
-            } else {
-                qDebug() << "Failed to find query root";
-               
-                return QModelIndex();
-            }
-        }();
-
+        const QModelIndex query_root_index = get_query_root_index(console);
         if (!query_root_index.isValid()) {
             return QModelIndex();
         }
@@ -234,7 +222,7 @@ void MoveQueryDialog::accept() {
 
     console->sort_scope();
 
-    query_tree_save();
+    query_tree_save(console);
 
     QDialog::accept();
 }

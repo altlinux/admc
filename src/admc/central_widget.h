@@ -104,7 +104,6 @@ private slots:
 private:
     ConsoleWidget *console;
     QPersistentModelIndex object_tree_head;
-    QPersistentModelIndex policy_tree_head;
     FilterDialog *filter_dialog;
     PolicyResultsWidget *policy_results_widget;
     

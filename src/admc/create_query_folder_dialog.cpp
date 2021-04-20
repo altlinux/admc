@@ -72,7 +72,7 @@ void CreateQueryFolderDialog::accept() {
 
     query_folder_create(console, name, description, parent_index);
 
-    query_tree_save();
+    query_tree_save(console);
 
     QDialog::accept();
 }

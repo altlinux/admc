@@ -47,8 +47,8 @@ void policy_results_load(const QList<QStandardItem *> &row, const AdObject &obje
 QList<QString> policy_model_header_labels();
 QList<int> policy_model_default_columns();
 QList<QString> policy_model_search_attributes();
-void policy_create(ConsoleWidget *console, const QModelIndex &policies_index, const AdObject &object);
-QModelIndex policy_tree_init(ConsoleWidget *console, AdInterface &ad);
+void policy_create(ConsoleWidget *console, const AdObject &object);
+void policy_tree_init(ConsoleWidget *console, AdInterface &ad);
 void policy_add_actions_to_menu(ConsoleActions *actions, QMenu *menu);
 void policy_show_hide_actions(ConsoleActions *actions, const QList<QModelIndex> &indexes);
 void policy_get_action_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);

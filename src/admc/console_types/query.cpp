@@ -44,7 +44,6 @@ enum QueryColumn {
 };
 
 int query_folder_results_id;
-QPersistentModelIndex query_tree_head;
 
 QList<QString> query_folder_header_labels() {
     return {
@@ -233,23 +232,26 @@ void query_tree_init(ConsoleWidget *console) {
             }
         }
     }
-
-    query_tree_head = head_item->index();
 }
 
 // Saves current state of queries tree to settings. Should
 // be called after every modication to queries tree
-void query_tree_save() {
+void query_tree_save(ConsoleWidget *console) {
     // folder path = {list of children}
     // data = {path => data map containing info about
     // query folder/item}
     QHash<QString, QVariant> folders;
     QHash<QString, QVariant> info_map;
 
-    QStack<QModelIndex> stack;
-    stack.append(query_tree_head);
+    const QModelIndex query_root_index = get_query_root_index(console);
+    if (!query_root_index.isValid()) {
+        return;
+    }
 
-    const QAbstractItemModel *model = query_tree_head.model();
+    QStack<QModelIndex> stack;
+    stack.append(query_root_index);
+
+    const QAbstractItemModel *model = query_root_index.model();
 
     while (!stack.isEmpty()) {
         const QModelIndex index = stack.pop();
@@ -365,5 +367,17 @@ void query_get_action_state(const QModelIndex &index, const bool single_selectio
     if (type == ItemType_QueryItem || type == ItemType_QueryFolder) {
         visible_actions->insert(ConsoleAction_QueryMoveItemOrFolder);
         visible_actions->insert(ConsoleAction_QueryDeleteItemOrFolder);
+    }
+}
+
+QModelIndex get_query_root_index(ConsoleWidget *console) {
+    const QList<QModelIndex> search_results = console->search_scope_by_role(ConsoleRole_Type, ItemType_QueryRoot);
+
+    if (!search_results.isEmpty()) {
+        return search_results[0];
+    } else {
+        qDebug() << "Failed to find query root";
+
+        return QModelIndex();
     }
 }

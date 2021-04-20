@@ -78,16 +78,33 @@ QList<QString> policy_model_search_attributes() {
     return {ATTRIBUTE_DISPLAY_NAME};
 }
 
-void policy_create(ConsoleWidget *console, const QModelIndex &policies_index, const AdObject &object) {
+void policy_create(ConsoleWidget *console, const AdObject &object) {
+    const QModelIndex policy_root_index =
+    [&]() {
+        const QList<QModelIndex> search_results = console->search_scope_by_role(ConsoleRole_Type, ItemType_PolicyRoot);
+
+        if (!search_results.isEmpty()) {
+            return search_results[0];
+        } else {
+            return QModelIndex();
+        }
+    }();
+
+    if (!policy_root_index.isValid()) {
+        qDebug() << "Failed to find policy root";
+        
+        return;
+    }
+
     QStandardItem *scope_item;
     QList<QStandardItem *> results_row;
-    console->add_buddy_scope_and_results(policy_results_id, ScopeNodeType_Static, policies_index, &scope_item, &results_row);
+    console->add_buddy_scope_and_results(policy_results_id, ScopeNodeType_Static, policy_root_index, &scope_item, &results_row);
 
     policy_scope_load(scope_item, object);
     policy_results_load(results_row, object);
 }
 
-QModelIndex policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
+void policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
     // Add head item
     QStandardItem *head_item = console->add_scope_item(policy_container_results_id, ScopeNodeType_Static, QModelIndex());
     head_item->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
@@ -102,10 +119,8 @@ QModelIndex policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
     const QHash<QString, AdObject> policy_search_results = ad.search(policy_search_filter, policy_search_attributes, SearchScope_All);
 
     for (const AdObject &object : policy_search_results.values()) {
-        policy_create(console, head_item->index(), object);
+        policy_create(console, object);
     }
-
-    return head_item->index();
 }
 
 void policy_add_actions_to_menu(ConsoleActions *actions, QMenu *menu) {

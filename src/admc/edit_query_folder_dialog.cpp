@@ -83,7 +83,7 @@ void EditQueryFolderDialog::accept() {
     const QList<QStandardItem *> results_row = console->get_results_row(results_index);
     query_folder_load(scope_item, results_row, name, description);
 
-    query_tree_save();
+    query_tree_save(console);
 
     QDialog::accept();
 }

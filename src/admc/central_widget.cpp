@@ -239,7 +239,7 @@ void CentralWidget::go_online(AdInterface &ad) {
     object_results_id = console->register_results(object_results, object_header_labels(), object_default_columns());
 
     object_tree_head = object_tree_init(console, ad);
-    policy_tree_head = policy_tree_init(console, ad);
+    policy_tree_init(console, ad);
     query_tree_init(console);
 
     console->sort_scope();
@@ -452,9 +452,6 @@ void CentralWidget::edit_upn_suffixes() {
 }
 
 void CentralWidget::create_policy() {
-    // TODO: implement using ad.create_gpo() (which is
-    // unfinished)
-
     auto dialog = new CreatePolicyDialog(this);
 
     connect(
@@ -471,7 +468,7 @@ void CentralWidget::create_policy() {
             const QHash<QString, AdObject> search_results = ad.search(QString(), search_attributes, SearchScope_Object, dn);
             const AdObject object = search_results[dn];
 
-            policy_create(console, policy_tree_head, object);
+            policy_create(console, object);
 
             // NOTE: not adding policy object to the domain
             // tree, but i think it's ok?
@@ -595,7 +592,7 @@ void CentralWidget::delete_query_item_or_folder() {
     const QModelIndex index = selected_indexes[0];
     console->delete_item(index);
 
-    query_tree_save();
+    query_tree_save(console);
 }
 
 void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, bool *ok) {
