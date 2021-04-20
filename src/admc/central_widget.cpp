@@ -712,27 +712,16 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
     }
 
     for (const QString &dn : changed_objects) {
-        const QPersistentModelIndex index = targets[dn];
+        const QList<QModelIndex> scope_indexes = console->search_scope_by_role(ObjectRole_DN, dn, ItemType_Object);
+        for (const QModelIndex &index : scope_indexes) {
+            QStandardItem *scope_item = console->get_scope_item(index);
+            scope_item->setData(disabled, ObjectRole_AccountDisabled);
+        }
 
-        auto update_helper =
-        [=](const QPersistentModelIndex &the_index) {
-            const bool is_scope = console->is_scope_item(the_index);
-
-            if (is_scope) {
-                QStandardItem *scope_item = console->get_scope_item(the_index);
-
-                scope_item->setData(disabled, ObjectRole_AccountDisabled);
-            } else {
-                QList<QStandardItem *> results_row = console->get_results_row(the_index);
-                results_row[0]->setData(disabled, ObjectRole_AccountDisabled);
-            }
-        };
-
-        update_helper(index);
-
-        const QPersistentModelIndex buddy = console->get_buddy(index);
-        if (buddy.isValid()) {
-            update_helper(buddy);
+        const QList<QModelIndex> results_indexes = console->search_results_by_role(ObjectRole_DN, dn, ItemType_Object);
+        for (const QModelIndex &index : results_indexes) {
+            const QList<QStandardItem *> results_row = console->get_results_row(index);
+            results_row[0]->setData(disabled, ObjectRole_AccountDisabled);
         }
     }
 
