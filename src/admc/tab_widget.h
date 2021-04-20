@@ -39,6 +39,12 @@ public:
 
     void add_tab(QWidget *tab, const QString &title);
 
+signals:
+    void current_changed(QWidget *prev_tab, QWidget *new_tab);
+
+private slots:
+    void on_list_current_row_changed(int index);
+
 private:
     QStackedWidget *stacked_widget;
     QListWidget *list_widget;

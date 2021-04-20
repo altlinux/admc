@@ -41,12 +41,20 @@ TabWidget::TabWidget()
 
     connect(
         list_widget, &QListWidget::currentRowChanged,
-        [this](int index) {
-            stacked_widget->setCurrentIndex(index);
-        });
+        this, &TabWidget::on_list_current_row_changed);
 }
 
 void TabWidget::add_tab(QWidget *tab, const QString &title) {
     list_widget->addItem(title);
     stacked_widget->addWidget(tab);
+}
+
+void TabWidget::on_list_current_row_changed(int index) {
+    QWidget *prev_tab = stacked_widget->currentWidget();
+
+    stacked_widget->setCurrentIndex(index);
+
+    QWidget *new_tab = stacked_widget->currentWidget();
+
+    emit current_changed(prev_tab, new_tab);
 }

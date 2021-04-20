@@ -101,6 +101,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
 : QDialog()
 {
     target = target_arg;
+    is_modified = false;
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -162,7 +163,11 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     const bool advanced_view_ON = g_settings->get_bool(BoolSetting_AdvancedFeatures);
     if (advanced_view_ON) {
         add_tab(new ObjectTab(), tr("Object"));
-        add_tab(new AttributesTab(), tr("Attributes"));
+
+        attributes_tab = new AttributesTab();
+        add_tab(attributes_tab, tr("Attributes"));
+    } else {
+        attributes_tab = nullptr;
     }
 
     if (object.is_class(CLASS_USER)) {
@@ -200,6 +205,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
 
     reset();
 
+
     connect(
         ok_button, &QPushButton::clicked,
         this, &PropertiesDialog::ok);
@@ -212,6 +218,67 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     connect(
         cancel_button, &QPushButton::clicked,
         this, &PropertiesDialog::reject);
+    connect(
+        tab_widget, &TabWidget::current_changed,
+        this, &PropertiesDialog::on_current_tab_changed);
+}
+
+void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab) {
+    const bool switching_to_or_from_attributes = (prev_tab == attributes_tab || new_tab == attributes_tab);
+    const bool need_to_open_dialog = (switching_to_or_from_attributes && is_modified);
+    if (!need_to_open_dialog) {
+        return;
+    }
+
+    // Open dialog which let's user choose whether to
+    // apply changes and move to new tab or stay on
+    // current tab
+    auto dialog = new QDialog(this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+
+    const QString explanation_text =
+    [&]() {
+        if (new_tab == attributes_tab) {
+            return tr("You're switching to attributes tab, while another tab has unapplied changes. Choose to apply or discard those changes.");
+        } else {
+            return tr("You're switching from attributes tab, while it has unapplied changes. Choose to apply or discard those changes.");
+        }
+    }();
+    auto explanation_label = new QLabel(explanation_text);
+
+    auto button_box = new QDialogButtonBox();
+    button_box->addButton(tr("Apply current changes"), QDialogButtonBox::AcceptRole);
+    button_box->addButton(tr("Discard changes"), QDialogButtonBox::RejectRole);
+
+    connect(
+        button_box, &QDialogButtonBox::accepted,
+        dialog, &QDialog::accept);
+    connect(
+        button_box, &QDialogButtonBox::rejected,
+        dialog, &QDialog::reject);
+
+    const auto layout = new QVBoxLayout();
+    dialog->setLayout(layout);
+    layout->addWidget(explanation_label);
+    layout->addWidget(button_box);
+
+    connect(
+        dialog, &QDialog::accepted,
+        [&]() {
+            apply();
+
+            // NOTE: have to reset for attributes/other tab
+            // to load updates
+            reset();
+        });
+
+    connect(
+        dialog, &QDialog::rejected,
+        [&]() {
+            reset();
+        });
+
+    dialog->open();
 }
 
 void PropertiesDialog::ok() {
@@ -252,6 +319,7 @@ bool PropertiesDialog::apply() {
     if (total_apply_success) {
         apply_button->setEnabled(false);
         reset_button->setEnabled(false);
+        is_modified = false;
     }
 
     hide_busy_indicator();
@@ -275,9 +343,11 @@ void PropertiesDialog::reset() {
 
     apply_button->setEnabled(false);
     reset_button->setEnabled(false);
+    is_modified = false;
 }
 
 void PropertiesDialog::on_edited() {
     apply_button->setEnabled(true);
     reset_button->setEnabled(true);
+    is_modified = true;
 }

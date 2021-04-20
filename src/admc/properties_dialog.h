@@ -33,6 +33,7 @@ class QString;
 class PropertiesTab;
 class QAbstractItemView;
 class QPushButton;
+class AttributesTab;
 template <typename T> class QList;
 
 class PropertiesDialog final : public QDialog {
@@ -53,12 +54,15 @@ private slots:
     bool apply();
     void reset();
     void on_edited();
+    void on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab);
 
 private:
     QList<PropertiesTab *> tabs;
     QString target;
     QPushButton *apply_button;
     QPushButton *reset_button;
+    AttributesTab *attributes_tab;
+    bool is_modified;
 
     // NOTE: ctor is private, use open_for_target() instead
     PropertiesDialog(const QString &target_arg);
