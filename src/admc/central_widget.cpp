@@ -549,6 +549,24 @@ void CentralWidget::query_delete() {
 }
 
 void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, bool *ok) {
+    const bool dropped_contains_target =
+    [&]() {
+        const QModelIndex target_scope = console_item_convert_to_scope_index(target);
+
+        for (const QModelIndex &dropped : dropped_list) {
+            const QModelIndex dropped_scope = console_item_convert_to_scope_index(dropped);
+            if (dropped_scope == target_scope) {
+                return true;
+            }
+        }
+
+        return false;
+    }();
+
+    if (dropped_contains_target) {
+        return;
+    }
+
     const ItemType target_type = (ItemType) target.data(ConsoleRole_Type).toInt();
     const QSet<ItemType> dropped_types =
     [&]() {
