@@ -32,7 +32,7 @@ class RenameObjectDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    RenameObjectDialog(const QList<QString> &targets, QWidget *parent);
+    RenameObjectDialog(const QString &target_arg, QWidget *parent);
 
     static void success_msg(const QString &old_name);
     static void fail_msg(const QString &old_name);

@@ -195,14 +195,14 @@ void FindResults::properties() {
 }
 
 void FindResults::rename() {
-    const QList<QString> targets = get_selected_dns();
-    auto dialog = new RenameObjectDialog(targets, this);
+    const QString target = get_selected_dn();
+    auto dialog = new RenameObjectDialog(target, this);
     dialog->open();
 }
 
 void FindResults::create_helper(const QString &object_class) {
-    const QList<QString> targets = get_selected_dns();
-    auto dialog = new CreateObjectDialog(targets, object_class, this);
+    const QString parent_dn = get_selected_dn();
+    auto dialog = new CreateObjectDialog(parent_dn, object_class, this);
     dialog->open();
 }
 
@@ -226,8 +226,8 @@ void FindResults::disable() {
 }
 
 void FindResults::reset_password() {
-    const QList<QString> targets = get_selected_dns();
-    const auto dialog = new PasswordDialog(targets, this);
+    const QString target = get_selected_dn();
+    const auto dialog = new PasswordDialog(target, this);
     dialog->open();
 }
 
@@ -300,4 +300,14 @@ QList<QString> FindResults::get_selected_dns() {
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
 
     return selected.keys();
+}
+
+QString FindResults::get_selected_dn() {
+    const QList<QString> dn_list = get_selected_dns();
+
+    if (!dn_list.isEmpty()) {
+        return dn_list[0];
+    } else {
+        return QString();
+    }
 }

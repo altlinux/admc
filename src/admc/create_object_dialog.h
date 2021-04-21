@@ -41,7 +41,7 @@ class CreateObjectDialog : public QDialog {
 Q_OBJECT
 
 public:
-    CreateObjectDialog(const QList<QString> &targets, const QString &object_class_arg, QWidget *parent);
+    CreateObjectDialog(const QString &parent_dn_arg, const QString &object_class_arg, QWidget *parent);
 
     QString get_created_dn() const;
 

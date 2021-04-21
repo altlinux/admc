@@ -42,7 +42,7 @@
 // just do this through verify()? Had to remove upnedit from
 // required_edits because that's a list of stringedits. Now upnedit checks that it's not empty in verify();
 
-CreateObjectDialog::CreateObjectDialog(const QList<QString> &targets, const QString &object_class_arg, QWidget *parent)
+CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QString &object_class_arg, QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -54,13 +54,7 @@ CreateObjectDialog::CreateObjectDialog(const QList<QString> &targets, const QStr
         return;
     }
     
-    if (targets.size() != 1) {
-        QDialog::close();
-
-        return;
-    }
-
-    parent_dn = targets[0];
+    parent_dn = parent_dn_arg;
     object_class = object_class_arg;
 
     setMinimumWidth(400);

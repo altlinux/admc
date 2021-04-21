@@ -297,9 +297,9 @@ void CentralWidget::on_properties_requested() {
 }
 
 void CentralWidget::rename() {
-    const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
+    const QString target = get_selected_dn();
 
-    auto dialog = new RenameObjectDialog(targets.keys(), this);
+    auto dialog = new RenameObjectDialog(target, this);
     dialog->open();
 
     connect(
@@ -310,7 +310,7 @@ void CentralWidget::rename() {
                 return;
             }
 
-            const QString old_dn = targets.keys()[0];
+            const QString old_dn = target;
             const QString new_dn = dialog->get_new_dn();
             const QString parent_dn = dn_get_parent(old_dn);
             console_object_move(console, ad, {old_dn}, {new_dn}, parent_dn);
@@ -318,9 +318,9 @@ void CentralWidget::rename() {
 }
 
 void CentralWidget::create_helper(const QString &object_class) {
-    const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
+    const QString parent_dn = get_selected_dn();
 
-    auto dialog = new CreateObjectDialog(targets.keys(), object_class, this);
+    auto dialog = new CreateObjectDialog(parent_dn, object_class, this);
     dialog->open();
 
     // NOTE: can't just add new object to console by adding
@@ -337,7 +337,6 @@ void CentralWidget::create_helper(const QString &object_class) {
 
             show_busy_indicator();
 
-            const QString parent_dn = targets.keys()[0];
             const QList<QModelIndex> search_parent = console->search_scope_by_role(ObjectRole_DN, parent_dn, ItemType_Object);
 
             if (search_parent.isEmpty()) {
@@ -404,8 +403,8 @@ void CentralWidget::find() {
 }
 
 void CentralWidget::reset_password() {
-    const QList<QString> targets = get_selected_dns();
-    const auto password_dialog = new PasswordDialog(targets, this);
+    const QString target = get_selected_dn();
+    const auto password_dialog = new PasswordDialog(target, this);
     password_dialog->open();
 }
 
@@ -759,4 +758,14 @@ QList<QString> CentralWidget::get_selected_dns() {
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
 
     return selected.keys();
+}
+
+QString CentralWidget::get_selected_dn() {
+    const QList<QString> dn_list = get_selected_dns();
+
+    if (!dn_list.isEmpty()) {
+        return dn_list[0];
+    } else {
+        return QString();
+    }
 }

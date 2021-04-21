@@ -120,6 +120,7 @@ private:
     void create_helper(const QString &object_class);
     QHash<QString, QPersistentModelIndex> get_selected_dns_and_indexes();
     QList<QString> get_selected_dns();
+    QString get_selected_dn();
     void fetch_scope_node(const QModelIndex &index);
 };
 
