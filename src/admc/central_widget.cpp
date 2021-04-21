@@ -129,56 +129,56 @@ CentralWidget::CentralWidget()
 
     connect(
         console_actions->get(ConsoleAction_NewUser), &QAction::triggered,
-        this, &CentralWidget::create_user);
+        this, &CentralWidget::object_create_user);
     connect(
         console_actions->get(ConsoleAction_NewComputer), &QAction::triggered,
-        this, &CentralWidget::create_computer);
+        this, &CentralWidget::object_create_computer);
     connect(
         console_actions->get(ConsoleAction_NewOU), &QAction::triggered,
-        this, &CentralWidget::create_ou);
+        this, &CentralWidget::object_create_ou);
     connect(
         console_actions->get(ConsoleAction_NewGroup), &QAction::triggered,
-        this, &CentralWidget::create_group);
+        this, &CentralWidget::object_create_group);
     connect(
         console_actions->get(ConsoleAction_Delete), &QAction::triggered,
-        this, &CentralWidget::delete_objects);
+        this, &CentralWidget::object_delete);
     connect(
         console_actions->get(ConsoleAction_Rename), &QAction::triggered,
-        this, &CentralWidget::rename);
+        this, &CentralWidget::object_rename);
     connect(
         console_actions->get(ConsoleAction_Move), &QAction::triggered,
-        this, &CentralWidget::move);
+        this, &CentralWidget::object_move);
     connect(
         console_actions->get(ConsoleAction_AddToGroup), &QAction::triggered,
-        this, &CentralWidget::add_to_group);
+        this, &CentralWidget::object_add_to_group);
     connect(
         console_actions->get(ConsoleAction_Enable), &QAction::triggered,
-        this, &CentralWidget::enable);
+        this, &CentralWidget::object_enable);
     connect(
         console_actions->get(ConsoleAction_Disable), &QAction::triggered,
-        this, &CentralWidget::disable);
+        this, &CentralWidget::object_disable);
     connect(
         console_actions->get(ConsoleAction_ResetPassword), &QAction::triggered,
-        this, &CentralWidget::reset_password);
+        this, &CentralWidget::object_reset_password);
     connect(
         console_actions->get(ConsoleAction_Find), &QAction::triggered,
-        this, &CentralWidget::find);
+        this, &CentralWidget::object_find);
     connect(
         console_actions->get(ConsoleAction_EditUpnSuffixes), &QAction::triggered,
-        this, &CentralWidget::edit_upn_suffixes);
+        this, &CentralWidget::object_edit_upn_suffixes);
 
     connect(
         console_actions->get(ConsoleAction_PolicyCreate), &QAction::triggered,
         create_policy_dialog, &QDialog::open);
     connect(
         console_actions->get(ConsoleAction_PolicyAddLink), &QAction::triggered,
-        this, &CentralWidget::add_link);
+        this, &CentralWidget::policy_add_link);
     connect(
         console_actions->get(ConsoleAction_PolicyRename), &QAction::triggered,
         rename_policy_dialog, &QDialog::open);
     connect(
         console_actions->get(ConsoleAction_PolicyDelete), &QAction::triggered,
-        this, &CentralWidget::delete_policy);
+        this, &CentralWidget::policy_delete);
 
     connect(
         console_actions->get(ConsoleAction_QueryCreateFolder), &QAction::triggered,
@@ -194,7 +194,7 @@ CentralWidget::CentralWidget()
         move_query_dialog, &QDialog::open);
     connect(
         console_actions->get(ConsoleAction_QueryDeleteItemOrFolder), &QAction::triggered,
-        this, &CentralWidget::delete_query_item_or_folder);
+        this, &CentralWidget::query_delete);
 
     connect(
         console, &ConsoleWidget::current_scope_item_changed,
@@ -213,7 +213,7 @@ CentralWidget::CentralWidget()
         this, &CentralWidget::on_items_dropped);
     connect(
         console, &ConsoleWidget::properties_requested,
-        this, &CentralWidget::on_properties_requested);
+        this, &CentralWidget::object_properties);
     connect(
         console, &ConsoleWidget::selection_changed,
         this, &CentralWidget::update_actions_visibility);
@@ -253,14 +253,14 @@ void CentralWidget::open_filter() {
     }
 }
 
-void CentralWidget::delete_objects() {
+void CentralWidget::object_delete() {
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
-    const QList<QString> deleted_objects = object_delete(selected.keys(), this);
+    const QList<QString> deleted_objects = object_operation_delete(selected.keys(), this);
 
     console_object_delete(console, deleted_objects);
 }
 
-void CentralWidget::on_properties_requested() {
+void CentralWidget::object_properties() {
     const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
     if (targets.size() != 1) {
         return;
@@ -296,7 +296,7 @@ void CentralWidget::on_properties_requested() {
         });
 }
 
-void CentralWidget::rename() {
+void CentralWidget::object_rename() {
     const QString target = get_selected_dn();
 
     auto dialog = new RenameObjectDialog(target, this);
@@ -317,7 +317,7 @@ void CentralWidget::rename() {
         });
 }
 
-void CentralWidget::create_helper(const QString &object_class) {
+void CentralWidget::object_create_helper(const QString &object_class) {
     const QString parent_dn = get_selected_dn();
 
     auto dialog = new CreateObjectDialog(parent_dn, object_class, this);
@@ -354,7 +354,7 @@ void CentralWidget::create_helper(const QString &object_class) {
         });
 }
 
-void CentralWidget::move() {
+void CentralWidget::object_move() {
     const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
 
     auto dialog = new MoveObjectDialog(targets.keys(), this);
@@ -376,20 +376,20 @@ void CentralWidget::move() {
         });
 }
 
-void CentralWidget::add_to_group() {
+void CentralWidget::object_add_to_group() {
     const QList<QString> targets = get_selected_dns();
-    object_add_to_group(targets, this);
+    object_operation_add_to_group(targets, this);
 }
 
-void CentralWidget::enable() {
+void CentralWidget::object_enable() {
     enable_disable_helper(false);
 }
 
-void CentralWidget::disable() {
+void CentralWidget::object_disable() {
     enable_disable_helper(true);
 }
 
-void CentralWidget::find() {
+void CentralWidget::object_find() {
     const QList<QString> targets = get_selected_dns();
 
     if (targets.size() != 1) {
@@ -402,29 +402,29 @@ void CentralWidget::find() {
     find_dialog->open();
 }
 
-void CentralWidget::reset_password() {
+void CentralWidget::object_reset_password() {
     const QString target = get_selected_dn();
     const auto password_dialog = new PasswordDialog(target, this);
     password_dialog->open();
 }
 
-void CentralWidget::create_user() {
-    create_helper(CLASS_USER);
+void CentralWidget::object_create_user() {
+    object_create_helper(CLASS_USER);
 }
 
-void CentralWidget::create_computer() {
-    create_helper(CLASS_COMPUTER);
+void CentralWidget::object_create_computer() {
+    object_create_helper(CLASS_COMPUTER);
 }
 
-void CentralWidget::create_ou() {
-    create_helper(CLASS_OU);
+void CentralWidget::object_create_ou() {
+    object_create_helper(CLASS_OU);
 }
 
-void CentralWidget::create_group() {
-    create_helper(CLASS_GROUP);
+void CentralWidget::object_create_group() {
+    object_create_helper(CLASS_GROUP);
 }
 
-void CentralWidget::edit_upn_suffixes() {
+void CentralWidget::object_edit_upn_suffixes() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -455,7 +455,7 @@ void CentralWidget::edit_upn_suffixes() {
         });
 }
 
-void CentralWidget::add_link() {
+void CentralWidget::policy_add_link() {
     const QList<QModelIndex> selected = console->get_selected_items();
     if (selected.size() == 0) {
         return;
@@ -489,7 +489,7 @@ void CentralWidget::add_link() {
     dialog->open();
 }
 
-void CentralWidget::delete_policy() {
+void CentralWidget::policy_delete() {
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
 
     if (selected.size() == 0) {
@@ -538,7 +538,7 @@ void CentralWidget::delete_policy() {
     g_status()->display_ad_messages(ad, this);
 }
 
-void CentralWidget::delete_query_item_or_folder() {
+void CentralWidget::query_delete() {
     const QList<QPersistentModelIndex> selected_indexes = get_persistent_indexes(console->get_selected_items());
 
     for (const QPersistentModelIndex &index : selected_indexes) {
@@ -707,7 +707,7 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
 
     show_busy_indicator();
 
-    const QList<QString> changed_objects = object_set_disabled(targets.keys(), disabled, this);
+    const QList<QString> changed_objects = object_operation_set_disabled(targets.keys(), disabled, this);
 
     AdInterface ad;
     if (ad_failed(ad)) {

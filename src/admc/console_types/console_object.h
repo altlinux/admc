@@ -67,9 +67,11 @@ void console_object_drop(ConsoleWidget *console, const QList<QModelIndex> &dropp
 void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu);
 void console_object_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);
 
-QList<QString> object_delete(const QList<QString> &targets, QWidget *parent);
-QList<QString> object_set_disabled(const QList<QString> &targets, const bool disabled, QWidget *parent);
-void object_add_to_group(const QList<QString> &targets, QWidget *parent);
+// NOTE: this f-ns don't do anything with console. Just
+// convenience code for reuse
+QList<QString> object_operation_delete(const QList<QString> &targets, QWidget *parent);
+QList<QString> object_operation_set_disabled(const QList<QString> &targets, const bool disabled, QWidget *parent);
+void object_operation_add_to_group(const QList<QString> &targets, QWidget *parent);
 
 bool console_object_is_ou(const QModelIndex &index);
 

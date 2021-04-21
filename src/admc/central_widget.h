@@ -72,28 +72,27 @@ signals:
     void context_menu(const QPoint pos);
 
 private slots:
-    void refresh_head();
-
     void open_filter();
-    void on_properties_requested();
-    void delete_objects();
-    void rename();
-    void move();
-    void add_to_group();
-    void enable();
-    void disable();
-    void find();
-    void reset_password();
-    void create_user();
-    void create_computer();
-    void create_ou();
-    void create_group();
-    void edit_upn_suffixes();
 
-    void add_link();
-    void delete_policy();
+    void object_properties();
+    void object_delete();
+    void object_rename();
+    void object_move();
+    void object_add_to_group();
+    void object_enable();
+    void object_disable();
+    void object_find();
+    void object_reset_password();
+    void object_create_user();
+    void object_create_computer();
+    void object_create_ou();
+    void object_create_group();
+    void object_edit_upn_suffixes();
 
-    void delete_query_item_or_folder();
+    void policy_add_link();
+    void policy_delete();
+
+    void query_delete();
     
     void on_items_can_drop(const QList<QModelIndex> &dropped, const QModelIndex &target, bool *ok);
     void on_items_dropped(const QList<QModelIndex> &dropped, const QModelIndex &target);
@@ -117,11 +116,12 @@ private:
     void update_description_bar();
     void enable_disable_helper(const bool disabled);
     void update_actions_visibility();
-    void create_helper(const QString &object_class);
+    void object_create_helper(const QString &object_class);
     QHash<QString, QPersistentModelIndex> get_selected_dns_and_indexes();
     QList<QString> get_selected_dns();
     QString get_selected_dn();
     void fetch_scope_node(const QModelIndex &index);
+    void refresh_head();
 };
 
 #endif /* CENTRAL_WIDGET_H */
