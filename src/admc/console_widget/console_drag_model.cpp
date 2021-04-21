@@ -30,7 +30,20 @@ QModelIndex prev_parent = QModelIndex();
 // mimedata so that objects can be obtained directly from
 // models
 QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
-    emit start_drag(indexes);
+    const QList<QModelIndex> main_indexes =
+    [&]() {
+        QList<QModelIndex> out;
+
+        for (const QModelIndex &index : indexes) {
+            if (index.column() == 0) {
+                out.append(index);
+            }
+        }
+
+        return out;
+    }();
+
+    emit start_drag(main_indexes);
 
     auto data = new QMimeData();
 
