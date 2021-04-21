@@ -255,7 +255,7 @@ void CentralWidget::open_filter() {
 
 void CentralWidget::delete_objects() {
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
-    const QList<QString> deleted_objects = console_object_delete(selected.keys(), this);
+    const QList<QString> deleted_objects = object_delete(selected.keys(), this);
 
     console_object_delete(console, deleted_objects);
 }
@@ -379,7 +379,7 @@ void CentralWidget::move() {
 
 void CentralWidget::add_to_group() {
     const QList<QString> targets = get_selected_dns();
-    console_object_add_to_group(targets, this);
+    object_add_to_group(targets, this);
 }
 
 void CentralWidget::enable() {
@@ -704,7 +704,7 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
 
     show_busy_indicator();
 
-    const QList<QString> changed_objects = console_object_set_disabled(targets.keys(), disabled, this);
+    const QList<QString> changed_objects = object_set_disabled(targets.keys(), disabled, this);
 
     AdInterface ad;
     if (ad_failed(ad)) {

@@ -179,7 +179,7 @@ QList<QList<QStandardItem *>> FindResults::get_selected_rows() const {
 void FindResults::delete_objects() {
     const QList<QString> targets = get_selected_dns();
 
-    console_object_delete(targets, this);
+    object_delete(targets, this);
 }
 
 void FindResults::properties() {
@@ -214,7 +214,7 @@ void FindResults::move() {
 
 void FindResults::add_to_group() {
     const QList<QString> targets = get_selected_dns();
-    console_object_add_to_group(targets, this);
+    object_add_to_group(targets, this);
 }
 
 void FindResults::enable() {
@@ -260,7 +260,7 @@ void FindResults::on_context_menu(const QPoint pos) {
 
 void FindResults::enable_disable_helper(const bool disabled) {
     const QList<QString> targets = get_selected_dns();
-    const QList<QString> changed_objects = console_object_set_disabled(targets, disabled, this);
+    const QList<QString> changed_objects = object_set_disabled(targets, disabled, this);
 
     const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
 

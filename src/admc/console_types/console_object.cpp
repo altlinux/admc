@@ -629,7 +629,7 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
     visible_actions->insert(ConsoleAction_Delete);
 }
 
-QList<QString> console_object_delete(const QList<QString> &targets, QWidget *parent) {
+QList<QString> object_delete(const QList<QString> &targets, QWidget *parent) {
     if (targets.size() == 0) {
         return QList<QString>();
     }
@@ -663,7 +663,7 @@ QList<QString> console_object_delete(const QList<QString> &targets, QWidget *par
     return deleted_objects;
 }
 
-QList<QString> console_object_set_disabled(const QList<QString> &targets, const bool disabled, QWidget *parent) {
+QList<QString> object_set_disabled(const QList<QString> &targets, const bool disabled, QWidget *parent) {
     AdInterface ad;
     if (ad_failed(ad)) {
         return QList<QString>();
@@ -688,7 +688,7 @@ QList<QString> console_object_set_disabled(const QList<QString> &targets, const 
     return changed_objects;
 }
 
-void console_object_add_to_group(const QList<QString> &targets, QWidget *parent) {
+void object_add_to_group(const QList<QString> &targets, QWidget *parent) {
     auto dialog = new SelectDialog({CLASS_GROUP}, SelectDialogMultiSelection_Yes, parent);
 
     QObject::connect(
