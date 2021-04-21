@@ -25,6 +25,10 @@
 #include "utils.h"
 #include "central_widget.h"
 #include "console_actions.h"
+#include "console_types/console_object.h"
+#include "gplink.h"
+#include "status.h"
+#include "policy_results_widget.h"
 
 #include <QStandardItem>
 #include <QList>
@@ -44,8 +48,6 @@ void console_policy_scope_load(QStandardItem *item, const AdObject &object) {
     item->setText(display_name);
 
     setup_policy_item_data(item, object);
-
-    item->setDragEnabled(false);
 }
 
 void console_policy_results_load(const QList<QStandardItem *> &row, const AdObject &object) {
@@ -54,10 +56,6 @@ void console_policy_results_load(const QList<QStandardItem *> &row, const AdObje
     row[0]->setText(display_name);
 
     setup_policy_item_data(row[0], object);
-
-    for (QStandardItem *item : row) {
-        item->setDragEnabled(false);
-    }
 }
 
 void setup_policy_item_data(QStandardItem *item, const AdObject &object) {
@@ -148,4 +146,86 @@ void console_policy_actions_get_state(const QModelIndex &index, const bool singl
             visible_actions->insert(ConsoleAction_PolicyDelete);
         }
     }
+}
+
+void console_policy_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
+    const bool dropped_are_objects = (dropped_types == QSet<ItemType>({ItemType_Object}));
+    if (!dropped_are_objects) {
+        return;
+    }
+
+    const bool dropped_contain_ou =
+    [&]() {
+        for (const QModelIndex &index : dropped_list) {
+            if (console_object_is_ou(index)) {
+                return true;
+            }
+        }
+
+        return false;
+    }();
+
+    if (!dropped_contain_ou) {
+        return;
+    }
+
+    *ok = true;
+}
+
+void console_policy_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target, PolicyResultsWidget *policy_results_widget) {
+    const QString policy_dn = target.data(PolicyRole_DN).toString();
+    const QList<QString> policy_list = {policy_dn};
+
+    const QList<QString> ou_list =
+    [&]() {
+        QList<QString> out;
+
+        // NOTE: when multi-selecting, selection may contain
+        // a mix of OU and non-OU objects. In that case just
+        // ignore non-OU objects and link OU's only
+        for (const QModelIndex &index : dropped_list) {
+            if (console_object_is_ou(index)) {
+                const QString dn = index.data(ObjectRole_DN).toString();
+                out.append(dn);
+            }
+        }
+
+        return out;
+    }();
+
+    console_policy_add_link(console, policy_list, ou_list, policy_results_widget);
+
+    // NOTE: don't need to sync changes in policy results
+    // widget because when drag and dropping you will select
+    // the policy which will update results automatically
+}
+
+void console_policy_add_link(ConsoleWidget *console, const QList<QString> &policy_list, const QList<QString> &ou_list, PolicyResultsWidget *policy_results_widget) {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    for (const QString &ou_dn : ou_list) {
+        const QHash<QString, AdObject> results = ad.search(QString(), {ATTRIBUTE_GPLINK}, SearchScope_Object, ou_dn);
+        const AdObject ou_object = results[ou_dn];
+        const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
+        Gplink gplink = Gplink(gplink_string);
+
+        for (const QString &policy : policy_list) {
+            gplink.add(policy);
+        }
+
+        ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink.to_string());
+    }
+
+    // Update policy results widget since link state changed
+    const QModelIndex current_scope = console->get_current_scope_item();
+    policy_results_widget->update(current_scope);
+
+    hide_busy_indicator();
+
+    g_status()->display_ad_messages(ad, console);
 }

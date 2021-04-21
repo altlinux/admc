@@ -466,13 +466,6 @@ void CentralWidget::add_link() {
     QObject::connect(
         dialog, &SelectObjectDialog::accepted,
         [=]() {           
-            AdInterface ad;
-            if (ad_failed(ad)) {
-                return;
-            }
-
-            show_busy_indicator();
-
             const QList<QString> gpos =
             [selected]() {
                 QList<QString> out;
@@ -487,25 +480,10 @@ void CentralWidget::add_link() {
 
             const QList<QString> ou_list = dialog->get_selected();
 
-            for (const QString &ou_dn : ou_list) {
-                const QHash<QString, AdObject> results = ad.search(QString(), {ATTRIBUTE_GPLINK}, SearchScope_Object, ou_dn);
-                const AdObject ou_object = results[ou_dn];
-                const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
-                Gplink gplink = Gplink(gplink_string);
-
-                for (const QString &gpo : gpos) {
-                    gplink.add(gpo);
-                }
-
-                ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink.to_string());
-            }
+            console_policy_add_link(console, gpos, ou_list, policy_results_widget);
 
             const QModelIndex current_scope = console->get_current_scope_item();
             policy_results_widget->update(current_scope);
-
-            hide_busy_indicator();
-
-            g_status()->display_ad_messages(ad, this);
         });
 
     dialog->open();
@@ -591,7 +569,10 @@ void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, co
             break;
         }
         case ItemType_PolicyRoot: break;
-        case ItemType_Policy: break;
+        case ItemType_Policy: {
+            console_policy_can_drop(dropped_list, target, dropped_types, ok);
+            break;
+        }
         case ItemType_QueryRoot: {
             console_query_can_drop(dropped_list, target, dropped_types, ok);
             break;
@@ -607,15 +588,29 @@ void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, co
 
 void CentralWidget::on_items_dropped(const QList<QModelIndex> &dropped_list, const QModelIndex &target) {
     const ItemType target_type = (ItemType) target.data(ConsoleRole_Type).toInt();
+    const QSet<ItemType> dropped_types =
+    [&]() {
+        QSet<ItemType> out;
+
+        for (const QModelIndex &index : dropped_list) {
+            const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
+            out.insert(type);
+        }
+
+        return out;
+    }();
 
     switch (target_type) {
         case ItemType_Unassigned: break;
         case ItemType_Object: {
-            console_object_drop(console, dropped_list, target);
+            console_object_drop(console, dropped_list, dropped_types, target, policy_results_widget);
             break;
         }
         case ItemType_PolicyRoot: break;
-        case ItemType_Policy: break;
+        case ItemType_Policy: {
+            console_policy_drop(console, dropped_list, target, policy_results_widget);
+            break;
+        }
         case ItemType_QueryRoot: {
             console_query_drop(console, dropped_list, target);
             break;

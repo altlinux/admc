@@ -30,6 +30,7 @@ class AdInterface;
 class FilterDialog;
 class ConsoleActions;
 class QMenu;
+class PolicyResultsWidget;
 template <typename T> class QList;
 
 /**
@@ -62,12 +63,14 @@ void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<
 void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index);
 QModelIndex console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
 void console_object_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
-void console_object_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target);
+void console_object_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QSet<ItemType> &dropped_types, const QModelIndex &target, PolicyResultsWidget *policy_results_widget);
 void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu);
 void console_object_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);
 
 QList<QString> object_delete(const QList<QString> &targets, QWidget *parent);
 QList<QString> object_set_disabled(const QList<QString> &targets, const bool disabled, QWidget *parent);
 void object_add_to_group(const QList<QString> &targets, QWidget *parent);
+
+bool console_object_is_ou(const QModelIndex &index);
 
 #endif /* CONSOLE_OBJECT_H */

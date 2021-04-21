@@ -29,6 +29,7 @@
 #include "filter_widget/filter_widget.h"
 #include "console_actions.h"
 #include "select_object_dialog.h"
+#include "console_types/console_policy.h"
 
 #include <QStandardItemModel>
 #include <QSet>
@@ -46,6 +47,8 @@ void console_object_item_data_load(QStandardItem *item, const AdObject &object);
 DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIndex &target);
 void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
 bool console_object_scope_and_results_add_check(ConsoleWidget *console, const QModelIndex &parent);
+void console_object_drop_objects(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target);
+void console_object_drop_policies(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target, PolicyResultsWidget *policy_results_widget);
 
 void console_object_results_load(const QList<QStandardItem *> row, const AdObject &object) {
     // Load attribute columns
@@ -420,67 +423,39 @@ QModelIndex console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
 
 void console_object_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
     const bool dropped_are_all_objects = (dropped_types.size() == 1 && dropped_types.contains(ItemType_Object));
-    if (!dropped_are_all_objects) {
-        return;
-    }
+    const bool dropped_are_policies = (dropped_types == QSet<ItemType>({ItemType_Policy}));
 
-    // NOTE: always allow dropping when dragging multiple
-    // objects. This way, whatever objects can drop will be
-    // dropped and if others fail to drop it's not a big
-    // deal.
-    if (dropped_list.size() != 1) {
-        *ok = true;
-    } else {
-        const QModelIndex dropped = dropped_list[0];
+    if (dropped_are_all_objects) {
+        // NOTE: always allow dropping when dragging multiple
+        // objects. This way, whatever objects can drop will be
+        // dropped and if others fail to drop it's not a big
+        // deal.
+        if (dropped_list.size() != 1) {
+            *ok = true;
+        } else {
+            const QModelIndex dropped = dropped_list[0];
 
-        const DropType drop_type = console_object_get_drop_type(dropped, target);
-        const bool can_drop = (drop_type != DropType_None);
+            const DropType drop_type = console_object_get_drop_type(dropped, target);
+            const bool can_drop = (drop_type != DropType_None);
 
-        *ok = can_drop;
+            *ok = can_drop;
+        }
+    } else if (dropped_are_policies) {
+        const bool target_is_ou = console_object_is_ou(target);
+
+        *ok = target_is_ou;
     }
 }
 
-void console_object_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target) {
-    const QString target_dn = target.data(ObjectRole_DN).toString();
+void console_object_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QSet<ItemType> &dropped_types, const QModelIndex &target, PolicyResultsWidget *policy_results_widget) {
+    const bool dropped_are_all_objects = (dropped_types.size() == 1 && dropped_types.contains(ItemType_Object));
+    const bool dropped_are_policies = (dropped_types == QSet<ItemType>({ItemType_Policy}));
 
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
+    if (dropped_are_all_objects) {
+        console_object_drop_objects(console, dropped_list, target);
+    } else if (dropped_are_policies) {
+        console_object_drop_policies(console, dropped_list, target, policy_results_widget);
     }
-
-    show_busy_indicator();
-
-    for (const QModelIndex &dropped : dropped_list) {
-        const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
-        const DropType drop_type = console_object_get_drop_type(dropped, target);
-
-        switch (drop_type) {
-            case DropType_Move: {
-                const bool move_success = ad.object_move(dropped_dn, 
-                    target_dn);
-
-                if (move_success) {
-                    console_object_move(console, ad, QList<QString>({dropped_dn}), target_dn);
-                }
-
-                break;
-            }
-            case DropType_AddToGroup: {
-                ad.group_add_member(target_dn, dropped_dn);
-
-                break;
-            }
-            case DropType_None: {
-                break;
-            }
-        }
-    }
-
-    console->sort_scope();
-
-    hide_busy_indicator();
-
-    g_status()->display_ad_messages(ad, console);
 }
 
 // Determine what kind of drop type is dropping this object
@@ -716,3 +691,72 @@ void object_add_to_group(const QList<QString> &targets, QWidget *parent) {
 
     dialog->open();
 }
+
+bool console_object_is_ou(const QModelIndex &index) {
+    const QList<QString> classes = index.data(ObjectRole_ObjectClasses).toStringList();
+    const bool is_ou = classes.contains(CLASS_OU);
+
+    return is_ou;
+}
+
+void console_object_drop_objects(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target) {
+    const QString target_dn = target.data(ObjectRole_DN).toString();
+
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    for (const QModelIndex &dropped : dropped_list) {
+        const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
+        const DropType drop_type = console_object_get_drop_type(dropped, target);
+
+        switch (drop_type) {
+            case DropType_Move: {
+                const bool move_success = ad.object_move(dropped_dn, 
+                    target_dn);
+
+                if (move_success) {
+                    console_object_move(console, ad, QList<QString>({dropped_dn}), target_dn);
+                }
+
+                break;
+            }
+            case DropType_AddToGroup: {
+                ad.group_add_member(target_dn, dropped_dn);
+
+                break;
+            }
+            case DropType_None: {
+                break;
+            }
+        }
+    }
+
+    console->sort_scope();
+
+    hide_busy_indicator();
+
+    g_status()->display_ad_messages(ad, console);
+}
+
+void console_object_drop_policies(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target, PolicyResultsWidget *policy_results_widget) {
+    const QList<QString> policy_list =
+    [&]() {
+        QList<QString> out;
+
+        for (const QModelIndex &index : dropped_list) {
+            const QString dn = index.data(PolicyRole_DN).toString();
+            out.append(dn);
+        }
+
+        return out;
+    }();
+
+    const QString target_dn = target.data(ObjectRole_DN).toString();
+    const QList<QString> ou_list = {target_dn};
+
+    console_policy_add_link(console, policy_list, ou_list, policy_results_widget);
+}    
