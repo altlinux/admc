@@ -28,11 +28,11 @@
 #include "console_widget/customize_columns_dialog.h"
 #include "console_widget/results_view.h"
 #include "status.h"
-#include "rename_dialog.h"
-#include "move_dialog.h"
+#include "rename_object_dialog.h"
+#include "move_object_dialog.h"
 #include "select_container_dialog.h"
-#include "create_dialog.h"
-#include "select_dialog.h"
+#include "create_object_dialog.h"
+#include "select_object_dialog.h"
 #include "password_dialog.h"
 
 #include <QTreeView>
@@ -196,19 +196,19 @@ void FindResults::properties() {
 
 void FindResults::rename() {
     const QList<QString> targets = get_selected_dns();
-    auto dialog = new RenameDialog(targets, this);
+    auto dialog = new RenameObjectDialog(targets, this);
     dialog->open();
 }
 
 void FindResults::create_helper(const QString &object_class) {
     const QList<QString> targets = get_selected_dns();
-    auto dialog = new CreateDialog(targets, object_class, this);
+    auto dialog = new CreateObjectDialog(targets, object_class, this);
     dialog->open();
 }
 
 void FindResults::move() {
     const QList<QString> targets = get_selected_dns();
-    auto dialog = new MoveDialog(targets, this);
+    auto dialog = new MoveObjectDialog(targets, this);
     dialog->open();
 }
 

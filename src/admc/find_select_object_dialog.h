@@ -17,29 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MOVE_DIALOG_H
-#define MOVE_DIALOG_H
+#ifndef FIND_SELECT_OBJECT_DIALOG_H
+#define FIND_SELECT_OBJECT_DIALOG_H
 
 /**
- *
+ * Find objects and select them. 
  */
 
-#include "select_container_dialog.h"
+#include <QDialog>
 
-class MoveDialog final : public SelectContainerDialog {
+class FindWidget;
+class QStandardItem;
+template <typename T> class QList;
+
+class FindSelectObjectDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    MoveDialog(const QList<QString> &targets_arg, QWidget *parent);
+    FindSelectObjectDialog(const QList<QString> classes, QWidget *parent);
 
-    QList<QString> get_moved_objects() const;
-
-public slots:
-    void accept() override;
+    QList<QList<QStandardItem *>> get_selected_rows() const;
 
 private:
-    QList<QString> targets;
-    QList<QString> moved_objects;
+    FindWidget *find_widget;
+    
 };
 
-#endif /* MOVE_DIALOG_H */
+#endif /* FIND_SELECT_OBJECT_DIALOG_H */

@@ -17,48 +17,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATE_DIALOG_H
-#define CREATE_DIALOG_H
-
-/**
- * Creates an object by letting user fill in attributes. All
- * objects require a name. Depending on object's class,
- * different additional attributes may be set after
- * creation.
- */
+#ifndef SELECT_OBJECT_DIALOG_H
+#define SELECT_OBJECT_DIALOG_H
 
 #include <QDialog>
-#include <QString>
-#include <QList>
 
-class AttributeEdit;
-class StringEdit;
-class QLineEdit;
-class QPushButton;
-class PasswordEdit;
+class QTreeView;
+class ObjectModel;
+class QString;
+class QStandardItemModel;
+template <typename T> class QList;
 
-class CreateDialog : public QDialog {
+enum SelectObjectDialogMultiSelection {
+    SelectObjectDialogMultiSelection_Yes,
+    SelectObjectDialogMultiSelection_No
+};
+
+class SelectObjectDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    CreateDialog(const QList<QString> &targets, const QString &object_class_arg, QWidget *parent);
-
-    QString get_created_dn() const;
+    SelectObjectDialog(QList<QString> classes_arg, SelectObjectDialogMultiSelection multi_selection, QWidget *parent);
+    
+    QList<QString> get_selected() const;
 
 public slots:
     void accept();
 
 private slots:
-    void on_edited();
+    void open_find_dialog();
+    void remove_from_list();
 
 private:
-    QString parent_dn;
-    QString object_class;
-    QLineEdit *name_edit;
-    QPushButton *create_button;
-    QList<AttributeEdit *> all_edits;
-    QList<StringEdit *> required_edits;
-    PasswordEdit *pass_edit;
+    QTreeView *view;
+    QStandardItemModel *model;
+    QList<QString> classes;
+    SelectObjectDialogMultiSelection multi_selection;
+
+
+    void showEvent(QShowEvent *event);
 };
 
-#endif /* CREATE_DIALOG_H */
+#endif /* SELECT_OBJECT_DIALOG_H */

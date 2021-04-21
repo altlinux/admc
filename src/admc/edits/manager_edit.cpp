@@ -22,7 +22,7 @@
 #include "adldap.h"
 #include "globals.h"
 #include "properties_dialog.h"
-#include "select_dialog.h"
+#include "select_object_dialog.h"
 #include <QLineEdit>
 #include <QFormLayout>
 #include <QPushButton>
@@ -84,10 +84,10 @@ QString ManagerEdit::get_manager() const {
 }
 
 void ManagerEdit::on_change() {
-    auto dialog = new SelectDialog({CLASS_USER, CLASS_CONTACT}, SelectDialogMultiSelection_No, edit);
+    auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_CONTACT}, SelectObjectDialogMultiSelection_No, edit);
 
     connect(
-        dialog, &SelectDialog::accepted,
+        dialog, &SelectObjectDialog::accepted,
         [this, dialog]() {
             const QList<QString> selected = dialog->get_selected();
 

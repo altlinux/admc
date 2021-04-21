@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "rename_dialog.h"
+#include "rename_object_dialog.h"
 #include "adldap.h"
 #include "globals.h"
 #include "edits/string_edit.h"
@@ -31,7 +31,7 @@
 #include <QVBoxLayout>
 #include <QFormLayout>
 
-RenameDialog::RenameDialog(const QList<QString> &targets, QWidget *parent)
+RenameObjectDialog::RenameObjectDialog(const QList<QString> &targets, QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -83,10 +83,10 @@ RenameDialog::RenameDialog(const QList<QString> &targets, QWidget *parent)
         this, &QDialog::accept);
     connect(
         reset_button, &QPushButton::clicked,
-        this, &RenameDialog::reset);
+        this, &RenameObjectDialog::reset);
     connect(
         cancel_button, &QPushButton::clicked,
-        this, &RenameDialog::reject);
+        this, &RenameObjectDialog::reject);
 
     const auto edits_layout = new QFormLayout();
     edits_layout->addRow(tr("Name:"), name_edit);
@@ -100,34 +100,34 @@ RenameDialog::RenameDialog(const QList<QString> &targets, QWidget *parent)
     for (auto edit : all_edits) {
         connect(
             edit, &AttributeEdit::edited,
-            this, &RenameDialog::on_edited);
+            this, &RenameObjectDialog::on_edited);
     }
     connect(
         name_edit, &QLineEdit::textChanged,
-        this, &RenameDialog::on_edited);
+        this, &RenameObjectDialog::on_edited);
     on_edited();
 
     reset();
 }
 
-void RenameDialog::success_msg(const QString &old_name) {
+void RenameObjectDialog::success_msg(const QString &old_name) {
     const QString message = QString(tr("Renamed object \"%1\"")).arg(old_name);
     g_status()->add_message(message, StatusType_Success);
 }
 
-void RenameDialog::fail_msg(const QString &old_name) {
+void RenameObjectDialog::fail_msg(const QString &old_name) {
     const QString message = QString(tr("Failed to rename object \"%1\"")).arg(old_name);
     g_status()->add_message(message, StatusType_Error);
 }
 
-QString RenameDialog::get_new_dn() const {
+QString RenameObjectDialog::get_new_dn() const {
     const QString new_name = name_edit->text();
     const QString new_dn = dn_rename(target, new_name);
 
     return new_dn;
 }
 
-void RenameDialog::accept() {
+void RenameObjectDialog::accept() {
     // Handle failure
     AdInterface ad;
     if (ad_failed(ad)) {
@@ -169,12 +169,12 @@ void RenameDialog::accept() {
     }
 }
 
-void RenameDialog::on_edited() {
+void RenameObjectDialog::on_edited() {
     reset_button->setEnabled(true);
     ok_button->setEnabled(true);
 }
 
-void RenameDialog::reset() {
+void RenameObjectDialog::reset() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "find_dialog.h"
+#include "find_object_dialog.h"
 
 #include "find_widget.h"
 #include "find_results.h"
@@ -32,7 +32,7 @@
 #include <QMenuBar>
 #include <QTreeView>
 
-FindDialog::FindDialog(const QList<QString> classes, const QString default_search_base, QWidget *parent)
+FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString default_search_base, QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -55,9 +55,9 @@ FindDialog::FindDialog(const QList<QString> classes, const QString default_searc
 
     connect(
         find_widget->find_results, &FindResults::context_menu,
-        this, &FindDialog::on_context_menu);
+        this, &FindObjectDialog::on_context_menu);
 }
 
-void FindDialog::on_context_menu(const QPoint pos) {
+void FindObjectDialog::on_context_menu(const QPoint pos) {
     action_menu->exec(pos);
 }

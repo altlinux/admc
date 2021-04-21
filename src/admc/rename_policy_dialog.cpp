@@ -19,7 +19,7 @@
 
 #include "rename_policy_dialog.h"
 
-#include "rename_dialog.h"
+#include "rename_object_dialog.h"
 #include "adldap.h"
 #include "globals.h"
 #include "status.h"
@@ -93,10 +93,10 @@ void RenamePolicyDialog::accept() {
     const bool apply_success = ad.attribute_replace_string(target, ATTRIBUTE_DISPLAY_NAME, new_name);
 
     if (apply_success) {
-        RenameDialog::success_msg(old_name);
+        RenameObjectDialog::success_msg(old_name);
         QDialog::accept();
     } else {
-        RenameDialog::fail_msg(old_name);
+        RenameObjectDialog::fail_msg(old_name);
     }
 
     g_status()->display_ad_messages(ad, this);

@@ -17,30 +17,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FIND_SELECT_DIALOG_H
-#define FIND_SELECT_DIALOG_H
-
-/**
- * Find objects and select them. 
- */
+#ifndef RENAME_OBJECT_DIALOG_H
+#define RENAME_OBJECT_DIALOG_H
 
 #include <QDialog>
+#include <QString>
+#include <QList>
 
-class FindWidget;
-class QStandardItem;
-template <typename T> class QList;
+class AttributeEdit;
+class QLineEdit;
+class QPushButton;
 
-class FindSelectDialog final : public QDialog {
+class RenameObjectDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    FindSelectDialog(const QList<QString> classes, QWidget *parent);
+    RenameObjectDialog(const QList<QString> &targets, QWidget *parent);
 
-    QList<QList<QStandardItem *>> get_selected_rows() const;
+    static void success_msg(const QString &old_name);
+    static void fail_msg(const QString &old_name);
+
+    QString get_new_dn() const;
+
+public slots:
+    void accept();
+
+private slots:
+    void on_edited();
+    void reset();
 
 private:
-    FindWidget *find_widget;
-    
+    QString target;
+    QList<AttributeEdit *> all_edits;
+    QLineEdit *name_edit;
+    QPushButton *ok_button;
+    QPushButton *reset_button;
+
 };
 
-#endif /* FIND_SELECT_DIALOG_H */
+#endif /* RENAME_OBJECT_DIALOG_H */

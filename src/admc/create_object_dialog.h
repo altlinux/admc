@@ -17,44 +17,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RENAME_DIALOG_H
-#define RENAME_DIALOG_H
+#ifndef CREATE_OBJECT_DIALOG_H
+#define CREATE_OBJECT_DIALOG_H
+
+/**
+ * Creates an object by letting user fill in attributes. All
+ * objects require a name. Depending on object's class,
+ * different additional attributes may be set after
+ * creation.
+ */
 
 #include <QDialog>
 #include <QString>
 #include <QList>
 
 class AttributeEdit;
+class StringEdit;
 class QLineEdit;
 class QPushButton;
+class PasswordEdit;
 
-class RenameDialog final : public QDialog {
+class CreateObjectDialog : public QDialog {
 Q_OBJECT
 
 public:
-    RenameDialog(const QList<QString> &targets, QWidget *parent);
+    CreateObjectDialog(const QList<QString> &targets, const QString &object_class_arg, QWidget *parent);
 
-    static void success_msg(const QString &old_name);
-    static void fail_msg(const QString &old_name);
-
-    QString get_new_dn() const;
+    QString get_created_dn() const;
 
 public slots:
     void accept();
 
 private slots:
     void on_edited();
-    void reset();
 
 private:
-    QString target;
-    QList<AttributeEdit *> all_edits;
+    QString parent_dn;
+    QString object_class;
     QLineEdit *name_edit;
-    QPushButton *ok_button;
-    QPushButton *reset_button;
-
+    QPushButton *create_button;
+    QList<AttributeEdit *> all_edits;
+    QList<StringEdit *> required_edits;
+    PasswordEdit *pass_edit;
 };
 
-
-
-#endif /* RENAME_DIALOG_H */
+#endif /* CREATE_OBJECT_DIALOG_H */

@@ -95,7 +95,7 @@ void edits_connect_to_tab(QList<AttributeEdit *> edits, PropertiesTab *tab);
 void edits_add_to_layout(QList<AttributeEdit *> edits, QFormLayout *layout);
 
 // NOTE: "ignore_modified" argument is solely for a edge
-// case in CreateDialog. If it's set to true, then edits are
+// case in CreateObjectDialog. If it's set to true, then edits are
 // verified/applied regardless or whether they are modified
 // or not
 

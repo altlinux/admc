@@ -17,13 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "select_dialog.h"
+#include "select_object_dialog.h"
 #include "adldap.h"
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
 #include "console_types/console_object.h"
-#include "find_select_dialog.h"
+#include "find_select_object_dialog.h"
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -34,7 +34,7 @@
 #include <QMessageBox>
 #include <QStandardItemModel>
 
-SelectDialog::SelectDialog(QList<QString> classes_arg, SelectDialogMultiSelection multi_selection_arg, QWidget *parent)
+SelectObjectDialog::SelectObjectDialog(QList<QString> classes_arg, SelectObjectDialogMultiSelection multi_selection_arg, QWidget *parent)
 : QDialog(parent)
 {
     classes = classes_arg;
@@ -87,13 +87,13 @@ SelectDialog::SelectDialog(QList<QString> classes_arg, SelectDialogMultiSelectio
 
     connect(
         add_button, &QPushButton::clicked,
-        this, &SelectDialog::open_find_dialog);
+        this, &SelectObjectDialog::open_find_dialog);
     connect(
         add_button, &QPushButton::clicked,
-        this, &SelectDialog::remove_from_list);
+        this, &SelectObjectDialog::remove_from_list);
 }
 
-QList<QString> SelectDialog::get_selected() const {
+QList<QString> SelectObjectDialog::get_selected() const {
     QSet<QString> selected_dns;
 
     for (int row = 0; row < model->rowCount(); row++) {
@@ -106,10 +106,10 @@ QList<QString> SelectDialog::get_selected() const {
     return selected_dns.toList();
 }
 
-void SelectDialog::accept() {
+void SelectObjectDialog::accept() {
     const QList<QString> selected = get_selected();
 
-    const bool selected_multiple_when_single_selection = (multi_selection == SelectDialogMultiSelection_No && selected.size() > 1);
+    const bool selected_multiple_when_single_selection = (multi_selection == SelectObjectDialogMultiSelection_No && selected.size() > 1);
     if (selected_multiple_when_single_selection) {
         QMessageBox::warning(this, tr("Error"), tr("This selection accepts only one object. Remove extra objects to proceed."));
     } else {
@@ -117,11 +117,11 @@ void SelectDialog::accept() {
     }
 }
 
-void SelectDialog::open_find_dialog() {
-    auto dialog = new FindSelectDialog(classes, this);
+void SelectObjectDialog::open_find_dialog() {
+    auto dialog = new FindSelectObjectDialog(classes, this);
 
     connect(
-        dialog, &FindSelectDialog::accepted,
+        dialog, &FindSelectObjectDialog::accepted,
         [this, dialog]() {
             // Add objects selected in find dialog to select
             // objects list
@@ -152,7 +152,7 @@ void SelectDialog::open_find_dialog() {
     dialog->open();
 }
 
-void SelectDialog::remove_from_list() {
+void SelectObjectDialog::remove_from_list() {
     const QItemSelectionModel *selection_model = view->selectionModel();
     const QList<QModelIndex> selected = selection_model->selectedRows();
 
@@ -161,7 +161,7 @@ void SelectDialog::remove_from_list() {
     }
 }
 
-void SelectDialog::showEvent(QShowEvent *event) {
+void SelectObjectDialog::showEvent(QShowEvent *event) {
     resize_columns(view,
     {
         {0, 0.4},

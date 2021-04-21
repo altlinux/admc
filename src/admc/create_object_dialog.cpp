@@ -17,7 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "create_dialog.h"
+#include "create_object_dialog.h"
+
 #include "adldap.h"
 #include "globals.h"
 #include "status.h"
@@ -41,7 +42,7 @@
 // just do this through verify()? Had to remove upnedit from
 // required_edits because that's a list of stringedits. Now upnedit checks that it's not empty in verify();
 
-CreateDialog::CreateDialog(const QList<QString> &targets, const QString &object_class_arg, QWidget *parent)
+CreateObjectDialog::CreateObjectDialog(const QList<QString> &targets, const QString &object_class_arg, QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -200,20 +201,20 @@ CreateDialog::CreateDialog(const QList<QString> &targets, const QString &object_
 
     connect(
         create_button, &QAbstractButton::clicked,
-        this, &CreateDialog::accept);
+        this, &CreateObjectDialog::accept);
 
     for (auto edit : required_edits) {
         connect(
             edit, &AttributeEdit::edited,
-            this, &CreateDialog::on_edited);
+            this, &CreateObjectDialog::on_edited);
     }
     connect(
         name_edit, &QLineEdit::textChanged,
-        this, &CreateDialog::on_edited);
+        this, &CreateObjectDialog::on_edited);
     on_edited();
 }
 
-QString CreateDialog::get_created_dn() const {
+QString CreateObjectDialog::get_created_dn() const {
     const QString name = name_edit->text();
     const QString dn = dn_from_name_and_parent(name, parent_dn, object_class);
 
@@ -223,7 +224,7 @@ QString CreateDialog::get_created_dn() const {
 // NOTE: passing "ignore_modified" to verify and apply f-ns
 // because this is a new object, so all the edits are in
 // "unmodified" state but still need to be processed.
-void CreateDialog::accept() {
+void CreateObjectDialog::accept() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -274,7 +275,7 @@ void CreateDialog::accept() {
 }
 
 // Enable/disable create button if all required edits filled
-void CreateDialog::on_edited() {
+void CreateObjectDialog::on_edited() {
     const bool required_edits_filled =
     [this]() {
         for (auto edit : required_edits) {

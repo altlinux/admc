@@ -362,36 +362,36 @@
     </message>
 </context>
 <context>
-    <name>CreateDialog</name>
+    <name>CreateObjectDialog</name>
     <message>
-        <location filename="create_dialog.cpp" line="68"/>
+        <location filename="create_object_dialog.cpp" line="68"/>
         <source>Create object - &quot;%1&quot;</source>
         <translation>Создать обьект - &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="create_dialog.cpp" line="103"/>
+        <location filename="create_object_dialog.cpp" line="103"/>
         <source>Full name:</source>
         <translation>Полное имя:</translation>
     </message>
     <message>
-        <location filename="create_dialog.cpp" line="162"/>
-        <location filename="create_dialog.cpp" line="177"/>
-        <location filename="create_dialog.cpp" line="188"/>
+        <location filename="create_object_dialog.cpp" line="162"/>
+        <location filename="create_object_dialog.cpp" line="177"/>
+        <location filename="create_object_dialog.cpp" line="188"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="create_dialog.cpp" line="194"/>
+        <location filename="create_object_dialog.cpp" line="194"/>
         <source>Create</source>
         <translation>Создать</translation>
     </message>
     <message>
-        <location filename="create_dialog.cpp" line="245"/>
+        <location filename="create_object_dialog.cpp" line="245"/>
         <source>Failed to create object &quot;%1&quot;</source>
         <translation>Не удалось создать объект &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="create_dialog.cpp" line="268"/>
+        <location filename="create_object_dialog.cpp" line="268"/>
         <source>Created object &quot;%1&quot;</source>
         <translation>Создан объект &quot;%1&quot;</translation>
     </message>
@@ -545,19 +545,19 @@
     </message>
 </context>
 <context>
-    <name>FindDialog</name>
+    <name>FindObjectDialog</name>
     <message>
-        <location filename="find_dialog.cpp" line="40"/>
+        <location filename="find_object_dialog.cpp" line="40"/>
         <source>Find objects</source>
         <translation>Поиск объектов</translation>
     </message>
     <message>
-        <location filename="find_dialog.cpp" line="43"/>
+        <location filename="find_object_dialog.cpp" line="43"/>
         <source>&amp;Action</source>
         <translation>&amp;Действие</translation>
     </message>
     <message>
-        <location filename="find_dialog.cpp" line="44"/>
+        <location filename="find_object_dialog.cpp" line="44"/>
         <source>&amp;View</source>
         <translation>&amp;Вид</translation>
     </message>
@@ -585,9 +585,9 @@
     </message>
 </context>
 <context>
-    <name>FindSelectDialog</name>
+    <name>FindSelectObjectDialog</name>
     <message>
-        <location filename="find_select_dialog.cpp" line="35"/>
+        <location filename="find_select_object_dialog.cpp" line="35"/>
         <source>Find and select objects</source>
         <translation>Найдите и выберите объекты</translation>
     </message>
@@ -1213,24 +1213,24 @@
     </message>
 </context>
 <context>
-    <name>RenameDialog</name>
+    <name>RenameObjectDialog</name>
     <message>
-        <location filename="rename_dialog.cpp" line="59"/>
+        <location filename="rename_object_dialog.cpp" line="59"/>
         <source>Rename object &quot;%1&quot;</source>
         <translation>Переименовать объект &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="rename_dialog.cpp" line="92"/>
+        <location filename="rename_object_dialog.cpp" line="92"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="rename_dialog.cpp" line="114"/>
+        <location filename="rename_object_dialog.cpp" line="114"/>
         <source>Renamed object &quot;%1&quot;</source>
         <translation>Переименован объект &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="rename_dialog.cpp" line="119"/>
+        <location filename="rename_object_dialog.cpp" line="119"/>
         <source>Failed to rename object &quot;%1&quot;</source>
         <translation>Не удалось переименовать объект &quot;%1&quot;</translation>
     </message>
@@ -1275,24 +1275,24 @@
     </message>
 </context>
 <context>
-    <name>SelectDialog</name>
+    <name>SelectObjectDialog</name>
     <message>
-        <location filename="select_dialog.cpp" line="61"/>
+        <location filename="select_object_dialog.cpp" line="61"/>
         <source>Add</source>
         <translation>Добавить</translation>
     </message>
     <message>
-        <location filename="select_dialog.cpp" line="62"/>
+        <location filename="select_object_dialog.cpp" line="62"/>
         <source>Remove</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="select_dialog.cpp" line="114"/>
+        <location filename="select_object_dialog.cpp" line="114"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="select_dialog.cpp" line="114"/>
+        <location filename="select_object_dialog.cpp" line="114"/>
         <source>This selection accepts only one object. Remove extra objects to proceed.</source>
         <translation>Этот выбор принимает только один объект. Чтобы продолжить, уберите лишние объекты.</translation>
     </message>

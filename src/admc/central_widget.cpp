@@ -30,17 +30,17 @@
 #include "filter_dialog.h"
 #include "console_actions.h"
 #include "status.h"
-#include "rename_dialog.h"
-#include "create_dialog.h"
+#include "rename_object_dialog.h"
+#include "create_object_dialog.h"
 #include "create_policy_dialog.h"
 #include "create_query_dialog.h"
 #include "move_query_dialog.h"
 #include "create_query_folder_dialog.h"
-#include "move_dialog.h"
-#include "find_dialog.h"
+#include "move_object_dialog.h"
+#include "find_object_dialog.h"
 #include "password_dialog.h"
 #include "rename_policy_dialog.h"
-#include "select_dialog.h"
+#include "select_object_dialog.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 #include "editors/multi_editor.h"
@@ -299,11 +299,11 @@ void CentralWidget::on_properties_requested() {
 void CentralWidget::rename() {
     const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
 
-    auto dialog = new RenameDialog(targets.keys(), this);
+    auto dialog = new RenameObjectDialog(targets.keys(), this);
     dialog->open();
 
     connect(
-        dialog, &RenameDialog::accepted,
+        dialog, &RenameObjectDialog::accepted,
         [=]() {
             AdInterface ad;
             if (ad_failed(ad)) {
@@ -320,7 +320,7 @@ void CentralWidget::rename() {
 void CentralWidget::create_helper(const QString &object_class) {
     const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
 
-    auto dialog = new CreateDialog(targets.keys(), object_class, this);
+    auto dialog = new CreateObjectDialog(targets.keys(), object_class, this);
     dialog->open();
 
     // NOTE: can't just add new object to console by adding
@@ -328,7 +328,7 @@ void CentralWidget::create_helper(const QString &object_class) {
     // by using action menu of an object in a query tree.
     // Therefore need to search for parent in domain tree.
     connect(
-        dialog, &CreateDialog::accepted,
+        dialog, &CreateObjectDialog::accepted,
         [=]() {
             AdInterface ad;
             if (ad_failed(ad)) {
@@ -358,7 +358,7 @@ void CentralWidget::create_helper(const QString &object_class) {
 void CentralWidget::move() {
     const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
 
-    auto dialog = new MoveDialog(targets.keys(), this);
+    auto dialog = new MoveObjectDialog(targets.keys(), this);
     dialog->open();
 
     connect(
@@ -399,7 +399,7 @@ void CentralWidget::find() {
 
     const QString target = targets[0];
 
-    auto find_dialog = new FindDialog(filter_classes, target, this);
+    auto find_dialog = new FindObjectDialog(filter_classes, target, this);
     find_dialog->open();
 }
 
@@ -462,10 +462,10 @@ void CentralWidget::add_link() {
         return;
     }
 
-    auto dialog = new SelectDialog({CLASS_OU}, SelectDialogMultiSelection_Yes, this);
+    auto dialog = new SelectObjectDialog({CLASS_OU}, SelectObjectDialogMultiSelection_Yes, this);
 
     QObject::connect(
-        dialog, &SelectDialog::accepted,
+        dialog, &SelectObjectDialog::accepted,
         [=]() {           
             AdInterface ad;
             if (ad_failed(ad)) {

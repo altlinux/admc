@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "move_dialog.h"
+#include "move_object_dialog.h"
 
 #include "adldap.h"
 #include "globals.h"
@@ -31,7 +31,7 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 
-MoveDialog::MoveDialog(const QList<QString> &targets_arg, QWidget *parent)
+MoveObjectDialog::MoveObjectDialog(const QList<QString> &targets_arg, QWidget *parent)
 : SelectContainerDialog(parent)
 {
     targets = targets_arg;
@@ -43,11 +43,11 @@ MoveDialog::MoveDialog(const QList<QString> &targets_arg, QWidget *parent)
     }
 }
 
-QList<QString> MoveDialog::get_moved_objects() const {
+QList<QString> MoveObjectDialog::get_moved_objects() const {
     return moved_objects;
 }
 
-void MoveDialog::accept() {
+void MoveObjectDialog::accept() {
     AdInterface ad;
     if (ad_failed(ad)) {
         close();

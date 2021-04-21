@@ -26,7 +26,7 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/properties_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/main_window.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/status.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/select_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/select_object_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/console_actions.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/password_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/find_results.cpp
@@ -46,12 +46,12 @@ set(TEST_SOURCES
     ${PROJECT_SOURCE_DIR}/src/admc/console_types/console_policy.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/console_types/console_query.cpp
 
-    ${PROJECT_SOURCE_DIR}/src/admc/move_dialog.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/rename_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/move_object_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/rename_object_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/rename_policy_dialog.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/create_dialog.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/find_dialog.cpp
-    ${PROJECT_SOURCE_DIR}/src/admc/find_select_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/create_object_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/find_object_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/admc/find_select_object_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/select_container_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/about_dialog.cpp
     ${PROJECT_SOURCE_DIR}/src/admc/manual_dialog.cpp

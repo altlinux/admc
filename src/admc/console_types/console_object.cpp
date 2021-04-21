@@ -28,7 +28,7 @@
 #include "filter_dialog.h"
 #include "filter_widget/filter_widget.h"
 #include "console_actions.h"
-#include "select_dialog.h"
+#include "select_object_dialog.h"
 
 #include <QStandardItemModel>
 #include <QSet>
@@ -689,10 +689,10 @@ QList<QString> object_set_disabled(const QList<QString> &targets, const bool dis
 }
 
 void object_add_to_group(const QList<QString> &targets, QWidget *parent) {
-    auto dialog = new SelectDialog({CLASS_GROUP}, SelectDialogMultiSelection_Yes, parent);
+    auto dialog = new SelectObjectDialog({CLASS_GROUP}, SelectObjectDialogMultiSelection_Yes, parent);
 
     QObject::connect(
-        dialog, &SelectDialog::accepted,
+        dialog, &SelectObjectDialog::accepted,
         [=]() {
             AdInterface ad;
             if (ad_failed(ad)) {

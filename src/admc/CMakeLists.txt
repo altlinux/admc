@@ -20,7 +20,7 @@ add_executable(admc
     properties_dialog.cpp
     main_window.cpp
     status.cpp
-    select_dialog.cpp
+    select_object_dialog.cpp
     console_actions.cpp
     password_dialog.cpp
     find_results.cpp
@@ -40,12 +40,12 @@ add_executable(admc
     console_types/console_policy.cpp
     console_types/console_query.cpp
 
-    move_dialog.cpp
-    rename_dialog.cpp
+    move_object_dialog.cpp
+    rename_object_dialog.cpp
     rename_policy_dialog.cpp
-    create_dialog.cpp
-    find_dialog.cpp
-    find_select_dialog.cpp
+    create_object_dialog.cpp
+    find_object_dialog.cpp
+    find_select_object_dialog.cpp
     select_container_dialog.cpp
     about_dialog.cpp
     manual_dialog.cpp

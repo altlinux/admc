@@ -22,7 +22,7 @@
 #include "properties_dialog.h"
 #include "adldap.h"
 #include "utils.h"
-#include "select_dialog.h"
+#include "select_object_dialog.h"
 #include "globals.h"
 
 #include <QTreeView>
@@ -328,10 +328,10 @@ void MembershipTab::on_add_button() {
         return QList<QString>();
     }();
 
-    auto dialog = new SelectDialog(classes, SelectDialogMultiSelection_Yes, this);
+    auto dialog = new SelectObjectDialog(classes, SelectObjectDialogMultiSelection_Yes, this);
 
     connect(
-        dialog, &SelectDialog::accepted,
+        dialog, &SelectObjectDialog::accepted,
         [this, dialog]() {
             const QList<QString> selected = dialog->get_selected();
 

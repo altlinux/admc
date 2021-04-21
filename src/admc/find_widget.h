@@ -23,7 +23,7 @@
 /**
  * Provides a way for user to find objects. FilterWidget is
  * used for filter input and FindResults for displaying
- * objects. Used by FindDialog and SelectDialog.
+ * objects. Used by FindObjectDialog and SelectObjectDialog.
  */
 
 #include <QWidget>

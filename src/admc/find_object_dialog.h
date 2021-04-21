@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FIND_DIALOG_H
-#define FIND_DIALOG_H
+#ifndef FIND_OBJECT_DIALOG_H
+#define FIND_OBJECT_DIALOG_H
 
 /**
  * Find objects and perform actions on them.
@@ -30,11 +30,11 @@ class QString;
 class QMenu;
 template <typename T> class QList;
 
-class FindDialog final : public QDialog {
+class FindObjectDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    FindDialog(const QList<QString> classes, const QString 
+    FindObjectDialog(const QList<QString> classes, const QString 
         default_search_base, QWidget *parent);
 
 private:
@@ -43,4 +43,4 @@ private:
     void on_context_menu(const QPoint pos);
 };
 
-#endif /* FIND_DIALOG_H */
+#endif /* FIND_OBJECT_DIALOG_H */
