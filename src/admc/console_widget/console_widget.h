@@ -176,14 +176,8 @@ public:
     QStandardItem *get_scope_item(const QModelIndex &scope_index) const;
     QList<QStandardItem *> get_results_row(const QModelIndex &results_index) const;
 
-    QModelIndex get_buddy(const QModelIndex &index) const;
     QModelIndex get_scope_parent(const QModelIndex &index) const;
-    bool is_scope_item(const QModelIndex &index) const;
     bool item_was_fetched(const QModelIndex &index) const;
-    
-    // If index is already scope, returns index, otherwise
-    // returns scope buddy, if it exists
-    QModelIndex convert_to_scope_index(const QModelIndex &index) const;
 
     void add_actions_to_action_menu(QMenu *menu);
     void add_actions_to_navigation_menu(QMenu *menu);
@@ -236,5 +230,11 @@ signals:
 private:
     ConsoleWidgetPrivate *d;
 };
+
+bool console_item_is_scope(const QModelIndex &index);
+QModelIndex console_item_get_buddy(const QModelIndex &index);
+// If index is already scope, returns index, otherwise
+// returns scope buddy, if it exists
+QModelIndex console_item_convert_to_scope_index(const QModelIndex &index);
 
 #endif /* CONSOLE_WIDGET_H */

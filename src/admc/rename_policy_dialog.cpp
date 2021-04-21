@@ -107,7 +107,7 @@ void RenamePolicyDialog::accept() {
     QStandardItem *scope_item = console->get_scope_item(scope_index);
     console_policy_scope_load(scope_item, object);
     
-    const QModelIndex results_index = console->get_buddy(scope_index);
+    const QModelIndex results_index = console_item_get_buddy(scope_index);
     const QList<QStandardItem *> results_row = console->get_results_row(results_index);
     console_policy_results_load(results_row, object);
 

@@ -173,51 +173,27 @@ void MoveQueryDialog::accept() {
         return;
     }
 
+    const bool name_conflict =
+    [&]() {
+        const QList<QPersistentModelIndex> selected_indexes = get_persistent_indexes(console->get_selected_items());
+        for (const QPersistentModelIndex &old_index : selected_indexes) {
+            QAbstractItemModel *index_model = (QAbstractItemModel *) old_index.model();
+            const QString moved_name = index_model->data(old_index, Qt::DisplayRole).toString();
+            if (!console_query_name_is_good({moved_name}, new_parent_index, this, old_index)) {
+                return true;
+            }
+        }
+
+        return false;
+    }();
+
+    if (name_conflict) {
+        return;
+    }
+
     const QList<QPersistentModelIndex> selected_indexes = get_persistent_indexes(console->get_selected_items());
     for (const QPersistentModelIndex &old_index : selected_indexes) {
-        QAbstractItemModel *index_model = (QAbstractItemModel *)old_index.model();
-        // Check that moved item doesn't have a name conflict at
-        // new location
-        const QString moved_name = index_model->data(old_index, Qt::DisplayRole).toString();
-        if (!console_query_name_is_good(moved_name, new_parent_index, this, old_index)) {
-            return;
-        }
-
-        // Create a copy of the tree branch at new location. Go
-        // down the branch and replicate all of the children.
-
-        QHash<QPersistentModelIndex, QPersistentModelIndex> old_to_new_index;
-        old_to_new_index[old_index.parent()] = new_parent_index;
-
-        QStack<QPersistentModelIndex> stack;
-        stack.append(old_index);
-        while (!stack.isEmpty()) {
-            const QPersistentModelIndex index = stack.pop();
-
-            const QPersistentModelIndex new_parent = old_to_new_index[old_index.parent()];
-
-            const ItemType type = (ItemType) index_model->data(index, ConsoleRole_Type).toInt();
-            if (type == ItemType_QueryItem) {
-                const QString description = index_model->data(index, QueryItemRole_Description).toString();
-                const QString filter = index_model->data(index, QueryItemRole_Filter).toString();
-                const QString search_base = index_model->data(index, QueryItemRole_SearchBase).toString();
-                const QString name = index_model->data(index, Qt::DisplayRole).toString();
-
-                console_query_item_create(console, name, description, filter, search_base, new_parent);
-            } else if (type == ItemType_QueryFolder) {
-                const QString name = index_model->data(index, Qt::DisplayRole).toString();
-                const QString description = index_model->data(index, QueryItemRole_Description).toString();
-                console_query_folder_create(console, name, description, new_parent);
-            }
-
-            for (int row = 0; row < index_model->rowCount(index); row++) {
-                const QModelIndex child = index_model->index(row, 0, index);
-                stack.append(QPersistentModelIndex(child));
-            }
-        }
-
-        // Delete branch at old location
-        console->delete_item(old_index);
+        console_query_move(console, old_index, new_parent_index);
     }
 
     console->sort_scope();

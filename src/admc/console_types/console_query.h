@@ -22,6 +22,7 @@
 
 #include "console_widget/console_widget.h"
 #include "console_actions.h"
+#include "central_widget.h"
 
 class QStandardItem;
 class QModelIndex;
@@ -55,5 +56,8 @@ void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu);
 void console_query_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);
 QString console_query_folder_path(const QModelIndex &index);
 QModelIndex console_query_get_root_index(ConsoleWidget *console);
+void console_query_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
+void console_query_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target);
+void console_query_move(ConsoleWidget *console, const QModelIndex &old_index, const QModelIndex &new_parent_index);
 
 #endif /* CONSOLE_QUERY_H */

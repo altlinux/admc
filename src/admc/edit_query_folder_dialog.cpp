@@ -71,7 +71,7 @@ void EditQueryFolderDialog::open() {
 
 void EditQueryFolderDialog::accept() {
     const QModelIndex scope_index = get_selected_scope_index(console);
-    const QModelIndex results_index = console->get_buddy(scope_index);
+    const QModelIndex results_index = console_item_get_buddy(scope_index);
     const QString name = name_edit->text();
     const QString description = description_edit->text();
 

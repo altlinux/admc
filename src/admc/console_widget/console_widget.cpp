@@ -315,7 +315,7 @@ void ConsoleWidget::delete_item(const QModelIndex &index) {
     // expected since we're deleting it from the model.
 
     // Remove buddy item
-    const QModelIndex buddy = get_buddy(index);
+    const QModelIndex buddy = console_item_get_buddy(index);
     if (buddy.isValid()) {
         ((QAbstractItemModel *)buddy.model())->removeRows(buddy.row(), 1, buddy.parent());
     }
@@ -508,37 +508,14 @@ QList<QStandardItem *> ConsoleWidget::get_results_row(const QModelIndex &results
     }
 }
 
-QModelIndex ConsoleWidget::get_buddy(const QModelIndex &index) const {
-    const QModelIndex buddy = index.data(ConsoleRole_Buddy).toModelIndex();
-
-    return buddy;
-}
-
 QModelIndex ConsoleWidget::get_scope_parent(const QModelIndex &index) const {
     const QModelIndex scope_parent = index.data(ConsoleRole_ScopeParent).toModelIndex();
 
     return scope_parent;
 }
 
-bool ConsoleWidget::is_scope_item(const QModelIndex &index) const {
-    const bool is_scope = index.data(ConsoleRole_IsScope).toBool();
-
-    return is_scope;
-}
-
 bool ConsoleWidget::item_was_fetched(const QModelIndex &index) const {
     return index.data(ConsoleRole_WasFetched).toBool();
-}
-
-// TODO: rename
-QModelIndex ConsoleWidget::convert_to_scope_index(const QModelIndex &index) const {
-    if (is_scope_item(index)) {
-        return index;
-    } else {
-        const QModelIndex buddy = get_buddy(index);
-
-        return buddy;
-    }
 }
 
 QWidget *ConsoleWidget::get_scope_view() const {
@@ -575,7 +552,7 @@ void ConsoleWidgetPrivate::on_scope_expanded(const QModelIndex &index_proxy) {
 }
 
 void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
-    const QModelIndex buddy = q->get_buddy(index);
+    const QModelIndex buddy = console_item_get_buddy(index);
 
     if (buddy.isValid()) {
         q->set_current_scope(buddy);
@@ -936,4 +913,27 @@ QList<QModelIndex> filter_indexes_by_type(const QList<QModelIndex> &indexes, con
     }
 
     return out;
+}
+
+bool console_item_is_scope(const QModelIndex &index) {
+    const bool is_scope = index.data(ConsoleRole_IsScope).toBool();
+
+    return is_scope;
+}
+
+QModelIndex console_item_get_buddy(const QModelIndex &index) {
+    const QModelIndex buddy = index.data(ConsoleRole_Buddy).toModelIndex();
+
+    return buddy;
+}
+
+// TODO: rename
+QModelIndex console_item_convert_to_scope_index(const QModelIndex &index) {
+    if (console_item_is_scope(index)) {
+        return index;
+    } else {
+        const QModelIndex buddy = console_item_get_buddy(index);
+
+        return buddy;
+    }
 }

@@ -117,14 +117,10 @@ void console_query_folder_load(QStandardItem *scope_item, const QList<QStandardI
 
     load_main_item(scope_item);
     scope_item->setText(name);
-    scope_item->setDragEnabled(false);
 
     load_main_item(results_row[0]);
     results_row[QueryColumn_Name]->setText(name);
     results_row[QueryColumn_Description]->setText(description);
-    for (QStandardItem *item : results_row) {
-        item->setDragEnabled(false);
-    }
 }
 
 QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent) {
@@ -152,14 +148,10 @@ void console_query_item_create(ConsoleWidget *console, const QString &name, cons
 
     load_main_item(scope_item);
     scope_item->setText(name);
-    scope_item->setDragEnabled(false);
 
     load_main_item(results_row[0]);
     results_row[QueryColumn_Name]->setText(name);
     results_row[QueryColumn_Description]->setText(description);
-    for (QStandardItem *item : results_row) {
-        item->setDragEnabled(false);
-    }
 }
 
 void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) {
@@ -197,6 +189,7 @@ void console_query_tree_init(ConsoleWidget *console) {
     head_item->setText(QCoreApplication::translate("query", "Saved Queries"));
     head_item->setIcon(QIcon::fromTheme("folder"));
     head_item->setData(ItemType_QueryRoot, ConsoleRole_Type);
+    head_item->setDragEnabled(false);
 
     // Add rest of tree
     const QHash<QString, QVariant> folders_map = g_settings->get_variant(VariantSetting_QueryFolders).toHash();
@@ -304,7 +297,9 @@ void console_query_tree_save(ConsoleWidget *console) {
     g_settings->set_variant(VariantSetting_QueryInfo, info_map_variant);
 }
 
-bool console_query_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index) {
+bool console_query_name_is_good(const QString &name, const QModelIndex &parent_index_raw, QWidget *parent_widget, const QModelIndex &current_index) {
+    const QModelIndex parent_index = console_item_convert_to_scope_index(parent_index_raw);
+
     const QString current_name = current_index.data(Qt::DisplayRole).toString();
 
     const QList<QString> sibling_names =
@@ -380,4 +375,87 @@ QModelIndex console_query_get_root_index(ConsoleWidget *console) {
 
         return QModelIndex();
     }
+}
+
+void console_query_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
+    const bool dropped_are_query_item_or_folder = (dropped_types - QSet<ItemType>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
+    if (!dropped_are_query_item_or_folder) {
+        return;
+    }
+
+    const ItemType target_type = (ItemType) target.data(ConsoleRole_Type).toInt();
+
+    const bool target_is_query_folder_or_root = (target_type == ItemType_QueryFolder || target_type == ItemType_QueryRoot);
+
+    *ok = target_is_query_folder_or_root;
+}
+
+void console_query_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target) {
+    // Check for name conflict
+    for (const QModelIndex &index : dropped_list) {
+        const QString name = index.data(Qt::DisplayRole).toString();
+        if (!console_query_name_is_good(name, target, console, index)) {
+            return;
+        }
+    }
+
+    // TODO: check name conflict
+    for (const QModelIndex &dropped : dropped_list) {
+        console_query_move(console, dropped, target);
+    }
+
+    console->sort_scope();
+
+    console_query_tree_save(console);
+}
+
+void console_query_move(ConsoleWidget *console, const QModelIndex &old_index_raw, const QModelIndex &new_parent_index_raw) {
+    // NOTE: convert both moved index and target index to
+    // their scope index equivalents (if they aren't scope
+    // indexes already). Do this because move process
+    // requires iteration through scope tree.
+    const QModelIndex old_index = console_item_convert_to_scope_index(old_index_raw);
+    const QModelIndex new_parent_index = console_item_convert_to_scope_index(new_parent_index_raw);
+
+    // Create a copy of the tree branch at new location. Go
+    // down the branch and replicate all of the children.
+
+    // This map contains mapping between old parents of
+    // indexes in branch and new parents. Filled out as the
+    // branch is copied over to new location.
+    QHash<QPersistentModelIndex, QPersistentModelIndex> new_parent_map;
+    new_parent_map[old_index.parent()] = new_parent_index;
+
+    QStack<QPersistentModelIndex> stack;
+    stack.append(old_index);
+    while (!stack.isEmpty()) {
+        const QPersistentModelIndex index = stack.pop();
+
+        const QPersistentModelIndex new_parent = new_parent_map[index.parent()];
+
+        const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
+        if (type == ItemType_QueryItem) {
+            const QString description = index.data(QueryItemRole_Description).toString();
+            const QString filter = index.data(QueryItemRole_Filter).toString();
+            const QString search_base = index.data(QueryItemRole_SearchBase).toString();
+            const QString name = index.data(Qt::DisplayRole).toString();
+
+            console_query_item_create(console, name, description, filter, search_base, new_parent);
+        } else if (type == ItemType_QueryFolder) {
+            const QString name = index.data(Qt::DisplayRole).toString();
+            const QString description = index.data(QueryItemRole_Description).toString();
+            const QModelIndex folder_index = console_query_folder_create(console, name, description, new_parent);
+
+            new_parent_map[index] = QPersistentModelIndex(folder_index); 
+        }
+
+        QAbstractItemModel *index_model = (QAbstractItemModel *)index.model();
+        for (int row = 0; row < index_model->rowCount(index); row++) {
+            const QModelIndex child = index_model->index(row, 0, index);
+            stack.append(QPersistentModelIndex(child));
+        }
+    }
+
+    // Delete branch at old location
+    console->delete_item(old_index);
 }

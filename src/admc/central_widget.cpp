@@ -587,13 +587,19 @@ void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, co
     switch (target_type) {
         case ItemType_Unassigned: break;
         case ItemType_Object: {
-            console_object_can_drop(dropped_list, target, dropped_types,ok);
+            console_object_can_drop(dropped_list, target, dropped_types, ok);
             break;
         }
         case ItemType_PolicyRoot: break;
         case ItemType_Policy: break;
-        case ItemType_QueryRoot: break;
-        case ItemType_QueryFolder: break;
+        case ItemType_QueryRoot: {
+            console_query_can_drop(dropped_list, target, dropped_types, ok);
+            break;
+        }
+        case ItemType_QueryFolder: {
+            console_query_can_drop(dropped_list, target, dropped_types, ok);
+            break;
+        }
         case ItemType_QueryItem: break;
         case ItemType_LAST: break;
     }
@@ -610,8 +616,14 @@ void CentralWidget::on_items_dropped(const QList<QModelIndex> &dropped_list, con
         }
         case ItemType_PolicyRoot: break;
         case ItemType_Policy: break;
-        case ItemType_QueryRoot: break;
-        case ItemType_QueryFolder: break;
+        case ItemType_QueryRoot: {
+            console_query_drop(console, dropped_list, target);
+            break;
+        }
+        case ItemType_QueryFolder: {
+            console_query_drop(console, dropped_list, target);
+            break;
+        }
         case ItemType_QueryItem: break;
         case ItemType_LAST: break;
     }

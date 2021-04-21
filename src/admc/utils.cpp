@@ -246,7 +246,7 @@ QModelIndex get_selected_scope_index(ConsoleWidget *console) {
     
     if (selected_indexes.size() == 1) {
         const QModelIndex index = selected_indexes[0];
-        const QModelIndex scope_index = console->convert_to_scope_index(index);
+        const QModelIndex scope_index = console_item_convert_to_scope_index(index);
 
         return scope_index;
     } else {
