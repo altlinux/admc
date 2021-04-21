@@ -561,14 +561,11 @@ void CentralWidget::delete_policy() {
 }
 
 void CentralWidget::delete_query_item_or_folder() {
-    const QList<QModelIndex> selected_indexes = console->get_selected_items();
-    
-    if (selected_indexes.size() != 1) {
-        return;
-    }
+    const QList<QPersistentModelIndex> selected_indexes = get_persistent_indexes(console->get_selected_items());
 
-    const QModelIndex index = selected_indexes[0];
-    console->delete_item(index);
+    for (const QPersistentModelIndex &index : selected_indexes) {
+        console->delete_item(index);
+    }
 
     console_query_tree_save(console);
 }
