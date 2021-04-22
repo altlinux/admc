@@ -16,7 +16,7 @@ link_libraries(
     Qt5::Test
     Qt5::Help
     adldap
-    libadmc
+    admctest
 )
 
 include_directories(

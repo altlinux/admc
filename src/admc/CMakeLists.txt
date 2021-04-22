@@ -132,7 +132,7 @@ add_executable(admc
 
 # NOTE: build admc as library to streamline building tests.
 # Tests just link to this lib and use all of admc's code.
-add_library(libadmc SHARED
+add_library(admctest SHARED
     ${ADMC_SOURCES}
 )
 
@@ -155,4 +155,4 @@ set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION ${CMAKE_CURRE
 qt5_add_translation(QM_FILES ${TS_FILES})
 
 install(TARGETS admc)
-install(TARGETS libadmc)
+install(TARGETS admctest)
