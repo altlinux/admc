@@ -24,6 +24,7 @@
 #define MIME_TYPE_CONSOLE "MIME_TYPE_CONSOLE"
 
 QModelIndex prev_parent = QModelIndex();
+bool drag_start = false;
 
 // TODO: when implementing console widget, this should be
 // removed. The replacement will be to store node id's in
@@ -53,6 +54,8 @@ QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
     // by checking if mimedata has our mime type.
     data->setData(MIME_TYPE_CONSOLE, QByteArray());
 
+    drag_start = true;
+
     return data;
 }
 
@@ -70,10 +73,13 @@ bool ConsoleDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, in
     // always return true from canDropMimeData() when parent
     // index changes (when hovering over new object). Also
     // return true for invalid index for cases where drag is
-    // hovered over empty space.
+    // hovered over empty space. Also return true for the
+    // first canDrop() call when drag just started.
     // https://bugreports.qt.io/browse/QTBUG-76418
-    if (prev_parent != parent || parent == QModelIndex()) {
+    if (prev_parent != parent || parent == QModelIndex() || drag_start) {
         prev_parent = parent;
+        drag_start = false;
+
         return true;
     }
 
