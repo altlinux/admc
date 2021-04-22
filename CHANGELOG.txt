@@ -2,6 +2,66 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.5.0 (Released 22-04-2021)
+-----------------------------------------------------------------------
+- Console: Added new tree called "Group Policy Objects".
+  Lists all of the policies in the domain. Selecting a
+  policy shows all of the links to that policy in results
+  pane.
+- Console: Added new tree called "Saved Queries". Displays a
+  tree of folders which contain "queries". Queries are saved
+  searches which display search results in results pane.
+- Console: Display current domain controller in domain item
+  label.
+- Console: Add additional way to "activate" results items by
+  selecting and pressing ENTER. Before could only activate
+  by double-clicking. Activating means switching scope to
+  selected results item or opening it's properties.
+- Console: Items in scope pane are now sorted.
+- Console: Change sorting of items in scope and results to
+  be case insensitive.
+- Action menu: Added "Edit upn suffixes" action to domain
+  object. Opens menu to edit upn suffixes for this domain.
+- Account tab: Added combobox for user logon name which
+  contains current upn suffixes.
+- Attributes tab: Remember what attribute filters were
+  selected when app is closed.
+- Move object dialog: Items are now sorted.
+- Attributes tab: Prevent mixing changes in attributes tab
+  with changes in other tabs. When switching from/to
+  attributes tab while there are changes in tabs, open a
+  dialog which forces user to apply or discard those
+  changes.
+- Create dialog: Added combobox for user logon name which
+  contains current upn suffixes.
+- View menu: Added new results view types: Icons, Lists,
+  Detail.
+- View menu: Added "Customize columns" option. Opens a
+  dialog where columns for results pane can be shown and
+  hidden.
+- Preferences: Added toggles for some console widgets.
+  Replaces "toggle widgets dialog".
+- Message log: Changed this to a docked widget. Can now be
+  repositioned to the sides or bottom of window as well as
+  floating.
+- Find dialog: Fixed find dialog taking a long time to close
+  if find results contained many objects and they were
+  sorted by user.
+- Find dialog: Fixed group scope and type not showing
+  correctly. Was always showing the default scope and type
+  (Distribution Group - Global).
+- Properties: Added new tab called "Managed by",
+  which is shown for Organizational Units.
+- Properties: Added new tab called "Group policy"
+  which displays and edits policies linked to selected
+  object.
+- Manual: Added contents and index sectio. Still no actual content though.
+- Misc: Drag and drop is now disabled for objects that can't
+  be moved. Before you were able to start drag process for
+  those objects but weren't able to drop them anywhere,
+  which is confusing.
+
+-----------------------------------------------------------------------
  VERSION 0.4.1 (Released 02-03-2021)
 -----------------------------------------------------------------------
 - Properties: Fixed "Apply"/"Reset" buttons being
