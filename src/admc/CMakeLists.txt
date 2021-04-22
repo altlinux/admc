@@ -155,3 +155,4 @@ set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION ${CMAKE_CURRE
 qt5_add_translation(QM_FILES ${TS_FILES})
 
 install(TARGETS admc)
+install(TARGETS libadmc)
