@@ -21,6 +21,7 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "utils.h"
 #include "console_types/console_object.h"
 
 #include <QTest>
@@ -37,11 +38,8 @@ void ADMCTest::initTestCase() {
 
     QVERIFY2(ad.is_connected(), "Failed to connect to AD server");
 
-    // TODO: check for load failure
-    ad_config = new AdConfig();
-    ad_config->load(ad, QLocale(QLocale::English));
-
-    AdInterface::set_permanent_adconfig(ad_config);
+    g_adconfig->load(ad, QLocale(QLocale::English));
+    AdInterface::set_permanent_adconfig(g_adconfig);
 
     // Cleanup before all tests in-case this test suite was
     // previously interrupted and a cleanup wasn't performed
@@ -93,7 +91,7 @@ void ADMCTest::cleanup() {
 }
 
 QString ADMCTest::test_arena_dn() {
-    const QString head_dn = ad_config->domain_head();
+    const QString head_dn = g_adconfig->domain_head();
     const QString dn = QString("OU=test-arena,%1").arg(head_dn);
 
     return dn;
@@ -174,7 +172,9 @@ void navigate_until_object(QTreeView *view, const QString &target_dn, const int 
 
 void ADMCTest::wait_for_find_results_to_load(QTreeView *view) {
     int timer = 0;
+    trace();
     while (view->model()->rowCount() == 0) {
+    trace();
         QTest::qWait(1);
         timer++;
         QVERIFY2((timer < 1000), "Find results failed to load, took too long");
