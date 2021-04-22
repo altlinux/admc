@@ -15,8 +15,22 @@ set(ADMC_ORGANIZATION "BaseALT")
 set(ADMC_ORGANIZATION_DOMAIN "basealt.ru")
 configure_file("config.h.in" "config.h")
 
-add_executable(admc
-    main.cpp
+include_directories(
+    PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${PROJECT_SOURCE_DIR}/src/adldap
+)
+
+link_libraries(
+    Qt5::Core
+    Qt5::Widgets
+    Qt5::Help
+    adldap
+    resolv
+)
+
+set(ADMC_SOURCES
     properties_dialog.cpp
     main_window.cpp
     status.cpp
@@ -111,19 +125,15 @@ add_executable(admc
     admc.qrc
 )
 
-target_include_directories(admc
-    PRIVATE
-        ${CMAKE_CURRENT_BINARY_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${PROJECT_SOURCE_DIR}/src/adldap
+add_executable(admc
+    main.cpp
+    ${ADMC_SOURCES}
 )
 
-target_link_libraries(admc
-    Qt5::Core
-    Qt5::Widgets
-    Qt5::Help
-    adldap
-    resolv
+# NOTE: build admc as library to streamline building tests.
+# Tests just link to this lib and use all of admc's code.
+add_library(libadmc SHARED
+    ${ADMC_SOURCES}
 )
 
 set(TS_FILES

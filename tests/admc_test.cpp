@@ -38,7 +38,10 @@ void ADMCTest::initTestCase() {
     QVERIFY2(ad.is_connected(), "Failed to connect to AD server");
 
     // TODO: check for load failure
-    g_adconfig->load(ad, QLocale(QLocale::English));
+    ad_config = new AdConfig();
+    ad_config->load(ad, QLocale(QLocale::English));
+
+    AdInterface::set_permanent_adconfig(ad_config);
 
     // Cleanup before all tests in-case this test suite was
     // previously interrupted and a cleanup wasn't performed
@@ -90,7 +93,7 @@ void ADMCTest::cleanup() {
 }
 
 QString ADMCTest::test_arena_dn() {
-    const QString head_dn = g_adconfig->domain_head();
+    const QString head_dn = ad_config->domain_head();
     const QString dn = QString("OU=test-arena,%1").arg(head_dn);
 
     return dn;

@@ -19,7 +19,6 @@
 
 #include "admc_test_unlock_edit.h"
 
-#include "adldap.h"
 #include "edits/unlock_edit.h"
 
 #include <QFormLayout>

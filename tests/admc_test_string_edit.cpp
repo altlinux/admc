@@ -19,7 +19,6 @@
 
 #include "admc_test_string_edit.h"
 
-#include "adldap.h"
 #include "edits/string_edit.h"
 
 #include <QFormLayout>

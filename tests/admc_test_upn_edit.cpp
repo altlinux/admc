@@ -19,7 +19,6 @@
 
 #include "admc_test_upn_edit.h"
 
-#include "adldap.h"
 #include "edits/upn_edit.h"
 
 #include <QFormLayout>

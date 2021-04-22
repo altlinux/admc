@@ -34,6 +34,7 @@
 
 class QString;
 class QTreeView;
+class AdConfig;
 
 #define TEST_USER "test-user"
 #define TEST_USER_LOGON "test-user-logon"
@@ -94,6 +95,8 @@ protected:
     void close_message_box_later();
 
 private:
+    AdConfig *ad_config;
+    
     void close_message_box_slot();
 
 };

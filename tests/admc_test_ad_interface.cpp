@@ -19,28 +19,7 @@
 
 #include "admc_test_ad_interface.h"
 
-#include "adldap.h"
-#include "create_object_dialog.h"
-#include "utils.h"
-#include "status.h"
-#include "console_types/console_object.h"
-#include "select_container_dialog.h"
-#include "select_object_dialog.h"
-#include "find_select_object_dialog.h"
-#include "settings.h"
-#include "rename_object_dialog.h"
-#include "find_object_dialog.h"
-#include "move_object_dialog.h"
-#include "password_dialog.h"
-#include "find_widget.h"
-#include "console_actions.h"
-
 #include <QTest>
-#include <QDebug>
-#include <QModelIndex>
-#include <QTreeView>
-#include <QPushButton>
-#include <QComboBox>
 
 void ADMCTestAdInterface::object_add() {
     const QString dn = test_object_dn(TEST_USER, CLASS_USER);
