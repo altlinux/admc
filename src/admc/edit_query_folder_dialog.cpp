@@ -29,6 +29,7 @@
 #include <QFormLayout>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QDialogButtonBox>
 
 EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg)
 : QDialog(console_arg)
@@ -43,7 +44,8 @@ EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg)
 
     auto form_layout = new QFormLayout();
 
-    auto ok_button = new QPushButton(tr("Ok"));
+    auto button_box = new QDialogButtonBox();
+    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
 
     form_layout->addRow(tr("Name:"), name_edit);
     form_layout->addRow(tr("Description:"), description_edit);
