@@ -64,8 +64,8 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
 
     auto button_box = new QDialogButtonBox();
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    auto apply_button = button_box->addButton(QDialogButtonBox::Apply);
-    auto reset_button = button_box->addButton(QDialogButtonBox::Reset);
+    apply_button = button_box->addButton(QDialogButtonBox::Apply);
+    reset_button = button_box->addButton(QDialogButtonBox::Reset);
     auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
 
     const auto layout = new QVBoxLayout();
@@ -76,6 +76,13 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
 
     auto general_tab = new GeneralMultiTab();
     tab_widget->add_tab(general_tab, tr("General"));
+    tab_list.append(general_tab);
+
+    for (PropertiesMultiTab *tab : tab_list) {
+        connect(
+            tab, &PropertiesMultiTab::edited,
+            this, &ObjectMultiPropertiesDialog::on_tab_edited);
+    }
 
     connect(
         ok_button, &QPushButton::clicked,
@@ -89,16 +96,50 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
     connect(
         cancel_button, &QPushButton::clicked,
         this, &ObjectMultiPropertiesDialog::reject);
+
+    reset();
 }
 
 void ObjectMultiPropertiesDialog::ok() {
-    QDialog::accept();
+    const bool success = apply();
+
+    if (success) {
+        accept();
+    }
 }
 
-void ObjectMultiPropertiesDialog::apply() {
+bool ObjectMultiPropertiesDialog::apply() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return false;
+    }
 
+    show_busy_indicator();
+
+    bool total_apply_success = true;
+    for (PropertiesMultiTab *tab : tab_list) {
+        const bool success = tab->apply(ad, target_list);
+
+        if (!success) {
+            total_apply_success = false;
+        }
+    }
+
+    g_status()->display_ad_messages(ad, this);
+
+    hide_busy_indicator();
+
+    emit applied();
+
+    return total_apply_success;
 }
 
 void ObjectMultiPropertiesDialog::reset() {
+    for (PropertiesMultiTab *tab : tab_list) {
+        tab->reset();
+    }
+}
 
+void ObjectMultiPropertiesDialog::on_tab_edited() {
+    
 }

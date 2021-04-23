@@ -18,3 +18,30 @@
  */
 
 #include "multi_tabs/properties_multi_tab.h"
+
+#include "multi_edits/attribute_multi_edit.h"
+
+#include <QDebug>
+
+bool PropertiesMultiTab::apply(AdInterface &ad, const QList<QString> &target_list) {
+    bool total_success = true;
+    for (AttributeMultiEdit *edit : edit_list) {
+        const bool success = edit->apply(ad, target_list);
+
+        if (!success) {
+            total_success = false;
+        }
+    }
+
+    return total_success;
+}
+
+void PropertiesMultiTab::on_edit_edited() {
+    emit edited();
+}
+
+void PropertiesMultiTab::reset() {
+    for (AttributeMultiEdit *edit : edit_list) {
+        edit->reset();
+    }
+}

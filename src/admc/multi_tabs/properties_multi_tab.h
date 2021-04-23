@@ -22,6 +22,9 @@
 
 #include <QWidget>
 
+class AdInterface;
+class AttributeMultiEdit;
+
 /**
  *
  */
@@ -30,6 +33,17 @@ class PropertiesMultiTab : public QWidget {
 Q_OBJECT
 
 public:
+    virtual bool apply(AdInterface &ad, const QList<QString> &target_list);
+    virtual void reset();
+
+signals:
+    void edited();
+
+public slots:
+    void on_edit_edited();
+
+protected:
+    QList<AttributeMultiEdit *> edit_list;
 
 };
 

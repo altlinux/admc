@@ -17,38 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_MULTI_PROPERTIES_DIALOG_H
-#define OBJECT_MULTI_PROPERTIES_DIALOG_H
+#include "multi_edits/attribute_multi_edit.h"
 
-/**
- * TODO: comment
- */
+#include "multi_tabs/properties_multi_tab.h"
 
-#include <QDialog>
+#include <QDebug>
 
-class PropertiesMultiTab;
+AttributeMultiEdit::AttributeMultiEdit(QList<AttributeMultiEdit *> *edits_out, QObject *parent)
+: QObject(parent)
+{
+    if (edits_out != nullptr) {
+        if (edits_out->contains(this)) {
+            qDebug() << "ERROR: attribute edit added twice to list!";
+        } else {
+            edits_out->append(this);
+        }
+    }
+}
 
-class ObjectMultiPropertiesDialog final : public QDialog {
-Q_OBJECT
-
-public:
-    ObjectMultiPropertiesDialog(const QList<QString> &target_list_arg);
-
-signals:
-    void applied();
-    
-private slots:
-    void ok();
-    void reset();
-    void on_tab_edited();
-
-private:
-    QList<QString> target_list;
-    QList<PropertiesMultiTab *> tab_list;
-    QPushButton *apply_button;
-    QPushButton *reset_button;
-
-    bool apply();
-};
-
-#endif /* OBJECT_MULTI_PROPERTIES_DIALOG_H */
+void multi_edits_connect_to_tab(QList<AttributeMultiEdit *> edits, PropertiesMultiTab *tab) {
+    for (auto edit : edits) {
+        QObject::connect(
+            edit, &AttributeMultiEdit::edited,
+            tab, &PropertiesMultiTab::on_edit_edited);
+    }
+}

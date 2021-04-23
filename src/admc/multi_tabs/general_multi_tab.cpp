@@ -18,12 +18,14 @@
  */
 
 #include "multi_tabs/general_multi_tab.h"
+
 #include "edits/string_edit.h"
 #include "edits/string_other_edit.h"
 #include "edits/country_edit.h"
 #include "edits/group_scope_edit.h"
 #include "edits/group_type_edit.h"
 #include "adldap.h"
+#include "multi_edits/string_multi_edit.h"
 
 #include <QLabel>
 #include <QFormLayout>
@@ -36,8 +38,16 @@ GeneralMultiTab::GeneralMultiTab() {
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Sunken);
 
+    auto edits_layout = new QFormLayout();
+
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addWidget(name_label);
     top_layout->addWidget(line);
+    top_layout->addLayout(edits_layout);
+
+    auto edit = new StringMultiEdit(ATTRIBUTE_DESCRIPTION, CLASS_USER, &edit_list, edits_layout);
+
+    edit->add_to_layout(edits_layout);
+    multi_edits_connect_to_tab(edit_list, this);
 }

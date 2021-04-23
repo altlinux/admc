@@ -17,38 +17,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_MULTI_PROPERTIES_DIALOG_H
-#define OBJECT_MULTI_PROPERTIES_DIALOG_H
+#ifndef ATTRIBUTE_MULTI_EDIT_H
+#define ATTRIBUTE_MULTI_EDIT_H
 
-/**
- * TODO: comment
- */
+#include <QObject>
+#include <QList>
 
-#include <QDialog>
-
+class QFormLayout;
+class AdInterface;
 class PropertiesMultiTab;
 
-class ObjectMultiPropertiesDialog final : public QDialog {
-Q_OBJECT
+/**
+ */
 
+class AttributeMultiEdit : public QObject {
+Q_OBJECT
 public:
-    ObjectMultiPropertiesDialog(const QList<QString> &target_list_arg);
+    AttributeMultiEdit(QList<AttributeMultiEdit *> *edits_out, QObject *parent);
+
+    virtual void add_to_layout(QFormLayout *layout) = 0;
+    virtual bool apply(AdInterface &ad, const QList<QString> &target_list) = 0;
+    virtual void reset() = 0;
 
 signals:
-    void applied();
-    
-private slots:
-    void ok();
-    void reset();
-    void on_tab_edited();
+    void edited();
 
 private:
-    QList<QString> target_list;
-    QList<PropertiesMultiTab *> tab_list;
-    QPushButton *apply_button;
-    QPushButton *reset_button;
-
-    bool apply();
+    bool m_modified;
 };
 
-#endif /* OBJECT_MULTI_PROPERTIES_DIALOG_H */
+void multi_edits_connect_to_tab(QList<AttributeMultiEdit *> edits, PropertiesMultiTab *tab);
+
+#endif /* ATTRIBUTE_MULTI_EDIT_H */

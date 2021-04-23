@@ -20,9 +20,9 @@
 #ifndef GENERAL_MULTI_TAB_H
 #define GENERAL_MULTI_TAB_H
 
-#include "tabs/properties_tab.h"
+#include "multi_tabs/properties_multi_tab.h"
 
-class GeneralMultiTab final : public PropertiesTab {
+class GeneralMultiTab final : public PropertiesMultiTab {
 Q_OBJECT
 
 public:

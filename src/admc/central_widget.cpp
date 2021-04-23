@@ -263,6 +263,7 @@ void CentralWidget::object_delete() {
 
 void CentralWidget::object_properties() {
     const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
+
     if (targets.size() == 1) {
         const QString target = targets.keys()[0];
 
@@ -270,31 +271,14 @@ void CentralWidget::object_properties() {
 
         connect(
             dialog, &PropertiesDialog::applied,
-            [=]() {
-                AdInterface ad;
-                if (ad_failed(ad)) {
-                    return;
-                }
-
-                const AdObject object = ad.search_object(target);
-
-                const QList<QModelIndex> scope_indexes = console->search_scope_by_role(ObjectRole_DN, target, ItemType_Object);
-                for (const QModelIndex &index : scope_indexes) {
-                    QStandardItem *scope_item = console->get_scope_item(index);
-                    console_object_scope_load(scope_item, object);
-                }
-
-                const QList<QModelIndex> results_indexes = console->search_results_by_role(ObjectRole_DN, target, ItemType_Object);
-                for (const QModelIndex &index : results_indexes) {
-                    const QList<QStandardItem *> results_row = console->get_results_row(index);
-                    console_object_results_load(results_row, object);
-                }
-
-                update_actions_visibility();
-            });
+            this, &CentralWidget::on_properties_applied);
     } else if (targets.size() > 1) {
         auto dialog = new ObjectMultiPropertiesDialog(targets.keys());
         dialog->open();
+
+        connect(
+            dialog, &ObjectMultiPropertiesDialog::applied,
+            this, &CentralWidget::on_properties_applied);
     }
 }
 
@@ -649,6 +633,33 @@ void CentralWidget::on_current_scope_changed() {
     policy_results_widget->update(current_scope);
 
     update_description_bar();
+}
+
+void CentralWidget::on_properties_applied() {    
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const QList<QString> target_list = get_selected_dns();
+
+    for (const QString &target : target_list) {
+        const AdObject object = ad.search_object(target);
+
+        const QList<QModelIndex> scope_indexes = console->search_scope_by_role(ObjectRole_DN, target, ItemType_Object);
+        for (const QModelIndex &index : scope_indexes) {
+            QStandardItem *scope_item = console->get_scope_item(index);
+            console_object_scope_load(scope_item, object);
+        }
+
+        const QList<QModelIndex> results_indexes = console->search_results_by_role(ObjectRole_DN, target, ItemType_Object);
+        for (const QModelIndex &index : results_indexes) {
+            const QList<QStandardItem *> results_row = console->get_results_row(index);
+            console_object_results_load(results_row, object);
+        }
+
+        update_actions_visibility();
+    }
 }
 
 void CentralWidget::refresh_head() {
