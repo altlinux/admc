@@ -43,7 +43,7 @@ private slots:
 
 private:
     QCheckBox *check;
-    QWidget *left;
+    QWidget *check_and_label_wrapper;
     QLineEdit *edit;
     QString attribute;
     QString object_class;

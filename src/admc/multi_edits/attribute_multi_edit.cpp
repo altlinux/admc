@@ -42,3 +42,9 @@ void multi_edits_connect_to_tab(QList<AttributeMultiEdit *> edits, PropertiesMul
             tab, &PropertiesMultiTab::on_edit_edited);
     }
 }
+
+void multi_edits_add_to_layout(QList<AttributeMultiEdit *> edits, QFormLayout *layout) {
+    for (auto edit : edits) {
+        edit->add_to_layout(layout);
+    }
+}

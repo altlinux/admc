@@ -32,7 +32,7 @@ class ObjectMultiPropertiesDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    ObjectMultiPropertiesDialog(const QList<QString> &target_list_arg);
+    ObjectMultiPropertiesDialog(const QList<QString> &target_list_arg, const QList<QString> &class_list);
 
 signals:
     void applied();

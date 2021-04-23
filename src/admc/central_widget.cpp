@@ -273,7 +273,20 @@ void CentralWidget::object_properties() {
             dialog, &PropertiesDialog::applied,
             this, &CentralWidget::on_properties_applied);
     } else if (targets.size() > 1) {
-        auto dialog = new ObjectMultiPropertiesDialog(targets.keys());
+        const QList<QString> class_list =
+        [&]() {
+            QSet<QString> out;
+
+            for (const QPersistentModelIndex &index : targets.values()) {
+                const QList<QString> this_class_list = index.data(ObjectRole_ObjectClasses).toStringList();
+                const QString main_class = this_class_list.last();
+                out.insert(main_class);
+            }
+
+            return out.toList();
+        }();
+
+        auto dialog = new ObjectMultiPropertiesDialog(targets.keys(), class_list);
         dialog->open();
 
         connect(

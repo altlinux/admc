@@ -48,7 +48,7 @@
 #include <QDebug>
 #include <QAbstractItemView>
 
-ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &target_list_arg)
+ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &target_list_arg, const QList<QString> &class_list)
 : QDialog()
 {
     target_list = target_list_arg;
@@ -74,9 +74,14 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
     layout->addWidget(tab_widget);
     layout->addWidget(button_box);    
 
-    auto general_tab = new GeneralMultiTab();
+    auto general_tab = new GeneralMultiTab(class_list);
     tab_widget->add_tab(general_tab, tr("General"));
     tab_list.append(general_tab);
+
+    // TODO: add other tabs
+    if (class_list == QList<QString>({CLASS_USER})) {
+    
+    }
 
     for (PropertiesMultiTab *tab : tab_list) {
         connect(

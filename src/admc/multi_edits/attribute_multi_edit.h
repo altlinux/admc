@@ -47,5 +47,6 @@ private:
 };
 
 void multi_edits_connect_to_tab(QList<AttributeMultiEdit *> edits, PropertiesMultiTab *tab);
+void multi_edits_add_to_layout(QList<AttributeMultiEdit *> edits, QFormLayout *layout);
 
 #endif /* ATTRIBUTE_MULTI_EDIT_H */

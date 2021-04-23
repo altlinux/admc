@@ -31,23 +31,32 @@
 #include <QFormLayout>
 #include <QFrame>
 
-GeneralMultiTab::GeneralMultiTab() {   
+GeneralMultiTab::GeneralMultiTab(const QList<QString> &class_list) {   
     auto name_label = new QLabel(tr("Multiple objects selected"));
 
     auto line = new QFrame();
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Sunken);
 
-    auto edits_layout = new QFormLayout();
+    auto edit_layout = new QFormLayout();
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addWidget(name_label);
     top_layout->addWidget(line);
-    top_layout->addLayout(edits_layout);
+    top_layout->addLayout(edit_layout);
 
-    auto edit = new StringMultiEdit(ATTRIBUTE_DESCRIPTION, CLASS_USER, &edit_list, edits_layout);
+    if (class_list == QList<QString>({CLASS_USER})) {
+        new StringMultiEdit(ATTRIBUTE_DESCRIPTION, CLASS_USER, &edit_list, edit_layout);
+        new StringMultiEdit(ATTRIBUTE_OFFICE, CLASS_USER, &edit_list, edit_layout);
+        new StringMultiEdit(ATTRIBUTE_MOBILE, CLASS_USER, &edit_list, edit_layout);
+        new StringMultiEdit(ATTRIBUTE_FAX_NUMBER, CLASS_USER, &edit_list, edit_layout);
+        new StringMultiEdit(ATTRIBUTE_WWW_HOMEPAGE, CLASS_USER, &edit_list, edit_layout);
+        new StringMultiEdit(ATTRIBUTE_MAIL, CLASS_USER, &edit_list, edit_layout);
+    } else {
+        new StringMultiEdit(ATTRIBUTE_DESCRIPTION, CLASS_USER, &edit_list, edit_layout);
+    }
 
-    edit->add_to_layout(edits_layout);
+    multi_edits_add_to_layout(edit_list, edit_layout);
     multi_edits_connect_to_tab(edit_list, this);
 }

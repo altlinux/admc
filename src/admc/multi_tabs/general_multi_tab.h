@@ -26,7 +26,7 @@ class GeneralMultiTab final : public PropertiesMultiTab {
 Q_OBJECT
 
 public:
-    GeneralMultiTab();
+    GeneralMultiTab(const QList<QString> &class_list);
 };
 
 #endif /* GENERAL_MULTI_TAB_H */

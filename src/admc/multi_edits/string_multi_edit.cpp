@@ -39,12 +39,12 @@ StringMultiEdit::StringMultiEdit(const QString &attribute_arg, const QString &ob
     const QString label_text = g_adconfig->get_attribute_display_name(attribute, object_class) + ":";
     auto label = new QLabel(label_text);
 
-    left = new QWidget();
-    auto left_layout = new QHBoxLayout();
-    left_layout->setContentsMargins(0, 0, 0, 0);
-    left->setLayout(left_layout);
-    left_layout->addWidget(check);
-    left_layout->addWidget(label);
+    check_and_label_wrapper = new QWidget();
+    auto layout = new QHBoxLayout();
+    layout->setContentsMargins(0, 0, 0, 0);
+    check_and_label_wrapper->setLayout(layout);
+    layout->addWidget(check);
+    layout->addWidget(label);
 
     edit = new QLineEdit();
 
@@ -58,7 +58,7 @@ StringMultiEdit::StringMultiEdit(const QString &attribute_arg, const QString &ob
 }
 
 void StringMultiEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(left, edit);
+    layout->addRow(check_and_label_wrapper, edit);
 }
 
 bool StringMultiEdit::apply(AdInterface &ad, const QList<QString> &target_list) {
