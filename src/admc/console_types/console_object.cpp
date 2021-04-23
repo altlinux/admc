@@ -47,8 +47,8 @@ void console_object_item_data_load(QStandardItem *item, const AdObject &object);
 DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIndex &target);
 void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
 bool console_object_scope_and_results_add_check(ConsoleWidget *console, const QModelIndex &parent);
-void console_object_drop_objects(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target);
-void console_object_drop_policies(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target, PolicyResultsWidget *policy_results_widget);
+void console_object_drop_objects(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
+void console_object_drop_policies(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget);
 
 void console_object_results_load(const QList<QStandardItem *> row, const AdObject &object) {
     // Load attribute columns
@@ -421,7 +421,7 @@ QModelIndex console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
     return head_item->index();
 }
 
-void console_object_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
+void console_object_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
     const bool dropped_are_all_objects = (dropped_types.size() == 1 && dropped_types.contains(ItemType_Object));
     const bool dropped_are_policies = (dropped_types == QSet<ItemType>({ItemType_Policy}));
 
@@ -433,7 +433,7 @@ void console_object_can_drop(const QList<QModelIndex> &dropped_list, const QMode
         if (dropped_list.size() != 1) {
             *ok = true;
         } else {
-            const QModelIndex dropped = dropped_list[0];
+            const QPersistentModelIndex dropped = dropped_list[0];
 
             const DropType drop_type = console_object_get_drop_type(dropped, target);
             const bool can_drop = (drop_type != DropType_None);
@@ -447,7 +447,7 @@ void console_object_can_drop(const QList<QModelIndex> &dropped_list, const QMode
     }
 }
 
-void console_object_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QSet<ItemType> &dropped_types, const QModelIndex &target, PolicyResultsWidget *policy_results_widget) {
+void console_object_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QSet<ItemType> &dropped_types, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget) {
     const bool dropped_are_all_objects = (dropped_types.size() == 1 && dropped_types.contains(ItemType_Object));
     const bool dropped_are_policies = (dropped_types == QSet<ItemType>({ItemType_Policy}));
 
@@ -699,7 +699,7 @@ bool console_object_is_ou(const QModelIndex &index) {
     return is_ou;
 }
 
-void console_object_drop_objects(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target) {
+void console_object_drop_objects(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
     const QString target_dn = target.data(ObjectRole_DN).toString();
 
     AdInterface ad;
@@ -709,7 +709,7 @@ void console_object_drop_objects(ConsoleWidget *console, const QList<QModelIndex
 
     show_busy_indicator();
 
-    for (const QModelIndex &dropped : dropped_list) {
+    for (const QPersistentModelIndex &dropped : dropped_list) {
         const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
         const DropType drop_type = console_object_get_drop_type(dropped, target);
 
@@ -742,12 +742,12 @@ void console_object_drop_objects(ConsoleWidget *console, const QList<QModelIndex
     g_status()->display_ad_messages(ad, console);
 }
 
-void console_object_drop_policies(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target, PolicyResultsWidget *policy_results_widget) {
+void console_object_drop_policies(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget) {
     const QList<QString> policy_list =
     [&]() {
         QList<QString> out;
 
-        for (const QModelIndex &index : dropped_list) {
+        for (const QPersistentModelIndex &index : dropped_list) {
             const QString dn = index.data(PolicyRole_DN).toString();
             out.append(dn);
         }

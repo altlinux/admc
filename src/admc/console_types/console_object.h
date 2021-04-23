@@ -62,8 +62,8 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
 void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index);
 QModelIndex console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
-void console_object_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
-void console_object_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QSet<ItemType> &dropped_types, const QModelIndex &target, PolicyResultsWidget *policy_results_widget);
+void console_object_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
+void console_object_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QSet<ItemType> &dropped_types, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget);
 void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu);
 void console_object_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);
 

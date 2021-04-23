@@ -40,7 +40,7 @@ public:
 
 signals:
     // Save these indexes when drag is started
-    void start_drag(const QList<QModelIndex> &dropped) const;
+    void start_drag(const QList<QPersistentModelIndex> &dropped) const;
 
     // Set "ok" to true if can drop and false if can't drop
     // NOTE: "ok" is supposed to be set only once

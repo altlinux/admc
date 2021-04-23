@@ -508,7 +508,7 @@ void CentralWidget::policy_delete() {
 
     show_busy_indicator();
 
-    for (const QModelIndex &index : selected) {
+    for (const QPersistentModelIndex &index : selected) {
         const QString dn = index.data(PolicyRole_DN).toString();
         const bool success = ad.object_delete(dn);
 
@@ -548,12 +548,12 @@ void CentralWidget::query_delete() {
     console_query_tree_save(console);
 }
 
-void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, bool *ok) {
+void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, bool *ok) {
     const bool dropped_contains_target =
     [&]() {
         const QModelIndex target_scope = console_item_convert_to_scope_index(target);
 
-        for (const QModelIndex &dropped : dropped_list) {
+        for (const QPersistentModelIndex &dropped : dropped_list) {
             const QModelIndex dropped_scope = console_item_convert_to_scope_index(dropped);
             if (dropped_scope == target_scope) {
                 return true;
@@ -572,7 +572,7 @@ void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, co
     [&]() {
         QSet<ItemType> out;
 
-        for (const QModelIndex &index : dropped_list) {
+        for (const QPersistentModelIndex &index : dropped_list) {
             const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
             out.insert(type);
         }
@@ -604,13 +604,13 @@ void CentralWidget::on_items_can_drop(const QList<QModelIndex> &dropped_list, co
     }
 }
 
-void CentralWidget::on_items_dropped(const QList<QModelIndex> &dropped_list, const QModelIndex &target) {
+void CentralWidget::on_items_dropped(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
     const ItemType target_type = (ItemType) target.data(ConsoleRole_Type).toInt();
     const QSet<ItemType> dropped_types =
     [&]() {
         QSet<ItemType> out;
 
-        for (const QModelIndex &index : dropped_list) {
+        for (const QPersistentModelIndex &index : dropped_list) {
             const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
             out.insert(type);
         }

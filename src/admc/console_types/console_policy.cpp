@@ -148,7 +148,7 @@ void console_policy_actions_get_state(const QModelIndex &index, const bool singl
     }
 }
 
-void console_policy_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
+void console_policy_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
     const bool dropped_are_objects = (dropped_types == QSet<ItemType>({ItemType_Object}));
     if (!dropped_are_objects) {
         return;
@@ -156,7 +156,7 @@ void console_policy_can_drop(const QList<QModelIndex> &dropped_list, const QMode
 
     const bool dropped_contain_ou =
     [&]() {
-        for (const QModelIndex &index : dropped_list) {
+        for (const QPersistentModelIndex &index : dropped_list) {
             if (console_object_is_ou(index)) {
                 return true;
             }
@@ -172,7 +172,7 @@ void console_policy_can_drop(const QList<QModelIndex> &dropped_list, const QMode
     *ok = true;
 }
 
-void console_policy_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target, PolicyResultsWidget *policy_results_widget) {
+void console_policy_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget) {
     const QString policy_dn = target.data(PolicyRole_DN).toString();
     const QList<QString> policy_list = {policy_dn};
 
@@ -183,7 +183,7 @@ void console_policy_drop(ConsoleWidget *console, const QList<QModelIndex> &dropp
         // NOTE: when multi-selecting, selection may contain
         // a mix of OU and non-OU objects. In that case just
         // ignore non-OU objects and link OU's only
-        for (const QModelIndex &index : dropped_list) {
+        for (const QPersistentModelIndex &index : dropped_list) {
             if (console_object_is_ou(index)) {
                 const QString dn = index.data(ObjectRole_DN).toString();
                 out.append(dn);

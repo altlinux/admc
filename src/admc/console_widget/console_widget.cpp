@@ -789,7 +789,7 @@ void ConsoleWidgetPrivate::navigate_forward() {
     update_navigation_actions();
 }
 
-void ConsoleWidgetPrivate::on_start_drag(const QList<QModelIndex> &dropped_arg) {
+void ConsoleWidgetPrivate::on_start_drag(const QList<QPersistentModelIndex> &dropped_arg) {
     dropped = dropped_arg;
 }
 

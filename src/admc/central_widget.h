@@ -94,8 +94,8 @@ private slots:
 
     void query_delete();
     
-    void on_items_can_drop(const QList<QModelIndex> &dropped, const QModelIndex &target, bool *ok);
-    void on_items_dropped(const QList<QModelIndex> &dropped, const QModelIndex &target);
+    void on_items_can_drop(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target, bool *ok);
+    void on_items_dropped(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target);
 
     void on_current_scope_changed();
 

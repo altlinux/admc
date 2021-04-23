@@ -195,10 +195,10 @@ void console_query_tree_init(ConsoleWidget *console) {
     const QHash<QString, QVariant> folders_map = g_settings->get_variant(VariantSetting_QueryFolders).toHash();
     const QHash<QString, QVariant> info_map = g_settings->get_variant(VariantSetting_QueryInfo).toHash();
 
-    QStack<QModelIndex> query_stack;
+    QStack<QPersistentModelIndex> query_stack;
     query_stack.append(head_item->index());
     while (!query_stack.isEmpty()) {
-        const QModelIndex index = query_stack.pop();
+        const QPersistentModelIndex index = query_stack.pop();
         const QString path = console_query_folder_path(index);
 
         // Go through children and add them as folders or
@@ -219,7 +219,7 @@ void console_query_tree_init(ConsoleWidget *console) {
                 // Query folder
                 const QString name = path_to_name(child_path);
                 const QString description = info["description"].toString();
-                const QModelIndex child_scope_index = console_query_folder_create(console, name, description, index);
+                const QPersistentModelIndex child_scope_index = console_query_folder_create(console, name, description, index);
 
                 query_stack.append(child_scope_index);
             }
@@ -377,7 +377,7 @@ QModelIndex console_query_get_root_index(ConsoleWidget *console) {
     }
 }
 
-void console_query_can_drop(const QList<QModelIndex> &dropped_list, const QModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
+void console_query_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
     const bool dropped_are_query_item_or_folder = (dropped_types - QSet<ItemType>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
     if (!dropped_are_query_item_or_folder) {
         return;
@@ -390,9 +390,9 @@ void console_query_can_drop(const QList<QModelIndex> &dropped_list, const QModel
     *ok = target_is_query_folder_or_root;
 }
 
-void console_query_drop(ConsoleWidget *console, const QList<QModelIndex> &dropped_list, const QModelIndex &target) {
+void console_query_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
     // Check for name conflict
-    for (const QModelIndex &index : dropped_list) {
+    for (const QPersistentModelIndex &index : dropped_list) {
         const QString name = index.data(Qt::DisplayRole).toString();
         if (!console_query_name_is_good(name, target, console, index)) {
             return;
@@ -400,7 +400,7 @@ void console_query_drop(ConsoleWidget *console, const QList<QModelIndex> &droppe
     }
 
     // TODO: check name conflict
-    for (const QModelIndex &dropped : dropped_list) {
+    for (const QPersistentModelIndex &dropped : dropped_list) {
         console_query_move(console, dropped, target);
     }
 

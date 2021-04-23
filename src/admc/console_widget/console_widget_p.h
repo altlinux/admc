@@ -94,7 +94,7 @@ public:
     QAction *set_results_to_detail_action;
     QAction *customize_columns_action;
 
-    QList<QModelIndex> dropped;
+    QList<QPersistentModelIndex> dropped;
 
     // NOTE: target history stores target items' id's.
     // History lists are in order of ascending time.
@@ -121,7 +121,7 @@ public:
     void navigate_up();
     void navigate_back();
     void navigate_forward();
-    void on_start_drag(const QList<QModelIndex> &dropped);
+    void on_start_drag(const QList<QPersistentModelIndex> &dropped);
     void on_can_drop(const QModelIndex &target, bool *ok);
     void on_drop(const QModelIndex &target);
     void set_results_to_icons();
