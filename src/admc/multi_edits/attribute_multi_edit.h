@@ -28,6 +28,7 @@ class AdInterface;
 class PropertiesMultiTab;
 
 /**
+ * Base class for attribute multi edits.
  */
 
 class AttributeMultiEdit : public QObject {

@@ -26,7 +26,7 @@ class AdInterface;
 class AttributeMultiEdit;
 
 /**
- *
+ * Base class for properties multi tabs.
  */
 
 class PropertiesMultiTab : public QWidget {

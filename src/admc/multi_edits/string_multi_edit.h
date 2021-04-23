@@ -27,6 +27,7 @@ class QLineEdit;
 class QCheckBox;
 
 /**
+ * Edit for editing string attributes of multiple objects.
  */
 
 class StringMultiEdit : public AttributeMultiEdit {

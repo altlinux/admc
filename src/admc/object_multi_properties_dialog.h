@@ -21,7 +21,10 @@
 #define OBJECT_MULTI_PROPERTIES_DIALOG_H
 
 /**
- * TODO: comment
+ * Properties dialog for editing attributes of multiple
+ * objects at the same time. Only editing, attribute values
+ * aren't displayed. For most objects the only attribute is
+ * description. Only users have many tabs/attributes.
  */
 
 #include <QDialog>

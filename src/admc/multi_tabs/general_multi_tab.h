@@ -20,6 +20,11 @@
 #ifndef GENERAL_MULTI_TAB_H
 #define GENERAL_MULTI_TAB_H
 
+/**
+ * General multi tab that contains general object
+ * attributes.
+ */
+
 #include "multi_tabs/properties_multi_tab.h"
 
 class GeneralMultiTab final : public PropertiesMultiTab {
