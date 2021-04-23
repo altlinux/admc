@@ -69,6 +69,7 @@ set(ADMC_SOURCES
     create_query_folder_dialog.cpp
     edit_query_folder_dialog.cpp
     move_query_dialog.cpp
+    object_multi_properties_dialog.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_widget_simple_tab.cpp
