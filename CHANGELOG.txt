@@ -2,6 +2,14 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.5.1 (Released 23-04-2021)
+-----------------------------------------------------------------------
+- Console: Fixed a bug where when moving or deleting items,
+  some of the items were skipped.
+- Select dialog: Fixed pressing return closing the Find the
+  dialog. Pressing return now presses "Find" button.
+
+-----------------------------------------------------------------------
  VERSION 0.5.0 (Released 22-04-2021)
 -----------------------------------------------------------------------
 - Console: Added new tree called "Group Policy Objects".
