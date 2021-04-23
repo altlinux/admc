@@ -93,6 +93,9 @@ set(ADMC_SOURCES
     tabs/profile_tab.cpp
     tabs/managed_by_tab.cpp
 
+    multi_tabs/properties_multi_tab.cpp
+    multi_tabs/general_multi_tab.cpp
+
     editors/attribute_editor.cpp
     editors/multi_editor.cpp
     editors/string_editor.cpp

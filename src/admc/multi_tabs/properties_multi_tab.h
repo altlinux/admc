@@ -17,30 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_MULTI_PROPERTIES_DIALOG_H
-#define OBJECT_MULTI_PROPERTIES_DIALOG_H
+#ifndef PROPERTIES_MULTI_TAB_H
+#define PROPERTIES_MULTI_TAB_H
+
+#include <QWidget>
 
 /**
- * TODO: comment
+ *
  */
 
-#include <QDialog>
-
-class ObjectMultiPropertiesDialog final : public QDialog {
+class PropertiesMultiTab : public QWidget {
 Q_OBJECT
 
 public:
-    ObjectMultiPropertiesDialog(const QList<QString> &target_list_arg);
 
-signals:
-
-private slots:
-    void ok();
-    void apply();
-    void reset();
-
-private:
-    QList<QString> target_list;
 };
 
-#endif /* OBJECT_MULTI_PROPERTIES_DIALOG_H */
+#endif /* PROPERTIES_MULTI_TAB_H */

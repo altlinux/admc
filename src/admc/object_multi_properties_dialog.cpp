@@ -38,6 +38,7 @@
 #include "status.h"
 #include "utils.h"
 #include "tab_widget.h"
+#include "multi_tabs/general_multi_tab.h"
 
 #include <QAction>
 #include <QLabel>
@@ -55,4 +56,49 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
     setAttribute(Qt::WA_DeleteOnClose);
 
     setWindowTitle(tr("Properties for multiple objects"));
+
+    setMinimumHeight(700);
+    setMinimumWidth(500);
+
+    auto tab_widget = new TabWidget();
+
+    auto button_box = new QDialogButtonBox();
+    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
+    auto apply_button = button_box->addButton(QDialogButtonBox::Apply);
+    auto reset_button = button_box->addButton(QDialogButtonBox::Reset);
+    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
+
+    const auto layout = new QVBoxLayout();
+    setLayout(layout);
+    layout->setSpacing(0);
+    layout->addWidget(tab_widget);
+    layout->addWidget(button_box);    
+
+    auto general_tab = new GeneralMultiTab();
+    tab_widget->add_tab(general_tab, tr("General"));
+
+    connect(
+        ok_button, &QPushButton::clicked,
+        this, &ObjectMultiPropertiesDialog::ok);
+    connect(
+        apply_button, &QPushButton::clicked,
+        this, &ObjectMultiPropertiesDialog::apply);
+    connect(
+        reset_button, &QPushButton::clicked,
+        this, &ObjectMultiPropertiesDialog::reset);
+    connect(
+        cancel_button, &QPushButton::clicked,
+        this, &ObjectMultiPropertiesDialog::reject);
+}
+
+void ObjectMultiPropertiesDialog::ok() {
+    QDialog::accept();
+}
+
+void ObjectMultiPropertiesDialog::apply() {
+
+}
+
+void ObjectMultiPropertiesDialog::reset() {
+
 }

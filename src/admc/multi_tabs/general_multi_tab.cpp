@@ -17,30 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_MULTI_PROPERTIES_DIALOG_H
-#define OBJECT_MULTI_PROPERTIES_DIALOG_H
+#include "multi_tabs/general_multi_tab.h"
+#include "edits/string_edit.h"
+#include "edits/string_other_edit.h"
+#include "edits/country_edit.h"
+#include "edits/group_scope_edit.h"
+#include "edits/group_type_edit.h"
+#include "adldap.h"
 
-/**
- * TODO: comment
- */
+#include <QLabel>
+#include <QFormLayout>
+#include <QFrame>
 
-#include <QDialog>
+GeneralMultiTab::GeneralMultiTab() {   
+    auto name_label = new QLabel(tr("Multiple objects selected"));
 
-class ObjectMultiPropertiesDialog final : public QDialog {
-Q_OBJECT
+    auto line = new QFrame();
+    line->setFrameShape(QFrame::HLine);
+    line->setFrameShadow(QFrame::Sunken);
 
-public:
-    ObjectMultiPropertiesDialog(const QList<QString> &target_list_arg);
-
-signals:
-
-private slots:
-    void ok();
-    void apply();
-    void reset();
-
-private:
-    QList<QString> target_list;
-};
-
-#endif /* OBJECT_MULTI_PROPERTIES_DIALOG_H */
+    const auto top_layout = new QVBoxLayout();
+    setLayout(top_layout);
+    top_layout->addWidget(name_label);
+    top_layout->addWidget(line);
+}
