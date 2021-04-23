@@ -44,7 +44,7 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
     filter_widget = new FilterWidget(classes);
 
     find_button = new QPushButton(tr(FIND_BUTTON_LABEL));
-    find_button->setAutoDefault(false);
+    find_button->setDefault(true);
 
     stop_button = new QPushButton(tr("Stop"));
     stop_button->setAutoDefault(false);
@@ -86,9 +86,6 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
 
     connect(
         find_button, &QPushButton::clicked,
-        this, &FindWidget::find);
-    connect(
-        filter_widget, &FilterWidget::return_pressed,
         this, &FindWidget::find);
 
     // NOTE: need this for the case where dialog is closed

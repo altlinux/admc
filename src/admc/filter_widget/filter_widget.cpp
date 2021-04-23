@@ -50,12 +50,6 @@ FilterWidget::FilterWidget(const QList<QString> classes)
     auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(tab_widget);
-
-    connect(
-        simple_tab, &FilterWidgetSimpleTab::return_pressed,
-        [this]() {
-            emit return_pressed();
-        });
 }
 
 QString FilterWidget::get_filter() const {

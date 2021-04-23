@@ -43,9 +43,6 @@ public:
 signals:
     void changed();
 
-    // Indicates that input of filter is complete
-    void return_pressed();
-
 private:
     QTabWidget *tab_widget;
 };

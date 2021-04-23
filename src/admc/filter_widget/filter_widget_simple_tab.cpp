@@ -41,11 +41,6 @@ FilterWidgetSimpleTab::FilterWidgetSimpleTab(const QList<QString> classes)
         [this]() {
             emit changed();
         });
-    connect(
-        name_edit, &QLineEdit::returnPressed,
-        [this]() {
-            emit return_pressed();
-        });
 }
 
 QString FilterWidgetSimpleTab::get_filter() const {
