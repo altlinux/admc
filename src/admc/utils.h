@@ -88,7 +88,7 @@ void limit_edit(QLineEdit *edit, const QString &attribute);
 
 QIcon get_object_icon(const AdObject &object);
 
-QList<QPersistentModelIndex> get_persistent_indexes(const QList<QModelIndex> &indexes);
+QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &indexes);
 
 // Returns selected scope index. If selected item is in
 // results, returns it's scope buddy.

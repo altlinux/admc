@@ -539,7 +539,7 @@ void CentralWidget::policy_delete() {
 }
 
 void CentralWidget::query_delete() {
-    const QList<QPersistentModelIndex> selected_indexes = get_persistent_indexes(console->get_selected_items());
+    const QList<QPersistentModelIndex> selected_indexes = persistent_index_list(console->get_selected_items());
 
     for (const QPersistentModelIndex &index : selected_indexes) {
         console->delete_item(index);

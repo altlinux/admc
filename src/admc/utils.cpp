@@ -231,7 +231,7 @@ QIcon get_object_icon(const AdObject &object) {
     return icon;
 }
 
-QList<QPersistentModelIndex> get_persistent_indexes(const QList<QModelIndex> &indexes) {
+QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &indexes) {
     QList<QPersistentModelIndex> out;
 
     for (const QModelIndex &index : indexes) {

@@ -175,7 +175,7 @@ void MoveQueryDialog::accept() {
 
     const bool name_conflict =
     [&]() {
-        const QList<QPersistentModelIndex> selected_indexes = get_persistent_indexes(console->get_selected_items());
+        const QList<QPersistentModelIndex> selected_indexes = persistent_index_list(console->get_selected_items());
         for (const QPersistentModelIndex &old_index : selected_indexes) {
             QAbstractItemModel *index_model = (QAbstractItemModel *) old_index.model();
             const QString moved_name = index_model->data(old_index, Qt::DisplayRole).toString();
@@ -191,7 +191,7 @@ void MoveQueryDialog::accept() {
         return;
     }
 
-    const QList<QPersistentModelIndex> selected_indexes = get_persistent_indexes(console->get_selected_items());
+    const QList<QPersistentModelIndex> selected_indexes = persistent_index_list(console->get_selected_items());
     for (const QPersistentModelIndex &old_index : selected_indexes) {
         console_query_move(console, old_index, new_parent_index);
     }
