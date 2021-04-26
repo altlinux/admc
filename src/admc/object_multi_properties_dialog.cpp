@@ -43,6 +43,13 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
 
     setAttribute(Qt::WA_DeleteOnClose);
 
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        close();
+        
+        return;
+    }
+
     setWindowTitle(tr("Properties for multiple objects"));
 
     setMinimumHeight(700);
@@ -72,7 +79,7 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
 
     // TODO: add other tabs
     if (class_list == QList<QString>({CLASS_USER})) {
-        add_tab(new AccountMultiTab(), tr("Account"));
+        add_tab(new AccountMultiTab(ad), tr("Account"));
     }
 
     for (PropertiesMultiTab *tab : tab_list) {

@@ -77,6 +77,10 @@ public:
     // NOTE: this compares for the most derived class, so each object only maps to one class. For example computers have objectClass values of both "user" and "computer" but "computer" is more derived so they are only computers and not users.
     bool is_class(const QString &object_class) const;
 
+    QList<QString> get_split_upn() const;
+    QString get_upn_prefix() const;
+    QString get_upn_suffix() const;
+
 private:
     QString dn;
     QHash<QString, QList<QByteArray>> attributes_data;

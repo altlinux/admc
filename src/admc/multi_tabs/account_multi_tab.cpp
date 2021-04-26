@@ -19,20 +19,17 @@
 
 #include "multi_tabs/account_multi_tab.h"
 
-#include "edits/string_edit.h"
-#include "edits/string_other_edit.h"
-#include "edits/country_edit.h"
-#include "edits/group_scope_edit.h"
-#include "edits/group_type_edit.h"
 #include "adldap.h"
 #include "multi_edits/string_multi_edit.h"
 #include "multi_edits/expiry_multi_edit.h"
+#include "multi_edits/upn_multi_edit.h"
 
 #include <QLabel>
 #include <QFormLayout>
 #include <QFrame>
 
-AccountMultiTab::AccountMultiTab() {   
+AccountMultiTab::AccountMultiTab(AdInterface &ad) {   
+    new UpnMultiEdit(edit_list, ad, this);
     new ExpiryMultiEdit(edit_list, this);
 
     auto edit_layout = new QFormLayout();

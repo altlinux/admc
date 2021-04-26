@@ -100,6 +100,7 @@ set(ADMC_SOURCES
     multi_edits/attribute_multi_edit.cpp
     multi_edits/string_multi_edit.cpp
     multi_edits/expiry_multi_edit.cpp
+    multi_edits/upn_multi_edit.cpp
 
     editors/attribute_editor.cpp
     editors/multi_editor.cpp
@@ -124,6 +125,7 @@ set(ADMC_SOURCES
     edits/gpoptions_edit.cpp
     edits/manager_edit.cpp
     edits/upn_edit.cpp
+    edits/upn_suffix_widget.cpp
 
     console_widget/console_widget.cpp
     console_widget/scope_model.cpp

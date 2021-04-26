@@ -17,31 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UPN_EDIT_H
-#define UPN_EDIT_H
+#ifndef UPN_SUFFIX_WIDGET_H
+#define UPN_SUFFIX_WIDGET_H
 
-#include "attribute_edit.h"
+#include <QWidget>
 
-class QLineEdit;
 class AdInterface;
-class UpnSuffixWidget;
+class AdObject;
+class QComboBox;
 
-class UpnEdit final : public AttributeEdit {
+class UpnSuffixWidget final : public QWidget {
 Q_OBJECT
-public:
-    UpnEdit(QList<AttributeEdit *> *edits_out, AdInterface &ad, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
-    QString get_input() const;
-    bool verify(AdInterface &ad, const QString &dn) const override;
+public:
+    UpnSuffixWidget(AdInterface &ad);
+
+    QString get_suffix() const;
+    void load(const AdObject &object);
+    void set_enabled(const bool enabled);
+
+signals:
+    void edited();
 
 private:
-    QLineEdit *prefix_edit;
-    UpnSuffixWidget *upn_suffix_widget;
-
-    friend class StringOtherEdit;
-
-    QString get_new_value() const;
+    QComboBox *combo;
 };
 
-#endif /* UPN_EDIT_H */
+#endif /* UPN_SUFFIX_WIDGET_H */

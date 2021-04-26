@@ -17,31 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UPN_EDIT_H
-#define UPN_EDIT_H
+#ifndef UPN_MULTI_EDIT_H
+#define UPN_MULTI_EDIT_H
 
-#include "attribute_edit.h"
+/**
+ * Edit for editing UPN suffixes of multiple objects. Note
+ * that prefix remains unchanged.
+ */
+
+#include "multi_edits/attribute_multi_edit.h"
 
 class QLineEdit;
-class AdInterface;
 class UpnSuffixWidget;
 
-class UpnEdit final : public AttributeEdit {
+class UpnMultiEdit final : public AttributeMultiEdit {
 Q_OBJECT
 public:
-    UpnEdit(QList<AttributeEdit *> *edits_out, AdInterface &ad, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    UpnMultiEdit(QList<AttributeMultiEdit *> &edits_out, AdInterface &ad, QObject *parent);
 
-    QString get_input() const;
-    bool verify(AdInterface &ad, const QString &dn) const override;
+    DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
 
 private:
-    QLineEdit *prefix_edit;
     UpnSuffixWidget *upn_suffix_widget;
-
-    friend class StringOtherEdit;
-
-    QString get_new_value() const;
 };
 
-#endif /* UPN_EDIT_H */
+#endif /* UPN_MULTI_EDIT_H */

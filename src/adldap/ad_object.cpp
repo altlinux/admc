@@ -228,3 +228,25 @@ bool AdObject::is_class(const QString &object_class) const {
 
     return is_class;
 }
+
+QList<QString> AdObject::get_split_upn() const {
+    const QString upn = get_string(ATTRIBUTE_USER_PRINCIPAL_NAME);
+    const int split_index = upn.lastIndexOf('@');
+    const QString prefix = upn.left(split_index);
+    const QString suffix = upn.mid(split_index + 1);
+    const QList<QString> upn_split = {prefix, suffix};
+
+    return upn_split;
+}
+
+QString AdObject::get_upn_prefix() const {
+    const QList<QString> upn_split = get_split_upn();
+
+    return upn_split[0];
+}
+
+QString AdObject::get_upn_suffix() const {
+    const QList<QString> upn_split = get_split_upn();
+
+    return upn_split[1];
+}
