@@ -19,130 +19,39 @@
 
 #include "edits/expiry_edit.h"
 
+#include "edits/expiry_widget.h"
 #include "adldap.h"
 #include "globals.h"
 #include "utils.h"
 
-#include <QVBoxLayout>
 #include <QFormLayout>
-#include <QCheckBox>
-#include <QDateTime>
-#include <QButtonGroup>
-#include <QDateEdit>
-#include <QFrame>
-
-// TODO: do end of day by local time or UTC????
-
-const QTime END_OF_DAY(23, 59);
 
 ExpiryEdit::ExpiryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
 {
-    never_check = new QCheckBox(tr("Never"));
-    end_of_check = new QCheckBox(tr("End of:"));
-
-    never_check->setAutoExclusive(true);
-    end_of_check->setAutoExclusive(true);
-
-    edit = new QDateEdit();
-
-    auto button_group = new QButtonGroup(this);
-    button_group->addButton(never_check);
-    button_group->addButton(end_of_check);
-
-    frame = new QFrame();
-    frame->setFrameStyle(QFrame::Raised);
-    frame->setFrameShape(QFrame::Box);
-
-    auto frame_layout = new QVBoxLayout();
-    frame->setLayout(frame_layout);
-    frame_layout->addWidget(never_check);
-    frame_layout->addWidget(end_of_check);
-    frame_layout->addWidget(edit);
+    edit_widget = new ExpiryWidget();
 
     connect(
-        never_check, &QCheckBox::stateChanged,
-        this, &ExpiryEdit::on_never_check);
-    connect(
-        end_of_check, &QCheckBox::stateChanged,
-        this, &ExpiryEdit::on_end_of_check);
-    connect(
-        edit, &QDateEdit::dateChanged,
+        edit_widget, &ExpiryWidget::edited,
         [this]() {
             emit edited();
         });
 }
 
 void ExpiryEdit::load_internal(AdInterface &ad, const AdObject &object) {
-    const bool never =
-    [object]() {
-        const QString expiry_string = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);
-        return large_integer_datetime_is_never(expiry_string);
-    }();
-
-    if (never) {
-        never_check->setChecked(true);
-
-        end_of_check->setChecked(false);
-        edit->setEnabled(false);
-    } else {
-        never_check->setChecked(false);
-
-        end_of_check->setChecked(true);
-        edit->setEnabled(true);
-    }
-    
-    const QDate date =
-    [=]() {
-        if (never) {
-            // Default to current date when expiry is never
-            return QDate::currentDate();
-        } else {
-            const QDateTime datetime = object.get_datetime(ATTRIBUTE_ACCOUNT_EXPIRES, g_adconfig);
-            return datetime.date();
-        }
-    }();
-
-    edit->setDate(date);
+    edit_widget->load(object);
 }
 
 void ExpiryEdit::set_read_only(const bool read_only) {
-    never_check->setDisabled(read_only);
-    end_of_check->setDisabled(read_only);
-    edit->setReadOnly(read_only);
+    edit_widget->set_read_only(read_only);
 }
 
 void ExpiryEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
 
-    layout->addRow(label_text, frame);
+    layout->addRow(label_text, edit_widget);
 }
 
 bool ExpiryEdit::apply(AdInterface &ad, const QString &dn) const {
-    const bool never = never_check->isChecked();
-
-    if (never) {
-        return ad.attribute_replace_string(dn, ATTRIBUTE_ACCOUNT_EXPIRES, AD_LARGE_INTEGER_DATETIME_NEVER_2);
-    } else {
-        const QDate date = edit->date();
-        const QDateTime datetime(date, END_OF_DAY);
-
-        return ad.attribute_replace_datetime(dn, ATTRIBUTE_ACCOUNT_EXPIRES, datetime);
-    }
-}
-
-void ExpiryEdit::on_never_check() {
-    if (never_check->isChecked()) {
-        edit->setEnabled(false);
-
-        emit edited();
-    }
-}
-
-void ExpiryEdit::on_end_of_check() {
-    if (end_of_check->isChecked()) {
-        edit->setEnabled(true);
-
-        emit edited();
-    }
+    return edit_widget->apply(ad, dn);
 }

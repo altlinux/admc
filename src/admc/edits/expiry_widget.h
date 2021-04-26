@@ -17,31 +17,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EXPIRY_MULTI_EDIT_H
-#define EXPIRY_MULTI_EDIT_H
+#ifndef EXPIRY_WIDGET_H
+#define EXPIRY_WIDGET_H
 
-#include "multi_edits/attribute_multi_edit.h"
+#include <QFrame>
 
 class QCheckBox;
-class ExpiryWidget;
+class QDateEdit;
+class AdInterface;
+class AdObject;
 
-class ExpiryMultiEdit final : public AttributeMultiEdit {
+class ExpiryWidget final : public QFrame {
 Q_OBJECT
 public:
-    ExpiryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
+    ExpiryWidget();
 
-    void add_to_layout(QFormLayout *layout) override;
-    bool apply(AdInterface &ad, const QList<QString> &target_list) override;
-    void reset() override;
+    void load(const AdObject &object);
+    void set_read_only(const bool read_only);
+    bool apply(AdInterface &ad, const QString &dn) const;
+
+signals:
+    void edited();
 
 private slots:
-    void on_check_toggled();
-    
-private:
-    ExpiryWidget *edit_widget;
-    QCheckBox *check;
-    QWidget *check_and_label_wrapper;
+    void on_never_check();
+    void on_end_of_check();
 
+private:
+    QCheckBox *never_check;
+    QCheckBox *end_of_check;
+    QDateEdit *edit;
+
+    QString get_new_value() const;
 };
 
-#endif /* EXPIRY_MULTI_EDIT_H */
+#endif /* EXPIRY_WIDGET_H */

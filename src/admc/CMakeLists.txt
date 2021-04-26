@@ -114,6 +114,7 @@ set(ADMC_SOURCES
     edits/string_large_edit.cpp
     edits/country_edit.cpp
     edits/expiry_edit.cpp
+    edits/expiry_widget.cpp
     edits/unlock_edit.cpp
     edits/group_scope_edit.cpp
     edits/group_type_edit.cpp
