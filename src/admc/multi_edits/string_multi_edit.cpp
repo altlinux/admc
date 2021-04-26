@@ -23,9 +23,7 @@
 #include "globals.h"
 
 #include <QLineEdit>
-#include <QHBoxLayout>
 #include <QFormLayout>
-#include <QCheckBox>
 #include <QLabel>
 
 StringMultiEdit::StringMultiEdit(const QString &attribute_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
@@ -33,69 +31,34 @@ StringMultiEdit::StringMultiEdit(const QString &attribute_arg, QList<AttributeMu
 {
     attribute = attribute_arg;
 
-    check = new QCheckBox();
-
     // NOTE: default to using user object class for
     // attribute display name because multi edits are mostly
     // for users
     const QString label_text = g_adconfig->get_attribute_display_name(attribute, CLASS_USER) + ":";
-    auto label = new QLabel(label_text);
-
-    check_and_label_wrapper = new QWidget();
-    auto layout = new QHBoxLayout();
-    layout->setContentsMargins(0, 0, 0, 0);
-    check_and_label_wrapper->setLayout(layout);
-    layout->addWidget(check);
-    layout->addWidget(label);
+    label->setText(label_text);
 
     edit = new QLineEdit();
 
     connect(
-        check, &QAbstractButton::toggled,
-        this, &StringMultiEdit::on_check_toggled);
-    connect(
         edit, &QLineEdit::textChanged,
         this, &StringMultiEdit::edited);
-    on_check_toggled();
+
+    set_enabled(false);
 }
 
 void StringMultiEdit::add_to_layout(QFormLayout *layout) {
     layout->addRow(check_and_label_wrapper, edit);
 }
 
-bool StringMultiEdit::apply(AdInterface &ad, const QList<QString> &target_list) {
-    const bool need_to_apply = check->isChecked();
-    if (!need_to_apply) {
-        return true;
-    }
-
-    bool total_success = true;
-
+bool StringMultiEdit::apply_internal(AdInterface &ad, const QString &target) {
     const QString new_value = edit->text();
-    for (const QString &target : target_list) {
-        const bool success = ad.attribute_replace_string(target, attribute, new_value);
-
-        if (!success) {
-            total_success = false;
-        }
-    }
-
-    check->setChecked(false);
-
-    return total_success;
+    return ad.attribute_replace_string(target, attribute, new_value);
 }
 
-void StringMultiEdit::reset() {
-    check->setChecked(false);
-}
-
-void StringMultiEdit::on_check_toggled() {
-    if (check->isChecked()) {
-        emit edited();
-    } else {
-        // Clear edit when check is unchecked
+void StringMultiEdit::set_enabled(const bool enabled) {
+    if (!enabled) {
         edit->setText(QString());
     }
 
-    edit->setEnabled(check->isChecked());
+    edit->setEnabled(enabled);
 }

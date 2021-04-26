@@ -24,9 +24,7 @@
 
 #include <QString>
 
-class QCheckBox;
-class QDateEdit;
-class QFrame;
+class ExpiryWidget;
 
 class ExpiryEdit final : public AttributeEdit {
 Q_OBJECT
@@ -34,15 +32,8 @@ public:
     ExpiryEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
-private slots:
-    void on_never_check();
-    void on_end_of_check();
-
 private:
-    QCheckBox *never_check;
-    QCheckBox *end_of_check;
-    QDateEdit *edit;
-    QFrame *frame;
+    ExpiryWidget *edit_widget;
 
     QString get_new_value() const;
 };

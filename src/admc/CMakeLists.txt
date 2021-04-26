@@ -99,6 +99,7 @@ set(ADMC_SOURCES
 
     multi_edits/attribute_multi_edit.cpp
     multi_edits/string_multi_edit.cpp
+    multi_edits/expiry_multi_edit.cpp
 
     editors/attribute_editor.cpp
     editors/multi_editor.cpp
@@ -113,6 +114,7 @@ set(ADMC_SOURCES
     edits/string_large_edit.cpp
     edits/country_edit.cpp
     edits/expiry_edit.cpp
+    edits/expiry_widget.cpp
     edits/unlock_edit.cpp
     edits/group_scope_edit.cpp
     edits/group_type_edit.cpp

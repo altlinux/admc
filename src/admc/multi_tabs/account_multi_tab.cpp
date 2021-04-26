@@ -26,12 +26,15 @@
 #include "edits/group_type_edit.h"
 #include "adldap.h"
 #include "multi_edits/string_multi_edit.h"
+#include "multi_edits/expiry_multi_edit.h"
 
 #include <QLabel>
 #include <QFormLayout>
 #include <QFrame>
 
 AccountMultiTab::AccountMultiTab() {   
+    new ExpiryMultiEdit(edit_list, this);
+
     auto edit_layout = new QFormLayout();
 
     const auto top_layout = new QVBoxLayout();

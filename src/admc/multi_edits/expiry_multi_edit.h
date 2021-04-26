@@ -17,27 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STRING_MULTI_EDIT_H
-#define STRING_MULTI_EDIT_H
+#ifndef EXPIRY_MULTI_EDIT_H
+#define EXPIRY_MULTI_EDIT_H
 
 #include "multi_edits/attribute_multi_edit.h"
 
-class QLineEdit;
+class ExpiryWidget;
 
-/**
- * Edit for editing string attributes of multiple objects.
- */
-
-class StringMultiEdit : public AttributeMultiEdit {
+class ExpiryMultiEdit final : public AttributeMultiEdit {
 Q_OBJECT
 public:
-    StringMultiEdit(const QString &attribute_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent);
+    ExpiryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 
     DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
 
 private:
-    QLineEdit *edit;
-    QString attribute;
+    ExpiryWidget *edit_widget;
 };
 
-#endif /* STRING_MULTI_EDIT_H */
+#endif /* EXPIRY_MULTI_EDIT_H */

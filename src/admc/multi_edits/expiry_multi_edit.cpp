@@ -17,41 +17,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "edits/expiry_edit.h"
+#include "multi_edits/expiry_multi_edit.h"
 
 #include "edits/expiry_widget.h"
 #include "adldap.h"
 #include "globals.h"
-#include "utils.h"
 
 #include <QFormLayout>
+#include <QLabel>
 
-ExpiryEdit::ExpiryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent)
+ExpiryMultiEdit::ExpiryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
+: AttributeMultiEdit(edits_out, parent)
 {
     edit_widget = new ExpiryWidget();
+
+    const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
+    label->setText(label_text);
 
     connect(
         edit_widget, &ExpiryWidget::edited,
         [this]() {
             emit edited();
         });
+
+    set_enabled(false);
 }
 
-void ExpiryEdit::load_internal(AdInterface &ad, const AdObject &object) {
-    edit_widget->load(object);
+void ExpiryMultiEdit::add_to_layout(QFormLayout *layout) {
+    layout->addRow(check_and_label_wrapper, edit_widget);
 }
 
-void ExpiryEdit::set_read_only(const bool read_only) {
-    edit_widget->set_read_only(read_only);
+bool ExpiryMultiEdit::apply_internal(AdInterface &ad, const QString &target) {
+    return edit_widget->apply(ad, target);
 }
 
-void ExpiryEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
+void ExpiryMultiEdit::set_enabled(const bool enabled) {
+    if (!enabled) {
+        edit_widget->load(AdObject());
+    }
 
-    layout->addRow(label_text, edit_widget);
-}
-
-bool ExpiryEdit::apply(AdInterface &ad, const QString &dn) const {
-    return edit_widget->apply(ad, dn);
+    edit_widget->setEnabled(enabled);
 }

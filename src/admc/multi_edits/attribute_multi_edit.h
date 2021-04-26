@@ -26,6 +26,8 @@
 class QFormLayout;
 class AdInterface;
 class PropertiesMultiTab;
+class QLabel;
+class QCheckBox;
 
 /**
  * Base class for attribute multi edits.
@@ -37,15 +39,33 @@ public:
     AttributeMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 
     virtual void add_to_layout(QFormLayout *layout) = 0;
-    virtual bool apply(AdInterface &ad, const QList<QString> &target_list) = 0;
-    virtual void reset() = 0;
+    bool apply(AdInterface &ad, const QList<QString> &target_list);
+    void reset();
+
+private slots:
+    void on_check_toggled();
 
 signals:
     void edited();
 
+protected:
+    QLabel *label;
+    QWidget *check_and_label_wrapper;
+
+    virtual bool apply_internal(AdInterface &ad, const QString &target) = 0;
+    virtual void set_enabled(const bool enabled) = 0;
+
 private:
-    bool m_modified;
+    QCheckBox *check;
 };
+
+#define DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS()\
+public:\
+void add_to_layout(QFormLayout *layout) override;\
+protected:\
+bool apply_internal(AdInterface &ad, const QString &target) override;\
+void set_enabled(const bool enabled) override;\
+public:
 
 void multi_edits_connect_to_tab(const QList<AttributeMultiEdit *> &edits, PropertiesMultiTab *tab);
 void multi_edits_add_to_layout(const QList<AttributeMultiEdit *> &edits, QFormLayout *layout);
