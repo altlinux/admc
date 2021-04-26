@@ -34,6 +34,9 @@
 GeneralMultiTab::GeneralMultiTab(const QList<QString> &class_list) {   
     auto name_label = new QLabel(tr("Multiple objects selected"));
 
+    auto explanation_label = new QLabel(tr("To change a property for multiple objects, first select the checkbox to enable the change and then type the change. Depending on the number of selected objects, you might have to wait while the changes are applied."));
+    explanation_label->setWordWrap(true);
+
     auto line = new QFrame();
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Sunken);
@@ -43,6 +46,7 @@ GeneralMultiTab::GeneralMultiTab(const QList<QString> &class_list) {
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addWidget(name_label);
+    top_layout->addWidget(explanation_label);
     top_layout->addWidget(line);
     top_layout->addLayout(edit_layout);
 
