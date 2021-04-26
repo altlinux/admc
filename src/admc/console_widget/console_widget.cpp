@@ -585,6 +585,22 @@ void ConsoleWidgetPrivate::on_selection_changed() {
         if (has_properties) {
             properties_action->setVisible(true);
         }
+    } else if (selected_list.size() > 1) {
+        const bool all_have_properties =
+        [&]() {
+            for (const QModelIndex &selected: selected_list) {
+                const bool has_properties = selected.data(ConsoleRole_HasProperties).toBool();
+                if (!has_properties) {
+                    return false;
+                }
+            }
+
+            return true;
+        }();
+
+        if (all_have_properties) {
+            properties_action->setVisible(true);
+        }
     }
 
     emit q->selection_changed();

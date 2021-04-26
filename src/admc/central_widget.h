@@ -98,6 +98,7 @@ private slots:
     void on_items_dropped(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target);
 
     void on_current_scope_changed();
+    void on_object_properties_applied();
 
 private:
     ConsoleWidget *console;

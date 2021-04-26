@@ -47,6 +47,7 @@
 #include "gplink.h"
 #include "policy_results_widget.h"
 #include "edit_query_folder_dialog.h"
+#include "object_multi_properties_dialog.h"
 
 #include <QDebug>
 #include <QAbstractItemView>
@@ -262,38 +263,36 @@ void CentralWidget::object_delete() {
 
 void CentralWidget::object_properties() {
     const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
-    if (targets.size() != 1) {
-        return;
+
+    if (targets.size() == 1) {
+        const QString target = targets.keys()[0];
+
+        PropertiesDialog *dialog = PropertiesDialog::open_for_target(target);
+
+        connect(
+            dialog, &PropertiesDialog::applied,
+            this, &CentralWidget::on_object_properties_applied);
+    } else if (targets.size() > 1) {
+        const QList<QString> class_list =
+        [&]() {
+            QSet<QString> out;
+
+            for (const QPersistentModelIndex &index : targets.values()) {
+                const QList<QString> this_class_list = index.data(ObjectRole_ObjectClasses).toStringList();
+                const QString main_class = this_class_list.last();
+                out.insert(main_class);
+            }
+
+            return out.toList();
+        }();
+
+        auto dialog = new ObjectMultiPropertiesDialog(targets.keys(), class_list);
+        dialog->open();
+
+        connect(
+            dialog, &ObjectMultiPropertiesDialog::applied,
+            this, &CentralWidget::on_object_properties_applied);
     }
-
-    const QString target = targets.keys()[0];
-
-    PropertiesDialog *dialog = PropertiesDialog::open_for_target(target);
-
-    connect(
-        dialog, &PropertiesDialog::applied,
-        [=]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
-                return;
-            }
-
-            const AdObject object = ad.search_object(target);
-
-            const QList<QModelIndex> scope_indexes = console->search_scope_by_role(ObjectRole_DN, target, ItemType_Object);
-            for (const QModelIndex &index : scope_indexes) {
-                QStandardItem *scope_item = console->get_scope_item(index);
-                console_object_scope_load(scope_item, object);
-            }
-
-            const QList<QModelIndex> results_indexes = console->search_results_by_role(ObjectRole_DN, target, ItemType_Object);
-            for (const QModelIndex &index : results_indexes) {
-                const QList<QStandardItem *> results_row = console->get_results_row(index);
-                console_object_results_load(results_row, object);
-            }
-            
-            update_actions_visibility();
-        });
 }
 
 void CentralWidget::object_rename() {
@@ -647,6 +646,33 @@ void CentralWidget::on_current_scope_changed() {
     policy_results_widget->update(current_scope);
 
     update_description_bar();
+}
+
+void CentralWidget::on_object_properties_applied() {    
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const QList<QString> target_list = get_selected_dns();
+
+    for (const QString &target : target_list) {
+        const AdObject object = ad.search_object(target);
+
+        const QList<QModelIndex> scope_indexes = console->search_scope_by_role(ObjectRole_DN, target, ItemType_Object);
+        for (const QModelIndex &index : scope_indexes) {
+            QStandardItem *scope_item = console->get_scope_item(index);
+            console_object_scope_load(scope_item, object);
+        }
+
+        const QList<QModelIndex> results_indexes = console->search_results_by_role(ObjectRole_DN, target, ItemType_Object);
+        for (const QModelIndex &index : results_indexes) {
+            const QList<QStandardItem *> results_row = console->get_results_row(index);
+            console_object_results_load(results_row, object);
+        }
+    }
+
+    update_actions_visibility();
 }
 
 void CentralWidget::refresh_head() {
