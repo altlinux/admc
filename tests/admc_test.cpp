@@ -172,9 +172,7 @@ void navigate_until_object(QTreeView *view, const QString &target_dn, const int 
 
 void ADMCTest::wait_for_find_results_to_load(QTreeView *view) {
     int timer = 0;
-    trace();
     while (view->model()->rowCount() == 0) {
-    trace();
         QTest::qWait(1);
         timer++;
         QVERIFY2((timer < 1000), "Find results failed to load, took too long");
