@@ -23,19 +23,17 @@
 
 #include <QDebug>
 
-AttributeMultiEdit::AttributeMultiEdit(QList<AttributeMultiEdit *> *edits_out, QObject *parent)
+AttributeMultiEdit::AttributeMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
 : QObject(parent)
 {
-    if (edits_out != nullptr) {
-        if (edits_out->contains(this)) {
-            qDebug() << "ERROR: attribute edit added twice to list!";
-        } else {
-            edits_out->append(this);
-        }
+    if (edits_out.contains(this)) {
+        qDebug() << "ERROR: attribute edit added twice to list!";
+    } else {
+        edits_out.append(this);
     }
 }
 
-void multi_edits_connect_to_tab(QList<AttributeMultiEdit *> edits, PropertiesMultiTab *tab) {
+void multi_edits_connect_to_tab(const QList<AttributeMultiEdit *> &edits, PropertiesMultiTab *tab) {
     for (auto edit : edits) {
         QObject::connect(
             edit, &AttributeMultiEdit::edited,
@@ -43,7 +41,7 @@ void multi_edits_connect_to_tab(QList<AttributeMultiEdit *> edits, PropertiesMul
     }
 }
 
-void multi_edits_add_to_layout(QList<AttributeMultiEdit *> edits, QFormLayout *layout) {
+void multi_edits_add_to_layout(const QList<AttributeMultiEdit *> &edits, QFormLayout *layout) {
     for (auto edit : edits) {
         edit->add_to_layout(layout);
     }

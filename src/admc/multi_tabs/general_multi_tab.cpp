@@ -47,14 +47,14 @@ GeneralMultiTab::GeneralMultiTab(const QList<QString> &class_list) {
     top_layout->addLayout(edit_layout);
 
     if (class_list == QList<QString>({CLASS_USER})) {
-        new StringMultiEdit(ATTRIBUTE_DESCRIPTION, CLASS_USER, &edit_list, edit_layout);
-        new StringMultiEdit(ATTRIBUTE_OFFICE, CLASS_USER, &edit_list, edit_layout);
-        new StringMultiEdit(ATTRIBUTE_MOBILE, CLASS_USER, &edit_list, edit_layout);
-        new StringMultiEdit(ATTRIBUTE_FAX_NUMBER, CLASS_USER, &edit_list, edit_layout);
-        new StringMultiEdit(ATTRIBUTE_WWW_HOMEPAGE, CLASS_USER, &edit_list, edit_layout);
-        new StringMultiEdit(ATTRIBUTE_MAIL, CLASS_USER, &edit_list, edit_layout);
+        new StringMultiEdit(ATTRIBUTE_DESCRIPTION, edit_list, edit_layout);
+        new StringMultiEdit(ATTRIBUTE_OFFICE, edit_list, edit_layout);
+        new StringMultiEdit(ATTRIBUTE_MOBILE, edit_list, edit_layout);
+        new StringMultiEdit(ATTRIBUTE_FAX_NUMBER, edit_list, edit_layout);
+        new StringMultiEdit(ATTRIBUTE_WWW_HOMEPAGE, edit_list, edit_layout);
+        new StringMultiEdit(ATTRIBUTE_MAIL, edit_list, edit_layout);
     } else {
-        new StringMultiEdit(ATTRIBUTE_DESCRIPTION, CLASS_USER, &edit_list, edit_layout);
+        new StringMultiEdit(ATTRIBUTE_DESCRIPTION, edit_list, edit_layout);
     }
 
     multi_edits_add_to_layout(edit_list, edit_layout);

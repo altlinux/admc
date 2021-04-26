@@ -34,7 +34,7 @@ class PropertiesMultiTab;
 class AttributeMultiEdit : public QObject {
 Q_OBJECT
 public:
-    AttributeMultiEdit(QList<AttributeMultiEdit *> *edits_out, QObject *parent);
+    AttributeMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 
     virtual void add_to_layout(QFormLayout *layout) = 0;
     virtual bool apply(AdInterface &ad, const QList<QString> &target_list) = 0;
@@ -47,7 +47,7 @@ private:
     bool m_modified;
 };
 
-void multi_edits_connect_to_tab(QList<AttributeMultiEdit *> edits, PropertiesMultiTab *tab);
-void multi_edits_add_to_layout(QList<AttributeMultiEdit *> edits, QFormLayout *layout);
+void multi_edits_connect_to_tab(const QList<AttributeMultiEdit *> &edits, PropertiesMultiTab *tab);
+void multi_edits_add_to_layout(const QList<AttributeMultiEdit *> &edits, QFormLayout *layout);
 
 #endif /* ATTRIBUTE_MULTI_EDIT_H */

@@ -28,15 +28,17 @@
 #include <QCheckBox>
 #include <QLabel>
 
-StringMultiEdit::StringMultiEdit(const QString &attribute_arg, const QString &object_class_arg, QList<AttributeMultiEdit *> *edits_out, QObject *parent)
+StringMultiEdit::StringMultiEdit(const QString &attribute_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
 : AttributeMultiEdit(edits_out, parent)
 {
     attribute = attribute_arg;
-    object_class = object_class_arg;
 
     check = new QCheckBox();
 
-    const QString label_text = g_adconfig->get_attribute_display_name(attribute, object_class) + ":";
+    // NOTE: default to using user object class for
+    // attribute display name because multi edits are mostly
+    // for users
+    const QString label_text = g_adconfig->get_attribute_display_name(attribute, CLASS_USER) + ":";
     auto label = new QLabel(label_text);
 
     check_and_label_wrapper = new QWidget();
@@ -70,7 +72,6 @@ bool StringMultiEdit::apply(AdInterface &ad, const QList<QString> &target_list) 
     bool total_success = true;
 
     const QString new_value = edit->text();
-    // TODO: return bool for total success?
     for (const QString &target : target_list) {
         const bool success = ad.attribute_replace_string(target, attribute, new_value);
 
@@ -89,10 +90,10 @@ void StringMultiEdit::reset() {
 }
 
 void StringMultiEdit::on_check_toggled() {
-    // Clear edit when check is unchecked
     if (check->isChecked()) {
         emit edited();
     } else {
+        // Clear edit when check is unchecked
         edit->setText(QString());
     }
 

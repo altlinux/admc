@@ -271,7 +271,7 @@ void CentralWidget::object_properties() {
 
         connect(
             dialog, &PropertiesDialog::applied,
-            this, &CentralWidget::on_properties_applied);
+            this, &CentralWidget::on_object_properties_applied);
     } else if (targets.size() > 1) {
         const QList<QString> class_list =
         [&]() {
@@ -291,7 +291,7 @@ void CentralWidget::object_properties() {
 
         connect(
             dialog, &ObjectMultiPropertiesDialog::applied,
-            this, &CentralWidget::on_properties_applied);
+            this, &CentralWidget::on_object_properties_applied);
     }
 }
 
@@ -648,7 +648,7 @@ void CentralWidget::on_current_scope_changed() {
     update_description_bar();
 }
 
-void CentralWidget::on_properties_applied() {    
+void CentralWidget::on_object_properties_applied() {    
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -670,9 +670,9 @@ void CentralWidget::on_properties_applied() {
             const QList<QStandardItem *> results_row = console->get_results_row(index);
             console_object_results_load(results_row, object);
         }
-
-        update_actions_visibility();
     }
+
+    update_actions_visibility();
 }
 
 void CentralWidget::refresh_head() {

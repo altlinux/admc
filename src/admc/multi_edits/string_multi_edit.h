@@ -22,7 +22,6 @@
 
 #include "multi_edits/attribute_multi_edit.h"
 
-class QFormLayout;
 class QLineEdit;
 class QCheckBox;
 
@@ -33,7 +32,7 @@ class QCheckBox;
 class StringMultiEdit : public AttributeMultiEdit {
 Q_OBJECT
 public:
-    StringMultiEdit(const QString &attribute_arg, const QString &object_class_arg, QList<AttributeMultiEdit *> *edits_out, QObject *parent);
+    StringMultiEdit(const QString &attribute_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 
     void add_to_layout(QFormLayout *layout) override;
     bool apply(AdInterface &ad, const QList<QString> &target_list) override;
@@ -47,7 +46,6 @@ private:
     QWidget *check_and_label_wrapper;
     QLineEdit *edit;
     QString attribute;
-    QString object_class;
 };
 
 #endif /* STRING_MULTI_EDIT_H */
