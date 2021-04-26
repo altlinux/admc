@@ -19,19 +19,6 @@
 
 #include "object_multi_properties_dialog.h"
 
-#include "tabs/properties_tab.h"
-#include "tabs/attributes_tab.h"
-#include "tabs/membership_tab.h"
-#include "tabs/account_tab.h"
-#include "tabs/general_tab.h"
-#include "tabs/address_tab.h"
-#include "tabs/object_tab.h"
-#include "tabs/group_policy_tab.h"
-#include "tabs/gpo_links_tab.h"
-#include "tabs/organization_tab.h"
-#include "tabs/telephones_tab.h"
-#include "tabs/profile_tab.h"
-#include "tabs/managed_by_tab.h"
 #include "adldap.h"
 #include "globals.h"
 #include "settings.h"
@@ -39,6 +26,7 @@
 #include "utils.h"
 #include "tab_widget.h"
 #include "multi_tabs/general_multi_tab.h"
+#include "multi_tabs/account_multi_tab.h"
 
 #include <QAction>
 #include <QLabel>
@@ -74,13 +62,17 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
     layout->addWidget(tab_widget);
     layout->addWidget(button_box);    
 
-    auto general_tab = new GeneralMultiTab(class_list);
-    tab_widget->add_tab(general_tab, tr("General"));
-    tab_list.append(general_tab);
+    auto add_tab =
+    [&](PropertiesMultiTab *tab, const QString &title) {
+        tab_widget->add_tab(tab, title);
+        tab_list.append(tab);
+    };
+
+    add_tab(new GeneralMultiTab(class_list), tr("General"));
 
     // TODO: add other tabs
     if (class_list == QList<QString>({CLASS_USER})) {
-    
+        add_tab(new AccountMultiTab(), tr("Account"));
     }
 
     for (PropertiesMultiTab *tab : tab_list) {
