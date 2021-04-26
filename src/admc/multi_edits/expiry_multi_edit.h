@@ -22,7 +22,6 @@
 
 #include "multi_edits/attribute_multi_edit.h"
 
-class QCheckBox;
 class ExpiryWidget;
 
 class ExpiryMultiEdit final : public AttributeMultiEdit {
@@ -30,18 +29,10 @@ Q_OBJECT
 public:
     ExpiryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 
-    void add_to_layout(QFormLayout *layout) override;
-    bool apply(AdInterface &ad, const QList<QString> &target_list) override;
-    void reset() override;
+    DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
 
-private slots:
-    void on_check_toggled();
-    
 private:
     ExpiryWidget *edit_widget;
-    QCheckBox *check;
-    QWidget *check_and_label_wrapper;
-
 };
 
 #endif /* EXPIRY_MULTI_EDIT_H */

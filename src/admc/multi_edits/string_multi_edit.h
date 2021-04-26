@@ -23,7 +23,6 @@
 #include "multi_edits/attribute_multi_edit.h"
 
 class QLineEdit;
-class QCheckBox;
 
 /**
  * Edit for editing string attributes of multiple objects.
@@ -34,16 +33,9 @@ Q_OBJECT
 public:
     StringMultiEdit(const QString &attribute_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 
-    void add_to_layout(QFormLayout *layout) override;
-    bool apply(AdInterface &ad, const QList<QString> &target_list) override;
-    void reset() override;
-
-private slots:
-    void on_check_toggled();
+    DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
 
 private:
-    QCheckBox *check;
-    QWidget *check_and_label_wrapper;
     QLineEdit *edit;
     QString attribute;
 };

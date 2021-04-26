@@ -22,6 +22,9 @@
 #include "multi_tabs/properties_multi_tab.h"
 
 #include <QDebug>
+#include <QCheckBox>
+#include <QLabel>
+#include <QHBoxLayout>
 
 AttributeMultiEdit::AttributeMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
 : QObject(parent)
@@ -31,6 +34,57 @@ AttributeMultiEdit::AttributeMultiEdit(QList<AttributeMultiEdit *> &edits_out, Q
     } else {
         edits_out.append(this);
     }
+
+    check = new QCheckBox();
+    label = new QLabel();
+
+    check_and_label_wrapper = new QWidget();
+    auto layout = new QHBoxLayout();
+    layout->setContentsMargins(0, 0, 0, 0);
+    check_and_label_wrapper->setLayout(layout);
+    layout->addWidget(check);
+    layout->addWidget(label);
+
+    connect(
+        check, &QAbstractButton::toggled,
+        this, &AttributeMultiEdit::on_check_toggled);
+}
+
+bool AttributeMultiEdit::apply(AdInterface &ad, const QList<QString> &target_list) {
+    const bool need_to_apply = check->isChecked();
+    if (!need_to_apply) {
+        return true;
+    }
+
+    bool total_success = true;
+
+    for (const QString &target : target_list) {
+        const bool success = apply_internal(ad, target);
+
+        if (!success) {
+            total_success = false;
+        }
+    }
+
+    check->setChecked(false);
+
+    return total_success;
+}
+
+void AttributeMultiEdit::reset() {
+    // NOTE: when check is unchecked, the on_check_toggled()
+    // calls set_enabled()
+    check->setChecked(false);
+}
+
+void AttributeMultiEdit::on_check_toggled() {
+    if (check->isChecked()) {
+        emit edited();
+    }
+
+    // NOTE: call set_enabled() of the subclass
+    const bool enabled = check->isChecked();
+    set_enabled(enabled);
 }
 
 void multi_edits_connect_to_tab(const QList<AttributeMultiEdit *> &edits, PropertiesMultiTab *tab) {
