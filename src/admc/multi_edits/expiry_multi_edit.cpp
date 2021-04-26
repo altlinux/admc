@@ -17,30 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "multi_tabs/account_multi_tab.h"
-
-#include "edits/string_edit.h"
-#include "edits/string_other_edit.h"
-#include "edits/country_edit.h"
-#include "edits/group_scope_edit.h"
-#include "edits/group_type_edit.h"
-#include "adldap.h"
-#include "multi_edits/string_multi_edit.h"
 #include "multi_edits/expiry_multi_edit.h"
 
-#include <QLabel>
-#include <QFormLayout>
-#include <QFrame>
+ExpiryMultiEdit::ExpiryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
+: AttributeMultiEdit(edits_out, parent)
+{
 
-AccountMultiTab::AccountMultiTab() {   
-    new ExpiryMultiEdit(edit_list, this);
+}
 
-    auto edit_layout = new QFormLayout();
+void ExpiryMultiEdit::add_to_layout(QFormLayout *layout) {
 
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addLayout(edit_layout);
+}
 
-    multi_edits_add_to_layout(edit_list, edit_layout);
-    multi_edits_connect_to_tab(edit_list, this);
+bool ExpiryMultiEdit::apply(AdInterface &ad, const QList<QString> &target_list) {
+
+    return true;
+}
+
+void ExpiryMultiEdit::reset() {
+
 }
