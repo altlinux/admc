@@ -35,23 +35,23 @@ AttributeMultiEdit::AttributeMultiEdit(QList<AttributeMultiEdit *> &edits_out, Q
         edits_out.append(this);
     }
 
-    check = new QCheckBox();
+    apply_check = new QCheckBox();
     label = new QLabel();
 
     check_and_label_wrapper = new QWidget();
     auto layout = new QHBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
     check_and_label_wrapper->setLayout(layout);
-    layout->addWidget(check);
+    layout->addWidget(apply_check);
     layout->addWidget(label);
 
     connect(
-        check, &QAbstractButton::toggled,
+        apply_check, &QAbstractButton::toggled,
         this, &AttributeMultiEdit::on_check_toggled);
 }
 
 bool AttributeMultiEdit::apply(AdInterface &ad, const QList<QString> &target_list) {
-    const bool need_to_apply = check->isChecked();
+    const bool need_to_apply = apply_check->isChecked();
     if (!need_to_apply) {
         return true;
     }
@@ -66,24 +66,24 @@ bool AttributeMultiEdit::apply(AdInterface &ad, const QList<QString> &target_lis
         }
     }
 
-    check->setChecked(false);
+    apply_check->setChecked(false);
 
     return total_success;
 }
 
 void AttributeMultiEdit::reset() {
-    // NOTE: when check is unchecked, the on_check_toggled()
-    // calls set_enabled()
-    check->setChecked(false);
+    // NOTE: when apply_check is unchecked, the
+    // on_check_toggled() calls set_enabled()
+    apply_check->setChecked(false);
 }
 
 void AttributeMultiEdit::on_check_toggled() {
-    if (check->isChecked()) {
+    if (apply_check->isChecked()) {
         emit edited();
     }
 
     // NOTE: call set_enabled() of the subclass
-    const bool enabled = check->isChecked();
+    const bool enabled = apply_check->isChecked();
     set_enabled(enabled);
 }
 

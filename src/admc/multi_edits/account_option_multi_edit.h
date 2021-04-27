@@ -35,7 +35,7 @@ public:
 
 private:
     QScrollArea *options_scroll;
-    QHash<AccountOption, QCheckBox *> option_check_map;
+    QHash<AccountOption, QCheckBox *> check_map;
 };
 
 #endif /* ACCOUNT_OPTION_MULTI_EDIT_H */

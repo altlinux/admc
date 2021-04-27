@@ -48,13 +48,13 @@ AccountOptionMultiEdit::AccountOptionMultiEdit(QList<AttributeMultiEdit *> &edit
     };
 
     for (const AccountOption &option : option_list) {
-        auto option_check = new QCheckBox();
+        auto check = new QCheckBox();
 
-        option_check_map[option] = option_check;
+        check_map[option] = check;
 
         const int row = checks_layout->rowCount();
         const QString label_text = account_option_string(option);
-        checks_layout->addWidget(option_check, row, 0);
+        checks_layout->addWidget(check, row, 0);
         checks_layout->addWidget(new QLabel(label_text), row, 1);
     }
 
@@ -67,7 +67,7 @@ AccountOptionMultiEdit::AccountOptionMultiEdit(QList<AttributeMultiEdit *> &edit
     options_scroll = new QScrollArea();
     options_scroll->setWidget(options_widget);
 
-    account_option_setup_conflicts(option_check_map);
+    account_option_setup_conflicts(check_map);
 
     set_enabled(false);
 }
@@ -88,11 +88,11 @@ bool AccountOptionMultiEdit::apply_internal(AdInterface &ad, const QString &targ
 
         const AdObject object = ad.search_object(target);
 
-        for (const AccountOption &option : option_check_map.keys()) {
-            QCheckBox *option_check = option_check_map[option];
+        for (const AccountOption &option : check_map.keys()) {
+            QCheckBox *check = check_map[option];
 
             const bool current_option_state = object.get_account_option(option);
-            const bool new_option_state = option_check->isChecked();
+            const bool new_option_state = check->isChecked();
             const bool option_changed = (new_option_state != current_option_state);
             if (option_changed) {
                 out.append(option);
@@ -105,8 +105,8 @@ bool AccountOptionMultiEdit::apply_internal(AdInterface &ad, const QString &targ
     bool total_success = true;
 
     for (const AccountOption &option : option_change_list) {
-        QCheckBox *option_check = option_check_map[option];
-        const bool option_is_set = option_check->isChecked();
+        QCheckBox *check = check_map[option];
+        const bool option_is_set = check->isChecked();
 
         const bool success = ad.user_set_account_option(target, option, option_is_set);
 
@@ -120,8 +120,8 @@ bool AccountOptionMultiEdit::apply_internal(AdInterface &ad, const QString &targ
 
 void AccountOptionMultiEdit::set_enabled(const bool enabled) {
     if (!enabled) {
-        for (QCheckBox *option_check : option_check_map.values()) {
-            option_check->setChecked(false);
+        for (QCheckBox *check : check_map.values()) {
+            check->setChecked(false);
         }
     }
 

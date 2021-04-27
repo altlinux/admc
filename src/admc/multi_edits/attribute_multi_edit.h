@@ -56,7 +56,7 @@ protected:
     virtual void set_enabled(const bool enabled) = 0;
 
 private:
-    QCheckBox *check;
+    QCheckBox *apply_check;
 };
 
 #define DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS()\
