@@ -21,6 +21,7 @@
 
 #include "adldap.h"
 #include "multi_edits/string_multi_edit.h"
+#include "multi_edits/country_multi_edit.h"
 
 #include <QLabel>
 #include <QFormLayout>
@@ -32,6 +33,7 @@ AddressMultiTab::AddressMultiTab() {
     new StringMultiEdit(ATTRIBUTE_CITY, edit_list, this);
     new StringMultiEdit(ATTRIBUTE_STATE, edit_list, this);
     new StringMultiEdit(ATTRIBUTE_POSTAL_CODE, edit_list, this);
+    new CountryMultiEdit(edit_list, this);
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);

@@ -17,34 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COUNTRY_WIDGET_H
-#define COUNTRY_WIDGET_H
+#ifndef COUNTRY_MULTI_EDIT_H
+#define COUNTRY_MULTI_EDIT_H
 
-#include <QWidget>
+#include "multi_edits/attribute_multi_edit.h"
 
-class QComboBox;
-class AdObject;
-class AdInterface;
+class CountryWidget;
 
-class CountryWidget final : public QWidget {
+/**
+ * Edit for editing string attributes of multiple objects.
+ */
+
+class CountryMultiEdit : public AttributeMultiEdit {
 Q_OBJECT
-
 public:
-    CountryWidget();
+    CountryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 
-    void load(const AdObject &object);
-    void set_enabled(const bool enabled);
-    bool apply(AdInterface &ad, const QString &dn) const;
-
-signals:
-    void edited();
+    DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
 
 private:
-    QComboBox *combo;
-    
-    // NOTE: country codes are 3 digits only, so 0-999 = 1000
-    QString country_strings[1000];
-    QString country_abbreviations[1000];
+    CountryWidget *country_widget;
 };
 
-#endif /* COUNTRY_WIDGET_H */
+#endif /* COUNTRY_MULTI_EDIT_H */

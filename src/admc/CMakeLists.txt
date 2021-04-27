@@ -103,6 +103,7 @@ set(ADMC_SOURCES
     multi_edits/expiry_multi_edit.cpp
     multi_edits/upn_multi_edit.cpp
     multi_edits/account_option_multi_edit.cpp
+    multi_edits/country_multi_edit.cpp
 
     editors/attribute_editor.cpp
     editors/multi_editor.cpp

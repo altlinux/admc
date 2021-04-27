@@ -124,8 +124,8 @@ void CountryWidget::load(const AdObject &object) {
     }
 }
 
-void CountryWidget::set_read_only(const bool read_only) {
-    combo->setDisabled(read_only);
+void CountryWidget::set_enabled(const bool enabled) {
+    combo->setDisabled(enabled);
 }
 
 bool CountryWidget::apply(AdInterface &ad, const QString &dn) const {

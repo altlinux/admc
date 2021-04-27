@@ -49,7 +49,7 @@ void CountryEdit::load_internal(AdInterface &ad, const AdObject &object) {
 }
 
 void CountryEdit::set_read_only(const bool read_only) {
-    country_widget->set_read_only(read_only);
+    country_widget->set_enabled(!read_only);
 }
 
 void CountryEdit::add_to_layout(QFormLayout *layout) {
