@@ -29,6 +29,7 @@
 #include "multi_tabs/account_multi_tab.h"
 #include "multi_tabs/address_multi_tab.h"
 #include "multi_tabs/profile_multi_tab.h"
+#include "multi_tabs/organization_multi_tab.h"
 
 #include <QAction>
 #include <QLabel>
@@ -84,6 +85,7 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
         add_tab(new AccountMultiTab(ad), tr("Account"));
         add_tab(new AddressMultiTab(), tr("Address"));
         add_tab(new ProfileMultiTab(), tr("Profile"));
+        add_tab(new OrganizationMultiTab(), tr("Organization"));
     }
 
     for (PropertiesMultiTab *tab : tab_list) {
