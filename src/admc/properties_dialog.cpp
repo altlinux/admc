@@ -18,6 +18,7 @@
  */
 
 #include "properties_dialog.h"
+
 #include "tabs/properties_tab.h"
 #include "tabs/attributes_tab.h"
 #include "tabs/membership_tab.h"
@@ -31,6 +32,7 @@
 #include "tabs/telephones_tab.h"
 #include "tabs/profile_tab.h"
 #include "tabs/managed_by_tab.h"
+#include "tabs/security_tab.h"
 #include "adldap.h"
 #include "globals.h"
 #include "settings.h"
@@ -176,6 +178,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         add_tab(new OrganizationTab(), tr("Organization"));
         add_tab(new TelephonesTab(), tr("Telephones"));
         add_tab(new ProfileTab(), tr("Profile"));
+        add_tab(new SecurityTab(), tr("Security"));
     }
     if (object.is_class(CLASS_GROUP)) {
         add_tab(new MembersTab(), tr("Members"));
