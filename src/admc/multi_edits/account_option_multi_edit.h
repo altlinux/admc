@@ -17,29 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "multi_tabs/account_multi_tab.h"
+#ifndef ACCOUNT_OPTION_MULTI_EDIT_H
+#define ACCOUNT_OPTION_MULTI_EDIT_H
+
+#include "multi_edits/attribute_multi_edit.h"
 
 #include "adldap.h"
-#include "multi_edits/string_multi_edit.h"
-#include "multi_edits/expiry_multi_edit.h"
-#include "multi_edits/upn_multi_edit.h"
-#include "multi_edits/account_option_multi_edit.h"
 
-#include <QLabel>
-#include <QFormLayout>
-#include <QFrame>
+class QScrollArea;
 
-AccountMultiTab::AccountMultiTab(AdInterface &ad) {   
-    new UpnMultiEdit(edit_list, ad, this);
-    new AccountOptionMultiEdit(edit_list, this);
-    new ExpiryMultiEdit(edit_list, this);
+class AccountOptionMultiEdit final : public AttributeMultiEdit {
+Q_OBJECT
+public:
+    AccountOptionMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 
-    auto edit_layout = new QFormLayout();
+    DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
 
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addLayout(edit_layout);
+private:
+    QScrollArea *options_scroll;
+    QHash<AccountOption, QCheckBox *> option_check_map;
+};
 
-    multi_edits_add_to_layout(edit_list, edit_layout);
-    multi_edits_connect_to_tab(edit_list, this);
-}
+#endif /* ACCOUNT_OPTION_MULTI_EDIT_H */

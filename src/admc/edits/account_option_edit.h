@@ -42,4 +42,6 @@ private:
     QCheckBox *check;
 };
 
+void account_option_setup_conflicts(const QHash<AccountOption, QCheckBox *> &check_map);
+
 #endif /* ACCOUNT_OPTION_EDIT_H */

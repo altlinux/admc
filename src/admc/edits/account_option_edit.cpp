@@ -31,53 +31,15 @@
 #include <QLabel>
 
 void AccountOptionEdit::make_many(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
-    QMap<AccountOption, AccountOptionEdit *> option_edits;
+    QHash<AccountOption, QCheckBox *> check_map;
 
     for (auto option : options) {
         auto edit = new AccountOptionEdit(option, edits_out, parent);
-        option_edits.insert(option, edit);
+        check_map[option] = edit->check;
         option_edits_out->insert(option, edit);
     }
 
-    // PasswordExpired conflicts with (DontExpirePassword and CantChangePassword)
-    // When PasswordExpired is set, the other two can't be set
-    // When any of the other two are set, PasswordExpired can't be set
-    // Implement this by connecting to state changes of all options and
-    // resetting to previous state if state transition is invalid
-    auto setup_conflict =
-    [option_edits](const AccountOption subject, const AccountOption blocker) {
-        QCheckBox *subject_check = option_edits[subject]->check;
-        QCheckBox *blocker_check = option_edits[blocker]->check;
-
-        connect(subject_check, &QCheckBox::stateChanged,
-            [subject, blocker, subject_check, blocker_check]() {
-                if (subject_check->isChecked() && blocker_check->isChecked()) {
-                    subject_check->setCheckState(Qt::Unchecked);
-
-                    const QString subject_name = account_option_string(subject);
-                    const QString blocker_name = account_option_string(blocker);
-                    const QString error = QString(tr("Can't set \"%1\" when \"%2\" is set.")).arg(blocker_name, subject_name);
-                    QMessageBox::warning(blocker_check, tr("Error"), error);
-                }
-            }
-            );
-    };
-
-    // NOTE: only setup conflicts for options that exist
-    // TODO: AccountOption_CantChangePassword. Once security descriptor manipulation is implemented, it should be evident how to do this. See link: https://docs.microsoft.com/en-us/windows/win32/adsi/modifying-user-cannot-change-password-ldap-provider?redirectedfrom=MSDN
-    if (options.contains(AccountOption_PasswordExpired)) {
-        const QList<AccountOption> other_two_options = {
-            AccountOption_DontExpirePassword,
-            // AccountOption_CantChangePassword,
-        };
-
-        for (auto other_option : other_two_options) {
-            if (options.contains(other_option)) {
-                setup_conflict(AccountOption_PasswordExpired, other_option);
-                setup_conflict(other_option, AccountOption_PasswordExpired);
-            }
-        }
-    }
+    account_option_setup_conflicts(check_map);
 }
 
 QWidget *AccountOptionEdit::layout_many(const QList<AccountOption> &options, const QMap<AccountOption, AccountOptionEdit *> &option_edits) {
@@ -140,4 +102,51 @@ bool AccountOptionEdit::apply(AdInterface &ad, const QString &dn) const {
 
 void AccountOptionEdit::set_checked(const bool checked) {
     check->setChecked(checked);
+}
+
+// PasswordExpired conflicts with (DontExpirePassword and
+// CantChangePassword) When PasswordExpired is set, the
+// other two can't be set When any of the other two are set,
+// PasswordExpired can't be set Implement this by connecting
+// to state changes of all options and resetting to previous
+// state if state transition is invalid
+void account_option_setup_conflicts(const QHash<AccountOption, QCheckBox *> &check_map) {
+    auto setup_conflict =
+    [&](const AccountOption subject_option, const AccountOption blocker_option) {
+        if (!check_map.contains(subject_option) || !check_map.contains(blocker_option)) {
+            return;
+        }
+
+        QCheckBox *subject = check_map[subject_option];
+        QCheckBox *blocker = check_map[blocker_option];
+
+        QObject::connect(
+            subject, &QCheckBox::stateChanged,
+            [&, subject, blocker]() {
+                const bool conflict = (subject->isChecked() && blocker->isChecked());
+                if (conflict) {
+                    subject->setChecked(false);
+
+                    const QString subject_name = account_option_string(subject_option);
+                    const QString blocker_name = account_option_string(blocker_option);
+                    const QString error = QString(QObject::tr("Can't set \"%1\" when \"%2\" is set.")).arg(blocker_name, subject_name);
+                    QMessageBox::warning(blocker, QObject::tr("Error"), error);
+                }
+            });
+    };
+
+    // NOTE: only setup conflicts for options that exist
+    // TODO: AccountOption_CantChangePassword. Once security
+    // descriptor manipulation is implemented, it should be
+    // evident how to do this. See link:
+    // https://docs.microsoft.com/en-us/windows/win32/adsi/modifying-user-cannot-change-password-ldap-provider?redirectedfrom=MSDN
+    const QList<AccountOption> other_two_options = {
+        AccountOption_DontExpirePassword,
+        // AccountOption_CantChangePassword,
+    };
+
+    for (auto other_option : other_two_options) {
+        setup_conflict(AccountOption_PasswordExpired, other_option);
+        setup_conflict(other_option, AccountOption_PasswordExpired);
+    }
 }
