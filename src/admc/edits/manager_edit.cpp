@@ -18,104 +18,45 @@
  */
 
 #include "edits/manager_edit.h"
+
+#include "edits/manager_widget.h"
 #include "utils.h"
 #include "adldap.h"
 #include "globals.h"
 #include "properties_dialog.h"
 #include "select_object_dialog.h"
-#include <QLineEdit>
+
 #include <QFormLayout>
-#include <QPushButton>
 
 ManagerEdit::ManagerEdit(const QString &manager_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
 {
     manager_attribute = manager_attribute_arg;
 
-    edit = new QLineEdit();
-
-    change_button = new QPushButton(tr("Change"));
-    properties_button = new QPushButton(PropertiesDialog::display_name());
-    clear_button = new QPushButton(tr("Clear"));
+    widget = new ManagerWidget(manager_attribute_arg);
 
     connect(
-        change_button, &QPushButton::clicked,
-        this, &ManagerEdit::on_change);
-    connect(
-        properties_button, &QPushButton::clicked,
-        this, &ManagerEdit::on_properties);
-    connect(
-        clear_button, &QPushButton::clicked,
-        this, &ManagerEdit::on_clear);
+        widget, &ManagerWidget::edited,
+        this, &ManagerEdit::edited);
 }
 
 void ManagerEdit::load_internal(AdInterface &ad, const AdObject &object) {
-    const QString manager = object.get_string(manager_attribute);
-    
-    load_value(manager);
+    widget->load(object);
 }
 
 void ManagerEdit::set_read_only(const bool read_only) {
-
+    widget->setEnabled(!read_only);
 }
 
 void ManagerEdit::add_to_layout(QFormLayout *layout) {
-    auto buttons_layout = new QHBoxLayout();
-    buttons_layout->addWidget(change_button);
-    buttons_layout->addWidget(properties_button);
-    buttons_layout->addWidget(clear_button);
-
-    auto sublayout = new QVBoxLayout();
-    sublayout->addWidget(edit);
-    sublayout->addLayout(buttons_layout);
-
     const QString label_text = g_adconfig->get_attribute_display_name(manager_attribute, CLASS_USER) + ":";
-    layout->addRow(label_text, sublayout);
+    layout->addRow(label_text, widget);
 }
 
 bool ManagerEdit::apply(AdInterface &ad, const QString &dn) const {
-    const bool success = ad.attribute_replace_string(dn, manager_attribute, current_value);
-
-    return success;
+    return widget->apply(ad, dn);
 }
 
 QString ManagerEdit::get_manager() const {
-    return current_value;
-}
-
-void ManagerEdit::on_change() {
-    auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_CONTACT}, SelectObjectDialogMultiSelection_No, edit);
-
-    connect(
-        dialog, &SelectObjectDialog::accepted,
-        [this, dialog]() {
-            const QList<QString> selected = dialog->get_selected();
-
-            load_value(selected[0]);
-
-            emit edited();
-        });
-
-    dialog->open();
-}
-
-void ManagerEdit::on_properties() {
-    PropertiesDialog::open_for_target(current_value);
-}
-
-void ManagerEdit::on_clear() {
-    load_value(QString());
-
-    emit edited();
-}
-
-void ManagerEdit::load_value(const QString &value) {
-    current_value = value;
-
-    const QString rdn = dn_get_name(current_value);
-    edit->setText(current_value);
-
-    const bool have_manager = !current_value.isEmpty();
-    properties_button->setEnabled(have_manager);
-    clear_button->setEnabled(have_manager);
+    return widget->get_manager();
 }

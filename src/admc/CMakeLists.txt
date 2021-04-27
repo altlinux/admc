@@ -132,6 +132,7 @@ set(ADMC_SOURCES
     edits/upn_edit.cpp
     edits/upn_suffix_widget.cpp
     edits/country_widget.cpp
+    edits/manager_widget.cpp
 
     console_widget/console_widget.cpp
     console_widget/scope_model.cpp

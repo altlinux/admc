@@ -17,32 +17,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MANAGER_EDIT_H
-#define MANAGER_EDIT_H
+#ifndef MANAGER_WIDGET_H
+#define MANAGER_WIDGET_H
 
-/**
- * Edit for editing manager. Displays current manager and
- * allows changing manager, opening manager properties and
- * clearing manager. Accepts manager attribute argument
- * because there are two manager attributes: "manager" and
- * "managedBy".
- */
+#include <QWidget>
 
-#include "attribute_edit.h"
+class AdObject;
+class AdInterface;
+class QLineEdit;
+class QPushButton;
 
-class ManagerWidget;
-
-class ManagerEdit final : public AttributeEdit {
+class ManagerWidget final : public QWidget {
 Q_OBJECT
+
 public:
-    ManagerEdit(const QString &manager_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    ManagerWidget(const QString &manager_attribute_arg);
+
+    void load(const AdObject &object);
+    bool apply(AdInterface &ad, const QString &dn) const;
 
     QString get_manager() const;
 
+signals:
+    void edited();
+
+private slots:
+    void on_change();
+    void on_properties();
+    void on_clear();
+
 private:
-    ManagerWidget *widget;
+    QLineEdit *edit;
+    QPushButton *change_button;
+    QPushButton *properties_button;
+    QPushButton *clear_button;
     QString manager_attribute;
+    QString current_value;
+
+    void load_value(const QString &value);
 };
 
-#endif /* MANAGER_EDIT_H */
+#endif /* MANAGER_WIDGET_H */
