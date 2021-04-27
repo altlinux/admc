@@ -2,7 +2,7 @@
 
 Name: admc
 Version: 0.5.2
-Release: alt1
+Release: alt1.1
 
 Summary: AD editor
 License: GPLv3+
@@ -78,6 +78,9 @@ Tests for ADMC
 %_bindir/admc_test_ad_interface
 
 %changelog
+* Sun May 30 2021 Arseny Maslennikov <arseny@altlinux.org> 0.5.2-alt1.1
+- NMU: spec: adapted to new cmake macros.
+
 * Wed May 12 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.5.2-alt1
 - 0.5.2
 
