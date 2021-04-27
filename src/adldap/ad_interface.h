@@ -165,6 +165,8 @@ public:
 
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
+    QList<QString> get_trustee_list(const AdObject &object);
+    
 private:
     AdInterfacePrivate *d;
 };

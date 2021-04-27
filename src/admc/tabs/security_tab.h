@@ -22,11 +22,24 @@
 
 #include "tabs/properties_tab.h"
 
+class QTreeView;
+class QStandardItemModel;
+class QLabel;
+
 class SecurityTab final : public PropertiesTab {
 Q_OBJECT
 
 public:
     SecurityTab();
+    void load(AdInterface &ad, const AdObject &object) override;
+
+private slots:
+    void on_selected_trustee_changed();
+
+private:
+    QTreeView *view;
+    QStandardItemModel *model;
+    QLabel *selected_trustee_label;
 };
 
 #endif /* SECURITY_TAB_H */

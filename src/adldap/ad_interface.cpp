@@ -27,6 +27,8 @@
 #include "samba/gp_manage.h"
 #include "samba/dom_sid.h"
 
+#include "ad_filter.h"
+
 #include <ldap.h>
 #include <lber.h>
 #include <resolv.h>
@@ -1531,4 +1533,91 @@ AdMessageType AdMessage::type() const {
     return m_type;
 }
 
+#define TRUSTEE_ENUM_TO_STRING(ENUM) {ENUM, #ENUM}
 
+// TODO: write custom trustee names. Not sure if have to be
+// translated, trustee object dn's aren't translated so
+// maybe names are untranslated as well?
+const QHash<QString, QString> trustee_name_map = {
+    TRUSTEE_ENUM_TO_STRING(NAME_WORLD),
+    TRUSTEE_ENUM_TO_STRING(SID_WORLD_DOMAIN),
+    TRUSTEE_ENUM_TO_STRING(SID_WORLD),
+    TRUSTEE_ENUM_TO_STRING(SID_CREATOR_OWNER_DOMAIN),
+    TRUSTEE_ENUM_TO_STRING(SID_CREATOR_OWNER),
+    TRUSTEE_ENUM_TO_STRING(SID_CREATOR_GROUP),
+    TRUSTEE_ENUM_TO_STRING(SID_OWNER_RIGHTS),
+    TRUSTEE_ENUM_TO_STRING(NAME_NT_AUTHORITY),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_AUTHORITY),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_DIALUP),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_NETWORK),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_BATCH),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_INTERACTIVE),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_SERVICE),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_ANONYMOUS),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_PROXY),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_ENTERPRISE_DCS),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_SELF),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_AUTHENTICATED_USERS),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_RESTRICTED),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_TERMINAL_SERVER_USERS),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_REMOTE_INTERACTIVE),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_THIS_ORGANISATION),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_IUSR),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_SYSTEM),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_LOCAL_SERVICE),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_NETWORK_SERVICE),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_DIGEST_AUTHENTICATION),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_NTLM_AUTHENTICATION),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_SCHANNEL_AUTHENTICATION),
+    TRUSTEE_ENUM_TO_STRING(SID_NT_OTHER_ORGANISATION),
+};
+
+QList<QString> AdInterface::get_trustee_list(const AdObject &object) {
+    const QByteArray descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
+
+    /* new zero-length top level context */
+    TALLOC_CTX *tmp_ctx = talloc_new(NULL);
+
+    struct ndr_pull *ndr_pull;
+    struct security_descriptor sd;
+    DATA_BLOB blob;
+
+    blob.data = (uint8_t *)descriptor_bytes.data();
+    blob.length = descriptor_bytes.size();
+
+    ndr_pull = ndr_pull_init_blob(&blob, tmp_ctx);
+
+    ndr_security_pull_security_descriptor(ndr_pull, NDR_SCALARS|NDR_BUFFERS, &sd);
+
+    QSet<QString> trustee_list;
+
+    struct security_acl *dacl = sd.dacl;
+    for (uint32_t i = 0; i < dacl->num_aces; i++) {
+        const QString trustee_display_string =
+        [&]() {
+            struct security_ace ace = dacl->aces[i];
+            const char *trustee_sid_string = dom_sid_string(tmp_ctx, &ace.trustee);
+
+            if (trustee_name_map.contains(trustee_sid_string)) {
+                return trustee_name_map[trustee_sid_string];
+            } else {
+                // Try to get name of trustee by finding it's DN
+                const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, trustee_sid_string);
+                const auto trustee_search = search(filter, QList<QString>(), SearchScope_All);
+                if (!trustee_search.isEmpty()) {
+                    const QString trustee_dn = trustee_search.keys()[0];
+                    const QString trustee_name = dn_get_name(trustee_dn);
+
+                    return trustee_name;
+                } else {
+                    // Return raw sid as last option
+                    return QString(trustee_sid_string);
+                }
+            }
+        }();
+        
+        trustee_list.insert(trustee_display_string);
+    }
+
+    return trustee_list.toList();
+}

@@ -39,6 +39,7 @@
 #include "status.h"
 #include "utils.h"
 #include "tab_widget.h"
+#include "console_types/console_object.h"
 
 #include <QAction>
 #include <QLabel>
@@ -338,7 +339,22 @@ void PropertiesDialog::reset() {
     if (ad_failed(ad)) {
         return;
     }
-    const AdObject object = ad.search_object(target);
+
+    // TODO: one search wasted on figuring out which
+    // atrributes to get because want to get all +
+    // descriptor
+    const QList<QString> attribute_list =
+    [&]() {
+        QList<QString> out;
+
+        const AdObject object = ad.search_object(target);
+        out.append(object.attributes());
+        out.append(ATTRIBUTE_SECURITY_DESCRIPTOR);
+
+        return out;
+    }();
+
+    const AdObject object = ad.search_object(target, attribute_list);
 
     for (auto tab : tabs) {
         tab->load(ad, object);
