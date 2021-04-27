@@ -77,6 +77,10 @@ QString ManagerWidget::get_manager() const {
     return current_value;
 }
 
+void ManagerWidget::reset() {
+    edit->setText(QString());
+}
+
 void ManagerWidget::on_change() {
     auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_CONTACT}, SelectObjectDialogMultiSelection_No, edit);
 

@@ -17,45 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MANAGER_WIDGET_H
-#define MANAGER_WIDGET_H
+#ifndef MANAGER_MULTI_EDIT_H
+#define MANAGER_MULTI_EDIT_H
 
-#include <QWidget>
+#include "multi_edits/attribute_multi_edit.h"
 
-class AdObject;
-class AdInterface;
-class QLineEdit;
-class QPushButton;
+class ManagerWidget;
 
-class ManagerWidget final : public QWidget {
+class ManagerMultiEdit : public AttributeMultiEdit {
 Q_OBJECT
-
 public:
-    ManagerWidget(const QString &manager_attribute_arg);
+    ManagerMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 
-    void load(const AdObject &object);
-    bool apply(AdInterface &ad, const QString &dn) const;
-
-    QString get_manager() const;
-    void reset();
-
-signals:
-    void edited();
-
-private slots:
-    void on_change();
-    void on_properties();
-    void on_clear();
+    DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
 
 private:
-    QLineEdit *edit;
-    QPushButton *change_button;
-    QPushButton *properties_button;
-    QPushButton *clear_button;
-    QString manager_attribute;
-    QString current_value;
-
-    void load_value(const QString &value);
+    ManagerWidget *widget;
 };
 
-#endif /* MANAGER_WIDGET_H */
+#endif /* MANAGER_MULTI_EDIT_H */
