@@ -17,21 +17,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COUNTRY_EDIT_H
-#define COUNTRY_EDIT_H
+#ifndef COUNTRY_WIDGET_H
+#define COUNTRY_WIDGET_H
 
-#include "edits/attribute_edit.h"
+#include <QWidget>
 
-class CountryWidget;
+class QComboBox;
+class AdObject;
+class AdInterface;
 
-class CountryEdit final : public AttributeEdit {
+class CountryWidget final : public QWidget {
 Q_OBJECT
+
 public:
-    CountryEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    CountryWidget();
+
+    void load(const AdObject &object);
+    void set_read_only(const bool read_only);
+    bool apply(AdInterface &ad, const QString &dn) const;
+
+signals:
+    void edited();
 
 private:
-    CountryWidget *country_widget;
+    QComboBox *combo;
+    
+    // NOTE: country codes are 3 digits only, so 0-999 = 1000
+    QString country_strings[1000];
+    QString country_abbreviations[1000];
 };
 
-#endif /* COUNTRY_EDIT_H */
+#endif /* COUNTRY_WIDGET_H */

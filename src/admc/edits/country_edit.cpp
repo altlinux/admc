@@ -17,12 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "edits/country_edit.h"
+
+#include "edits/country_widget.h"
 #include "tabs/address_tab.h"
 #include "adldap.h"
 #include "status.h"
 #include "globals.h"
 #include "utils.h"
-#include "edits/country_edit.h"
 
 #include <QVBoxLayout>
 #include <QFormLayout>
@@ -32,114 +34,29 @@
 #include <algorithm>
 #include <QDebug>
 
-// TODO: translate country strings to Russian (qt doesn't have it)
-
-#define COUNTRY_CODE_NONE 0
-
 CountryEdit::CountryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
 {
-    combo = new QComboBox();
+    country_widget = new CountryWidget();
 
-    // Load all country names into combobox
-    // NOTE: temp collections to sort items for combo box
-    QList<QString> all_countries;
-    QHash<QString, int> string_to_code;
-
-    // TODO: cache this
-    QFile file(":/admc/countries.csv");
-    if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "ERROR: Failed to load countries file!\n";
-    } else {
-        // Load countries csv into maps
-        // Map country code to country string and country abbreviation
-        QHash<QString, int> country_string_to_code;
-        
-        // Skip header
-        file.readLine();
-
-        while (!file.atEnd()) {
-            const QByteArray line_array = file.readLine();
-            const QString line(line_array);
-            const QList<QString> line_split = line.split(',');
-
-            if (line_split.size() != 3) {
-                continue;
-            }
-
-            const QString country_string = line_split[0];
-            const QString abbreviation = line_split[1];
-            const QString code_string = line_split[2];
-            const int code = code_string.toInt();
-
-            country_strings[code] = country_string;
-            country_abbreviations[code] = abbreviation;
-
-            all_countries.append(country_string);
-            string_to_code[country_string] = code;
-        }
-    }
-
-    // Put country strings/codes into combo box, sorted by strings
-    std::sort(all_countries.begin(), all_countries.end());
-
-    // Special case for "None" country
-    // TODO: this seems really easy to break
-    const QString none_string = tr("None");
-    string_to_code[none_string] = COUNTRY_CODE_NONE;
-    all_countries.insert(0, none_string);
-    country_strings[COUNTRY_CODE_NONE] = "";
-    country_abbreviations[COUNTRY_CODE_NONE] = "";
-
-    for (auto country_string : all_countries) {
-        const int code = string_to_code[country_string];
-
-        combo->addItem(country_string, code);
-    }
-
-    QObject::connect(
-    combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-    [this]() {
-        emit edited();
-    });
+    connect(
+        country_widget, &CountryWidget::edited,
+        this, &CountryEdit::edited);
 }
 
 void CountryEdit::load_internal(AdInterface &ad, const AdObject &object) {
-    const int country_code =
-    [object]() {
-        if (object.contains(ATTRIBUTE_COUNTRY_CODE)) {
-            return object.get_int(ATTRIBUTE_COUNTRY_CODE);
-        } else {
-            return COUNTRY_CODE_NONE;
-        }
-    }();
-
-    const int index = combo->findData(QVariant(country_code));
-    if (index != -1) {
-        combo->setCurrentIndex(index);
-    }
+    country_widget->load(object);
 }
 
 void CountryEdit::set_read_only(const bool read_only) {
-    combo->setDisabled(read_only);
+    country_widget->set_read_only(read_only);
 }
 
 void CountryEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_COUNTRY, CLASS_USER) + ":";
-    layout->addRow(label_text, combo);
+    layout->addRow(label_text, country_widget);
 }
 
 bool CountryEdit::apply(AdInterface &ad, const QString &dn) const {
-    const int code = combo->currentData().toInt();
-
-    const QString code_string = QString::number(code);
-    const QString country_string = country_strings[code];
-    const QString abbreviation = country_abbreviations[code];
-
-    bool success = true;
-    success = success && ad.attribute_replace_string(dn, ATTRIBUTE_COUNTRY_CODE, code_string);
-    success = success && ad.attribute_replace_string(dn, ATTRIBUTE_COUNTRY_ABBREVIATION, abbreviation);
-    success = success && ad.attribute_replace_string(dn, ATTRIBUTE_COUNTRY, country_string);
-
-    return success;
+    return country_widget->apply(ad, dn);
 }
