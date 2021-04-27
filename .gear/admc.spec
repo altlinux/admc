@@ -55,11 +55,10 @@ Tests for ADMC
 
 %build
 %cmake -DCMAKE_INSTALL_LIBDIR=%_libdir
-%cmake_build VERBOSE=1
+%cmake_build
 
 %install
-cd BUILD
-%makeinstall_std
+%cmake_install
 
 %files
 %doc README.md
