@@ -96,6 +96,7 @@ set(ADMC_SOURCES
     multi_tabs/properties_multi_tab.cpp
     multi_tabs/general_multi_tab.cpp
     multi_tabs/account_multi_tab.cpp
+    multi_tabs/address_multi_tab.cpp
 
     multi_edits/attribute_multi_edit.cpp
     multi_edits/string_multi_edit.cpp

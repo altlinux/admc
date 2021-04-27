@@ -27,6 +27,7 @@
 #include "tab_widget.h"
 #include "multi_tabs/general_multi_tab.h"
 #include "multi_tabs/account_multi_tab.h"
+#include "multi_tabs/address_multi_tab.h"
 
 #include <QAction>
 #include <QLabel>
@@ -80,6 +81,7 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
     // TODO: add other tabs
     if (class_list == QList<QString>({CLASS_USER})) {
         add_tab(new AccountMultiTab(ad), tr("Account"));
+        add_tab(new AddressMultiTab(), tr("Address"));
     }
 
     for (PropertiesMultiTab *tab : tab_list) {
