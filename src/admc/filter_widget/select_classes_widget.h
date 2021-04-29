@@ -53,6 +53,7 @@ private:
     QDialog *dialog;
     QHash<QString, QCheckBox *> dialog_checks;
     QPushButton *ok_button;
+    QList<QString> class_list;
 
     QList<QString> get_selected_classes() const;
 };

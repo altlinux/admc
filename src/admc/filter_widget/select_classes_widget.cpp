@@ -29,10 +29,13 @@
 #include <QLineEdit>
 #include <QDialogButtonBox>
 #include <QPushButton>
+#include <QSet>
 
-SelectClassesWidget::SelectClassesWidget(const QList<QString> classes)
+SelectClassesWidget::SelectClassesWidget(const QList<QString> class_list_arg)
 : QWidget()
 {
+    class_list = class_list_arg;
+
     classes_display = new QLineEdit();
     classes_display->setReadOnly(true);
 
@@ -55,7 +58,7 @@ SelectClassesWidget::SelectClassesWidget(const QList<QString> classes)
     dialog_buttons->addButton(QDialogButtonBox::Cancel);
 
     auto checks_layout = new QFormLayout();
-    for (const QString &object_class : classes) {
+    for (const QString &object_class : class_list) {
         auto check = new QCheckBox();
         check->setChecked(true);
         
@@ -99,11 +102,21 @@ SelectClassesWidget::SelectClassesWidget(const QList<QString> classes)
 }
 
 QString SelectClassesWidget::get_filter() const {
-    const QList<QString> class_filters =
-    [this]() {
-        QList<QString> out;
+    // NOTE: this is slightly weird behavior. When all
+    // classes are selected, we just return empty filter to
+    // accept any class (even those that don't have a
+    // checkbox in this widget). Not sure how to express
+    // this better.
+    const QList<QString> selected_classes = get_selected_classes();
 
-        const QList<QString> selected_classes = get_selected_classes();
+    const bool selected_all_classes = (selected_classes.toSet() == class_list.toSet());
+    if (selected_all_classes) {
+        return QString();
+    }
+
+    const QList<QString> class_filters =
+    [&]() {
+        QList<QString> out;
         
         for (const QString &object_class : selected_classes) {
             const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
