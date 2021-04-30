@@ -122,7 +122,7 @@ const QHash<AcePermission, QString> ace_permission_to_name_map = {
 };
 
 const QHash<AcePermission, uint32_t> ace_permission_to_mask_map = {
-    {AcePermission_FullControl, 0x000F01FF},
+    {AcePermission_FullControl, SEC_ADS_GENERIC_ALL},
     {AcePermission_Read, SEC_ADS_GENERIC_READ},
     {AcePermission_Write, SEC_ADS_GENERIC_WRITE},
     {AcePermission_CreateChild, SEC_ADS_CREATE_CHILD},
