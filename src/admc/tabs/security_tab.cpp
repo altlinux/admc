@@ -334,7 +334,7 @@ void SecurityTab::on_selected_trustee_changed() {
         }
 
         const uint32_t permission_mask = ace_permission_to_mask_map[permission];
-        const bool ace_ok = ((ace->access_mask & permission_mask) != 0);
+        const bool ace_ok = ((ace->access_mask & permission_mask) == permission_mask);
 
         if (ace_ok) {
             if (ace->type == SEC_ACE_TYPE_ACCESS_ALLOWED || ace->type == SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT) {
