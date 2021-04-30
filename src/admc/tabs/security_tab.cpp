@@ -77,6 +77,11 @@ const QHash<AcePermission, uint32_t> ace_permission_to_mask_map = {
     {AcePermission_Write, SEC_ADS_GENERIC_WRITE},
     {AcePermission_CreateChild, SEC_ADS_CREATE_CHILD},
     {AcePermission_DeleteChild, SEC_ADS_DELETE_CHILD},
+    {AcePermission_ChangePassword, SEC_ADS_CONTROL_ACCESS},
+};
+
+const QHash<AcePermission, QString> ace_permission_to_type_map = {
+    {AcePermission_ChangePassword, GUID_DRS_USER_CHANGE_PASSWORD},
 };
 
 SecurityTab::SecurityTab() {
@@ -176,10 +181,12 @@ void SecurityTab::on_selected_trustee_changed() {
 
     auto get_permission_state =
     [](security_ace *ace, const AcePermission permission) {
-        if (permission == AcePermission_ChangePassword) {
-            const bool mask_ok = (ace->access_mask == SEC_ADS_CONTROL_ACCESS);
-            const bool flags_ok = (ace->flags == 0);
-            const bool type_ok =
+        const bool permission_has_type = ace_permission_to_type_map.contains(permission);
+
+        if (permission_has_type) {
+            // Check that ace type equals to permission
+            // type, if it exists
+            const bool type_matches =
             [&]() {
                 const GUID type = ace->object.object.type.type;
                 const QByteArray type_bytes = QByteArray((char *) &type, sizeof(GUID));
@@ -188,31 +195,23 @@ void SecurityTab::on_selected_trustee_changed() {
                 return (type_string.toLower() == QString(GUID_DRS_USER_CHANGE_PASSWORD).toLower());
             }();
 
-            const bool ace_ok = (mask_ok && flags_ok && type_ok);
-
-            if (ace_ok) {
-                if (ace->type == SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT) {
-                    return PermissionState_Allowed;
-                } else if (ace->type == SEC_ACE_TYPE_ACCESS_DENIED_OBJECT) {
-                    return PermissionState_Denied;
-                }
+            if (!type_matches) {
+                return PermissionState_None;
             }
-            
-            return PermissionState_None;
-        } else {
-            const uint32_t permission_mask = ace_permission_to_mask_map[permission];
-            const bool ace_ok = ((ace->access_mask & permission_mask) != 0);
-
-            if (ace_ok) {
-                if (ace->type == SEC_ACE_TYPE_ACCESS_ALLOWED) {
-                    return PermissionState_Allowed;
-                } else if (ace->type == SEC_ACE_TYPE_ACCESS_DENIED) {
-                    return PermissionState_Denied;
-                }
-            }
-
-            return PermissionState_None;
         }
+
+        const uint32_t permission_mask = ace_permission_to_mask_map[permission];
+        const bool ace_ok = ((ace->access_mask & permission_mask) != 0);
+
+        if (ace_ok) {
+            if (ace->type == SEC_ACE_TYPE_ACCESS_ALLOWED || ace->type == SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT) {
+                return PermissionState_Allowed;
+            } else if (ace->type == SEC_ACE_TYPE_ACCESS_DENIED || ace->type == SEC_ACE_TYPE_ACCESS_DENIED_OBJECT) {
+                return PermissionState_Denied;
+            }
+        }
+
+        return PermissionState_None;
     };
 
     for (int permission_i = 0; permission_i < AcePermission_COUNT; permission_i++) {
