@@ -22,6 +22,8 @@
 
 #include "tabs/properties_tab.h"
 
+#include "adldap.h"
+
 class QTreeView;
 class QStandardItemModel;
 class QLabel;
@@ -37,9 +39,12 @@ private slots:
     void on_selected_trustee_changed();
 
 private:
-    QTreeView *view;
-    QStandardItemModel *model;
+    QTreeView *trustee_view;
+    QStandardItemModel *trustee_model;
+    QTreeView *ace_view;
+    QStandardItemModel *ace_model;
     QLabel *selected_trustee_label;
+    SecurityDescriptor sd;
 };
 
 #endif /* SECURITY_TAB_H */

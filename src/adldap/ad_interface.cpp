@@ -1572,14 +1572,19 @@ const QHash<QString, QString> trustee_name_map = {
     TRUSTEE_ENUM_TO_STRING(SID_NT_OTHER_ORGANISATION),
 };
 
-QList<QString> AdInterface::get_trustee_list(const AdObject &object) {
-    const QByteArray descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
+SecurityDescriptor::SecurityDescriptor() {
+    tmp_ctx = nullptr;
+}
 
-    /* new zero-length top level context */
-    TALLOC_CTX *tmp_ctx = talloc_new(NULL);
+SecurityDescriptor::~SecurityDescriptor() {
+    talloc_free(tmp_ctx);
+}
+
+void SecurityDescriptor::load(const QByteArray &descriptor_bytes) {
+    talloc_free(tmp_ctx);
+    tmp_ctx = talloc_new(NULL);
 
     struct ndr_pull *ndr_pull;
-    struct security_descriptor sd;
     DATA_BLOB blob;
 
     blob.data = (uint8_t *)descriptor_bytes.data();
@@ -1587,37 +1592,72 @@ QList<QString> AdInterface::get_trustee_list(const AdObject &object) {
 
     ndr_pull = ndr_pull_init_blob(&blob, tmp_ctx);
 
-    ndr_security_pull_security_descriptor(ndr_pull, NDR_SCALARS|NDR_BUFFERS, &sd);
+    data = talloc(tmp_ctx, struct security_descriptor);
 
-    QSet<QString> trustee_list;
+    ndr_security_pull_security_descriptor(ndr_pull, NDR_SCALARS|NDR_BUFFERS, data);
 
-    struct security_acl *dacl = sd.dacl;
-    for (uint32_t i = 0; i < dacl->num_aces; i++) {
-        const QString trustee_display_string =
-        [&]() {
+    ace_map =
+    [&]() {
+        QHash<QString, QList<security_ace *>> out;
+
+        TALLOC_CTX *sid_ctx = talloc_new(NULL);
+
+        security_acl *dacl = data->dacl;
+        for (uint32_t i = 0; i < dacl->num_aces; i++) {
             struct security_ace ace = dacl->aces[i];
-            const char *trustee_sid_string = dom_sid_string(tmp_ctx, &ace.trustee);
 
-            if (trustee_name_map.contains(trustee_sid_string)) {
-                return trustee_name_map[trustee_sid_string];
-            } else {
-                // Try to get name of trustee by finding it's DN
-                const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, trustee_sid_string);
-                const auto trustee_search = search(filter, QList<QString>(), SearchScope_All);
-                if (!trustee_search.isEmpty()) {
-                    const QString trustee_dn = trustee_search.keys()[0];
-                    const QString trustee_name = dn_get_name(trustee_dn);
+            const char *trustee_cstr = dom_sid_string(sid_ctx, &ace.trustee);
+            const QString trustee = QString(trustee_cstr);
 
-                    return trustee_name;
-                } else {
-                    // Return raw sid as last option
-                    return QString(trustee_sid_string);
-                }
+            if (!out.contains(trustee)) {
+                out[trustee] = QList<security_ace *>();
             }
-        }();
-        
-        trustee_list.insert(trustee_display_string);
+
+            out[trustee].append(&(dacl->aces[i]));
+        }
+
+        talloc_free(sid_ctx);
+
+        return out;
+    }();
+}
+
+QList<QString> SecurityDescriptor::get_trustee_list() {
+    TALLOC_CTX *sid_ctx = talloc_new(NULL);
+    
+    QSet<QString> out;
+
+    struct security_acl *dacl = data->dacl;
+    for (uint32_t i = 0; i < dacl->num_aces; i++) {
+        struct security_ace ace = dacl->aces[i];
+
+        const char *trustee_sid_cstr = dom_sid_string(sid_ctx, &ace.trustee);
+        const QString trustee_sid = QString(trustee_sid_cstr);
+
+        out.insert(trustee_sid);
     }
 
-    return trustee_list.toList();
+
+    talloc_free(sid_ctx);
+
+    return out.toList();
+}
+
+QString AdInterface::get_trustee_name(const QString &trustee_sid) {
+    if (trustee_name_map.contains(trustee_sid)) {
+        return trustee_name_map[trustee_sid];
+    } else {
+        // Try to get name of trustee by finding it's DN
+        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, trustee_sid);
+        const auto trustee_search = search(filter, QList<QString>(), SearchScope_All);
+        if (!trustee_search.isEmpty()) {
+            const QString trustee_dn = trustee_search.keys()[0];
+            const QString name = dn_get_name(trustee_dn);
+
+            return name;
+        } else {
+            // Return raw sid as last option
+            return trustee_sid;
+        }
+    }
 }

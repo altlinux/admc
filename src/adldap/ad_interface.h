@@ -26,6 +26,7 @@
  */
 
 #include <QCoreApplication>
+#include <QHash>
 
 #include "ad_defines.h"
 
@@ -36,6 +37,9 @@ class QDateTime;
 class AdObject;
 class AdConfig;
 template <typename T> class QList;
+typedef void TALLOC_CTX;
+struct security_descriptor;
+struct security_ace;
 
 enum SearchScope {
     SearchScope_Object,
@@ -165,10 +169,31 @@ public:
 
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
-    QList<QString> get_trustee_list(const AdObject &object);
+    QString get_trustee_name(const QString &trustee_sid);
     
 private:
     AdInterfacePrivate *d;
 };
+
+class SecurityDescriptor {
+
+public:
+    SecurityDescriptor();
+    ~SecurityDescriptor();
+
+    void load(const QByteArray &descriptor_bytes);
+    QList<QString> get_trustee_list();
+    QList<QString> get_ace_list(AdInterface &ad, const QString &trustee);
+    QHash<uint32_t, bool> get_ace_map(AdInterface &ad, const QString &trustee);
+    QList<uint32_t> get_mask_list(AdInterface &ad, const QString &trustee);
+
+    TALLOC_CTX *tmp_ctx;
+    struct security_descriptor *data;
+
+    QHash<QString, QList<security_ace *>> ace_map;
+};
+
+extern const QList<uint32_t> sec_masks;
+QString access_mask_string(const uint32_t access_mask);
 
 #endif /* AD_INTERFACE_H */
