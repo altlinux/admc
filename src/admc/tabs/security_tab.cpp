@@ -55,7 +55,11 @@ enum AcePermission {
     AcePermission_Write,
     AcePermission_CreateChild,
     AcePermission_DeleteChild,
+    AcePermission_AllowedToAuthenticate,
     AcePermission_ChangePassword,
+    AcePermission_ReceiveAs,
+    AcePermission_ResetPassword,
+    AcePermission_SendAs,
 
     AcePermission_COUNT,
 };
@@ -68,7 +72,11 @@ const QHash<AcePermission, QString> ace_permission_to_name_map = {
     ENUM_TO_STRING(AcePermission_Write),
     ENUM_TO_STRING(AcePermission_CreateChild),
     ENUM_TO_STRING(AcePermission_DeleteChild),
+    ENUM_TO_STRING(AcePermission_AllowedToAuthenticate),
     ENUM_TO_STRING(AcePermission_ChangePassword),
+    ENUM_TO_STRING(AcePermission_ReceiveAs),
+    ENUM_TO_STRING(AcePermission_ResetPassword),
+    ENUM_TO_STRING(AcePermission_SendAs),
 };
 
 const QHash<AcePermission, uint32_t> ace_permission_to_mask_map = {
@@ -77,13 +85,22 @@ const QHash<AcePermission, uint32_t> ace_permission_to_mask_map = {
     {AcePermission_Write, SEC_ADS_GENERIC_WRITE},
     {AcePermission_CreateChild, SEC_ADS_CREATE_CHILD},
     {AcePermission_DeleteChild, SEC_ADS_DELETE_CHILD},
+    {AcePermission_AllowedToAuthenticate, SEC_ADS_CONTROL_ACCESS},
     {AcePermission_ChangePassword, SEC_ADS_CONTROL_ACCESS},
+    {AcePermission_ReceiveAs, SEC_ADS_CONTROL_ACCESS},
+    {AcePermission_ResetPassword, SEC_ADS_CONTROL_ACCESS},
+    {AcePermission_SendAs, SEC_ADS_CONTROL_ACCESS},
 };
 
 // NOTE: store right's cn value here, then search for it to
 // get right's guid, which is compared to ace type.
 const QHash<AcePermission, QString> ace_permission_to_type_map = {
+    {AcePermission_AllowedToAuthenticate, "ALlowed-To-Authenticate"},
     {AcePermission_ChangePassword, "User-Change-Password"},
+    {AcePermission_ReceiveAs, "Receive-As"},
+    // NOTE: not sure if this one's correct
+    {AcePermission_ResetPassword, "User-Force-Change-Password"},
+    {AcePermission_SendAs, "Send-As"},
 };
 
 SecurityTab::SecurityTab() {
