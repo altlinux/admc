@@ -305,6 +305,10 @@ QString AdConfig::partitions_dn() const {
     return QString("CN=Partitions,CN=Configuration,%1").arg(domain_head());
 }
 
+QString AdConfig::extended_rights_dn() const {
+    return QString("CN=Extended-Rights,%1").arg(configuration_dn());
+}
+
 QString AdConfig::get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const {
     if (d->attribute_display_names.contains(objectClass) && d->attribute_display_names[objectClass].contains(attribute)) {
         const QString display_name = d->attribute_display_names[objectClass][attribute];

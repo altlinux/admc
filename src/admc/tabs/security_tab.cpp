@@ -80,8 +80,10 @@ const QHash<AcePermission, uint32_t> ace_permission_to_mask_map = {
     {AcePermission_ChangePassword, SEC_ADS_CONTROL_ACCESS},
 };
 
+// NOTE: store right's cn value here, then search for it to
+// get right's guid, which is compared to ace type.
 const QHash<AcePermission, QString> ace_permission_to_type_map = {
-    {AcePermission_ChangePassword, GUID_DRS_USER_CHANGE_PASSWORD},
+    {AcePermission_ChangePassword, "User-Change-Password"},
 };
 
 SecurityTab::SecurityTab() {
@@ -180,7 +182,7 @@ void SecurityTab::on_selected_trustee_changed() {
     const QList<security_ace *> ace_list = sd.ace_map[trustee];
 
     auto get_permission_state =
-    [](security_ace *ace, const AcePermission permission) {
+    [&](security_ace *ace, const AcePermission permission) {
         const bool permission_has_type = ace_permission_to_type_map.contains(permission);
 
         if (permission_has_type) {
@@ -188,11 +190,42 @@ void SecurityTab::on_selected_trustee_changed() {
             // type, if it exists
             const bool type_matches =
             [&]() {
-                const GUID type = ace->object.object.type.type;
-                const QByteArray type_bytes = QByteArray((char *) &type, sizeof(GUID));
-                const QString type_string = attribute_display_value(ATTRIBUTE_OBJECT_GUID, type_bytes, g_adconfig);
+                const QString rights_guid =
+                [&]() {
+                    const QString filter =
+                    [&]() {
+                        const QString permission_right_cn = ace_permission_to_type_map[permission];
+                        const QString cn_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_CN, permission_right_cn);
 
-                return (type_string.toLower() == QString(GUID_DRS_USER_CHANGE_PASSWORD).toLower());
+                        return cn_filter;
+                    }();
+
+                    const QList<QString> attributes = {
+                        ATTRIBUTE_RIGHTS_GUID,
+                    };
+
+                    const QString search_base = g_adconfig->extended_rights_dn();
+
+                    const QHash<QString, AdObject> search_results = ad.search(filter, attributes, SearchScope_Children, search_base);
+
+                    if (search_results.isEmpty()) {
+                        return QString();
+                    }
+
+                    const AdObject object = search_results.values()[0];
+
+                    return object.get_string(ATTRIBUTE_RIGHTS_GUID);
+                }();
+
+                const QString ace_type_guid =
+                [&]() {
+                    const GUID type = ace->object.object.type.type;
+                    const QByteArray type_bytes = QByteArray((char *) &type, sizeof(GUID));
+
+                    return attribute_display_value(ATTRIBUTE_OBJECT_GUID, type_bytes, g_adconfig);
+                }();
+
+                return (rights_guid.toLower() == ace_type_guid.toLower());
             }();
 
             if (!type_matches) {

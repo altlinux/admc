@@ -86,6 +86,7 @@ enum SystemFlagsBit {
     SystemFlagsBit_CannotDelete = 0x80000000
 };
 
+#define ATTRIBUTE_CN                    "cn"
 #define ATTRIBUTE_USER_ACCOUNT_CONTROL  "userAccountControl"
 #define ATTRIBUTE_LOCKOUT_TIME          "lockoutTime"
 #define ATTRIBUTE_ACCOUNT_EXPIRES       "accountExpires"
@@ -167,6 +168,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_OTHER_IP_PHONE        "otherIpPhone"
 #define ATTRIBUTE_UPN_SUFFIXES          "uPNSuffixes"
 #define ATTRIBUTE_SECURITY_DESCRIPTOR   "nTSecurityDescriptor"
+#define ATTRIBUTE_RIGHTS_GUID           "rightsGuid"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
@@ -194,6 +196,7 @@ enum SystemFlagsBit {
 #define CLASS_REMOTE_STORAGE_SERVICE    "remoteStorageServicePoint"
 // NOTE: for schema object
 #define CLASS_dMD                       "dMD"
+#define CLASS_CONTROL_ACCESS_RIGHT      "controlAccessRight"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 
