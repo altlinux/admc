@@ -398,6 +398,8 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
     console->sort_scope();
 
     hide_busy_indicator();
+
+    g_status()->display_ad_messages(ad, console);
 }
 
 QModelIndex console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {

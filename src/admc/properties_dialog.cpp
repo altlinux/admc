@@ -203,6 +203,8 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
             this, &PropertiesDialog::on_edited);
     }
 
+    g_status()->display_ad_messages(ad, this);
+
     reset();
 
 
@@ -344,6 +346,8 @@ void PropertiesDialog::reset() {
     apply_button->setEnabled(false);
     reset_button->setEnabled(false);
     is_modified = false;
+
+    g_status()->display_ad_messages(ad, this);
 }
 
 void PropertiesDialog::on_edited() {

@@ -435,6 +435,8 @@ void CentralWidget::object_edit_upn_suffixes() {
     const AdObject partitions_object = ad.search_object(partitions_dn);
     const QList<QByteArray> current_values = partitions_object.get_values(ATTRIBUTE_UPN_SUFFIXES);
 
+    g_status()->display_ad_messages(ad, this);
+
     auto editor = new MultiEditor(ATTRIBUTE_UPN_SUFFIXES, current_values, this);
     editor->open();
 
@@ -671,6 +673,8 @@ void CentralWidget::on_object_properties_applied() {
             console_object_results_load(results_row, object);
         }
     }
+
+    g_status()->display_ad_messages(ad, this);
 
     update_actions_visibility();
 }
