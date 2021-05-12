@@ -20,6 +20,8 @@
 #include "status.h"
 
 #include "adldap.h"
+#include "globals.h"
+#include "settings.h"
 
 #include <QStatusBar>
 #include <QTextEdit>
@@ -29,6 +31,7 @@
 #include <QVBoxLayout>
 #include <QDebug>
 #include <QCoreApplication>
+#include <QDateTime>
 
 #define MAX_MESSAGES_IN_LOG 200
 
@@ -48,6 +51,16 @@ QTextEdit *Status::message_log() const {
 
 void Status::add_message(const QString &msg, const StatusType &type) {
     m_status_bar->showMessage(msg);
+
+    const QString timestamp =
+    []() {
+        const QDateTime current_datetime = QDateTime::currentDateTime();
+        return current_datetime.toString("hh:mm:ss");
+    }();
+
+    const QString timestamped_msg = QString("%1 %2").arg(timestamp, msg);
+
+    const bool timestamps_ON = g_settings->get_bool(BoolSetting_TimestampLog);
     
     const QColor color =
     [type]() {
@@ -60,7 +73,11 @@ void Status::add_message(const QString &msg, const StatusType &type) {
 
     const QColor original_color = m_message_log->textColor();
     m_message_log->setTextColor(color);
-    m_message_log->append(msg);
+    if (timestamps_ON) {
+        m_message_log->append(timestamped_msg);
+    } else {
+        m_message_log->append(msg);
+    }
     m_message_log->setTextColor(original_color);
 
     // Limit number of messages in log by deleting old ones

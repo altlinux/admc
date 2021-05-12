@@ -70,6 +70,7 @@ bool ad_connect(const char* uri, LDAP **ld_out);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 
 AdConfig *AdInterfacePrivate::s_adconfig = nullptr;
+bool AdInterfacePrivate::s_log_searches = false;
 
 void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgroup, int maxLenWorkgroup, char * pUsername, int maxLenUsername, char * pPassword, int maxLenPassword) {
 
@@ -140,6 +141,10 @@ AdInterface::~AdInterface() {
 
 void AdInterface::set_permanent_adconfig(AdConfig *adconfig) {
     AdInterfacePrivate::s_adconfig = adconfig;
+}
+
+void AdInterface::set_log_searches(const bool enabled) {
+    AdInterfacePrivate::s_log_searches = enabled;
 }
 
 AdInterfacePrivate::AdInterfacePrivate() {
@@ -314,6 +319,24 @@ bool AdInterfacePrivate::search_paged_internal(const char *filter, char **attrib
 QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<QString> &attributes, const SearchScope scope, const QString &search_base) {
     AdCookie cookie;
     QHash<QString, AdObject> out;
+
+    if (AdInterfacePrivate::s_log_searches) {
+        const QString attributes_string = "{" + attributes.join(",") + "}";
+
+        const QString scope_string =
+        [&scope]() -> QString {
+            switch (scope) {
+                case SearchScope_Object: return "object";
+                case SearchScope_Children: return "children";
+                case SearchScope_Descendants: return "descendants";
+                case SearchScope_All: return "all";
+                default: break;
+            }
+            return QString();
+        }();
+
+        d->success_message(QString(tr("Search:\n\tfilter = \"%1\"\n\tattributes = %2\n\tscope = \"%3\"\n\tbase = \"%4\"")).arg(filter, attributes_string, scope_string, search_base));
+    }
 
     while (true) {
         const bool success = search_paged(filter, attributes, scope, search_base, &cookie, &out);

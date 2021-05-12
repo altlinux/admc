@@ -2,6 +2,16 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.5.2 (Released 12-05-2021)
+-----------------------------------------------------------------------
+- Translation: Fix translation of "Action" menu not loading.
+- Properties: Added new properties dialog for multiple
+  objects which allows editing properties of multiple
+  objects at the same time.
+- Message Log: Add option to show LDAP search operations.
+- Message Log: Add option to show timestamps next to messages.
+
+-----------------------------------------------------------------------
  VERSION 0.5.1 (Released 23-04-2021)
 -----------------------------------------------------------------------
 - Console: Fixed a bug where when moving or deleting items,

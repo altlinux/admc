@@ -35,6 +35,7 @@ public:
     AdInterfacePrivate();
 
     static AdConfig *s_adconfig;
+    static bool s_log_searches;
     AdConfig *adconfig;
     LDAP *ld;
     SMBCCTX *smbc;

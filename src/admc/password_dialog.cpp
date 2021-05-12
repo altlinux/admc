@@ -79,6 +79,8 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
     connect(
         cancel_button, &QPushButton::clicked,
         this, &QDialog::reject);
+
+    g_status()->display_ad_messages(ad, this);
 }
 
 void PasswordDialog::accept() {

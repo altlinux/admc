@@ -22,17 +22,15 @@
 <context>
     <name>AccountOptionEdit</name>
     <message>
-        <location filename="edits/account_option_edit.cpp" line="59"/>
-        <source>Can&apos;t set &quot;%1&quot; when &quot;%2&quot; is set.</source>
+        <location filename="edits/account_option_edit.cpp" line="57"/>
+        <source>Account options:</source>
         <translation></translation>
     </message>
+</context>
+<context>
+    <name>AccountOptionMultiEdit</name>
     <message>
-        <location filename="edits/account_option_edit.cpp" line="60"/>
-        <source>Error</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="edits/account_option_edit.cpp" line="95"/>
+        <location filename="multi_edits/account_option_multi_edit.cpp" line="36"/>
         <source>Account options:</source>
         <translation></translation>
     </message>
@@ -249,27 +247,27 @@
 <context>
     <name>CentralWidget</name>
     <message>
-        <location filename="central_widget.cpp" line="70"/>
+        <location filename="central_widget.cpp" line="71"/>
         <source>&amp;Filter objects</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="central_widget.cpp" line="71"/>
+        <location filename="central_widget.cpp" line="72"/>
         <source>Dev mode</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="central_widget.cpp" line="72"/>
+        <location filename="central_widget.cpp" line="73"/>
         <source>&amp;Show non-container objects in Console tree</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="central_widget.cpp" line="499"/>
+        <location filename="central_widget.cpp" line="500"/>
         <source>Are you sure you want to delete this policy and all of it&apos;s links?</source>
         <translation></translation>
     </message>
     <message numerus="yes">
-        <location filename="central_widget.cpp" line="670"/>
+        <location filename="central_widget.cpp" line="700"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n object</numerusform>
@@ -379,7 +377,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_object.cpp" line="612"/>
+        <location filename="console_types/console_object.cpp" line="614"/>
         <source>Are you sure you want to delete this object?</source>
         <translation></translation>
     </message>
@@ -433,9 +431,9 @@
     </message>
 </context>
 <context>
-    <name>CountryEdit</name>
+    <name>CountryWidget</name>
     <message>
-        <location filename="edits/country_edit.cpp" line="88"/>
+        <location filename="edits/country_widget.cpp" line="88"/>
         <source>None</source>
         <translation></translation>
     </message>
@@ -581,14 +579,14 @@
     </message>
 </context>
 <context>
-    <name>ExpiryEdit</name>
+    <name>ExpiryWidget</name>
     <message>
-        <location filename="edits/expiry_edit.cpp" line="41"/>
+        <location filename="edits/expiry_widget.cpp" line="41"/>
         <source>Never</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/expiry_edit.cpp" line="42"/>
+        <location filename="edits/expiry_widget.cpp" line="42"/>
         <source>End of:</source>
         <translation></translation>
     </message>
@@ -757,6 +755,19 @@
     </message>
 </context>
 <context>
+    <name>GeneralMultiTab</name>
+    <message>
+        <location filename="multi_tabs/general_multi_tab.cpp" line="35"/>
+        <source>Multiple objects selected</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="multi_tabs/general_multi_tab.cpp" line="37"/>
+        <source>To change a property for multiple objects, first select the checkbox to enable the change and then type the change. Depending on the number of selected objects, you might have to wait while the changes are applied.</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>GpoLinksTab</name>
     <message>
         <location filename="tabs/gpo_links_tab.cpp" line="50"/>
@@ -880,69 +891,79 @@
     </message>
     <message>
         <location filename="main_window.cpp" line="99"/>
-        <source>Console Tree</source>
+        <source>Log searches</source>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.cpp" line="100"/>
+        <source>Timestamps in message log</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.cpp" line="101"/>
+        <source>Console Tree</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.cpp" line="102"/>
         <source>Description Bar</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="149"/>
+        <location filename="main_window.cpp" line="151"/>
         <source>&amp;File</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="150"/>
+        <location filename="main_window.cpp" line="152"/>
         <source>&amp;Action</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="151"/>
+        <location filename="main_window.cpp" line="153"/>
         <source>&amp;Navigation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="152"/>
+        <location filename="main_window.cpp" line="154"/>
         <source>&amp;View</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="153"/>
+        <location filename="main_window.cpp" line="155"/>
         <source>&amp;Preferences</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="154"/>
+        <location filename="main_window.cpp" line="156"/>
         <source>&amp;Language</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="155"/>
+        <location filename="main_window.cpp" line="157"/>
         <source>&amp;Help</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="215"/>
+        <location filename="main_window.cpp" line="221"/>
         <source>Info</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="215"/>
+        <location filename="main_window.cpp" line="221"/>
         <source>App needs to be restarted for the language option to take effect.</source>
         <translation></translation>
     </message>
 </context>
 <context>
-    <name>ManagerEdit</name>
+    <name>ManagerWidget</name>
     <message>
-        <location filename="edits/manager_edit.cpp" line="37"/>
+        <location filename="edits/manager_widget.cpp" line="38"/>
         <source>Change</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/manager_edit.cpp" line="39"/>
+        <location filename="edits/manager_widget.cpp" line="40"/>
         <source>Clear</source>
         <translation></translation>
     </message>
@@ -1053,6 +1074,39 @@
     <message>
         <location filename="editors/multi_editor.cpp" line="79"/>
         <source>Remove</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>ObjectMultiPropertiesDialog</name>
+    <message>
+        <location filename="object_multi_properties_dialog.cpp" line="56"/>
+        <source>Properties for multiple objects</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="object_multi_properties_dialog.cpp" line="81"/>
+        <source>General</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="object_multi_properties_dialog.cpp" line="85"/>
+        <source>Account</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="object_multi_properties_dialog.cpp" line="86"/>
+        <source>Address</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="object_multi_properties_dialog.cpp" line="87"/>
+        <source>Profile</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="object_multi_properties_dialog.cpp" line="88"/>
+        <source>Organization</source>
         <translation></translation>
     </message>
 </context>
@@ -1270,22 +1324,22 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="242"/>
+        <location filename="properties_dialog.cpp" line="244"/>
         <source>You&apos;re switching to attributes tab, while another tab has unapplied changes. Choose to apply or discard those changes.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="244"/>
+        <location filename="properties_dialog.cpp" line="246"/>
         <source>You&apos;re switching from attributes tab, while it has unapplied changes. Choose to apply or discard those changes.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="250"/>
+        <location filename="properties_dialog.cpp" line="252"/>
         <source>Apply current changes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="251"/>
+        <location filename="properties_dialog.cpp" line="253"/>
         <source>Discard changes</source>
         <translation></translation>
     </message>
@@ -1312,6 +1366,16 @@
         <source>Failed to connect to server.</source>
         <translation></translation>
     </message>
+    <message>
+        <location filename="edits/account_option_edit.cpp" line="132"/>
+        <source>Can&apos;t set &quot;%1&quot; when &quot;%2&quot; is set.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="edits/account_option_edit.cpp" line="133"/>
+        <source>Error</source>
+        <translation></translation>
+    </message>
 </context>
 <context>
     <name>RenameObjectDialog</name>
@@ -1326,12 +1390,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="rename_object_dialog.cpp" line="108"/>
+        <location filename="rename_object_dialog.cpp" line="110"/>
         <source>Renamed object &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="rename_object_dialog.cpp" line="113"/>
+        <location filename="rename_object_dialog.cpp" line="115"/>
         <source>Failed to rename object &quot;%1&quot;</source>
         <translation></translation>
     </message>
@@ -1360,17 +1424,17 @@
 <context>
     <name>SelectClassesWidget</name>
     <message>
-        <location filename="filter_widget/select_classes_widget.cpp" line="39"/>
+        <location filename="filter_widget/select_classes_widget.cpp" line="42"/>
         <source>Select</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="filter_widget/select_classes_widget.cpp" line="50"/>
+        <location filename="filter_widget/select_classes_widget.cpp" line="53"/>
         <source>Select all</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="filter_widget/select_classes_widget.cpp" line="51"/>
+        <location filename="filter_widget/select_classes_widget.cpp" line="54"/>
         <source>Clear selection</source>
         <translation></translation>
     </message>
@@ -1378,7 +1442,7 @@
 <context>
     <name>SelectContainerDialog</name>
     <message>
-        <location filename="select_container_dialog.cpp" line="41"/>
+        <location filename="select_container_dialog.cpp" line="42"/>
         <source>Select a container</source>
         <translation></translation>
     </message>
@@ -1409,7 +1473,7 @@
 <context>
     <name>Status</name>
     <message>
-        <location filename="status.cpp" line="112"/>
+        <location filename="status.cpp" line="129"/>
         <source>Errors occured</source>
         <translation></translation>
     </message>
@@ -1456,18 +1520,18 @@
 <context>
     <name>UpnEdit</name>
     <message>
-        <location filename="edits/upn_edit.cpp" line="112"/>
+        <location filename="edits/upn_edit.cpp" line="75"/>
         <source>UPN may not be empty.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/upn_edit.cpp" line="113"/>
-        <location filename="edits/upn_edit.cpp" line="136"/>
+        <location filename="edits/upn_edit.cpp" line="76"/>
+        <location filename="edits/upn_edit.cpp" line="99"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/upn_edit.cpp" line="135"/>
+        <location filename="edits/upn_edit.cpp" line="98"/>
         <source>The specified user logon name already exists.</source>
         <translation></translation>
     </message>

@@ -102,6 +102,8 @@ RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *paren
     on_edited();
 
     reset();
+
+    g_status()->display_ad_messages(ad, this);
 }
 
 void RenameObjectDialog::success_msg(const QString &old_name) {

@@ -62,6 +62,7 @@ enum ConsoleAction {
 };
 
 class ConsoleActions final : public QObject {
+Q_OBJECT
 
 public:
     ConsoleActions(QObject *parent);

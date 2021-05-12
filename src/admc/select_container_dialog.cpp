@@ -21,6 +21,7 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "status.h"
 #include "settings.h"
 #include "utils.h"
 
@@ -103,6 +104,8 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     const AdObject head_object = ad.search_object(head_dn);
     auto item = make_container_node(head_object);
     model->appendRow(item);
+
+    g_status()->display_ad_messages(ad, this);
 }
 
 QString SelectContainerDialog::get_selected() const {

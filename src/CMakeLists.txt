@@ -6,5 +6,4 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_options(-Wall -Wshadow -Werror=switch)
 
 add_subdirectory(admc)
-add_subdirectory(gpgui)
 add_subdirectory(adldap)
