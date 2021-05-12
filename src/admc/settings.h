@@ -63,6 +63,7 @@ enum BoolSetting {
     BoolSetting_ShowConsoleTree,
     BoolSetting_ShowResultsHeader,
     BoolSetting_LogSearches,
+    BoolSetting_TimestampLog,
 
     BoolSetting_COUNT,
 };

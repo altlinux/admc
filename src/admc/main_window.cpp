@@ -97,6 +97,7 @@ void MainWindow::setup_menubar() {
     auto confirm_actions_action = new QAction(tr("&Confirm actions"), this);
     auto last_before_first_name_action = new QAction(tr("&Put last name before first name when creating users"), this);
     auto log_searches_action = new QAction(tr("Log searches"), this);
+    auto timestamp_log_action = new QAction(tr("Timestamps in message log"), this);
     auto toggle_console_tree_action = new QAction(tr("Console Tree"), this);
     auto toggle_description_bar_action = new QAction(tr("Description Bar"), this);
 
@@ -169,6 +170,7 @@ void MainWindow::setup_menubar() {
     preferences_menu->addAction(confirm_actions_action);
     preferences_menu->addAction(last_before_first_name_action);
     preferences_menu->addAction(log_searches_action);
+    preferences_menu->addAction(timestamp_log_action);
     preferences_menu->addMenu(language_menu);
     preferences_menu->addSeparator();
     preferences_menu->addAction(message_log_dock->toggleViewAction());
@@ -203,6 +205,7 @@ void MainWindow::setup_menubar() {
     g_settings->connect_action_to_bool_setting(confirm_actions_action, BoolSetting_ConfirmActions);
     g_settings->connect_action_to_bool_setting(last_before_first_name_action, BoolSetting_LastNameBeforeFirstName);
     g_settings->connect_action_to_bool_setting(log_searches_action, BoolSetting_LogSearches);
+    g_settings->connect_action_to_bool_setting(timestamp_log_action, BoolSetting_TimestampLog);
     g_settings->connect_action_to_bool_setting(toggle_console_tree_action, BoolSetting_ShowConsoleTree);
     g_settings->connect_action_to_bool_setting(toggle_description_bar_action, BoolSetting_ShowResultsHeader);
 

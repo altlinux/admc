@@ -152,6 +152,7 @@ bool bool_default_value(const BoolSetting setting) {
         case BoolSetting_ShowConsoleTree: return true;
         case BoolSetting_ShowResultsHeader: return true;
         case BoolSetting_LogSearches: return false;
+        case BoolSetting_TimestampLog: return true;
 
         case BoolSetting_COUNT: {}
     }
@@ -173,6 +174,7 @@ QString bool_to_string(const BoolSetting setting) {
         CASE_ENUM_TO_STRING(BoolSetting_ShowConsoleTree);
         CASE_ENUM_TO_STRING(BoolSetting_ShowResultsHeader);
         CASE_ENUM_TO_STRING(BoolSetting_LogSearches);
+        CASE_ENUM_TO_STRING(BoolSetting_TimestampLog);
         CASE_ENUM_TO_STRING(BoolSetting_COUNT);
     }
     return "";
