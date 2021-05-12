@@ -44,18 +44,11 @@ Source0: %name-%version.tar
 Summary: Tests for ADMC
 Group: Other
 
-%package gpgui
-Summary: Group Policy Template Editor
-Group: Other
-
 %description
 AD editor
 
 %description test
 Tests for ADMC
-
-%description gpgui
-Group Policy Template editor GUI
 
 %prep
 %setup -q
@@ -84,10 +77,6 @@ cd BUILD
 %_bindir/admc_test_country_edit
 %_bindir/admc_test_gplink
 %_bindir/admc_test_ad_interface
-
-%files gpgui
-%_bindir/gpgui
-%_libdir/libgptbackend.so
 
 %changelog
 * Fri Apr 23 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.5.1-alt1
