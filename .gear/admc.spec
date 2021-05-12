@@ -1,7 +1,7 @@
 %define _unpackaged_files_terminate_build 1
 
 Name: admc
-Version: 0.5.1
+Version: 0.5.2
 Release: alt1
 
 Summary: AD editor
@@ -79,6 +79,9 @@ cd BUILD
 %_bindir/admc_test_ad_interface
 
 %changelog
+* Wed May 12 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.5.2-alt1
+- 0.5.2
+
 * Fri Apr 23 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.5.1-alt1
 - 0.5.1
 
