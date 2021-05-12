@@ -43,6 +43,7 @@ private:
     void setup_menubar();
     void connect_to_server();
     void quit();
+    void on_log_searches_changed();
 };
 
 #endif /* MAIN_WINDOW_H */

@@ -109,6 +109,8 @@ public:
      * override the permanent adconfig.
      */
     static void set_permanent_adconfig(AdConfig *adconfig);
+    
+    static void set_log_searches(const bool enabled);
 
     bool is_connected() const;
     QString host() const;

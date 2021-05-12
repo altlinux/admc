@@ -96,6 +96,7 @@ void MainWindow::setup_menubar() {
     auto advanced_features_action = new QAction(tr("&Advanced Features"), this);
     auto confirm_actions_action = new QAction(tr("&Confirm actions"), this);
     auto last_before_first_name_action = new QAction(tr("&Put last name before first name when creating users"), this);
+    auto log_searches_action = new QAction(tr("Log searches"), this);
     auto toggle_console_tree_action = new QAction(tr("Console Tree"), this);
     auto toggle_description_bar_action = new QAction(tr("Description Bar"), this);
 
@@ -167,6 +168,7 @@ void MainWindow::setup_menubar() {
     preferences_menu->addAction(advanced_features_action);
     preferences_menu->addAction(confirm_actions_action);
     preferences_menu->addAction(last_before_first_name_action);
+    preferences_menu->addAction(log_searches_action);
     preferences_menu->addMenu(language_menu);
     preferences_menu->addSeparator();
     preferences_menu->addAction(message_log_dock->toggleViewAction());
@@ -200,6 +202,7 @@ void MainWindow::setup_menubar() {
     g_settings->connect_action_to_bool_setting(advanced_features_action, BoolSetting_AdvancedFeatures);
     g_settings->connect_action_to_bool_setting(confirm_actions_action, BoolSetting_ConfirmActions);
     g_settings->connect_action_to_bool_setting(last_before_first_name_action, BoolSetting_LastNameBeforeFirstName);
+    g_settings->connect_action_to_bool_setting(log_searches_action, BoolSetting_LogSearches);
     g_settings->connect_action_to_bool_setting(toggle_console_tree_action, BoolSetting_ShowConsoleTree);
     g_settings->connect_action_to_bool_setting(toggle_description_bar_action, BoolSetting_ShowResultsHeader);
 
@@ -223,6 +226,11 @@ void MainWindow::setup_menubar() {
         [action_menu](const QPoint pos) {
             action_menu->exec(pos);
         });
+
+    connect(
+        g_settings->get_bool_signal(BoolSetting_LogSearches), &BoolSettingSignal::changed,
+        this, &MainWindow::on_log_searches_changed);
+    on_log_searches_changed();
 }
 
 void MainWindow::connect_to_server() {
@@ -244,4 +252,10 @@ void MainWindow::connect_to_server() {
 
 void MainWindow::quit() {
     close();
+}
+
+void MainWindow::on_log_searches_changed() {
+    const bool log_searches_ON = g_settings->get_bool(BoolSetting_LogSearches);
+
+    AdInterface::set_log_searches(log_searches_ON);
 }

@@ -62,6 +62,7 @@ enum BoolSetting {
     BoolSetting_LastNameBeforeFirstName,
     BoolSetting_ShowConsoleTree,
     BoolSetting_ShowResultsHeader,
+    BoolSetting_LogSearches,
 
     BoolSetting_COUNT,
 };
