@@ -1607,17 +1607,11 @@ void SecurityDescriptor::load(const QByteArray &descriptor_bytes) {
     talloc_free(tmp_ctx);
     tmp_ctx = talloc_new(NULL);
 
-    struct ndr_pull *ndr_pull;
-    DATA_BLOB blob;
-
-    blob.data = (uint8_t *)descriptor_bytes.data();
-    blob.length = descriptor_bytes.size();
-
-    ndr_pull = ndr_pull_init_blob(&blob, tmp_ctx);
+    DATA_BLOB blob = data_blob_const(descriptor_bytes.data(), descriptor_bytes.size());
 
     data = talloc(tmp_ctx, struct security_descriptor);
 
-    ndr_pull_security_descriptor(ndr_pull, NDR_SCALARS|NDR_BUFFERS, data);
+    ndr_pull_struct_blob(&blob, data, data, (ndr_pull_flags_fn_t)ndr_pull_security_descriptor);
 
     ace_map =
     [&]() {
