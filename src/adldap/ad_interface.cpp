@@ -1132,7 +1132,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     struct ndr_pull *ndr_pull = ndr_pull_init_blob(&blob, tmp_ctx);
 
     struct security_descriptor domain_sd;
-    ndr_security_pull_security_descriptor(ndr_pull, NDR_SCALARS|NDR_BUFFERS, &domain_sd);
+    ndr_pull_security_descriptor(ndr_pull, NDR_SCALARS|NDR_BUFFERS, &domain_sd);
 
     // TODO: not sure why but my
     // gp_create_gpt_security_descriptor() call creates an
@@ -1617,7 +1617,7 @@ void SecurityDescriptor::load(const QByteArray &descriptor_bytes) {
 
     data = talloc(tmp_ctx, struct security_descriptor);
 
-    ndr_security_pull_security_descriptor(ndr_pull, NDR_SCALARS|NDR_BUFFERS, data);
+    ndr_pull_security_descriptor(ndr_pull, NDR_SCALARS|NDR_BUFFERS, data);
 
     ace_map =
     [&]() {

@@ -28,6 +28,7 @@ add_library(adldap SHARED
     samba/ndr_security.c
     samba/dom_sid.c
     samba/replace.c
+    samba/ndr_misc.c
 
     adldap.qrc
 )
