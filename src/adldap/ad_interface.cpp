@@ -1613,31 +1613,6 @@ void SecurityDescriptor::load(const QByteArray &descriptor_bytes) {
 
     ndr_pull_struct_blob(&blob, data, data, (ndr_pull_flags_fn_t)ndr_pull_security_descriptor);
 
-    ace_map =
-    [&]() {
-        QHash<QString, QList<security_ace *>> out;
-
-        TALLOC_CTX *sid_ctx = talloc_new(NULL);
-
-        security_acl *data_dacl = data->dacl;
-        for (uint32_t i = 0; i < data_dacl->num_aces; i++) {
-            struct security_ace ace = data_dacl->aces[i];
-
-            const char *trustee_cstr = dom_sid_string(sid_ctx, &ace.trustee);
-            const QString trustee = QString(trustee_cstr);
-
-            if (!out.contains(trustee)) {
-                out[trustee] = QList<security_ace *>();
-            }
-
-            out[trustee].append(&(data_dacl->aces[i]));
-        }
-
-        talloc_free(sid_ctx);
-
-        return out;
-    }();
-
     auto security_acl_to_qlist =
     [](security_acl *acl) {
         QList<security_ace *> out;
@@ -1756,18 +1731,12 @@ void SecurityDescriptor::modify_sd(const QString &trustee, const bool allowed_ch
 
     auto print_acl =
     [&]() {
-        TALLOC_CTX *mem_ctx = talloc_new(NULL);
+        const QList<security_ace *> ace_list = get_ace_list(trustee);
         
-        for (security_ace *ace : dacl) {
-            const char *this_trustee = dom_sid_string(mem_ctx, &ace->trustee);
-
-            if (trustee == this_trustee) {
-                const QString ace_string = ace_to_string(ace);
-                qDebug() << ace_string;
-            }
+        for (security_ace *ace : ace_list) {
+            const QString ace_string = ace_to_string(ace);
+            qDebug() << ace_string;
         }
-
-        talloc_free(mem_ctx);
     };
 
     qDebug() << "modify_sd()";
@@ -1791,10 +1760,10 @@ void SecurityDescriptor::modify_sd(const QString &trustee, const bool allowed_ch
     auto get_ace =
     [&](const enum security_ace_type type, const bool create_if_not_present) -> security_ace * {
         // First, try to find ace in the list
-        for (security_ace *ace : dacl) {
-            const char *this_trustee = dom_sid_string(mem_ctx, &ace->trustee);
-
-            if (trustee == this_trustee && ace->type == type) {
+        const QList<security_ace *> ace_list = get_ace_list(trustee);
+        
+        for (security_ace *ace : ace_list) {
+            if (ace->type == type) {
                 return ace;
             }
         }
@@ -1885,4 +1854,22 @@ void SecurityDescriptor::modify_sd(const QString &trustee, const bool allowed_ch
     // dacl_sort_into_canonical_order() in samba source
 
     talloc_free(mem_ctx);
+}
+
+QList<security_ace *> SecurityDescriptor::get_ace_list(const QString &trustee) {
+    QList<security_ace *> out;
+
+    TALLOC_CTX *mem_ctx = talloc_new(NULL);
+
+    for (security_ace *ace : dacl) {
+        const char *this_trustee = dom_sid_string(mem_ctx, &ace->trustee);
+
+        if (trustee == this_trustee) {
+            out.append(ace);
+        }
+    }
+
+    talloc_free(mem_ctx);
+
+    return out;
 }

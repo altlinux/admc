@@ -294,7 +294,7 @@ void SecurityTab::on_selected_trustee_changed() {
 
     ace_model->removeRows(0, ace_model->rowCount());
 
-    const QList<security_ace *> ace_list = sd.ace_map[trustee];
+    const QList<security_ace *> ace_list = sd.get_ace_list(trustee);
 
     auto get_permission_state =
     [&](security_ace *ace, const AcePermission permission) {
@@ -448,6 +448,8 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
     qDebug() << "denied_checked = " << denied_checked;
 
     sd.modify_sd(trustee, allowed_checked, denied_checked, allowed_changed, denied_changed, permission_mask);
+
+    on_selected_trustee_changed();
     
     emit edited();
 }
