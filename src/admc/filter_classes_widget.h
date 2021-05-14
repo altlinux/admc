@@ -35,6 +35,8 @@ Q_OBJECT
 public:
     FilterClassesWidget();
 
+    QString get_filter() const;
+
 private:
     QHash<QString, QCheckBox *> checkbox_map;
 };

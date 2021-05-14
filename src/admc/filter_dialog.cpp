@@ -33,6 +33,7 @@
 #include <QFrame>
 #include <QScrollArea>
 #include <QCheckBox>
+#include <QDebug>
 
 // TODO: implement canceling. Need to be able to load/unload
 // filter widget state though. For example, one way to
@@ -62,7 +63,7 @@ FilterDialog::FilterDialog(QWidget *parent)
 
     custom_dialog = new FilterCustomDialog(this);
 
-    auto all_button = new QRadioButton(tr("Show all"));
+    all_button = new QRadioButton(tr("Show all"));
     classes_button = new QRadioButton(tr("Show only these types"));
     custom_button = new QRadioButton(tr("Create custom"));
 
@@ -114,6 +115,18 @@ FilterDialog::FilterDialog(QWidget *parent)
         classes_button, &QAbstractButton::toggled,
         this, &FilterDialog::on_classes_button);
     on_classes_button();
+}
+
+QString FilterDialog::get_filter() const {
+    if (all_button->isChecked()) {
+        return "(objectClass=*)";
+    } else if (classes_button->isChecked()) {
+        return filter_classes_widget->get_filter();
+    } else if (custom_button->isChecked()) {
+        return custom_dialog->filter_widget->get_filter();
+    }
+    
+    return QString();
 }
 
 void FilterDialog::on_custom_button() {

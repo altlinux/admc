@@ -38,16 +38,18 @@ class FilterDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    FilterWidget *filter_widget;
-    
     FilterDialog(QWidget *parent);
+
+    QString get_filter() const;
 
 private:
     FilterCustomDialog *custom_dialog;
+    QRadioButton *all_button;
     QRadioButton *custom_button;
     QRadioButton *classes_button;
     QPushButton *custom_dialog_button;
     FilterClassesWidget *filter_classes_widget;
+    FilterWidget *filter_widget;
 
     void on_custom_button();
     void on_classes_button();

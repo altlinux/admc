@@ -68,3 +68,25 @@ FilterClassesWidget::FilterClassesWidget()
     layout->setSpacing(0);
     layout->addWidget(scroll_area);
 }
+
+QString FilterClassesWidget::get_filter() const {
+    const QList<QString> class_filter_list =
+    [&] {
+        QList<QString> out;
+
+        for (const QString &object_class : checkbox_map.keys()) {
+            QCheckBox *checkbox = checkbox_map[object_class];
+
+            if (checkbox->isChecked()) {
+                const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
+                out.append(class_filter);
+            }
+        }
+
+        return out;
+    }();
+
+    const QString filter = filter_OR(class_filter_list);
+
+    return filter;
+}
