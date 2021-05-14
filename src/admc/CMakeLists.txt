@@ -50,6 +50,7 @@ set(ADMC_SOURCES
     settings.cpp
     policy_results_widget.cpp
     gplink.cpp
+    filter_classes_widget.cpp
     
     console_types/console_object.cpp
     console_types/console_policy.cpp
