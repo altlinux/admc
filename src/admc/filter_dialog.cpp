@@ -117,6 +117,10 @@ FilterDialog::FilterDialog(QWidget *parent)
     on_classes_button();
 }
 
+bool FilterDialog::filtering_ON() const {
+    return !all_button->isChecked();
+}
+
 QString FilterDialog::get_filter() const {
     if (all_button->isChecked()) {
         return "(objectClass=*)";

@@ -41,6 +41,7 @@ public:
     FilterDialog(QWidget *parent);
 
     QString get_filter() const;
+    bool filtering_ON() const;
 
 private:
     FilterCustomDialog *custom_dialog;
