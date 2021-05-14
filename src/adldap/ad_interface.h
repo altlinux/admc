@@ -36,10 +36,12 @@ class QByteArray;
 class QDateTime;
 class AdObject;
 class AdConfig;
+class SecurityACE;
 template <typename T> class QList;
 typedef void TALLOC_CTX;
 struct security_descriptor;
 struct security_ace;
+struct dom_sid;
 
 enum SearchScope {
     SearchScope_Object,
@@ -184,18 +186,26 @@ public:
     ~SecurityDescriptor();
 
     void load(const QByteArray &descriptor_bytes);
-    QList<QString> get_trustee_list();
+    QHash<QString, dom_sid> get_trustee_map();
+    QList<QString> get_trustee_order();
     QList<QString> get_ace_list(AdInterface &ad, const QString &trustee);
     QHash<uint32_t, bool> get_ace_map(AdInterface &ad, const QString &trustee);
     QList<uint32_t> get_mask_list(AdInterface &ad, const QString &trustee);
 
     TALLOC_CTX *tmp_ctx;
     struct security_descriptor *data;
+    QList<security_ace *> dacl;
+    QList<security_ace *> sacl;
 
     QHash<QString, QList<security_ace *>> ace_map;
+
+    void modify_sd(const QString &trustee, const bool allowed_checked, const bool denied_checked, const bool allowed_changed, const bool denied_changed, const uint32_t permission_mask);
 };
 
 extern const QList<uint32_t> sec_masks;
 QString access_mask_string(const uint32_t access_mask);
+
+void edit_sd(TALLOC_CTX *mem_ctx, struct security_descriptor *old_sd);
+QString ace_to_string(security_ace *ace);
 
 #endif /* AD_INTERFACE_H */

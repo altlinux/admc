@@ -33,6 +33,11 @@
 
 enum TrusteeItemRole {
     TrusteeItemRole_Sid = Qt::UserRole,
+    TrusteeItemRole_SidRaw = Qt::UserRole + 1,
+};
+
+enum AcePermissionItemRole {
+    AcePermissionItemRole_Permission = Qt::UserRole,
 };
 
 enum AceColumn {
@@ -121,10 +126,17 @@ const QHash<AcePermission, QString> ace_permission_to_name_map = {
     ENUM_TO_STRING(AcePermission_WriteWebInfo),
 };
 
+// TODO: values of SEC_ADS_GENERIC_READ and
+// SEC_ADS_GENERIC_WRITE constants don't match with the bits
+// that ADUC sets when you enable those permissions in
+// security tab. There are some extra bits in these
+// constants, took them out as a quick fix.
 const QHash<AcePermission, uint32_t> ace_permission_to_mask_map = {
     {AcePermission_FullControl, SEC_ADS_GENERIC_ALL},
-    {AcePermission_Read, SEC_ADS_GENERIC_READ},
-    {AcePermission_Write, SEC_ADS_GENERIC_WRITE},
+    // {AcePermission_Read, SEC_ADS_GENERIC_READ},
+    {AcePermission_Read, (SEC_STD_READ_CONTROL | SEC_ADS_LIST | SEC_ADS_READ_PROP)},
+    // {AcePermission_Write, SEC_ADS_GENERIC_WRITE},
+    {AcePermission_Write, (SEC_ADS_SELF_WRITE | SEC_ADS_WRITE_PROP)},
     {AcePermission_CreateChild, SEC_ADS_CREATE_CHILD},
     {AcePermission_DeleteChild, SEC_ADS_DELETE_CHILD},
     {AcePermission_AllowedToAuthenticate, SEC_ADS_CONTROL_ACCESS},
@@ -221,6 +233,9 @@ SecurityTab::SecurityTab() {
     connect(
         trustee_view->selectionModel(), &QItemSelectionModel::selectionChanged,
         this, &SecurityTab::on_selected_trustee_changed);
+    connect(
+        ace_model, &QStandardItemModel::itemChanged,
+        this, &SecurityTab::on_item_changed);
 }
 
 void SecurityTab::load(AdInterface &ad, const AdObject &object) {
@@ -229,15 +244,15 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     const QByteArray descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
     sd.load(descriptor_bytes);
 
-    const QList<QString> trustee_list = sd.get_trustee_list();
-    for (const QString &trustee : trustee_list) {
+    const QList<QString> trustee_order = sd.get_trustee_order();
+    for (const QString &trustee_string : trustee_order) {
         auto item = new QStandardItem();
         
-        const QString name = ad.get_trustee_name(trustee);
+        const QString name = ad.get_trustee_name(trustee_string);
         item->setText(name);
 
-        item->setData(trustee, TrusteeItemRole_Sid);
-        
+        item->setData(trustee_string, TrusteeItemRole_Sid);
+
         trustee_model->appendRow(item);
     }
 
@@ -338,6 +353,7 @@ void SecurityTab::on_selected_trustee_changed() {
 
         if (ace_ok) {
             if (ace->type == SEC_ACE_TYPE_ACCESS_ALLOWED || ace->type == SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT) {
+                
                 return PermissionState_Allowed;
             } else if (ace->type == SEC_ACE_TYPE_ACCESS_DENIED || ace->type == SEC_ACE_TYPE_ACCESS_DENIED_OBJECT) {
                 return PermissionState_Denied;
@@ -374,6 +390,64 @@ void SecurityTab::on_selected_trustee_changed() {
             }
         }
 
+        row[0]->setData(permission, AcePermissionItemRole_Permission);
+
         ace_model->appendRow(row);
     }
+}
+
+void SecurityTab::on_item_changed(QStandardItem *item) {
+    const AceColumn changed_column = (AceColumn) item->column();
+
+    const bool incorrect_column = (changed_column != AceColumn_Allowed && changed_column != AceColumn_Denied);
+    if (incorrect_column) {
+        return;
+    }
+
+    const QString trustee =
+    [&]() {
+        const QList<QModelIndex> selected_list = trustee_view->selectionModel()->selectedRows();
+        if (selected_list.isEmpty()) {
+            return QString();
+        }
+
+        const QModelIndex selected_index = selected_list[0];
+        QStandardItem *selected_item = trustee_model->itemFromIndex(selected_index);
+        const QString out = selected_item->data(TrusteeItemRole_Sid).toString();
+
+        return out;
+    }();
+
+    auto get_checked =
+    [&](const AceColumn column) {
+        const QModelIndex index = item->index();
+        const QModelIndex column_index = index.siblingAtColumn(column);
+        QStandardItem *column_item = ace_model->itemFromIndex(column_index);
+
+        const Qt::CheckState check_state = column_item->checkState();
+        const bool checked = (check_state == Qt::Checked);
+
+        return checked;
+    };
+
+    const uint32_t permission_mask =
+    [&]() {
+        const QModelIndex index = item->index();
+        const QModelIndex main_index = index.siblingAtColumn(0);
+        const AcePermission permission = (AcePermission) main_index.data(AcePermissionItemRole_Permission).toInt();
+        const uint32_t mask = ace_permission_to_mask_map[permission];
+
+        return mask;
+    }();
+
+    const bool allowed_checked = get_checked(AceColumn_Allowed);
+    const bool denied_checked = get_checked(AceColumn_Denied);
+    const bool allowed_changed = (changed_column == AceColumn_Allowed);
+    const bool denied_changed = (changed_column == AceColumn_Denied);
+    qDebug() << "allowed_checked = " << allowed_checked;
+    qDebug() << "denied_checked = " << denied_checked;
+
+    sd.modify_sd(trustee, allowed_checked, denied_checked, allowed_changed, denied_changed, permission_mask);
+    
+    emit edited();
 }

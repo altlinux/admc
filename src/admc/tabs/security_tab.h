@@ -26,6 +26,7 @@
 
 class QTreeView;
 class QStandardItemModel;
+class QStandardItem;
 class QLabel;
 
 class SecurityTab final : public PropertiesTab {
@@ -37,6 +38,7 @@ public:
 
 private slots:
     void on_selected_trustee_changed();
+    void on_item_changed(QStandardItem *item);
 
 private:
     QTreeView *trustee_view;
