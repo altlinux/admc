@@ -17,36 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FILTER_DIALOG_H
-#define FILTER_DIALOG_H
+#ifndef FILTER_CUSTOM_DIALOG_H
+#define FILTER_CUSTOM_DIALOG_H
 
 /**
- * Contains FilterWidget. When a filter is entered and
- * dialog is accepted, emits filter_changed() signal. Used
- * for filtering ObjectModel.
+ * Dialog that's opened when "Custom" button is pressed in
+ * filter dialog.
  */
 
 #include <QDialog>
 
 class FilterWidget;
-class FilterCustomDialog;
-class QRadioButton;
-class QPushButton;
 
-class FilterDialog final : public QDialog {
+class FilterCustomDialog final : public QDialog {
 Q_OBJECT
 
 public:
     FilterWidget *filter_widget;
     
-    FilterDialog(QWidget *parent);
+    FilterCustomDialog(QWidget *parent);
 
-private:
-    FilterCustomDialog *custom_dialog;
-    QRadioButton *custom_button;
-    QPushButton *custom_dialog_button;
-
-    void on_custom_button();
 };
 
-#endif /* FILTER_DIALOG_H */
+#endif /* FILTER_CUSTOM_DIALOG_H */

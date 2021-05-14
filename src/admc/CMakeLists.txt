@@ -39,6 +39,7 @@ set(ADMC_SOURCES
     password_dialog.cpp
     find_results.cpp
     filter_dialog.cpp
+    filter_custom_dialog.cpp
     find_widget.cpp
     tab_widget.cpp
     central_widget.cpp
