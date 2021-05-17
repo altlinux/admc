@@ -21,41 +21,31 @@
 #define SELECT_CLASSES_WIDGET_H
 
 /**
- * Select classes for filtering.
+ * Widget embedded in find widget for selecting classes to
+ * filter for. Displays currently selected classes in line
+ * edit, with a button next to it which opens a dialog in
+ * which classes can be selected.
  */
 
 #include <QWidget>
-#include <QHash>
 
 class QLineEdit;
-class QDialog;
-class QCheckBox;
-class QPushButton;
-class QString;
+class FilterClassesWidget;
 
 class SelectClassesWidget final : public QWidget {
 Q_OBJECT
     
 public:
-    SelectClassesWidget(const QList<QString> classes);
+    SelectClassesWidget(const QList<QString> class_list);
 
-    // Return a filter that accepts only selected classes
     QString get_filter() const;
 
 private slots:
     void on_dialog_accepted();
-    void select_all();
-    void clear_selection();
-    void on_check_changed();
 
 private:
     QLineEdit *classes_display;
-    QDialog *dialog;
-    QHash<QString, QCheckBox *> dialog_checks;
-    QPushButton *ok_button;
-    QList<QString> class_list;
-
-    QList<QString> get_selected_classes() const;
+    FilterClassesWidget *filter_classes_widget;
 };
 
 #endif /* SELECT_CLASSES_WIDGET_H */

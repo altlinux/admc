@@ -60,7 +60,7 @@ FilterDialog::FilterDialog(QWidget *parent)
 
     custom_dialog_button = new QPushButton(tr("Custom"));
 
-    filter_classes_widget = new FilterClassesWidget();
+    filter_classes_widget = new FilterClassesWidget(noncontainer_classes);
 
     auto buttonbox = new QDialogButtonBox();
     buttonbox->addButton(QDialogButtonBox::Ok);

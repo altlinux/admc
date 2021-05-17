@@ -26,14 +26,13 @@
 #include <QScrollArea>
 #include <QCheckBox>
 
-FilterClassesWidget::FilterClassesWidget()
+FilterClassesWidget::FilterClassesWidget(const QList<QString> &class_list)
 : QWidget()
 {   
-    const QList<QString> noncontainer_classes = g_adconfig->get_noncontainer_classes();   
-
-    for (const QString &object_class : noncontainer_classes) {
+    for (const QString &object_class : class_list) {
         const QString class_string = g_adconfig->get_class_display_name(object_class);
         auto checkbox = new QCheckBox(class_string);
+        checkbox->setChecked(true);
 
         checkbox_map[object_class] = checkbox;
     }
@@ -43,7 +42,7 @@ FilterClassesWidget::FilterClassesWidget()
     auto classes_layout = new QVBoxLayout();
     classes_widget->setLayout(classes_layout);
 
-    for (const QString &object_class : noncontainer_classes) {
+    for (const QString &object_class : class_list) {
         QCheckBox *checkbox = checkbox_map[object_class];
         classes_layout->addWidget(checkbox);
     }
@@ -78,4 +77,18 @@ QString FilterClassesWidget::get_filter() const {
     const QString filter = filter_OR(class_filter_list);
 
     return filter;
+}
+
+QList<QString> FilterClassesWidget::get_selected_classes() const {
+    QList<QString> out;
+
+    for (const QString &object_class : checkbox_map.keys()) {
+        const QCheckBox *check = checkbox_map[object_class];
+
+        if (check->isChecked()) {
+            out.append(object_class);
+        }
+    }
+
+    return out;
 }

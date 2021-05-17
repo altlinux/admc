@@ -36,9 +36,10 @@ class FilterClassesWidget final : public QWidget {
 Q_OBJECT
     
 public:
-    FilterClassesWidget();
+    FilterClassesWidget(const QList<QString> &class_list);
 
     QString get_filter() const;
+    QList<QString> get_selected_classes() const;
 
 private:
     QHash<QString, QCheckBox *> checkbox_map;
