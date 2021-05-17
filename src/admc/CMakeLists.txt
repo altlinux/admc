@@ -39,6 +39,7 @@ set(ADMC_SOURCES
     password_dialog.cpp
     find_results.cpp
     filter_dialog.cpp
+    filter_custom_dialog.cpp
     find_widget.cpp
     tab_widget.cpp
     central_widget.cpp
@@ -49,6 +50,7 @@ set(ADMC_SOURCES
     settings.cpp
     policy_results_widget.cpp
     gplink.cpp
+    filter_classes_widget.cpp
     
     console_types/console_object.cpp
     console_types/console_policy.cpp

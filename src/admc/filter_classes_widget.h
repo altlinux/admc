@@ -17,43 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FILTER_DIALOG_H
-#define FILTER_DIALOG_H
+#ifndef FILTER_CLASSES_WIDGET_H
+#define FILTER_CLASSES_WIDGET_H
 
 /**
- * Dialog used to enter a filter that is applied to objects
- * in the console. Allows showing all objects, objects of
- * certain type or entering a custom filter.
+ * This widget is embedded in FilterDialog. Contains
+ * checkboxes of object classes. get_filter() returns a
+ * filter which will filter out unselected classes.
  */
 
-#include <QDialog>
+#include <QWidget>
+#include <QHash>
+#include <QString>
 
-class FilterWidget;
-class FilterCustomDialog;
-class QRadioButton;
-class QPushButton;
-class FilterClassesWidget;
+class QCheckBox;
 
-class FilterDialog final : public QDialog {
+class FilterClassesWidget final : public QWidget {
 Q_OBJECT
-
+    
 public:
-    FilterDialog(QWidget *parent);
+    FilterClassesWidget(const QList<QString> &class_list);
 
     QString get_filter() const;
-    bool filtering_ON() const;
+    QList<QString> get_selected_classes() const;
 
 private:
-    FilterCustomDialog *custom_dialog;
-    QRadioButton *all_button;
-    QRadioButton *custom_button;
-    QRadioButton *classes_button;
-    QPushButton *custom_dialog_button;
-    FilterClassesWidget *filter_classes_widget;
-    FilterWidget *filter_widget;
-
-    void on_custom_button();
-    void on_classes_button();
+    QHash<QString, QCheckBox *> checkbox_map;
 };
 
-#endif /* FILTER_DIALOG_H */
+#endif /* FILTER_CLASSES_WIDGET_H */
