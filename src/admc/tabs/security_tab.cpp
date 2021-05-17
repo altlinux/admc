@@ -230,9 +230,11 @@ SecurityTab::SecurityTab() {
     layout->addWidget(selected_trustee_label);
     layout->addWidget(ace_view);
 
+    // TODO: maybe use current, not selected? i think selection
+    // may be empty if you press escape or something
     connect(
         trustee_view->selectionModel(), &QItemSelectionModel::selectionChanged,
-        this, &SecurityTab::on_selected_trustee_changed);
+        this, &SecurityTab::load_trustee_acl);
     connect(
         ace_model, &QStandardItemModel::itemChanged,
         this, &SecurityTab::on_item_changed);
@@ -259,14 +261,14 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     trustee_model->sort(0, Qt::AscendingOrder);
 
     // Select first index
+    // NOTE: load_trustee_acl() is called because setCurrentIndex
+    // emits "current change" signal
     trustee_view->selectionModel()->setCurrentIndex(trustee_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 
     PropertiesTab::load(ad, object);
 }
 
-// TODO: maybe use current, not selected? i think selection
-// may be empty if you press escape or something
-void SecurityTab::on_selected_trustee_changed() {
+void SecurityTab::load_trustee_acl() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -476,7 +478,7 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
 
     sd.modify_sd(trustee, allowed_checked, denied_checked, allowed_changed, denied_changed, permission_mask);
 
-    on_selected_trustee_changed();
+    load_trustee_acl();
     
     emit edited();
 }

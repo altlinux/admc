@@ -37,7 +37,7 @@ public:
     void load(AdInterface &ad, const AdObject &object) override;
 
 private slots:
-    void on_selected_trustee_changed();
+    void load_trustee_acl();
     void on_item_changed(QStandardItem *item);
 
 private:
