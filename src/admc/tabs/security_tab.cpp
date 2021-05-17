@@ -294,75 +294,103 @@ void SecurityTab::on_selected_trustee_changed() {
 
     ace_model->removeRows(0, ace_model->rowCount());
 
-    const QList<security_ace *> ace_list = sd.get_ace_list(trustee);
+    const QHash<AcePermission, PermissionState> permission_state_map =
+    [&]() {
+        QHash<AcePermission, PermissionState> out;
 
-    auto get_permission_state =
-    [&](security_ace *ace, const AcePermission permission) {
-        const bool permission_has_type = ace_permission_to_type_map.contains(permission);
+        const QList<security_ace *> ace_list = sd.get_ace_list(trustee);
 
-        if (permission_has_type) {
-            // Check that ace type equals to permission
-            // type, if it exists
-            const bool type_matches =
-            [&]() {
-                const QString rights_guid =
+        for (security_ace *ace : ace_list) {
+            const uint32_t ace_mask = ace->access_mask;
+
+            for (int permission_i = 0; permission_i < AcePermission_COUNT; permission_i++) {
+                const AcePermission permission = (AcePermission) permission_i;
+
+                if (!ace_permission_to_mask_map.contains(permission)) {
+                    continue;
+                }
+
+                const uint32_t permission_mask = ace_permission_to_mask_map[permission];
+
+                const bool mask_match = ((ace_mask & permission_mask) != 0);
+                if (!mask_match) {
+                    continue;
+                }
+
+                const bool object_match =
                 [&]() {
-                    const QString filter =
-                    [&]() {
-                        const QString permission_right_cn = ace_permission_to_type_map[permission];
-                        const QString cn_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_CN, permission_right_cn);
-
-                        return cn_filter;
-                    }();
-
-                    const QList<QString> attributes = {
-                        ATTRIBUTE_RIGHTS_GUID,
-                    };
-
-                    const QString search_base = g_adconfig->extended_rights_dn();
-
-                    const QHash<QString, AdObject> search_results = ad.search(filter, attributes, SearchScope_Children, search_base);
-
-                    if (search_results.isEmpty()) {
-                        return QString();
+                    const bool object_present = ((ace->object.object.flags & SEC_ACE_OBJECT_TYPE_PRESENT) != 0);
+                    if (!object_present) {
+                        return false;
                     }
 
-                    const AdObject object = search_results.values()[0];
+                    const QString rights_guid =
+                    [&]() {
+                        const QString filter =
+                        [&]() {
+                            const QString permission_right_cn = ace_permission_to_type_map[permission];
+                            const QString cn_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_CN, permission_right_cn);
 
-                    return object.get_string(ATTRIBUTE_RIGHTS_GUID);
+                            return cn_filter;
+                        }();
+
+                        const QList<QString> attributes = {
+                            ATTRIBUTE_RIGHTS_GUID,
+                        };
+
+                        const QString search_base = g_adconfig->extended_rights_dn();
+
+                        const QHash<QString, AdObject> search_results = ad.search(filter, attributes, SearchScope_Children, search_base);
+
+                        if (search_results.isEmpty()) {
+                            return QString();
+                        }
+
+                        const AdObject object = search_results.values()[0];
+
+                        return object.get_string(ATTRIBUTE_RIGHTS_GUID);
+                    }();
+
+                    const QString ace_type_guid =
+                    [&]() {
+                        const GUID type = ace->object.object.type.type;
+                        const QByteArray type_bytes = QByteArray((char *) &type, sizeof(GUID));
+
+                        return attribute_display_value(ATTRIBUTE_OBJECT_GUID, type_bytes, g_adconfig);
+                    }();
+
+                    return (rights_guid.toLower() == ace_type_guid.toLower());
                 }();
 
-                const QString ace_type_guid =
-                [&]() {
-                    const GUID type = ace->object.object.type.type;
-                    const QByteArray type_bytes = QByteArray((char *) &type, sizeof(GUID));
-
-                    return attribute_display_value(ATTRIBUTE_OBJECT_GUID, type_bytes, g_adconfig);
-                }();
-
-                return (rights_guid.toLower() == ace_type_guid.toLower());
-            }();
-
-            if (!type_matches) {
-                return PermissionState_None;
+                switch (ace->type) {
+                    case SEC_ACE_TYPE_ACCESS_ALLOWED: {
+                        out[permission] = PermissionState_Allowed;
+                        break;
+                    }
+                    case SEC_ACE_TYPE_ACCESS_DENIED: {
+                        out[permission] = PermissionState_Denied;
+                        break;
+                    }
+                    case SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT: {
+                        if (object_match) {
+                            out[permission] = PermissionState_Allowed;
+                        }
+                        break;
+                    }
+                    case SEC_ACE_TYPE_ACCESS_DENIED_OBJECT: {
+                        if (object_match) {
+                            out[permission] = PermissionState_Denied;
+                        }
+                        break;
+                    }
+                    default: break;
+                }
             }
         }
 
-        const uint32_t permission_mask = ace_permission_to_mask_map[permission];
-        const bool ace_ok = ((ace->access_mask & permission_mask) == permission_mask);
-
-        if (ace_ok) {
-            if (ace->type == SEC_ACE_TYPE_ACCESS_ALLOWED || ace->type == SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT) {
-                
-                return PermissionState_Allowed;
-            } else if (ace->type == SEC_ACE_TYPE_ACCESS_DENIED || ace->type == SEC_ACE_TYPE_ACCESS_DENIED_OBJECT) {
-                return PermissionState_Denied;
-            }
-        }
-
-        return PermissionState_None;
-    };
-
+        return out;
+    }();
+    
     for (int permission_i = 0; permission_i < AcePermission_COUNT; permission_i++) {
         const AcePermission permission = (AcePermission) permission_i;
 
@@ -374,19 +402,16 @@ void SecurityTab::on_selected_trustee_changed() {
         row[AceColumn_Allowed]->setCheckable(true);
         row[AceColumn_Denied]->setCheckable(true);
 
-        for (security_ace *ace : ace_list) {
-            const PermissionState permission_state = get_permission_state(ace, permission);
-
-            switch (permission_state) {
-                case PermissionState_None: break;
-                case PermissionState_Allowed: {
-                    row[AceColumn_Allowed]->setCheckState(Qt::Checked);
-                    break;
-                }
-                case PermissionState_Denied: {
-                    row[AceColumn_Denied]->setCheckState(Qt::Checked);
-                    break;
-                }
+        const PermissionState permission_state = permission_state_map[permission];
+        switch (permission_state) {
+            case PermissionState_None: break;
+            case PermissionState_Allowed: {
+                row[AceColumn_Allowed]->setCheckState(Qt::Checked);
+                break;
+            }
+            case PermissionState_Denied: {
+                row[AceColumn_Denied]->setCheckState(Qt::Checked);
+                break;
             }
         }
 
