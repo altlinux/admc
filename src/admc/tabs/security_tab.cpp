@@ -328,29 +328,10 @@ void SecurityTab::load_trustee_acl() {
 
                     const QString rights_guid =
                     [&]() {
-                        const QString filter =
-                        [&]() {
-                            const QString permission_right_cn = ace_permission_to_type_map[permission];
-                            const QString cn_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_CN, permission_right_cn);
+                        const QString right_cn = ace_permission_to_type_map[permission];
+                        const QString guid_out =  g_adconfig->get_right_guid(right_cn);
 
-                            return cn_filter;
-                        }();
-
-                        const QList<QString> attributes = {
-                            ATTRIBUTE_RIGHTS_GUID,
-                        };
-
-                        const QString search_base = g_adconfig->extended_rights_dn();
-
-                        const QHash<QString, AdObject> search_results = ad.search(filter, attributes, SearchScope_Children, search_base);
-
-                        if (search_results.isEmpty()) {
-                            return QString();
-                        }
-
-                        const AdObject object = search_results.values()[0];
-
-                        return object.get_string(ATTRIBUTE_RIGHTS_GUID);
+                        return guid_out;
                     }();
 
                     const QString ace_type_guid =

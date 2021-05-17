@@ -52,6 +52,8 @@ public:
     QHash<ObjectClass, AdObject> class_schemas;
 
     QList<ObjectClass> add_auxiliary_classes(const QList<QString> &object_classes) const;
+
+    QHash<QString, QString> right_to_guid_map;
 };
 
 #endif /* AD_CONFIG_P_H */

@@ -81,6 +81,8 @@ public:
 
     void limit_edit(QLineEdit *edit, const QString &attribute);
 
+    QString get_right_guid(const QString &right_cn) const;
+
 private:
     AdConfigPrivate *d;
 };
