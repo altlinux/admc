@@ -58,6 +58,6 @@ QString console_query_folder_path(const QModelIndex &index);
 QModelIndex console_query_get_root_index(ConsoleWidget *console);
 void console_query_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
 void console_query_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
-void console_query_move(ConsoleWidget *console, const QModelIndex &old_index, const QModelIndex &new_parent_index);
+void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index);
 
 #endif /* CONSOLE_QUERY_H */

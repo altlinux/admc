@@ -192,13 +192,7 @@ void MoveQueryDialog::accept() {
     }
 
     const QList<QPersistentModelIndex> selected_indexes = persistent_index_list(console->get_selected_items());
-    for (const QPersistentModelIndex &old_index : selected_indexes) {
-        console_query_move(console, old_index, new_parent_index);
-    }
-
-    console->sort_scope();
-
-    console_query_tree_save(console);
+    console_query_move(console, selected_indexes, new_parent_index);
 
     QDialog::accept();
 }
