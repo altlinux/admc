@@ -26,7 +26,6 @@
 #include "status.h"
 #include "central_widget.h"
 #include "filter_dialog.h"
-#include "filter_widget/filter_widget.h"
 #include "console_actions.h"
 #include "select_object_dialog.h"
 #include "console_types/console_policy.h"
@@ -339,7 +338,7 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
     //
     const QString filter =
     [=]() {
-        const QString user_filter = filter_dialog->filter_widget->get_filter();
+        const QString user_filter = filter_dialog->get_filter();
 
         const QString is_container = is_container_filter();
 

@@ -524,6 +524,18 @@ bool AdConfig::get_attribute_is_constructed(const QString &attribute) const {
     return bit_is_set(system_flags, FLAG_ATTR_IS_CONSTRUCTED);   
 }
 
+// (noncontainer classes) = (all classes) - (container classes)
+QList<QString> AdConfig::get_noncontainer_classes() {
+    QList<QString> out = filter_classes;
+
+    const QList<QString> container_classes = get_filter_containers();
+    for (const QString &container_class : container_classes) {
+        out.removeAll(container_class);
+    }
+
+    return out;
+}
+
 QList<QString> AdConfigPrivate::add_auxiliary_classes(const QList<QString> &object_classes) const {
     QList<QString> out;
 

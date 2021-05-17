@@ -695,7 +695,12 @@ void CentralWidget::update_description_bar() {
 
         if (type == ItemType_Object) {
             const int results_count = console->get_current_results_count();
-            const QString out = tr("%n object(s)", "", results_count);
+            QString out = tr("%n object(s)", "", results_count);
+
+            const bool filtering_ON = filter_dialog->filtering_ON();
+            if (filtering_ON) {
+                out += tr(" [Filtering results]");
+            }
 
             return out;
         } else {
