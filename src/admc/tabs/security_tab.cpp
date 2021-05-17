@@ -314,7 +314,7 @@ void SecurityTab::load_trustee_acl() {
 
                 const uint32_t permission_mask = ace_permission_to_mask_map[permission];
 
-                const bool mask_match = ((ace_mask & permission_mask) != 0);
+                const bool mask_match = ((ace_mask & permission_mask) == permission_mask);
                 if (!mask_match) {
                     continue;
                 }
