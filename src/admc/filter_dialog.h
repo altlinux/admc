@@ -21,9 +21,9 @@
 #define FILTER_DIALOG_H
 
 /**
- * Contains FilterWidget. When a filter is entered and
- * dialog is accepted, emits filter_changed() signal. Used
- * for filtering ObjectModel.
+ * Dialog used to enter a filter that is applied to objects
+ * in the console. Allows showing all objects, objects of
+ * certain type or entering a custom filter.
  */
 
 #include <QDialog>

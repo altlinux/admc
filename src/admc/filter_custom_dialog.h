@@ -22,7 +22,8 @@
 
 /**
  * Dialog that's opened when "Custom" button is pressed in
- * filter dialog.
+ * filter dialog. Contains a filter widget which is used to
+ * create a filter.
  */
 
 #include <QDialog>

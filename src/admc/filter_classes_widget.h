@@ -21,6 +21,9 @@
 #define FILTER_CLASSES_WIDGET_H
 
 /**
+ * This widget is embedded in FilterDialog. Contains
+ * checkboxes of object classes. get_filter() returns a
+ * filter which will filter out unselected classes.
  */
 
 #include <QWidget>
