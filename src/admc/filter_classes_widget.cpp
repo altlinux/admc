@@ -29,18 +29,7 @@
 FilterClassesWidget::FilterClassesWidget()
 : QWidget()
 {   
-    // = all classes - container classes
-    const QList<QString> noncontainer_classes =
-    []() {
-        QList<QString> out = filter_classes;
-
-        const QList<QString> container_classes = g_adconfig->get_filter_containers();
-        for (const QString &container_class : container_classes) {
-            out.removeAll(container_class);
-        }
-
-        return out;
-    }();
+    const QList<QString> noncontainer_classes = g_adconfig->get_noncontainer_classes();   
 
     for (const QString &object_class : noncontainer_classes) {
         const QString class_string = g_adconfig->get_class_display_name(object_class);

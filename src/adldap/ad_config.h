@@ -80,6 +80,8 @@ public:
 
     void limit_edit(QLineEdit *edit, const QString &attribute);
 
+    QList<QString> get_noncontainer_classes();
+
 private:
     AdConfigPrivate *d;
 };
