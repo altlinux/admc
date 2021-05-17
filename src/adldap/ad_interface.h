@@ -198,7 +198,8 @@ public:
 
     void modify_sd(const QString &trustee, const bool allowed_checked, const bool denied_checked, const bool allowed_changed, const bool denied_changed, const uint32_t permission_mask);
 
-    QList<security_ace *> get_ace_list(const QString &trustee);
+    QList<security_ace *> get_ace_list(const QString &trustee) const;
+    void print_acl(const QString &trustee) const;
 };
 
 extern const QList<uint32_t> sec_masks;

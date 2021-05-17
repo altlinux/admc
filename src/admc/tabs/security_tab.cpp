@@ -419,6 +419,8 @@ void SecurityTab::on_selected_trustee_changed() {
 
         ace_model->appendRow(row);
     }
+
+    sd.print_acl(trustee);
 }
 
 void SecurityTab::on_item_changed(QStandardItem *item) {

@@ -1729,21 +1729,9 @@ QString ace_to_string(security_ace *ace) {
 
 void SecurityDescriptor::modify_sd(const QString &trustee, const bool allowed_checked, const bool denied_checked, const bool allowed_changed, const bool denied_changed, const uint32_t permission_mask) {
 
-    auto print_acl =
-    [&]() {
-        const QList<security_ace *> ace_list = get_ace_list(trustee);
-        
-        for (security_ace *ace : ace_list) {
-            const QString ace_string = ace_to_string(ace);
-            qDebug() << ace_string;
-        }
-    };
-
     qDebug() << "modify_sd()";
-    qDebug() << "-------------------------";
     qDebug() << "\t\tbefore";
-    qDebug() << "-------------------------";
-    print_acl();
+    print_acl(trustee);
 
     const dom_sid trustee_sid =
     [&]() {
@@ -1843,11 +1831,8 @@ void SecurityDescriptor::modify_sd(const QString &trustee, const bool allowed_ch
         free(ace);
     }
 
-    qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
     qDebug() << "\t\tafter";
-    qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
-
-    print_acl();
+    print_acl(trustee);
 
     // TODO: think need to reorder dacl because we sometimes
     // create new ace's and just append to end of list. See
@@ -1856,7 +1841,7 @@ void SecurityDescriptor::modify_sd(const QString &trustee, const bool allowed_ch
     talloc_free(mem_ctx);
 }
 
-QList<security_ace *> SecurityDescriptor::get_ace_list(const QString &trustee) {
+QList<security_ace *> SecurityDescriptor::get_ace_list(const QString &trustee) const {
     QList<security_ace *> out;
 
     TALLOC_CTX *mem_ctx = talloc_new(NULL);
@@ -1872,4 +1857,17 @@ QList<security_ace *> SecurityDescriptor::get_ace_list(const QString &trustee) {
     talloc_free(mem_ctx);
 
     return out;
+}
+
+void SecurityDescriptor::print_acl(const QString &trustee) const {
+    const QList<security_ace *> ace_list = get_ace_list(trustee);
+
+    qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
+    qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
+    for (security_ace *ace : ace_list) {
+        const QString ace_string = ace_to_string(ace);
+        qDebug().noquote() << ace_string;
+    }
+    qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
+    qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
 }
