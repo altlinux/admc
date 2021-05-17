@@ -6,8 +6,6 @@
 
 #define LDAP_PREFIX "LDAP://"
 
-// TODO: confirm that input gplink is valid. Do sanity checks?
-
 Gplink::Gplink() {
 
 }

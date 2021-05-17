@@ -118,7 +118,6 @@ QString SelectContainerDialog::get_selected() const {
 void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
     const QModelIndex index = proxy_model->mapToSource(proxy_index);
 
-    // TODO: handle error
     AdInterface ad;
     if (ad_failed(ad)) {
         return;

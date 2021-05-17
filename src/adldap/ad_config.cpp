@@ -409,8 +409,6 @@ QList<QString> AdConfig::get_find_attributes(const QString &object_class) const 
 AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
     // NOTE: replica of: https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/7cda533e-d7a4-4aec-a517-91d02ff4a1aa
     // syntax -> om syntax list -> type
-    // TODO: is there a lib for this?
-    // TODO: there are Object(x) types, not sure if need those
     static QHash<QString, QHash<QString, AttributeType>> type_map = {
         {"2.5.5.8", {{"1", AttributeType_Boolean}}},
         {
@@ -463,8 +461,6 @@ AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
 
 LargeIntegerSubtype AdConfig::get_attribute_large_integer_subtype(const QString &attribute) const {
     // Manually remap large integer types to subtypes
-    // TODO: figure out where to get this data
-    // externally. So far haven't found anything.
     static const QList<QString> datetimes = {
         ATTRIBUTE_ACCOUNT_EXPIRES,
         ATTRIBUTE_LAST_LOGON,

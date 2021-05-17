@@ -687,8 +687,6 @@ void CentralWidget::refresh_head() {
     hide_busy_indicator();
 }
 
-// TODO: currently calling this when current scope changes,
-// but also need to call this when items are added/deleted
 void CentralWidget::update_description_bar() {
     const QString text =
     [this]() {

@@ -127,7 +127,6 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
                 }
             }();
 
-            // TODO: replace with full name
             name_edit->setText(full_name_value);
         };
         QObject::connect(

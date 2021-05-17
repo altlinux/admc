@@ -155,12 +155,6 @@ bool ad_connected_base(const AdInterface &ad) {
         const QString title = QObject::tr("Connection error");
         const QString text = QObject::tr("Failed to connect to server.");
 
-        // TODO: would want a valid parent widget for
-        // message box but this f-n can be called from
-        // places where there isn't one available,
-        // console_drag_model for example. Good news is that
-        // the messagebox appears to be modal even without a
-        // parent.
         QMessageBox::critical(nullptr, title, text);
     }
 
@@ -195,7 +189,6 @@ void limit_edit(QLineEdit *edit, const QString &attribute) {
 }
 
 QIcon get_object_icon(const AdObject &object) {
-    // TODO: change to custom, good icons, add those icons to installation?
     static const QMap<QString, QString> class_to_icon = {
         {CLASS_DOMAIN, "network-server"},
         {CLASS_CONTAINER, "folder"},

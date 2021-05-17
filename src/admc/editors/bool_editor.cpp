@@ -68,7 +68,6 @@ BoolEditor::BoolEditor(const QString attribute, const QList<QByteArray> values, 
     }
 }
 
-// TODO: this might be useful somewhere else. "this" = "converting unset/true/false into bytes"
 QList<QByteArray> BoolEditor::get_new_values() const {
     if (unset_button->isChecked()) {
         return QList<QByteArray>();
