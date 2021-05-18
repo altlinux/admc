@@ -69,6 +69,7 @@ set(ADMC_SOURCES
     create_policy_dialog.cpp
     create_query_dialog.cpp
     create_query_folder_dialog.cpp
+    edit_query_dialog.cpp
     edit_query_folder_dialog.cpp
     move_query_dialog.cpp
     object_multi_properties_dialog.cpp

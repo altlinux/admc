@@ -34,6 +34,7 @@
 #include "create_object_dialog.h"
 #include "create_policy_dialog.h"
 #include "create_query_dialog.h"
+#include "edit_query_dialog.h"
 #include "move_query_dialog.h"
 #include "create_query_folder_dialog.h"
 #include "move_object_dialog.h"
@@ -189,6 +190,9 @@ CentralWidget::CentralWidget()
     connect(
         console_actions->get(ConsoleAction_QueryEditFolder), &QAction::triggered,
         edit_query_folder_dialog, &QDialog::open);
+    connect(
+        console_actions->get(ConsoleAction_QueryEditItem), &QAction::triggered,
+        this, &CentralWidget::query_edit);
     connect(
         console_actions->get(ConsoleAction_QueryMoveItemOrFolder), &QAction::triggered,
         move_query_dialog, &QDialog::open);
@@ -540,6 +544,11 @@ void CentralWidget::policy_delete() {
 
 void CentralWidget::query_create() {
     auto dialog = new CreateQueryDialog(console);
+    dialog->open();
+}
+
+void CentralWidget::query_edit() {
+    auto dialog = new EditQueryDialog(console);
     dialog->open();
 }
 

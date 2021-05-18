@@ -58,6 +58,7 @@ ConsoleActions::ConsoleActions(QObject *parent)
                 case ConsoleAction_QueryCreateFolder: return tr("&Folder");
                 case ConsoleAction_QueryCreateItem: return tr("&Query");
                 case ConsoleAction_QueryEditFolder: return tr("&Edit");
+                case ConsoleAction_QueryEditItem: return tr("&Edit");
                 case ConsoleAction_QueryDeleteItemOrFolder: return tr("&Delete");
                 case ConsoleAction_QueryMoveItemOrFolder: return tr("&Move");
 

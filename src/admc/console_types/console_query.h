@@ -35,7 +35,8 @@ template <typename T> class QList;
 enum QueryItemRole {
     QueryItemRole_Description = ConsoleRole_LAST + 1,
     QueryItemRole_Filter = ConsoleRole_LAST + 2,
-    QueryItemRole_SearchBase = ConsoleRole_LAST + 3,
+    QueryItemRole_FilterState = ConsoleRole_LAST + 3,
+    QueryItemRole_SearchBase = ConsoleRole_LAST + 4,
 
     QueryItemRole_LAST = ConsoleRole_LAST + 7,
 };
@@ -47,7 +48,8 @@ QList<int> console_query_folder_default_columns();
 void console_query_folder_load(QStandardItem *scope_item, const QList<QStandardItem *> &results_row, const QString &name, const QString &description);
 // Returns index of the scope item
 QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent);
-void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QString &search_base, const QModelIndex &parent);
+void console_query_item_load(QStandardItem *scope_item, const QList<QStandardItem *> results_row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &search_base);
+void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &search_base, const QModelIndex &parent);
 void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index);
 void console_query_tree_init(ConsoleWidget *console);
 void console_query_tree_save(ConsoleWidget *console);

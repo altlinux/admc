@@ -42,7 +42,7 @@ FilterWidget::FilterWidget(const QList<QString> classes)
             });
     };
 
-    auto simple_tab = new FilterWidgetSimpleTab(classes);
+    simple_tab = new FilterWidgetSimpleTab(classes);
     add_tab(simple_tab, tr("Simple"));
     add_tab(new FilterWidgetNormalTab(classes), tr("Normal"));
     add_tab(new FilterWidgetAdvancedTab(), tr("Advanced"));
@@ -61,4 +61,24 @@ QString FilterWidget::get_filter() const {
         qDebug() << "Inserted a non FilterWidgetTab into FilterWidget";
         return QString();
     }
+}
+
+void FilterWidget::serialize(QDataStream &stream) const {
+    stream << simple_tab;
+}
+
+void FilterWidget::deserialize(QDataStream &stream) {
+    stream >> simple_tab;
+}
+
+QDataStream &operator<<(QDataStream &stream, const FilterWidget *widget) {
+    widget->serialize(stream);
+
+    return stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, FilterWidget *widget) {
+    widget->deserialize(stream);
+    
+    return stream;
 }
