@@ -59,3 +59,30 @@ QString FilterWidgetSimpleTab::get_filter() const {
 
     return filter_AND({name_filter, classes_filter});
 }
+
+void FilterWidgetSimpleTab::serialize(QDataStream &stream) const {
+    stream << select_classes;
+    
+    const QString name = name_edit->text();
+    stream << name;
+}
+
+void FilterWidgetSimpleTab::deserialize(QDataStream &stream) {
+    stream >> select_classes;
+
+    QString name;
+    stream >> name;
+    name_edit->setText(name);
+}
+
+QDataStream &operator<<(QDataStream &stream, const FilterWidgetSimpleTab *widget) {
+    widget->serialize(stream);
+
+    return stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, FilterWidgetSimpleTab *widget) {
+    widget->deserialize(stream);
+    
+    return stream;
+}

@@ -37,9 +37,15 @@ public:
 
     QString get_filter() const;
 
+    void serialize(QDataStream &stream) const;
+    void deserialize(QDataStream &stream);
+
 private:
     SelectClassesWidget *select_classes;
     QLineEdit *name_edit;
 };
+
+QDataStream &operator<<(QDataStream &stream, const FilterWidgetSimpleTab *widget);
+QDataStream &operator>>(QDataStream &stream, FilterWidgetSimpleTab *widget);
 
 #endif /* FILTER_WIDGET_SIMPLE_TAB_H */

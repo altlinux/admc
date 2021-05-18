@@ -26,9 +26,11 @@
 #include <QScrollArea>
 #include <QCheckBox>
 
-FilterClassesWidget::FilterClassesWidget(const QList<QString> &class_list)
+FilterClassesWidget::FilterClassesWidget(const QList<QString> &class_list_arg)
 : QWidget()
 {   
+    class_list = class_list_arg;
+
     for (const QString &object_class : class_list) {
         const QString class_string = g_adconfig->get_class_display_name(object_class);
         auto checkbox = new QCheckBox(class_string);
@@ -91,4 +93,60 @@ QList<QString> FilterClassesWidget::get_selected_classes() const {
     }
 
     return out;
+}
+
+void FilterClassesWidget::serialize(QDataStream &stream) const {
+    const QHash<QString, bool> state =
+    [&]() {
+        QHash<QString, bool> out;
+
+        for (const QString &object_class : checkbox_map.keys()) {
+            QCheckBox *checkbox = checkbox_map[object_class];
+            const bool checked = checkbox->isChecked();
+
+            out[object_class] = checked;
+        }
+
+        return out;
+    }();
+
+    stream << state;
+}
+
+void FilterClassesWidget::deserialize(QDataStream &stream) {
+    const QHash<QString, bool> state =
+    [&]() {
+        QHash<QString, bool> out;
+        stream >> out;
+
+        return out;
+    }();
+
+    for (const QString &object_class : checkbox_map.keys()) {
+        const bool checked =
+        [&]() {
+            if (state.contains(object_class)) {
+                const bool out = state[object_class];
+
+                return out;
+            } else {
+                return false;
+            }
+        }();
+
+        QCheckBox *checkbox = checkbox_map[object_class];
+        checkbox->setChecked(checked);
+    }
+}
+
+QDataStream &operator<<(QDataStream &stream, const FilterClassesWidget *widget) {
+    widget->serialize(stream);
+
+    return stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, FilterClassesWidget *widget) {
+    widget->deserialize(stream);
+    
+    return stream;
 }

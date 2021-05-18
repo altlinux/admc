@@ -97,3 +97,23 @@ void SelectClassesWidget::on_dialog_accepted() {
     classes_display->setText(classes_display_text);
     classes_display->setCursorPosition(0);
 }
+
+void SelectClassesWidget::serialize(QDataStream &stream) const {
+    stream << filter_classes_widget;
+}
+
+void SelectClassesWidget::deserialize(QDataStream &stream) {
+    stream >> filter_classes_widget;
+}
+
+QDataStream &operator<<(QDataStream &stream, const SelectClassesWidget *widget) {
+    widget->serialize(stream);
+
+    return stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, SelectClassesWidget *widget) {
+    widget->deserialize(stream);
+    
+    return stream;
+}
