@@ -48,7 +48,13 @@ EditQueryItemDialog::EditQueryItemDialog(ConsoleWidget *console_arg)
     layout->addWidget(buttonbox);
 
     const QList<QModelIndex> selected_list = console->get_selected_items();
-    // TODO: check empty etc
+
+    if (selected_list.isEmpty()) {
+        close();
+
+        return;
+    }
+
     index = selected_list[0];
 
     edit_query_widget->load(index);
