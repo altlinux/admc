@@ -108,8 +108,6 @@ private:
     
     ConsoleActions *console_actions;
 
-    QHash<ItemType, QList<QAction *>> item_actions;
-    
     QAction *open_filter_action;
     QAction *show_noncontainers_action;
     QAction *dev_mode_action;

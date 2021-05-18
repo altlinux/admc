@@ -714,12 +714,6 @@ void CentralWidget::update_description_bar() {
 void CentralWidget::add_actions_to_action_menu(QMenu *menu) {
     console_actions->add_to_menu(menu);
 
-    for (const QList<QAction *> actions : item_actions.values()) {
-        for (QAction *action : actions) {
-            menu->addAction(action);
-        }
-    }
-
     menu->addSeparator();
 
     console->add_actions_to_action_menu(menu);
@@ -789,9 +783,6 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
 void CentralWidget::update_actions_visibility() {
     // Figure out what kind of types of items are selected
     const QList<QModelIndex> selected_indexes = console->get_selected_items();
-    if (selected_indexes.isEmpty()) {
-        return;
-    }
 
     console_actions->update_actions_visibility(selected_indexes);
 }
