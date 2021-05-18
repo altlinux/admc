@@ -17,25 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATE_QUERY_DIALOG_H
-#define CREATE_QUERY_DIALOG_H
+#ifndef CREATE_QUERY_ITEM_DIALOG_H
+#define CREATE_QUERY_ITEM_DIALOG_H
 
 #include <QDialog>
 
 class ConsoleWidget;
-class EditQueryWidget;
+class EditQueryItemWidget;
 
-class CreateQueryDialog : public QDialog {
+class CreateQueryItemDialog : public QDialog {
 Q_OBJECT
 
 public:
-    CreateQueryDialog(ConsoleWidget *console_arg);
+    CreateQueryItemDialog(ConsoleWidget *console_arg);
 
     void accept() override;
 
 private:
     ConsoleWidget *console;
-    EditQueryWidget *edit_query_widget;
+    EditQueryItemWidget *edit_query_widget;
 };
 
-#endif /* CREATE_QUERY_DIALOG_H */
+#endif /* CREATE_QUERY_ITEM_DIALOG_H */

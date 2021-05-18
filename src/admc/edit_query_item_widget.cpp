@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "edit_query_widget.h"
+#include "edit_query_item_widget.h"
 
 #include "ad_filter.h"
 #include "console_types/console_query.h"
@@ -27,7 +27,7 @@
 #include <QLineEdit>
 #include <QFormLayout>
 
-EditQueryWidget::EditQueryWidget()
+EditQueryItemWidget::EditQueryItemWidget()
 : QWidget()
 {
     search_base_widget = new SearchBaseWidget();
@@ -50,7 +50,7 @@ EditQueryWidget::EditQueryWidget()
     layout->addWidget(filter_widget);
 }
 
-void EditQueryWidget::load(const QModelIndex &index) {
+void EditQueryItemWidget::load(const QModelIndex &index) {
     QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
     QDataStream filter_state_stream(filter_state);
     filter_state_stream >> search_base_widget;
@@ -63,7 +63,7 @@ void EditQueryWidget::load(const QModelIndex &index) {
     description_edit->setText(description);
 }
 
-void EditQueryWidget::get_state(QString &name, QString &description, QString &filter, QString &search_base, QByteArray &filter_state) const {
+void EditQueryItemWidget::get_state(QString &name, QString &description, QString &filter, QString &search_base, QByteArray &filter_state) const {
     name = name_edit->text();
     description = description_edit->text();
     filter = filter_widget->get_filter();

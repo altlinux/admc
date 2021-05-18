@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EDIT_QUERY_WIDGET_H
-#define EDIT_QUERY_WIDGET_H
+#ifndef EDIT_QUERY_ITEM_WIDGET_H
+#define EDIT_QUERY_ITEM_WIDGET_H
 
 /**
  * Widget used for editing queries. Used in edit query
@@ -33,11 +33,11 @@ class QLineEdit;
 class FilterWidget;
 class SearchBaseWidget;
 
-class EditQueryWidget : public QWidget {
+class EditQueryItemWidget : public QWidget {
 Q_OBJECT
 
 public:
-    EditQueryWidget();
+    EditQueryItemWidget();
 
     void load(const QModelIndex &index);
     void get_state(QString &name, QString &description, QString &filter, QString &search_base, QByteArray &filter_state) const;
@@ -49,4 +49,4 @@ private:
     SearchBaseWidget *search_base_widget;
 };
 
-#endif /* EDIT_QUERY_WIDGET_H */
+#endif /* EDIT_QUERY_ITEM_WIDGET_H */

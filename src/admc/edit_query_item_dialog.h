@@ -17,27 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EDIT_QUERY_DIALOG_H
-#define EDIT_QUERY_DIALOG_H
+#ifndef EDIT_QUERY_ITEM_DIALOG_H
+#define EDIT_QUERY_ITEM_DIALOG_H
 
 #include <QDialog>
 #include <QModelIndex>
 
 class ConsoleWidget;
-class EditQueryWidget;
+class EditQueryItemWidget;
 
-class EditQueryDialog : public QDialog {
+class EditQueryItemDialog : public QDialog {
 Q_OBJECT
 
 public:
-    EditQueryDialog(ConsoleWidget *console_arg);
+    EditQueryItemDialog(ConsoleWidget *console_arg);
 
     void accept() override;
 
 private:
     ConsoleWidget *console;
-    EditQueryWidget *edit_query_widget;
+    EditQueryItemWidget *edit_query_widget;
     QModelIndex index;
 };
 
-#endif /* EDIT_QUERY_DIALOG_H */
+#endif /* EDIT_QUERY_ITEM_DIALOG_H */
