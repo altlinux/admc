@@ -68,7 +68,7 @@ void FilterWidget::serialize(QDataStream &stream) const {
     const FilterWidgetTab *current_tab = dynamic_cast<FilterWidgetTab *> (tab_widget->currentWidget());
 
     stream << current_tab_index;
-    current_tab->serialize(stream);
+    stream << current_tab;
 }
 
 void FilterWidget::deserialize(QDataStream &stream) {
@@ -77,7 +77,7 @@ void FilterWidget::deserialize(QDataStream &stream) {
     tab_widget->setCurrentIndex(current_tab_index);
     
     FilterWidgetTab *current_tab = dynamic_cast<FilterWidgetTab *> (tab_widget->currentWidget());
-    current_tab->deserialize(stream);
+    stream >> current_tab;
 }
 
 QDataStream &operator<<(QDataStream &stream, const FilterWidget *widget) {
@@ -87,6 +87,18 @@ QDataStream &operator<<(QDataStream &stream, const FilterWidget *widget) {
 }
 
 QDataStream &operator>>(QDataStream &stream, FilterWidget *widget) {
+    widget->deserialize(stream);
+    
+    return stream;
+}
+
+QDataStream &operator<<(QDataStream &stream, const FilterWidgetTab *widget) {
+    widget->serialize(stream);
+
+    return stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, FilterWidgetTab *widget) {
     widget->deserialize(stream);
     
     return stream;

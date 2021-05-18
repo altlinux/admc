@@ -68,4 +68,7 @@ signals:
 QDataStream &operator<<(QDataStream &stream, const FilterWidget *widget);
 QDataStream &operator>>(QDataStream &stream, FilterWidget *widget);
 
+QDataStream &operator<<(QDataStream &stream, const FilterWidgetTab *widget);
+QDataStream &operator>>(QDataStream &stream, FilterWidgetTab *widget);
+
 #endif /* FILTER_WIDGET_H */
