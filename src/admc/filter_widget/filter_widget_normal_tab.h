@@ -44,6 +44,9 @@ public:
 
     QString get_filter() const;
 
+    void serialize(QDataStream &stream) const;
+    void deserialize(QDataStream &stream);
+
 private slots:
     void add_filter();
     void remove_filter();
@@ -54,5 +57,8 @@ private:
     FilterBuilder *filter_builder;
     QListWidget *filter_list;
 };
+
+QDataStream &operator<<(QDataStream &stream, const FilterWidgetNormalTab *widget);
+QDataStream &operator>>(QDataStream &stream, FilterWidgetNormalTab *widget);
 
 #endif /* FILTER_WIDGET_NORMAL_TAB_H */
