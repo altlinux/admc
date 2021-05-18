@@ -43,7 +43,4 @@ private:
     QPlainTextEdit *ldap_filter_edit;
 };
 
-QDataStream &operator<<(QDataStream &stream, const FilterWidgetAdvancedTab *widget);
-QDataStream &operator>>(QDataStream &stream, FilterWidgetAdvancedTab *widget);
-
 #endif /* FILTER_WIDGET_ADVANCED_TAB_H */

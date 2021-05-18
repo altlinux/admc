@@ -74,15 +74,3 @@ void FilterWidgetSimpleTab::deserialize(QDataStream &stream) {
     stream >> name;
     name_edit->setText(name);
 }
-
-QDataStream &operator<<(QDataStream &stream, const FilterWidgetSimpleTab *widget) {
-    widget->serialize(stream);
-
-    return stream;
-}
-
-QDataStream &operator>>(QDataStream &stream, FilterWidgetSimpleTab *widget) {
-    widget->deserialize(stream);
-    
-    return stream;
-}

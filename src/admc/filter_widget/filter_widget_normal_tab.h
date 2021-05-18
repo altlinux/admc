@@ -58,7 +58,4 @@ private:
     QListWidget *filter_list;
 };
 
-QDataStream &operator<<(QDataStream &stream, const FilterWidgetNormalTab *widget);
-QDataStream &operator>>(QDataStream &stream, FilterWidgetNormalTab *widget);
-
 #endif /* FILTER_WIDGET_NORMAL_TAB_H */

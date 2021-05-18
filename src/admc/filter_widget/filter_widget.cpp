@@ -64,11 +64,20 @@ QString FilterWidget::get_filter() const {
 }
 
 void FilterWidget::serialize(QDataStream &stream) const {
-    stream << simple_tab;
+    const int current_tab_index = tab_widget->currentIndex();
+    const FilterWidgetTab *current_tab = dynamic_cast<FilterWidgetTab *> (tab_widget->currentWidget());
+
+    stream << current_tab_index;
+    current_tab->serialize(stream);
 }
 
 void FilterWidget::deserialize(QDataStream &stream) {
-    stream >> simple_tab;
+    int current_tab_index;
+    stream >> current_tab_index;
+    tab_widget->setCurrentIndex(current_tab_index);
+    
+    FilterWidgetTab *current_tab = dynamic_cast<FilterWidgetTab *> (tab_widget->currentWidget());
+    current_tab->deserialize(stream);
 }
 
 QDataStream &operator<<(QDataStream &stream, const FilterWidget *widget) {

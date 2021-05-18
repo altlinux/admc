@@ -57,6 +57,9 @@ Q_OBJECT
 
 public:
     virtual QString get_filter() const = 0;
+    
+    virtual void serialize(QDataStream &stream) const = 0;
+    virtual void deserialize(QDataStream &stream) = 0;
 
 signals:
     void changed();

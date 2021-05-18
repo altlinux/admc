@@ -45,7 +45,4 @@ private:
     QLineEdit *name_edit;
 };
 
-QDataStream &operator<<(QDataStream &stream, const FilterWidgetSimpleTab *widget);
-QDataStream &operator>>(QDataStream &stream, FilterWidgetSimpleTab *widget);
-
 #endif /* FILTER_WIDGET_SIMPLE_TAB_H */

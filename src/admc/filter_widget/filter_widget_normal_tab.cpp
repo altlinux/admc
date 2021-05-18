@@ -186,15 +186,3 @@ void FilterWidgetNormalTab::deserialize(QDataStream &stream) {
         filter_list->addItem(item);
     }
 }
-
-QDataStream &operator<<(QDataStream &stream, const FilterWidgetNormalTab *widget) {
-    widget->serialize(stream);
-
-    return stream;
-}
-
-QDataStream &operator>>(QDataStream &stream, FilterWidgetNormalTab *widget) {
-    widget->deserialize(stream);
-    
-    return stream;
-}
