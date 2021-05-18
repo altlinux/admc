@@ -77,7 +77,6 @@ CentralWidget::CentralWidget()
 
     console = new ConsoleWidget();
 
-    auto create_query_dialog = new CreateQueryDialog(console);
     auto create_query_folder_dialog = new CreateQueryFolderDialog(console);
     auto edit_query_folder_dialog = new EditQueryFolderDialog(console);
     auto create_policy_dialog = new CreatePolicyDialog(console);
@@ -186,7 +185,7 @@ CentralWidget::CentralWidget()
         create_query_folder_dialog, &QDialog::open);
     connect(
         console_actions->get(ConsoleAction_QueryCreateItem), &QAction::triggered,
-        create_query_dialog, &QDialog::open);
+        this, &CentralWidget::query_create);
     connect(
         console_actions->get(ConsoleAction_QueryEditFolder), &QAction::triggered,
         edit_query_folder_dialog, &QDialog::open);
@@ -537,6 +536,11 @@ void CentralWidget::policy_delete() {
     hide_busy_indicator();
 
     g_status()->display_ad_messages(ad, this);
+}
+
+void CentralWidget::query_create() {
+    auto dialog = new CreateQueryDialog(console);
+    dialog->open();
 }
 
 void CentralWidget::query_delete() {
