@@ -17,25 +17,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATE_QUERY_DIALOG_H
-#define CREATE_QUERY_DIALOG_H
+#ifndef EDIT_QUERY_WIDGET_H
+#define EDIT_QUERY_WIDGET_H
 
-#include <QDialog>
+/**
+ * Widget used for editing queries. Used in edit query
+ * dialog and create query dialog.
+ */
 
-class ConsoleWidget;
-class EditQueryWidget;
+#include <QWidget>
+#include <QString>
+#include <QModelIndex>
 
-class CreateQueryDialog : public QDialog {
+class QLineEdit;
+class FilterWidget;
+class SearchBaseWidget;
+
+class EditQueryWidget : public QWidget {
 Q_OBJECT
 
 public:
-    CreateQueryDialog(ConsoleWidget *console_arg);
+    EditQueryWidget();
 
-    void accept() override;
+    void load(const QModelIndex &index);
+    void get_state(QString &name, QString &description, QString &filter, QString &search_base, QByteArray &filter_state) const;
 
 private:
-    ConsoleWidget *console;
-    EditQueryWidget *edit_query_widget;
+    QLineEdit *name_edit;
+    QLineEdit *description_edit;
+    FilterWidget *filter_widget;
+    SearchBaseWidget *search_base_widget;
 };
 
-#endif /* CREATE_QUERY_DIALOG_H */
+#endif /* EDIT_QUERY_WIDGET_H */

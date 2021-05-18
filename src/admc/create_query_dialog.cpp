@@ -19,17 +19,13 @@
 
 #include "create_query_dialog.h"
 
-#include "ad_filter.h"
-#include "status.h"
-#include "globals.h"
-#include "filter_widget/filter_widget.h"
-#include "filter_widget/search_base_widget.h"
+#include "utils.h"
 #include "console_types/console_query.h"
+#include "edit_query_widget.h"
 
 #include <QLineEdit>
-#include <QFormLayout>
-#include <QPushButton>
-#include <QMessageBox>
+#include <QVBoxLayout>
+#include <QDialogButtonBox>
 
 CreateQueryDialog::CreateQueryDialog(ConsoleWidget *console_arg)
 : QDialog(console_arg)
@@ -41,51 +37,30 @@ CreateQueryDialog::CreateQueryDialog(ConsoleWidget *console_arg)
     const auto title = QString(tr("Create Query"));
     setWindowTitle(title);
 
-    search_base_widget = new SearchBaseWidget();
+    edit_query_widget = new EditQueryWidget();
 
-    filter_widget = new FilterWidget(filter_classes);
-
-    name_edit = new QLineEdit();
-    name_edit->setText("New query");
-
-    description_edit = new QLineEdit();
-
-    auto form_layout = new QFormLayout();
-
-    auto create_button = new QPushButton(tr("Create"));
-
-    form_layout->addRow(tr("Name:"), name_edit);
-    form_layout->addRow(tr("Description:"), description_edit);
-    form_layout->addRow(tr("Search in:"), search_base_widget);
+    auto buttonbox = new QDialogButtonBox();
+    buttonbox->addButton(QDialogButtonBox::Ok);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->addLayout(form_layout);
-    layout->addWidget(filter_widget);
-    layout->addWidget(create_button);
+    layout->addWidget(edit_query_widget);
+    layout->addWidget(buttonbox);
 
     connect(
-        create_button, &QAbstractButton::clicked,
+        buttonbox, &QDialogButtonBox::accepted,
         this, &QDialog::accept);
 }
 
 void CreateQueryDialog::accept() {
+    QString name;
+    QString description;
+    QString filter;
+    QString search_base;
+    QByteArray filter_state;
+    edit_query_widget->get_state(name, description, filter, search_base, filter_state);
+
     const QModelIndex parent_index = get_selected_scope_index(console);
-    const QString name = name_edit->text();
-    const QString description = description_edit->text();
-    const QString filter = filter_widget->get_filter();
-    const QString search_base = search_base_widget->get_search_base();
-
-    const QByteArray filter_state =
-    [&]() {
-        QByteArray out;
-
-        QDataStream filter_state_stream(&out, QIODevice::WriteOnly);
-        filter_state_stream << search_base_widget;
-        filter_state_stream << filter_widget;
-
-        return out;
-    }();
 
     if (!console_query_name_is_good(name, parent_index, this, QModelIndex())) {
         return;

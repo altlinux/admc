@@ -1,0 +1,82 @@
+/*
+ * ADMC - AD Management Center
+ *
+ * Copyright (C) 2020 BaseALT Ltd.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "edit_query_widget.h"
+
+#include "ad_filter.h"
+#include "console_types/console_query.h"
+#include "filter_widget/filter_widget.h"
+#include "filter_widget/search_base_widget.h"
+
+#include <QLineEdit>
+#include <QFormLayout>
+
+EditQueryWidget::EditQueryWidget()
+: QWidget()
+{
+    search_base_widget = new SearchBaseWidget();
+
+    filter_widget = new FilterWidget(filter_classes);
+
+    name_edit = new QLineEdit();
+
+    description_edit = new QLineEdit();
+
+    auto form_layout = new QFormLayout();
+
+    form_layout->addRow(tr("Name:"), name_edit);
+    form_layout->addRow(tr("Description:"), description_edit);
+    form_layout->addRow(tr("Search in:"), search_base_widget);
+
+    const auto layout = new QVBoxLayout();
+    setLayout(layout);
+    layout->addLayout(form_layout);
+    layout->addWidget(filter_widget);
+}
+
+void EditQueryWidget::load(const QModelIndex &index) {
+    QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
+    QDataStream filter_state_stream(filter_state);
+    filter_state_stream >> search_base_widget;
+    filter_state_stream >> filter_widget;
+
+    const QString name = index.data(Qt::DisplayRole).toString();
+    name_edit->setText(name);
+
+    const QString description = index.data(QueryItemRole_Description).toString();
+    description_edit->setText(description);
+}
+
+void EditQueryWidget::get_state(QString &name, QString &description, QString &filter, QString &search_base, QByteArray &filter_state) const {
+    name = name_edit->text();
+    description = description_edit->text();
+    filter = filter_widget->get_filter();
+    search_base = search_base_widget->get_search_base();
+
+    filter_state =
+    [&]() {
+        QByteArray out;
+
+        QDataStream filter_state_stream(&out, QIODevice::WriteOnly);
+        filter_state_stream << search_base_widget;
+        filter_state_stream << filter_widget;
+
+        return out;
+    }();
+}

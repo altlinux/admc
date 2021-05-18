@@ -21,14 +21,10 @@
 #define EDIT_QUERY_DIALOG_H
 
 #include <QDialog>
-#include <QString>
-#include <QList>
 #include <QModelIndex>
 
-class QLineEdit;
-class FilterWidget;
-class SearchBaseWidget;
 class ConsoleWidget;
+class EditQueryWidget;
 
 class EditQueryDialog : public QDialog {
 Q_OBJECT
@@ -39,11 +35,8 @@ public:
     void accept() override;
 
 private:
-    QLineEdit *name_edit;
-    QLineEdit *description_edit;
-    FilterWidget *filter_widget;
-    SearchBaseWidget *search_base_widget;
     ConsoleWidget *console;
+    EditQueryWidget *edit_query_widget;
     QModelIndex index;
 };
 

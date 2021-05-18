@@ -19,17 +19,12 @@
 
 #include "edit_query_dialog.h"
 
-#include "ad_filter.h"
-#include "status.h"
-#include "globals.h"
-#include "filter_widget/filter_widget.h"
-#include "filter_widget/search_base_widget.h"
 #include "console_types/console_query.h"
+#include "edit_query_widget.h"
 
 #include <QLineEdit>
-#include <QFormLayout>
-#include <QPushButton>
-#include <QMessageBox>
+#include <QVBoxLayout>
+#include <QDialogButtonBox>
 
 EditQueryDialog::EditQueryDialog(ConsoleWidget *console_arg)
 : QDialog(console_arg)
@@ -41,70 +36,45 @@ EditQueryDialog::EditQueryDialog(ConsoleWidget *console_arg)
     const auto title = QString(tr("Edit Query"));
     setWindowTitle(title);
 
-    search_base_widget = new SearchBaseWidget();
+    edit_query_widget = new EditQueryWidget();
 
-    filter_widget = new FilterWidget(filter_classes);
-
-    name_edit = new QLineEdit();
-
-    description_edit = new QLineEdit();
-
-    auto form_layout = new QFormLayout();
-
-    auto create_button = new QPushButton(tr("Ok"));
-
-    form_layout->addRow(tr("Name:"), name_edit);
-    form_layout->addRow(tr("Description:"), description_edit);
-    form_layout->addRow(tr("Search in:"), search_base_widget);
+    auto buttonbox = new QDialogButtonBox();
+    buttonbox->addButton(QDialogButtonBox::Ok);
+    buttonbox->addButton(QDialogButtonBox::Cancel);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->addLayout(form_layout);
-    layout->addWidget(filter_widget);
-    layout->addWidget(create_button);
+    layout->addWidget(edit_query_widget);
+    layout->addWidget(buttonbox);
 
     const QList<QModelIndex> selected_list = console->get_selected_items();
     // TODO: check empty etc
     index = selected_list[0];
 
-    QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
-    QDataStream filter_state_stream(filter_state);
-    filter_state_stream >> search_base_widget;
-    filter_state_stream >> filter_widget;
-
-    const QString name = index.data(Qt::DisplayRole).toString();
-    name_edit->setText(name);
-
-    const QString description = index.data(QueryItemRole_Description).toString();
-    description_edit->setText(description);
+    edit_query_widget->load(index);
 
     connect(
-        create_button, &QAbstractButton::clicked,
+        buttonbox, &QDialogButtonBox::accepted,
         this, &QDialog::accept);
+    connect(
+        buttonbox, &QDialogButtonBox::rejected,
+        this, &QDialog::reject);
 }
 
 void EditQueryDialog::accept() {
-    const QString name = name_edit->text();
-    const QString description = description_edit->text();
-    const QString filter = filter_widget->get_filter();
-    const QString search_base = search_base_widget->get_search_base();
+    QString name;
+    QString description;
+    QString filter;
+    QString search_base;
+    QByteArray filter_state;
+    edit_query_widget->get_state(name, description, filter, search_base, filter_state);
 
-    const QByteArray filter_state =
-    [&]() {
-        QByteArray out;
+    const QModelIndex scope_index = console_item_convert_to_scope_index(index);
 
-        QDataStream filter_state_stream(&out, QIODevice::WriteOnly);
-        filter_state_stream << search_base_widget;
-        filter_state_stream << filter_widget;
-
-        return out;
-    }();
-
-    if (!console_query_name_is_good(name, index.parent(), this, index)) {
+    if (!console_query_name_is_good(name, scope_index.parent(), this, scope_index)) {
         return;
     }
 
-    const QModelIndex scope_index = console_item_convert_to_scope_index(index);
     QStandardItem *scope_item = console->get_scope_item(scope_index);
 
     const QModelIndex results_index = console_item_get_buddy(scope_index);
