@@ -46,3 +46,25 @@ QString FilterWidgetAdvancedTab::get_filter() const {
 
     return filter;
 }
+
+void FilterWidgetAdvancedTab::serialize(QDataStream &stream) const {
+    stream << ldap_filter_edit->toPlainText();
+}
+
+void FilterWidgetAdvancedTab::deserialize(QDataStream &stream) {
+    QString text;
+    stream >> text;
+    ldap_filter_edit->setPlainText(text);
+}
+
+QDataStream &operator<<(QDataStream &stream, const FilterWidgetAdvancedTab *widget) {
+    widget->serialize(stream);
+
+    return stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, FilterWidgetAdvancedTab *widget) {
+    widget->deserialize(stream);
+    
+    return stream;
+}
