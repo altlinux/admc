@@ -75,7 +75,7 @@ QString SearchBaseWidget::get_search_base() const {
 }
 
 void SearchBaseWidget::browse() {
-    auto dialog = new SelectContainerDialog(parentWidget());
+    auto dialog = new SelectContainerDialog(this);
 
     connect(
         dialog, &SelectContainerDialog::accepted,
