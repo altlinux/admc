@@ -25,6 +25,8 @@
 #include <QVBoxLayout>
 #include <QScrollArea>
 #include <QCheckBox>
+#include <QDialogButtonBox>
+#include <QPushButton>
 
 FilterClassesWidget::FilterClassesWidget(const QList<QString> &class_list_arg)
 : QWidget()
@@ -49,14 +51,24 @@ FilterClassesWidget::FilterClassesWidget(const QList<QString> &class_list_arg)
         classes_layout->addWidget(checkbox);
     }
 
+    auto buttonbox = new QDialogButtonBox();
+    auto select_all_button = buttonbox->addButton(tr("Select all"), QDialogButtonBox::ActionRole);
+    auto clear_selection_button = buttonbox->addButton(tr("Clear selection"), QDialogButtonBox::ActionRole);
+
     auto scroll_area = new QScrollArea();
     scroll_area->setWidget(classes_widget);
 
     auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
+    layout->addWidget(buttonbox);
     layout->addWidget(scroll_area);
+
+    connect(
+        select_all_button, &QPushButton::clicked,
+        this, &FilterClassesWidget::select_all);
+    connect(
+        clear_selection_button, &QPushButton::clicked,
+        this, &FilterClassesWidget::clear_selection);
 }
 
 QString FilterClassesWidget::get_filter() const {
@@ -93,6 +105,18 @@ QList<QString> FilterClassesWidget::get_selected_classes() const {
     }
 
     return out;
+}
+
+void FilterClassesWidget::select_all() {
+    for (QCheckBox *checkbox : checkbox_map.values()) {
+        checkbox->setChecked(true);
+    }
+}
+
+void FilterClassesWidget::clear_selection() {
+    for (QCheckBox *checkbox : checkbox_map.values()) {
+        checkbox->setChecked(false);
+    }
 }
 
 void FilterClassesWidget::serialize(QDataStream &stream) const {

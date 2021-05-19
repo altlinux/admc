@@ -46,6 +46,9 @@ public:
 private:
     QHash<QString, QCheckBox *> checkbox_map;
     QList<QString> class_list;
+
+    void select_all();
+    void clear_selection();
 };
 
 QDataStream &operator<<(QDataStream &stream, const FilterClassesWidget *widget);

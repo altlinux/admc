@@ -19,6 +19,8 @@
 
 #include "settings.h"
 
+#include "config.h"
+
 #include <QAction>
 #include <QCheckBox>
 #include <QWidget>
@@ -32,7 +34,7 @@ QString bool_to_string(const BoolSetting setting);
 QString variant_to_string(const VariantSetting setting);
 
 Settings::Settings()
-: qsettings()
+: qsettings(ADMC_ORGANIZATION, ADMC_APPLICATION_NAME)
 {
 
 }
