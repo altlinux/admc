@@ -127,8 +127,6 @@ void FilterWidgetNormalTab::add_filter() {
     filter_list->addItem(item);
 
     filter_builder->clear();
-
-    emit changed();
 }
 
 void FilterWidgetNormalTab::remove_filter() {
@@ -137,16 +135,10 @@ void FilterWidgetNormalTab::remove_filter() {
     for (auto item : selected_items) {
         delete item;
     }
-
-    if (!selected_items.isEmpty()) {
-        emit changed();
-    }
 }
 
 void FilterWidgetNormalTab::clear_filters() {
     filter_list->clear();
-
-    emit changed();
 }
 
 void FilterWidgetNormalTab::serialize(QDataStream &stream) const {

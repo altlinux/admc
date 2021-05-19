@@ -44,9 +44,6 @@ public:
     void serialize(QDataStream &stream) const;
     void deserialize(QDataStream &stream);
 
-signals:
-    void changed();
-
 private:
     QTabWidget *tab_widget;
     FilterWidgetSimpleTab *simple_tab;
@@ -60,9 +57,6 @@ public:
     
     virtual void serialize(QDataStream &stream) const = 0;
     virtual void deserialize(QDataStream &stream) = 0;
-
-signals:
-    void changed();
 };
 
 QDataStream &operator<<(QDataStream &stream, const FilterWidget *widget);

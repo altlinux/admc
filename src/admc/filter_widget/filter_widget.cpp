@@ -34,12 +34,6 @@ FilterWidget::FilterWidget(const QList<QString> classes)
     auto add_tab =
     [this](FilterWidgetTab *tab, const QString &title) {
         tab_widget->addTab(tab, title);
-
-        connect(
-            tab, &FilterWidgetTab::changed,
-            [this]() {
-                emit changed();
-            });
     };
 
     simple_tab = new FilterWidgetSimpleTab(classes);
