@@ -77,6 +77,7 @@ cd BUILD
 %_bindir/admc_test_country_edit
 %_bindir/admc_test_gplink
 %_bindir/admc_test_ad_interface
+%_bindir/admc_test_search_base_widget
 
 %changelog
 * Wed May 12 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.5.2-alt1
