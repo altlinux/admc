@@ -148,8 +148,8 @@ void FilterWidgetNormalTab::serialize(QDataStream &stream) const {
     QList<QString> filter_value_list;
     for (int i = 0; i < filter_list->count(); i++) {
         const QListWidgetItem *item = filter_list->item(i);
-        const QString filter_display = item->data(Qt::UserRole).toString();
-        const QString filter_value = item->data(Qt::DisplayRole).toString();
+        const QString filter_display = item->data(Qt::DisplayRole).toString();
+        const QString filter_value = item->data(Qt::UserRole).toString();
 
         filter_display_list.append(filter_display);
         filter_value_list.append(filter_value);
