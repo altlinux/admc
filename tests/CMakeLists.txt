@@ -40,6 +40,7 @@ set(TEST_TARGETS
     admc_test_country_edit
     admc_test_gplink
     admc_test_search_base_widget
+    admc_test_filter_widget
 )
 
 foreach(target ${TEST_TARGETS})

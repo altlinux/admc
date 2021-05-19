@@ -30,6 +30,7 @@ FilterWidgetSimpleTab::FilterWidgetSimpleTab(const QList<QString> classes)
     select_classes = new SelectClassesWidget(classes);
 
     name_edit = new QLineEdit(this);
+    name_edit->setObjectName("name_edit");
 
     auto layout = new QFormLayout();
     setLayout(layout);

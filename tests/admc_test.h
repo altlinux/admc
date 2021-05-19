@@ -34,6 +34,7 @@
 
 class QString;
 class QTreeView;
+class QPushButton;
 
 #define TEST_USER "test-user"
 #define TEST_USER_LOGON "test-user-logon"
@@ -99,6 +100,8 @@ private:
 };
 
 void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role);
+
+QPushButton *find_button_by_name(const QString& name, QWidget *parent);
 
 // Presses the Tab button. Use to cycle through input
 // widgets.

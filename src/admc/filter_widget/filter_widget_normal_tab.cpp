@@ -85,6 +85,8 @@ FilterWidgetNormalTab::FilterWidgetNormalTab(const QList<QString> classes)
     connect(
         clear_filters_button, &QAbstractButton::clicked,
         this, &FilterWidgetNormalTab::clear_filters);
+
+    add_filter_button->setObjectName("add_button");
 }
 
 QString FilterWidgetNormalTab::get_filter() const {
