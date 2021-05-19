@@ -43,6 +43,9 @@ public:
 
 private:
     QHash<QString, QCheckBox *> checkbox_map;
+
+    void select_all();
+    void clear_selection();
 };
 
 #endif /* FILTER_CLASSES_WIDGET_H */
