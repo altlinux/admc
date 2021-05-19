@@ -51,6 +51,7 @@ set(ADMC_SOURCES
     policy_results_widget.cpp
     gplink.cpp
     filter_classes_widget.cpp
+    edit_query_item_widget.cpp
     
     console_types/console_object.cpp
     console_types/console_policy.cpp
@@ -67,8 +68,9 @@ set(ADMC_SOURCES
     manual_dialog.cpp
     select_policy_dialog.cpp
     create_policy_dialog.cpp
-    create_query_dialog.cpp
+    create_query_item_dialog.cpp
     create_query_folder_dialog.cpp
+    edit_query_item_dialog.cpp
     edit_query_folder_dialog.cpp
     move_query_dialog.cpp
     object_multi_properties_dialog.cpp

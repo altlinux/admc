@@ -93,6 +93,7 @@ private slots:
     void policy_delete();
 
     void query_create();
+    void query_edit();
     void query_delete();
     
     void on_items_can_drop(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target, bool *ok);

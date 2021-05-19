@@ -40,6 +40,9 @@ public:
 
     QString get_filter() const;
 
+    void serialize(QDataStream &stream) const;
+    void deserialize(QDataStream &stream);
+
 private slots:
     void on_dialog_accepted();
 
@@ -47,5 +50,8 @@ private:
     QLineEdit *classes_display;
     FilterClassesWidget *filter_classes_widget;
 };
+
+QDataStream &operator<<(QDataStream &stream, const SelectClassesWidget *widget);
+QDataStream &operator>>(QDataStream &stream, SelectClassesWidget *widget);
 
 #endif /* SELECT_CLASSES_WIDGET_H */

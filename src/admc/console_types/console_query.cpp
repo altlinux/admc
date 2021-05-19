@@ -132,26 +132,35 @@ QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &n
     return scope_item->index();
 }
 
-void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QString &search_base, const QModelIndex &parent) {
+void console_query_item_load(QStandardItem *scope_item, const QList<QStandardItem *> results_row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &search_base) {
     auto load_main_item =
     [&](QStandardItem *item) {
         item->setData(ItemType_QueryItem, ConsoleRole_Type);
         item->setData(description, QueryItemRole_Description);
         item->setData(filter, QueryItemRole_Filter);
+        item->setData(filter_state, QueryItemRole_FilterState);
         item->setData(search_base, QueryItemRole_SearchBase);
         item->setIcon(QIcon::fromTheme("emblem-system"));
     };
 
+    if (scope_item != nullptr) {
+        load_main_item(scope_item);
+        scope_item->setText(name);
+    }
+
+    if (!results_row.isEmpty()) {
+        load_main_item(results_row[0]);
+        results_row[QueryColumn_Name]->setText(name);
+        results_row[QueryColumn_Description]->setText(description);
+    }
+}
+
+void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &search_base, const QModelIndex &parent) {
     QStandardItem *scope_item;
     QList<QStandardItem *> results_row;
     console->add_buddy_scope_and_results(console_object_results_id, ScopeNodeType_Dynamic, parent, &scope_item, &results_row);
 
-    load_main_item(scope_item);
-    scope_item->setText(name);
-
-    load_main_item(results_row[0]);
-    results_row[QueryColumn_Name]->setText(name);
-    results_row[QueryColumn_Description]->setText(description);
+    console_query_item_load(scope_item, results_row, name, description, filter, filter_state, search_base);
 }
 
 void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) {
@@ -212,9 +221,10 @@ void console_query_tree_init(ConsoleWidget *console) {
                 // Query item
                 const QString description = info["description"].toString();
                 const QString filter = info["filter"].toString();
+                const QByteArray filter_state = info["filter_state"].toByteArray();
                 const QString search_base = info["search_base"].toString();
                 const QString name = path_to_name(child_path);
-                console_query_item_create(console, name, description, filter, search_base, index);
+                console_query_item_create(console, name, description, filter, filter_state, search_base, index);
             } else {
                 // Query folder
                 const QString name = path_to_name(child_path);
@@ -279,12 +289,14 @@ void console_query_tree_save(ConsoleWidget *console) {
             info_map[path] = QVariant(info);
         } else {
             const QString filter = index.data(QueryItemRole_Filter).toString();
+            const QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
             const QString search_base = index.data(QueryItemRole_SearchBase).toString();
 
             QHash<QString, QVariant> info;
             info["is_query_item"] = QVariant(true);
             info["description"] = QVariant(description);
             info["filter"] = QVariant(filter);
+            info["filter_state"] = QVariant(filter_state);
             info["search_base"] = QVariant(search_base);
             info_map[path] = QVariant(info);
         }
@@ -341,6 +353,7 @@ bool console_query_name_is_good(const QString &name, const QModelIndex &parent_i
 
 void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ConsoleAction_QueryEditFolder));
+    menu->addAction(actions->get(ConsoleAction_QueryEditItem));
     menu->addAction(actions->get(ConsoleAction_QueryMoveItemOrFolder));
     menu->addAction(actions->get(ConsoleAction_QueryDeleteItemOrFolder));
 }
@@ -356,6 +369,10 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
 
         if (type == ItemType_QueryFolder) {
             visible_actions->insert(ConsoleAction_QueryEditFolder);
+        }
+
+        if (type == ItemType_QueryItem) {
+            visible_actions->insert(ConsoleAction_QueryEditItem);
         }
     }
 
@@ -434,10 +451,11 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
             if (type == ItemType_QueryItem) {
                 const QString description = index.data(QueryItemRole_Description).toString();
                 const QString filter = index.data(QueryItemRole_Filter).toString();
+                const QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
                 const QString search_base = index.data(QueryItemRole_SearchBase).toString();
                 const QString name = index.data(Qt::DisplayRole).toString();
 
-                console_query_item_create(console, name, description, filter, search_base, new_parent);
+                console_query_item_create(console, name, description, filter, filter_state, search_base, new_parent);
             } else if (type == ItemType_QueryFolder) {
                 const QString name = index.data(Qt::DisplayRole).toString();
                 const QString description = index.data(QueryItemRole_Description).toString();

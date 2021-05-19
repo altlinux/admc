@@ -17,42 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "create_query_dialog.h"
+#include "edit_query_item_widget.h"
 
 #include "ad_filter.h"
-#include "status.h"
-#include "globals.h"
+#include "console_types/console_query.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/search_base_widget.h"
-#include "console_types/console_query.h"
 
 #include <QLineEdit>
 #include <QFormLayout>
-#include <QPushButton>
-#include <QMessageBox>
 
-CreateQueryDialog::CreateQueryDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg)
+EditQueryItemWidget::EditQueryItemWidget()
+: QWidget()
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-    
-    console = console_arg;
-
-    const auto title = QString(tr("Create Query"));
-    setWindowTitle(title);
-
     search_base_widget = new SearchBaseWidget();
 
     filter_widget = new FilterWidget(filter_classes);
 
     name_edit = new QLineEdit();
-    name_edit->setText("New query");
 
     description_edit = new QLineEdit();
 
     auto form_layout = new QFormLayout();
-
-    auto create_button = new QPushButton(tr("Create"));
 
     form_layout->addRow(tr("Name:"), name_edit);
     form_layout->addRow(tr("Description:"), description_edit);
@@ -62,27 +48,35 @@ CreateQueryDialog::CreateQueryDialog(ConsoleWidget *console_arg)
     setLayout(layout);
     layout->addLayout(form_layout);
     layout->addWidget(filter_widget);
-    layout->addWidget(create_button);
-
-    connect(
-        create_button, &QAbstractButton::clicked,
-        this, &QDialog::accept);
 }
 
-void CreateQueryDialog::accept() {
-    const QModelIndex parent_index = get_selected_scope_index(console);
-    const QString name = name_edit->text();
-    const QString description = description_edit->text();
-    const QString filter = filter_widget->get_filter();
-    const QString search_base = search_base_widget->get_search_base();
+void EditQueryItemWidget::load(const QModelIndex &index) {
+    QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
+    QDataStream filter_state_stream(filter_state);
+    filter_state_stream >> search_base_widget;
+    filter_state_stream >> filter_widget;
 
-    if (!console_query_name_is_good(name, parent_index, this, QModelIndex())) {
-        return;
-    }
+    const QString name = index.data(Qt::DisplayRole).toString();
+    name_edit->setText(name);
 
-    console_query_item_create(console, name, description, filter, search_base, parent_index);
+    const QString description = index.data(QueryItemRole_Description).toString();
+    description_edit->setText(description);
+}
 
-    console_query_tree_save(console);
+void EditQueryItemWidget::get_state(QString &name, QString &description, QString &filter, QString &search_base, QByteArray &filter_state) const {
+    name = name_edit->text();
+    description = description_edit->text();
+    filter = filter_widget->get_filter();
+    search_base = search_base_widget->get_search_base();
 
-    QDialog::accept();
+    filter_state =
+    [&]() {
+        QByteArray out;
+
+        QDataStream filter_state_stream(&out, QIODevice::WriteOnly);
+        filter_state_stream << search_base_widget;
+        filter_state_stream << filter_widget;
+
+        return out;
+    }();
 }

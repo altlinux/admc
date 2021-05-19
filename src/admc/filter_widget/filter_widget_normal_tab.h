@@ -44,6 +44,9 @@ public:
 
     QString get_filter() const;
 
+    void serialize(QDataStream &stream) const;
+    void deserialize(QDataStream &stream);
+
 private slots:
     void add_filter();
     void remove_filter();
