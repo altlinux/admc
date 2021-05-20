@@ -179,7 +179,7 @@ void MoveQueryDialog::accept() {
         for (const QPersistentModelIndex &old_index : selected_indexes) {
             QAbstractItemModel *index_model = (QAbstractItemModel *) old_index.model();
             const QString moved_name = index_model->data(old_index, Qt::DisplayRole).toString();
-            if (!console_query_name_is_good({moved_name}, new_parent_index, this, old_index)) {
+            if (!console_query_or_folder_name_is_good({moved_name}, new_parent_index, this, old_index)) {
                 return true;
             }
         }

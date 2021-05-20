@@ -36,7 +36,7 @@ FilterClassesWidget::FilterClassesWidget(const QList<QString> &class_list_arg)
     for (const QString &object_class : class_list) {
         const QString class_string = g_adconfig->get_class_display_name(object_class);
         auto checkbox = new QCheckBox(class_string);
-        checkbox->setChecked(true);
+        checkbox->setChecked(false);
 
         checkbox_map[object_class] = checkbox;
     }

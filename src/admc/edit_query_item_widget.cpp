@@ -42,6 +42,7 @@ EditQueryItemWidget::EditQueryItemWidget()
     filter_widget = new FilterWidget(filter_classes);
 
     name_edit = new QLineEdit();
+    name_edit->setText("New query");
     
     description_edit = new QLineEdit();
 

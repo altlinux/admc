@@ -309,7 +309,14 @@ void console_query_tree_save(ConsoleWidget *console) {
     g_settings->set_variant(VariantSetting_QueryInfo, info_map_variant);
 }
 
-bool console_query_name_is_good(const QString &name, const QModelIndex &parent_index_raw, QWidget *parent_widget, const QModelIndex &current_index) {
+bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex &parent_index_raw, QWidget *parent_widget, const QModelIndex &current_index) {
+    if (name.isEmpty()) {
+        const QString error_text = QString(QCoreApplication::translate("query.cpp", "Name may not be empty"));
+        QMessageBox::warning(parent_widget, QCoreApplication::translate("query.cpp", "Error"), error_text);
+
+        return false;
+    }
+
     const QModelIndex parent_index = console_item_convert_to_scope_index(parent_index_raw);
 
     const QString current_name = current_index.data(Qt::DisplayRole).toString();
@@ -339,10 +346,10 @@ bool console_query_name_is_good(const QString &name, const QModelIndex &parent_i
     const bool name_contains_slash = name.contains("/");
 
     if (name_conflict) {
-        const QString error_text = QString(QCoreApplication::translate("query.cpp", "There's already a folder with this name."));
+        const QString error_text = QString(QCoreApplication::translate("query.cpp", "There's already an item with this name."));
         QMessageBox::warning(parent_widget, QCoreApplication::translate("query.cpp", "Error"), error_text);
     } else if (name_contains_slash) {
-        const QString error_text = QString(QCoreApplication::translate("query.cpp", "Folder names cannot contain \"/\"."));
+        const QString error_text = QString(QCoreApplication::translate("query.cpp", "Names cannot contain \"/\"."));
         QMessageBox::warning(parent_widget, QCoreApplication::translate("query.cpp", "Error"), error_text);
     }
 
@@ -419,7 +426,7 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
         const QModelIndex index = console_item_convert_to_scope_index(index_raw);
 
         const QString name = index.data(Qt::DisplayRole).toString();
-        if (!console_query_name_is_good(name, new_parent_index, console, index)) {
+        if (!console_query_or_folder_name_is_good(name, new_parent_index, console, index)) {
             return;
         }
     }

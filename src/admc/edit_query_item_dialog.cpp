@@ -77,7 +77,7 @@ void EditQueryItemDialog::accept() {
 
     const QModelIndex scope_index = console_item_convert_to_scope_index(index);
 
-    if (!console_query_name_is_good(name, scope_index.parent(), this, scope_index)) {
+    if (!console_query_or_folder_name_is_good(name, scope_index.parent(), this, scope_index)) {
         return;
     }
 
