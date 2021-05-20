@@ -104,6 +104,7 @@ void SelectClassesWidget::serialize(QDataStream &stream) const {
 
 void SelectClassesWidget::deserialize(QDataStream &stream) {
     stream >> filter_classes_widget;
+    on_dialog_accepted();
 }
 
 QDataStream &operator<<(QDataStream &stream, const SelectClassesWidget *widget) {
