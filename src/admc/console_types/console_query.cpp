@@ -513,13 +513,6 @@ void console_query_export(ConsoleWidget *console) {
     }
 
     QFile file(file_path);
-
-    // TODO: show error here? maybe allow to overwrite?
-    // Maybe filedialog already handles this?
-    if (file.exists()) {
-        return;
-    }
-
     file.open(QIODevice::WriteOnly);
     QDataStream out(&file);
 
