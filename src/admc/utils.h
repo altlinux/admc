@@ -94,4 +94,7 @@ QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &ind
 // results, returns it's scope buddy.
 QModelIndex get_selected_scope_index(ConsoleWidget *console);
 
+void dev_mode_filter(QString &filter);
+void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &current_dn);
+
 #endif /* UTILS_H */

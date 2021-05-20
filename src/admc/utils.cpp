@@ -246,3 +246,46 @@ QModelIndex get_selected_scope_index(ConsoleWidget *console) {
         return QModelIndex();
     }
 }
+
+// OR filter with some dev mode object classes, so that they
+// show up no matter what when dev mode is on
+void dev_mode_filter(QString &filter) {
+    const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
+    if (!dev_mode) {
+        return;
+    }
+
+    const QList<QString> schema_classes = {
+        "classSchema",
+        "attributeSchema",
+        "displaySpecifier",
+    };
+
+    QList<QString> class_filters;
+    for (const QString &object_class : schema_classes) {
+        const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
+        class_filters.append(class_filter);
+    }
+
+    filter = filter_OR({filter, filter_OR(class_filters)});
+}
+
+// NOTE: configuration and schema objects are hidden so that
+// they don't show up in regular searches. Have to use
+// search_object() and manually add them to search results.
+void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &current_dn) {
+    const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
+    if (!dev_mode) {
+        return;
+    }
+
+    const QString search_base = g_adconfig->domain_head();
+    const QString configuration_dn = g_adconfig->configuration_dn();
+    const QString schema_dn = g_adconfig->schema_dn();
+
+    if (current_dn == search_base) {
+        results[configuration_dn] = ad.search_object(configuration_dn);
+    } else if (current_dn == configuration_dn) {
+        results[schema_dn] = ad.search_object(schema_dn);
+    }
+}
