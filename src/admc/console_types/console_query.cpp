@@ -573,11 +573,9 @@ void console_query_import(ConsoleWidget *console) {
         file.open(QIODevice::ReadOnly);
         const QByteArray json_bytes = file.readAll();
 
-        QJsonParseError error;
-        const QJsonDocument json_document = QJsonDocument::fromJson(json_bytes, &error);
+        const QJsonDocument json_document = QJsonDocument::fromJson(json_bytes);
 
-        const bool parse_success = (error.error != QJsonParseError::NoError);
-        if (parse_success) {
+        if (json_document.isNull()) {
             const QString error_text = QString(QCoreApplication::translate("query.cpp", "Query file is corrupted."));
             QMessageBox::warning(console, QCoreApplication::translate("query.cpp", "Error"), error_text);
 
@@ -588,6 +586,10 @@ void console_query_import(ConsoleWidget *console) {
 
         return out;
     }();
+
+    if (json_object.isEmpty()) {
+        return;
+    }
 
     const QString name = json_object["name"].toString();
     const QString description = json_object["description"].toString();
