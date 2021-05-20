@@ -336,21 +336,17 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
     //
     const QString filter =
     [=]() {
+        QString out;
+
+        out = is_container_filter();
+
+        // NOTE: OR user filter with containers filter so
+        // that container objects are always shown, even if
+        // they are filtered out by user filter
         const QString user_filter = filter_dialog->get_filter();
+        out = filter_OR({user_filter, out});
 
-        const QString is_container = is_container_filter();
-
-        // NOTE: OR user filter with containers filter so that container objects are always shown, even if they are filtered out by user filter
-        QString out = filter_OR({user_filter, is_container});
-
-        // Hide advanced view only" objects if advanced view
-        // setting is off
-        const bool advanced_features_OFF = !g_settings->get_bool(BoolSetting_AdvancedFeatures);
-        if (advanced_features_OFF) {
-            const QString advanced_features = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
-            out = filter_OR({out, advanced_features});
-        }
-
+        advanced_features_filter(out);
         dev_mode_filter(out);
 
         return out;

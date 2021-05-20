@@ -129,14 +129,11 @@ void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
 
     const QString filter =
     [=]() {
-        QString out = is_container_filter();
+        QString out;
 
-        const bool advanced_view_OFF = !g_settings->get_bool(BoolSetting_AdvancedFeatures);
-        if (advanced_view_OFF) {
-            const QString advanced_view = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
-            out = filter_OR({out, advanced_view});
-        }
+        out = is_container_filter();
 
+        advanced_features_filter(out);
         dev_mode_filter(out);
 
         return out;
