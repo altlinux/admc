@@ -30,6 +30,7 @@
 #include <QModelIndex>
 
 class QLineEdit;
+class QTextEdit;
 class FilterWidget;
 class SearchBaseWidget;
 
@@ -45,8 +46,11 @@ public:
 private:
     QLineEdit *name_edit;
     QLineEdit *description_edit;
+    QTextEdit *filter_edit;
     FilterWidget *filter_widget;
     SearchBaseWidget *search_base_widget;
+
+    void on_edit_filter_dialog_accepted();
 };
 
 #endif /* EDIT_QUERY_ITEM_WIDGET_H */
