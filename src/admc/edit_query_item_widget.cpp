@@ -93,6 +93,8 @@ void EditQueryItemWidget::load(const QModelIndex &index) {
     filter_state_stream >> search_base_widget;
     filter_state_stream >> filter_widget;
 
+    on_edit_filter_dialog_accepted();
+
     const QString name = index.data(Qt::DisplayRole).toString();
     name_edit->setText(name);
 
