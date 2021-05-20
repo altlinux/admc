@@ -17,36 +17,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SEARCH_BASE_WIDGET_H
-#define SEARCH_BASE_WIDGET_H
+#ifndef EDIT_QUERY_ITEM_WIDGET_H
+#define EDIT_QUERY_ITEM_WIDGET_H
 
 /**
- * Allows user to select a search base object.
+ * Widget used for editing queries. Used in edit query
+ * dialog and create query dialog.
  */
 
 #include <QWidget>
+#include <QString>
+#include <QModelIndex>
 
-class QComboBox;
-class QString;
+class QLineEdit;
+class QTextEdit;
+class FilterWidget;
+class SearchBaseWidget;
 
-class SearchBaseWidget final : public QWidget {
+class EditQueryItemWidget : public QWidget {
 Q_OBJECT
 
 public:
-    SearchBaseWidget(const QString &default_search_base = QString());
+    EditQueryItemWidget();
 
-    QString get_search_base() const;
-
-    void serialize(QDataStream &stream) const;
-    void deserialize(QDataStream &stream);
+    void load(const QModelIndex &index);
+    void get_state(QString &name, QString &description, QString &filter, QString &search_base, QByteArray &filter_state) const;
 
 private:
-    QComboBox *combo;
+    QLineEdit *name_edit;
+    QLineEdit *description_edit;
+    QTextEdit *filter_display;
+    FilterWidget *filter_widget;
+    SearchBaseWidget *search_base_widget;
 
-    void browse();
+    void update_filter_display();
 };
 
-QDataStream &operator<<(QDataStream &stream, const SearchBaseWidget *widget);
-QDataStream &operator>>(QDataStream &stream, SearchBaseWidget *widget);
-
-#endif /* SEARCH_BASE_WIDGET_H */
+#endif /* EDIT_QUERY_ITEM_WIDGET_H */

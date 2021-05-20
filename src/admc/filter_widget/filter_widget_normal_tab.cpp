@@ -85,6 +85,8 @@ FilterWidgetNormalTab::FilterWidgetNormalTab(const QList<QString> classes)
     connect(
         clear_filters_button, &QAbstractButton::clicked,
         this, &FilterWidgetNormalTab::clear_filters);
+
+    add_filter_button->setObjectName("add_button");
 }
 
 QString FilterWidgetNormalTab::get_filter() const {
@@ -127,8 +129,6 @@ void FilterWidgetNormalTab::add_filter() {
     filter_list->addItem(item);
 
     filter_builder->clear();
-
-    emit changed();
 }
 
 void FilterWidgetNormalTab::remove_filter() {
@@ -137,14 +137,46 @@ void FilterWidgetNormalTab::remove_filter() {
     for (auto item : selected_items) {
         delete item;
     }
-
-    if (!selected_items.isEmpty()) {
-        emit changed();
-    }
 }
 
 void FilterWidgetNormalTab::clear_filters() {
     filter_list->clear();
+}
 
-    emit changed();
+void FilterWidgetNormalTab::serialize(QDataStream &stream) const {
+    QList<QString> filter_display_list;
+    QList<QString> filter_value_list;
+    for (int i = 0; i < filter_list->count(); i++) {
+        const QListWidgetItem *item = filter_list->item(i);
+        const QString filter_display = item->data(Qt::DisplayRole).toString();
+        const QString filter_value = item->data(Qt::UserRole).toString();
+
+        filter_display_list.append(filter_display);
+        filter_value_list.append(filter_value);
+    }
+
+    stream << select_classes;
+    stream << filter_display_list;
+    stream << filter_value_list;
+}
+
+void FilterWidgetNormalTab::deserialize(QDataStream &stream) {
+    QString text;
+    stream >> select_classes;
+
+    QList<QString> filter_display_list;
+    QList<QString> filter_value_list;
+    stream >> filter_display_list;
+    stream >> filter_value_list;
+
+    filter_list->clear();
+    for (int i = 0; i < filter_display_list.size(); i++) {
+        const QString filter_display = filter_display_list[i];
+        const QString filter_value = filter_value_list[i];
+
+        auto item = new QListWidgetItem();
+        item->setText(filter_display);
+        item->setData(Qt::UserRole, filter_value);
+        filter_list->addItem(item);
+    }
 }

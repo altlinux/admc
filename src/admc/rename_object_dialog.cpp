@@ -44,7 +44,6 @@ RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *paren
         return;
     }
 
-    // TODO: handle failure, dialog should close
     const AdObject object = ad.search_object(target);
 
     const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);

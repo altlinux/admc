@@ -19,6 +19,8 @@
 
 #include "settings.h"
 
+#include "config.h"
+
 #include <QAction>
 #include <QCheckBox>
 #include <QWidget>
@@ -32,7 +34,7 @@ QString bool_to_string(const BoolSetting setting);
 QString variant_to_string(const VariantSetting setting);
 
 Settings::Settings()
-: qsettings()
+: qsettings(ADMC_ORGANIZATION, ADMC_APPLICATION_NAME)
 {
 
 }
@@ -192,7 +194,7 @@ QString variant_to_string(const VariantSetting setting) {
         CASE_ENUM_TO_STRING(VariantSetting_AttributesHeader);
         CASE_ENUM_TO_STRING(VariantSetting_AttributesTabFilter);
         CASE_ENUM_TO_STRING(VariantSetting_QueryFolders);
-        CASE_ENUM_TO_STRING(VariantSetting_QueryInfo);
+        CASE_ENUM_TO_STRING(VariantSetting_QueryItems);
         CASE_ENUM_TO_STRING(VariantSetting_COUNT);
     }
     return "";

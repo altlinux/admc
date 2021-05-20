@@ -17,36 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SEARCH_BASE_WIDGET_H
-#define SEARCH_BASE_WIDGET_H
+#ifndef ADMC_TEST_FILTER_WIDGET_H
+#define ADMC_TEST_FILTER_WIDGET_H
 
-/**
- * Allows user to select a search base object.
- */
+#include "admc_test.h"
 
-#include <QWidget>
+class FilterWidget;
+class QTabWidget;
 
-class QComboBox;
-class QString;
-
-class SearchBaseWidget final : public QWidget {
+class ADMCTestFilterWidget : public ADMCTest {
 Q_OBJECT
 
-public:
-    SearchBaseWidget(const QString &default_search_base = QString());
+private slots:
+    void init() override;
 
-    QString get_search_base() const;
-
-    void serialize(QDataStream &stream) const;
-    void deserialize(QDataStream &stream);
+    void test_simple_tab();
+    void test_normal_tab();
+    void test_advanced_tab();
 
 private:
-    QComboBox *combo;
-
-    void browse();
+    FilterWidget *filter_widget;
+    QTabWidget *tab_widget;
+    QWidget *simple_tab;
+    QWidget *normal_tab;
+    QWidget *advanced_tab;
 };
 
-QDataStream &operator<<(QDataStream &stream, const SearchBaseWidget *widget);
-QDataStream &operator>>(QDataStream &stream, SearchBaseWidget *widget);
-
-#endif /* SEARCH_BASE_WIDGET_H */
+#endif /* ADMC_TEST_FILTER_WIDGET_H */

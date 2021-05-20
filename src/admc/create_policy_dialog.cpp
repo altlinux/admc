@@ -30,12 +30,6 @@
 #include <QPushButton>
 #include <QMessageBox>
 
-// TODO: implement checkbox for account option "User cannot change password". Can't just do it through UAC attribute bits.
-
-// TODO: not sure about how required_edits are done, maybe
-// just do this through verify()? Had to remove upnedit from
-// required_edits because that's a list of stringedits. Now upnedit checks that it's not empty in verify();
-
 CreatePolicyDialog::CreatePolicyDialog(ConsoleWidget *console_arg)
 : QDialog(console_arg)
 {

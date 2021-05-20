@@ -118,7 +118,6 @@ QString SelectContainerDialog::get_selected() const {
 void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
     const QModelIndex index = proxy_model->mapToSource(proxy_index);
 
-    // TODO: handle error
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -130,13 +129,12 @@ void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
 
     const QString filter =
     [=]() {
-        QString out = is_container_filter();
+        QString out;
 
-        const bool advanced_view_OFF = !g_settings->get_bool(BoolSetting_AdvancedFeatures);
-        if (advanced_view_OFF) {
-            const QString advanced_view = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
-            out = filter_OR({out, advanced_view});
-        }
+        out = is_container_filter();
+
+        advanced_features_filter(out);
+        dev_mode_filter(out);
 
         return out;
     }();
@@ -145,7 +143,9 @@ void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
 
     const QString dn = index.data(ContainerRole_DN).toString();
 
-    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_Children, dn);
+    QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_Children, dn);
+
+    dev_mode_search_results(search_results, ad, dn);
 
     QStandardItem *parent = model->itemFromIndex(index);
     for (const AdObject &object : search_results.values()) {

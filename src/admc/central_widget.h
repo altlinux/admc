@@ -92,7 +92,11 @@ private slots:
     void policy_add_link();
     void policy_delete();
 
+    void query_create();
+    void query_edit();
     void query_delete();
+    void query_export();
+    void query_import();
     
     void on_items_can_drop(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target, bool *ok);
     void on_items_dropped(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target);
@@ -108,8 +112,6 @@ private:
     
     ConsoleActions *console_actions;
 
-    QHash<ItemType, QList<QAction *>> item_actions;
-    
     QAction *open_filter_action;
     QAction *show_noncontainers_action;
     QAction *dev_mode_action;

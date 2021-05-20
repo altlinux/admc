@@ -549,15 +549,4 @@ void ADMCTestObjectMenu::test_object_rename(const QString& oldname, const QStrin
     QVERIFY2(object_exists(dn_after_rename), "Renamed object doesn't exist");
 }
 
-QPushButton *ADMCTestObjectMenu::find_button_by_name(const QString& name, QWidget *parent) {
-    auto buttons = parent->findChildren<QPushButton*>();
-    for (const auto &button : buttons) {
-        if (button->text() == name) {
-            return button;
-        }
-    }
-
-    return nullptr;
-}
-
 QTEST_MAIN(ADMCTestObjectMenu)

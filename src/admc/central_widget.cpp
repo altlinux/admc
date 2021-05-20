@@ -33,7 +33,8 @@
 #include "rename_object_dialog.h"
 #include "create_object_dialog.h"
 #include "create_policy_dialog.h"
-#include "create_query_dialog.h"
+#include "create_query_item_dialog.h"
+#include "edit_query_item_dialog.h"
 #include "move_query_dialog.h"
 #include "create_query_folder_dialog.h"
 #include "move_object_dialog.h"
@@ -77,7 +78,6 @@ CentralWidget::CentralWidget()
 
     console = new ConsoleWidget();
 
-    auto create_query_dialog = new CreateQueryDialog(console);
     auto create_query_folder_dialog = new CreateQueryFolderDialog(console);
     auto edit_query_folder_dialog = new EditQueryFolderDialog(console);
     auto create_policy_dialog = new CreatePolicyDialog(console);
@@ -183,19 +183,28 @@ CentralWidget::CentralWidget()
 
     connect(
         console_actions->get(ConsoleAction_QueryCreateFolder), &QAction::triggered,
-        create_query_folder_dialog, &QDialog::open);
+        create_query_folder_dialog, &CreateQueryFolderDialog::open);
     connect(
         console_actions->get(ConsoleAction_QueryCreateItem), &QAction::triggered,
-        create_query_dialog, &QDialog::open);
+        this, &CentralWidget::query_create);
     connect(
         console_actions->get(ConsoleAction_QueryEditFolder), &QAction::triggered,
         edit_query_folder_dialog, &QDialog::open);
+    connect(
+        console_actions->get(ConsoleAction_QueryEditItem), &QAction::triggered,
+        this, &CentralWidget::query_edit);
     connect(
         console_actions->get(ConsoleAction_QueryMoveItemOrFolder), &QAction::triggered,
         move_query_dialog, &QDialog::open);
     connect(
         console_actions->get(ConsoleAction_QueryDeleteItemOrFolder), &QAction::triggered,
         this, &CentralWidget::query_delete);
+    connect(
+        console_actions->get(ConsoleAction_QueryExport), &QAction::triggered,
+        this, &CentralWidget::query_export);
+    connect(
+        console_actions->get(ConsoleAction_QueryImport), &QAction::triggered,
+        this, &CentralWidget::query_import);
 
     connect(
         console, &ConsoleWidget::current_scope_item_changed,
@@ -539,6 +548,16 @@ void CentralWidget::policy_delete() {
     g_status()->display_ad_messages(ad, this);
 }
 
+void CentralWidget::query_create() {
+    auto dialog = new CreateQueryItemDialog(console);
+    dialog->open();
+}
+
+void CentralWidget::query_edit() {
+    auto dialog = new EditQueryItemDialog(console);
+    dialog->open();
+}
+
 void CentralWidget::query_delete() {
     const QList<QPersistentModelIndex> selected_indexes = persistent_index_list(console->get_selected_items());
 
@@ -547,6 +566,14 @@ void CentralWidget::query_delete() {
     }
 
     console_query_tree_save(console);
+}
+
+void CentralWidget::query_export() {
+    console_query_export(console);
+}
+
+void CentralWidget::query_import() {
+    console_query_import(console);
 }
 
 void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, bool *ok) {
@@ -687,8 +714,6 @@ void CentralWidget::refresh_head() {
     hide_busy_indicator();
 }
 
-// TODO: currently calling this when current scope changes,
-// but also need to call this when items are added/deleted
 void CentralWidget::update_description_bar() {
     const QString text =
     [this]() {
@@ -697,7 +722,12 @@ void CentralWidget::update_description_bar() {
 
         if (type == ItemType_Object) {
             const int results_count = console->get_current_results_count();
-            const QString out = tr("%n object(s)", "", results_count);
+            QString out = tr("%n object(s)", "", results_count);
+
+            const bool filtering_ON = filter_dialog->filtering_ON();
+            if (filtering_ON) {
+                out += tr(" [Filtering results]");
+            }
 
             return out;
         } else {
@@ -710,12 +740,6 @@ void CentralWidget::update_description_bar() {
 
 void CentralWidget::add_actions_to_action_menu(QMenu *menu) {
     console_actions->add_to_menu(menu);
-
-    for (const QList<QAction *> actions : item_actions.values()) {
-        for (QAction *action : actions) {
-            menu->addAction(action);
-        }
-    }
 
     menu->addSeparator();
 
@@ -786,9 +810,6 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
 void CentralWidget::update_actions_visibility() {
     // Figure out what kind of types of items are selected
     const QList<QModelIndex> selected_indexes = console->get_selected_items();
-    if (selected_indexes.isEmpty()) {
-        return;
-    }
 
     console_actions->update_actions_visibility(selected_indexes);
 }

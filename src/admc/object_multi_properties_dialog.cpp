@@ -80,7 +80,6 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
 
     add_tab(new GeneralMultiTab(class_list), tr("General"));
 
-    // TODO: add other tabs
     if (class_list == QList<QString>({CLASS_USER})) {
         add_tab(new AccountMultiTab(ad), tr("Account"));
         add_tab(new AddressMultiTab(), tr("Address"));

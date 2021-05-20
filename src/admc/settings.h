@@ -49,7 +49,7 @@ enum VariantSetting {
     VariantSetting_MainWindowState,
     VariantSetting_AttributesTabFilter,
     VariantSetting_QueryFolders,
-    VariantSetting_QueryInfo,
+    VariantSetting_QueryItems,
 
     VariantSetting_COUNT,    
 };

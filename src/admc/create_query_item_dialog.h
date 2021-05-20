@@ -17,36 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SEARCH_BASE_WIDGET_H
-#define SEARCH_BASE_WIDGET_H
+#ifndef CREATE_QUERY_ITEM_DIALOG_H
+#define CREATE_QUERY_ITEM_DIALOG_H
 
-/**
- * Allows user to select a search base object.
- */
+#include <QDialog>
 
-#include <QWidget>
+class ConsoleWidget;
+class EditQueryItemWidget;
 
-class QComboBox;
-class QString;
-
-class SearchBaseWidget final : public QWidget {
+class CreateQueryItemDialog : public QDialog {
 Q_OBJECT
 
 public:
-    SearchBaseWidget(const QString &default_search_base = QString());
+    CreateQueryItemDialog(ConsoleWidget *console_arg);
 
-    QString get_search_base() const;
-
-    void serialize(QDataStream &stream) const;
-    void deserialize(QDataStream &stream);
+    void accept() override;
 
 private:
-    QComboBox *combo;
-
-    void browse();
+    ConsoleWidget *console;
+    EditQueryItemWidget *edit_query_widget;
 };
 
-QDataStream &operator<<(QDataStream &stream, const SearchBaseWidget *widget);
-QDataStream &operator>>(QDataStream &stream, SearchBaseWidget *widget);
-
-#endif /* SEARCH_BASE_WIDGET_H */
+#endif /* CREATE_QUERY_ITEM_DIALOG_H */

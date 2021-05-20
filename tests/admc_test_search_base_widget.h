@@ -17,33 +17,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATE_QUERY_DIALOG_H
-#define CREATE_QUERY_DIALOG_H
+#ifndef ADMC_TEST_SEARCH_BASE_WIDGET_H
+#define ADMC_TEST_SEARCH_BASE_WIDGET_H
 
-#include <QDialog>
-#include <QString>
-#include <QList>
-#include <QModelIndex>
+#include "admc_test.h"
 
-class QLineEdit;
-class FilterWidget;
+class QComboBox;
+class QPushButton;
 class SearchBaseWidget;
-class ConsoleWidget;
 
-class CreateQueryDialog : public QDialog {
+class ADMCTestSearchBaseWidget : public ADMCTest {
 Q_OBJECT
 
-public:
-    CreateQueryDialog(ConsoleWidget *console_arg);
+private slots:
+    void init() override;
+
+    void default_to_domain_head();
+    void select_search_base();
+    void select_search_base_multiple();
+    void serialize();
 
 private:
-    QLineEdit *name_edit;
-    QLineEdit *description_edit;
-    FilterWidget *filter_widget;
     SearchBaseWidget *search_base_widget;
-    ConsoleWidget *console;
+    QComboBox *combo;
+    QPushButton *browse_button;
+    QList<QString> dn_list;
 
-    void accept() override;
+    void add_search_base(const QString &dn);
 };
 
-#endif /* CREATE_QUERY_DIALOG_H */
+#endif /* ADMC_TEST_SEARCH_BASE_WIDGET_H */

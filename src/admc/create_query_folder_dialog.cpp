@@ -61,12 +61,19 @@ CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg)
         this, &CreateQueryFolderDialog::accept);
 }
 
+void CreateQueryFolderDialog::open() {
+    name_edit->setText(tr("New folder"));
+    description_edit->setText("");
+
+    QDialog::open();
+}
+
 void CreateQueryFolderDialog::accept() {
     const QModelIndex parent_index = get_selected_scope_index(console);
     const QString name = name_edit->text();
     const QString description = description_edit->text();
 
-    if (!console_query_name_is_good(name, parent_index, this, QModelIndex())) {
+    if (!console_query_or_folder_name_is_good(name, parent_index, this, QModelIndex())) {
         return;
     }
 

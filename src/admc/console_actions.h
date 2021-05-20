@@ -55,8 +55,11 @@ enum ConsoleAction {
     ConsoleAction_QueryCreateFolder,
     ConsoleAction_QueryCreateItem,
     ConsoleAction_QueryEditFolder,
+    ConsoleAction_QueryEditItem,
     ConsoleAction_QueryDeleteItemOrFolder,
     ConsoleAction_QueryMoveItemOrFolder,
+    ConsoleAction_QueryExport,
+    ConsoleAction_QueryImport,
 
     ConsoleAction_LAST,
 };

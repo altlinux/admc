@@ -43,6 +43,8 @@ const QList<QString> filter_classes = {
     CLASS_REMOTE_STORAGE_SERVICE,
 };
 
+QList<QString> process_subfilters(const QList<QString> &in);
+
 QString filter_CONDITION(const Condition condition, const QString &attribute, const QString &value) {
     switch(condition) {
         case Condition_Equals: return QString("(%1=%2)").arg(attribute, value);
@@ -58,8 +60,10 @@ QString filter_CONDITION(const Condition condition, const QString &attribute, co
 }
 
 // {x, y, z ...} => (&(x)(y)(z)...)
-QString filter_AND(const QList<QString> &subfilters) {
-    if (!subfilters.isEmpty()) {
+QString filter_AND(const QList<QString> &subfilters_raw) {
+    const QList<QString> subfilters = process_subfilters(subfilters_raw);
+
+    if (subfilters.size() > 1) {
         QString filter = "(&";
         for (const QString &subfilter : subfilters) {
             filter += subfilter;
@@ -67,14 +71,18 @@ QString filter_AND(const QList<QString> &subfilters) {
         filter += ")";
 
         return filter;
+    } else if (subfilters.size() == 1) {
+        return subfilters[0];
     } else {
         return QString();
     }
 }
 
 // {x, y, z ...} => (|(x)(y)(z)...)
-QString filter_OR(const QList<QString> &subfilters) {
-    if (!subfilters.isEmpty()) {
+QString filter_OR(const QList<QString> &subfilters_raw) {
+    const QList<QString> subfilters = process_subfilters(subfilters_raw);
+    
+    if (subfilters.size() > 1) {
         QString filter = "(|";
         for (const QString &subfilter : subfilters) {
             filter += subfilter;
@@ -82,6 +90,8 @@ QString filter_OR(const QList<QString> &subfilters) {
         filter += ")";
 
         return filter;
+    } else if (subfilters.size() == 1) {
+       return subfilters[0];
     } else {
         return QString();
     }
@@ -99,4 +109,11 @@ QString condition_to_display_string(const Condition condition) {
         case Condition_COUNT: return QString();
     }
     return QString();
+}
+
+QList<QString> process_subfilters(const QList<QString> &in) {
+    QList<QString> out = in;
+    out.removeAll("");
+
+    return out;
 }

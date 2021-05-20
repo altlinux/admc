@@ -30,17 +30,12 @@ FilterWidgetSimpleTab::FilterWidgetSimpleTab(const QList<QString> classes)
     select_classes = new SelectClassesWidget(classes);
 
     name_edit = new QLineEdit(this);
+    name_edit->setObjectName("name_edit");
 
     auto layout = new QFormLayout();
     setLayout(layout);
     layout->addRow(tr("Classes:"), select_classes);
     layout->addRow(tr("Name:"), name_edit);
-
-    connect(
-        name_edit, &QLineEdit::textChanged,
-        [this]() {
-            emit changed();
-        });
 }
 
 QString FilterWidgetSimpleTab::get_filter() const {
@@ -58,4 +53,19 @@ QString FilterWidgetSimpleTab::get_filter() const {
     const QString classes_filter = select_classes->get_filter();
 
     return filter_AND({name_filter, classes_filter});
+}
+
+void FilterWidgetSimpleTab::serialize(QDataStream &stream) const {
+    stream << select_classes;
+    
+    const QString name = name_edit->text();
+    stream << name;
+}
+
+void FilterWidgetSimpleTab::deserialize(QDataStream &stream) {
+    stream >> select_classes;
+
+    QString name;
+    stream >> name;
+    name_edit->setText(name);
 }

@@ -162,7 +162,6 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
 
     add_tab(new GeneralTab(object), tr("General"));
 
-    // TODO: security tab(didn't make it yet) is also "advanced", so add it here when it gets made
     const bool advanced_view_ON = g_settings->get_bool(BoolSetting_AdvancedFeatures);
     if (advanced_view_ON) {
         add_tab(new ObjectTab(), tr("Object"));
@@ -193,7 +192,6 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     }
 
     if (object.is_class(CLASS_OU) || object.is_class(CLASS_DOMAIN)) {
-        // TODO: not sure which object classes can have gplink, for now only know of OU's.
         add_tab(new GroupPolicyTab(), tr("Group policy"));
     }
 
@@ -296,7 +294,6 @@ void PropertiesDialog::ok() {
 }
 
 bool PropertiesDialog::apply() {
-    // TODO: handle failure
     AdInterface ad;
     if (ad_failed(ad)) {
         return false;
@@ -336,7 +333,6 @@ bool PropertiesDialog::apply() {
 }
 
 void PropertiesDialog::reset() {
-    // TODO: handle error
     AdInterface ad;
     if (ad_failed(ad)) {
         return;

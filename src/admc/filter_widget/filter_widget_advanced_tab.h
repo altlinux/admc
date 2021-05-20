@@ -36,6 +36,9 @@ public:
 
     QString get_filter() const;
 
+    void serialize(QDataStream &stream) const;
+    void deserialize(QDataStream &stream);
+
 private:
     QPlainTextEdit *ldap_filter_edit;
 };

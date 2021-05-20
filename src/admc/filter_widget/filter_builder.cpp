@@ -67,6 +67,8 @@ FilterBuilder::FilterBuilder()
         condition_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &FilterBuilder::update_value_edit);
     update_value_edit();
+
+    value_edit->setObjectName("value_edit");
 }
 
 QString FilterBuilder::get_filter() const {

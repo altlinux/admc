@@ -155,12 +155,6 @@ bool ad_connected_base(const AdInterface &ad) {
         const QString title = QObject::tr("Connection error");
         const QString text = QObject::tr("Failed to connect to server.");
 
-        // TODO: would want a valid parent widget for
-        // message box but this f-n can be called from
-        // places where there isn't one available,
-        // console_drag_model for example. Good news is that
-        // the messagebox appears to be modal even without a
-        // parent.
         QMessageBox::critical(nullptr, title, text);
     }
 
@@ -195,7 +189,6 @@ void limit_edit(QLineEdit *edit, const QString &attribute) {
 }
 
 QIcon get_object_icon(const AdObject &object) {
-    // TODO: change to custom, good icons, add those icons to installation?
     static const QMap<QString, QString> class_to_icon = {
         {CLASS_DOMAIN, "network-server"},
         {CLASS_CONTAINER, "folder"},
@@ -251,5 +244,58 @@ QModelIndex get_selected_scope_index(ConsoleWidget *console) {
         return scope_index;
     } else {
         return QModelIndex();
+    }
+}
+
+// Hide advanced view only" objects if advanced view setting
+// is off
+void advanced_features_filter(QString &filter) {
+    const bool advanced_features_OFF = !g_settings->get_bool(BoolSetting_AdvancedFeatures);
+    if (advanced_features_OFF) {
+        const QString advanced_features = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
+        filter = filter_OR({filter, advanced_features});
+    }
+}
+
+// OR filter with some dev mode object classes, so that they
+// show up no matter what when dev mode is on
+void dev_mode_filter(QString &filter) {
+    const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
+    if (!dev_mode) {
+        return;
+    }
+
+    const QList<QString> schema_classes = {
+        "classSchema",
+        "attributeSchema",
+        "displaySpecifier",
+    };
+
+    QList<QString> class_filters;
+    for (const QString &object_class : schema_classes) {
+        const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
+        class_filters.append(class_filter);
+    }
+
+    filter = filter_OR({filter, filter_OR(class_filters)});
+}
+
+// NOTE: configuration and schema objects are hidden so that
+// they don't show up in regular searches. Have to use
+// search_object() and manually add them to search results.
+void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &current_dn) {
+    const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
+    if (!dev_mode) {
+        return;
+    }
+
+    const QString search_base = g_adconfig->domain_head();
+    const QString configuration_dn = g_adconfig->configuration_dn();
+    const QString schema_dn = g_adconfig->schema_dn();
+
+    if (current_dn == search_base) {
+        results[configuration_dn] = ad.search_object(configuration_dn);
+    } else if (current_dn == configuration_dn) {
+        results[schema_dn] = ad.search_object(schema_dn);
     }
 }

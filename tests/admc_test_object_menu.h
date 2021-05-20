@@ -64,8 +64,6 @@ private:
 
     // Common renamer for object.
     static void basic_rename(const QString& newname);
-
-    QPushButton *find_button_by_name(const QString& name, QWidget *parent);
 };
 
 #endif /* ADMC_TEST_OBJECT_MENU_H */

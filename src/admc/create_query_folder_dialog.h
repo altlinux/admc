@@ -34,6 +34,8 @@ Q_OBJECT
 public:
     CreateQueryFolderDialog(ConsoleWidget *console_arg);
 
+    void open() override;
+
 private:
     QLineEdit *name_edit;
     QLineEdit *description_edit;

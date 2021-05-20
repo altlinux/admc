@@ -17,36 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SEARCH_BASE_WIDGET_H
-#define SEARCH_BASE_WIDGET_H
+#ifndef FILTER_CLASSES_WIDGET_H
+#define FILTER_CLASSES_WIDGET_H
 
 /**
- * Allows user to select a search base object.
+ * This widget is embedded in FilterDialog. Contains
+ * checkboxes of object classes. get_filter() returns a
+ * filter which will filter out unselected classes.
  */
 
 #include <QWidget>
+#include <QHash>
+#include <QString>
 
-class QComboBox;
-class QString;
+class QCheckBox;
 
-class SearchBaseWidget final : public QWidget {
+class FilterClassesWidget final : public QWidget {
 Q_OBJECT
-
+    
 public:
-    SearchBaseWidget(const QString &default_search_base = QString());
+    FilterClassesWidget(const QList<QString> &class_list);
 
-    QString get_search_base() const;
-
+    QString get_filter() const;
+    QList<QString> get_selected_classes() const;
     void serialize(QDataStream &stream) const;
     void deserialize(QDataStream &stream);
 
 private:
-    QComboBox *combo;
+    QHash<QString, QCheckBox *> checkbox_map;
+    QList<QString> class_list;
 
-    void browse();
+    void select_all();
+    void clear_selection();
 };
 
-QDataStream &operator<<(QDataStream &stream, const SearchBaseWidget *widget);
-QDataStream &operator>>(QDataStream &stream, SearchBaseWidget *widget);
+QDataStream &operator<<(QDataStream &stream, const FilterClassesWidget *widget);
+QDataStream &operator>>(QDataStream &stream, FilterClassesWidget *widget);
 
-#endif /* SEARCH_BASE_WIDGET_H */
+#endif /* FILTER_CLASSES_WIDGET_H */

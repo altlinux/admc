@@ -104,14 +104,12 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     }
     qDebug() << "hosts=" << hosts;
 
-    // TODO: for now selecting first host, which seems to be fine but investigate what should be selected.
     d->host = hosts[0];
 
     const QString uri = "ldap://" + d->host;
 
     const bool success = ad_connect(cstr(uri), &d->ld);
     if (success) {
-        // TODO: can this context expire, for example from a disconnect?
         // NOTE: this doesn't leak memory. False positive.
         smbc_init(get_auth_data_fn, 0);
         d->smbc = smbc_new_context();
@@ -215,7 +213,7 @@ bool AdInterfacePrivate::search_paged_internal(const char *filter, char **attrib
     const int attrsonly = 0;
     result = ldap_search_ext_s(ld, search_base, scope, filter, attributes, attrsonly, server_controls, NULL, NULL, LDAP_NO_LIMIT, &res);
     if ((result != LDAP_SUCCESS) && (result != LDAP_PARTIAL_RESULTS)) {
-        // TODO: it's not really an error for an object to
+        // NOTE: it's not really an error for an object to
         // not exist. For example, sometimes it's needed to
         // check whether an object exists. Not sure how to
         // distinguish this error type from others
@@ -755,11 +753,6 @@ bool AdInterface::group_remove_member(const QString &group_dn, const QString &us
 }
 
 bool AdInterface::group_set_scope(const QString &dn, GroupScope scope, const DoStatusMsg do_msg) {
-    // TODO: Switching scope global<->domainlocal might have
-    // some requirements. Might need to check in UI whether
-    // the switch is possible. See:
-    // https://serverfault.com/questions/701016/why-cant-we-directly-change-a-group-from-global-scope-to-domain-local-or-vice-v
-
     // NOTE: it is not possible to change scope from
     // global<->domainlocal directly, so have to switch to
     // universal first.
@@ -873,7 +866,9 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
     const auto codec = QTextCodec::codecForName("UTF-16LE");
     QByteArray password_bytes = codec->fromUnicode(quoted_password);
     // Remove BOM
-    // TODO: gotta be a way to tell codec not to add BOM, but couldn't find it, only QTextStream has setGenerateBOM
+    // NOTE: gotta be a way to tell codec not to add BOM
+    // but couldn't find it, only QTextStream has
+    // setGenerateBOM()
     if (password_bytes[0] != '\"') {
         password_bytes.remove(0, 2);
     }
@@ -1077,7 +1072,6 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     //
     // Create AD object for gpo
     //
-    // TODO: add all attributes during creation, need to directly create through ldap then
     const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, d->domain_head);
     dn_out = dn;
     const bool result_add = object_add(dn, CLASS_GP_CONTAINER);
@@ -1385,7 +1379,6 @@ QList<QString> query_server_for_hosts(const char *dname) {
         GETSHORT(priority, curr);
         GETSHORT(weight, curr);
         GETSHORT(port, curr);
-        // TODO: need to save port field? maybe to incorporate into uri
 
         // Get host
         char host[NS_MAXDNAME];

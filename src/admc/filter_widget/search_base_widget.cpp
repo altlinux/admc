@@ -75,7 +75,7 @@ QString SearchBaseWidget::get_search_base() const {
 }
 
 void SearchBaseWidget::browse() {
-    auto dialog = new SelectContainerDialog(parentWidget());
+    auto dialog = new SelectContainerDialog(this);
 
     connect(
         dialog, &SelectContainerDialog::accepted,
@@ -91,4 +91,54 @@ void SearchBaseWidget::browse() {
         });
 
     dialog->open();
+}
+
+void SearchBaseWidget::serialize(QDataStream &stream) const {
+    QList<QString> name_list;
+    QList<QString> dn_list;
+
+    for (int i = 0; i < combo->count(); i++) {
+        const QString dn = combo->itemData(i).toString();
+        const QString name = combo->itemText(i);
+        name_list.append(name);
+        dn_list.append(dn);
+    }
+
+    const int current_index = combo->currentIndex();
+
+    stream << dn_list;
+    stream << name_list;
+    stream << current_index;
+}
+
+void SearchBaseWidget::deserialize(QDataStream &stream) {
+    QList<QString> name_list;
+    QList<QString> dn_list;
+    int current_index;
+
+    stream >> dn_list;
+    stream >> name_list;
+    stream >> current_index;
+
+    combo->clear();
+
+    for (int i = 0; i < dn_list.size(); i++) {
+        const QString dn = dn_list[i];
+        const QString name = name_list[i];
+        combo->addItem(name, dn);
+    }
+
+    combo->setCurrentIndex(current_index);
+}
+
+QDataStream &operator<<(QDataStream &stream, const SearchBaseWidget *widget) {
+    widget->serialize(stream);
+
+    return stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, SearchBaseWidget *widget) {
+    widget->deserialize(stream);
+    
+    return stream;
 }

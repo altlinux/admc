@@ -77,7 +77,7 @@ void EditQueryFolderDialog::accept() {
     const QString name = name_edit->text();
     const QString description = description_edit->text();
 
-    if (!console_query_name_is_good(name, scope_index.parent(), this, scope_index)) {
+    if (!console_query_or_folder_name_is_good(name, scope_index.parent(), this, scope_index)) {
         return;
     }
 

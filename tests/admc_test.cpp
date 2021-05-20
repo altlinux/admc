@@ -29,6 +29,7 @@
 #include <QTreeView>
 #include <QMessageBox>
 #include <QTimer>
+#include <QPushButton>
 
 #define PRINT_FOCUS_WIDGET_BEFORE_TAB false
 #define PRINT_FOCUS_WIDGET_AFTER_TAB false
@@ -191,4 +192,15 @@ void ADMCTest::close_message_box_slot() {
             QTest::keyClick(message_box, Qt::Key_Enter);
         }
     }
+}
+
+QPushButton *find_button_by_name(const QString& name, QWidget *parent) {
+    auto buttons = parent->findChildren<QPushButton*>();
+    for (const auto &button : buttons) {
+        if (button->text() == name) {
+            return button;
+        }
+    }
+
+    return nullptr;
 }

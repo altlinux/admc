@@ -33,16 +33,20 @@ FilterWidgetAdvancedTab::FilterWidgetAdvancedTab()
     setLayout(layout);
     layout->addWidget(label);
     layout->addWidget(ldap_filter_edit);
-
-    connect(
-        ldap_filter_edit, &QPlainTextEdit::textChanged,
-        [this]() {
-            emit changed();
-        });
 }
 
 QString FilterWidgetAdvancedTab::get_filter() const {
     const QString filter = ldap_filter_edit->toPlainText();
 
     return filter;
+}
+
+void FilterWidgetAdvancedTab::serialize(QDataStream &stream) const {
+    stream << ldap_filter_edit->toPlainText();
+}
+
+void FilterWidgetAdvancedTab::deserialize(QDataStream &stream) {
+    QString text;
+    stream >> text;
+    ldap_filter_edit->setPlainText(text);
 }

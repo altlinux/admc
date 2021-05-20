@@ -26,7 +26,6 @@
 #include "status.h"
 #include "central_widget.h"
 #include "filter_dialog.h"
-#include "filter_widget/filter_widget.h"
 #include "console_actions.h"
 #include "select_object_dialog.h"
 #include "console_types/console_policy.h"
@@ -332,44 +331,23 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
 
     show_busy_indicator();
 
-    const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
-
     //
     // Search object's children
     //
     const QString filter =
     [=]() {
-        const QString user_filter = filter_dialog->filter_widget->get_filter();
+        QString out;
 
-        const QString is_container = is_container_filter();
+        out = is_container_filter();
 
-        // NOTE: OR user filter with containers filter so that container objects are always shown, even if they are filtered out by user filter
-        QString out = filter_OR({user_filter, is_container});
+        // NOTE: OR user filter with containers filter so
+        // that container objects are always shown, even if
+        // they are filtered out by user filter
+        const QString user_filter = filter_dialog->get_filter();
+        out = filter_OR({user_filter, out});
 
-        // Hide advanced view only" objects if advanced view
-        // setting is off
-        const bool advanced_features_OFF = !g_settings->get_bool(BoolSetting_AdvancedFeatures);
-        if (advanced_features_OFF) {
-            const QString advanced_features = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
-            out = filter_OR({out, advanced_features});
-        }
-
-        // OR filter with some dev mode object classes, so that they show up no matter what when dev mode is on
-        if (dev_mode) {
-            const QList<QString> schema_classes = {
-                "classSchema",
-                "attributeSchema",
-                "displaySpecifier",
-            };
-
-            QList<QString> class_filters;
-            for (const QString &object_class : schema_classes) {
-                const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
-                class_filters.append(class_filter);
-            }
-
-            out = filter_OR({out, filter_OR(class_filters)});
-        }
+        advanced_features_filter(out);
+        dev_mode_filter(out);
 
         return out;
     }();
@@ -380,19 +358,7 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
 
     QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_Children, dn);
 
-    // Dev mode
-    // NOTE: configuration and schema objects are hidden so that they don't show up in regular searches. Have to use search_object() and manually add them to search results.
-    if (dev_mode) {
-        const QString search_base = g_adconfig->domain_head();
-        const QString configuration_dn = g_adconfig->configuration_dn();
-        const QString schema_dn = g_adconfig->schema_dn();
-
-        if (dn == search_base) {
-            search_results[configuration_dn] = ad.search_object(configuration_dn);
-        } else if (dn == configuration_dn) {
-            search_results[schema_dn] = ad.search_object(schema_dn);
-        }
-    }
+    dev_mode_search_results(search_results, ad, dn);
 
     console_object_create(console, search_results.values(), index);
     console->sort_scope();

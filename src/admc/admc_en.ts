@@ -502,29 +502,29 @@
     </message>
 </context>
 <context>
-    <name>CreateQueryDialog</name>
+    <name>CreateQueryItemDialog</name>
     <message>
-        <location filename="create_query_dialog.cpp" line="39"/>
+        <location filename="create_query_item_dialog.cpp" line="39"/>
         <source>Create Query</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_dialog.cpp" line="53"/>
+        <location filename="create_query_item_dialog.cpp" line="53"/>
         <source>Create</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_dialog.cpp" line="55"/>
+        <location filename="create_query_item_dialog.cpp" line="55"/>
         <source>Name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_dialog.cpp" line="56"/>
+        <location filename="create_query_item_dialog.cpp" line="56"/>
         <source>Description:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_dialog.cpp" line="57"/>
+        <location filename="create_query_item_dialog.cpp" line="57"/>
         <source>Search in:</source>
         <translation></translation>
     </message>
