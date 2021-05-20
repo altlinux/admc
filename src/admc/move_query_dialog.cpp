@@ -36,6 +36,9 @@
 #include <QSortFilterProxyModel>
 #include <QStack>
 #include <QDebug>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 MoveQueryDialog::MoveQueryDialog(ConsoleWidget *console_arg)
 : QDialog(console_arg) {
@@ -81,14 +84,6 @@ MoveQueryDialog::MoveQueryDialog(ConsoleWidget *console_arg)
 
 // TODO: duplicating console_query_tree_init()
 void MoveQueryDialog::open() {
-    auto path_to_name =
-    [](const QString &path) {
-        const int separator_i = path.lastIndexOf("/");
-        const QString name = path.mid(separator_i + 1);
-
-        return name;
-    };
-
     model->removeRows(0, model->rowCount());
 
     QStandardItem *head_item = new QStandardItem();
@@ -97,28 +92,33 @@ void MoveQueryDialog::open() {
     head_item->setData(ItemType_QueryRoot, ConsoleRole_Type);
     model->appendRow(head_item);
 
-    const QHash<QString, QVariant> folders_map = g_settings->get_variant(VariantSetting_QueryFolders).toHash();
-    const QHash<QString, QVariant> info_map = g_settings->get_variant(VariantSetting_QueryItems).toHash();
+    const QJsonObject folder_list = QJsonDocument::fromJson(g_settings->get_variant(VariantSetting_QueryFolders).toByteArray()).object();
 
     QStack<QModelIndex> query_stack;
     query_stack.append(head_item->index());
     while (!query_stack.isEmpty()) {
-        const QModelIndex index = query_stack.pop();
-        const QString path = console_query_folder_path(index);
+        const QModelIndex folder_index = query_stack.pop();
+        QStandardItem *folder_item  = model->itemFromIndex(folder_index);
 
-        // Go through children and add them as folders or
-        // query items
-        const QList<QString> children = folders_map[path].toStringList();
-        for (const QString &child_path : children) {
-            const QHash<QString, QVariant> info = info_map[child_path].toHash();
-            const bool is_query_item = info["is_query_item"].toBool();
+        const QJsonArray child_list =
+        [&]() {
+            const QString folder_path = console_query_folder_path(folder_index);
+            const QJsonObject folder_data = folder_list[folder_path].toObject();
+            
+            return folder_data["child_list"].toArray();
+        }();
 
-            if (!is_query_item) {
-                const QString name = path_to_name(child_path);
+        for (const QJsonValue &path_json : child_list) {
+            const QString path = path_json.toString();
+
+            if (folder_list.contains(path)) {
+                const QJsonObject folder_data = folder_list[path].toObject();
+
+                const QString name = folder_data["name"].toString();
 
                 auto item = new QStandardItem(name);
-                auto parent_item = model->itemFromIndex(index);
-                parent_item->appendRow(item);
+                item->setIcon(QIcon::fromTheme("folder"));
+                folder_item->appendRow(item);
 
                 query_stack.append(item->index());
             }
