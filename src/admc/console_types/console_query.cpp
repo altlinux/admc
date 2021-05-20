@@ -35,6 +35,8 @@
 #include <QMenu>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #define QUERY_ROOT "QUERY_ROOT"
 
@@ -500,31 +502,47 @@ void console_query_export(ConsoleWidget *console) {
     }
     const QModelIndex index = index_list[0];
 
-    const QString name = index.data(Qt::DisplayRole).toString();
-    const QString description = index.data(QueryItemRole_Description).toString();
-    const QString search_base = index.data(QueryItemRole_SearchBase).toString();
-    const QString filter = index.data(QueryItemRole_Filter).toString();
-    const QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
+    const QString file_path =
+    [&]() {
+        const QString query_name = index.data(Qt::DisplayRole).toString();
 
-    const QString caption = QCoreApplication::translate("console_query.cpp", "Export Query");
-    const QString suggested_file = QString("%1/%2.query").arg(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation), name);
-    const QString file_filter = QCoreApplication::translate("console_query.cpp", "Query (*.query)");
+        const QString caption = QCoreApplication::translate("console_query.cpp", "Export Query");
+        const QString suggested_file = QString("%1/%2.json").arg(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation), query_name);
+        const QString filter = QCoreApplication::translate("console_query.cpp", "JSON (*.json)");
 
-    const QString file_path = QFileDialog::getSaveFileName(console, caption, suggested_file, file_filter);
+        const QString out = QFileDialog::getSaveFileName(console, caption, suggested_file, filter);
+
+        return out;
+    }();
 
     if (file_path.isEmpty()) {
         return;
     }
 
+    const QByteArray json_bytes =
+    [&]() {
+        const QString name = index.data(Qt::DisplayRole).toString();
+        const QString description = index.data(QueryItemRole_Description).toString();
+        const QString search_base = index.data(QueryItemRole_SearchBase).toString();
+        const QString filter = index.data(QueryItemRole_Filter).toString();
+        const QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
+
+        QJsonObject json_object;
+        json_object["name"] = name;
+        json_object["description"] = description;
+        json_object["search_base"] = search_base;
+        json_object["filter"] = filter;
+        json_object["filter_state"] = QString(filter_state.toHex());
+
+        const QJsonDocument json_document = QJsonDocument(json_object);
+        const QByteArray out = json_document.toJson();
+
+        return out;
+    }();
+
     QFile file(file_path);
     file.open(QIODevice::WriteOnly);
-    QDataStream out(&file);
-
-    out << name;
-    out << description;
-    out << search_base;
-    out << filter;
-    out << filter_state;
+    file.write(json_bytes);
 }
 
 void console_query_import(ConsoleWidget *console) {
@@ -534,30 +552,48 @@ void console_query_import(ConsoleWidget *console) {
     }
     const QModelIndex parent_index = index_list[0];
 
-    const QString caption = QCoreApplication::translate("console_query.cpp", "Import Query");
-    const QString dir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-    const QString file_filter = QCoreApplication::translate("console_query.cpp", "Query (*.query)");
+    const QString file_path =
+    [&]() {
+        const QString caption = QCoreApplication::translate("console_query.cpp", "Import Query");
+        const QString dir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+        const QString file_filter = QCoreApplication::translate("console_query.cpp", "JSON (*.json)");
 
-    const QString file_path = QFileDialog::getOpenFileName(console, caption, dir, file_filter);
+        const QString out = QFileDialog::getOpenFileName(console, caption, dir, file_filter);
+
+        return out;
+    }();
 
     if (file_path.isEmpty()) {
         return;
     }
 
-    QFile file(file_path);
-    file.open(QIODevice::ReadOnly);
-    QDataStream in(&file);
+    const QJsonObject json_object = 
+    [&]() {
+        QFile file(file_path);
+        file.open(QIODevice::ReadOnly);
+        const QByteArray json_bytes = file.readAll();
 
-    QString name;    
-    QString description;    
-    QString search_base;
-    QString filter;
-    QByteArray filter_state;
-    in >> name;
-    in >> description;
-    in >> search_base;
-    in >> filter;
-    in >> filter_state;
+        QJsonParseError error;
+        const QJsonDocument json_document = QJsonDocument::fromJson(json_bytes, &error);
+
+        const bool parse_success = (error.error != QJsonParseError::NoError);
+        if (parse_success) {
+            const QString error_text = QString(QCoreApplication::translate("query.cpp", "Query file is corrupted."));
+            QMessageBox::warning(console, QCoreApplication::translate("query.cpp", "Error"), error_text);
+
+            return QJsonObject();
+        }
+
+        const QJsonObject out = json_document.object();
+
+        return out;
+    }();
+
+    const QString name = json_object["name"].toString();
+    const QString description = json_object["description"].toString();
+    const QString search_base = json_object["search_base"].toString();
+    const QString filter = json_object["filter"].toString();
+    const QByteArray filter_state = QByteArray::fromHex(json_object["filter_state"].toString().toLocal8Bit());
 
     if (!console_query_or_folder_name_is_good(name, parent_index, console, QModelIndex())) {
         return;
