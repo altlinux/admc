@@ -199,6 +199,9 @@ CentralWidget::CentralWidget()
     connect(
         console_actions->get(ConsoleAction_QueryDeleteItemOrFolder), &QAction::triggered,
         this, &CentralWidget::query_delete);
+    connect(
+        console_actions->get(ConsoleAction_QueryExport), &QAction::triggered,
+        this, &CentralWidget::query_export);
 
     connect(
         console, &ConsoleWidget::current_scope_item_changed,
@@ -560,6 +563,10 @@ void CentralWidget::query_delete() {
     }
 
     console_query_tree_save(console);
+}
+
+void CentralWidget::query_export() {
+    console_query_export(console);
 }
 
 void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, bool *ok) {

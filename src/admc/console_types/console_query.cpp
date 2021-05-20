@@ -33,6 +33,8 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QMenu>
+#include <QFileDialog>
+#include <QStandardPaths>
 
 #define QUERY_ROOT "QUERY_ROOT"
 
@@ -363,6 +365,7 @@ void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ConsoleAction_QueryEditItem));
     menu->addAction(actions->get(ConsoleAction_QueryMoveItemOrFolder));
     menu->addAction(actions->get(ConsoleAction_QueryDeleteItemOrFolder));
+    menu->addAction(actions->get(ConsoleAction_QueryExport));
 }
 
 void console_query_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
@@ -380,6 +383,7 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
 
         if (type == ItemType_QueryItem) {
             visible_actions->insert(ConsoleAction_QueryEditItem);
+            visible_actions->insert(ConsoleAction_QueryExport);
         }
     }
 
@@ -484,4 +488,43 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
 
     console->sort_scope();
     console_query_tree_save(console);
+}
+
+void console_query_export(ConsoleWidget *console) {
+    const QList<QModelIndex> index_list = console->get_selected_items();
+    if (index_list.isEmpty()) {
+        return;
+    }
+    const QModelIndex index = index_list[0];
+
+    const QString filter = index.data(QueryItemRole_Filter).toString();
+    const QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
+    const QString search_base = index.data(QueryItemRole_SearchBase).toString();
+    const QString name = index.data(Qt::DisplayRole).toString();
+
+    const QString caption = QCoreApplication::translate("console_query.cpp", "Export Query");
+    const QString suggested_file = QString("%1/%2.query").arg(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation), name);
+    const QString file_filter = QCoreApplication::translate("console_query.cpp", "Query (*.query)");
+
+    const QString file_path = QFileDialog::getSaveFileName(console, caption, suggested_file, file_filter);
+
+    if (file_path.isEmpty()) {
+        return;
+    }
+
+    QFile file(file_path);
+
+    // TODO: show error here? maybe allow to overwrite?
+    // Maybe filedialog already handles this?
+    if (file.exists()) {
+        return;
+    }
+
+    file.open(QIODevice::WriteOnly);
+    QDataStream out(&file);
+
+    out << filter;
+    out << filter_state;
+    out << search_base;
+    out << name;
 }
