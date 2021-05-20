@@ -74,7 +74,7 @@ QString filter_AND(const QList<QString> &subfilters) {
 
 // {x, y, z ...} => (|(x)(y)(z)...)
 QString filter_OR(const QList<QString> &subfilters) {
-    if (!subfilters.isEmpty()) {
+    if (subfilters.size() > 1) {
         QString filter = "(|";
         for (const QString &subfilter : subfilters) {
             filter += subfilter;
@@ -82,6 +82,8 @@ QString filter_OR(const QList<QString> &subfilters) {
         filter += ")";
 
         return filter;
+    } else if (subfilters.size() == 1) {
+       return subfilters[0];
     } else {
         return QString();
     }
