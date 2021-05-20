@@ -21,6 +21,7 @@
 
 #include "console_types/console_query.h"
 #include "edit_query_item_widget.h"
+#include "utils.h"
 
 #include <QLineEdit>
 #include <QVBoxLayout>
@@ -47,17 +48,15 @@ EditQueryItemDialog::EditQueryItemDialog(ConsoleWidget *console_arg)
     layout->addWidget(edit_query_widget);
     layout->addWidget(buttonbox);
 
-    const QList<QModelIndex> selected_list = console->get_selected_items();
+    scope_index = get_selected_scope_index(console);
 
-    if (selected_list.isEmpty()) {
+    if (scope_index.isValid()) {
         close();
 
         return;
     }
 
-    index = selected_list[0];
-
-    edit_query_widget->load(index);
+    edit_query_widget->load(scope_index);
 
     connect(
         buttonbox, &QDialogButtonBox::accepted,
@@ -74,8 +73,6 @@ void EditQueryItemDialog::accept() {
     QString search_base;
     QByteArray filter_state;
     edit_query_widget->get_state(name, description, filter, search_base, filter_state);
-
-    const QModelIndex scope_index = console_item_convert_to_scope_index(index);
 
     if (!console_query_or_folder_name_is_good(name, scope_index.parent(), this, scope_index)) {
         return;

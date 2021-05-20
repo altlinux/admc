@@ -496,11 +496,7 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
 }
 
 void console_query_export(ConsoleWidget *console) {
-    const QList<QModelIndex> index_list = console->get_selected_items();
-    if (index_list.isEmpty()) {
-        return;
-    }
-    const QModelIndex index = index_list[0];
+    const QModelIndex index = get_selected_scope_index(console);
 
     const QString file_path =
     [&]() {
@@ -528,11 +524,7 @@ void console_query_export(ConsoleWidget *console) {
 }
 
 void console_query_import(ConsoleWidget *console) {
-    const QList<QModelIndex> index_list = console->get_selected_items();
-    if (index_list.isEmpty()) {
-        return;
-    }
-    const QModelIndex parent_index = index_list[0];
+    const QModelIndex parent_index = get_selected_scope_index(console);
 
     const QString file_path =
     [&]() {
