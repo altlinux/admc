@@ -45,8 +45,8 @@ EditQueryItemWidget::EditQueryItemWidget()
     
     description_edit = new QLineEdit();
 
-    filter_edit = new QTextEdit();
-    filter_edit->setReadOnly(true);
+    filter_display = new QTextEdit();
+    filter_display->setReadOnly(true);
 
     auto edit_filter_dialog = new QDialog(this);
     edit_filter_dialog->setWindowTitle("Edit filter");
@@ -66,7 +66,7 @@ EditQueryItemWidget::EditQueryItemWidget()
     form_layout->addRow(tr("Description:"), description_edit);
     form_layout->addRow(tr("Search in:"), search_base_widget);
     form_layout->addRow(new QLabel(tr("Filter:")));
-    form_layout->addRow(filter_edit);
+    form_layout->addRow(filter_display);
     form_layout->addRow(edit_filter_button);
 
     const auto layout = new QVBoxLayout();
@@ -83,8 +83,8 @@ EditQueryItemWidget::EditQueryItemWidget()
         edit_filter_dialog, &QDialog::open);
     connect(
         edit_filter_dialog, &QDialog::accepted,
-        this, &EditQueryItemWidget::on_edit_filter_dialog_accepted);
-    on_edit_filter_dialog_accepted();
+        this, &EditQueryItemWidget::update_filter_display);
+    update_filter_display();
 }
 
 void EditQueryItemWidget::load(const QModelIndex &index) {
@@ -93,7 +93,7 @@ void EditQueryItemWidget::load(const QModelIndex &index) {
     filter_state_stream >> search_base_widget;
     filter_state_stream >> filter_widget;
 
-    on_edit_filter_dialog_accepted();
+    update_filter_display();
 
     const QString name = index.data(Qt::DisplayRole).toString();
     name_edit->setText(name);
@@ -120,7 +120,7 @@ void EditQueryItemWidget::get_state(QString &name, QString &description, QString
     }();
 }
 
-void EditQueryItemWidget::on_edit_filter_dialog_accepted() {
+void EditQueryItemWidget::update_filter_display() {
     const QString filter = filter_widget->get_filter();
-    filter_edit->setPlainText(filter);
+    filter_display->setPlainText(filter);
 }

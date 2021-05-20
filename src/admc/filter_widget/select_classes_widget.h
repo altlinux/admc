@@ -43,12 +43,11 @@ public:
     void serialize(QDataStream &stream) const;
     void deserialize(QDataStream &stream);
 
-private slots:
-    void on_dialog_accepted();
-
 private:
     QLineEdit *classes_display;
     FilterClassesWidget *filter_classes_widget;
+
+    void update_classes_display();
 };
 
 QDataStream &operator<<(QDataStream &stream, const SelectClassesWidget *widget);

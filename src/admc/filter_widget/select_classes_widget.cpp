@@ -61,8 +61,8 @@ SelectClassesWidget::SelectClassesWidget(const QList<QString> class_list)
         dialog, &QDialog::accept);
     connect(
         dialog, &QDialog::accepted,
-        this, &SelectClassesWidget::on_dialog_accepted);
-    on_dialog_accepted();
+        this, &SelectClassesWidget::update_classes_display);
+    update_classes_display();
 
     connect(
         select_classes_button, &QAbstractButton::clicked,
@@ -76,7 +76,7 @@ QString SelectClassesWidget::get_filter() const {
 // Display selected classes in line edit as a sorted list of
 // class display strings separated by ","
 // "User, Organizational Unit, ..."
-void SelectClassesWidget::on_dialog_accepted() {
+void SelectClassesWidget::update_classes_display() {
     const QString classes_display_text =
     [this]() {
         const QList<QString> selected_classes = filter_classes_widget->get_selected_classes();
@@ -104,7 +104,7 @@ void SelectClassesWidget::serialize(QDataStream &stream) const {
 
 void SelectClassesWidget::deserialize(QDataStream &stream) {
     stream >> filter_classes_widget;
-    on_dialog_accepted();
+    update_classes_display();
 }
 
 QDataStream &operator<<(QDataStream &stream, const SelectClassesWidget *widget) {
