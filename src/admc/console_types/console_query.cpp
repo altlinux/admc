@@ -562,6 +562,8 @@ void console_query_import(ConsoleWidget *console) {
     }();
 
     json_load_query_item(console, json_object, parent_index);
+
+    console_query_tree_save(console);
 }
 
 QJsonObject json_save_query_item(const QModelIndex &index) {
