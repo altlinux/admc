@@ -98,7 +98,7 @@ void MoveQueryDialog::open() {
     model->appendRow(head_item);
 
     const QHash<QString, QVariant> folders_map = g_settings->get_variant(VariantSetting_QueryFolders).toHash();
-    const QHash<QString, QVariant> info_map = g_settings->get_variant(VariantSetting_QueryInfo).toHash();
+    const QHash<QString, QVariant> info_map = g_settings->get_variant(VariantSetting_QueryItems).toHash();
 
     QStack<QModelIndex> query_stack;
     query_stack.append(head_item->index());
