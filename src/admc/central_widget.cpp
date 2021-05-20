@@ -183,7 +183,7 @@ CentralWidget::CentralWidget()
 
     connect(
         console_actions->get(ConsoleAction_QueryCreateFolder), &QAction::triggered,
-        create_query_folder_dialog, &QDialog::open);
+        create_query_folder_dialog, &CreateQueryFolderDialog::open);
     connect(
         console_actions->get(ConsoleAction_QueryCreateItem), &QAction::triggered,
         this, &CentralWidget::query_create);
