@@ -61,5 +61,7 @@ QModelIndex console_query_get_root_index(ConsoleWidget *console);
 void console_query_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
 void console_query_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
 void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index);
+void console_query_export(ConsoleWidget *console);
+void console_query_import(ConsoleWidget *console);
 
 #endif /* CONSOLE_QUERY_H */

@@ -33,6 +33,10 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QMenu>
+#include <QFileDialog>
+#include <QStandardPaths>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #define QUERY_ROOT "QUERY_ROOT"
 
@@ -363,6 +367,8 @@ void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ConsoleAction_QueryEditItem));
     menu->addAction(actions->get(ConsoleAction_QueryMoveItemOrFolder));
     menu->addAction(actions->get(ConsoleAction_QueryDeleteItemOrFolder));
+    menu->addAction(actions->get(ConsoleAction_QueryExport));
+    menu->addAction(actions->get(ConsoleAction_QueryImport));
 }
 
 void console_query_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
@@ -372,14 +378,17 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
         if (type == ItemType_QueryRoot || type == ItemType_QueryFolder) {
             visible_actions->insert(ConsoleAction_QueryCreateFolder);
             visible_actions->insert(ConsoleAction_QueryCreateItem);
+            visible_actions->insert(ConsoleAction_QueryImport);
         }
 
         if (type == ItemType_QueryFolder) {
             visible_actions->insert(ConsoleAction_QueryEditFolder);
+            visible_actions->insert(ConsoleAction_QueryImport);
         }
 
         if (type == ItemType_QueryItem) {
             visible_actions->insert(ConsoleAction_QueryEditItem);
+            visible_actions->insert(ConsoleAction_QueryExport);
         }
     }
 
@@ -484,4 +493,111 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
 
     console->sort_scope();
     console_query_tree_save(console);
+}
+
+void console_query_export(ConsoleWidget *console) {
+    const QList<QModelIndex> index_list = console->get_selected_items();
+    if (index_list.isEmpty()) {
+        return;
+    }
+    const QModelIndex index = index_list[0];
+
+    const QString file_path =
+    [&]() {
+        const QString query_name = index.data(Qt::DisplayRole).toString();
+
+        const QString caption = QCoreApplication::translate("console_query.cpp", "Export Query");
+        const QString suggested_file = QString("%1/%2.json").arg(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation), query_name);
+        const QString filter = QCoreApplication::translate("console_query.cpp", "JSON (*.json)");
+
+        const QString out = QFileDialog::getSaveFileName(console, caption, suggested_file, filter);
+
+        return out;
+    }();
+
+    if (file_path.isEmpty()) {
+        return;
+    }
+
+    const QByteArray json_bytes =
+    [&]() {
+        const QString name = index.data(Qt::DisplayRole).toString();
+        const QString description = index.data(QueryItemRole_Description).toString();
+        const QString search_base = index.data(QueryItemRole_SearchBase).toString();
+        const QString filter = index.data(QueryItemRole_Filter).toString();
+        const QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
+
+        QJsonObject json_object;
+        json_object["name"] = name;
+        json_object["description"] = description;
+        json_object["search_base"] = search_base;
+        json_object["filter"] = filter;
+        json_object["filter_state"] = QString(filter_state.toHex());
+
+        const QJsonDocument json_document = QJsonDocument(json_object);
+        const QByteArray out = json_document.toJson();
+
+        return out;
+    }();
+
+    QFile file(file_path);
+    file.open(QIODevice::WriteOnly);
+    file.write(json_bytes);
+}
+
+void console_query_import(ConsoleWidget *console) {
+    const QList<QModelIndex> index_list = console->get_selected_items();
+    if (index_list.isEmpty()) {
+        return;
+    }
+    const QModelIndex parent_index = index_list[0];
+
+    const QString file_path =
+    [&]() {
+        const QString caption = QCoreApplication::translate("console_query.cpp", "Import Query");
+        const QString dir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+        const QString file_filter = QCoreApplication::translate("console_query.cpp", "JSON (*.json)");
+
+        const QString out = QFileDialog::getOpenFileName(console, caption, dir, file_filter);
+
+        return out;
+    }();
+
+    if (file_path.isEmpty()) {
+        return;
+    }
+
+    const QJsonObject json_object = 
+    [&]() {
+        QFile file(file_path);
+        file.open(QIODevice::ReadOnly);
+        const QByteArray json_bytes = file.readAll();
+
+        QJsonParseError error;
+        const QJsonDocument json_document = QJsonDocument::fromJson(json_bytes, &error);
+
+        const bool parse_success = (error.error != QJsonParseError::NoError);
+        if (parse_success) {
+            const QString error_text = QString(QCoreApplication::translate("query.cpp", "Query file is corrupted."));
+            QMessageBox::warning(console, QCoreApplication::translate("query.cpp", "Error"), error_text);
+
+            return QJsonObject();
+        }
+
+        const QJsonObject out = json_document.object();
+
+        return out;
+    }();
+
+    const QString name = json_object["name"].toString();
+    const QString description = json_object["description"].toString();
+    const QString search_base = json_object["search_base"].toString();
+    const QString filter = json_object["filter"].toString();
+    const QByteArray filter_state = QByteArray::fromHex(json_object["filter_state"].toString().toLocal8Bit());
+
+    if (!console_query_or_folder_name_is_good(name, parent_index, console, QModelIndex())) {
+        return;
+    }
+
+    console_query_item_create(console, name, description, filter, filter_state, search_base, parent_index);
 }
