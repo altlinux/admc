@@ -366,6 +366,7 @@ void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ConsoleAction_QueryMoveItemOrFolder));
     menu->addAction(actions->get(ConsoleAction_QueryDeleteItemOrFolder));
     menu->addAction(actions->get(ConsoleAction_QueryExport));
+    menu->addAction(actions->get(ConsoleAction_QueryImport));
 }
 
 void console_query_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
@@ -375,10 +376,12 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
         if (type == ItemType_QueryRoot || type == ItemType_QueryFolder) {
             visible_actions->insert(ConsoleAction_QueryCreateFolder);
             visible_actions->insert(ConsoleAction_QueryCreateItem);
+            visible_actions->insert(ConsoleAction_QueryImport);
         }
 
         if (type == ItemType_QueryFolder) {
             visible_actions->insert(ConsoleAction_QueryEditFolder);
+            visible_actions->insert(ConsoleAction_QueryImport);
         }
 
         if (type == ItemType_QueryItem) {
@@ -497,10 +500,11 @@ void console_query_export(ConsoleWidget *console) {
     }
     const QModelIndex index = index_list[0];
 
+    const QString name = index.data(Qt::DisplayRole).toString();
+    const QString description = index.data(QueryItemRole_Description).toString();
+    const QString search_base = index.data(QueryItemRole_SearchBase).toString();
     const QString filter = index.data(QueryItemRole_Filter).toString();
     const QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
-    const QString search_base = index.data(QueryItemRole_SearchBase).toString();
-    const QString name = index.data(Qt::DisplayRole).toString();
 
     const QString caption = QCoreApplication::translate("console_query.cpp", "Export Query");
     const QString suggested_file = QString("%1/%2.query").arg(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation), name);
@@ -516,8 +520,48 @@ void console_query_export(ConsoleWidget *console) {
     file.open(QIODevice::WriteOnly);
     QDataStream out(&file);
 
+    out << name;
+    out << description;
+    out << search_base;
     out << filter;
     out << filter_state;
-    out << search_base;
-    out << name;
+}
+
+void console_query_import(ConsoleWidget *console) {
+    const QList<QModelIndex> index_list = console->get_selected_items();
+    if (index_list.isEmpty()) {
+        return;
+    }
+    const QModelIndex parent_index = index_list[0];
+
+    const QString caption = QCoreApplication::translate("console_query.cpp", "Import Query");
+    const QString dir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    const QString file_filter = QCoreApplication::translate("console_query.cpp", "Query (*.query)");
+
+    const QString file_path = QFileDialog::getOpenFileName(console, caption, dir, file_filter);
+
+    if (file_path.isEmpty()) {
+        return;
+    }
+
+    QFile file(file_path);
+    file.open(QIODevice::ReadOnly);
+    QDataStream in(&file);
+
+    QString name;    
+    QString description;    
+    QString search_base;
+    QString filter;
+    QByteArray filter_state;
+    in >> name;
+    in >> description;
+    in >> search_base;
+    in >> filter;
+    in >> filter_state;
+
+    if (!console_query_or_folder_name_is_good(name, parent_index, console, QModelIndex())) {
+        return;
+    }
+
+    console_query_item_create(console, name, description, filter, filter_state, search_base, parent_index);
 }

@@ -59,6 +59,7 @@ enum ConsoleAction {
     ConsoleAction_QueryDeleteItemOrFolder,
     ConsoleAction_QueryMoveItemOrFolder,
     ConsoleAction_QueryExport,
+    ConsoleAction_QueryImport,
 
     ConsoleAction_LAST,
 };

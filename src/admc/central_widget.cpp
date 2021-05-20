@@ -202,6 +202,9 @@ CentralWidget::CentralWidget()
     connect(
         console_actions->get(ConsoleAction_QueryExport), &QAction::triggered,
         this, &CentralWidget::query_export);
+    connect(
+        console_actions->get(ConsoleAction_QueryImport), &QAction::triggered,
+        this, &CentralWidget::query_import);
 
     connect(
         console, &ConsoleWidget::current_scope_item_changed,
@@ -567,6 +570,10 @@ void CentralWidget::query_delete() {
 
 void CentralWidget::query_export() {
     console_query_export(console);
+}
+
+void CentralWidget::query_import() {
+    console_query_import(console);
 }
 
 void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, bool *ok) {
