@@ -88,7 +88,7 @@ void ADMCTestFilterWidget::test_simple_tab() {
     QLineEdit * name_edit = simple_tab->findChild<QLineEdit *>("name_edit");
     name_edit->setText("test");
 
-    const QString correct_filter = "(&(name=*test*)(|(objectClass=user)))";
+    const QString correct_filter = "(&(name=*test*)(objectClass=user))";
     const QString filter = filter_widget->get_filter();
     QVERIFY(correct_filter == filter);
 
@@ -141,7 +141,7 @@ void ADMCTestFilterWidget::test_normal_tab() {
     QVERIFY(add_button != nullptr);
     add_button->click();
 
-    const QString correct_filter = "(&(|(objectClass=user))(&(assistant=value)))";
+    const QString correct_filter = "(&(objectClass=user)(assistant=value))";
     const QString filter = filter_widget->get_filter();
     QVERIFY(correct_filter == filter);
 
