@@ -374,7 +374,6 @@ bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex
 void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ConsoleAction_QueryEditFolder));
     menu->addAction(actions->get(ConsoleAction_QueryEditItem));
-    menu->addAction(actions->get(ConsoleAction_QueryMoveItemOrFolder));
     menu->addAction(actions->get(ConsoleAction_QueryCutItemOrFolder));
     menu->addAction(actions->get(ConsoleAction_QueryCopyItemOrFolder));
     menu->addAction(actions->get(ConsoleAction_QueryPasteItemOrFolder));
@@ -414,7 +413,6 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
     }
 
     if (type == ItemType_QueryItem || type == ItemType_QueryFolder) {
-        visible_actions->insert(ConsoleAction_QueryMoveItemOrFolder);
         visible_actions->insert(ConsoleAction_QueryDeleteItemOrFolder);
     }
 }

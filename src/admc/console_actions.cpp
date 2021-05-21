@@ -60,7 +60,6 @@ ConsoleActions::ConsoleActions(QObject *parent)
                 case ConsoleAction_QueryEditFolder: return tr("&Edit");
                 case ConsoleAction_QueryEditItem: return tr("&Edit");
                 case ConsoleAction_QueryDeleteItemOrFolder: return tr("&Delete");
-                case ConsoleAction_QueryMoveItemOrFolder: return tr("&Move");
                 case ConsoleAction_QueryCutItemOrFolder: return tr("Cut");
                 case ConsoleAction_QueryCopyItemOrFolder: return tr("&Copy");
                 case ConsoleAction_QueryPasteItemOrFolder: return tr("&Paste");
