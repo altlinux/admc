@@ -35,7 +35,7 @@ private slots:
     void default_to_domain_head();
     void select_search_base();
     void select_search_base_multiple();
-    void serialize();
+    void save_state();
 
 private:
     SearchBaseWidget *search_base_widget;

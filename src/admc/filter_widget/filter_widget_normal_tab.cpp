@@ -143,9 +143,9 @@ void FilterWidgetNormalTab::clear_filters() {
     filter_list->clear();
 }
 
-void FilterWidgetNormalTab::serialize(QHash<QString, QVariant> &state) const {
+void FilterWidgetNormalTab::save_state(QHash<QString, QVariant> &state) const {
     QHash<QString, QVariant> select_classes_state;
-    select_classes->serialize(select_classes_state);
+    select_classes->save_state(select_classes_state);
     state["select_classes"] = select_classes_state;
 
     QList<QString> filter_display_list;
@@ -163,9 +163,9 @@ void FilterWidgetNormalTab::serialize(QHash<QString, QVariant> &state) const {
     state["filter_value_list"] = QVariant(filter_value_list);
 }
 
-void FilterWidgetNormalTab::deserialize(const QHash<QString, QVariant> &state) {
+void FilterWidgetNormalTab::load_state(const QHash<QString, QVariant> &state) {
     const QHash<QString, QVariant> select_classes_state = state["select_classes"].toHash();
-    select_classes->deserialize(select_classes_state);
+    select_classes->load_state(select_classes_state);
 
     const QList<QString> filter_display_list = state["filter_display_list"].toStringList();
     const QList<QString> filter_value_list = state["filter_value_list"].toStringList();

@@ -72,7 +72,7 @@ void EditQueryItemDialog::accept() {
     QString filter;
     QString search_base;
     QByteArray filter_state;
-    edit_query_widget->get_state(name, description, filter, search_base, filter_state);
+    edit_query_widget->save(name, description, filter, search_base, filter_state);
 
     if (!console_query_or_folder_name_is_good(name, scope_index.parent(), this, scope_index)) {
         return;

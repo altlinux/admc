@@ -115,7 +115,7 @@ void ADMCTestSearchBaseWidget::add_search_base(const QString &dn) {
     delete select_container_dialog;
 }
 
-void ADMCTestSearchBaseWidget::serialize() {
+void ADMCTestSearchBaseWidget::save_state() {
     // Setup some state
     for (const QString &dn : dn_list) {
         add_search_base(dn);

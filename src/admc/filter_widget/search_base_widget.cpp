@@ -93,7 +93,7 @@ void SearchBaseWidget::browse() {
     dialog->open();
 }
 
-void SearchBaseWidget::serialize(QHash<QString, QVariant> &state) const {
+void SearchBaseWidget::save_state(QHash<QString, QVariant> &state) const {
     QList<QString> name_list;
     QList<QString> dn_list;
 
@@ -111,7 +111,7 @@ void SearchBaseWidget::serialize(QHash<QString, QVariant> &state) const {
     state["current_index"] = QVariant(current_index);
 }
 
-void SearchBaseWidget::deserialize(const QHash<QString, QVariant> &state) {
+void SearchBaseWidget::load_state(const QHash<QString, QVariant> &state) {
     const QList<QString> dn_list = state["dn_list"].toStringList();
     const QList<QString> name_list = state["name_list"].toStringList();
     const int current_index = state["current_index"].toInt();

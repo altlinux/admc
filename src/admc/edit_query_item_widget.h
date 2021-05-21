@@ -41,7 +41,7 @@ public:
     EditQueryItemWidget();
 
     void load(const QModelIndex &index);
-    void get_state(QString &name, QString &description, QString &filter, QString &search_base, QByteArray &filter_state) const;
+    void save(QString &name, QString &description, QString &filter, QString &search_base, QByteArray &filter_state) const;
 
 private:
     QLineEdit *name_edit;

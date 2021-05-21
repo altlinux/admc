@@ -120,7 +120,7 @@ void FilterClassesWidget::clear_selection() {
     }
 }
 
-void FilterClassesWidget::serialize(QHash<QString, QVariant> &state) const {
+void FilterClassesWidget::save_state(QHash<QString, QVariant> &state) const {
     const QHash<QString, QVariant> check_state =
     [&]() {
         QHash<QString, QVariant> out;
@@ -138,7 +138,7 @@ void FilterClassesWidget::serialize(QHash<QString, QVariant> &state) const {
     state["check_state"] = check_state;
 }
 
-void FilterClassesWidget::deserialize(const QHash<QString, QVariant> &state) {
+void FilterClassesWidget::load_state(const QHash<QString, QVariant> &state) {
     const QHash<QString, QVariant> check_state = state["check_state"].toHash();
 
     for (const QString &object_class : checkbox_map.keys()) {

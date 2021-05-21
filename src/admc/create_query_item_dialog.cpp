@@ -58,7 +58,7 @@ void CreateQueryItemDialog::accept() {
     QString filter;
     QString search_base;
     QByteArray filter_state;
-    edit_query_widget->get_state(name, description, filter, search_base, filter_state);
+    edit_query_widget->save(name, description, filter, search_base, filter_state);
 
     const QModelIndex parent_index = get_selected_scope_index(console);
 

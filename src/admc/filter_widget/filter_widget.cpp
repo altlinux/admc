@@ -59,16 +59,16 @@ QString FilterWidget::get_filter() const {
     }
 }
 
-void FilterWidget::serialize(QHash<QString, QVariant> &state) const {
+void FilterWidget::save_state(QHash<QString, QVariant> &state) const {
     const int current_tab_index = tab_widget->currentIndex();
 
     QHash<QString, QVariant> simple_state;
     QHash<QString, QVariant> normal_state;
     QHash<QString, QVariant> advanced_state;
 
-    simple_tab->serialize(simple_state);
-    normal_tab->serialize(normal_state);
-    advanced_tab->serialize(advanced_state);
+    simple_tab->save_state(simple_state);
+    normal_tab->save_state(normal_state);
+    advanced_tab->save_state(advanced_state);
 
     state["current_tab_index"] = QVariant(current_tab_index);
     state["simple_state"] = simple_state;
@@ -76,15 +76,15 @@ void FilterWidget::serialize(QHash<QString, QVariant> &state) const {
     state["advanced_state"] = advanced_state;
 }
 
-void FilterWidget::deserialize(const QHash<QString, QVariant> &state) {
+void FilterWidget::load_state(const QHash<QString, QVariant> &state) {
     const int current_tab_index = state["current_tab_index"].toInt();
     const QHash<QString, QVariant> simple_state = state["simple_state"].toHash();
     const QHash<QString, QVariant> normal_state = state["normal_state"].toHash();
     const QHash<QString, QVariant> advanced_state = state["advanced_state"].toHash();
 
-    simple_tab->deserialize(simple_state);
-    normal_tab->deserialize(normal_state);
-    advanced_tab->deserialize(advanced_state);
+    simple_tab->load_state(simple_state);
+    normal_tab->load_state(normal_state);
+    advanced_tab->load_state(advanced_state);
 
     tab_widget->setCurrentIndex(current_tab_index);
 }

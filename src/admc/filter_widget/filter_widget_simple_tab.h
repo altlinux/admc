@@ -37,8 +37,8 @@ public:
 
     QString get_filter() const;
 
-    void serialize(QHash<QString, QVariant> &state) const;
-    void deserialize(const QHash<QString, QVariant> &state);
+    void save_state(QHash<QString, QVariant> &state) const;
+    void load_state(const QHash<QString, QVariant> &state);
 
 private:
     SelectClassesWidget *select_classes;

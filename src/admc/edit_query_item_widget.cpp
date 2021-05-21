@@ -97,8 +97,8 @@ void EditQueryItemWidget::load(const QModelIndex &index) {
     const QHash<QString, QVariant> search_base_widget_state = state["search_base_widget"].toHash();
     const QHash<QString, QVariant> filter_widget_state = state["filter_widget"].toHash();
 
-    search_base_widget->deserialize(search_base_widget_state);
-    filter_widget->deserialize(filter_widget_state);
+    search_base_widget->load_state(search_base_widget_state);
+    filter_widget->load_state(filter_widget_state);
 
     update_filter_display();
 
@@ -109,7 +109,7 @@ void EditQueryItemWidget::load(const QModelIndex &index) {
     description_edit->setText(description);
 }
 
-void EditQueryItemWidget::get_state(QString &name, QString &description, QString &filter, QString &search_base, QByteArray &filter_state) const {
+void EditQueryItemWidget::save(QString &name, QString &description, QString &filter, QString &search_base, QByteArray &filter_state) const {
     name = name_edit->text();
     description = description_edit->text();
     filter = filter_widget->get_filter();
@@ -120,8 +120,8 @@ void EditQueryItemWidget::get_state(QString &name, QString &description, QString
         QHash<QString, QVariant> search_base_widget_state;
         QHash<QString, QVariant> filter_widget_state;
 
-        search_base_widget->serialize(search_base_widget_state);
-        filter_widget->serialize(filter_widget_state);
+        search_base_widget->save_state(search_base_widget_state);
+        filter_widget->save_state(filter_widget_state);
 
         QHash<QString, QVariant> state;
         state["search_base_widget"] = search_base_widget_state;
