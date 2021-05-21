@@ -48,6 +48,9 @@ enum QueryColumn {
 
 int console_query_folder_results_id;
 
+bool copied_index_is_cut = false;
+QPersistentModelIndex copied_index;
+
 QHash<QString, QVariant> console_query_item_save(const QModelIndex &index);
 void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVariant> &data, const QModelIndex &parent_index);
 
@@ -372,6 +375,9 @@ void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ConsoleAction_QueryEditFolder));
     menu->addAction(actions->get(ConsoleAction_QueryEditItem));
     menu->addAction(actions->get(ConsoleAction_QueryMoveItemOrFolder));
+    menu->addAction(actions->get(ConsoleAction_QueryCutItemOrFolder));
+    menu->addAction(actions->get(ConsoleAction_QueryCopyItemOrFolder));
+    menu->addAction(actions->get(ConsoleAction_QueryPasteItemOrFolder));
     menu->addAction(actions->get(ConsoleAction_QueryDeleteItemOrFolder));
     menu->addAction(actions->get(ConsoleAction_QueryExport));
     menu->addAction(actions->get(ConsoleAction_QueryImport));
@@ -387,7 +393,16 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
             visible_actions->insert(ConsoleAction_QueryImport);
         }
 
+        if (type == ItemType_QueryFolder || type == ItemType_QueryItem) {
+            visible_actions->insert(ConsoleAction_QueryCutItemOrFolder);
+            visible_actions->insert(ConsoleAction_QueryCopyItemOrFolder);
+        }
+
         if (type == ItemType_QueryFolder) {
+            if (copied_index.isValid()) {
+                visible_actions->insert(ConsoleAction_QueryPasteItemOrFolder);
+            } 
+
             visible_actions->insert(ConsoleAction_QueryEditFolder);
             visible_actions->insert(ConsoleAction_QueryImport);
         }
@@ -433,7 +448,7 @@ void console_query_drop(ConsoleWidget *console, const QList<QPersistentModelInde
     console_query_move(console, dropped_list, target);
 }
 
-void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index_raw) {
+void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index_raw, const bool delete_old_branch) {
     const QModelIndex new_parent_index = console_item_convert_to_scope_index(new_parent_index_raw);
 
     // Check for name conflict
@@ -495,7 +510,9 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
         }
 
         // Delete branch at old location
-        console->delete_item(old_index);
+        if (delete_old_branch) {
+            console->delete_item(old_index);
+        }
     }
 
     console->sort_scope();
@@ -571,6 +588,22 @@ void console_query_import(ConsoleWidget *console) {
     console_query_item_load(console, data, parent_index);
 
     console_query_tree_save(console);
+}
+
+void console_query_cut(ConsoleWidget *console) {
+    copied_index = get_selected_scope_index(console);
+    copied_index_is_cut = true;
+}
+
+void console_query_copy(ConsoleWidget *console) {
+    copied_index = get_selected_scope_index(console);
+    copied_index_is_cut = false;
+}
+
+void console_query_paste(ConsoleWidget *console) {
+    const QModelIndex parent_index = get_selected_scope_index(console);
+    const bool delete_old_branch = copied_index_is_cut;
+    console_query_move(console, {copied_index}, parent_index, delete_old_branch);
 }
 
 QHash<QString, QVariant> console_query_item_save(const QModelIndex &index) {

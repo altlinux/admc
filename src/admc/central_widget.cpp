@@ -197,6 +197,15 @@ CentralWidget::CentralWidget()
         console_actions->get(ConsoleAction_QueryMoveItemOrFolder), &QAction::triggered,
         move_query_dialog, &QDialog::open);
     connect(
+        console_actions->get(ConsoleAction_QueryCutItemOrFolder), &QAction::triggered,
+        this, &CentralWidget::query_cut);
+    connect(
+        console_actions->get(ConsoleAction_QueryCopyItemOrFolder), &QAction::triggered,
+        this, &CentralWidget::query_copy);
+    connect(
+        console_actions->get(ConsoleAction_QueryPasteItemOrFolder), &QAction::triggered,
+        this, &CentralWidget::query_paste);
+    connect(
         console_actions->get(ConsoleAction_QueryDeleteItemOrFolder), &QAction::triggered,
         this, &CentralWidget::query_delete);
     connect(
@@ -574,6 +583,18 @@ void CentralWidget::query_export() {
 
 void CentralWidget::query_import() {
     console_query_import(console);
+}
+
+void CentralWidget::query_cut() {
+    console_query_cut(console);
+}
+
+void CentralWidget::query_copy() {
+    console_query_copy(console);
+}
+
+void CentralWidget::query_paste() {
+    console_query_paste(console);
 }
 
 void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, bool *ok) {
