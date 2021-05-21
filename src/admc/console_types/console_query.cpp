@@ -35,9 +35,7 @@
 #include <QMenu>
 #include <QFileDialog>
 #include <QStandardPaths>
-#include <QJsonObject>
 #include <QJsonDocument>
-#include <QJsonArray>
 
 #define QUERY_ROOT "QUERY_ROOT"
 
@@ -50,8 +48,8 @@ enum QueryColumn {
 
 int console_query_folder_results_id;
 
-QJsonObject json_save_query_item(const QModelIndex &index);
-void json_load_query_item(ConsoleWidget *console, const QJsonObject &json, const QModelIndex &parent_index);
+QHash<QString, QVariant> console_query_item_save(const QModelIndex &index);
+void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVariant> &data, const QModelIndex &parent_index);
 
 QList<QString> console_query_folder_header_labels() {
     return {
@@ -201,34 +199,32 @@ void console_query_tree_init(ConsoleWidget *console) {
     head_item->setDragEnabled(false);
 
     // Add rest of tree
-    const QJsonObject folder_list = QJsonDocument::fromJson(g_settings->get_variant(VariantSetting_QueryFolders).toByteArray()).object();
-    const QJsonObject item_list = QJsonDocument::fromJson(g_settings->get_variant(VariantSetting_QueryItems).toByteArray()).object();
+    const QHash<QString, QVariant> folder_list = g_settings->get_variant(VariantSetting_QueryFolders).toHash();
+    const QHash<QString, QVariant> item_list = g_settings->get_variant(VariantSetting_QueryItems).toHash();
 
     QStack<QPersistentModelIndex> folder_stack;
     folder_stack.append(head_item->index());
     while (!folder_stack.isEmpty()) {
         const QPersistentModelIndex folder_index = folder_stack.pop();
 
-        const QJsonArray child_list =
+        const QList<QString> child_list =
         [&]() {
             const QString folder_path = console_query_folder_path(folder_index);
-            const QJsonObject folder_data = folder_list[folder_path].toObject();
+            const QHash<QString, QVariant> folder_data = folder_list[folder_path].toHash();
             
-            return folder_data["child_list"].toArray();
+            return folder_data["child_list"].toStringList();
         }();
 
         // Go through children and add them as folders or
         // query items
-        for (const QJsonValue &path_json : child_list) {
-            const QString path = path_json.toString();
-
+        for (const QString &path : child_list) {
             if (item_list.contains(path)) {
                 // Query item
-                const QJsonObject data = item_list[path].toObject();
-                json_load_query_item(console, data, folder_index);
+                const QHash<QString, QVariant> data = item_list[path].toHash();
+                console_query_item_load(console, data, folder_index);
             } else if (folder_list.contains(path)) {
                 // Query folder
-                const QJsonObject data = folder_list[path].toObject();
+                const QHash<QString, QVariant> data = folder_list[path].toHash();
 
                 const QString name = data["name"].toString();
                 const QString description = data["description"].toString();
@@ -243,8 +239,8 @@ void console_query_tree_init(ConsoleWidget *console) {
 // Saves current state of queries tree to settings. Should
 // be called after every modication to queries tree
 void console_query_tree_save(ConsoleWidget *console) {
-    QJsonObject folder_list;
-    QJsonObject item_list;
+    QHash<QString, QVariant> folder_list;
+    QHash<QString, QVariant> item_list;
 
     const QModelIndex query_root_index = console_query_get_root_index(console);
     if (!query_root_index.isValid()) {
@@ -270,9 +266,9 @@ void console_query_tree_save(ConsoleWidget *console) {
         const QString parent_path = console_query_folder_path(index.parent());
         const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
 
-        const QJsonArray child_list =
+        const QList<QString> child_list =
         [&]() {
-            QJsonArray out;
+            QList<QString> out;
 
             for (int i = 0; i < model->rowCount(index); i++) {
                 const QModelIndex child = model->index(i, 0, index);
@@ -285,29 +281,29 @@ void console_query_tree_save(ConsoleWidget *console) {
         }();
 
         if (type == ItemType_QueryRoot) {
-            QJsonObject data;
-            data["child_list"] = child_list;
+            QHash<QString, QVariant> data;
+            data["child_list"] = QVariant(child_list);
 
             folder_list[path] = data;
         } else if (type == ItemType_QueryFolder) {
             const QString name = index.data(Qt::DisplayRole).toString();
             const QString description = index.data(QueryItemRole_Description).toString();
 
-            QJsonObject data;
+            QHash<QString, QVariant> data;
             data["name"] = name;
             data["description"] = description;
-            data["child_list"] = child_list;
+            data["child_list"] = QVariant(child_list);
 
             folder_list[path] = data;
         } else {
-            const QJsonObject json_object = json_save_query_item(index);
+            const QHash<QString, QVariant> data = console_query_item_save(index);
 
-            item_list[path] = json_object;
+            item_list[path] = data;
         }
     }
 
-    const QVariant folder_variant = QVariant(QJsonDocument(folder_list).toJson());
-    const QVariant item_variant = QVariant(QJsonDocument(item_list).toJson());
+    const QVariant folder_variant = QVariant(folder_list);
+    const QVariant item_variant = QVariant(item_list);
 
     g_settings->set_variant(VariantSetting_QueryFolders, folder_variant);
     g_settings->set_variant(VariantSetting_QueryItems, item_variant);
@@ -515,8 +511,8 @@ void console_query_export(ConsoleWidget *console) {
         return;
     }
 
-    const QJsonObject json_object = json_save_query_item(index);
-    const QByteArray json_bytes = QJsonDocument(json_object).toJson();
+    const QHash<QString, QVariant> data = console_query_item_save(index);
+    const QByteArray json_bytes = QJsonDocument::fromVariant(data).toJson();
 
     QFile file(file_path);
     file.open(QIODevice::WriteOnly);
@@ -541,7 +537,7 @@ void console_query_import(ConsoleWidget *console) {
         return;
     }
 
-    const QJsonObject json_object = 
+    const QHash<QString, QVariant> data = 
     [&]() {
         QFile file(file_path);
         file.open(QIODevice::ReadOnly);
@@ -553,46 +549,46 @@ void console_query_import(ConsoleWidget *console) {
             const QString error_text = QString(QCoreApplication::translate("query.cpp", "Query file is corrupted."));
             QMessageBox::warning(console, QCoreApplication::translate("query.cpp", "Error"), error_text);
 
-            return QJsonObject();
+            return QHash<QString, QVariant>();
         }
 
-        const QJsonObject out = json_document.object();
+        const QHash<QString, QVariant> out = json_document.toVariant().toHash();
 
         return out;
     }();
 
-    json_load_query_item(console, json_object, parent_index);
+    console_query_item_load(console, data, parent_index);
 
     console_query_tree_save(console);
 }
 
-QJsonObject json_save_query_item(const QModelIndex &index) {
+QHash<QString, QVariant> console_query_item_save(const QModelIndex &index) {
     const QString name = index.data(Qt::DisplayRole).toString();
     const QString description = index.data(QueryItemRole_Description).toString();
     const QString search_base = index.data(QueryItemRole_SearchBase).toString();
     const QString filter = index.data(QueryItemRole_Filter).toString();
     const QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
 
-    QJsonObject json;
-    json["name"] = name;
-    json["description"] = description;
-    json["search_base"] = search_base;
-    json["filter"] = filter;
-    json["filter_state"] = QString(filter_state.toHex());
+    QHash<QString, QVariant> data;
+    data["name"] = name;
+    data["description"] = description;
+    data["search_base"] = search_base;
+    data["filter"] = filter;
+    data["filter_state"] = QString(filter_state.toHex());
 
-    return json;
+    return data;
 }
 
-void json_load_query_item(ConsoleWidget *console, const QJsonObject &json, const QModelIndex &parent_index) {
-    if (json.isEmpty()) {
+void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVariant> &data, const QModelIndex &parent_index) {
+    if (data.isEmpty()) {
         return;
     }
 
-    const QString name = json["name"].toString();
-    const QString description = json["description"].toString();
-    const QString search_base = json["search_base"].toString();
-    const QString filter = json["filter"].toString();
-    const QByteArray filter_state = QByteArray::fromHex(json["filter_state"].toString().toLocal8Bit());
+    const QString name = data["name"].toString();
+    const QString description = data["description"].toString();
+    const QString search_base = data["search_base"].toString();
+    const QString filter = data["filter"].toString();
+    const QByteArray filter_state = QByteArray::fromHex(data["filter_state"].toString().toLocal8Bit());
 
     if (!console_query_or_folder_name_is_good(name, parent_index, console, QModelIndex())) {
         return;
