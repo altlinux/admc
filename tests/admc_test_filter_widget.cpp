@@ -93,16 +93,14 @@ void ADMCTestFilterWidget::test_simple_tab() {
     QVERIFY(correct_filter == filter);
 
     // Serialize
-    QByteArray stream_bytes;
-    QDataStream stream_in(&stream_bytes, QIODevice::WriteOnly);
-    stream_in << filter_widget;
+    QHash<QString, QVariant> state;
+    filter_widget->save_state(state);
 
     // Change state
     name_edit->setText("changed");
     
     // Deserialize
-    QDataStream stream_out(stream_bytes);
-    stream_out >> filter_widget;
+    filter_widget->load_state(state);
 
     const QString filter_deserialized = filter_widget->get_filter();
     QVERIFY(correct_filter == filter_deserialized);
@@ -148,17 +146,15 @@ void ADMCTestFilterWidget::test_normal_tab() {
     QVERIFY(correct_filter == filter);
 
     // Serialize
-    QByteArray stream_bytes;
-    QDataStream stream_in(&stream_bytes, QIODevice::WriteOnly);
-    stream_in << filter_widget;
+    QHash<QString, QVariant> state;
+    filter_widget->save_state(state);
 
     // Change state
     value_edit->setText("value 2");
     add_button->click();
     
     // Deserialize
-    QDataStream stream_out(stream_bytes);
-    stream_out >> filter_widget;
+    filter_widget->load_state(state);
 
     const QString filter_deserialized = filter_widget->get_filter();
     QVERIFY(correct_filter == filter_deserialized);
@@ -177,16 +173,14 @@ void ADMCTestFilterWidget::test_advanced_tab() {
     QVERIFY(correct_filter == filter);
 
     // Serialize
-    QByteArray stream_bytes;
-    QDataStream stream_in(&stream_bytes, QIODevice::WriteOnly);
-    stream_in << filter_widget;
+    QHash<QString, QVariant> state;
+    filter_widget->save_state(state);
 
     // Change state
     edit->setPlainText("changed");
     
     // Deserialize
-    QDataStream stream_out(stream_bytes);
-    stream_out >> filter_widget;
+    filter_widget->load_state(state);
 
     const QString filter_deserialized = filter_widget->get_filter();
     QVERIFY(correct_filter == filter_deserialized);

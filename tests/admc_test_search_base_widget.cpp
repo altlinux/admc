@@ -125,16 +125,14 @@ void ADMCTestSearchBaseWidget::save_state() {
     const QString search_base_original = search_base_widget->get_search_base();
 
     // Serialize
-    QByteArray stream_bytes;
-    QDataStream stream_in(&stream_bytes, QIODevice::WriteOnly);
-    stream_in << search_base_widget;
+    QHash<QString, QVariant> state;
+    search_base_widget->save_state(state);
 
     // Change state
     combo->setCurrentIndex(2);
     
     // Deserialize
-    QDataStream stream_out(stream_bytes);
-    stream_out >> search_base_widget;
+    search_base_widget->load_state(state);
 
     // Check that deserialization successfully restored
     // original state
