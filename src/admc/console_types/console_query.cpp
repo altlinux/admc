@@ -586,7 +586,7 @@ QHash<QString, QVariant> console_query_item_save(const QModelIndex &index) {
     data["description"] = description;
     data["search_base"] = search_base;
     data["filter"] = filter;
-    data["filter_state"] = filter_state;
+    data["filter_state"] = filter_state.toHex();
     data["scope_is_children"] = scope_is_children;
 
     return data;
@@ -602,7 +602,7 @@ void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVaria
     const QString search_base = data["search_base"].toString();
     const bool scope_is_children = data["scope_is_children"].toBool();
     const QString filter = data["filter"].toString();
-    const QByteArray filter_state = data["filter_state"].toByteArray();
+    const QByteArray filter_state = QByteArray::fromHex(data["filter_state"].toString().toLocal8Bit());
 
     if (!console_query_or_folder_name_is_good(name, parent_index, console, QModelIndex())) {
         return;
