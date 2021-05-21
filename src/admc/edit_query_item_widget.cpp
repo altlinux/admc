@@ -31,6 +31,7 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 #include <QLabel>
+#include <QCheckBox>
 
 EditQueryItemWidget::EditQueryItemWidget()
 : QWidget()
@@ -45,6 +46,8 @@ EditQueryItemWidget::EditQueryItemWidget()
     name_edit->setText("New query");
     
     description_edit = new QLineEdit();
+
+    scope_checkbox = new QCheckBox(tr("Include subcontainers"));
 
     filter_display = new QTextEdit();
     filter_display->setReadOnly(true);
@@ -66,6 +69,7 @@ EditQueryItemWidget::EditQueryItemWidget()
     form_layout->addRow(tr("Name:"), name_edit);
     form_layout->addRow(tr("Description:"), description_edit);
     form_layout->addRow(tr("Search in:"), search_base_widget);
+    form_layout->addRow(scope_checkbox);
     form_layout->addRow(new QLabel(tr("Filter:")));
     form_layout->addRow(filter_display);
     form_layout->addRow(edit_filter_button);
@@ -107,13 +111,17 @@ void EditQueryItemWidget::load(const QModelIndex &index) {
 
     const QString description = index.data(QueryItemRole_Description).toString();
     description_edit->setText(description);
+
+    const bool scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
+    scope_checkbox->setChecked(!scope_is_children);
 }
 
-void EditQueryItemWidget::save(QString &name, QString &description, QString &filter, QString &search_base, QByteArray &filter_state) const {
+void EditQueryItemWidget::save(QString &name, QString &description, QString &filter, QString &search_base, bool &scope_is_children, QByteArray &filter_state) const {
     name = name_edit->text();
     description = description_edit->text();
     filter = filter_widget->get_filter();
     search_base = search_base_widget->get_search_base();
+    scope_is_children = !scope_checkbox->isChecked();
 
     filter_state =
     [&]() {
