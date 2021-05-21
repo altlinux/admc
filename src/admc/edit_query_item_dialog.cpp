@@ -50,7 +50,7 @@ EditQueryItemDialog::EditQueryItemDialog(ConsoleWidget *console_arg)
 
     scope_index = get_selected_scope_index(console);
 
-    if (scope_index.isValid()) {
+    if (!scope_index.isValid()) {
         close();
 
         return;
