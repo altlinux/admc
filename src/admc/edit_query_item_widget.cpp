@@ -134,6 +134,7 @@ void EditQueryItemWidget::save(QString &name, QString &description, QString &fil
         QHash<QString, QVariant> state;
         state["search_base_widget"] = search_base_widget_state;
         state["filter_widget"] = filter_widget_state;
+        state["filter"] = filter;
 
         QByteArray out;
         QDataStream state_stream(&out, QIODevice::WriteOnly);
