@@ -94,34 +94,13 @@ void SearchBaseWidget::browse() {
 }
 
 void SearchBaseWidget::save_state(QHash<QString, QVariant> &state) const {
-    QList<QString> name_list;
-    QList<QString> dn_list;
-
-    for (int i = 0; i < combo->count(); i++) {
-        const QString dn = combo->itemData(i).toString();
-        const QString name = combo->itemText(i);
-        name_list.append(name);
-        dn_list.append(dn);
-    }
-
-    const int current_index = combo->currentIndex();
-
-    state["dn_list"] = QVariant(dn_list);
-    state["name_list"] = QVariant(name_list);
-    state["current_index"] = QVariant(current_index);
+    const QString search_base = combo->currentData().toString();
+    state["search_base"] = QVariant(search_base);
 }
 
 void SearchBaseWidget::load_state(const QHash<QString, QVariant> &state) {
-    const QList<QString> dn_list = state["dn_list"].toStringList();
-    const QList<QString> name_list = state["name_list"].toStringList();
-    const int current_index = state["current_index"].toInt();
+    const QString search_base = state["search_base"].toString();
+    const QString search_base_name = dn_get_name(search_base);
     combo->clear();
-
-    for (int i = 0; i < dn_list.size(); i++) {
-        const QString dn = dn_list[i];
-        const QString name = name_list[i];
-        combo->addItem(name, dn);
-    }
-
-    combo->setCurrentIndex(current_index);
+    combo->addItem(search_base_name, search_base);
 }
