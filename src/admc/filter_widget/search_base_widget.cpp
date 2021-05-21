@@ -93,7 +93,7 @@ void SearchBaseWidget::browse() {
     dialog->open();
 }
 
-void SearchBaseWidget::serialize(QDataStream &stream) const {
+void SearchBaseWidget::serialize(QHash<QString, QVariant> &state) const {
     QList<QString> name_list;
     QList<QString> dn_list;
 
@@ -106,20 +106,15 @@ void SearchBaseWidget::serialize(QDataStream &stream) const {
 
     const int current_index = combo->currentIndex();
 
-    stream << dn_list;
-    stream << name_list;
-    stream << current_index;
+    state["dn_list"] = QVariant(dn_list);
+    state["name_list"] = QVariant(name_list);
+    state["current_index"] = QVariant(current_index);
 }
 
-void SearchBaseWidget::deserialize(QDataStream &stream) {
-    QList<QString> name_list;
-    QList<QString> dn_list;
-    int current_index;
-
-    stream >> dn_list;
-    stream >> name_list;
-    stream >> current_index;
-
+void SearchBaseWidget::deserialize(const QHash<QString, QVariant> &state) {
+    const QList<QString> dn_list = state["dn_list"].toStringList();
+    const QList<QString> name_list = state["name_list"].toStringList();
+    const int current_index = state["current_index"].toInt();
     combo->clear();
 
     for (int i = 0; i < dn_list.size(); i++) {
@@ -129,16 +124,4 @@ void SearchBaseWidget::deserialize(QDataStream &stream) {
     }
 
     combo->setCurrentIndex(current_index);
-}
-
-QDataStream &operator<<(QDataStream &stream, const SearchBaseWidget *widget) {
-    widget->serialize(stream);
-
-    return stream;
-}
-
-QDataStream &operator>>(QDataStream &stream, SearchBaseWidget *widget) {
-    widget->deserialize(stream);
-    
-    return stream;
 }

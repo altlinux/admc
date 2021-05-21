@@ -37,9 +37,11 @@ FilterWidget::FilterWidget(const QList<QString> classes)
     };
 
     simple_tab = new FilterWidgetSimpleTab(classes);
+    normal_tab = new FilterWidgetNormalTab(classes);
+    advanced_tab = new FilterWidgetAdvancedTab();
     add_tab(simple_tab, tr("Simple"));
-    add_tab(new FilterWidgetNormalTab(classes), tr("Normal"));
-    add_tab(new FilterWidgetAdvancedTab(), tr("Advanced"));
+    add_tab(normal_tab, tr("Normal"));
+    add_tab(advanced_tab, tr("Advanced"));
 
     auto layout = new QVBoxLayout();
     setLayout(layout);
@@ -57,43 +59,32 @@ QString FilterWidget::get_filter() const {
     }
 }
 
-void FilterWidget::serialize(QDataStream &stream) const {
+void FilterWidget::serialize(QHash<QString, QVariant> &state) const {
     const int current_tab_index = tab_widget->currentIndex();
-    const FilterWidgetTab *current_tab = dynamic_cast<FilterWidgetTab *> (tab_widget->currentWidget());
 
-    stream << current_tab_index;
-    stream << current_tab;
+    QHash<QString, QVariant> simple_state;
+    QHash<QString, QVariant> normal_state;
+    QHash<QString, QVariant> advanced_state;
+
+    simple_tab->serialize(simple_state);
+    normal_tab->serialize(normal_state);
+    advanced_tab->serialize(advanced_state);
+
+    state["current_tab_index"] = QVariant(current_tab_index);
+    state["simple_state"] = simple_state;
+    state["normal_state"] = normal_state;
+    state["advanced_state"] = advanced_state;
 }
 
-void FilterWidget::deserialize(QDataStream &stream) {
-    int current_tab_index;
-    stream >> current_tab_index;
+void FilterWidget::deserialize(const QHash<QString, QVariant> &state) {
+    const int current_tab_index = state["current_tab_index"].toInt();
+    const QHash<QString, QVariant> simple_state = state["simple_state"].toHash();
+    const QHash<QString, QVariant> normal_state = state["normal_state"].toHash();
+    const QHash<QString, QVariant> advanced_state = state["advanced_state"].toHash();
+
+    simple_tab->deserialize(simple_state);
+    normal_tab->deserialize(normal_state);
+    advanced_tab->deserialize(advanced_state);
+
     tab_widget->setCurrentIndex(current_tab_index);
-    
-    FilterWidgetTab *current_tab = dynamic_cast<FilterWidgetTab *> (tab_widget->currentWidget());
-    stream >> current_tab;
-}
-
-QDataStream &operator<<(QDataStream &stream, const FilterWidget *widget) {
-    widget->serialize(stream);
-
-    return stream;
-}
-
-QDataStream &operator>>(QDataStream &stream, FilterWidget *widget) {
-    widget->deserialize(stream);
-    
-    return stream;
-}
-
-QDataStream &operator<<(QDataStream &stream, const FilterWidgetTab *widget) {
-    widget->serialize(stream);
-
-    return stream;
-}
-
-QDataStream &operator>>(QDataStream &stream, FilterWidgetTab *widget) {
-    widget->deserialize(stream);
-    
-    return stream;
 }

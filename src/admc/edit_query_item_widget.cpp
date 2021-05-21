@@ -91,8 +91,14 @@ EditQueryItemWidget::EditQueryItemWidget()
 void EditQueryItemWidget::load(const QModelIndex &index) {
     QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
     QDataStream filter_state_stream(filter_state);
-    filter_state_stream >> search_base_widget;
-    filter_state_stream >> filter_widget;
+    QHash<QString, QVariant> state;
+    filter_state_stream >> state;
+
+    const QHash<QString, QVariant> search_base_widget_state = state["search_base_widget"].toHash();
+    const QHash<QString, QVariant> filter_widget_state = state["filter_widget"].toHash();
+
+    search_base_widget->deserialize(search_base_widget_state);
+    filter_widget->deserialize(filter_widget_state);
 
     update_filter_display();
 
@@ -111,11 +117,19 @@ void EditQueryItemWidget::get_state(QString &name, QString &description, QString
 
     filter_state =
     [&]() {
-        QByteArray out;
+        QHash<QString, QVariant> search_base_widget_state;
+        QHash<QString, QVariant> filter_widget_state;
 
-        QDataStream filter_state_stream(&out, QIODevice::WriteOnly);
-        filter_state_stream << search_base_widget;
-        filter_state_stream << filter_widget;
+        search_base_widget->serialize(search_base_widget_state);
+        filter_widget->serialize(filter_widget_state);
+
+        QHash<QString, QVariant> state;
+        state["search_base_widget"] = search_base_widget_state;
+        state["filter_widget"] = filter_widget_state;
+
+        QByteArray out;
+        QDataStream state_stream(&out, QIODevice::WriteOnly);
+        state_stream << state;
 
         return out;
     }();

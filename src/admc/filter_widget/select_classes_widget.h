@@ -40,8 +40,8 @@ public:
 
     QString get_filter() const;
 
-    void serialize(QDataStream &stream) const;
-    void deserialize(QDataStream &stream);
+    void serialize(QHash<QString, QVariant> &state) const;
+    void deserialize(const QHash<QString, QVariant> &state);
 
 private:
     QLineEdit *classes_display;
@@ -49,8 +49,5 @@ private:
 
     void update_classes_display();
 };
-
-QDataStream &operator<<(QDataStream &stream, const SelectClassesWidget *widget);
-QDataStream &operator>>(QDataStream &stream, SelectClassesWidget *widget);
 
 #endif /* SELECT_CLASSES_WIDGET_H */

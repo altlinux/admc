@@ -41,12 +41,12 @@ QString FilterWidgetAdvancedTab::get_filter() const {
     return filter;
 }
 
-void FilterWidgetAdvancedTab::serialize(QDataStream &stream) const {
-    stream << ldap_filter_edit->toPlainText();
+void FilterWidgetAdvancedTab::serialize(QHash<QString, QVariant> &state) const {
+    const QString filter = ldap_filter_edit->toPlainText();
+    state["filter"] = filter;
 }
 
-void FilterWidgetAdvancedTab::deserialize(QDataStream &stream) {
-    QString text;
-    stream >> text;
-    ldap_filter_edit->setPlainText(text);
+void FilterWidgetAdvancedTab::deserialize(const QHash<QString, QVariant> &state) {
+    const QString filter = state["filter"].toString();
+    ldap_filter_edit->setPlainText(filter);
 }

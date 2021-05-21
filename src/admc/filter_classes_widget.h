@@ -40,8 +40,8 @@ public:
 
     QString get_filter() const;
     QList<QString> get_selected_classes() const;
-    void serialize(QDataStream &stream) const;
-    void deserialize(QDataStream &stream);
+    void serialize(QHash<QString, QVariant> &state) const;
+    void deserialize(const QHash<QString, QVariant> &state);
 
 private:
     QHash<QString, QCheckBox *> checkbox_map;
@@ -50,8 +50,5 @@ private:
     void select_all();
     void clear_selection();
 };
-
-QDataStream &operator<<(QDataStream &stream, const FilterClassesWidget *widget);
-QDataStream &operator>>(QDataStream &stream, FilterClassesWidget *widget);
 
 #endif /* FILTER_CLASSES_WIDGET_H */

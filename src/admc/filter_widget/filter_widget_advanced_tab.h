@@ -36,8 +36,8 @@ public:
 
     QString get_filter() const;
 
-    void serialize(QDataStream &stream) const;
-    void deserialize(QDataStream &stream);
+    void serialize(QHash<QString, QVariant> &state) const;
+    void deserialize(const QHash<QString, QVariant> &state);
 
 private:
     QPlainTextEdit *ldap_filter_edit;
