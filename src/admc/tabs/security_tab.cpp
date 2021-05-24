@@ -170,7 +170,7 @@ const QHash<AcePermission, uint32_t> ace_permission_to_mask_map = {
 // NOTE: store right's cn value here, then search for it to
 // get right's guid, which is compared to ace type.
 const QHash<AcePermission, QString> ace_permission_to_type_map = {
-    {AcePermission_AllowedToAuthenticate, "ALlowed-To-Authenticate"},
+    {AcePermission_AllowedToAuthenticate, "Allowed-To-Authenticate"},
     {AcePermission_ChangePassword, "User-Change-Password"},
     {AcePermission_ReceiveAs, "Receive-As"},
     {AcePermission_ResetPassword, "User-Force-Change-Password"},
