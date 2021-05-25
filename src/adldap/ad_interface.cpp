@@ -92,25 +92,7 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     d->domain = get_default_domain_from_krb5();
     d->domain_head = domain_to_domain_dn(d->domain);
 
-    const QList<QString> hosts = get_domain_hosts(d->domain, QString());
-    if (hosts.isEmpty()) {
-        qDebug() << "No hosts found";
-        
-        return;
-    }
-
-    // Use preferred host, if it's present, otherwise use
-    // the first host that was found
-    d->host =
-    [&]() {
-        if (hosts.contains(AdInterfacePrivate::s_dc)) {
-            return AdInterfacePrivate::s_dc;
-        } else {
-            return hosts[0];
-        }
-    }();
-
-    const QString uri = "ldap://" + d->host;
+    const QString uri = "ldap://" + AdInterfacePrivate::s_dc;
 
     const bool success = ad_connect(cstr(uri), &d->ld);
     if (success) {
@@ -153,16 +135,16 @@ void AdInterface::set_dc(const QString &dc) {
     AdInterfacePrivate::s_dc = dc;
 }
 
+QString AdInterface::get_dc() {
+    return AdInterfacePrivate::s_dc;
+}
+
 AdInterfacePrivate::AdInterfacePrivate() {
 
 }
 
 bool AdInterface::is_connected() const {
     return d->is_connected;
-}
-
-QString AdInterface::host() const {
-    return d->host;
 }
 
 QList<AdMessage> AdInterface::messages() const {
@@ -1046,7 +1028,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
 
     // Create main dir
     // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(d->host, d->domain.toLower(), uuid);
+    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(AdInterfacePrivate::s_dc, d->domain.toLower(), uuid);
     const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0);
     if (result_mkdir_main != 0) {
         qDebug() << "Failed to create policy main dir";
@@ -1223,7 +1205,7 @@ QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
     const int sysvol_i = out.indexOf("sysvol");
     out.remove(0, sysvol_i);
 
-    out = QString("smb://%1/%2").arg(d->host, out);
+    out = QString("smb://%1/%2").arg(AdInterfacePrivate::s_dc, out);
 
     return out;
 }

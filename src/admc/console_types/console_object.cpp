@@ -377,7 +377,7 @@ QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad)
 
     console_object_scope_load(head_item, head_object);
 
-    console_object_load_domain_head_text(head_item, ad.host());
+    console_object_load_domain_head_text(head_item);
 
     return head_item;
 }
@@ -724,8 +724,9 @@ void console_object_drop_policies(ConsoleWidget *console, const QList<QPersisten
     console_policy_add_link(console, policy_list, ou_list, policy_results_widget);
 }    
 
-void console_object_load_domain_head_text(QStandardItem *item, const QString &dc) {
+void console_object_load_domain_head_text(QStandardItem *item) {
     const QString domain_head = g_adconfig->domain().toLower();
+    const QString dc = AdInterface::get_dc();
     const QString domain_text = QString("%1 [%2]").arg(domain_head, dc);
 
     item->setText(domain_text);

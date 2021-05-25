@@ -66,8 +66,9 @@ ChangeDCDialog::ChangeDCDialog(QStandardItem *domain_head_item_arg, QWidget *par
 void ChangeDCDialog::accept() {
     QListWidgetItem *current_item = list_widget->currentItem();
     const QString current_dc = current_item->text();
+    AdInterface::set_dc(current_dc);
 
-    console_object_load_domain_head_text(domain_head_item, current_dc);
+    console_object_load_domain_head_text(domain_head_item);
 
     QDialog::accept();
 }

@@ -238,6 +238,26 @@ void MainWindow::setup_menubar() {
 }
 
 void MainWindow::connect_to_server() {
+    const QString host =
+    []() {
+        const QString domain = get_default_domain_from_krb5();
+        const QList<QString> host_list = get_domain_hosts(domain, QString());
+
+        if (!host_list.isEmpty()) {
+            return host_list[0];
+        } else {
+            return QString();
+        }
+    }();
+
+    if (host.isEmpty()) {
+        QMessageBox::critical(this, tr("Error"), tr("Failed to find hosts for current domain. Check your connection."));
+
+        return;
+    }
+
+    AdInterface::set_dc(host);
+
     AdInterface ad;
     if (ad_connected(ad)) {
         // TODO: check for load failure

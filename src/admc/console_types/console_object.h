@@ -74,6 +74,6 @@ QList<QString> object_operation_set_disabled(const QList<QString> &targets, cons
 void object_operation_add_to_group(const QList<QString> &targets, QWidget *parent);
 
 bool console_object_is_ou(const QModelIndex &index);
-void console_object_load_domain_head_text(QStandardItem *item, const QString &dc);
+void console_object_load_domain_head_text(QStandardItem *item);
 
 #endif /* CONSOLE_OBJECT_H */
