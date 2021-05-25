@@ -62,13 +62,13 @@ typedef struct sasl_defaults_gssapi {
     char *authzid;
 } sasl_defaults_gssapi;
 
-QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 QList<QString> query_server_for_hosts(const char *dname);
 bool ad_connect(const char* uri, LDAP **ld_out);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 
 AdConfig *AdInterfacePrivate::s_adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
+QString AdInterfacePrivate::s_dc = QString();
 
 void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgroup, int maxLenWorkgroup, char * pUsername, int maxLenUsername, char * pPassword, int maxLenPassword) {
 
@@ -99,7 +99,16 @@ AdInterface::AdInterface(AdConfig *adconfig) {
         return;
     }
 
-    d->host = hosts[0];
+    // Use preferred host, if it's present, otherwise use
+    // the first host that was found
+    d->host =
+    [&]() {
+        if (hosts.contains(AdInterfacePrivate::s_dc)) {
+            return AdInterfacePrivate::s_dc;
+        } else {
+            return hosts[0];
+        }
+    }();
 
     const QString uri = "ldap://" + d->host;
 
@@ -138,6 +147,10 @@ void AdInterface::set_permanent_adconfig(AdConfig *adconfig) {
 
 void AdInterface::set_log_searches(const bool enabled) {
     AdInterfacePrivate::s_log_searches = enabled;
+}
+
+void AdInterface::set_dc(const QString &dc) {
+    AdInterfacePrivate::s_dc = dc;
 }
 
 AdInterfacePrivate::AdInterfacePrivate() {

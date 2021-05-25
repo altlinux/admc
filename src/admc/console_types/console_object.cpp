@@ -368,7 +368,7 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
     g_status()->display_ad_messages(ad, console);
 }
 
-QModelIndex console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
+QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
     // Create tree head
     const QString head_dn = g_adconfig->domain_head();
     const AdObject head_object = ad.search_object(head_dn);
@@ -377,16 +377,9 @@ QModelIndex console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
 
     console_object_scope_load(head_item, head_object);
 
-    const QString domain_text =
-    [&]() {
-        const QString name = head_item->text();
-        const QString host = ad.host();
+    console_object_load_domain_head_text(head_item, ad.host());
 
-        return QString("%1 [%2]").arg(name, host);
-    }();
-    head_item->setText(domain_text);
-
-    return head_item->index();
+    return head_item;
 }
 
 void console_object_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
@@ -487,6 +480,7 @@ void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
 
     // Other
     menu->addAction(actions->get(ConsoleAction_EditUpnSuffixes));
+    menu->addAction(actions->get(ConsoleAction_ChangeDC));
 
     menu->addSeparator();
 
@@ -542,6 +536,7 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
 
         if (is_domain) {
             visible_actions->insert(ConsoleAction_EditUpnSuffixes);
+            visible_actions->insert(ConsoleAction_ChangeDC);
         }
 
         visible_actions->insert(ConsoleAction_Rename);
@@ -728,3 +723,10 @@ void console_object_drop_policies(ConsoleWidget *console, const QList<QPersisten
 
     console_policy_add_link(console, policy_list, ou_list, policy_results_widget);
 }    
+
+void console_object_load_domain_head_text(QStandardItem *item, const QString &dc) {
+    const QString domain_head = g_adconfig->domain().toLower();
+    const QString domain_text = QString("%1 [%2]").arg(domain_head, dc);
+
+    item->setText(domain_text);
+}

@@ -36,6 +36,7 @@ public:
 
     static AdConfig *s_adconfig;
     static bool s_log_searches;
+    static QString s_dc;
     AdConfig *adconfig;
     LDAP *ld;
     SMBCCTX *smbc;

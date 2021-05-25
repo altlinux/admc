@@ -49,6 +49,7 @@ ConsoleActions::ConsoleActions(QObject *parent)
                 case ConsoleAction_Delete: return tr("&Delete");
                 case ConsoleAction_Move: return tr("&Move");
                 case ConsoleAction_EditUpnSuffixes: return tr("Edit &Upn Suffixes");
+                case ConsoleAction_ChangeDC: return tr("Change domain controller");
 
                 case ConsoleAction_PolicyCreate: return tr("&Policy");
                 case ConsoleAction_PolicyAddLink: return tr("&Add link");
