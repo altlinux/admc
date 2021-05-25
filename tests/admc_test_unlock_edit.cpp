@@ -43,8 +43,7 @@ void ADMCTestUnlockEdit::init() {
     parent_widget->show();
     QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
 
-    tab();
-    checkbox = qobject_cast<QCheckBox *>(QApplication::focusWidget());
+    checkbox = parent_widget->findChild<QCheckBox *>();
     QVERIFY(checkbox != nullptr);
 
     // Create test user

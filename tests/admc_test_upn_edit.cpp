@@ -40,11 +40,10 @@ void ADMCTestUpnEdit::init() {
     parent_widget->show();
     QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
 
-    prefix_edit = qobject_cast<QLineEdit *>(QApplication::focusWidget());
+    prefix_edit = parent_widget->findChild<QLineEdit *>();
     QVERIFY(prefix_edit != nullptr);
 
-    tab();
-    suffix_edit = qobject_cast<QComboBox *>(QApplication::focusWidget());
+    suffix_edit = parent_widget->findChild<QComboBox *>();
     QVERIFY(suffix_edit != nullptr);
 
     // Create test user
