@@ -28,6 +28,7 @@
 
 class QStandardItem;
 class QListWidget;
+class QCheckBox;
 
 class ChangeDCDialog : public QDialog {
 Q_OBJECT
@@ -40,6 +41,7 @@ public:
 private:
     QListWidget *list_widget;
     QStandardItem *domain_head_item;
+    QCheckBox *save_dc_checkbox;
 };
 
 #endif /* CHANGE_DC_DIALOG_H */

@@ -243,8 +243,14 @@ void MainWindow::connect_to_server() {
         const QString domain = get_default_domain_from_krb5();
         const QList<QString> host_list = get_domain_hosts(domain, QString());
 
+        const QString saved_dc = g_settings->get_variant(VariantSetting_DC).toString();
+
         if (!host_list.isEmpty()) {
-            return host_list[0];
+            if (host_list.contains(saved_dc)) {
+                return saved_dc;
+            } else {
+                return host_list[0];
+            }
         } else {
             return QString();
         }

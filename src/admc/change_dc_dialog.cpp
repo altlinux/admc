@@ -23,10 +23,13 @@
 #include "adldap.h"
 #include "change_dc_dialog.h"
 #include "console_types/console_object.h"
+#include "globals.h"
+#include "settings.h"
 
 #include <QVBoxLayout>
 #include <QListWidget>
 #include <QDialogButtonBox>
+#include <QCheckBox>
 
 ChangeDCDialog::ChangeDCDialog(QStandardItem *domain_head_item_arg, QWidget *parent)
 : QDialog(parent)
@@ -46,6 +49,8 @@ ChangeDCDialog::ChangeDCDialog(QStandardItem *domain_head_item_arg, QWidget *par
         list_widget->addItem(host);
     }
 
+    save_dc_checkbox = new QCheckBox(tr("Save this setting"));
+
     auto buttonbox = new QDialogButtonBox();
     buttonbox->addButton(QDialogButtonBox::Ok);
     buttonbox->addButton(QDialogButtonBox::Cancel);
@@ -53,6 +58,7 @@ ChangeDCDialog::ChangeDCDialog(QStandardItem *domain_head_item_arg, QWidget *par
     auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(list_widget);
+    layout->addWidget(save_dc_checkbox);
     layout->addWidget(buttonbox);
 
     connect(
@@ -69,6 +75,10 @@ void ChangeDCDialog::accept() {
     AdInterface::set_dc(current_dc);
 
     console_object_load_domain_head_text(domain_head_item);
+
+    if (save_dc_checkbox->isChecked()) {
+        g_settings->set_variant(VariantSetting_DC, current_dc);
+    }
 
     QDialog::accept();
 }
