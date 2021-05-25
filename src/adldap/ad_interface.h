@@ -112,8 +112,10 @@ public:
     
     static void set_log_searches(const bool enabled);
 
+    static void set_dc(const QString &dc);
+    static QString get_dc();
+
     bool is_connected() const;
-    QString host() const;
     QList<AdMessage> messages() const;
     bool any_error_messages() const;
     void clear_messages();
@@ -170,5 +172,7 @@ public:
 private:
     AdInterfacePrivate *d;
 };
+
+QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 
 #endif /* AD_INTERFACE_H */

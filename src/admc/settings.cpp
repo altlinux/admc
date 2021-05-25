@@ -184,6 +184,7 @@ QString bool_to_string(const BoolSetting setting) {
 
 QString variant_to_string(const VariantSetting setting) {
     switch (setting) {
+        CASE_ENUM_TO_STRING(VariantSetting_DC);
         CASE_ENUM_TO_STRING(VariantSetting_Domain);
         CASE_ENUM_TO_STRING(VariantSetting_Site);
         CASE_ENUM_TO_STRING(VariantSetting_MainWindowGeometry);

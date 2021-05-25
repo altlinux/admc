@@ -48,6 +48,7 @@
 #include "policy_results_widget.h"
 #include "edit_query_folder_dialog.h"
 #include "object_multi_properties_dialog.h"
+#include "change_dc_dialog.h"
 
 #include <QDebug>
 #include <QAbstractItemView>
@@ -165,6 +166,9 @@ CentralWidget::CentralWidget()
     connect(
         console_actions->get(ConsoleAction_EditUpnSuffixes), &QAction::triggered,
         this, &CentralWidget::object_edit_upn_suffixes);
+    connect(
+        console_actions->get(ConsoleAction_ChangeDC), &QAction::triggered,
+        this, &CentralWidget::object_change_dc);
 
     connect(
         console_actions->get(ConsoleAction_PolicyCreate), &QAction::triggered,
@@ -258,7 +262,7 @@ void CentralWidget::go_online(AdInterface &ad) {
     console_query_tree_init(console);
 
     console->sort_scope();
-    console->set_current_scope(object_tree_head);
+    console->set_current_scope(object_tree_head->index());
 }
 
 void CentralWidget::open_filter() {
@@ -467,6 +471,11 @@ void CentralWidget::object_edit_upn_suffixes() {
             ad2.attribute_replace_values(partitions_dn, ATTRIBUTE_UPN_SUFFIXES, new_values);
             g_status()->display_ad_messages(ad2, this);
         });
+}
+
+void CentralWidget::object_change_dc() {
+    auto change_dc_dialog = new ChangeDCDialog(object_tree_head, this);
+    change_dc_dialog->open();
 }
 
 void CentralWidget::policy_add_link() {
@@ -725,7 +734,7 @@ void CentralWidget::on_object_properties_applied() {
 void CentralWidget::refresh_head() {
     show_busy_indicator();
 
-    console->refresh_scope(object_tree_head);
+    console->refresh_scope(object_tree_head->index());
 
     hide_busy_indicator();
 }

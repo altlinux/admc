@@ -46,6 +46,7 @@ enum ConsoleAction {
     ConsoleAction_Delete,
     ConsoleAction_Move,
     ConsoleAction_EditUpnSuffixes,
+    ConsoleAction_ChangeDC,
 
     ConsoleAction_PolicyCreate,
     ConsoleAction_PolicyAddLink,

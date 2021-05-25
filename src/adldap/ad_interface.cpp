@@ -62,13 +62,13 @@ typedef struct sasl_defaults_gssapi {
     char *authzid;
 } sasl_defaults_gssapi;
 
-QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 QList<QString> query_server_for_hosts(const char *dname);
 bool ad_connect(const char* uri, LDAP **ld_out);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 
 AdConfig *AdInterfacePrivate::s_adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
+QString AdInterfacePrivate::s_dc = QString();
 
 void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgroup, int maxLenWorkgroup, char * pUsername, int maxLenUsername, char * pPassword, int maxLenPassword) {
 
@@ -92,16 +92,7 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     d->domain = get_default_domain_from_krb5();
     d->domain_head = domain_to_domain_dn(d->domain);
 
-    const QList<QString> hosts = get_domain_hosts(d->domain, QString());
-    if (hosts.isEmpty()) {
-        qDebug() << "No hosts found";
-        
-        return;
-    }
-
-    d->host = hosts[0];
-
-    const QString uri = "ldap://" + d->host;
+    const QString uri = "ldap://" + AdInterfacePrivate::s_dc;
 
     const bool success = ad_connect(cstr(uri), &d->ld);
     if (success) {
@@ -140,16 +131,20 @@ void AdInterface::set_log_searches(const bool enabled) {
     AdInterfacePrivate::s_log_searches = enabled;
 }
 
+void AdInterface::set_dc(const QString &dc) {
+    AdInterfacePrivate::s_dc = dc;
+}
+
+QString AdInterface::get_dc() {
+    return AdInterfacePrivate::s_dc;
+}
+
 AdInterfacePrivate::AdInterfacePrivate() {
 
 }
 
 bool AdInterface::is_connected() const {
     return d->is_connected;
-}
-
-QString AdInterface::host() const {
-    return d->host;
 }
 
 QList<AdMessage> AdInterface::messages() const {
@@ -1033,7 +1028,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
 
     // Create main dir
     // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(d->host, d->domain.toLower(), uuid);
+    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(AdInterfacePrivate::s_dc, d->domain.toLower(), uuid);
     const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0);
     if (result_mkdir_main != 0) {
         qDebug() << "Failed to create policy main dir";
@@ -1210,7 +1205,7 @@ QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
     const int sysvol_i = out.indexOf("sysvol");
     out.remove(0, sysvol_i);
 
-    out = QString("smb://%1/%2").arg(d->host, out);
+    out = QString("smb://%1/%2").arg(AdInterfacePrivate::s_dc, out);
 
     return out;
 }

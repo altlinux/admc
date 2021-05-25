@@ -36,13 +36,13 @@ public:
 
     static AdConfig *s_adconfig;
     static bool s_log_searches;
+    static QString s_dc;
     AdConfig *adconfig;
     LDAP *ld;
     SMBCCTX *smbc;
     bool is_connected;
     QString domain;
     QString domain_head;
-    QString host;
     QList<AdMessage> messages;
 
     void success_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);

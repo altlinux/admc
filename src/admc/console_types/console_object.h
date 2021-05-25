@@ -61,7 +61,7 @@ void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QS
 void console_object_create(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
 void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index);
-QModelIndex console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
+QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
 void console_object_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
 void console_object_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QSet<ItemType> &dropped_types, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget);
 void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu);
@@ -74,5 +74,6 @@ QList<QString> object_operation_set_disabled(const QList<QString> &targets, cons
 void object_operation_add_to_group(const QList<QString> &targets, QWidget *parent);
 
 bool console_object_is_ou(const QModelIndex &index);
+void console_object_load_domain_head_text(QStandardItem *item);
 
 #endif /* CONSOLE_OBJECT_H */

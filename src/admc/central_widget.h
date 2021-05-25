@@ -88,6 +88,7 @@ private slots:
     void object_create_ou();
     void object_create_group();
     void object_edit_upn_suffixes();
+    void object_change_dc();
 
     void policy_add_link();
     void policy_delete();
@@ -109,7 +110,7 @@ private slots:
 
 private:
     ConsoleWidget *console;
-    QPersistentModelIndex object_tree_head;
+    QStandardItem *object_tree_head;
     FilterDialog *filter_dialog;
     PolicyResultsWidget *policy_results_widget;
     
