@@ -179,6 +179,14 @@ private:
     AdInterfacePrivate *d;
 };
 
+enum SecurityModifyType {
+    SecurityModifyType_None,
+    SecurityModifyType_SetAllowed,
+    SecurityModifyType_UnsetAllowed,
+    SecurityModifyType_SetDenied,
+    SecurityModifyType_UnsetDenied,
+};
+
 class SecurityDescriptor {
 
 public:
@@ -196,7 +204,7 @@ public:
     QList<security_ace *> dacl;
     QList<security_ace *> sacl;
 
-    void modify_sd(const QString &trustee, const bool allowed_checked, const bool denied_checked, const bool allowed_changed, const bool denied_changed, const uint32_t permission_mask);
+    void modify_sd(const QString &trustee, const SecurityModifyType modify_type, const uint32_t permission_mask);
 
     QList<security_ace *> get_ace_list(const QString &trustee) const;
     void print_acl(const QString &trustee) const;

@@ -450,14 +450,32 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
         return mask;
     }();
 
-    const bool allowed_checked = get_checked(AceColumn_Allowed);
-    const bool denied_checked = get_checked(AceColumn_Denied);
-    const bool allowed_changed = (changed_column == AceColumn_Allowed);
-    const bool denied_changed = (changed_column == AceColumn_Denied);
-    qDebug() << "allowed_checked = " << allowed_checked;
-    qDebug() << "denied_checked = " << denied_checked;
+    
 
-    sd.modify_sd(trustee, allowed_checked, denied_checked, allowed_changed, denied_changed, permission_mask);
+    const SecurityModifyType modify_type =
+    [&]() {
+        const bool allowed_checked = get_checked(AceColumn_Allowed);
+        const bool denied_checked = get_checked(AceColumn_Denied);
+        const bool allowed_changed = (changed_column == AceColumn_Allowed);
+        const bool denied_changed = (changed_column == AceColumn_Denied);
+
+        qDebug() << "allowed_checked = " << allowed_checked;
+        qDebug() << "denied_checked = " << denied_checked;
+
+        if (allowed_changed && allowed_checked) {
+            return SecurityModifyType_SetAllowed;
+        } else if (allowed_changed && !allowed_checked) {
+            return SecurityModifyType_UnsetAllowed;
+        } else if (denied_changed && denied_checked) {
+            return SecurityModifyType_SetDenied;
+        } else if (denied_changed && !denied_checked) {
+            return SecurityModifyType_UnsetDenied;
+        } else {
+            return SecurityModifyType_None;
+        }
+    }();
+
+    sd.modify_sd(trustee, modify_type, permission_mask);
 
     load_trustee_acl();
     

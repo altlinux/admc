@@ -1720,8 +1720,7 @@ QString ace_to_string(security_ace *ace) {
     return out;
 }
 
-void SecurityDescriptor::modify_sd(const QString &trustee, const bool allowed_checked, const bool denied_checked, const bool allowed_changed, const bool denied_changed, const uint32_t permission_mask) {
-
+void SecurityDescriptor::modify_sd(const QString &trustee, const SecurityModifyType modify_type, const uint32_t permission_mask) {
     qDebug() << "modify_sd()";
     qDebug() << "\t\tbefore";
     print_acl(trustee);
@@ -1768,39 +1767,51 @@ void SecurityDescriptor::modify_sd(const QString &trustee, const bool allowed_ch
         return nullptr;
     };
 
-    const bool allowed_became_checked = (allowed_changed && allowed_checked);
-    const bool allowed_became_unchecked = (allowed_changed && !allowed_checked);
-    const bool denied_became_checked = (denied_changed && denied_checked);
-    const bool denied_became_unchecked = (denied_changed && !denied_checked);
+    switch (modify_type) {
+        case SecurityModifyType_SetAllowed: {
+            // Unset bits in denied ace
+            security_ace *denied = get_ace(SEC_ACE_TYPE_ACCESS_DENIED, false);
+            if (denied != nullptr) {
+                denied->access_mask &= (~permission_mask);
+            }
 
-    if (allowed_became_checked) {
-        // Unset bits in denied ace
-        security_ace *denied = get_ace(SEC_ACE_TYPE_ACCESS_DENIED, false);
-        if (denied != nullptr) {
-            denied->access_mask &= (~permission_mask);
+            // Set bits in allowed ace. Create if doesn't exist
+            security_ace *allowed = get_ace(SEC_ACE_TYPE_ACCESS_ALLOWED, true);
+            allowed->access_mask |= permission_mask;
+
+            break;
         }
-
-        // Set bits in allowed ace. Create if doesn't exist
-        security_ace *allowed = get_ace(SEC_ACE_TYPE_ACCESS_ALLOWED, true);
-        allowed->access_mask |= permission_mask;
-    } else if (allowed_became_unchecked) {
-        // Unset bits in allowed ace
-        security_ace *allowed = get_ace(SEC_ACE_TYPE_ACCESS_ALLOWED, false);
-        allowed->access_mask &= (~permission_mask);
-    } else if (denied_became_checked) {
-        // Unset bits in allowed ace
-        security_ace *allowed = get_ace(SEC_ACE_TYPE_ACCESS_ALLOWED, false);
-        if (allowed != nullptr) {
+        case SecurityModifyType_UnsetAllowed: {
+            // Unset bits in allowed ace
+            security_ace *allowed = get_ace(SEC_ACE_TYPE_ACCESS_ALLOWED, false);
             allowed->access_mask &= (~permission_mask);
+            
+            break;
         }
+        case SecurityModifyType_SetDenied: {
+            // Unset bits in allowed ace
+            security_ace *allowed = get_ace(SEC_ACE_TYPE_ACCESS_ALLOWED, false);
+            if (allowed != nullptr) {
+                allowed->access_mask &= (~permission_mask);
+            }
 
-        // Set bits in denied ace. Create if doesn't exist
-        security_ace *denied = get_ace(SEC_ACE_TYPE_ACCESS_DENIED, true);
-        denied->access_mask |= permission_mask;
-    } else if (denied_became_unchecked) {
-        // Unset bits in denied ace
-        security_ace *denied = get_ace(SEC_ACE_TYPE_ACCESS_DENIED, false);
-        denied->access_mask &= (~permission_mask);
+            // Set bits in denied ace. Create if doesn't exist
+            security_ace *denied = get_ace(SEC_ACE_TYPE_ACCESS_DENIED, true);
+            denied->access_mask |= permission_mask;
+
+            break;
+        }
+        case SecurityModifyType_UnsetDenied: {
+            // Unset bits in denied ace
+            security_ace *denied = get_ace(SEC_ACE_TYPE_ACCESS_DENIED, false);
+            denied->access_mask &= (~permission_mask);
+
+            break;
+        }
+        case SecurityModifyType_None: {
+
+            break;
+        }
     }
 
     // Remove all ace's that became empty due to this edit.
