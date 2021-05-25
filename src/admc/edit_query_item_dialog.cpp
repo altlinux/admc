@@ -50,7 +50,7 @@ EditQueryItemDialog::EditQueryItemDialog(ConsoleWidget *console_arg)
 
     scope_index = get_selected_scope_index(console);
 
-    if (scope_index.isValid()) {
+    if (!scope_index.isValid()) {
         close();
 
         return;
@@ -72,7 +72,8 @@ void EditQueryItemDialog::accept() {
     QString filter;
     QString search_base;
     QByteArray filter_state;
-    edit_query_widget->get_state(name, description, filter, search_base, filter_state);
+    bool scope_is_children;
+    edit_query_widget->save(name, description, filter, search_base, scope_is_children, filter_state);
 
     if (!console_query_or_folder_name_is_good(name, scope_index.parent(), this, scope_index)) {
         return;
@@ -83,7 +84,7 @@ void EditQueryItemDialog::accept() {
     const QModelIndex results_index = console_item_get_buddy(scope_index);
     const QList<QStandardItem *> results_row = console->get_results_row(results_index);
 
-    console_query_item_load(scope_item, results_row, name, description, filter, filter_state, search_base);
+    console_query_item_load(scope_item, results_row, name, description, filter, filter_state, search_base, scope_is_children);
 
     console_query_tree_save(console);
 

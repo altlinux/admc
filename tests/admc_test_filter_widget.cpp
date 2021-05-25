@@ -88,21 +88,19 @@ void ADMCTestFilterWidget::test_simple_tab() {
     QLineEdit * name_edit = simple_tab->findChild<QLineEdit *>("name_edit");
     name_edit->setText("test");
 
-    const QString correct_filter = "(&(name=*test*)(|(objectClass=user)))";
+    const QString correct_filter = "(&(name=*test*)(objectClass=user))";
     const QString filter = filter_widget->get_filter();
     QVERIFY(correct_filter == filter);
 
     // Serialize
-    QByteArray stream_bytes;
-    QDataStream stream_in(&stream_bytes, QIODevice::WriteOnly);
-    stream_in << filter_widget;
+    QHash<QString, QVariant> state;
+    filter_widget->save_state(state);
 
     // Change state
     name_edit->setText("changed");
     
     // Deserialize
-    QDataStream stream_out(stream_bytes);
-    stream_out >> filter_widget;
+    filter_widget->load_state(state);
 
     const QString filter_deserialized = filter_widget->get_filter();
     QVERIFY(correct_filter == filter_deserialized);
@@ -143,22 +141,20 @@ void ADMCTestFilterWidget::test_normal_tab() {
     QVERIFY(add_button != nullptr);
     add_button->click();
 
-    const QString correct_filter = "(&(|(objectClass=user))(&(assistant=value)))";
+    const QString correct_filter = "(&(objectClass=user)(assistant=value))";
     const QString filter = filter_widget->get_filter();
     QVERIFY(correct_filter == filter);
 
     // Serialize
-    QByteArray stream_bytes;
-    QDataStream stream_in(&stream_bytes, QIODevice::WriteOnly);
-    stream_in << filter_widget;
+    QHash<QString, QVariant> state;
+    filter_widget->save_state(state);
 
     // Change state
     value_edit->setText("value 2");
     add_button->click();
     
     // Deserialize
-    QDataStream stream_out(stream_bytes);
-    stream_out >> filter_widget;
+    filter_widget->load_state(state);
 
     const QString filter_deserialized = filter_widget->get_filter();
     QVERIFY(correct_filter == filter_deserialized);
@@ -177,16 +173,14 @@ void ADMCTestFilterWidget::test_advanced_tab() {
     QVERIFY(correct_filter == filter);
 
     // Serialize
-    QByteArray stream_bytes;
-    QDataStream stream_in(&stream_bytes, QIODevice::WriteOnly);
-    stream_in << filter_widget;
+    QHash<QString, QVariant> state;
+    filter_widget->save_state(state);
 
     // Change state
     edit->setPlainText("changed");
     
     // Deserialize
-    QDataStream stream_out(stream_bytes);
-    stream_out >> filter_widget;
+    filter_widget->load_state(state);
 
     const QString filter_deserialized = filter_widget->get_filter();
     QVERIFY(correct_filter == filter_deserialized);

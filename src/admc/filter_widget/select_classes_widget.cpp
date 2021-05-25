@@ -98,23 +98,11 @@ void SelectClassesWidget::update_classes_display() {
     classes_display->setCursorPosition(0);
 }
 
-void SelectClassesWidget::serialize(QDataStream &stream) const {
-    stream << filter_classes_widget;
+void SelectClassesWidget::save_state(QHash<QString, QVariant> &state) const {
+    filter_classes_widget->save_state(state);
 }
 
-void SelectClassesWidget::deserialize(QDataStream &stream) {
-    stream >> filter_classes_widget;
+void SelectClassesWidget::load_state(const QHash<QString, QVariant> &state) {
+    filter_classes_widget->load_state(state);
     update_classes_display();
-}
-
-QDataStream &operator<<(QDataStream &stream, const SelectClassesWidget *widget) {
-    widget->serialize(stream);
-
-    return stream;
-}
-
-QDataStream &operator>>(QDataStream &stream, SelectClassesWidget *widget) {
-    widget->deserialize(stream);
-    
-    return stream;
 }

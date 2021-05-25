@@ -32,6 +32,8 @@ class QTabWidget;
 class QString;
 class FilterWidgetTab;
 class FilterWidgetSimpleTab;
+class FilterWidgetNormalTab;
+class FilterWidgetAdvancedTab;
 
 class FilterWidget final : public QWidget {
 Q_OBJECT
@@ -41,12 +43,14 @@ public:
 
     QString get_filter() const;
 
-    void serialize(QDataStream &stream) const;
-    void deserialize(QDataStream &stream);
+    void save_state(QHash<QString, QVariant> &state) const;
+    void load_state(const QHash<QString, QVariant> &state);
 
 private:
     QTabWidget *tab_widget;
     FilterWidgetSimpleTab *simple_tab;
+    FilterWidgetNormalTab *normal_tab;
+    FilterWidgetAdvancedTab *advanced_tab;
 };
 
 class FilterWidgetTab : public QWidget {
@@ -54,15 +58,6 @@ Q_OBJECT
 
 public:
     virtual QString get_filter() const = 0;
-    
-    virtual void serialize(QDataStream &stream) const = 0;
-    virtual void deserialize(QDataStream &stream) = 0;
 };
-
-QDataStream &operator<<(QDataStream &stream, const FilterWidget *widget);
-QDataStream &operator>>(QDataStream &stream, FilterWidget *widget);
-
-QDataStream &operator<<(QDataStream &stream, const FilterWidgetTab *widget);
-QDataStream &operator>>(QDataStream &stream, FilterWidgetTab *widget);
 
 #endif /* FILTER_WIDGET_H */

@@ -58,7 +58,8 @@ void CreateQueryItemDialog::accept() {
     QString filter;
     QString search_base;
     QByteArray filter_state;
-    edit_query_widget->get_state(name, description, filter, search_base, filter_state);
+    bool scope_is_children;
+    edit_query_widget->save(name, description, filter, search_base, scope_is_children, filter_state);
 
     const QModelIndex parent_index = get_selected_scope_index(console);
 
@@ -66,7 +67,7 @@ void CreateQueryItemDialog::accept() {
         return;
     }
 
-    console_query_item_create(console, name, description, filter, filter_state, search_base, parent_index);
+    console_query_item_create(console, name, description, filter, filter_state, search_base, scope_is_children, parent_index);
 
     console_query_tree_save(console);
 

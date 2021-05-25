@@ -35,7 +35,6 @@
 #include "create_policy_dialog.h"
 #include "create_query_item_dialog.h"
 #include "edit_query_item_dialog.h"
-#include "move_query_dialog.h"
 #include "create_query_folder_dialog.h"
 #include "move_object_dialog.h"
 #include "find_object_dialog.h"
@@ -82,7 +81,6 @@ CentralWidget::CentralWidget()
     auto edit_query_folder_dialog = new EditQueryFolderDialog(console);
     auto create_policy_dialog = new CreatePolicyDialog(console);
     auto rename_policy_dialog = new RenamePolicyDialog(console);
-    auto move_query_dialog = new MoveQueryDialog(console);
 
     auto policy_container_results = new ResultsView(this);
     policy_container_results->detail_view()->header()->setDefaultSectionSize(200);
@@ -194,8 +192,14 @@ CentralWidget::CentralWidget()
         console_actions->get(ConsoleAction_QueryEditItem), &QAction::triggered,
         this, &CentralWidget::query_edit);
     connect(
-        console_actions->get(ConsoleAction_QueryMoveItemOrFolder), &QAction::triggered,
-        move_query_dialog, &QDialog::open);
+        console_actions->get(ConsoleAction_QueryCutItemOrFolder), &QAction::triggered,
+        this, &CentralWidget::query_cut);
+    connect(
+        console_actions->get(ConsoleAction_QueryCopyItemOrFolder), &QAction::triggered,
+        this, &CentralWidget::query_copy);
+    connect(
+        console_actions->get(ConsoleAction_QueryPasteItemOrFolder), &QAction::triggered,
+        this, &CentralWidget::query_paste);
     connect(
         console_actions->get(ConsoleAction_QueryDeleteItemOrFolder), &QAction::triggered,
         this, &CentralWidget::query_delete);
@@ -574,6 +578,18 @@ void CentralWidget::query_export() {
 
 void CentralWidget::query_import() {
     console_query_import(console);
+}
+
+void CentralWidget::query_cut() {
+    console_query_cut(console);
+}
+
+void CentralWidget::query_copy() {
+    console_query_copy(console);
+}
+
+void CentralWidget::query_paste() {
+    console_query_paste(console);
 }
 
 void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, bool *ok) {

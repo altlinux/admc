@@ -37,6 +37,7 @@ enum QueryItemRole {
     QueryItemRole_Filter = ConsoleRole_LAST + 2,
     QueryItemRole_FilterState = ConsoleRole_LAST + 3,
     QueryItemRole_SearchBase = ConsoleRole_LAST + 4,
+    QueryItemRole_ScopeIsChildren = ConsoleRole_LAST + 5,
 
     QueryItemRole_LAST = ConsoleRole_LAST + 7,
 };
@@ -48,8 +49,8 @@ QList<int> console_query_folder_default_columns();
 void console_query_folder_load(QStandardItem *scope_item, const QList<QStandardItem *> &results_row, const QString &name, const QString &description);
 // Returns index of the scope item
 QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent);
-void console_query_item_load(QStandardItem *scope_item, const QList<QStandardItem *> results_row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &search_base);
-void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &search_base, const QModelIndex &parent);
+void console_query_item_load(QStandardItem *scope_item, const QList<QStandardItem *> results_row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &search_base, const bool scope_is_children);
+void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &search_base, const bool scope_is_children, const QModelIndex &parent);
 void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index);
 void console_query_tree_init(ConsoleWidget *console);
 void console_query_tree_save(ConsoleWidget *console);
@@ -60,8 +61,11 @@ QString console_query_folder_path(const QModelIndex &index);
 QModelIndex console_query_get_root_index(ConsoleWidget *console);
 void console_query_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
 void console_query_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
-void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index);
+void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index, const bool delete_old_branch = true);
 void console_query_export(ConsoleWidget *console);
 void console_query_import(ConsoleWidget *console);
+void console_query_cut(ConsoleWidget *console);
+void console_query_copy(ConsoleWidget *console);
+void console_query_paste(ConsoleWidget *console);
 
 #endif /* CONSOLE_QUERY_H */

@@ -31,6 +31,7 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 #include <QLabel>
+#include <QCheckBox>
 
 EditQueryItemWidget::EditQueryItemWidget()
 : QWidget()
@@ -45,6 +46,8 @@ EditQueryItemWidget::EditQueryItemWidget()
     name_edit->setText("New query");
     
     description_edit = new QLineEdit();
+
+    scope_checkbox = new QCheckBox(tr("Include subcontainers"));
 
     filter_display = new QTextEdit();
     filter_display->setReadOnly(true);
@@ -66,6 +69,7 @@ EditQueryItemWidget::EditQueryItemWidget()
     form_layout->addRow(tr("Name:"), name_edit);
     form_layout->addRow(tr("Description:"), description_edit);
     form_layout->addRow(tr("Search in:"), search_base_widget);
+    form_layout->addRow(scope_checkbox);
     form_layout->addRow(new QLabel(tr("Filter:")));
     form_layout->addRow(filter_display);
     form_layout->addRow(edit_filter_button);
@@ -91,8 +95,14 @@ EditQueryItemWidget::EditQueryItemWidget()
 void EditQueryItemWidget::load(const QModelIndex &index) {
     QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
     QDataStream filter_state_stream(filter_state);
-    filter_state_stream >> search_base_widget;
-    filter_state_stream >> filter_widget;
+    QHash<QString, QVariant> state;
+    filter_state_stream >> state;
+
+    const QHash<QString, QVariant> search_base_widget_state = state["search_base_widget"].toHash();
+    const QHash<QString, QVariant> filter_widget_state = state["filter_widget"].toHash();
+
+    search_base_widget->load_state(search_base_widget_state);
+    filter_widget->load_state(filter_widget_state);
 
     update_filter_display();
 
@@ -101,21 +111,34 @@ void EditQueryItemWidget::load(const QModelIndex &index) {
 
     const QString description = index.data(QueryItemRole_Description).toString();
     description_edit->setText(description);
+
+    const bool scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
+    scope_checkbox->setChecked(!scope_is_children);
 }
 
-void EditQueryItemWidget::get_state(QString &name, QString &description, QString &filter, QString &search_base, QByteArray &filter_state) const {
+void EditQueryItemWidget::save(QString &name, QString &description, QString &filter, QString &search_base, bool &scope_is_children, QByteArray &filter_state) const {
     name = name_edit->text();
     description = description_edit->text();
     filter = filter_widget->get_filter();
     search_base = search_base_widget->get_search_base();
+    scope_is_children = !scope_checkbox->isChecked();
 
     filter_state =
     [&]() {
-        QByteArray out;
+        QHash<QString, QVariant> search_base_widget_state;
+        QHash<QString, QVariant> filter_widget_state;
 
-        QDataStream filter_state_stream(&out, QIODevice::WriteOnly);
-        filter_state_stream << search_base_widget;
-        filter_state_stream << filter_widget;
+        search_base_widget->save_state(search_base_widget_state);
+        filter_widget->save_state(filter_widget_state);
+
+        QHash<QString, QVariant> state;
+        state["search_base_widget"] = search_base_widget_state;
+        state["filter_widget"] = filter_widget_state;
+        state["filter"] = filter;
+
+        QByteArray out;
+        QDataStream state_stream(&out, QIODevice::WriteOnly);
+        state_stream << state;
 
         return out;
     }();

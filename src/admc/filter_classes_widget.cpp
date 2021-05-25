@@ -27,6 +27,7 @@
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QPushButton>
+#include <QVariant>
 
 FilterClassesWidget::FilterClassesWidget(const QList<QString> &class_list_arg)
 : QWidget()
@@ -119,38 +120,32 @@ void FilterClassesWidget::clear_selection() {
     }
 }
 
-void FilterClassesWidget::serialize(QDataStream &stream) const {
-    const QHash<QString, bool> state =
+void FilterClassesWidget::save_state(QHash<QString, QVariant> &state) const {
+    const QHash<QString, QVariant> check_state =
     [&]() {
-        QHash<QString, bool> out;
+        QHash<QString, QVariant> out;
 
         for (const QString &object_class : checkbox_map.keys()) {
             QCheckBox *checkbox = checkbox_map[object_class];
             const bool checked = checkbox->isChecked();
 
-            out[object_class] = checked;
+            out[object_class] = QVariant(checked);
         }
 
         return out;
     }();
 
-    stream << state;
+    state["check_state"] = check_state;
 }
 
-void FilterClassesWidget::deserialize(QDataStream &stream) {
-    const QHash<QString, bool> state =
-    [&]() {
-        QHash<QString, bool> out;
-        stream >> out;
-
-        return out;
-    }();
+void FilterClassesWidget::load_state(const QHash<QString, QVariant> &state) {
+    const QHash<QString, QVariant> check_state = state["check_state"].toHash();
 
     for (const QString &object_class : checkbox_map.keys()) {
         const bool checked =
         [&]() {
-            if (state.contains(object_class)) {
-                const bool out = state[object_class];
+            if (check_state.contains(object_class)) {
+                const bool out = check_state[object_class].toBool();
 
                 return out;
             } else {
@@ -161,16 +156,4 @@ void FilterClassesWidget::deserialize(QDataStream &stream) {
         QCheckBox *checkbox = checkbox_map[object_class];
         checkbox->setChecked(checked);
     }
-}
-
-QDataStream &operator<<(QDataStream &stream, const FilterClassesWidget *widget) {
-    widget->serialize(stream);
-
-    return stream;
-}
-
-QDataStream &operator>>(QDataStream &stream, FilterClassesWidget *widget) {
-    widget->deserialize(stream);
-    
-    return stream;
 }

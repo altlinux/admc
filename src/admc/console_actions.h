@@ -57,7 +57,9 @@ enum ConsoleAction {
     ConsoleAction_QueryEditFolder,
     ConsoleAction_QueryEditItem,
     ConsoleAction_QueryDeleteItemOrFolder,
-    ConsoleAction_QueryMoveItemOrFolder,
+    ConsoleAction_QueryCutItemOrFolder,
+    ConsoleAction_QueryCopyItemOrFolder,
+    ConsoleAction_QueryPasteItemOrFolder,
     ConsoleAction_QueryExport,
     ConsoleAction_QueryImport,
 

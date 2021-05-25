@@ -94,15 +94,12 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     d->domain = get_default_domain_from_krb5();
     d->domain_head = domain_to_domain_dn(d->domain);
 
-    qDebug() << "domain=" << d->domain;
-
     const QList<QString> hosts = get_domain_hosts(d->domain, QString());
     if (hosts.isEmpty()) {
         qDebug() << "No hosts found";
         
         return;
     }
-    qDebug() << "hosts=" << hosts;
 
     d->host = hosts[0];
 

@@ -37,16 +37,13 @@ public:
 
     QString get_search_base() const;
 
-    void serialize(QDataStream &stream) const;
-    void deserialize(QDataStream &stream);
+    void save_state(QHash<QString, QVariant> &state) const;
+    void load_state(const QHash<QString, QVariant> &state);
 
 private:
     QComboBox *combo;
 
     void browse();
 };
-
-QDataStream &operator<<(QDataStream &stream, const SearchBaseWidget *widget);
-QDataStream &operator>>(QDataStream &stream, SearchBaseWidget *widget);
 
 #endif /* SEARCH_BASE_WIDGET_H */

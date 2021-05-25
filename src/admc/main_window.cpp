@@ -36,6 +36,7 @@
 #include <QActionGroup>
 #include <QMessageBox>
 #include <QDockWidget>
+#include <QDebug>
 
 #define MESSAGE_LOG_OBJECT_NAME "MESSAGE_LOG_OBJECT_NAME"
 
@@ -242,6 +243,8 @@ void MainWindow::connect_to_server() {
         // TODO: check for load failure
         const QLocale locale = g_settings->get_variant(VariantSetting_Locale).toLocale();
         g_adconfig->load(ad, locale);
+
+        qDebug() << "domain =" << g_adconfig->domain();
 
         AdInterface::set_permanent_adconfig(g_adconfig);
 
