@@ -362,6 +362,10 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
 
     const QPersistentModelIndex perma_index = index;
 
+    QStandardItem *item = console->get_scope_item(index);
+    const QIcon original_icon = item->icon();
+    item->setIcon(QIcon::fromTheme("system-search")); 
+
     // NOTE: need to pass console as receiver object to
     // connect() even though we're using lambda as a slot.
     // This is to be able to define queuedconnection type,
@@ -377,7 +381,8 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
     QObject::connect(
         search_thread, &SearchThread::finished,
         console,
-        [console]() {
+        [console, item, original_icon]() {
+            item->setIcon(original_icon);
         }, Qt::QueuedConnection);
 
     search_thread->start();
