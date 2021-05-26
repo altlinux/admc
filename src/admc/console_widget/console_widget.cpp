@@ -202,6 +202,8 @@ QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const ScopeNo
 
     item->setData(is_dynamic, ConsoleRole_ScopeIsDynamic);
 
+    item->setData(true, ConsoleRole_RefreshEnabled);
+
     // NOTE: if item is not dynamic, then it's "fetched"
     // from creation
     if (is_dynamic) {
@@ -414,6 +416,18 @@ void ConsoleWidget::set_description_bar_text(const QString &text) {
     d->description_bar_right->setText(text);
 }
 
+void ConsoleWidget::set_refresh_enabled(const QModelIndex &scope_index, const bool enabled) {
+    QStandardItem *item = get_scope_item(scope_index);
+
+    if (item == nullptr) {
+        return;
+    }
+
+    item->setData(enabled, ConsoleRole_RefreshEnabled);
+
+    d->on_selection_changed();
+}
+
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
     ResultsView *results_view = d->get_current_results().view();
 
@@ -579,6 +593,9 @@ void ConsoleWidgetPrivate::on_selection_changed() {
         const bool is_dynamic = selected.data(ConsoleRole_ScopeIsDynamic).toBool();
         if (is_dynamic) {
             refresh_action->setVisible(true);
+
+            const bool refresh_enabled = selected.data(ConsoleRole_RefreshEnabled).toBool();
+            refresh_action->setEnabled(refresh_enabled);
         }
 
         const bool has_properties = selected.data(ConsoleRole_HasProperties).toBool();

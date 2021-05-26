@@ -368,6 +368,11 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
     const QIcon original_icon = item->icon();
     item->setIcon(QIcon::fromTheme("system-search"));
 
+    // NOTE: disable refresh for the during of fetch because
+    // starting another fetch while this one is running will
+    // cause both of them to run together which is bad.
+    console->set_refresh_enabled(item->index(), false);
+
     // NOTE: need to pass console as receiver object to
     // connect() even though we're using lambda as a slot.
     // This is to be able to define queuedconnection type,
@@ -403,6 +408,8 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
 
             QStandardItem *scope_item = console->get_scope_item(persistent_index);
             scope_item->setIcon(original_icon);
+
+            console->set_refresh_enabled(scope_item->index(), true);
         }, Qt::QueuedConnection);
 
     search_thread->start();
