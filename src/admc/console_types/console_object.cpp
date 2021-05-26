@@ -371,6 +371,7 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
     // NOTE: need to set this role to disable actions during
     // fetch
     console->set_item_fetching(item->index(), true);
+    item->setDragEnabled(false);
 
     // NOTE: need to pass console as receiver object to
     // connect() even though we're using lambda as a slot.
@@ -409,6 +410,7 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
             scope_item->setIcon(original_icon);
 
             console->set_item_fetching(scope_item->index(), false);
+            scope_item->setDragEnabled(true);
         }, Qt::QueuedConnection);
 
     search_thread->start();
@@ -494,8 +496,9 @@ DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIn
     const bool dropped_is_user = dropped_classes.contains(CLASS_USER);
     const bool dropped_is_group = dropped_classes.contains(CLASS_GROUP);
     const bool target_is_group = target_classes.contains(CLASS_GROUP);
+    const bool target_is_fetching = console_get_item_fetching(target);
 
-    if (dropped_is_target) {
+    if (dropped_is_target || target_is_fetching) {
         return DropType_None;
     } else if (dropped_is_user && target_is_group) {
         return DropType_AddToGroup;
