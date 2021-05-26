@@ -92,7 +92,23 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     d->domain = get_default_domain_from_krb5();
     d->domain_head = domain_to_domain_dn(d->domain);
 
-    const QString uri = "ldap://" + AdInterfacePrivate::s_dc;
+    const QString dc =
+    []() {
+        if (!AdInterfacePrivate::s_dc.isEmpty()) {
+            return AdInterfacePrivate::s_dc;
+        } else {
+            const QString domain = get_default_domain_from_krb5();
+            const QList<QString> host_list = get_domain_hosts(domain, QString());
+
+            if (!host_list.isEmpty()) {
+                return host_list[0];
+            } else {
+                return QString();
+            }
+        }
+    }();
+
+    const QString uri = "ldap://" + dc;
 
     const bool success = ad_connect(cstr(uri), &d->ld);
     if (success) {
