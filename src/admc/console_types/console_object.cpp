@@ -360,11 +360,13 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
 
     auto search_thread = new SearchThread(filter, search_base, search_attributes, SearchScope_Children);
 
-    const QPersistentModelIndex perma_index = index;
+    const QPersistentModelIndex persistent_index = index;
 
+    // Save original icon and switch to a different icon
+    // that will indicate that this item is being fetched.
     QStandardItem *item = console->get_scope_item(index);
     const QIcon original_icon = item->icon();
-    item->setIcon(QIcon::fromTheme("system-search")); 
+    item->setIcon(QIcon::fromTheme("system-search"));
 
     // NOTE: need to pass console as receiver object to
     // connect() even though we're using lambda as a slot.
@@ -374,15 +376,33 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
     QObject::connect(
         search_thread, &SearchThread::results_ready,
         console,
-        [index, console](const QHash<QString, AdObject> &results) {
-            console_object_create(console, results.values(), index);
+        [console, search_thread, persistent_index](const QHash<QString, AdObject> &results) {
+            // NOTE: fetched index might become invalid for
+            // many reasons, parent getting moved, deleted,
+            // item at the index itself might get modified.
+            // Since this slot runs in the main thread, it's
+            // not possible for any catastrophic conflict to
+            // happen, so it's enough to just stop the
+            // search.
+            if (!persistent_index.isValid()) {
+                search_thread->stop();
+
+                return;
+            }
+
+            console_object_create(console, results.values(), persistent_index);
             console->sort_scope();
         }, Qt::QueuedConnection);
     QObject::connect(
         search_thread, &SearchThread::finished,
         console,
-        [console, item, original_icon]() {
-            item->setIcon(original_icon);
+        [console, persistent_index, original_icon]() {
+            if (!persistent_index.isValid()) {
+                return;
+            }
+
+            QStandardItem *scope_item = console->get_scope_item(persistent_index);
+            scope_item->setIcon(original_icon);
         }, Qt::QueuedConnection);
 
     search_thread->start();
