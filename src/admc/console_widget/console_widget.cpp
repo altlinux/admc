@@ -344,6 +344,9 @@ void ConsoleWidget::refresh_scope(const QModelIndex &index) {
     // Emit item_fetched() so that user of console can
     // reload item's results
     emit item_fetched(index);
+
+    // When fetching, need to disable actions
+    d->on_selection_changed();
 }
 
 // No view, only widget
