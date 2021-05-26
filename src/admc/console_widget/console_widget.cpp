@@ -432,16 +432,13 @@ void ConsoleWidget::set_item_fetching(const QModelIndex &scope_index, const bool
     d->on_selection_changed();
 }
 
-bool ConsoleWidget::get_item_fetching(const QModelIndex &scope_index) {
-    QStandardItem *item = get_scope_item(scope_index);
+bool console_get_item_fetching(const QModelIndex &index) {
+    const bool index_fetching = index.data(ConsoleRole_Fetching).toBool();
 
-    if (item == nullptr) {
-        return false;
-    }
+    const QModelIndex buddy = console_item_get_buddy(index);
+    const bool buddy_fetching = buddy.data(ConsoleRole_Fetching).toBool();
 
-    const bool out = item->data(ConsoleRole_Fetching).toBool();
-
-    return out;
+    return (index_fetching || buddy_fetching);
 }
 
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
@@ -639,12 +636,9 @@ void ConsoleWidgetPrivate::on_selection_changed() {
     const bool any_selected_is_fetching =
     [&]() {
         for (const QModelIndex &index : selected_list) {
-            const bool index_fetching = q->get_item_fetching(index);
+            const bool is_fetching = console_get_item_fetching(index);
 
-            const QModelIndex buddy = console_item_get_buddy(index);
-            const bool buddy_fetching = q->get_item_fetching(buddy);
-
-            if (index_fetching || buddy_fetching) {
+            if (is_fetching) {
                 return true;
             }
         }
