@@ -161,7 +161,8 @@ public:
 
     void set_description_bar_text(const QString &text);
 
-    void set_refresh_enabled(const QModelIndex &scope_index, const bool enabled);
+    void set_item_fetching(const QModelIndex &scope_index, const bool enabled);
+    bool get_item_fetching(const QModelIndex &scope_index);
 
     // Gets selected item(s) from currently focused view,
     // which could be scope or results.

@@ -202,8 +202,6 @@ QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const ScopeNo
 
     item->setData(is_dynamic, ConsoleRole_ScopeIsDynamic);
 
-    item->setData(true, ConsoleRole_RefreshEnabled);
-
     // NOTE: if item is not dynamic, then it's "fetched"
     // from creation
     if (is_dynamic) {
@@ -416,16 +414,31 @@ void ConsoleWidget::set_description_bar_text(const QString &text) {
     d->description_bar_right->setText(text);
 }
 
-void ConsoleWidget::set_refresh_enabled(const QModelIndex &scope_index, const bool enabled) {
+// NOTE: this role is done through setter/getter because we
+// need to call on_selection_changed() in setter() to update
+// actions
+void ConsoleWidget::set_item_fetching(const QModelIndex &scope_index, const bool enabled) {
     QStandardItem *item = get_scope_item(scope_index);
 
     if (item == nullptr) {
         return;
     }
 
-    item->setData(enabled, ConsoleRole_RefreshEnabled);
+    item->setData(enabled, ConsoleRole_Fetching);
 
     d->on_selection_changed();
+}
+
+bool ConsoleWidget::get_item_fetching(const QModelIndex &scope_index) {
+    QStandardItem *item = get_scope_item(scope_index);
+
+    if (item == nullptr) {
+        return false;
+    }
+
+    const bool out = item->data(ConsoleRole_Fetching).toBool();
+
+    return out;
 }
 
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
@@ -587,15 +600,15 @@ void ConsoleWidgetPrivate::on_selection_changed() {
     properties_action->setVisible(false);
     refresh_action->setVisible(false);
 
+    properties_action->setEnabled(true);
+    refresh_action->setEnabled(true);
+
     if (selected_list.size() == 1) {
         const QModelIndex selected = selected_list[0];
 
         const bool is_dynamic = selected.data(ConsoleRole_ScopeIsDynamic).toBool();
         if (is_dynamic) {
             refresh_action->setVisible(true);
-
-            const bool refresh_enabled = selected.data(ConsoleRole_RefreshEnabled).toBool();
-            refresh_action->setEnabled(refresh_enabled);
         }
 
         const bool has_properties = selected.data(ConsoleRole_HasProperties).toBool();
@@ -618,6 +631,27 @@ void ConsoleWidgetPrivate::on_selection_changed() {
         if (all_have_properties) {
             properties_action->setVisible(true);
         }
+    }
+
+    const bool any_selected_is_fetching =
+    [&]() {
+        for (const QModelIndex &index : selected_list) {
+            const bool index_fetching = q->get_item_fetching(index);
+
+            const QModelIndex buddy = console_item_get_buddy(index);
+            const bool buddy_fetching = q->get_item_fetching(buddy);
+
+            if (index_fetching || buddy_fetching) {
+                return true;
+            }
+        }
+
+        return false;
+    }();
+
+    if (any_selected_is_fetching) {
+        properties_action->setEnabled(false);
+        refresh_action->setEnabled(false);
     }
 
     emit q->selection_changed();

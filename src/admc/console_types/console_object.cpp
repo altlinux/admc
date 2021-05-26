@@ -368,10 +368,9 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
     const QIcon original_icon = item->icon();
     item->setIcon(QIcon::fromTheme("system-search"));
 
-    // NOTE: disable refresh for the during of fetch because
-    // starting another fetch while this one is running will
-    // cause both of them to run together which is bad.
-    console->set_refresh_enabled(item->index(), false);
+    // NOTE: need to set this role to disable actions during
+    // fetch
+    console->set_item_fetching(item->index(), true);
 
     // NOTE: need to pass console as receiver object to
     // connect() even though we're using lambda as a slot.
@@ -409,7 +408,7 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
             QStandardItem *scope_item = console->get_scope_item(persistent_index);
             scope_item->setIcon(original_icon);
 
-            console->set_refresh_enabled(scope_item->index(), true);
+            console->set_item_fetching(scope_item->index(), false);
         }, Qt::QueuedConnection);
 
     search_thread->start();
