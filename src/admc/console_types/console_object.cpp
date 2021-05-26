@@ -29,10 +29,12 @@
 #include "console_actions.h"
 #include "select_object_dialog.h"
 #include "console_types/console_policy.h"
+#include "search_thread.h"
 
 #include <QStandardItemModel>
 #include <QSet>
 #include <QMenu>
+#include <QDebug>
 
 int console_object_results_id;
 
@@ -324,12 +326,12 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
 // and load results linked to this scope item
 void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index) {
     // TODO: handle connect/search failure
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
+    // AdInterface ad;
+    // if (ad_failed(ad)) {
+    //     return;
+    // }
 
-    show_busy_indicator();
+    // show_busy_indicator();
 
     //
     // Search object's children
@@ -354,18 +356,42 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
 
     const QList<QString> search_attributes = console_object_search_attributes();
 
-    const QString dn = index.data(ObjectRole_DN).toString();
+    const QString search_base = index.data(ObjectRole_DN).toString();
 
-    QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_Children, dn);
+    auto search_thread = new SearchThread(filter, search_base, search_attributes, SearchScope_Children);
 
-    dev_mode_search_results(search_results, ad, dn);
+    const QPersistentModelIndex perma_index = index;
 
-    console_object_create(console, search_results.values(), index);
-    console->sort_scope();
+    // NOTE: need to pass console as receiver object to
+    // connect() even though we're using lambda as a slot.
+    // This is to be able to define queuedconnection type,
+    // because there's no connect() version with no receiver
+    // which has a connection type argument.
+    QObject::connect(
+        search_thread, &SearchThread::results_ready,
+        console,
+        [index, console](const QHash<QString, AdObject> &results) {
+            console_object_create(console, results.values(), index);
+            console->sort_scope();
+        }, Qt::QueuedConnection);
+    QObject::connect(
+        search_thread, &SearchThread::finished,
+        console,
+        [console]() {
+        }, Qt::QueuedConnection);
 
-    hide_busy_indicator();
+    search_thread->start();
 
-    g_status()->display_ad_messages(ad, console);
+    // QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_Children, dn);
+
+    // dev_mode_search_results(search_results, ad, dn);
+
+    // console_object_create(console, search_results.values(), index);
+    // console->sort_scope();
+
+    // hide_busy_indicator();
+
+    // g_status()->display_ad_messages(ad, console);
 }
 
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {

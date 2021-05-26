@@ -23,6 +23,7 @@
 #include "console_widget/console_widget.h"
 #include "central_widget.h"
 #include "console_actions.h"
+#include "adldap.h"
 
 class QStandardItem;
 class AdObject;
