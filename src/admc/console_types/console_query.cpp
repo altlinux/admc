@@ -402,6 +402,11 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
     if (type == ItemType_QueryItem || type == ItemType_QueryFolder) {
         visible_actions->insert(ConsoleAction_QueryDeleteItemOrFolder);
     }
+
+    const bool is_fetching = console_get_item_fetching(index);
+    if (is_fetching) {
+        *disabled_actions = *visible_actions;
+    }
 }
 
 QModelIndex console_query_get_root_index(ConsoleWidget *console) {
@@ -419,6 +424,11 @@ QModelIndex console_query_get_root_index(ConsoleWidget *console) {
 void console_query_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
     const bool dropped_are_query_item_or_folder = (dropped_types - QSet<ItemType>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
     if (!dropped_are_query_item_or_folder) {
+        return;
+    }
+
+    const bool target_is_fetching = console_get_item_fetching(target);
+    if (target_is_fetching) {
         return;
     }
 
