@@ -40,8 +40,6 @@ class QHeaderView;
 
 enum VariantSetting {
     VariantSetting_DC,
-    VariantSetting_Domain,    
-    VariantSetting_Site,    
     VariantSetting_Locale,
     VariantSetting_ResultsHeader,
     VariantSetting_FindResultsHeader,
