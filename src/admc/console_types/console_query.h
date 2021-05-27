@@ -36,7 +36,7 @@ enum QueryItemRole {
     QueryItemRole_Description = ConsoleRole_LAST + 1,
     QueryItemRole_Filter = ConsoleRole_LAST + 2,
     QueryItemRole_FilterState = ConsoleRole_LAST + 3,
-    QueryItemRole_SearchBase = ConsoleRole_LAST + 4,
+    QueryItemRole_Base = ConsoleRole_LAST + 4,
     QueryItemRole_ScopeIsChildren = ConsoleRole_LAST + 5,
 
     QueryItemRole_LAST = ConsoleRole_LAST + 7,

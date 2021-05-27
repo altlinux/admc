@@ -33,7 +33,7 @@ class FindResults;
 class QStandardItem;
 class QPushButton;
 class AdObject;
-class SearchBaseWidget;
+class SelectBaseWidget;
 template <typename T> class QList;
 template <typename K, typename V> class QHash;
 
@@ -59,7 +59,7 @@ private:
     FilterWidget *filter_widget;
     QPushButton *find_button;
     QPushButton *stop_button;
-    SearchBaseWidget *search_base_widget;
+    SelectBaseWidget *select_base_widget;
 };
 
 #endif /* FIND_WIDGET_H */

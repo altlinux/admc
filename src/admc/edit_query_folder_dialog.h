@@ -27,7 +27,7 @@
 
 class QLineEdit;
 class FilterWidget;
-class SearchBaseWidget;
+class SelectBaseWidget;
 class ConsoleWidget;
 
 class EditQueryFolderDialog : public QDialog {

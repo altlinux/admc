@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SEARCH_BASE_WIDGET_H
-#define SEARCH_BASE_WIDGET_H
+#ifndef SELECT_BASE_WIDGET_H
+#define SELECT_BASE_WIDGET_H
 
 /**
  * Allows user to select a search base object.
@@ -29,11 +29,11 @@
 class QComboBox;
 class QString;
 
-class SearchBaseWidget final : public QWidget {
+class SelectBaseWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    SearchBaseWidget(const QString &default_base = QString());
+    SelectBaseWidget(const QString &default_base = QString());
 
     QString get_base() const;
 
@@ -46,4 +46,4 @@ private:
     void browse();
 };
 
-#endif /* SEARCH_BASE_WIDGET_H */
+#endif /* SELECT_BASE_WIDGET_H */

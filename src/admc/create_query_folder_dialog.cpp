@@ -23,7 +23,7 @@
 #include "status.h"
 #include "globals.h"
 #include "filter_widget/filter_widget.h"
-#include "filter_widget/search_base_widget.h"
+#include "filter_widget/select_base_widget.h"
 #include "console_types/console_query.h"
 
 #include <QLineEdit>

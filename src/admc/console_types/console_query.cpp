@@ -148,7 +148,7 @@ void console_query_item_load(QStandardItem *scope_item, const QList<QStandardIte
         item->setData(description, QueryItemRole_Description);
         item->setData(filter, QueryItemRole_Filter);
         item->setData(filter_state, QueryItemRole_FilterState);
-        item->setData(base, QueryItemRole_SearchBase);
+        item->setData(base, QueryItemRole_Base);
         item->setData(scope_is_children, QueryItemRole_ScopeIsChildren);
         item->setIcon(QIcon::fromTheme("emblem-system"));
     };
@@ -175,7 +175,7 @@ void console_query_item_create(ConsoleWidget *console, const QString &name, cons
 
 void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) {
     const QString filter = index.data(QueryItemRole_Filter).toString();
-    const QString base = index.data(QueryItemRole_SearchBase).toString();
+    const QString base = index.data(QueryItemRole_Base).toString();
     const QList<QString> search_attributes = console_object_search_attributes();
     const SearchScope scope =
     [&]() {
@@ -488,7 +488,7 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
                 const QString description = index.data(QueryItemRole_Description).toString();
                 const QString filter = index.data(QueryItemRole_Filter).toString();
                 const QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
-                const QString base = index.data(QueryItemRole_SearchBase).toString();
+                const QString base = index.data(QueryItemRole_Base).toString();
                 const QString name = index.data(Qt::DisplayRole).toString();
                 const bool scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
 
@@ -608,7 +608,7 @@ void console_query_paste(ConsoleWidget *console) {
 QHash<QString, QVariant> console_query_item_save(const QModelIndex &index) {
     const QString name = index.data(Qt::DisplayRole).toString();
     const QString description = index.data(QueryItemRole_Description).toString();
-    const QString base = index.data(QueryItemRole_SearchBase).toString();
+    const QString base = index.data(QueryItemRole_Base).toString();
     const QString filter = index.data(QueryItemRole_Filter).toString();
     const QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
     const bool scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();

@@ -24,9 +24,9 @@
 
 class QComboBox;
 class QPushButton;
-class SearchBaseWidget;
+class SelectBaseWidget;
 
-class ADMCTestSearchBaseWidget : public ADMCTest {
+class ADMCTestSelectBaseWidget : public ADMCTest {
 Q_OBJECT
 
 private slots:
@@ -38,7 +38,7 @@ private slots:
     void save_state();
 
 private:
-    SearchBaseWidget *search_base_widget;
+    SelectBaseWidget *select_base_widget;
     QComboBox *combo;
     QPushButton *browse_button;
     QList<QString> dn_list;

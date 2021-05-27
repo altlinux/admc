@@ -32,7 +32,7 @@
 class QLineEdit;
 class QTextEdit;
 class FilterWidget;
-class SearchBaseWidget;
+class SelectBaseWidget;
 class QCheckBox;
 
 class EditQueryItemWidget : public QWidget {
@@ -49,7 +49,7 @@ private:
     QLineEdit *description_edit;
     QTextEdit *filter_display;
     FilterWidget *filter_widget;
-    SearchBaseWidget *search_base_widget;
+    SelectBaseWidget *select_base_widget;
     QCheckBox *scope_checkbox;
 
     void update_filter_display();
