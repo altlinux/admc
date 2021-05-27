@@ -174,13 +174,6 @@ void console_query_item_create(ConsoleWidget *console, const QString &name, cons
 }
 
 void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    show_busy_indicator();
-
     const QString filter = index.data(QueryItemRole_Filter).toString();
     const QString search_base = index.data(QueryItemRole_SearchBase).toString();
     const QList<QString> search_attributes = console_object_search_attributes();
@@ -194,13 +187,7 @@ void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) 
         }
     }();
 
-    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, search_scope, search_base);
-    for (const AdObject &object : search_results.values()) {
-        const QList<QStandardItem *> results_row = console->add_results_row(index);
-        console_object_results_load(results_row, object);
-    }
-
-    hide_busy_indicator();
+    console_object_search(console, index, filter, search_base, search_attributes, search_scope);
 }
 
 void console_query_tree_init(ConsoleWidget *console) {

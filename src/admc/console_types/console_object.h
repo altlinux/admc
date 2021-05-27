@@ -61,6 +61,7 @@ void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QS
 void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
 void console_object_create(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
 void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
+void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &filter, const QString &search_base, const QList<QString> &search_attributes, const SearchScope search_scope);
 void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index);
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
 void console_object_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);

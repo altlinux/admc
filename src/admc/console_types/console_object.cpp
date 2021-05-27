@@ -322,46 +322,7 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
     }
 }
 
-// Load children of this item in scope tree
-// and load results linked to this scope item
-void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index) {
-    // TODO: handle connect/search failure
-    // AdInterface ad;
-    // if (ad_failed(ad)) {
-    //     return;
-    // }
-
-    // show_busy_indicator();
-
-    //
-    // Search object's children
-    //
-    const QString filter =
-    [=]() {
-        QString out;
-
-        out = is_container_filter();
-
-        // NOTE: OR user filter with containers filter so
-        // that container objects are always shown, even if
-        // they are filtered out by user filter
-        const QString user_filter = filter_dialog->get_filter();
-        out = filter_OR({user_filter, out});
-
-        advanced_features_filter(out);
-        dev_mode_filter(out);
-
-        return out;
-    }();
-
-    const QList<QString> search_attributes = console_object_search_attributes();
-
-    const QString search_base = index.data(ObjectRole_DN).toString();
-
-    auto search_thread = new SearchThread(filter, search_base, search_attributes, SearchScope_Children);
-
-    const QPersistentModelIndex persistent_index = index;
-
+void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &filter, const QString &search_base, const QList<QString> &search_attributes, const SearchScope search_scope) {
     // Save original icon and switch to a different icon
     // that will indicate that this item is being fetched.
     QStandardItem *item = console->get_scope_item(index);
@@ -373,17 +334,9 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
     console->set_item_fetching(item->index(), true);
     item->setDragEnabled(false);
 
-    const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
-    if (dev_mode) {
-        AdInterface ad;
-        if (ad_connected(ad)) {
-            QHash<QString, AdObject> search_results;
-            dev_mode_search_results(search_results, ad, search_base);
+    auto search_thread = new SearchThread(filter, search_base, search_attributes, search_scope);
 
-            console_object_create(console, search_results.values(), index);
-            console->sort_scope();
-        }
-    }
+    const QPersistentModelIndex persistent_index = index;
 
     // NOTE: need to pass console as receiver object to
     // connect() even though we're using lambda as a slot.
@@ -426,6 +379,57 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
         }, Qt::QueuedConnection);
 
     search_thread->start();
+}
+
+// Load children of this item in scope tree
+// and load results linked to this scope item
+void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index) {
+    // TODO: handle connect/search failure
+    // AdInterface ad;
+    // if (ad_failed(ad)) {
+    //     return;
+    // }
+
+    // show_busy_indicator();
+
+    //
+    // Search object's children
+    //
+    const QString filter =
+    [=]() {
+        QString out;
+
+        out = is_container_filter();
+
+        // NOTE: OR user filter with containers filter so
+        // that container objects are always shown, even if
+        // they are filtered out by user filter
+        const QString user_filter = filter_dialog->get_filter();
+        out = filter_OR({user_filter, out});
+
+        advanced_features_filter(out);
+        dev_mode_filter(out);
+
+        return out;
+    }();
+
+    const QList<QString> search_attributes = console_object_search_attributes();
+
+    const QString search_base = index.data(ObjectRole_DN).toString();
+
+    const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
+    if (dev_mode) {
+        AdInterface ad;
+        if (ad_connected(ad)) {
+            QHash<QString, AdObject> search_results;
+            dev_mode_search_results(search_results, ad, search_base);
+
+            console_object_create(console, search_results.values(), index);
+            console->sort_scope();
+        }
+    }
+
+    console_object_search(console, index, filter, search_base, search_attributes, SearchScope_Children);
 }
 
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
