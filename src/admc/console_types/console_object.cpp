@@ -384,14 +384,6 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
 // Load children of this item in scope tree
 // and load results linked to this scope item
 void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index) {
-    // TODO: handle connect/search failure
-    // AdInterface ad;
-    // if (ad_failed(ad)) {
-    //     return;
-    // }
-
-    // show_busy_indicator();
-
     //
     // Search object's children
     //
