@@ -372,40 +372,44 @@ void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
 void console_query_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
     const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
 
+    QSet<ConsoleAction> my_visible_actions;
+
     if (single_selection) {
         if (type == ItemType_QueryRoot || type == ItemType_QueryFolder) {
-            visible_actions->insert(ConsoleAction_QueryCreateFolder);
-            visible_actions->insert(ConsoleAction_QueryCreateItem);
-            visible_actions->insert(ConsoleAction_QueryImport);
+            my_visible_actions.insert(ConsoleAction_QueryCreateFolder);
+            my_visible_actions.insert(ConsoleAction_QueryCreateItem);
+            my_visible_actions.insert(ConsoleAction_QueryImport);
         }
 
         if (type == ItemType_QueryFolder || type == ItemType_QueryItem) {
-            visible_actions->insert(ConsoleAction_QueryCutItemOrFolder);
-            visible_actions->insert(ConsoleAction_QueryCopyItemOrFolder);
+            my_visible_actions.insert(ConsoleAction_QueryCutItemOrFolder);
+            my_visible_actions.insert(ConsoleAction_QueryCopyItemOrFolder);
         }
 
         if (type == ItemType_QueryFolder) {
             if (copied_index.isValid()) {
-                visible_actions->insert(ConsoleAction_QueryPasteItemOrFolder);
+                my_visible_actions.insert(ConsoleAction_QueryPasteItemOrFolder);
             } 
 
-            visible_actions->insert(ConsoleAction_QueryEditFolder);
-            visible_actions->insert(ConsoleAction_QueryImport);
+            my_visible_actions.insert(ConsoleAction_QueryEditFolder);
+            my_visible_actions.insert(ConsoleAction_QueryImport);
         }
 
         if (type == ItemType_QueryItem) {
-            visible_actions->insert(ConsoleAction_QueryEditItem);
-            visible_actions->insert(ConsoleAction_QueryExport);
+            my_visible_actions.insert(ConsoleAction_QueryEditItem);
+            my_visible_actions.insert(ConsoleAction_QueryExport);
         }
     }
 
     if (type == ItemType_QueryItem || type == ItemType_QueryFolder) {
-        visible_actions->insert(ConsoleAction_QueryDeleteItemOrFolder);
+        my_visible_actions.insert(ConsoleAction_QueryDeleteItemOrFolder);
     }
+
+    visible_actions->unite(my_visible_actions);
 
     const bool is_fetching = console_get_item_fetching(index);
     if (is_fetching) {
-        *disabled_actions = *visible_actions;
+        disabled_actions->unite(my_visible_actions);
     }
 }
 

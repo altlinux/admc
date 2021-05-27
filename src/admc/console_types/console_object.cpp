@@ -578,33 +578,35 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
     const bool cannot_delete = index.data(ObjectRole_CannotDelete).toBool();
     const bool account_disabled = index.data(ObjectRole_AccountDisabled).toBool();
 
+    QSet<ConsoleAction> my_visible_actions;
+
     if (single_selection) {
         // Single selection only
         if (is_container) {
-            visible_actions->insert(ConsoleAction_NewUser);
-            visible_actions->insert(ConsoleAction_NewComputer);
-            visible_actions->insert(ConsoleAction_NewOU);
-            visible_actions->insert(ConsoleAction_NewGroup);
+            my_visible_actions.insert(ConsoleAction_NewUser);
+            my_visible_actions.insert(ConsoleAction_NewComputer);
+            my_visible_actions.insert(ConsoleAction_NewOU);
+            my_visible_actions.insert(ConsoleAction_NewGroup);
 
-            visible_actions->insert(ConsoleAction_Find);
+            my_visible_actions.insert(ConsoleAction_Find);
         }
 
         if (is_user) {
-            visible_actions->insert(ConsoleAction_ResetPassword);
+            my_visible_actions.insert(ConsoleAction_ResetPassword);
 
             if (account_disabled) {
-                visible_actions->insert(ConsoleAction_Enable);
+                my_visible_actions.insert(ConsoleAction_Enable);
             } else {
-                visible_actions->insert(ConsoleAction_Disable);
+                my_visible_actions.insert(ConsoleAction_Disable);
             }
         }
 
         if (is_domain) {
-            visible_actions->insert(ConsoleAction_EditUpnSuffixes);
-            visible_actions->insert(ConsoleAction_ChangeDC);
+            my_visible_actions.insert(ConsoleAction_EditUpnSuffixes);
+            my_visible_actions.insert(ConsoleAction_ChangeDC);
         }
 
-        visible_actions->insert(ConsoleAction_Rename);
+        my_visible_actions.insert(ConsoleAction_Rename);
 
         if (cannot_move) {
             disabled_actions->insert(ConsoleAction_Move);
@@ -618,22 +620,24 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
     } else {
         // Multi selection only
         if (is_user) {
-            visible_actions->insert(ConsoleAction_Enable);
-            visible_actions->insert(ConsoleAction_Disable);
+            my_visible_actions.insert(ConsoleAction_Enable);
+            my_visible_actions.insert(ConsoleAction_Disable);
         }
     }
 
     // Single OR multi selection
     if (is_user) {
-        visible_actions->insert(ConsoleAction_AddToGroup);
+        my_visible_actions.insert(ConsoleAction_AddToGroup);
     }
 
-    visible_actions->insert(ConsoleAction_Move);
-    visible_actions->insert(ConsoleAction_Delete);
+    my_visible_actions.insert(ConsoleAction_Move);
+    my_visible_actions.insert(ConsoleAction_Delete);
+
+    visible_actions->unite(my_visible_actions);
 
     const bool is_fetching = console_get_item_fetching(index);
     if (is_fetching) {
-        *disabled_actions = *visible_actions;
+        disabled_actions->unite(my_visible_actions);
     }
 }
 
