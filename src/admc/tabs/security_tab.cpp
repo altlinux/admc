@@ -406,78 +406,97 @@ void SecurityTab::load_trustee_acl() {
     sd.print_acl(trustee);
 }
 
+// NOTE: setCheckState() calls in this f-n trigger a signal
+// which calls this f-n again as a slot. Nothing unintended
+// happens, just 1 level recursion, but yeah it's a bit
+// weird. It also actually simplifies logic a bit too since
+// some checks check/uncheck opposites on their own.
 void SecurityTab::on_item_changed(QStandardItem *item) {
-    const AceColumn changed_column = (AceColumn) item->column();
+    const AceColumn column = (AceColumn) item->column();
 
-    const bool incorrect_column = (changed_column != AceColumn_Allowed && changed_column != AceColumn_Denied);
+    const bool incorrect_column = (column != AceColumn_Allowed && column != AceColumn_Denied);
     if (incorrect_column) {
         return;
     }
 
-    const QString trustee =
+    const AcePermission permission =
     [&]() {
-        const QList<QModelIndex> selected_list = trustee_view->selectionModel()->selectedRows();
-        if (selected_list.isEmpty()) {
-            return QString();
-        }
-
-        const QModelIndex selected_index = selected_list[0];
-        QStandardItem *selected_item = trustee_model->itemFromIndex(selected_index);
-        const QString out = selected_item->data(TrusteeItemRole_Sid).toString();
+        QStandardItem *main_item = ace_model->item(item->row(), 0);
+        const AcePermission out = (AcePermission) main_item->data(AcePermissionItemRole_Permission).toInt();
 
         return out;
     }();
 
-    auto get_checked =
-    [&](const AceColumn column) {
-        const QModelIndex index = item->index();
-        const QModelIndex column_index = index.siblingAtColumn(column);
-        QStandardItem *column_item = ace_model->itemFromIndex(column_index);
+    const uint32_t mask = ace_permission_to_mask_map[permission];
 
-        const Qt::CheckState check_state = column_item->checkState();
-        const bool checked = (check_state == Qt::Checked);
+    // When allowed/denied is checked, they affect some
+    // other items in the model
+    const bool checked = (item->checkState() == Qt::Checked);
+    if (checked) {
+        // Uncheck opposite item. For example: if allowed is
+        // currently check and you check denied, then
+        // allowed should become unchecked
+        const AceColumn opposite_column =
+        [&]() {
+            if (column == AceColumn_Allowed) {
+                return AceColumn_Denied;
+            } else {
+                return AceColumn_Allowed;
+            }
+        }();
 
-        return checked;
-    };
+        QStandardItem *opposite_item = ace_model->item(item->row(), opposite_column);
+        opposite_item->setCheckState(Qt::Unchecked);
 
-    const uint32_t permission_mask =
-    [&]() {
-        const QModelIndex index = item->index();
-        const QModelIndex main_index = index.siblingAtColumn(0);
-        const AcePermission permission = (AcePermission) main_index.data(AcePermissionItemRole_Permission).toInt();
-        const uint32_t mask = ace_permission_to_mask_map[permission];
+        // Check items which are dependent on this one. For
+        // example: if "Read" becomes checked, then all
+        // permissions that are for reading some property
+        // should become checked as well.
+        for (int row = 0; row < ace_model->rowCount(); row++) {
+            if (row == item->row()) {
+                continue;
+            }
 
-        return mask;
-    }();
+            const bool mask_contains_other_mask =
+            [&]() {
+                QStandardItem *other_item = ace_model->item(row, 0);
+                const AcePermission other_permission = (AcePermission) other_item->data(AcePermissionItemRole_Permission).toInt();
+                const uint32_t other_mask = ace_permission_to_mask_map[other_permission];
+                const bool out = ((mask & other_mask) == other_mask) && (mask != other_mask);
 
-    
+                return out;
+            }();
 
-    const SecurityModifyType modify_type =
-    [&]() {
-        const bool allowed_checked = get_checked(AceColumn_Allowed);
-        const bool denied_checked = get_checked(AceColumn_Denied);
-        const bool allowed_changed = (changed_column == AceColumn_Allowed);
-        const bool denied_changed = (changed_column == AceColumn_Denied);
-
-        qDebug() << "allowed_checked = " << allowed_checked;
-        qDebug() << "denied_checked = " << denied_checked;
-
-        if (allowed_changed && allowed_checked) {
-            return SecurityModifyType_SetAllowed;
-        } else if (allowed_changed && !allowed_checked) {
-            return SecurityModifyType_UnsetAllowed;
-        } else if (denied_changed && denied_checked) {
-            return SecurityModifyType_SetDenied;
-        } else if (denied_changed && !denied_checked) {
-            return SecurityModifyType_UnsetDenied;
-        } else {
-            return SecurityModifyType_None;
+            if (mask_contains_other_mask) {
+                QStandardItem *other_item_check = ace_model->item(row, column);
+                other_item_check->setCheckState(Qt::Checked);
+            }
         }
-    }();
+    } else {
+        // Uncheck items which this item depends on. For
+        // example: if "Read email" becomes unchecked, then if
+        // "Read" should become unchecked as well.
+        for (int row = 0; row < ace_model->rowCount(); row++) {
+            if (row == item->row()) {
+                continue;
+            }
 
-    sd.modify_sd(trustee, modify_type, permission_mask);
+            const bool other_mask_contains_mask =
+            [&]() {
+                QStandardItem *other_item = ace_model->item(row, 0);
+                const AcePermission other_permission = (AcePermission) other_item->data(AcePermissionItemRole_Permission).toInt();
+                const uint32_t other_mask = ace_permission_to_mask_map[other_permission];
+                const bool out = ((mask & other_mask) == mask) && (mask != other_mask);
 
-    load_trustee_acl();
-    
+                return out;
+            }();
+
+            if (other_mask_contains_mask) {
+                QStandardItem *other_item_check = ace_model->item(row, column);
+                other_item_check->setCheckState(Qt::Unchecked);
+            }
+        }
+    }
+
     emit edited();
 }
