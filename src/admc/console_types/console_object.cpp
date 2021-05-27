@@ -373,6 +373,18 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
     console->set_item_fetching(item->index(), true);
     item->setDragEnabled(false);
 
+    const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
+    if (dev_mode) {
+        AdInterface ad;
+        if (ad_connected(ad)) {
+            QHash<QString, AdObject> search_results;
+            dev_mode_search_results(search_results, ad, search_base);
+
+            console_object_create(console, search_results.values(), index);
+            console->sort_scope();
+        }
+    }
+
     // NOTE: need to pass console as receiver object to
     // connect() even though we're using lambda as a slot.
     // This is to be able to define queuedconnection type,
@@ -414,17 +426,6 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
         }, Qt::QueuedConnection);
 
     search_thread->start();
-
-    // QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_Children, dn);
-
-    // dev_mode_search_results(search_results, ad, dn);
-
-    // console_object_create(console, search_results.values(), index);
-    // console->sort_scope();
-
-    // hide_busy_indicator();
-
-    // g_status()->display_ad_messages(ad, console);
 }
 
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
