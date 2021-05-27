@@ -178,7 +178,10 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         add_tab(new OrganizationTab(), tr("Organization"));
         add_tab(new TelephonesTab(), tr("Telephones"));
         add_tab(new ProfileTab(), tr("Profile"));
-        add_tab(new SecurityTab(), tr("Security"));
+
+        if (advanced_view_ON) {
+            add_tab(new SecurityTab(), tr("Security"));
+        }
     }
     if (object.is_class(CLASS_GROUP)) {
         add_tab(new MembersTab(), tr("Members"));
