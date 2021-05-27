@@ -29,10 +29,12 @@
 #include "console_actions.h"
 #include "select_object_dialog.h"
 #include "console_types/console_policy.h"
+#include "search_thread.h"
 
 #include <QStandardItemModel>
 #include <QSet>
 #include <QMenu>
+#include <QDebug>
 
 int console_object_results_id;
 
@@ -320,17 +322,68 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
     }
 }
 
+void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &filter, const QString &search_base, const QList<QString> &search_attributes, const SearchScope search_scope) {
+    // Save original icon and switch to a different icon
+    // that will indicate that this item is being fetched.
+    QStandardItem *item = console->get_scope_item(index);
+    const QIcon original_icon = item->icon();
+    item->setIcon(QIcon::fromTheme("system-search"));
+
+    // NOTE: need to set this role to disable actions during
+    // fetch
+    console->set_item_fetching(item->index(), true);
+    item->setDragEnabled(false);
+
+    auto search_thread = new SearchThread(filter, search_base, search_attributes, search_scope);
+
+    const QPersistentModelIndex persistent_index = index;
+
+    // NOTE: need to pass console as receiver object to
+    // connect() even though we're using lambda as a slot.
+    // This is to be able to define queuedconnection type,
+    // because there's no connect() version with no receiver
+    // which has a connection type argument.
+    QObject::connect(
+        search_thread, &SearchThread::results_ready,
+        console,
+        [console, search_thread, persistent_index](const QHash<QString, AdObject> &results) {
+            // NOTE: fetched index might become invalid for
+            // many reasons, parent getting moved, deleted,
+            // item at the index itself might get modified.
+            // Since this slot runs in the main thread, it's
+            // not possible for any catastrophic conflict to
+            // happen, so it's enough to just stop the
+            // search.
+            if (!persistent_index.isValid()) {
+                search_thread->stop();
+
+                return;
+            }
+
+            console_object_create(console, results.values(), persistent_index);
+            console->sort_scope();
+        }, Qt::QueuedConnection);
+    QObject::connect(
+        search_thread, &SearchThread::finished,
+        console,
+        [console, persistent_index, original_icon]() {
+            if (!persistent_index.isValid()) {
+                return;
+            }
+
+            QStandardItem *scope_item = console->get_scope_item(persistent_index);
+            scope_item->setIcon(original_icon);
+
+            console->set_item_fetching(scope_item->index(), false);
+            scope_item->setDragEnabled(true);
+        }, Qt::QueuedConnection);
+
+    search_thread->start();
+}
+
 // Load children of this item in scope tree
 // and load results linked to this scope item
 void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index) {
-    // TODO: handle connect/search failure
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    show_busy_indicator();
-
     //
     // Search object's children
     //
@@ -354,18 +407,21 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
 
     const QList<QString> search_attributes = console_object_search_attributes();
 
-    const QString dn = index.data(ObjectRole_DN).toString();
+    const QString search_base = index.data(ObjectRole_DN).toString();
 
-    QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_Children, dn);
+    const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
+    if (dev_mode) {
+        AdInterface ad;
+        if (ad_connected(ad)) {
+            QHash<QString, AdObject> search_results;
+            dev_mode_search_results(search_results, ad, search_base);
 
-    dev_mode_search_results(search_results, ad, dn);
+            console_object_create(console, search_results.values(), index);
+            console->sort_scope();
+        }
+    }
 
-    console_object_create(console, search_results.values(), index);
-    console->sort_scope();
-
-    hide_busy_indicator();
-
-    g_status()->display_ad_messages(ad, console);
+    console_object_search(console, index, filter, search_base, search_attributes, SearchScope_Children);
 }
 
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
@@ -437,8 +493,9 @@ DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIn
     const bool dropped_is_user = dropped_classes.contains(CLASS_USER);
     const bool dropped_is_group = dropped_classes.contains(CLASS_GROUP);
     const bool target_is_group = target_classes.contains(CLASS_GROUP);
+    const bool target_is_fetching = console_get_item_fetching(target);
 
-    if (dropped_is_target) {
+    if (dropped_is_target || target_is_fetching) {
         return DropType_None;
     } else if (dropped_is_user && target_is_group) {
         return DropType_AddToGroup;
@@ -513,33 +570,35 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
     const bool cannot_delete = index.data(ObjectRole_CannotDelete).toBool();
     const bool account_disabled = index.data(ObjectRole_AccountDisabled).toBool();
 
+    QSet<ConsoleAction> my_visible_actions;
+
     if (single_selection) {
         // Single selection only
         if (is_container) {
-            visible_actions->insert(ConsoleAction_NewUser);
-            visible_actions->insert(ConsoleAction_NewComputer);
-            visible_actions->insert(ConsoleAction_NewOU);
-            visible_actions->insert(ConsoleAction_NewGroup);
+            my_visible_actions.insert(ConsoleAction_NewUser);
+            my_visible_actions.insert(ConsoleAction_NewComputer);
+            my_visible_actions.insert(ConsoleAction_NewOU);
+            my_visible_actions.insert(ConsoleAction_NewGroup);
 
-            visible_actions->insert(ConsoleAction_Find);
+            my_visible_actions.insert(ConsoleAction_Find);
         }
 
         if (is_user) {
-            visible_actions->insert(ConsoleAction_ResetPassword);
+            my_visible_actions.insert(ConsoleAction_ResetPassword);
 
             if (account_disabled) {
-                visible_actions->insert(ConsoleAction_Enable);
+                my_visible_actions.insert(ConsoleAction_Enable);
             } else {
-                visible_actions->insert(ConsoleAction_Disable);
+                my_visible_actions.insert(ConsoleAction_Disable);
             }
         }
 
         if (is_domain) {
-            visible_actions->insert(ConsoleAction_EditUpnSuffixes);
-            visible_actions->insert(ConsoleAction_ChangeDC);
+            my_visible_actions.insert(ConsoleAction_EditUpnSuffixes);
+            my_visible_actions.insert(ConsoleAction_ChangeDC);
         }
 
-        visible_actions->insert(ConsoleAction_Rename);
+        my_visible_actions.insert(ConsoleAction_Rename);
 
         if (cannot_move) {
             disabled_actions->insert(ConsoleAction_Move);
@@ -553,18 +612,25 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
     } else {
         // Multi selection only
         if (is_user) {
-            visible_actions->insert(ConsoleAction_Enable);
-            visible_actions->insert(ConsoleAction_Disable);
+            my_visible_actions.insert(ConsoleAction_Enable);
+            my_visible_actions.insert(ConsoleAction_Disable);
         }
     }
 
     // Single OR multi selection
     if (is_user) {
-        visible_actions->insert(ConsoleAction_AddToGroup);
+        my_visible_actions.insert(ConsoleAction_AddToGroup);
     }
 
-    visible_actions->insert(ConsoleAction_Move);
-    visible_actions->insert(ConsoleAction_Delete);
+    my_visible_actions.insert(ConsoleAction_Move);
+    my_visible_actions.insert(ConsoleAction_Delete);
+
+    visible_actions->unite(my_visible_actions);
+
+    const bool is_fetching = console_get_item_fetching(index);
+    if (is_fetching) {
+        disabled_actions->unite(my_visible_actions);
+    }
 }
 
 QList<QString> object_operation_delete(const QList<QString> &targets, QWidget *parent) {

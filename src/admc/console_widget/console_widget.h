@@ -161,6 +161,8 @@ public:
 
     void set_description_bar_text(const QString &text);
 
+    void set_item_fetching(const QModelIndex &scope_index, const bool enabled);
+
     // Gets selected item(s) from currently focused view,
     // which could be scope or results.
     QList<QModelIndex> get_selected_items() const;
@@ -236,5 +238,8 @@ QModelIndex console_item_get_buddy(const QModelIndex &index);
 // If index is already scope, returns index, otherwise
 // returns scope buddy, if it exists
 QModelIndex console_item_convert_to_scope_index(const QModelIndex &index);
+
+// Returns true if item or item's buddy is fetching
+bool console_get_item_fetching(const QModelIndex &index);
 
 #endif /* CONSOLE_WIDGET_H */

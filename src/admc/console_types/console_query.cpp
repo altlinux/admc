@@ -174,13 +174,6 @@ void console_query_item_create(ConsoleWidget *console, const QString &name, cons
 }
 
 void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    show_busy_indicator();
-
     const QString filter = index.data(QueryItemRole_Filter).toString();
     const QString search_base = index.data(QueryItemRole_SearchBase).toString();
     const QList<QString> search_attributes = console_object_search_attributes();
@@ -194,13 +187,7 @@ void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) 
         }
     }();
 
-    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, search_scope, search_base);
-    for (const AdObject &object : search_results.values()) {
-        const QList<QStandardItem *> results_row = console->add_results_row(index);
-        console_object_results_load(results_row, object);
-    }
-
-    hide_busy_indicator();
+    console_object_search(console, index, filter, search_base, search_attributes, search_scope);
 }
 
 void console_query_tree_init(ConsoleWidget *console) {
@@ -385,35 +372,44 @@ void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
 void console_query_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
     const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
 
+    QSet<ConsoleAction> my_visible_actions;
+
     if (single_selection) {
         if (type == ItemType_QueryRoot || type == ItemType_QueryFolder) {
-            visible_actions->insert(ConsoleAction_QueryCreateFolder);
-            visible_actions->insert(ConsoleAction_QueryCreateItem);
-            visible_actions->insert(ConsoleAction_QueryImport);
+            my_visible_actions.insert(ConsoleAction_QueryCreateFolder);
+            my_visible_actions.insert(ConsoleAction_QueryCreateItem);
+            my_visible_actions.insert(ConsoleAction_QueryImport);
         }
 
         if (type == ItemType_QueryFolder || type == ItemType_QueryItem) {
-            visible_actions->insert(ConsoleAction_QueryCutItemOrFolder);
-            visible_actions->insert(ConsoleAction_QueryCopyItemOrFolder);
+            my_visible_actions.insert(ConsoleAction_QueryCutItemOrFolder);
+            my_visible_actions.insert(ConsoleAction_QueryCopyItemOrFolder);
         }
 
         if (type == ItemType_QueryFolder) {
             if (copied_index.isValid()) {
-                visible_actions->insert(ConsoleAction_QueryPasteItemOrFolder);
+                my_visible_actions.insert(ConsoleAction_QueryPasteItemOrFolder);
             } 
 
-            visible_actions->insert(ConsoleAction_QueryEditFolder);
-            visible_actions->insert(ConsoleAction_QueryImport);
+            my_visible_actions.insert(ConsoleAction_QueryEditFolder);
+            my_visible_actions.insert(ConsoleAction_QueryImport);
         }
 
         if (type == ItemType_QueryItem) {
-            visible_actions->insert(ConsoleAction_QueryEditItem);
-            visible_actions->insert(ConsoleAction_QueryExport);
+            my_visible_actions.insert(ConsoleAction_QueryEditItem);
+            my_visible_actions.insert(ConsoleAction_QueryExport);
         }
     }
 
     if (type == ItemType_QueryItem || type == ItemType_QueryFolder) {
-        visible_actions->insert(ConsoleAction_QueryDeleteItemOrFolder);
+        my_visible_actions.insert(ConsoleAction_QueryDeleteItemOrFolder);
+    }
+
+    visible_actions->unite(my_visible_actions);
+
+    const bool is_fetching = console_get_item_fetching(index);
+    if (is_fetching) {
+        disabled_actions->unite(my_visible_actions);
     }
 }
 
@@ -432,6 +428,11 @@ QModelIndex console_query_get_root_index(ConsoleWidget *console) {
 void console_query_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
     const bool dropped_are_query_item_or_folder = (dropped_types - QSet<ItemType>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
     if (!dropped_are_query_item_or_folder) {
+        return;
+    }
+
+    const bool target_is_fetching = console_get_item_fetching(target);
+    if (target_is_fetching) {
         return;
     }
 

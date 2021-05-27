@@ -34,6 +34,8 @@
 
 #include <QThread>
 
+#include "adldap.h"
+
 class AdObject;
 template <typename T> class QList;
 template <typename K, typename V> class QHash;
@@ -43,7 +45,7 @@ class SearchThread final : public QThread
     Q_OBJECT
 
 public:
-    SearchThread(const QString &filter_arg, const QString search_base_arg, const QList<QString> attrs_arg);
+    SearchThread(const QString &filter_arg, const QString search_base_arg, const QList<QString> attrs_arg, const SearchScope scope_arg = SearchScope_All);
 
     void stop();
 
@@ -55,6 +57,7 @@ private:
     QString search_base;
     QList<QString> attrs;
     bool stop_flag;
+    SearchScope scope;
 
     void run() override;
 };
