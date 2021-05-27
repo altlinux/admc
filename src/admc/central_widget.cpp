@@ -540,12 +540,13 @@ void CentralWidget::policy_delete() {
             console->delete_item(index);
 
             // Remove links to delete policy
+            const QString base = g_adconfig->domain_head();
+            const SearchScope scope = SearchScope_All;
             const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, dn);
-            const QList<QString> search_attributes = {
-                ATTRIBUTE_GPLINK,
-            };
-            const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
-            for (const AdObject &object : search_results.values()) {
+            const QList<QString> attributes = {ATTRIBUTE_GPLINK};
+            const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+            
+            for (const AdObject &object : results.values()) {
                 const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
                 Gplink gplink = Gplink(gplink_string);
                 gplink.remove(dn);

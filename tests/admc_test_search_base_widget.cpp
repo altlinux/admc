@@ -68,35 +68,35 @@ void ADMCTestSearchBaseWidget::init() {
 void ADMCTestSearchBaseWidget::default_to_domain_head() {
     const QString domain_head = g_adconfig->domain_head();
 
-    const QString search_base = search_base_widget->get_search_base();
-    QVERIFY(search_base == domain_head);
+    const QString base = search_base_widget->get_base();
+    QVERIFY(base == domain_head);
 }
 
 // After selecting a search base, the widget should return
 // the DN of selected search base
-void ADMCTestSearchBaseWidget::select_search_base() {
+void ADMCTestSearchBaseWidget::select_base() {
     const QString select_dn = dn_list[0];
-    add_search_base(select_dn);
+    add_base(select_dn);
 
-    const QString search_base = search_base_widget->get_search_base();
-    QVERIFY(search_base == select_dn);
+    const QString base = search_base_widget->get_base();
+    QVERIFY(base == select_dn);
 }
 
 // Adding multiple search bases to combo box, then selecting
 // one of them in the combobox should make the widget return
 // that search base.
-void ADMCTestSearchBaseWidget::select_search_base_multiple() {
+void ADMCTestSearchBaseWidget::select_base_multiple() {
     for (const QString &dn : dn_list) {
-        add_search_base(dn);
+        add_base(dn);
     }
 
     // Alpha is at index 1 in the combo (0 is domain)
     combo->setCurrentIndex(1);
-    const QString search_base = search_base_widget->get_search_base();
-    QVERIFY(search_base == dn_list[0]);
+    const QString base = search_base_widget->get_base();
+    QVERIFY(base == dn_list[0]);
 }
 
-void ADMCTestSearchBaseWidget::add_search_base(const QString &dn) {
+void ADMCTestSearchBaseWidget::add_base(const QString &dn) {
     browse_button->click();
     auto select_container_dialog = search_base_widget->findChild<SelectContainerDialog *>();
     QVERIFY(select_container_dialog != nullptr);
@@ -110,7 +110,7 @@ void ADMCTestSearchBaseWidget::add_search_base(const QString &dn) {
     QVERIFY(QTest::qWaitForWindowExposed(search_base_widget, 1000));
 
     // NOTE: have to delete manually, dialog deletes itself
-    // on close a bit late which causes consecutive add_search_base()
+    // on close a bit late which causes consecutive add_base()
     // calls to get the dialog that should've been destroyed
     delete select_container_dialog;
 }
@@ -118,11 +118,11 @@ void ADMCTestSearchBaseWidget::add_search_base(const QString &dn) {
 void ADMCTestSearchBaseWidget::save_state() {
     // Setup some state
     for (const QString &dn : dn_list) {
-        add_search_base(dn);
+        add_base(dn);
     }
 
     combo->setCurrentIndex(1);
-    const QString search_base_original = search_base_widget->get_search_base();
+    const QString base_original = search_base_widget->get_base();
 
     // Serialize
     QHash<QString, QVariant> state;
@@ -136,8 +136,8 @@ void ADMCTestSearchBaseWidget::save_state() {
 
     // Check that deserialization successfully restored
     // original state
-    const QString search_base_deserialized = search_base_widget->get_search_base();
-    QVERIFY(search_base_original == search_base_deserialized);
+    const QString base_deserialized = search_base_widget->get_base();
+    QVERIFY(base_original == base_deserialized);
 }
 
 QTEST_MAIN(ADMCTestSearchBaseWidget)

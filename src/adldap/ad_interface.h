@@ -124,7 +124,7 @@ public:
 
     // This is a simplified version that searches all pages
     // in one go
-    QHash<QString, AdObject> search(const QString &filter, const QList<QString> &attributes, const SearchScope scope, const QString &search_base = QString());
+    QHash<QString, AdObject> search(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
 
     // This is a more complicated version of search() which
     // separates the search process by pages as they arrive
@@ -132,7 +132,7 @@ public:
     // search(). This version is specifically for cases
     // where you need to do something between pages, like
     // processing UI events so it doesn't freeze.
-    bool search_paged(const QString &filter_arg, const QList<QString> &attributes_arg, const SearchScope scope_arg, const QString &search_base_arg, AdCookie *cookie, QHash<QString, AdObject> *out);
+    bool search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie);
 
     // Simplest search f-n that only searches for attributes
     // of one object

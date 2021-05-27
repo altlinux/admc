@@ -35,7 +35,7 @@ Q_OBJECT
 
 public:
     FindObjectDialog(const QList<QString> classes, const QString 
-        default_search_base, QWidget *parent);
+        default_base, QWidget *parent);
 
 private:
     QMenu *action_menu;

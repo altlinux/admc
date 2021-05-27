@@ -32,7 +32,7 @@
 #include <QMenuBar>
 #include <QTreeView>
 
-FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString default_search_base, QWidget *parent)
+FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString default_base, QWidget *parent)
 : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -43,7 +43,7 @@ FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString d
     action_menu = menubar->addMenu(tr("&Action"));
     auto view_menu = menubar->addMenu(tr("&View"));
 
-    auto find_widget = new FindWidget(classes, default_search_base);
+    auto find_widget = new FindWidget(classes, default_base);
 
     auto layout = new QVBoxLayout();
     setLayout(layout);

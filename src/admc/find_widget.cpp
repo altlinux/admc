@@ -36,10 +36,10 @@
 #include <QFrame>
 #include <QDebug>
 
-FindWidget::FindWidget(const QList<QString> classes, const QString &default_search_base)
+FindWidget::FindWidget(const QList<QString> classes, const QString &default_base)
 : QWidget()
 {
-    search_base_widget = new SearchBaseWidget(default_search_base);
+    search_base_widget = new SearchBaseWidget(default_base);
 
     filter_widget = new FilterWidget(classes);
 
@@ -101,10 +101,10 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
 void FindWidget::find() {
     // Prepare search args
     const QString filter = filter_widget->get_filter();
-    const QString search_base = search_base_widget->get_search_base();
+    const QString base = search_base_widget->get_base();
     const QList<QString> search_attributes = console_object_search_attributes();
 
-    auto find_thread = new SearchThread(filter, search_base, search_attributes);
+    auto find_thread = new SearchThread(base, SearchScope_All, filter, search_attributes);
 
     connect(
         find_thread, &SearchThread::results_ready,

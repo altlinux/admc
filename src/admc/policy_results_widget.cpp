@@ -123,11 +123,13 @@ void PolicyResultsWidget::update(const QModelIndex &scope_index) {
 
     gpo = scope_index.data(PolicyRole_DN).toString();
 
-    const QList<QString> search_attributes = {ATTRIBUTE_NAME, ATTRIBUTE_GPLINK};
+    const QString base = g_adconfig->domain_head();
+    const SearchScope scope = SearchScope_All;
+    const QList<QString> attributes = {ATTRIBUTE_NAME, ATTRIBUTE_GPLINK};
     const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, gpo);
-    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
+    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
-    for (const AdObject &object : search_results.values()) {
+    for (const AdObject &object : results.values()) {
         const QList<QStandardItem *> row = make_item_row(PolicyResultsColumn_COUNT);
         
         const QString dn = object.get_dn();

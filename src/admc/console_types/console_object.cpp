@@ -234,10 +234,10 @@ void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QS
     // duplicated.
     const QModelIndex new_parent_index =
     [=]() {
-        const QList<QModelIndex> search_results = console->search_scope_by_role(ObjectRole_DN, new_parent_dn, ItemType_Object);
+        const QList<QModelIndex> results = console->search_scope_by_role(ObjectRole_DN, new_parent_dn, ItemType_Object);
 
-        if (search_results.size() == 1) {
-            return search_results[0];
+        if (results.size() == 1) {
+            return results[0];
         } else {
             return QModelIndex();
         }
@@ -322,7 +322,7 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
     }
 }
 
-void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &filter, const QString &search_base, const QList<QString> &search_attributes, const SearchScope search_scope) {
+void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes) {
     // Save original icon and switch to a different icon
     // that will indicate that this item is being fetched.
     QStandardItem *item = console->get_scope_item(index);
@@ -334,7 +334,7 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
     console->set_item_fetching(item->index(), true);
     item->setDragEnabled(false);
 
-    auto search_thread = new SearchThread(filter, search_base, search_attributes, search_scope);
+    auto search_thread = new SearchThread(base, scope, filter, attributes);
 
     const QPersistentModelIndex persistent_index = index;
 
@@ -384,6 +384,10 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
 // Load children of this item in scope tree
 // and load results linked to this scope item
 void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index) {
+    const QString base = index.data(ObjectRole_DN).toString();
+
+    const SearchScope scope = SearchScope_Children;
+
     //
     // Search object's children
     //
@@ -405,23 +409,23 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
         return out;
     }();
 
-    const QList<QString> search_attributes = console_object_search_attributes();
+    const QList<QString> attributes = console_object_search_attributes();
 
-    const QString search_base = index.data(ObjectRole_DN).toString();
-
+    // NOTE: do an extra search before real search for
+    // objects that should be visible in dev mode
     const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
     if (dev_mode) {
         AdInterface ad;
         if (ad_connected(ad)) {
-            QHash<QString, AdObject> search_results;
-            dev_mode_search_results(search_results, ad, search_base);
+            QHash<QString, AdObject> results;
+            dev_mode_search_results(results, ad, base);
 
-            console_object_create(console, search_results.values(), index);
+            console_object_create(console, results.values(), index);
             console->sort_scope();
         }
     }
 
-    console_object_search(console, index, filter, search_base, search_attributes, SearchScope_Children);
+    console_object_search(console, index, base, scope, filter, attributes);
 }
 
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {

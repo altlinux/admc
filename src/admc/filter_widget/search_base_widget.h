@@ -33,9 +33,9 @@ class SearchBaseWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    SearchBaseWidget(const QString &default_search_base = QString());
+    SearchBaseWidget(const QString &default_base = QString());
 
-    QString get_search_base() const;
+    QString get_base() const;
 
     void save_state(QHash<QString, QVariant> &state) const;
     void load_state(const QHash<QString, QVariant> &state);

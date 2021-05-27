@@ -64,12 +64,14 @@ SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
 
     model->setHorizontalHeaderLabels(console_policy_header_labels());
 
-    const QList<QString> search_attributes = console_policy_search_attributes();
+    const QString base = g_adconfig->domain_head();
+    const SearchScope scope = SearchScope_All;
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
+    const QList<QString> attributes = console_policy_search_attributes();
 
-    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
+    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
-    for (const AdObject &object : search_results.values()) {
+    for (const AdObject &object : results.values()) {
         auto item = new QStandardItem();
         model->appendRow(item);
 

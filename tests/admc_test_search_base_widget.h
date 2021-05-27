@@ -33,8 +33,8 @@ private slots:
     void init() override;
 
     void default_to_domain_head();
-    void select_search_base();
-    void select_search_base_multiple();
+    void select_base();
+    void select_base_multiple();
     void save_state();
 
 private:
@@ -43,7 +43,7 @@ private:
     QPushButton *browse_button;
     QList<QString> dn_list;
 
-    void add_search_base(const QString &dn);
+    void add_base(const QString &dn);
 };
 
 #endif /* ADMC_TEST_SEARCH_BASE_WIDGET_H */

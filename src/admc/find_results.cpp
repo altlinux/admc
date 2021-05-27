@@ -141,8 +141,8 @@ void FindResults::clear() {
     model->removeRows(0, model->rowCount());
 }
 
-void FindResults::load(const QHash<QString, AdObject> &search_results) {
-    for (const AdObject &object : search_results) {
+void FindResults::load(const QHash<QString, AdObject> &results) {
+    for (const AdObject &object : results) {
         const QList<QStandardItem *> row = make_item_row(g_adconfig->get_columns().count());
 
         console_object_results_load(row, object);

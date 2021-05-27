@@ -79,10 +79,10 @@ QList<QString> console_policy_search_attributes() {
 void console_policy_create(ConsoleWidget *console, const AdObject &object) {
     const QModelIndex policy_root_index =
     [&]() {
-        const QList<QModelIndex> search_results = console->search_scope_by_role(ConsoleRole_Type, ItemType_PolicyRoot);
+        const QList<QModelIndex> results = console->search_scope_by_role(ConsoleRole_Type, ItemType_PolicyRoot);
 
-        if (!search_results.isEmpty()) {
-            return search_results[0];
+        if (!results.isEmpty()) {
+            return results[0];
         } else {
             return QModelIndex();
         }
@@ -111,12 +111,13 @@ void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
     head_item->setData(ItemType_PolicyRoot, ConsoleRole_Type);
 
     // Add children
-    const QList<QString> policy_search_attributes = console_policy_search_attributes();
-    const QString policy_search_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
+    const QString base = g_adconfig->domain_head();
+    const SearchScope scope = SearchScope_All;
+    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
+    const QList<QString> attributes = console_policy_search_attributes();
+    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
-    const QHash<QString, AdObject> policy_search_results = ad.search(policy_search_filter, policy_search_attributes, SearchScope_All);
-
-    for (const AdObject &object : policy_search_results.values()) {
+    for (const AdObject &object : results.values()) {
         console_policy_create(console, object);
     }
 }
@@ -209,7 +210,12 @@ void console_policy_add_link(ConsoleWidget *console, const QList<QString> &polic
     show_busy_indicator();
 
     for (const QString &ou_dn : ou_list) {
-        const QHash<QString, AdObject> results = ad.search(QString(), {ATTRIBUTE_GPLINK}, SearchScope_Object, ou_dn);
+        const QString base = ou_dn;
+        const SearchScope scope = SearchScope_Object;
+        const QString filter = QString();
+        const QList<QString> attributes = {ATTRIBUTE_GPLINK};
+        const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+
         const AdObject ou_object = results[ou_dn];
         const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
         Gplink gplink = Gplink(gplink_string);

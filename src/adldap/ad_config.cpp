@@ -111,9 +111,9 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             ATTRIBUTE_SYSTEM_FLAGS,
         };
 
-        const QHash<QString, AdObject> search_results = ad.search(filter, attributes, SearchScope_Children, schema_dn());
+        const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes );
 
-        for (const AdObject &object : search_results.values()) {
+        for (const AdObject &object : results.values()) {
             const QString attribute = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
             d->attribute_schemas[attribute] = object;
         }
@@ -135,9 +135,9 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             ATTRIBUTE_SYSTEM_AUXILIARY_CLASS,
         };
 
-        const QHash<QString, AdObject> search_results = ad.search(filter, attributes, SearchScope_Children, schema_dn());
+        const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes);
 
-        for (const AdObject &object : search_results.values()) {
+        for (const AdObject &object : results.values()) {
             const QString object_class = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
             d->class_schemas[object_class] = object;
         }
@@ -153,9 +153,9 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES,
         };
 
-        const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_Children, locale_dir);
+        const QHash<QString, AdObject> results = ad.search(locale_dir, SearchScope_Children, filter, search_attributes);
 
-        for (const AdObject &object : search_results) {
+        for (const AdObject &object : results) {
             const QString dn = object.get_dn();
 
             // Display specifier DN is "CN=object-class-Display,CN=..."

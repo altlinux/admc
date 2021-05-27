@@ -79,8 +79,11 @@ void CreatePolicyDialog::accept() {
     // catch this.
     const bool name_conflict =
     [&]() {
+        const QString base = g_adconfig->domain_head();
+        const SearchScope scope = SearchScope_All;
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DISPLAY_NAME, name);
-        const QHash<QString, AdObject> results = ad.search(filter, QList<QString>(), SearchScope_All);
+        const QList<QString> attributes = QList<QString>();
+        const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
         return !results.isEmpty();
     }();
@@ -100,9 +103,13 @@ void CreatePolicyDialog::accept() {
 
     if (success) {
         // Create policy in console
-        const QList<QString> search_attributes = console_policy_search_attributes();
-        const QHash<QString, AdObject> search_results = ad.search(QString(), search_attributes, SearchScope_Object, created_dn);
-        const AdObject object = search_results[created_dn];
+        const QString base = created_dn;
+        const SearchScope scope = SearchScope_Object;
+        const QString filter = QString();
+        const QList<QString> attributes = console_policy_search_attributes();
+        const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+
+        const AdObject object = results[created_dn];
 
         console_policy_create(console, object);
 

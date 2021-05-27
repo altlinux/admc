@@ -116,11 +116,11 @@ void EditQueryItemWidget::load(const QModelIndex &index) {
     scope_checkbox->setChecked(!scope_is_children);
 }
 
-void EditQueryItemWidget::save(QString &name, QString &description, QString &filter, QString &search_base, bool &scope_is_children, QByteArray &filter_state) const {
+void EditQueryItemWidget::save(QString &name, QString &description, QString &filter, QString &base, bool &scope_is_children, QByteArray &filter_state) const {
     name = name_edit->text();
     description = description_edit->text();
     filter = filter_widget->get_filter();
-    search_base = search_base_widget->get_search_base();
+    base = search_base_widget->get_base();
     scope_is_children = !scope_checkbox->isChecked();
 
     filter_state =

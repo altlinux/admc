@@ -82,8 +82,8 @@ void ADMCTest::cleanup() {
     // Delete test arena, if it exists
     const QString dn = test_arena_dn();
 
-    const QHash<QString, AdObject> search_results = ad.search(QString(), QList<QString>(), SearchScope_Object, dn);
-    const bool test_arena_exists = (search_results.size() == 1);
+    const QHash<QString, AdObject> results = ad.search(dn, SearchScope_Object, QString(), QList<QString>());
+    const bool test_arena_exists = (results.size() == 1);
     if (test_arena_exists) {
         const bool delete_success = ad.object_delete(dn);
         QVERIFY2(delete_success, "Failed to delete test-arena or it's contents");
@@ -106,8 +106,8 @@ QString ADMCTest::test_object_dn(const QString &name, const QString &object_clas
 }
 
 bool ADMCTest::object_exists(const QString &dn) {
-    const QHash<QString, AdObject> search_results = ad.search(QString(), QList<QString>(), SearchScope_Object, dn);
-    const bool exists = (search_results.size() == 1);
+    const QHash<QString, AdObject> results = ad.search(dn, SearchScope_Object, QString(), QList<QString>());
+    const bool exists = (results.size() == 1);
 
     return exists;
 }

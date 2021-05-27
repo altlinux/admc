@@ -24,14 +24,12 @@
 
 #include <QHash>
 
-// TODO: make arg order same for this ctor and ad search()
-SearchThread::SearchThread(const QString &filter_arg, const QString search_base_arg, const QList<QString> attrs_arg, const SearchScope scope_arg) {
+SearchThread::SearchThread(const QString base_arg, const SearchScope scope_arg, const QString &filter_arg, const QList<QString> attributes_arg) {
     stop_flag = false;
-
-    filter = filter_arg;
-    search_base = search_base_arg;
-    attrs = attrs_arg;
+    base = base_arg;
     scope = scope_arg;
+    filter = filter_arg;
+    attributes = attributes_arg;
 
     connect(
         this, &SearchThread::finished,
@@ -54,7 +52,7 @@ void SearchThread::run() {
     while (true) {
         QHash<QString, AdObject> results;
         
-        const bool success = ad.search_paged(filter, attrs, scope, search_base, &cookie, &results);
+        const bool success = ad.search_paged(base, scope, filter, attributes, &results, &cookie);
 
         emit results_ready(results);
 

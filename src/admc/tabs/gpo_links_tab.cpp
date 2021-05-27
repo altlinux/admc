@@ -18,9 +18,11 @@
  */
 
 #include "tabs/gpo_links_tab.h"
+
 #include "properties_dialog.h"
 #include "utils.h"
 #include "adldap.h"
+#include "globals.h"
 
 #include <algorithm>
 
@@ -60,16 +62,18 @@ GpoLinksTab::GpoLinksTab() {
 }
 
 void GpoLinksTab::load(AdInterface &ad, const AdObject &object) {
-    const QList<QString> search_attributes = {ATTRIBUTE_NAME};
+    const QString base = g_adconfig->domain_head();
+    const SearchScope scope = SearchScope_All;
+    const QList<QString> attributes = {ATTRIBUTE_NAME};
     const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, object.get_dn());
-    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
+    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
     // Sort objects by dn(identical to sorting by name)
-    QList<QString> dns = search_results.keys();
+    QList<QString> dns = results.keys();
     std::sort(dns.begin(), dns.end());
 
     for (auto dn : dns) {
-        const AdObject linked_object = search_results[dn];
+        const AdObject linked_object = results[dn];
         const QString name = linked_object.get_string(ATTRIBUTE_NAME);
 
         const QList<QStandardItem *> row = make_item_row(GpoLinksColumn_COUNT);
