@@ -51,7 +51,7 @@ public slots:
     // cleanup() are special slots called by QTest.
 
     // Called before first test
-    void initTestCase();
+    virtual void initTestCase();
     // Called after last test
     void cleanupTestCase();
 

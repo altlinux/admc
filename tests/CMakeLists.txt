@@ -41,6 +41,7 @@ set(TEST_TARGETS
     admc_test_gplink
     admc_test_search_base_widget
     admc_test_filter_widget
+    admc_test_security_tab
 )
 
 foreach(target ${TEST_TARGETS})
