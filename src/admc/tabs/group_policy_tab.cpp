@@ -18,10 +18,12 @@
  */
 
 #include "tabs/group_policy_tab.h"
+
 #include "adldap.h"
 #include "utils.h"
 #include "select_policy_dialog.h"
 #include "edits/gpoptions_edit.h"
+#include "globals.h"
 
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -237,18 +239,20 @@ void GroupPolicyTab::reload_gplink() {
     }
 
     // TODO: use filter to search only for needed gpo's, not all of them (dn=dn1 or dn=dn2 or ...)
-    const QList<QString> search_attributes = {ATTRIBUTE_DISPLAY_NAME};
+    const QString base = g_adconfig->domain_head();
+    const SearchScope scope = SearchScope_All;
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
-    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
+    const QList<QString> attributes = {ATTRIBUTE_DISPLAY_NAME};
+    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
     const QList<QString> gpos = gplink.get_gpos();
 
-    for (auto dn : search_results.keys()) {
+    for (auto dn : results.keys()) {
         if (!gpos.contains(dn)) {
             continue;
         }
 
-        const AdObject object  = search_results[dn];
+        const AdObject object  = results[dn];
 
         const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
 

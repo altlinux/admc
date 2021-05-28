@@ -34,6 +34,8 @@
 
 #include <QThread>
 
+#include "adldap.h"
+
 class AdObject;
 template <typename T> class QList;
 template <typename K, typename V> class QHash;
@@ -43,7 +45,7 @@ class SearchThread final : public QThread
     Q_OBJECT
 
 public:
-    SearchThread(const QString &filter_arg, const QString search_base_arg, const QList<QString> attrs_arg);
+    SearchThread(const QString base, const SearchScope scope, const QString &filter, const QList<QString> attributes);
 
     void stop();
 
@@ -51,10 +53,11 @@ signals:
     void results_ready(const QHash<QString, AdObject> &results);
 
 private:
-    QString filter;
-    QString search_base;
-    QList<QString> attrs;
     bool stop_flag;
+    QString base;
+    SearchScope scope;
+    QString filter;
+    QList<QString> attributes;
 
     void run() override;
 };

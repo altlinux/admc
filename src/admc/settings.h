@@ -39,8 +39,7 @@ class QCheckBox;
 class QHeaderView;
 
 enum VariantSetting {
-    VariantSetting_Domain,    
-    VariantSetting_Site,    
+    VariantSetting_DC,
     VariantSetting_Locale,
     VariantSetting_ResultsHeader,
     VariantSetting_FindResultsHeader,

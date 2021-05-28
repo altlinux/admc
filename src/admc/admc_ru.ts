@@ -1417,9 +1417,9 @@
     </message>
 </context>
 <context>
-    <name>SearchBaseWidget</name>
+    <name>SelectBaseWidget</name>
     <message>
-        <location filename="filter_widget/search_base_widget.cpp" line="52"/>
+        <location filename="filter_widget/select_base_widget.cpp" line="52"/>
         <source>Browse</source>
         <translation>Выбор</translation>
     </message>

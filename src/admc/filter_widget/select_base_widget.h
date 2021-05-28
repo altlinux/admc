@@ -17,33 +17,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EDIT_QUERY_FOLDER_DIALOG_H
-#define EDIT_QUERY_FOLDER_DIALOG_H
+#ifndef SELECT_BASE_WIDGET_H
+#define SELECT_BASE_WIDGET_H
 
-#include <QDialog>
-#include <QString>
-#include <QList>
-#include <QModelIndex>
+/**
+ * Allows user to select a search base object.
+ */
 
-class QLineEdit;
-class FilterWidget;
-class SelectBaseWidget;
-class ConsoleWidget;
+#include <QWidget>
 
-class EditQueryFolderDialog : public QDialog {
+class QComboBox;
+class QString;
+
+class SelectBaseWidget final : public QWidget {
 Q_OBJECT
 
 public:
-    EditQueryFolderDialog(ConsoleWidget *console_arg);
+    SelectBaseWidget(const QString &default_base = QString());
 
-    void open() override;
+    QString get_base() const;
+
+    void save_state(QHash<QString, QVariant> &state) const;
+    void load_state(const QHash<QString, QVariant> &state);
 
 private:
-    QLineEdit *name_edit;
-    QLineEdit *description_edit;
-    ConsoleWidget *console;
+    QComboBox *combo;
 
-    void accept() override;
+    void browse();
 };
 
-#endif /* EDIT_QUERY_FOLDER_DIALOG_H */
+#endif /* SELECT_BASE_WIDGET_H */

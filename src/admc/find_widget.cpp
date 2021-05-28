@@ -24,7 +24,7 @@
 #include "settings.h"
 #include "utils.h"
 #include "filter_widget/filter_widget.h"
-#include "filter_widget/search_base_widget.h"
+#include "filter_widget/select_base_widget.h"
 #include "find_results.h"
 #include "search_thread.h"
 #include "console_types/console_object.h"
@@ -36,10 +36,10 @@
 #include <QFrame>
 #include <QDebug>
 
-FindWidget::FindWidget(const QList<QString> classes, const QString &default_search_base)
+FindWidget::FindWidget(const QList<QString> classes, const QString &default_base)
 : QWidget()
 {
-    search_base_widget = new SearchBaseWidget(default_search_base);
+    select_base_widget = new SelectBaseWidget(default_base);
 
     filter_widget = new FilterWidget(classes);
 
@@ -56,8 +56,8 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
     filter_widget_frame->setFrameShape(QFrame::Box);
 
     {
-        auto search_base_layout = new QFormLayout();
-        search_base_layout->addRow(tr("Search in:"), search_base_widget);
+        auto select_base_layout = new QFormLayout();
+        select_base_layout->addRow(tr("Search in:"), select_base_widget);
 
         auto buttons_layout = new QHBoxLayout();
         buttons_layout->addWidget(find_button);
@@ -66,7 +66,7 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
 
         auto layout = new QVBoxLayout();
         filter_widget_frame->setLayout(layout);
-        layout->addLayout(search_base_layout);
+        layout->addLayout(select_base_layout);
         layout->addWidget(filter_widget);
         layout->addLayout(buttons_layout);
     }
@@ -101,10 +101,10 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_sear
 void FindWidget::find() {
     // Prepare search args
     const QString filter = filter_widget->get_filter();
-    const QString search_base = search_base_widget->get_search_base();
+    const QString base = select_base_widget->get_base();
     const QList<QString> search_attributes = console_object_search_attributes();
 
-    auto find_thread = new SearchThread(filter, search_base, search_attributes);
+    auto find_thread = new SearchThread(base, SearchScope_All, filter, search_attributes);
 
     connect(
         find_thread, &SearchThread::results_ready,

@@ -48,6 +48,7 @@
 #include "policy_results_widget.h"
 #include "edit_query_folder_dialog.h"
 #include "object_multi_properties_dialog.h"
+#include "change_dc_dialog.h"
 
 #include <QDebug>
 #include <QAbstractItemView>
@@ -165,6 +166,9 @@ CentralWidget::CentralWidget()
     connect(
         console_actions->get(ConsoleAction_EditUpnSuffixes), &QAction::triggered,
         this, &CentralWidget::object_edit_upn_suffixes);
+    connect(
+        console_actions->get(ConsoleAction_ChangeDC), &QAction::triggered,
+        this, &CentralWidget::object_change_dc);
 
     connect(
         console_actions->get(ConsoleAction_PolicyCreate), &QAction::triggered,
@@ -258,7 +262,7 @@ void CentralWidget::go_online(AdInterface &ad) {
     console_query_tree_init(console);
 
     console->sort_scope();
-    console->set_current_scope(object_tree_head);
+    console->set_current_scope(object_tree_head->index());
 }
 
 void CentralWidget::open_filter() {
@@ -469,6 +473,11 @@ void CentralWidget::object_edit_upn_suffixes() {
         });
 }
 
+void CentralWidget::object_change_dc() {
+    auto change_dc_dialog = new ChangeDCDialog(object_tree_head, this);
+    change_dc_dialog->open();
+}
+
 void CentralWidget::policy_add_link() {
     const QList<QModelIndex> selected = console->get_selected_items();
     if (selected.size() == 0) {
@@ -531,12 +540,13 @@ void CentralWidget::policy_delete() {
             console->delete_item(index);
 
             // Remove links to delete policy
+            const QString base = g_adconfig->domain_head();
+            const SearchScope scope = SearchScope_All;
             const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, dn);
-            const QList<QString> search_attributes = {
-                ATTRIBUTE_GPLINK,
-            };
-            const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_All);
-            for (const AdObject &object : search_results.values()) {
+            const QList<QString> attributes = {ATTRIBUTE_GPLINK};
+            const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+            
+            for (const AdObject &object : results.values()) {
                 const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
                 Gplink gplink = Gplink(gplink_string);
                 gplink.remove(dn);
@@ -725,7 +735,7 @@ void CentralWidget::on_object_properties_applied() {
 void CentralWidget::refresh_head() {
     show_busy_indicator();
 
-    console->refresh_scope(object_tree_head);
+    console->refresh_scope(object_tree_head->index());
 
     hide_busy_indicator();
 }

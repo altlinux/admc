@@ -97,6 +97,6 @@ QModelIndex get_selected_scope_index(ConsoleWidget *console);
 void advanced_features_filter(QString &filter);
 
 void dev_mode_filter(QString &filter);
-void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &current_dn);
+void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &base);
 
 #endif /* UTILS_H */

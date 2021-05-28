@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "filter_widget/search_base_widget.h"
+#include "filter_widget/select_base_widget.h"
 
 #include "adldap.h"
 #include "globals.h"
@@ -29,24 +29,24 @@
 
 // TODO: missing "Entire directory" in search base combo. Not 100% sure what it's supposed to be, the tippy-top domain? Definitely need it for work with multiple domains.
 
-SearchBaseWidget::SearchBaseWidget(const QString &default_search_base)
+SelectBaseWidget::SelectBaseWidget(const QString &default_base)
 : QWidget()
 {
     const QString domain_head = g_adconfig->domain_head();
 
     combo = new QComboBox();
 
-    auto add_search_base_to_combo =
+    auto add_base_to_combo =
     [this](const QString dn) {
         const QString name = dn_get_name(dn);
         combo->addItem(name, dn);
     };
 
-    if (default_search_base == domain_head || default_search_base.isEmpty()) {
-        add_search_base_to_combo(domain_head);
+    if (default_base == domain_head || default_base.isEmpty()) {
+        add_base_to_combo(domain_head);
     } else {
-        add_search_base_to_combo(domain_head);
-        add_search_base_to_combo(default_search_base);
+        add_base_to_combo(domain_head);
+        add_base_to_combo(default_base);
     }
 
     auto browse_button = new QPushButton(tr("Browse"));
@@ -64,17 +64,17 @@ SearchBaseWidget::SearchBaseWidget(const QString &default_search_base)
 
     connect(
         browse_button, &QAbstractButton::clicked,
-        this, &SearchBaseWidget::browse);
+        this, &SelectBaseWidget::browse);
 }
 
-QString SearchBaseWidget::get_search_base() const {
+QString SelectBaseWidget::get_base() const {
     const int index = combo->currentIndex();
     const QVariant item_data = combo->itemData(index);
 
     return item_data.toString();
 }
 
-void SearchBaseWidget::browse() {
+void SelectBaseWidget::browse() {
     auto dialog = new SelectContainerDialog(this);
 
     connect(
@@ -93,14 +93,14 @@ void SearchBaseWidget::browse() {
     dialog->open();
 }
 
-void SearchBaseWidget::save_state(QHash<QString, QVariant> &state) const {
-    const QString search_base = combo->currentData().toString();
-    state["search_base"] = QVariant(search_base);
+void SelectBaseWidget::save_state(QHash<QString, QVariant> &state) const {
+    const QString base = combo->currentData().toString();
+    state["base"] = QVariant(base);
 }
 
-void SearchBaseWidget::load_state(const QHash<QString, QVariant> &state) {
-    const QString search_base = state["search_base"].toString();
-    const QString search_base_name = dn_get_name(search_base);
+void SelectBaseWidget::load_state(const QHash<QString, QVariant> &state) {
+    const QString base = state["base"].toString();
+    const QString base_name = dn_get_name(base);
     combo->clear();
-    combo->addItem(search_base_name, search_base);
+    combo->addItem(base_name, base);
 }

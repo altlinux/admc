@@ -39,8 +39,7 @@ void ADMCTestStringEdit::init() {
     parent_widget->show();
     QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
 
-    tab();
-    line_edit = qobject_cast<QLineEdit *>(QApplication::focusWidget());
+    line_edit = parent_widget->findChild<QLineEdit *>();
     QVERIFY(line_edit != nullptr);
 
     // Create test user

@@ -38,8 +38,7 @@ void ADMCTestCountryEdit::init() {
     parent_widget->show();
     QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
 
-    tab();
-    combo = qobject_cast<QComboBox *>(QApplication::focusWidget());
+    combo = parent_widget->findChild<QComboBox *>();
     QVERIFY(combo != nullptr);
 
     // Create test user

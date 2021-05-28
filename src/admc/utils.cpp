@@ -283,19 +283,19 @@ void dev_mode_filter(QString &filter) {
 // NOTE: configuration and schema objects are hidden so that
 // they don't show up in regular searches. Have to use
 // search_object() and manually add them to search results.
-void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &current_dn) {
+void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &base) {
     const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
     if (!dev_mode) {
         return;
     }
 
-    const QString search_base = g_adconfig->domain_head();
+    const QString domain_head = g_adconfig->domain_head();
     const QString configuration_dn = g_adconfig->configuration_dn();
     const QString schema_dn = g_adconfig->schema_dn();
 
-    if (current_dn == search_base) {
+    if (base == domain_head) {
         results[configuration_dn] = ad.search_object(configuration_dn);
-    } else if (current_dn == configuration_dn) {
+    } else if (base == configuration_dn) {
         results[schema_dn] = ad.search_object(schema_dn);
     }
 }

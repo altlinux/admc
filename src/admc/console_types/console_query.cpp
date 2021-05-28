@@ -141,14 +141,14 @@ QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &n
     return scope_item->index();
 }
 
-void console_query_item_load(QStandardItem *scope_item, const QList<QStandardItem *> results_row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &search_base, const bool scope_is_children) {
+void console_query_item_load(QStandardItem *scope_item, const QList<QStandardItem *> results_row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children) {
     auto load_main_item =
     [&](QStandardItem *item) {
         item->setData(ItemType_QueryItem, ConsoleRole_Type);
         item->setData(description, QueryItemRole_Description);
         item->setData(filter, QueryItemRole_Filter);
         item->setData(filter_state, QueryItemRole_FilterState);
-        item->setData(search_base, QueryItemRole_SearchBase);
+        item->setData(base, QueryItemRole_Base);
         item->setData(scope_is_children, QueryItemRole_ScopeIsChildren);
         item->setIcon(QIcon::fromTheme("emblem-system"));
     };
@@ -165,26 +165,19 @@ void console_query_item_load(QStandardItem *scope_item, const QList<QStandardIte
     }
 }
 
-void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &search_base, const bool scope_is_children, const QModelIndex &parent) {
+void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent) {
     QStandardItem *scope_item;
     QList<QStandardItem *> results_row;
     console->add_buddy_scope_and_results(console_object_results_id, ScopeNodeType_Dynamic, parent, &scope_item, &results_row);
 
-    console_query_item_load(scope_item, results_row, name, description, filter, filter_state, search_base, scope_is_children);
+    console_query_item_load(scope_item, results_row, name, description, filter, filter_state, base, scope_is_children);
 }
 
 void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    show_busy_indicator();
-
     const QString filter = index.data(QueryItemRole_Filter).toString();
-    const QString search_base = index.data(QueryItemRole_SearchBase).toString();
+    const QString base = index.data(QueryItemRole_Base).toString();
     const QList<QString> search_attributes = console_object_search_attributes();
-    const SearchScope search_scope =
+    const SearchScope scope =
     [&]() {
         const bool scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
         if (scope_is_children) {
@@ -194,13 +187,7 @@ void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) 
         }
     }();
 
-    const QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, search_scope, search_base);
-    for (const AdObject &object : search_results.values()) {
-        const QList<QStandardItem *> results_row = console->add_results_row(index);
-        console_object_results_load(results_row, object);
-    }
-
-    hide_busy_indicator();
+    console_object_search(console, index, base, scope, filter, search_attributes);
 }
 
 void console_query_tree_init(ConsoleWidget *console) {
@@ -385,43 +372,52 @@ void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
 void console_query_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
     const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
 
+    QSet<ConsoleAction> my_visible_actions;
+
     if (single_selection) {
         if (type == ItemType_QueryRoot || type == ItemType_QueryFolder) {
-            visible_actions->insert(ConsoleAction_QueryCreateFolder);
-            visible_actions->insert(ConsoleAction_QueryCreateItem);
-            visible_actions->insert(ConsoleAction_QueryImport);
+            my_visible_actions.insert(ConsoleAction_QueryCreateFolder);
+            my_visible_actions.insert(ConsoleAction_QueryCreateItem);
+            my_visible_actions.insert(ConsoleAction_QueryImport);
         }
 
         if (type == ItemType_QueryFolder || type == ItemType_QueryItem) {
-            visible_actions->insert(ConsoleAction_QueryCutItemOrFolder);
-            visible_actions->insert(ConsoleAction_QueryCopyItemOrFolder);
+            my_visible_actions.insert(ConsoleAction_QueryCutItemOrFolder);
+            my_visible_actions.insert(ConsoleAction_QueryCopyItemOrFolder);
         }
 
         if (type == ItemType_QueryFolder) {
             if (copied_index.isValid()) {
-                visible_actions->insert(ConsoleAction_QueryPasteItemOrFolder);
+                my_visible_actions.insert(ConsoleAction_QueryPasteItemOrFolder);
             } 
 
-            visible_actions->insert(ConsoleAction_QueryEditFolder);
-            visible_actions->insert(ConsoleAction_QueryImport);
+            my_visible_actions.insert(ConsoleAction_QueryEditFolder);
+            my_visible_actions.insert(ConsoleAction_QueryImport);
         }
 
         if (type == ItemType_QueryItem) {
-            visible_actions->insert(ConsoleAction_QueryEditItem);
-            visible_actions->insert(ConsoleAction_QueryExport);
+            my_visible_actions.insert(ConsoleAction_QueryEditItem);
+            my_visible_actions.insert(ConsoleAction_QueryExport);
         }
     }
 
     if (type == ItemType_QueryItem || type == ItemType_QueryFolder) {
-        visible_actions->insert(ConsoleAction_QueryDeleteItemOrFolder);
+        my_visible_actions.insert(ConsoleAction_QueryDeleteItemOrFolder);
+    }
+
+    visible_actions->unite(my_visible_actions);
+
+    const bool is_fetching = console_get_item_fetching(index);
+    if (is_fetching) {
+        disabled_actions->unite(my_visible_actions);
     }
 }
 
 QModelIndex console_query_get_root_index(ConsoleWidget *console) {
-    const QList<QModelIndex> search_results = console->search_scope_by_role(ConsoleRole_Type, ItemType_QueryRoot);
+    const QList<QModelIndex> results = console->search_scope_by_role(ConsoleRole_Type, ItemType_QueryRoot);
 
-    if (!search_results.isEmpty()) {
-        return search_results[0];
+    if (!results.isEmpty()) {
+        return results[0];
     } else {
         qDebug() << "Failed to find query root";
 
@@ -432,6 +428,11 @@ QModelIndex console_query_get_root_index(ConsoleWidget *console) {
 void console_query_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
     const bool dropped_are_query_item_or_folder = (dropped_types - QSet<ItemType>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
     if (!dropped_are_query_item_or_folder) {
+        return;
+    }
+
+    const bool target_is_fetching = console_get_item_fetching(target);
+    if (target_is_fetching) {
         return;
     }
 
@@ -487,11 +488,11 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
                 const QString description = index.data(QueryItemRole_Description).toString();
                 const QString filter = index.data(QueryItemRole_Filter).toString();
                 const QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
-                const QString search_base = index.data(QueryItemRole_SearchBase).toString();
+                const QString base = index.data(QueryItemRole_Base).toString();
                 const QString name = index.data(Qt::DisplayRole).toString();
                 const bool scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
 
-                console_query_item_create(console, name, description, filter, filter_state, search_base, scope_is_children, new_parent);
+                console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, new_parent);
             } else if (type == ItemType_QueryFolder) {
                 const QString name = index.data(Qt::DisplayRole).toString();
                 const QString description = index.data(QueryItemRole_Description).toString();
@@ -607,7 +608,7 @@ void console_query_paste(ConsoleWidget *console) {
 QHash<QString, QVariant> console_query_item_save(const QModelIndex &index) {
     const QString name = index.data(Qt::DisplayRole).toString();
     const QString description = index.data(QueryItemRole_Description).toString();
-    const QString search_base = index.data(QueryItemRole_SearchBase).toString();
+    const QString base = index.data(QueryItemRole_Base).toString();
     const QString filter = index.data(QueryItemRole_Filter).toString();
     const QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
     const bool scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
@@ -615,7 +616,7 @@ QHash<QString, QVariant> console_query_item_save(const QModelIndex &index) {
     QHash<QString, QVariant> data;
     data["name"] = name;
     data["description"] = description;
-    data["search_base"] = search_base;
+    data["base"] = base;
     data["filter"] = filter;
     data["filter_state"] = filter_state.toHex();
     data["scope_is_children"] = scope_is_children;
@@ -630,7 +631,7 @@ void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVaria
 
     const QString name = data["name"].toString();
     const QString description = data["description"].toString();
-    const QString search_base = data["search_base"].toString();
+    const QString base = data["base"].toString();
     const bool scope_is_children = data["scope_is_children"].toBool();
     const QString filter = data["filter"].toString();
     const QByteArray filter_state = QByteArray::fromHex(data["filter_state"].toString().toLocal8Bit());
@@ -639,5 +640,5 @@ void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVaria
         return;
     }
 
-    console_query_item_create(console, name, description, filter, filter_state, search_base, scope_is_children, parent_index);
+    console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
 }

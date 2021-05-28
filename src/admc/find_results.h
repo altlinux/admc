@@ -48,7 +48,7 @@ public:
     void clear();
 
     // Append results to list and re-sort
-    void load(const QHash<QString, AdObject> &search_results);
+    void load(const QHash<QString, AdObject> &results);
 
     // NOTE: returned items need to be re-parented or deleted!
     QList<QList<QStandardItem *>> get_selected_rows() const;

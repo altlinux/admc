@@ -344,6 +344,9 @@ void ConsoleWidget::refresh_scope(const QModelIndex &index) {
     // Emit item_fetched() so that user of console can
     // reload item's results
     emit item_fetched(index);
+
+    // When fetching, need to disable actions
+    d->on_selection_changed();
 }
 
 // No view, only widget
@@ -412,6 +415,30 @@ void ConsoleWidget::set_description_bar_text(const QString &text) {
 
     d->description_bar_left->setText(scope_name);
     d->description_bar_right->setText(text);
+}
+
+// NOTE: this role is done through setter/getter because we
+// need to call on_selection_changed() in setter() to update
+// actions
+void ConsoleWidget::set_item_fetching(const QModelIndex &scope_index, const bool enabled) {
+    QStandardItem *item = get_scope_item(scope_index);
+
+    if (item == nullptr) {
+        return;
+    }
+
+    item->setData(enabled, ConsoleRole_Fetching);
+
+    d->on_selection_changed();
+}
+
+bool console_get_item_fetching(const QModelIndex &index) {
+    const bool index_fetching = index.data(ConsoleRole_Fetching).toBool();
+
+    const QModelIndex buddy = console_item_get_buddy(index);
+    const bool buddy_fetching = buddy.data(ConsoleRole_Fetching).toBool();
+
+    return (index_fetching || buddy_fetching);
 }
 
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
@@ -573,6 +600,9 @@ void ConsoleWidgetPrivate::on_selection_changed() {
     properties_action->setVisible(false);
     refresh_action->setVisible(false);
 
+    properties_action->setEnabled(true);
+    refresh_action->setEnabled(true);
+
     if (selected_list.size() == 1) {
         const QModelIndex selected = selected_list[0];
 
@@ -601,6 +631,24 @@ void ConsoleWidgetPrivate::on_selection_changed() {
         if (all_have_properties) {
             properties_action->setVisible(true);
         }
+    }
+
+    const bool any_selected_is_fetching =
+    [&]() {
+        for (const QModelIndex &index : selected_list) {
+            const bool is_fetching = console_get_item_fetching(index);
+
+            if (is_fetching) {
+                return true;
+            }
+        }
+
+        return false;
+    }();
+
+    if (any_selected_is_fetching) {
+        properties_action->setEnabled(false);
+        refresh_action->setEnabled(false);
     }
 
     emit q->selection_changed();

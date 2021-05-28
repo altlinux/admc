@@ -32,7 +32,7 @@
 class QLineEdit;
 class QTextEdit;
 class FilterWidget;
-class SearchBaseWidget;
+class SelectBaseWidget;
 class QCheckBox;
 
 class EditQueryItemWidget : public QWidget {
@@ -42,14 +42,14 @@ public:
     EditQueryItemWidget();
 
     void load(const QModelIndex &index);
-    void save(QString &name, QString &description, QString &filter, QString &search_base, bool &scope_is_children, QByteArray &filter_state) const;
+    void save(QString &name, QString &description, QString &filter, QString &base, bool &scope_is_children, QByteArray &filter_state) const;
 
 private:
     QLineEdit *name_edit;
     QLineEdit *description_edit;
     QTextEdit *filter_display;
     FilterWidget *filter_widget;
-    SearchBaseWidget *search_base_widget;
+    SelectBaseWidget *select_base_widget;
     QCheckBox *scope_checkbox;
 
     void update_filter_display();

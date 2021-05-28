@@ -33,7 +33,7 @@ class FindResults;
 class QStandardItem;
 class QPushButton;
 class AdObject;
-class SearchBaseWidget;
+class SelectBaseWidget;
 template <typename T> class QList;
 template <typename K, typename V> class QHash;
 
@@ -45,7 +45,7 @@ Q_OBJECT
 public:
     FindResults *find_results;
     
-    FindWidget(const QList<QString> classes, const QString &default_search_base);
+    FindWidget(const QList<QString> classes, const QString &default_base);
 
     // NOTE: returned items need to be re-parented or deleted!
     QList<QList<QStandardItem *>> get_selected_rows() const;
@@ -59,7 +59,7 @@ private:
     FilterWidget *filter_widget;
     QPushButton *find_button;
     QPushButton *stop_button;
-    SearchBaseWidget *search_base_widget;
+    SelectBaseWidget *select_base_widget;
 };
 
 #endif /* FIND_WIDGET_H */

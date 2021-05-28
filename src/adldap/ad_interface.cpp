@@ -64,13 +64,13 @@ typedef struct sasl_defaults_gssapi {
     char *authzid;
 } sasl_defaults_gssapi;
 
-QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 QList<QString> query_server_for_hosts(const char *dname);
 bool ad_connect(const char* uri, LDAP **ld_out);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 
 AdConfig *AdInterfacePrivate::s_adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
+QString AdInterfacePrivate::s_dc = QString();
 
 void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgroup, int maxLenWorkgroup, char * pUsername, int maxLenUsername, char * pPassword, int maxLenPassword) {
 
@@ -94,16 +94,23 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     d->domain = get_default_domain_from_krb5();
     d->domain_head = domain_to_domain_dn(d->domain);
 
-    const QList<QString> hosts = get_domain_hosts(d->domain, QString());
-    if (hosts.isEmpty()) {
-        qDebug() << "No hosts found";
-        
-        return;
-    }
+    const QString dc =
+    []() {
+        if (!AdInterfacePrivate::s_dc.isEmpty()) {
+            return AdInterfacePrivate::s_dc;
+        } else {
+            const QString domain = get_default_domain_from_krb5();
+            const QList<QString> host_list = get_domain_hosts(domain, QString());
 
-    d->host = hosts[0];
+            if (!host_list.isEmpty()) {
+                return host_list[0];
+            } else {
+                return QString();
+            }
+        }
+    }();
 
-    const QString uri = "ldap://" + d->host;
+    const QString uri = "ldap://" + dc;
 
     const bool success = ad_connect(cstr(uri), &d->ld);
     if (success) {
@@ -142,16 +149,20 @@ void AdInterface::set_log_searches(const bool enabled) {
     AdInterfacePrivate::s_log_searches = enabled;
 }
 
+void AdInterface::set_dc(const QString &dc) {
+    AdInterfacePrivate::s_dc = dc;
+}
+
+QString AdInterface::get_dc() {
+    return AdInterfacePrivate::s_dc;
+}
+
 AdInterfacePrivate::AdInterfacePrivate() {
 
 }
 
 bool AdInterface::is_connected() const {
     return d->is_connected;
-}
-
-QString AdInterface::host() const {
-    return d->host;
 }
 
 QList<AdMessage> AdInterface::messages() const {
@@ -177,12 +188,12 @@ void AdInterface::clear_messages() {
 // loop, it is set to the value returned by
 // ldap_search_ext_s(). At the end cookie is set back to
 // NULL.
-bool AdInterfacePrivate::search_paged_internal(const char *filter, char **attributes, const int scope, const char *search_base, QHash<QString, AdObject> *out, AdCookie *ad_cookie) {
+bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope, const char *filter, char **attributes, QHash<QString, AdObject> *results, AdCookie *cookie) {
     int result;
     LDAPMessage *res = NULL;
     LDAPControl *page_control = NULL;
     LDAPControl **returned_controls = NULL;
-    struct berval *prev_cookie = ad_cookie->cookie;
+    struct berval *prev_cookie = cookie->cookie;
     struct berval *new_cookie = NULL;
     
     auto cleanup =
@@ -208,7 +219,7 @@ bool AdInterfacePrivate::search_paged_internal(const char *filter, char **attrib
 
     // Perform search
     const int attrsonly = 0;
-    result = ldap_search_ext_s(ld, search_base, scope, filter, attributes, attrsonly, server_controls, NULL, NULL, LDAP_NO_LIMIT, &res);
+    result = ldap_search_ext_s(ld, base, scope, filter, attributes, attrsonly, server_controls, NULL, NULL, LDAP_NO_LIMIT, &res);
     if ((result != LDAP_SUCCESS) && (result != LDAP_PARTIAL_RESULTS)) {
         // NOTE: it's not really an error for an object to
         // not exist. For example, sometimes it's needed to
@@ -236,7 +247,7 @@ bool AdInterfacePrivate::search_paged_internal(const char *filter, char **attrib
 
             const QList<QByteArray> values_bytes =
             [=]() {
-                QList<QByteArray> values_bytes_out;
+                QList<QByteArray> out;
 
                 if (values_ldap != NULL) {
                     const int values_count = ldap_count_values_len(values_ldap);
@@ -244,11 +255,11 @@ bool AdInterfacePrivate::search_paged_internal(const char *filter, char **attrib
                         struct berval value_berval = *values_ldap[i];
                         const QByteArray value_bytes(value_berval.bv_val, value_berval.bv_len);
 
-                        values_bytes_out.append(value_bytes);
+                        out.append(value_bytes);
                     }
                 }
 
-                return values_bytes_out;
+                return out;
             }();
 
             const QString attribute(attr);
@@ -263,7 +274,7 @@ bool AdInterfacePrivate::search_paged_internal(const char *filter, char **attrib
         AdObject object;
         object.load(dn, object_attributes);
 
-        out->insert(dn, object);
+        results->insert(dn, object);
     }
 
     // Parse the results to retrieve returned controls
@@ -302,18 +313,18 @@ bool AdInterfacePrivate::search_paged_internal(const char *filter, char **attrib
     // empty
     const bool more_pages = (new_cookie->bv_len > 0);
     if (more_pages) {
-        ad_cookie->cookie = ber_bvdup(new_cookie);
+        cookie->cookie = ber_bvdup(new_cookie);
     } else {
-        ad_cookie->cookie = NULL;
+        cookie->cookie = NULL;
     }
 
     cleanup();
     return true;
 }
 
-QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<QString> &attributes, const SearchScope scope, const QString &search_base) {
+QHash<QString, AdObject> AdInterface::search(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes) {
     AdCookie cookie;
-    QHash<QString, AdObject> out;
+    QHash<QString, AdObject> results;
 
     if (AdInterfacePrivate::s_log_searches) {
         const QString attributes_string = "{" + attributes.join(",") + "}";
@@ -330,11 +341,11 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
             return QString();
         }();
 
-        d->success_message(QString(tr("Search:\n\tfilter = \"%1\"\n\tattributes = %2\n\tscope = \"%3\"\n\tbase = \"%4\"")).arg(filter, attributes_string, scope_string, search_base));
+        d->success_message(QString(tr("Search:\n\tfilter = \"%1\"\n\tattributes = %2\n\tscope = \"%3\"\n\tbase = \"%4\"")).arg(filter, attributes_string, scope_string, base));
     }
 
     while (true) {
-        const bool success = search_paged(filter, attributes, scope, search_base, &cookie, &out);
+        const bool success = search_paged(base, scope, filter, attributes, &results, &cookie);
 
         if (!success) {
             break;
@@ -345,33 +356,15 @@ QHash<QString, AdObject> AdInterface::search(const QString &filter, const QList<
         }
     }
 
-    return out;
+    return results;
 }
 
-bool AdInterface::search_paged(const QString &filter_arg, const QList<QString> &attributes_arg, const SearchScope scope_arg, const QString &search_base_arg, AdCookie *cookie, QHash<QString, AdObject> *out) {
-    const char *search_base =
-    [this, search_base_arg]() {
-        if (search_base_arg.isEmpty()) {
-            return cstr(d->domain_head);
-        } else {
-            return cstr(search_base_arg);
-        }
-    }();
+bool AdInterface::search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie) {
+    const char *base_cstr = cstr(base);
 
-    const char *filter =
-    [filter_arg]() {
-        if (filter_arg.isEmpty()) {
-            // NOTE: need to pass NULL instead of empty
-            // string to denote "no filter"
-            return (const char *) NULL;
-        } else {
-            return cstr(filter_arg);
-        }
-    }();
-
-    const int scope =
-    [scope_arg]() {
-        switch (scope_arg) {
+    const int scope_int =
+    [&]() {
+        switch (scope) {
             case SearchScope_Object: return LDAP_SCOPE_BASE;
             case SearchScope_Children: return LDAP_SCOPE_ONELEVEL;
             case SearchScope_All: return LDAP_SCOPE_SUBTREE;
@@ -380,50 +373,64 @@ bool AdInterface::search_paged(const QString &filter_arg, const QList<QString> &
         return 0;
     }();
 
-    // Convert attributes list to NULL-terminated array
-    char **attributes =
-    [attributes_arg]() {
-        char **attributes_out;
-        if (attributes_arg.isEmpty()) {
-            // Pass NULL so LDAP gets all attributes
-            attributes_out = NULL;
+    const char *filter_cstr =
+    [&]() {
+        if (filter.isEmpty()) {
+            // NOTE: need to pass NULL instead of empty
+            // string to denote "no filter"
+            return (const char *) NULL;
         } else {
-            attributes_out = (char **) malloc((attributes_arg.size() + 1) * sizeof(char *));
+            return cstr(filter);
+        }
+    }();
 
-            if (attributes_out != NULL) {
-                for (int i = 0; i < attributes_arg.size(); i++) {
-                    const QString attribute = attributes_arg[i];
-                    attributes_out[i] = strdup(cstr(attribute));
+    // Convert attributes list to NULL-terminated array
+    char **attributes_array =
+    [&]() {
+        char **out;
+        if (attributes.isEmpty()) {
+            // Pass NULL so LDAP gets all attributes
+            out = NULL;
+        } else {
+            out = (char **) malloc((attributes.size() + 1) * sizeof(char *));
+
+            if (out != NULL) {
+                for (int i = 0; i < attributes.size(); i++) {
+                    const QString attribute = attributes[i];
+                    out[i] = strdup(cstr(attribute));
                 }
-                attributes_out[attributes_arg.size()] = NULL;
+                out[attributes.size()] = NULL;
             }
         }
 
-        return attributes_out;
+        return out;
     }();
 
-    const bool search_success = d->search_paged_internal(filter, attributes, scope, search_base, out, cookie);
+    const bool search_success = d->search_paged_internal(base_cstr, scope_int, filter_cstr, attributes_array, results, cookie);
     if (!search_success) {
-        out->clear();
+        results->clear();
 
         return false;
     }
 
-    if (attributes != NULL) {
-        for (int i = 0; attributes[i] != NULL; i++) {
-            free(attributes[i]);
+    if (attributes_array != NULL) {
+        for (int i = 0; attributes_array[i] != NULL; i++) {
+            free(attributes_array[i]);
         }
-        free(attributes);
+        free(attributes_array);
     }
 
     return true;
 }
 
 AdObject AdInterface::search_object(const QString &dn, const QList<QString> &attributes) {
-    const QHash<QString, AdObject> search_results = search("", attributes, SearchScope_Object, dn);
+    const QString base = dn;
+    const SearchScope scope = SearchScope_Object;
+    const QString filter = QString();
+    const QHash<QString, AdObject> results = search(base, scope, filter, attributes);
 
-    if (search_results.contains(dn)) {
-        return search_results[dn];
+    if (results.contains(dn)) {
+        return results[dn];
     } else {
         return AdObject();
     }
@@ -1035,7 +1042,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
 
     // Create main dir
     // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(d->host, d->domain.toLower(), uuid);
+    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(AdInterfacePrivate::s_dc, d->domain.toLower(), uuid);
     const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0);
     if (result_mkdir_main != 0) {
         qDebug() << "Failed to create policy main dir";
@@ -1109,8 +1116,13 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     //
 
     // First get descriptor of the GPO
-    const QHash<QString, AdObject> search_results = search(QString(), {ATTRIBUTE_SECURITY_DESCRIPTOR}, SearchScope_Object, dn);
-    const AdObject object = search_results[dn];
+    const QString base = dn;
+    const SearchScope scope = SearchScope_Object;
+    const QString filter = QString();
+    const QList<QString> attributes = {ATTRIBUTE_SECURITY_DESCRIPTOR};
+    const QHash<QString, AdObject> results = search(base, scope, filter, attributes);
+    
+    const AdObject object = results[dn];
     const QByteArray descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
 
     // Transform descriptor bytes into descriptor struct
@@ -1212,7 +1224,7 @@ QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
     const int sysvol_i = out.indexOf("sysvol");
     out.remove(0, sysvol_i);
 
-    out = QString("smb://%1/%2").arg(d->host, out);
+    out = QString("smb://%1/%2").arg(AdInterfacePrivate::s_dc, out);
 
     return out;
 }
@@ -1667,7 +1679,7 @@ QString AdInterface::get_trustee_name(const QString &trustee_sid) {
     } else {
         // Try to get name of trustee by finding it's DN
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, trustee_sid);
-        const auto trustee_search = search(filter, QList<QString>(), SearchScope_All);
+        const auto trustee_search = search(d->domain_head, SearchScope_All, filter, QList<QString>());
         if (!trustee_search.isEmpty()) {
             const QString trustee_dn = trustee_search.keys()[0];
             const QString name = dn_get_name(trustee_dn);

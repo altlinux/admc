@@ -126,6 +126,9 @@ void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
     show_busy_indicator();
 
     model->removeRows(0, model->rowCount(index), index);
+    
+    const QString base = index.data(ContainerRole_DN).toString();
+    const SearchScope scope = SearchScope_Children;
 
     const QString filter =
     [=]() {
@@ -139,16 +142,14 @@ void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
         return out;
     }();
 
-    const QList<QString> search_attributes;
+    const QList<QString> attributes = QList<QString>();
 
-    const QString dn = index.data(ContainerRole_DN).toString();
+    QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
-    QHash<QString, AdObject> search_results = ad.search(filter, search_attributes, SearchScope_Children, dn);
-
-    dev_mode_search_results(search_results, ad, dn);
+    dev_mode_search_results(results, ad, base);
 
     QStandardItem *parent = model->itemFromIndex(index);
-    for (const AdObject &object : search_results.values()) {
+    for (const AdObject &object : results.values()) {
         auto item = make_container_node(object);
         parent->appendRow(item);
     }

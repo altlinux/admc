@@ -153,10 +153,13 @@ void MembershipTab::load(AdInterface &ad, const AdObject &object) {
             const QByteArray group_sid = object.get_value(ATTRIBUTE_OBJECT_SID);
             const QString group_rid = extract_rid_from_sid(group_sid, g_adconfig);
 
+            const QString base = g_adconfig->domain_head();
+            const SearchScope scope = SearchScope_All;
             const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_PRIMARY_GROUP_ID, group_rid);
-            const QHash<QString, AdObject> result = ad.search(filter, QList<QString>(), SearchScope_All);
+            const QList<QString> attributes = QList<QString>();
+            const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
-            for (const QString &user : result.keys()) {
+            for (const QString &user : results.keys()) {
                 original_primary_values.insert(user);
             }
 
@@ -177,11 +180,14 @@ void MembershipTab::load(AdInterface &ad, const AdObject &object) {
             const int cut_index = user_sid_string.lastIndexOf("-") + 1;
             const QString group_sid = user_sid_string.left(cut_index) + group_rid;
 
+            const QString base = g_adconfig->domain_head();
+            const SearchScope scope = SearchScope_All;
             const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, group_sid);
-            const QHash<QString, AdObject> result = ad.search(filter, QList<QString>(), SearchScope_All);
+            const QList<QString> attributes = QList<QString>();
+            const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
-            if (!result.isEmpty()) {
-                const QString group_dn = result.values()[0].get_dn();
+            if (!results.isEmpty()) {
+                const QString group_dn = results.values()[0].get_dn();
                 original_primary_values.insert(group_dn);
             }
 

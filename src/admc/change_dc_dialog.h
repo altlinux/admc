@@ -17,33 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADMC_TEST_SEARCH_BASE_WIDGET_H
-#define ADMC_TEST_SEARCH_BASE_WIDGET_H
+#ifndef CHANGE_DC_DIALOG_H
+#define CHANGE_DC_DIALOG_H
 
-#include "admc_test.h"
+/**
+ * Dialog that allows user to change the domain controller.
+ */
 
-class QComboBox;
-class QPushButton;
-class SearchBaseWidget;
+#include <QDialog>
 
-class ADMCTestSearchBaseWidget : public ADMCTest {
+class QStandardItem;
+class QListWidget;
+class QCheckBox;
+
+class ChangeDCDialog : public QDialog {
 Q_OBJECT
 
-private slots:
-    void init() override;
+public:
+    ChangeDCDialog(QStandardItem *domain_head_item, QWidget *parent);
 
-    void default_to_domain_head();
-    void select_search_base();
-    void select_search_base_multiple();
-    void save_state();
+    void accept() override;
 
 private:
-    SearchBaseWidget *search_base_widget;
-    QComboBox *combo;
-    QPushButton *browse_button;
-    QList<QString> dn_list;
-
-    void add_search_base(const QString &dn);
+    QListWidget *list_widget;
+    QStandardItem *domain_head_item;
+    QCheckBox *save_dc_checkbox;
 };
 
-#endif /* ADMC_TEST_SEARCH_BASE_WIDGET_H */
+#endif /* CHANGE_DC_DIALOG_H */

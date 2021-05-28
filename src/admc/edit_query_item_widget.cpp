@@ -22,7 +22,7 @@
 #include "ad_filter.h"
 #include "console_types/console_query.h"
 #include "filter_widget/filter_widget.h"
-#include "filter_widget/search_base_widget.h"
+#include "filter_widget/select_base_widget.h"
 
 #include <QLineEdit>
 #include <QTextEdit>
@@ -38,7 +38,7 @@ EditQueryItemWidget::EditQueryItemWidget()
 {
     setMinimumWidth(400);
 
-    search_base_widget = new SearchBaseWidget();
+    select_base_widget = new SelectBaseWidget();
 
     filter_widget = new FilterWidget(filter_classes);
 
@@ -68,7 +68,7 @@ EditQueryItemWidget::EditQueryItemWidget()
     auto form_layout = new QFormLayout();
     form_layout->addRow(tr("Name:"), name_edit);
     form_layout->addRow(tr("Description:"), description_edit);
-    form_layout->addRow(tr("Search in:"), search_base_widget);
+    form_layout->addRow(tr("Search in:"), select_base_widget);
     form_layout->addRow(scope_checkbox);
     form_layout->addRow(new QLabel(tr("Filter:")));
     form_layout->addRow(filter_display);
@@ -98,10 +98,10 @@ void EditQueryItemWidget::load(const QModelIndex &index) {
     QHash<QString, QVariant> state;
     filter_state_stream >> state;
 
-    const QHash<QString, QVariant> search_base_widget_state = state["search_base_widget"].toHash();
+    const QHash<QString, QVariant> select_base_widget_state = state["select_base_widget"].toHash();
     const QHash<QString, QVariant> filter_widget_state = state["filter_widget"].toHash();
 
-    search_base_widget->load_state(search_base_widget_state);
+    select_base_widget->load_state(select_base_widget_state);
     filter_widget->load_state(filter_widget_state);
 
     update_filter_display();
@@ -116,23 +116,23 @@ void EditQueryItemWidget::load(const QModelIndex &index) {
     scope_checkbox->setChecked(!scope_is_children);
 }
 
-void EditQueryItemWidget::save(QString &name, QString &description, QString &filter, QString &search_base, bool &scope_is_children, QByteArray &filter_state) const {
+void EditQueryItemWidget::save(QString &name, QString &description, QString &filter, QString &base, bool &scope_is_children, QByteArray &filter_state) const {
     name = name_edit->text();
     description = description_edit->text();
     filter = filter_widget->get_filter();
-    search_base = search_base_widget->get_search_base();
+    base = select_base_widget->get_base();
     scope_is_children = !scope_checkbox->isChecked();
 
     filter_state =
     [&]() {
-        QHash<QString, QVariant> search_base_widget_state;
+        QHash<QString, QVariant> select_base_widget_state;
         QHash<QString, QVariant> filter_widget_state;
 
-        search_base_widget->save_state(search_base_widget_state);
+        select_base_widget->save_state(select_base_widget_state);
         filter_widget->save_state(filter_widget_state);
 
         QHash<QString, QVariant> state;
-        state["search_base_widget"] = search_base_widget_state;
+        state["select_base_widget"] = select_base_widget_state;
         state["filter_widget"] = filter_widget_state;
         state["filter"] = filter;
 

@@ -17,33 +17,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SEARCH_BASE_WIDGET_H
-#define SEARCH_BASE_WIDGET_H
+#ifndef ADMC_TEST_SELECT_BASE_WIDGET_H
+#define ADMC_TEST_SELECT_BASE_WIDGET_H
 
-/**
- * Allows user to select a search base object.
- */
-
-#include <QWidget>
+#include "admc_test.h"
 
 class QComboBox;
-class QString;
+class QPushButton;
+class SelectBaseWidget;
 
-class SearchBaseWidget final : public QWidget {
+class ADMCTestSelectBaseWidget : public ADMCTest {
 Q_OBJECT
 
-public:
-    SearchBaseWidget(const QString &default_search_base = QString());
+private slots:
+    void init() override;
 
-    QString get_search_base() const;
-
-    void save_state(QHash<QString, QVariant> &state) const;
-    void load_state(const QHash<QString, QVariant> &state);
+    void default_to_domain_head();
+    void select_base();
+    void select_base_multiple();
+    void save_state();
 
 private:
+    SelectBaseWidget *select_base_widget;
     QComboBox *combo;
+    QPushButton *browse_button;
+    QList<QString> dn_list;
 
-    void browse();
+    void add_base(const QString &dn);
 };
 
-#endif /* SEARCH_BASE_WIDGET_H */
+#endif /* ADMC_TEST_SELECT_BASE_WIDGET_H */
