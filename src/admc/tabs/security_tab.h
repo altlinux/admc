@@ -29,12 +29,64 @@ class QStandardItemModel;
 class QStandardItem;
 class QLabel;
 
+enum AceColumn {
+    AceColumn_Name,
+    AceColumn_Allowed,
+    AceColumn_Denied,
+
+    AceColumn_COUNT,
+};
+
+enum AcePermissionItemRole {
+    AcePermissionItemRole_Permission = Qt::UserRole,
+};
+
+enum AcePermission {
+    AcePermission_FullControl,
+    AcePermission_Read,
+    AcePermission_Write,
+    AcePermission_CreateChild,
+    AcePermission_DeleteChild,
+    AcePermission_AllowedToAuthenticate,
+    AcePermission_ChangePassword,
+    AcePermission_ReceiveAs,
+    AcePermission_ResetPassword,
+    AcePermission_SendAs,
+    AcePermission_ReadAccountRestrictions,
+    AcePermission_WriteAccountRestrictions,
+    AcePermission_ReadGeneralInfo,
+    AcePermission_WriteGeneralInfo,
+    AcePermission_ReadGroupMembership,
+    AcePermission_ReadLogonInfo,
+    AcePermission_WriteLogonInfo,
+    AcePermission_ReadPersonalInfo,
+    AcePermission_WritePersonalInfo,
+    AcePermission_ReadPhoneAndMailOptions,
+    AcePermission_WritePhoneAndMailOptions,
+    AcePermission_ReadPrivateInfo,
+    AcePermission_WritePrivateInfo,
+    AcePermission_ReadPublicInfo,
+    AcePermission_WritePublicInfo,
+    AcePermission_ReadRemoteAccessInfo,
+    AcePermission_WriteRemoteAccessInfo,
+    AcePermission_ReadTerminalServerLicenseServer,
+    AcePermission_WriteTerminalServerLicenseServer,
+    AcePermission_ReadWebInfo,
+    AcePermission_WriteWebInfo,
+    
+    AcePermission_COUNT,
+};
+
+extern const QHash<AcePermission, uint32_t> ace_permission_to_mask_map;
+
 class SecurityTab final : public PropertiesTab {
 Q_OBJECT
 
 public:
     SecurityTab();
     void load(AdInterface &ad, const AdObject &object) override;
+
+    QStandardItemModel *get_ace_model() const;
 
 private slots:
     void load_trustee_acl();

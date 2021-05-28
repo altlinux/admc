@@ -36,58 +36,10 @@ enum TrusteeItemRole {
     TrusteeItemRole_SidRaw = Qt::UserRole + 1,
 };
 
-enum AcePermissionItemRole {
-    AcePermissionItemRole_Permission = Qt::UserRole,
-};
-
-enum AceColumn {
-    AceColumn_Name,
-    AceColumn_Allowed,
-    AceColumn_Denied,
-
-    AceColumn_COUNT,
-};
-
 enum PermissionState {
     PermissionState_None,
     PermissionState_Allowed,
     PermissionState_Denied,
-};
-
-enum AcePermission {
-    AcePermission_FullControl,
-    AcePermission_Read,
-    AcePermission_Write,
-    AcePermission_CreateChild,
-    AcePermission_DeleteChild,
-    AcePermission_AllowedToAuthenticate,
-    AcePermission_ChangePassword,
-    AcePermission_ReceiveAs,
-    AcePermission_ResetPassword,
-    AcePermission_SendAs,
-    AcePermission_ReadAccountRestrictions,
-    AcePermission_WriteAccountRestrictions,
-    AcePermission_ReadGeneralInfo,
-    AcePermission_WriteGeneralInfo,
-    AcePermission_ReadGroupMembership,
-    AcePermission_ReadLogonInfo,
-    AcePermission_WriteLogonInfo,
-    AcePermission_ReadPersonalInfo,
-    AcePermission_WritePersonalInfo,
-    AcePermission_ReadPhoneAndMailOptions,
-    AcePermission_WritePhoneAndMailOptions,
-    AcePermission_ReadPrivateInfo,
-    AcePermission_WritePrivateInfo,
-    AcePermission_ReadPublicInfo,
-    AcePermission_WritePublicInfo,
-    AcePermission_ReadRemoteAccessInfo,
-    AcePermission_WriteRemoteAccessInfo,
-    AcePermission_ReadTerminalServerLicenseServer,
-    AcePermission_WriteTerminalServerLicenseServer,
-    AcePermission_ReadWebInfo,
-    AcePermission_WriteWebInfo,
-    
-    AcePermission_COUNT,
 };
 
 #define ENUM_TO_STRING(ENUM) {ENUM, #ENUM}
@@ -214,6 +166,23 @@ SecurityTab::SecurityTab() {
         {AceColumn_Allowed, tr("Allowed")},
         {AceColumn_Denied, tr("Denied")},
     });
+
+    // Fill ace model
+    for (int permission_i = 0; permission_i < AcePermission_COUNT; permission_i++) {
+        const AcePermission permission = (AcePermission) permission_i;
+
+        const QList<QStandardItem *> row = make_item_row(AceColumn_COUNT);
+
+        const QString mask_string = ace_permission_to_name_map[permission];
+        row[AceColumn_Name]->setText(mask_string);
+
+        row[AceColumn_Allowed]->setCheckable(true);
+        row[AceColumn_Denied]->setCheckable(true);
+
+        row[0]->setData(permission, AcePermissionItemRole_Permission);
+
+        ace_model->appendRow(row);
+    }
     
     ace_view = new QTreeView(this);
     ace_view->setModel(ace_model);
@@ -268,6 +237,10 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     PropertiesTab::load(ad, object);
 }
 
+QStandardItemModel *SecurityTab::get_ace_model() const {
+    return ace_model;
+}
+
 void SecurityTab::load_trustee_acl() {
     AdInterface ad;
     if (ad_failed(ad)) {
@@ -293,8 +266,6 @@ void SecurityTab::load_trustee_acl() {
     const QString trustee = selected_item->data(TrusteeItemRole_Sid).toString();
 
     selected_trustee_label->setText(label_text);
-
-    ace_model->removeRows(0, ace_model->rowCount());
 
     const QHash<AcePermission, PermissionState> permission_state_map =
     [&]() {
@@ -374,33 +345,36 @@ void SecurityTab::load_trustee_acl() {
         return out;
     }();
     
-    for (int permission_i = 0; permission_i < AcePermission_COUNT; permission_i++) {
-        const AcePermission permission = (AcePermission) permission_i;
+    for (int row = 0; row < ace_model->rowCount(); row++) {
+        QStandardItem *allowed = ace_model->item(row, AceColumn_Allowed);
+        QStandardItem *denied = ace_model->item(row, AceColumn_Denied);
 
-        const QList<QStandardItem *> row = make_item_row(AceColumn_COUNT);
+        const PermissionState permission_state =
+        [&]() {
+            QStandardItem *main_item = ace_model->item(row, 0);
+            const AcePermission permission = (AcePermission) main_item->data(AcePermissionItemRole_Permission).toInt();
+            const PermissionState out = permission_state_map[permission];
 
-        const QString mask_string = ace_permission_to_name_map[permission];
-        row[AceColumn_Name]->setText(mask_string);
+            return out;
+        }();
 
-        row[AceColumn_Allowed]->setCheckable(true);
-        row[AceColumn_Denied]->setCheckable(true);
-
-        const PermissionState permission_state = permission_state_map[permission];
         switch (permission_state) {
-            case PermissionState_None: break;
+            case PermissionState_None: {
+                allowed->setCheckState(Qt::Unchecked);
+                denied->setCheckState(Qt::Unchecked);
+                break;
+            };
             case PermissionState_Allowed: {
-                row[AceColumn_Allowed]->setCheckState(Qt::Checked);
+                allowed->setCheckState(Qt::Checked);
+                denied->setCheckState(Qt::Unchecked);
                 break;
             }
             case PermissionState_Denied: {
-                row[AceColumn_Denied]->setCheckState(Qt::Checked);
+                allowed->setCheckState(Qt::Unchecked);
+                denied->setCheckState(Qt::Checked);
                 break;
             }
         }
-
-        row[0]->setData(permission, AcePermissionItemRole_Permission);
-
-        ace_model->appendRow(row);
     }
 
     sd.print_acl(trustee);
