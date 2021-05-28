@@ -41,6 +41,12 @@ enum AcePermissionItemRole {
     AcePermissionItemRole_Permission = Qt::UserRole,
 };
 
+enum PermissionState {
+    PermissionState_None,
+    PermissionState_Allowed,
+    PermissionState_Denied,
+};
+
 enum AcePermission {
     AcePermission_FullControl,
     AcePermission_Read,
@@ -88,6 +94,7 @@ Q_OBJECT
 public:
     SecurityTab();
     void load(AdInterface &ad, const AdObject &object) override;
+    bool apply(AdInterface &ad, const QString &target) override;
 
     QStandardItemModel *get_ace_model() const;
     void set_permission_state(const QSet<AcePermission> &permission_list, const AceColumn column, const Qt::CheckState state);
@@ -105,7 +112,7 @@ private:
     QLabel *selected_trustee_label;
     SecurityDescriptor sd;
     QHash<AcePermission, QHash<AceColumn, QStandardItem *>> permission_item_map;
-
+    QHash<QString, QHash<AcePermission, PermissionState>> permission_state_map;
 };
 
 #endif /* SECURITY_TAB_H */

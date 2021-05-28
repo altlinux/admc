@@ -36,12 +36,6 @@ enum TrusteeItemRole {
     TrusteeItemRole_SidRaw = Qt::UserRole + 1,
 };
 
-enum PermissionState {
-    PermissionState_None,
-    PermissionState_Allowed,
-    PermissionState_Denied,
-};
-
 #define ENUM_TO_STRING(ENUM) {ENUM, #ENUM}
 
 const QHash<AcePermission, QString> ace_permission_to_name_map = {
@@ -275,6 +269,84 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
         item->setData(trustee_string, TrusteeItemRole_Sid);
 
         trustee_model->appendRow(item);
+
+        permission_state_map[trustee_string] =
+        [&]() {
+            QHash<AcePermission, PermissionState> out;
+
+            const QList<security_ace *> ace_list = sd.get_ace_list(trustee_string);
+
+            for (security_ace *ace : ace_list) {
+                const uint32_t ace_mask = ace->access_mask;
+
+                for (int permission_i = 0; permission_i < AcePermission_COUNT; permission_i++) {
+                    const AcePermission permission = (AcePermission) permission_i;
+
+                    if (!ace_permission_to_mask_map.contains(permission)) {
+                        continue;
+                    }
+
+                    const uint32_t permission_mask = ace_permission_to_mask_map[permission];
+
+                    const bool mask_match = ((ace_mask & permission_mask) == permission_mask);
+                    if (!mask_match) {
+                        continue;
+                    }
+
+                    const bool object_match =
+                    [&]() {
+                        const bool object_present = ((ace->object.object.flags & SEC_ACE_OBJECT_TYPE_PRESENT) != 0);
+                        if (!object_present) {
+                            return false;
+                        }
+
+                        const QString rights_guid =
+                        [&]() {
+                            const QString right_cn = ace_permission_to_type_map[permission];
+                            const QString guid_out =  g_adconfig->get_right_guid(right_cn);
+
+                            return guid_out;
+                        }();
+
+                        const QString ace_type_guid =
+                        [&]() {
+                            const GUID type = ace->object.object.type.type;
+                            const QByteArray type_bytes = QByteArray((char *) &type, sizeof(GUID));
+
+                            return attribute_display_value(ATTRIBUTE_OBJECT_GUID, type_bytes, g_adconfig);
+                        }();
+
+                        return (rights_guid.toLower() == ace_type_guid.toLower());
+                    }();
+
+                    switch (ace->type) {
+                        case SEC_ACE_TYPE_ACCESS_ALLOWED: {
+                            out[permission] = PermissionState_Allowed;
+                            break;
+                        }
+                        case SEC_ACE_TYPE_ACCESS_DENIED: {
+                            out[permission] = PermissionState_Denied;
+                            break;
+                        }
+                        case SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT: {
+                            if (object_match) {
+                                out[permission] = PermissionState_Allowed;
+                            }
+                            break;
+                        }
+                        case SEC_ACE_TYPE_ACCESS_DENIED_OBJECT: {
+                            if (object_match) {
+                                out[permission] = PermissionState_Denied;
+                            }
+                            break;
+                        }
+                        default: break;
+                    }
+                }
+            }
+
+            return out;
+        }();
     }
 
     trustee_model->sort(0, Qt::AscendingOrder);
@@ -316,84 +388,6 @@ void SecurityTab::load_trustee_acl() {
     const QString trustee = selected_item->data(TrusteeItemRole_Sid).toString();
 
     selected_trustee_label->setText(label_text);
-
-    const QHash<AcePermission, PermissionState> permission_state_map =
-    [&]() {
-        QHash<AcePermission, PermissionState> out;
-
-        const QList<security_ace *> ace_list = sd.get_ace_list(trustee);
-
-        for (security_ace *ace : ace_list) {
-            const uint32_t ace_mask = ace->access_mask;
-
-            for (int permission_i = 0; permission_i < AcePermission_COUNT; permission_i++) {
-                const AcePermission permission = (AcePermission) permission_i;
-
-                if (!ace_permission_to_mask_map.contains(permission)) {
-                    continue;
-                }
-
-                const uint32_t permission_mask = ace_permission_to_mask_map[permission];
-
-                const bool mask_match = ((ace_mask & permission_mask) == permission_mask);
-                if (!mask_match) {
-                    continue;
-                }
-
-                const bool object_match =
-                [&]() {
-                    const bool object_present = ((ace->object.object.flags & SEC_ACE_OBJECT_TYPE_PRESENT) != 0);
-                    if (!object_present) {
-                        return false;
-                    }
-
-                    const QString rights_guid =
-                    [&]() {
-                        const QString right_cn = ace_permission_to_type_map[permission];
-                        const QString guid_out =  g_adconfig->get_right_guid(right_cn);
-
-                        return guid_out;
-                    }();
-
-                    const QString ace_type_guid =
-                    [&]() {
-                        const GUID type = ace->object.object.type.type;
-                        const QByteArray type_bytes = QByteArray((char *) &type, sizeof(GUID));
-
-                        return attribute_display_value(ATTRIBUTE_OBJECT_GUID, type_bytes, g_adconfig);
-                    }();
-
-                    return (rights_guid.toLower() == ace_type_guid.toLower());
-                }();
-
-                switch (ace->type) {
-                    case SEC_ACE_TYPE_ACCESS_ALLOWED: {
-                        out[permission] = PermissionState_Allowed;
-                        break;
-                    }
-                    case SEC_ACE_TYPE_ACCESS_DENIED: {
-                        out[permission] = PermissionState_Denied;
-                        break;
-                    }
-                    case SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT: {
-                        if (object_match) {
-                            out[permission] = PermissionState_Allowed;
-                        }
-                        break;
-                    }
-                    case SEC_ACE_TYPE_ACCESS_DENIED_OBJECT: {
-                        if (object_match) {
-                            out[permission] = PermissionState_Denied;
-                        }
-                        break;
-                    }
-                    default: break;
-                }
-            }
-        }
-
-        return out;
-    }();
     
     for (int row = 0; row < ace_model->rowCount(); row++) {
         QStandardItem *allowed = ace_model->item(row, AceColumn_Allowed);
@@ -403,7 +397,7 @@ void SecurityTab::load_trustee_acl() {
         [&]() {
             QStandardItem *main_item = ace_model->item(row, 0);
             const AcePermission permission = (AcePermission) main_item->data(AcePermissionItemRole_Permission).toInt();
-            const PermissionState out = permission_state_map[permission];
+            const PermissionState out = permission_state_map[trustee][permission];
 
             return out;
         }();
@@ -512,6 +506,41 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
 
     ace_model->blockSignals(false);
 
+    const QString trustee =
+    [&]() {
+        const QModelIndex current_index = trustee_view->currentIndex();
+        QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
+        const QString out = current_item->data(TrusteeItemRole_Sid).toString();
+
+        return out;
+    }();
+
+    // Update permission_state_map
+    permission_state_map[trustee] =
+    [this]() {
+        QHash<AcePermission, PermissionState> out;
+
+        for (const AcePermission &this_permission : all_permissions) {
+            out[this_permission] =
+            [&]() {
+                QStandardItem *allowed_item = get_item(this_permission, AceColumn_Allowed);
+                QStandardItem *denied_item = get_item(this_permission, AceColumn_Denied);
+                const bool allowed = (allowed_item->checkState() == Qt::Checked);
+                const bool denied = (denied_item->checkState() == Qt::Checked);
+
+                if (allowed) {
+                    return PermissionState_Allowed;
+                } else if (denied) {
+                    return PermissionState_Denied;
+                } else {
+                    return PermissionState_None;
+                }
+            }();
+        }
+
+        return out;
+    }();
+
     emit edited();
 }
 
@@ -524,4 +553,8 @@ void SecurityTab::set_permission_state(const QSet<AcePermission> &permission_set
         QStandardItem *item = get_item(permission, column);
         item->setCheckState(state);
     }
+}
+
+bool SecurityTab::apply(AdInterface &ad, const QString &target) {
+    return true;
 }
