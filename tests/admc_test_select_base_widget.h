@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADMC_TEST_SEARCH_BASE_WIDGET_H
-#define ADMC_TEST_SEARCH_BASE_WIDGET_H
+#ifndef ADMC_TEST_SELECT_BASE_WIDGET_H
+#define ADMC_TEST_SELECT_BASE_WIDGET_H
 
 #include "admc_test.h"
 
@@ -46,4 +46,4 @@ private:
     void add_base(const QString &dn);
 };
 
-#endif /* ADMC_TEST_SEARCH_BASE_WIDGET_H */
+#endif /* ADMC_TEST_SELECT_BASE_WIDGET_H */
