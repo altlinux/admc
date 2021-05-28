@@ -77,7 +77,10 @@ enum AcePermission {
     AcePermission_COUNT,
 };
 
-extern const QHash<AcePermission, uint32_t> ace_permission_to_mask_map;
+extern const QSet<AcePermission> all_permissions;
+extern const QSet<AcePermission> access_permissions;
+extern const QSet<AcePermission> read_prop_permissions;
+extern const QSet<AcePermission> write_prop_permissions;
 
 class SecurityTab final : public PropertiesTab {
 Q_OBJECT
@@ -87,6 +90,8 @@ public:
     void load(AdInterface &ad, const AdObject &object) override;
 
     QStandardItemModel *get_ace_model() const;
+    void set_permission_state(const QSet<AcePermission> &permission_list, const AceColumn column, const Qt::CheckState state);
+    QStandardItem *get_item(const AcePermission permission, const AceColumn column);
 
 private slots:
     void load_trustee_acl();
@@ -99,6 +104,8 @@ private:
     QStandardItemModel *ace_model;
     QLabel *selected_trustee_label;
     SecurityDescriptor sd;
+    QHash<AcePermission, QHash<AceColumn, QStandardItem *>> permission_item_map;
+
 };
 
 #endif /* SECURITY_TAB_H */

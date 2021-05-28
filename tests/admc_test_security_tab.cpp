@@ -28,75 +28,11 @@
 #include <QTreeView>
 #include <QStandardItemModel>
 
-void set_checked(QStandardItem *item, const bool checked);
-bool is_checked(QStandardItem *item);
-
-void ADMCTestSecurityTab::initTestCase() {
-    ADMCTest::initTestCase();
-
-    all_permissions =
-    []() {
-        QSet<AcePermission> out;
-
-        for (int permission_i = 0; permission_i < AcePermission_COUNT; permission_i++) {
-            const AcePermission permission = (AcePermission) permission_i;
-            out.insert(permission);
-        }
-
-        return out;
-    }();
-
-    for (const AcePermission &permission : all_permissions) {
-        const uint32_t mask = ace_permission_to_mask_map[permission];
-
-        switch (mask) {
-            case SEC_ADS_CONTROL_ACCESS: {
-                access_permissions.insert(permission);
-
-                break;
-            }
-            case SEC_ADS_READ_PROP: {
-                read_prop_permissions.insert(permission);
-
-                break;
-            }
-            case SEC_ADS_WRITE_PROP: {
-                write_prop_permissions.insert(permission);
-
-                break;
-            }
-            default: break;
-        }
-    }
-}
-
 void ADMCTestSecurityTab::init() {
     ADMCTest::init();
 
     security_tab = new SecurityTab();
     ace_model = security_tab->get_ace_model();
-
-    permission_item_map =
-    [&]() {
-        QHash<AcePermission, QHash<AceColumn, QStandardItem *>> out;
-
-        for (int row = 0; row < ace_model->rowCount(); row++) {
-            QStandardItem *main_item = ace_model->item(row, 0);
-            const AcePermission permission = (AcePermission) main_item->data(AcePermissionItemRole_Permission).toInt();
-
-            const QList<AceColumn> column_list = {
-                AceColumn_Allowed,
-                AceColumn_Denied,
-            };
-
-            for (const AceColumn &column : column_list) {
-                QStandardItem *item = ace_model->item(row, column);
-                out[permission][column] = item;
-            }
-        }
-
-        return out;
-    }();
 
     // Create test user
     const QString name = TEST_USER;
@@ -135,11 +71,11 @@ void ADMCTestSecurityTab::allow_then_deny() {
     // NOTE: permission doesn't matter, just picked some random one
     const AcePermission permission = AcePermission_SendAs;
 
-    set_state(permission, AceColumn_Allowed, true);
+    security_tab->set_permission_state({permission}, AceColumn_Allowed, Qt::Checked);
 
     QVERIFY(state_is({permission}, {AceColumn_Allowed}));
 
-    set_state(permission, AceColumn_Denied, true);
+    security_tab->set_permission_state({permission}, AceColumn_Denied, Qt::Checked);
     QVERIFY(state_is({permission}, {AceColumn_Denied}));
 }
 
@@ -147,7 +83,9 @@ void ADMCTestSecurityTab::allow_then_deny() {
 void ADMCTestSecurityTab::allow_full() {
     uncheck_all_permissions();
 
-    set_state(AcePermission_FullControl, AceColumn_Allowed, true);
+    QVERIFY(state_is({all_permissions}, {}));
+    
+    security_tab->set_permission_state({AcePermission_FullControl}, AceColumn_Allowed, Qt::Checked);
 
     QVERIFY(state_is({all_permissions}, {AceColumn_Allowed}));
 }
@@ -157,8 +95,8 @@ void ADMCTestSecurityTab::allow_full() {
 void ADMCTestSecurityTab::allow_full_deny_read() {
     uncheck_all_permissions();
 
-    set_state(AcePermission_FullControl, AceColumn_Allowed, true);
-    set_state(AcePermission_Read, AceColumn_Denied, true);
+    security_tab->set_permission_state({AcePermission_FullControl}, AceColumn_Allowed, Qt::Checked);
+    security_tab->set_permission_state({AcePermission_Read}, AceColumn_Denied, Qt::Checked);
 
     QVERIFY(state_is({AcePermission_FullControl}, {}));
     QVERIFY(state_is(access_permissions, {AceColumn_Allowed}));
@@ -173,8 +111,8 @@ void ADMCTestSecurityTab::allow_full_deny_read() {
 void ADMCTestSecurityTab::allow_full_uncheck_read() {
     uncheck_all_permissions();
 
-    set_state(AcePermission_FullControl, AceColumn_Allowed, true);
-    set_state(AcePermission_Read, AceColumn_Allowed, false);
+    security_tab->set_permission_state({AcePermission_FullControl}, AceColumn_Allowed, Qt::Checked);
+    security_tab->set_permission_state({AcePermission_Read}, AceColumn_Allowed, Qt::Unchecked);
 
     QVERIFY(state_is({AcePermission_FullControl}, {}));
     QVERIFY(state_is(access_permissions, {AceColumn_Allowed}));
@@ -189,8 +127,8 @@ void ADMCTestSecurityTab::allow_full_uncheck_read() {
 void ADMCTestSecurityTab::allow_read_uncheck_read_prop() {
     uncheck_all_permissions();
 
-    set_state(AcePermission_Read, AceColumn_Allowed, true);
-    set_state(AcePermission_ReadWebInfo, AceColumn_Allowed, false);
+    security_tab->set_permission_state({AcePermission_Read}, AceColumn_Allowed, Qt::Checked);
+    security_tab->set_permission_state({AcePermission_ReadWebInfo}, AceColumn_Allowed, Qt::Unchecked);
 
     QVERIFY(state_is({AcePermission_Read}, {}));
 
@@ -202,8 +140,8 @@ void ADMCTestSecurityTab::allow_read_uncheck_read_prop() {
 void ADMCTestSecurityTab::allow_read_deny_read_prop() {
     uncheck_all_permissions();
 
-    set_state(AcePermission_Read, AceColumn_Allowed, true);
-    set_state(AcePermission_ReadWebInfo, AceColumn_Denied, true);
+    security_tab->set_permission_state({AcePermission_Read}, AceColumn_Allowed, Qt::Checked);
+    security_tab->set_permission_state({AcePermission_ReadWebInfo}, AceColumn_Denied, Qt::Checked);
 
     QVERIFY(state_is({AcePermission_Read}, {}));
     QVERIFY(state_is({AcePermission_ReadWebInfo}, {AceColumn_Denied}));
@@ -212,30 +150,8 @@ void ADMCTestSecurityTab::allow_read_deny_read_prop() {
 }
 
 void ADMCTestSecurityTab::uncheck_all_permissions() {
-    for (const AcePermission &permission : all_permissions) {
-        QStandardItem *allowed = permission_item_map[permission][AceColumn_Allowed];
-        QStandardItem *denied = permission_item_map[permission][AceColumn_Denied];
-
-        set_checked(allowed, false);
-        set_checked(denied, false);
-    }
-}
-
-void set_checked(QStandardItem *item, const bool checked) {
-    const Qt::CheckState state =
-    [&]() {
-        if (checked) {
-            return Qt::Checked;
-        } else {
-            return Qt::Unchecked;
-        }
-    }();
-
-    item->setCheckState(state);
-}
-
-bool is_checked(QStandardItem *item) {
-    return (item->checkState() == Qt::Checked);
+    security_tab->set_permission_state(all_permissions, AceColumn_Allowed, Qt::Unchecked);
+    security_tab->set_permission_state(all_permissions, AceColumn_Denied, Qt::Unchecked);
 }
 
 bool ADMCTestSecurityTab::state_is(const QSet<AcePermission> &permission_list, const QSet<AceColumn> &checked_columns) const {
@@ -246,24 +162,21 @@ bool ADMCTestSecurityTab::state_is(const QSet<AcePermission> &permission_list, c
         };
 
         for (const AceColumn &column : column_list) {
-            QStandardItem *item = permission_item_map[permission][column];
+            QStandardItem *item = security_tab->get_item(permission, column);
 
             const bool should_be_checked = checked_columns.contains(column);
-            const bool state_is_correct = (is_checked(item) == should_be_checked);
+            const bool is_checked = (item->checkState() == Qt::Checked);
+            const bool state_is_correct = (is_checked == should_be_checked);
 
             if (!state_is_correct) {
+                qInfo() << permission << column << should_be_checked << is_checked;
+
                 return false;
             }
         }
     }
 
     return true;
-}
-
-void ADMCTestSecurityTab::set_state(const AcePermission permission, const AceColumn column, const bool checked) {
-    QStandardItem *item = permission_item_map[permission][column];
-
-    set_checked(item, checked);
 }
 
 QTEST_MAIN(ADMCTestSecurityTab)

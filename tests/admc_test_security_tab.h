@@ -31,7 +31,6 @@ class ADMCTestSecurityTab : public ADMCTest {
 Q_OBJECT
 
 private slots:
-    void initTestCase() override;
     void init() override;
 
     void allow_then_deny();
@@ -44,15 +43,11 @@ private slots:
 private:
     SecurityTab *security_tab;
     QStandardItemModel *ace_model;
-    QHash<AcePermission, QHash<AceColumn, QStandardItem *>> permission_item_map;
-    QSet<AcePermission> all_permissions;
-    QSet<AcePermission> access_permissions;
-    QSet<AcePermission> read_prop_permissions;
-    QSet<AcePermission> write_prop_permissions;
 
     void uncheck_all_permissions();
     bool state_is(const QSet<AcePermission> &permission_list, const QSet<AceColumn> &checked_columns) const;
-    void set_state(const AcePermission permission, const AceColumn column, const bool checked);
+
+
 };
 
 #endif /* ADMC_TEST_SECURITY_TAB_H */

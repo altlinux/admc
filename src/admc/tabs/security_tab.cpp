@@ -150,6 +150,36 @@ const QHash<AcePermission, QString> ace_permission_to_type_map = {
     {AcePermission_WriteWebInfo, "Web-Information"}
 };
 
+const QSet<AcePermission> all_permissions =
+[]() {
+    QSet<AcePermission> out;
+
+    for (int permission_i = 0; permission_i < AcePermission_COUNT; permission_i++) {
+        const AcePermission permission = (AcePermission) permission_i;
+        out.insert(permission);
+    }
+
+    return out;
+}();
+
+QSet<AcePermission> get_permission_set(const uint32_t mask) {
+    QSet<AcePermission> out;
+
+    for (const AcePermission &permission : all_permissions) {
+        const uint32_t this_mask = ace_permission_to_mask_map[permission];
+
+        if (this_mask == mask) {
+            out.insert(permission);
+        }
+    }
+
+    return out;
+}
+
+const QSet<AcePermission> access_permissions = get_permission_set(SEC_ADS_CONTROL_ACCESS);
+const QSet<AcePermission> read_prop_permissions = get_permission_set(SEC_ADS_READ_PROP);
+const QSet<AcePermission> write_prop_permissions = get_permission_set(SEC_ADS_WRITE_PROP);
+
 SecurityTab::SecurityTab() {
     trustee_model = new QStandardItemModel(0, 1, this);
     
@@ -183,12 +213,32 @@ SecurityTab::SecurityTab() {
 
         ace_model->appendRow(row);
     }
+
+    permission_item_map =
+    [&]() {
+        QHash<AcePermission, QHash<AceColumn, QStandardItem *>> out;
+
+        for (int row = 0; row < ace_model->rowCount(); row++) {
+            QStandardItem *main_item = ace_model->item(row, 0);
+            const AcePermission permission = (AcePermission) main_item->data(AcePermissionItemRole_Permission).toInt();
+
+            const QList<AceColumn> column_list = {
+                AceColumn_Allowed,
+                AceColumn_Denied,
+            };
+
+            for (const AceColumn &column : column_list) {
+                QStandardItem *item = ace_model->item(row, column);
+                out[permission][column] = item;
+            }
+        }
+
+        return out;
+    }();
     
     ace_view = new QTreeView(this);
     ace_view->setModel(ace_model);
     ace_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ace_view->sortByColumn(0, Qt::AscendingOrder);
-    ace_view->setSortingEnabled(true);
     ace_view->setColumnWidth(AceColumn_Name, 400);
 
     selected_trustee_label = new QLabel();
@@ -380,63 +430,10 @@ void SecurityTab::load_trustee_acl() {
     sd.print_acl(trustee);
 }
 
-// Permission states are interdependent. When the state of
-// some permission changes, we sometimes also need to change
-// the state of other permissions.
+// Permission check states are interdependent. When some
+// check states change we also need to change other check
+// states.
 void SecurityTab::on_item_changed(QStandardItem *item) {
-    // NOTE: First kind of dependence is opposite states for
-    // same permission. Allowed/Denied are exclusive to each
-    // other, both of them can't be checked at the same
-    // time. So if one of them becomes checked, the opposite
-    // one becomes unchecked.
-
-    // NOTE: Second kind of dependence is parent/child.
-    // There are 3 main "parent" checks: full control, read,
-    // write. All other ones depend on some of these 3. When
-    // a parent becomes checked in allowed or denied column,
-    // it's children will also become checked in the same
-    // column. When any of the children become unchecked in
-    // some column, their parent(s) also become unchecked in
-    // the same column. Parent/child relationship is based
-    // on permission masks. If a permission mask contains
-    // another mask, then these two permissions are
-    // parent/child to each other.
-
-    // NOTE: each time setCheckState() is called here,
-    // itemChanged() signal is emitted by the model which
-    // calls this f-n (item_changed()) again, since it is
-    // connected as a slot. This recursion is intended
-    // behavior and does useful work because it propagates
-    // some state changes automatically. For example, if
-    // "Read" becomes allowed, permissions that are children
-    // of "Read" also become allowed. If some of these
-    // children were previously denied, then denied is
-    // automatically unchecked in the recursion caused by
-    // setCheckState().
-
-    auto permission_is_parent =
-    [&](const int row_parent, const int row_child) {
-        auto get_mask =
-        [&](const int row) {
-            QStandardItem *row_item = ace_model->item(row, 0);
-            const AcePermission permission = (AcePermission) row_item->data(AcePermissionItemRole_Permission).toInt();
-            const uint32_t mask = ace_permission_to_mask_map[permission];
-
-            return mask;
-        };
-
-        // Mask "containing" another mask, means that the parent
-        // mask contains all of the bits of the child mask and
-        // that they are not equal to each other.
-        const uint32_t parent_mask = get_mask(row_parent);
-        const uint32_t child_mask = get_mask(row_child);
-        const bool parent_contains_child = ((parent_mask & child_mask) == child_mask);
-        const bool parent_is_not_child = (parent_mask != child_mask);
-        const bool out = (parent_contains_child && parent_is_not_child);
-
-        return out;
-    };
-
     const AceColumn column = (AceColumn) item->column();
 
     const bool incorrect_column = (column != AceColumn_Allowed && column != AceColumn_Denied);
@@ -444,49 +441,87 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
         return;
     }
 
-    const bool checked = (item->checkState() == Qt::Checked);
-    if (checked) {
-        // Uncheck opposite item. For example: if allowed is
-        // currently checked and you check denied, then
-        // allowed should become unchecked.
-        const AceColumn opposite_column =
-        [&]() {
-            if (column == AceColumn_Allowed) {
-                return AceColumn_Denied;
-            } else {
-                return AceColumn_Allowed;
-            }
-        }();
+    // NOTE: block signals for the duration of this f-n so
+    // that there's no recursion due to setCheckState()
+    // calls triggering more on_item_changed() slot calls.
+    ace_model->blockSignals(true);
 
-        QStandardItem *opposite_item = ace_model->item(item->row(), opposite_column);
-        opposite_item->setCheckState(Qt::Unchecked);
+    const AcePermission permission =
+    [&]() {
+        QStandardItem *main_item = ace_model->item(item->row(), 0);
+        const AcePermission out = (AcePermission) main_item->data(AcePermissionItemRole_Permission).toInt();
 
-        // Check permissions which are children of this
-        // permission. For example: if "Read" becomes
-        // checked, then all permissions that are for
-        // reading some property should become checked as
-        // well.
-        for (int row = 0; row < ace_model->rowCount(); row++) {
-            const bool this_is_parent = permission_is_parent(item->row(), row);
+        return out;
+    }();
 
-            if (this_is_parent) {
-                QStandardItem *other_item_check = ace_model->item(row, column);
-                other_item_check->setCheckState(Qt::Checked);
-            }
+    const AceColumn opposite_column =
+    [&]() {
+        if (column == AceColumn_Allowed) {
+            return AceColumn_Denied;
+        } else {
+            return AceColumn_Allowed;
         }
-    } else {
-        // Uncheck items which this item depends on. For
-        // example: if "Read email" becomes unchecked, then
-        // "Read" should become unchecked as well.
-        for (int row = 0; row < ace_model->rowCount(); row++) {
-            const bool this_is_child = permission_is_parent(row, item->row());
+    }();
 
-            if (this_is_child) {
-                QStandardItem *other_item_check = ace_model->item(row, column);
-                other_item_check->setCheckState(Qt::Unchecked);
-            }
+    const bool is_checked = (item->checkState() == Qt::Checked);
+
+    if (is_checked) {
+        // Uncheck opposite column to make Allowed/Denied exclusive to each other
+        set_permission_state({permission}, opposite_column, Qt::Unchecked);
+
+        // FullControl, Read and Write permissions cause
+        // their children permissions to become
+        // allowed/denied as well.
+        if (permission == AcePermission_FullControl) {
+            set_permission_state(all_permissions, column, Qt::Checked);
+            set_permission_state(all_permissions, opposite_column, Qt::Unchecked);
+        } else if (permission == AcePermission_Read) {
+            set_permission_state(read_prop_permissions, column, Qt::Checked);
+            set_permission_state(read_prop_permissions, opposite_column, Qt::Unchecked);
+        } else if (permission == AcePermission_Write) {
+            set_permission_state(write_prop_permissions, column, Qt::Checked);
+            set_permission_state(write_prop_permissions, opposite_column, Qt::Unchecked);
         }
     }
 
+    const QList<AcePermission> parent_permissions =
+    [&]() {
+        QList<AcePermission> out;
+
+        out.append(AcePermission_FullControl);
+
+        if (read_prop_permissions.contains(permission)) {
+            out.append(AcePermission_Read);
+        } else if (write_prop_permissions.contains(permission)) {
+            out.append(AcePermission_Write);
+        }
+
+        return out;
+    }();
+
+    // When children are unchecked or switch to opposite
+    // allowed/denied while their parent is checked, parent
+    // needs to become unchecked.
+    for (const AcePermission &parent_permission : parent_permissions) {
+        if (is_checked) {
+            set_permission_state({parent_permission}, opposite_column, Qt::Unchecked);
+        } else {
+            set_permission_state({parent_permission}, column, Qt::Unchecked);
+        }
+    }
+
+    ace_model->blockSignals(false);
+
     emit edited();
+}
+
+QStandardItem *SecurityTab::get_item(const AcePermission permission, const AceColumn column) {
+    return permission_item_map[permission][column];
+}
+
+void SecurityTab::set_permission_state(const QSet<AcePermission> &permission_set, const AceColumn column, const Qt::CheckState state) {
+    for (const AcePermission &permission : permission_set.values()) {
+        QStandardItem *item = get_item(permission, column);
+        item->setCheckState(state);
+    }
 }
