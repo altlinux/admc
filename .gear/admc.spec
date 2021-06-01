@@ -21,7 +21,6 @@ BuildRequires: samba-devel
 BuildRequires: libldap-devel
 BuildRequires: libsasl2-devel
 BuildRequires: libsmbclient-devel
-BuildRequires: libcmocka-devel
 BuildRequires: qt5-base-common
 BuildRequires: doxygen
 BuildRequires: libuuid-devel
