@@ -196,7 +196,7 @@ public:
     ~SecurityDescriptor();
 
     void load(const QByteArray &descriptor_bytes);
-    QList<QByteArray> get_trustee_order();
+    QList<QByteArray> get_trustee_list();
     QList<uint32_t> get_mask_list(AdInterface &ad, const QByteArray &trustee);
 
     TALLOC_CTX *tmp_ctx;
@@ -216,5 +216,6 @@ QString access_mask_string(const uint32_t access_mask);
 void edit_sd(TALLOC_CTX *mem_ctx, struct security_descriptor *old_sd);
 QString ace_to_string(security_ace *ace);
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
+QByteArray dom_sid_to_bytes(const dom_sid &sid);
 
 #endif /* AD_INTERFACE_H */

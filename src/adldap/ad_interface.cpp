@@ -67,7 +67,6 @@ typedef struct sasl_defaults_gssapi {
 QList<QString> query_server_for_hosts(const char *dname);
 bool ad_connect(const char* uri, LDAP **ld_out);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
-QByteArray dom_sid_to_bytes(const dom_sid &sid);
 
 AdConfig *AdInterfacePrivate::s_adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
@@ -1640,7 +1639,7 @@ void SecurityDescriptor::load(const QByteArray &descriptor_bytes) {
     edit_sd(tmp_ctx, data);
 }
 
-QList<QByteArray> SecurityDescriptor::get_trustee_order() {
+QList<QByteArray> SecurityDescriptor::get_trustee_list() {
     QSet<QByteArray> out;
 
     for (security_ace *ace : dacl) {
