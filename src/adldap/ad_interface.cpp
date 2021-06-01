@@ -1758,15 +1758,10 @@ void SecurityDescriptor::modify_sd(const QString &trustee, const SecurityModifyT
         }
 
         if (create_if_not_present) {
-            // TODO: kind of a duplicate of init_sec_ace()
-            // in samba's secace.c. Not sure if want to
-            // bother with importing that code though.
             security_ace *ace = (security_ace *) malloc(sizeof(security_ace));
             ace->type = type;
             ace->access_mask = 0;
             memcpy(&ace->trustee, &trustee_sid, sizeof(dom_sid));
-            const uint16_t sid_size = 8 + 4 * ace->trustee.num_auths; 
-            ace->size = sid_size + 8;
 
             dacl.append(ace);
 
