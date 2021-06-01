@@ -175,6 +175,8 @@ const QSet<AcePermission> read_prop_permissions = get_permission_set(SEC_ADS_REA
 const QSet<AcePermission> write_prop_permissions = get_permission_set(SEC_ADS_WRITE_PROP);
 
 SecurityTab::SecurityTab() {
+    ignore_item_changed_signal = false;
+    
     trustee_model = new QStandardItemModel(0, 1, this);
     
     trustee_view = new QTreeView(this);
@@ -388,6 +390,8 @@ void SecurityTab::load_trustee_acl() {
     const QString trustee = selected_item->data(TrusteeItemRole_Sid).toString();
 
     selected_trustee_label->setText(label_text);
+
+    ignore_item_changed_signal = true;
     
     for (int row = 0; row < ace_model->rowCount(); row++) {
         QStandardItem *allowed = ace_model->item(row, AceColumn_Allowed);
@@ -421,22 +425,29 @@ void SecurityTab::load_trustee_acl() {
         }
     }
 
+    ignore_item_changed_signal = false;
+
     sd.print_acl(trustee);
 }
-
-// NOTE: on_item_changed() is a slot that is connected to
-// ace_model's itemChanged() signal, so it gets called
-// recursively when QStandardItem::setCheckState() is called
-// (inside set_permission_state()). Can't call
-// blockSignals() on the model to avoid recursion because
-// itemChanged() signal is also used to update the GUI and
-// other things. This recursion also does the useful work of
-// recursively unchecking opposite columns.
 
 // Permission check states are interdependent. When some
 // check states change we also need to change other check
 // states.
 void SecurityTab::on_item_changed(QStandardItem *item) {
+    // NOTE: in some cases we need to ignore this signal
+    if (ignore_item_changed_signal) {
+        return;
+    }
+
+    // NOTE: set this flag to avoid recursion. Inside this
+    // function we call setCheckState() (via
+    // set_permission_state()), which triggers the
+    // itemChanged() signal. Note that using blockSignals()
+    // on the model is not a solution because turning off
+    // model's signals messes up the view (view uses model's
+    // signals to know when to update itself).
+    ignore_item_changed_signal = true;
+
     const AceColumn column = (AceColumn) item->column();
 
     const bool incorrect_column = (column != AceColumn_Allowed && column != AceColumn_Denied);
@@ -476,10 +487,13 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
         // allowed/denied as well.
         if (permission == AcePermission_FullControl) {
             set_permission_state(all_permissions, column, Qt::Checked);
+            set_permission_state(all_permissions, opposite_column, Qt::Unchecked);
         } else if (permission == AcePermission_Read) {
             set_permission_state(read_prop_permissions, column, Qt::Checked);
+            set_permission_state(read_prop_permissions, opposite_column, Qt::Unchecked);
         } else if (permission == AcePermission_Write) {
             set_permission_state(write_prop_permissions, column, Qt::Checked);
+            set_permission_state(write_prop_permissions, opposite_column, Qt::Unchecked);
         }
     }
 
@@ -543,6 +557,8 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
 
         return out;
     }();
+
+    ignore_item_changed_signal = false;
 
     emit edited();
 }
