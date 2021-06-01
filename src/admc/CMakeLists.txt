@@ -178,5 +178,5 @@ add_custom_target(admc_ts
 set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION ${CMAKE_CURRENT_SOURCE_DIR})
 qt5_add_translation(QM_FILES ${TS_FILES})
 
-install(TARGETS admc)
-install(TARGETS admctest)
+install(TARGETS admc DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS admctest DESTINATION ${CMAKE_INSTALL_LIBDIR})

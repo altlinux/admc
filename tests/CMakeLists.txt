@@ -53,5 +53,5 @@ foreach(target ${TEST_TARGETS})
         ${PROJECT_BINARY_DIR}/${target}
     )
 
-    install(TARGETS ${target})
+    install(TARGETS ${target} DESTINATION ${CMAKE_INSTALL_BINDIR})
 endforeach()
