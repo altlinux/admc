@@ -424,6 +424,15 @@ void SecurityTab::load_trustee_acl() {
     sd.print_acl(trustee);
 }
 
+// NOTE: on_item_changed() is a slot that is connected to
+// ace_model's itemChanged() signal, so it gets called
+// recursively when QStandardItem::setCheckState() is called
+// (inside set_permission_state()). Can't call
+// blockSignals() on the model to avoid recursion because
+// itemChanged() signal is also used to update the GUI and
+// other things. This recursion also does the useful work of
+// recursively unchecking opposite columns.
+
 // Permission check states are interdependent. When some
 // check states change we also need to change other check
 // states.
@@ -438,7 +447,6 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
     // NOTE: block signals for the duration of this f-n so
     // that there's no recursion due to setCheckState()
     // calls triggering more on_item_changed() slot calls.
-    ace_model->blockSignals(true);
 
     const AcePermission permission =
     [&]() {
@@ -468,13 +476,10 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
         // allowed/denied as well.
         if (permission == AcePermission_FullControl) {
             set_permission_state(all_permissions, column, Qt::Checked);
-            set_permission_state(all_permissions, opposite_column, Qt::Unchecked);
         } else if (permission == AcePermission_Read) {
             set_permission_state(read_prop_permissions, column, Qt::Checked);
-            set_permission_state(read_prop_permissions, opposite_column, Qt::Unchecked);
         } else if (permission == AcePermission_Write) {
             set_permission_state(write_prop_permissions, column, Qt::Checked);
-            set_permission_state(write_prop_permissions, opposite_column, Qt::Unchecked);
         }
     }
 
@@ -503,8 +508,6 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
             set_permission_state({parent_permission}, column, Qt::Unchecked);
         }
     }
-
-    ace_model->blockSignals(false);
 
     const QString trustee =
     [&]() {
