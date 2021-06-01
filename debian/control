@@ -1,0 +1,13 @@
+Source: admc
+Maintainer: Kees van Vloten
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9)
+
+Package: admc
+Architecture: any
+Depends: ${shlib:Depends}, ${misc:Depends}
+Description: Samba domain management console.
+ Samba domain management console.
+
