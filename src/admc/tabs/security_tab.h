@@ -112,7 +112,7 @@ private:
     QLabel *selected_trustee_label;
     SecurityDescriptor sd;
     QHash<AcePermission, QHash<AceColumn, QStandardItem *>> permission_item_map;
-    QHash<QString, QHash<AcePermission, PermissionState>> permission_state_map;
+    QHash<QByteArray, QHash<AcePermission, PermissionState>> permission_state_map;
     bool ignore_item_changed_signal;
 };
 

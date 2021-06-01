@@ -67,6 +67,7 @@ typedef struct sasl_defaults_gssapi {
 QList<QString> query_server_for_hosts(const char *dname);
 bool ad_connect(const char* uri, LDAP **ld_out);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
+QByteArray dom_sid_to_bytes(const dom_sid &sid);
 
 AdConfig *AdInterfacePrivate::s_adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
@@ -1639,19 +1640,14 @@ void SecurityDescriptor::load(const QByteArray &descriptor_bytes) {
     edit_sd(tmp_ctx, data);
 }
 
-QList<QString> SecurityDescriptor::get_trustee_order() {
-    TALLOC_CTX *sid_ctx = talloc_new(NULL);
-    
-    QSet<QString> out;
+QList<QByteArray> SecurityDescriptor::get_trustee_order() {
+    QSet<QByteArray> out;
 
     for (security_ace *ace : dacl) {
-        const char *trustee_sid_cstr = dom_sid_string(sid_ctx, &ace->trustee);
-        const QString trustee_sid = QString(trustee_sid_cstr);
+        const QByteArray trustee_bytes = dom_sid_to_bytes(ace->trustee);
 
-        out.insert(trustee_sid);
+        out.insert(trustee_bytes);
     }
-
-    talloc_free(sid_ctx);
 
     return out.toList();
 }
@@ -1673,12 +1669,26 @@ QHash<QString, dom_sid> SecurityDescriptor::get_trustee_map() {
     return out;
 }
 
-QString AdInterface::get_trustee_name(const QString &trustee_sid) {
-    if (trustee_name_map.contains(trustee_sid)) {
-        return trustee_name_map[trustee_sid];
+QString AdInterface::get_trustee_name(const QByteArray &trustee) {
+    const QString trustee_string =
+    [&]() {
+        dom_sid *sid = (dom_sid *) trustee.data();
+
+        TALLOC_CTX *tmp_ctx = talloc_new(NULL);
+
+        const char *sid_cstr = dom_sid_string(tmp_ctx, sid);
+        const QString out = QString(sid_cstr);
+
+        talloc_free(tmp_ctx);
+
+        return out;
+    }();
+
+    if (trustee_name_map.contains(trustee_string)) {
+        return trustee_name_map[trustee_string];
     } else {
         // Try to get name of trustee by finding it's DN
-        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, trustee_sid);
+        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, trustee_string);
         const auto trustee_search = search(d->domain_head, SearchScope_All, filter, QList<QString>());
         if (!trustee_search.isEmpty()) {
             const QString trustee_dn = trustee_search.keys()[0];
@@ -1687,7 +1697,7 @@ QString AdInterface::get_trustee_name(const QString &trustee_sid) {
             return name;
         } else {
             // Return raw sid as last option
-            return trustee_sid;
+            return trustee_string;
         }
     }
 }
@@ -1729,17 +1739,13 @@ QString ace_to_string(security_ace *ace) {
     return out;
 }
 
-void SecurityDescriptor::modify_sd(const QString &trustee, const SecurityModifyType modify_type, const uint32_t permission_mask) {
+void SecurityDescriptor::modify_sd(const QByteArray &trustee, const SecurityModifyType modify_type, const uint32_t permission_mask) {
     qDebug() << "modify_sd()";
     qDebug() << "\t\tbefore";
     print_acl(trustee);
 
-    const dom_sid trustee_sid =
-    [&]() {
-        const QHash<QString, dom_sid> trustee_to_sid_map = get_trustee_map();
-
-        return trustee_to_sid_map[trustee];
-    }();
+    dom_sid trustee_sid;
+    memcpy(&trustee_sid, trustee.data(), sizeof(dom_sid));
 
     TALLOC_CTX *mem_ctx = talloc_new(NULL);
 
@@ -1849,15 +1855,15 @@ void SecurityDescriptor::modify_sd(const QString &trustee, const SecurityModifyT
     talloc_free(mem_ctx);
 }
 
-QList<security_ace *> SecurityDescriptor::get_ace_list(const QString &trustee) const {
+QList<security_ace *> SecurityDescriptor::get_ace_list(const QByteArray &trustee) const {
     QList<security_ace *> out;
-
     TALLOC_CTX *mem_ctx = talloc_new(NULL);
 
     for (security_ace *ace : dacl) {
-        const char *this_trustee = dom_sid_string(mem_ctx, &ace->trustee);
+        const QByteArray this_trustee_bytes = dom_sid_to_bytes(ace->trustee);
 
-        if (trustee == this_trustee) {
+        const bool trustee_match = (this_trustee_bytes == trustee);
+        if (trustee_match) {
             out.append(ace);
         }
     }
@@ -1867,7 +1873,7 @@ QList<security_ace *> SecurityDescriptor::get_ace_list(const QString &trustee) c
     return out;
 }
 
-void SecurityDescriptor::print_acl(const QString &trustee) const {
+void SecurityDescriptor::print_acl(const QByteArray &trustee) const {
     const QList<security_ace *> ace_list = get_ace_list(trustee);
 
     qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
@@ -1878,4 +1884,10 @@ void SecurityDescriptor::print_acl(const QString &trustee) const {
     }
     qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
     qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
+}
+
+QByteArray dom_sid_to_bytes(const dom_sid &sid) {
+    const QByteArray bytes = QByteArray((char *) &sid, sizeof(struct dom_sid));
+
+    return bytes;
 }

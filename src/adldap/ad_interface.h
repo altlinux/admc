@@ -175,7 +175,7 @@ public:
 
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
-    QString get_trustee_name(const QString &trustee_sid);
+    QString get_trustee_name(const QByteArray &trustee);
     
 private:
     AdInterfacePrivate *d;
@@ -197,19 +197,19 @@ public:
 
     void load(const QByteArray &descriptor_bytes);
     QHash<QString, dom_sid> get_trustee_map();
-    QList<QString> get_trustee_order();
-    QList<QString> get_ace_list(AdInterface &ad, const QString &trustee);
-    QList<uint32_t> get_mask_list(AdInterface &ad, const QString &trustee);
+    QHash<QString, dom_sid> get_trustee_map();
+    QList<QByteArray> get_trustee_order();
+    QList<uint32_t> get_mask_list(AdInterface &ad, const QByteArray &trustee);
 
     TALLOC_CTX *tmp_ctx;
     struct security_descriptor *data;
     QList<security_ace *> dacl;
     QList<security_ace *> sacl;
 
-    void modify_sd(const QString &trustee, const SecurityModifyType modify_type, const uint32_t permission_mask);
+    void modify_sd(const QByteArray &trustee, const SecurityModifyType modify_type, const uint32_t permission_mask);
 
-    QList<security_ace *> get_ace_list(const QString &trustee) const;
-    void print_acl(const QString &trustee) const;
+    QList<security_ace *> get_ace_list(const QByteArray &trustee) const;
+    void print_acl(const QByteArray &trustee) const;
 };
 
 extern const QList<uint32_t> sec_masks;

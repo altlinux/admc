@@ -33,7 +33,6 @@
 
 enum TrusteeItemRole {
     TrusteeItemRole_Sid = Qt::UserRole,
-    TrusteeItemRole_SidRaw = Qt::UserRole + 1,
 };
 
 #define ENUM_TO_STRING(ENUM) {ENUM, #ENUM}
@@ -261,26 +260,26 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     const QByteArray descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
     sd.load(descriptor_bytes);
 
-    const QList<QString> trustee_order = sd.get_trustee_order();
-    for (const QString &trustee_string : trustee_order) {
+    const QList<QByteArray> trustee_order = sd.get_trustee_order();
+    for (const QByteArray &trustee : trustee_order) {
         auto item = new QStandardItem();
-        
-        const QString name = ad.get_trustee_name(trustee_string);
+
+        const QString name = ad.get_trustee_name(trustee);
         item->setText(name);
 
-        item->setData(trustee_string, TrusteeItemRole_Sid);
+        item->setData(trustee, TrusteeItemRole_Sid);
 
         trustee_model->appendRow(item);
 
-        permission_state_map[trustee_string] =
+        permission_state_map[trustee] =
         [&]() {
             QHash<AcePermission, PermissionState> out;
 
-            const QList<security_ace *> ace_list = sd.get_ace_list(trustee_string);
+            const QList<security_ace *> ace_list = sd.get_ace_list(trustee);
 
             for (security_ace *ace : ace_list) {
                 const uint32_t ace_mask = ace->access_mask;
-
+    
                 for (int permission_i = 0; permission_i < AcePermission_COUNT; permission_i++) {
                     const AcePermission permission = (AcePermission) permission_i;
 
@@ -295,6 +294,9 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
                         continue;
                     }
 
+                    // TODO: some permissions are getting
+                    // set to none because of no object
+                    // match. should be just not set at all
                     const bool object_match =
                     [&]() {
                         const bool object_present = ((ace->object.object.flags & SEC_ACE_OBJECT_TYPE_PRESENT) != 0);
@@ -366,11 +368,6 @@ QStandardItemModel *SecurityTab::get_ace_model() const {
 }
 
 void SecurityTab::load_trustee_acl() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
     const QList<QModelIndex> selected_list = trustee_view->selectionModel()->selectedRows();
     if (selected_list.isEmpty()) {
         return;
@@ -387,12 +384,12 @@ void SecurityTab::load_trustee_acl() {
         return text;
     }();
 
-    const QString trustee = selected_item->data(TrusteeItemRole_Sid).toString();
-
     selected_trustee_label->setText(label_text);
 
     ignore_item_changed_signal = true;
     
+    const QByteArray trustee = selected_item->data(TrusteeItemRole_Sid).toByteArray();
+
     for (int row = 0; row < ace_model->rowCount(); row++) {
         QStandardItem *allowed = ace_model->item(row, AceColumn_Allowed);
         QStandardItem *denied = ace_model->item(row, AceColumn_Denied);
@@ -523,11 +520,11 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
         }
     }
 
-    const QString trustee =
+    const QByteArray trustee =
     [&]() {
         const QModelIndex current_index = trustee_view->currentIndex();
         QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
-        const QString out = current_item->data(TrusteeItemRole_Sid).toString();
+        const QByteArray out = current_item->data(TrusteeItemRole_Sid).toByteArray();
 
         return out;
     }();
