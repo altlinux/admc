@@ -196,8 +196,6 @@ public:
     ~SecurityDescriptor();
 
     void load(const QByteArray &descriptor_bytes);
-    QHash<QString, dom_sid> get_trustee_map();
-    QHash<QString, dom_sid> get_trustee_map();
     QList<QByteArray> get_trustee_order();
     QList<uint32_t> get_mask_list(AdInterface &ad, const QByteArray &trustee);
 

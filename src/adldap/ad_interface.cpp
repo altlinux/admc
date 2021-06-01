@@ -1652,23 +1652,6 @@ QList<QByteArray> SecurityDescriptor::get_trustee_order() {
     return out.toList();
 }
 
-QHash<QString, dom_sid> SecurityDescriptor::get_trustee_map() {
-    TALLOC_CTX *sid_ctx = talloc_new(NULL);
-    
-    QHash<QString, dom_sid> out;
-
-    for (security_ace *ace : dacl) {
-        const char *trustee_sid_cstr = dom_sid_string(sid_ctx, &ace->trustee);
-        const QString trustee_sid = QString(trustee_sid_cstr);
-
-        out[trustee_sid] = ace->trustee;
-    }
-
-    talloc_free(sid_ctx);
-
-    return out;
-}
-
 QString AdInterface::get_trustee_name(const QByteArray &trustee) {
     const QString trustee_string =
     [&]() {
