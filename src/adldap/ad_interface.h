@@ -37,6 +37,7 @@ class QDateTime;
 class AdObject;
 class AdConfig;
 class SecurityACE;
+class SecurityDescriptor;
 template <typename T> class QList;
 typedef void TALLOC_CTX;
 struct security_descriptor;
@@ -176,6 +177,8 @@ public:
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
     QString get_trustee_name(const QByteArray &trustee);
+
+    QByteArray generate_sd(const QHash<QByteArray, QHash<AcePermission, PermissionState>> &state, const SecurityDescriptor &original_sd) const;
     
 private:
     AdInterfacePrivate *d;

@@ -169,7 +169,6 @@ QSet<AcePermission> get_permission_set(const uint32_t mask) {
     return out;
 }
 
-const QSet<AcePermission> access_permissions = get_permission_set(SEC_ADS_CONTROL_ACCESS);
 const QSet<AcePermission> read_prop_permissions = get_permission_set(SEC_ADS_READ_PROP);
 const QSet<AcePermission> write_prop_permissions = get_permission_set(SEC_ADS_WRITE_PROP);
 
@@ -564,5 +563,47 @@ void SecurityTab::set_permission_state(const QSet<AcePermission> &permission_set
 }
 
 bool SecurityTab::apply(AdInterface &ad, const QString &target) {
+    // Remove redundancy from permission state
+    const QHash<QByteArray, QHash<AcePermission, PermissionState>> state =
+    [&]() {
+        QHash<QByteArray, QHash<AcePermission, PermissionState>> out;
+
+        out = permission_state_map;
+
+        for (const QByteArray &trustee : out.keys()) {
+            const bool full_control = out[trustee].contains(AcePermission_FullControl) && (out[trustee][AcePermission_FullControl] != PermissionState_None);
+            if (full_control) {
+                for (const AcePermission &permission : all_permissions) {
+                    if (permission != AcePermission_FullControl) {
+                        out[trustee].remove(permission);
+                    }
+                }
+            }
+
+            const bool read = out[trustee].contains(AcePermission_Read) && (out[trustee][AcePermission_Read] != PermissionState_None);
+            if (read) {
+                for (const AcePermission &permission : read_prop_permissions) {
+                    if (permission != AcePermission_Read) {
+                        out[trustee].remove(permission);
+                    }
+                }
+            }
+
+            const bool write = out[trustee].contains(AcePermission_Write) && (out[trustee][AcePermission_Write] != PermissionState_None);
+            if (write) {
+                for (const AcePermission &permission : write_prop_permissions) {
+                    if (permission != AcePermission_Read) {
+                        out[trustee].remove(permission);
+                    }
+                }
+            }
+        }
+
+        return out;
+    }();
+
+    const QByteArray descriptor_bytes = ad.generate_sd(state, sd);
+    // object.attribute_replace_value(target, ATTRIBUTE_SECURITY_DESCRIPTOR, descriptor_bytes);
+
     return true;
 }

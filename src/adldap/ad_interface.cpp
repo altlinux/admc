@@ -1873,3 +1873,37 @@ QByteArray dom_sid_to_bytes(const dom_sid &sid) {
 
     return bytes;
 }
+
+QByteArray AdInterface::generate_sd(const QHash<QByteArray, QHash<AcePermission, PermissionState>> &state, const SecurityDescriptor &original_security_descriptor) const {
+    TALLOC_CTX* tmp_ctx = talloc_new(NULL);
+
+    struct security_descriptor *sd = talloc(tmp_ctx, struct security_descriptor);
+
+    // Copy everything that is unchanged from old sd
+    struct security_descriptor *original_sd = original_security_descriptor.data;
+    sd->revision = original_sd->revision;
+    sd->type = original_sd->type;
+    sd->owner_sid = original_sd->owner_sid;
+    sd->group_sid = original_sd->group_sid;
+    sd->sacl = original_sd->sacl;
+
+    // Generate new dacl
+    struct security_acl *dacl = talloc(tmp_ctx, struct security_acl);
+    dacl->revision = original_sd->dacl->revision;
+    for (const QByteArray &trustee : state.keys()) {
+        const QHash<AcePermission, PermissionState> permission_map = state[trustee];
+
+        struct security_ace *ace = talloc(tmp_ctx, struct security_ace);
+        // ace->type = 
+        // ace->flags = 
+        // ace->access_mask =
+        // ace->object =
+        memcpy(&ace->trustee, trustee.data(), sizeof(dom_sid));
+    }
+
+    sd->dacl = dacl;
+
+    talloc_free(tmp_ctx);
+
+    return QByteArray();
+}
