@@ -179,7 +179,7 @@ public:
     QString get_trustee_name(const QByteArray &trustee);
 
     QByteArray generate_sd(const QHash<QByteArray, QHash<AcePermission, PermissionState>> &state, const SecurityDescriptor &original_sd) const;
-    
+
 private:
     AdInterfacePrivate *d;
 };
@@ -187,18 +187,19 @@ private:
 class SecurityDescriptor {
 
 public:
-    SecurityDescriptor();
-    ~SecurityDescriptor();
-
-    void load(const QByteArray &descriptor_bytes);
-    QList<QByteArray> get_trustee_list();
-
-    TALLOC_CTX *tmp_ctx;
     struct security_descriptor *data;
 
+    SecurityDescriptor(const QByteArray &descriptor_bytes);
+    ~SecurityDescriptor();
+
+    QList<QByteArray> get_trustee_list() const;
     QList<security_ace *> dacl() const;
     QList<security_ace *> get_ace_list(const QByteArray &trustee) const;
     void print_acl(const QByteArray &trustee) const;
+
+private:
+    TALLOC_CTX *tmp_ctx;
+
 };
 
 extern const QList<uint32_t> sec_masks;

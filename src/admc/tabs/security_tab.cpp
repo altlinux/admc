@@ -183,7 +183,7 @@ SecurityTab::SecurityTab() {
 
 void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     const QByteArray descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
-    sd.load(descriptor_bytes);
+    const SecurityDescriptor sd = SecurityDescriptor(descriptor_bytes);
 
     // Add items to trustee model
     trustee_model->removeRows(0, trustee_model->rowCount());
@@ -540,8 +540,12 @@ bool SecurityTab::apply(AdInterface &ad, const QString &target) {
         return out;
     }();
 
-    const QByteArray descriptor_bytes = ad.generate_sd(state, sd);
-    const bool apply_success = ad.attribute_replace_value(target, ATTRIBUTE_SECURITY_DESCRIPTOR, descriptor_bytes);
+    const AdObject object = ad.search_object(target, {ATTRIBUTE_SECURITY_DESCRIPTOR});
+    const QByteArray descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
+    const SecurityDescriptor sd = SecurityDescriptor(descriptor_bytes);
+
+    const QByteArray new_descriptor_bytes = ad.generate_sd(state, sd);
+    const bool apply_success = ad.attribute_replace_value(target, ATTRIBUTE_SECURITY_DESCRIPTOR, new_descriptor_bytes);
 
     return apply_success;
 }

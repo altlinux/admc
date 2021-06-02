@@ -1670,18 +1670,9 @@ const QHash<QString, QString> trustee_name_map = {
     TRUSTEE_ENUM_TO_STRING(SID_NT_OTHER_ORGANISATION),
 };
 
-SecurityDescriptor::SecurityDescriptor() {
-    tmp_ctx = nullptr;
-}
-
-SecurityDescriptor::~SecurityDescriptor() {
-    talloc_free(tmp_ctx);
-}
-
-void SecurityDescriptor::load(const QByteArray &descriptor_bytes) {
-    talloc_free(tmp_ctx);
+SecurityDescriptor::SecurityDescriptor(const QByteArray &descriptor_bytes) {
     tmp_ctx = talloc_new(NULL);
-
+    
     DATA_BLOB blob = data_blob_const(descriptor_bytes.data(), descriptor_bytes.size());
 
     data = talloc(tmp_ctx, struct security_descriptor);
@@ -1689,7 +1680,11 @@ void SecurityDescriptor::load(const QByteArray &descriptor_bytes) {
     ndr_pull_struct_blob(&blob, data, data, (ndr_pull_flags_fn_t)ndr_pull_security_descriptor);
 }
 
-QList<QByteArray> SecurityDescriptor::get_trustee_list() {
+SecurityDescriptor::~SecurityDescriptor() {
+    talloc_free(tmp_ctx);
+}
+
+QList<QByteArray> SecurityDescriptor::get_trustee_list() const {
     QSet<QByteArray> out;
 
     for (security_ace *ace : dacl()) {
