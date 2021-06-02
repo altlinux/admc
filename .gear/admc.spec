@@ -62,7 +62,7 @@ cd BUILD
 
 %files
 %doc README.md
-%_docdir/admc.qch
+%_docdir/admc/admc.qch
 %_bindir/admc
 %_libdir/libadldap.so
 %_man1dir/admc*
