@@ -201,14 +201,19 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
 
     trustee_model->sort(0, Qt::AscendingOrder);
 
-    // Debug print
+    // Debug print acl
+    // NOTE: manually wrap this in QT_DEBUG because
+    // get_trustee_name() is expensive and we don't want to
+    // call it in release version for no reason
+    #ifdef QT_DEBUG
     for (const QByteArray &trustee : trustee_list) {
         const QString trustee_name = ad.get_trustee_name(trustee);
         qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
-        qInfo() << trustee_name;
+        qDebug() << trustee_name;
         sd.print_acl(trustee);
         qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
     }
+    #endif
 
     //
     // Load permission state
