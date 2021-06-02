@@ -1961,73 +1961,93 @@ QByteArray AdInterface::generate_sd(const QHash<QByteArray, QHash<AcePermission,
     sd->sacl = original_sd->sacl;
 
     // Generate new dacl
-    struct security_acl *dacl = talloc(tmp_ctx, struct security_acl);
-    dacl->revision = original_sd->dacl->revision;
-    for (const QByteArray &trustee : state.keys()) {
-        const QHash<AcePermission, PermissionState> permission_map = state[trustee];
+    const QList<security_ace *> dacl_qlist =
+    [&]() {
+        QList<security_ace *> out;
 
-        for (const AcePermission &permission : permission_map.keys()) {
-            const PermissionState permission_state = permission_map[permission];
+        for (const QByteArray &trustee : state.keys()) {
+            const QHash<AcePermission, PermissionState> permission_map = state[trustee];
 
-            if (permission_state == PermissionState_None) {
-                continue;
+            for (const AcePermission &permission : permission_map.keys()) {
+                const PermissionState permission_state = permission_map[permission];
+
+                if (permission_state == PermissionState_None) {
+                    continue;
+                }
+
+                struct security_ace *ace = talloc(tmp_ctx, struct security_ace);
+
+                const bool object_present = ace_permission_to_type_map.contains(permission);
+
+                ace->type =
+                [&]() {
+                    if (permission_state == PermissionState_Allowed) {
+                        if (object_present) {
+                            return SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT;
+                        } else {
+                            return SEC_ACE_TYPE_ACCESS_ALLOWED;
+                        }
+                    } else if (permission_state == PermissionState_Denied) {
+                        if (object_present) {
+                            return SEC_ACE_TYPE_ACCESS_DENIED_OBJECT;
+                        } else {
+                            return SEC_ACE_TYPE_ACCESS_DENIED;
+                        }
+                    }
+
+                    return SEC_ACE_TYPE_ACCESS_ALLOWED;
+                }();
+
+                // TODO: these flags should be set to something
+                // in some cases, for now just 0
+                ace->flags = 0x00;
+                ace->access_mask = ace_permission_to_mask_map[permission];
+                ace->object.object.flags =
+                [&]() {
+                    if (object_present) {
+                        return SEC_ACE_OBJECT_TYPE_PRESENT;
+                    } else {
+                        return 0;
+                    }
+                }();
+                ace->object.object.type.type =
+                [&]() {
+                    if (object_present) {
+                        const QString type_name_string = ace_permission_to_type_map[permission];
+                        const QString type_string = d->adconfig->get_right_guid(type_name_string);
+                        const QByteArray type_bytes = guid_string_to_bytes(type_string);
+
+                        struct GUID guid;
+                        memcpy(&guid, type_bytes.data(), sizeof(GUID));
+
+                        return guid;
+                    } else {
+                        return GUID();
+                    }
+                }();
+                memcpy(&ace->trustee, trustee.data(), sizeof(dom_sid));
+
+                out.append(ace);
             }
-
-            struct security_ace *ace = talloc(tmp_ctx, struct security_ace);
-
-            const bool object_present = ace_permission_to_type_map.contains(permission);
-
-            ace->type =
-            [&]() {
-                if (permission_state == PermissionState_Allowed) {
-                    if (object_present) {
-                        return SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT;
-                    } else {
-                        return SEC_ACE_TYPE_ACCESS_ALLOWED;
-                    }
-                } else if (permission_state == PermissionState_Denied) {
-                    if (object_present) {
-                        return SEC_ACE_TYPE_ACCESS_DENIED_OBJECT;
-                    } else {
-                        return SEC_ACE_TYPE_ACCESS_DENIED;
-                    }
-                }
-
-                return SEC_ACE_TYPE_ACCESS_ALLOWED;
-            }();
-
-            // TODO: these flags should be set to something
-            // in some cases, for now just 0
-            ace->flags = 0x00;
-            ace->access_mask = ace_permission_to_mask_map[permission];
-            ace->object.object.flags =
-            [&]() {
-                if (object_present) {
-                    return SEC_ACE_OBJECT_TYPE_PRESENT;
-                } else {
-                    return 0;
-                }
-            }();
-            ace->object.object.type.type =
-            [&]() {
-                if (object_present) {
-                    const QString type_name_string = ace_permission_to_type_map[permission];
-                    const QString type_string = d->adconfig->get_right_guid(type_name_string);
-                    const QByteArray type_bytes = guid_string_to_bytes(type_string);
-
-                    struct GUID out;
-                    memcpy(&out, type_bytes.data(), sizeof(GUID));
-
-                    return out;
-                } else {
-                    return GUID();
-                }
-            }();
-            memcpy(&ace->trustee, trustee.data(), sizeof(dom_sid));
         }
-    }
 
-    sd->dacl = dacl;
+        return out;
+    }();
+
+    sd->dacl =
+    [&]() {
+        struct security_acl *out = talloc(tmp_ctx, struct security_acl);
+        out->revision = original_sd->dacl->revision;
+
+        out->num_aces = dacl_qlist.size();
+
+        out->aces = talloc_array(tmp_ctx, security_ace, dacl_qlist.size());
+        for (int i = 0; i < dacl_qlist.size(); i++) {
+            memcpy(&out->aces[i], dacl_qlist[i], sizeof(security_ace));
+        }
+
+        return out;
+    }();
 
     talloc_free(tmp_ctx);
 
