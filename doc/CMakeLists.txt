@@ -2,11 +2,19 @@
 set(ADMC_HELP_PROJECT ${CMAKE_CURRENT_SOURCE_DIR}/admc.qhp)
 set(ADMC_COMPRESSED_HELP ${CMAKE_CURRENT_BINARY_DIR}/admc.qch)
 
-add_custom_command(
-    OUTPUT ${ADMC_COMPRESSED_HELP}
-    COMMAND qhelpgenerator ${ADMC_HELP_PROJECT} -o ${ADMC_COMPRESSED_HELP}
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*
-)
+if (ADMC_BUILD_DEB)
+    add_custom_command(
+        OUTPUT ${ADMC_COMPRESSED_HELP}
+        COMMAND qhelpgenerator ${ADMC_HELP_PROJECT} -o ${ADMC_COMPRESSED_HELP}
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*
+    )
+else()
+    add_custom_command(
+        OUTPUT ${ADMC_COMPRESSED_HELP}
+        COMMAND qhelpgenerator-qt5 ${ADMC_HELP_PROJECT} -o ${ADMC_COMPRESSED_HELP}
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*
+    )
+endif (ADMC_BUILD_DEB)
 
 add_custom_target(doc
     ALL
