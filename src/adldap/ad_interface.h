@@ -206,6 +206,7 @@ extern const QHash<AcePermission, uint32_t> ace_permission_to_mask_map;
 extern const QHash<AcePermission, QString> ace_permission_to_type_map;
 extern const QList<AcePermission> all_permissions_list;
 extern const QSet<AcePermission> all_permissions;
+extern const QSet<AcePermission> access_permissions;
 extern const QSet<AcePermission> read_prop_permissions;
 extern const QSet<AcePermission> write_prop_permissions;
 

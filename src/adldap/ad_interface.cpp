@@ -174,6 +174,7 @@ QSet<AcePermission> get_permission_set(const uint32_t mask) {
     return out;
 }
 
+const QSet<AcePermission> access_permissions = get_permission_set(SEC_ADS_CONTROL_ACCESS);
 const QSet<AcePermission> read_prop_permissions = get_permission_set(SEC_ADS_READ_PROP);
 const QSet<AcePermission> write_prop_permissions = get_permission_set(SEC_ADS_WRITE_PROP);
 
