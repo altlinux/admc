@@ -239,11 +239,6 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
                     return guid_out;
                 }();
 
-
-                const QByteArray bytes_1 = guid_string_to_bytes(rights_guid);
-                const QString string_2 = attribute_display_value(ATTRIBUTE_OBJECT_GUID, bytes_1, g_adconfig);
-                qInfo() << rights_guid << string_2 << (rights_guid == string_2);
-
                 const QString ace_type_guid =
                 [&]() {
                     const GUID type = ace->object.object.type.type;
