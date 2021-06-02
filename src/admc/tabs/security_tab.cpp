@@ -534,7 +534,7 @@ bool SecurityTab::apply(AdInterface &ad, const QString &target) {
     }();
 
     const QByteArray descriptor_bytes = ad.generate_sd(state, sd);
-    // object.attribute_replace_value(target, ATTRIBUTE_SECURITY_DESCRIPTOR, descriptor_bytes);
+    const bool apply_success = ad.attribute_replace_value(target, ATTRIBUTE_SECURITY_DESCRIPTOR, descriptor_bytes);
 
-    return true;
+    return apply_success;
 }

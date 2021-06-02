@@ -1769,8 +1769,6 @@ void edit_sd(TALLOC_CTX *mem_ctx, struct security_descriptor *old_sd) {
     sd->owner_sid = (dom_sid *)talloc_memdup(mem_ctx, old_sd->owner_sid, sizeof(dom_sid));
     sd->group_sid = (dom_sid *)talloc_memdup(mem_ctx, old_sd->group_sid, sizeof(dom_sid));
 
-
-
     // NOTE: use diff ctx here, otherwise current
     // context will grow with each edit_sd() call
     DATA_BLOB blob;
@@ -2049,7 +2047,12 @@ QByteArray AdInterface::generate_sd(const QHash<QByteArray, QHash<AcePermission,
         return out;
     }();
 
+    DATA_BLOB blob;
+    ndr_push_struct_blob(&blob, tmp_ctx, sd, (ndr_push_flags_fn_t)ndr_push_security_descriptor);
+
+    const QByteArray out = QByteArray((char *) blob.data, blob.length);
+
     talloc_free(tmp_ctx);
 
-    return QByteArray();
+    return out;
 }
