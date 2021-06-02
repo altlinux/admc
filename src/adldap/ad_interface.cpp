@@ -145,6 +145,37 @@ const QHash<AcePermission, QString> ace_permission_to_type_map = {
     {AcePermission_WriteWebInfo, "Web-Information"}
 };
 
+const QList<AcePermission> all_permissions_list =
+[]() {
+    QList<AcePermission> out;
+
+    for (int permission_i = 0; permission_i < AcePermission_COUNT; permission_i++) {
+        const AcePermission permission = (AcePermission) permission_i;
+        out.append(permission);
+    }
+
+    return out;
+}();
+
+const QSet<AcePermission> all_permissions = all_permissions_list.toSet();
+
+QSet<AcePermission> get_permission_set(const uint32_t mask) {
+    QSet<AcePermission> out;
+
+    for (const AcePermission &permission : all_permissions) {
+        const uint32_t this_mask = ace_permission_to_mask_map[permission];
+
+        if (this_mask == mask) {
+            out.insert(permission);
+        }
+    }
+
+    return out;
+}
+
+const QSet<AcePermission> read_prop_permissions = get_permission_set(SEC_ADS_READ_PROP);
+const QSet<AcePermission> write_prop_permissions = get_permission_set(SEC_ADS_WRITE_PROP);
+
 void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgroup, int maxLenWorkgroup, char * pUsername, int maxLenUsername, char * pPassword, int maxLenPassword) {
 
 }
@@ -669,6 +700,168 @@ bool AdInterface::attribute_replace_datetime(const QString &dn, const QString &a
     const bool result = attribute_replace_string(dn, attribute, datetime_string);
 
     return result;
+}
+
+bool AdInterface::attribute_replace_security_descriptor(const QString &dn, const QHash<QByteArray, QHash<AcePermission, PermissionState>> &descriptor_state_arg) {
+    const QByteArray new_descriptor_bytes =
+    [&]() {
+        // Remove redundancy from permission state
+        const QHash<QByteArray, QHash<AcePermission, PermissionState>> state =
+        [&]() {
+            QHash<QByteArray, QHash<AcePermission, PermissionState>> out;
+
+            out = descriptor_state_arg;
+
+            // Remove child permission states. For example if
+            // "Read" is allowed, then there's no need to
+            // include any other state for "read prop"
+            // permissions.
+            for (const QByteArray &trustee : out.keys()) {
+                const bool full_control = out[trustee].contains(AcePermission_FullControl) && (out[trustee][AcePermission_FullControl] != PermissionState_None);
+                const bool read = out[trustee].contains(AcePermission_Read) && (out[trustee][AcePermission_Read] != PermissionState_None);
+                const bool write = out[trustee].contains(AcePermission_Write) && (out[trustee][AcePermission_Write] != PermissionState_None);
+
+                if (full_control) {
+                    for (const AcePermission &permission : all_permissions) {
+                        if (permission != AcePermission_FullControl) {
+                            out[trustee].remove(permission);
+                        }
+                    }
+                } else if (read) {
+                    for (const AcePermission &permission : read_prop_permissions) {
+                        if (permission != AcePermission_Read) {
+                            out[trustee].remove(permission);
+                        }
+                    }
+                } else if (write) {
+                    for (const AcePermission &permission : write_prop_permissions) {
+                        if (permission != AcePermission_Read) {
+                            out[trustee].remove(permission);
+                        }
+                    }
+                }
+            }
+
+            return out;
+        }();
+
+        TALLOC_CTX* tmp_ctx = talloc_new(NULL);
+
+        struct security_descriptor *sd = talloc(tmp_ctx, struct security_descriptor);
+
+        // Copy everything that is unchanged from old sd
+        const AdObject object = search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
+        const QByteArray old_descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
+        const SecurityDescriptor old_sd = SecurityDescriptor(old_descriptor_bytes);
+        struct security_descriptor *original_sd = old_sd.data;
+        sd->revision = original_sd->revision;
+        sd->type = original_sd->type;
+        sd->owner_sid = original_sd->owner_sid;
+        sd->group_sid = original_sd->group_sid;
+        sd->sacl = original_sd->sacl;
+
+        // Generate new dacl
+        const QList<security_ace *> dacl_qlist =
+        [&]() {
+            QList<security_ace *> out;
+
+            for (const QByteArray &trustee : state.keys()) {
+                const QHash<AcePermission, PermissionState> permission_map = state[trustee];
+
+                for (const AcePermission &permission : permission_map.keys()) {
+                    const PermissionState permission_state = permission_map[permission];
+
+                    if (permission_state == PermissionState_None) {
+                        continue;
+                    }
+
+                    struct security_ace *ace = talloc(tmp_ctx, struct security_ace);
+
+                    const bool object_present = ace_permission_to_type_map.contains(permission);
+
+                    ace->type =
+                    [&]() {
+                        if (permission_state == PermissionState_Allowed) {
+                            if (object_present) {
+                                return SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT;
+                            } else {
+                                return SEC_ACE_TYPE_ACCESS_ALLOWED;
+                            }
+                        } else if (permission_state == PermissionState_Denied) {
+                            if (object_present) {
+                                return SEC_ACE_TYPE_ACCESS_DENIED_OBJECT;
+                            } else {
+                                return SEC_ACE_TYPE_ACCESS_DENIED;
+                            }
+                        }
+
+                        return SEC_ACE_TYPE_ACCESS_ALLOWED;
+                    }();
+
+                    // TODO: these flags should be set to something
+                    // in some cases, for now just 0
+                    ace->flags = 0x00;
+                    ace->access_mask = ace_permission_to_mask_map[permission];
+                    ace->object.object.flags =
+                    [&]() {
+                        if (object_present) {
+                            return SEC_ACE_OBJECT_TYPE_PRESENT;
+                        } else {
+                            return 0;
+                        }
+                    }();
+                    ace->object.object.type.type =
+                    [&]() {
+                        if (object_present) {
+                            const QString type_name_string = ace_permission_to_type_map[permission];
+                            const QString type_string = d->adconfig->get_right_guid(type_name_string);
+                            const QByteArray type_bytes = guid_string_to_bytes(type_string);
+
+                            struct GUID guid;
+                            memcpy(&guid, type_bytes.data(), sizeof(GUID));
+
+                            return guid;
+                        } else {
+                            return GUID();
+                        }
+                    }();
+                    memcpy(&ace->trustee, trustee.data(), sizeof(dom_sid));
+
+                    out.append(ace);
+                }
+            }
+
+            return out;
+        }();
+
+        sd->dacl =
+        [&]() {
+            struct security_acl *out = talloc(tmp_ctx, struct security_acl);
+            out->revision = original_sd->dacl->revision;
+
+            out->num_aces = dacl_qlist.size();
+
+            out->aces = talloc_array(tmp_ctx, security_ace, dacl_qlist.size());
+            for (int i = 0; i < dacl_qlist.size(); i++) {
+                memcpy(&out->aces[i], dacl_qlist[i], sizeof(security_ace));
+            }
+
+            return out;
+        }();
+
+        DATA_BLOB blob;
+        ndr_push_struct_blob(&blob, tmp_ctx, sd, (ndr_push_flags_fn_t)ndr_push_security_descriptor);
+
+        const QByteArray out = QByteArray((char *) blob.data, blob.length);
+
+        talloc_free(tmp_ctx);
+
+        return out;
+    }();
+
+    const bool apply_success = attribute_replace_value(dn, ATTRIBUTE_SECURITY_DESCRIPTOR, new_descriptor_bytes);
+
+    return apply_success;
 }
 
 bool AdInterface::object_add(const QString &dn, const QString &object_class) {
@@ -1781,116 +1974,4 @@ QByteArray dom_sid_to_bytes(const dom_sid &sid) {
     const QByteArray bytes = QByteArray((char *) &sid, sizeof(struct dom_sid));
 
     return bytes;
-}
-
-QByteArray AdInterface::generate_sd(const QHash<QByteArray, QHash<AcePermission, PermissionState>> &state, const SecurityDescriptor &original_security_descriptor) const {
-    TALLOC_CTX* tmp_ctx = talloc_new(NULL);
-
-    struct security_descriptor *sd = talloc(tmp_ctx, struct security_descriptor);
-
-    // Copy everything that is unchanged from old sd
-    struct security_descriptor *original_sd = original_security_descriptor.data;
-    sd->revision = original_sd->revision;
-    sd->type = original_sd->type;
-    sd->owner_sid = original_sd->owner_sid;
-    sd->group_sid = original_sd->group_sid;
-    sd->sacl = original_sd->sacl;
-
-    // Generate new dacl
-    const QList<security_ace *> dacl_qlist =
-    [&]() {
-        QList<security_ace *> out;
-
-        for (const QByteArray &trustee : state.keys()) {
-            const QHash<AcePermission, PermissionState> permission_map = state[trustee];
-
-            for (const AcePermission &permission : permission_map.keys()) {
-                const PermissionState permission_state = permission_map[permission];
-
-                if (permission_state == PermissionState_None) {
-                    continue;
-                }
-
-                struct security_ace *ace = talloc(tmp_ctx, struct security_ace);
-
-                const bool object_present = ace_permission_to_type_map.contains(permission);
-
-                ace->type =
-                [&]() {
-                    if (permission_state == PermissionState_Allowed) {
-                        if (object_present) {
-                            return SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT;
-                        } else {
-                            return SEC_ACE_TYPE_ACCESS_ALLOWED;
-                        }
-                    } else if (permission_state == PermissionState_Denied) {
-                        if (object_present) {
-                            return SEC_ACE_TYPE_ACCESS_DENIED_OBJECT;
-                        } else {
-                            return SEC_ACE_TYPE_ACCESS_DENIED;
-                        }
-                    }
-
-                    return SEC_ACE_TYPE_ACCESS_ALLOWED;
-                }();
-
-                // TODO: these flags should be set to something
-                // in some cases, for now just 0
-                ace->flags = 0x00;
-                ace->access_mask = ace_permission_to_mask_map[permission];
-                ace->object.object.flags =
-                [&]() {
-                    if (object_present) {
-                        return SEC_ACE_OBJECT_TYPE_PRESENT;
-                    } else {
-                        return 0;
-                    }
-                }();
-                ace->object.object.type.type =
-                [&]() {
-                    if (object_present) {
-                        const QString type_name_string = ace_permission_to_type_map[permission];
-                        const QString type_string = d->adconfig->get_right_guid(type_name_string);
-                        const QByteArray type_bytes = guid_string_to_bytes(type_string);
-
-                        struct GUID guid;
-                        memcpy(&guid, type_bytes.data(), sizeof(GUID));
-
-                        return guid;
-                    } else {
-                        return GUID();
-                    }
-                }();
-                memcpy(&ace->trustee, trustee.data(), sizeof(dom_sid));
-
-                out.append(ace);
-            }
-        }
-
-        return out;
-    }();
-
-    sd->dacl =
-    [&]() {
-        struct security_acl *out = talloc(tmp_ctx, struct security_acl);
-        out->revision = original_sd->dacl->revision;
-
-        out->num_aces = dacl_qlist.size();
-
-        out->aces = talloc_array(tmp_ctx, security_ace, dacl_qlist.size());
-        for (int i = 0; i < dacl_qlist.size(); i++) {
-            memcpy(&out->aces[i], dacl_qlist[i], sizeof(security_ace));
-        }
-
-        return out;
-    }();
-
-    DATA_BLOB blob;
-    ndr_push_struct_blob(&blob, tmp_ctx, sd, (ndr_push_flags_fn_t)ndr_push_security_descriptor);
-
-    const QByteArray out = QByteArray((char *) blob.data, blob.length);
-
-    talloc_free(tmp_ctx);
-
-    return out;
 }

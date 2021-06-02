@@ -71,37 +71,6 @@ const QHash<AcePermission, QString> ace_permission_to_name_map = {
     ENUM_TO_STRING(AcePermission_WriteWebInfo),
 };
 
-const QList<AcePermission> all_permissions_list =
-[]() {
-    QList<AcePermission> out;
-
-    for (int permission_i = 0; permission_i < AcePermission_COUNT; permission_i++) {
-        const AcePermission permission = (AcePermission) permission_i;
-        out.append(permission);
-    }
-
-    return out;
-}();
-
-const QSet<AcePermission> all_permissions = all_permissions_list.toSet();
-
-QSet<AcePermission> get_permission_set(const uint32_t mask) {
-    QSet<AcePermission> out;
-
-    for (const AcePermission &permission : all_permissions) {
-        const uint32_t this_mask = ace_permission_to_mask_map[permission];
-
-        if (this_mask == mask) {
-            out.insert(permission);
-        }
-    }
-
-    return out;
-}
-
-const QSet<AcePermission> read_prop_permissions = get_permission_set(SEC_ADS_READ_PROP);
-const QSet<AcePermission> write_prop_permissions = get_permission_set(SEC_ADS_WRITE_PROP);
-
 SecurityTab::SecurityTab() {
     ignore_item_changed_signal = false;
     
@@ -505,52 +474,7 @@ void SecurityTab::set_permission_state(const QSet<AcePermission> &permission_set
 }
 
 bool SecurityTab::apply(AdInterface &ad, const QString &target) {
-    // Remove redundancy from permission state
-    const QHash<QByteArray, QHash<AcePermission, PermissionState>> state =
-    [&]() {
-        QHash<QByteArray, QHash<AcePermission, PermissionState>> out;
-
-        out = permission_state_map;
-
-        // Remove child permission states. For example if
-        // "Read" is allowed, then there's no need to
-        // include any other state for "read prop"
-        // permissions.
-        for (const QByteArray &trustee : out.keys()) {
-            const bool full_control = out[trustee].contains(AcePermission_FullControl) && (out[trustee][AcePermission_FullControl] != PermissionState_None);
-            const bool read = out[trustee].contains(AcePermission_Read) && (out[trustee][AcePermission_Read] != PermissionState_None);
-            const bool write = out[trustee].contains(AcePermission_Write) && (out[trustee][AcePermission_Write] != PermissionState_None);
-            
-            if (full_control) {
-                for (const AcePermission &permission : all_permissions) {
-                    if (permission != AcePermission_FullControl) {
-                        out[trustee].remove(permission);
-                    }
-                }
-            } else if (read) {
-                for (const AcePermission &permission : read_prop_permissions) {
-                    if (permission != AcePermission_Read) {
-                        out[trustee].remove(permission);
-                    }
-                }
-            } else if (write) {
-                for (const AcePermission &permission : write_prop_permissions) {
-                    if (permission != AcePermission_Read) {
-                        out[trustee].remove(permission);
-                    }
-                }
-            }
-        }
-
-        return out;
-    }();
-
-    const AdObject object = ad.search_object(target, {ATTRIBUTE_SECURITY_DESCRIPTOR});
-    const QByteArray descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
-    const SecurityDescriptor sd = SecurityDescriptor(descriptor_bytes);
-
-    const QByteArray new_descriptor_bytes = ad.generate_sd(state, sd);
-    const bool apply_success = ad.attribute_replace_value(target, ATTRIBUTE_SECURITY_DESCRIPTOR, new_descriptor_bytes);
+    const bool apply_success = ad.attribute_replace_security_descriptor(target, permission_state_map);
 
     return apply_success;
 }

@@ -27,6 +27,7 @@
 
 #include <QCoreApplication>
 #include <QHash>
+#include <QSet>
 
 #include "ad_defines.h"
 
@@ -154,6 +155,7 @@ public:
     bool attribute_replace_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace_int(const QString &dn, const QString &attribute, const int value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace_datetime(const QString &dn, const QString &attribute, const QDateTime &datetime);
+    bool attribute_replace_security_descriptor(const QString &dn, const QHash<QByteArray, QHash<AcePermission, PermissionState>> &descriptor_state);
 
     bool object_add(const QString &dn, const QString &object_class);
     bool object_delete(const QString &dn);
@@ -177,8 +179,6 @@ public:
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
     QString get_trustee_name(const QByteArray &trustee);
-
-    QByteArray generate_sd(const QHash<QByteArray, QHash<AcePermission, PermissionState>> &state, const SecurityDescriptor &original_sd) const;
 
 private:
     AdInterfacePrivate *d;
@@ -208,5 +208,10 @@ extern const QHash<AcePermission, QString> ace_permission_to_type_map;
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 QByteArray dom_sid_to_bytes(const dom_sid &sid);
+
+extern const QList<AcePermission> all_permissions_list;
+extern const QSet<AcePermission> all_permissions;
+extern const QSet<AcePermission> read_prop_permissions;
+extern const QSet<AcePermission> write_prop_permissions;
 
 #endif /* AD_INTERFACE_H */
