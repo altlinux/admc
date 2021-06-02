@@ -198,7 +198,7 @@ public:
     void print_acl(const QByteArray &trustee) const;
 
 private:
-    TALLOC_CTX *tmp_ctx;
+    TALLOC_CTX *mem_ctx;
 
 };
 

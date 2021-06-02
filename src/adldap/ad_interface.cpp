@@ -1671,17 +1671,17 @@ const QHash<QString, QString> trustee_name_map = {
 };
 
 SecurityDescriptor::SecurityDescriptor(const QByteArray &descriptor_bytes) {
-    tmp_ctx = talloc_new(NULL);
-    
+    mem_ctx = talloc_new(NULL);
+
     DATA_BLOB blob = data_blob_const(descriptor_bytes.data(), descriptor_bytes.size());
 
-    data = talloc(tmp_ctx, struct security_descriptor);
+    data = talloc(mem_ctx, struct security_descriptor);
 
     ndr_pull_struct_blob(&blob, data, data, (ndr_pull_flags_fn_t)ndr_pull_security_descriptor);
 }
 
 SecurityDescriptor::~SecurityDescriptor() {
-    talloc_free(tmp_ctx);
+    talloc_free(mem_ctx);
 }
 
 QList<QByteArray> SecurityDescriptor::get_trustee_list() const {
@@ -1756,14 +1756,14 @@ QList<security_ace *> SecurityDescriptor::get_ace_list(const QByteArray &trustee
 }
 
 void SecurityDescriptor::print_acl(const QByteArray &trustee) const {
-    TALLOC_CTX *mem_ctx = talloc_new(NULL);
+    TALLOC_CTX *tmp_ctx = talloc_new(NULL);
 
     const QList<security_ace *> ace_list = get_ace_list(trustee);
 
     for (security_ace *ace : ace_list) {
         const QString ace_string =
         [&]() {
-            char *ace_cstr = ndr_print_struct_string(mem_ctx, (ndr_print_fn_t)ndr_print_security_ace,
+            char *ace_cstr = ndr_print_struct_string(tmp_ctx, (ndr_print_fn_t)ndr_print_security_ace,
                 "ace", ace);
 
             const QString out = QString(ace_cstr);
@@ -1774,7 +1774,7 @@ void SecurityDescriptor::print_acl(const QByteArray &trustee) const {
         qDebug().noquote() << ace_string;
     }
 
-    talloc_free(mem_ctx);
+    talloc_free(tmp_ctx);
 }
 
 QByteArray dom_sid_to_bytes(const dom_sid &sid) {
