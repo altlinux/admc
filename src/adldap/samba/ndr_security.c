@@ -31,9 +31,6 @@
 #define N_ELEMENTS(arr) (sizeof(arr) / sizeof(arr[0]))
 #endif
 
-// TODO: figure out how to define this
-#define SMB_HAS_NEW_NDR_PULL_STEAL_SWITCH
-
 static enum ndr_err_code
 ndr_pull_GUID(struct ndr_pull *ndr,
               int ndr_flags,
