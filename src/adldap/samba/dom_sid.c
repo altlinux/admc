@@ -29,6 +29,67 @@
 
 #include "replace.h"
 
+/*****************************************************************
+ Compare the auth portion of two sids.
+*****************************************************************/
+
+int dom_sid_compare_auth(const struct dom_sid *sid1,
+             const struct dom_sid *sid2)
+{
+    int i;
+
+    if (sid1 == sid2)
+        return 0;
+    if (!sid1)
+        return -1;
+    if (!sid2)
+        return 1;
+
+    if (sid1->sid_rev_num != sid2->sid_rev_num)
+        return sid1->sid_rev_num - sid2->sid_rev_num;
+
+    for (i = 0; i < 6; i++)
+        if (sid1->id_auth[i] != sid2->id_auth[i])
+            return sid1->id_auth[i] - sid2->id_auth[i];
+
+    return 0;
+}
+
+/*****************************************************************
+ Compare two sids.
+*****************************************************************/
+
+int dom_sid_compare(const struct dom_sid *sid1, const struct dom_sid *sid2)
+{
+    int i;
+
+    if (sid1 == sid2)
+        return 0;
+    if (!sid1)
+        return -1;
+    if (!sid2)
+        return 1;
+
+    /* Compare most likely different rids, first: i.e start at end */
+    if (sid1->num_auths != sid2->num_auths)
+        return sid1->num_auths - sid2->num_auths;
+
+    for (i = sid1->num_auths-1; i >= 0; --i)
+        if (sid1->sub_auths[i] != sid2->sub_auths[i])
+            return sid1->sub_auths[i] - sid2->sub_auths[i];
+
+    return dom_sid_compare_auth(sid1, sid2);
+}
+
+/*****************************************************************
+ Compare two sids.
+*****************************************************************/
+
+bool dom_sid_equal(const struct dom_sid *sid1, const struct dom_sid *sid2)
+{
+    return dom_sid_compare(sid1, sid2) == 0;
+}
+
 /*
   Convert a dom_sid to a string, printing into a buffer. Return the
   string length. If it overflows, return the string length that would

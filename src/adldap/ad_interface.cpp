@@ -27,6 +27,7 @@
 #include "samba/ndr_security.h"
 #include "samba/gp_manage.h"
 #include "samba/dom_sid.h"
+#include "samba/libsmb_xattr.h"
 
 #include "ad_filter.h"
 
@@ -845,6 +846,8 @@ bool AdInterface::attribute_replace_security_descriptor(const QString &dn, const
             for (int i = 0; i < dacl_qlist.size(); i++) {
                 memcpy(&out->aces[i], dacl_qlist[i], sizeof(security_ace));
             }
+
+            qsort(out->aces, out->num_aces, sizeof(security_ace), ace_compare);
 
             return out;
         }();

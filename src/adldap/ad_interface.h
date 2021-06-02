@@ -36,8 +36,7 @@ class QString;
 class QByteArray;
 class QDateTime;
 class AdObject;
-class AdConfig;
-class SecurityACE;
+class AdConfig; 
 class SecurityDescriptor;
 template <typename T> class QList;
 typedef void TALLOC_CTX;
@@ -200,13 +199,11 @@ private:
     security_descriptor *data;
 };
 
-extern const QList<uint32_t> sec_masks;
-extern const QHash<AcePermission, uint32_t> ace_permission_to_mask_map;
-extern const QHash<AcePermission, QString> ace_permission_to_type_map;
-
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 QByteArray dom_sid_to_bytes(const dom_sid &sid);
 
+extern const QHash<AcePermission, uint32_t> ace_permission_to_mask_map;
+extern const QHash<AcePermission, QString> ace_permission_to_type_map;
 extern const QList<AcePermission> all_permissions_list;
 extern const QSet<AcePermission> all_permissions;
 extern const QSet<AcePermission> read_prop_permissions;

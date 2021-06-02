@@ -38,6 +38,8 @@ char *dom_sid_string(TALLOC_CTX *mem_ctx, const struct dom_sid *sid);
 
 struct dom_sid_buf { char buf[DOM_SID_STR_BUFLEN]; };
 char *dom_sid_str_buf(const struct dom_sid *sid, struct dom_sid_buf *dst);
+int dom_sid_compare(const struct dom_sid *sid1, const struct dom_sid *sid2);
+bool dom_sid_equal(const struct dom_sid *sid1, const struct dom_sid *sid2);
 
 #ifdef __cplusplus
 }
