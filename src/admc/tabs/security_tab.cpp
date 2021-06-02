@@ -71,78 +71,6 @@ const QHash<AcePermission, QString> ace_permission_to_name_map = {
     ENUM_TO_STRING(AcePermission_WriteWebInfo),
 };
 
-// TODO: values of SEC_ADS_GENERIC_READ and
-// SEC_ADS_GENERIC_WRITE constants don't match with the bits
-// that ADUC sets when you enable those permissions in
-// security tab. There are some extra bits in these
-// constants, took them out as a quick fix.
-const QHash<AcePermission, uint32_t> ace_permission_to_mask_map = {
-    {AcePermission_FullControl, SEC_ADS_GENERIC_ALL},
-    // {AcePermission_Read, SEC_ADS_GENERIC_READ},
-    {AcePermission_Read, (SEC_STD_READ_CONTROL | SEC_ADS_LIST | SEC_ADS_READ_PROP)},
-    // {AcePermission_Write, SEC_ADS_GENERIC_WRITE},
-    {AcePermission_Write, (SEC_ADS_SELF_WRITE | SEC_ADS_WRITE_PROP)},
-    {AcePermission_CreateChild, SEC_ADS_CREATE_CHILD},
-    {AcePermission_DeleteChild, SEC_ADS_DELETE_CHILD},
-    {AcePermission_AllowedToAuthenticate, SEC_ADS_CONTROL_ACCESS},
-    {AcePermission_ChangePassword, SEC_ADS_CONTROL_ACCESS},
-    {AcePermission_ReceiveAs, SEC_ADS_CONTROL_ACCESS},
-    {AcePermission_ResetPassword, SEC_ADS_CONTROL_ACCESS},
-    {AcePermission_SendAs, SEC_ADS_CONTROL_ACCESS},
-    {AcePermission_ReadAccountRestrictions, SEC_ADS_READ_PROP},
-    {AcePermission_WriteAccountRestrictions, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadGeneralInfo, SEC_ADS_READ_PROP},
-    {AcePermission_WriteGeneralInfo, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadGroupMembership, SEC_ADS_READ_PROP},
-    {AcePermission_ReadLogonInfo, SEC_ADS_READ_PROP},
-    {AcePermission_WriteLogonInfo, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadPersonalInfo, SEC_ADS_READ_PROP},
-    {AcePermission_WritePersonalInfo, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadPhoneAndMailOptions, SEC_ADS_READ_PROP},
-    {AcePermission_WritePhoneAndMailOptions, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadPrivateInfo, SEC_ADS_READ_PROP},
-    {AcePermission_WritePrivateInfo, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadPublicInfo, SEC_ADS_READ_PROP},
-    {AcePermission_WritePublicInfo, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadRemoteAccessInfo, SEC_ADS_READ_PROP},
-    {AcePermission_WriteRemoteAccessInfo, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadTerminalServerLicenseServer, SEC_ADS_READ_PROP},
-    {AcePermission_WriteTerminalServerLicenseServer, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadWebInfo, SEC_ADS_READ_PROP},
-    {AcePermission_WriteWebInfo, SEC_ADS_WRITE_PROP},
-};
-
-// NOTE: store right's cn value here, then search for it to
-// get right's guid, which is compared to ace type.
-const QHash<AcePermission, QString> ace_permission_to_type_map = {
-    {AcePermission_AllowedToAuthenticate, "Allowed-To-Authenticate"},
-    {AcePermission_ChangePassword, "User-Change-Password"},
-    {AcePermission_ReceiveAs, "Receive-As"},
-    {AcePermission_ResetPassword, "User-Force-Change-Password"},
-    {AcePermission_SendAs, "Send-As"},
-    {AcePermission_ReadAccountRestrictions, "User-Account-Restrictions"},
-    {AcePermission_WriteAccountRestrictions, "User-Account-Restrictions"},
-    {AcePermission_ReadGeneralInfo, "General-Information"},
-    {AcePermission_WriteGeneralInfo, "General-Information"},
-    {AcePermission_ReadGroupMembership, "Membership"},
-    {AcePermission_ReadLogonInfo, "User-Logon"},
-    {AcePermission_WriteLogonInfo, "User-Logon"},
-    {AcePermission_ReadPersonalInfo, "Personal-Information"},
-    {AcePermission_WritePersonalInfo, "Personal-Information"},
-    {AcePermission_ReadPhoneAndMailOptions, "Email-Information"},
-    {AcePermission_WritePhoneAndMailOptions, "Email-Information"},
-    {AcePermission_ReadPrivateInfo, "Private-Information"},
-    {AcePermission_WritePrivateInfo, "Private-Information"},
-    {AcePermission_ReadPublicInfo, "Public-Information"},
-    {AcePermission_WritePublicInfo, "Public-Information"},
-    {AcePermission_ReadRemoteAccessInfo, "RAS-Information"},
-    {AcePermission_WriteRemoteAccessInfo, "RAS-Information"},
-    {AcePermission_ReadTerminalServerLicenseServer, "Terminal-Server-License-Server"},
-    {AcePermission_WriteTerminalServerLicenseServer, "Terminal-Server-License-Server"},
-    {AcePermission_ReadWebInfo, "Web-Information"},
-    {AcePermission_WriteWebInfo, "Web-Information"}
-};
-
 const QList<AcePermission> all_permissions_list =
 []() {
     QList<AcePermission> out;
@@ -310,6 +238,11 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
 
                     return guid_out;
                 }();
+
+
+                const QByteArray bytes_1 = guid_string_to_bytes(rights_guid);
+                const QString string_2 = attribute_display_value(ATTRIBUTE_OBJECT_GUID, bytes_1, g_adconfig);
+                qInfo() << rights_guid << string_2 << (rights_guid == string_2);
 
                 const QString ace_type_guid =
                 [&]() {
@@ -572,27 +505,28 @@ bool SecurityTab::apply(AdInterface &ad, const QString &target) {
 
         out = permission_state_map;
 
+        // Remove child permission states. For example if
+        // "Read" is allowed, then there's no need to
+        // include any other state for "read prop"
+        // permissions.
         for (const QByteArray &trustee : out.keys()) {
             const bool full_control = out[trustee].contains(AcePermission_FullControl) && (out[trustee][AcePermission_FullControl] != PermissionState_None);
+            const bool read = out[trustee].contains(AcePermission_Read) && (out[trustee][AcePermission_Read] != PermissionState_None);
+            const bool write = out[trustee].contains(AcePermission_Write) && (out[trustee][AcePermission_Write] != PermissionState_None);
+            
             if (full_control) {
                 for (const AcePermission &permission : all_permissions) {
                     if (permission != AcePermission_FullControl) {
                         out[trustee].remove(permission);
                     }
                 }
-            }
-
-            const bool read = out[trustee].contains(AcePermission_Read) && (out[trustee][AcePermission_Read] != PermissionState_None);
-            if (read) {
+            } else if (read) {
                 for (const AcePermission &permission : read_prop_permissions) {
                     if (permission != AcePermission_Read) {
                         out[trustee].remove(permission);
                     }
                 }
-            }
-
-            const bool write = out[trustee].contains(AcePermission_Write) && (out[trustee][AcePermission_Write] != PermissionState_None);
-            if (write) {
+            } else if (write) {
                 for (const AcePermission &permission : write_prop_permissions) {
                     if (permission != AcePermission_Read) {
                         out[trustee].remove(permission);

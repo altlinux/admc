@@ -214,6 +214,9 @@ public:
 };
 
 extern const QList<uint32_t> sec_masks;
+extern const QHash<AcePermission, uint32_t> ace_permission_to_mask_map;
+extern const QHash<AcePermission, QString> ace_permission_to_type_map;
+
 QString access_mask_string(const uint32_t access_mask);
 
 void edit_sd(TALLOC_CTX *mem_ctx, struct security_descriptor *old_sd);

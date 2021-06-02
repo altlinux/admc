@@ -23,6 +23,7 @@
 #include "ad_utils.h"
 #include "ad_object.h"
 #include "ad_display.h"
+#include "ad_config.h"
 #include "samba/ndr_security.h"
 #include "samba/gp_manage.h"
 #include "samba/dom_sid.h"
@@ -71,6 +72,78 @@ int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 AdConfig *AdInterfacePrivate::s_adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
 QString AdInterfacePrivate::s_dc = QString();
+
+// TODO: values of SEC_ADS_GENERIC_READ and
+// SEC_ADS_GENERIC_WRITE constants don't match with the bits
+// that ADUC sets when you enable those permissions in
+// security tab. There are some extra bits in these
+// constants, took them out as a quick fix.
+const QHash<AcePermission, uint32_t> ace_permission_to_mask_map = {
+    {AcePermission_FullControl, SEC_ADS_GENERIC_ALL},
+    // {AcePermission_Read, SEC_ADS_GENERIC_READ},
+    {AcePermission_Read, (SEC_STD_READ_CONTROL | SEC_ADS_LIST | SEC_ADS_READ_PROP)},
+    // {AcePermission_Write, SEC_ADS_GENERIC_WRITE},
+    {AcePermission_Write, (SEC_ADS_SELF_WRITE | SEC_ADS_WRITE_PROP)},
+    {AcePermission_CreateChild, SEC_ADS_CREATE_CHILD},
+    {AcePermission_DeleteChild, SEC_ADS_DELETE_CHILD},
+    {AcePermission_AllowedToAuthenticate, SEC_ADS_CONTROL_ACCESS},
+    {AcePermission_ChangePassword, SEC_ADS_CONTROL_ACCESS},
+    {AcePermission_ReceiveAs, SEC_ADS_CONTROL_ACCESS},
+    {AcePermission_ResetPassword, SEC_ADS_CONTROL_ACCESS},
+    {AcePermission_SendAs, SEC_ADS_CONTROL_ACCESS},
+    {AcePermission_ReadAccountRestrictions, SEC_ADS_READ_PROP},
+    {AcePermission_WriteAccountRestrictions, SEC_ADS_WRITE_PROP},
+    {AcePermission_ReadGeneralInfo, SEC_ADS_READ_PROP},
+    {AcePermission_WriteGeneralInfo, SEC_ADS_WRITE_PROP},
+    {AcePermission_ReadGroupMembership, SEC_ADS_READ_PROP},
+    {AcePermission_ReadLogonInfo, SEC_ADS_READ_PROP},
+    {AcePermission_WriteLogonInfo, SEC_ADS_WRITE_PROP},
+    {AcePermission_ReadPersonalInfo, SEC_ADS_READ_PROP},
+    {AcePermission_WritePersonalInfo, SEC_ADS_WRITE_PROP},
+    {AcePermission_ReadPhoneAndMailOptions, SEC_ADS_READ_PROP},
+    {AcePermission_WritePhoneAndMailOptions, SEC_ADS_WRITE_PROP},
+    {AcePermission_ReadPrivateInfo, SEC_ADS_READ_PROP},
+    {AcePermission_WritePrivateInfo, SEC_ADS_WRITE_PROP},
+    {AcePermission_ReadPublicInfo, SEC_ADS_READ_PROP},
+    {AcePermission_WritePublicInfo, SEC_ADS_WRITE_PROP},
+    {AcePermission_ReadRemoteAccessInfo, SEC_ADS_READ_PROP},
+    {AcePermission_WriteRemoteAccessInfo, SEC_ADS_WRITE_PROP},
+    {AcePermission_ReadTerminalServerLicenseServer, SEC_ADS_READ_PROP},
+    {AcePermission_WriteTerminalServerLicenseServer, SEC_ADS_WRITE_PROP},
+    {AcePermission_ReadWebInfo, SEC_ADS_READ_PROP},
+    {AcePermission_WriteWebInfo, SEC_ADS_WRITE_PROP},
+};
+
+// NOTE: store right's cn value here, then search for it to
+// get right's guid, which is compared to ace type.
+const QHash<AcePermission, QString> ace_permission_to_type_map = {
+    {AcePermission_AllowedToAuthenticate, "Allowed-To-Authenticate"},
+    {AcePermission_ChangePassword, "User-Change-Password"},
+    {AcePermission_ReceiveAs, "Receive-As"},
+    {AcePermission_ResetPassword, "User-Force-Change-Password"},
+    {AcePermission_SendAs, "Send-As"},
+    {AcePermission_ReadAccountRestrictions, "User-Account-Restrictions"},
+    {AcePermission_WriteAccountRestrictions, "User-Account-Restrictions"},
+    {AcePermission_ReadGeneralInfo, "General-Information"},
+    {AcePermission_WriteGeneralInfo, "General-Information"},
+    {AcePermission_ReadGroupMembership, "Membership"},
+    {AcePermission_ReadLogonInfo, "User-Logon"},
+    {AcePermission_WriteLogonInfo, "User-Logon"},
+    {AcePermission_ReadPersonalInfo, "Personal-Information"},
+    {AcePermission_WritePersonalInfo, "Personal-Information"},
+    {AcePermission_ReadPhoneAndMailOptions, "Email-Information"},
+    {AcePermission_WritePhoneAndMailOptions, "Email-Information"},
+    {AcePermission_ReadPrivateInfo, "Private-Information"},
+    {AcePermission_WritePrivateInfo, "Private-Information"},
+    {AcePermission_ReadPublicInfo, "Public-Information"},
+    {AcePermission_WritePublicInfo, "Public-Information"},
+    {AcePermission_ReadRemoteAccessInfo, "RAS-Information"},
+    {AcePermission_WriteRemoteAccessInfo, "RAS-Information"},
+    {AcePermission_ReadTerminalServerLicenseServer, "Terminal-Server-License-Server"},
+    {AcePermission_WriteTerminalServerLicenseServer, "Terminal-Server-License-Server"},
+    {AcePermission_ReadWebInfo, "Web-Information"},
+    {AcePermission_WriteWebInfo, "Web-Information"}
+};
 
 void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgroup, int maxLenWorkgroup, char * pUsername, int maxLenUsername, char * pPassword, int maxLenPassword) {
 
@@ -1893,12 +1966,65 @@ QByteArray AdInterface::generate_sd(const QHash<QByteArray, QHash<AcePermission,
     for (const QByteArray &trustee : state.keys()) {
         const QHash<AcePermission, PermissionState> permission_map = state[trustee];
 
-        struct security_ace *ace = talloc(tmp_ctx, struct security_ace);
-        // ace->type = 
-        // ace->flags = 
-        // ace->access_mask =
-        // ace->object =
-        memcpy(&ace->trustee, trustee.data(), sizeof(dom_sid));
+        for (const AcePermission &permission : permission_map.keys()) {
+            const PermissionState permission_state = permission_map[permission];
+
+            if (permission_state == PermissionState_None) {
+                continue;
+            }
+
+            struct security_ace *ace = talloc(tmp_ctx, struct security_ace);
+
+            const bool object_present = ace_permission_to_type_map.contains(permission);
+
+            ace->type =
+            [&]() {
+                if (permission_state == PermissionState_Allowed) {
+                    if (object_present) {
+                        return SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT;
+                    } else {
+                        return SEC_ACE_TYPE_ACCESS_ALLOWED;
+                    }
+                } else if (permission_state == PermissionState_Denied) {
+                    if (object_present) {
+                        return SEC_ACE_TYPE_ACCESS_DENIED_OBJECT;
+                    } else {
+                        return SEC_ACE_TYPE_ACCESS_DENIED;
+                    }
+                }
+
+                return SEC_ACE_TYPE_ACCESS_ALLOWED;
+            }();
+
+            // TODO: these flags should be set to something
+            // in some cases, for now just 0
+            ace->flags = 0x00;
+            ace->access_mask = ace_permission_to_mask_map[permission];
+            ace->object.object.flags =
+            [&]() {
+                if (object_present) {
+                    return SEC_ACE_OBJECT_TYPE_PRESENT;
+                } else {
+                    return 0;
+                }
+            }();
+            ace->object.object.type.type =
+            [&]() {
+                if (object_present) {
+                    const QString type_name_string = ace_permission_to_type_map[permission];
+                    const QString type_string = d->adconfig->get_right_guid(type_name_string);
+                    const QByteArray type_bytes = guid_string_to_bytes(type_string);
+
+                    struct GUID out;
+                    memcpy(&out, type_bytes.data(), sizeof(GUID));
+
+                    return out;
+                } else {
+                    return GUID();
+                }
+            }();
+            memcpy(&ace->trustee, trustee.data(), sizeof(dom_sid));
+        }
     }
 
     sd->dacl = dacl;
