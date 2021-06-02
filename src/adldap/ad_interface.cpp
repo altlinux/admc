@@ -753,7 +753,7 @@ bool AdInterface::attribute_replace_security_descriptor(const QString &dn, const
         const AdObject object = search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
         const QByteArray old_descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
         const SecurityDescriptor old_sd = SecurityDescriptor(old_descriptor_bytes);
-        struct security_descriptor *original_sd = old_sd.data;
+        security_descriptor *original_sd = old_sd.get_data();
         sd->revision = original_sd->revision;
         sd->type = original_sd->type;
         sd->owner_sid = original_sd->owner_sid;
@@ -1968,6 +1968,10 @@ void SecurityDescriptor::print_acl(const QByteArray &trustee) const {
     }
 
     talloc_free(tmp_ctx);
+}
+
+security_descriptor *SecurityDescriptor::get_data() const {
+    return data;
 }
 
 QByteArray dom_sid_to_bytes(const dom_sid &sid) {

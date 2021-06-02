@@ -187,8 +187,6 @@ private:
 class SecurityDescriptor {
 
 public:
-    struct security_descriptor *data;
-
     SecurityDescriptor(const QByteArray &descriptor_bytes);
     ~SecurityDescriptor();
 
@@ -196,10 +194,11 @@ public:
     QList<security_ace *> dacl() const;
     QList<security_ace *> get_ace_list(const QByteArray &trustee) const;
     void print_acl(const QByteArray &trustee) const;
+    security_descriptor *get_data() const;
 
 private:
     TALLOC_CTX *mem_ctx;
-
+    security_descriptor *data;
 };
 
 extern const QList<uint32_t> sec_masks;
