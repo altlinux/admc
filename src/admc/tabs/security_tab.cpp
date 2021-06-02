@@ -201,6 +201,15 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
 
     trustee_model->sort(0, Qt::AscendingOrder);
 
+    // Debug print
+    for (const QByteArray &trustee : trustee_list) {
+        const QString trustee_name = ad.get_trustee_name(trustee);
+        qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
+        qInfo() << trustee_name;
+        sd.print_acl(trustee);
+        qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
+    }
+
     //
     // Load permission state
     //
@@ -344,8 +353,6 @@ void SecurityTab::load_trustee_acl() {
     }
 
     ignore_item_changed_signal = false;
-
-    sd.print_acl(trustee);
 }
 
 // Permission check states are interdependent. When some

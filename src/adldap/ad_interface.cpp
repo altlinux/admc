@@ -1929,14 +1929,10 @@ QList<security_ace *> SecurityDescriptor::get_ace_list(const QByteArray &trustee
 void SecurityDescriptor::print_acl(const QByteArray &trustee) const {
     const QList<security_ace *> ace_list = get_ace_list(trustee);
 
-    qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
-    qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
     for (security_ace *ace : ace_list) {
         const QString ace_string = ace_to_string(ace);
         qDebug().noquote() << ace_string;
     }
-    qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
-    qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!";
 }
 
 QByteArray dom_sid_to_bytes(const dom_sid &sid) {
