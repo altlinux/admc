@@ -184,14 +184,6 @@ private:
     AdInterfacePrivate *d;
 };
 
-enum SecurityModifyType {
-    SecurityModifyType_None,
-    SecurityModifyType_SetAllowed,
-    SecurityModifyType_UnsetAllowed,
-    SecurityModifyType_SetDenied,
-    SecurityModifyType_UnsetDenied,
-};
-
 class SecurityDescriptor {
 
 public:
@@ -203,9 +195,8 @@ public:
 
     TALLOC_CTX *tmp_ctx;
     struct security_descriptor *data;
-    QList<security_ace *> dacl;
-    QList<security_ace *> sacl;
 
+    QList<security_ace *> dacl() const;
     QList<security_ace *> get_ace_list(const QByteArray &trustee) const;
     void print_acl(const QByteArray &trustee) const;
 };

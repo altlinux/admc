@@ -1687,39 +1687,29 @@ void SecurityDescriptor::load(const QByteArray &descriptor_bytes) {
     data = talloc(tmp_ctx, struct security_descriptor);
 
     ndr_pull_struct_blob(&blob, data, data, (ndr_pull_flags_fn_t)ndr_pull_security_descriptor);
-
-    auto security_acl_to_qlist =
-    [](security_acl *acl) {
-        QList<security_ace *> out;
-
-        for (uint32_t i = 0; i < acl->num_aces; i++) {
-            security_ace *ace = &acl->aces[i];
-            security_ace *ace_copy = (security_ace *) malloc(sizeof(security_ace));
-            memcpy(ace_copy, ace, sizeof(security_ace));
-            out.append(ace_copy);
-        }
-
-        return out;
-    };
-
-    // SecurityACE ace;
-    // QList<SecurityACE> ace_list;
-    // ace_list.append(ace);
-
-    dacl = security_acl_to_qlist(data->dacl);
-    sacl = security_acl_to_qlist(data->sacl);
 }
 
 QList<QByteArray> SecurityDescriptor::get_trustee_list() {
     QSet<QByteArray> out;
 
-    for (security_ace *ace : dacl) {
+    for (security_ace *ace : dacl()) {
         const QByteArray trustee_bytes = dom_sid_to_bytes(ace->trustee);
 
         out.insert(trustee_bytes);
     }
 
     return out.toList();
+}
+
+QList<security_ace *> SecurityDescriptor::dacl() const {
+    QList<security_ace *> out;
+
+    for (uint32_t i = 0; i < data->dacl->num_aces; i++) {
+        security_ace *ace = &data->dacl->aces[i];
+        out.append(ace);
+    }
+
+    return out;
 }
 
 QString AdInterface::get_trustee_name(const QByteArray &trustee) {
@@ -1757,9 +1747,8 @@ QString AdInterface::get_trustee_name(const QByteArray &trustee) {
 
 QList<security_ace *> SecurityDescriptor::get_ace_list(const QByteArray &trustee) const {
     QList<security_ace *> out;
-    TALLOC_CTX *mem_ctx = talloc_new(NULL);
 
-    for (security_ace *ace : dacl) {
+    for (security_ace *ace : dacl()) {
         const QByteArray this_trustee_bytes = dom_sid_to_bytes(ace->trustee);
 
         const bool trustee_match = (this_trustee_bytes == trustee);
@@ -1767,8 +1756,6 @@ QList<security_ace *> SecurityDescriptor::get_ace_list(const QByteArray &trustee
             out.append(ace);
         }
     }
-
-    talloc_free(mem_ctx);
 
     return out;
 }

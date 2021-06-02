@@ -222,7 +222,7 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     }
 
     // Then go through acl and set allowed/denied permission states
-    for (security_ace *ace : sd.dacl) {
+    for (security_ace *ace : sd.dacl()) {
         const QByteArray trustee = dom_sid_to_bytes(ace->trustee);
 
         for (const AcePermission &permission : all_permissions) {
