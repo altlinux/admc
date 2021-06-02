@@ -192,7 +192,6 @@ public:
 
     QList<QByteArray> get_trustee_list() const;
     QList<security_ace *> dacl() const;
-    QList<security_ace *> get_ace_list(const QByteArray &trustee) const;
     void print_acl(const QByteArray &trustee) const;
     security_descriptor *get_data() const;
 

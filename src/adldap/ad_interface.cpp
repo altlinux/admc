@@ -1933,25 +1933,24 @@ QString AdInterface::get_trustee_name(const QByteArray &trustee) {
     }
 }
 
-QList<security_ace *> SecurityDescriptor::get_ace_list(const QByteArray &trustee) const {
-    QList<security_ace *> out;
-
-    for (security_ace *ace : dacl()) {
-        const QByteArray this_trustee_bytes = dom_sid_to_bytes(ace->trustee);
-
-        const bool trustee_match = (this_trustee_bytes == trustee);
-        if (trustee_match) {
-            out.append(ace);
-        }
-    }
-
-    return out;
-}
-
 void SecurityDescriptor::print_acl(const QByteArray &trustee) const {
     TALLOC_CTX *tmp_ctx = talloc_new(NULL);
 
-    const QList<security_ace *> ace_list = get_ace_list(trustee);
+    const QList<security_ace *> ace_list =
+    [&]() {
+        QList<security_ace *> out;
+
+        for (security_ace *ace : dacl()) {
+            const QByteArray this_trustee_bytes = dom_sid_to_bytes(ace->trustee);
+
+            const bool trustee_match = (this_trustee_bytes == trustee);
+            if (trustee_match) {
+                out.append(ace);
+            }
+        }
+
+        return out;
+    }();
 
     for (security_ace *ace : ace_list) {
         const QString ace_string =
