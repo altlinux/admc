@@ -1708,8 +1708,6 @@ void SecurityDescriptor::load(const QByteArray &descriptor_bytes) {
 
     dacl = security_acl_to_qlist(data->dacl);
     sacl = security_acl_to_qlist(data->sacl);
-
-    edit_sd(tmp_ctx, data);
 }
 
 QList<QByteArray> SecurityDescriptor::get_trustee_list() {
@@ -1757,157 +1755,6 @@ QString AdInterface::get_trustee_name(const QByteArray &trustee) {
     }
 }
 
-void edit_sd(TALLOC_CTX *mem_ctx, struct security_descriptor *old_sd) {
-    struct security_descriptor *sd = talloc_zero(mem_ctx, struct security_descriptor);
-
-    sd->revision = old_sd->revision;
-    sd->type = old_sd->type;
-
-    // NOTE: not sure why samba uses dom_sid_dup() to
-    // duplicate dom sid's. It seems like it's fine to just
-    // memdup it.
-    sd->owner_sid = (dom_sid *)talloc_memdup(mem_ctx, old_sd->owner_sid, sizeof(dom_sid));
-    sd->group_sid = (dom_sid *)talloc_memdup(mem_ctx, old_sd->group_sid, sizeof(dom_sid));
-
-    // NOTE: use diff ctx here, otherwise current
-    // context will grow with each edit_sd() call
-    DATA_BLOB blob;
-    ndr_push_struct_blob(
-        &blob, mem_ctx, sd,
-        (ndr_push_flags_fn_t)ndr_push_security_descriptor);
-
-    talloc_free(sd);
-}
-
-QString ace_to_string(security_ace *ace) {
-    TALLOC_CTX *mem_ctx = talloc_new(NULL);
-
-    char *ace_string = ndr_print_struct_string(mem_ctx, (ndr_print_fn_t)ndr_print_security_ace,
-        "ace", ace);
-
-    const QString out = QString(ace_string);
-
-    talloc_free(mem_ctx);
-
-    return out;
-}
-
-void SecurityDescriptor::modify_sd(const QByteArray &trustee, const SecurityModifyType modify_type, const uint32_t permission_mask) {
-    qDebug() << "modify_sd()";
-    qDebug() << "\t\tbefore";
-    print_acl(trustee);
-
-    dom_sid trustee_sid;
-    memcpy(&trustee_sid, trustee.data(), sizeof(dom_sid));
-
-    TALLOC_CTX *mem_ctx = talloc_new(NULL);
-
-    // TODO: DON'T create ace's if don't need to edit them
-    // if only setting allowed, DON'T create denied
-
-    auto get_ace =
-    [&](const enum security_ace_type type, const bool create_if_not_present) -> security_ace * {
-        // First, try to find ace in the list
-        const QList<security_ace *> ace_list = get_ace_list(trustee);
-        
-        for (security_ace *ace : ace_list) {
-            if (ace->type == type) {
-                return ace;
-            }
-        }
-
-        if (create_if_not_present) {
-            security_ace *ace = (security_ace *) malloc(sizeof(security_ace));
-            ace->type = type;
-            ace->access_mask = 0;
-            memcpy(&ace->trustee, &trustee_sid, sizeof(dom_sid));
-
-            dacl.append(ace);
-
-            return ace;
-        }
-
-        return nullptr;
-    };
-
-    switch (modify_type) {
-        case SecurityModifyType_SetAllowed: {
-            // Unset bits in denied ace
-            security_ace *denied = get_ace(SEC_ACE_TYPE_ACCESS_DENIED, false);
-            if (denied != nullptr) {
-                denied->access_mask &= (~permission_mask);
-            }
-
-            // Set bits in allowed ace. Create if doesn't exist
-            security_ace *allowed = get_ace(SEC_ACE_TYPE_ACCESS_ALLOWED, true);
-            allowed->access_mask |= permission_mask;
-
-            break;
-        }
-        case SecurityModifyType_UnsetAllowed: {
-            // Unset bits in allowed ace
-            security_ace *allowed = get_ace(SEC_ACE_TYPE_ACCESS_ALLOWED, false);
-            allowed->access_mask &= (~permission_mask);
-            
-            break;
-        }
-        case SecurityModifyType_SetDenied: {
-            // Unset bits in allowed ace
-            security_ace *allowed = get_ace(SEC_ACE_TYPE_ACCESS_ALLOWED, false);
-            if (allowed != nullptr) {
-                allowed->access_mask &= (~permission_mask);
-            }
-
-            // Set bits in denied ace. Create if doesn't exist
-            security_ace *denied = get_ace(SEC_ACE_TYPE_ACCESS_DENIED, true);
-            denied->access_mask |= permission_mask;
-
-            break;
-        }
-        case SecurityModifyType_UnsetDenied: {
-            // Unset bits in denied ace
-            security_ace *denied = get_ace(SEC_ACE_TYPE_ACCESS_DENIED, false);
-            denied->access_mask &= (~permission_mask);
-
-            break;
-        }
-        case SecurityModifyType_None: {
-
-            break;
-        }
-    }
-
-    // Remove all ace's that became empty due to this edit.
-    // Ace's may become empty when they bits are unset
-    const QList<security_ace *> empty_ace_list =
-    [&]() {
-        QList<security_ace *> out;
-
-        for (security_ace *ace : dacl) {
-            const bool ace_is_empty = (ace->access_mask == 0);
-            if (ace_is_empty) {
-                out.append(ace);
-            }
-        }
-
-        return out;
-    }();
-
-    for (security_ace *ace : empty_ace_list) {
-        dacl.removeAll(ace);
-        free(ace);
-    }
-
-    qDebug() << "\t\tafter";
-    print_acl(trustee);
-
-    // TODO: think need to reorder dacl because we sometimes
-    // create new ace's and just append to end of list. See
-    // dacl_sort_into_canonical_order() in samba source
-
-    talloc_free(mem_ctx);
-}
-
 QList<security_ace *> SecurityDescriptor::get_ace_list(const QByteArray &trustee) const {
     QList<security_ace *> out;
     TALLOC_CTX *mem_ctx = talloc_new(NULL);
@@ -1927,12 +1774,25 @@ QList<security_ace *> SecurityDescriptor::get_ace_list(const QByteArray &trustee
 }
 
 void SecurityDescriptor::print_acl(const QByteArray &trustee) const {
+    TALLOC_CTX *mem_ctx = talloc_new(NULL);
+
     const QList<security_ace *> ace_list = get_ace_list(trustee);
 
     for (security_ace *ace : ace_list) {
-        const QString ace_string = ace_to_string(ace);
+        const QString ace_string =
+        [&]() {
+            char *ace_cstr = ndr_print_struct_string(mem_ctx, (ndr_print_fn_t)ndr_print_security_ace,
+                "ace", ace);
+
+            const QString out = QString(ace_cstr);
+
+            return out;
+        }();
+
         qDebug().noquote() << ace_string;
     }
+
+    talloc_free(mem_ctx);
 }
 
 QByteArray dom_sid_to_bytes(const dom_sid &sid) {

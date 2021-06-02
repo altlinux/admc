@@ -200,14 +200,11 @@ public:
 
     void load(const QByteArray &descriptor_bytes);
     QList<QByteArray> get_trustee_list();
-    QList<uint32_t> get_mask_list(AdInterface &ad, const QByteArray &trustee);
 
     TALLOC_CTX *tmp_ctx;
     struct security_descriptor *data;
     QList<security_ace *> dacl;
     QList<security_ace *> sacl;
-
-    void modify_sd(const QByteArray &trustee, const SecurityModifyType modify_type, const uint32_t permission_mask);
 
     QList<security_ace *> get_ace_list(const QByteArray &trustee) const;
     void print_acl(const QByteArray &trustee) const;
@@ -217,10 +214,6 @@ extern const QList<uint32_t> sec_masks;
 extern const QHash<AcePermission, uint32_t> ace_permission_to_mask_map;
 extern const QHash<AcePermission, QString> ace_permission_to_type_map;
 
-QString access_mask_string(const uint32_t access_mask);
-
-void edit_sd(TALLOC_CTX *mem_ctx, struct security_descriptor *old_sd);
-QString ace_to_string(security_ace *ace);
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
 QByteArray dom_sid_to_bytes(const dom_sid &sid);
 
