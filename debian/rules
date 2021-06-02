@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE=1
+export QT_SELECT=qt5
+
+%:
+	dh $@ --buildsystem=cmake
+
+override_dh_auto_install:
+	$(MAKE) DESTDIR=$$(pwd)/debian/hithere prefix=/usr install
+
