@@ -143,17 +143,19 @@ const QHash<AcePermission, QString> ace_permission_to_type_map = {
     {AcePermission_WriteWebInfo, "Web-Information"}
 };
 
-const QSet<AcePermission> all_permissions =
+const QList<AcePermission> all_permissions_list =
 []() {
-    QSet<AcePermission> out;
+    QList<AcePermission> out;
 
     for (int permission_i = 0; permission_i < AcePermission_COUNT; permission_i++) {
         const AcePermission permission = (AcePermission) permission_i;
-        out.insert(permission);
+        out.append(permission);
     }
 
     return out;
 }();
+
+const QSet<AcePermission> all_permissions = all_permissions_list.toSet();
 
 QSet<AcePermission> get_permission_set(const uint32_t mask) {
     QSet<AcePermission> out;
@@ -192,7 +194,7 @@ SecurityTab::SecurityTab() {
     });
 
     // Fill ace model
-    for (const AcePermission &permission : all_permissions) {
+    for (const AcePermission &permission : all_permissions_list) {
         const QList<QStandardItem *> row = make_item_row(AceColumn_COUNT);
 
         const QString mask_string = ace_permission_to_name_map[permission];

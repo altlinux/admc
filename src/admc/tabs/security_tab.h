@@ -41,6 +41,7 @@ enum AcePermissionItemRole {
     AcePermissionItemRole_Permission = Qt::UserRole,
 };
 
+extern const QList<AcePermission> all_permissions_list;
 extern const QSet<AcePermission> all_permissions;
 extern const QSet<AcePermission> access_permissions;
 extern const QSet<AcePermission> read_prop_permissions;
