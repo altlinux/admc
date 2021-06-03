@@ -24,7 +24,7 @@ add_library(adldap SHARED
     ad_display.cpp
     ad_filter.cpp
 
-    samba/gp_manage.cpp
+    samba/gp_manage.c
     samba/ndr_security.c
     samba/dom_sid.c
     samba/replace.c

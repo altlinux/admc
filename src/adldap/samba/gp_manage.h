@@ -22,17 +22,21 @@
  * were removed or edited.
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef GP_MANAGE_H
 #define GP_MANAGE_H
-
-extern "C" {
 
 #include <ndr.h>
 #include <gen_ndr/security.h>
 #include <talloc.h>
 
-};
-
-bool gp_create_gpt_security_descriptor(TALLOC_CTX *mem_ctx, struct security_descriptor *ds_sd, struct security_descriptor **ret);
+NTSTATUS gp_create_gpt_security_descriptor(TALLOC_CTX *mem_ctx, struct security_descriptor *ds_sd, struct security_descriptor **ret);
 
 #endif /* GP_MANAGE_H */
+
+#ifdef __cplusplus
+}
+#endif

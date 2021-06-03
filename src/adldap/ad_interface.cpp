@@ -1412,8 +1412,8 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     // Create sysvol descriptor from domain descriptor (not
     // one to one, some modifications are needed)
     struct security_descriptor *sysvol_sd;
-    const bool create_sd_success = gp_create_gpt_security_descriptor(tmp_ctx, &domain_sd, &sysvol_sd);
-    if (!create_sd_success) {
+    const NTSTATUS create_sd_status = gp_create_gpt_security_descriptor(tmp_ctx, &domain_sd, &sysvol_sd);
+    if (!NT_STATUS_IS_OK(create_sd_status)) {
         qDebug() << "Failed to create gpo sd";
         return false;
     }
