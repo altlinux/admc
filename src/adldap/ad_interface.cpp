@@ -1888,19 +1888,7 @@ QList<security_ace *> SecurityDescriptor::dacl() const {
 }
 
 QString AdInterface::get_trustee_name(const QByteArray &trustee) {
-    const QString trustee_string =
-    [&]() {
-        dom_sid *sid = (dom_sid *) trustee.data();
-
-        TALLOC_CTX *tmp_ctx = talloc_new(NULL);
-
-        const char *sid_cstr = dom_sid_string(tmp_ctx, sid);
-        const QString out = QString(sid_cstr);
-
-        talloc_free(tmp_ctx);
-
-        return out;
-    }();
+    const QString trustee_string = object_sid_display_value(trustee);
 
     if (trustee_name_map.contains(trustee_string)) {
         return trustee_name_map[trustee_string];

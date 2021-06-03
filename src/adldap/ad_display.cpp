@@ -22,6 +22,7 @@
 #include "ad_defines.h"
 #include "ad_utils.h"
 #include "ad_config.h"
+#include "samba/dom_sid.h"
 
 #include <QString>
 #include <QDateTime>
@@ -35,7 +36,6 @@ const qint64 MINUTES_TO_SECONDS = 60LL;
 const qint64 HOURS_TO_SECONDS   = MINUTES_TO_SECONDS * 60LL;
 const qint64 DAYS_TO_SECONDS    = HOURS_TO_SECONDS * 24LL;
 
-QString object_sid_display_value(const QByteArray &sid);
 QString large_integer_datetime_display_value(const QString &attribute, const QByteArray &bytes, const AdConfig *adconfig);
 QString datetime_display_value(const QString &attribute, const QByteArray &bytes, const AdConfig *adconfig);
 QString timespan_display_value(const QByteArray &bytes);
@@ -98,42 +98,17 @@ QString attribute_display_values(const QString &attribute, const QList<QByteArra
     }
 }
 
-// TODO: replace with some library if possible. Maybe one of samba's libs has this.
-// NOTE: https://ldapwiki.com/wiki/ObjectSID
-QString object_sid_display_value(const QByteArray &sid) {
-    QString string = "S-";
-    
-    // byte[0] - revision level
-    const int revision = sid[0];
-    string += QString::number(revision);
-    
-    // byte[1] - count of sub-authorities
-    const int sub_authority_count = sid[1] & 0xFF;
-    
-    // byte(2-7) - authority 48 bit Big-Endian
-    long authority = 0;
-    for (int i = 2; i <= 7; i++) {
-        authority |= ((long)sid[i]) << (8 * (5 - (i - 2)));
-    }
-    string += "-" + QString::number(authority);
-    // TODO: not sure if authority is supposed to be formatted as hex or not. Currently it matches how ADUC displays it.
-    
-    // byte(8-...)
-    // sub-authorities 32 bit Little-Endian
-    int offset = 8;
-    const int bytes = 4;
-    for (int i = 0; i < sub_authority_count; i++) {
-        long sub_authority = 0;
-        for (int j = 0; j < bytes; j++) {
-            sub_authority |= (long)(sid[offset + j] & 0xFF) << (8 * j);
-        }
+QString object_sid_display_value(const QByteArray &sid_bytes) {
+    dom_sid *sid = (dom_sid *) sid_bytes.data();
 
-        string += "-" + QString::number(sub_authority);
+    TALLOC_CTX *tmp_ctx = talloc_new(NULL);
 
-        offset += bytes;
-    }
+    const char *sid_cstr = dom_sid_string(tmp_ctx, sid);
+    const QString out = QString(sid_cstr);
 
-    return string;
+    talloc_free(tmp_ctx);
+
+    return out;
 }
 
 QString large_integer_datetime_display_value(const QString &attribute, const QByteArray &value, const AdConfig *adconfig) {
