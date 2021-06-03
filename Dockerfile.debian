@@ -3,7 +3,7 @@ FROM debian:buster-slim
 ENV DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8 TZ=UTC TERM=xterm-256color
 
 RUN apt-get update \
-    && apt-get -y install build-essential devscripts debhelper gcc g++ catch cmake cmake-data cmake-qt-gui \
+    && apt-get -y install dumb-init build-essential devscripts debhelper gcc g++ catch cmake cmake-data cmake-qt-gui \
             qttools5-dev qtbase5-dev qtbase5-dev-tools qtbase5-private-dev \
             samba-dev libldap-dev libsasl2-dev libsmbclient-dev libcmocka-dev doxygen libg2-dev libpcre3-dev \
             libkrb5-dev libcmocka-dev \
