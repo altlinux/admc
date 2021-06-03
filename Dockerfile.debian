@@ -1,0 +1,17 @@
+# Container image that runs your code
+FROM debian:buster-slim
+ENV DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8 TZ=UTC TERM=xterm-256color
+
+RUN apt-get update \
+    && apt-get -y install build-essential devscripts debhelper gcc g++ catch cmake cmake-data cmake-qt-gui \
+            qttools5-dev qtbase5-dev qtbase5-dev-tools qtbase5-private-dev \
+            samba-dev libldap-dev libsasl2-dev libsmbclient-dev libcmocka-dev doxygen libg2-dev libpcre3-dev \
+            libkrb5-dev libcmocka-dev \
+    && mkdir /admc
+
+WORKDIR /admc
+# Copies the complete project
+COPY . .
+RUN dpkg-buildpackage -us -uc
+
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
