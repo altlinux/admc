@@ -1853,17 +1853,15 @@ const QHash<QString, QString> trustee_name_map = {
 };
 
 SecurityDescriptor::SecurityDescriptor(const QByteArray &descriptor_bytes) {
-    mem_ctx = talloc_new(NULL);
-
     DATA_BLOB blob = data_blob_const(descriptor_bytes.data(), descriptor_bytes.size());
 
-    data = talloc(mem_ctx, struct security_descriptor);
+    data = talloc(NULL, struct security_descriptor);
 
     ndr_pull_struct_blob(&blob, data, data, (ndr_pull_flags_fn_t)ndr_pull_security_descriptor);
 }
 
 SecurityDescriptor::~SecurityDescriptor() {
-    talloc_free(mem_ctx);
+    talloc_free(data);
 }
 
 QList<QByteArray> SecurityDescriptor::get_trustee_list() const {

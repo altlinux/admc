@@ -185,9 +185,8 @@ private:
 
 /**
  * Wrapper over "security_descriptor" struct mainly for the
- * purpose of automatically allocating and free'ing the
- * TALLOC_CTX required for loading this struct. Also
- * contains some access f-ns.
+ * purpose of automatically allocating and free'ing it's
+ * memory. Also contains some access f-ns.
  */
 class SecurityDescriptor {
 
@@ -201,7 +200,6 @@ public:
     security_descriptor *get_data() const;
 
 private:
-    TALLOC_CTX *mem_ctx;
     security_descriptor *data;
 };
 
