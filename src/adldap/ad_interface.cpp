@@ -831,22 +831,12 @@ bool AdInterface::attribute_replace_security_descriptor(const QString &dn, const
         }();
 
         // Replace dacl
-        sd->dacl =
-        [&]() {
-            struct security_acl *out = talloc(tmp_ctx, struct security_acl);
-            out->revision = SECURITY_ACL_REVISION_NT4;
-
-            out->num_aces = dacl_qlist.size();
-
-            out->aces = talloc_array(tmp_ctx, security_ace, dacl_qlist.size());
-            for (int i = 0; i < dacl_qlist.size(); i++) {
-                memcpy(&out->aces[i], dacl_qlist[i], sizeof(security_ace));
-            }
-
-            qsort(out->aces, out->num_aces, sizeof(security_ace), ace_compare);
-
-            return out;
-        }();
+        talloc_free(sd->dacl);
+        sd->dacl = NULL;
+        for (security_ace *ace : dacl_qlist) {
+            security_descriptor_dacl_add(sd, ace);
+        }
+        qsort(sd->dacl->aces, sd->dacl->num_aces, sizeof(security_ace), ace_compare);
 
         DATA_BLOB blob;
         ndr_push_struct_blob(&blob, tmp_ctx, sd, (ndr_push_flags_fn_t)ndr_push_security_descriptor);
