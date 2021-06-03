@@ -183,6 +183,12 @@ private:
     AdInterfacePrivate *d;
 };
 
+/**
+ * Wrapper over "security_descriptor" struct mainly for the
+ * purpose of automatically allocating and free'ing the
+ * TALLOC_CTX required for loading this struct. Also
+ * contains some access f-ns.
+ */
 class SecurityDescriptor {
 
 public:

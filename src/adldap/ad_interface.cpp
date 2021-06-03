@@ -28,6 +28,7 @@
 #include "samba/gp_manage.h"
 #include "samba/dom_sid.h"
 #include "samba/libsmb_xattr.h"
+#include "samba/security_descriptor.h"
 
 #include "ad_filter.h"
 
@@ -749,18 +750,11 @@ bool AdInterface::attribute_replace_security_descriptor(const QString &dn, const
 
         TALLOC_CTX* tmp_ctx = talloc_new(NULL);
 
-        struct security_descriptor *sd = talloc(tmp_ctx, struct security_descriptor);
-
-        // Copy everything that is unchanged from old sd
+        // Use original sd as base, only remaking the dacl
         const AdObject object = search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
         const QByteArray old_descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
         const SecurityDescriptor old_sd = SecurityDescriptor(old_descriptor_bytes);
-        security_descriptor *original_sd = old_sd.get_data();
-        sd->revision = original_sd->revision;
-        sd->type = original_sd->type;
-        sd->owner_sid = original_sd->owner_sid;
-        sd->group_sid = original_sd->group_sid;
-        sd->sacl = original_sd->sacl;
+        security_descriptor *sd = old_sd.get_data();
 
         // Generate new dacl
         const QList<security_ace *> dacl_qlist =
@@ -836,10 +830,11 @@ bool AdInterface::attribute_replace_security_descriptor(const QString &dn, const
             return out;
         }();
 
+        // Replace dacl
         sd->dacl =
         [&]() {
             struct security_acl *out = talloc(tmp_ctx, struct security_acl);
-            out->revision = original_sd->dacl->revision;
+            out->revision = SECURITY_ACL_REVISION_NT4;
 
             out->num_aces = dacl_qlist.size();
 
