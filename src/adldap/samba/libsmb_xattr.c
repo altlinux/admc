@@ -29,6 +29,8 @@
 
 #include "samba/dom_sid.h"
 
+#include "samba/security_descriptor.h"
+
 #include <ndr.h>
 #include <gen_ndr/security.h>
 #include <string.h>
