@@ -1895,10 +1895,27 @@ QString AdInterface::get_trustee_name(const QByteArray &trustee) {
     } else {
         // Try to get name of trustee by finding it's DN
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, trustee_string);
+        const QList<QString> attributes = {
+            ATTRIBUTE_DISPLAY_NAME,
+            ATTRIBUTE_SAMACCOUNT_NAME,
+        };
         const auto trustee_search = search(d->domain_head, SearchScope_All, filter, QList<QString>());
         if (!trustee_search.isEmpty()) {
-            const QString trustee_dn = trustee_search.keys()[0];
-            const QString name = dn_get_name(trustee_dn);
+            // NOTE: this is some weird name selection logic
+            // but that's how microsoft does it. Maybe need
+            // to use this somewhere else as well?
+            const QString name =
+            [&]() {
+                const AdObject object = trustee_search.values()[0];
+
+                if (object.contains(ATTRIBUTE_DISPLAY_NAME)) {
+                    return object.get_string(ATTRIBUTE_DISPLAY_NAME);
+                } else if (object.contains(ATTRIBUTE_SAMACCOUNT_NAME)) {
+                    return object.get_string(ATTRIBUTE_SAMACCOUNT_NAME);
+                } else {
+                    return dn_get_name(object.get_dn());
+                }
+            }();
 
             return name;
         } else {
