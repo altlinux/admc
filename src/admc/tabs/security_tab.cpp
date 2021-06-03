@@ -22,6 +22,7 @@
 #include "adldap.h"
 #include "utils.h"
 #include "globals.h"
+#include "select_object_dialog.h"
 
 #include "samba/ndr_security.h"
 
@@ -30,6 +31,10 @@
 #include <QTreeView>
 #include <QStandardItemModel>
 #include <QLabel>
+#include <QDialogButtonBox>
+#include <QPushButton>
+#include <QPersistentModelIndex>
+#include <QMessageBox>
 
 enum TrusteeItemRole {
     TrusteeItemRole_Sid = Qt::UserRole,
@@ -82,6 +87,11 @@ SecurityTab::SecurityTab() {
     trustee_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     trustee_view->sortByColumn(0, Qt::AscendingOrder);
     trustee_view->setSortingEnabled(true);
+    trustee_view->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    auto trustee_buttonbox = new QDialogButtonBox();
+    auto add_trustee_button = trustee_buttonbox->addButton(tr("Add"), QDialogButtonBox::ActionRole);
+    auto remove_trustee_button = trustee_buttonbox->addButton(tr("Remove"), QDialogButtonBox::ActionRole);
 
     ace_model = new QStandardItemModel(0, AceColumn_COUNT, this);
     set_horizontal_header_labels_from_map(ace_model, {
@@ -137,6 +147,7 @@ SecurityTab::SecurityTab() {
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(trustee_view);
+    layout->addWidget(trustee_buttonbox);
     layout->addWidget(selected_trustee_label);
     layout->addWidget(ace_view);
 
@@ -148,6 +159,12 @@ SecurityTab::SecurityTab() {
     connect(
         ace_model, &QStandardItemModel::itemChanged,
         this, &SecurityTab::on_item_changed);
+    connect(
+        add_trustee_button, &QAbstractButton::clicked,
+        this, &SecurityTab::add_trustee);
+    connect(
+        remove_trustee_button, &QAbstractButton::clicked,
+        this, &SecurityTab::remove_trustee);
 }
 
 void SecurityTab::load(AdInterface &ad, const AdObject &object) {
@@ -158,14 +175,7 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     trustee_model->removeRows(0, trustee_model->rowCount());
     const QList<QByteArray> trustee_list = sd.get_trustee_list();
     for (const QByteArray &trustee : trustee_list) {
-        auto item = new QStandardItem();
-
-        const QString name = ad.get_trustee_name(trustee);
-        item->setText(name);
-
-        item->setData(trustee, TrusteeItemRole_Sid);
-
-        trustee_model->appendRow(item);
+        add_trustee_item(trustee, ad);
     }
 
     trustee_model->sort(0, Qt::AscendingOrder);
@@ -463,4 +473,91 @@ bool SecurityTab::apply(AdInterface &ad, const QString &target) {
     const bool apply_success = ad.attribute_replace_security_descriptor(target, permission_state_map);
 
     return apply_success;
+}
+
+void SecurityTab::add_trustee() {
+    auto dialog = new SelectObjectDialog({CLASS_USER}, SelectObjectDialogMultiSelection_Yes, this);
+
+    QObject::connect(
+        dialog, &SelectObjectDialog::accepted,
+        [=]() {
+            AdInterface ad;
+            if (ad_failed(ad)) {
+                return;
+            }
+
+            const QList<QString> selected_list = dialog->get_selected();
+
+            const QList<QString> current_sid_string_list =
+            [&]() {
+                QList<QString> out;
+
+                for (int row = 0; row < trustee_model->rowCount(); row++) {
+                    QStandardItem *item = trustee_model->item(row, 0);
+                    const QByteArray sid = item->data(TrusteeItemRole_Sid).toByteArray();
+                    const QString sid_string = object_sid_display_value(sid);
+
+                    out.append(sid_string);
+                }
+
+                return out;
+            }();
+
+            bool added_anything = false;
+
+            for (const QString &dn : selected_list) {
+                const AdObject object = ad.search_object(dn, {ATTRIBUTE_OBJECT_SID});
+                const QByteArray sid = object.get_value(ATTRIBUTE_OBJECT_SID);
+                const QString sid_string = object_sid_display_value(sid);
+
+                const bool trustee_already_in_list = (current_sid_string_list.contains(sid_string));
+                if (trustee_already_in_list) {
+                    continue;
+                }
+
+                add_trustee_item(sid, ad);
+                added_anything = true;
+            }
+
+            if (added_anything) {
+                trace();
+
+                emit edited();
+            }
+
+            const bool failed_to_add_because_already_exists = (!added_anything && !selected_list.isEmpty());
+            if (failed_to_add_because_already_exists) {
+                trace();
+                QMessageBox::warning(this, tr("Error"), tr("Failed to add some trustee's because they are already in the list."));
+            }
+        });
+
+    dialog->open();
+}
+
+void SecurityTab::remove_trustee() {
+    QItemSelectionModel *selection_model = trustee_view->selectionModel();
+    const QList<QPersistentModelIndex> selected_list = persistent_index_list(selection_model->selectedRows());
+
+    for (const QPersistentModelIndex &index : selected_list) {
+        const QByteArray sid = index.data(TrusteeItemRole_Sid).toByteArray();
+        permission_state_map.remove(sid);
+
+        trustee_model->removeRow(index.row());
+    }
+
+    if (!selected_list.isEmpty()) {
+        emit edited();
+    }
+}
+
+void SecurityTab::add_trustee_item(const QByteArray &sid, AdInterface &ad) {
+    auto item = new QStandardItem();
+
+    const QString name = ad.get_trustee_name(sid);
+    item->setText(name);
+
+    item->setData(sid, TrusteeItemRole_Sid);
+
+    trustee_model->appendRow(item);
 }

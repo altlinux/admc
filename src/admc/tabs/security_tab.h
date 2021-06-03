@@ -72,6 +72,10 @@ private:
     QHash<AcePermission, QHash<AceColumn, QStandardItem *>> permission_item_map;
     QHash<QByteArray, QHash<AcePermission, PermissionState>> permission_state_map;
     bool ignore_item_changed_signal;
+
+    void add_trustee();
+    void remove_trustee();
+    void add_trustee_item(const QByteArray &sid, AdInterface &ad);
 };
 
 #endif /* SECURITY_TAB_H */
