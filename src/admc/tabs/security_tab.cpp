@@ -476,7 +476,7 @@ bool SecurityTab::apply(AdInterface &ad, const QString &target) {
 }
 
 void SecurityTab::add_trustee() {
-    auto dialog = new SelectObjectDialog({CLASS_USER}, SelectObjectDialogMultiSelection_Yes, this);
+    auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_GROUP}, SelectObjectDialogMultiSelection_Yes, this);
 
     QObject::connect(
         dialog, &SelectObjectDialog::accepted,
