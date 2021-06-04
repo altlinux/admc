@@ -68,6 +68,7 @@ ManualDialog::ManualDialog(QWidget *parent)
         qDebug() << "Help engine error : " << qPrintable(help_engine->error());
     }
 
+    help_engine->unregisterDocumentation("alt.basealt.admc");
     const bool help_register_success = help_engine->registerDocumentation(compressed_help_path);
     if (!help_register_success) {
         qDebug() << "help_engine registerDocumentation() call failed";
