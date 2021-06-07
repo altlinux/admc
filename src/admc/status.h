@@ -57,4 +57,8 @@ private:
     QTextEdit *m_message_log;
 };
 
+// Opens a dialog containing ad error messages in a
+// scrollable list. Nothing is done if no errors occured.
+void ad_error_log(const AdInterface &ad, QWidget *parent);
+
 #endif /* STATUS_BAR_H */

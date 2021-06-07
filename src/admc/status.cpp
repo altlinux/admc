@@ -100,16 +100,11 @@ void Status::add_message(const QString &msg, const StatusType &type) {
 }
 
 void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
-    const QList<AdMessage> messages = ad.messages();
-
-    if (messages.isEmpty()) {
-        return;
-    }
-
     //
     // Display all messages in status log
     //
-    for (const auto &message : messages) {
+    const QList<AdMessage> messages = ad.messages();
+    for (const AdMessage &message : messages) {
         const StatusType status_type =
         [message]() {
             switch (message.type()) {
@@ -122,42 +117,47 @@ void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
         add_message(message.text(), status_type);
     }
 
-    //
-    // Display all error messages in error log
-    //
-    if (ad.any_error_messages()) {
-        auto dialog = new QDialog(parent);
-        dialog->setWindowTitle(QCoreApplication::translate("Status", "Errors occured"));
-        dialog->setAttribute(Qt::WA_DeleteOnClose);
-        dialog->setMinimumWidth(600);
+    ad_error_log(ad, parent);
+}
 
-        const QString errors_text =
-        [messages]() {
-            QList<QString> errors;
-
-            for (const auto &message : messages) {
-                if (message.type() == AdMessageType_Error) {
-                    errors.append(message.text());
-                }
-            }
-            
-            return errors.join("\n");
-        }();
-
-        auto errors_display = new QPlainTextEdit();
-        errors_display->setPlainText(errors_text);
-
-        auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok);
-
-        auto layout = new QVBoxLayout();
-        dialog->setLayout(layout);
-        layout->addWidget(errors_display);
-        layout->addWidget(button_box);
-
-        QObject::connect(
-            button_box, &QDialogButtonBox::accepted,
-            dialog, &QDialog::accept);
-
-        dialog->open();
+void ad_error_log(const AdInterface &ad, QWidget *parent) {
+    if (!ad.any_error_messages()) {
+        return;
     }
+
+    auto dialog = new QDialog(parent);
+    dialog->setWindowTitle(QCoreApplication::translate("Status", "Errors occured"));
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->setMinimumWidth(600);
+
+    const QString errors_text =
+    [&]() {
+        QList<QString> errors;
+
+        const QList<AdMessage> messages = ad.messages();
+      
+        for (const auto &message : messages) {
+            if (message.type() == AdMessageType_Error) {
+                errors.append(message.text());
+            }
+        }
+
+        return errors.join("\n");
+    }();
+
+    auto errors_display = new QPlainTextEdit();
+    errors_display->setPlainText(errors_text);
+
+    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok);
+
+    auto layout = new QVBoxLayout();
+    dialog->setLayout(layout);
+    layout->addWidget(errors_display);
+    layout->addWidget(button_box);
+
+    QObject::connect(
+        button_box, &QDialogButtonBox::accepted,
+        dialog, &QDialog::accept);
+
+    dialog->open();
 }
