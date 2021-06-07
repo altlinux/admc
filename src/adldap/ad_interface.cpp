@@ -89,37 +89,56 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     d->smbc = NULL;
 
     d->domain = get_default_domain_from_krb5();
+    if (d->domain.isEmpty()) {
+        d->error_message(tr("Failed to connect"), tr("Failed to get a domain"));
+        return;
+    }
+
     d->domain_head = domain_to_domain_dn(d->domain);
 
     //
     // Connect via LDAP
     //
+    d->is_connected = false;
+    const QString connect_error_context = tr("Failed to connect");
+
     const QString uri =
     [&]() {
         const QString dc =
         [&]() {
-            if (!AdInterfacePrivate::s_dc.isEmpty()) {
-                return AdInterfacePrivate::s_dc;
-            } else {
-                const QString domain = get_default_domain_from_krb5();
-                const QList<QString> host_list = get_domain_hosts(domain, QString());
+            const QList<QString> dc_list = get_domain_hosts(d->domain, QString());
+            if (dc_list.isEmpty()) {
+                d->error_message_plain(tr("Failed to find domain controllers. Make sure your computer is in the domain and that domain controllers are operational."));
 
-                if (!host_list.isEmpty()) {
-                    return host_list[0];
+                return QString();
+            }
+
+            if (!AdInterfacePrivate::s_dc.isEmpty()) {
+                if (dc_list.contains(AdInterfacePrivate::s_dc)) {
+                    return AdInterfacePrivate::s_dc;
                 } else {
-                    return QString();
+                    d->error_message_plain(tr("Failed to load DC defined in settings. Switching to default DC"));
+
+                    return dc_list[0];
                 }
+            } else {
+                return dc_list[0];
             }
         }();
 
-        const QString out = "ldap://" + dc;
-
-        return out;
+        if (!dc.isEmpty()) {
+            const QString out = "ldap://" + dc;
+            return out;
+        } else {
+            return QString();
+        }
     }();
 
+    if (uri.isEmpty()) {
+        return;
+    }
+
     int result;
-    d->is_connected = false;
-    const QString connect_error_context = tr("Failed to connect");
 
     // NOTE: this doesn't leak memory. False positive.
     result = ldap_initialize(&d->ld, cstr(uri));
@@ -185,7 +204,7 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     ldap_memfree(defaults.authcid);
     ldap_memfree(defaults.authzid);
     if (result != LDAP_SUCCESS) {
-        d->error_message(connect_error_context, tr("Failed to authenticate"));
+        d->error_message(connect_error_context, tr("Failed to authenticate. Make sure you have initialized your credentials (kinit)."));
         return;
     }
 
@@ -1324,6 +1343,15 @@ void AdInterfacePrivate::error_message(const QString &context, const QString &er
     }
 
     const AdMessage message(msg, AdMessageType_Error);
+    messages.append(message);
+}
+
+void AdInterfacePrivate::error_message_plain(const QString &text, const DoStatusMsg do_msg) {
+    if (do_msg == DoStatusMsg_No) {
+        return;
+    }
+
+    const AdMessage message(text, AdMessageType_Error);
     messages.append(message);
 }
 

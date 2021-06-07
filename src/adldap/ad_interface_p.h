@@ -48,6 +48,7 @@ public:
 
     void success_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     void error_message(const QString &context, const QString &error, const DoStatusMsg do_msg = DoStatusMsg_Yes);
+    void error_message_plain(const QString &text, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     QString default_error() const;
     int get_ldap_result() const;
     bool search_paged_internal(const char *base, const int scope, const char *filter, char **attributes, QHash<QString, AdObject> *results, AdCookie *cookie);
