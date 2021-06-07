@@ -25,6 +25,23 @@ set(LIBRARY_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH})
 
 enable_testing()
 
+include(GNUInstallDirs)
+
+option(ADMC_BUILD_DEB "Build the deb package of ADMC." OFF)
+
 add_subdirectory(src)
-add_subdirectory(tests)
+if(NOT ADMC_BUILD_DEB)
+    add_subdirectory(tests)
+endif(NOT ADMC_BUILD_DEB)
 add_subdirectory(doc)
+
+if (ADMC_BUILD_DEB)
+    SET(CPACK_GENERATOR "DEB")
+    SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Kees van Vloten")
+    SET(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+    SET(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+    SET(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Samba domain management console.")
+    SET(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/altlinux/admc")
+    set(CPACK_STRIP_FILES "${CMAKE_INSTALL_LIBDIR}/libadldap.so;${CMAKE_INSTALL_BINDIR}/admc")
+    INCLUDE(CPack)
+endif(ADMC_BUILD_DEB)
