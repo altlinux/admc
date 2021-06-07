@@ -263,10 +263,6 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     PropertiesTab::load(ad, object);
 }
 
-QStandardItemModel *SecurityTab::get_ace_model() const {
-    return ace_model;
-}
-
 void SecurityTab::load_trustee_acl() {
     const QList<QModelIndex> selected_list = trustee_view->selectionModel()->selectedRows();
     if (selected_list.isEmpty()) {
@@ -394,13 +390,6 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
 
 QStandardItem *SecurityTab::get_item(const AcePermission permission, const AceColumn column) {
     return permission_item_map[permission][column];
-}
-
-void SecurityTab::set_permission_state(const QSet<AcePermission> &permission_set, const AceColumn column, const Qt::CheckState state) {
-    for (const AcePermission &permission : permission_set.values()) {
-        QStandardItem *item = get_item(permission, column);
-        item->setCheckState(state);
-    }
 }
 
 bool SecurityTab::apply(AdInterface &ad, const QString &target) {

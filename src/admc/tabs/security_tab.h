@@ -55,8 +55,6 @@ public:
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &target) override;
 
-    QStandardItemModel *get_ace_model() const;
-    void set_permission_state(const QSet<AcePermission> &permission_list, const AceColumn column, const Qt::CheckState state);
     QStandardItem *get_item(const AcePermission permission, const AceColumn column);
 
 private slots:

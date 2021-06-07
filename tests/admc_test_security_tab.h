@@ -25,7 +25,6 @@
 #include "tabs/security_tab.h"
 
 class SecurityTab;
-class QStandardItemModel;
 
 class ADMCTestSecurityTab : public ADMCTest {
 Q_OBJECT
@@ -42,12 +41,10 @@ private slots:
 
 private:
     SecurityTab *security_tab;
-    QStandardItemModel *ace_model;
 
     void uncheck_all_permissions();
-    bool state_is(const QSet<AcePermission> &permission_list, const QSet<AceColumn> &checked_columns) const;
-
-
+    void set_permission_state(const QSet<AcePermission> &permission_set, const AceColumn column, const Qt::CheckState state);
+    bool state_is(const QSet<AcePermission> &permission_set, const QSet<AceColumn> &checked_columns) const;
 };
 
 #endif /* ADMC_TEST_SECURITY_TAB_H */
