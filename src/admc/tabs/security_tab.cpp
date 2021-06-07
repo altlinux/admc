@@ -286,62 +286,14 @@ void SecurityTab::load_trustee_acl() {
 
     selected_trustee_label->setText(label_text);
 
-    ignore_item_changed_signal = true;
-    
-    const QByteArray trustee = selected_item->data(TrusteeItemRole_Sid).toByteArray();
-
-    for (int row = 0; row < ace_model->rowCount(); row++) {
-        QStandardItem *allowed = ace_model->item(row, AceColumn_Allowed);
-        QStandardItem *denied = ace_model->item(row, AceColumn_Denied);
-
-        const PermissionState permission_state =
-        [&]() {
-            QStandardItem *main_item = ace_model->item(row, 0);
-            const AcePermission permission = (AcePermission) main_item->data(AcePermissionItemRole_Permission).toInt();
-            const PermissionState out = permission_state_map[trustee][permission];
-
-            return out;
-        }();
-
-        switch (permission_state) {
-            case PermissionState_None: {
-                allowed->setCheckState(Qt::Unchecked);
-                denied->setCheckState(Qt::Unchecked);
-                break;
-            };
-            case PermissionState_Allowed: {
-                allowed->setCheckState(Qt::Checked);
-                denied->setCheckState(Qt::Unchecked);
-                break;
-            }
-            case PermissionState_Denied: {
-                allowed->setCheckState(Qt::Unchecked);
-                denied->setCheckState(Qt::Checked);
-                break;
-            }
-        }
-    }
-
-    ignore_item_changed_signal = false;
+    apply_current_state_to_items();
 }
 
-// Permission check states are interdependent. When some
-// check states change we also need to change other check
-// states.
 void SecurityTab::on_item_changed(QStandardItem *item) {
     // NOTE: in some cases we need to ignore this signal
     if (ignore_item_changed_signal) {
         return;
     }
-
-    // NOTE: set this flag to avoid recursion. Inside this
-    // function we call setCheckState() (via
-    // set_permission_state()), which triggers the
-    // itemChanged() signal. Note that using blockSignals()
-    // on the model is not a solution because turning off
-    // model's signals messes up the view (view uses model's
-    // signals to know when to update itself).
-    ignore_item_changed_signal = true;
 
     const AceColumn column = (AceColumn) item->column();
 
@@ -349,10 +301,6 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
     if (incorrect_column) {
         return;
     }
-
-    // NOTE: block signals for the duration of this f-n so
-    // that there's no recursion due to setCheckState()
-    // calls triggering more on_item_changed() slot calls.
 
     const AcePermission permission =
     [&]() {
@@ -362,61 +310,24 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
         return out;
     }();
 
-    const AceColumn opposite_column =
+    const PermissionState new_state =
     [&]() {
-        if (column == AceColumn_Allowed) {
-            return AceColumn_Denied;
+        const bool checked = (item->checkState() == Qt::Checked);
+        const bool allowed = (column == AceColumn_Allowed);
+
+        if (checked) {
+            if (allowed) {
+                return PermissionState_Allowed;
+            } else {
+                return PermissionState_Denied;
+            }
         } else {
-            return AceColumn_Allowed;
+            // NOTE: the case of opposite column being
+            // checked while this one becomes unchecked is
+            // impossible, so ignore it
+            return PermissionState_None;
         }
     }();
-
-    const bool is_checked = (item->checkState() == Qt::Checked);
-
-    if (is_checked) {
-        // Uncheck opposite column to make Allowed/Denied exclusive to each other
-        set_permission_state({permission}, opposite_column, Qt::Unchecked);
-
-        // FullControl, Read and Write permissions cause
-        // their children permissions to become
-        // allowed/denied as well.
-        if (permission == AcePermission_FullControl) {
-            set_permission_state(all_permissions, column, Qt::Checked);
-            set_permission_state(all_permissions, opposite_column, Qt::Unchecked);
-        } else if (permission == AcePermission_Read) {
-            set_permission_state(read_prop_permissions, column, Qt::Checked);
-            set_permission_state(read_prop_permissions, opposite_column, Qt::Unchecked);
-        } else if (permission == AcePermission_Write) {
-            set_permission_state(write_prop_permissions, column, Qt::Checked);
-            set_permission_state(write_prop_permissions, opposite_column, Qt::Unchecked);
-        }
-    }
-
-    const QList<AcePermission> parent_permissions =
-    [&]() {
-        QList<AcePermission> out;
-
-        out.append(AcePermission_FullControl);
-
-        if (read_prop_permissions.contains(permission)) {
-            out.append(AcePermission_Read);
-        } else if (write_prop_permissions.contains(permission)) {
-            out.append(AcePermission_Write);
-        }
-
-        return out;
-    }();
-
-    // When children are unchecked or switch to opposite
-    // allowed/denied while their parent is checked, parent
-    // needs to become unchecked.
-    for (const AcePermission &parent_permission : parent_permissions) {
-        if (is_checked) {
-            set_permission_state({parent_permission}, opposite_column, Qt::Unchecked);
-        } else {
-            set_permission_state({parent_permission}, column, Qt::Unchecked);
-        }
-    }
 
     const QByteArray trustee =
     [&]() {
@@ -427,33 +338,56 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
         return out;
     }();
 
-    // Update permission_state_map
-    permission_state_map[trustee] =
-    [this]() {
-        QHash<AcePermission, PermissionState> out;
+    auto permission_state_set =
+    [&](const QSet<AcePermission> &permission_set, const PermissionState state) {
+        for (const AcePermission &this_permission : permission_set) {
+            permission_state_map[trustee][this_permission] = state;
+        }
+    };
 
-        for (const AcePermission &this_permission : all_permissions) {
-            out[this_permission] =
-            [&]() {
-                QStandardItem *allowed_item = get_item(this_permission, AceColumn_Allowed);
-                QStandardItem *denied_item = get_item(this_permission, AceColumn_Denied);
-                const bool allowed = (allowed_item->checkState() == Qt::Checked);
-                const bool denied = (denied_item->checkState() == Qt::Checked);
+    //
+    // Apply state change to permission state map
+    //
+    permission_state_map[trustee][permission] = new_state;
 
-                if (allowed) {
-                    return PermissionState_Allowed;
-                } else if (denied) {
-                    return PermissionState_Denied;
-                } else {
-                    return PermissionState_None;
-                }
-            }();
+    // When children permissions change their parent
+    // permissions always become None (yes, for each case).
+    const QSet<AcePermission> parent_permissions =
+    [&]() {
+        QSet<AcePermission> out;
+
+        out.insert(AcePermission_FullControl);
+
+        if (read_prop_permissions.contains(permission)) {
+            out.insert(AcePermission_Read);
+        } else if (write_prop_permissions.contains(permission)) {
+            out.insert(AcePermission_Write);
         }
 
         return out;
     }();
+    permission_state_set(parent_permissions, PermissionState_None);
 
-    ignore_item_changed_signal = false;
+    // When parent permissions become Allowed or Denied,
+    // their children change to that state as well.
+    if (new_state != PermissionState_None) {
+        const QSet<AcePermission> child_permissions =
+        [&]() {
+            if (permission == AcePermission_FullControl) {
+                return all_permissions;
+            } else if (permission == AcePermission_Read) {
+                return read_prop_permissions;
+            } else if (permission == AcePermission_Write) {
+                return write_prop_permissions;
+            } else {
+                return QSet<AcePermission>();
+            }
+        }();
+
+        permission_state_set(child_permissions, new_state);
+    }
+
+    apply_current_state_to_items();
 
     emit edited();
 }
@@ -560,4 +494,46 @@ void SecurityTab::add_trustee_item(const QByteArray &sid, AdInterface &ad) {
     item->setData(sid, TrusteeItemRole_Sid);
 
     trustee_model->appendRow(item);
+}
+
+// NOTE: a flag is set to avoid triggering on_item_changed()
+// slot due to setCheckState() calls. Otherwise it would
+// recurse and do all kinds of bad stuff.
+void SecurityTab::apply_current_state_to_items() {
+    ignore_item_changed_signal = true;
+   
+    const QByteArray trustee =
+    [&]() {
+        const QModelIndex current_index = trustee_view->currentIndex();
+        QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
+        const QByteArray out = current_item->data(TrusteeItemRole_Sid).toByteArray();
+
+        return out;
+    }();
+
+    for (const AcePermission &permission : all_permissions) {
+        QStandardItem *allowed = permission_item_map[permission][AceColumn_Allowed];
+        QStandardItem *denied = permission_item_map[permission][AceColumn_Denied];
+        const PermissionState state = permission_state_map[trustee][permission];
+
+        switch (state) {
+            case PermissionState_None: {
+                allowed->setCheckState(Qt::Unchecked);
+                denied->setCheckState(Qt::Unchecked);
+                break;
+            };
+            case PermissionState_Allowed: {
+                allowed->setCheckState(Qt::Checked);
+                denied->setCheckState(Qt::Unchecked);
+                break;
+            }
+            case PermissionState_Denied: {
+                allowed->setCheckState(Qt::Unchecked);
+                denied->setCheckState(Qt::Checked);
+                break;
+            }
+        }
+    }
+
+    ignore_item_changed_signal = false;
 }

@@ -76,6 +76,7 @@ private:
     void add_trustee();
     void remove_trustee();
     void add_trustee_item(const QByteArray &sid, AdInterface &ad);
+    void apply_current_state_to_items();
 };
 
 #endif /* SECURITY_TAB_H */
