@@ -64,7 +64,6 @@ typedef struct sasl_defaults_gssapi {
 } sasl_defaults_gssapi;
 
 QList<QString> query_server_for_hosts(const char *dname);
-bool ad_connect(const char* uri, LDAP **ld_out);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 
 AdConfig *AdInterfacePrivate::s_adconfig = nullptr;
@@ -88,44 +87,121 @@ AdInterface::AdInterface(AdConfig *adconfig) {
 
     d->ld = NULL;
     d->smbc = NULL;
-    d->is_connected = false;
 
     d->domain = get_default_domain_from_krb5();
     d->domain_head = domain_to_domain_dn(d->domain);
 
-    const QString dc =
-    []() {
-        if (!AdInterfacePrivate::s_dc.isEmpty()) {
-            return AdInterfacePrivate::s_dc;
-        } else {
-            const QString domain = get_default_domain_from_krb5();
-            const QList<QString> host_list = get_domain_hosts(domain, QString());
-
-            if (!host_list.isEmpty()) {
-                return host_list[0];
+    //
+    // Connect via LDAP
+    //
+    const QString uri =
+    [&]() {
+        const QString dc =
+        [&]() {
+            if (!AdInterfacePrivate::s_dc.isEmpty()) {
+                return AdInterfacePrivate::s_dc;
             } else {
-                return QString();
+                const QString domain = get_default_domain_from_krb5();
+                const QList<QString> host_list = get_domain_hosts(domain, QString());
+
+                if (!host_list.isEmpty()) {
+                    return host_list[0];
+                } else {
+                    return QString();
+                }
             }
-        }
+        }();
+
+        const QString out = "ldap://" + dc;
+
+        return out;
     }();
 
-    const QString uri = "ldap://" + dc;
+    int result;
+    d->is_connected = false;
+    const QString connect_error_context = tr("Failed to connect");
 
-    const bool success = ad_connect(cstr(uri), &d->ld);
-    if (success) {
-        // NOTE: this doesn't leak memory. False positive.
-        smbc_init(get_auth_data_fn, 0);
-        d->smbc = smbc_new_context();
-        smbc_setOptionUseKerberos(d->smbc, true);
-        smbc_setOptionFallbackAfterKerberos(d->smbc, true);
-        if (!smbc_init_context(d->smbc)) {
-            smbc_free_context(d->smbc, 0);
-            qDebug() << "Could not initialize smbc context";
-        }
-        smbc_set_context(d->smbc);
-
-        d->is_connected = true;
+    // NOTE: this doesn't leak memory. False positive.
+    result = ldap_initialize(&d->ld, cstr(uri));
+    if (result != LDAP_SUCCESS) {
+        ldap_memfree(d->ld);
+        d->error_message(connect_error_context, tr("Failed to initialize LDAP library"));
+        return;
     }
+
+    auto option_error =
+    [&](const QString &option) {
+        d->error_message(connect_error_context, QString(tr("Failed to set %1")).arg(option));
+    };
+
+    // Set version
+    const int version = LDAP_VERSION3;
+    result = ldap_set_option(d->ld, LDAP_OPT_PROTOCOL_VERSION, &version);
+    if (result != LDAP_OPT_SUCCESS) {
+        option_error("LDAP_OPT_PROTOCOL_VERSION");
+        return;
+    }
+
+    // Disable referrals
+    result = ldap_set_option(d->ld, LDAP_OPT_REFERRALS, LDAP_OPT_OFF);
+    if (result != LDAP_OPT_SUCCESS) {
+        option_error("LDAP_OPT_REFERRALS");
+        return;
+    }
+
+    // Set maxssf
+    const char* sasl_secprops = "maxssf=56";
+    result = ldap_set_option(d->ld, LDAP_OPT_X_SASL_SECPROPS, sasl_secprops);
+    if (result != LDAP_SUCCESS) {
+        option_error("LDAP_OPT_X_SASL_SECPROPS");
+        return;
+    }
+
+    result = ldap_set_option(d->ld, LDAP_OPT_X_SASL_NOCANON, LDAP_OPT_ON);
+    if (result != LDAP_SUCCESS) {
+        option_error("LDAP_OPT_X_SASL_NOCANON");
+        return;
+    }
+
+    // TODO: add option to turn off
+    ldap_set_option(d->ld, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
+    if (result != LDAP_SUCCESS) {
+        option_error("LDAP_OPT_X_TLS_REQUIRE_CERT");
+        return;
+    }
+
+    // Setup sasl_defaults_gssapi 
+    struct sasl_defaults_gssapi defaults;
+    defaults.mech = (char *)"GSSAPI";
+    ldap_get_option(d->ld, LDAP_OPT_X_SASL_REALM, &defaults.realm);
+    ldap_get_option(d->ld, LDAP_OPT_X_SASL_AUTHCID, &defaults.authcid);
+    ldap_get_option(d->ld, LDAP_OPT_X_SASL_AUTHZID, &defaults.authzid);
+    defaults.passwd = NULL;
+
+    // Perform bind operation
+    unsigned sasl_flags = LDAP_SASL_QUIET;
+    result = ldap_sasl_interactive_bind_s(d->ld, NULL, defaults.mech, NULL, NULL, sasl_flags, sasl_interact_gssapi, &defaults);
+    ldap_memfree(defaults.realm);
+    ldap_memfree(defaults.authcid);
+    ldap_memfree(defaults.authzid);
+    if (result != LDAP_SUCCESS) {
+        d->error_message(connect_error_context, tr("Failed to authenticate"));
+        return;
+    }
+
+    // Initialize SMB context
+    // NOTE: this doesn't leak memory. False positive.
+    smbc_init(get_auth_data_fn, 0);
+    d->smbc = smbc_new_context();
+    smbc_setOptionUseKerberos(d->smbc, true);
+    smbc_setOptionFallbackAfterKerberos(d->smbc, true);
+    if (!smbc_init_context(d->smbc)) {
+        d->error_message(connect_error_context, tr("Failed to initialize SMB context"));
+        return;
+    }
+    smbc_set_context(d->smbc);
+
+    d->is_connected = true;
 }
 
 AdInterface::~AdInterface() {
@@ -1402,84 +1478,6 @@ QList<QString> query_server_for_hosts(const char *dname) {
     }
 
     return hosts;
-}
-
-bool ad_connect(const char* uri, LDAP **ld_out) {
-    int result;
-    LDAP *ld = NULL;
-
-    auto cleanup =
-    [ld]() {
-        ldap_memfree(ld);
-    };
-
-    // NOTE: this doesn't leak memory. False positive.
-    result = ldap_initialize(&ld, uri);
-    if (result != LDAP_SUCCESS) {
-        cleanup();
-        return false;
-    }
-
-    // Set version
-    const int version = LDAP_VERSION3;
-    result = ldap_set_option(ld, LDAP_OPT_PROTOCOL_VERSION, &version);
-    if (result != LDAP_OPT_SUCCESS) {
-        cleanup();
-        return false;
-    }
-
-    // Disable referrals
-    result =ldap_set_option(ld, LDAP_OPT_REFERRALS, LDAP_OPT_OFF);
-    if (result != LDAP_OPT_SUCCESS) {
-        cleanup();
-        return false;
-    }
-
-    // Set maxssf
-    const char* sasl_secprops = "maxssf=56";
-    result = ldap_set_option(ld, LDAP_OPT_X_SASL_SECPROPS, sasl_secprops);
-    if (result != LDAP_SUCCESS) {
-        cleanup();
-        return false;
-    }
-
-    result = ldap_set_option(ld, LDAP_OPT_X_SASL_NOCANON, LDAP_OPT_ON);
-    if (result != LDAP_SUCCESS) {
-        cleanup();
-        return false;
-    }
-
-    // TODO: add option to turn off
-    ldap_set_option(ld, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
-    if (result != LDAP_SUCCESS) {
-        cleanup();
-        return false;
-    }
-
-    // Setup sasl_defaults_gssapi 
-    struct sasl_defaults_gssapi defaults;
-    defaults.mech = (char *)"GSSAPI";
-    ldap_get_option(ld, LDAP_OPT_X_SASL_REALM, &defaults.realm);
-    ldap_get_option(ld, LDAP_OPT_X_SASL_AUTHCID, &defaults.authcid);
-    ldap_get_option(ld, LDAP_OPT_X_SASL_AUTHZID, &defaults.authzid);
-    defaults.passwd = NULL;
-
-    // Perform bind operation
-    unsigned sasl_flags = LDAP_SASL_QUIET;
-    result = ldap_sasl_interactive_bind_s(ld, NULL, defaults.mech, NULL, NULL, sasl_flags, sasl_interact_gssapi, &defaults);
-    ldap_memfree(defaults.realm);
-    ldap_memfree(defaults.authcid);
-    ldap_memfree(defaults.authzid);
-    if (result != LDAP_SUCCESS) {
-        cleanup();
-        return false;
-    }
-
-    if (ld_out != NULL) {
-        *ld_out = ld;
-    }
-
-    return true;
 }
 
 /**

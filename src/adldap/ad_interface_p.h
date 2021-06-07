@@ -51,6 +51,7 @@ public:
     QString default_error() const;
     int get_ldap_result() const;
     bool search_paged_internal(const char *base, const int scope, const char *filter, char **attributes, QHash<QString, AdObject> *results, AdCookie *cookie);
+    bool connect_via_ldap(const char* uri);
 };
 
 #endif /* AD_INTERFACE_P_H */

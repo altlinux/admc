@@ -23,6 +23,7 @@
 #include "settings.h"
 #include "adldap.h"
 #include "globals.h"
+#include "status.h"
 #include "console_widget/console_widget.h"
 
 #include <QAbstractItemModel>
@@ -153,10 +154,7 @@ void set_data_for_row(const QList<QStandardItem *> &row, const QVariant &data, c
 
 bool ad_connected_base(const AdInterface &ad) {
     if (!ad.is_connected()) {
-        const QString title = QObject::tr("Connection error");
-        const QString text = QObject::tr("Failed to connect to server.");
-
-        QMessageBox::critical(nullptr, title, text);
+        ad_error_log(ad, nullptr);
     }
 
     return ad.is_connected();
