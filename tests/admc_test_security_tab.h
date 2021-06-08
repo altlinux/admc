@@ -32,6 +32,7 @@ Q_OBJECT
 private slots:
     void init() override;
 
+    void load();
     void allow_then_deny();
     void allow_full();
     void allow_full_deny_read();

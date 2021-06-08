@@ -41,6 +41,41 @@ enum AcePermissionItemRole {
     AcePermissionItemRole_Permission = Qt::UserRole,
 };
 
+#define ENUM_TO_STRING(ENUM) {ENUM, #ENUM}
+const QHash<AcePermission, QString> ace_permission_to_name_map = {
+    ENUM_TO_STRING(AcePermission_FullControl),
+    ENUM_TO_STRING(AcePermission_Read),
+    ENUM_TO_STRING(AcePermission_Write),
+    ENUM_TO_STRING(AcePermission_CreateChild),
+    ENUM_TO_STRING(AcePermission_DeleteChild),
+    ENUM_TO_STRING(AcePermission_AllowedToAuthenticate),
+    ENUM_TO_STRING(AcePermission_ChangePassword),
+    ENUM_TO_STRING(AcePermission_ReceiveAs),
+    ENUM_TO_STRING(AcePermission_ResetPassword),
+    ENUM_TO_STRING(AcePermission_SendAs),
+    ENUM_TO_STRING(AcePermission_ReadAccountRestrictions),
+    ENUM_TO_STRING(AcePermission_WriteAccountRestrictions),
+    ENUM_TO_STRING(AcePermission_ReadGeneralInfo),
+    ENUM_TO_STRING(AcePermission_WriteGeneralInfo),
+    ENUM_TO_STRING(AcePermission_ReadGroupMembership),
+    ENUM_TO_STRING(AcePermission_ReadLogonInfo),
+    ENUM_TO_STRING(AcePermission_WriteLogonInfo),
+    ENUM_TO_STRING(AcePermission_ReadPersonalInfo),
+    ENUM_TO_STRING(AcePermission_WritePersonalInfo),
+    ENUM_TO_STRING(AcePermission_ReadPhoneAndMailOptions),
+    ENUM_TO_STRING(AcePermission_WritePhoneAndMailOptions),
+    ENUM_TO_STRING(AcePermission_ReadPrivateInfo),
+    ENUM_TO_STRING(AcePermission_WritePrivateInfo),
+    ENUM_TO_STRING(AcePermission_ReadPublicInfo),
+    ENUM_TO_STRING(AcePermission_WritePublicInfo),
+    ENUM_TO_STRING(AcePermission_ReadRemoteAccessInfo),
+    ENUM_TO_STRING(AcePermission_WriteRemoteAccessInfo),
+    ENUM_TO_STRING(AcePermission_ReadTerminalServerLicenseServer),
+    ENUM_TO_STRING(AcePermission_WriteTerminalServerLicenseServer),
+    ENUM_TO_STRING(AcePermission_ReadWebInfo),
+    ENUM_TO_STRING(AcePermission_WriteWebInfo),
+};
+
 extern const QList<AcePermission> all_permissions_list;
 extern const QSet<AcePermission> all_permissions;
 extern const QSet<AcePermission> access_permissions;
@@ -55,7 +90,9 @@ public:
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &target) override;
 
+    // NOTE: f-ns for testings
     QStandardItem *get_item(const AcePermission permission, const AceColumn column);
+    bool set_trustee(const QString &trustee_name);
 
 private slots:
     void load_trustee_acl();

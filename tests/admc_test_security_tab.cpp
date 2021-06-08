@@ -62,6 +62,28 @@ void ADMCTestSecurityTab::init() {
     QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
 }
 
+// NOTE: just checking that the default security descriptor
+// is laoded correctly. Creating custom security descriptors
+// is too complicated at the moment.
+void ADMCTestSecurityTab::load() {
+    QVERIFY(security_tab->set_trustee("Account Operators"));
+    QVERIFY(state_is(all_permissions, {AceColumn_Allowed}));
+
+    const QSet<AcePermission> administrators_allowed =
+    [&]() {
+        QSet<AcePermission> out = all_permissions;
+        out -= AcePermission_FullControl;
+        out -= AcePermission_DeleteChild;
+
+        return out;
+    }();
+    const QSet<AcePermission> administrators_none = all_permissions - administrators_allowed;
+
+    QVERIFY(security_tab->set_trustee("Administrators"));
+    QVERIFY(state_is(administrators_allowed, {AceColumn_Allowed}));
+    QVERIFY(state_is(administrators_none, {}));
+}
+
 // When you allow some perm then deny it, the allow checkbox
 // should become unchecked, aka they are exclusive.
 void ADMCTestSecurityTab::allow_then_deny() {
@@ -166,7 +188,19 @@ bool ADMCTestSecurityTab::state_is(const QSet<AcePermission> &permission_set, co
             const bool state_is_correct = (is_checked == should_be_checked);
 
             if (!state_is_correct) {
-                qInfo() << permission << column << should_be_checked << is_checked;
+                const QString permission_name = ace_permission_to_name_map[permission];
+                const QString column_name =
+                [&]() {
+                    switch (column) {
+                        case AceColumn_Allowed: return "Allowed";
+                        case AceColumn_Denied: return "Denied";
+                        default: break;
+                    }
+
+                    return "unknown";
+                }();
+
+                qInfo().noquote() << QString("Incorrect state:\n\tpermission = %1\n\tcolumn = %2\n\tcurrent state = %3\n\tcorrect state = %4").arg(permission_name, column_name, QString::number(is_checked), QString::number(should_be_checked));
 
                 return false;
             }
