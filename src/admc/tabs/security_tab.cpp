@@ -180,80 +180,7 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
 
     trustee_model->sort(0, Qt::AscendingOrder);
 
-    //
-    // Load permission state
-    //
-
-    // Initialize to None by default
-    for (const QByteArray &trustee : trustee_list) {
-        for (const AcePermission &permission : all_permissions) {
-            permission_state_map[trustee][permission] = PermissionState_None;
-        }
-    }
-
-    // Then go through acl and set allowed/denied permission states
-    for (security_ace *ace : sd.dacl()) {
-        const QByteArray trustee = dom_sid_to_bytes(ace->trustee);
-
-        for (const AcePermission &permission : all_permissions) {
-            const uint32_t permission_mask = ace_permission_to_mask_map[permission];
-
-            const bool mask_match = ((ace->access_mask & permission_mask) == permission_mask);
-            if (!mask_match) {
-                continue;
-            }
-
-            const bool object_match =
-            [&]() {
-                const bool object_present = ((ace->object.object.flags & SEC_ACE_OBJECT_TYPE_PRESENT) != 0);
-                if (!object_present) {
-                    return false;
-                }
-
-                const QString rights_guid =
-                [&]() {
-                    const QString right_cn = ace_permission_to_type_map[permission];
-                    const QString guid_out =  g_adconfig->get_right_guid(right_cn);
-
-                    return guid_out;
-                }();
-
-                const QString ace_type_guid =
-                [&]() {
-                    const GUID type = ace->object.object.type.type;
-                    const QByteArray type_bytes = QByteArray((char *) &type, sizeof(GUID));
-
-                    return attribute_display_value(ATTRIBUTE_OBJECT_GUID, type_bytes, g_adconfig);
-                }();
-
-                return (rights_guid.toLower() == ace_type_guid.toLower());
-            }();
-
-            switch (ace->type) {
-                case SEC_ACE_TYPE_ACCESS_ALLOWED: {
-                    permission_state_map[trustee][permission] = PermissionState_Allowed;
-                    break;
-                }
-                case SEC_ACE_TYPE_ACCESS_DENIED: {
-                    permission_state_map[trustee][permission] = PermissionState_Denied;
-                    break;
-                }
-                case SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT: {
-                    if (object_match) {
-                        permission_state_map[trustee][permission] = PermissionState_Allowed;
-                    }
-                    break;
-                }
-                case SEC_ACE_TYPE_ACCESS_DENIED_OBJECT: {
-                    if (object_match) {
-                        permission_state_map[trustee][permission] = PermissionState_Denied;
-                    }
-                    break;
-                }
-                default: break;
-            }
-        }
-    }
+    permission_state_map = sd.get_state(g_adconfig);
 
     // Select first index
     // NOTE: load_trustee_acl() is called because setCurrentIndex
@@ -334,55 +261,7 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
         return out;
     }();
 
-    auto permission_state_set =
-    [&](const QSet<AcePermission> &permission_set, const PermissionState state) {
-        for (const AcePermission &this_permission : permission_set) {
-            permission_state_map[trustee][this_permission] = state;
-        }
-    };
-
-    //
-    // Apply state change to permission state map
-    //
-    permission_state_map[trustee][permission] = new_state;
-
-    // When children permissions change their parent
-    // permissions always become None (yes, for each case).
-    const QSet<AcePermission> parent_permissions =
-    [&]() {
-        QSet<AcePermission> out;
-
-        out.insert(AcePermission_FullControl);
-
-        if (read_prop_permissions.contains(permission)) {
-            out.insert(AcePermission_Read);
-        } else if (write_prop_permissions.contains(permission)) {
-            out.insert(AcePermission_Write);
-        }
-
-        return out;
-    }();
-    permission_state_set(parent_permissions, PermissionState_None);
-
-    // When parent permissions become Allowed or Denied,
-    // their children change to that state as well.
-    if (new_state != PermissionState_None) {
-        const QSet<AcePermission> child_permissions =
-        [&]() {
-            if (permission == AcePermission_FullControl) {
-                return all_permissions;
-            } else if (permission == AcePermission_Read) {
-                return read_prop_permissions;
-            } else if (permission == AcePermission_Write) {
-                return write_prop_permissions;
-            } else {
-                return QSet<AcePermission>();
-            }
-        }();
-
-        permission_state_set(child_permissions, new_state);
-    }
-
+    permission_state_map = ad_security_modify(permission_state_map, trustee, permission, new_state);    
     apply_current_state_to_items();
 
     emit edited();
