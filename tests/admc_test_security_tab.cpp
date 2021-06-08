@@ -184,11 +184,11 @@ void ADMCTestSecurityTab::allow_then_deny() {
 void ADMCTestSecurityTab::allow_full() {
     uncheck_all_permissions();
 
-    QVERIFY(state_is({all_permissions}, PermissionState_None));
+    QVERIFY(state_is(all_permissions, PermissionState_None));
     
     set_permission_state({AcePermission_FullControl}, AceColumn_Allowed, Qt::Checked);
 
-    QVERIFY(state_is({all_permissions}, PermissionState_Allowed));
+    QVERIFY(state_is(all_permissions, PermissionState_Allowed));
 }
 
 // Allowing full and denying read, should allow everything
