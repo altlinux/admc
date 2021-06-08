@@ -20,6 +20,7 @@
 #include "tabs/security_tab.h"
 
 #include "adldap.h"
+#include "ad_security.h"
 #include "utils.h"
 #include "globals.h"
 #include "select_object_dialog.h"
@@ -405,7 +406,7 @@ bool SecurityTab::set_trustee(const QString &trustee_name) {
 }
 
 bool SecurityTab::apply(AdInterface &ad, const QString &target) {
-    const bool apply_success = ad.attribute_replace_security_descriptor(target, permission_state_map);
+    const bool apply_success = attribute_replace_security_descriptor(ad, target, permission_state_map);
 
     return apply_success;
 }
@@ -489,7 +490,7 @@ void SecurityTab::remove_trustee() {
 void SecurityTab::add_trustee_item(const QByteArray &sid, AdInterface &ad) {
     auto item = new QStandardItem();
 
-    const QString name = ad.get_trustee_name(sid);
+    const QString name = ad_security_get_trustee_name(ad, sid);
     item->setText(name);
 
     item->setData(sid, TrusteeItemRole_Sid);

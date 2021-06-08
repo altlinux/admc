@@ -23,6 +23,7 @@ add_library(adldap SHARED
     ad_object.cpp
     ad_display.cpp
     ad_filter.cpp
+    ad_security.cpp
 
     samba/gp_manage.c
     samba/ndr_security.c

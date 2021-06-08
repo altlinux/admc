@@ -38,12 +38,8 @@ class QByteArray;
 class QDateTime;
 class AdObject;
 class AdConfig; 
-class SecurityDescriptor;
 template <typename T> class QList;
 typedef void TALLOC_CTX;
-struct security_descriptor;
-struct security_ace;
-struct dom_sid;
 
 enum SearchScope {
     SearchScope_Object,
@@ -128,6 +124,7 @@ public:
     QList<AdMessage> messages() const;
     bool any_error_messages() const;
     void clear_messages();
+    AdConfig *adconfig() const;
 
     // NOTE: If request attributes list is empty, all attributes are returned
 
@@ -156,7 +153,6 @@ public:
     bool attribute_replace_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace_int(const QString &dn, const QString &attribute, const int value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace_datetime(const QString &dn, const QString &attribute, const QDateTime &datetime);
-    bool attribute_replace_security_descriptor(const QString &dn, const QHash<QByteArray, QHash<AcePermission, PermissionState>> &descriptor_state);
 
     bool object_add(const QString &dn, const QString &object_class);
     bool object_delete(const QString &dn);
@@ -179,41 +175,10 @@ public:
 
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
-    QString get_trustee_name(const QByteArray &trustee);
-
 private:
     AdInterfacePrivate *d;
 };
 
-/**
- * Wrapper over "security_descriptor" struct mainly for the
- * purpose of automatically allocating and free'ing it's
- * memory. Also contains some access f-ns.
- */
-class SecurityDescriptor {
-
-public:
-    SecurityDescriptor(const QByteArray &descriptor_bytes);
-    ~SecurityDescriptor();
-
-    QList<QByteArray> get_trustee_list() const;
-    QList<security_ace *> dacl() const;
-    void print_acl(const QByteArray &trustee) const;
-    security_descriptor *get_data() const;
-
-private:
-    security_descriptor *data;
-};
-
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
-QByteArray dom_sid_to_bytes(const dom_sid &sid);
-
-extern const QHash<AcePermission, uint32_t> ace_permission_to_mask_map;
-extern const QHash<AcePermission, QString> ace_permission_to_type_map;
-extern const QList<AcePermission> all_permissions_list;
-extern const QSet<AcePermission> all_permissions;
-extern const QSet<AcePermission> access_permissions;
-extern const QSet<AcePermission> read_prop_permissions;
-extern const QSet<AcePermission> write_prop_permissions;
 
 #endif /* AD_INTERFACE_H */
