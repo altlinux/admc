@@ -32,7 +32,6 @@ Q_OBJECT
 private slots:
     void init() override;
 
-    void apply();
     void load();
     void allow_then_deny();
     void allow_full();
@@ -40,6 +39,7 @@ private slots:
     void allow_full_uncheck_read();
     void allow_read_uncheck_read_prop();
     void allow_read_deny_read_prop();
+    void apply();
 
 private:
     SecurityTab *security_tab;
