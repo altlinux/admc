@@ -35,22 +35,22 @@ void ADMCTestSecurityTab::init() {
 
     // Create test user
     const QString name = TEST_USER;
-    const QString dn = test_object_dn(name, CLASS_USER);
-    const bool create_success = ad.object_add(dn, CLASS_USER);
+    test_user_dn = test_object_dn(name, CLASS_USER);
+    const bool create_success = ad.object_add(test_user_dn, CLASS_USER);
     QVERIFY(create_success);
 
     const QList<QString> attribute_list =
     [&]() {
         QList<QString> out;
 
-        const AdObject object = ad.search_object(dn);
+        const AdObject object = ad.search_object(test_user_dn);
         out.append(object.attributes());
         out.append(ATTRIBUTE_SECURITY_DESCRIPTOR);
 
         return out;
     }();
 
-    const AdObject object = ad.search_object(dn, attribute_list);
+    const AdObject object = ad.search_object(test_user_dn, attribute_list);
 
     security_tab->load(ad, object);
 
@@ -248,6 +248,50 @@ void ADMCTestSecurityTab::allow_read_deny_read_prop() {
     QVERIFY(state_is({AcePermission_ReadWebInfo}, PermissionState_Denied));
 
     QVERIFY(state_is((read_prop_permissions - QSet<AcePermission>{AcePermission_ReadWebInfo}), PermissionState_Allowed));
+}
+
+void ADMCTestSecurityTab::apply() {
+    QVERIFY(security_tab->set_trustee("Cert Publishers"));
+
+    // Check/uncheck some permissions in the tab
+    const QSet<AcePermission> allowed_set = {
+        AcePermission_CreateChild,
+        AcePermission_ReadPersonalInfo,
+    };
+    const QSet<AcePermission> denied_set = {
+        AcePermission_WriteWebInfo,
+        AcePermission_WritePersonalInfo,
+        AcePermission_DeleteChild,
+    };
+    const QSet<AcePermission> none_set = all_permissions - allowed_set - denied_set;
+    uncheck_all_permissions();
+    set_permission_state(allowed_set, AceColumn_Allowed, Qt::Checked);
+    set_permission_state(denied_set, AceColumn_Denied, Qt::Checked);
+
+
+    // Apply
+    const bool apply_success = security_tab->apply(ad, test_user_dn);
+    QVERIFY(apply_success);
+
+    // Reload tab
+    const QList<QString> attribute_list =
+    [&]() {
+        QList<QString> out;
+
+        const AdObject object = ad.search_object(test_user_dn);
+        out.append(object.attributes());
+        out.append(ATTRIBUTE_SECURITY_DESCRIPTOR);
+
+        return out;
+    }();
+    const AdObject updated_object = ad.search_object(test_user_dn, attribute_list);
+    security_tab->load(ad, updated_object);
+
+    // Verify that state loaded correctly
+    QVERIFY(security_tab->set_trustee("Cert Publishers"));
+    QVERIFY(state_is(allowed_set, PermissionState_Allowed));
+    QVERIFY(state_is(denied_set, PermissionState_Denied));
+    QVERIFY(state_is(none_set, PermissionState_None));
 }
 
 void ADMCTestSecurityTab::uncheck_all_permissions() {

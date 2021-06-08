@@ -253,6 +253,10 @@ void AdInterface::set_permanent_adconfig(AdConfig *adconfig) {
     AdInterfacePrivate::s_adconfig = adconfig;
 }
 
+void AdInterface::set_adconfig(AdConfig *adconfig) {
+    d->adconfig = adconfig;
+}
+
 void AdInterface::set_log_searches(const bool enabled) {
     AdInterfacePrivate::s_log_searches = enabled;
 }

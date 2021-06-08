@@ -32,6 +32,7 @@ Q_OBJECT
 private slots:
     void init() override;
 
+    void apply();
     void load();
     void allow_then_deny();
     void allow_full();
@@ -42,6 +43,7 @@ private slots:
 
 private:
     SecurityTab *security_tab;
+    QString test_user_dn;
 
     void uncheck_all_permissions();
     void set_permission_state(const QSet<AcePermission> &permission_set, const AceColumn column, const Qt::CheckState state);

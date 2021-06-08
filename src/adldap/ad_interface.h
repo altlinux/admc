@@ -117,6 +117,7 @@ public:
      * override the permanent adconfig.
      */
     static void set_permanent_adconfig(AdConfig *adconfig);
+    void set_adconfig(AdConfig *adconfig);
     
     static void set_log_searches(const bool enabled);
 
