@@ -40,6 +40,41 @@ enum TrusteeItemRole {
     TrusteeItemRole_Sid = Qt::UserRole,
 };
 
+#define trS(x) QCoreApplication::translate("Security", x)
+const QHash<AcePermission, QString> ace_permission_to_name_map = {
+    {AcePermission_FullControl, trS("Full control")},
+    {AcePermission_Read, trS("Read")},
+    {AcePermission_Write, trS("Write")},
+    {AcePermission_CreateChild, trS("Create child")},
+    {AcePermission_DeleteChild, trS("Delete child")},
+    {AcePermission_AllowedToAuthenticate, trS("Allowed to authenticate")},
+    {AcePermission_ChangePassword, trS("Change password")},
+    {AcePermission_ReceiveAs, trS("Receive as")},
+    {AcePermission_ResetPassword, trS("Reset password")},
+    {AcePermission_SendAs, trS("Send as")},
+    {AcePermission_ReadAccountRestrictions, trS("Read Account restrictions")},
+    {AcePermission_WriteAccountRestrictions, trS("Write Account restrictions")},
+    {AcePermission_ReadGeneralInfo, trS("Read general info")},
+    {AcePermission_WriteGeneralInfo, trS("Write general info")},
+    {AcePermission_ReadGroupMembership, trS("Read group membership")},
+    {AcePermission_ReadLogonInfo, trS("Read logon info")},
+    {AcePermission_WriteLogonInfo, trS("Write logon info")},
+    {AcePermission_ReadPersonalInfo, trS("Read personal info")},
+    {AcePermission_WritePersonalInfo, trS("Write personal info")},
+    {AcePermission_ReadPhoneAndMailOptions, trS("Read phone and mail options")},
+    {AcePermission_WritePhoneAndMailOptions, trS("Write phone and mail options")},
+    {AcePermission_ReadPrivateInfo, trS("Read private info")},
+    {AcePermission_WritePrivateInfo, trS("Write private info")},
+    {AcePermission_ReadPublicInfo, trS("Read public info")},
+    {AcePermission_WritePublicInfo, trS("Write public info")},
+    {AcePermission_ReadRemoteAccessInfo, trS("Read remote access info")},
+    {AcePermission_WriteRemoteAccessInfo, trS("Write remote access info")},
+    {AcePermission_ReadTerminalServerLicenseServer, trS("Read terminal server license server")},
+    {AcePermission_WriteTerminalServerLicenseServer, trS("Write terminal server license server")},
+    {AcePermission_ReadWebInfo, trS("Read web info")},
+    {AcePermission_WriteWebInfo, trS("Write web info")},
+};
+
 SecurityTab::SecurityTab() {
     ignore_item_changed_signal = false;
     
