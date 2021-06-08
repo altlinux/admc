@@ -66,22 +66,104 @@ void ADMCTestSecurityTab::init() {
 // is laoded correctly. Creating custom security descriptors
 // is too complicated at the moment.
 void ADMCTestSecurityTab::load() {
-    QVERIFY(security_tab->set_trustee("Account Operators"));
-    QVERIFY(state_is(all_permissions, PermissionState_Allowed));
+    auto test_allowed =
+    [&](const QString &trustee_name, const QSet<AcePermission> allowed_set) {
+        QVERIFY(security_tab->set_trustee(trustee_name));
 
-    const QSet<AcePermission> administrators_allowed =
-    [&]() {
+        const QSet<AcePermission> none_set = all_permissions - allowed_set;
+        QVERIFY2(state_is(allowed_set, PermissionState_Allowed), qPrintable(trustee_name));
+        QVERIFY2(state_is(none_set, PermissionState_None), qPrintable(trustee_name));
+    };
+
+    test_allowed("Account Operators", all_permissions);
+
+    test_allowed("Administrators",
+        [&]() {
         QSet<AcePermission> out = all_permissions;
         out -= AcePermission_FullControl;
         out -= AcePermission_DeleteChild;
 
         return out;
-    }();
-    const QSet<AcePermission> administrators_none = all_permissions - administrators_allowed;
+    }());
 
-    QVERIFY(security_tab->set_trustee("Administrators"));
-    QVERIFY(state_is(administrators_allowed, PermissionState_Allowed));
-    QVERIFY(state_is(administrators_none, PermissionState_None));
+    test_allowed("Authenticated Users",
+        [&]() {
+        QSet<AcePermission> out;
+        out += AcePermission_ReadGeneralInfo;
+        out += AcePermission_ReadPersonalInfo;
+        out += AcePermission_ReadPublicInfo;
+        out += AcePermission_ReadWebInfo;
+
+        return out;
+    }());
+
+    test_allowed("Cert Publishers", {});
+
+    test_allowed("Domain Admins", all_permissions);
+
+    test_allowed("ENTERPRISE DOMAIN CONTROLLERS", {});
+
+    test_allowed("Enterprise Admins", all_permissions);
+
+    test_allowed("Everyone",
+        [&]() {
+        QSet<AcePermission> out;
+        out += AcePermission_ChangePassword;
+
+        return out;
+    }());
+
+    test_allowed("Pre-Windows 2000 Compatible Access",
+        [&]() {
+        QSet<AcePermission> out;
+        out += AcePermission_ReadAccountRestrictions;
+        out += AcePermission_ReadGeneralInfo;
+        out += AcePermission_ReadGroupMembership;
+        out += AcePermission_ReadLogonInfo;
+        out += AcePermission_ReadRemoteAccessInfo;
+
+        return out;
+    }());
+
+    test_allowed("RAS and IAS Servers",
+        [&]() {
+        QSet<AcePermission> out;
+        out += AcePermission_ReadAccountRestrictions;
+        out += AcePermission_ReadGroupMembership;
+        out += AcePermission_ReadLogonInfo;
+        out += AcePermission_ReadRemoteAccessInfo;
+
+        return out;
+    }());
+
+    test_allowed("SELF",
+        [&]() {
+        QSet<AcePermission> out;
+        out += AcePermission_Read;
+        out += read_prop_permissions;
+        out += AcePermission_ChangePassword;
+        out += AcePermission_ReceiveAs;
+        out += AcePermission_SendAs;
+        out += AcePermission_WritePersonalInfo;
+        out += AcePermission_WritePhoneAndMailOptions;
+        out += AcePermission_WritePrivateInfo;
+        out += AcePermission_WriteWebInfo;
+
+        return out;
+    }());
+
+    test_allowed("SYSTEM", all_permissions);
+
+    test_allowed("Terminal Server License Servers",
+        [&]() {
+        QSet<AcePermission> out;
+        out += AcePermission_ReadTerminalServerLicenseServer;
+        out += AcePermission_WriteTerminalServerLicenseServer;
+
+        return out;
+    }());
+
+    test_allowed("Windows Authorization Access Group", {});
 }
 
 // When you allow some perm then deny it, the allow checkbox
