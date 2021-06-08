@@ -39,18 +39,7 @@ void ADMCTestSecurityTab::init() {
     const bool create_success = ad.object_add(test_user_dn, CLASS_USER);
     QVERIFY(create_success);
 
-    const QList<QString> attribute_list =
-    [&]() {
-        QList<QString> out;
-
-        const AdObject object = ad.search_object(test_user_dn);
-        out.append(object.attributes());
-        out.append(ATTRIBUTE_SECURITY_DESCRIPTOR);
-
-        return out;
-    }();
-
-    const AdObject object = ad.search_object(test_user_dn, attribute_list);
+    const AdObject object = ad.search_object(test_user_dn);
 
     security_tab->load(ad, object);
 
@@ -274,17 +263,7 @@ void ADMCTestSecurityTab::apply() {
     QVERIFY(apply_success);
 
     // Reload tab
-    const QList<QString> attribute_list =
-    [&]() {
-        QList<QString> out;
-
-        const AdObject object = ad.search_object(test_user_dn);
-        out.append(object.attributes());
-        out.append(ATTRIBUTE_SECURITY_DESCRIPTOR);
-
-        return out;
-    }();
-    const AdObject updated_object = ad.search_object(test_user_dn, attribute_list);
+    const AdObject updated_object = ad.search_object(test_user_dn);
     security_tab->load(ad, updated_object);
 
     // Verify that state loaded correctly

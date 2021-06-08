@@ -342,21 +342,7 @@ void PropertiesDialog::reset() {
         return;
     }
 
-    // TODO: one search wasted on figuring out which
-    // atrributes to get because want to get all +
-    // descriptor
-    const QList<QString> attribute_list =
-    [&]() {
-        QList<QString> out;
-
-        const AdObject object = ad.search_object(target);
-        out.append(object.attributes());
-        out.append(ATTRIBUTE_SECURITY_DESCRIPTOR);
-
-        return out;
-    }();
-
-    const AdObject object = ad.search_object(target, attribute_list);
+    const AdObject object = ad.search_object(target);
 
     for (auto tab : tabs) {
         tab->load(ad, object);

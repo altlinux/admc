@@ -217,6 +217,34 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
         ber_bvfree(new_cookie);
     };
 
+    // typedef struct ldapcontrol {
+
+    // char *ldctl_oid;
+
+    // struct berval ldctl_value;
+
+    // char ldctl_iscritical;
+
+    // } LDAPControl; 
+
+    // NOTE: this control is needed so that ldap returns
+    // security descriptor attribute when we ask for all
+    // attributes. Otherwise it won't includ the descriptor
+    // in attributes. This might break something when the
+    // app is used by a client with not enough rights to get
+    // some/all parts of the descriptor. Investigate.
+    LDAPControl sd_control;
+    const char *sd_control_oid = LDAP_SERVER_SD_FLAGS_OID;
+    sd_control.ldctl_oid = (char *) sd_control_oid;
+    const int sd_control_value_int = (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | SACL_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
+    BerElement *sd_control_value_be = ber_alloc_t(LBER_USE_DER);
+    ber_printf(sd_control_value_be, "{i}", sd_control_value_int);
+    struct berval *sd_control_value_bv = NULL;
+    ber_flatten(sd_control_value_be, &sd_control_value_bv);
+    sd_control.ldctl_value.bv_len = sd_control_value_bv->bv_len;
+    sd_control.ldctl_value.bv_val = sd_control_value_bv->bv_val;
+    sd_control.ldctl_iscritical = (char) 1;
+
     // Create page control
     const ber_int_t page_size = 1000;
     const int is_critical = 1;
@@ -227,11 +255,15 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
         cleanup();
         return false;
     }
-    LDAPControl *server_controls[2] = {page_control, NULL};
+    LDAPControl *server_controls[3] = {page_control, &sd_control, NULL};
 
     // Perform search
     const int attrsonly = 0;
     result = ldap_search_ext_s(ld, base, scope, filter, attributes, attrsonly, server_controls, NULL, NULL, LDAP_NO_LIMIT, &res);
+
+    ber_free(sd_control_value_be, 1);
+    ber_bvfree(sd_control_value_bv);
+
     if ((result != LDAP_SUCCESS) && (result != LDAP_PARTIAL_RESULTS)) {
         // NOTE: it's not really an error for an object to
         // not exist. For example, sometimes it's needed to

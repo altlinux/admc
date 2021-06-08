@@ -220,6 +220,12 @@ enum SystemFlagsBit {
 
 const long long MILLIS_TO_100_NANOS = 10000LL;
 
+#define LDAP_SERVER_SD_FLAGS_OID "1.2.840.113556.1.4.801"
+#define OWNER_SECURITY_INFORMATION 0x01
+#define GROUP_SECURITY_INFORMATION 0x04
+#define SACL_SECURITY_INFORMATION 0x08
+#define DACL_SECURITY_INFORMATION 0x10
+
 enum PermissionState {
     PermissionState_None,
     PermissionState_Allowed,
