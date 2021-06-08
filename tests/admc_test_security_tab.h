@@ -45,7 +45,7 @@ private:
 
     void uncheck_all_permissions();
     void set_permission_state(const QSet<AcePermission> &permission_set, const AceColumn column, const Qt::CheckState state);
-    bool state_is(const QSet<AcePermission> &permission_set, const QSet<AceColumn> &checked_columns) const;
+    bool state_is(const QSet<AcePermission> &permission_set, const PermissionState state) const;
 };
 
 #endif /* ADMC_TEST_SECURITY_TAB_H */
