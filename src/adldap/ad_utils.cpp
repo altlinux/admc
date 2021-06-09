@@ -19,8 +19,10 @@
  */
 
 #include "ad_utils.h"
+
 #include "ad_config.h"
 #include "ad_display.h"
+#include "samba/dom_sid.h"
 
 #include <ldap.h>
 #include <krb5.h>
@@ -374,4 +376,46 @@ const char *cstr(const QString &qstr) {
 
 bool load_adldap_translation(QTranslator &translator, const QLocale &locale) {
     return translator.load(locale, "adldap", "_", ":/adldap");
+}
+
+QByteArray guid_string_to_bytes(const QString &guid_string) {
+    const QList<QByteArray> segment_list =
+    [&]() {
+        QList<QByteArray> out;
+
+        const QList<QString> string_segment_list = guid_string.split('-');
+
+        for (const QString &string_segment : string_segment_list) {
+            const QByteArray segment = QByteArray::fromHex(string_segment.toLatin1());
+            out.append(segment);
+        }
+
+        std::reverse(out[0].begin(), out[0].end());
+        std::reverse(out[1].begin(), out[1].end());
+        std::reverse(out[2].begin(), out[2].end());
+
+        return out;
+    }();
+
+    const QByteArray guid_bytes =
+    [&]() {
+        QByteArray out;
+
+        for (const QByteArray &segment : segment_list) {
+            out.append(segment);
+        }
+
+        return out;
+    }();
+
+    return guid_bytes;
+}
+
+QByteArray sid_string_to_bytes(const QString &sid_string) {
+    dom_sid sid;
+    string_to_sid(&sid, cstr(sid_string));
+
+    const QByteArray sid_bytes = QByteArray((char *) &sid, sizeof(dom_sid));
+
+    return sid_bytes;
 }
