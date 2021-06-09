@@ -32,8 +32,11 @@
 #include <QDebug>
 
 QByteArray dom_sid_to_bytes(const dom_sid &sid);
-QList<security_ace *> ad_security_get_dacl(security_descriptor *sd);
 security_descriptor *ad_security_get_sd(const AdObject *object);
+QList<security_ace *> ad_security_get_dacl(security_descriptor *sd);
+QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd);
+QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd);
+QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_sd(security_descriptor *sd, AdConfig *adconfig);
 
 // TODO: values of SEC_ADS_GENERIC_READ and
 // SEC_ADS_GENERIC_WRITE constants don't match with the bits
@@ -139,150 +142,6 @@ const QSet<AcePermission> access_permissions = get_permission_set(SEC_ADS_CONTRO
 const QSet<AcePermission> read_prop_permissions = get_permission_set(SEC_ADS_READ_PROP);
 const QSet<AcePermission> write_prop_permissions = get_permission_set(SEC_ADS_WRITE_PROP);
 
-QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd) {
-    QSet<QByteArray> out;
-
-    const QList<security_ace *> dacl = ad_security_get_dacl(sd);
-    for (security_ace *ace : dacl) {
-        const QByteArray trustee_bytes = dom_sid_to_bytes(ace->trustee);
-
-        out.insert(trustee_bytes);
-    }
-
-    return out.toList();
-}
-
-QList<security_ace *> ad_security_get_dacl(security_descriptor *sd) {
-    QList<security_ace *> out;
-
-    for (uint32_t i = 0; i < sd->dacl->num_aces; i++) {
-        security_ace *ace = &sd->dacl->aces[i];
-        out.append(ace);
-    }
-
-    return out;
-}
-
-void ad_security_print_acl(security_descriptor *sd, const QByteArray &trustee) {
-    TALLOC_CTX *tmp_ctx = talloc_new(NULL);
-
-    const QList<security_ace *> ace_list =
-    [&]() {
-        QList<security_ace *> out;
-
-        const QList<security_ace *> dacl = ad_security_get_dacl(sd);
-        for (security_ace *ace : dacl) {
-            const QByteArray this_trustee_bytes = dom_sid_to_bytes(ace->trustee);
-
-            const bool trustee_match = (this_trustee_bytes == trustee);
-            if (trustee_match) {
-                out.append(ace);
-            }
-        }
-
-        return out;
-    }();
-
-    for (security_ace *ace : ace_list) {
-        const QString ace_string =
-        [&]() {
-            char *ace_cstr = ndr_print_struct_string(tmp_ctx, (ndr_print_fn_t)ndr_print_security_ace,
-                "ace", ace);
-
-            const QString out = QString(ace_cstr);
-
-            return out;
-        }();
-
-        qDebug().noquote() << ace_string;
-    }
-
-    talloc_free(tmp_ctx);
-}
-
-// TODO: this requiring adconfig is so messy and causes
-// other f-ns that use this f-n to require adconfig also.
-// Not sure if possible to remove this requirement.
-QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_sd(security_descriptor *sd, AdConfig *adconfig) {
-    QHash<QByteArray, QHash<AcePermission, PermissionState>>  out;
-
-    // Initialize to None by default
-    const QList<QByteArray> trustee_list = ad_security_get_trustee_list_from_sd(sd);
-    for (const QByteArray &trustee : trustee_list) {
-        for (const AcePermission &permission : all_permissions) {
-            out[trustee][permission] = PermissionState_None;
-        }
-    }
-
-    // Then go through acl and set allowed/denied permission
-    // states
-    const QList<security_ace *> dacl = ad_security_get_dacl(sd);
-    for (security_ace *ace : dacl) {
-        const QByteArray trustee = dom_sid_to_bytes(ace->trustee);
-
-        for (const AcePermission &permission : all_permissions) {
-            const uint32_t permission_mask = ace_permission_to_mask_map[permission];
-
-            const bool mask_match = ((ace->access_mask & permission_mask) == permission_mask);
-            if (!mask_match) {
-                continue;
-            }
-
-            const bool object_match =
-            [&]() {
-                const bool object_present = ((ace->object.object.flags & SEC_ACE_OBJECT_TYPE_PRESENT) != 0);
-                if (!object_present) {
-                    return false;
-                }
-
-                const QString rights_guid =
-                [&]() {
-                    const QString right_cn = ace_permission_to_type_map[permission];
-                    const QString guid_out = adconfig->get_right_guid(right_cn);
-
-                    return guid_out;
-                }();
-
-                const QString ace_type_guid =
-                [&]() {
-                    const GUID type = ace->object.object.type.type;
-                    const QByteArray type_bytes = QByteArray((char *) &type, sizeof(GUID));
-
-                    return attribute_display_value(ATTRIBUTE_OBJECT_GUID, type_bytes, adconfig);
-                }();
-
-                return (rights_guid.toLower() == ace_type_guid.toLower());
-            }();
-
-            switch (ace->type) {
-                case SEC_ACE_TYPE_ACCESS_ALLOWED: {
-                    out[trustee][permission] = PermissionState_Allowed;
-                    break;
-                }
-                case SEC_ACE_TYPE_ACCESS_DENIED: {
-                    out[trustee][permission] = PermissionState_Denied;
-                    break;
-                }
-                case SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT: {
-                    if (object_match) {
-                        out[trustee][permission] = PermissionState_Allowed;
-                    }
-                    break;
-                }
-                case SEC_ACE_TYPE_ACCESS_DENIED_OBJECT: {
-                    if (object_match) {
-                        out[trustee][permission] = PermissionState_Denied;
-                    }
-                    break;
-                }
-                default: break;
-            }
-        }
-    }
-
-    return out;
-}
-
 QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_modify(const QHash<QByteArray, QHash<AcePermission, PermissionState>> &current, const QByteArray &trustee, const AcePermission permission, const PermissionState new_state) {
     QHash<QByteArray, QHash<AcePermission, PermissionState>> out;
 
@@ -338,12 +197,6 @@ QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_modify(cons
     }
 
     return out;
-}
-
-QByteArray dom_sid_to_bytes(const dom_sid &sid) {
-    const QByteArray bytes = QByteArray((char *) &sid, sizeof(struct dom_sid));
-
-    return bytes;
 }
 
 QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee) {
@@ -584,6 +437,12 @@ QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_f
     return out;
 }
 
+QByteArray dom_sid_to_bytes(const dom_sid &sid) {
+    const QByteArray bytes = QByteArray((char *) &sid, sizeof(struct dom_sid));
+
+    return bytes;
+}
+
 // NOTE: have to talloc_free() returned sd
 security_descriptor *ad_security_get_sd(const AdObject *object) {
     const QByteArray descriptor_bytes = object->get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
@@ -594,4 +453,148 @@ security_descriptor *ad_security_get_sd(const AdObject *object) {
     ndr_pull_struct_blob(&blob, sd, sd, (ndr_pull_flags_fn_t)ndr_pull_security_descriptor);
 
     return sd;
+}
+
+QList<security_ace *> ad_security_get_dacl(security_descriptor *sd) {
+    QList<security_ace *> out;
+
+    for (uint32_t i = 0; i < sd->dacl->num_aces; i++) {
+        security_ace *ace = &sd->dacl->aces[i];
+        out.append(ace);
+    }
+
+    return out;
+}
+
+QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd) {
+    QSet<QByteArray> out;
+
+    const QList<security_ace *> dacl = ad_security_get_dacl(sd);
+    for (security_ace *ace : dacl) {
+        const QByteArray trustee_bytes = dom_sid_to_bytes(ace->trustee);
+
+        out.insert(trustee_bytes);
+    }
+
+    return out.toList();
+}
+
+void ad_security_print_acl(security_descriptor *sd, const QByteArray &trustee) {
+    TALLOC_CTX *tmp_ctx = talloc_new(NULL);
+
+    const QList<security_ace *> ace_list =
+    [&]() {
+        QList<security_ace *> out;
+
+        const QList<security_ace *> dacl = ad_security_get_dacl(sd);
+        for (security_ace *ace : dacl) {
+            const QByteArray this_trustee_bytes = dom_sid_to_bytes(ace->trustee);
+
+            const bool trustee_match = (this_trustee_bytes == trustee);
+            if (trustee_match) {
+                out.append(ace);
+            }
+        }
+
+        return out;
+    }();
+
+    for (security_ace *ace : ace_list) {
+        const QString ace_string =
+        [&]() {
+            char *ace_cstr = ndr_print_struct_string(tmp_ctx, (ndr_print_fn_t)ndr_print_security_ace,
+                "ace", ace);
+
+            const QString out = QString(ace_cstr);
+
+            return out;
+        }();
+
+        qDebug().noquote() << ace_string;
+    }
+
+    talloc_free(tmp_ctx);
+}
+
+// TODO: this requiring adconfig is so messy and causes
+// other f-ns that use this f-n to require adconfig also.
+// Not sure if possible to remove this requirement.
+QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_sd(security_descriptor *sd, AdConfig *adconfig) {
+    QHash<QByteArray, QHash<AcePermission, PermissionState>>  out;
+
+    // Initialize to None by default
+    const QList<QByteArray> trustee_list = ad_security_get_trustee_list_from_sd(sd);
+    for (const QByteArray &trustee : trustee_list) {
+        for (const AcePermission &permission : all_permissions) {
+            out[trustee][permission] = PermissionState_None;
+        }
+    }
+
+    // Then go through acl and set allowed/denied permission
+    // states
+    const QList<security_ace *> dacl = ad_security_get_dacl(sd);
+    for (security_ace *ace : dacl) {
+        const QByteArray trustee = dom_sid_to_bytes(ace->trustee);
+
+        for (const AcePermission &permission : all_permissions) {
+            const uint32_t permission_mask = ace_permission_to_mask_map[permission];
+
+            const bool mask_match = ((ace->access_mask & permission_mask) == permission_mask);
+            if (!mask_match) {
+                continue;
+            }
+
+            const bool object_match =
+            [&]() {
+                const bool object_present = ((ace->object.object.flags & SEC_ACE_OBJECT_TYPE_PRESENT) != 0);
+                if (!object_present) {
+                    return false;
+                }
+
+                const QString rights_guid =
+                [&]() {
+                    const QString right_cn = ace_permission_to_type_map[permission];
+                    const QString guid_out = adconfig->get_right_guid(right_cn);
+
+                    return guid_out;
+                }();
+
+                const QString ace_type_guid =
+                [&]() {
+                    const GUID type = ace->object.object.type.type;
+                    const QByteArray type_bytes = QByteArray((char *) &type, sizeof(GUID));
+
+                    return attribute_display_value(ATTRIBUTE_OBJECT_GUID, type_bytes, adconfig);
+                }();
+
+                return (rights_guid.toLower() == ace_type_guid.toLower());
+            }();
+
+            switch (ace->type) {
+                case SEC_ACE_TYPE_ACCESS_ALLOWED: {
+                    out[trustee][permission] = PermissionState_Allowed;
+                    break;
+                }
+                case SEC_ACE_TYPE_ACCESS_DENIED: {
+                    out[trustee][permission] = PermissionState_Denied;
+                    break;
+                }
+                case SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT: {
+                    if (object_match) {
+                        out[trustee][permission] = PermissionState_Allowed;
+                    }
+                    break;
+                }
+                case SEC_ACE_TYPE_ACCESS_DENIED_OBJECT: {
+                    if (object_match) {
+                        out[trustee][permission] = PermissionState_Denied;
+                    }
+                    break;
+                }
+                default: break;
+            }
+        }
+    }
+
+    return out;
 }

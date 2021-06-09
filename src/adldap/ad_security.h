@@ -32,9 +32,6 @@
 #include <QHash>
 #include <QSet>
 
-struct security_descriptor;
-struct security_ace;
-struct dom_sid;
 class AdInterface;
 class AdConfig;
 class AdObject;
@@ -47,11 +44,10 @@ extern const QSet<AcePermission> access_permissions;
 extern const QSet<AcePermission> read_prop_permissions;
 extern const QSet<AcePermission> write_prop_permissions;
 
+QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_modify(const QHash<QByteArray, QHash<AcePermission, PermissionState>> &current, const QByteArray &trustee, const AcePermission permission, const PermissionState new_state);
 QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee);
 bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, const QHash<QByteArray, QHash<AcePermission, PermissionState>> &descriptor_state_arg);
-QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_modify(const QHash<QByteArray, QHash<AcePermission, PermissionState>> &current, const QByteArray &trustee, const AcePermission permission, const PermissionState new_state);
-QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_object(const AdObject *object, AdConfig *adconfig);
 QList<QByteArray> ad_security_get_trustee_list_from_object(const AdObject *object);
-void ad_security_print_acl(security_descriptor *sd, const QByteArray &trustee);
+QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_object(const AdObject *object, AdConfig *adconfig);
 
 #endif /* AD_SECURITY_H */
