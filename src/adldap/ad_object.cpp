@@ -22,6 +22,10 @@
 
 #include "ad_utils.h"
 #include "ad_config.h"
+#include "ad_security.h"
+#include "ad_display.h"
+
+#include "samba/ndr_security.h"
 
 #include <algorithm>
 #include <QMap>
@@ -167,8 +171,22 @@ bool AdObject::get_system_flag(const SystemFlagsBit bit) const {
     }
 }
 
-bool AdObject::get_account_option(AccountOption option) const {
+bool AdObject::get_account_option(AccountOption option, AdConfig *adconfig) const {
     switch (option) {
+        case AccountOption_CantChangePassword: {
+            if (contains(ATTRIBUTE_SECURITY_DESCRIPTOR)) {
+                const QByteArray descriptor_bytes = get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
+                const SecurityDescriptor sd = SecurityDescriptor(descriptor_bytes);
+                const auto security_state = sd.get_state(adconfig);
+                const QByteArray self_trustee = sid_string_to_bytes(SID_NT_SELF);
+                const PermissionState permission_state = security_state[self_trustee][AcePermission_ChangePassword];
+                const bool denied = (permission_state == PermissionState_Denied);
+
+                return denied;
+            } else {
+                return false;
+            }
+        }
         case AccountOption_PasswordExpired: {
             if (contains(ATTRIBUTE_PWD_LAST_SET)) {
                 const QString pwdLastSet_value = get_string(ATTRIBUTE_PWD_LAST_SET);

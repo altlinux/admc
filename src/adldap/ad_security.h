@@ -68,7 +68,7 @@ private:
 };
 
 QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee);
-bool attribute_replace_security_descriptor(AdInterface &ad, const QString &dn, const QHash<QByteArray, QHash<AcePermission, PermissionState>> &descriptor_state_arg);
+bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, const QHash<QByteArray, QHash<AcePermission, PermissionState>> &descriptor_state_arg);
 QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_modify(const QHash<QByteArray, QHash<AcePermission, PermissionState>> &current, const QByteArray &trustee, const AcePermission permission, const PermissionState new_state);
 
 #endif /* AD_SECURITY_H */

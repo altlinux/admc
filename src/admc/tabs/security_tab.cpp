@@ -291,7 +291,7 @@ bool SecurityTab::apply(AdInterface &ad, const QString &target) {
         return true;
     }
 
-    const bool apply_success = attribute_replace_security_descriptor(ad, target, permission_state_map);
+    const bool apply_success = attribute_replace_security_descriptor(&ad, target, permission_state_map);
 
     original_permission_state_map = permission_state_map;
 

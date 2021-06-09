@@ -21,6 +21,7 @@
 #include "multi_edits/account_option_multi_edit.h"
 
 #include "edits/account_option_edit.h"
+#include "globals.h"
 
 #include <QCheckBox>
 #include <QFormLayout>
@@ -92,7 +93,7 @@ bool AccountOptionMultiEdit::apply_internal(AdInterface &ad, const QString &targ
         for (const AccountOption &option : check_map.keys()) {
             QCheckBox *check = check_map[option];
 
-            const bool current_option_state = object.get_account_option(option);
+            const bool current_option_state = object.get_account_option(option, g_adconfig);
             const bool new_option_state = check->isChecked();
             const bool option_changed = (new_option_state != current_option_state);
             if (option_changed) {

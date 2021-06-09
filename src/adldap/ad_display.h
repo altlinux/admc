@@ -37,5 +37,6 @@ QString object_sid_display_value(const QByteArray &sid_bytes);
 
 // TODO: this doesn't belong here...
 QByteArray guid_string_to_bytes(const QString &guid_string);
+QByteArray sid_string_to_bytes(const QString &sid_string);
 
 #endif /* ATTRIBUTE_DISPLAY_H */

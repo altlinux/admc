@@ -70,7 +70,7 @@ public:
 
     bool get_system_flag(const SystemFlagsBit bit) const;
 
-    bool get_account_option(AccountOption option) const;
+    bool get_account_option(AccountOption option, AdConfig *adconfig) const;
 
     GroupScope get_group_scope() const;
     GroupType get_group_type() const;

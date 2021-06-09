@@ -212,6 +212,9 @@ security_descriptor *SecurityDescriptor::get_data() const {
     return data;
 }
 
+// TODO: this requiring adconfig is so messy and causes
+// other f-ns that use this f-n to require adconfig also.
+// Not sure if possible to remove this requirement.
 QHash<QByteArray, QHash<AcePermission, PermissionState>> SecurityDescriptor::get_state(AdConfig *adconfig) const {
     QHash<QByteArray, QHash<AcePermission, PermissionState>>  out;
 
@@ -426,7 +429,7 @@ QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee)
     }
 }
 
-bool attribute_replace_security_descriptor(AdInterface &ad, const QString &dn, const QHash<QByteArray, QHash<AcePermission, PermissionState>> &descriptor_state_arg) {
+bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, const QHash<QByteArray, QHash<AcePermission, PermissionState>> &descriptor_state_arg) {
     const QByteArray new_descriptor_bytes =
     [&]() {
         // Remove redundancy from permission state
@@ -472,7 +475,7 @@ bool attribute_replace_security_descriptor(AdInterface &ad, const QString &dn, c
         TALLOC_CTX* tmp_ctx = talloc_new(NULL);
 
         // Use original sd as base, only remaking the dacl
-        const AdObject object = ad.search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
+        const AdObject object = ad->search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
         const QByteArray old_descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
         const SecurityDescriptor old_sd = SecurityDescriptor(old_descriptor_bytes);
         security_descriptor *sd = old_sd.get_data();
@@ -531,7 +534,7 @@ bool attribute_replace_security_descriptor(AdInterface &ad, const QString &dn, c
                     [&]() {
                         if (object_present) {
                             const QString type_name_string = ace_permission_to_type_map[permission];
-                            const QString type_string = ad.adconfig()->get_right_guid(type_name_string);
+                            const QString type_string = ad->adconfig()->get_right_guid(type_name_string);
                             const QByteArray type_bytes = guid_string_to_bytes(type_string);
 
                             struct GUID guid;
@@ -569,7 +572,7 @@ bool attribute_replace_security_descriptor(AdInterface &ad, const QString &dn, c
         return out;
     }();
 
-    const bool apply_success = ad.attribute_replace_value(dn, ATTRIBUTE_SECURITY_DESCRIPTOR, new_descriptor_bytes);
+    const bool apply_success = ad->attribute_replace_value(dn, ATTRIBUTE_SECURITY_DESCRIPTOR, new_descriptor_bytes);
 
     return apply_success;
 }

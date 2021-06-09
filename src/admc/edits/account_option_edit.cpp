@@ -19,8 +19,11 @@
  */
 
 #include "edits/account_option_edit.h"
+
 #include "adldap.h"
 #include "utils.h"
+#include "globals.h"
+
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QComboBox>
@@ -81,7 +84,7 @@ AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QList<Attri
 }
 
 void AccountOptionEdit::load_internal(AdInterface &ad, const AdObject &object) {
-    const bool option_is_set = object.get_account_option(option);
+    const bool option_is_set = object.get_account_option(option, g_adconfig);
     check->setChecked(option_is_set);
 }
 
@@ -136,14 +139,9 @@ void account_option_setup_conflicts(const QHash<AccountOption, QCheckBox *> &che
             });
     };
 
-    // NOTE: only setup conflicts for options that exist
-    // TODO: AccountOption_CantChangePassword. Once security
-    // descriptor manipulation is implemented, it should be
-    // evident how to do this. See link:
-    // https://docs.microsoft.com/en-us/windows/win32/adsi/modifying-user-cannot-change-password-ldap-provider?redirectedfrom=MSDN
     const QList<AccountOption> other_two_options = {
         AccountOption_DontExpirePassword,
-        // AccountOption_CantChangePassword,
+        AccountOption_CantChangePassword,
     };
 
     for (auto other_option : other_two_options) {

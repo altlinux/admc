@@ -25,6 +25,7 @@
 #include "ad_object.h"
 #include "ad_display.h"
 #include "ad_config.h"
+#include "ad_security.h"
 #include "samba/ndr_security.h"
 #include "samba/gp_manage.h"
 #include "samba/dom_sid.h"
@@ -960,6 +961,30 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
     bool success = false;
 
     switch (option) {
+        case AccountOption_CantChangePassword: {
+            const AdObject object = search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
+            const QByteArray descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
+            const SecurityDescriptor sd = SecurityDescriptor(descriptor_bytes);
+
+            const auto old_security_state = sd.get_state(d->adconfig);
+
+            const QByteArray self_trustee = sid_string_to_bytes(SID_NT_SELF);
+            
+            const PermissionState new_permission_state =
+            [&]() {
+                if (set) {
+                    return PermissionState_Denied;
+                } else {
+                    return PermissionState_Allowed;
+                }
+            }();
+
+            const auto new_security_state = ad_security_modify(old_security_state, self_trustee, AcePermission_ChangePassword, new_permission_state);    
+
+            success = attribute_replace_security_descriptor(this, dn, new_security_state);
+
+            break;
+        }
         case AccountOption_PasswordExpired: {
             QString pwdLastSet_value;
             if (set) {

@@ -268,6 +268,15 @@ QByteArray guid_string_to_bytes(const QString &guid_string) {
     return guid_bytes;
 }
 
+QByteArray sid_string_to_bytes(const QString &sid_string) {
+    dom_sid sid;
+    string_to_sid(&sid, cstr(sid_string));
+
+    QByteArray sid_bytes = QByteArray((char *) &sid, sizeof(dom_sid));
+
+    return sid_bytes;
+}
+
 QString octet_display_value(const QByteArray &bytes) {
     const QByteArray bytes_hex = bytes.toHex();
 
