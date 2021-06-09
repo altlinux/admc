@@ -142,19 +142,17 @@ SecurityTab::SecurityTab() {
     ace_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ace_view->setColumnWidth(AceColumn_Name, 400);
 
-    selected_trustee_label = new QLabel();
+    trustee_label = new QLabel();
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(trustee_view);
     layout->addWidget(trustee_buttonbox);
-    layout->addWidget(selected_trustee_label);
+    layout->addWidget(trustee_label);
     layout->addWidget(ace_view);
 
-    // TODO: maybe use current, not selected? i think selection
-    // may be empty if you press escape or something
     connect(
-        trustee_view->selectionModel(), &QItemSelectionModel::selectionChanged,
+        trustee_view->selectionModel(), &QItemSelectionModel::currentChanged,
         this, &SecurityTab::load_trustee_acl);
     connect(
         ace_model, &QStandardItemModel::itemChanged,
@@ -191,23 +189,17 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
 }
 
 void SecurityTab::load_trustee_acl() {
-    const QList<QModelIndex> selected_list = trustee_view->selectionModel()->selectedRows();
-    if (selected_list.isEmpty()) {
-        return;
-    }
-
-    const QModelIndex selected_index = selected_list[0];
-    QStandardItem *selected_item = trustee_model->itemFromIndex(selected_index);
-
     const QString label_text =
     [&]() {
-        const QString selected_name = selected_item->data(Qt::DisplayRole).toString();
-        const QString text = QString("Permissions for %1").arg(selected_name);
+        const QModelIndex current_index = trustee_view->currentIndex();
+        QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
+        const QString trustee_name = current_item->text();
+        const QString text = QString("Permissions for %1").arg(trustee_name);
 
         return text;
     }();
 
-    selected_trustee_label->setText(label_text);
+    trustee_label->setText(label_text);
 
     apply_current_state_to_items();
 }

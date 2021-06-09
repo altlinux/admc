@@ -69,7 +69,7 @@ private:
     QStandardItemModel *trustee_model;
     QTreeView *ace_view;
     QStandardItemModel *ace_model;
-    QLabel *selected_trustee_label;
+    QLabel *trustee_label;
     QHash<AcePermission, QHash<AceColumn, QStandardItem *>> permission_item_map;
     QHash<QByteArray, QHash<AcePermission, PermissionState>> original_permission_state_map;
     QHash<QByteArray, QHash<AcePermission, PermissionState>> permission_state_map;
