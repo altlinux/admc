@@ -175,9 +175,7 @@ bool AdObject::get_account_option(AccountOption option, AdConfig *adconfig) cons
     switch (option) {
         case AccountOption_CantChangePassword: {
             if (contains(ATTRIBUTE_SECURITY_DESCRIPTOR)) {
-                const QByteArray descriptor_bytes = get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
-                const SecurityDescriptor sd = SecurityDescriptor(descriptor_bytes);
-                const auto security_state = sd.get_state(adconfig);
+                const auto security_state = ad_security_get_state_from_object(this, adconfig);
                 const QByteArray self_trustee = sid_string_to_bytes(SID_NT_SELF);
                 const PermissionState permission_state = security_state[self_trustee][AcePermission_ChangePassword];
                 const bool denied = (permission_state == PermissionState_Denied);

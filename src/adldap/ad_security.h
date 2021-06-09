@@ -37,6 +37,7 @@ struct security_ace;
 struct dom_sid;
 class AdInterface;
 class AdConfig;
+class AdObject;
 
 extern const QHash<AcePermission, uint32_t> ace_permission_to_mask_map;
 extern const QHash<AcePermission, QString> ace_permission_to_type_map;
@@ -46,29 +47,11 @@ extern const QSet<AcePermission> access_permissions;
 extern const QSet<AcePermission> read_prop_permissions;
 extern const QSet<AcePermission> write_prop_permissions;
 
-/**
- * Wrapper over "security_descriptor" struct mainly for the
- * purpose of automatically allocating and free'ing it's
- * memory. Also contains some access f-ns.
- */
-class SecurityDescriptor {
-
-public:
-    SecurityDescriptor(const QByteArray &descriptor_bytes);
-    ~SecurityDescriptor();
-
-    QList<QByteArray> get_trustee_list() const;
-    QList<security_ace *> dacl() const;
-    void print_acl(const QByteArray &trustee) const;
-    security_descriptor *get_data() const;
-    QHash<QByteArray, QHash<AcePermission, PermissionState>> get_state(AdConfig *adconfig) const;
-
-private:
-    security_descriptor *data;
-};
-
 QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee);
 bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, const QHash<QByteArray, QHash<AcePermission, PermissionState>> &descriptor_state_arg);
 QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_modify(const QHash<QByteArray, QHash<AcePermission, PermissionState>> &current, const QByteArray &trustee, const AcePermission permission, const PermissionState new_state);
+QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_object(const AdObject *object, AdConfig *adconfig);
+QList<QByteArray> ad_security_get_trustee_list_from_object(const AdObject *object);
+void ad_security_print_acl(security_descriptor *sd, const QByteArray &trustee);
 
 #endif /* AD_SECURITY_H */

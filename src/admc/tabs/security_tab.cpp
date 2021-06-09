@@ -168,19 +168,18 @@ SecurityTab::SecurityTab() {
 }
 
 void SecurityTab::load(AdInterface &ad, const AdObject &object) {
-    const QByteArray descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
-    const SecurityDescriptor sd = SecurityDescriptor(descriptor_bytes);
-
-    // Add items to trustee model
     trustee_model->removeRows(0, trustee_model->rowCount());
-    const QList<QByteArray> trustee_list = sd.get_trustee_list();
+    
+    // Add items to trustee model
+    const QList<QByteArray> trustee_list = ad_security_get_trustee_list_from_object(&object);
     for (const QByteArray &trustee : trustee_list) {
         add_trustee_item(trustee, ad);
     }
 
     trustee_model->sort(0, Qt::AscendingOrder);
 
-    permission_state_map = sd.get_state(g_adconfig);
+    permission_state_map = ad_security_get_state_from_object(&object, g_adconfig);
+
     original_permission_state_map = permission_state_map;
 
     // Select first index

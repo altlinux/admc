@@ -32,6 +32,8 @@
 #include <QDebug>
 
 QByteArray dom_sid_to_bytes(const dom_sid &sid);
+QList<security_ace *> ad_security_get_dacl(security_descriptor *sd);
+security_descriptor *ad_security_get_sd(const AdObject *object);
 
 // TODO: values of SEC_ADS_GENERIC_READ and
 // SEC_ADS_GENERIC_WRITE constants don't match with the bits
@@ -137,22 +139,11 @@ const QSet<AcePermission> access_permissions = get_permission_set(SEC_ADS_CONTRO
 const QSet<AcePermission> read_prop_permissions = get_permission_set(SEC_ADS_READ_PROP);
 const QSet<AcePermission> write_prop_permissions = get_permission_set(SEC_ADS_WRITE_PROP);
 
-SecurityDescriptor::SecurityDescriptor(const QByteArray &descriptor_bytes) {
-    DATA_BLOB blob = data_blob_const(descriptor_bytes.data(), descriptor_bytes.size());
-
-    data = talloc(NULL, struct security_descriptor);
-
-    ndr_pull_struct_blob(&blob, data, data, (ndr_pull_flags_fn_t)ndr_pull_security_descriptor);
-}
-
-SecurityDescriptor::~SecurityDescriptor() {
-    talloc_free(data);
-}
-
-QList<QByteArray> SecurityDescriptor::get_trustee_list() const {
+QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd) {
     QSet<QByteArray> out;
 
-    for (security_ace *ace : dacl()) {
+    const QList<security_ace *> dacl = ad_security_get_dacl(sd);
+    for (security_ace *ace : dacl) {
         const QByteArray trustee_bytes = dom_sid_to_bytes(ace->trustee);
 
         out.insert(trustee_bytes);
@@ -161,25 +152,26 @@ QList<QByteArray> SecurityDescriptor::get_trustee_list() const {
     return out.toList();
 }
 
-QList<security_ace *> SecurityDescriptor::dacl() const {
+QList<security_ace *> ad_security_get_dacl(security_descriptor *sd) {
     QList<security_ace *> out;
 
-    for (uint32_t i = 0; i < data->dacl->num_aces; i++) {
-        security_ace *ace = &data->dacl->aces[i];
+    for (uint32_t i = 0; i < sd->dacl->num_aces; i++) {
+        security_ace *ace = &sd->dacl->aces[i];
         out.append(ace);
     }
 
     return out;
 }
 
-void SecurityDescriptor::print_acl(const QByteArray &trustee) const {
+void ad_security_print_acl(security_descriptor *sd, const QByteArray &trustee) {
     TALLOC_CTX *tmp_ctx = talloc_new(NULL);
 
     const QList<security_ace *> ace_list =
     [&]() {
         QList<security_ace *> out;
 
-        for (security_ace *ace : dacl()) {
+        const QList<security_ace *> dacl = ad_security_get_dacl(sd);
+        for (security_ace *ace : dacl) {
             const QByteArray this_trustee_bytes = dom_sid_to_bytes(ace->trustee);
 
             const bool trustee_match = (this_trustee_bytes == trustee);
@@ -208,18 +200,14 @@ void SecurityDescriptor::print_acl(const QByteArray &trustee) const {
     talloc_free(tmp_ctx);
 }
 
-security_descriptor *SecurityDescriptor::get_data() const {
-    return data;
-}
-
 // TODO: this requiring adconfig is so messy and causes
 // other f-ns that use this f-n to require adconfig also.
 // Not sure if possible to remove this requirement.
-QHash<QByteArray, QHash<AcePermission, PermissionState>> SecurityDescriptor::get_state(AdConfig *adconfig) const {
+QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_sd(security_descriptor *sd, AdConfig *adconfig) {
     QHash<QByteArray, QHash<AcePermission, PermissionState>>  out;
 
     // Initialize to None by default
-    const QList<QByteArray> trustee_list = get_trustee_list();
+    const QList<QByteArray> trustee_list = ad_security_get_trustee_list_from_sd(sd);
     for (const QByteArray &trustee : trustee_list) {
         for (const AcePermission &permission : all_permissions) {
             out[trustee][permission] = PermissionState_None;
@@ -228,7 +216,8 @@ QHash<QByteArray, QHash<AcePermission, PermissionState>> SecurityDescriptor::get
 
     // Then go through acl and set allowed/denied permission
     // states
-    for (security_ace *ace : dacl()) {
+    const QList<security_ace *> dacl = ad_security_get_dacl(sd);
+    for (security_ace *ace : dacl) {
         const QByteArray trustee = dom_sid_to_bytes(ace->trustee);
 
         for (const AcePermission &permission : all_permissions) {
@@ -476,9 +465,7 @@ bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, c
 
         // Use original sd as base, only remaking the dacl
         const AdObject object = ad->search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
-        const QByteArray old_descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
-        const SecurityDescriptor old_sd = SecurityDescriptor(old_descriptor_bytes);
-        security_descriptor *sd = old_sd.get_data();
+        security_descriptor *sd = ad_security_get_sd(&object);
 
         // Generate new dacl
         const QList<security_ace *> dacl_qlist =
@@ -575,4 +562,36 @@ bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, c
     const bool apply_success = ad->attribute_replace_value(dn, ATTRIBUTE_SECURITY_DESCRIPTOR, new_descriptor_bytes);
 
     return apply_success;
+}
+
+QList<QByteArray> ad_security_get_trustee_list_from_object(const AdObject *object) {
+    security_descriptor *sd = ad_security_get_sd(object);
+
+    const QList<QByteArray> out = ad_security_get_trustee_list_from_sd(sd);
+
+    talloc_free(sd);
+
+    return out;
+}
+
+QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_object(const AdObject *object, AdConfig *adconfig) {
+    security_descriptor *sd = ad_security_get_sd(object);
+
+    const auto out = ad_security_get_state_from_sd(sd, adconfig);
+
+    talloc_free(sd);
+
+    return out;
+}
+
+// NOTE: have to talloc_free() returned sd
+security_descriptor *ad_security_get_sd(const AdObject *object) {
+    const QByteArray descriptor_bytes = object->get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
+    DATA_BLOB blob = data_blob_const(descriptor_bytes.data(), descriptor_bytes.size());
+
+    security_descriptor *sd = talloc(NULL, struct security_descriptor);
+
+    ndr_pull_struct_blob(&blob, sd, sd, (ndr_pull_flags_fn_t)ndr_pull_security_descriptor);
+
+    return sd;
 }

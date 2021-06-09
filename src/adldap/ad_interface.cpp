@@ -963,10 +963,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
     switch (option) {
         case AccountOption_CantChangePassword: {
             const AdObject object = search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
-            const QByteArray descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
-            const SecurityDescriptor sd = SecurityDescriptor(descriptor_bytes);
-
-            const auto old_security_state = sd.get_state(d->adconfig);
+            const auto old_security_state = ad_security_get_state_from_object(&object, d->adconfig);
 
             const QByteArray self_trustee = sid_string_to_bytes(SID_NT_SELF);
             
