@@ -218,16 +218,6 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
         ber_bvfree(new_cookie);
     };
 
-    // typedef struct ldapcontrol {
-
-    // char *ldctl_oid;
-
-    // struct berval ldctl_value;
-
-    // char ldctl_iscritical;
-
-    // } LDAPControl; 
-
     // NOTE: this control is needed so that ldap returns
     // security descriptor attribute when we ask for all
     // attributes. Otherwise it won't includ the descriptor
