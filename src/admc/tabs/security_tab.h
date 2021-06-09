@@ -71,6 +71,7 @@ private:
     QStandardItemModel *ace_model;
     QLabel *selected_trustee_label;
     QHash<AcePermission, QHash<AceColumn, QStandardItem *>> permission_item_map;
+    QHash<QByteArray, QHash<AcePermission, PermissionState>> original_permission_state_map;
     QHash<QByteArray, QHash<AcePermission, PermissionState>> permission_state_map;
     bool ignore_item_changed_signal;
 

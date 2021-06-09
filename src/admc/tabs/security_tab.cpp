@@ -181,6 +181,7 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     trustee_model->sort(0, Qt::AscendingOrder);
 
     permission_state_map = sd.get_state(g_adconfig);
+    original_permission_state_map = permission_state_map;
 
     // Select first index
     // NOTE: load_trustee_acl() is called because setCurrentIndex
@@ -285,7 +286,14 @@ bool SecurityTab::set_trustee(const QString &trustee_name) {
 }
 
 bool SecurityTab::apply(AdInterface &ad, const QString &target) {
+    const bool modified = (original_permission_state_map != permission_state_map);
+    if (!modified) {
+        return true;
+    }
+
     const bool apply_success = attribute_replace_security_descriptor(ad, target, permission_state_map);
+
+    original_permission_state_map = permission_state_map;
 
     return apply_success;
 }
