@@ -208,7 +208,9 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
     LDAPControl **returned_controls = NULL;
     struct berval *prev_cookie = cookie->cookie;
     struct berval *new_cookie = NULL;
-    
+    BerElement *sd_control_value_be = NULL;
+    berval *sd_control_value_bv = NULL;
+
     auto cleanup =
     [&]() {
         ldap_msgfree(res);
@@ -216,6 +218,8 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
         ldap_controls_free(returned_controls);
         ber_bvfree(prev_cookie);
         ber_bvfree(new_cookie);
+        ber_free(sd_control_value_be, 1);
+        ber_bvfree(sd_control_value_bv);
     };
 
     // NOTE: this control is needed so that ldap returns
@@ -228,9 +232,8 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
     const char *sd_control_oid = LDAP_SERVER_SD_FLAGS_OID;
     sd_control.ldctl_oid = (char *) sd_control_oid;
     const int sd_control_value_int = (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | SACL_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
-    BerElement *sd_control_value_be = ber_alloc_t(LBER_USE_DER);
+    sd_control_value_be = ber_alloc_t(LBER_USE_DER);
     ber_printf(sd_control_value_be, "{i}", sd_control_value_int);
-    struct berval *sd_control_value_bv = NULL;
     ber_flatten(sd_control_value_be, &sd_control_value_bv);
     sd_control.ldctl_value.bv_len = sd_control_value_bv->bv_len;
     sd_control.ldctl_value.bv_val = sd_control_value_bv->bv_val;
@@ -251,9 +254,6 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
     // Perform search
     const int attrsonly = 0;
     result = ldap_search_ext_s(ld, base, scope, filter, attributes, attrsonly, server_controls, NULL, NULL, LDAP_NO_LIMIT, &res);
-
-    ber_free(sd_control_value_be, 1);
-    ber_bvfree(sd_control_value_bv);
 
     if ((result != LDAP_SUCCESS) && (result != LDAP_PARTIAL_RESULTS)) {
         // NOTE: it's not really an error for an object to
