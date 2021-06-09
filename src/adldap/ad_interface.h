@@ -27,6 +27,8 @@
  */
 
 #include <QCoreApplication>
+#include <QHash>
+#include <QSet>
 
 #include "ad_defines.h"
 
@@ -35,8 +37,9 @@ class QString;
 class QByteArray;
 class QDateTime;
 class AdObject;
-class AdConfig;
+class AdConfig; 
 template <typename T> class QList;
+typedef void TALLOC_CTX;
 
 enum SearchScope {
     SearchScope_Object,
@@ -110,6 +113,7 @@ public:
      * override the permanent adconfig.
      */
     static void set_permanent_adconfig(AdConfig *adconfig);
+    void set_adconfig(AdConfig *adconfig);
     
     static void set_log_searches(const bool enabled);
 
@@ -120,6 +124,7 @@ public:
     QList<AdMessage> messages() const;
     bool any_error_messages() const;
     void clear_messages();
+    AdConfig *adconfig() const;
 
     // NOTE: If request attributes list is empty, all attributes are returned
 

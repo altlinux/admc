@@ -54,6 +54,7 @@
 
 #define CLASS_ATTRIBUTE_SCHEMA          "attributeSchema"
 #define CLASS_CLASS_SCHEMA              "classSchema"
+#define CLASS_CONTROL_ACCESS_RIGHT      "controlAccessRight"
 
 #define FLAG_ATTR_IS_CONSTRUCTED        0x00000004 
 
@@ -284,6 +285,31 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
 
         return out;
     }();
+
+    d->right_to_guid_map =
+    [&]() {
+        QHash<QString, QString> out;
+
+        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_CONTROL_ACCESS_RIGHT);
+
+        const QList<QString> attributes = {
+            ATTRIBUTE_CN,
+            ATTRIBUTE_RIGHTS_GUID,
+        };
+
+        const QString search_base = extended_rights_dn();
+
+        const QHash<QString, AdObject> search_results = ad.search(search_base, SearchScope_Children, filter, attributes);
+
+        for (const AdObject &object : search_results.values()) {
+            const QString cn = object.get_string(ATTRIBUTE_CN);
+            const QString guid = object.get_string(ATTRIBUTE_RIGHTS_GUID);
+
+            out[cn] = guid;
+        }
+
+        return out;
+    }();
 }
 
 QString AdConfig::domain() const {
@@ -304,6 +330,10 @@ QString AdConfig::schema_dn() const {
 
 QString AdConfig::partitions_dn() const {
     return QString("CN=Partitions,CN=Configuration,%1").arg(domain_head());
+}
+
+QString AdConfig::extended_rights_dn() const {
+    return QString("CN=Extended-Rights,%1").arg(configuration_dn());
 }
 
 QString AdConfig::get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const {
@@ -523,6 +553,11 @@ bool AdConfig::get_attribute_is_backlink(const QString &attribute) const {
 bool AdConfig::get_attribute_is_constructed(const QString &attribute) const {
     const int system_flags = d->attribute_schemas[attribute].get_int(ATTRIBUTE_SYSTEM_FLAGS);
     return bit_is_set(system_flags, FLAG_ATTR_IS_CONSTRUCTED);   
+}
+
+QString AdConfig::get_right_guid(const QString &right_cn) const {
+    const QString out = d->right_to_guid_map.value(right_cn, QString());
+    return out;
 }
 
 // (noncontainer classes) = (all classes) - (container classes)

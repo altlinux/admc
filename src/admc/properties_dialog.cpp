@@ -19,6 +19,7 @@
  */
 
 #include "properties_dialog.h"
+
 #include "tabs/properties_tab.h"
 #include "tabs/attributes_tab.h"
 #include "tabs/membership_tab.h"
@@ -32,12 +33,14 @@
 #include "tabs/telephones_tab.h"
 #include "tabs/profile_tab.h"
 #include "tabs/managed_by_tab.h"
+#include "tabs/security_tab.h"
 #include "adldap.h"
 #include "globals.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
 #include "tab_widget.h"
+#include "console_types/console_object.h"
 
 #include <QAction>
 #include <QLabel>
@@ -176,6 +179,10 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         add_tab(new OrganizationTab(), tr("Organization"));
         add_tab(new TelephonesTab(), tr("Telephones"));
         add_tab(new ProfileTab(), tr("Profile"));
+
+        if (advanced_view_ON) {
+            add_tab(new SecurityTab(), tr("Security"));
+        }
     }
     if (object.is_class(CLASS_GROUP)) {
         add_tab(new MembersTab(), tr("Members"));
@@ -334,6 +341,7 @@ void PropertiesDialog::reset() {
     if (ad_failed(ad)) {
         return;
     }
+
     const AdObject object = ad.search_object(target);
 
     for (auto tab : tabs) {

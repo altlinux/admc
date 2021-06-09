@@ -325,7 +325,7 @@ void ADMCTestObjectMenu::object_menu_disable_enable_account() {
 
         // Check that final disabled state has changed
         const AdObject object = ad.search_object(dn);
-        const bool final_disabled_state = object.get_account_option(AccountOption_Disabled);
+        const bool final_disabled_state = object.get_account_option(AccountOption_Disabled, ad.adconfig());
         const bool disabled_state_changed = (final_disabled_state != initial_disabled_state);
 
         const QString error_text =

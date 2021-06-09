@@ -24,9 +24,15 @@
 #include "ad_utils.h"
 #include "ad_object.h"
 #include "ad_display.h"
+#include "ad_config.h"
+#include "ad_security.h"
 #include "samba/ndr_security.h"
 #include "samba/gp_manage.h"
 #include "samba/dom_sid.h"
+#include "samba/libsmb_xattr.h"
+#include "samba/security_descriptor.h"
+
+#include "ad_filter.h"
 
 #include <ldap.h>
 #include <lber.h>
@@ -239,6 +245,10 @@ void AdInterface::set_permanent_adconfig(AdConfig *adconfig) {
     AdInterfacePrivate::s_adconfig = adconfig;
 }
 
+void AdInterface::set_adconfig(AdConfig *adconfig) {
+    d->adconfig = adconfig;
+}
+
 void AdInterface::set_log_searches(const bool enabled) {
     AdInterfacePrivate::s_log_searches = enabled;
 }
@@ -277,6 +287,10 @@ void AdInterface::clear_messages() {
     d->messages.clear();
 }
 
+AdConfig *AdInterface::adconfig() const {
+    return d->adconfig;
+}
+
 // Helper f-n for search()
 // NOTE: cookie is starts as NULL. Then after each while
 // loop, it is set to the value returned by
@@ -289,7 +303,9 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
     LDAPControl **returned_controls = NULL;
     struct berval *prev_cookie = cookie->cookie;
     struct berval *new_cookie = NULL;
-    
+    BerElement *sd_control_value_be = NULL;
+    berval *sd_control_value_bv = NULL;
+
     auto cleanup =
     [&]() {
         ldap_msgfree(res);
@@ -297,7 +313,26 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
         ldap_controls_free(returned_controls);
         ber_bvfree(prev_cookie);
         ber_bvfree(new_cookie);
+        ber_free(sd_control_value_be, 1);
+        ber_bvfree(sd_control_value_bv);
     };
+
+    // NOTE: this control is needed so that ldap returns
+    // security descriptor attribute when we ask for all
+    // attributes. Otherwise it won't includ the descriptor
+    // in attributes. This might break something when the
+    // app is used by a client with not enough rights to get
+    // some/all parts of the descriptor. Investigate.
+    LDAPControl sd_control;
+    const char *sd_control_oid = LDAP_SERVER_SD_FLAGS_OID;
+    sd_control.ldctl_oid = (char *) sd_control_oid;
+    const int sd_control_value_int = (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | SACL_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
+    sd_control_value_be = ber_alloc_t(LBER_USE_DER);
+    ber_printf(sd_control_value_be, "{i}", sd_control_value_int);
+    ber_flatten(sd_control_value_be, &sd_control_value_bv);
+    sd_control.ldctl_value.bv_len = sd_control_value_bv->bv_len;
+    sd_control.ldctl_value.bv_val = sd_control_value_bv->bv_val;
+    sd_control.ldctl_iscritical = (char) 1;
 
     // Create page control
     const ber_int_t page_size = 1000;
@@ -309,11 +344,12 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
         cleanup();
         return false;
     }
-    LDAPControl *server_controls[2] = {page_control, NULL};
+    LDAPControl *server_controls[3] = {page_control, &sd_control, NULL};
 
     // Perform search
     const int attrsonly = 0;
     result = ldap_search_ext_s(ld, base, scope, filter, attributes, attrsonly, server_controls, NULL, NULL, LDAP_NO_LIMIT, &res);
+
     if ((result != LDAP_SUCCESS) && (result != LDAP_PARTIAL_RESULTS)) {
         // NOTE: it's not really an error for an object to
         // not exist. For example, sometimes it's needed to
@@ -1010,6 +1046,27 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
     bool success = false;
 
     switch (option) {
+        case AccountOption_CantChangePassword: {
+            const AdObject object = search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
+            const auto old_security_state = ad_security_get_state_from_object(&object, d->adconfig);
+
+            const QByteArray self_trustee = sid_string_to_bytes(SID_NT_SELF);
+            
+            const PermissionState new_permission_state =
+            [&]() {
+                if (set) {
+                    return PermissionState_Denied;
+                } else {
+                    return PermissionState_Allowed;
+                }
+            }();
+
+            const auto new_security_state = ad_security_modify(old_security_state, self_trustee, AcePermission_ChangePassword, new_permission_state);    
+
+            success = attribute_replace_security_descriptor(this, dn, new_security_state);
+
+            break;
+        }
         case AccountOption_PasswordExpired: {
             QString pwdLastSet_value;
             if (set) {
@@ -1229,7 +1286,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     struct ndr_pull *ndr_pull = ndr_pull_init_blob(&blob, tmp_ctx);
 
     struct security_descriptor domain_sd;
-    ndr_security_pull_security_descriptor(ndr_pull, NDR_SCALARS|NDR_BUFFERS, &domain_sd);
+    ndr_pull_security_descriptor(ndr_pull, NDR_SCALARS|NDR_BUFFERS, &domain_sd);
 
     // TODO: not sure why but my
     // gp_create_gpt_security_descriptor() call creates an
@@ -1241,8 +1298,8 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     // Create sysvol descriptor from domain descriptor (not
     // one to one, some modifications are needed)
     struct security_descriptor *sysvol_sd;
-    const bool create_sd_success = gp_create_gpt_security_descriptor(tmp_ctx, &domain_sd, &sysvol_sd);
-    if (!create_sd_success) {
+    const NTSTATUS create_sd_status = gp_create_gpt_security_descriptor(tmp_ctx, &domain_sd, &sysvol_sd);
+    if (!NT_STATUS_IS_OK(create_sd_status)) {
         qDebug() << "Failed to create gpo sd";
         return false;
     }
@@ -1582,5 +1639,3 @@ QString AdMessage::text() const {
 AdMessageType AdMessage::type() const {
     return m_type;
 }
-
-

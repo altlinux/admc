@@ -43,6 +43,12 @@ void ADMCTest::initTestCase() {
     g_adconfig->load(ad, QLocale(QLocale::English));
     AdInterface::set_permanent_adconfig(g_adconfig);
 
+    // TODO: temp band-aid. A proper solution would be to
+    // switch to using a pointer for AD and then
+    // initializing it here after loading adconfig. This way
+    // set_adconfig() won't be needed.
+    ad.set_adconfig(g_adconfig);
+
     // Cleanup before all tests in-case this test suite was
     // previously interrupted and a cleanup wasn't performed
     cleanup();

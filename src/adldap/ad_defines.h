@@ -59,6 +59,7 @@ enum LargeIntegerSubtype {
 
 enum AccountOption {
     AccountOption_Disabled,
+    AccountOption_CantChangePassword,
     AccountOption_PasswordExpired,
     AccountOption_DontExpirePassword,
     AccountOption_UseDesKey,
@@ -87,6 +88,7 @@ enum SystemFlagsBit {
     SystemFlagsBit_CannotDelete = 0x80000000
 };
 
+#define ATTRIBUTE_CN                    "cn"
 #define ATTRIBUTE_USER_ACCOUNT_CONTROL  "userAccountControl"
 #define ATTRIBUTE_LOCKOUT_TIME          "lockoutTime"
 #define ATTRIBUTE_ACCOUNT_EXPIRES       "accountExpires"
@@ -168,6 +170,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_OTHER_IP_PHONE        "otherIpPhone"
 #define ATTRIBUTE_UPN_SUFFIXES          "uPNSuffixes"
 #define ATTRIBUTE_SECURITY_DESCRIPTOR   "nTSecurityDescriptor"
+#define ATTRIBUTE_RIGHTS_GUID           "rightsGuid"
 
 #define CLASS_GROUP                     "group"
 #define CLASS_USER                      "user"
@@ -195,6 +198,7 @@ enum SystemFlagsBit {
 #define CLASS_REMOTE_STORAGE_SERVICE    "remoteStorageServicePoint"
 // NOTE: for schema object
 #define CLASS_dMD                       "dMD"
+#define CLASS_CONTROL_ACCESS_RIGHT      "controlAccessRight"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 
@@ -216,5 +220,53 @@ enum SystemFlagsBit {
 #define DATETIME_DISPLAY_FORMAT   "dd.MM.yy hh:mm UTCt"
 
 const long long MILLIS_TO_100_NANOS = 10000LL;
+
+#define LDAP_SERVER_SD_FLAGS_OID "1.2.840.113556.1.4.801"
+#define OWNER_SECURITY_INFORMATION 0x01
+#define GROUP_SECURITY_INFORMATION 0x04
+#define SACL_SECURITY_INFORMATION 0x08
+#define DACL_SECURITY_INFORMATION 0x10
+
+enum PermissionState {
+    PermissionState_None,
+    PermissionState_Allowed,
+    PermissionState_Denied,
+};
+
+enum AcePermission {
+    AcePermission_FullControl,
+    AcePermission_Read,
+    AcePermission_Write,
+    AcePermission_CreateChild,
+    AcePermission_DeleteChild,
+    AcePermission_AllowedToAuthenticate,
+    AcePermission_ChangePassword,
+    AcePermission_ReceiveAs,
+    AcePermission_ResetPassword,
+    AcePermission_SendAs,
+    AcePermission_ReadAccountRestrictions,
+    AcePermission_WriteAccountRestrictions,
+    AcePermission_ReadGeneralInfo,
+    AcePermission_WriteGeneralInfo,
+    AcePermission_ReadGroupMembership,
+    AcePermission_ReadLogonInfo,
+    AcePermission_WriteLogonInfo,
+    AcePermission_ReadPersonalInfo,
+    AcePermission_WritePersonalInfo,
+    AcePermission_ReadPhoneAndMailOptions,
+    AcePermission_WritePhoneAndMailOptions,
+    AcePermission_ReadPrivateInfo,
+    AcePermission_WritePrivateInfo,
+    AcePermission_ReadPublicInfo,
+    AcePermission_WritePublicInfo,
+    AcePermission_ReadRemoteAccessInfo,
+    AcePermission_WriteRemoteAccessInfo,
+    AcePermission_ReadTerminalServerLicenseServer,
+    AcePermission_WriteTerminalServerLicenseServer,
+    AcePermission_ReadWebInfo,
+    AcePermission_WriteWebInfo,
+    
+    AcePermission_COUNT,
+};
 
 #endif /* AD_DEFINES_H */

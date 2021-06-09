@@ -79,4 +79,7 @@ const char *cstr(const QString &qstr);
 // calling this
 bool load_adldap_translation(QTranslator &translator, const QLocale &locale);
 
+QByteArray guid_string_to_bytes(const QString &guid_string);
+QByteArray sid_string_to_bytes(const QString &sid_string);
+
 #endif /* AD_UTILS_H */

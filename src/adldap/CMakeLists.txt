@@ -23,11 +23,15 @@ add_library(adldap SHARED
     ad_object.cpp
     ad_display.cpp
     ad_filter.cpp
+    ad_security.cpp
 
-    samba/gp_manage.cpp
+    samba/gp_manage.c
     samba/ndr_security.c
     samba/dom_sid.c
     samba/replace.c
+    samba/ndr_misc.c
+    samba/libsmb_xattr.c
+    samba/security_descriptor.c
 
     adldap.qrc
 )

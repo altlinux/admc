@@ -147,7 +147,7 @@ void ADMCTestAdInterface::user_set_account_option() {
         const bool success = ad.user_set_account_option(user_dn, option, true);
 
         const AdObject object = ad.search_object(user_dn);
-        const bool option_set = object.get_account_option(option);
+        const bool option_set = object.get_account_option(option, ad.adconfig());
         QVERIFY(option_set);
     }
 }

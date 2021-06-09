@@ -35,6 +35,7 @@
 
 #include <stddef.h>
 #include <inttypes.h>
+#include <ctype.h>
 
 #ifndef __PRI64_PREFIX
 # if __WORDSIZE == 64 && ! defined __APPLE__
@@ -57,6 +58,11 @@
 # define PRIu64     __PRI64_PREFIX "u"
 #endif
 
+#ifndef HAVE_MEMSET_S
+#define memset_s rep_memset_s
+int rep_memset_s(void *dest, size_t destsz, int ch, size_t count);
+#endif
+
 #define strlcpy rep_strlcpy
 size_t rep_strlcpy(char *d, const char *s, size_t bufsize);
 
@@ -67,5 +73,29 @@ size_t rep_strlcpy(char *d, const char *s, size_t bufsize);
 #ifndef MAX
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #endif
+
+/**
+ * Work out how many elements there are in a static array.
+ */
+#define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
+
+/**
+ * Zero a structure.
+ */
+#define ZERO_STRUCT(x) memset_s((char *)&(x), sizeof(x), 0, sizeof(x))
+
+/**
+ * Zero a structure given a pointer to the structure.
+ */
+#define ZERO_STRUCTP(x) do { \
+    if ((x) != NULL) { \
+        memset_s((char *)(x), sizeof(*(x)), 0, sizeof(*(x))); \
+    } \
+} while(0)
+
+/**
+ * Zero a structure given a pointer to the structure - no zero check
+ */
+#define ZERO_STRUCTPN(x) memset_s((char *)(x), sizeof(*(x)), 0, sizeof(*(x)))
 
 #endif /* _LIBREPLACE_REPLACE_H */

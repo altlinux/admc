@@ -29,6 +29,11 @@
 
 // TODO: logon hours, logon computers
 
+// NOTE: the "can't change password" checkbox does not
+// affect the permission in the security tab, even though
+// they control the same thing. And vice versa. Too
+// complicated to implement so this is a WONTFIX.
+
 AccountTab::AccountTab(AdInterface &ad) {
     auto upn_edit = new UpnEdit(&edits, ad, this);
 

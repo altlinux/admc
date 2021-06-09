@@ -19,8 +19,10 @@
  */
 
 #include "ad_utils.h"
+
 #include "ad_config.h"
 #include "ad_display.h"
+#include "samba/dom_sid.h"
 
 #include <ldap.h>
 #include <krb5.h>
@@ -120,6 +122,7 @@ QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &
 QString account_option_string(const AccountOption &option) {
     switch (option) {
         case AccountOption_Disabled: return QCoreApplication::translate("ad_utils", "Account disabled");
+        case AccountOption_CantChangePassword: return QCoreApplication::translate("ad_utils", "User cannot change password");
         case AccountOption_PasswordExpired: return QCoreApplication::translate("ad_utils", "User must change password on next logon");
         case AccountOption_DontExpirePassword: return QCoreApplication::translate("ad_utils", "Don't expire password");
         case AccountOption_UseDesKey: return QCoreApplication::translate("ad_utils", "Store password using reversible encryption");
@@ -133,7 +136,6 @@ QString account_option_string(const AccountOption &option) {
 }
 
 int account_option_bit(const AccountOption &option) {
-    // NOTE: not all account options can be directly mapped to bits
     switch (option) {
         case AccountOption_Disabled: 
         return 0x00000002;
@@ -148,6 +150,9 @@ int account_option_bit(const AccountOption &option) {
         case AccountOption_CantDelegate: 
         return 0x00100000;
 
+        // NOTE: not all account options can be directly
+        // mapped to bits
+        case AccountOption_CantChangePassword: return 0;
         case AccountOption_PasswordExpired: return 0;
         case AccountOption_COUNT: return 0;
     }
@@ -371,4 +376,46 @@ const char *cstr(const QString &qstr) {
 
 bool load_adldap_translation(QTranslator &translator, const QLocale &locale) {
     return translator.load(locale, "adldap", "_", ":/adldap");
+}
+
+QByteArray guid_string_to_bytes(const QString &guid_string) {
+    const QList<QByteArray> segment_list =
+    [&]() {
+        QList<QByteArray> out;
+
+        const QList<QString> string_segment_list = guid_string.split('-');
+
+        for (const QString &string_segment : string_segment_list) {
+            const QByteArray segment = QByteArray::fromHex(string_segment.toLatin1());
+            out.append(segment);
+        }
+
+        std::reverse(out[0].begin(), out[0].end());
+        std::reverse(out[1].begin(), out[1].end());
+        std::reverse(out[2].begin(), out[2].end());
+
+        return out;
+    }();
+
+    const QByteArray guid_bytes =
+    [&]() {
+        QByteArray out;
+
+        for (const QByteArray &segment : segment_list) {
+            out.append(segment);
+        }
+
+        return out;
+    }();
+
+    return guid_bytes;
+}
+
+QByteArray sid_string_to_bytes(const QString &sid_string) {
+    dom_sid sid;
+    string_to_sid(&sid, cstr(sid_string));
+
+    const QByteArray sid_bytes = QByteArray((char *) &sid, sizeof(dom_sid));
+
+    return sid_bytes;
 }

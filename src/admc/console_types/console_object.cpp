@@ -113,7 +113,7 @@ void console_object_item_data_load(QStandardItem *item, const AdObject &object) 
     const bool cannot_delete = object.get_system_flag(SystemFlagsBit_CannotDelete);
     item->setData(cannot_delete, ObjectRole_CannotDelete);
 
-    const bool account_disabled = object.get_account_option(AccountOption_Disabled);
+    const bool account_disabled = object.get_account_option(AccountOption_Disabled, g_adconfig);
     item->setData(account_disabled, ObjectRole_AccountDisabled);
 }
 

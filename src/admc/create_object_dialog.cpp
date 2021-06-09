@@ -81,9 +81,9 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
 
         const QList<AccountOption> options = {
             AccountOption_PasswordExpired,
+            AccountOption_CantChangePassword,
             AccountOption_DontExpirePassword,
-            AccountOption_Disabled
-            // TODO: AccountOption_CannotChangePass
+            AccountOption_Disabled,
         };
         QMap<AccountOption, AccountOptionEdit *> option_edits;
         AccountOptionEdit::make_many(options, &option_edits, &all_edits, this);
