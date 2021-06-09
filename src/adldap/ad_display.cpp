@@ -70,6 +70,9 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
                 return octet_display_value(value);
             }
         }
+        case AttributeType_NTSecDesc: {
+            return QCoreApplication::translate("attribute_display", "<BINARY VALUE>");
+        }
         default: {
             return QString(value);
         }
