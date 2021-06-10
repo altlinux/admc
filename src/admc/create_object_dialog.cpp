@@ -146,7 +146,7 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
         auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
 
         required_edits = {
-            sama_edit
+            sama_edit,
         };
 
         new GroupScopeEdit(&all_edits, this);

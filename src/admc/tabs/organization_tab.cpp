@@ -53,7 +53,8 @@ OrganizationTab::OrganizationTab() {
     edits_connect_to_tab(edits, this);
 
     reports_model = new QStandardItemModel(0, ReportsColumn_COUNT, this);
-    set_horizontal_header_labels_from_map(reports_model, {
+    set_horizontal_header_labels_from_map(reports_model,
+    {
         {ReportsColumn_Name, tr("Name")},
         {ReportsColumn_Folder, tr("Folder")},
     });

@@ -94,7 +94,8 @@ SecurityTab::SecurityTab() {
     auto remove_trustee_button = trustee_buttonbox->addButton(tr("Remove"), QDialogButtonBox::ActionRole);
 
     ace_model = new QStandardItemModel(0, AceColumn_COUNT, this);
-    set_horizontal_header_labels_from_map(ace_model, {
+    set_horizontal_header_labels_from_map(ace_model,
+    {
         {AceColumn_Name, tr("Name")},
         {AceColumn_Allowed, tr("Allowed")},
         {AceColumn_Denied, tr("Denied")},

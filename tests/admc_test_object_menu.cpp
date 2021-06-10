@@ -51,7 +51,7 @@ void ADMCTestObjectMenu::select_dialog_correct_object_added() {
         "test-user-2",
         "test-user-3",
         "test-user-4",
-        "test-user-5"
+        "test-user-5",
     };
     for (const QString &name : names) {
         const QString dn = test_object_dn(name, CLASS_USER);

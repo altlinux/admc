@@ -34,7 +34,7 @@ AddressTab::AddressTab() {
         ATTRIBUTE_PO_BOX,
         ATTRIBUTE_CITY,
         ATTRIBUTE_STATE,
-        ATTRIBUTE_POSTAL_CODE
+        ATTRIBUTE_POSTAL_CODE,
     };
     StringEdit::make_many(attributes, CLASS_USER, &edits, this);
 

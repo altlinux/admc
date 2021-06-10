@@ -49,7 +49,8 @@ GpoLinksTab::GpoLinksTab() {
     view->setSortingEnabled(true);
 
     model = new QStandardItemModel(0, GpoLinksColumn_COUNT, this);
-    set_horizontal_header_labels_from_map(model, {
+    set_horizontal_header_labels_from_map(model,
+    {
         {GpoLinksColumn_Name, tr("Name")},
     });
 

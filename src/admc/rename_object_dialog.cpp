@@ -61,7 +61,7 @@ RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *paren
             ATTRIBUTE_LAST_NAME,
             ATTRIBUTE_DISPLAY_NAME,
             ATTRIBUTE_USER_PRINCIPAL_NAME,
-            ATTRIBUTE_SAMACCOUNT_NAME
+            ATTRIBUTE_SAMACCOUNT_NAME,
         };
         StringEdit::make_many(attributes, object_class, &all_edits, this);
     } else if (object.is_class(CLASS_GROUP)) {

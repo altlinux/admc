@@ -437,7 +437,7 @@ AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
             "2.5.5.9",
             {
                 {"10", AttributeType_Enumeration},
-                {"2", AttributeType_Integer}
+                {"2", AttributeType_Integer},
             }
         },
         {"2.5.5.16", {{"65", AttributeType_LargeInteger}}},
@@ -450,7 +450,7 @@ AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
             "2.5.5.10",
             {
                 {"4", AttributeType_Octet},
-                {"127", AttributeType_ReplicaLink}
+                {"127", AttributeType_ReplicaLink},
             }
         },
         {"2.5.5.5", {{"19", AttributeType_Printable}}},
@@ -461,7 +461,7 @@ AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
             "2.5.5.11",
             {
                 {"23", AttributeType_UTCTime},
-                {"24", AttributeType_GeneralizedTime}
+                {"24", AttributeType_GeneralizedTime},
             }
         },
         {"2.5.5.14", {{"127", AttributeType_DNString}}},
@@ -489,7 +489,7 @@ LargeIntegerSubtype AdConfig::get_attribute_large_integer_subtype(const QString 
         ATTRIBUTE_LAST_LOGON_TIMESTAMP,
         ATTRIBUTE_PWD_LAST_SET,
         ATTRIBUTE_LOCKOUT_TIME,
-        ATTRIBUTE_BAD_PWD_TIME
+        ATTRIBUTE_BAD_PWD_TIME,
     };
     static const QList<QString> timespans = {
         ATTRIBUTE_MAX_PWD_AGE,

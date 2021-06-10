@@ -47,12 +47,12 @@ enum GplinkRole {
 
 const QSet<GplinkColumn> option_columns = {
     GplinkColumn_Disabled,
-    GplinkColumn_Enforced
+    GplinkColumn_Enforced,
 };
 
 const QHash<GplinkColumn, GplinkOption> column_to_option = {
     {GplinkColumn_Disabled, GplinkOption_Disabled},
-    {GplinkColumn_Enforced, GplinkOption_Enforced}
+    {GplinkColumn_Enforced, GplinkOption_Enforced},
 };
 
 QString gplink_option_to_display_string(const QString &option);
@@ -65,7 +65,8 @@ GroupPolicyTab::GroupPolicyTab() {
     view->setSortingEnabled(true);
 
     model = new QStandardItemModel(0, GplinkColumn_COUNT, this);
-    set_horizontal_header_labels_from_map(model, {
+    set_horizontal_header_labels_from_map(model,
+    {
         {GplinkColumn_Name, tr("Name")},
         {GplinkColumn_Disabled, tr("Disabled")},
         {GplinkColumn_Enforced, tr("Enforced")},

@@ -58,12 +58,12 @@ enum PolicyResultsRole {
 
 const QSet<PolicyResultsColumn> option_columns = {
     PolicyResultsColumn_Disabled,
-    PolicyResultsColumn_Enforced
+    PolicyResultsColumn_Enforced,
 };
 
 const QHash<PolicyResultsColumn, GplinkOption> column_to_option = {
     {PolicyResultsColumn_Disabled, GplinkOption_Disabled},
-    {PolicyResultsColumn_Enforced, GplinkOption_Enforced}
+    {PolicyResultsColumn_Enforced, GplinkOption_Enforced},
 };
 
 // TODO: need to sync this with changes done through group
@@ -78,7 +78,8 @@ PolicyResultsWidget::PolicyResultsWidget() {
     view = new ResultsView(this);
 
     model = new QStandardItemModel(0, PolicyResultsColumn_COUNT, this);
-    set_horizontal_header_labels_from_map(model, {
+    set_horizontal_header_labels_from_map(model,
+    {
         {PolicyResultsColumn_Name, tr("Location")},
         {PolicyResultsColumn_Enforced, tr("Enforced")},
         {PolicyResultsColumn_Disabled, tr("Disabled")},

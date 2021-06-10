@@ -73,7 +73,8 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     view->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     model = new QStandardItemModel(0, MembersColumn_COUNT, this);
-    set_horizontal_header_labels_from_map(model, {
+    set_horizontal_header_labels_from_map(model,
+    {
         {MembersColumn_Name, tr("Name")},
         {MembersColumn_Parent, tr("Folder")},
     });
@@ -326,7 +327,7 @@ void MembershipTab::on_add_button() {
     const QList<QString> classes = [this]() -> QList<QString> {
         switch (type) {
             case MembershipTabType_Members: return {
-                CLASS_USER, CLASS_GROUP, CLASS_CONTACT, CLASS_COMPUTER
+                CLASS_USER, CLASS_GROUP, CLASS_CONTACT, CLASS_COMPUTER,
             };
             case MembershipTabType_MemberOf: return {CLASS_GROUP};
         }

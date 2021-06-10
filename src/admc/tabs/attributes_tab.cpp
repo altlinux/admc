@@ -48,10 +48,11 @@ QString attribute_type_display_string(const AttributeType type);
 
 AttributesTab::AttributesTab() {
     model = new QStandardItemModel(0, AttributesColumn_COUNT, this);
-    set_horizontal_header_labels_from_map(model, {
+    set_horizontal_header_labels_from_map(model,
+    {
         {AttributesColumn_Name, tr("Name")},
         {AttributesColumn_Value, tr("Value")},
-        {AttributesColumn_Type, tr("Type")}
+        {AttributesColumn_Type, tr("Type")},
     });
 
     view = new QTreeView(this);

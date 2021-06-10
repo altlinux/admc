@@ -156,7 +156,7 @@ bool bool_default_value(const BoolSetting setting) {
         case BoolSetting_LogSearches: return false;
         case BoolSetting_TimestampLog: return true;
 
-        case BoolSetting_COUNT: {}
+        case BoolSetting_COUNT: break;
     }
 
     return false;
