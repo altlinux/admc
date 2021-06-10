@@ -131,8 +131,7 @@ void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
     const QString base = index.data(ContainerRole_DN).toString();
     const SearchScope scope = SearchScope_Children;
 
-    const QString filter =
-    [=]() {
+    const QString filter = [=]() {
         QString out;
 
         out = is_container_filter();

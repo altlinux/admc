@@ -86,8 +86,7 @@ void ADMCTestUpnEdit::test_emit_edited() {
 
     const int suffix_count = suffix_edit->count();
     QVERIFY((suffix_count > 1));
-    const int changed_index =
-    [this]() {
+    const int changed_index = [this]() {
         if (suffix_edit->currentIndex() == 0) {
             return 1;
         } else {
@@ -158,8 +157,7 @@ bool ADMCTestUpnEdit::edit_state_equals_to_server_state() {
 
 // Change to next suffix, not equal to current one
 void ADMCTestUpnEdit::change_suffix_in_edit() {
-    const int new_suffix_index =
-    [this]() {
+    const int new_suffix_index = [this]() {
         const QString current_suffix = suffix_edit->currentText();
         
         for (int i = 0; i < suffix_edit->count(); i++) {

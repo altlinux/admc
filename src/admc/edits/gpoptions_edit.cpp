@@ -54,8 +54,7 @@ void GpoptionsEdit::add_to_layout(QFormLayout *layout) {
 }
 
 bool GpoptionsEdit::apply(AdInterface &ad, const QString &dn) const {
-    const QString new_value =
-    [this]() {
+    const QString new_value = [this]() {
         const bool checked = check->isChecked();
         if (checked) {
             return GPOPTIONS_BLOCK_INHERITANCE;

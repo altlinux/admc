@@ -155,8 +155,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     layout->addWidget(button_box);    
 
     // Create new tabs
-    const auto add_tab =
-    [this, tab_widget](PropertiesTab *tab, const QString &title) {
+    const auto add_tab = [this, tab_widget](PropertiesTab *tab, const QString &title) {
         tabs.append(tab);
         tab_widget->add_tab(tab, title);
     };
@@ -244,8 +243,7 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
     auto dialog = new QDialog(this);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-    const QString explanation_text =
-    [&]() {
+    const QString explanation_text = [&]() {
         if (new_tab == attributes_tab) {
             return tr("You're switching to attributes tab, while another tab has unapplied changes. Choose to apply or discard those changes.");
         } else {

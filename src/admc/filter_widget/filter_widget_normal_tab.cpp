@@ -91,8 +91,7 @@ FilterWidgetNormalTab::FilterWidgetNormalTab(const QList<QString> classes)
 }
 
 QString FilterWidgetNormalTab::get_filter() const {
-    const QString attribute_filter =
-    [this]() {
+    const QString attribute_filter = [this]() {
         QList<QString> filters;
         for (int i = 0; i < filter_list->count(); i++) {
             const QListWidgetItem *item = filter_list->item(i);

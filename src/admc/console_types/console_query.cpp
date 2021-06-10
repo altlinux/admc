@@ -77,8 +77,7 @@ QString console_query_folder_path(const QModelIndex &index) {
         return QString(QUERY_ROOT);
     }
 
-    const QList<QString> path_split =
-    [&index]() {
+    const QList<QString> path_split = [&index]() {
         QList<QString> out;
 
         QModelIndex current = index;
@@ -95,8 +94,7 @@ QString console_query_folder_path(const QModelIndex &index) {
         return out;
     }();
 
-    const QString path =
-    [&path_split]() {
+    const QString path = [&path_split]() {
         QString out;
 
         for (int i = 0; i < path_split.size(); i++) {
@@ -118,8 +116,7 @@ QString console_query_folder_path(const QModelIndex &index) {
 }
 
 void console_query_folder_load(QStandardItem *scope_item, const QList<QStandardItem *> &results_row, const QString &name, const QString &description) {
-    auto load_main_item =
-    [&](QStandardItem *item) {
+    auto load_main_item = [&](QStandardItem *item) {
         item->setData(description, QueryItemRole_Description);
         item->setData(ItemType_QueryFolder, ConsoleRole_Type);
         item->setIcon(QIcon::fromTheme("folder"));
@@ -143,8 +140,7 @@ QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &n
 }
 
 void console_query_item_load(QStandardItem *scope_item, const QList<QStandardItem *> results_row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children) {
-    auto load_main_item =
-    [&](QStandardItem *item) {
+    auto load_main_item = [&](QStandardItem *item) {
         item->setData(ItemType_QueryItem, ConsoleRole_Type);
         item->setData(description, QueryItemRole_Description);
         item->setData(filter, QueryItemRole_Filter);
@@ -178,8 +174,7 @@ void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) 
     const QString filter = index.data(QueryItemRole_Filter).toString();
     const QString base = index.data(QueryItemRole_Base).toString();
     const QList<QString> search_attributes = console_object_search_attributes();
-    const SearchScope scope =
-    [&]() {
+    const SearchScope scope = [&]() {
         const bool scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
         if (scope_is_children) {
             return SearchScope_Children;
@@ -208,8 +203,7 @@ void console_query_tree_init(ConsoleWidget *console) {
     while (!folder_stack.isEmpty()) {
         const QPersistentModelIndex folder_index = folder_stack.pop();
 
-        const QList<QString> child_list =
-        [&]() {
+        const QList<QString> child_list = [&]() {
             const QString folder_path = console_query_folder_path(folder_index);
             const QHash<QString, QVariant> folder_data = folder_list[folder_path].toHash();
             
@@ -267,8 +261,7 @@ void console_query_tree_save(ConsoleWidget *console) {
         const QString parent_path = console_query_folder_path(index.parent());
         const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
 
-        const QList<QString> child_list =
-        [&]() {
+        const QList<QString> child_list = [&]() {
             QList<QString> out;
 
             for (int i = 0; i < model->rowCount(index); i++) {
@@ -322,8 +315,7 @@ bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex
 
     const QString current_name = current_index.data(Qt::DisplayRole).toString();
 
-    const QList<QString> sibling_names =
-    [&]() {
+    const QList<QString> sibling_names = [&]() {
         QList<QString> out;
 
         QAbstractItemModel *model = (QAbstractItemModel *) parent_index.model();
@@ -522,8 +514,7 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
 void console_query_export(ConsoleWidget *console) {
     const QModelIndex index = get_selected_scope_index(console);
 
-    const QString file_path =
-    [&]() {
+    const QString file_path = [&]() {
         const QString query_name = index.data(Qt::DisplayRole).toString();
 
         const QString caption = QCoreApplication::translate("console_query.cpp", "Export Query");
@@ -550,8 +541,7 @@ void console_query_export(ConsoleWidget *console) {
 void console_query_import(ConsoleWidget *console) {
     const QModelIndex parent_index = get_selected_scope_index(console);
 
-    const QString file_path =
-    [&]() {
+    const QString file_path = [&]() {
         const QString caption = QCoreApplication::translate("console_query.cpp", "Import Query");
         const QString dir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
         const QString file_filter = QCoreApplication::translate("console_query.cpp", "JSON (*.json)");
@@ -565,8 +555,7 @@ void console_query_import(ConsoleWidget *console) {
         return;
     }
 
-    const QHash<QString, QVariant> data = 
-    [&]() {
+    const QHash<QString, QVariant> data = [&]() {
         QFile file(file_path);
         file.open(QIODevice::ReadOnly);
         const QByteArray json_bytes = file.readAll();

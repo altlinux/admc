@@ -122,8 +122,7 @@ void OctetEditor::on_format_combo() {
 }
 
 bool OctetEditor::check_input(const OctetDisplayFormat format) {
-    const bool ok =
-    [=]() {
+    const bool ok = [=]() {
         const QString text = edit->toPlainText();
         const QList<QString> text_split = text.split(" ");
 
@@ -186,8 +185,7 @@ bool OctetEditor::check_input(const OctetDisplayFormat format) {
     if (!ok) {
         const QString title = tr("Error");
         
-        const QString text =
-        [format]() {
+        const QString text = [format]() {
             switch (format) {
                 case OctetDisplayFormat_Hexadecimal: return tr("Input must be strings of 2 hexadecimal digits separated by spaces. Example: \"0a 00 b5 ff\"");
                 case OctetDisplayFormat_Binary: return tr("Input must be strings of 8 binary digits separated by spaces. Example: \"01010010 01000010 01000010\"");
@@ -230,8 +228,7 @@ QString octet_bytes_to_string(const QByteArray bytes, const OctetDisplayFormat f
 
         const QString byte_string_unpadded(buffer);
 
-        const int string_length =
-        [format]() {
+        const int string_length = [format]() {
             switch (format) {
                 case OctetDisplayFormat_Hexadecimal: return 2;
                 case OctetDisplayFormat_Binary: return 8;
@@ -259,8 +256,7 @@ QByteArray octet_string_to_bytes(const QString string, const OctetDisplayFormat 
     for (const QString &byte_string_padded : string_split) {
         // NOTE: remove padding because strtol doesn't understand it
         // "005" => "5"
-        const QString byte_string =
-        [byte_string_padded]() {
+        const QString byte_string = [byte_string_padded]() {
             QString byte = byte_string_padded;
             while (byte[0] == '0' && byte.size() > 0) {
                 byte.remove(0, 1);

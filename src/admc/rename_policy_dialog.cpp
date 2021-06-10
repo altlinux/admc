@@ -126,8 +126,7 @@ void RenamePolicyDialog::reset() {
         return;
     }
 
-    const QString name =
-    [&]() {
+    const QString name = [&]() {
         const QModelIndex scope_index = get_selected_scope_index(console);
         const QString dn = scope_index.data(PolicyRole_DN).toString();
         const AdObject object = ad.search_object(dn);

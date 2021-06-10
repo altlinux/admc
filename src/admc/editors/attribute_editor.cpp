@@ -41,8 +41,7 @@ AttributeEditor::AttributeEditor(QWidget *parent)
 AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByteArray> values, QWidget *parent) {
     const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
 
-    auto octet_dialog =
-    [=]() -> AttributeEditor * {
+    auto octet_dialog = [=]() -> AttributeEditor * {
         if (single_valued) {
             return new OctetEditor(attribute, values, parent);
         } else {
@@ -50,8 +49,7 @@ AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByt
         } 
     };
 
-    auto string_dialog =
-    [=]() -> AttributeEditor * {
+    auto string_dialog = [=]() -> AttributeEditor * {
         if (single_valued) {
             return new StringEditor(attribute, values, parent);
         } else {
@@ -59,8 +57,7 @@ AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByt
         } 
     };
 
-    auto bool_dialog =
-    [=]() -> AttributeEditor * {
+    auto bool_dialog = [=]() -> AttributeEditor * {
         if (single_valued) {
             return new BoolEditor(attribute, values, parent);
         } else {
@@ -69,8 +66,7 @@ AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByt
         } 
     };
 
-    auto datetime_dialog =
-    [=]() -> AttributeEditor * {
+    auto datetime_dialog = [=]() -> AttributeEditor * {
         if (single_valued) {
             return new DateTimeEditor(attribute, values, parent);
         } else {

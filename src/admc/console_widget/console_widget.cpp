@@ -188,8 +188,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 }
 
 QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent) {
-    QStandardItem *parent_item =
-    [=]() {
+    QStandardItem *parent_item = [=]() {
         if (parent.isValid()) {
             return d->scope_model->itemFromIndex(parent);
         } else {
@@ -249,8 +248,7 @@ QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &scope_p
         return QList<QStandardItem *>();
     }
 
-    const QList<QStandardItem *> row =
-    [=]() {
+    const QList<QStandardItem *> row = [=]() {
         QList<QStandardItem *> out;
 
         const int results_id = scope_parent.data(ConsoleRole_ResultsId).toInt();
@@ -406,8 +404,7 @@ void ConsoleWidget::sort_scope() {
 }
 
 void ConsoleWidget::set_description_bar_text(const QString &text) {
-    const QString scope_name =
-    [this]() {
+    const QString scope_name = [this]() {
         const QModelIndex current_scope = get_current_scope_item();
         const QString out = current_scope.data().toString();
 
@@ -617,8 +614,7 @@ void ConsoleWidgetPrivate::on_selection_changed() {
             properties_action->setVisible(true);
         }
     } else if (selected_list.size() > 1) {
-        const bool all_have_properties =
-        [&]() {
+        const bool all_have_properties = [&]() {
             for (const QModelIndex &selected: selected_list) {
                 const bool has_properties = selected.data(ConsoleRole_HasProperties).toBool();
                 if (!has_properties) {
@@ -634,8 +630,7 @@ void ConsoleWidgetPrivate::on_selection_changed() {
         }
     }
 
-    const bool any_selected_is_fetching =
-    [&]() {
+    const bool any_selected_is_fetching = [&]() {
         for (const QModelIndex &index : selected_list) {
             const bool is_fetching = console_get_item_fetching(index);
 
@@ -699,8 +694,7 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
 }
 
 void ConsoleWidgetPrivate::on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last) {
-    const QList<QModelIndex> removed_scope_items =
-    [=]() {
+    const QList<QModelIndex> removed_scope_items = [=]() {
         QList<QModelIndex> out;
 
         QStack<QStandardItem *> stack;
@@ -750,8 +744,7 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
 
     if (new_focused_view != nullptr) {
         const ResultsDescription current_results = get_current_results();
-        QAbstractItemView *results_view =
-        [=]() -> QAbstractItemView * {
+        QAbstractItemView *results_view = [=]() -> QAbstractItemView * {
             if (current_results.view() != nullptr) {
                 return current_results.view()->current_view();
             } else {
@@ -888,8 +881,7 @@ void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
 
 // NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
 void ConsoleWidgetPrivate::update_navigation_actions() {
-    const bool can_navigate_up =
-    [this]() {
+    const bool can_navigate_up = [this]() {
         const QModelIndex current = q->get_current_scope_item();
         const QModelIndex current_parent = current.parent();
 

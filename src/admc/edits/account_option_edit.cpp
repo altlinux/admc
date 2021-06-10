@@ -115,8 +115,7 @@ void AccountOptionEdit::set_checked(const bool checked) {
 // to state changes of all options and resetting to previous
 // state if state transition is invalid
 void account_option_setup_conflicts(const QHash<AccountOption, QCheckBox *> &check_map) {
-    auto setup_conflict =
-    [&](const AccountOption subject_option, const AccountOption blocker_option) {
+    auto setup_conflict = [&](const AccountOption subject_option, const AccountOption blocker_option) {
         if (!check_map.contains(subject_option) || !check_map.contains(blocker_option)) {
             return;
         }

@@ -34,8 +34,7 @@ ConsoleActions::ConsoleActions(QObject *parent)
     for (int action_i = ConsoleAction_NewUser; action_i < ConsoleAction_LAST; action_i++) {
         const ConsoleAction action_enum = (ConsoleAction) action_i;
 
-        const QString action_text =
-        [action_enum]() {
+        const QString action_text = [action_enum]() {
             switch(action_enum) {
                 case ConsoleAction_NewUser: return tr("&User");
                 case ConsoleAction_NewComputer: return tr("&Computer");
@@ -149,8 +148,7 @@ void ConsoleActions::update_actions_visibility(const QList<QModelIndex> &indexes
     }
 
     // Show "New" menu if any new actions are visible
-    const bool any_new_action_visible =
-    [&]() {
+    const bool any_new_action_visible = [&]() {
         for (const ConsoleAction action_enum : new_actions) {
             QAction *action = actions[action_enum];
 

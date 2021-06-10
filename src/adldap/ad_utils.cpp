@@ -85,8 +85,7 @@ QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &
 
     const AttributeType type = adconfig->get_attribute_type(attribute);
 
-    QDateTime datetime =
-    [=]() {
+    QDateTime datetime = [=]() {
         switch (type) {
             case AttributeType_LargeInteger: {
                 const LargeIntegerSubtype subtype = adconfig->get_attribute_large_integer_subtype(attribute);
@@ -252,8 +251,7 @@ QString dn_get_parent_canonical(const QString &dn) {
 QString dn_rename(const QString &dn, const QString &new_name) {
     const QStringList exploded_dn = dn.split(',');
 
-    const QString new_rdn =
-    [=]() {
+    const QString new_rdn = [=]() {
         const QString old_rdn = exploded_dn[0];
         const int prefix_index = old_rdn.indexOf('=') + 1;
         const QString prefix = old_rdn.left(prefix_index);
@@ -288,8 +286,7 @@ QString dn_canonical(const QString &dn) {
 }
 
 QString dn_from_name_and_parent(const QString &name, const QString &parent, const QString &object_class) {
-    const QString suffix =
-    [object_class]() {
+    const QString suffix = [object_class]() {
         if (object_class == CLASS_OU) {
             return "OU";
         } else {
@@ -306,8 +303,7 @@ QString get_default_domain_from_krb5() {
     krb5_context context;
     char *realm_cstr = NULL;
 
-    auto cleanup =
-    [&]() {
+    auto cleanup = [&]() {
         krb5_free_default_realm(context, realm_cstr);
         krb5_free_context(context);
     };
@@ -379,8 +375,7 @@ bool load_adldap_translation(QTranslator &translator, const QLocale &locale) {
 }
 
 QByteArray guid_string_to_bytes(const QString &guid_string) {
-    const QList<QByteArray> segment_list =
-    [&]() {
+    const QList<QByteArray> segment_list = [&]() {
         QList<QByteArray> out;
 
         const QList<QString> string_segment_list = guid_string.split('-');
@@ -397,8 +392,7 @@ QByteArray guid_string_to_bytes(const QString &guid_string) {
         return out;
     }();
 
-    const QByteArray guid_bytes =
-    [&]() {
+    const QByteArray guid_bytes = [&]() {
         QByteArray out;
 
         for (const QByteArray &segment : segment_list) {

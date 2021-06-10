@@ -78,8 +78,7 @@ void CreatePolicyDialog::accept() {
     // NOTE: since this is *display name*, not just name,
     // have to manually check for conflict. Server wouldn't
     // catch this.
-    const bool name_conflict =
-    [&]() {
+    const bool name_conflict = [&]() {
         const QString base = g_adconfig->domain_head();
         const SearchScope scope = SearchScope_All;
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DISPLAY_NAME, name);

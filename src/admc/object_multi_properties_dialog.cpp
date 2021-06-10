@@ -73,8 +73,7 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
     layout->addWidget(tab_widget);
     layout->addWidget(button_box);    
 
-    auto add_tab =
-    [&](PropertiesMultiTab *tab, const QString &title) {
+    auto add_tab = [&](PropertiesMultiTab *tab, const QString &title) {
         tab_widget->add_tab(tab, title);
         tab_list.append(tab);
     };

@@ -84,8 +84,7 @@ void AccountOptionMultiEdit::add_to_layout(QFormLayout *layout) {
 // do this if want to get separate status messages for each
 // bit.
 bool AccountOptionMultiEdit::apply_internal(AdInterface &ad, const QString &target) {
-    const QList<AccountOption> option_change_list =
-    [&]() {
+    const QList<AccountOption> option_change_list = [&]() {
         QList<AccountOption> out;
 
         const AdObject object = ad.search_object(target);

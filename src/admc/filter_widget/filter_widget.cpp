@@ -32,8 +32,7 @@ FilterWidget::FilterWidget(const QList<QString> classes)
 {
     tab_widget = new QTabWidget();
 
-    auto add_tab =
-    [this](FilterWidgetTab *tab, const QString &title) {
+    auto add_tab = [this](FilterWidgetTab *tab, const QString &title) {
         tab_widget->addTab(tab, title);
     };
 

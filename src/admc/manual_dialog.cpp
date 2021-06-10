@@ -44,8 +44,7 @@ ManualDialog::ManualDialog(QWidget *parent)
     // debug/development builds. This is so that you can
     // edit the help file and see changes on the fly without
     // having to install it.
-    const QString compressed_help_path =
-    []() {
+    const QString compressed_help_path = []() {
         #ifdef QT_DEBUG
         return QCoreApplication::applicationDirPath() + "/doc/admc.qch";
         #endif        

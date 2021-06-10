@@ -272,8 +272,7 @@ bool MembershipTab::apply(AdInterface &ad, const QString &target) {
             // performs some membership modifications on
             // it's end. Therefore, don't need to do
             // anything with groups that were or are primary.
-            auto group_is_or_was_primary =
-            [this](const QString &group) {
+            auto group_is_or_was_primary = [this](const QString &group) {
                 return original_primary_values.contains(group) || current_primary_values.contains(group);
             };
 
@@ -324,8 +323,7 @@ bool MembershipTab::apply(AdInterface &ad, const QString &target) {
 void MembershipTab::on_add_button() {
     // TODO: aduc has "other objects" section in class selection for adding members to groups. No idea what "other objects" are. No results come up when searching for other objects in current test domain.
     // TODO: there's also "service account", no idea what that is either.
-    const QList<QString> classes =
-    [this]() -> QList<QString> {
+    const QList<QString> classes = [this]() -> QList<QString> {
         switch (type) {
             case MembershipTabType_Members: return {
                 CLASS_USER, CLASS_GROUP, CLASS_CONTACT, CLASS_COMPUTER
@@ -359,8 +357,7 @@ void MembershipTab::on_remove_button() {
         removed_values.append(dn);
     }
 
-    const bool any_selected_are_primary =
-    [this, removed_values]() {
+    const bool any_selected_are_primary = [this, removed_values]() {
         for (const QString &dn : removed_values) {
             if (current_primary_values.contains(dn)) {
                 return true;
@@ -371,8 +368,7 @@ void MembershipTab::on_remove_button() {
     }();
 
     if (any_selected_are_primary) {
-        const QString error_text =
-        [this]() {
+        const QString error_text = [this]() {
             switch (type) {
                 case MembershipTabType_Members: return tr("Can't remove because this group is a primary group to selected user.");
                 case MembershipTabType_MemberOf: return tr("Can't remove because selected group is a primary group to this user.");
@@ -423,8 +419,7 @@ void MembershipTab::enable_primary_button_on_valid_selection() {
     // Enable "set primary group" button if
     // 1) there's a selection
     // 2) the selected group is NOT primary already
-    const QSet<QString> selected_dns =
-    [selecteds]() {
+    const QSet<QString> selected_dns = [selecteds]() {
         QSet<QString> out;
         for (const QModelIndex selected : selecteds) {
             const QString dn = selected.data(MembersRole_DN).toString();
@@ -446,8 +441,7 @@ void MembershipTab::enable_primary_button_on_valid_selection() {
 void MembershipTab::reload_model() {
     // Load primary group name into label
     if (type == MembershipTabType_MemberOf) {
-        const QString primary_group_label_text =
-        [this]() {
+        const QString primary_group_label_text = [this]() {
             if (!current_primary_values.isEmpty()) {
                 const QString primary_group_dn = current_primary_values.values()[0];
                 const QString primary_group_name = dn_get_name(primary_group_dn);

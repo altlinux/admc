@@ -78,8 +78,7 @@ QList<QString> console_policy_search_attributes() {
 }
 
 void console_policy_create(ConsoleWidget *console, const AdObject &object) {
-    const QModelIndex policy_root_index =
-    [&]() {
+    const QModelIndex policy_root_index = [&]() {
         const QList<QModelIndex> results = console->search_scope_by_role(ConsoleRole_Type, ItemType_PolicyRoot);
 
         if (!results.isEmpty()) {
@@ -156,8 +155,7 @@ void console_policy_can_drop(const QList<QPersistentModelIndex> &dropped_list, c
         return;
     }
 
-    const bool dropped_contain_ou =
-    [&]() {
+    const bool dropped_contain_ou = [&]() {
         for (const QPersistentModelIndex &index : dropped_list) {
             if (console_object_is_ou(index)) {
                 return true;
@@ -178,8 +176,7 @@ void console_policy_drop(ConsoleWidget *console, const QList<QPersistentModelInd
     const QString policy_dn = target.data(PolicyRole_DN).toString();
     const QList<QString> policy_list = {policy_dn};
 
-    const QList<QString> ou_list =
-    [&]() {
+    const QList<QString> ou_list = [&]() {
         QList<QString> out;
 
         // NOTE: when multi-selecting, selection may contain

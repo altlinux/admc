@@ -107,15 +107,13 @@ void MainWindow::setup_menubar() {
         QLocale::English,
         QLocale::Russian,
     };
-    const QHash<QLocale::Language, QAction *> language_actions =
-    [this, language_list]() {
+    const QHash<QLocale::Language, QAction *> language_actions = [this, language_list]() {
         QHash<QLocale::Language, QAction *> out;
 
         auto language_group = new QActionGroup(this);
         for (const auto language : language_list) {
             QLocale locale(language);
-            const QString language_name =
-            [locale]() {
+            const QString language_name = [locale]() {
             // NOTE: Russian nativeLanguageName starts with lowercase letter for some reason
                 QString name_out = locale.nativeLanguageName();
 
@@ -130,8 +128,7 @@ void MainWindow::setup_menubar() {
             action->setCheckable(true);
             language_group->addAction(action);
 
-            const bool is_checked =
-            [=]() {
+            const bool is_checked = [=]() {
                 const QLocale current_locale = g_settings->get_variant(VariantSetting_Locale).toLocale();
 
                 return (current_locale == locale);

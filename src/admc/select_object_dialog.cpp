@@ -132,8 +132,7 @@ void SelectObjectDialog::open_find_dialog() {
             const QList<QList<QStandardItem *>> selected_rows = dialog->get_selected_rows();
 
             for (auto row : selected_rows) {
-                const bool model_contains_object =
-                [=]() {
+                const bool model_contains_object = [=]() {
                     QStandardItem *dn_item = row[0];
                     const QString dn = dn_item->text();
 

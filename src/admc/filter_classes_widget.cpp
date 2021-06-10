@@ -84,8 +84,7 @@ FilterClassesWidget::FilterClassesWidget(const QList<QString> &class_list_arg)
 }
 
 QString FilterClassesWidget::get_filter() const {
-    const QList<QString> class_filter_list =
-    [&] {
+    const QList<QString> class_filter_list = [&] {
         QList<QString> out;
 
         for (const QString &object_class : checkbox_map.keys()) {
@@ -132,8 +131,7 @@ void FilterClassesWidget::clear_selection() {
 }
 
 void FilterClassesWidget::save_state(QHash<QString, QVariant> &state) const {
-    const QHash<QString, QVariant> check_state =
-    [&]() {
+    const QHash<QString, QVariant> check_state = [&]() {
         QHash<QString, QVariant> out;
 
         for (const QString &object_class : checkbox_map.keys()) {
@@ -153,8 +151,7 @@ void FilterClassesWidget::load_state(const QHash<QString, QVariant> &state) {
     const QHash<QString, QVariant> check_state = state["check_state"].toHash();
 
     for (const QString &object_class : checkbox_map.keys()) {
-        const bool checked =
-        [&]() {
+        const bool checked = [&]() {
             if (check_state.contains(object_class)) {
                 const bool out = check_state[object_class].toBool();
 

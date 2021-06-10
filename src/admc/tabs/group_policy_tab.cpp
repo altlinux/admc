@@ -265,8 +265,7 @@ void GroupPolicyTab::reload_gplink() {
             QStandardItem *item = row[column];
             item->setCheckable(true);
 
-            const Qt::CheckState checkstate =
-            [=]() {
+            const Qt::CheckState checkstate = [=]() {
                 const GplinkOption option = column_to_option[column];
                 const bool option_is_set = gplink.get_option(dn, option);
                 if (option_is_set) {

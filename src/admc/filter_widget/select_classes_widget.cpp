@@ -78,8 +78,7 @@ QString SelectClassesWidget::get_filter() const {
 // class display strings separated by ","
 // "User, Organizational Unit, ..."
 void SelectClassesWidget::update_classes_display() {
-    const QString classes_display_text =
-    [this]() {
+    const QString classes_display_text = [this]() {
         const QList<QString> selected_classes = filter_classes_widget->get_selected_classes();
         
         QList<QString> classes_display_strings;

@@ -125,8 +125,7 @@ void Settings::setup_header_state(QHeaderView *header, const VariantSetting sett
 void Settings::connect_toggle_widget(QWidget *widget, const BoolSetting setting) {
     const BoolSettingSignal *signal = get_bool_signal(setting);
 
-    auto on_changed =
-    [=]() {
+    auto on_changed = [=]() {
         const bool visible = get_bool(setting);
         widget->setVisible(visible);
     };

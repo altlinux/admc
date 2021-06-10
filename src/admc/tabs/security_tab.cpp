@@ -115,8 +115,7 @@ SecurityTab::SecurityTab() {
         ace_model->appendRow(row);
     }
 
-    permission_item_map =
-    [&]() {
+    permission_item_map = [&]() {
         QHash<AcePermission, QHash<AceColumn, QStandardItem *>> out;
 
         for (int row = 0; row < ace_model->rowCount(); row++) {
@@ -189,8 +188,7 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
 }
 
 void SecurityTab::load_trustee_acl() {
-    const QString label_text =
-    [&]() {
+    const QString label_text = [&]() {
         const QModelIndex current_index = trustee_view->currentIndex();
         QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
         const QString trustee_name = current_item->text();
@@ -217,16 +215,14 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
         return;
     }
 
-    const AcePermission permission =
-    [&]() {
+    const AcePermission permission = [&]() {
         QStandardItem *main_item = ace_model->item(item->row(), 0);
         const AcePermission out = (AcePermission) main_item->data(AcePermissionItemRole_Permission).toInt();
 
         return out;
     }();
 
-    const PermissionState new_state =
-    [&]() {
+    const PermissionState new_state = [&]() {
         const bool checked = (item->checkState() == Qt::Checked);
         const bool allowed = (column == AceColumn_Allowed);
 
@@ -244,8 +240,7 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
         }
     }();
 
-    const QByteArray trustee =
-    [&]() {
+    const QByteArray trustee = [&]() {
         const QModelIndex current_index = trustee_view->currentIndex();
         QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
         const QByteArray out = current_item->data(TrusteeItemRole_Sid).toByteArray();
@@ -302,8 +297,7 @@ void SecurityTab::add_trustee() {
 
             const QList<QString> selected_list = dialog->get_selected();
 
-            const QList<QString> current_sid_string_list =
-            [&]() {
+            const QList<QString> current_sid_string_list = [&]() {
                 QList<QString> out;
 
                 for (int row = 0; row < trustee_model->rowCount(); row++) {
@@ -382,8 +376,7 @@ void SecurityTab::add_trustee_item(const QByteArray &sid, AdInterface &ad) {
 void SecurityTab::apply_current_state_to_items() {
     ignore_item_changed_signal = true;
    
-    const QByteArray trustee =
-    [&]() {
+    const QByteArray trustee = [&]() {
         const QModelIndex current_index = trustee_view->currentIndex();
         QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
         const QByteArray out = current_item->data(TrusteeItemRole_Sid).toByteArray();

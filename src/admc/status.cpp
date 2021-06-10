@@ -53,8 +53,7 @@ QTextEdit *Status::message_log() const {
 void Status::add_message(const QString &msg, const StatusType &type) {
     m_status_bar->showMessage(msg);
 
-    const QString timestamp =
-    []() {
+    const QString timestamp = []() {
         const QDateTime current_datetime = QDateTime::currentDateTime();
         return current_datetime.toString("hh:mm:ss");
     }();
@@ -63,8 +62,7 @@ void Status::add_message(const QString &msg, const StatusType &type) {
 
     const bool timestamps_ON = g_settings->get_bool(BoolSetting_TimestampLog);
     
-    const QColor color =
-    [type]() {
+    const QColor color = [type]() {
         switch (type) {
             case StatusType_Success: return Qt::darkGreen;
             case StatusType_Error: return Qt::red;
@@ -105,8 +103,7 @@ void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
     //
     const QList<AdMessage> messages = ad.messages();
     for (const AdMessage &message : messages) {
-        const StatusType status_type =
-        [message]() {
+        const StatusType status_type = [message]() {
             switch (message.type()) {
                 case AdMessageType_Success: return StatusType_Success;
                 case AdMessageType_Error: return StatusType_Error;
@@ -130,8 +127,7 @@ void ad_error_log(const AdInterface &ad, QWidget *parent) {
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->setMinimumWidth(600);
 
-    const QString errors_text =
-    [&]() {
+    const QString errors_text = [&]() {
         QList<QString> errors;
 
         const QList<AdMessage> messages = ad.messages();

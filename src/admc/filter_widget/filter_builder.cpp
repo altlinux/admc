@@ -77,8 +77,7 @@ QString FilterBuilder::get_filter() const {
     const Condition condition = (Condition) condition_combo->itemData(condition_combo->currentIndex()).toInt();
     const QString value = value_edit->text();
 
-    const QString filter_display_string =
-    [this, condition, value]() {
+    const QString filter_display_string = [this, condition, value]() {
         const QString attribute_display = attribute_combo->itemText(attribute_combo->currentIndex());
         const QString condition_string = condition_to_display_string(condition);
         
@@ -117,8 +116,7 @@ void FilterBuilder::clear() {
 void FilterBuilder::update_attributes_combo() {
     attribute_combo->clear();
 
-    const QString object_class =
-    [this]() {
+    const QString object_class = [this]() {
         const int index = attribute_class_combo->currentIndex();
         const QVariant item_data = attribute_class_combo->itemData(index);
 
@@ -127,8 +125,7 @@ void FilterBuilder::update_attributes_combo() {
     
     const QList<QString> attributes = g_adconfig->get_find_attributes(object_class);
 
-    const QList<QString> display_attributes =
-    [attributes, object_class]() {
+    const QList<QString> display_attributes = [attributes, object_class]() {
         QList<QString> out;
 
         for (const QString &attribute : attributes) {
@@ -142,8 +139,7 @@ void FilterBuilder::update_attributes_combo() {
     }();
 
     // NOTE: need backwards mapping from display name to attribute for insertion
-    const QHash<QString, QString> display_to_attribute =
-    [attributes, object_class]() {
+    const QHash<QString, QString> display_to_attribute = [attributes, object_class]() {
         QHash<QString, QString> out;
         for (const QString &attribute : attributes) {
             const QString display_name = g_adconfig->get_attribute_display_name(attribute, object_class);
@@ -162,10 +158,8 @@ void FilterBuilder::update_attributes_combo() {
 
 // Conditions combo contents depend on what attribute is selected
 void FilterBuilder::update_conditions_combo() {
-    const QList<Condition> conditions =
-    [this]() -> QList<Condition> {
-        const AttributeType attribute_type =
-        [this]() {
+    const QList<Condition> conditions = [this]() -> QList<Condition> {
+        const AttributeType attribute_type = [this]() {
             const int index = attribute_combo->currentIndex();
             const QVariant item_data = attribute_combo->itemData(index);
             const QString attribute = item_data.toString();

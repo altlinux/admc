@@ -31,8 +31,7 @@ UpnSuffixWidget::UpnSuffixWidget(AdInterface &ad)
 {
     combo = new QComboBox();
 
-    const QList<QString> suffixes =
-    [&]() {
+    const QList<QString> suffixes = [&]() {
         QList<QString> out;
 
         const QString partitions_dn = g_adconfig->partitions_dn();

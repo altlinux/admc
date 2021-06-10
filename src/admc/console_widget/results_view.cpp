@@ -139,8 +139,7 @@ QTreeView *ResultsView::detail_view() const {
 }
 
 QList<QModelIndex> ResultsView::get_selected_indexes() const {
-    const QList<QModelIndex> proxy_indexes =
-    [this]() {
+    const QList<QModelIndex> proxy_indexes = [this]() {
         QItemSelectionModel *selection_model = current_view()->selectionModel();
 
         if (current_view_type() == ResultsViewType_Detail) {

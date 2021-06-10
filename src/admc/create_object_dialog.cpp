@@ -105,10 +105,8 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
 
         // Setup autofills
         // (first name + last name) -> full name
-        auto autofill_full_name =
-        [=]() {
-            const QString full_name_value =
-            [=]() {
+        auto autofill_full_name = [=]() {
+            const QString full_name_value = [=]() {
                 const QString first_name = first_name_edit->get_input(); 
                 const QString last_name = last_name_edit->get_input(); 
 
@@ -235,8 +233,7 @@ void CreateObjectDialog::accept() {
         return;
     }
 
-    auto fail_msg =
-    [name]() {
+    auto fail_msg = [name]() {
         const QString message = QString(tr("Failed to create object \"%1\"")).arg(name);
         g_status()->add_message(message, StatusType_Error);
     };
@@ -270,8 +267,7 @@ void CreateObjectDialog::accept() {
 
 // Enable/disable create button if all required edits filled
 void CreateObjectDialog::on_edited() {
-    const bool required_edits_filled =
-    [this]() {
+    const bool required_edits_filled = [this]() {
         for (auto edit : required_edits) {
             if (edit->is_empty()) {
                 return false;

@@ -51,8 +51,7 @@ void UpnMultiEdit::add_to_layout(QFormLayout *layout) {
 }
 
 bool UpnMultiEdit::apply_internal(AdInterface &ad, const QString &target) {
-    const QString new_value =
-    [&]() {
+    const QString new_value = [&]() {
         const AdObject current_object = ad.search_object(target);
         const QString current_prefix = current_object.get_upn_prefix();
         const QString new_suffix = upn_suffix_widget->get_suffix();

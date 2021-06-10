@@ -103,8 +103,7 @@ void AttributesTab::edit_attribute() {
     const QModelIndex proxy_index = selecteds[0];
     const QModelIndex index = proxy->mapToSource(proxy_index);
     
-    const QList<QStandardItem *> row =
-    [this, index]() {
+    const QList<QStandardItem *> row = [this, index]() {
         QList<QStandardItem *> out;
         for (int col = 0; col < AttributesColumn_COUNT; col++) {
             const QModelIndex item_index = index.siblingAtColumn(col);
@@ -144,8 +143,7 @@ void AttributesTab::open_filter_dialog() {
 
     QHash<AttributeFilter, QCheckBox *> checks;
 
-    auto make_frame =
-    []() -> QFrame * {
+    auto make_frame = []() -> QFrame * {
         auto frame = new QFrame();
         frame->setFrameShape(QFrame::Box);
         frame->setFrameShadow(QFrame::Raised);
@@ -154,8 +152,7 @@ void AttributesTab::open_filter_dialog() {
         return frame;
     };
 
-    auto add_check =
-    [this, &checks](const QString text, const AttributeFilter filter) {
+    auto add_check = [this, &checks](const QString text, const AttributeFilter filter) {
         auto check = new QCheckBox(text);
         const bool is_checked = proxy->filters[filter];
         check->setChecked(is_checked);
@@ -221,8 +218,7 @@ void AttributesTab::open_filter_dialog() {
             proxy->invalidate();
 
             // Save filters to settings
-            const QVariant filters_variant =
-            [=]() {
+            const QVariant filters_variant = [=]() {
                 QList<QVariant> filters_list;
 
                 for (int filter_i = 0; filter_i < AttributeFilter_COUNT; filter_i++) {
@@ -311,8 +307,7 @@ AttributesTabProxy::AttributesTabProxy(QObject *parent)
     for (int filter_i = 0; filter_i < AttributeFilter_COUNT; filter_i++) {
         const AttributeFilter filter = (AttributeFilter) filter_i;
 
-        const bool filter_is_set =
-        [&]() {
+        const bool filter_is_set = [&]() {
             if (filter_i < filters_list.size()) {
                 return filters_list[filter_i].toBool();
             } else {

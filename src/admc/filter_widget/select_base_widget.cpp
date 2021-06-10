@@ -37,8 +37,7 @@ SelectBaseWidget::SelectBaseWidget(const QString &default_base)
 
     combo = new QComboBox();
 
-    auto add_base_to_combo =
-    [this](const QString dn) {
+    auto add_base_to_combo = [this](const QString dn) {
         const QString name = dn_get_name(dn);
         combo->addItem(name, dn);
     };

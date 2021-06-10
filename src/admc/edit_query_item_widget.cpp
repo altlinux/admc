@@ -124,8 +124,7 @@ void EditQueryItemWidget::save(QString &name, QString &description, QString &fil
     base = select_base_widget->get_base();
     scope_is_children = !scope_checkbox->isChecked();
 
-    filter_state =
-    [&]() {
+    filter_state = [&]() {
         QHash<QString, QVariant> select_base_widget_state;
         QHash<QString, QVariant> filter_widget_state;
 

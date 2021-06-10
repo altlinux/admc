@@ -41,8 +41,7 @@ MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> va
 {
     attribute = attribute_arg;
 
-    const QString title =
-    [this]() {
+    const QString title = [this]() {
         const AttributeType type = g_adconfig->get_attribute_type(attribute);
 
         const QString octet_title = tr("Edit multi-valued octet");
@@ -109,8 +108,7 @@ MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> va
 }
 
 void MultiEditor::add() {
-    AttributeEditor *editor =
-    [this]() -> AttributeEditor * {
+    AttributeEditor *editor = [this]() -> AttributeEditor * {
         const bool is_bool = (g_adconfig->get_attribute_type(attribute) == AttributeType_Boolean);
         if (is_bool) {
             return new BoolEditor(attribute, QList<QByteArray>(), this);
@@ -159,8 +157,7 @@ void MultiEditor::edit_item(QListWidgetItem *item) {
     const QString text = item->text();
     const QByteArray bytes = string_to_bytes(text);
 
-    auto editor =
-    [=]() -> AttributeEditor * {
+    auto editor = [=]() -> AttributeEditor * {
         const MultiEditorType editor_type = get_editor_type();
 
         switch (editor_type) {

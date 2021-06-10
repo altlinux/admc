@@ -263,8 +263,7 @@ void ADMCTestObjectMenu::object_menu_reset_password() {
     QVERIFY2(create_user_success, "Failed to create user");
     QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
 
-    const QByteArray pwdLastSet_value_before =
-    [=]() {
+    const QByteArray pwdLastSet_value_before = [=]() {
         const AdObject object = ad.search_object(user_dn);
 
         return object.get_value(ATTRIBUTE_PWD_LAST_SET);
@@ -284,8 +283,7 @@ void ADMCTestObjectMenu::object_menu_reset_password() {
 
     password_dialog->accept();
 
-    const QByteArray pwdLastSet_value_after =
-    [=]() {
+    const QByteArray pwdLastSet_value_after = [=]() {
         const AdObject object = ad.search_object(user_dn);
         
         return object.get_value(ATTRIBUTE_PWD_LAST_SET);
@@ -296,12 +294,9 @@ void ADMCTestObjectMenu::object_menu_reset_password() {
 }
 
 void ADMCTestObjectMenu::object_menu_disable_enable_account() {
-    auto test_disable_enable =
-    [=](const bool initial_disabled_state) {
-        const QString dn =
-        [=]() {
-            const QString name =
-            [=]() {
+    auto test_disable_enable = [=](const bool initial_disabled_state) {
+        const QString dn = [=]() {
+            const QString name = [=]() {
                 if (initial_disabled_state) {
                     return QString("disabled-%1").arg(TEST_USER);
                 } else {
@@ -328,8 +323,7 @@ void ADMCTestObjectMenu::object_menu_disable_enable_account() {
         const bool final_disabled_state = object.get_account_option(AccountOption_Disabled, ad.adconfig());
         const bool disabled_state_changed = (final_disabled_state != initial_disabled_state);
 
-        const QString error_text =
-        [=]() {
+        const QString error_text = [=]() {
             if (initial_disabled_state) {
                 return QString("Failed to enable user - %1").arg(dn);
             } else {
@@ -516,8 +510,7 @@ void ADMCTestObjectMenu::object_menu_rename_group()
     const QString group_name = TEST_GROUP;
     const QString group_renamed = group_name + "2";
 
-    auto group_rename =
-    [](const QString& newname) {
+    auto group_rename = [](const QString& newname) {
         ADMCTestObjectMenu::basic_rename(newname);
         tab();
         ADMCTestObjectMenu::basic_rename(newname);

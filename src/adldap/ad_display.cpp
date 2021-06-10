@@ -148,8 +148,7 @@ QString timespan_display_value(const QByteArray &bytes) {
         return "(never)";
     }
 
-    qint64 seconds_total =
-    [hundred_nanos_negative]() {
+    qint64 seconds_total = [hundred_nanos_negative]() {
         const qint64 hundred_nanos = -hundred_nanos_negative;
         const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
         const qint64 seconds = millis / SECONDS_TO_MILLIS;
@@ -170,8 +169,7 @@ QString timespan_display_value(const QByteArray &bytes) {
 
     // Convert arbitrary time unit value to string with format
     // "00-99" with leading zero if needed
-    const auto time_unit_to_string =
-    [](qint64 time) -> QString {
+    const auto time_unit_to_string = [](qint64 time) -> QString {
         if (time > 99) {
             time = 99;
         }
@@ -215,8 +213,7 @@ QString guid_to_display_value(const QByteArray &bytes) {
     std::reverse(segments[1].begin(), segments[1].end());
     std::reverse(segments[2].begin(), segments[2].end());
 
-    const QString guid_display_string =
-    [&]() {
+    const QString guid_display_string = [&]() {
         QString out;
 
         for (int i = 0; i < segments_count; i++) {

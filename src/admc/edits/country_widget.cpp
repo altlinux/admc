@@ -110,8 +110,7 @@ CountryWidget::CountryWidget()
 }
 
 void CountryWidget::load(const AdObject &object) {
-    const int country_code =
-    [object]() {
+    const int country_code = [object]() {
         if (object.contains(ATTRIBUTE_COUNTRY_CODE)) {
             return object.get_int(ATTRIBUTE_COUNTRY_CODE);
         } else {

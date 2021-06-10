@@ -142,8 +142,7 @@ void PolicyResultsWidget::update(const QModelIndex &scope_index) {
         const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
         const Gplink gplink = Gplink(gplink_string);
 
-        const Qt::CheckState enforced_checkstate =
-        [&]() {
+        const Qt::CheckState enforced_checkstate = [&]() {
             const bool is_enforced = gplink.get_option(dn, GplinkOption_Enforced);
             if (is_enforced) {
                 return Qt::Checked;
@@ -158,8 +157,7 @@ void PolicyResultsWidget::update(const QModelIndex &scope_index) {
             QStandardItem *item = row[column];
             item->setCheckable(true);
 
-            const Qt::CheckState checkstate =
-            [=]() {
+            const Qt::CheckState checkstate = [=]() {
                 const GplinkOption option = column_to_option[column];
                 const bool option_is_set = gplink.get_option(dn, option);
                 if (option_is_set) {
@@ -213,8 +211,7 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
     if (success) {
         model->setData(index, updated_gplink_string, PolicyResultsRole_GplinkString);
     } else {
-        const Qt::CheckState undo_check_state =
-        [&]() {
+        const Qt::CheckState undo_check_state = [&]() {
             if (item->checkState() == Qt::Checked) {
                 return Qt::Unchecked;
             } else {

@@ -40,8 +40,7 @@ FilterWidgetSimpleTab::FilterWidgetSimpleTab(const QList<QString> classes)
 }
 
 QString FilterWidgetSimpleTab::get_filter() const {
-    const QString name_filter =
-    [this]() {
+    const QString name_filter = [this]() {
         const QString name = name_edit->text();
 
         if (!name.isEmpty()) {

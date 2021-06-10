@@ -61,8 +61,7 @@ void console_object_results_load(const QList<QStandardItem *> row, const AdObjec
             continue;
         }
 
-        const QString display_value =
-        [attribute, object]() {
+        const QString display_value = [attribute, object]() {
             if (attribute == ATTRIBUTE_OBJECT_CLASS) {
                 const QString object_class = object.get_string(attribute);
 
@@ -153,8 +152,7 @@ QList<QString> console_object_search_attributes() {
 }
 
 void console_object_scope_load(QStandardItem *item, const AdObject &object) {
-    const QString name =
-    [&]() {
+    const QString name = [&]() {
         const QString dn = object.get_dn();
         return dn_get_name(dn);
     }();
@@ -188,8 +186,7 @@ void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list
         for (const QPersistentModelIndex &index : results_indexes) {
             // NOTE: don't touch query tree indexes, they
             // stay around and just go out of date
-            const bool index_is_in_query_tree =
-            [=]() {
+            const bool index_is_in_query_tree = [=]() {
                 const QModelIndex scope_parent = console->get_scope_parent(index);
                 const ItemType scope_parent_type = (ItemType) scope_parent.data(ConsoleRole_Type).toInt();
 
@@ -210,8 +207,7 @@ void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<
         return;
     }
 
-    const QList<AdObject> object_list =
-    [&]() {
+    const QList<AdObject> object_list = [&]() {
         QList<AdObject> out;
 
         for (const QString &dn : dn_list) {
@@ -233,8 +229,7 @@ void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QS
     // to new parent being selected, it gets fetched and
     // loads new object. End result is that new object is
     // duplicated.
-    const QModelIndex new_parent_index =
-    [=]() {
+    const QModelIndex new_parent_index = [=]() {
         const QList<QModelIndex> results = console->search_scope_by_role(ObjectRole_DN, new_parent_dn, ItemType_Object);
 
         if (results.size() == 1) {
@@ -251,8 +246,7 @@ void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QS
 }
 
 void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn) {
-    const QList<QString> new_dn_list =
-    [&]() {
+    const QList<QString> new_dn_list = [&]() {
         QList<QString> out;
 
         for (const QString &old_dn : old_dn_list) {
@@ -289,15 +283,13 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
     }
 
     for (const AdObject &object : object_list) {
-        const bool should_be_in_scope =
-        [&]() {
+        const bool should_be_in_scope = [&]() {
             // NOTE: "containers" referenced here don't mean
             // objects with "container" object class.
             // Instead it means all the objects that can
             // have children(some of which are not
             // "container" class).
-            const bool is_container =
-            [=]() {
+            const bool is_container = [=]() {
                 const QList<QString> filter_containers = g_adconfig->get_filter_containers();
                 const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
@@ -392,8 +384,7 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
     //
     // Search object's children
     //
-    const QString filter =
-    [=]() {
+    const QString filter = [=]() {
         QString out;
 
         out = is_container_filter();
@@ -484,8 +475,7 @@ void console_object_drop(ConsoleWidget *console, const QList<QPersistentModelInd
 // onto target. If drop type is none, then can't drop this
 // object on this target.
 DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIndex &target) {
-    const bool dropped_is_target =
-    [&]() {
+    const bool dropped_is_target = [&]() {
         const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
         const QString target_dn = target.data(ObjectRole_DN).toString();
 
@@ -509,8 +499,7 @@ DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIn
     } else {
         const QList<QString> dropped_superiors = g_adconfig->get_possible_superiors(dropped_classes);
 
-        const bool target_is_valid_superior =
-        [&]() {
+        const bool target_is_valid_superior = [&]() {
             for (const auto &object_class : dropped_superiors) {
                 if (target_classes.contains(object_class)) {
                     return true;
@@ -560,8 +549,7 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
 
     const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
 
-    const bool is_container =
-    [=]() {
+    const bool is_container = [=]() {
         const QList<QString> container_classes = g_adconfig->get_filter_containers();
 
         return container_classes.contains(object_class);
@@ -777,8 +765,7 @@ void console_object_drop_objects(ConsoleWidget *console, const QList<QPersistent
 }
 
 void console_object_drop_policies(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget) {
-    const QList<QString> policy_list =
-    [&]() {
+    const QList<QString> policy_list = [&]() {
         QList<QString> out;
 
         for (const QPersistentModelIndex &index : dropped_list) {

@@ -32,8 +32,7 @@
 StringEditor::StringEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
 : AttributeEditor(parent)
 {
-    const QString title =
-    [attribute]() {
+    const QString title = [attribute]() {
         const AttributeType type = g_adconfig->get_attribute_type(attribute);
 
         switch (type) {

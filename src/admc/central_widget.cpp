@@ -291,8 +291,7 @@ void CentralWidget::object_properties() {
             dialog, &PropertiesDialog::applied,
             this, &CentralWidget::on_object_properties_applied);
     } else if (targets.size() > 1) {
-        const QList<QString> class_list =
-        [&]() {
+        const QList<QString> class_list = [&]() {
             QSet<QString> out;
 
             for (const QPersistentModelIndex &index : targets.values()) {
@@ -490,8 +489,7 @@ void CentralWidget::policy_add_link() {
     QObject::connect(
         dialog, &SelectObjectDialog::accepted,
         [=]() {           
-            const QList<QString> gpos =
-            [selected]() {
+            const QList<QString> gpos = [selected]() {
                 QList<QString> out;
 
                 for (const QModelIndex &index : selected) {
@@ -604,8 +602,7 @@ void CentralWidget::query_paste() {
 }
 
 void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, bool *ok) {
-    const bool dropped_contains_target =
-    [&]() {
+    const bool dropped_contains_target = [&]() {
         const QModelIndex target_scope = console_item_convert_to_scope_index(target);
 
         for (const QPersistentModelIndex &dropped : dropped_list) {
@@ -623,8 +620,7 @@ void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &droppe
     }
 
     const ItemType target_type = (ItemType) target.data(ConsoleRole_Type).toInt();
-    const QSet<ItemType> dropped_types =
-    [&]() {
+    const QSet<ItemType> dropped_types = [&]() {
         QSet<ItemType> out;
 
         for (const QPersistentModelIndex &index : dropped_list) {
@@ -661,8 +657,7 @@ void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &droppe
 
 void CentralWidget::on_items_dropped(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
     const ItemType target_type = (ItemType) target.data(ConsoleRole_Type).toInt();
-    const QSet<ItemType> dropped_types =
-    [&]() {
+    const QSet<ItemType> dropped_types = [&]() {
         QSet<ItemType> out;
 
         for (const QPersistentModelIndex &index : dropped_list) {
@@ -742,8 +737,7 @@ void CentralWidget::refresh_head() {
 }
 
 void CentralWidget::update_description_bar() {
-    const QString text =
-    [this]() {
+    const QString text = [this]() {
         const QModelIndex current_scope = console->get_current_scope_item();
         const ItemType type = (ItemType) current_scope.data(ConsoleRole_Type).toInt();
 

@@ -64,8 +64,7 @@ void exec_menu_from_view(QMenu *menu, const QAbstractItemView *view, const QPoin
 
 void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap<int, QString> &labels_map) {
     for (int col = 0; col < model->columnCount(); col++) {
-        const QString label =
-        [=]() {
+        const QString label = [=]() {
             if (labels_map.contains(col)) {
                 return labels_map[col];
             } else {
@@ -80,8 +79,7 @@ void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap
 void show_only_in_dev_mode(QWidget *widget) {
     const BoolSettingSignal *dev_mode_signal = g_settings->get_bool_signal(BoolSetting_DevMode);
 
-    const auto do_it =
-    [widget]() {
+    const auto do_it = [widget]() {
         const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
         widget->setVisible(dev_mode);
     };
@@ -101,8 +99,7 @@ void set_line_edit_to_numbers_only(QLineEdit *edit) {
 void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view) {
     auto selection_model = view->selectionModel();
 
-    auto do_it =
-    [widget, selection_model]() {
+    auto do_it = [widget, selection_model]() {
         const bool has_selection = selection_model->hasSelection();
         widget->setEnabled(has_selection);
     };
@@ -207,8 +204,7 @@ QIcon get_object_icon(const AdObject &object) {
     QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
     std::reverse(object_classes.begin(), object_classes.end());
 
-    const QString icon_name =
-    [object_classes]() -> QString {
+    const QString icon_name = [object_classes]() -> QString {
         for (auto object_class : object_classes) {
             if (class_to_icon.contains(object_class)) {
                 return class_to_icon[object_class];

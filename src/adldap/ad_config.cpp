@@ -83,10 +83,8 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     d->attribute_schemas.clear();
     d->class_schemas.clear();
 
-    const QString locale_dir =
-    [this, locale]() {
-        const QString locale_code =
-        [locale]() {
+    const QString locale_dir = [this, locale]() {
+        const QString locale_code = [locale]() {
             if (locale.language() == QLocale::Russian) {
                 return "419";
             } else {
@@ -162,8 +160,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
 
             // Display specifier DN is "CN=object-class-Display,CN=..."
             // Get "object-class" from that
-            const QString object_class =
-            [dn]() {
+            const QString object_class = [dn]() {
                 const QString rdn = dn.split(",")[0];
                 QString out = rdn;
                 out.remove("CN=", Qt::CaseInsensitive);
@@ -187,8 +184,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
                     d->attribute_display_names[object_class][attribute_name] = display_name;
                 }
 
-                d->find_attributes[object_class] =
-                [object_class, display_names]() {
+                d->find_attributes[object_class] = [object_class, display_names]() {
                     QList<QString> out;
 
                     for (const auto &display_name_pair : display_names) {
@@ -206,8 +202,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
 
     // Columns
     {
-        const QList<QString> columns_values =
-        [&] {
+        const QList<QString> columns_values = [&] {
             const QString dn = QString("CN=default-Display,%1").arg(locale_dir);
             const AdObject object = ad.search_object(dn, {ATTRIBUTE_EXTRA_COLUMNS});
 
@@ -236,8 +231,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         }
 
         // Insert some columns manually
-        auto add_custom =
-        [=](const Attribute &attribute, const QString &display_name) {
+        auto add_custom = [=](const Attribute &attribute, const QString &display_name) {
             d->columns.prepend(attribute);
             d->column_display_names[attribute] = display_name;
         };
@@ -248,8 +242,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         add_custom(ATTRIBUTE_NAME, QCoreApplication::translate("AdConfig", "Name"));
     }
 
-    d->filter_containers =
-    [&] {
+    d->filter_containers = [&] {
         QList<QString> out;
 
         const QString ui_settings_dn = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
@@ -258,8 +251,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         // TODO: dns-Zone category is mispelled in
         // ATTRIBUTE_FILTER_CONTAINERS, no idea why, might
         // just be on this domain version
-        const QList<QString> categories =
-        [object]() {
+        const QList<QString> categories = [object]() {
             QList<QString> categories_out = object.get_strings(ATTRIBUTE_FILTER_CONTAINERS);
             categories_out.replaceInStrings("dns-Zone", "Dns-Zone");
 
@@ -286,8 +278,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         return out;
     }();
 
-    d->right_to_guid_map =
-    [&]() {
+    d->right_to_guid_map = [&]() {
         QHash<QString, QString> out;
 
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_CONTROL_ACCESS_RIGHT);

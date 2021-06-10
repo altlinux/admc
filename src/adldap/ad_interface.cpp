@@ -108,10 +108,8 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     d->is_connected = false;
     const QString connect_error_context = tr("Failed to connect");
 
-    const QString uri =
-    [&]() {
-        const QString dc =
-        [&]() {
+    const QString uri = [&]() {
+        const QString dc = [&]() {
             const QList<QString> dc_list = get_domain_hosts(d->domain, QString());
             if (dc_list.isEmpty()) {
                 d->error_message_plain(tr("Failed to find domain controllers. Make sure your computer is in the domain and that domain controllers are operational."));
@@ -154,8 +152,7 @@ AdInterface::AdInterface(AdConfig *adconfig) {
         return;
     }
 
-    auto option_error =
-    [&](const QString &option) {
+    auto option_error = [&](const QString &option) {
         d->error_message(connect_error_context, QString(tr("Failed to set %1")).arg(option));
     };
 
@@ -306,8 +303,7 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
     BerElement *sd_control_value_be = NULL;
     berval *sd_control_value_bv = NULL;
 
-    auto cleanup =
-    [&]() {
+    auto cleanup = [&]() {
         ldap_msgfree(res);
         ldap_control_free(page_control);
         ldap_controls_free(returned_controls);
@@ -375,8 +371,7 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
         for (char *attr = ldap_first_attribute(ld, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ld, entry, berptr)) {
             struct berval **values_ldap = ldap_get_values_len(ld, entry, attr);
 
-            const QList<QByteArray> values_bytes =
-            [=]() {
+            const QList<QByteArray> values_bytes = [=]() {
                 QList<QByteArray> out;
 
                 if (values_ldap != NULL) {
@@ -459,8 +454,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &base, const SearchSc
     if (AdInterfacePrivate::s_log_searches) {
         const QString attributes_string = "{" + attributes.join(",") + "}";
 
-        const QString scope_string =
-        [&scope]() -> QString {
+        const QString scope_string = [&scope]() -> QString {
             switch (scope) {
                 case SearchScope_Object: return "object";
                 case SearchScope_Children: return "children";
@@ -492,8 +486,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &base, const SearchSc
 bool AdInterface::search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie) {
     const char *base_cstr = cstr(base);
 
-    const int scope_int =
-    [&]() {
+    const int scope_int = [&]() {
         switch (scope) {
             case SearchScope_Object: return LDAP_SCOPE_BASE;
             case SearchScope_Children: return LDAP_SCOPE_ONELEVEL;
@@ -503,8 +496,7 @@ bool AdInterface::search_paged(const QString &base, const SearchScope scope, con
         return 0;
     }();
 
-    const char *filter_cstr =
-    [&]() {
+    const char *filter_cstr = [&]() {
         if (filter.isEmpty()) {
             // NOTE: need to pass NULL instead of empty
             // string to denote "no filter"
@@ -515,8 +507,7 @@ bool AdInterface::search_paged(const QString &base, const SearchScope scope, con
     }();
 
     // Convert attributes list to NULL-terminated array
-    char **attributes_array =
-    [&]() {
+    char **attributes_array = [&]() {
         char **out;
         if (attributes.isEmpty()) {
             // Pass NULL so LDAP gets all attributes
@@ -615,8 +606,7 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
 }
 
 bool AdInterface::attribute_replace_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
-    const QList<QByteArray> values =
-    [=]() -> QList<QByteArray> {
+    const QList<QByteArray> values = [=]() -> QList<QByteArray> {
         if (value.isEmpty()) {
             return QList<QByteArray>();
         } else {
@@ -757,15 +747,13 @@ bool AdInterface::object_delete(const QString &dn) {
     int result;
     LDAPControl *tree_delete_control = NULL;
 
-    auto cleanup =
-    [tree_delete_control]() {
+    auto cleanup = [tree_delete_control]() {
         ldap_control_free(tree_delete_control);
     };
 
     const QString name = dn_get_name(dn);
 
-    auto error_message =
-    [this, name](const QString &error) {
+    auto error_message = [this, name](const QString &error) {
         const QString context = QString(tr("Failed to delete object \"%1\"")).arg(name);
 
         d->error_message(context, error);
@@ -890,8 +878,7 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope, const DoS
     // NOTE: it is not possible to change scope from
     // global<->domainlocal directly, so have to switch to
     // universal first.
-    const bool need_to_switch_to_universal =
-    [=]() {
+    const bool need_to_switch_to_universal = [=]() {
         const AdObject object = search_object(dn, {ATTRIBUTE_GROUP_TYPE});
         const GroupScope current_scope = object.get_group_scope();
 
@@ -1018,8 +1005,7 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
     } else {
         const QString context = QString(tr("Failed to set password for user \"%1\"")).arg(name);
 
-        const QString error =
-        [this]() {
+        const QString error = [this]() {
             const int ldap_result = d->get_ldap_result();
             if (ldap_result == LDAP_CONSTRAINT_VIOLATION) {
                 return tr("Password doesn't match rules");
@@ -1052,8 +1038,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
 
             const QByteArray self_trustee = sid_string_to_bytes(SID_NT_SELF);
             
-            const PermissionState new_permission_state =
-            [&]() {
+            const PermissionState new_permission_state = [&]() {
                 if (set) {
                     return PermissionState_Denied;
                 } else {
@@ -1080,8 +1065,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             break;
         }
         default: {
-            const int uac =
-            [this, dn]() {
+            const int uac = [this, dn]() {
                 const AdObject object = search_object(dn, {ATTRIBUTE_USER_ACCOUNT_CONTROL});
                 return object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
             }();
@@ -1096,8 +1080,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
     const QString name = dn_get_name(dn);
     
     if (success) {
-        const QString success_context =
-        [option, set, name]() {
+        const QString success_context = [option, set, name]() {
             switch (option) {
                 case AccountOption_Disabled: {
                     if (set) {
@@ -1122,8 +1105,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
 
         return true;
     } else {
-        const QString context =
-        [option, set, name]() {
+        const QString context = [option, set, name]() {
             switch (option) {
                 case AccountOption_Disabled: {
                     if (set) {
@@ -1174,8 +1156,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     //
     // TODO: make sure endianess works fine on processors
     // with weird endianess.
-    const QString uuid =
-    [](){
+    const QString uuid = [](){
         uuid_t uuid_struct;
         uuid_generate_random(uuid_struct);
 
@@ -1304,8 +1285,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
         return false;
     }
 
-    const QString sysvol_sd_string =
-    [tmp_ctx, &sysvol_sd]() {
+    const QString sysvol_sd_string = [tmp_ctx, &sysvol_sd]() {
         QString out;
 
         out += QString("REVISION:%1,OWNER:%2,GROUP:%3,").arg(QString::number(sysvol_sd->revision), dom_sid_string(tmp_ctx, sysvol_sd->owner_sid), dom_sid_string(tmp_ctx, sysvol_sd->group_sid));
@@ -1476,8 +1456,7 @@ QList<QString> query_server_for_hosts(const char *dname) {
         unsigned char buf[NS_MAXMSG];
     } msg;
 
-    auto error =
-    []() {
+    auto error = []() {
         return QList<QString>();
     };
 
