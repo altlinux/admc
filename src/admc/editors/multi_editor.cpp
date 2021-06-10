@@ -20,25 +20,24 @@
 
 #include "editors/multi_editor.h"
 
-#include "editors/string_editor.h"
-#include "editors/bool_editor.h"
-#include "editors/octet_editor.h"
-#include "editors/datetime_editor.h"
 #include "adldap.h"
+#include "editors/bool_editor.h"
+#include "editors/datetime_editor.h"
+#include "editors/octet_editor.h"
+#include "editors/string_editor.h"
 #include "globals.h"
 #include "utils.h"
 
-#include <QLineEdit>
 #include <QDialogButtonBox>
-#include <QPushButton>
-#include <QVBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
 #include <QListWidget>
 #include <QMessageBox>
-#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent)
-: AttributeEditor(parent)
-{
+: AttributeEditor(parent) {
     attribute = attribute_arg;
 
     const QString title = [this]() {
@@ -58,7 +57,7 @@ MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> va
 
             case AttributeType_UTCTime: return datetime_title;
             case AttributeType_GeneralizedTime: return datetime_title;
-            
+
             default: break;
         };
 
@@ -78,7 +77,8 @@ MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> va
 
     auto remove_button = new QPushButton(tr("Remove"));
 
-    QDialogButtonBox *button_box = make_button_box(attribute);;
+    QDialogButtonBox *button_box = make_button_box(attribute);
+    ;
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
@@ -229,4 +229,3 @@ QByteArray MultiEditor::string_to_bytes(const QString string) const {
 
     return QByteArray();
 }
-

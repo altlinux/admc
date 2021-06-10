@@ -22,9 +22,9 @@
 
 #include "edits/upn_edit.h"
 
+#include <QComboBox>
 #include <QFormLayout>
 #include <QLineEdit>
-#include <QComboBox>
 
 #define TEST_SUFFIX "test.com"
 
@@ -159,7 +159,7 @@ bool ADMCTestUpnEdit::edit_state_equals_to_server_state() {
 void ADMCTestUpnEdit::change_suffix_in_edit() {
     const int new_suffix_index = [this]() {
         const QString current_suffix = suffix_edit->currentText();
-        
+
         for (int i = 0; i < suffix_edit->count(); i++) {
             const QString suffix = suffix_edit->itemText(i);
 

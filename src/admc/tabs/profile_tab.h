@@ -24,7 +24,7 @@
 #include "tabs/properties_tab.h"
 
 class ProfileTab final : public PropertiesTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     ProfileTab();

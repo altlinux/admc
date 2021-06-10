@@ -27,15 +27,15 @@
  * filter which will filter out unselected classes.
  */
 
-#include <QWidget>
 #include <QHash>
 #include <QString>
+#include <QWidget>
 
 class QCheckBox;
 
 class FilterClassesWidget final : public QWidget {
-Q_OBJECT
-    
+    Q_OBJECT
+
 public:
     FilterClassesWidget(const QList<QString> &class_list);
 

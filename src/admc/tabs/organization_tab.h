@@ -27,7 +27,7 @@ class QStandardItemModel;
 class QTreeView;
 
 class OrganizationTab final : public PropertiesTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     OrganizationTab();

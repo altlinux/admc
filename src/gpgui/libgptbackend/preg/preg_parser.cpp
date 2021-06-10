@@ -22,16 +22,16 @@
 uint16_t preg::buffer2uint16(const char *type_buffer) {
     uint16_t num =
         static_cast<uint16_t>(static_cast<unsigned char>(type_buffer[1]) << 8 |
-                              static_cast<unsigned char>(type_buffer[0]));
+            static_cast<unsigned char>(type_buffer[0]));
     return num;
 }
 
 uint32_t preg::buffer2uint32(const char *type_buffer) {
     uint32_t num =
         static_cast<uint32_t>(static_cast<unsigned char>(type_buffer[3]) << 24 |
-                              static_cast<unsigned char>(type_buffer[2]) << 16 |
-                              static_cast<unsigned char>(type_buffer[1]) << 8 |
-                              static_cast<unsigned char>(type_buffer[0]));
+            static_cast<unsigned char>(type_buffer[2]) << 16 |
+            static_cast<unsigned char>(type_buffer[1]) << 8 |
+            static_cast<unsigned char>(type_buffer[0]));
     return num;
 }
 uint32_t preg::parse_type(const char *type_buffer) {
@@ -46,13 +46,13 @@ preg::preg_parser::preg_parser(std::string &file_path) {
 
 void preg::preg_parser::load_regpol(std::string &path) {
     this->polfile.open(path,
-                       std::ios::in | std::ios::binary | std::ios::ate);
+        std::ios::in | std::ios::binary | std::ios::ate);
     if (this->polfile.good()) {
-        this->polfile.seekg(0, std::ios::end);       /* Go to the end of file */
+        this->polfile.seekg(0, std::ios::end); /* Go to the end of file */
         this->raw_file_size = this->polfile.tellg(); /* Get file length */
 
         this->polfile.seekg(0,
-                            std::ios::beg); /* Set file position to beginning */
+            std::ios::beg); /* Set file position to beginning */
 
         this->read_header();
         this->read_version();
@@ -62,7 +62,7 @@ void preg::preg_parser::load_regpol(std::string &path) {
 void preg::preg_parser::read_header() {
     if (this->polfile.good() && 4 < this->raw_file_size) {
         this->polfile.seekg(0,
-                            std::ios::beg); /* Set file position to beginning */
+            std::ios::beg); /* Set file position to beginning */
         this->polfile.read(this->header, 4); /* Read first 4 bytes */
     }
     this->check_header();
@@ -194,7 +194,7 @@ preg::key_entry preg::preg_parser::get_next_key_entry() {
 preg::entry preg::preg_parser::read_entry(preg::key_entry kentry) {
     preg::entry appentry;
     std::vector<std::string> results = this->split_entry(kentry);
-    std::cout << "Elements in split entry: " << (int)results.size()
+    std::cout << "Elements in split entry: " << (int) results.size()
               << std::endl;
 
     /* We also need converter from UTF-16 to UTF-8 */
@@ -209,7 +209,7 @@ preg::entry preg::preg_parser::read_entry(preg::key_entry kentry) {
     appentry.type = preg::parse_type(results.at(2).c_str());
     std::cout << "Type " << preg::regtype2str(appentry.type) << std::endl;
     appentry.size = preg::buffer2uint32(results.at(3).c_str());
-    appentry.value = const_cast<char*>(results.at(4).c_str());
+    appentry.value = const_cast<char *>(results.at(4).c_str());
     std::cout << "Size " << appentry.size << std::endl;
     std::cout << "Value " << appentry.value << std::endl;
 

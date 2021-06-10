@@ -25,19 +25,15 @@
 void test_gplink_equality(const Gplink &a, const QString &b);
 
 void ADMCTestGplink::initTestCase() {
-
 }
 
 void ADMCTestGplink::cleanupTestCase() {
-
 }
 
 void ADMCTestGplink::init() {
-
 }
 
 void ADMCTestGplink::cleanup() {
-
 }
 
 void ADMCTestGplink::test_to_string() {

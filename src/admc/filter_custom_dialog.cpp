@@ -34,14 +34,13 @@
 // it when cancel is pressed.
 
 FilterCustomDialog::FilterCustomDialog(QWidget *parent)
-: QDialog(parent)
-{   
+: QDialog(parent) {
     setWindowTitle(tr("Custom filter"));
 
     // NOTE: Can't filter out container objects, because
     // otherwise the whole tree can't be displayed, so only
     // allow filtering by non-container classes
-    const QList<QString> noncontainer_classes = g_adconfig->get_noncontainer_classes();   
+    const QList<QString> noncontainer_classes = g_adconfig->get_noncontainer_classes();
 
     filter_widget = new FilterWidget(noncontainer_classes);
 

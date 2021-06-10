@@ -19,16 +19,16 @@
  */
 
 #include "tabs/organization_tab.h"
-#include "edits/string_edit.h"
-#include "edits/manager_edit.h"
 #include "adldap.h"
+#include "edits/manager_edit.h"
+#include "edits/string_edit.h"
 #include "properties_dialog.h"
 #include "utils.h"
 
 #include <QFormLayout>
-#include <QTreeView>
-#include <QStandardItemModel>
 #include <QLabel>
+#include <QStandardItemModel>
+#include <QTreeView>
 
 enum ReportsColumn {
     ReportsColumn_Name,
@@ -40,7 +40,7 @@ enum ReportsRole {
     ReportsRole_DN = Qt::UserRole + 1,
 };
 
-OrganizationTab::OrganizationTab() {   
+OrganizationTab::OrganizationTab() {
     const QList<QString> attributes = {
         ATTRIBUTE_TITLE,
         ATTRIBUTE_DEPARTMENT,
@@ -54,10 +54,10 @@ OrganizationTab::OrganizationTab() {
 
     reports_model = new QStandardItemModel(0, ReportsColumn_COUNT, this);
     set_horizontal_header_labels_from_map(reports_model,
-    {
-        {ReportsColumn_Name, tr("Name")},
-        {ReportsColumn_Folder, tr("Folder")},
-    });
+        {
+            {ReportsColumn_Name, tr("Name")},
+            {ReportsColumn_Folder, tr("Folder")},
+        });
 
     auto reports_label = new QLabel(tr("Reports:"));
 
@@ -78,17 +78,17 @@ OrganizationTab::OrganizationTab() {
 
 void OrganizationTab::load(AdInterface &ad, const AdObject &object) {
     const QList<QString> reports = object.get_strings(ATTRIBUTE_DIRECT_REPORTS);
-    
+
     reports_model->removeRows(0, reports_model->rowCount());
     for (auto dn : reports) {
         const QString name = dn_get_name(dn);
         const QString parent = dn_get_parent_canonical(dn);
-        
+
         const QList<QStandardItem *> row = make_item_row(ReportsColumn_COUNT);
         row[ReportsColumn_Name]->setText(name);
         row[ReportsColumn_Folder]->setText(parent);
 
-        set_data_for_row(row, dn, ReportsRole_DN); 
+        set_data_for_row(row, dn, ReportsRole_DN);
 
         reports_model->appendRow(row);
     }
@@ -98,8 +98,8 @@ void OrganizationTab::load(AdInterface &ad, const AdObject &object) {
 
 void OrganizationTab::showEvent(QShowEvent *event) {
     resize_columns(reports_view,
-    {
-        {ReportsColumn_Name, 0.5},
-        {ReportsColumn_Folder, 0.5},
-    });
+        {
+            {ReportsColumn_Name, 0.5},
+            {ReportsColumn_Folder, 0.5},
+        });
 }

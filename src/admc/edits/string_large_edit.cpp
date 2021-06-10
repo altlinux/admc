@@ -21,15 +21,14 @@
 #include "edits/string_large_edit.h"
 #include "adldap.h"
 #include "globals.h"
-#include <QPlainTextEdit>
 #include <QFormLayout>
+#include <QPlainTextEdit>
 
 StringLargeEdit::StringLargeEdit(const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent)
-{
+: AttributeEdit(edits_out, parent) {
     attribute = attribute_arg;
     objectClass = objectClass_arg;
-    
+
     edit = new QPlainTextEdit();
 
     const int range_upper = g_adconfig->get_attribute_range_upper(attribute);
@@ -57,7 +56,7 @@ StringLargeEdit::StringLargeEdit(const QString &attribute_arg, const QString &ob
 
 void StringLargeEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const QString value = object.get_string(attribute);
-    
+
     edit->setPlainText(value);
 }
 

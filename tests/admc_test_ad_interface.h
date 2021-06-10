@@ -40,7 +40,6 @@ private slots:
     void user_set_account_option();
 
 private:
-
 };
 
 #endif /* ADMC_TEST_AD_INTERFACE_H */

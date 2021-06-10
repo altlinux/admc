@@ -22,14 +22,13 @@
 
 #include "multi_tabs/properties_multi_tab.h"
 
-#include <QDebug>
 #include <QCheckBox>
-#include <QLabel>
+#include <QDebug>
 #include <QHBoxLayout>
+#include <QLabel>
 
 AttributeMultiEdit::AttributeMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
-: QObject(parent)
-{
+: QObject(parent) {
     if (edits_out.contains(this)) {
         qDebug() << "ERROR: attribute edit added twice to list!";
     } else {

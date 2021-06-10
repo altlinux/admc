@@ -21,20 +21,19 @@
 #include "move_object_dialog.h"
 
 #include "adldap.h"
-#include "globals.h"
 #include "edits/string_edit.h"
+#include "globals.h"
+#include "select_container_dialog.h"
 #include "status.h"
 #include "utils.h"
-#include "select_container_dialog.h"
 
 #include <QDialog>
-#include <QLineEdit>
 #include <QDialogButtonBox>
+#include <QLineEdit>
 #include <QPushButton>
 
 MoveObjectDialog::MoveObjectDialog(const QList<QString> &targets_arg, QWidget *parent)
-: SelectContainerDialog(parent)
-{
+: SelectContainerDialog(parent) {
     targets = targets_arg;
 
     if (targets.size() == 0) {
@@ -52,7 +51,7 @@ void MoveObjectDialog::accept() {
     AdInterface ad;
     if (ad_failed(ad)) {
         close();
-        
+
         return;
     }
 

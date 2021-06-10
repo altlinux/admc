@@ -19,11 +19,11 @@
  */
 
 #include "tabs/account_tab.h"
-#include "edits/string_edit.h"
+#include "edits/account_option_edit.h"
 #include "edits/expiry_edit.h"
+#include "edits/string_edit.h"
 #include "edits/unlock_edit.h"
 #include "edits/upn_edit.h"
-#include "edits/account_option_edit.h"
 
 #include <QFormLayout>
 

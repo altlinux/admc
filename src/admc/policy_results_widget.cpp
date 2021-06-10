@@ -21,24 +21,23 @@
 #include "policy_results_widget.h"
 
 #include "adldap.h"
-#include "console_widget/console_widget.h"
 #include "central_widget.h"
 #include "console_types/console_policy.h"
-#include "utils.h"
+#include "console_widget/console_widget.h"
+#include "console_widget/results_view.h"
+#include "globals.h"
 #include "gplink.h"
 #include "status.h"
-#include "globals.h"
-#include "console_widget/results_view.h"
+#include "utils.h"
 
-#include <QModelIndex>
-#include <QTreeView>
-#include <QDebug>
-#include <QTreeView>
-#include <QStandardItemModel>
-#include <QVBoxLayout>
 #include <QAction>
-#include <QMenu>
+#include <QDebug>
 #include <QHeaderView>
+#include <QMenu>
+#include <QModelIndex>
+#include <QStandardItemModel>
+#include <QTreeView>
+#include <QVBoxLayout>
 
 enum PolicyResultsColumn {
     PolicyResultsColumn_Name,
@@ -69,7 +68,7 @@ const QHash<PolicyResultsColumn, GplinkOption> column_to_option = {
 // TODO: need to sync this with changes done through group
 // policy tab (just call load after properties is closed?)
 
-PolicyResultsWidget::PolicyResultsWidget() {   
+PolicyResultsWidget::PolicyResultsWidget() {
     auto delete_link_action = new QAction(tr("Delete link"), this);
 
     context_menu = new QMenu(this);
@@ -79,12 +78,12 @@ PolicyResultsWidget::PolicyResultsWidget() {
 
     model = new QStandardItemModel(0, PolicyResultsColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
-    {
-        {PolicyResultsColumn_Name, tr("Location")},
-        {PolicyResultsColumn_Enforced, tr("Enforced")},
-        {PolicyResultsColumn_Disabled, tr("Disabled")},
-        {PolicyResultsColumn_Path, tr("Path")},
-    });
+        {
+            {PolicyResultsColumn_Name, tr("Location")},
+            {PolicyResultsColumn_Enforced, tr("Enforced")},
+            {PolicyResultsColumn_Disabled, tr("Disabled")},
+            {PolicyResultsColumn_Path, tr("Path")},
+        });
 
     view->set_model(model);
 
@@ -133,11 +132,11 @@ void PolicyResultsWidget::update(const QModelIndex &scope_index) {
 
     for (const AdObject &object : results.values()) {
         const QList<QStandardItem *> row = make_item_row(PolicyResultsColumn_COUNT);
-        
+
         const QString dn = object.get_dn();
         const QString name = dn_get_name(dn);
         row[PolicyResultsColumn_Name]->setText(name);
-        
+
         row[PolicyResultsColumn_Path]->setText(dn_get_parent_canonical(dn));
 
         const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
@@ -245,7 +244,6 @@ void PolicyResultsWidget::delete_link() {
 
     show_busy_indicator();
 
-
     const QList<QModelIndex> selected = view->get_selected_indexes();
 
     QList<QPersistentModelIndex> removed_indexes;
@@ -273,7 +271,7 @@ void PolicyResultsWidget::delete_link() {
     for (const QPersistentModelIndex &index : removed_indexes) {
         model->removeRow(index.row());
     }
-    
+
     g_status()->display_ad_messages(ad, this);
 
     hide_busy_indicator();

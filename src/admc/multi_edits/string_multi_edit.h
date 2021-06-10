@@ -30,7 +30,7 @@ class QLineEdit;
  */
 
 class StringMultiEdit : public AttributeMultiEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     StringMultiEdit(const QString &attribute_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 

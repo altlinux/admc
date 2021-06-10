@@ -40,11 +40,14 @@ class AdInterface;
 class AdObject;
 class QPersistentModelIndex;
 class ConsoleWidget;
-template <typename T> class QList;
-template <typename K, typename T> class QMap;
-template <typename K, typename T> class QHash;
+template <typename T>
+class QList;
+template <typename K, typename T>
+class QMap;
+template <typename K, typename T>
+class QHash;
 
-#define debug_print(a, args...) printf("%s(%s:%d) " a,  __func__,__FILE__, __LINE__, ##args)
+#define debug_print(a, args...) printf("%s(%s:%d) " a, __func__, __FILE__, __LINE__, ##args)
 #define trace(a, args...) debug_print(a "\n", ##args)
 
 QList<QStandardItem *> make_item_row(const int count);

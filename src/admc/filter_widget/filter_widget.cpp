@@ -19,17 +19,16 @@
  */
 
 #include "filter_widget/filter_widget.h"
-#include "filter_widget/filter_widget_simple_tab.h"
-#include "filter_widget/filter_widget_normal_tab.h"
 #include "filter_widget/filter_widget_advanced_tab.h"
+#include "filter_widget/filter_widget_normal_tab.h"
+#include "filter_widget/filter_widget_simple_tab.h"
 
 #include <QDebug>
 #include <QTabWidget>
 #include <QVBoxLayout>
 
 FilterWidget::FilterWidget(const QList<QString> classes)
-: QWidget()
-{
+: QWidget() {
     tab_widget = new QTabWidget();
 
     auto add_tab = [this](FilterWidgetTab *tab, const QString &title) {
@@ -49,7 +48,7 @@ FilterWidget::FilterWidget(const QList<QString> classes)
 }
 
 QString FilterWidget::get_filter() const {
-    const FilterWidgetTab *current_tab = dynamic_cast<FilterWidgetTab *> (tab_widget->currentWidget());
+    const FilterWidgetTab *current_tab = dynamic_cast<FilterWidgetTab *>(tab_widget->currentWidget());
 
     if (current_tab) {
         return current_tab->get_filter();

@@ -23,16 +23,15 @@
 #include "adldap.h"
 #include "globals.h"
 
-#include <QVBoxLayout>
-#include <QScrollArea>
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QPushButton>
+#include <QScrollArea>
+#include <QVBoxLayout>
 #include <QVariant>
 
 FilterClassesWidget::FilterClassesWidget(const QList<QString> &class_list_arg)
-: QWidget()
-{   
+: QWidget() {
     class_list = class_list_arg;
 
     for (const QString &object_class : class_list) {

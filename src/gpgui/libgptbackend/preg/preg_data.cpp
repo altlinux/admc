@@ -22,62 +22,62 @@ std::string preg::regtype2str(uint32_t &regtype) {
     std::string result = "UNKNOWN";
 
     switch (regtype) {
-    case preg::REG_NONE: {
-        result = "REG_NONE";
-        break;
-    }
-    case preg::REG_SZ: {
-        result = "REG_SZ";
-        break;
-    }
-    case preg::REG_EXPAND_SZ: {
-        result = "REG_EXPAND_SZ";
-        break;
-    }
-    case preg::REG_BINARY: {
-        result = "REG_BINARY";
-        break;
-    }
-    case preg::REG_DWORD_LITTLE_ENDIAN: {
-        result = "REG_DWORD_LITTLE_ENDIAN";
-        break;
-    }
-    case preg::REG_DWORD_BIG_ENDIAN: {
-        result = "REG_DWORD_BIG_ENDIAN";
-        break;
-    }
-    case preg::REG_LINK: {
-        result = "REG_LINK";
-        break;
-    }
-    case preg::REG_MULTI_SZ: {
-        result = "REG_MULTI_SZ";
-        break;
-    }
-    case preg::REG_RESOURCE_LIST: {
-        result = "REG_RESOURCE_LIST";
-        break;
-    }
-    case preg::REG_FULL_RESOURCE_DESCRIPTOR: {
-        result = "REG_FULL_RESOURCE_DESCRIPTOR";
-        break;
-    }
-    case preg::REG_RESOURCE_REQUIREMENTS_LIST: {
-        result = "REG_RESOURCE_REQUIREMENTS_LIST";
-        break;
-    }
-    case preg::REG_QWORD: {
-        result = "REG_QWORD";
-        break;
-    }
-    case preg::REG_QWORD_LITTLE_ENDIAN: {
-        result = "REG_QWORD_LITTLE_ENDIAN";
-        break;
-    }
-    default: {
-        result = "UNKNOWN";
-        break;
-    }
+        case preg::REG_NONE: {
+            result = "REG_NONE";
+            break;
+        }
+        case preg::REG_SZ: {
+            result = "REG_SZ";
+            break;
+        }
+        case preg::REG_EXPAND_SZ: {
+            result = "REG_EXPAND_SZ";
+            break;
+        }
+        case preg::REG_BINARY: {
+            result = "REG_BINARY";
+            break;
+        }
+        case preg::REG_DWORD_LITTLE_ENDIAN: {
+            result = "REG_DWORD_LITTLE_ENDIAN";
+            break;
+        }
+        case preg::REG_DWORD_BIG_ENDIAN: {
+            result = "REG_DWORD_BIG_ENDIAN";
+            break;
+        }
+        case preg::REG_LINK: {
+            result = "REG_LINK";
+            break;
+        }
+        case preg::REG_MULTI_SZ: {
+            result = "REG_MULTI_SZ";
+            break;
+        }
+        case preg::REG_RESOURCE_LIST: {
+            result = "REG_RESOURCE_LIST";
+            break;
+        }
+        case preg::REG_FULL_RESOURCE_DESCRIPTOR: {
+            result = "REG_FULL_RESOURCE_DESCRIPTOR";
+            break;
+        }
+        case preg::REG_RESOURCE_REQUIREMENTS_LIST: {
+            result = "REG_RESOURCE_REQUIREMENTS_LIST";
+            break;
+        }
+        case preg::REG_QWORD: {
+            result = "REG_QWORD";
+            break;
+        }
+        case preg::REG_QWORD_LITTLE_ENDIAN: {
+            result = "REG_QWORD_LITTLE_ENDIAN";
+            break;
+        }
+        default: {
+            result = "UNKNOWN";
+            break;
+        }
     } /* switch (regtype) */
 
     return result;
@@ -140,4 +140,3 @@ const char *preg::invalid_version::what() const throw() {
 const char *preg::no_more_entries::what() const throw() {
     return "No more PReg entries";
 }
-

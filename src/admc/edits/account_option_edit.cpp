@@ -21,18 +21,18 @@
 #include "edits/account_option_edit.h"
 
 #include "adldap.h"
-#include "utils.h"
 #include "globals.h"
+#include "utils.h"
 
 #include <QCheckBox>
-#include <QLineEdit>
 #include <QComboBox>
-#include <QFormLayout>
 #include <QDateTimeEdit>
-#include <QMessageBox>
-#include <QScrollArea>
+#include <QFormLayout>
 #include <QGridLayout>
 #include <QLabel>
+#include <QLineEdit>
+#include <QMessageBox>
+#include <QScrollArea>
 
 void AccountOptionEdit::make_many(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
     QHash<AccountOption, QCheckBox *> check_map;
@@ -71,8 +71,7 @@ QWidget *AccountOptionEdit::layout_many(const QList<AccountOption> &options, con
 }
 
 AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent)
-{
+: AttributeEdit(edits_out, parent) {
     option = option_arg;
     check = new QCheckBox();
 

@@ -28,13 +28,13 @@
 
 #include "attribute_edit.h"
 
-#include <QString>
 #include <QList>
+#include <QString>
 
 class QPlainTextEdit;
 
 class StringLargeEdit final : public AttributeEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     StringLargeEdit(const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();

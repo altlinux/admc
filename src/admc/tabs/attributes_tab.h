@@ -28,8 +28,8 @@
 
 #include "tabs/properties_tab.h"
 
-#include <QSortFilterProxyModel>
 #include <QSet>
+#include <QSortFilterProxyModel>
 #include <QString>
 
 class QStandardItemModel;
@@ -50,9 +50,8 @@ enum AttributeFilter {
     AttributeFilter_COUNT,
 };
 
-
 class AttributesTab final : public PropertiesTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     AttributesTab();

@@ -22,8 +22,8 @@
 
 #include "edits/country_edit.h"
 
-#include <QFormLayout>
 #include <QComboBox>
+#include <QFormLayout>
 
 #define TEST_ATTRIBUTE ATTRIBUTE_FIRST_NAME
 
@@ -72,13 +72,12 @@ void ADMCTestCountryEdit::emit_edited_signal() {
 // call
 void ADMCTestCountryEdit::load() {
     // Set attribute value
-    const int test_value = 4;    
+    const int test_value = 4;
     ad.attribute_replace_int(dn, ATTRIBUTE_COUNTRY_CODE, test_value);
 
     // Load user into edit
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
-
 
     const int edit_value = combo->currentData().toInt();
     QVERIFY(edit_value == test_value);
@@ -96,7 +95,7 @@ void ADMCTestCountryEdit::apply_unmodified() {
     QVERIFY(object_before_apply.get_attributes_data() == object_after_apply.get_attributes_data());
 }
 
-// Edit should do change attribute to value. 
+// Edit should do change attribute to value.
 void ADMCTestCountryEdit::apply_modified() {
     const int new_value = 8;
     const int new_value_index = combo->findData(QVariant(new_value));

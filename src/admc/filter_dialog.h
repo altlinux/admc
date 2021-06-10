@@ -36,7 +36,7 @@ class QPushButton;
 class FilterClassesWidget;
 
 class FilterDialog final : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     FilterDialog(QWidget *parent);

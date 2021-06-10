@@ -26,14 +26,13 @@
 class QComboBox;
 
 class GroupTypeEdit final : public AttributeEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     GroupTypeEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
     QComboBox *combo;
-    
 };
 
 #endif /* GROUP_TYPE_EDIT_H */

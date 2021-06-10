@@ -27,7 +27,7 @@ class UnlockEdit;
 class QCheckBox;
 
 class ADMCTestUnlockEdit : public ADMCTest {
-Q_OBJECT
+    Q_OBJECT
 
 private slots:
     void init() override;

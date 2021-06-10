@@ -24,12 +24,11 @@
 #include "globals.h"
 #include "utils.h"
 
-#include <QFormLayout>
 #include <QDateTimeEdit>
+#include <QFormLayout>
 
 DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent)
-{
+: AttributeEdit(edits_out, parent) {
     edit = new QDateTimeEdit();
     edit->setDisplayFormat(DATETIME_DISPLAY_FORMAT);
     attribute = attribute_arg;

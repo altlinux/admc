@@ -46,7 +46,7 @@ enum ConsoleRole {
     // Id of results view that should be used for this for
     // this scope item. Doesn't apply to results items.
     ConsoleRole_ResultsId = Qt::UserRole + 2,
-    
+
     ConsoleRole_Buddy = Qt::UserRole + 3,
 
     // Scope item parent of a results item. Doesn't apply
@@ -55,21 +55,21 @@ enum ConsoleRole {
 
     ConsoleRole_IsScope = Qt::UserRole + 5,
 
-    // Determines whether scope is dynamic. 
+    // Determines whether scope is dynamic.
     ConsoleRole_ScopeIsDynamic = Qt::UserRole + 6,
 
     ConsoleRole_Fetching = Qt::UserRole + 7,
 
     // NOTE: don't go above ConsoleRole_Type and
     // ConsoleRole_LAST (defined in public header)
-    
+
     // ConsoleRole_HasProperties = Qt::UserRole + 18,
     // ConsoleRole_Type = Qt::UserRole + 19,
     // ConsoleRole_LAST = Qt::UserRole + 20
 };
 
 class ConsoleWidgetPrivate : public QObject {
-Q_DECLARE_TR_FUNCTIONS(ConsoleWidgetPrivate)
+    Q_DECLARE_TR_FUNCTIONS(ConsoleWidgetPrivate)
 
 public:
     ConsoleWidget *q;

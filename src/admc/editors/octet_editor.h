@@ -34,7 +34,7 @@ enum OctetDisplayFormat {
 };
 
 class OctetEditor final : public AttributeEditor {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     OctetEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);

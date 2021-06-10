@@ -20,41 +20,41 @@
 #define __GPTBACKEND_PREG_DATA 1
 
 #include <cstddef>
-#include <string>
 #include <exception>
+#include <string>
 
 namespace preg {
 
 /* Same as REG_BINARY */
-const uint32_t REG_NONE                       = 0;
+const uint32_t REG_NONE = 0;
 
 /* Null-terminated-string */
-const uint32_t REG_SZ                         = 1;
+const uint32_t REG_SZ = 1;
 
 /* A null-terminated UTF16-LE or ANSI string that contains unexpanded
  * references to environment variables.  */
-const uint32_t REG_EXPAND_SZ                  = 2;
+const uint32_t REG_EXPAND_SZ = 2;
 
 /* Any kind of binary data */
-const uint32_t REG_BINARY                     = 3;
+const uint32_t REG_BINARY = 3;
 
 /* 32-bit number */
-const uint32_t REG_DWORD_LITTLE_ENDIAN        = 4;
+const uint32_t REG_DWORD_LITTLE_ENDIAN = 4;
 
 /* 32-bit number in NBO format */
-const uint32_t REG_DWORD_BIG_ENDIAN           = 5;
+const uint32_t REG_DWORD_BIG_ENDIAN = 5;
 
 /* A null-terminated Unicode string that contains the target path of a
  * symbolic link. */
-const uint32_t REG_LINK                       = 6;
+const uint32_t REG_LINK = 6;
 
 /* Sequence of null-terminated strings terminated by null-terminator */
-const uint32_t REG_MULTI_SZ                   = 7;
-const uint32_t REG_RESOURCE_LIST              = 8;
-const uint32_t REG_FULL_RESOURCE_DESCRIPTOR   = 9;
+const uint32_t REG_MULTI_SZ = 7;
+const uint32_t REG_RESOURCE_LIST = 8;
+const uint32_t REG_FULL_RESOURCE_DESCRIPTOR = 9;
 const uint32_t REG_RESOURCE_REQUIREMENTS_LIST = 10;
-const uint32_t REG_QWORD                      = 11;
-const uint32_t REG_QWORD_LITTLE_ENDIAN        = 12;
+const uint32_t REG_QWORD = 11;
+const uint32_t REG_QWORD_LITTLE_ENDIAN = 12;
 
 struct entry {
     std::string value_name;
@@ -64,15 +64,15 @@ struct entry {
     char *value;
 };
 
-class invalid_magic: public std::exception {
+class invalid_magic : public std::exception {
     virtual const char *what() const throw();
 }; /* class invalid_magic */
 
-class invalid_version: public std::exception {
+class invalid_version : public std::exception {
     virtual const char *what() const throw();
 }; /* class invalid_version */
 
-class no_more_entries: public std::exception {
+class no_more_entries : public std::exception {
     virtual const char *what() const throw();
 }; /* class no_more_entries */
 

@@ -38,7 +38,7 @@ class SelectClassesWidget;
 class FilterBuilder;
 
 class FilterWidgetNormalTab final : public FilterWidgetTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     FilterWidgetNormalTab(const QList<QString> classes);

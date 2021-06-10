@@ -19,18 +19,17 @@
  */
 
 #include "edits/password_edit.h"
-#include "utils.h"
 #include "adldap.h"
 #include "globals.h"
-#include <QLineEdit>
+#include "utils.h"
 #include <QFormLayout>
-#include <QMessageBox>
 #include <QLabel>
+#include <QLineEdit>
+#include <QMessageBox>
 #include <QTextCodec>
 
 PasswordEdit::PasswordEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent)
-{
+: AttributeEdit(edits_out, parent) {
     edit = new QLineEdit();
     confirm_edit = new QLineEdit();
 

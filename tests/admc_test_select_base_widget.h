@@ -28,7 +28,7 @@ class QPushButton;
 class SelectBaseWidget;
 
 class ADMCTestSelectBaseWidget : public ADMCTest {
-Q_OBJECT
+    Q_OBJECT
 
 private slots:
     void init() override;

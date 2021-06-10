@@ -26,7 +26,7 @@
 class QLineEdit;
 
 class StringEditor final : public AttributeEditor {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     StringEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);

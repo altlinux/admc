@@ -25,15 +25,14 @@
 #include <QFormLayout>
 
 GroupScopeEdit::GroupScopeEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent)
-{
+: AttributeEdit(edits_out, parent) {
     combo = new QComboBox();
 
     for (int i = 0; i < GroupScope_COUNT; i++) {
         const GroupScope type = (GroupScope) i;
         const QString type_string = group_scope_string(type);
 
-        combo->addItem(type_string, (int)type);
+        combo->addItem(type_string, (int) type);
     }
 
     QObject::connect(
@@ -59,7 +58,7 @@ void GroupScopeEdit::add_to_layout(QFormLayout *layout) {
 }
 
 bool GroupScopeEdit::apply(AdInterface &ad, const QString &dn) const {
-    const GroupScope new_value = (GroupScope)combo->currentData().toInt();
+    const GroupScope new_value = (GroupScope) combo->currentData().toInt();
     const bool success = ad.group_set_scope(dn, new_value);
 
     return success;

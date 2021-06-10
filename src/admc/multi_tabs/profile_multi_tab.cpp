@@ -25,7 +25,7 @@
 
 #include <QFormLayout>
 
-ProfileMultiTab::ProfileMultiTab() {   
+ProfileMultiTab::ProfileMultiTab() {
     new StringMultiEdit(ATTRIBUTE_PROFILE_PATH, edit_list, this);
     new StringMultiEdit(ATTRIBUTE_SCRIPT_PATH, edit_list, this);
     new StringMultiEdit(ATTRIBUTE_HOME_DIRECTORY, edit_list, this);

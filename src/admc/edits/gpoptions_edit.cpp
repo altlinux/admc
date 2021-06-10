@@ -19,15 +19,14 @@
  */
 
 #include "edits/gpoptions_edit.h"
-#include "utils.h"
 #include "adldap.h"
+#include "utils.h"
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QHash>
 
 GpoptionsEdit::GpoptionsEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent)
-{
+: AttributeEdit(edits_out, parent) {
     check = new QCheckBox();
 
     QObject::connect(

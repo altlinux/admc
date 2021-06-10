@@ -21,21 +21,21 @@
 #include "console_types/console_policy.h"
 
 #include "adldap.h"
-#include "globals.h"
-#include "settings.h"
-#include "utils.h"
 #include "central_widget.h"
 #include "console_actions.h"
 #include "console_types/console_object.h"
+#include "globals.h"
 #include "gplink.h"
-#include "status.h"
 #include "policy_results_widget.h"
+#include "settings.h"
+#include "status.h"
+#include "utils.h"
 
-#include <QStandardItem>
-#include <QList>
 #include <QCoreApplication>
-#include <QMenu>
 #include <QDebug>
+#include <QList>
+#include <QMenu>
+#include <QStandardItem>
 
 int policy_container_results_id;
 int policy_results_id;
@@ -90,7 +90,7 @@ void console_policy_create(ConsoleWidget *console, const AdObject &object) {
 
     if (!policy_root_index.isValid()) {
         qDebug() << "Failed to find policy root";
-        
+
         return;
     }
 
@@ -124,9 +124,9 @@ void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
 
 void console_policy_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ConsoleAction_PolicyAddLink));
-    
+
     menu->addSeparator();
-    
+
     menu->addAction(actions->get(ConsoleAction_PolicyRename));
     menu->addAction(actions->get(ConsoleAction_PolicyDelete));
 }

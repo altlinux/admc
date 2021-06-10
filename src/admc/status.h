@@ -44,7 +44,7 @@ class Status {
 
 public:
     Status();
-    
+
     QStatusBar *status_bar() const;
     QTextEdit *message_log() const;
 

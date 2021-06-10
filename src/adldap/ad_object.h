@@ -33,10 +33,10 @@
 
 #include "ad_defines.h"
 
-#include <QHash>
-#include <QString>
-#include <QList>
 #include <QByteArray>
+#include <QHash>
+#include <QList>
+#include <QString>
 
 class QDateTime;
 class AdConfig;

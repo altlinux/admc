@@ -20,17 +20,16 @@
 
 #include "find_select_object_dialog.h"
 
-#include "find_widget.h"
 #include "adldap.h"
+#include "find_widget.h"
 #include "globals.h"
 
+#include <QDialogButtonBox>
 #include <QList>
 #include <QVBoxLayout>
-#include <QDialogButtonBox>
 
 FindSelectObjectDialog::FindSelectObjectDialog(const QList<QString> classes, QWidget *parent)
-: QDialog(parent)
-{
+: QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
 
     setWindowTitle(tr("Find and select objects"));

@@ -21,9 +21,9 @@
 #define XML_ATTRIBUTE_H
 
 #include <QDialog>
-#include <QString>
-#include <QList>
 #include <QDomDocument>
+#include <QList>
+#include <QString>
 
 enum XmlAttributeType {
     XmlAttributeType_String,

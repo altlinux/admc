@@ -22,9 +22,9 @@
 #define EDIT_QUERY_FOLDER_DIALOG_H
 
 #include <QDialog>
-#include <QString>
 #include <QList>
 #include <QModelIndex>
+#include <QString>
 
 class QLineEdit;
 class FilterWidget;
@@ -32,7 +32,7 @@ class SelectBaseWidget;
 class ConsoleWidget;
 
 class EditQueryFolderDialog : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     EditQueryFolderDialog(ConsoleWidget *console_arg);

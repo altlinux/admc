@@ -21,8 +21,8 @@
 #ifndef AD_INTERFACE_P_H
 #define AD_INTERFACE_P_H
 
-#include <QList>
 #include <QCoreApplication>
+#include <QList>
 
 class AdConfig;
 class QString;
@@ -30,8 +30,8 @@ typedef struct ldap LDAP;
 typedef struct _SMBCCTX SMBCCTX;
 
 class AdInterfacePrivate {
-Q_DECLARE_TR_FUNCTIONS(AdInterfacePrivate)
-    
+    Q_DECLARE_TR_FUNCTIONS(AdInterfacePrivate)
+
 public:
     AdInterfacePrivate();
 
@@ -52,7 +52,7 @@ public:
     QString default_error() const;
     int get_ldap_result() const;
     bool search_paged_internal(const char *base, const int scope, const char *filter, char **attributes, QHash<QString, AdObject> *results, AdCookie *cookie);
-    bool connect_via_ldap(const char* uri);
+    bool connect_via_ldap(const char *uri);
 };
 
 #endif /* AD_INTERFACE_P_H */

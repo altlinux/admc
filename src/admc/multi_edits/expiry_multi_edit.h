@@ -26,7 +26,7 @@
 class ExpiryWidget;
 
 class ExpiryMultiEdit final : public AttributeMultiEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     ExpiryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 

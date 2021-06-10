@@ -30,7 +30,7 @@
  */
 
 class ConsoleDragModel : public QStandardItemModel {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     using QStandardItemModel::QStandardItemModel;

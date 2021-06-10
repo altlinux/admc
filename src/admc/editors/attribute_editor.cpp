@@ -19,18 +19,18 @@
  */
 
 #include "editors/attribute_editor.h"
-#include "editors/string_editor.h"
-#include "editors/multi_editor.h"
-#include "editors/octet_editor.h"
+#include "adldap.h"
 #include "editors/bool_editor.h"
 #include "editors/datetime_editor.h"
-#include "adldap.h"
+#include "editors/multi_editor.h"
+#include "editors/octet_editor.h"
+#include "editors/string_editor.h"
 #include "globals.h"
 
-#include <QVBoxLayout>
+#include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QLabel>
-#include <QDialogButtonBox>
+#include <QVBoxLayout>
 
 AttributeEditor::AttributeEditor(QWidget *parent)
 : QDialog(parent) {
@@ -46,7 +46,7 @@ AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByt
             return new OctetEditor(attribute, values, parent);
         } else {
             return new MultiEditor(attribute, values, parent);
-        } 
+        }
     };
 
     auto string_dialog = [=]() -> AttributeEditor * {
@@ -54,7 +54,7 @@ AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByt
             return new StringEditor(attribute, values, parent);
         } else {
             return new MultiEditor(attribute, values, parent);
-        } 
+        }
     };
 
     auto bool_dialog = [=]() -> AttributeEditor * {
@@ -63,7 +63,7 @@ AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByt
         } else {
             // NOTE: yes, string multi editor also works for multi-valued bools since they are just strings (TRUE/FALSE)
             return new MultiEditor(attribute, values, parent);
-        } 
+        }
     };
 
     auto datetime_dialog = [=]() -> AttributeEditor * {
@@ -71,7 +71,7 @@ AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByt
             return new DateTimeEditor(attribute, values, parent);
         } else {
             return nullptr;
-        } 
+        }
     };
 
     const AttributeType type = g_adconfig->get_attribute_type(attribute);

@@ -20,17 +20,17 @@
 
 #include "tabs/gpo_links_tab.h"
 
-#include "properties_dialog.h"
-#include "utils.h"
 #include "adldap.h"
 #include "globals.h"
+#include "properties_dialog.h"
+#include "utils.h"
 
 #include <algorithm>
 
+#include <QMenu>
+#include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <QStandardItemModel>
-#include <QMenu>
 
 enum GpoLinksColumn {
     GpoLinksColumn_Name,
@@ -41,7 +41,7 @@ enum GpoLinksRole {
     GpoLinksRole_DN = Qt::UserRole + 1,
 };
 
-GpoLinksTab::GpoLinksTab() {   
+GpoLinksTab::GpoLinksTab() {
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -50,9 +50,9 @@ GpoLinksTab::GpoLinksTab() {
 
     model = new QStandardItemModel(0, GpoLinksColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
-    {
-        {GpoLinksColumn_Name, tr("Name")},
-    });
+        {
+            {GpoLinksColumn_Name, tr("Name")},
+        });
 
     view->setModel(model);
 
@@ -80,7 +80,7 @@ void GpoLinksTab::load(AdInterface &ad, const AdObject &object) {
 
         const QList<QStandardItem *> row = make_item_row(GpoLinksColumn_COUNT);
         row[GpoLinksColumn_Name]->setText(name);
-        
+
         set_data_for_row(row, dn, GpoLinksRole_DN);
 
         model->appendRow(row);
@@ -91,7 +91,7 @@ void GpoLinksTab::load(AdInterface &ad, const AdObject &object) {
 
 void GpoLinksTab::showEvent(QShowEvent *event) {
     resize_columns(view,
-    {
-        {GpoLinksColumn_Name, 0.5},
-    });
+        {
+            {GpoLinksColumn_Name, 0.5},
+        });
 }

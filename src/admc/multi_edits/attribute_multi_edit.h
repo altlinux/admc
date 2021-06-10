@@ -21,8 +21,8 @@
 #ifndef ATTRIBUTE_MULTI_EDIT_H
 #define ATTRIBUTE_MULTI_EDIT_H
 
-#include <QObject>
 #include <QList>
+#include <QObject>
 
 class QFormLayout;
 class AdInterface;
@@ -35,7 +35,7 @@ class QCheckBox;
  */
 
 class AttributeMultiEdit : public QObject {
-Q_OBJECT
+    Q_OBJECT
 public:
     AttributeMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 
@@ -60,12 +60,14 @@ private:
     QCheckBox *apply_check;
 };
 
-#define DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS()\
-public:\
-void add_to_layout(QFormLayout *layout) override;\
-protected:\
-bool apply_internal(AdInterface &ad, const QString &target) override;\
-void set_enabled(const bool enabled) override;\
+#define DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS()                              \
+public:                                                                   \
+    void add_to_layout(QFormLayout *layout) override;                     \
+                                                                          \
+protected:                                                                \
+    bool apply_internal(AdInterface &ad, const QString &target) override; \
+    void set_enabled(const bool enabled) override;                        \
+                                                                          \
 public:
 
 void multi_edits_connect_to_tab(const QList<AttributeMultiEdit *> &edits, PropertiesMultiTab *tab);

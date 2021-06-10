@@ -19,15 +19,14 @@
  */
 
 #include "filter_widget/filter_widget_simple_tab.h"
-#include "filter_widget/select_classes_widget.h"
 #include "adldap.h"
+#include "filter_widget/select_classes_widget.h"
 
-#include <QLineEdit>
 #include <QFormLayout>
+#include <QLineEdit>
 
 FilterWidgetSimpleTab::FilterWidgetSimpleTab(const QList<QString> classes)
-: FilterWidgetTab()
-{
+: FilterWidgetTab() {
     select_classes = new SelectClassesWidget(classes);
 
     name_edit = new QLineEdit(this);
@@ -59,7 +58,7 @@ void FilterWidgetSimpleTab::save_state(QHash<QString, QVariant> &state) const {
     QHash<QString, QVariant> select_classes_state;
     select_classes->save_state(select_classes_state);
     state["select_classes"] = select_classes_state;
-    
+
     const QString name = name_edit->text();
     state["name"] = name;
 }

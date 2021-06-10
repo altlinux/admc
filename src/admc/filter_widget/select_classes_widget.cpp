@@ -21,18 +21,17 @@
 #include "filter_widget/select_classes_widget.h"
 
 #include "adldap.h"
-#include "globals.h"
 #include "filter_classes_widget.h"
+#include "globals.h"
 
-#include <QVBoxLayout>
 #include <QDialog>
-#include <QLineEdit>
 #include <QDialogButtonBox>
+#include <QLineEdit>
 #include <QPushButton>
+#include <QVBoxLayout>
 
 SelectClassesWidget::SelectClassesWidget(const QList<QString> class_list)
-: QWidget()
-{
+: QWidget() {
     classes_display = new QLineEdit();
     classes_display->setReadOnly(true);
 
@@ -56,7 +55,7 @@ SelectClassesWidget::SelectClassesWidget(const QList<QString> class_list)
     dialog->setLayout(dialog_layout);
     dialog_layout->addWidget(filter_classes_widget);
     dialog_layout->addWidget(dialog_buttons);
-    
+
     connect(
         dialog_buttons, &QDialogButtonBox::accepted,
         dialog, &QDialog::accept);
@@ -80,7 +79,7 @@ QString SelectClassesWidget::get_filter() const {
 void SelectClassesWidget::update_classes_display() {
     const QString classes_display_text = [this]() {
         const QList<QString> selected_classes = filter_classes_widget->get_selected_classes();
-        
+
         QList<QString> classes_display_strings;
         for (const QString &object_class : selected_classes) {
             const QString class_display = g_adconfig->get_class_display_name(object_class);

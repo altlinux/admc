@@ -28,9 +28,9 @@
 #include "ad_defines.h"
 
 #include <QByteArray>
-#include <QString>
 #include <QHash>
 #include <QSet>
+#include <QString>
 
 class AdInterface;
 class AdConfig;

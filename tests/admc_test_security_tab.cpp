@@ -19,14 +19,14 @@
 
 #include "admc_test_security_tab.h"
 
-#include "tabs/security_tab.h"
 #include "samba/ndr_security.h"
+#include "tabs/security_tab.h"
 
-#include <QVBoxLayout>
 #include <QComboBox>
 #include <QPushButton>
-#include <QTreeView>
 #include <QStandardItemModel>
+#include <QTreeView>
+#include <QVBoxLayout>
 
 void ADMCTestSecurityTab::init() {
     ADMCTest::init();
@@ -166,7 +166,7 @@ void ADMCTestSecurityTab::allow_full() {
     uncheck_all_permissions();
 
     QVERIFY(state_is(all_permissions, PermissionState_None));
-    
+
     set_permission_state({AcePermission_FullControl}, AceColumn_Allowed, Qt::Checked);
 
     QVERIFY(state_is(all_permissions, PermissionState_Allowed));
@@ -183,7 +183,7 @@ void ADMCTestSecurityTab::allow_full_deny_read() {
     QVERIFY(state_is({AcePermission_FullControl}, PermissionState_None));
     QVERIFY(state_is(access_permissions, PermissionState_Allowed));
     QVERIFY(state_is(write_prop_permissions, PermissionState_Allowed));
-    
+
     QVERIFY(state_is({AcePermission_Read}, PermissionState_Denied));
     QVERIFY(state_is(read_prop_permissions, PermissionState_Denied));
 }
@@ -200,7 +200,7 @@ void ADMCTestSecurityTab::allow_full_uncheck_read() {
     QVERIFY(state_is(access_permissions, PermissionState_Allowed));
     QVERIFY(state_is(write_prop_permissions, PermissionState_Allowed));
     QVERIFY(state_is(read_prop_permissions, PermissionState_Allowed));
-    
+
     QVERIFY(state_is({AcePermission_Read}, PermissionState_None));
 }
 
@@ -248,7 +248,6 @@ void ADMCTestSecurityTab::apply() {
     uncheck_all_permissions();
     set_permission_state(allowed_set, AceColumn_Allowed, Qt::Checked);
     set_permission_state(denied_set, AceColumn_Denied, Qt::Checked);
-
 
     // Apply
     const bool apply_success = security_tab->apply(ad, test_user_dn);

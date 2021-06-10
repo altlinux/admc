@@ -21,21 +21,21 @@
 #include "console_types/console_object.h"
 
 #include "adldap.h"
-#include "globals.h"
-#include "settings.h"
-#include "utils.h"
-#include "status.h"
 #include "central_widget.h"
-#include "filter_dialog.h"
 #include "console_actions.h"
-#include "select_object_dialog.h"
 #include "console_types/console_policy.h"
+#include "filter_dialog.h"
+#include "globals.h"
 #include "search_thread.h"
+#include "select_object_dialog.h"
+#include "settings.h"
+#include "status.h"
+#include "utils.h"
 
-#include <QStandardItemModel>
-#include <QSet>
-#include <QMenu>
 #include <QDebug>
+#include <QMenu>
+#include <QSet>
+#include <QStandardItemModel>
 
 int console_object_results_id;
 
@@ -66,10 +66,10 @@ void console_object_results_load(const QList<QStandardItem *> row, const AdObjec
                 const QString object_class = object.get_string(attribute);
 
                 if (object_class == CLASS_GROUP) {
-                    const GroupScope scope = object.get_group_scope(); 
+                    const GroupScope scope = object.get_group_scope();
                     const QString scope_string = group_scope_string(scope);
 
-                    const GroupType type = object.get_group_type(); 
+                    const GroupType type = object.get_group_type();
                     const QString type_string = group_type_string_adjective(type);
 
                     return QString("%1 - %2").arg(type_string, scope_string);
@@ -97,7 +97,7 @@ void console_object_item_data_load(QStandardItem *item, const AdObject &object) 
 
     const QIcon icon = get_object_icon(object);
     item->setIcon(icon);
-    
+
     item->setData(object.get_dn(), ObjectRole_DN);
 
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
@@ -124,7 +124,7 @@ QList<QString> console_object_header_labels() {
 
         out.append(attribute_display_name);
     }
-    
+
     return out;
 }
 
@@ -355,7 +355,8 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
 
             console_object_create(console, results.values(), persistent_index);
             console->sort_scope();
-        }, Qt::QueuedConnection);
+        },
+        Qt::QueuedConnection);
     QObject::connect(
         search_thread, &SearchThread::finished,
         console,
@@ -369,7 +370,8 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
 
             console->set_item_fetching(scope_item->index(), false);
             scope_item->setDragEnabled(true);
-        }, Qt::QueuedConnection);
+        },
+        Qt::QueuedConnection);
 
     search_thread->start();
 }
@@ -737,7 +739,7 @@ void console_object_drop_objects(ConsoleWidget *console, const QList<QPersistent
 
         switch (drop_type) {
             case DropType_Move: {
-                const bool move_success = ad.object_move(dropped_dn, 
+                const bool move_success = ad.object_move(dropped_dn,
                     target_dn);
 
                 if (move_success) {
@@ -780,7 +782,7 @@ void console_object_drop_policies(ConsoleWidget *console, const QList<QPersisten
     const QList<QString> ou_list = {target_dn};
 
     console_policy_add_link(console, policy_list, ou_list, policy_results_widget);
-}    
+}
 
 void console_object_load_domain_head_text(QStandardItem *item) {
     const QString domain_head = g_adconfig->domain().toLower();

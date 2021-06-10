@@ -20,24 +20,23 @@
 
 #include "rename_policy_dialog.h"
 
-#include "rename_object_dialog.h"
 #include "adldap.h"
+#include "console_types/console_policy.h"
 #include "globals.h"
+#include "rename_object_dialog.h"
 #include "status.h"
 #include "utils.h"
-#include "console_types/console_policy.h"
 
 #include <QDialog>
-#include <QLineEdit>
 #include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QLineEdit>
+#include <QModelIndex>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <QFormLayout>
-#include <QModelIndex>
 
 RenamePolicyDialog::RenamePolicyDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg)
-{
+: QDialog(console_arg) {
     console = console_arg;
 
     const auto title = QString(tr("Rename policy"));
@@ -63,7 +62,7 @@ RenamePolicyDialog::RenamePolicyDialog(ConsoleWidget *console_arg)
     // NOTE: label name edit as "Name" even though it edits
     // display name attribute
     edits_layout->addRow(tr("Name:"), name_edit);
-    
+
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addLayout(edits_layout);
@@ -107,7 +106,7 @@ void RenamePolicyDialog::accept() {
 
     QStandardItem *scope_item = console->get_scope_item(scope_index);
     console_policy_scope_load(scope_item, object);
-    
+
     const QModelIndex results_index = console_item_get_buddy(scope_index);
     const QList<QStandardItem *> results_row = console->get_results_row(results_index);
     console_policy_results_load(results_row, object);

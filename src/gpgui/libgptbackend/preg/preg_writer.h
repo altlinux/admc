@@ -19,9 +19,9 @@
 #if !defined(__GPTBACKEND_PREG_WRITER)
 #define __GPTBACKEND_PREG_WRITER 1
 
-#include <string>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <string>
 #include <vector>
 
 #include "preg_data.h"
@@ -30,8 +30,8 @@ namespace preg {
 
 class preg_writer {
     std::ofstream preg_file;
-    char preg_magic[4]{ 'P', 'R', 'e', 'g' };
-    char preg_version[4]{ '\x01', '\x00', '\x00', '\x00' };
+    char preg_magic[4]{'P', 'R', 'e', 'g'};
+    char preg_version[4]{'\x01', '\x00', '\x00', '\x00'};
 
 public:
     preg_writer(std::string &preg_file);
@@ -48,4 +48,3 @@ private:
 } /* namespace preg */
 
 #endif /* namespace preg */
-

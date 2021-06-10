@@ -21,19 +21,18 @@
 #include "create_policy_dialog.h"
 
 #include "adldap.h"
-#include "status.h"
-#include "globals.h"
-#include "console_widget/console_widget.h"
 #include "console_types/console_policy.h"
+#include "console_widget/console_widget.h"
+#include "globals.h"
+#include "status.h"
 
-#include <QLineEdit>
 #include <QFormLayout>
-#include <QPushButton>
+#include <QLineEdit>
 #include <QMessageBox>
+#include <QPushButton>
 
 CreatePolicyDialog::CreatePolicyDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg)
-{
+: QDialog(console_arg) {
     console = console_arg;
 
     setMinimumWidth(400);

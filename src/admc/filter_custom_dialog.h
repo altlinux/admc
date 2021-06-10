@@ -32,13 +32,12 @@
 class FilterWidget;
 
 class FilterCustomDialog final : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     FilterWidget *filter_widget;
-    
-    FilterCustomDialog(QWidget *parent);
 
+    FilterCustomDialog(QWidget *parent);
 };
 
 #endif /* FILTER_CUSTOM_DIALOG_H */

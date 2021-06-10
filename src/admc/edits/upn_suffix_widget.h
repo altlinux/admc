@@ -28,7 +28,7 @@ class AdObject;
 class QComboBox;
 
 class UpnSuffixWidget final : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     UpnSuffixWidget(AdInterface &ad);

@@ -24,15 +24,15 @@
 #include "globals.h"
 #include "settings.h"
 
-#include <QStatusBar>
-#include <QTextEdit>
-#include <QDialog>
-#include <QPlainTextEdit>
-#include <QDialogButtonBox>
-#include <QVBoxLayout>
-#include <QDebug>
 #include <QCoreApplication>
 #include <QDateTime>
+#include <QDebug>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QPlainTextEdit>
+#include <QStatusBar>
+#include <QTextEdit>
+#include <QVBoxLayout>
 
 #define MAX_MESSAGES_IN_LOG 200
 
@@ -61,7 +61,7 @@ void Status::add_message(const QString &msg, const StatusType &type) {
     const QString timestamped_msg = QString("%1 %2").arg(timestamp, msg);
 
     const bool timestamps_ON = g_settings->get_bool(BoolSetting_TimestampLog);
-    
+
     const QColor color = [type]() {
         switch (type) {
             case StatusType_Success: return Qt::darkGreen;
@@ -131,7 +131,7 @@ void ad_error_log(const AdInterface &ad, QWidget *parent) {
         QList<QString> errors;
 
         const QList<AdMessage> messages = ad.messages();
-      
+
         for (const auto &message : messages) {
             if (message.type() == AdMessageType_Error) {
                 errors.append(message.text());

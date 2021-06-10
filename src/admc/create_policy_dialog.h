@@ -26,14 +26,14 @@
  */
 
 #include <QDialog>
-#include <QString>
 #include <QList>
+#include <QString>
 
 class QLineEdit;
 class ConsoleWidget;
 
 class CreatePolicyDialog : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     CreatePolicyDialog(ConsoleWidget *console_arg);
@@ -45,7 +45,6 @@ public slots:
 private:
     ConsoleWidget *console;
     QLineEdit *name_edit;
-
 };
 
 #endif /* CREATE_POLICY_DIALOG_H */

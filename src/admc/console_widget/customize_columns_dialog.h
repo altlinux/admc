@@ -35,7 +35,7 @@ class CustomizeColumnsDialogPrivate;
 class QTreeView;
 
 class CustomizeColumnsDialog final : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     CustomizeColumnsDialog(QTreeView *view, const QList<int> &default_columns, QWidget *parent);

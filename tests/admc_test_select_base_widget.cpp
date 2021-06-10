@@ -20,15 +20,15 @@
 
 #include "admc_test_select_base_widget.h"
 
-#include "filter_widget/select_base_widget.h"
 #include "console_types/console_object.h"
-#include "select_container_dialog.h"
+#include "filter_widget/select_base_widget.h"
 #include "globals.h"
+#include "select_container_dialog.h"
 
-#include <QVBoxLayout>
 #include <QComboBox>
 #include <QPushButton>
 #include <QTreeView>
+#include <QVBoxLayout>
 
 void ADMCTestSelectBaseWidget::init() {
     ADMCTest::init();
@@ -57,7 +57,7 @@ void ADMCTestSelectBaseWidget::init() {
     dn_list.clear();
     for (const QString &ou_name : ou_name_list) {
         const QString dn = test_object_dn(ou_name, CLASS_OU);
-        
+
         dn_list.append(dn);
 
         const bool create_success = ad.object_add(dn, CLASS_OU);
@@ -131,7 +131,7 @@ void ADMCTestSelectBaseWidget::save_state() {
 
     // Change state
     combo->setCurrentIndex(2);
-    
+
     // Deserialize
     select_base_widget->load_state(state);
 

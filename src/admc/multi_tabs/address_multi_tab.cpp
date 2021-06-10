@@ -21,11 +21,11 @@
 #include "multi_tabs/address_multi_tab.h"
 
 #include "adldap.h"
-#include "multi_edits/string_multi_edit.h"
 #include "multi_edits/country_multi_edit.h"
+#include "multi_edits/string_multi_edit.h"
 
-#include <QLabel>
 #include <QFormLayout>
+#include <QLabel>
 
 AddressMultiTab::AddressMultiTab() {
     auto edit_layout = new QFormLayout();

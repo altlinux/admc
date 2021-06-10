@@ -23,7 +23,7 @@
 #include "xml_string_edit.h"
 
 class XmlUByteEdit : public XmlStringEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     XmlUByteEdit(const XmlAttribute &attribute_arg, QObject *parent);
     bool verify_input(QWidget *parent);

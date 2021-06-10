@@ -35,17 +35,19 @@ class QStandardItem;
 class QPushButton;
 class AdObject;
 class SelectBaseWidget;
-template <typename T> class QList;
-template <typename K, typename V> class QHash;
+template <typename T>
+class QList;
+template <typename K, typename V>
+class QHash;
 
 #define FIND_BUTTON_LABEL QT_TRANSLATE_NOOP("FindWidget", "Find")
 
 class FindWidget final : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     FindResults *find_results;
-    
+
     FindWidget(const QList<QString> classes, const QString &default_base);
 
     // NOTE: returned items need to be re-parented or deleted!

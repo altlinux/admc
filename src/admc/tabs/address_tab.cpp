@@ -19,13 +19,13 @@
  */
 
 #include "tabs/address_tab.h"
+#include "adldap.h"
+#include "edits/country_edit.h"
 #include "edits/string_edit.h"
 #include "edits/string_large_edit.h"
-#include "edits/country_edit.h"
-#include "adldap.h"
 
-#include <QVBoxLayout>
 #include <QFormLayout>
+#include <QVBoxLayout>
 
 AddressTab::AddressTab() {
     new StringLargeEdit(ATTRIBUTE_STREET, CLASS_USER, &edits, this);

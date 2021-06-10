@@ -29,13 +29,12 @@
 #include <QSet>
 
 ConsoleActions::ConsoleActions(QObject *parent)
-: QObject(parent)
-{
+: QObject(parent) {
     for (int action_i = ConsoleAction_NewUser; action_i < ConsoleAction_LAST; action_i++) {
         const ConsoleAction action_enum = (ConsoleAction) action_i;
 
         const QString action_text = [action_enum]() {
-            switch(action_enum) {
+            switch (action_enum) {
                 case ConsoleAction_NewUser: return tr("&User");
                 case ConsoleAction_NewComputer: return tr("&Computer");
                 case ConsoleAction_NewOU: return tr("&Organization");

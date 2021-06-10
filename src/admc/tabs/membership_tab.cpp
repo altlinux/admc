@@ -20,21 +20,21 @@
  */
 
 #include "tabs/membership_tab.h"
-#include "properties_dialog.h"
 #include "adldap.h"
-#include "utils.h"
-#include "select_object_dialog.h"
 #include "globals.h"
+#include "properties_dialog.h"
+#include "select_object_dialog.h"
+#include "utils.h"
 
-#include <QTreeView>
-#include <QVBoxLayout>
-#include <QStandardItemModel>
-#include <QMenu>
-#include <QPushButton>
 #include <QDebug>
 #include <QFormLayout>
 #include <QLabel>
+#include <QMenu>
 #include <QMessageBox>
+#include <QPushButton>
+#include <QStandardItemModel>
+#include <QTreeView>
+#include <QVBoxLayout>
 
 // Store members in a set
 // Generate model from current members list
@@ -54,12 +54,10 @@ enum MembersRole {
 
 MembersTab::MembersTab()
 : MembershipTab(MembershipTabType_Members) {
-
 }
 
 MemberOfTab::MemberOfTab()
 : MembershipTab(MembershipTabType_MemberOf) {
-
 }
 
 MembershipTab::MembershipTab(const MembershipTabType type_arg) {
@@ -74,10 +72,10 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
 
     model = new QStandardItemModel(0, MembersColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
-    {
-        {MembersColumn_Name, tr("Name")},
-        {MembersColumn_Parent, tr("Folder")},
-    });
+        {
+            {MembersColumn_Name, tr("Name")},
+            {MembersColumn_Parent, tr("Folder")},
+        });
 
     view->setModel(model);
 
@@ -174,7 +172,7 @@ void MembershipTab::load(AdInterface &ad, const AdObject &object) {
 
             // Construct group sid from group rid + user sid
             // user sid  = "S-foo-bar-baz-abc"
-            // group rid = "xyz" 
+            // group rid = "xyz"
             // group sid = "S-foo-bar-baz-xyz"
             const QString group_rid = object.get_string(ATTRIBUTE_PRIMARY_GROUP_ID);
             const QByteArray user_sid = object.get_value(ATTRIBUTE_OBJECT_SID);
@@ -195,7 +193,7 @@ void MembershipTab::load(AdInterface &ad, const AdObject &object) {
 
             break;
         }
-    } 
+    }
 
     current_primary_values = original_primary_values;
 
@@ -209,7 +207,7 @@ bool MembershipTab::apply(AdInterface &ad, const QString &target) {
     // during iteration
     QSet<QString> new_original_values = original_values;
     QSet<QString> new_original_primary_values = original_primary_values;
-    
+
     // NOTE: logic is kinda duplicated but switching on behavior within iterations would be very confusing
     switch (type) {
         case MembershipTabType_Members: {
@@ -252,7 +250,7 @@ bool MembershipTab::apply(AdInterface &ad, const QString &target) {
             if (current_primary_values != original_primary_values) {
                 const QString original_primary_group = original_primary_values.values()[0];
                 const QString group_dn = current_primary_values.values()[0];
-                
+
                 const bool success = ad.user_set_primary_group(group_dn, target);
                 if (success) {
                     new_original_primary_values = {group_dn};
@@ -313,7 +311,7 @@ bool MembershipTab::apply(AdInterface &ad, const QString &target) {
 
             break;
         }
-    } 
+    }
 
     original_values = new_original_values;
     original_primary_values = new_original_primary_values;
@@ -327,7 +325,10 @@ void MembershipTab::on_add_button() {
     const QList<QString> classes = [this]() -> QList<QString> {
         switch (type) {
             case MembershipTabType_Members: return {
-                CLASS_USER, CLASS_GROUP, CLASS_CONTACT, CLASS_COMPUTER,
+                CLASS_USER,
+                CLASS_GROUP,
+                CLASS_CONTACT,
+                CLASS_COMPUTER,
             };
             case MembershipTabType_MemberOf: return {CLASS_GROUP};
         }
@@ -379,7 +380,7 @@ void MembershipTab::on_remove_button() {
 
         QMessageBox::warning(this, tr("Error"), error_text);
     } else {
-        remove_values(removed_values);    
+        remove_values(removed_values);
     }
 }
 
@@ -463,7 +464,7 @@ void MembershipTab::reload_model() {
     for (auto dn : all_values) {
         const QString name = dn_get_name(dn);
         const QString parent = dn_get_parent_canonical(dn);
-        
+
         const QList<QStandardItem *> row = make_item_row(MembersColumn_COUNT);
         row[MembersColumn_Name]->setText(name);
         row[MembersColumn_Parent]->setText(parent);
@@ -502,12 +503,12 @@ QString MembershipTab::get_membership_attribute() {
         case MembershipTabType_MemberOf: return ATTRIBUTE_MEMBER_OF;
     }
     return "";
-}    
+}
 
 void MembershipTab::showEvent(QShowEvent *event) {
     resize_columns(view,
-    {
-        {MembersColumn_Name, 0.4},
-        {MembersColumn_Parent, 0.6},
-    });
+        {
+            {MembersColumn_Name, 0.4},
+            {MembersColumn_Parent, 0.6},
+        });
 }

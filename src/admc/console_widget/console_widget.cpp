@@ -22,34 +22,32 @@
 #include "console_widget/console_widget_p.h"
 
 #include "console_widget/console_drag_model.h"
-#include "console_widget/scope_model.h"
 #include "console_widget/customize_columns_dialog.h"
 #include "console_widget/results_description.h"
 #include "console_widget/results_view.h"
+#include "console_widget/scope_model.h"
 
+#include <QAction>
+#include <QApplication>
 #include <QDebug>
+#include <QHeaderView>
+#include <QLabel>
+#include <QMenu>
+#include <QSplitter>
+#include <QStack>
+#include <QStackedWidget>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <QAction>
-#include <QStack>
-#include <QSplitter>
-#include <QStackedWidget>
-#include <QLabel>
-#include <QApplication>
-#include <QMenu>
-#include <QHeaderView>
 
 QList<QModelIndex> filter_indexes_by_type(const QList<QModelIndex> &indexes, const int type);
 
 ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
-: QObject(q_arg)
-{
+: QObject(q_arg) {
     q = q_arg;
 }
 
 ConsoleWidget::ConsoleWidget(QWidget *parent)
-: QWidget(parent)
-{
+: QWidget(parent) {
     d = new ConsoleWidgetPrivate(this);
 
     d->scope_view = new QTreeView();
@@ -70,7 +68,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->scope_proxy_model = new ScopeModel(this);
     d->scope_proxy_model->setSourceModel(d->scope_model);
     d->scope_proxy_model->setSortCaseSensitivity(Qt::CaseInsensitive);
-    
+
     d->scope_view->setModel(d->scope_proxy_model);
 
     d->focused_view = d->scope_view;
@@ -316,11 +314,11 @@ void ConsoleWidget::delete_item(const QModelIndex &index) {
     // Remove buddy item
     const QModelIndex buddy = console_item_get_buddy(index);
     if (buddy.isValid()) {
-        ((QAbstractItemModel *)buddy.model())->removeRows(buddy.row(), 1, buddy.parent());
+        ((QAbstractItemModel *) buddy.model())->removeRows(buddy.row(), 1, buddy.parent());
     }
 
     // Remove item from it's own model
-    ((QAbstractItemModel *)index.model())->removeRows(index.row(), 1, index.parent());
+    ((QAbstractItemModel *) index.model())->removeRows(index.row(), 1, index.parent());
 }
 
 void ConsoleWidget::set_current_scope(const QModelIndex &index) {
@@ -447,7 +445,7 @@ QList<QModelIndex> ConsoleWidget::get_selected_items() const {
 
     if (focused_scope) {
         QList<QModelIndex> selected;
-        
+
         const QList<QModelIndex> selected_proxy = d->scope_view->selectionModel()->selectedIndexes();
         for (const QModelIndex &index : selected_proxy) {
             const QModelIndex source_index = d->scope_proxy_model->mapToSource(index);
@@ -486,7 +484,7 @@ QList<QModelIndex> ConsoleWidget::search_results_by_role(int role, const QVarian
 
 QModelIndex ConsoleWidget::get_current_scope_item() const {
     const QModelIndex index = d->scope_view->selectionModel()->currentIndex();
-    
+
     if (index.isValid()) {
         const QModelIndex source_index = d->scope_proxy_model->mapToSource(index);
 
@@ -590,7 +588,7 @@ void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
 // signal
 void ConsoleWidgetPrivate::on_selection_changed() {
     const QList<QModelIndex> selected_list = q->get_selected_items();
-    
+
     if (!selected_list.isEmpty() && !selected_list[0].isValid()) {
         return;
     }
@@ -615,7 +613,7 @@ void ConsoleWidgetPrivate::on_selection_changed() {
         }
     } else if (selected_list.size() > 1) {
         const bool all_have_properties = [&]() {
-            for (const QModelIndex &selected: selected_list) {
+            for (const QModelIndex &selected : selected_list) {
                 const bool has_properties = selected.data(ConsoleRole_HasProperties).toBool();
                 if (!has_properties) {
                     return false;
@@ -873,7 +871,7 @@ void ConsoleWidgetPrivate::set_results_to_detail() {
 
 void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
     const ResultsDescription results = get_current_results();
-    
+
     if (results.view() != nullptr) {
         results.view()->set_view_type(type);
     }
@@ -924,7 +922,7 @@ void ConsoleWidget::add_actions_to_view_menu(QMenu *menu) {
     menu->addAction(d->set_results_to_detail_action);
 
     menu->addSeparator();
-    
+
     menu->addAction(d->customize_columns_action);
 }
 

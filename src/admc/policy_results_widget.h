@@ -25,8 +25,8 @@
  * Displays OU's linked to currently selected policy.
  */
 
-#include <QWidget>
 #include <QString>
+#include <QWidget>
 
 class QModelIndex;
 class QTreeView;
@@ -36,7 +36,7 @@ class QMenu;
 class ResultsView;
 
 class PolicyResultsWidget final : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     PolicyResultsWidget();

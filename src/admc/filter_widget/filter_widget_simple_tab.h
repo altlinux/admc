@@ -31,7 +31,7 @@ class QLineEdit;
 class SelectClassesWidget;
 
 class FilterWidgetSimpleTab final : public FilterWidgetTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     FilterWidgetSimpleTab(const QList<QString> classes);

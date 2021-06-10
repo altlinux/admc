@@ -21,25 +21,24 @@
 #include "edits/country_widget.h"
 
 #include "adldap.h"
-#include "status.h"
 #include "globals.h"
+#include "status.h"
 #include "utils.h"
 
-#include <QVBoxLayout>
-#include <QFormLayout>
 #include <QComboBox>
-#include <QHash>
-#include <QFile>
-#include <algorithm>
 #include <QDebug>
+#include <QFile>
+#include <QFormLayout>
+#include <QHash>
+#include <QVBoxLayout>
+#include <algorithm>
 
 // TODO: translate country strings to Russian (qt doesn't have it)
 
 #define COUNTRY_CODE_NONE 0
 
 CountryWidget::CountryWidget()
-: QWidget()
-{
+: QWidget() {
     combo = new QComboBox();
 
     // Load all country names into combobox
@@ -55,7 +54,7 @@ CountryWidget::CountryWidget()
         // Load countries csv into maps
         // Map country code to country string and country abbreviation
         QHash<QString, int> country_string_to_code;
-        
+
         // Skip header
         file.readLine();
 

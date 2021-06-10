@@ -21,9 +21,9 @@
 #ifndef PROPERTIES_TAB_H
 #define PROPERTIES_TAB_H
 
-#include <QWidget>
-#include <QString>
 #include <QList>
+#include <QString>
+#include <QWidget>
 
 /**
  * PropertiesTab are used in PropertiesDialog. They are usually
@@ -38,7 +38,7 @@ class AdInterface;
 class AdObject;
 
 class PropertiesTab : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     virtual void load(AdInterface &ad, const AdObject &object);
@@ -51,7 +51,7 @@ protected:
 signals:
     // Emitted to notify details dialog that tab was edited.
     void edited();
-    
+
 public slots:
     void on_edit_edited();
 };

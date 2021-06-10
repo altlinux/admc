@@ -20,9 +20,9 @@
 #ifndef BROWSE_WIDGET_H
 #define BROWSE_WIDGET_H
 
-#include <QWidget>
 #include <QPoint>
 #include <QString>
+#include <QWidget>
 
 class QTreeView;
 class QStandardItemModel;
@@ -30,7 +30,7 @@ class QStandardItem;
 class QString;
 
 class BrowseWidget final : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     BrowseWidget();

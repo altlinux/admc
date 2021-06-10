@@ -22,9 +22,9 @@
 
 #include "adldap.h"
 
-#include "samba/ndr_security.h"
 #include "samba/dom_sid.h"
 #include "samba/libsmb_xattr.h"
+#include "samba/ndr_security.h"
 #include "samba/security_descriptor.h"
 
 #include "ad_filter.h"
@@ -107,8 +107,7 @@ const QHash<AcePermission, QString> ace_permission_to_type_map = {
     {AcePermission_ReadTerminalServerLicenseServer, "Terminal-Server-License-Server"},
     {AcePermission_WriteTerminalServerLicenseServer, "Terminal-Server-License-Server"},
     {AcePermission_ReadWebInfo, "Web-Information"},
-    {AcePermission_WriteWebInfo, "Web-Information"}
-};
+    {AcePermission_WriteWebInfo, "Web-Information"}};
 
 const QList<AcePermission> all_permissions_list = []() {
     QList<AcePermission> out;
@@ -307,7 +306,7 @@ bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, c
             return out;
         }();
 
-        TALLOC_CTX* tmp_ctx = talloc_new(NULL);
+        TALLOC_CTX *tmp_ctx = talloc_new(NULL);
 
         // Use original sd as base, only remaking the dacl
         const AdObject object = ad->search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
@@ -392,7 +391,7 @@ bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, c
         qsort(sd->dacl->aces, sd->dacl->num_aces, sizeof(security_ace), ace_compare);
 
         DATA_BLOB blob;
-        ndr_push_struct_blob(&blob, tmp_ctx, sd, (ndr_push_flags_fn_t)ndr_push_security_descriptor);
+        ndr_push_struct_blob(&blob, tmp_ctx, sd, (ndr_push_flags_fn_t) ndr_push_security_descriptor);
 
         const QByteArray out = QByteArray((char *) blob.data, blob.length);
 
@@ -439,7 +438,7 @@ security_descriptor *ad_security_get_sd(const AdObject *object) {
 
     security_descriptor *sd = talloc(NULL, struct security_descriptor);
 
-    ndr_pull_struct_blob(&blob, sd, sd, (ndr_pull_flags_fn_t)ndr_pull_security_descriptor);
+    ndr_pull_struct_blob(&blob, sd, sd, (ndr_pull_flags_fn_t) ndr_pull_security_descriptor);
 
     return sd;
 }
@@ -489,7 +488,7 @@ void ad_security_print_acl(security_descriptor *sd, const QByteArray &trustee) {
 
     for (security_ace *ace : ace_list) {
         const QString ace_string = [&]() {
-            char *ace_cstr = ndr_print_struct_string(tmp_ctx, (ndr_print_fn_t)ndr_print_security_ace,
+            char *ace_cstr = ndr_print_struct_string(tmp_ctx, (ndr_print_fn_t) ndr_print_security_ace,
                 "ace", ace);
 
             const QString out = QString(ace_cstr);
@@ -507,7 +506,7 @@ void ad_security_print_acl(security_descriptor *sd, const QByteArray &trustee) {
 // other f-ns that use this f-n to require adconfig also.
 // Not sure if possible to remove this requirement.
 QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_sd(security_descriptor *sd, AdConfig *adconfig) {
-    QHash<QByteArray, QHash<AcePermission, PermissionState>>  out;
+    QHash<QByteArray, QHash<AcePermission, PermissionState>> out;
 
     // Initialize to None by default
     const QList<QByteArray> trustee_list = ad_security_get_trustee_list_from_sd(sd);

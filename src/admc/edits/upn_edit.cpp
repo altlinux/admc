@@ -20,19 +20,18 @@
 
 #include "edits/upn_edit.h"
 
-#include "utils.h"
 #include "adldap.h"
-#include "globals.h"
 #include "edits/upn_suffix_widget.h"
+#include "globals.h"
+#include "utils.h"
 
-#include <QLineEdit>
-#include <QFormLayout>
-#include <QMessageBox>
 #include <QComboBox>
+#include <QFormLayout>
+#include <QLineEdit>
+#include <QMessageBox>
 
 UpnEdit::UpnEdit(QList<AttributeEdit *> *edits_out, AdInterface &ad, QObject *parent)
-: AttributeEdit(edits_out, parent)
-{
+: AttributeEdit(edits_out, parent) {
     prefix_edit = new QLineEdit();
     upn_suffix_widget = new UpnSuffixWidget(ad);
 
@@ -61,7 +60,7 @@ void UpnEdit::set_read_only(const bool read_only) {
 
 void UpnEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER) + ":";
-    
+
     auto sublayout = new QHBoxLayout();
     sublayout->addWidget(prefix_edit);
     sublayout->addWidget(upn_suffix_widget);

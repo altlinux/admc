@@ -24,7 +24,7 @@
 #include "tabs/properties_tab.h"
 
 class TelephonesTab final : public PropertiesTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     TelephonesTab();

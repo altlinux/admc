@@ -20,24 +20,23 @@
 
 #include "edits/country_edit.h"
 
-#include "edits/country_widget.h"
-#include "tabs/address_tab.h"
 #include "adldap.h"
-#include "status.h"
+#include "edits/country_widget.h"
 #include "globals.h"
+#include "status.h"
+#include "tabs/address_tab.h"
 #include "utils.h"
 
-#include <QVBoxLayout>
-#include <QFormLayout>
 #include <QComboBox>
-#include <QHash>
-#include <QFile>
-#include <algorithm>
 #include <QDebug>
+#include <QFile>
+#include <QFormLayout>
+#include <QHash>
+#include <QVBoxLayout>
+#include <algorithm>
 
 CountryEdit::CountryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent)
-{
+: AttributeEdit(edits_out, parent) {
     country_widget = new CountryWidget();
 
     connect(

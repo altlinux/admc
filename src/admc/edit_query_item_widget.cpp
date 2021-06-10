@@ -25,18 +25,17 @@
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/select_base_widget.h"
 
-#include <QLineEdit>
-#include <QTextEdit>
-#include <QFormLayout>
-#include <QDialog>
-#include <QPushButton>
-#include <QDialogButtonBox>
-#include <QLabel>
 #include <QCheckBox>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QTextEdit>
 
 EditQueryItemWidget::EditQueryItemWidget()
-: QWidget()
-{
+: QWidget() {
     setMinimumWidth(400);
 
     select_base_widget = new SelectBaseWidget();
@@ -45,7 +44,7 @@ EditQueryItemWidget::EditQueryItemWidget()
 
     name_edit = new QLineEdit();
     name_edit->setText("New query");
-    
+
     description_edit = new QLineEdit();
 
     scope_checkbox = new QCheckBox(tr("Include subcontainers"));

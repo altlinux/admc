@@ -22,18 +22,17 @@
 #include "adldap.h"
 #include "globals.h"
 
-#include <QLineEdit>
 #include <QComboBox>
-#include <QFormLayout>
 #include <QCoreApplication>
+#include <QFormLayout>
+#include <QLineEdit>
 
 #include <algorithm>
 
 QString condition_to_display_string(const Condition condition);
 
 FilterBuilder::FilterBuilder()
-: QWidget()
-{
+: QWidget() {
     attribute_class_combo = new QComboBox();
     for (const QString &object_class : filter_classes) {
         const QString display = g_adconfig->get_class_display_name(object_class);
@@ -80,7 +79,7 @@ QString FilterBuilder::get_filter() const {
     const QString filter_display_string = [this, condition, value]() {
         const QString attribute_display = attribute_combo->itemText(attribute_combo->currentIndex());
         const QString condition_string = condition_to_display_string(condition);
-        
+
         const bool set_unset_condition = (condition == Condition_Set || condition == Condition_Unset);
         if (set_unset_condition) {
             return QString("%1 %2").arg(attribute_display, condition_string);
@@ -99,7 +98,7 @@ QString FilterBuilder::get_filter_display() const {
 
     const QString attribute_display = attribute_combo->itemText(attribute_combo->currentIndex());
     const QString condition_string = condition_to_display_string(condition);
-    
+
     const bool set_unset_condition = (condition == Condition_Set || condition == Condition_Unset);
     if (set_unset_condition) {
         return QString("%1 %2").arg(attribute_display, condition_string);
@@ -122,7 +121,7 @@ void FilterBuilder::update_attributes_combo() {
 
         return item_data.toString();
     }();
-    
+
     const QList<QString> attributes = g_adconfig->get_find_attributes(object_class);
 
     const QList<QString> display_attributes = [attributes, object_class]() {
@@ -193,7 +192,7 @@ void FilterBuilder::update_conditions_combo() {
     for (const auto condition : conditions) {
         const QString condition_string = condition_to_display_string(condition);
 
-        condition_combo->addItem(condition_string, (int)condition);
+        condition_combo->addItem(condition_string, (int) condition);
     }
 }
 

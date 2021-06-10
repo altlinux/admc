@@ -24,9 +24,9 @@
 #include "ad_config.h"
 #include "ad_defines.h"
 #include "ad_display.h"
+#include "ad_filter.h"
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "ad_utils.h"
-#include "ad_filter.h"
 
 #endif /* ADLDAP_H */

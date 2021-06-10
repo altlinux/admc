@@ -22,8 +22,8 @@
 
 #include "edits/unlock_edit.h"
 
-#include <QFormLayout>
 #include <QCheckBox>
+#include <QFormLayout>
 
 // NOTE: this doesn't really "lock" accounts. Accounts can
 // only be locked by the server and lockout time only

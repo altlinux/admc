@@ -26,8 +26,8 @@
  * browse and manipulate objects. Wraps ConsoleWidget inside it.
  */
 
-#include <QWidget>
 #include <QPersistentModelIndex>
+#include <QWidget>
 
 class QAbstractItemView;
 class QStandardItemModel;
@@ -44,7 +44,8 @@ class AdInterface;
 class ConsoleWidget;
 class ConsoleActions;
 class PolicyResultsWidget;
-template <typename T> class QList;
+template <typename T>
+class QList;
 
 enum ItemType {
     ItemType_Unassigned,
@@ -59,9 +60,9 @@ enum ItemType {
 };
 
 class CentralWidget final : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
-public:        
+public:
     CentralWidget();
 
     void go_online(AdInterface &ad);
@@ -102,7 +103,7 @@ private slots:
     void query_cut();
     void query_copy();
     void query_paste();
-    
+
     void on_items_can_drop(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target, bool *ok);
     void on_items_dropped(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target);
 
@@ -114,7 +115,7 @@ private:
     QStandardItem *object_tree_head;
     FilterDialog *filter_dialog;
     PolicyResultsWidget *policy_results_widget;
-    
+
     ConsoleActions *console_actions;
 
     QAction *open_filter_action;

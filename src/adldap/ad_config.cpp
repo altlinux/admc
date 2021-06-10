@@ -21,45 +21,44 @@
 #include "ad_config.h"
 #include "ad_config_p.h"
 
+#include "ad_filter.h"
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "ad_utils.h"
-#include "ad_filter.h"
 
-#include <QLocale>
-#include <QDebug>
 #include <QCoreApplication>
+#include <QDebug>
+#include <QLocale>
 #include <algorithm>
 
 #define ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES "attributeDisplayNames"
-#define ATTRIBUTE_EXTRA_COLUMNS         "extraColumns"
-#define ATTRIBUTE_FILTER_CONTAINERS     "msDS-FilterContainers"
-#define ATTRIBUTE_LDAP_DISPLAY_NAME     "lDAPDisplayName"
-#define ATTRIBUTE_POSSIBLE_SUPERIORS    "possSuperiors"
+#define ATTRIBUTE_EXTRA_COLUMNS "extraColumns"
+#define ATTRIBUTE_FILTER_CONTAINERS "msDS-FilterContainers"
+#define ATTRIBUTE_LDAP_DISPLAY_NAME "lDAPDisplayName"
+#define ATTRIBUTE_POSSIBLE_SUPERIORS "possSuperiors"
 #define ATTRIBUTE_SYSTEM_POSSIBLE_SUPERIORS "systemPossSuperiors"
-#define ATTRIBUTE_ATTRIBUTE_SYNTAX      "attributeSyntax"
-#define ATTRIBUTE_OM_SYNTAX             "oMSyntax"
-#define ATTRIBUTE_CLASS_DISPLAY_NAME    "classDisplayName"
-#define ATTRIBUTE_MAY_CONTAIN           "mayContain"
-#define ATTRIBUTE_SYSTEM_MAY_CONTAIN    "systemMayContain"
-#define ATTRIBUTE_MUST_CONTAIN          "mustContain"
-#define ATTRIBUTE_SYSTEM_MUST_CONTAIN   "systemMustContain"
-#define ATTRIBUTE_IS_SINGLE_VALUED      "isSingleValued"
-#define ATTRIBUTE_SYSTEM_ONLY           "systemOnly"
-#define ATTRIBUTE_RANGE_UPPER           "rangeUpper"
-#define ATTRIBUTE_AUXILIARY_CLASS       "auxiliaryClass"
-#define ATTRIBUTE_SYSTEM_FLAGS          "systemFlags"
-#define ATTRIBUTE_LINK_ID               "linkID"
+#define ATTRIBUTE_ATTRIBUTE_SYNTAX "attributeSyntax"
+#define ATTRIBUTE_OM_SYNTAX "oMSyntax"
+#define ATTRIBUTE_CLASS_DISPLAY_NAME "classDisplayName"
+#define ATTRIBUTE_MAY_CONTAIN "mayContain"
+#define ATTRIBUTE_SYSTEM_MAY_CONTAIN "systemMayContain"
+#define ATTRIBUTE_MUST_CONTAIN "mustContain"
+#define ATTRIBUTE_SYSTEM_MUST_CONTAIN "systemMustContain"
+#define ATTRIBUTE_IS_SINGLE_VALUED "isSingleValued"
+#define ATTRIBUTE_SYSTEM_ONLY "systemOnly"
+#define ATTRIBUTE_RANGE_UPPER "rangeUpper"
+#define ATTRIBUTE_AUXILIARY_CLASS "auxiliaryClass"
+#define ATTRIBUTE_SYSTEM_FLAGS "systemFlags"
+#define ATTRIBUTE_LINK_ID "linkID"
 #define ATTRIBUTE_SYSTEM_AUXILIARY_CLASS "systemAuxiliaryClass"
 
-#define CLASS_ATTRIBUTE_SCHEMA          "attributeSchema"
-#define CLASS_CLASS_SCHEMA              "classSchema"
-#define CLASS_CONTROL_ACCESS_RIGHT      "controlAccessRight"
+#define CLASS_ATTRIBUTE_SCHEMA "attributeSchema"
+#define CLASS_CLASS_SCHEMA "classSchema"
+#define CLASS_CONTROL_ACCESS_RIGHT "controlAccessRight"
 
-#define FLAG_ATTR_IS_CONSTRUCTED        0x00000004 
+#define FLAG_ATTR_IS_CONSTRUCTED 0x00000004
 
 AdConfigPrivate::AdConfigPrivate() {
-
 }
 
 AdConfig::AdConfig() {
@@ -88,7 +87,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             if (locale.language() == QLocale::Russian) {
                 return "419";
             } else {
-                        // English
+                // English
                 return "409";
             }
         }();
@@ -111,7 +110,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             ATTRIBUTE_SYSTEM_FLAGS,
         };
 
-        const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes );
+        const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes);
 
         for (const AdObject &object : results.values()) {
             const QString attribute = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
@@ -433,37 +432,31 @@ AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
     // syntax -> om syntax list -> type
     static QHash<QString, QHash<QString, AttributeType>> type_map = {
         {"2.5.5.8", {{"1", AttributeType_Boolean}}},
-        {
-            "2.5.5.9",
+        {"2.5.5.9",
             {
                 {"10", AttributeType_Enumeration},
                 {"2", AttributeType_Integer},
-            }
-        },
+            }},
         {"2.5.5.16", {{"65", AttributeType_LargeInteger}}},
         {"2.5.5.3", {{"27", AttributeType_StringCase}}},
         {"2.5.5.5", {{"22", AttributeType_IA5}}},
         {"2.5.5.15", {{"66", AttributeType_NTSecDesc}}},
         {"2.5.5.6", {{"18", AttributeType_Numeric}}},
         {"2.5.5.2", {{"6", AttributeType_ObjectIdentifier}}},
-        {
-            "2.5.5.10",
+        {"2.5.5.10",
             {
                 {"4", AttributeType_Octet},
                 {"127", AttributeType_ReplicaLink},
-            }
-        },
+            }},
         {"2.5.5.5", {{"19", AttributeType_Printable}}},
         {"2.5.5.17", {{"4", AttributeType_Sid}}},
         {"2.5.5.4", {{"20", AttributeType_Teletex}}},
         {"2.5.5.12", {{"64", AttributeType_Unicode}}},
-        {
-            "2.5.5.11",
+        {"2.5.5.11",
             {
                 {"23", AttributeType_UTCTime},
                 {"24", AttributeType_GeneralizedTime},
-            }
-        },
+            }},
         {"2.5.5.14", {{"127", AttributeType_DNString}}},
         {"2.5.5.7", {{"127", AttributeType_DNBinary}}},
         {"2.5.5.1", {{"127", AttributeType_DSDN}}},
@@ -543,7 +536,7 @@ bool AdConfig::get_attribute_is_backlink(const QString &attribute) const {
 
 bool AdConfig::get_attribute_is_constructed(const QString &attribute) const {
     const int system_flags = d->attribute_schemas[attribute].get_int(ATTRIBUTE_SYSTEM_FLAGS);
-    return bit_is_set(system_flags, FLAG_ATTR_IS_CONSTRUCTED);   
+    return bit_is_set(system_flags, FLAG_ATTR_IS_CONSTRUCTED);
 }
 
 QString AdConfig::get_right_guid(const QString &right_cn) const {

@@ -26,7 +26,7 @@
 class QRadioButton;
 
 class BoolEditor final : public AttributeEditor {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     BoolEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);

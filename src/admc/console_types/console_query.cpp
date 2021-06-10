@@ -20,23 +20,23 @@
 
 #include "console_types/console_query.h"
 
-#include "console_types/console_object.h"
+#include "adldap.h"
 #include "central_widget.h"
-#include "utils.h"
+#include "console_actions.h"
+#include "console_types/console_object.h"
 #include "globals.h"
 #include "settings.h"
-#include "adldap.h"
-#include "console_actions.h"
+#include "utils.h"
 
 #include <QCoreApplication>
-#include <QStandardItem>
-#include <QStack>
 #include <QDebug>
-#include <QMessageBox>
-#include <QMenu>
 #include <QFileDialog>
-#include <QStandardPaths>
 #include <QJsonDocument>
+#include <QMenu>
+#include <QMessageBox>
+#include <QStack>
+#include <QStandardItem>
+#include <QStandardPaths>
 
 #define QUERY_ROOT "QUERY_ROOT"
 
@@ -206,7 +206,7 @@ void console_query_tree_init(ConsoleWidget *console) {
         const QList<QString> child_list = [&]() {
             const QString folder_path = console_query_folder_path(folder_index);
             const QHash<QString, QVariant> folder_data = folder_list[folder_path].toHash();
-            
+
             return folder_data["child_list"].toStringList();
         }();
 
@@ -328,7 +328,7 @@ bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex
             if (this_is_query_itself) {
                 continue;
             }
-            
+
             out.append(sibling_name);
         }
 
@@ -382,7 +382,7 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
         if (type == ItemType_QueryFolder) {
             if (copied_index.isValid()) {
                 my_visible_actions.insert(ConsoleAction_QueryPasteItemOrFolder);
-            } 
+            }
 
             my_visible_actions.insert(ConsoleAction_QueryEditFolder);
             my_visible_actions.insert(ConsoleAction_QueryImport);
@@ -491,10 +491,10 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
                 const QString description = index.data(QueryItemRole_Description).toString();
                 const QModelIndex folder_index = console_query_folder_create(console, name, description, new_parent);
 
-                new_parent_map[index] = QPersistentModelIndex(folder_index); 
+                new_parent_map[index] = QPersistentModelIndex(folder_index);
             }
 
-            QAbstractItemModel *index_model = (QAbstractItemModel *)index.model();
+            QAbstractItemModel *index_model = (QAbstractItemModel *) index.model();
             for (int row = 0; row < index_model->rowCount(index); row++) {
                 const QModelIndex child = index_model->index(row, 0, index);
                 stack.append(QPersistentModelIndex(child));

@@ -22,20 +22,19 @@
 
 #include "help_browser.h"
 
-#include <QDebug>
-#include <QString>
-#include <QHelpEngine>
-#include <QHelpContentWidget>
-#include <QHelpIndexWidget>
-#include <QTabWidget>
-#include <QStandardPaths>
-#include <QSplitter>
-#include <QVBoxLayout>
 #include <QCoreApplication>
+#include <QDebug>
+#include <QHelpContentWidget>
+#include <QHelpEngine>
+#include <QHelpIndexWidget>
+#include <QSplitter>
+#include <QStandardPaths>
+#include <QString>
+#include <QTabWidget>
+#include <QVBoxLayout>
 
 ManualDialog::ManualDialog(QWidget *parent)
-: QDialog(parent)
-{
+: QDialog(parent) {
     setMinimumSize(800, 600);
 
     const QString help_collection_path = QStandardPaths::writableLocation(QStandardPaths::QStandardPaths::AppDataLocation) + "/admc.qhc";
@@ -45,9 +44,9 @@ ManualDialog::ManualDialog(QWidget *parent)
     // edit the help file and see changes on the fly without
     // having to install it.
     const QString compressed_help_path = []() {
-        #ifdef QT_DEBUG
+#ifdef QT_DEBUG
         return QCoreApplication::applicationDirPath() + "/doc/admc.qch";
-        #endif        
+#endif
 
         return QStandardPaths::locate(QStandardPaths::GenericDataLocation, "admc.qch");
     }();

@@ -21,30 +21,30 @@
 #include "admc_test_object_menu.h"
 
 #include "adldap.h"
-#include "create_object_dialog.h"
-#include "utils.h"
 #include "console_types/console_object.h"
-#include "select_container_dialog.h"
-#include "select_object_dialog.h"
-#include "find_select_object_dialog.h"
-#include "rename_object_dialog.h"
+#include "create_object_dialog.h"
 #include "find_object_dialog.h"
+#include "find_select_object_dialog.h"
+#include "find_widget.h"
 #include "move_object_dialog.h"
 #include "password_dialog.h"
-#include "find_widget.h"
+#include "rename_object_dialog.h"
+#include "select_container_dialog.h"
+#include "select_object_dialog.h"
+#include "utils.h"
 
-#include <QTest>
+#include <QComboBox>
 #include <QDebug>
 #include <QModelIndex>
-#include <QTreeView>
 #include <QPushButton>
-#include <QComboBox>
+#include <QTest>
+#include <QTreeView>
 
 // Test that when adding an object from find dialog to
 // select dialog, the correct object is added.
 void ADMCTestObjectMenu::select_dialog_correct_object_added() {
     const QString parent = test_arena_dn();
-    
+
     // Create 5 different users
     const QList<QString> names = {
         "test-user-1",
@@ -69,7 +69,7 @@ void ADMCTestObjectMenu::select_dialog_correct_object_added() {
     // Press "Add" button in select dialog
     tab();
     QTest::keyClick(QApplication::focusWidget(), Qt::Key_Space);
-    
+
     // Find dialog has been opened, so switch to it
     auto find_select_dialog = select_dialog->findChild<FindSelectObjectDialog *>();
     QVERIFY2((find_select_dialog != nullptr), "Failed to find find_select_dialog");
@@ -82,10 +82,10 @@ void ADMCTestObjectMenu::select_dialog_correct_object_added() {
     // Press "Find" button
     QPushButton *find_button = find_button_by_name("Find", find_select_dialog);
     QVERIFY(find_button != nullptr);
-    QTest::mouseClick(find_button, Qt::LeftButton);    
+    QTest::mouseClick(find_button, Qt::LeftButton);
 
     // Switch to find results
-    auto find_results_view = find_select_dialog->findChild<QTreeView*>();
+    auto find_results_view = find_select_dialog->findChild<QTreeView *>();
     QVERIFY2((find_results_view != nullptr), "Failed to cast find_results_view");
 
     wait_for_find_results_to_load(find_results_view);
@@ -96,7 +96,7 @@ void ADMCTestObjectMenu::select_dialog_correct_object_added() {
     find_select_dialog->accept();
 
     // Switch to view containing selected object
-    auto select_dialog_view = select_dialog->findChild<QTreeView*>();
+    auto select_dialog_view = select_dialog->findChild<QTreeView *>();
     QVERIFY(select_dialog_view != nullptr);
 
     // Verify that user added from find dialog is in
@@ -215,7 +215,7 @@ void ADMCTestObjectMenu::object_menu_new_group() {
 
 void ADMCTestObjectMenu::object_menu_move() {
     const QString parent = test_arena_dn();
-    
+
     const QString user_name = TEST_USER;
     const QString user_dn = test_object_dn(user_name, CLASS_USER);
 
@@ -285,7 +285,7 @@ void ADMCTestObjectMenu::object_menu_reset_password() {
 
     const QByteArray pwdLastSet_value_after = [=]() {
         const AdObject object = ad.search_object(user_dn);
-        
+
         return object.get_value(ATTRIBUTE_PWD_LAST_SET);
     }();
 
@@ -337,8 +337,7 @@ void ADMCTestObjectMenu::object_menu_disable_enable_account() {
     test_disable_enable(false);
 }
 
-void ADMCTestObjectMenu::object_menu_find_simple()
-{
+void ADMCTestObjectMenu::object_menu_find_simple() {
     const QString parent = test_arena_dn();
 
     const QString user_name = TEST_USER;
@@ -359,20 +358,19 @@ void ADMCTestObjectMenu::object_menu_find_simple()
 
     QTest::keyClicks(QApplication::focusWidget(), user_name);
 
-    QPushButton* find_button = find_button_by_name(FIND_BUTTON_LABEL, find_dialog);
+    QPushButton *find_button = find_button_by_name(FIND_BUTTON_LABEL, find_dialog);
     QVERIFY2((find_button != nullptr), "Failed to find find_button");
 
     QTest::mouseClick(find_button, Qt::LeftButton);
 
-    auto find_results = find_dialog->findChild<QTreeView*>();
+    auto find_results = find_dialog->findChild<QTreeView *>();
 
     wait_for_find_results_to_load(find_results);
 
     QVERIFY2(find_results->model()->rowCount(), "No results found");
 }
 
-void ADMCTestObjectMenu::object_menu_find_advanced()
-{
+void ADMCTestObjectMenu::object_menu_find_advanced() {
     const QString parent = test_arena_dn();
 
     const QString user_name = TEST_USER;
@@ -396,12 +394,12 @@ void ADMCTestObjectMenu::object_menu_find_advanced()
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DN, user_dn);
     QTest::keyClicks(QApplication::focusWidget(), filter);
 
-    QPushButton* find_button = find_button_by_name(FIND_BUTTON_LABEL, find_dialog);
+    QPushButton *find_button = find_button_by_name(FIND_BUTTON_LABEL, find_dialog);
     QVERIFY2((find_button != nullptr), "Failed to find find_button");
 
-    QTest::mouseClick(find_button, Qt::LeftButton);    
+    QTest::mouseClick(find_button, Qt::LeftButton);
 
-    auto find_results = find_dialog->findChild<QTreeView*>();
+    auto find_results = find_dialog->findChild<QTreeView *>();
 
     wait_for_find_results_to_load(find_results);
 
@@ -410,7 +408,7 @@ void ADMCTestObjectMenu::object_menu_find_advanced()
 
 void ADMCTestObjectMenu::object_menu_add_to_group() {
     const QString parent = test_arena_dn();
-    
+
     const QString user_name = TEST_USER;
     const QString user_dn = test_object_dn(user_name, CLASS_USER);
 
@@ -452,7 +450,7 @@ void ADMCTestObjectMenu::object_menu_add_to_group() {
     QTest::keyClick(find_button, Qt::Key_Space);
 
     // Switch to find results
-    auto find_results_view = find_select_dialog->findChild<QTreeView*>();
+    auto find_results_view = find_select_dialog->findChild<QTreeView *>();
     QVERIFY2((find_results_view != nullptr), "Failed to cast find_results_view");
 
     wait_for_find_results_to_load(find_results_view);
@@ -474,7 +472,7 @@ void ADMCTestObjectMenu::object_menu_add_to_group() {
     QVERIFY(true);
 }
 
-void ADMCTestObjectMenu::basic_rename(const QString& newname) {
+void ADMCTestObjectMenu::basic_rename(const QString &newname) {
     QTest::keyClicks(QApplication::focusWidget(), "A", Qt::ControlModifier);
 
     QTest::keyClick(QApplication::focusWidget(), Qt::Key_Delete);
@@ -489,28 +487,25 @@ void ADMCTestObjectMenu::object_menu_rename_computer() {
     test_object_rename(computer_name, computer_renamed, CLASS_COMPUTER, basic_rename);
 }
 
-void ADMCTestObjectMenu::object_menu_rename_user()
-{
+void ADMCTestObjectMenu::object_menu_rename_user() {
     const QString user_name = TEST_USER;
     const QString user_renamed = user_name + "2";
 
     test_object_rename(user_name, user_renamed, CLASS_USER, basic_rename);
 }
 
-void ADMCTestObjectMenu::object_menu_rename_ou()
-{
+void ADMCTestObjectMenu::object_menu_rename_ou() {
     const QString ou_name = TEST_OU;
     const QString ou_renamed = ou_name + "2";
 
     test_object_rename(ou_name, ou_renamed, CLASS_OU, basic_rename);
 }
 
-void ADMCTestObjectMenu::object_menu_rename_group()
-{
+void ADMCTestObjectMenu::object_menu_rename_group() {
     const QString group_name = TEST_GROUP;
     const QString group_renamed = group_name + "2";
 
-    auto group_rename = [](const QString& newname) {
+    auto group_rename = [](const QString &newname) {
         ADMCTestObjectMenu::basic_rename(newname);
         tab();
         ADMCTestObjectMenu::basic_rename(newname);
@@ -519,7 +514,7 @@ void ADMCTestObjectMenu::object_menu_rename_group()
     test_object_rename(group_name, group_renamed, CLASS_GROUP, group_rename);
 }
 
-void ADMCTestObjectMenu::test_object_rename(const QString& oldname, const QString& newname, const QString &object_class, std::function<void(const QString &)> rename_callback) {
+void ADMCTestObjectMenu::test_object_rename(const QString &oldname, const QString &newname, const QString &object_class, std::function<void(const QString &)> rename_callback) {
     const QString parent = test_arena_dn();
 
     const QString dn = test_object_dn(oldname, object_class);

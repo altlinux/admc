@@ -22,32 +22,31 @@
 
 #include "adldap.h"
 #include "globals.h"
-#include "status.h"
 #include "settings.h"
+#include "status.h"
 #include "utils.h"
 
+#include <QDialogButtonBox>
+#include <QHeaderView>
+#include <QPushButton>
+#include <QSortFilterProxyModel>
+#include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QHeaderView>
-#include <QStandardItemModel>
-#include <QSortFilterProxyModel>
 
 QStandardItem *make_container_node(const AdObject &object);
 
 SelectContainerDialog::SelectContainerDialog(QWidget *parent)
-: QDialog(parent)
-{
+: QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(tr("Select a container"));
-    
+
     AdInterface ad;
     if (ad_failed(ad)) {
         close();
         return;
     }
-    
+
     resize(400, 500);
 
     view = new QTreeView(this);
@@ -63,7 +62,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     proxy_model = new QSortFilterProxyModel(this);
     proxy_model->setSourceModel(model);
     proxy_model->setSortCaseSensitivity(Qt::CaseInsensitive);
-    
+
     view->setModel(proxy_model);
 
     auto buttonbox = new QDialogButtonBox();
@@ -127,7 +126,7 @@ void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
     show_busy_indicator();
 
     model->removeRows(0, model->rowCount(index), index);
-    
+
     const QString base = index.data(ContainerRole_DN).toString();
     const SearchScope scope = SearchScope_Children;
 

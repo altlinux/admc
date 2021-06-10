@@ -31,8 +31,7 @@
 // TODO: missing "Entire directory" in search base combo. Not 100% sure what it's supposed to be, the tippy-top domain? Definitely need it for work with multiple domains.
 
 SelectBaseWidget::SelectBaseWidget(const QString &default_base)
-: QWidget()
-{
+: QWidget() {
     const QString domain_head = g_adconfig->domain_head();
 
     combo = new QComboBox();

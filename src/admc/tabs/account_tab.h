@@ -26,11 +26,10 @@
 class AdInterface;
 
 class AccountTab final : public PropertiesTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     AccountTab(AdInterface &ad);
-    
 };
 
 #endif /* ACCOUNT_TAB_H */

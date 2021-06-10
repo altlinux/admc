@@ -18,17 +18,17 @@
  */
 
 #include "browse_widget.h"
+#include "file.h"
 #include "pol_editor.h"
 #include "xml_editor.h"
-#include "file.h"
 
-#include <QTreeView>
-#include <QString>
-#include <QVBoxLayout>
-#include <QStandardItemModel>
-#include <QMenu>
 #include <QAction>
 #include <QLabel>
+#include <QMenu>
+#include <QStandardItemModel>
+#include <QString>
+#include <QTreeView>
+#include <QVBoxLayout>
 
 enum BrowseColumn {
     BrowseColumn_Name,
@@ -40,8 +40,7 @@ enum BrowseColumn {
 #define XML_EXTENSION ".xml"
 
 BrowseWidget::BrowseWidget()
-: QWidget()
-{   
+: QWidget() {
     model = new QStandardItemModel(0, BrowseColumn_COUNT, this);
     // set_horizontal_header_labels_from_map(model, {
     //     {BrowseColumn_Name, tr("Name")},
@@ -72,7 +71,7 @@ void BrowseWidget::change_target(const QString &policy_path_arg) {
     model->clear();
 
     add_entry_recursively(policy_path, nullptr);
-    
+
     // TODO: use proxy for this
     view->setColumnHidden(BrowseColumn_Path, true);
 }
@@ -108,7 +107,6 @@ void BrowseWidget::on_context_menu(const QPoint pos) {
     const QString path = path_index.data().toString();
 
     const QPoint global_pos = view->mapToGlobal(pos);
-
 
     const bool is_pol = path.endsWith(POL_EXTENSION);
     const bool is_xml = path.endsWith(XML_EXTENSION);

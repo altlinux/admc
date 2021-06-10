@@ -24,15 +24,14 @@
 #include <QVBoxLayout>
 
 PolEditor::PolEditor(const QString &path)
-: QDialog()
-{   
+: QDialog() {
     setAttribute(Qt::WA_DeleteOnClose);
     resize(600, 600);
 
     const QString title_label_text = "Editing pol file:" + path;
     auto title_label = new QLabel(title_label_text);
 
-    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok |  QDialogButtonBox::Cancel);
+    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
