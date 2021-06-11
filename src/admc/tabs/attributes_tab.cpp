@@ -36,6 +36,7 @@
 #include <QFrame>
 #include <QLabel>
 #include <QHeaderView>
+#include <QDebug>
 
 enum AttributesColumn {
     AttributesColumn_Name,
@@ -69,6 +70,7 @@ AttributesTab::AttributesTab() {
 
     auto edit_button = new QPushButton(tr("Edit"));
     auto filter_button = new QPushButton(tr("Filter"));
+    filter_button->setObjectName("filter_button");
     auto buttons = new QHBoxLayout();
     buttons->addWidget(edit_button);
     buttons->addStretch(1);
@@ -138,6 +140,7 @@ void AttributesTab::edit_attribute() {
 
 void AttributesTab::open_filter_dialog() {
     auto dialog = new QDialog(this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
 
     auto layout = new QVBoxLayout();
     dialog->setLayout(layout);
@@ -159,6 +162,7 @@ void AttributesTab::open_filter_dialog() {
         auto check = new QCheckBox(text);
         const bool is_checked = proxy->filters[filter];
         check->setChecked(is_checked);
+        check->setObjectName(QString::number(filter));
 
         checks.insert(filter, check);
     };
@@ -172,15 +176,17 @@ void AttributesTab::open_filter_dialog() {
     add_check(tr("Backlink"), AttributeFilter_Backlink);
 
     // Enable readonly subtype checks when readonly is enabled
+    auto on_read_only_check = [checks]() {
+        const bool read_only_enabled = checks[AttributeFilter_ReadOnly]->isChecked();
+
+        checks[AttributeFilter_SystemOnly]->setEnabled(read_only_enabled);
+        checks[AttributeFilter_Constructed]->setEnabled(read_only_enabled);
+        checks[AttributeFilter_Backlink]->setEnabled(read_only_enabled);
+    };
     connect(
         checks[AttributeFilter_ReadOnly], &QCheckBox::stateChanged,
-        [checks]() {
-            const bool read_only_enabled = checks[AttributeFilter_ReadOnly]->isChecked();
-
-            checks[AttributeFilter_SystemOnly]->setEnabled(read_only_enabled);
-            checks[AttributeFilter_Constructed]->setEnabled(read_only_enabled);
-            checks[AttributeFilter_Backlink]->setEnabled(read_only_enabled);
-        });
+        on_read_only_check);
+    on_read_only_check();
 
     auto first_frame = make_frame();
     first_frame->layout()->addWidget(checks[AttributeFilter_Unset]);
