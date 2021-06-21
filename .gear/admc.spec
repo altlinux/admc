@@ -82,7 +82,7 @@ cd BUILD
 
 %changelog
 * Mon Jun 21 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.5.3-alt1
-- 
+- 0.5.3
 
 * Wed May 12 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.5.2-alt1
 - 0.5.2
