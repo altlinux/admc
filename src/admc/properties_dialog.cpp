@@ -41,6 +41,7 @@
 #include "tabs/security_tab.h"
 #include "tabs/telephones_tab.h"
 #include "tabs/os_tab.h"
+#include "tabs/delegation_tab.h"
 #include "utils.h"
 
 #include <QAbstractItemView>
@@ -204,6 +205,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
 
     if (object.is_class(CLASS_COMPUTER)) {
         add_tab(new OSTab(), tr("Operating System"));
+        add_tab(new DelegationTab(), tr("Delegation"));
         add_tab(new MemberOfTab(), tr("Member of"));
         add_tab(new ManagedByTab(), tr("Managed by"));
     }

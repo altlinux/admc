@@ -66,6 +66,7 @@ enum AccountOption {
     AccountOption_SmartcardRequired,
     AccountOption_CantDelegate,
     AccountOption_DontRequirePreauth,
+    AccountOption_TrustedForDelegation,
     AccountOption_COUNT
 };
 

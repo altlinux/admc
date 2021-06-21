@@ -98,6 +98,7 @@ set(ADMC_SOURCES
     tabs/managed_by_tab.cpp
     tabs/security_tab.cpp
     tabs/os_tab.cpp
+    tabs/delegation_tab.cpp
 
     multi_tabs/properties_multi_tab.cpp
     multi_tabs/general_multi_tab.cpp
@@ -140,6 +141,7 @@ set(ADMC_SOURCES
     edits/upn_suffix_widget.cpp
     edits/country_widget.cpp
     edits/manager_widget.cpp
+    edits/delegation_edit.cpp
 
     console_widget/console_widget.cpp
     console_widget/scope_model.cpp
