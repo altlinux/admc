@@ -189,8 +189,12 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
 }
 
 void SecurityTab::load_trustee_acl() {
+    const QModelIndex current_index = trustee_view->currentIndex();
+    if (!current_index.isValid()) {
+        return;
+    }
+    
     const QString label_text = [&]() {
-        const QModelIndex current_index = trustee_view->currentIndex();
         QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
         const QString trustee_name = current_item->text();
         const QString text = QString("Permissions for %1").arg(trustee_name);
