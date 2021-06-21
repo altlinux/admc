@@ -147,12 +147,13 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     result = ldap_initialize(&d->ld, cstr(uri));
     if (result != LDAP_SUCCESS) {
         ldap_memfree(d->ld);
-        d->error_message(connect_error_context, tr("Failed to initialize LDAP library"));
+        d->error_message(tr("Failed to initialize LDAP library"), strerror(errno));
+
         return;
     }
 
     auto option_error = [&](const QString &option) {
-        d->error_message(connect_error_context, QString(tr("Failed to set %1")).arg(option));
+        d->error_message(connect_error_context, QString(tr("Failed to set ldap option %1")).arg(option));
     };
 
     // Set version
@@ -206,7 +207,9 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     ldap_memfree(defaults.authcid);
     ldap_memfree(defaults.authzid);
     if (result != LDAP_SUCCESS) {
-        d->error_message(connect_error_context, tr("Failed to authenticate. Make sure you have initialized your credentials (kinit)."));
+        d->error_message_plain(tr("Failed to authenticate. Make sure you have initialized your credentials (kinit)"));
+        d->error_message_plain(d->default_error());
+
         return;
     }
 
