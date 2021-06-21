@@ -20,24 +20,23 @@
 
 #include "select_object_dialog.h"
 #include "adldap.h"
+#include "console_types/console_object.h"
+#include "find_select_object_dialog.h"
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
-#include "console_types/console_object.h"
-#include "find_select_object_dialog.h"
 
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QTreeView>
-#include <QPushButton>
-#include <QItemSelectionModel>
 #include <QDialogButtonBox>
+#include <QHBoxLayout>
+#include <QItemSelectionModel>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QStandardItemModel>
+#include <QTreeView>
+#include <QVBoxLayout>
 
 SelectObjectDialog::SelectObjectDialog(QList<QString> classes_arg, SelectObjectDialogMultiSelection multi_selection_arg, QWidget *parent)
-: QDialog(parent)
-{
+: QDialog(parent) {
     classes = classes_arg;
     multi_selection = multi_selection_arg;
 
@@ -132,14 +131,13 @@ void SelectObjectDialog::open_find_dialog() {
             const QList<QList<QStandardItem *>> selected_rows = dialog->get_selected_rows();
 
             for (auto row : selected_rows) {
-                const bool model_contains_object =
-                [=]() {
+                const bool model_contains_object = [=]() {
                     QStandardItem *dn_item = row[0];
                     const QString dn = dn_item->text();
 
                     return current_selected.contains(dn);
                 }();
-                
+
                 if (!model_contains_object) {
                     model->appendRow(row);
                 } else {
@@ -164,8 +162,8 @@ void SelectObjectDialog::remove_from_list() {
 
 void SelectObjectDialog::showEvent(QShowEvent *event) {
     resize_columns(view,
-    {
-        {0, 0.4},
-        {1, 0.4},
-    });
+        {
+            {0, 0.4},
+            {1, 0.4},
+        });
 }

@@ -47,7 +47,7 @@ const QList<QString> filter_classes = {
 QList<QString> process_subfilters(const QList<QString> &in);
 
 QString filter_CONDITION(const Condition condition, const QString &attribute, const QString &value) {
-    switch(condition) {
+    switch (condition) {
         case Condition_Equals: return QString("(%1=%2)").arg(attribute, value);
         case Condition_NotEquals: return QString("(!(%1=%2))").arg(attribute, value);
         case Condition_StartsWith: return QString("(%1=*%2)").arg(attribute, value);
@@ -82,7 +82,7 @@ QString filter_AND(const QList<QString> &subfilters_raw) {
 // {x, y, z ...} => (|(x)(y)(z)...)
 QString filter_OR(const QList<QString> &subfilters_raw) {
     const QList<QString> subfilters = process_subfilters(subfilters_raw);
-    
+
     if (subfilters.size() > 1) {
         QString filter = "(|";
         for (const QString &subfilter : subfilters) {
@@ -92,7 +92,7 @@ QString filter_OR(const QList<QString> &subfilters_raw) {
 
         return filter;
     } else if (subfilters.size() == 1) {
-       return subfilters[0];
+        return subfilters[0];
     } else {
         return QString();
     }

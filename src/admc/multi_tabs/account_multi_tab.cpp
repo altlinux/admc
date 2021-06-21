@@ -21,16 +21,16 @@
 #include "multi_tabs/account_multi_tab.h"
 
 #include "adldap.h"
-#include "multi_edits/string_multi_edit.h"
-#include "multi_edits/expiry_multi_edit.h"
-#include "multi_edits/upn_multi_edit.h"
 #include "multi_edits/account_option_multi_edit.h"
+#include "multi_edits/expiry_multi_edit.h"
+#include "multi_edits/string_multi_edit.h"
+#include "multi_edits/upn_multi_edit.h"
 
-#include <QLabel>
 #include <QFormLayout>
 #include <QFrame>
+#include <QLabel>
 
-AccountMultiTab::AccountMultiTab(AdInterface &ad) {   
+AccountMultiTab::AccountMultiTab(AdInterface &ad) {
     new UpnMultiEdit(edit_list, ad, this);
     new AccountOptionMultiEdit(edit_list, this);
     new ExpiryMultiEdit(edit_list, this);

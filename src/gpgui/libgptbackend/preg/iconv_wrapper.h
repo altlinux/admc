@@ -32,7 +32,7 @@ namespace gptbackend {
 class iconv_wrapper {
     /* C++ reinterpret_cast<> and static_cast<> can't be used in
      * this case */
-    const iconv_t invalid_open = (iconv_t)-1;
+    const iconv_t invalid_open = (iconv_t) -1;
 
     /* Disable copy since iconv_t can't duplicate */
     iconv_wrapper(iconv_wrapper const &) = delete;
@@ -42,7 +42,7 @@ class iconv_wrapper {
     std::string from_encoding;
     std::string to_encoding;
 
-  public:
+public:
     iconv_wrapper(std::string from_encoding, std::string to_encoding);
     ~iconv_wrapper();
 
@@ -51,7 +51,7 @@ class iconv_wrapper {
      */
     std::string convert(std::string from);
 
-  private:
+private:
     /**
      * Check if there were conversion errors.
      */

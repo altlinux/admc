@@ -23,17 +23,15 @@
 #include "globals.h"
 #include "utils.h"
 
-#include <QLineEdit>
-#include <QDialogButtonBox>
-#include <QVBoxLayout>
-#include <QLabel>
 #include <QDebug>
+#include <QDialogButtonBox>
+#include <QLabel>
+#include <QLineEdit>
+#include <QVBoxLayout>
 
 StringEditor::StringEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
-: AttributeEditor(parent)
-{
-    const QString title =
-    [attribute]() {
+: AttributeEditor(parent) {
+    const QString title = [attribute]() {
         const AttributeType type = g_adconfig->get_attribute_type(attribute);
 
         switch (type) {
@@ -61,7 +59,8 @@ StringEditor::StringEditor(const QString attribute, const QList<QByteArray> valu
     const QString value_string = QString(value);
     edit->setText(value_string);
 
-    QDialogButtonBox *button_box = make_button_box(attribute);;
+    QDialogButtonBox *button_box = make_button_box(attribute);
+    ;
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);

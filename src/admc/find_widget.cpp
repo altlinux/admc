@@ -21,25 +21,24 @@
 #include "find_widget.h"
 
 #include "adldap.h"
-#include "globals.h"
-#include "settings.h"
-#include "utils.h"
+#include "console_types/console_object.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/select_base_widget.h"
 #include "find_results.h"
+#include "globals.h"
 #include "search_thread.h"
-#include "console_types/console_object.h"
+#include "settings.h"
+#include "utils.h"
 
-#include <QString>
-#include <QList>
-#include <QFormLayout>
-#include <QPushButton>
-#include <QFrame>
 #include <QDebug>
+#include <QFormLayout>
+#include <QFrame>
+#include <QList>
+#include <QPushButton>
+#include <QString>
 
 FindWidget::FindWidget(const QList<QString> classes, const QString &default_base)
-: QWidget()
-{
+: QWidget() {
     select_base_widget = new SelectBaseWidget(default_base);
 
     filter_widget = new FilterWidget(classes);

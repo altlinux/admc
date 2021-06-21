@@ -37,7 +37,7 @@ class QLabel;
 // MembersTab and MemberOfTab implement both of those
 
 class MembershipTab : public PropertiesTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     void load(AdInterface &ad, const AdObject &object) override;

@@ -26,7 +26,7 @@
 class QComboBox;
 
 class GroupScopeEdit final : public AttributeEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     GroupScopeEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();

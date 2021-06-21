@@ -19,23 +19,23 @@
  */
 
 #include "tabs/attributes_tab.h"
-#include "editors/attribute_editor.h"
 #include "adldap.h"
+#include "editors/attribute_editor.h"
 #include "globals.h"
-#include "utils.h"
 #include "settings.h"
+#include "utils.h"
 
-#include <QTreeView>
-#include <QVBoxLayout>
-#include <QStandardItemModel>
-#include <QMessageBox>
-#include <QPushButton>
+#include <QCheckBox>
 #include <QDialog>
 #include <QDialogButtonBox>
-#include <QCheckBox>
 #include <QFrame>
-#include <QLabel>
 #include <QHeaderView>
+#include <QLabel>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QStandardItemModel>
+#include <QTreeView>
+#include <QVBoxLayout>
 
 enum AttributesColumn {
     AttributesColumn_Name,
@@ -48,11 +48,12 @@ QString attribute_type_display_string(const AttributeType type);
 
 AttributesTab::AttributesTab() {
     model = new QStandardItemModel(0, AttributesColumn_COUNT, this);
-    set_horizontal_header_labels_from_map(model, {
-        {AttributesColumn_Name, tr("Name")},
-        {AttributesColumn_Value, tr("Value")},
-        {AttributesColumn_Type, tr("Type")}
-    });
+    set_horizontal_header_labels_from_map(model,
+        {
+            {AttributesColumn_Name, tr("Name")},
+            {AttributesColumn_Value, tr("Value")},
+            {AttributesColumn_Type, tr("Type")},
+        });
 
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -102,9 +103,8 @@ void AttributesTab::edit_attribute() {
 
     const QModelIndex proxy_index = selecteds[0];
     const QModelIndex index = proxy->mapToSource(proxy_index);
-    
-    const QList<QStandardItem *> row =
-    [this, index]() {
+
+    const QList<QStandardItem *> row = [this, index]() {
         QList<QStandardItem *> out;
         for (int col = 0; col < AttributesColumn_COUNT; col++) {
             const QModelIndex item_index = index.siblingAtColumn(col);
@@ -144,8 +144,7 @@ void AttributesTab::open_filter_dialog() {
 
     QHash<AttributeFilter, QCheckBox *> checks;
 
-    auto make_frame =
-    []() -> QFrame * {
+    auto make_frame = []() -> QFrame * {
         auto frame = new QFrame();
         frame->setFrameShape(QFrame::Box);
         frame->setFrameShadow(QFrame::Raised);
@@ -154,8 +153,7 @@ void AttributesTab::open_filter_dialog() {
         return frame;
     };
 
-    auto add_check =
-    [this, &checks](const QString text, const AttributeFilter filter) {
+    auto add_check = [this, &checks](const QString text, const AttributeFilter filter) {
         auto check = new QCheckBox(text);
         const bool is_checked = proxy->filters[filter];
         check->setChecked(is_checked);
@@ -221,8 +219,7 @@ void AttributesTab::open_filter_dialog() {
             proxy->invalidate();
 
             // Save filters to settings
-            const QVariant filters_variant =
-            [=]() {
+            const QVariant filters_variant = [=]() {
                 QList<QVariant> filters_list;
 
                 for (int filter_i = 0; filter_i < AttributeFilter_COUNT; filter_i++) {
@@ -311,8 +308,7 @@ AttributesTabProxy::AttributesTabProxy(QObject *parent)
     for (int filter_i = 0; filter_i < AttributeFilter_COUNT; filter_i++) {
         const AttributeFilter filter = (AttributeFilter) filter_i;
 
-        const bool filter_is_set =
-        [&]() {
+        const bool filter_is_set = [&]() {
             if (filter_i < filters_list.size()) {
                 return filters_list[filter_i].toBool();
             } else {
@@ -335,7 +331,7 @@ void AttributesTabProxy::load(const AdObject &object) {
 bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
     auto source = sourceModel();
     const QString attribute = source->index(source_row, AttributesColumn_Name, source_parent).data().toString();
-    
+
     const bool system_only = g_adconfig->get_attribute_is_system_only(attribute);
     const bool unset = !set_attributes.contains(attribute);
     const bool mandatory = mandatory_attributes.contains(attribute);

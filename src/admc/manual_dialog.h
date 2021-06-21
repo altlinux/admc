@@ -28,7 +28,7 @@
 #include <QDialog>
 
 class ManualDialog : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     ManualDialog(QWidget *parent);

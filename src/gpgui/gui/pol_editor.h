@@ -24,7 +24,7 @@
 #include <QString>
 
 class PolEditor final : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     PolEditor(const QString &path);

@@ -26,7 +26,7 @@
 class CountryWidget;
 
 class CountryEdit final : public AttributeEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     CountryEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();

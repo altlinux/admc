@@ -39,7 +39,7 @@ enum ContainerRole {
 };
 
 class SelectContainerDialog : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     SelectContainerDialog(QWidget *parent);

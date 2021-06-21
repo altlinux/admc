@@ -29,7 +29,8 @@
 class AdConfig;
 class QString;
 class QByteArray;
-template <typename T> class QList;
+template <typename T>
+class QList;
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value, const AdConfig *adconfig);
 QString attribute_display_values(const QString &attribute, const QList<QByteArray> &values, const AdConfig *adconfig);

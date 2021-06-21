@@ -19,20 +19,20 @@
  */
 
 #include "tabs/general_tab.h"
-#include "edits/string_edit.h"
-#include "edits/string_other_edit.h"
+#include "adldap.h"
 #include "edits/country_edit.h"
 #include "edits/group_scope_edit.h"
 #include "edits/group_type_edit.h"
-#include "adldap.h"
+#include "edits/string_edit.h"
+#include "edits/string_other_edit.h"
 
-#include <QLabel>
 #include <QFormLayout>
 #include <QFrame>
+#include <QLabel>
 
 // TODO: other object types also have special general tab versions, like top level domain object for example. Find out all of them and implement them
 
-GeneralTab::GeneralTab(const AdObject &object) {   
+GeneralTab::GeneralTab(const AdObject &object) {
     auto name_label = new QLabel();
     const QString name = object.get_string(ATTRIBUTE_NAME);
     name_label->setText(name);
@@ -78,10 +78,10 @@ GeneralTab::GeneralTab(const AdObject &object) {
     } else if (object.is_class(CLASS_COMPUTER)) {
         auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, CLASS_COMPUTER, &edits, this);
         sama_edit->set_read_only(true);
-        
+
         auto dns_edit = new StringEdit(ATTRIBUTE_DNS_HOST_NAME, CLASS_COMPUTER, &edits, this);
         dns_edit->set_read_only(true);
-        
+
         new StringEdit(ATTRIBUTE_DESCRIPTION, CLASS_COMPUTER, &edits, this);
 
         // TODO: more string edits for: site (probably just site?), dc type (no idea)
@@ -93,9 +93,9 @@ GeneralTab::GeneralTab(const AdObject &object) {
             ATTRIBUTE_INFO,
         };
         StringEdit::make_many(string_attributes, CLASS_GROUP, &edits, this);
-        
+
         auto scope_edit = new GroupScopeEdit(&edits, this);
-        
+
         auto type_edit = new GroupTypeEdit(&edits, this);
 
         const bool is_critical_system_object = object.get_bool(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT);
@@ -108,5 +108,5 @@ GeneralTab::GeneralTab(const AdObject &object) {
     }
 
     edits_add_to_layout(edits, edits_layout);
-    edits_connect_to_tab(edits, this);  
+    edits_connect_to_tab(edits, this);
 }

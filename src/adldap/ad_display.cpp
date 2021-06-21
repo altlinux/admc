@@ -20,22 +20,22 @@
 
 #include "ad_display.h"
 
+#include "ad_config.h"
 #include "ad_defines.h"
 #include "ad_utils.h"
-#include "ad_config.h"
 #include "samba/dom_sid.h"
 
-#include <QString>
-#include <QDateTime>
-#include <QByteArray> 
-#include <QList> 
+#include <QByteArray>
 #include <QCoreApplication>
+#include <QDateTime>
+#include <QList>
+#include <QString>
 #include <algorithm>
 
-const qint64 SECONDS_TO_MILLIS  = 1000LL;
+const qint64 SECONDS_TO_MILLIS = 1000LL;
 const qint64 MINUTES_TO_SECONDS = 60LL;
-const qint64 HOURS_TO_SECONDS   = MINUTES_TO_SECONDS * 60LL;
-const qint64 DAYS_TO_SECONDS    = HOURS_TO_SECONDS * 24LL;
+const qint64 HOURS_TO_SECONDS = MINUTES_TO_SECONDS * 60LL;
+const qint64 DAYS_TO_SECONDS = HOURS_TO_SECONDS * 24LL;
 
 QString large_integer_datetime_display_value(const QString &attribute, const QByteArray &bytes, const AdConfig *adconfig);
 QString datetime_display_value(const QString &attribute, const QByteArray &bytes, const AdConfig *adconfig);
@@ -117,7 +117,7 @@ QString object_sid_display_value(const QByteArray &sid_bytes) {
 
 QString large_integer_datetime_display_value(const QString &attribute, const QByteArray &value, const AdConfig *adconfig) {
     const QString value_string = QString(value);
-    
+
     if (large_integer_datetime_is_never(value_string)) {
         return QCoreApplication::translate("attribute_display", "(never)");
     } else {
@@ -148,8 +148,7 @@ QString timespan_display_value(const QByteArray &bytes) {
         return "(never)";
     }
 
-    qint64 seconds_total =
-    [hundred_nanos_negative]() {
+    qint64 seconds_total = [hundred_nanos_negative]() {
         const qint64 hundred_nanos = -hundred_nanos_negative;
         const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
         const qint64 seconds = millis / SECONDS_TO_MILLIS;
@@ -160,18 +159,17 @@ QString timespan_display_value(const QByteArray &bytes) {
     const qint64 days = seconds_total / DAYS_TO_SECONDS;
     seconds_total = days % DAYS_TO_SECONDS;
 
-    const qint64 hours = seconds_total / HOURS_TO_SECONDS; 
+    const qint64 hours = seconds_total / HOURS_TO_SECONDS;
     seconds_total = hours % HOURS_TO_SECONDS;
 
-    const qint64 minutes = seconds_total / MINUTES_TO_SECONDS; 
+    const qint64 minutes = seconds_total / MINUTES_TO_SECONDS;
     seconds_total = minutes % MINUTES_TO_SECONDS;
 
     const qint64 seconds = seconds_total;
 
     // Convert arbitrary time unit value to string with format
     // "00-99" with leading zero if needed
-    const auto time_unit_to_string =
-    [](qint64 time) -> QString {
+    const auto time_unit_to_string = [](qint64 time) -> QString {
         if (time > 99) {
             time = 99;
         }
@@ -215,8 +213,7 @@ QString guid_to_display_value(const QByteArray &bytes) {
     std::reverse(segments[1].begin(), segments[1].end());
     std::reverse(segments[2].begin(), segments[2].end());
 
-    const QString guid_display_string =
-    [&]() {
+    const QString guid_display_string = [&]() {
         QString out;
 
         for (int i = 0; i < segments_count; i++) {

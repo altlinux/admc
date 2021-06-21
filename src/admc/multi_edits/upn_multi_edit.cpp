@@ -20,20 +20,19 @@
 
 #include "multi_edits/upn_multi_edit.h"
 
-#include "utils.h"
 #include "adldap.h"
-#include "globals.h"
 #include "edits/upn_suffix_widget.h"
+#include "globals.h"
+#include "utils.h"
 
-#include <QLineEdit>
-#include <QFormLayout>
-#include <QMessageBox>
 #include <QComboBox>
+#include <QFormLayout>
 #include <QLabel>
+#include <QLineEdit>
+#include <QMessageBox>
 
 UpnMultiEdit::UpnMultiEdit(QList<AttributeMultiEdit *> &edits_out, AdInterface &ad, QObject *parent)
-: AttributeMultiEdit(edits_out, parent)
-{
+: AttributeMultiEdit(edits_out, parent) {
     upn_suffix_widget = new UpnSuffixWidget(ad);
 
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER) + ":";
@@ -51,12 +50,11 @@ void UpnMultiEdit::add_to_layout(QFormLayout *layout) {
 }
 
 bool UpnMultiEdit::apply_internal(AdInterface &ad, const QString &target) {
-    const QString new_value =
-    [&]() {
+    const QString new_value = [&]() {
         const AdObject current_object = ad.search_object(target);
         const QString current_prefix = current_object.get_upn_prefix();
         const QString new_suffix = upn_suffix_widget->get_suffix();
-        
+
         return QString("%1@%2").arg(current_prefix, new_suffix);
     }();
 

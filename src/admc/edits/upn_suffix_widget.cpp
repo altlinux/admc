@@ -27,12 +27,10 @@
 #include <QVBoxLayout>
 
 UpnSuffixWidget::UpnSuffixWidget(AdInterface &ad)
-: QWidget()
-{
+: QWidget() {
     combo = new QComboBox();
 
-    const QList<QString> suffixes =
-    [&]() {
+    const QList<QString> suffixes = [&]() {
         QList<QString> out;
 
         const QString partitions_dn = g_adconfig->partitions_dn();
@@ -78,7 +76,7 @@ void UpnSuffixWidget::load(const AdObject &object) {
         combo->setCurrentIndex(suffix_index);
     } else {
         combo->addItem(suffix);
-        
+
         const int added_index = combo->findText(suffix);
         combo->setCurrentIndex(added_index);
     }

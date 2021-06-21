@@ -31,7 +31,7 @@ class QComboBox;
 class QString;
 
 class SelectBaseWidget final : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     SelectBaseWidget(const QString &default_base = QString());

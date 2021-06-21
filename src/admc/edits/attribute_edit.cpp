@@ -24,8 +24,7 @@
 #include <QDebug>
 
 AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
-: QObject(parent)
-{
+: QObject(parent) {
     if (edits_out != nullptr) {
         if (edits_out->contains(this)) {
             qDebug() << "ERROR: attribute edit added twice to list!";

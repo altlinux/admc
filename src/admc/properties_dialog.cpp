@@ -20,35 +20,35 @@
 
 #include "properties_dialog.h"
 
-#include "tabs/properties_tab.h"
-#include "tabs/attributes_tab.h"
-#include "tabs/membership_tab.h"
-#include "tabs/account_tab.h"
-#include "tabs/general_tab.h"
-#include "tabs/address_tab.h"
-#include "tabs/object_tab.h"
-#include "tabs/group_policy_tab.h"
-#include "tabs/gpo_links_tab.h"
-#include "tabs/organization_tab.h"
-#include "tabs/telephones_tab.h"
-#include "tabs/profile_tab.h"
-#include "tabs/managed_by_tab.h"
-#include "tabs/security_tab.h"
 #include "adldap.h"
+#include "console_types/console_object.h"
 #include "globals.h"
 #include "settings.h"
 #include "status.h"
-#include "utils.h"
 #include "tab_widget.h"
-#include "console_types/console_object.h"
+#include "tabs/account_tab.h"
+#include "tabs/address_tab.h"
+#include "tabs/attributes_tab.h"
+#include "tabs/general_tab.h"
+#include "tabs/gpo_links_tab.h"
+#include "tabs/group_policy_tab.h"
+#include "tabs/managed_by_tab.h"
+#include "tabs/membership_tab.h"
+#include "tabs/object_tab.h"
+#include "tabs/organization_tab.h"
+#include "tabs/profile_tab.h"
+#include "tabs/properties_tab.h"
+#include "tabs/security_tab.h"
+#include "tabs/telephones_tab.h"
+#include "utils.h"
 
-#include <QAction>
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QDebug>
 #include <QAbstractItemView>
+#include <QAction>
+#include <QDebug>
+#include <QDialogButtonBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 PropertiesDialog *PropertiesDialog::open_for_target(const QString &target) {
     if (target.isEmpty()) {
@@ -92,7 +92,7 @@ void PropertiesDialog::open_when_view_item_activated(QAbstractItemView *view, co
         view, &QAbstractItemView::doubleClicked,
         [dn_role](const QModelIndex &index) {
             const QString dn = index.data(dn_role).toString();
-            
+
             open_for_target(dn);
         });
 }
@@ -102,8 +102,7 @@ QString PropertiesDialog::display_name() {
 }
 
 PropertiesDialog::PropertiesDialog(const QString &target_arg)
-: QDialog()
-{
+: QDialog() {
     target = target_arg;
     is_modified = false;
 
@@ -141,22 +140,21 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
 
     if (object.is_empty()) {
         auto no_object_label = new QLabel(tr("Object could not be found"));
-        layout->addWidget(no_object_label);    
+        layout->addWidget(no_object_label);
         layout->addWidget(button_box);
 
         button_box->setEnabled(false);
-        
+
         return;
     }
 
     auto tab_widget = new TabWidget();
-    
+
     layout->addWidget(tab_widget);
-    layout->addWidget(button_box);    
+    layout->addWidget(button_box);
 
     // Create new tabs
-    const auto add_tab =
-    [this, tab_widget](PropertiesTab *tab, const QString &title) {
+    const auto add_tab = [this, tab_widget](PropertiesTab *tab, const QString &title) {
         tabs.append(tab);
         tab_widget->add_tab(tab, title);
     };
@@ -213,7 +211,6 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
 
     reset();
 
-
     connect(
         ok_button, &QPushButton::clicked,
         this, &PropertiesDialog::ok);
@@ -244,8 +241,7 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
     auto dialog = new QDialog(this);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-    const QString explanation_text =
-    [&]() {
+    const QString explanation_text = [&]() {
         if (new_tab == attributes_tab) {
             return tr("You're switching to attributes tab, while another tab has unapplied changes. Choose to apply or discard those changes.");
         } else {
@@ -313,7 +309,7 @@ bool PropertiesDialog::apply() {
     show_busy_indicator();
 
     bool total_apply_success = true;
-    
+
     for (auto tab : tabs) {
         const bool apply_success = tab->apply(ad, target);
         if (!apply_success) {

@@ -26,7 +26,7 @@
 class QDateTimeEdit;
 
 class DateTimeEditor final : public AttributeEditor {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     DateTimeEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);

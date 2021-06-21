@@ -21,8 +21,8 @@
 #ifndef GROUP_POLICY_TAB_H
 #define GROUP_POLICY_TAB_H
 
-#include "tabs/properties_tab.h"
 #include "gplink.h"
+#include "tabs/properties_tab.h"
 
 class QTreeView;
 class QString;
@@ -37,7 +37,7 @@ class QPoint;
  */
 
 class GroupPolicyTab final : public PropertiesTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     GroupPolicyTab();

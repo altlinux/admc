@@ -19,10 +19,10 @@
 
 #include "file.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
 #include <QFile>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include <libsmbclient.h>
 
@@ -39,8 +39,7 @@ enum FileLocation {
     FileLocation_Smb
 };
 
-void get_auth_data_fn(const char * pServer, const char * pShare, char * pWorkgroup, int maxLenWorkgroup, char * pUsername, int maxLenUsername, char * pPassword, int maxLenPassword) {
-
+void get_auth_data_fn(const char *pServer, const char *pShare, char *pWorkgroup, int maxLenWorkgroup, char *pUsername, int maxLenUsername, char *pPassword, int maxLenPassword) {
 }
 
 SMBCCTX *make_smbc_context() {
@@ -82,17 +81,17 @@ QList<QString> file_get_children(const QString &path) {
     const FileLocation location = get_file_location(path);
 
     auto add_child =
-    [path, &children](const char *child_name_cstr) {
-        const QString child_name(child_name_cstr);
+        [path, &children](const char *child_name_cstr) {
+            const QString child_name(child_name_cstr);
 
-        const bool is_dot_path = (child_name == "." || child_name == "..");
-        if (is_dot_path) {
-            return;
-        } else {
-            const QString child_path = path + "/" + child_name;
-            children.append(child_path);
-        }
-    };
+            const bool is_dot_path = (child_name == "." || child_name == "..");
+            if (is_dot_path) {
+                return;
+            } else {
+                const QString child_path = path + "/" + child_name;
+                children.append(child_path);
+            }
+        };
 
     switch (location) {
         case FileLocation_Local: {
@@ -153,7 +152,7 @@ QByteArray file_read(const QString &path) {
                 file.close();
 
                 return bytes;
-            } else  {
+            } else {
                 printf("Error: file_read failed to open %s\n", qPrintable(path));
 
                 return QByteArray();
@@ -166,7 +165,7 @@ QByteArray file_read(const QString &path) {
 
             const QByteArray path_bytes = path.toUtf8();
             const char *path_cstr = path_bytes.constData();
-            
+
             const int file = smbc_open(path_cstr, O_RDONLY, 0);
 
             const bool open_success = (file > 0);
@@ -176,7 +175,7 @@ QByteArray file_read(const QString &path) {
                 char buffer[buffer_size];
 
                 smbc_ftruncate(file, 0);
-                const ssize_t bytes_read = smbc_read(file, (void *)buffer, buffer_size);
+                const ssize_t bytes_read = smbc_read(file, (void *) buffer, buffer_size);
 
                 smbc_close(file);
 
@@ -207,7 +206,7 @@ void file_write(const QString &path, const QByteArray &bytes) {
             if (open_success) {
                 file.write(bytes);
                 file.close();
-            } else  {
+            } else {
                 printf("Error: file_write failed to open file\n");
             }
 
@@ -226,7 +225,7 @@ void file_write(const QString &path, const QByteArray &bytes) {
                 const char *new_contents = bytes.constData();
 
                 smbc_ftruncate(file, 0);
-                smbc_write(file, (void *)new_contents, bytes.size());
+                smbc_write(file, (void *) new_contents, bytes.size());
 
                 smbc_close(file);
             } else {

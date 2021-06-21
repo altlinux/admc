@@ -28,7 +28,7 @@ class ConsoleWidget;
 class EditQueryItemWidget;
 
 class EditQueryItemDialog : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     EditQueryItemDialog(ConsoleWidget *console_arg);

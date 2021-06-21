@@ -20,16 +20,15 @@
 
 #include "multi_edits/expiry_multi_edit.h"
 
-#include "edits/expiry_widget.h"
 #include "adldap.h"
+#include "edits/expiry_widget.h"
 #include "globals.h"
 
 #include <QFormLayout>
 #include <QLabel>
 
 ExpiryMultiEdit::ExpiryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
-: AttributeMultiEdit(edits_out, parent)
-{
+: AttributeMultiEdit(edits_out, parent) {
     edit_widget = new ExpiryWidget();
 
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";

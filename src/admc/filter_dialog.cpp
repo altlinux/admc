@@ -21,20 +21,20 @@
 #include "filter_dialog.h"
 
 #include "adldap.h"
-#include "globals.h"
-#include "filter_widget/filter_widget.h"
-#include "filter_custom_dialog.h"
 #include "filter_classes_widget.h"
+#include "filter_custom_dialog.h"
+#include "filter_widget/filter_widget.h"
+#include "globals.h"
 
-#include <QDialogButtonBox>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QRadioButton>
-#include <QPushButton>
-#include <QFrame>
-#include <QScrollArea>
 #include <QCheckBox>
 #include <QDebug>
+#include <QDialogButtonBox>
+#include <QFrame>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QScrollArea>
+#include <QVBoxLayout>
 
 // TODO: implement canceling. Need to be able to load/unload
 // filter widget state though. For example, one way to
@@ -42,12 +42,11 @@
 // it when cancel is pressed.
 
 FilterDialog::FilterDialog(QWidget *parent)
-: QDialog(parent)
-{   
+: QDialog(parent) {
     setWindowTitle(tr("Filter contents"));
     resize(400, 400);
 
-    const QList<QString> noncontainer_classes = g_adconfig->get_noncontainer_classes();   
+    const QList<QString> noncontainer_classes = g_adconfig->get_noncontainer_classes();
 
     filter_widget = new FilterWidget(noncontainer_classes);
 
@@ -119,7 +118,7 @@ QString FilterDialog::get_filter() const {
     } else if (custom_button->isChecked()) {
         return custom_dialog->filter_widget->get_filter();
     }
-    
+
     return QString();
 }
 

@@ -21,19 +21,18 @@
 #include "create_policy_dialog.h"
 
 #include "adldap.h"
-#include "status.h"
-#include "globals.h"
-#include "console_widget/console_widget.h"
 #include "console_types/console_policy.h"
+#include "console_widget/console_widget.h"
+#include "globals.h"
+#include "status.h"
 
-#include <QLineEdit>
 #include <QFormLayout>
-#include <QPushButton>
+#include <QLineEdit>
 #include <QMessageBox>
+#include <QPushButton>
 
 CreatePolicyDialog::CreatePolicyDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg)
-{
+: QDialog(console_arg) {
     console = console_arg;
 
     setMinimumWidth(400);
@@ -78,8 +77,7 @@ void CreatePolicyDialog::accept() {
     // NOTE: since this is *display name*, not just name,
     // have to manually check for conflict. Server wouldn't
     // catch this.
-    const bool name_conflict =
-    [&]() {
+    const bool name_conflict = [&]() {
         const QString base = g_adconfig->domain_head();
         const SearchScope scope = SearchScope_All;
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DISPLAY_NAME, name);

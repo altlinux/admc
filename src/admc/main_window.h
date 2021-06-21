@@ -28,7 +28,7 @@ class CentralWidget;
 class QDockWidget;
 
 class MainWindow final : public QMainWindow {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     MainWindow();

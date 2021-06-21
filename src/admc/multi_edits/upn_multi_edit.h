@@ -32,7 +32,7 @@ class QLineEdit;
 class UpnSuffixWidget;
 
 class UpnMultiEdit final : public AttributeMultiEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     UpnMultiEdit(QList<AttributeMultiEdit *> &edits_out, AdInterface &ad, QObject *parent);
 

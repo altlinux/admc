@@ -19,15 +19,14 @@
  */
 
 #include "edits/gpoptions_edit.h"
-#include "utils.h"
 #include "adldap.h"
+#include "utils.h"
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QHash>
 
 GpoptionsEdit::GpoptionsEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent)
-{
+: AttributeEdit(edits_out, parent) {
     check = new QCheckBox();
 
     QObject::connect(
@@ -54,8 +53,7 @@ void GpoptionsEdit::add_to_layout(QFormLayout *layout) {
 }
 
 bool GpoptionsEdit::apply(AdInterface &ad, const QString &dn) const {
-    const QString new_value =
-    [this]() {
+    const QString new_value = [this]() {
         const bool checked = check->isChecked();
         if (checked) {
             return GPOPTIONS_BLOCK_INHERITANCE;

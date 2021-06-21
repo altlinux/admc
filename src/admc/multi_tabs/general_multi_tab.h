@@ -29,7 +29,7 @@
 #include "multi_tabs/properties_multi_tab.h"
 
 class GeneralMultiTab final : public PropertiesMultiTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     GeneralMultiTab(const QList<QString> &class_list);

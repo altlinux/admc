@@ -21,18 +21,18 @@
 #include "tabs/group_policy_tab.h"
 
 #include "adldap.h"
-#include "utils.h"
-#include "select_policy_dialog.h"
 #include "edits/gpoptions_edit.h"
 #include "globals.h"
+#include "select_policy_dialog.h"
+#include "utils.h"
 
-#include <QTreeView>
-#include <QVBoxLayout>
+#include <QDebug>
 #include <QFormLayout>
-#include <QStandardItemModel>
 #include <QMenu>
 #include <QPushButton>
-#include <QDebug>
+#include <QStandardItemModel>
+#include <QTreeView>
+#include <QVBoxLayout>
 
 enum GplinkColumn {
     GplinkColumn_Name,
@@ -47,17 +47,17 @@ enum GplinkRole {
 
 const QSet<GplinkColumn> option_columns = {
     GplinkColumn_Disabled,
-    GplinkColumn_Enforced
+    GplinkColumn_Enforced,
 };
 
 const QHash<GplinkColumn, GplinkOption> column_to_option = {
     {GplinkColumn_Disabled, GplinkOption_Disabled},
-    {GplinkColumn_Enforced, GplinkOption_Enforced}
+    {GplinkColumn_Enforced, GplinkOption_Enforced},
 };
 
 QString gplink_option_to_display_string(const QString &option);
 
-GroupPolicyTab::GroupPolicyTab() {   
+GroupPolicyTab::GroupPolicyTab() {
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -65,11 +65,12 @@ GroupPolicyTab::GroupPolicyTab() {
     view->setSortingEnabled(true);
 
     model = new QStandardItemModel(0, GplinkColumn_COUNT, this);
-    set_horizontal_header_labels_from_map(model, {
-        {GplinkColumn_Name, tr("Name")},
-        {GplinkColumn_Disabled, tr("Disabled")},
-        {GplinkColumn_Enforced, tr("Enforced")},
-    });
+    set_horizontal_header_labels_from_map(model,
+        {
+            {GplinkColumn_Name, tr("Name")},
+            {GplinkColumn_Disabled, tr("Disabled")},
+            {GplinkColumn_Enforced, tr("Enforced")},
+        });
 
     view->setModel(model);
 
@@ -113,15 +114,15 @@ void GroupPolicyTab::load(AdInterface &ad, const AdObject &object) {
     const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
     gplink = Gplink(gplink_string);
     original_gplink_string = gplink_string;
-    
+
     reload_gplink();
-    
+
     PropertiesTab::load(ad, object);
 }
 
 bool GroupPolicyTab::apply(AdInterface &ad, const QString &target) {
     bool total_success = true;
-    
+
     const bool gplink_changed = !gplink.equals(original_gplink_string);
     if (gplink_changed) {
         const QString gplink_string = gplink.to_string();
@@ -141,7 +142,7 @@ bool GroupPolicyTab::apply(AdInterface &ad, const QString &target) {
     if (!apply_success) {
         total_success = false;
     }
-    
+
     return total_success;
 }
 
@@ -174,7 +175,7 @@ void GroupPolicyTab::on_add_button() {
         dialog, &SelectPolicyDialog::accepted,
         [this, dialog]() {
             const QList<QString> selected = dialog->get_selected_dns();
-            
+
             add_link(selected);
         });
 
@@ -192,7 +193,7 @@ void GroupPolicyTab::on_remove_button() {
         selected.append(gpo);
     }
 
-    remove_link(selected);    
+    remove_link(selected);
 }
 
 void GroupPolicyTab::add_link(QList<QString> gps) {
@@ -253,7 +254,7 @@ void GroupPolicyTab::reload_gplink() {
             continue;
         }
 
-        const AdObject object  = results[dn];
+        const AdObject object = results[dn];
 
         const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
 
@@ -265,8 +266,7 @@ void GroupPolicyTab::reload_gplink() {
             QStandardItem *item = row[column];
             item->setCheckable(true);
 
-            const Qt::CheckState checkstate =
-            [=]() {
+            const Qt::CheckState checkstate = [=]() {
                 const GplinkOption option = column_to_option[column];
                 const bool option_is_set = gplink.get_option(dn, option);
                 if (option_is_set) {

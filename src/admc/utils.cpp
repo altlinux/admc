@@ -20,31 +20,31 @@
 
 #include "utils.h"
 
-#include "settings.h"
 #include "adldap.h"
-#include "globals.h"
-#include "status.h"
 #include "console_widget/console_widget.h"
+#include "globals.h"
+#include "settings.h"
+#include "status.h"
 
 #include <QAbstractItemModel>
-#include <QSortFilterProxyModel>
 #include <QAbstractItemView>
+#include <QCheckBox>
+#include <QCursor>
+#include <QGuiApplication>
+#include <QHash>
+#include <QHeaderView>
+#include <QLineEdit>
+#include <QList>
+#include <QMap>
+#include <QMenu>
+#include <QMessageBox>
 #include <QModelIndex>
 #include <QPersistentModelIndex>
-#include <QCheckBox>
-#include <QStandardItem>
-#include <QMenu>
-#include <QTreeView>
-#include <QHeaderView>
-#include <QStandardItemModel>
-#include <QLineEdit>
-#include <QGuiApplication>
-#include <QCursor>
-#include <QList>
 #include <QPoint>
-#include <QMap>
-#include <QHash>
-#include <QMessageBox>
+#include <QSortFilterProxyModel>
+#include <QStandardItem>
+#include <QStandardItemModel>
+#include <QTreeView>
 
 QList<QStandardItem *> make_item_row(const int count) {
     QList<QStandardItem *> row;
@@ -64,8 +64,7 @@ void exec_menu_from_view(QMenu *menu, const QAbstractItemView *view, const QPoin
 
 void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap<int, QString> &labels_map) {
     for (int col = 0; col < model->columnCount(); col++) {
-        const QString label =
-        [=]() {
+        const QString label = [=]() {
             if (labels_map.contains(col)) {
                 return labels_map[col];
             } else {
@@ -80,8 +79,7 @@ void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap
 void show_only_in_dev_mode(QWidget *widget) {
     const BoolSettingSignal *dev_mode_signal = g_settings->get_bool_signal(BoolSetting_DevMode);
 
-    const auto do_it =
-    [widget]() {
+    const auto do_it = [widget]() {
         const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
         widget->setVisible(dev_mode);
     };
@@ -101,8 +99,7 @@ void set_line_edit_to_numbers_only(QLineEdit *edit) {
 void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view) {
     auto selection_model = view->selectionModel();
 
-    auto do_it =
-    [widget, selection_model]() {
+    auto do_it = [widget, selection_model]() {
         const bool has_selection = selection_model->hasSelection();
         widget->setEnabled(has_selection);
     };
@@ -117,7 +114,7 @@ void resize_columns(QTreeView *view, const QHash<int, double> widths) {
     for (const int col : widths.keys()) {
         const double width_ratio = widths[col];
         const int width = (int) (view->width() * width_ratio);
-        
+
         view->setColumnWidth(col, width);
     }
 }
@@ -137,7 +134,7 @@ bool confirmation_dialog(const QString &text, QWidget *parent) {
     }
 
     const QString title = QObject::tr("Confirm action");
-    const QMessageBox::StandardButton reply = QMessageBox::question(parent, title, text, QMessageBox::Yes|QMessageBox::No);
+    const QMessageBox::StandardButton reply = QMessageBox::question(parent, title, text, QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes) {
         return true;
@@ -207,8 +204,7 @@ QIcon get_object_icon(const AdObject &object) {
     QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
     std::reverse(object_classes.begin(), object_classes.end());
 
-    const QString icon_name =
-    [object_classes]() -> QString {
+    const QString icon_name = [object_classes]() -> QString {
         for (auto object_class : object_classes) {
             if (class_to_icon.contains(object_class)) {
                 return class_to_icon[object_class];
@@ -235,7 +231,7 @@ QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &ind
 
 QModelIndex get_selected_scope_index(ConsoleWidget *console) {
     const QList<QModelIndex> selected_indexes = console->get_selected_items();
-    
+
     if (selected_indexes.size() == 1) {
         const QModelIndex index = selected_indexes[0];
         const QModelIndex scope_index = console_item_convert_to_scope_index(index);

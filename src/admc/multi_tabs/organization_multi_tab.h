@@ -24,7 +24,7 @@
 #include "multi_tabs/properties_multi_tab.h"
 
 class OrganizationMultiTab final : public PropertiesMultiTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     OrganizationMultiTab();

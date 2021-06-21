@@ -27,7 +27,8 @@ class QTreeView;
 class ObjectModel;
 class QString;
 class QStandardItemModel;
-template <typename T> class QList;
+template <typename T>
+class QList;
 
 enum SelectObjectDialogMultiSelection {
     SelectObjectDialogMultiSelection_Yes,
@@ -35,11 +36,11 @@ enum SelectObjectDialogMultiSelection {
 };
 
 class SelectObjectDialog final : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     SelectObjectDialog(QList<QString> classes_arg, SelectObjectDialogMultiSelection multi_selection, QWidget *parent);
-    
+
     QList<QString> get_selected() const;
 
 public slots:
@@ -54,7 +55,6 @@ private:
     QStandardItemModel *model;
     QList<QString> classes;
     SelectObjectDialogMultiSelection multi_selection;
-
 
     void showEvent(QShowEvent *event);
 };

@@ -28,7 +28,7 @@
 class QScrollArea;
 
 class AccountOptionMultiEdit final : public AttributeMultiEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     AccountOptionMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 

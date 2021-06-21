@@ -28,7 +28,7 @@
  */
 
 class ScopeModel : public QSortFilterProxyModel {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     using QSortFilterProxyModel::QSortFilterProxyModel;

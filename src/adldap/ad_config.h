@@ -34,18 +34,19 @@ class AdInterface;
 class QLocale;
 class QString;
 class QLineEdit;
-template <typename T> class QList;
+template <typename T>
+class QList;
 
 // NOTE: name strings to reduce confusion
 typedef QString ObjectClass;
 typedef QString Attribute;
 
 class AdConfig {
-    
+
 public:
     AdConfig();
     ~AdConfig();
-    
+
     void load(AdInterface &ad, const QLocale &locale);
 
     QString domain() const;
@@ -83,7 +84,7 @@ public:
     void limit_edit(QLineEdit *edit, const QString &attribute);
 
     QString get_right_guid(const QString &right_cn) const;
-    
+
     QList<QString> get_noncontainer_classes();
 
 private:

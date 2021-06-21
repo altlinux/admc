@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <catch2/catch.hpp>
 #include "preg_writer.h"
+#include <catch2/catch.hpp>
 
 TEST_CASE("Test if PReg file may be written to disk", "[preg_writer]" /*"[!hide]"*/) {
     preg::entry pe;
@@ -25,7 +25,7 @@ TEST_CASE("Test if PReg file may be written to disk", "[preg_writer]" /*"[!hide]
     pe.key_name = "sudo";
     pe.type = 4;
     pe.size = 5;
-    pe.value = new char[5]{ 'T', 'e', 's', 't', '1' };
+    pe.value = new char[5]{'T', 'e', 's', 't', '1'};
 
     std::string preg_path = "test.pol";
 
@@ -34,4 +34,3 @@ TEST_CASE("Test if PReg file may be written to disk", "[preg_writer]" /*"[!hide]
         pw.add_entry(pe);
     }
 }
-

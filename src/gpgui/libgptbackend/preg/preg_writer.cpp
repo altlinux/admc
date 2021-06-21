@@ -37,10 +37,10 @@ void preg::preg_writer::close() {
 } /* preg::preg_writer::close() */
 
 void preg::preg_writer::add_entry(preg::entry &pentry) {
-    char null_terminator[2]{ '\x00', '\x00' };
-    char separator[2]{ ';', '\x00' };
-    char range_start[2]{ '[', '\x00' };
-    char range_end[2]{ ']', '\x00' };
+    char null_terminator[2]{'\x00', '\x00'};
+    char separator[2]{';', '\x00'};
+    char range_start[2]{'[', '\x00'};
+    char range_end[2]{']', '\x00'};
 
     gptbackend::iconv_wrapper iw("UTF-8", "UTF-16LE");
 
@@ -79,4 +79,3 @@ void preg::preg_writer::add_entry(preg::entry &pentry) {
     this->preg_file.write(pentry.value, pentry.size);
     this->preg_file.write(range_end, 2);
 } /* void preg::preg_writer::add_entry() */
-

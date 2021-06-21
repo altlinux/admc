@@ -23,13 +23,12 @@
 #include "adldap.h"
 #include "globals.h"
 
-#include <QLineEdit>
 #include <QFormLayout>
 #include <QLabel>
+#include <QLineEdit>
 
 StringMultiEdit::StringMultiEdit(const QString &attribute_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
-: AttributeMultiEdit(edits_out, parent)
-{
+: AttributeMultiEdit(edits_out, parent) {
     attribute = attribute_arg;
 
     // NOTE: default to using user object class for

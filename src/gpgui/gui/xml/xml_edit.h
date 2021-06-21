@@ -22,8 +22,8 @@
 
 #include "xml_attribute.h"
 
-#include <QObject>
 #include <QDomDocument>
+#include <QObject>
 #include <QString>
 
 class QGridLayout;
@@ -31,7 +31,7 @@ class QWidget;
 class QDomDocument;
 
 class XmlEdit : public QObject {
-Q_OBJECT
+    Q_OBJECT
 public:
     using QObject::QObject;
     virtual void add_to_layout(QGridLayout *layout) = 0;
@@ -44,12 +44,12 @@ signals:
     void edited();
 };
 
-#define DECL_XML_EDIT_VIRTUALS()\
-void add_to_layout(QGridLayout *layout);\
-void load(const QDomDocument &doc);\
-bool modified() const;\
-bool verify_input(QWidget *parent);\
-void apply(QDomDocument *doc);
+#define DECL_XML_EDIT_VIRTUALS()             \
+    void add_to_layout(QGridLayout *layout); \
+    void load(const QDomDocument &doc);      \
+    bool modified() const;                   \
+    bool verify_input(QWidget *parent);      \
+    void apply(QDomDocument *doc);
 
 void add_xml_edit_to_layout(QGridLayout *layout, const XmlAttribute &attribute, QWidget *widget, XmlEdit *edit);
 QDomElement get_element_by_tag_name(const QDomDocument &doc, const QString &tag_name);

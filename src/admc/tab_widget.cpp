@@ -20,13 +20,12 @@
 
 #include "tab_widget.h"
 
-#include <QStackedWidget>
-#include <QListWidget>
 #include <QHBoxLayout>
+#include <QListWidget>
+#include <QStackedWidget>
 
 TabWidget::TabWidget()
-: QWidget()
-{
+: QWidget() {
     list_widget = new QListWidget();
     list_widget->setMinimumWidth(50);
     list_widget->setMaximumWidth(150);

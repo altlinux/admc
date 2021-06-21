@@ -29,7 +29,7 @@
 #include "multi_tabs/properties_multi_tab.h"
 
 class AddressMultiTab final : public PropertiesMultiTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     AddressMultiTab();

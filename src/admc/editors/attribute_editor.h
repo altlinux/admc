@@ -21,10 +21,10 @@
 #ifndef ATTRIBUTE_EDITOR_H
 #define ATTRIBUTE_EDITOR_H
 
-#include <QString>
+#include <QByteArray>
 #include <QDialog>
 #include <QList>
-#include <QByteArray>
+#include <QString>
 
 class QVBoxLayout;
 class QLabel;
@@ -38,7 +38,7 @@ class QDialogButtonBox;
  */
 
 class AttributeEditor : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     // Makes a dialog by picking the appropriate type of
@@ -50,7 +50,7 @@ public:
 
 protected:
     AttributeEditor(QWidget *parent);
-    
+
     static QLabel *make_attribute_label(const QString &attribute);
     QDialogButtonBox *make_button_box(const QString attribute);
 };

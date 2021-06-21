@@ -35,10 +35,11 @@ class PropertiesTab;
 class QAbstractItemView;
 class QPushButton;
 class AttributesTab;
-template <typename T> class QList;
+template <typename T>
+class QList;
 
 class PropertiesDialog final : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     static PropertiesDialog *open_for_target(const QString &target);

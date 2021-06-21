@@ -20,8 +20,8 @@
 
 #include "help_browser.h"
 
-#include <QHelpEngine>
 #include <QHelpContentWidget>
+#include <QHelpEngine>
 #include <QHelpIndexWidget>
 
 HelpBrowser::HelpBrowser(QHelpEngine *help_engine_arg) {

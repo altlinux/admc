@@ -20,19 +20,18 @@
 
 #include "create_query_item_dialog.h"
 
-#include "utils.h"
 #include "console_types/console_query.h"
 #include "edit_query_item_widget.h"
+#include "utils.h"
 
+#include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QVBoxLayout>
-#include <QDialogButtonBox>
 
 CreateQueryItemDialog::CreateQueryItemDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg)
-{
+: QDialog(console_arg) {
     setAttribute(Qt::WA_DeleteOnClose);
-    
+
     console = console_arg;
 
     const auto title = QString(tr("Create Query"));

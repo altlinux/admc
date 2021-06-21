@@ -21,20 +21,19 @@
 #include "edit_query_folder_dialog.h"
 
 #include "ad_filter.h"
-#include "status.h"
-#include "globals.h"
-#include "console_widget/console_widget.h"
 #include "console_types/console_query.h"
+#include "console_widget/console_widget.h"
+#include "globals.h"
+#include "status.h"
 
-#include <QLineEdit>
-#include <QFormLayout>
-#include <QPushButton>
-#include <QMessageBox>
 #include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QLineEdit>
+#include <QMessageBox>
+#include <QPushButton>
 
 EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg)
-{
+: QDialog(console_arg) {
     console = console_arg;
 
     const auto title = QString(tr("Edit query folder"));

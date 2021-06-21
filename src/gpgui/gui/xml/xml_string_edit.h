@@ -20,15 +20,15 @@
 #ifndef XML_STRING_EDIT_H
 #define XML_STRING_EDIT_H
 
-#include "xml_edit.h"
 #include "xml_attribute.h"
+#include "xml_edit.h"
 
 #include <QString>
 
 class QLineEdit;
 
 class XmlStringEdit : public XmlEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     QLineEdit *edit;
 

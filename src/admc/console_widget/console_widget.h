@@ -56,7 +56,7 @@ class QAbstractItemView;
 
 enum ConsoleRolePublic {
     ConsoleRole_HasProperties = Qt::UserRole + 18,
-    
+
     // Use this role to set and get item types
     ConsoleRole_Type = Qt::UserRole + 19,
 
@@ -66,7 +66,7 @@ enum ConsoleRolePublic {
     // enum YourRole {
     //     YourRole_First = ConsoleRole_LAST + 1,
     //     YourRole_Second = ConsoleRole_LAST + 2,
-    //     ... 
+    //     ...
     // };
     ConsoleRole_LAST = Qt::UserRole + 20,
 };
@@ -77,9 +77,9 @@ enum ScopeNodeType {
 };
 
 class ConsoleWidget final : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
-public:        
+public:
     ConsoleWidget(QWidget *parent = nullptr);
 
     // These f-ns are for adding items to console. There are
@@ -102,7 +102,7 @@ public:
     // on it.
     //
     // Arguments:
-    // 
+    //
     // "results_id" - id of the results description that
     // should've been previously registered by calling
     // register_results().

@@ -28,7 +28,7 @@
 #include "select_container_dialog.h"
 
 class MoveObjectDialog final : public SelectContainerDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     MoveObjectDialog(const QList<QString> &targets_arg, QWidget *parent);

@@ -20,16 +20,15 @@
 
 #include "console_widget/results_view.h"
 
-#include <QTreeView>
-#include <QListView>
 #include <QHeaderView>
-#include <QVBoxLayout>
-#include <QStackedWidget>
+#include <QListView>
 #include <QSortFilterProxyModel>
+#include <QStackedWidget>
+#include <QTreeView>
+#include <QVBoxLayout>
 
 ResultsView::ResultsView(QWidget *parent)
-: QWidget(parent)
-{
+: QWidget(parent) {
     // Setup child views
     m_detail_view = new QTreeView();
     QHeaderView *detail_header = m_detail_view->header();
@@ -39,7 +38,7 @@ ResultsView::ResultsView(QWidget *parent)
     m_detail_view->sortByColumn(0, Qt::AscendingOrder);
     m_detail_view->setSortingEnabled(true);
     m_detail_view->header()->setDefaultSectionSize(200);
-    
+
     auto list_view = new QListView();
     list_view->setViewMode(QListView::ListMode);
 
@@ -139,8 +138,7 @@ QTreeView *ResultsView::detail_view() const {
 }
 
 QList<QModelIndex> ResultsView::get_selected_indexes() const {
-    const QList<QModelIndex> proxy_indexes =
-    [this]() {
+    const QList<QModelIndex> proxy_indexes = [this]() {
         QItemSelectionModel *selection_model = current_view()->selectionModel();
 
         if (current_view_type() == ResultsViewType_Detail) {

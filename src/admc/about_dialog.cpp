@@ -22,14 +22,13 @@
 
 #include "config.h"
 
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QString>
-#include <QDialogButtonBox>
 #include <QVBoxLayout>
 
 AboutDialog::AboutDialog(QWidget *parent)
-: QDialog(parent)
-{
+: QDialog(parent) {
     auto version_label = new QLabel(QString(tr("Version %1")).arg(ADMC_VERSION));
     version_label->setAlignment(Qt::AlignHCenter);
 

@@ -28,7 +28,7 @@ class QLineEdit;
 class QComboBox;
 
 class ADMCTestUpnEdit : public ADMCTest {
-Q_OBJECT
+    Q_OBJECT
 
 private slots:
     void init() override;

@@ -21,25 +21,23 @@
 #include "console_widget/customize_columns_dialog.h"
 #include "console_widget/customize_columns_dialog_p.h"
 
-#include <QTreeView>
-#include <QHeaderView>
+#include <QCheckBox>
 #include <QDialog>
 #include <QDialogButtonBox>
-#include <QCheckBox>
+#include <QHeaderView>
 #include <QPushButton>
 #include <QScrollArea>
+#include <QTreeView>
 #include <QVBoxLayout>
 
 #include <QDebug>
 
 CustomizeColumnsDialogPrivate::CustomizeColumnsDialogPrivate(CustomizeColumnsDialog *q)
 : QObject(q) {
-
 }
 
 CustomizeColumnsDialog::CustomizeColumnsDialog(QTreeView *view_arg, const QList<int> &default_columns_arg, QWidget *parent)
-: QDialog(parent)
-{
+: QDialog(parent) {
     d = new CustomizeColumnsDialogPrivate(this);
 
     setAttribute(Qt::WA_DeleteOnClose);

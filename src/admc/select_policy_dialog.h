@@ -22,13 +22,13 @@
 #define SELECT_POLICY_DIALOG_H
 
 #include <QDialog>
-#include <QString>
 #include <QList>
+#include <QString>
 
 class QTreeView;
 
 class SelectPolicyDialog final : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     SelectPolicyDialog(QWidget *parent);
@@ -37,9 +37,6 @@ public:
 
 private:
     QTreeView *view;
-
 };
-
-
 
 #endif /* SELECT_POLICY_DIALOG_H */

@@ -21,20 +21,20 @@
 #include "create_object_dialog.h"
 
 #include "adldap.h"
-#include "globals.h"
-#include "status.h"
-#include "settings.h"
-#include "edits/string_edit.h"
+#include "edits/account_option_edit.h"
 #include "edits/group_scope_edit.h"
 #include "edits/group_type_edit.h"
-#include "edits/account_option_edit.h"
 #include "edits/password_edit.h"
+#include "edits/string_edit.h"
 #include "edits/upn_edit.h"
+#include "globals.h"
+#include "settings.h"
+#include "status.h"
 
-#include <QDebug>
-#include <QLineEdit>
-#include <QFormLayout>
 #include <QButtonGroup>
+#include <QDebug>
+#include <QFormLayout>
+#include <QLineEdit>
 #include <QPushButton>
 
 // TODO: implement checkbox for account option "User cannot change password". Can't just do it through UAC attribute bits.
@@ -44,17 +44,16 @@
 // required_edits because that's a list of stringedits. Now upnedit checks that it's not empty in verify();
 
 CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QString &object_class_arg, QWidget *parent)
-: QDialog(parent)
-{
+: QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
 
     AdInterface ad;
     if (ad_failed(ad)) {
         close();
-        
+
         return;
     }
-    
+
     parent_dn = parent_dn_arg;
     object_class = object_class_arg;
 
@@ -105,12 +104,10 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
 
         // Setup autofills
         // (first name + last name) -> full name
-        auto autofill_full_name =
-        [=]() {
-            const QString full_name_value =
-            [=]() {
-                const QString first_name = first_name_edit->get_input(); 
-                const QString last_name = last_name_edit->get_input(); 
+        auto autofill_full_name = [=]() {
+            const QString full_name_value = [=]() {
+                const QString first_name = first_name_edit->get_input();
+                const QString last_name = last_name_edit->get_input();
 
                 const bool last_name_first = g_settings->get_bool(BoolSetting_LastNameBeforeFirstName);
                 if (!first_name.isEmpty() && !last_name.isEmpty()) {
@@ -140,7 +137,7 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
         // upn -> samaccount name
         QObject::connect(
             upn_edit, &UpnEdit::edited,
-            [=] () {
+            [=]() {
                 const QString upn_input = upn_edit->get_input();
                 sama_edit->set_input(upn_input);
             });
@@ -148,7 +145,7 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
         auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
 
         required_edits = {
-            sama_edit
+            sama_edit,
         };
 
         new GroupScopeEdit(&all_edits, this);
@@ -166,8 +163,7 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
         auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
 
         required_edits = {
-            sama_edit
-        };
+            sama_edit};
 
         edits_layout->addRow(tr("Name:"), name_edit);
         sama_edit->add_to_layout(edits_layout);
@@ -175,7 +171,7 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
         // Autofill name -> sama
         QObject::connect(
             name_edit, &QLineEdit::textChanged,
-            [=] () {
+            [=]() {
                 const QString name_input = name_edit->text();
                 sama_edit->set_input(name_input.toUpper());
             });
@@ -235,8 +231,7 @@ void CreateObjectDialog::accept() {
         return;
     }
 
-    auto fail_msg =
-    [name]() {
+    auto fail_msg = [name]() {
         const QString message = QString(tr("Failed to create object \"%1\"")).arg(name);
         g_status()->add_message(message, StatusType_Error);
     };
@@ -258,7 +253,7 @@ void CreateObjectDialog::accept() {
     }
 
     g_status()->display_ad_messages(ad, this);
-    
+
     if (final_success) {
         const QString message = QString(tr("Created object \"%1\"")).arg(name);
 
@@ -270,8 +265,7 @@ void CreateObjectDialog::accept() {
 
 // Enable/disable create button if all required edits filled
 void CreateObjectDialog::on_edited() {
-    const bool required_edits_filled =
-    [this]() {
+    const bool required_edits_filled = [this]() {
         for (auto edit : required_edits) {
             if (edit->is_empty()) {
                 return false;

@@ -28,7 +28,7 @@ class AdObject;
 class AdInterface;
 
 class CountryWidget final : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     CountryWidget();
@@ -42,7 +42,7 @@ signals:
 
 private:
     QComboBox *combo;
-    
+
     // NOTE: country codes are 3 digits only, so 0-999 = 1000
     QString country_strings[1000];
     QString country_abbreviations[1000];

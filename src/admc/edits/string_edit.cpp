@@ -20,12 +20,12 @@
 
 #include "edits/string_edit.h"
 
-#include "utils.h"
 #include "adldap.h"
 #include "globals.h"
+#include "utils.h"
 
-#include <QLineEdit>
 #include <QFormLayout>
+#include <QLineEdit>
 
 void StringEdit::make_many(const QList<QString> attributes, const QString &objectClass, QList<AttributeEdit *> *edits_out, QObject *parent) {
     for (auto attribute : attributes) {
@@ -34,17 +34,16 @@ void StringEdit::make_many(const QList<QString> attributes, const QString &objec
 }
 
 StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent)
-{
+: AttributeEdit(edits_out, parent) {
     attribute = attribute_arg;
     objectClass = objectClass_arg;
-    
+
     edit = new QLineEdit();
-    
+
     if (g_adconfig->get_attribute_is_number(attribute)) {
         set_line_edit_to_numbers_only(edit);
     }
-    
+
     limit_edit(edit, attribute);
 
     QObject::connect(
@@ -55,8 +54,7 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
 }
 
 void StringEdit::load_internal(AdInterface &ad, const AdObject &object) {
-    const QString value =
-    [=]() {
+    const QString value = [=]() {
         const QString raw_value = object.get_string(attribute);
 
         if (attribute == ATTRIBUTE_DN) {
@@ -65,7 +63,7 @@ void StringEdit::load_internal(AdInterface &ad, const AdObject &object) {
             return raw_value;
         }
     }();
-    
+
     edit->setText(value);
 }
 
@@ -75,10 +73,10 @@ void StringEdit::set_read_only(const bool read_only) {
 
 void StringEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = g_adconfig->get_attribute_display_name(attribute, objectClass) + ":";
-    
+
     if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
         const QString domain = g_adconfig->domain();
-        
+
         const QString domain_name = domain.split(".")[0];
         const QString extra_edit_text = "\\" + domain_name;
         auto extra_edit = new QLineEdit();

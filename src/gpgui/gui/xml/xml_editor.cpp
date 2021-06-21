@@ -18,20 +18,20 @@
  */
 
 #include "xml_editor.h"
+#include "file.h"
+#include "xml_attribute.h"
+#include "xml_bool_edit.h"
 #include "xml_edit.h"
 #include "xml_string_edit.h"
-#include "xml_bool_edit.h"
 #include "xml_ubyte_edit.h"
-#include "xml_attribute.h"
-#include "file.h"
 
 #include <QDialogButtonBox>
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QFile>
-#include <QXmlStreamReader>
 #include <QDomDocument>
+#include <QFile>
+#include <QLabel>
 #include <QPushButton>
+#include <QVBoxLayout>
+#include <QXmlStreamReader>
 
 QList<XmlAttribute> XmlEditor::schema_attributes;
 QHash<QString, XmlAttribute> XmlEditor::schema_attributes_by_name;
@@ -65,8 +65,7 @@ void XmlEditor::load_schema() {
 }
 
 XmlEditor::XmlEditor(const QString &path_arg)
-: QDialog()
-{   
+: QDialog() {
     path = path_arg;
 
     load_schema();
@@ -89,19 +88,19 @@ XmlEditor::XmlEditor(const QString &path_arg)
         }
 
         XmlEdit *edit =
-        [this, attribute]() -> XmlEdit * {
+            [this, attribute]() -> XmlEdit * {
             switch (attribute.type()) {
                 case XmlAttributeType_String:
-                return new XmlStringEdit(attribute, this);
+                    return new XmlStringEdit(attribute, this);
 
                 case XmlAttributeType_Boolean:
-                return new XmlBoolEdit(attribute, this);
+                    return new XmlBoolEdit(attribute, this);
 
                 case XmlAttributeType_UnsignedByte:
-                return new XmlUByteEdit(attribute, this);
+                    return new XmlUByteEdit(attribute, this);
 
                 case XmlAttributeType_None:
-                return nullptr;
+                    return nullptr;
             }
 
             return nullptr;
@@ -138,15 +137,15 @@ XmlEditor::XmlEditor(const QString &path_arg)
 
 void XmlEditor::enable_buttons_if_changed() {
     const bool changed =
-    [this]() {
-        for (auto edit : edits) {
-            if (edit->modified()) {
-                return true;
+        [this]() {
+            for (auto edit : edits) {
+                if (edit->modified()) {
+                    return true;
+                }
             }
-        }
 
-        return false;
-    }();
+            return false;
+        }();
 
     apply_button->setEnabled(changed);
     reset_button->setEnabled(changed);
@@ -156,7 +155,7 @@ void XmlEditor::reload() {
     const QByteArray original_content = file_read(path);
     QDomDocument doc;
     doc.setContent(original_content);
-    
+
     for (auto edit : edits) {
         edit->load(doc);
     }

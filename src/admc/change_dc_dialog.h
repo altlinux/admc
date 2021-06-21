@@ -32,7 +32,7 @@ class QListWidget;
 class QCheckBox;
 
 class ChangeDCDialog : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     ChangeDCDialog(QStandardItem *domain_head_item, QWidget *parent);

@@ -20,29 +20,27 @@
 
 #include "editors/multi_editor.h"
 
-#include "editors/string_editor.h"
-#include "editors/bool_editor.h"
-#include "editors/octet_editor.h"
-#include "editors/datetime_editor.h"
 #include "adldap.h"
+#include "editors/bool_editor.h"
+#include "editors/datetime_editor.h"
+#include "editors/octet_editor.h"
+#include "editors/string_editor.h"
 #include "globals.h"
 #include "utils.h"
 
-#include <QLineEdit>
 #include <QDialogButtonBox>
-#include <QPushButton>
-#include <QVBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
 #include <QListWidget>
 #include <QMessageBox>
-#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent)
-: AttributeEditor(parent)
-{
+: AttributeEditor(parent) {
     attribute = attribute_arg;
 
-    const QString title =
-    [this]() {
+    const QString title = [this]() {
         const AttributeType type = g_adconfig->get_attribute_type(attribute);
 
         const QString octet_title = tr("Edit multi-valued octet");
@@ -59,7 +57,7 @@ MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> va
 
             case AttributeType_UTCTime: return datetime_title;
             case AttributeType_GeneralizedTime: return datetime_title;
-            
+
             default: break;
         };
 
@@ -79,7 +77,8 @@ MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> va
 
     auto remove_button = new QPushButton(tr("Remove"));
 
-    QDialogButtonBox *button_box = make_button_box(attribute);;
+    QDialogButtonBox *button_box = make_button_box(attribute);
+    ;
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
@@ -109,8 +108,7 @@ MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> va
 }
 
 void MultiEditor::add() {
-    AttributeEditor *editor =
-    [this]() -> AttributeEditor * {
+    AttributeEditor *editor = [this]() -> AttributeEditor * {
         const bool is_bool = (g_adconfig->get_attribute_type(attribute) == AttributeType_Boolean);
         if (is_bool) {
             return new BoolEditor(attribute, QList<QByteArray>(), this);
@@ -159,8 +157,7 @@ void MultiEditor::edit_item(QListWidgetItem *item) {
     const QString text = item->text();
     const QByteArray bytes = string_to_bytes(text);
 
-    auto editor =
-    [=]() -> AttributeEditor * {
+    auto editor = [=]() -> AttributeEditor * {
         const MultiEditorType editor_type = get_editor_type();
 
         switch (editor_type) {
@@ -232,4 +229,3 @@ QByteArray MultiEditor::string_to_bytes(const QString string) const {
 
     return QByteArray();
 }
-

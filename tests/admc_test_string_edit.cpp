@@ -74,7 +74,8 @@ void ADMCTestStringEdit::load() {
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
 
-    const QString edit_value = line_edit->text();;
+    const QString edit_value = line_edit->text();
+    ;
     QVERIFY(edit_value == test_value);
 }
 

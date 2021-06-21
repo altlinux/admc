@@ -20,17 +20,16 @@
 
 #include "multi_edits/manager_multi_edit.h"
 
-#include "edits/manager_widget.h"
 #include "adldap.h"
+#include "edits/manager_widget.h"
 #include "globals.h"
 
-#include <QLineEdit>
 #include <QFormLayout>
 #include <QLabel>
+#include <QLineEdit>
 
 ManagerMultiEdit::ManagerMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
-: AttributeMultiEdit(edits_out, parent)
-{
+: AttributeMultiEdit(edits_out, parent) {
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_MANAGER, CLASS_USER) + ":";
     label->setText(label_text);
 

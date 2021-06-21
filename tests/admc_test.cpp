@@ -21,16 +21,16 @@
 #include "admc_test.h"
 
 #include "adldap.h"
+#include "console_types/console_object.h"
 #include "globals.h"
 #include "utils.h"
-#include "console_types/console_object.h"
 
-#include <QTest>
-#include <QModelIndex>
-#include <QTreeView>
 #include <QMessageBox>
-#include <QTimer>
+#include <QModelIndex>
 #include <QPushButton>
+#include <QTest>
+#include <QTimer>
+#include <QTreeView>
 
 #define PRINT_FOCUS_WIDGET_BEFORE_TAB false
 #define PRINT_FOCUS_WIDGET_AFTER_TAB false
@@ -55,12 +55,11 @@ void ADMCTest::initTestCase() {
 }
 
 void ADMCTest::cleanupTestCase() {
-
 }
 
 void ADMCTest::init() {
     parent_widget = new QWidget();
-    
+
     const QString dn = test_arena_dn();
     const bool create_success = ad.object_add(dn, CLASS_OU);
 
@@ -138,11 +137,11 @@ void tab(const int n) {
 // until current item's dn equals to target dn
 void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role) {
     QModelIndex prev_index;
-    
+
     QAbstractItemModel *model = view->model();
 
     QList<QModelIndex> search_stack;
-    
+
     // NOTE: start at invalid index to iterate over top items
     search_stack.append(QModelIndex());
 
@@ -201,8 +200,8 @@ void ADMCTest::close_message_box_slot() {
     }
 }
 
-QPushButton *find_button_by_name(const QString& name, QWidget *parent) {
-    auto buttons = parent->findChildren<QPushButton*>();
+QPushButton *find_button_by_name(const QString &name, QWidget *parent) {
+    auto buttons = parent->findChildren<QPushButton *>();
     for (const auto &button : buttons) {
         if (button->text() == name) {
             return button;

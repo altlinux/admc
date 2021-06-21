@@ -21,21 +21,21 @@
 #include "console_types/console_object.h"
 
 #include "adldap.h"
-#include "globals.h"
-#include "settings.h"
-#include "utils.h"
-#include "status.h"
 #include "central_widget.h"
-#include "filter_dialog.h"
 #include "console_actions.h"
-#include "select_object_dialog.h"
 #include "console_types/console_policy.h"
+#include "filter_dialog.h"
+#include "globals.h"
 #include "search_thread.h"
+#include "select_object_dialog.h"
+#include "settings.h"
+#include "status.h"
+#include "utils.h"
 
-#include <QStandardItemModel>
-#include <QSet>
-#include <QMenu>
 #include <QDebug>
+#include <QMenu>
+#include <QSet>
+#include <QStandardItemModel>
 
 int console_object_results_id;
 
@@ -61,16 +61,15 @@ void console_object_results_load(const QList<QStandardItem *> row, const AdObjec
             continue;
         }
 
-        const QString display_value =
-        [attribute, object]() {
+        const QString display_value = [attribute, object]() {
             if (attribute == ATTRIBUTE_OBJECT_CLASS) {
                 const QString object_class = object.get_string(attribute);
 
                 if (object_class == CLASS_GROUP) {
-                    const GroupScope scope = object.get_group_scope(); 
+                    const GroupScope scope = object.get_group_scope();
                     const QString scope_string = group_scope_string(scope);
 
-                    const GroupType type = object.get_group_type(); 
+                    const GroupType type = object.get_group_type();
                     const QString type_string = group_type_string_adjective(type);
 
                     return QString("%1 - %2").arg(type_string, scope_string);
@@ -98,7 +97,7 @@ void console_object_item_data_load(QStandardItem *item, const AdObject &object) 
 
     const QIcon icon = get_object_icon(object);
     item->setIcon(icon);
-    
+
     item->setData(object.get_dn(), ObjectRole_DN);
 
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
@@ -125,7 +124,7 @@ QList<QString> console_object_header_labels() {
 
         out.append(attribute_display_name);
     }
-    
+
     return out;
 }
 
@@ -153,8 +152,7 @@ QList<QString> console_object_search_attributes() {
 }
 
 void console_object_scope_load(QStandardItem *item, const AdObject &object) {
-    const QString name =
-    [&]() {
+    const QString name = [&]() {
         const QString dn = object.get_dn();
         return dn_get_name(dn);
     }();
@@ -188,8 +186,7 @@ void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list
         for (const QPersistentModelIndex &index : results_indexes) {
             // NOTE: don't touch query tree indexes, they
             // stay around and just go out of date
-            const bool index_is_in_query_tree =
-            [=]() {
+            const bool index_is_in_query_tree = [=]() {
                 const QModelIndex scope_parent = console->get_scope_parent(index);
                 const ItemType scope_parent_type = (ItemType) scope_parent.data(ConsoleRole_Type).toInt();
 
@@ -210,8 +207,7 @@ void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<
         return;
     }
 
-    const QList<AdObject> object_list =
-    [&]() {
+    const QList<AdObject> object_list = [&]() {
         QList<AdObject> out;
 
         for (const QString &dn : dn_list) {
@@ -233,8 +229,7 @@ void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QS
     // to new parent being selected, it gets fetched and
     // loads new object. End result is that new object is
     // duplicated.
-    const QModelIndex new_parent_index =
-    [=]() {
+    const QModelIndex new_parent_index = [=]() {
         const QList<QModelIndex> results = console->search_scope_by_role(ObjectRole_DN, new_parent_dn, ItemType_Object);
 
         if (results.size() == 1) {
@@ -251,8 +246,7 @@ void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QS
 }
 
 void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn) {
-    const QList<QString> new_dn_list =
-    [&]() {
+    const QList<QString> new_dn_list = [&]() {
         QList<QString> out;
 
         for (const QString &old_dn : old_dn_list) {
@@ -289,15 +283,13 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
     }
 
     for (const AdObject &object : object_list) {
-        const bool should_be_in_scope =
-        [&]() {
+        const bool should_be_in_scope = [&]() {
             // NOTE: "containers" referenced here don't mean
             // objects with "container" object class.
             // Instead it means all the objects that can
             // have children(some of which are not
             // "container" class).
-            const bool is_container =
-            [=]() {
+            const bool is_container = [=]() {
                 const QList<QString> filter_containers = g_adconfig->get_filter_containers();
                 const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
@@ -363,7 +355,8 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
 
             console_object_create(console, results.values(), persistent_index);
             console->sort_scope();
-        }, Qt::QueuedConnection);
+        },
+        Qt::QueuedConnection);
     QObject::connect(
         search_thread, &SearchThread::finished,
         console,
@@ -377,7 +370,8 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
 
             console->set_item_fetching(scope_item->index(), false);
             scope_item->setDragEnabled(true);
-        }, Qt::QueuedConnection);
+        },
+        Qt::QueuedConnection);
 
     search_thread->start();
 }
@@ -392,8 +386,7 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
     //
     // Search object's children
     //
-    const QString filter =
-    [=]() {
+    const QString filter = [=]() {
         QString out;
 
         out = is_container_filter();
@@ -484,8 +477,7 @@ void console_object_drop(ConsoleWidget *console, const QList<QPersistentModelInd
 // onto target. If drop type is none, then can't drop this
 // object on this target.
 DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIndex &target) {
-    const bool dropped_is_target =
-    [&]() {
+    const bool dropped_is_target = [&]() {
         const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
         const QString target_dn = target.data(ObjectRole_DN).toString();
 
@@ -509,8 +501,7 @@ DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIn
     } else {
         const QList<QString> dropped_superiors = g_adconfig->get_possible_superiors(dropped_classes);
 
-        const bool target_is_valid_superior =
-        [&]() {
+        const bool target_is_valid_superior = [&]() {
             for (const auto &object_class : dropped_superiors) {
                 if (target_classes.contains(object_class)) {
                     return true;
@@ -560,8 +551,7 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
 
     const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
 
-    const bool is_container =
-    [=]() {
+    const bool is_container = [=]() {
         const QList<QString> container_classes = g_adconfig->get_filter_containers();
 
         return container_classes.contains(object_class);
@@ -749,7 +739,7 @@ void console_object_drop_objects(ConsoleWidget *console, const QList<QPersistent
 
         switch (drop_type) {
             case DropType_Move: {
-                const bool move_success = ad.object_move(dropped_dn, 
+                const bool move_success = ad.object_move(dropped_dn,
                     target_dn);
 
                 if (move_success) {
@@ -777,8 +767,7 @@ void console_object_drop_objects(ConsoleWidget *console, const QList<QPersistent
 }
 
 void console_object_drop_policies(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget) {
-    const QList<QString> policy_list =
-    [&]() {
+    const QList<QString> policy_list = [&]() {
         QList<QString> out;
 
         for (const QPersistentModelIndex &index : dropped_list) {
@@ -793,7 +782,7 @@ void console_object_drop_policies(ConsoleWidget *console, const QList<QPersisten
     const QList<QString> ou_list = {target_dn};
 
     console_policy_add_link(console, policy_list, ou_list, policy_results_widget);
-}    
+}
 
 void console_object_load_domain_head_text(QStandardItem *item) {
     const QString domain_head = g_adconfig->domain().toLower();

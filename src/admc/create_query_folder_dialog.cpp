@@ -21,20 +21,19 @@
 #include "create_query_folder_dialog.h"
 
 #include "ad_filter.h"
-#include "status.h"
-#include "globals.h"
+#include "console_types/console_query.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/select_base_widget.h"
-#include "console_types/console_query.h"
+#include "globals.h"
+#include "status.h"
 
-#include <QLineEdit>
 #include <QFormLayout>
-#include <QPushButton>
+#include <QLineEdit>
 #include <QMessageBox>
+#include <QPushButton>
 
 CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg)
-{
+: QDialog(console_arg) {
     console = console_arg;
 
     const auto title = QString(tr("Create query folder"));

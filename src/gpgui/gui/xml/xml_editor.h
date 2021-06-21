@@ -23,16 +23,16 @@
 #include "xml_attribute.h"
 
 #include <QDialog>
-#include <QString>
-#include <QList>
-#include <QHash>
 #include <QDomDocument>
+#include <QHash>
+#include <QList>
+#include <QString>
 
 class XmlEdit;
 class QPushButton;
 
 class XmlEditor final : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     static QList<XmlAttribute> schema_attributes;

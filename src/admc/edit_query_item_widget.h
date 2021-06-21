@@ -26,9 +26,9 @@
  * dialog and create query dialog.
  */
 
-#include <QWidget>
-#include <QString>
 #include <QModelIndex>
+#include <QString>
+#include <QWidget>
 
 class QLineEdit;
 class QTextEdit;
@@ -37,7 +37,7 @@ class SelectBaseWidget;
 class QCheckBox;
 
 class EditQueryItemWidget : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     EditQueryItemWidget();

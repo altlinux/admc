@@ -25,12 +25,11 @@
 
 #include <QDateTimeEdit>
 #include <QDialogButtonBox>
-#include <QVBoxLayout>
 #include <QLabel>
+#include <QVBoxLayout>
 
 DateTimeEditor::DateTimeEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
-: AttributeEditor(parent)
-{
+: AttributeEditor(parent) {
     setWindowTitle(tr("Edit datetime"));
 
     QLabel *attribute_label = make_attribute_label(attribute);
@@ -42,7 +41,8 @@ DateTimeEditor::DateTimeEditor(const QString attribute, const QList<QByteArray> 
     const QDateTime value_datetime = datetime_string_to_qdatetime(attribute, value_string, g_adconfig);
     edit->setDateTime(value_datetime);
 
-    QDialogButtonBox *button_box = make_button_box(attribute);;
+    QDialogButtonBox *button_box = make_button_box(attribute);
+    ;
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);

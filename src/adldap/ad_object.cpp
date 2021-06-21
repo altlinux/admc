@@ -20,23 +20,22 @@
 
 #include "ad_object.h"
 
-#include "ad_utils.h"
 #include "ad_config.h"
-#include "ad_security.h"
 #include "ad_display.h"
+#include "ad_security.h"
+#include "ad_utils.h"
 
 #include "samba/ndr_security.h"
 
-#include <algorithm>
-#include <QMap>
-#include <QHash>
-#include <QString>
-#include <QList>
 #include <QByteArray>
 #include <QDateTime>
+#include <QHash>
+#include <QList>
+#include <QMap>
+#include <QString>
+#include <algorithm>
 
 AdObject::AdObject() {
-
 }
 
 void AdObject::load(const QString &dn_arg, const QHash<QString, QList<QByteArray>> &attributes_data_arg) {
@@ -96,7 +95,7 @@ QList<QString> AdObject::get_strings(const QString &attribute) const {
 
 QString AdObject::get_string(const QString &attribute) const {
     const QList<QString> strings = get_strings(attribute);
-    
+
     // NOTE: return last object class because that is the most derived one and is what's needed most of the time
     if (!strings.isEmpty()) {
         if (attribute == ATTRIBUTE_OBJECT_CLASS) {

@@ -23,19 +23,18 @@
 #include "adldap.h"
 #include "globals.h"
 
-#include <QVBoxLayout>
-#include <QCheckBox>
-#include <QDateTime>
 #include <QButtonGroup>
+#include <QCheckBox>
 #include <QDateEdit>
+#include <QDateTime>
+#include <QVBoxLayout>
 
 // TODO: do end of day by local time or UTC????
 
 const QTime END_OF_DAY(23, 59);
 
 ExpiryWidget::ExpiryWidget()
-: QFrame()
-{
+: QFrame() {
     setFrameStyle(QFrame::Raised);
     setFrameShape(QFrame::Box);
 
@@ -71,8 +70,7 @@ ExpiryWidget::ExpiryWidget()
 }
 
 void ExpiryWidget::load(const AdObject &object) {
-    const bool never =
-    [object]() {
+    const bool never = [object]() {
         const QString expiry_string = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);
         return large_integer_datetime_is_never(expiry_string);
     }();
@@ -88,9 +86,8 @@ void ExpiryWidget::load(const AdObject &object) {
         end_of_check->setChecked(true);
         edit->setEnabled(true);
     }
-    
-    const QDate date =
-    [=]() {
+
+    const QDate date = [=]() {
         if (never) {
             // Default to current date when expiry is never
             return QDate::currentDate();

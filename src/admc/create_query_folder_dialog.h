@@ -22,15 +22,15 @@
 #define CREATE_QUERY_FOLDER_DIALOG_H
 
 #include <QDialog>
-#include <QString>
 #include <QList>
 #include <QModelIndex>
+#include <QString>
 
 class QLineEdit;
 class ConsoleWidget;
 
 class CreateQueryFolderDialog : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     CreateQueryFolderDialog(ConsoleWidget *console_arg);
