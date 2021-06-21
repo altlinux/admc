@@ -124,7 +124,7 @@ void CountryWidget::load(const AdObject &object) {
 }
 
 void CountryWidget::set_enabled(const bool enabled) {
-    combo->setDisabled(enabled);
+    combo->setEnabled(enabled);
 }
 
 bool CountryWidget::apply(AdInterface &ad, const QString &dn) const {

@@ -34,6 +34,7 @@ ManagerWidget::ManagerWidget(const QString &manager_attribute_arg)
     manager_attribute = manager_attribute_arg;
 
     edit = new QLineEdit();
+    edit->setReadOnly(true);
 
     change_button = new QPushButton(tr("Change"));
     properties_button = new QPushButton(PropertiesDialog::display_name());
