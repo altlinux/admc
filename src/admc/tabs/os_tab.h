@@ -18,28 +18,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tabs/object_tab.h"
-#include "adldap.h"
-#include "edits/datetime_edit.h"
-#include "edits/string_edit.h"
+#ifndef OS_TAB_H
+#define OS_TAB_H
 
-#include <QFormLayout>
+#include "tabs/properties_tab.h"
 
-ObjectTab::ObjectTab() {
-    new StringEdit(ATTRIBUTE_DN, "", &edits, this);
-    new StringEdit(ATTRIBUTE_OBJECT_CLASS, "", &edits, this);
+class OSTab final : public PropertiesTab {
+    Q_OBJECT
 
-    new DateTimeEdit(ATTRIBUTE_WHEN_CREATED, &edits, this);
-    new DateTimeEdit(ATTRIBUTE_WHEN_CHANGED, &edits, this);
+public:
+    OSTab();
+};
 
-    new StringEdit(ATTRIBUTE_USN_CREATED, "", &edits, this);
-    new StringEdit(ATTRIBUTE_USN_CHANGED, "", &edits, this);
-
-    edits_set_read_only(edits, true);
-
-    edits_connect_to_tab(edits, this);
-
-    const auto layout = new QFormLayout();
-    setLayout(layout);
-    edits_add_to_layout(edits, layout);
-}
+#endif /* OS_TAB_H */

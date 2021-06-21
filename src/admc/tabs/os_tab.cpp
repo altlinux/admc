@@ -18,25 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tabs/object_tab.h"
+#include "tabs/os_tab.h"
+
 #include "adldap.h"
-#include "edits/datetime_edit.h"
 #include "edits/string_edit.h"
 
 #include <QFormLayout>
 
-ObjectTab::ObjectTab() {
-    new StringEdit(ATTRIBUTE_DN, "", &edits, this);
-    new StringEdit(ATTRIBUTE_OBJECT_CLASS, "", &edits, this);
-
-    new DateTimeEdit(ATTRIBUTE_WHEN_CREATED, &edits, this);
-    new DateTimeEdit(ATTRIBUTE_WHEN_CHANGED, &edits, this);
-
-    new StringEdit(ATTRIBUTE_USN_CREATED, "", &edits, this);
-    new StringEdit(ATTRIBUTE_USN_CHANGED, "", &edits, this);
+OSTab::OSTab() {
+    new StringEdit(ATTRIBUTE_OS, CLASS_COMPUTER, &edits, this);
+    new StringEdit(ATTRIBUTE_OS_VERSION, CLASS_COMPUTER, &edits, this);
+    new StringEdit(ATTRIBUTE_OS_SERVICE_PACK, CLASS_COMPUTER, &edits, this);
 
     edits_set_read_only(edits, true);
-
     edits_connect_to_tab(edits, this);
 
     const auto layout = new QFormLayout();

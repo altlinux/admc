@@ -52,9 +52,7 @@ ManagedByTab::ManagedByTab() {
     new StringOtherEdit(ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, CLASS_USER, &manager_edits, this);
     new StringOtherEdit(ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, CLASS_USER, &manager_edits, this);
 
-    for (AttributeEdit *edit : manager_edits) {
-        edit->set_read_only(true);
-    }
+    edits_set_read_only(manager_edits, true);
 
     auto edits_layout = new QFormLayout();
 

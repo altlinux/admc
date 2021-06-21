@@ -117,4 +117,9 @@ bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &d
 
 void edits_load(QList<AttributeEdit *> edits, AdInterface &ad, const AdObject &object);
 
+// NOTE: not all edits might support read-only mode, see
+// specific edit headers to verify that they implement
+// set_read_only()
+void edits_set_read_only(QList<AttributeEdit *> edits, const bool read_only);
+
 #endif /* ATTRIBUTE_EDIT_H */

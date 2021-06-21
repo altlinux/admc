@@ -107,3 +107,9 @@ void edits_connect_to_tab(QList<AttributeEdit *> edits, PropertiesTab *tab) {
             tab, &PropertiesTab::on_edit_edited);
     }
 }
+
+void edits_set_read_only(QList<AttributeEdit *> edits, const bool read_only) {
+    for (AttributeEdit *edit : edits) {
+        edit->set_read_only(read_only);
+    }
+}

@@ -172,6 +172,9 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_SECURITY_DESCRIPTOR "nTSecurityDescriptor"
 #define ATTRIBUTE_RIGHTS_GUID "rightsGuid"
 #define ATTRIBUTE_LOCATION "location"
+#define ATTRIBUTE_OS "operatingSystem"
+#define ATTRIBUTE_OS_VERSION "operatingSystemVersion"
+#define ATTRIBUTE_OS_SERVICE_PACK "operatingSystemServicePack"
 
 #define CLASS_GROUP "group"
 #define CLASS_USER "user"
