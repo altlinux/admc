@@ -201,6 +201,11 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         add_tab(new GpoLinksTab(), tr("Links to"));
     }
 
+    if (object.is_class(CLASS_COMPUTER)) {
+        add_tab(new MemberOfTab(), tr("Member of"));
+        add_tab(new ManagedByTab(), tr("Managed by"));
+    }
+
     for (auto tab : tabs) {
         connect(
             tab, &PropertiesTab::edited,
