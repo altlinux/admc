@@ -171,6 +171,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_UPN_SUFFIXES "uPNSuffixes"
 #define ATTRIBUTE_SECURITY_DESCRIPTOR "nTSecurityDescriptor"
 #define ATTRIBUTE_RIGHTS_GUID "rightsGuid"
+#define ATTRIBUTE_LOCATION "location"
 
 #define CLASS_GROUP "group"
 #define CLASS_USER "user"

@@ -83,6 +83,7 @@ GeneralTab::GeneralTab(const AdObject &object) {
         dns_edit->set_read_only(true);
 
         new StringEdit(ATTRIBUTE_DESCRIPTION, CLASS_COMPUTER, &edits, this);
+        new StringEdit(ATTRIBUTE_LOCATION, CLASS_COMPUTER, &edits, this);
 
         // TODO: more string edits for: site (probably just site?), dc type (no idea)
     } else if (object.is_class(CLASS_GROUP)) {
