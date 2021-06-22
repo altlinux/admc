@@ -110,12 +110,6 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        close();
-        return;
-    }
-
     setMinimumHeight(700);
     auto button_box = new QDialogButtonBox();
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
@@ -130,24 +124,19 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     apply_button->setAutoDefault(false);
     ok_button->setAutoDefault(true);
 
-    const AdObject object = ad.search_object(target);
-
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->setSpacing(0);
 
-    const QString name = object.get_string(ATTRIBUTE_NAME);
+    const QString name = dn_get_name(target_arg);
     const QString window_title = name.isEmpty() ? PropertiesDialog::display_name() : QString(tr("\"%1\" Properties")).arg(name);
     setWindowTitle(window_title);
 
-    if (object.is_empty()) {
-        auto no_object_label = new QLabel(tr("Object could not be found"));
-        layout->addWidget(no_object_label);
-        layout->addWidget(button_box);
+    AdObject object;
 
-        button_box->setEnabled(false);
-
-        return;
+    AdInterface ad;
+    if (!ad_failed(ad)) {
+        object = ad.search_object(target);
     }
 
     auto tab_widget = new TabWidget();
@@ -216,9 +205,11 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
             this, &PropertiesDialog::on_edited);
     }
 
-    g_status()->display_ad_messages(ad, this);
-
-    reset();
+    if (ad.is_connected()) {
+        g_status()->display_ad_messages(ad, this);
+        
+        reset_internal(ad);
+    }
 
     connect(
         ok_button, &QPushButton::clicked,
@@ -278,11 +269,15 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
     connect(
         dialog, &QDialog::accepted,
         [&]() {
-            apply();
+            AdInterface ad;
 
-            // NOTE: have to reset for attributes/other tab
-            // to load updates
-            reset();
+            if (ad_connected(ad)) {
+                apply_internal(ad);
+
+                // NOTE: have to reset for attributes/other tab
+                // to load updates
+                reset_internal(ad);
+            }
         });
 
     connect(
@@ -304,10 +299,21 @@ void PropertiesDialog::ok() {
 
 bool PropertiesDialog::apply() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_connected(ad)) {
+        return apply_internal(ad);
+    } else {
         return false;
     }
+}
 
+void PropertiesDialog::reset() {
+    AdInterface ad;
+    if (ad_connected(ad)) {
+        reset_internal(ad);
+    }
+}
+
+bool PropertiesDialog::apply_internal(AdInterface &ad) {
     for (auto tab : tabs) {
         const bool verify_success = tab->verify(ad, target);
         if (!verify_success) {
@@ -341,12 +347,7 @@ bool PropertiesDialog::apply() {
     return total_apply_success;
 }
 
-void PropertiesDialog::reset() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
+void PropertiesDialog::reset_internal(AdInterface &ad) {
     const AdObject object = ad.search_object(target);
 
     for (auto tab : tabs) {

@@ -35,6 +35,7 @@ class PropertiesTab;
 class QAbstractItemView;
 class QPushButton;
 class AttributesTab;
+class AdInterface;
 template <typename T>
 class QList;
 
@@ -68,6 +69,8 @@ private:
 
     // NOTE: ctor is private, use open_for_target() instead
     PropertiesDialog(const QString &target_arg);
+    bool apply_internal(AdInterface &ad);
+    void reset_internal(AdInterface &ad);
 };
 
 #endif /* PROPERTIES_DIALOG_H */

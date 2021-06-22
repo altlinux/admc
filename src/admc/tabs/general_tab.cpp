@@ -37,6 +37,10 @@ GeneralTab::GeneralTab(const AdObject &object) {
     const QString name = object.get_string(ATTRIBUTE_NAME);
     name_label->setText(name);
 
+    if (object.is_empty()) {
+        name_label->setText(tr("Failed to load object information. Check your connection."));
+    }
+
     auto line = new QFrame();
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Sunken);
