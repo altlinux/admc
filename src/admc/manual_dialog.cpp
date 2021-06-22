@@ -48,7 +48,7 @@ ManualDialog::ManualDialog(QWidget *parent)
         return QCoreApplication::applicationDirPath() + "/doc/admc.qch";
 #endif
 
-        return QStandardPaths::locate(QStandardPaths::GenericDataLocation, "admc.qch");
+        return QStandardPaths::locate(QStandardPaths::GenericDataLocation, "doc/admc/admc.qch");
     }();
 
     if (compressed_help_path.isEmpty()) {
