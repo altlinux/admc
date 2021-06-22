@@ -302,10 +302,12 @@ QString dn_from_name_and_parent(const QString &name, const QString &parent, cons
 QString get_default_domain_from_krb5() {
     krb5_error_code result;
     krb5_context context;
-    char *realm_cstr = NULL;
+    krb5_ccache default_cache;
+    krb5_principal default_principal;
 
     auto cleanup = [&]() {
-        krb5_free_default_realm(context, realm_cstr);
+        krb5_free_principal(context, default_principal);
+        krb5_cc_close(context, default_cache);
         krb5_free_context(context);
     };
 
@@ -317,15 +319,23 @@ QString get_default_domain_from_krb5() {
         return QString();
     }
 
-    result = krb5_get_default_realm(context, &realm_cstr);
+    result = krb5_cc_default(context, &default_cache);
     if (result) {
-        qDebug() << "Failed to get default realm";
+        qDebug() << "Failed to get default krb5 ccache";
 
         cleanup();
         return QString();
     }
 
-    const QString out = QString(realm_cstr);
+    result = krb5_cc_get_principal(context, default_cache, &default_principal);
+    if (result) {
+        qDebug() << "Failed to get default krb5 principal";
+
+        cleanup();
+        return QString();
+    }
+
+    const QString out = QString::fromLocal8Bit(default_principal->realm.data, default_principal->realm.length);
 
     cleanup();
 
