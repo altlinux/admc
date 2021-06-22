@@ -82,6 +82,10 @@ void get_auth_data_fn(const char *pServer, const char *pShare, char *pWorkgroup,
 AdInterface::AdInterface(AdConfig *adconfig) {
     d = new AdInterfacePrivate();
 
+    // TODO: this is very bug-prone, error returns should
+    // set this to false or return false
+    d->is_connected = false;
+
     if (adconfig != nullptr) {
         d->adconfig = adconfig;
     } else if (AdInterfacePrivate::s_adconfig != nullptr) {
@@ -104,7 +108,6 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     //
     // Connect via LDAP
     //
-    d->is_connected = false;
     const QString connect_error_context = tr("Failed to connect");
 
     const QString uri = [&]() {
