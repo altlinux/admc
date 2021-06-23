@@ -210,7 +210,7 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     ldap_memfree(defaults.authcid);
     ldap_memfree(defaults.authzid);
     if (result != LDAP_SUCCESS) {
-        d->error_message_plain(tr("Failed to authenticate. Make sure you have initialized your credentials (kinit)"));
+        d->error_message_plain(tr("Failed to connect to server. Check your connection and make sure you have initialized your credentials using kinit."));
         d->error_message_plain(d->default_error());
 
         return;

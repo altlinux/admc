@@ -89,48 +89,48 @@
 <context>
     <name>AdInterface</name>
     <message>
-        <location filename="ad_interface.cpp" line="98"/>
-        <location filename="ad_interface.cpp" line="108"/>
+        <location filename="ad_interface.cpp" line="102"/>
+        <location filename="ad_interface.cpp" line="111"/>
         <source>Failed to connect</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="98"/>
+        <location filename="ad_interface.cpp" line="102"/>
         <source>Failed to get a domain</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="114"/>
+        <location filename="ad_interface.cpp" line="117"/>
         <source>Failed to find domain controllers. Make sure your computer is in the domain and that domain controllers are operational.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="123"/>
+        <location filename="ad_interface.cpp" line="126"/>
         <source>Failed to load DC defined in settings. Switching to default DC</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="150"/>
+        <location filename="ad_interface.cpp" line="153"/>
         <source>Failed to initialize LDAP library</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="156"/>
+        <location filename="ad_interface.cpp" line="159"/>
         <source>Failed to set ldap option %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="210"/>
-        <source>Failed to authenticate. Make sure you have initialized your credentials (kinit)</source>
+        <location filename="ad_interface.cpp" line="213"/>
+        <source>Failed to connect to server. Check your connection and make sure you have initialized your credentials using kinit.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="223"/>
+        <location filename="ad_interface.cpp" line="226"/>
         <source>Failed to initialize SMB context</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="469"/>
+        <location filename="ad_interface.cpp" line="472"/>
         <source>Search:
 	filter = &quot;%1&quot;
 	attributes = %2
@@ -139,197 +139,197 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="597"/>
+        <location filename="ad_interface.cpp" line="600"/>
         <source>Changed attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="601"/>
+        <location filename="ad_interface.cpp" line="604"/>
         <source>Failed to change attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="648"/>
+        <location filename="ad_interface.cpp" line="651"/>
         <source>Added value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="654"/>
+        <location filename="ad_interface.cpp" line="657"/>
         <source>Failed to add value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="688"/>
+        <location filename="ad_interface.cpp" line="691"/>
         <source>Deleted value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="694"/>
+        <location filename="ad_interface.cpp" line="697"/>
         <source>Failed to delete value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="735"/>
+        <location filename="ad_interface.cpp" line="738"/>
         <source>Created object &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="739"/>
+        <location filename="ad_interface.cpp" line="742"/>
         <source>Failed to create object &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="758"/>
+        <location filename="ad_interface.cpp" line="761"/>
         <source>Failed to delete object &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="766"/>
+        <location filename="ad_interface.cpp" line="769"/>
         <source>LDAP Operation error - Failed to allocate tree delete control</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="774"/>
+        <location filename="ad_interface.cpp" line="777"/>
         <source>LDAP Operation error - Failed to create tree delete control</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="787"/>
+        <location filename="ad_interface.cpp" line="790"/>
         <source>Deleted object &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="806"/>
+        <location filename="ad_interface.cpp" line="809"/>
         <source>Moved object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="810"/>
+        <location filename="ad_interface.cpp" line="813"/>
         <source>Failed to move object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="826"/>
+        <location filename="ad_interface.cpp" line="829"/>
         <source>Renamed object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="830"/>
+        <location filename="ad_interface.cpp" line="833"/>
         <source>Failed to rename object &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="846"/>
+        <location filename="ad_interface.cpp" line="849"/>
         <source>Added user &quot;%1&quot; to group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="850"/>
+        <location filename="ad_interface.cpp" line="853"/>
         <source>Failed to add user &quot;%1&quot; to group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="866"/>
+        <location filename="ad_interface.cpp" line="869"/>
         <source>Removed user &quot;%1&quot; from group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="870"/>
+        <location filename="ad_interface.cpp" line="873"/>
         <source>Failed to remove user &quot;%1&quot; from group &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="913"/>
+        <location filename="ad_interface.cpp" line="916"/>
         <source>Set scope for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="917"/>
+        <location filename="ad_interface.cpp" line="920"/>
         <source>Failed to set scope for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="939"/>
+        <location filename="ad_interface.cpp" line="942"/>
         <source>Set type for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="943"/>
+        <location filename="ad_interface.cpp" line="946"/>
         <source>Failed to set type for group &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="969"/>
+        <location filename="ad_interface.cpp" line="972"/>
         <source>Set primary group for user &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="973"/>
+        <location filename="ad_interface.cpp" line="976"/>
         <source>Failed to set primary group for user &quot;%1&quot; to &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1002"/>
+        <location filename="ad_interface.cpp" line="1005"/>
         <source>Set password for user &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1006"/>
+        <location filename="ad_interface.cpp" line="1009"/>
         <source>Failed to set password for user &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1011"/>
+        <location filename="ad_interface.cpp" line="1014"/>
         <source>Password doesn&apos;t match rules</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1087"/>
+        <location filename="ad_interface.cpp" line="1090"/>
         <source>Disabled account for user - &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1089"/>
+        <location filename="ad_interface.cpp" line="1092"/>
         <source>Enabled account for user - &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1096"/>
+        <location filename="ad_interface.cpp" line="1099"/>
         <source>Turned ON account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1098"/>
+        <location filename="ad_interface.cpp" line="1101"/>
         <source>Turned OFF account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1112"/>
+        <location filename="ad_interface.cpp" line="1115"/>
         <source>Failed to disable account for user &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1114"/>
+        <location filename="ad_interface.cpp" line="1117"/>
         <source>Failed to enable account for user &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1121"/>
+        <location filename="ad_interface.cpp" line="1124"/>
         <source>Failed to turn ON account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1123"/>
+        <location filename="ad_interface.cpp" line="1126"/>
         <source>Failed to turn OFF account option &quot;%1&quot; for user &quot;%2&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1141"/>
+        <location filename="ad_interface.cpp" line="1144"/>
         <source>Unlocked user &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1145"/>
+        <location filename="ad_interface.cpp" line="1148"/>
         <source>Failed to unlock user &quot;%1&quot;</source>
         <translation></translation>
     </message>
@@ -337,32 +337,32 @@
 <context>
     <name>AdInterfacePrivate</name>
     <message>
-        <location filename="ad_interface.cpp" line="1379"/>
+        <location filename="ad_interface.cpp" line="1382"/>
         <source>. Error: &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1399"/>
+        <location filename="ad_interface.cpp" line="1402"/>
         <source>No such object</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1400"/>
+        <location filename="ad_interface.cpp" line="1403"/>
         <source>Constraint violation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1401"/>
+        <location filename="ad_interface.cpp" line="1404"/>
         <source>Server is unwilling to perform</source>
         <translation>Server is unwilling to perform</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1402"/>
+        <location filename="ad_interface.cpp" line="1405"/>
         <source>Already exists</source>
         <translation>Object already exists</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1406"/>
+        <location filename="ad_interface.cpp" line="1409"/>
         <source>Server error: %1</source>
         <translation></translation>
     </message>
