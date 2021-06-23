@@ -68,6 +68,7 @@ MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> va
     QLabel *attribute_label = make_attribute_label(attribute);
 
     auto add_button = new QPushButton(tr("Add"));
+    add_button->setObjectName("add_button");
 
     list_widget = new QListWidget();
 

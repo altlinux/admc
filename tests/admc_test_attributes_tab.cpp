@@ -20,12 +20,17 @@
 
 #include "admc_test_attributes_tab.h"
 
+#include "editors/multi_editor.h"
+#include "editors/string_editor.h"
+
 #include <QVBoxLayout>
 #include <QString>
 #include <QStandardItemModel>
 #include <QPushButton>
 #include <QDialog>
 #include <QCheckBox>
+#include <QLineEdit>
+#include <QTreeView>
 
 // NOTE: can't be set because order is important. Read only
 // has to be set first to enable other filters.
@@ -51,6 +56,9 @@ void ADMCTestAttributesTab::init() {
     parent_widget->setLayout(layout);
     layout->addWidget(attributes_tab);
 
+    view = attributes_tab->findChild<QTreeView *>();
+    QVERIFY(view != nullptr);
+
     model = attributes_tab->findChild<QStandardItemModel *>();
     QVERIFY(model != nullptr);
 
@@ -58,6 +66,9 @@ void ADMCTestAttributesTab::init() {
     QVERIFY(proxy != nullptr);
 
     filter_button = attributes_tab->findChild<QPushButton *>("filter_button");
+    QVERIFY(filter_button != nullptr);
+
+    edit_button = attributes_tab->findChild<QPushButton *>("edit_button");
     QVERIFY(filter_button != nullptr);
 
     // Create test user
@@ -133,6 +144,40 @@ void ADMCTestAttributesTab::filter() {
     test_filter(AttributeFilter_ReadOnly, ATTRIBUTE_MEMBER_OF);
 
     set_filter(all_filters, Qt::Checked);
+}
+
+// Change description attribute, apply and then confirm
+// changes
+void ADMCTestAttributesTab::apply() {
+    const QString correct_value = "test description";
+    
+    navigate_until_object(view, "description", Qt::DisplayRole);
+    edit_button->click();
+
+    auto multi_editor = attributes_tab->findChild<MultiEditor *>();
+    QVERIFY(multi_editor != nullptr);
+    QVERIFY(QTest::qWaitForWindowExposed(multi_editor, 1000));
+
+    auto add_button = multi_editor->findChild<QPushButton *>("add_button");
+    QVERIFY(add_button != nullptr);
+    add_button->click();
+
+    auto string_editor = multi_editor->findChild<StringEditor *>();
+    QVERIFY(string_editor != nullptr);
+    QVERIFY(QTest::qWaitForWindowExposed(string_editor, 1000));
+
+    auto string_editor_edit = string_editor->findChild<QLineEdit *>();
+    QVERIFY(string_editor_edit != nullptr);
+    string_editor_edit->setText(correct_value);
+
+    string_editor->accept();
+    multi_editor->accept();
+
+    attributes_tab->apply(ad, dn);
+
+    const AdObject object = ad.search_object(dn);
+    const QString description_value = object.get_string(ATTRIBUTE_DESCRIPTION);
+    QVERIFY(description_value == correct_value);
 }
 
 void ADMCTestAttributesTab::set_filter(const QList<AttributeFilter> &filter_list, const Qt::CheckState state) {

@@ -28,6 +28,7 @@
 class QStandardItemModel;
 class QSortFilterProxyModel;
 class QPushButton;
+class QTreeView;
 
 class ADMCTestAttributesTab : public ADMCTest {
 Q_OBJECT
@@ -35,14 +36,17 @@ Q_OBJECT
 private slots:
     void init() override;
 
+    void apply();
     void load();
     void filter();
 
 private:
     AttributesTab *attributes_tab;
+    QTreeView *view;
     QStandardItemModel *model;
     QSortFilterProxyModel *proxy;
     QPushButton *filter_button;
+    QPushButton *edit_button;
     QString dn;
 
     void set_filter(const QList<AttributeFilter> &filter_list, const Qt::CheckState state);
