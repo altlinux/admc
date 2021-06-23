@@ -152,6 +152,9 @@ public:
     int register_results(ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
     int register_results(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
+    QList<QStandardItem *> add_item(const int results_id, const bool is_scope, const ScopeNodeType scope_type, const QModelIndex &parent);
+
+
     // Sorts scope items by name. Note that this can affect
     // performance negatively if overused. For example, when
     // adding multiple scope items, try to call this once

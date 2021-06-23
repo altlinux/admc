@@ -83,7 +83,6 @@ public:
     QAbstractItemView *focused_view;
     QStackedWidget *results_stacked_widget;
     QHash<int, ResultsDescription> results_descriptions;
-    QHash<QPersistentModelIndex, QStandardItemModel *> results_models;
 
     QAction *properties_action;
     QAction *refresh_action;
@@ -107,7 +106,6 @@ public:
 
     ConsoleWidgetPrivate(ConsoleWidget *q_arg);
 
-    QStandardItemModel *get_results_model_for_scope_item(const QModelIndex &index) const;
     void open_action_menu_as_context_menu(const QPoint pos);
     void connect_to_drag_model(ConsoleDragModel *model);
     void on_scope_expanded(const QModelIndex &index);

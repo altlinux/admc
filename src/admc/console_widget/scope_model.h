@@ -34,6 +34,7 @@ public:
     using QSortFilterProxyModel::QSortFilterProxyModel;
 
     bool hasChildren(const QModelIndex &parent) const override;
+    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
 
 #endif /* SCOPE_MODEL_H */

@@ -36,3 +36,11 @@ bool ScopeModel::hasChildren(const QModelIndex &parent) const {
         return QSortFilterProxyModel::hasChildren(parent);
     }
 }
+
+bool ScopeModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
+    const QModelIndex source_index = sourceModel()->index(source_row, 0, source_parent);
+
+    const bool is_scope = source_index.data(ConsoleRole_IsScope).toBool();
+
+    return is_scope;   
+}

@@ -54,6 +54,7 @@ public:
     ResultsView(QWidget *parent);
 
     void set_model(QAbstractItemModel *model);
+    void set_parent(const QModelIndex &source_index);
     void set_view_type(const ResultsViewType type);
     QAbstractItemView *current_view() const;
     ResultsViewType current_view_type() const;
