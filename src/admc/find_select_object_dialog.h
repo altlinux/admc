@@ -29,10 +29,11 @@
 
 class FindWidget;
 class QStandardItem;
-template <typename T> class QList;
+template <typename T>
+class QList;
 
 class FindSelectObjectDialog final : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     FindSelectObjectDialog(const QList<QString> classes, QWidget *parent);
@@ -41,7 +42,6 @@ public:
 
 private:
     FindWidget *find_widget;
-    
 };
 
 #endif /* FIND_SELECT_OBJECT_DIALOG_H */

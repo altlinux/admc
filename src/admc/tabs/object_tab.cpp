@@ -19,25 +19,23 @@
  */
 
 #include "tabs/object_tab.h"
-#include "edits/string_edit.h"
-#include "edits/datetime_edit.h"
 #include "adldap.h"
+#include "edits/datetime_edit.h"
+#include "edits/string_edit.h"
 
 #include <QFormLayout>
 
-ObjectTab::ObjectTab() {   
+ObjectTab::ObjectTab() {
     new StringEdit(ATTRIBUTE_DN, "", &edits, this);
     new StringEdit(ATTRIBUTE_OBJECT_CLASS, "", &edits, this);
-    
+
     new DateTimeEdit(ATTRIBUTE_WHEN_CREATED, &edits, this);
     new DateTimeEdit(ATTRIBUTE_WHEN_CHANGED, &edits, this);
 
     new StringEdit(ATTRIBUTE_USN_CREATED, "", &edits, this);
     new StringEdit(ATTRIBUTE_USN_CHANGED, "", &edits, this);
 
-    for (auto edit : edits) {
-        edit->set_read_only(true);
-    }
+    edits_set_read_only(edits, true);
 
     edits_connect_to_tab(edits, this);
 

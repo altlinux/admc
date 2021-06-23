@@ -24,15 +24,14 @@
 #include "edit_query_item_widget.h"
 #include "utils.h"
 
+#include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QVBoxLayout>
-#include <QDialogButtonBox>
 
 EditQueryItemDialog::EditQueryItemDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg)
-{
+: QDialog(console_arg) {
     setAttribute(Qt::WA_DeleteOnClose);
-    
+
     console = console_arg;
 
     const auto title = QString(tr("Edit Query"));

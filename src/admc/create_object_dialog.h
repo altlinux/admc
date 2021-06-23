@@ -29,8 +29,8 @@
  */
 
 #include <QDialog>
-#include <QString>
 #include <QList>
+#include <QString>
 
 class AttributeEdit;
 class StringEdit;
@@ -39,7 +39,7 @@ class QPushButton;
 class PasswordEdit;
 
 class CreateObjectDialog : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     CreateObjectDialog(const QString &parent_dn_arg, const QString &object_class_arg, QWidget *parent);

@@ -35,7 +35,7 @@ private slots:
     void select_dialog_correct_object_added();
 
     void object_menu_add_to_group();
-    
+
     void object_menu_new_user();
     void object_menu_new_ou();
     void object_menu_new_computer();
@@ -61,10 +61,10 @@ private:
 
     // Creates object of given type with specified name and
     // runs a specified rename function on this object.
-    void test_object_rename(const QString& oldname, const QString& newname, const QString &object_class, std::function<void(const QString&)> rename_callback);
+    void test_object_rename(const QString &oldname, const QString &newname, const QString &object_class, std::function<void(const QString &)> rename_callback);
 
     // Common renamer for object.
-    static void basic_rename(const QString& newname);
+    static void basic_rename(const QString &newname);
 };
 
 #endif /* ADMC_TEST_OBJECT_MENU_H */

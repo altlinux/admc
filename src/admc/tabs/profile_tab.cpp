@@ -19,8 +19,8 @@
  */
 
 #include "tabs/profile_tab.h"
-#include "edits/string_edit.h"
 #include "adldap.h"
+#include "edits/string_edit.h"
 
 #include <QFormLayout>
 

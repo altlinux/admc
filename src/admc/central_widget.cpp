@@ -20,54 +20,52 @@
 
 #include "central_widget.h"
 
+#include "adldap.h"
+#include "change_dc_dialog.h"
+#include "console_actions.h"
 #include "console_types/console_object.h"
 #include "console_types/console_policy.h"
 #include "console_types/console_query.h"
-#include "utils.h"
-#include "adldap.h"
-#include "properties_dialog.h"
-#include "globals.h"
-#include "settings.h"
-#include "filter_dialog.h"
-#include "console_actions.h"
-#include "status.h"
-#include "rename_object_dialog.h"
-#include "create_object_dialog.h"
-#include "create_policy_dialog.h"
-#include "create_query_item_dialog.h"
-#include "edit_query_item_dialog.h"
-#include "create_query_folder_dialog.h"
-#include "move_object_dialog.h"
-#include "find_object_dialog.h"
-#include "password_dialog.h"
-#include "rename_policy_dialog.h"
-#include "select_object_dialog.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
-#include "editors/multi_editor.h"
-#include "gplink.h"
-#include "policy_results_widget.h"
+#include "create_object_dialog.h"
+#include "create_policy_dialog.h"
+#include "create_query_folder_dialog.h"
+#include "create_query_item_dialog.h"
 #include "edit_query_folder_dialog.h"
+#include "edit_query_item_dialog.h"
+#include "editors/multi_editor.h"
+#include "filter_dialog.h"
+#include "find_object_dialog.h"
+#include "globals.h"
+#include "gplink.h"
+#include "move_object_dialog.h"
 #include "object_multi_properties_dialog.h"
-#include "change_dc_dialog.h"
+#include "password_dialog.h"
+#include "policy_results_widget.h"
+#include "properties_dialog.h"
+#include "rename_object_dialog.h"
+#include "rename_policy_dialog.h"
+#include "select_object_dialog.h"
+#include "settings.h"
+#include "status.h"
+#include "utils.h"
 
-#include <QDebug>
 #include <QAbstractItemView>
-#include <QVBoxLayout>
-#include <QSplitter>
-#include <QDebug>
-#include <QStandardItemModel>
-#include <QHeaderView>
 #include <QApplication>
-#include <QTreeWidget>
-#include <QStack>
-#include <QMenu>
+#include <QDebug>
+#include <QHeaderView>
 #include <QLabel>
+#include <QMenu>
 #include <QSortFilterProxyModel>
+#include <QSplitter>
+#include <QStack>
+#include <QStandardItemModel>
+#include <QTreeWidget>
+#include <QVBoxLayout>
 
 CentralWidget::CentralWidget()
-: QWidget()
-{
+: QWidget() {
     console_actions = new ConsoleActions(this);
 
     open_filter_action = new QAction(tr("&Filter objects"), this);
@@ -87,14 +85,14 @@ CentralWidget::CentralWidget()
     auto policy_container_results = new ResultsView(this);
     policy_container_results->detail_view()->header()->setDefaultSectionSize(200);
     policy_container_results_id = console->register_results(policy_container_results, console_policy_header_labels(), console_policy_default_columns());
-    
+
     policy_results_widget = new PolicyResultsWidget();
     policy_results_id = console->register_results(policy_results_widget);
 
     auto query_results = new ResultsView(this);
     query_results->detail_view()->header()->setDefaultSectionSize(200);
     console_query_folder_results_id = console->register_results(query_results, console_query_folder_header_labels(), console_query_folder_default_columns());
-    
+
     auto layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
@@ -291,8 +289,7 @@ void CentralWidget::object_properties() {
             dialog, &PropertiesDialog::applied,
             this, &CentralWidget::on_object_properties_applied);
     } else if (targets.size() > 1) {
-        const QList<QString> class_list =
-        [&]() {
+        const QList<QString> class_list = [&]() {
             QSet<QString> out;
 
             for (const QPersistentModelIndex &index : targets.values()) {
@@ -489,9 +486,8 @@ void CentralWidget::policy_add_link() {
 
     QObject::connect(
         dialog, &SelectObjectDialog::accepted,
-        [=]() {           
-            const QList<QString> gpos =
-            [selected]() {
+        [=]() {
+            const QList<QString> gpos = [selected]() {
                 QList<QString> out;
 
                 for (const QModelIndex &index : selected) {
@@ -546,7 +542,7 @@ void CentralWidget::policy_delete() {
             const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, dn);
             const QList<QString> attributes = {ATTRIBUTE_GPLINK};
             const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
-            
+
             for (const AdObject &object : results.values()) {
                 const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
                 Gplink gplink = Gplink(gplink_string);
@@ -604,8 +600,7 @@ void CentralWidget::query_paste() {
 }
 
 void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, bool *ok) {
-    const bool dropped_contains_target =
-    [&]() {
+    const bool dropped_contains_target = [&]() {
         const QModelIndex target_scope = console_item_convert_to_scope_index(target);
 
         for (const QPersistentModelIndex &dropped : dropped_list) {
@@ -623,8 +618,7 @@ void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &droppe
     }
 
     const ItemType target_type = (ItemType) target.data(ConsoleRole_Type).toInt();
-    const QSet<ItemType> dropped_types =
-    [&]() {
+    const QSet<ItemType> dropped_types = [&]() {
         QSet<ItemType> out;
 
         for (const QPersistentModelIndex &index : dropped_list) {
@@ -661,8 +655,7 @@ void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &droppe
 
 void CentralWidget::on_items_dropped(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
     const ItemType target_type = (ItemType) target.data(ConsoleRole_Type).toInt();
-    const QSet<ItemType> dropped_types =
-    [&]() {
+    const QSet<ItemType> dropped_types = [&]() {
         QSet<ItemType> out;
 
         for (const QPersistentModelIndex &index : dropped_list) {
@@ -704,7 +697,7 @@ void CentralWidget::on_current_scope_changed() {
     update_description_bar();
 }
 
-void CentralWidget::on_object_properties_applied() {    
+void CentralWidget::on_object_properties_applied() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -742,8 +735,7 @@ void CentralWidget::refresh_head() {
 }
 
 void CentralWidget::update_description_bar() {
-    const QString text =
-    [this]() {
+    const QString text = [this]() {
         const QModelIndex current_scope = console->get_current_scope_item();
         const ItemType type = (ItemType) current_scope.data(ConsoleRole_Type).toInt();
 
@@ -786,9 +778,9 @@ void CentralWidget::add_actions_to_view_menu(QMenu *menu) {
 
     menu->addAction(show_noncontainers_action);
 
-    #ifdef QT_DEBUG
+#ifdef QT_DEBUG
     menu->addAction(dev_mode_action);
-    #endif
+#endif
 }
 
 void CentralWidget::fetch_scope_node(const QModelIndex &index) {

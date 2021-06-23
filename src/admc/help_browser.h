@@ -41,8 +41,7 @@ public:
     QVariant loadResource(int type, const QUrl &name) override;
 
 private:
-    QHelpEngine* help_engine;
-
+    QHelpEngine *help_engine;
 };
 
 #endif /* HELP_BROWSER_H */

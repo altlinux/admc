@@ -19,8 +19,8 @@
 
 #include "xml_ubyte_edit.h"
 
-#include <QMessageBox>
 #include <QLineEdit>
+#include <QMessageBox>
 
 XmlUByteEdit::XmlUByteEdit(const XmlAttribute &attribute_arg, QObject *parent)
 : XmlStringEdit(attribute_arg, parent) {

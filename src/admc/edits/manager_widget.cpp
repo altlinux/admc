@@ -20,21 +20,21 @@
 
 #include "edits/manager_widget.h"
 
-#include "utils.h"
 #include "adldap.h"
 #include "globals.h"
 #include "properties_dialog.h"
 #include "select_object_dialog.h"
-#include <QLineEdit>
+#include "utils.h"
 #include <QFormLayout>
+#include <QLineEdit>
 #include <QPushButton>
 
 ManagerWidget::ManagerWidget(const QString &manager_attribute_arg)
-: QWidget()
-{
+: QWidget() {
     manager_attribute = manager_attribute_arg;
 
     edit = new QLineEdit();
+    edit->setReadOnly(true);
 
     change_button = new QPushButton(tr("Change"));
     properties_button = new QPushButton(PropertiesDialog::display_name());
@@ -64,7 +64,7 @@ ManagerWidget::ManagerWidget(const QString &manager_attribute_arg)
 
 void ManagerWidget::load(const AdObject &object) {
     const QString manager = object.get_string(manager_attribute);
-    
+
     load_value(manager);
 }
 

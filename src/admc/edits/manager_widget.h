@@ -29,7 +29,7 @@ class QLineEdit;
 class QPushButton;
 
 class ManagerWidget final : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     ManagerWidget(const QString &manager_attribute_arg);

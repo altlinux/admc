@@ -24,7 +24,7 @@
 #include "tabs/properties_tab.h"
 
 class GeneralTab final : public PropertiesTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     GeneralTab(const AdObject &object);

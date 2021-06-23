@@ -34,8 +34,8 @@ class QLineEdit;
 class FilterClassesWidget;
 
 class SelectClassesWidget final : public QWidget {
-Q_OBJECT
-    
+    Q_OBJECT
+
 public:
     SelectClassesWidget(const QList<QString> class_list);
 

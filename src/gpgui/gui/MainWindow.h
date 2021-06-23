@@ -19,10 +19,10 @@
 #if !defined(MAIN_WINDOW_H)
 #define MAIN_WINDOW_H 1
 
-#include <QMainWindow>
-#include <QtWidgets>
-#include <QTableWidget>
 #include <QFileDialog>
+#include <QMainWindow>
+#include <QTableWidget>
+#include <QtWidgets>
 
 #include "preg_parser.h"
 
@@ -32,7 +32,7 @@ class QTableWidget;
 class BrowseWidget;
 
 class MainWindow final : public QMainWindow {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     MainWindow(const QString &path);

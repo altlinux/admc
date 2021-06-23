@@ -35,7 +35,7 @@ class QStandardItemModel;
  */
 
 class GpoLinksTab final : public PropertiesTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     GpoLinksTab();

@@ -23,11 +23,11 @@
 
 #include "edits/attribute_edit.h"
 
-#include <QString>
 #include <QDateTimeEdit>
+#include <QString>
 
 class DateTimeEdit final : public AttributeEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     DateTimeEdit(const QString &attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();

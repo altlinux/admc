@@ -20,15 +20,15 @@
 #ifndef XML_BOOL_EDIT_H
 #define XML_BOOL_EDIT_H
 
-#include "xml_edit.h"
 #include "xml_attribute.h"
+#include "xml_edit.h"
 
 #include <QString>
 
 class QCheckBox;
 
 class XmlBoolEdit final : public XmlEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     QCheckBox *check;
 

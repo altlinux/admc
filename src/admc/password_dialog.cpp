@@ -20,21 +20,20 @@
 
 #include "password_dialog.h"
 #include "adldap.h"
+#include "edits/account_option_edit.h"
 #include "edits/password_edit.h"
 #include "edits/unlock_edit.h"
-#include "edits/account_option_edit.h"
+#include "globals.h"
 #include "status.h"
 #include "utils.h"
-#include "globals.h"
 
+#include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QLabel>
-#include <QDialogButtonBox>
 #include <QPushButton>
 
 PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
-: QDialog(parent)
-{
+: QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
 
     target = target_arg;
@@ -52,7 +51,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
     setWindowTitle(title);
 
     new PasswordEdit(&edits, this);
-    
+
     auto pass_expired_check = new AccountOptionEdit(AccountOption_PasswordExpired, &edits, this);
 
     new UnlockEdit(&edits, this);

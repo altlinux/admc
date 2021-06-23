@@ -19,20 +19,19 @@
  */
 
 #include "edits/string_other_edit.h"
-#include "edits/string_edit.h"
-#include "editors/multi_editor.h"
-#include "utils.h"
 #include "adldap.h"
+#include "editors/multi_editor.h"
+#include "edits/string_edit.h"
 #include "globals.h"
-#include <QLineEdit>
+#include "utils.h"
 #include <QFormLayout>
 #include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
 
 StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &other_attribute_arg, const QString &object_class, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
-, other_attribute(other_attribute_arg)
-{
+, other_attribute(other_attribute_arg) {
     main_edit = new StringEdit(main_attribute, object_class, nullptr, parent);
 
     QObject::connect(
@@ -59,7 +58,7 @@ StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &o
 
 void StringOtherEdit::load_internal(AdInterface &ad, const AdObject &object) {
     main_edit->load(ad, object);
-    
+
     other_values = object.get_values(other_attribute);
 }
 

@@ -2,6 +2,35 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.5.3 (Released 21-06-2021)
+-----------------------------------------------------------------------
+- Properties dialog: Added new "Security" tab for User objects.
+- Properties dialog: Added new tabs for Computer objects:
+  "Delegation", "Managed by", "Member of" and "Operating
+  System".
+- Properties dialog: Added "Location" field to General tab
+  for Computer objects.
+- Create User dialog: Added "Can't change password" option.
+- Filters: Removed "Cancel" button from class selection
+  dialog.
+- Filters: Removed hidden feature where selecting all
+  classes in filter setup secretly changed filter to accept
+  ALL classes, even ones not listed in the class list.
+- Console filtering dialog: Added more filtering options.
+  Now there's an option to: show all objects, show selected
+  classes and a custom filter.
+- Console: Perform fetches of domain objects and queries in
+  a separate thread.
+- Create query dialog: Fixed dialog not resetting between
+  multiple instances.
+- Create query dialog: Fixed search base defaulting to being
+  empty. Default to domain instead like find dialog.
+- Queries: Added "Edit" action to query items, which is
+  accessible from the action menu.
+- Errors: Added more helpful error messages for the
+  connection process.
+
+-----------------------------------------------------------------------
  VERSION 0.5.2 (Released 12-05-2021)
 -----------------------------------------------------------------------
 - Translation: Fix translation of "Action" menu not loading.

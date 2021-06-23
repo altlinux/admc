@@ -19,13 +19,12 @@
 
 #include "xml_string_edit.h"
 
-#include <QLineEdit>
 #include <QLabel>
+#include <QLineEdit>
 
 XmlStringEdit::XmlStringEdit(const XmlAttribute &attribute_arg, QObject *parent)
 : XmlEdit(parent)
-, attribute(attribute_arg)
-{
+, attribute(attribute_arg) {
     edit = new QLineEdit();
 
     QObject::connect(

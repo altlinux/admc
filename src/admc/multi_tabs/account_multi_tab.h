@@ -29,7 +29,7 @@
 #include "multi_tabs/properties_multi_tab.h"
 
 class AccountMultiTab final : public PropertiesMultiTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     AccountMultiTab(AdInterface &ad);

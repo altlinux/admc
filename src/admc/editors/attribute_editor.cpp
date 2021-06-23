@@ -19,18 +19,18 @@
  */
 
 #include "editors/attribute_editor.h"
-#include "editors/string_editor.h"
-#include "editors/multi_editor.h"
-#include "editors/octet_editor.h"
+#include "adldap.h"
 #include "editors/bool_editor.h"
 #include "editors/datetime_editor.h"
-#include "adldap.h"
+#include "editors/multi_editor.h"
+#include "editors/octet_editor.h"
+#include "editors/string_editor.h"
 #include "globals.h"
 
-#include <QVBoxLayout>
+#include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QLabel>
-#include <QDialogButtonBox>
+#include <QVBoxLayout>
 
 AttributeEditor::AttributeEditor(QWidget *parent)
 : QDialog(parent) {
@@ -41,41 +41,37 @@ AttributeEditor::AttributeEditor(QWidget *parent)
 AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByteArray> values, QWidget *parent) {
     const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
 
-    auto octet_dialog =
-    [=]() -> AttributeEditor * {
+    auto octet_dialog = [=]() -> AttributeEditor * {
         if (single_valued) {
             return new OctetEditor(attribute, values, parent);
         } else {
             return new MultiEditor(attribute, values, parent);
-        } 
+        }
     };
 
-    auto string_dialog =
-    [=]() -> AttributeEditor * {
+    auto string_dialog = [=]() -> AttributeEditor * {
         if (single_valued) {
             return new StringEditor(attribute, values, parent);
         } else {
             return new MultiEditor(attribute, values, parent);
-        } 
+        }
     };
 
-    auto bool_dialog =
-    [=]() -> AttributeEditor * {
+    auto bool_dialog = [=]() -> AttributeEditor * {
         if (single_valued) {
             return new BoolEditor(attribute, values, parent);
         } else {
             // NOTE: yes, string multi editor also works for multi-valued bools since they are just strings (TRUE/FALSE)
             return new MultiEditor(attribute, values, parent);
-        } 
+        }
     };
 
-    auto datetime_dialog =
-    [=]() -> AttributeEditor * {
+    auto datetime_dialog = [=]() -> AttributeEditor * {
         if (single_valued) {
             return new DateTimeEditor(attribute, values, parent);
         } else {
             return nullptr;
-        } 
+        }
     };
 
     const AttributeType type = g_adconfig->get_attribute_type(attribute);

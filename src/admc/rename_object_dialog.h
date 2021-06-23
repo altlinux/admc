@@ -22,15 +22,15 @@
 #define RENAME_OBJECT_DIALOG_H
 
 #include <QDialog>
-#include <QString>
 #include <QList>
+#include <QString>
 
 class AttributeEdit;
 class QLineEdit;
 class QPushButton;
 
 class RenameObjectDialog final : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     RenameObjectDialog(const QString &target_arg, QWidget *parent);
@@ -53,7 +53,6 @@ private:
     QLineEdit *name_edit;
     QPushButton *ok_button;
     QPushButton *reset_button;
-
 };
 
 #endif /* RENAME_OBJECT_DIALOG_H */

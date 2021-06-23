@@ -16,33 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "config.h"
 #include "browse_widget.h"
+#include "config.h"
 #include "xml_editor.h"
 
 #include <QAction>
+#include <QApplication>
 #include <QCloseEvent>
-#include <QFrame>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QtWidgets>
 #include <QComboBox>
+#include <QFileDialog>
+#include <QFrame>
 #include <QHeaderView>
+#include <QMenu>
+#include <QPushButton>
 #include <QTabWidget>
 #include <QTableWidget>
 #include <QTableWidgetItem>
-#include <QFileDialog>
-#include <QMenu>
-#include <QApplication>
-#include <QFileDialog>
+#include <QVBoxLayout>
+#include <QtWidgets>
 
 #include "MainWindow.h"
 
 #include "preg_writer.h"
 
 MainWindow::MainWindow(const QString &path)
-: QMainWindow()
-{
+: QMainWindow() {
     // this->preg_open_dialog = new QFileDialog(
     //     this, tr("Select PReg file to edit"), QDir::currentPath(),
     //     "PReg files (*.pol);;All files (*.*)");
@@ -112,7 +110,7 @@ MainWindow::MainWindow(const QString &path)
         this, &MainWindow::on_exit);
 
     browse_widget = new BrowseWidget();
-    
+
     const auto central_layout = new QVBoxLayout();
     central_layout->addWidget(browse_widget);
 
@@ -144,8 +142,7 @@ void MainWindow::preg_entry2table(preg::entry &pentry) {
         "REG_FULL_RESOURCE_DESCRIPTOR",
         "REG_RESOURCE_REQUIREMENTS_LIST",
         "REG_QWORD",
-        "REG_QWORD_LITTLE_ENDIAN"
-    };
+        "REG_QWORD_LITTLE_ENDIAN"};
 
     std::string val = "0"; //std::to_string(pentry.value);
 
@@ -176,7 +173,7 @@ void MainWindow::open_preg() {
 
         std::string file_name = preg_file_name[0].toStdString();
         preg::preg_parser *test_regpol =
-        new preg::preg_parser(file_name);
+            new preg::preg_parser(file_name);
         this->regpol_table->setRowCount(0);
 
         try {
@@ -184,8 +181,7 @@ void MainWindow::open_preg() {
                 preg::entry pentry = test_regpol->get_next_entry();
                 this->preg_entry2table(pentry);
             }
-        }
-        catch (...) {
+        } catch (...) {
             std::cout << "Caught exception" << std::endl;
         }
 
@@ -209,22 +205,23 @@ void MainWindow::save_preg() {
         for (int rowid = 0; rowid < this->regpol_table->rowCount(); rowid++) {
             QTableWidgetItem *qvname = this->regpol_table->item(rowid, 0);
             QTableWidgetItem *qkname = this->regpol_table->item(rowid, 1);
-            QComboBox *qtype  = qobject_cast<QComboBox*>(this->regpol_table->cellWidget(rowid, 2));
-            QTableWidgetItem *qval   = this->regpol_table->item(rowid, 3);
+            QComboBox *qtype = qobject_cast<QComboBox *>(this->regpol_table->cellWidget(rowid, 2));
+            QTableWidgetItem *qval = this->regpol_table->item(rowid, 3);
 
             preg::entry pe;
-            pe.value_name = const_cast<char*>(qvname->data(Qt::DisplayRole).toString().toStdString().c_str());
-            pe.key_name   = const_cast<char*>(qkname->data(Qt::DisplayRole).toString().toStdString().c_str());
-            pe.type       = qtype->currentIndex();
-            pe.size       = 4;
-            pe.value      = const_cast<char*>(qval->data(Qt::DisplayRole).toString().toStdString().c_str());
+            pe.value_name = const_cast<char *>(qvname->data(Qt::DisplayRole).toString().toStdString().c_str());
+            pe.key_name = const_cast<char *>(qkname->data(Qt::DisplayRole).toString().toStdString().c_str());
+            pe.type = qtype->currentIndex();
+            pe.size = 4;
+            pe.value = const_cast<char *>(qval->data(Qt::DisplayRole).toString().toStdString().c_str());
 
             pw.add_entry(pe);
         }
     }
 }
 
-void MainWindow::save_dotreg() {}
+void MainWindow::save_dotreg() {
+}
 
 void MainWindow::edit_reg_dword_dialog() {
 }
@@ -274,5 +271,4 @@ void MainWindow::open_generic_path(const QString &path) {
 }
 
 void MainWindow::closeEvent(QCloseEvent *) {
-
 }

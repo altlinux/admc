@@ -19,8 +19,8 @@
 
 #include "xml_attribute.h"
 
-#include <QSet>
 #include <QHash>
+#include <QSet>
 
 XmlAttribute::XmlAttribute(const QDomNode &node) {
     const QDomElement element = node.toElement();
@@ -31,23 +31,23 @@ XmlAttribute::XmlAttribute(const QDomNode &node) {
     m_type = string_to_attribute_type(type_string);
 
     m_parent_name =
-    [node]() {
-        QDomNode current = node.parentNode();
-        while (!current.isNull()) {
-            const bool is_schema_element = (current.nodeName() == "xs:element");
+        [node]() {
+            QDomNode current = node.parentNode();
+            while (!current.isNull()) {
+                const bool is_schema_element = (current.nodeName() == "xs:element");
 
-            if (is_schema_element) {
-                const QDomElement current_element = current.toElement();
-                const QString name = current_element.attribute("name");
+                if (is_schema_element) {
+                    const QDomElement current_element = current.toElement();
+                    const QString name = current_element.attribute("name");
 
-                return name;
+                    return name;
+                }
+
+                current = current.parentNode();
             }
 
-            current = current.parentNode();
-        }
-
-        return QString();
-    }();
+            return QString();
+        }();
 
     if (m_parent_name.isEmpty()) {
         printf("Failed to find parent name for attribute %s!\n", qPrintable(name()));
@@ -59,7 +59,6 @@ void XmlAttribute::print() const {
     printf("    name=%s\n", qPrintable(m_name));
     printf("    type=%s\n", qPrintable(attribute_type_to_string(m_type)));
 }
-
 
 QString XmlAttribute::name() const {
     return m_name;
@@ -89,8 +88,7 @@ QString XmlAttribute::parent_name() const {
 const QHash<XmlAttributeType, QString> attribute_type_to_string_map = {
     {XmlAttributeType_String, "string"},
     {XmlAttributeType_Boolean, "boolean"},
-    {XmlAttributeType_UnsignedByte, "unsignedByte"}
-};
+    {XmlAttributeType_UnsignedByte, "unsignedByte"}};
 
 QString attribute_type_to_string(const XmlAttributeType type) {
     const QString string = attribute_type_to_string_map.value(type, "UNKNOWN_ATTRIBUTE_TYPE");
@@ -99,16 +97,16 @@ QString attribute_type_to_string(const XmlAttributeType type) {
 
 XmlAttributeType string_to_attribute_type(const QString string_raw) {
     static const QHash<QString, XmlAttributeType> string_to_attribute_type_map =
-    []() {
-        QHash<QString, XmlAttributeType> result;
+        []() {
+            QHash<QString, XmlAttributeType> result;
 
-        for (auto type : attribute_type_to_string_map.keys()) {
-            const QString string = attribute_type_to_string_map[type];
-            result.insert(string, type);
-        }
+            for (auto type : attribute_type_to_string_map.keys()) {
+                const QString string = attribute_type_to_string_map[type];
+                result.insert(string, type);
+            }
 
-        return result;
-    }();
+            return result;
+        }();
 
     QString string = string_raw;
     if (string.contains("xs:")) {

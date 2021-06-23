@@ -27,14 +27,14 @@
  * groups by class to which they are related.
  */
 
-#include <QWidget>
 #include <QString>
+#include <QWidget>
 
 class QComboBox;
 class QLineEdit;
 
 class FilterBuilder final : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     FilterBuilder();

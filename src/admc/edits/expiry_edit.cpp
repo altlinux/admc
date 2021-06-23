@@ -20,16 +20,15 @@
 
 #include "edits/expiry_edit.h"
 
-#include "edits/expiry_widget.h"
 #include "adldap.h"
+#include "edits/expiry_widget.h"
 #include "globals.h"
 #include "utils.h"
 
 #include <QFormLayout>
 
 ExpiryEdit::ExpiryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent)
-{
+: AttributeEdit(edits_out, parent) {
     edit_widget = new ExpiryWidget();
 
     connect(

@@ -26,7 +26,7 @@
 #include <QTest>
 
 class ADMCTestGplink : public QObject {
-Q_OBJECT
+    Q_OBJECT
 
 public slots:
     void initTestCase();

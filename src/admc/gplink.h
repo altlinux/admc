@@ -46,7 +46,7 @@ public:
 
     QString to_string() const;
     QList<QString> get_gpos() const;
-    
+
     void add(const QString &gpo);
     void remove(const QString &gpo);
     void move_up(const QString &gpo);

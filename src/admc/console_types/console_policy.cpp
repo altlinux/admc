@@ -21,21 +21,21 @@
 #include "console_types/console_policy.h"
 
 #include "adldap.h"
-#include "globals.h"
-#include "settings.h"
-#include "utils.h"
 #include "central_widget.h"
 #include "console_actions.h"
 #include "console_types/console_object.h"
+#include "globals.h"
 #include "gplink.h"
-#include "status.h"
 #include "policy_results_widget.h"
+#include "settings.h"
+#include "status.h"
+#include "utils.h"
 
-#include <QStandardItem>
-#include <QList>
 #include <QCoreApplication>
-#include <QMenu>
 #include <QDebug>
+#include <QList>
+#include <QMenu>
+#include <QStandardItem>
 
 int policy_container_results_id;
 int policy_results_id;
@@ -78,8 +78,7 @@ QList<QString> console_policy_search_attributes() {
 }
 
 void console_policy_create(ConsoleWidget *console, const AdObject &object) {
-    const QModelIndex policy_root_index =
-    [&]() {
+    const QModelIndex policy_root_index = [&]() {
         const QList<QModelIndex> results = console->search_scope_by_role(ConsoleRole_Type, ItemType_PolicyRoot);
 
         if (!results.isEmpty()) {
@@ -91,7 +90,7 @@ void console_policy_create(ConsoleWidget *console, const AdObject &object) {
 
     if (!policy_root_index.isValid()) {
         qDebug() << "Failed to find policy root";
-        
+
         return;
     }
 
@@ -125,9 +124,9 @@ void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
 
 void console_policy_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ConsoleAction_PolicyAddLink));
-    
+
     menu->addSeparator();
-    
+
     menu->addAction(actions->get(ConsoleAction_PolicyRename));
     menu->addAction(actions->get(ConsoleAction_PolicyDelete));
 }
@@ -156,8 +155,7 @@ void console_policy_can_drop(const QList<QPersistentModelIndex> &dropped_list, c
         return;
     }
 
-    const bool dropped_contain_ou =
-    [&]() {
+    const bool dropped_contain_ou = [&]() {
         for (const QPersistentModelIndex &index : dropped_list) {
             if (console_object_is_ou(index)) {
                 return true;
@@ -178,8 +176,7 @@ void console_policy_drop(ConsoleWidget *console, const QList<QPersistentModelInd
     const QString policy_dn = target.data(PolicyRole_DN).toString();
     const QList<QString> policy_list = {policy_dn};
 
-    const QList<QString> ou_list =
-    [&]() {
+    const QList<QString> ou_list = [&]() {
         QList<QString> out;
 
         // NOTE: when multi-selecting, selection may contain

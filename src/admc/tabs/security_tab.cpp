@@ -19,23 +19,23 @@
 
 #include "tabs/security_tab.h"
 
-#include "adldap.h"
 #include "ad_security.h"
-#include "utils.h"
+#include "adldap.h"
 #include "globals.h"
 #include "select_object_dialog.h"
+#include "utils.h"
 
 #include "samba/ndr_security.h"
 
-#include <QVBoxLayout>
 #include <QDebug>
-#include <QTreeView>
-#include <QStandardItemModel>
-#include <QLabel>
 #include <QDialogButtonBox>
-#include <QPushButton>
-#include <QPersistentModelIndex>
+#include <QLabel>
 #include <QMessageBox>
+#include <QPersistentModelIndex>
+#include <QPushButton>
+#include <QStandardItemModel>
+#include <QTreeView>
+#include <QVBoxLayout>
 
 enum TrusteeItemRole {
     TrusteeItemRole_Sid = Qt::UserRole,
@@ -78,9 +78,9 @@ const QHash<AcePermission, QString> ace_permission_to_name_map = {
 
 SecurityTab::SecurityTab() {
     ignore_item_changed_signal = false;
-    
+
     trustee_model = new QStandardItemModel(0, 1, this);
-    
+
     trustee_view = new QTreeView(this);
     trustee_view->setHeaderHidden(true);
     trustee_view->setModel(trustee_model);
@@ -94,11 +94,12 @@ SecurityTab::SecurityTab() {
     auto remove_trustee_button = trustee_buttonbox->addButton(tr("Remove"), QDialogButtonBox::ActionRole);
 
     ace_model = new QStandardItemModel(0, AceColumn_COUNT, this);
-    set_horizontal_header_labels_from_map(ace_model, {
-        {AceColumn_Name, tr("Name")},
-        {AceColumn_Allowed, tr("Allowed")},
-        {AceColumn_Denied, tr("Denied")},
-    });
+    set_horizontal_header_labels_from_map(ace_model,
+        {
+            {AceColumn_Name, tr("Name")},
+            {AceColumn_Allowed, tr("Allowed")},
+            {AceColumn_Denied, tr("Denied")},
+        });
 
     // Fill ace model
     for (const AcePermission &permission : all_permissions_list) {
@@ -115,8 +116,7 @@ SecurityTab::SecurityTab() {
         ace_model->appendRow(row);
     }
 
-    permission_item_map =
-    [&]() {
+    permission_item_map = [&]() {
         QHash<AcePermission, QHash<AceColumn, QStandardItem *>> out;
 
         for (int row = 0; row < ace_model->rowCount(); row++) {
@@ -136,7 +136,7 @@ SecurityTab::SecurityTab() {
 
         return out;
     }();
-    
+
     ace_view = new QTreeView(this);
     ace_view->setModel(ace_model);
     ace_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -167,7 +167,7 @@ SecurityTab::SecurityTab() {
 
 void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     trustee_model->removeRows(0, trustee_model->rowCount());
-    
+
     // Add items to trustee model
     const QList<QByteArray> trustee_list = ad_security_get_trustee_list_from_object(&object);
     for (const QByteArray &trustee : trustee_list) {
@@ -189,9 +189,12 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
 }
 
 void SecurityTab::load_trustee_acl() {
-    const QString label_text =
-    [&]() {
-        const QModelIndex current_index = trustee_view->currentIndex();
+    const QModelIndex current_index = trustee_view->currentIndex();
+    if (!current_index.isValid()) {
+        return;
+    }
+    
+    const QString label_text = [&]() {
         QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
         const QString trustee_name = current_item->text();
         const QString text = QString("Permissions for %1").arg(trustee_name);
@@ -217,16 +220,14 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
         return;
     }
 
-    const AcePermission permission =
-    [&]() {
+    const AcePermission permission = [&]() {
         QStandardItem *main_item = ace_model->item(item->row(), 0);
         const AcePermission out = (AcePermission) main_item->data(AcePermissionItemRole_Permission).toInt();
 
         return out;
     }();
 
-    const PermissionState new_state =
-    [&]() {
+    const PermissionState new_state = [&]() {
         const bool checked = (item->checkState() == Qt::Checked);
         const bool allowed = (column == AceColumn_Allowed);
 
@@ -244,8 +245,7 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
         }
     }();
 
-    const QByteArray trustee =
-    [&]() {
+    const QByteArray trustee = [&]() {
         const QModelIndex current_index = trustee_view->currentIndex();
         QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
         const QByteArray out = current_item->data(TrusteeItemRole_Sid).toByteArray();
@@ -253,7 +253,7 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
         return out;
     }();
 
-    permission_state_map = ad_security_modify(permission_state_map, trustee, permission, new_state);    
+    permission_state_map = ad_security_modify(permission_state_map, trustee, permission, new_state);
     apply_current_state_to_items();
 
     emit edited();
@@ -265,7 +265,7 @@ QStandardItem *SecurityTab::get_item(const AcePermission permission, const AceCo
 
 bool SecurityTab::set_trustee(const QString &trustee_name) {
     const QList<QStandardItem *> item_list = trustee_model->findItems(trustee_name);
-    
+
     if (item_list.isEmpty()) {
         return false;
     }
@@ -302,8 +302,7 @@ void SecurityTab::add_trustee() {
 
             const QList<QString> selected_list = dialog->get_selected();
 
-            const QList<QString> current_sid_string_list =
-            [&]() {
+            const QList<QString> current_sid_string_list = [&]() {
                 QList<QString> out;
 
                 for (int row = 0; row < trustee_model->rowCount(); row++) {
@@ -381,9 +380,8 @@ void SecurityTab::add_trustee_item(const QByteArray &sid, AdInterface &ad) {
 // recurse and do all kinds of bad stuff.
 void SecurityTab::apply_current_state_to_items() {
     ignore_item_changed_signal = true;
-   
-    const QByteArray trustee =
-    [&]() {
+
+    const QByteArray trustee = [&]() {
         const QModelIndex current_index = trustee_view->currentIndex();
         QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
         const QByteArray out = current_item->data(TrusteeItemRole_Sid).toByteArray();

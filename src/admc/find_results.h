@@ -37,11 +37,13 @@ class AdObject;
 class CustomizeColumnsDialog;
 class ResultsView;
 class ConsoleActions;
-template <typename T> class QList;
-template <typename K, typename T> class QHash;
+template <typename T>
+class QList;
+template <typename K, typename T>
+class QHash;
 
 class FindResults final : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     FindResults();

@@ -24,8 +24,7 @@
 #include <QDebug>
 
 AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
-: QObject(parent)
-{
+: QObject(parent) {
     if (edits_out != nullptr) {
         if (edits_out->contains(this)) {
             qDebug() << "ERROR: attribute edit added twice to list!";
@@ -106,5 +105,11 @@ void edits_connect_to_tab(QList<AttributeEdit *> edits, PropertiesTab *tab) {
         QObject::connect(
             edit, &AttributeEdit::edited,
             tab, &PropertiesTab::on_edit_edited);
+    }
+}
+
+void edits_set_read_only(QList<AttributeEdit *> edits, const bool read_only) {
+    for (AttributeEdit *edit : edits) {
+        edit->set_read_only(read_only);
     }
 }

@@ -23,9 +23,9 @@
 
 #include "attribute_edit.h"
 
-#include <QString>
 #include <QByteArray>
 #include <QList>
+#include <QString>
 
 class QLabel;
 class StringEdit;
@@ -40,7 +40,7 @@ class QPushButton;
  */
 
 class StringOtherEdit final : public AttributeEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     StringOtherEdit(const QString &main_attribute_arg, const QString &other_attribute_arg, const QString &object_class, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();

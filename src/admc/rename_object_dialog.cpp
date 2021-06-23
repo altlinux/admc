@@ -20,23 +20,22 @@
 
 #include "rename_object_dialog.h"
 #include "adldap.h"
-#include "globals.h"
 #include "edits/string_edit.h"
+#include "globals.h"
 #include "status.h"
 #include "utils.h"
 
 #include <QDialog>
-#include <QLineEdit>
 #include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <QFormLayout>
 
 RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *parent)
-: QDialog(parent)
-{
+: QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
-    
+
     target = target_arg;
 
     AdInterface ad;
@@ -61,7 +60,7 @@ RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *paren
             ATTRIBUTE_LAST_NAME,
             ATTRIBUTE_DISPLAY_NAME,
             ATTRIBUTE_USER_PRINCIPAL_NAME,
-            ATTRIBUTE_SAMACCOUNT_NAME
+            ATTRIBUTE_SAMACCOUNT_NAME,
         };
         StringEdit::make_many(attributes, object_class, &all_edits, this);
     } else if (object.is_class(CLASS_GROUP)) {
@@ -85,7 +84,7 @@ RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *paren
     const auto edits_layout = new QFormLayout();
     edits_layout->addRow(tr("Name:"), name_edit);
     edits_add_to_layout(all_edits, edits_layout);
-    
+
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addLayout(edits_layout);

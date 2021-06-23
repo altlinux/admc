@@ -37,7 +37,7 @@ class FilterWidgetNormalTab;
 class FilterWidgetAdvancedTab;
 
 class FilterWidget final : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     FilterWidget(const QList<QString> classes);
@@ -55,7 +55,7 @@ private:
 };
 
 class FilterWidgetTab : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     virtual QString get_filter() const = 0;

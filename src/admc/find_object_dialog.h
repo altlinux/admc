@@ -29,14 +29,14 @@
 
 class QString;
 class QMenu;
-template <typename T> class QList;
+template <typename T>
+class QList;
 
 class FindObjectDialog final : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
-    FindObjectDialog(const QList<QString> classes, const QString 
-        default_base, QWidget *parent);
+    FindObjectDialog(const QList<QString> classes, const QString default_base, QWidget *parent);
 
 private:
     QMenu *action_menu;

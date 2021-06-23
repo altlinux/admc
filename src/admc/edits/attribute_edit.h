@@ -21,10 +21,10 @@
 #ifndef ATTRIBUTE_EDIT_H
 #define ATTRIBUTE_EDIT_H
 
-#include <QObject>
-#include <QString>
 #include <QList>
 #include <QMap>
+#include <QObject>
+#include <QString>
 
 /**
  * AttributeEdit's wrap regular Qt widgets so that they can
@@ -39,7 +39,7 @@ class AdInterface;
 class AdObject;
 
 class AttributeEdit : public QObject {
-Q_OBJECT
+    Q_OBJECT
 public:
     AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
 
@@ -68,7 +68,7 @@ public:
     // manually undoes changes by retyping original value
     // for StringEdit for example.
     bool modified() const;
-    
+
     void reset_modified();
 
 signals:
@@ -82,14 +82,15 @@ private:
     bool m_modified;
 };
 
-#define DECL_ATTRIBUTE_EDIT_VIRTUALS()\
-void set_read_only(const bool read_only) override;\
-void add_to_layout(QFormLayout *layout) override;\
-bool apply(AdInterface &ad, const QString &dn) const override;\
-protected:\
-void load_internal(AdInterface &ad, const AdObject &object) override;\
-public:\
-
+#define DECL_ATTRIBUTE_EDIT_VIRTUALS()                                    \
+    void set_read_only(const bool read_only) override;                    \
+    void add_to_layout(QFormLayout *layout) override;                     \
+    bool apply(AdInterface &ad, const QString &dn) const override;        \
+                                                                          \
+protected:                                                                \
+    void load_internal(AdInterface &ad, const AdObject &object) override; \
+                                                                          \
+public:
 
 // Helper f-ns that iterate over edit lists for you
 void edits_connect_to_tab(QList<AttributeEdit *> edits, PropertiesTab *tab);
@@ -115,5 +116,10 @@ bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &
 bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn, const bool ignore_modified = false);
 
 void edits_load(QList<AttributeEdit *> edits, AdInterface &ad, const AdObject &object);
+
+// NOTE: not all edits might support read-only mode, see
+// specific edit headers to verify that they implement
+// set_read_only()
+void edits_set_read_only(QList<AttributeEdit *> edits, const bool read_only);
 
 #endif /* ATTRIBUTE_EDIT_H */

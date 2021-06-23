@@ -31,7 +31,7 @@ class AttributeMultiEdit;
  */
 
 class PropertiesMultiTab : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     virtual bool apply(AdInterface &ad, const QList<QString> &target_list);
@@ -45,7 +45,6 @@ public slots:
 
 protected:
     QList<AttributeMultiEdit *> edit_list;
-
 };
 
 #endif /* PROPERTIES_MULTI_TAB_H */

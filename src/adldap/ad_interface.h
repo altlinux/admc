@@ -37,8 +37,9 @@ class QString;
 class QByteArray;
 class QDateTime;
 class AdObject;
-class AdConfig; 
-template <typename T> class QList;
+class AdConfig;
+template <typename T>
+class QList;
 typedef void TALLOC_CTX;
 
 enum SearchScope {
@@ -93,7 +94,7 @@ private:
 };
 
 class AdInterface {
-Q_DECLARE_TR_FUNCTIONS(AdInterface)
+    Q_DECLARE_TR_FUNCTIONS(AdInterface)
 
 public:
     /**
@@ -114,7 +115,7 @@ public:
      */
     static void set_permanent_adconfig(AdConfig *adconfig);
     void set_adconfig(AdConfig *adconfig);
-    
+
     static void set_log_searches(const bool enabled);
 
     static void set_dc(const QString &dc);
@@ -145,11 +146,11 @@ public:
     AdObject search_object(const QString &dn, const QList<QString> &attributes = QList<QString>());
 
     bool attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg = DoStatusMsg_Yes);
-    
+
     bool attribute_replace_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_add_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_delete_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
-    
+
     bool attribute_replace_string(const QString &dn, const QString &attribute, const QString &value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace_int(const QString &dn, const QString &attribute, const int value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace_datetime(const QString &dn, const QString &attribute, const QDateTime &datetime);

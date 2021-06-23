@@ -21,15 +21,14 @@
 #include "multi_edits/country_multi_edit.h"
 
 #include "adldap.h"
-#include "globals.h"
 #include "edits/country_widget.h"
+#include "globals.h"
 
 #include <QFormLayout>
 #include <QLabel>
 
 CountryMultiEdit::CountryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
-: AttributeMultiEdit(edits_out, parent)
-{
+: AttributeMultiEdit(edits_out, parent) {
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_COUNTRY, CLASS_USER) + ":";
     label->setText(label_text);
 

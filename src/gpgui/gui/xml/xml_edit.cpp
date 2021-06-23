@@ -20,8 +20,8 @@
 #include "xml_edit.h"
 
 #include <QDomDocument>
-#include <QLabel>
 #include <QGridLayout>
+#include <QLabel>
 
 void add_xml_edit_to_layout(QGridLayout *layout, const XmlAttribute &attribute, QWidget *widget, XmlEdit *edit) {
     const QString label_text = attribute.display_string() + ":";

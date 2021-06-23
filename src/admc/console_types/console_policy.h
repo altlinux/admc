@@ -21,16 +21,17 @@
 #ifndef CONSOLE_POLICY_H
 #define CONSOLE_POLICY_H
 
-#include "console_widget/console_widget.h"
-#include "console_actions.h"
 #include "central_widget.h"
+#include "console_actions.h"
+#include "console_widget/console_widget.h"
 
 class QStandardItem;
 class AdObject;
 class AdInterface;
 class ConsoleActions;
 class PolicyResultsWidget;
-template <typename T> class QList;
+template <typename T>
+class QList;
 
 /**
  * Some f-ns used for models that store objects.
@@ -38,7 +39,7 @@ template <typename T> class QList;
 
 enum PolicyRole {
     PolicyRole_DN = ConsoleRole_LAST + 1,
-    
+
     PolicyRole_LAST = ConsoleRole_LAST + 2,
 };
 

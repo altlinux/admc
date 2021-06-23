@@ -21,10 +21,10 @@
 #ifndef CONSOLE_OBJECT_H
 #define CONSOLE_OBJECT_H
 
-#include "console_widget/console_widget.h"
+#include "adldap.h"
 #include "central_widget.h"
 #include "console_actions.h"
-#include "adldap.h"
+#include "console_widget/console_widget.h"
 
 class QStandardItem;
 class AdObject;
@@ -33,7 +33,8 @@ class FilterDialog;
 class ConsoleActions;
 class QMenu;
 class PolicyResultsWidget;
-template <typename T> class QList;
+template <typename T>
+class QList;
 
 /**
  * Some f-ns used for models that store objects.
@@ -46,7 +47,7 @@ enum ObjectRole {
     ObjectRole_CannotRename = ConsoleRole_LAST + 4,
     ObjectRole_CannotDelete = ConsoleRole_LAST + 5,
     ObjectRole_AccountDisabled = ConsoleRole_LAST + 6,
-    
+
     ObjectRole_LAST = ConsoleRole_LAST + 7,
 };
 

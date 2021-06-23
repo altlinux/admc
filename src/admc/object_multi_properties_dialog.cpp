@@ -22,27 +22,26 @@
 
 #include "adldap.h"
 #include "globals.h"
-#include "settings.h"
-#include "status.h"
-#include "utils.h"
-#include "tab_widget.h"
-#include "multi_tabs/general_multi_tab.h"
 #include "multi_tabs/account_multi_tab.h"
 #include "multi_tabs/address_multi_tab.h"
-#include "multi_tabs/profile_multi_tab.h"
+#include "multi_tabs/general_multi_tab.h"
 #include "multi_tabs/organization_multi_tab.h"
+#include "multi_tabs/profile_multi_tab.h"
+#include "settings.h"
+#include "status.h"
+#include "tab_widget.h"
+#include "utils.h"
 
-#include <QAction>
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QDebug>
 #include <QAbstractItemView>
+#include <QAction>
+#include <QDebug>
+#include <QDialogButtonBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &target_list_arg, const QList<QString> &class_list)
-: QDialog()
-{
+: QDialog() {
     target_list = target_list_arg;
 
     setAttribute(Qt::WA_DeleteOnClose);
@@ -50,7 +49,7 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
     AdInterface ad;
     if (ad_failed(ad)) {
         close();
-        
+
         return;
     }
 
@@ -71,10 +70,9 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
     setLayout(layout);
     layout->setSpacing(0);
     layout->addWidget(tab_widget);
-    layout->addWidget(button_box);    
+    layout->addWidget(button_box);
 
-    auto add_tab =
-    [&](PropertiesMultiTab *tab, const QString &title) {
+    auto add_tab = [&](PropertiesMultiTab *tab, const QString &title) {
         tab_widget->add_tab(tab, title);
         tab_list.append(tab);
     };
@@ -151,5 +149,4 @@ void ObjectMultiPropertiesDialog::reset() {
 }
 
 void ObjectMultiPropertiesDialog::on_tab_edited() {
-    
 }

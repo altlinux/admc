@@ -7,7 +7,6 @@
 #define LDAP_PREFIX "LDAP://"
 
 Gplink::Gplink() {
-
 }
 
 Gplink::Gplink(const QString &gplink_string) {
@@ -60,7 +59,7 @@ QString Gplink::to_string() const {
         const QString option_string = QString::number(option);
 
         const QString part = QString("[%1%2;%3]").arg(LDAP_PREFIX, gpo_case, option_string);
-        
+
         gplink_string += part;
     }
 
@@ -107,7 +106,7 @@ void Gplink::move_up(const QString &gpo_case) {
     if (!gpo_case_map.contains(gpo)) {
         return;
     }
-    
+
     const int current_index = gpos_in_order.indexOf(gpo);
 
     if (current_index > 0) {
@@ -121,9 +120,9 @@ void Gplink::move_down(const QString &gpo_case) {
     if (!gpo_case_map.contains(gpo)) {
         return;
     }
-    
+
     const int current_index = gpos_in_order.indexOf(gpo);
-    
+
     if (current_index < gpos_in_order.size() - 1) {
         const int new_index = current_index + 1;
 

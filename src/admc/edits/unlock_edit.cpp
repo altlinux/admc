@@ -21,8 +21,8 @@
 #include "edits/unlock_edit.h"
 #include "adldap.h"
 #include "utils.h"
-#include <QFormLayout>
 #include <QCheckBox>
+#include <QFormLayout>
 
 UnlockEdit::UnlockEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
@@ -49,11 +49,10 @@ void UnlockEdit::add_to_layout(QFormLayout *layout) {
 
 bool UnlockEdit::apply(AdInterface &ad, const QString &dn) const {
 
-
     if (check->isChecked()) {
         const bool result = ad.user_unlock(dn);
         check->setChecked(false);
-        
+
         return result;
     } else {
         return true;

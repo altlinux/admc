@@ -49,7 +49,7 @@ extern const QSet<AcePermission> write_prop_permissions;
 extern const QHash<AcePermission, QString> ace_permission_to_name_map;
 
 class SecurityTab final : public PropertiesTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     SecurityTab();

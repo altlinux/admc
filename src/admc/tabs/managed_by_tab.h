@@ -26,7 +26,7 @@
 class ManagerEdit;
 
 class ManagedByTab final : public PropertiesTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     ManagedByTab();

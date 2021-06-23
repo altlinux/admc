@@ -29,7 +29,7 @@ class AdInterface;
 class AdObject;
 
 class ExpiryWidget final : public QFrame {
-Q_OBJECT
+    Q_OBJECT
 public:
     ExpiryWidget();
 

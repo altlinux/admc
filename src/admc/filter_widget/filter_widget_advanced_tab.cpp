@@ -20,13 +20,12 @@
 
 #include "filter_widget/filter_widget_advanced_tab.h"
 
+#include <QLabel>
 #include <QPlainTextEdit>
 #include <QVBoxLayout>
-#include <QLabel>
 
 FilterWidgetAdvancedTab::FilterWidgetAdvancedTab()
-: FilterWidgetTab()
-{
+: FilterWidgetTab() {
     auto label = new QLabel(tr("Enter LDAP filter:"));
     ldap_filter_edit = new QPlainTextEdit(this);
 

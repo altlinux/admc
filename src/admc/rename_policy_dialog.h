@@ -35,7 +35,7 @@ class QPushButton;
 class ConsoleWidget;
 
 class RenamePolicyDialog final : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     RenamePolicyDialog(ConsoleWidget *console_arg);

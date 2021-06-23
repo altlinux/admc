@@ -22,34 +22,32 @@
 #include "console_widget/console_widget_p.h"
 
 #include "console_widget/console_drag_model.h"
-#include "console_widget/scope_model.h"
 #include "console_widget/customize_columns_dialog.h"
 #include "console_widget/results_description.h"
 #include "console_widget/results_view.h"
+#include "console_widget/scope_model.h"
 
+#include <QAction>
+#include <QApplication>
 #include <QDebug>
+#include <QHeaderView>
+#include <QLabel>
+#include <QMenu>
+#include <QSplitter>
+#include <QStack>
+#include <QStackedWidget>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <QAction>
-#include <QStack>
-#include <QSplitter>
-#include <QStackedWidget>
-#include <QLabel>
-#include <QApplication>
-#include <QMenu>
-#include <QHeaderView>
 
 QList<QModelIndex> filter_indexes_by_type(const QList<QModelIndex> &indexes, const int type);
 
 ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
-: QObject(q_arg)
-{
+: QObject(q_arg) {
     q = q_arg;
 }
 
 ConsoleWidget::ConsoleWidget(QWidget *parent)
-: QWidget(parent)
-{
+: QWidget(parent) {
     d = new ConsoleWidgetPrivate(this);
 
     d->scope_view = new QTreeView();
@@ -70,7 +68,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->scope_proxy_model = new ScopeModel(this);
     d->scope_proxy_model->setSourceModel(d->scope_model);
     d->scope_proxy_model->setSortCaseSensitivity(Qt::CaseInsensitive);
-    
+
     d->scope_view->setModel(d->scope_proxy_model);
 
     d->focused_view = d->scope_view;
@@ -188,8 +186,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 }
 
 QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent) {
-    QStandardItem *parent_item =
-    [=]() {
+    QStandardItem *parent_item = [=]() {
         if (parent.isValid()) {
             return d->scope_model->itemFromIndex(parent);
         } else {
@@ -249,8 +246,7 @@ QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &scope_p
         return QList<QStandardItem *>();
     }
 
-    const QList<QStandardItem *> row =
-    [=]() {
+    const QList<QStandardItem *> row = [=]() {
         QList<QStandardItem *> out;
 
         const int results_id = scope_parent.data(ConsoleRole_ResultsId).toInt();
@@ -318,11 +314,11 @@ void ConsoleWidget::delete_item(const QModelIndex &index) {
     // Remove buddy item
     const QModelIndex buddy = console_item_get_buddy(index);
     if (buddy.isValid()) {
-        ((QAbstractItemModel *)buddy.model())->removeRows(buddy.row(), 1, buddy.parent());
+        ((QAbstractItemModel *) buddy.model())->removeRows(buddy.row(), 1, buddy.parent());
     }
 
     // Remove item from it's own model
-    ((QAbstractItemModel *)index.model())->removeRows(index.row(), 1, index.parent());
+    ((QAbstractItemModel *) index.model())->removeRows(index.row(), 1, index.parent());
 }
 
 void ConsoleWidget::set_current_scope(const QModelIndex &index) {
@@ -406,8 +402,7 @@ void ConsoleWidget::sort_scope() {
 }
 
 void ConsoleWidget::set_description_bar_text(const QString &text) {
-    const QString scope_name =
-    [this]() {
+    const QString scope_name = [this]() {
         const QModelIndex current_scope = get_current_scope_item();
         const QString out = current_scope.data().toString();
 
@@ -450,7 +445,7 @@ QList<QModelIndex> ConsoleWidget::get_selected_items() const {
 
     if (focused_scope) {
         QList<QModelIndex> selected;
-        
+
         const QList<QModelIndex> selected_proxy = d->scope_view->selectionModel()->selectedIndexes();
         for (const QModelIndex &index : selected_proxy) {
             const QModelIndex source_index = d->scope_proxy_model->mapToSource(index);
@@ -489,7 +484,7 @@ QList<QModelIndex> ConsoleWidget::search_results_by_role(int role, const QVarian
 
 QModelIndex ConsoleWidget::get_current_scope_item() const {
     const QModelIndex index = d->scope_view->selectionModel()->currentIndex();
-    
+
     if (index.isValid()) {
         const QModelIndex source_index = d->scope_proxy_model->mapToSource(index);
 
@@ -593,7 +588,7 @@ void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
 // signal
 void ConsoleWidgetPrivate::on_selection_changed() {
     const QList<QModelIndex> selected_list = q->get_selected_items();
-    
+
     if (!selected_list.isEmpty() && !selected_list[0].isValid()) {
         return;
     }
@@ -617,9 +612,8 @@ void ConsoleWidgetPrivate::on_selection_changed() {
             properties_action->setVisible(true);
         }
     } else if (selected_list.size() > 1) {
-        const bool all_have_properties =
-        [&]() {
-            for (const QModelIndex &selected: selected_list) {
+        const bool all_have_properties = [&]() {
+            for (const QModelIndex &selected : selected_list) {
                 const bool has_properties = selected.data(ConsoleRole_HasProperties).toBool();
                 if (!has_properties) {
                     return false;
@@ -634,8 +628,7 @@ void ConsoleWidgetPrivate::on_selection_changed() {
         }
     }
 
-    const bool any_selected_is_fetching =
-    [&]() {
+    const bool any_selected_is_fetching = [&]() {
         for (const QModelIndex &index : selected_list) {
             const bool is_fetching = console_get_item_fetching(index);
 
@@ -699,8 +692,7 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
 }
 
 void ConsoleWidgetPrivate::on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last) {
-    const QList<QModelIndex> removed_scope_items =
-    [=]() {
+    const QList<QModelIndex> removed_scope_items = [=]() {
         QList<QModelIndex> out;
 
         QStack<QStandardItem *> stack;
@@ -750,8 +742,7 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
 
     if (new_focused_view != nullptr) {
         const ResultsDescription current_results = get_current_results();
-        QAbstractItemView *results_view =
-        [=]() -> QAbstractItemView * {
+        QAbstractItemView *results_view = [=]() -> QAbstractItemView * {
             if (current_results.view() != nullptr) {
                 return current_results.view()->current_view();
             } else {
@@ -880,7 +871,7 @@ void ConsoleWidgetPrivate::set_results_to_detail() {
 
 void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
     const ResultsDescription results = get_current_results();
-    
+
     if (results.view() != nullptr) {
         results.view()->set_view_type(type);
     }
@@ -888,8 +879,7 @@ void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
 
 // NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
 void ConsoleWidgetPrivate::update_navigation_actions() {
-    const bool can_navigate_up =
-    [this]() {
+    const bool can_navigate_up = [this]() {
         const QModelIndex current = q->get_current_scope_item();
         const QModelIndex current_parent = current.parent();
 
@@ -932,7 +922,7 @@ void ConsoleWidget::add_actions_to_view_menu(QMenu *menu) {
     menu->addAction(d->set_results_to_detail_action);
 
     menu->addSeparator();
-    
+
     menu->addAction(d->customize_columns_action);
 }
 

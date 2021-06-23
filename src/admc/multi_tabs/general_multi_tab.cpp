@@ -20,19 +20,19 @@
 
 #include "multi_tabs/general_multi_tab.h"
 
-#include "edits/string_edit.h"
-#include "edits/string_other_edit.h"
+#include "adldap.h"
 #include "edits/country_edit.h"
 #include "edits/group_scope_edit.h"
 #include "edits/group_type_edit.h"
-#include "adldap.h"
+#include "edits/string_edit.h"
+#include "edits/string_other_edit.h"
 #include "multi_edits/string_multi_edit.h"
 
-#include <QLabel>
 #include <QFormLayout>
 #include <QFrame>
+#include <QLabel>
 
-GeneralMultiTab::GeneralMultiTab(const QList<QString> &class_list) {   
+GeneralMultiTab::GeneralMultiTab(const QList<QString> &class_list) {
     auto name_label = new QLabel(tr("Multiple objects selected"));
 
     auto explanation_label = new QLabel(tr("To change a property for multiple objects, first select the checkbox to enable the change and then type the change. Depending on the number of selected objects, you might have to wait while the changes are applied."));

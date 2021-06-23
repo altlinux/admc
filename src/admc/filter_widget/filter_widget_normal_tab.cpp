@@ -19,20 +19,19 @@
  */
 
 #include "filter_widget/filter_widget_normal_tab.h"
-#include "filter_widget/select_classes_widget.h"
-#include "filter_widget/filter_builder.h"
 #include "adldap.h"
+#include "filter_widget/filter_builder.h"
+#include "filter_widget/select_classes_widget.h"
 
-#include <QLabel>
-#include <QFormLayout>
-#include <QVBoxLayout>
-#include <QPushButton>
-#include <QListWidget>
 #include <QDebug>
+#include <QFormLayout>
+#include <QLabel>
+#include <QListWidget>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 FilterWidgetNormalTab::FilterWidgetNormalTab(const QList<QString> classes)
-: FilterWidgetTab()
-{
+: FilterWidgetTab() {
     select_classes = new SelectClassesWidget(classes);
 
     filter_builder = new FilterBuilder();
@@ -91,8 +90,7 @@ FilterWidgetNormalTab::FilterWidgetNormalTab(const QList<QString> classes)
 }
 
 QString FilterWidgetNormalTab::get_filter() const {
-    const QString attribute_filter =
-    [this]() {
+    const QString attribute_filter = [this]() {
         QList<QString> filters;
         for (int i = 0; i < filter_list->count(); i++) {
             const QListWidgetItem *item = filter_list->item(i);

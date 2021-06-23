@@ -21,12 +21,12 @@
 #include "multi_tabs/organization_multi_tab.h"
 
 #include "adldap.h"
-#include "multi_edits/string_multi_edit.h"
 #include "multi_edits/manager_multi_edit.h"
+#include "multi_edits/string_multi_edit.h"
 
 #include <QFormLayout>
 
-OrganizationMultiTab::OrganizationMultiTab() {   
+OrganizationMultiTab::OrganizationMultiTab() {
     new StringMultiEdit(ATTRIBUTE_TITLE, edit_list, this);
     new StringMultiEdit(ATTRIBUTE_DEPARTMENT, edit_list, this);
     new StringMultiEdit(ATTRIBUTE_COMPANY, edit_list, this);

@@ -25,16 +25,15 @@
 
 #include <QCheckBox>
 #include <QFormLayout>
-#include <QScrollArea>
 #include <QGridLayout>
 #include <QLabel>
+#include <QScrollArea>
 
 // TODO: slight duplication of account_option_edit.cpp, but
 // not a big deal
 
 AccountOptionMultiEdit::AccountOptionMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
-: AttributeMultiEdit(edits_out, parent)
-{
+: AttributeMultiEdit(edits_out, parent) {
     label->setText(tr("Account options:"));
 
     auto checks_layout = new QGridLayout();
@@ -84,8 +83,7 @@ void AccountOptionMultiEdit::add_to_layout(QFormLayout *layout) {
 // do this if want to get separate status messages for each
 // bit.
 bool AccountOptionMultiEdit::apply_internal(AdInterface &ad, const QString &target) {
-    const QList<AccountOption> option_change_list =
-    [&]() {
+    const QList<AccountOption> option_change_list = [&]() {
         QList<AccountOption> out;
 
         const AdObject object = ad.search_object(target);
@@ -100,7 +98,7 @@ bool AccountOptionMultiEdit::apply_internal(AdInterface &ad, const QString &targ
                 out.append(option);
             }
         }
-    
+
         return out;
     }();
 

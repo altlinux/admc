@@ -24,34 +24,33 @@
 #include "globals.h"
 #include "utils.h"
 
-#include <QPlainTextEdit>
-#include <QLabel>
-#include <QVBoxLayout>
+#include <QComboBox>
+#include <QDialogButtonBox>
 #include <QFont>
 #include <QFontDatabase>
-#include <QDialogButtonBox>
+#include <QLabel>
 #include <QMessageBox>
-#include <QComboBox>
+#include <QPlainTextEdit>
+#include <QVBoxLayout>
 
 #include <cstdint>
 #include <cstdlib>
 
 OctetDisplayFormat current_format(QComboBox *format_combo);
 int format_base(const OctetDisplayFormat format);
-char* itoa(int value, char* result, int base);
+char *itoa(int value, char *result, int base);
 
 OctetEditor::OctetEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
-: AttributeEditor(parent)
-{
+: AttributeEditor(parent) {
     setWindowTitle(tr("Edit octet string"));
 
     QLabel *attribute_label = make_attribute_label(attribute);
 
     format_combo = new QComboBox();
-    format_combo->addItem(tr("Hexadecimal"), (int)OctetDisplayFormat_Hexadecimal);
-    format_combo->addItem(tr("Binary"), (int)OctetDisplayFormat_Binary);
-    format_combo->addItem(tr("Decimal"), (int)OctetDisplayFormat_Decimal);
-    format_combo->addItem(tr("Octal"), (int)OctetDisplayFormat_Octal);
+    format_combo->addItem(tr("Hexadecimal"), (int) OctetDisplayFormat_Hexadecimal);
+    format_combo->addItem(tr("Binary"), (int) OctetDisplayFormat_Binary);
+    format_combo->addItem(tr("Decimal"), (int) OctetDisplayFormat_Decimal);
+    format_combo->addItem(tr("Octal"), (int) OctetDisplayFormat_Octal);
 
     edit = new QPlainTextEdit();
     const QFont fixed_font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -65,7 +64,8 @@ OctetEditor::OctetEditor(const QString attribute, const QList<QByteArray> values
         edit->setReadOnly(true);
     }
 
-    QDialogButtonBox *button_box = make_button_box(attribute);;
+    QDialogButtonBox *button_box = make_button_box(attribute);
+    ;
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
@@ -108,7 +108,7 @@ void OctetEditor::on_format_combo() {
         const QString old_text = edit->toPlainText();
         const QByteArray bytes = octet_string_to_bytes(old_text, prev_format);
         const QString new_text = octet_bytes_to_string(bytes, current_format(format_combo));
-        
+
         edit->setPlainText(new_text);
 
         prev_format = current_format(format_combo);
@@ -122,8 +122,7 @@ void OctetEditor::on_format_combo() {
 }
 
 bool OctetEditor::check_input(const OctetDisplayFormat format) {
-    const bool ok =
-    [=]() {
+    const bool ok = [=]() {
         const QString text = edit->toPlainText();
         const QList<QString> text_split = text.split(" ");
 
@@ -185,9 +184,8 @@ bool OctetEditor::check_input(const OctetDisplayFormat format) {
 
     if (!ok) {
         const QString title = tr("Error");
-        
-        const QString text =
-        [format]() {
+
+        const QString text = [format]() {
             switch (format) {
                 case OctetDisplayFormat_Hexadecimal: return tr("Input must be strings of 2 hexadecimal digits separated by spaces. Example: \"0a 00 b5 ff\"");
                 case OctetDisplayFormat_Binary: return tr("Input must be strings of 8 binary digits separated by spaces. Example: \"01010010 01000010 01000010\"");
@@ -206,7 +204,7 @@ bool OctetEditor::check_input(const OctetDisplayFormat format) {
 OctetDisplayFormat current_format(QComboBox *format_combo) {
     const int format_index = format_combo->currentIndex();
     const QVariant format_variant = format_combo->itemData(format_index);
-    const OctetDisplayFormat format = (OctetDisplayFormat) (format_variant.toInt());
+    const OctetDisplayFormat format = (OctetDisplayFormat)(format_variant.toInt());
 
     return format;
 }
@@ -223,15 +221,14 @@ QString octet_bytes_to_string(const QByteArray bytes, const OctetDisplayFormat f
         uint8_t byte = (uint8_t) byte_char;
 
         char buffer[100];
-        
+
         const int base = format_base(format);
 
-        itoa((int)byte, buffer, base);
+        itoa((int) byte, buffer, base);
 
         const QString byte_string_unpadded(buffer);
 
-        const int string_length =
-        [format]() {
+        const int string_length = [format]() {
             switch (format) {
                 case OctetDisplayFormat_Hexadecimal: return 2;
                 case OctetDisplayFormat_Binary: return 8;
@@ -259,8 +256,7 @@ QByteArray octet_string_to_bytes(const QString string, const OctetDisplayFormat 
     for (const QString &byte_string_padded : string_split) {
         // NOTE: remove padding because strtol doesn't understand it
         // "005" => "5"
-        const QString byte_string =
-        [byte_string_padded]() {
+        const QString byte_string = [byte_string_padded]() {
             QString byte = byte_string_padded;
             while (byte[0] == '0' && byte.size() > 0) {
                 byte.remove(0, 1);
@@ -273,7 +269,6 @@ QByteArray octet_string_to_bytes(const QString string, const OctetDisplayFormat 
         const int base = format_base(format);
         const long int byte_li = strtol(byte_cstr, NULL, base);
         const char byte = (char) byte_li;
-
 
         out.append(byte);
     }
@@ -297,25 +292,29 @@ int format_base(const OctetDisplayFormat format) {
  * Released under GPLv3.
  */
 // NOTE: not included in base lib, so had to copypaste. Maybe find some other more popular implementation and use that (with appropriate license). Preferrably something that automatically pads the result (leading 0's).
-char* itoa(int value, char* result, int base) {
+char *itoa(int value, char *result, int base) {
     // check that the base is valid
-    if (base < 2 || base > 36) { *result = '\0'; return result; }
+    if (base < 2 || base > 36) {
+        *result = '\0';
+        return result;
+    }
 
-    char* ptr = result, *ptr1 = result, tmp_char;
+    char *ptr = result, *ptr1 = result, tmp_char;
     int tmp_value;
 
     do {
         tmp_value = value;
         value /= base;
-        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
-    } while ( value );
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + (tmp_value - value * base)];
+    } while (value);
 
     // Apply negative sign
-    if (tmp_value < 0) *ptr++ = '-';
+    if (tmp_value < 0)
+        *ptr++ = '-';
     *ptr-- = '\0';
-    while(ptr1 < ptr) {
+    while (ptr1 < ptr) {
         tmp_char = *ptr;
-        *ptr--= *ptr1;
+        *ptr-- = *ptr1;
         *ptr1++ = tmp_char;
     }
     return result;

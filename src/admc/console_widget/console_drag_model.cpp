@@ -32,8 +32,7 @@ bool drag_start = false;
 // mimedata so that objects can be obtained directly from
 // models
 QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
-    const QList<QPersistentModelIndex> main_indexes =
-    [&]() {
+    const QList<QPersistentModelIndex> main_indexes = [&]() {
         QList<QPersistentModelIndex> out;
 
         for (const QModelIndex &index : indexes) {

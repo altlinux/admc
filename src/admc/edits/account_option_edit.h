@@ -21,14 +21,14 @@
 #ifndef ACCOUNT_OPTION_EDIT_H
 #define ACCOUNT_OPTION_EDIT_H
 
-#include "edits/attribute_edit.h"
 #include "ad_defines.h"
+#include "edits/attribute_edit.h"
 
 class QCheckBox;
 class QWidget;
 
 class AccountOptionEdit final : public AttributeEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     static void make_many(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent);
     static QWidget *layout_many(const QList<AccountOption> &options, const QMap<AccountOption, AccountOptionEdit *> &option_edits);

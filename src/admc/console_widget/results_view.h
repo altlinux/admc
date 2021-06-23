@@ -28,8 +28,8 @@
  * switch between views.
  */
 
-#include <QWidget>
 #include <QHash>
+#include <QWidget>
 
 class QTreeView;
 class QListView;
@@ -58,7 +58,7 @@ public:
     QAbstractItemView *current_view() const;
     ResultsViewType current_view_type() const;
     QTreeView *detail_view() const;
-    
+
     // Returns selected indexes in current view. If current
     // view type is detail (QTreeView), then returns one
     // index per selected row at column 0

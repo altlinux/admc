@@ -37,7 +37,7 @@ public:
     // was setup this way or if this is an empty results
     QWidget *widget() const;
     ResultsView *view() const;
-    
+
     QList<QString> column_labels() const;
     QList<int> default_columns() const;
     int column_count() const;

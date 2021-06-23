@@ -26,7 +26,7 @@
 class ManagerWidget;
 
 class ManagerMultiEdit : public AttributeMultiEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     ManagerMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 

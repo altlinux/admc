@@ -17,18 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "iconv_wrapper.h"
+#include <climits>
 #include <cstring>
 #include <errno.h>
 #include <fstream>
 #include <iostream>
-#include <climits>
 #include <stdexcept>
 #include <system_error>
 
 #include <vector>
 
 gptbackend::iconv_wrapper::iconv_wrapper(std::string from_encoding,
-                                         std::string to_encoding) {
+    std::string to_encoding) {
     this->from_encoding = from_encoding;
     this->to_encoding = to_encoding;
     this->conv =
@@ -89,7 +89,7 @@ std::string gptbackend::iconv_wrapper::convert(std::string from) {
         size_t dst_size = buf.size();
         size_t res =
             ::iconv(this->conv, &src_ptr, &src_size, &dst_ptr, &dst_size);
-        if (res == (size_t)-1) {
+        if (res == (size_t) -1) {
             if (errno == E2BIG) {
                 // ignore this error
             } else if (ignore_error_) {
@@ -109,25 +109,25 @@ std::string gptbackend::iconv_wrapper::convert(std::string from) {
 
 void gptbackend::iconv_wrapper::check_conversion_error() {
     switch (errno) {
-    case EBADF: {
-        std::cout << "EBADF" << std::endl;
-        break;
-    }
-    case E2BIG: {
-        std::cout << "E2BIG" << std::endl;
-        break;
-    }
-    case EILSEQ: {
-        std::cout << "EILSEQ" << std::endl;
-        break;
-    }
-    case EINVAL: {
-        std::cout << "EINVAL" << std::endl;
-        break;
-    }
-    default: {
-        std::cout << "Unknown error " << errno << std::endl;
-        break;
-    }
+        case EBADF: {
+            std::cout << "EBADF" << std::endl;
+            break;
+        }
+        case E2BIG: {
+            std::cout << "E2BIG" << std::endl;
+            break;
+        }
+        case EILSEQ: {
+            std::cout << "EILSEQ" << std::endl;
+            break;
+        }
+        case EINVAL: {
+            std::cout << "EINVAL" << std::endl;
+            break;
+        }
+        default: {
+            std::cout << "Unknown error " << errno << std::endl;
+            break;
+        }
     }
 }

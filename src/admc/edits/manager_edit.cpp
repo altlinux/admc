@@ -20,18 +20,17 @@
 
 #include "edits/manager_edit.h"
 
-#include "edits/manager_widget.h"
-#include "utils.h"
 #include "adldap.h"
+#include "edits/manager_widget.h"
 #include "globals.h"
 #include "properties_dialog.h"
 #include "select_object_dialog.h"
+#include "utils.h"
 
 #include <QFormLayout>
 
 ManagerEdit::ManagerEdit(const QString &manager_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent)
-{
+: AttributeEdit(edits_out, parent) {
     manager_attribute = manager_attribute_arg;
 
     widget = new ManagerWidget(manager_attribute_arg);

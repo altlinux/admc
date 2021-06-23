@@ -19,14 +19,14 @@
 
 #include "admc_test_security_tab.h"
 
-#include "tabs/security_tab.h"
 #include "samba/ndr_security.h"
+#include "tabs/security_tab.h"
 
-#include <QVBoxLayout>
 #include <QComboBox>
 #include <QPushButton>
-#include <QTreeView>
 #include <QStandardItemModel>
+#include <QTreeView>
+#include <QVBoxLayout>
 
 void ADMCTestSecurityTab::init() {
     ADMCTest::init();
@@ -55,8 +55,7 @@ void ADMCTestSecurityTab::init() {
 // is laoded correctly. Creating custom security descriptors
 // is too complicated at the moment.
 void ADMCTestSecurityTab::load() {
-    auto test_allowed =
-    [&](const QString &trustee_name, const QSet<AcePermission> allowed_set) {
+    auto test_allowed = [&](const QString &trustee_name, const QSet<AcePermission> allowed_set) {
         QVERIFY(security_tab->set_trustee(trustee_name));
 
         const QSet<AcePermission> none_set = all_permissions - allowed_set;
@@ -66,8 +65,7 @@ void ADMCTestSecurityTab::load() {
 
     test_allowed("Account Operators", all_permissions);
 
-    test_allowed("Administrators",
-        [&]() {
+    test_allowed("Administrators", [&]() {
         QSet<AcePermission> out = all_permissions;
         out -= AcePermission_FullControl;
         out -= AcePermission_DeleteChild;
@@ -75,8 +73,7 @@ void ADMCTestSecurityTab::load() {
         return out;
     }());
 
-    test_allowed("Authenticated Users",
-        [&]() {
+    test_allowed("Authenticated Users", [&]() {
         QSet<AcePermission> out;
         out += AcePermission_ReadGeneralInfo;
         out += AcePermission_ReadPersonalInfo;
@@ -94,16 +91,14 @@ void ADMCTestSecurityTab::load() {
 
     test_allowed("Enterprise Admins", all_permissions);
 
-    test_allowed("Everyone",
-        [&]() {
+    test_allowed("Everyone", [&]() {
         QSet<AcePermission> out;
         out += AcePermission_ChangePassword;
 
         return out;
     }());
 
-    test_allowed("Pre-Windows 2000 Compatible Access",
-        [&]() {
+    test_allowed("Pre-Windows 2000 Compatible Access", [&]() {
         QSet<AcePermission> out;
         out += AcePermission_ReadAccountRestrictions;
         out += AcePermission_ReadGeneralInfo;
@@ -114,8 +109,7 @@ void ADMCTestSecurityTab::load() {
         return out;
     }());
 
-    test_allowed("RAS and IAS Servers",
-        [&]() {
+    test_allowed("RAS and IAS Servers", [&]() {
         QSet<AcePermission> out;
         out += AcePermission_ReadAccountRestrictions;
         out += AcePermission_ReadGroupMembership;
@@ -125,8 +119,7 @@ void ADMCTestSecurityTab::load() {
         return out;
     }());
 
-    test_allowed("SELF",
-        [&]() {
+    test_allowed("SELF", [&]() {
         QSet<AcePermission> out;
         out += AcePermission_Read;
         out += read_prop_permissions;
@@ -143,8 +136,7 @@ void ADMCTestSecurityTab::load() {
 
     test_allowed("SYSTEM", all_permissions);
 
-    test_allowed("Terminal Server License Servers",
-        [&]() {
+    test_allowed("Terminal Server License Servers", [&]() {
         QSet<AcePermission> out;
         out += AcePermission_ReadTerminalServerLicenseServer;
         out += AcePermission_WriteTerminalServerLicenseServer;
@@ -174,7 +166,7 @@ void ADMCTestSecurityTab::allow_full() {
     uncheck_all_permissions();
 
     QVERIFY(state_is(all_permissions, PermissionState_None));
-    
+
     set_permission_state({AcePermission_FullControl}, AceColumn_Allowed, Qt::Checked);
 
     QVERIFY(state_is(all_permissions, PermissionState_Allowed));
@@ -191,7 +183,7 @@ void ADMCTestSecurityTab::allow_full_deny_read() {
     QVERIFY(state_is({AcePermission_FullControl}, PermissionState_None));
     QVERIFY(state_is(access_permissions, PermissionState_Allowed));
     QVERIFY(state_is(write_prop_permissions, PermissionState_Allowed));
-    
+
     QVERIFY(state_is({AcePermission_Read}, PermissionState_Denied));
     QVERIFY(state_is(read_prop_permissions, PermissionState_Denied));
 }
@@ -208,7 +200,7 @@ void ADMCTestSecurityTab::allow_full_uncheck_read() {
     QVERIFY(state_is(access_permissions, PermissionState_Allowed));
     QVERIFY(state_is(write_prop_permissions, PermissionState_Allowed));
     QVERIFY(state_is(read_prop_permissions, PermissionState_Allowed));
-    
+
     QVERIFY(state_is({AcePermission_Read}, PermissionState_None));
 }
 
@@ -257,7 +249,6 @@ void ADMCTestSecurityTab::apply() {
     set_permission_state(allowed_set, AceColumn_Allowed, Qt::Checked);
     set_permission_state(denied_set, AceColumn_Denied, Qt::Checked);
 
-
     // Apply
     const bool apply_success = security_tab->apply(ad, test_user_dn);
     QVERIFY(apply_success);
@@ -279,8 +270,7 @@ void ADMCTestSecurityTab::uncheck_all_permissions() {
 }
 
 bool ADMCTestSecurityTab::state_is(const QSet<AcePermission> &permission_set, const PermissionState state) const {
-    const QSet<AceColumn> &checked_columns =
-    [&]() -> QSet<AceColumn> {
+    const QSet<AceColumn> &checked_columns = [&]() -> QSet<AceColumn> {
         switch (state) {
             case PermissionState_Allowed: return {AceColumn_Allowed};
             case PermissionState_Denied: return {AceColumn_Denied};
@@ -304,8 +294,7 @@ bool ADMCTestSecurityTab::state_is(const QSet<AcePermission> &permission_set, co
 
             if (!state_is_correct) {
                 const QString permission_name = ace_permission_to_name_map[permission];
-                const QString column_name =
-                [&]() {
+                const QString column_name = [&]() {
                     switch (column) {
                         case AceColumn_Allowed: return "Allowed";
                         case AceColumn_Denied: return "Denied";

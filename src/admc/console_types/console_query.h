@@ -21,9 +21,9 @@
 #ifndef CONSOLE_QUERY_H
 #define CONSOLE_QUERY_H
 
-#include "console_widget/console_widget.h"
-#include "console_actions.h"
 #include "central_widget.h"
+#include "console_actions.h"
+#include "console_widget/console_widget.h"
 
 class QStandardItem;
 class QModelIndex;
@@ -31,7 +31,8 @@ class QStandardItem;
 class QString;
 class ConsoleWidget;
 class ConsoleActions;
-template <typename T> class QList;
+template <typename T>
+class QList;
 
 enum QueryItemRole {
     QueryItemRole_Description = ConsoleRole_LAST + 1,

@@ -24,25 +24,25 @@
 #include "ad_display.h"
 #include "samba/dom_sid.h"
 
-#include <ldap.h>
 #include <krb5.h>
+#include <ldap.h>
 
-#include <QDebug>
-#include <QCoreApplication>
-#include <QString>
-#include <QDateTime>
 #include <QByteArray>
-#include <QTranslator>
+#include <QCoreApplication>
+#include <QDateTime>
+#include <QDebug>
 #include <QLocale>
+#include <QString>
+#include <QTranslator>
 
-#define GENERALIZED_TIME_FORMAT_STRING  "yyyyMMddhhmmss.zZ"
-#define UTC_TIME_FORMAT_STRING          "yyMMddhhmmss.zZ"
+#define GENERALIZED_TIME_FORMAT_STRING "yyyyMMddhhmmss.zZ"
+#define UTC_TIME_FORMAT_STRING "yyMMddhhmmss.zZ"
 
 const QDate ntfs_epoch = QDate(1601, 1, 1);
 
 bool large_integer_datetime_is_never(const QString &value) {
     const bool is_never = (value == AD_LARGE_INTEGER_DATETIME_NEVER_1 || value == AD_LARGE_INTEGER_DATETIME_NEVER_2);
-    
+
     return is_never;
 }
 
@@ -57,7 +57,7 @@ QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &
         case AttributeType_LargeInteger: {
             const qint64 millis = QDateTime(ntfs_epoch).msecsTo(datetime);
             const qint64 hundred_nanos = millis * MILLIS_TO_100_NANOS;
-            
+
             return QString::number(hundred_nanos);
 
             break;
@@ -85,12 +85,11 @@ QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &
 
     const AttributeType type = adconfig->get_attribute_type(attribute);
 
-    QDateTime datetime =
-    [=]() {
+    QDateTime datetime = [=]() {
         switch (type) {
             case AttributeType_LargeInteger: {
                 const LargeIntegerSubtype subtype = adconfig->get_attribute_large_integer_subtype(attribute);
-                
+
                 if (subtype == LargeIntegerSubtype_Datetime) {
                     QDateTime out = QDateTime(ntfs_epoch);
 
@@ -129,6 +128,7 @@ QString account_option_string(const AccountOption &option) {
         case AccountOption_SmartcardRequired: return QCoreApplication::translate("ad_utils", "Smartcard is required for interactive logon");
         case AccountOption_CantDelegate: return QCoreApplication::translate("ad_utils", "Account is sensitive and cannot be delegated");
         case AccountOption_DontRequirePreauth: return QCoreApplication::translate("ad_utils", "Don't require Kerberos preauthentication");
+        case AccountOption_TrustedForDelegation: return "Trusted for delegation";
         case AccountOption_COUNT: return QString("AccountOption_COUNT");
     }
 
@@ -137,18 +137,19 @@ QString account_option_string(const AccountOption &option) {
 
 int account_option_bit(const AccountOption &option) {
     switch (option) {
-        case AccountOption_Disabled: 
-        return 0x00000002;
-        case AccountOption_DontExpirePassword: 
-        return 0x00010000;
-        case AccountOption_UseDesKey: 
-        return 0x00200000;
-        case AccountOption_SmartcardRequired: 
-        return 0x00040000;
-        case AccountOption_DontRequirePreauth: 
-        return 0x00400000;
-        case AccountOption_CantDelegate: 
-        return 0x00100000;
+        case AccountOption_Disabled:
+            return 0x00000002;
+        case AccountOption_DontExpirePassword:
+            return 0x00010000;
+        case AccountOption_UseDesKey:
+            return 0x00200000;
+        case AccountOption_SmartcardRequired:
+            return 0x00040000;
+        case AccountOption_DontRequirePreauth:
+            return 0x00400000;
+        case AccountOption_CantDelegate:
+        case AccountOption_TrustedForDelegation:
+            return 0x00080000;
 
         // NOTE: not all account options can be directly
         // mapped to bits
@@ -208,7 +209,6 @@ QString extract_rid_from_sid(const QByteArray &sid, AdConfig *adconfig) {
     return rid;
 }
 
-
 bool ad_string_to_bool(const QString &string) {
     return (string == LDAP_BOOL_TRUE);
 }
@@ -252,8 +252,7 @@ QString dn_get_parent_canonical(const QString &dn) {
 QString dn_rename(const QString &dn, const QString &new_name) {
     const QStringList exploded_dn = dn.split(',');
 
-    const QString new_rdn =
-    [=]() {
+    const QString new_rdn = [=]() {
         const QString old_rdn = exploded_dn[0];
         const int prefix_index = old_rdn.indexOf('=') + 1;
         const QString prefix = old_rdn.left(prefix_index);
@@ -271,7 +270,7 @@ QString dn_rename(const QString &dn, const QString &new_name) {
 
 QString dn_move(const QString &dn, const QString &new_parent_dn) {
     const QString rdn = dn_get_rdn(dn);
-    const QString new_dn = QString("%1,%2").arg(rdn,new_parent_dn);
+    const QString new_dn = QString("%1,%2").arg(rdn, new_parent_dn);
 
     return new_dn;
 }
@@ -288,8 +287,7 @@ QString dn_canonical(const QString &dn) {
 }
 
 QString dn_from_name_and_parent(const QString &name, const QString &parent, const QString &object_class) {
-    const QString suffix =
-    [object_class]() {
+    const QString suffix = [object_class]() {
         if (object_class == CLASS_OU) {
             return "OU";
         } else {
@@ -304,11 +302,12 @@ QString dn_from_name_and_parent(const QString &name, const QString &parent, cons
 QString get_default_domain_from_krb5() {
     krb5_error_code result;
     krb5_context context;
-    char *realm_cstr = NULL;
+    krb5_ccache default_cache;
+    krb5_principal default_principal;
 
-    auto cleanup =
-    [&]() {
-        krb5_free_default_realm(context, realm_cstr);
+    auto cleanup = [&]() {
+        krb5_free_principal(context, default_principal);
+        krb5_cc_close(context, default_cache);
         krb5_free_context(context);
     };
 
@@ -320,15 +319,23 @@ QString get_default_domain_from_krb5() {
         return QString();
     }
 
-    result = krb5_get_default_realm(context, &realm_cstr);
+    result = krb5_cc_default(context, &default_cache);
     if (result) {
-        qDebug() << "Failed to get default realm";
+        qDebug() << "Failed to get default krb5 ccache";
 
         cleanup();
         return QString();
     }
 
-    const QString out = QString(realm_cstr);
+    result = krb5_cc_get_principal(context, default_cache, &default_principal);
+    if (result) {
+        qDebug() << "Failed to get default krb5 principal";
+
+        cleanup();
+        return QString();
+    }
+
+    const QString out = QString::fromLocal8Bit(default_principal->realm.data, default_principal->realm.length);
 
     cleanup();
 
@@ -379,8 +386,7 @@ bool load_adldap_translation(QTranslator &translator, const QLocale &locale) {
 }
 
 QByteArray guid_string_to_bytes(const QString &guid_string) {
-    const QList<QByteArray> segment_list =
-    [&]() {
+    const QList<QByteArray> segment_list = [&]() {
         QList<QByteArray> out;
 
         const QList<QString> string_segment_list = guid_string.split('-');
@@ -397,8 +403,7 @@ QByteArray guid_string_to_bytes(const QString &guid_string) {
         return out;
     }();
 
-    const QByteArray guid_bytes =
-    [&]() {
+    const QByteArray guid_bytes = [&]() {
         QByteArray out;
 
         for (const QByteArray &segment : segment_list) {

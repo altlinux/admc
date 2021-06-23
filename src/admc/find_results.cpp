@@ -19,36 +19,35 @@
  */
 
 #include "find_results.h"
-#include "console_actions.h"
-#include "properties_dialog.h"
-#include "utils.h"
 #include "adldap.h"
-#include "globals.h"
+#include "console_actions.h"
 #include "console_types/console_object.h"
-#include "settings.h"
 #include "console_widget/customize_columns_dialog.h"
 #include "console_widget/results_view.h"
-#include "status.h"
-#include "rename_object_dialog.h"
-#include "move_object_dialog.h"
-#include "select_container_dialog.h"
 #include "create_object_dialog.h"
-#include "select_object_dialog.h"
+#include "globals.h"
+#include "move_object_dialog.h"
 #include "password_dialog.h"
+#include "properties_dialog.h"
+#include "rename_object_dialog.h"
+#include "select_container_dialog.h"
+#include "select_object_dialog.h"
+#include "settings.h"
+#include "status.h"
+#include "utils.h"
 
-#include <QTreeView>
-#include <QLabel>
-#include <QHeaderView>
 #include <QDebug>
-#include <QVBoxLayout>
-#include <QMenu>
-#include <QStandardItemModel>
-#include <QSortFilterProxyModel>
 #include <QHash>
+#include <QHeaderView>
+#include <QLabel>
+#include <QMenu>
+#include <QSortFilterProxyModel>
+#include <QStandardItemModel>
+#include <QTreeView>
+#include <QVBoxLayout>
 
 FindResults::FindResults()
-: QWidget()
-{   
+: QWidget() {
     object_actions = new ConsoleActions(this);
 
     properties_action = new QAction(tr("&Properties"), this);
@@ -270,7 +269,7 @@ void FindResults::enable_disable_helper(const bool disabled) {
 
         model->setData(index, disabled, ObjectRole_AccountDisabled);
     }
-    
+
     update_actions_visibility();
 }
 

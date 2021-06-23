@@ -20,18 +20,18 @@
 
 #include "tabs/managed_by_tab.h"
 
-#include "edits/string_edit.h"
-#include "edits/string_other_edit.h"
+#include "adldap.h"
 #include "edits/country_edit.h"
 #include "edits/group_scope_edit.h"
 #include "edits/group_type_edit.h"
 #include "edits/manager_edit.h"
-#include "adldap.h"
+#include "edits/string_edit.h"
+#include "edits/string_other_edit.h"
 #include "utils.h"
 
-#include <QLabel>
 #include <QFormLayout>
 #include <QFrame>
+#include <QLabel>
 
 // NOTE: store manager's edits in separate list because they
 // don't apply to the target of properties.
@@ -52,9 +52,7 @@ ManagedByTab::ManagedByTab() {
     new StringOtherEdit(ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, CLASS_USER, &manager_edits, this);
     new StringOtherEdit(ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, CLASS_USER, &manager_edits, this);
 
-    for (AttributeEdit *edit : manager_edits) {
-        edit->set_read_only(true);
-    }
+    edits_set_read_only(manager_edits, true);
 
     auto edits_layout = new QFormLayout();
 
@@ -63,14 +61,14 @@ ManagedByTab::ManagedByTab() {
     top_layout->addLayout(edits_layout);
 
     edits_add_to_layout(edits, edits_layout);
-    edits_connect_to_tab(edits, this);  
+    edits_connect_to_tab(edits, this);
 
     edits_add_to_layout(manager_edits, edits_layout);
     edits_connect_to_tab(manager_edits, this);
 
     connect(
         manager_edit, &ManagerEdit::edited,
-        this, &ManagedByTab::on_manager_edited); 
+        this, &ManagedByTab::on_manager_edited);
 }
 
 void ManagedByTab::on_manager_edited() {

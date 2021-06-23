@@ -18,20 +18,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "adldap.h"
 #include "config.h"
+#include "globals.h"
 #include "main_window.h"
 #include "settings.h"
-#include "adldap.h"
-#include "globals.h"
 
 #include <QApplication>
-#include <QTranslator>
-#include <QLibraryInfo>
 #include <QDebug>
+#include <QLibraryInfo>
+#include <QTranslator>
 
 int main(int argc, char **argv) {
     Q_INIT_RESOURCE(adldap);
-    
+
     // NOTE: this is needed to pass this type from thread's
     // signal in find_widget.cpp. Without doing this,
     // passing this type from thread results in a runtime

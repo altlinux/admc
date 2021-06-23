@@ -20,21 +20,20 @@
 
 #include "change_dc_dialog.h"
 
-#include "utils.h"
 #include "adldap.h"
 #include "change_dc_dialog.h"
 #include "console_types/console_object.h"
 #include "globals.h"
 #include "settings.h"
+#include "utils.h"
 
-#include <QVBoxLayout>
-#include <QListWidget>
-#include <QDialogButtonBox>
 #include <QCheckBox>
+#include <QDialogButtonBox>
+#include <QListWidget>
+#include <QVBoxLayout>
 
 ChangeDCDialog::ChangeDCDialog(QStandardItem *domain_head_item_arg, QWidget *parent)
-: QDialog(parent)
-{
+: QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
     setMinimumSize(500, 200);
     setWindowTitle(tr("Change domain controller"));

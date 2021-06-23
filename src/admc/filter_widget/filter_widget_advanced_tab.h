@@ -30,7 +30,7 @@
 class QPlainTextEdit;
 
 class FilterWidgetAdvancedTab final : public FilterWidgetTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     FilterWidgetAdvancedTab();

@@ -38,11 +38,12 @@
 #include "adldap.h"
 
 class AdObject;
-template <typename T> class QList;
-template <typename K, typename V> class QHash;
+template <typename T>
+class QList;
+template <typename K, typename V>
+class QHash;
 
-class SearchThread final : public QThread
-{
+class SearchThread final : public QThread {
     Q_OBJECT
 
 public:

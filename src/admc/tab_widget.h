@@ -33,7 +33,7 @@ class QStackedWidget;
 class QListWidget;
 
 class TabWidget final : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     TabWidget();
@@ -49,7 +49,6 @@ private slots:
 private:
     QStackedWidget *stacked_widget;
     QListWidget *list_widget;
-    
 };
 
 #endif /* TAB_WIDGET_H */

@@ -108,9 +108,8 @@ void ADMCTestAdInterface::group_set_scope() {
     const bool add_group_success = ad.object_add(group_dn, CLASS_GROUP);
     QVERIFY(add_group_success);
 
-
-        const AdObject group_object2 = ad.search_object(group_dn);
-        const GroupScope current_scope2 = group_object2.get_group_scope();
+    const AdObject group_object2 = ad.search_object(group_dn);
+    const GroupScope current_scope2 = group_object2.get_group_scope();
 
     for (int scope_i = 0; scope_i < GroupScope_COUNT; scope_i++) {
         const GroupScope scope = (GroupScope) scope_i;

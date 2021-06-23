@@ -25,7 +25,7 @@
 
 // Address related attributes
 class AddressTab final : public PropertiesTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     AddressTab();

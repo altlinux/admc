@@ -23,9 +23,9 @@
 
 #include "ad_object.h"
 
+#include <QByteArray>
 #include <QHash>
 #include <QList>
-#include <QByteArray>
 #include <QString>
 
 // NOTE: name strings to reduce confusion
@@ -36,12 +36,12 @@ class AdConfigPrivate {
 
 public:
     AdConfigPrivate();
-    
+
     QString domain;
     QString domain_head;
 
     QList<ObjectClass> filter_containers;
-    
+
     QList<Attribute> columns;
     QHash<Attribute, QString> column_display_names;
 

@@ -31,4 +31,3 @@ public:
 } /* namespace reg */
 
 #endif /* __GPTBACKEND_REG_H */
-

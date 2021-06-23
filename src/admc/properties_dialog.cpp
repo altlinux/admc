@@ -20,35 +20,37 @@
 
 #include "properties_dialog.h"
 
-#include "tabs/properties_tab.h"
-#include "tabs/attributes_tab.h"
-#include "tabs/membership_tab.h"
-#include "tabs/account_tab.h"
-#include "tabs/general_tab.h"
-#include "tabs/address_tab.h"
-#include "tabs/object_tab.h"
-#include "tabs/group_policy_tab.h"
-#include "tabs/gpo_links_tab.h"
-#include "tabs/organization_tab.h"
-#include "tabs/telephones_tab.h"
-#include "tabs/profile_tab.h"
-#include "tabs/managed_by_tab.h"
-#include "tabs/security_tab.h"
 #include "adldap.h"
+#include "console_types/console_object.h"
 #include "globals.h"
 #include "settings.h"
 #include "status.h"
-#include "utils.h"
 #include "tab_widget.h"
-#include "console_types/console_object.h"
+#include "tabs/account_tab.h"
+#include "tabs/address_tab.h"
+#include "tabs/attributes_tab.h"
+#include "tabs/general_tab.h"
+#include "tabs/gpo_links_tab.h"
+#include "tabs/group_policy_tab.h"
+#include "tabs/managed_by_tab.h"
+#include "tabs/membership_tab.h"
+#include "tabs/object_tab.h"
+#include "tabs/organization_tab.h"
+#include "tabs/profile_tab.h"
+#include "tabs/properties_tab.h"
+#include "tabs/security_tab.h"
+#include "tabs/telephones_tab.h"
+#include "tabs/os_tab.h"
+#include "tabs/delegation_tab.h"
+#include "utils.h"
 
-#include <QAction>
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QDebug>
 #include <QAbstractItemView>
+#include <QAction>
+#include <QDebug>
+#include <QDialogButtonBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 PropertiesDialog *PropertiesDialog::open_for_target(const QString &target) {
     if (target.isEmpty()) {
@@ -92,7 +94,7 @@ void PropertiesDialog::open_when_view_item_activated(QAbstractItemView *view, co
         view, &QAbstractItemView::doubleClicked,
         [dn_role](const QModelIndex &index) {
             const QString dn = index.data(dn_role).toString();
-            
+
             open_for_target(dn);
         });
 }
@@ -102,18 +104,11 @@ QString PropertiesDialog::display_name() {
 }
 
 PropertiesDialog::PropertiesDialog(const QString &target_arg)
-: QDialog()
-{
+: QDialog() {
     target = target_arg;
     is_modified = false;
 
     setAttribute(Qt::WA_DeleteOnClose);
-
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        close();
-        return;
-    }
 
     setMinimumHeight(700);
     auto button_box = new QDialogButtonBox();
@@ -129,34 +124,28 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     apply_button->setAutoDefault(false);
     ok_button->setAutoDefault(true);
 
-    const AdObject object = ad.search_object(target);
-
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->setSpacing(0);
 
-    const QString name = object.get_string(ATTRIBUTE_NAME);
+    const QString name = dn_get_name(target_arg);
     const QString window_title = name.isEmpty() ? PropertiesDialog::display_name() : QString(tr("\"%1\" Properties")).arg(name);
     setWindowTitle(window_title);
 
-    if (object.is_empty()) {
-        auto no_object_label = new QLabel(tr("Object could not be found"));
-        layout->addWidget(no_object_label);    
-        layout->addWidget(button_box);
+    AdObject object;
 
-        button_box->setEnabled(false);
-        
-        return;
+    AdInterface ad;
+    if (!ad_failed(ad)) {
+        object = ad.search_object(target);
     }
 
     auto tab_widget = new TabWidget();
-    
+
     layout->addWidget(tab_widget);
-    layout->addWidget(button_box);    
+    layout->addWidget(button_box);
 
     // Create new tabs
-    const auto add_tab =
-    [this, tab_widget](PropertiesTab *tab, const QString &title) {
+    const auto add_tab = [this, tab_widget](PropertiesTab *tab, const QString &title) {
         tabs.append(tab);
         tab_widget->add_tab(tab, title);
     };
@@ -203,16 +192,24 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         add_tab(new GpoLinksTab(), tr("Links to"));
     }
 
+    if (object.is_class(CLASS_COMPUTER)) {
+        add_tab(new OSTab(), tr("Operating System"));
+        add_tab(new DelegationTab(), tr("Delegation"));
+        add_tab(new MemberOfTab(), tr("Member of"));
+        add_tab(new ManagedByTab(), tr("Managed by"));
+    }
+
     for (auto tab : tabs) {
         connect(
             tab, &PropertiesTab::edited,
             this, &PropertiesDialog::on_edited);
     }
 
-    g_status()->display_ad_messages(ad, this);
-
-    reset();
-
+    if (ad.is_connected()) {
+        g_status()->display_ad_messages(ad, this);
+        
+        reset_internal(ad);
+    }
 
     connect(
         ok_button, &QPushButton::clicked,
@@ -244,8 +241,7 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
     auto dialog = new QDialog(this);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-    const QString explanation_text =
-    [&]() {
+    const QString explanation_text = [&]() {
         if (new_tab == attributes_tab) {
             return tr("You're switching to attributes tab, while another tab has unapplied changes. Choose to apply or discard those changes.");
         } else {
@@ -273,11 +269,15 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
     connect(
         dialog, &QDialog::accepted,
         [&]() {
-            apply();
+            AdInterface ad;
 
-            // NOTE: have to reset for attributes/other tab
-            // to load updates
-            reset();
+            if (ad_connected(ad)) {
+                apply_internal(ad);
+
+                // NOTE: have to reset for attributes/other tab
+                // to load updates
+                reset_internal(ad);
+            }
         });
 
     connect(
@@ -299,10 +299,21 @@ void PropertiesDialog::ok() {
 
 bool PropertiesDialog::apply() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_connected(ad)) {
+        return apply_internal(ad);
+    } else {
         return false;
     }
+}
 
+void PropertiesDialog::reset() {
+    AdInterface ad;
+    if (ad_connected(ad)) {
+        reset_internal(ad);
+    }
+}
+
+bool PropertiesDialog::apply_internal(AdInterface &ad) {
     for (auto tab : tabs) {
         const bool verify_success = tab->verify(ad, target);
         if (!verify_success) {
@@ -313,7 +324,7 @@ bool PropertiesDialog::apply() {
     show_busy_indicator();
 
     bool total_apply_success = true;
-    
+
     for (auto tab : tabs) {
         const bool apply_success = tab->apply(ad, target);
         if (!apply_success) {
@@ -336,12 +347,7 @@ bool PropertiesDialog::apply() {
     return total_apply_success;
 }
 
-void PropertiesDialog::reset() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
+void PropertiesDialog::reset_internal(AdInterface &ad) {
     const AdObject object = ad.search_object(target);
 
     for (auto tab : tabs) {

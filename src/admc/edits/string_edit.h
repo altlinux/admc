@@ -23,15 +23,15 @@
 
 #include "attribute_edit.h"
 
-#include <QString>
-#include <QMap>
 #include <QList>
+#include <QMap>
+#include <QString>
 
 class QLineEdit;
 class QLabel;
 
 class StringEdit final : public AttributeEdit {
-Q_OBJECT
+    Q_OBJECT
 public:
     static void make_many(const QList<QString> attributes, const QString &objectClass, QList<AttributeEdit *> *edits_out, QObject *parent);
 

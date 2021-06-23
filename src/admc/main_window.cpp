@@ -19,31 +19,30 @@
  */
 
 #include "main_window.h"
-#include "status.h"
-#include "settings.h"
-#include "adldap.h"
-#include "globals.h"
-#include "central_widget.h"
 #include "about_dialog.h"
+#include "adldap.h"
+#include "central_widget.h"
+#include "globals.h"
 #include "manual_dialog.h"
+#include "settings.h"
+#include "status.h"
 
-#include <QApplication>
-#include <QString>
-#include <QStatusBar>
-#include <QTextEdit>
 #include <QAction>
-#include <QDesktopWidget>
-#include <QMenuBar>
 #include <QActionGroup>
-#include <QMessageBox>
-#include <QDockWidget>
+#include <QApplication>
 #include <QDebug>
+#include <QDesktopWidget>
+#include <QDockWidget>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QStatusBar>
+#include <QString>
+#include <QTextEdit>
 
 #define MESSAGE_LOG_OBJECT_NAME "MESSAGE_LOG_OBJECT_NAME"
 
 MainWindow::MainWindow()
-: QMainWindow()
-{
+: QMainWindow() {
     setStatusBar(g_status()->status_bar());
 
     g_status()->status_bar()->showMessage(tr("Ready"));
@@ -107,16 +106,14 @@ void MainWindow::setup_menubar() {
         QLocale::English,
         QLocale::Russian,
     };
-    const QHash<QLocale::Language, QAction *> language_actions =
-    [this, language_list]() {
+    const QHash<QLocale::Language, QAction *> language_actions = [this, language_list]() {
         QHash<QLocale::Language, QAction *> out;
 
         auto language_group = new QActionGroup(this);
         for (const auto language : language_list) {
             QLocale locale(language);
-            const QString language_name =
-            [locale]() {
-            // NOTE: Russian nativeLanguageName starts with lowercase letter for some reason
+            const QString language_name = [locale]() {
+                // NOTE: Russian nativeLanguageName starts with lowercase letter for some reason
                 QString name_out = locale.nativeLanguageName();
 
                 const QChar first_letter_uppercased = name_out[0].toUpper();
@@ -130,8 +127,7 @@ void MainWindow::setup_menubar() {
             action->setCheckable(true);
             language_group->addAction(action);
 
-            const bool is_checked =
-            [=]() {
+            const bool is_checked = [=]() {
                 const QLocale current_locale = g_settings->get_variant(VariantSetting_Locale).toLocale();
 
                 return (current_locale == locale);
@@ -186,7 +182,7 @@ void MainWindow::setup_menubar() {
 
     help_menu->addAction(manual_action);
     help_menu->addAction(about_action);
-    
+
     //
     // Connect actions
     //

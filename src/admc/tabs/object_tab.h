@@ -25,7 +25,7 @@
 
 // Object attributes, same for all types
 class ObjectTab final : public PropertiesTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     ObjectTab();

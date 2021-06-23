@@ -24,20 +24,18 @@
 
 #include <QAction>
 #include <QCheckBox>
-#include <QWidget>
-#include <QSettings>
-#include <QLocale>
 #include <QCoreApplication>
 #include <QHeaderView>
+#include <QLocale>
+#include <QSettings>
+#include <QWidget>
 
 bool bool_default_value(const BoolSetting setting);
 QString bool_to_string(const BoolSetting setting);
 QString variant_to_string(const VariantSetting setting);
 
 Settings::Settings()
-: qsettings(ADMC_ORGANIZATION, ADMC_APPLICATION_NAME)
-{
-
+: qsettings(ADMC_ORGANIZATION, ADMC_APPLICATION_NAME) {
 }
 
 const BoolSettingSignal *Settings::get_bool_signal(const BoolSetting setting) const {
@@ -59,7 +57,7 @@ void Settings::set_bool(const BoolSetting setting, const bool value) {
 
 QVariant Settings::get_variant(const VariantSetting setting) const {
     const QString name = variant_to_string(setting);
-    const QVariant value = qsettings.value(name); 
+    const QVariant value = qsettings.value(name);
 
     return value;
 }
@@ -125,8 +123,7 @@ void Settings::setup_header_state(QHeaderView *header, const VariantSetting sett
 void Settings::connect_toggle_widget(QWidget *widget, const BoolSetting setting) {
     const BoolSettingSignal *signal = get_bool_signal(setting);
 
-    auto on_changed =
-    [=]() {
+    auto on_changed = [=]() {
         const bool visible = get_bool(setting);
         widget->setVisible(visible);
     };
@@ -157,13 +154,14 @@ bool bool_default_value(const BoolSetting setting) {
         case BoolSetting_LogSearches: return false;
         case BoolSetting_TimestampLog: return true;
 
-        case BoolSetting_COUNT: {}
+        case BoolSetting_COUNT: break;
     }
 
     return false;
 }
 
-#define CASE_ENUM_TO_STRING(ENUM) case ENUM: return #ENUM
+#define CASE_ENUM_TO_STRING(ENUM) \
+    case ENUM: return #ENUM
 
 // Convert enum to string literal via macro
 // BoolSetting_Foo => "BoolSetting_Foo"

@@ -21,8 +21,8 @@
 #define FILE_H
 
 #include <QByteArray>
-#include <QString>
 #include <QList>
+#include <QString>
 
 // File f-ns that can operate on local or SMB files
 // File paths that start with "smb:" are assumed to be SMB

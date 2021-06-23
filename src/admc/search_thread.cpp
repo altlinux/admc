@@ -52,7 +52,7 @@ void SearchThread::run() {
 
     while (true) {
         QHash<QString, AdObject> results;
-        
+
         const bool success = ad.search_paged(base, scope, filter, attributes, &results, &cookie);
 
         emit results_ready(results);

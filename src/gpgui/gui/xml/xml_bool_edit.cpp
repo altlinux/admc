@@ -19,13 +19,12 @@
 
 #include "xml_bool_edit.h"
 
-#include <QLabel>
 #include <QCheckBox>
+#include <QLabel>
 
 XmlBoolEdit::XmlBoolEdit(const XmlAttribute &attribute_arg, QObject *parent)
 : XmlEdit(parent)
-, attribute(attribute_arg)
-{
+, attribute(attribute_arg) {
     check = new QCheckBox();
 
     QObject::connect(

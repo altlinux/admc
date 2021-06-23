@@ -21,28 +21,27 @@
 #include "select_policy_dialog.h"
 
 #include "adldap.h"
-#include "globals.h"
+#include "console_types/console_policy.h"
 #include "edits/string_edit.h"
+#include "globals.h"
 #include "status.h"
 #include "utils.h"
-#include "console_types/console_policy.h"
 
 #include <QDialog>
-#include <QLineEdit>
 #include <QDialogButtonBox>
-#include <QPushButton>
-#include <QVBoxLayout>
 #include <QFormLayout>
-#include <QTreeView>
+#include <QLineEdit>
+#include <QPushButton>
 #include <QStandardItemModel>
+#include <QTreeView>
+#include <QVBoxLayout>
 
 SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
-: QDialog(parent)
-{
+: QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
     setMinimumWidth(400);
     setMinimumHeight(500);
-    
+
     AdInterface ad;
     if (ad_failed(ad)) {
         close();

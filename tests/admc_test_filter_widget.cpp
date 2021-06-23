@@ -20,18 +20,18 @@
 
 #include "admc_test_filter_widget.h"
 
-#include "filter_widget/filter_widget.h"
-#include "filter_widget/filter_builder.h"
-#include "filter_widget/select_classes_widget.h"
 #include "filter_classes_widget.h"
+#include "filter_widget/filter_builder.h"
+#include "filter_widget/filter_widget.h"
+#include "filter_widget/select_classes_widget.h"
 
-#include <QVBoxLayout>
-#include <QTabWidget>
-#include <QPushButton>
 #include <QCheckBox>
 #include <QDialog>
 #include <QLineEdit>
 #include <QPlainTextEdit>
+#include <QPushButton>
+#include <QTabWidget>
+#include <QVBoxLayout>
 
 #define SIMPLE_TAB_INDEX 0
 #define NORMAL_TAB_INDEX 1
@@ -86,7 +86,7 @@ void ADMCTestFilterWidget::test_simple_tab() {
 
     select_classes_dialog->accept();
 
-    QLineEdit * name_edit = simple_tab->findChild<QLineEdit *>("name_edit");
+    QLineEdit *name_edit = simple_tab->findChild<QLineEdit *>("name_edit");
     name_edit->setText("test");
 
     const QString correct_filter = "(&(name=*test*)(objectClass=user))";
@@ -99,7 +99,7 @@ void ADMCTestFilterWidget::test_simple_tab() {
 
     // Change state
     name_edit->setText("changed");
-    
+
     // Deserialize
     filter_widget->load_state(state);
 
@@ -153,7 +153,7 @@ void ADMCTestFilterWidget::test_normal_tab() {
     // Change state
     value_edit->setText("value 2");
     add_button->click();
-    
+
     // Deserialize
     filter_widget->load_state(state);
 
@@ -179,7 +179,7 @@ void ADMCTestFilterWidget::test_advanced_tab() {
 
     // Change state
     edit->setPlainText("changed");
-    
+
     // Deserialize
     filter_widget->load_state(state);
 

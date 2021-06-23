@@ -48,11 +48,11 @@ class preg_parser {
     char version[4];
     size_t next_entry_start_offset = 8;
 
-  public:
+public:
     preg_parser(std::string &file_path);
     entry get_next_entry();
 
-  protected:
+protected:
     void load_regpol(std::string &file_path);
     void read_header();
     void read_version();

@@ -22,14 +22,13 @@
 #include "adldap.h"
 #include "globals.h"
 
-#include <QRadioButton>
 #include <QDialogButtonBox>
-#include <QVBoxLayout>
 #include <QLabel>
+#include <QRadioButton>
+#include <QVBoxLayout>
 
 BoolEditor::BoolEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
-: AttributeEditor(parent)
-{
+: AttributeEditor(parent) {
     setWindowTitle(tr("Edit boolean"));
 
     QLabel *attribute_label = make_attribute_label(attribute);
@@ -46,13 +45,14 @@ BoolEditor::BoolEditor(const QString attribute, const QList<QByteArray> values, 
         const bool value_bool = ad_string_to_bool(value_string);
 
         if (value_bool) {
-            true_button->setChecked(true);        
+            true_button->setChecked(true);
         } else {
             false_button->setChecked(true);
         }
     }
 
-    QDialogButtonBox *button_box = make_button_box(attribute);;
+    QDialogButtonBox *button_box = make_button_box(attribute);
+    ;
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);

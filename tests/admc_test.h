@@ -95,18 +95,16 @@ protected:
     // messageboxes later.
     void close_message_box_later();
 
-private:    
+private:
     void close_message_box_slot();
-
 };
 
 void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role);
 
-QPushButton *find_button_by_name(const QString& name, QWidget *parent);
+QPushButton *find_button_by_name(const QString &name, QWidget *parent);
 
 // Presses the Tab button. Use to cycle through input
 // widgets.
 void tab(const int n = 1);
 
 #endif /* ADMC_TEST_H */
-

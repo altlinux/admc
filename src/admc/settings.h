@@ -51,7 +51,7 @@ enum VariantSetting {
     VariantSetting_QueryFolders,
     VariantSetting_QueryItems,
 
-    VariantSetting_COUNT,    
+    VariantSetting_COUNT,
 };
 
 enum BoolSetting {
@@ -69,7 +69,7 @@ enum BoolSetting {
 };
 
 class BoolSettingSignal final : public QObject {
-Q_OBJECT
+    Q_OBJECT
 signals:
     void changed();
 };
@@ -91,12 +91,12 @@ public:
      * Connect action and bool setting so that toggling
      * the action updates the setting value
      * Action becomes checkable
-     */ 
+     */
     void connect_action_to_bool_setting(QAction *action, const BoolSetting setting);
 
     void connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSetting setting);
 
-    void setup_header_state(QHeaderView* header, const VariantSetting setting);
+    void setup_header_state(QHeaderView *header, const VariantSetting setting);
 
     void connect_toggle_widget(QWidget *widget, const BoolSetting setting);
 
