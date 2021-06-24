@@ -476,7 +476,6 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
         }
     }
 
-    console->sort_scope();
     console_query_tree_save(console);
 }
 

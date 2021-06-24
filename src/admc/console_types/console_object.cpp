@@ -229,8 +229,6 @@ void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QS
 
     console_object_create(console, ad, new_dn_list, new_parent_index);
     console_object_delete(console, old_dn_list, true);
-
-    console->sort_scope();
 }
 
 void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn) {
@@ -340,7 +338,6 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
             }
 
             console_object_create(console, results.values(), persistent_index);
-            console->sort_scope();
         },
         Qt::QueuedConnection);
     QObject::connect(
@@ -401,7 +398,6 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
             dev_mode_search_results(results, ad, base);
 
             console_object_create(console, results.values(), index);
-            console->sort_scope();
         }
     }
 
@@ -742,8 +738,6 @@ void console_object_drop_objects(ConsoleWidget *console, const QList<QPersistent
             }
         }
     }
-
-    console->sort_scope();
 
     hide_busy_indicator();
 

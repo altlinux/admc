@@ -106,8 +106,6 @@ void RenamePolicyDialog::accept() {
 
     const QList<QStandardItem *> row = console->get_row(index);
     console_policy_results_load(row, object);
-
-    console->sort_scope();
 }
 
 void RenamePolicyDialog::on_edited() {

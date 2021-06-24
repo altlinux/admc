@@ -361,10 +361,6 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
     return id;
 }
 
-void ConsoleWidget::sort_scope() {
-    d->scope_model->sort(0, Qt::AscendingOrder);
-}
-
 void ConsoleWidget::set_description_bar_text(const QString &text) {
     const QString scope_name = [this]() {
         const QModelIndex current_scope = get_current_scope_item();

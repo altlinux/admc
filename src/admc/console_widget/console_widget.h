@@ -153,14 +153,6 @@ public:
     int register_results(ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
     int register_results(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
-    // Sorts scope items by name. Note that this can affect
-    // performance negatively if overused. For example, when
-    // adding multiple scope items, try to call this once
-    // after all items are added. If you were to call this
-    // after each item is added the whole process would be
-    // slowed down.
-    void sort_scope();
-
     void set_description_bar_text(const QString &text);
 
     void set_item_fetching(const QModelIndex &index, const bool enabled);

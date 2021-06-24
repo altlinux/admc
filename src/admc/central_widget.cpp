@@ -260,7 +260,6 @@ void CentralWidget::go_online(AdInterface &ad) {
     console_policy_tree_init(console, ad);
     console_query_tree_init(console);
 
-    console->sort_scope();
     console->set_current_scope(object_tree_head->index());
 }
 
@@ -362,8 +361,6 @@ void CentralWidget::object_create_helper(const QString &object_class) {
             const QString created_dn = dialog->get_created_dn();
             console_object_create(console, ad, {created_dn}, scope_parent_index);
 
-            console->sort_scope();
-
             hide_busy_indicator();
         });
 }
@@ -385,8 +382,6 @@ void CentralWidget::object_move() {
             const QList<QString> old_dn_list = dialog->get_moved_objects();
             const QString new_parent_dn = dialog->get_selected();
             console_object_move(console, ad, old_dn_list, new_parent_dn);
-
-            console->sort_scope();
         });
 }
 
