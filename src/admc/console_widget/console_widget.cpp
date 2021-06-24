@@ -481,10 +481,6 @@ QWidget *ConsoleWidget::get_description_bar() const {
     return d->description_bar;
 }
 
-QStandardItemModel *ConsoleWidget::scope_model() const {
-    return d->scope_model;
-}
-
 void ConsoleWidgetPrivate::connect_to_drag_model(ConsoleDragModel *model) {
     connect(
         model, &ConsoleDragModel::start_drag,

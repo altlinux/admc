@@ -192,8 +192,6 @@ public:
     QWidget *get_scope_view() const;
     QWidget *get_description_bar() const;
 
-    QStandardItemModel *scope_model() const;
-
 signals:
     // Emitted when a dynamic scope item is expanded or
     // selected for the first time. User of this widget

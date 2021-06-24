@@ -297,7 +297,7 @@ bool console_query_or_folder_name_is_good(ConsoleWidget *console, const QString 
     const QList<QString> sibling_names = [&]() {
         QList<QString> out;
 
-        QStandardItemModel *model = console->scope_model();
+        const QAbstractItemModel *model = parent_index.model();
 
         for (int row = 0; row < model->rowCount(parent_index); row++) {
             const QModelIndex sibling = model->index(row, 0, parent_index);
