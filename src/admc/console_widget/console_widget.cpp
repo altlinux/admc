@@ -39,8 +39,6 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
-QList<QModelIndex> filter_indexes_by_type(const QList<QModelIndex> &indexes, const int type);
-
 ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
 : QObject(q_arg) {
     q = q_arg;
@@ -432,9 +430,28 @@ QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int ro
     const QModelIndex start = get_item(parent)->child(0, 0)->index();
     const QList<QModelIndex> all_matches = d->scope_model->match(start, role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
 
-    const QList<QModelIndex> matches = filter_indexes_by_type(all_matches, type);
+    const QList<QModelIndex> filtered_matches = [&]() {
+        if (type == -1) {
+            return all_matches;
+        }
 
-    return matches;
+        QList<QModelIndex> out;
+
+        for (const QModelIndex &index : all_matches) {
+            const QVariant type_variant = index.data(ConsoleRole_Type);
+            if (type_variant.isValid()) {
+                const int this_type = type_variant.toInt();
+
+                if (this_type == type) {
+                    out.append(index);
+                }
+            }
+        }
+
+        return out;
+    }();
+
+    return filtered_matches;
 }
 
 QModelIndex ConsoleWidget::get_current_scope_item() const {
@@ -890,25 +907,4 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
 
         emit q->item_fetched(index);
     }
-}
-
-QList<QModelIndex> filter_indexes_by_type(const QList<QModelIndex> &indexes, const int type) {
-    if (type == -1) {
-        return indexes;
-    }
-
-    QList<QModelIndex> out;
-
-    for (const QModelIndex &index : indexes) {
-        const QVariant type_variant = index.data(ConsoleRole_Type);
-        if (type_variant.isValid()) {
-            const int this_type = type_variant.toInt();
-
-            if (this_type == type) {
-                out.append(index);
-            }
-        }
-    }
-
-    return out;
 }
