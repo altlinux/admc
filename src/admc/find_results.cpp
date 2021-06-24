@@ -118,10 +118,6 @@ FindResults::FindResults()
     connect(
         object_actions->get(ConsoleAction_ResetPassword), &QAction::triggered,
         this, &FindResults::reset_password);
-
-    connect(
-        view, &ResultsView::selection_changed,
-        this, &FindResults::update_actions_visibility);
 }
 
 void FindResults::add_actions_to_action_menu(QMenu *menu) {
@@ -130,6 +126,10 @@ void FindResults::add_actions_to_action_menu(QMenu *menu) {
     menu->addSeparator();
 
     menu->addAction(properties_action);
+
+    connect(
+        menu, &QMenu::aboutToShow,
+        this, &FindResults::update_actions_visibility);
 }
 
 void FindResults::add_actions_to_view_menu(QMenu *menu) {

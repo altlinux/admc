@@ -299,7 +299,7 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
 
     // NOTE: need to set this role to disable actions during
     // fetch
-    console->set_item_fetching(item->index(), true);
+    item->setData(true, ConsoleRole_Fetching);
     item->setDragEnabled(false);
 
     auto search_thread = new SearchThread(base, scope, filter, attributes);
@@ -342,7 +342,7 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
             QStandardItem *item_now = console->get_item(persistent_index);
             item_now->setIcon(original_icon);
 
-            console->set_item_fetching(item_now->index(), false);
+            item_now->setData(false, ConsoleRole_Fetching);
             item_now->setDragEnabled(true);
         },
         Qt::QueuedConnection);
@@ -461,7 +461,7 @@ DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIn
     const bool dropped_is_user = dropped_classes.contains(CLASS_USER);
     const bool dropped_is_group = dropped_classes.contains(CLASS_GROUP);
     const bool target_is_group = target_classes.contains(CLASS_GROUP);
-    const bool target_is_fetching = console_get_item_fetching(target);
+    const bool target_is_fetching = target.data(ConsoleRole_Fetching).toBool();
 
     if (dropped_is_target || target_is_fetching) {
         return DropType_None;
@@ -593,7 +593,7 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
 
     visible_actions->unite(my_visible_actions);
 
-    const bool is_fetching = console_get_item_fetching(index);
+    const bool is_fetching = index.data(ConsoleRole_Fetching).toBool();
     if (is_fetching) {
         disabled_actions->unite(my_visible_actions);
     }

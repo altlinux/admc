@@ -375,7 +375,7 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
 
     visible_actions->unite(my_visible_actions);
 
-    const bool is_fetching = console_get_item_fetching(index);
+    const bool is_fetching = index.data(ConsoleRole_Fetching).toBool();
     if (is_fetching) {
         disabled_actions->unite(my_visible_actions);
     }
@@ -387,7 +387,7 @@ void console_query_can_drop(const QList<QPersistentModelIndex> &dropped_list, co
         return;
     }
 
-    const bool target_is_fetching = console_get_item_fetching(target);
+    const bool target_is_fetching = target.data(ConsoleRole_Fetching).toBool();
     if (target_is_fetching) {
         return;
     }

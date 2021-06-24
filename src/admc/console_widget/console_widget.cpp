@@ -132,9 +132,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
         d->scope_view->selectionModel(), &QItemSelectionModel::currentChanged,
         d, &ConsoleWidgetPrivate::on_current_scope_item_changed);
     connect(
-        d->scope_view->selectionModel(), &QItemSelectionModel::selectionChanged,
-        d, &ConsoleWidgetPrivate::on_selection_changed);
-    connect(
         d->scope_model, &QStandardItemModel::rowsAboutToBeRemoved,
         d, &ConsoleWidgetPrivate::on_scope_items_about_to_be_removed);
     connect(
@@ -300,9 +297,6 @@ void ConsoleWidget::refresh_scope(const QModelIndex &index) {
     // Emit item_fetched() so that user of console can
     // reload item's results
     emit item_fetched(index);
-
-    // When fetching, need to disable actions
-    d->on_selection_changed();
 }
 
 // No view, only widget
@@ -335,9 +329,6 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
         connect(
             view, &ResultsView::context_menu,
             d, &ConsoleWidgetPrivate::on_context_menu);
-        connect(
-            view, &ResultsView::selection_changed,
-            d, &ConsoleWidgetPrivate::on_selection_changed);
 
         // Hide non-default results view columns. Note that
         // at creation, view header doesnt have any
@@ -369,22 +360,6 @@ void ConsoleWidget::set_description_bar_text(const QString &text) {
 
     d->description_bar_left->setText(scope_name);
     d->description_bar_right->setText(text);
-}
-
-// NOTE: this role is done through setter/getter because we
-// need to call on_selection_changed() in setter() to update
-// actions
-void ConsoleWidget::set_item_fetching(const QModelIndex &index, const bool enabled) {
-    QStandardItem *item = get_item(index);
-    item->setData(enabled, ConsoleRole_Fetching);
-
-    d->on_selection_changed();
-}
-
-bool console_get_item_fetching(const QModelIndex &index) {
-    const bool is_fetching = index.data(ConsoleRole_Fetching).toBool();
-
-    return is_fetching;
 }
 
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
@@ -530,7 +505,7 @@ void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
 
 // Show/hide actions based on what's selected and emit the
 // signal
-void ConsoleWidgetPrivate::on_selection_changed() {
+void ConsoleWidgetPrivate::update_actions() {
     const QList<QModelIndex> selected_list = q->get_selected_items();
 
     if (!selected_list.isEmpty() && !selected_list[0].isValid()) {
@@ -574,7 +549,7 @@ void ConsoleWidgetPrivate::on_selection_changed() {
 
     const bool any_selected_is_fetching = [&]() {
         for (const QModelIndex &index : selected_list) {
-            const bool is_fetching = console_get_item_fetching(index);
+            const bool is_fetching = index.data(ConsoleRole_Fetching).toBool();
 
             if (is_fetching) {
                 return true;
@@ -712,8 +687,6 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
 
         if (new_focused_view == scope_view || new_focused_view == results_view) {
             focused_view = new_focused_view;
-
-            on_selection_changed();
         }
     }
 }
@@ -868,6 +841,11 @@ void ConsoleWidget::add_actions_to_action_menu(QMenu *menu) {
 
     d->properties_action->setVisible(false);
     d->refresh_action->setVisible(false);
+
+    // Update actions right before menu opens
+    connect(
+        menu, &QMenu::aboutToShow,
+        d, &ConsoleWidgetPrivate::update_actions);
 }
 
 void ConsoleWidget::add_actions_to_navigation_menu(QMenu *menu) {

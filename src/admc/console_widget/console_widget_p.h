@@ -52,11 +52,11 @@ enum ConsoleRole {
     // Determines whether scope is dynamic.
     ConsoleRole_ScopeIsDynamic = Qt::UserRole + 4,
 
-    ConsoleRole_Fetching = Qt::UserRole + 5,
-
     // NOTE: don't go above ConsoleRole_Type and
     // ConsoleRole_LAST (defined in public header)
 
+    // NOTE: these roles are "public" defined in public header
+    // ConsoleRole_Fetching = Qt::UserRole + 17,
     // ConsoleRole_HasProperties = Qt::UserRole + 18,
     // ConsoleRole_Type = Qt::UserRole + 19,
     // ConsoleRole_LAST = Qt::UserRole + 20
@@ -104,7 +104,7 @@ public:
     void connect_to_drag_model(ConsoleDragModel *model);
     void on_scope_expanded(const QModelIndex &index);
     void on_results_activated(const QModelIndex &index);
-    void on_selection_changed();
+    void update_actions();
     void on_context_menu(const QPoint pos);
     void update_navigation_actions();
     void update_view_actions();

@@ -91,16 +91,6 @@ ResultsView::ResultsView(QWidget *parent)
         connect(
             view, &QWidget::customContextMenuRequested,
             this, &ResultsView::context_menu);
-
-        // NOTE: this must be called after view model is set
-        // to proxy. Before that selectionModel() doesn't
-        // exist
-        connect(
-            view->selectionModel(), &QItemSelectionModel::selectionChanged,
-            this, &ResultsView::selection_changed);
-        connect(
-            view->selectionModel(), &QItemSelectionModel::currentChanged,
-            this, &ResultsView::current_changed);
     }
 
     set_view_type(ResultsViewType_Detail);

@@ -51,6 +51,8 @@ class QAbstractItemView;
 class QStandardItemModel;
 
 enum ConsoleRolePublic {
+    ConsoleRole_Fetching = Qt::UserRole + 17,
+
     ConsoleRole_HasProperties = Qt::UserRole + 18,
 
     // Use this role to set and get item types
@@ -132,8 +134,6 @@ public:
 
     void set_description_bar_text(const QString &text);
 
-    void set_item_fetching(const QModelIndex &index, const bool enabled);
-
     // Gets selected item(s) from currently focused view,
     // which could be scope or results. Only the main (first
     // column) item is returned for each selected row.
@@ -211,8 +211,5 @@ signals:
 private:
     ConsoleWidgetPrivate *d;
 };
-
-// Returns true if item or item's buddy is fetching
-bool console_get_item_fetching(const QModelIndex &index);
 
 #endif /* CONSOLE_WIDGET_H */
