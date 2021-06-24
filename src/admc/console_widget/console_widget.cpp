@@ -380,13 +380,8 @@ void ConsoleWidget::set_description_bar_text(const QString &text) {
 // NOTE: this role is done through setter/getter because we
 // need to call on_selection_changed() in setter() to update
 // actions
-void ConsoleWidget::set_item_fetching(const QModelIndex &scope_index, const bool enabled) {
-    QStandardItem *item = get_scope_item(scope_index);
-
-    if (item == nullptr) {
-        return;
-    }
-
+void ConsoleWidget::set_item_fetching(const QModelIndex &index, const bool enabled) {
+    QStandardItem *item = get_item(index);
     item->setData(enabled, ConsoleRole_Fetching);
 
     d->on_selection_changed();
@@ -463,13 +458,11 @@ int ConsoleWidget::get_current_results_count() const {
     return d->scope_model->rowCount(current_scope);
 }
 
-QStandardItem *ConsoleWidget::get_scope_item(const QModelIndex &scope_index) const {
-    QStandardItem *item = d->scope_model->itemFromIndex(scope_index);
-
-    return item;
+QStandardItem *ConsoleWidget::get_item(const QModelIndex &index) const {
+    return d->scope_model->itemFromIndex(index);
 }
 
-QList<QStandardItem *> ConsoleWidget::get_results_row(const QModelIndex &index) const {
+QList<QStandardItem *> ConsoleWidget::get_row(const QModelIndex &index) const {
     QList<QStandardItem *> row;
 
     for (int col = 0; col < d->scope_model->columnCount(); col++) {

@@ -75,7 +75,7 @@ void EditQueryItemDialog::accept() {
         return;
     }
 
-    const QList<QStandardItem *> row = console->get_results_row(index);
+    const QList<QStandardItem *> row = console->get_row(index);
 
     console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
 

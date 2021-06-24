@@ -163,7 +163,7 @@ public:
 
     void set_description_bar_text(const QString &text);
 
-    void set_item_fetching(const QModelIndex &scope_index, const bool enabled);
+    void set_item_fetching(const QModelIndex &index, const bool enabled);
 
     // Gets selected item(s) from currently focused view,
     // which could be scope or results. Only the main (first
@@ -187,8 +187,8 @@ public:
     QModelIndex get_current_scope_item() const;
     int get_current_results_count() const;
 
-    QStandardItem *get_scope_item(const QModelIndex &scope_index) const;
-    QList<QStandardItem *> get_results_row(const QModelIndex &results_index) const;
+    QStandardItem *get_item(const QModelIndex &index) const;
+    QList<QStandardItem *> get_row(const QModelIndex &index) const;
 
     bool item_was_fetched(const QModelIndex &index) const;
 

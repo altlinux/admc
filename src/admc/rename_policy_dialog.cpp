@@ -104,7 +104,7 @@ void RenamePolicyDialog::accept() {
     const QString dn = index.data(PolicyRole_DN).toString();
     const AdObject object = ad.search_object(dn);
 
-    const QList<QStandardItem *> row = console->get_results_row(index);
+    const QList<QStandardItem *> row = console->get_row(index);
     console_policy_results_load(row, object);
 
     console->sort_scope();

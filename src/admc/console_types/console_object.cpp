@@ -304,7 +304,7 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
 void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes) {
     // Save original icon and switch to a different icon
     // that will indicate that this item is being fetched.
-    QStandardItem *item = console->get_scope_item(index);
+    QStandardItem *item = console->get_item(index);
     const QIcon original_icon = item->icon();
     item->setIcon(QIcon::fromTheme("system-search"));
 
@@ -351,11 +351,11 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
                 return;
             }
 
-            QStandardItem *scope_item = console->get_scope_item(persistent_index);
-            scope_item->setIcon(original_icon);
+            QStandardItem *item_now = console->get_item(persistent_index);
+            item_now->setIcon(original_icon);
 
-            console->set_item_fetching(scope_item->index(), false);
-            scope_item->setDragEnabled(true);
+            console->set_item_fetching(item_now->index(), false);
+            item_now->setDragEnabled(true);
         },
         Qt::QueuedConnection);
 
