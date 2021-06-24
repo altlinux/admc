@@ -33,17 +33,12 @@
  * "results". Scope pane contains a tree of items. Each
  * scope item has it's own "results" which are displayed in
  * the results pane when the scope item is selected. Results
- * can contain items that represent children of the scope
- * item in scope tree. Results can also contain items that
- * do not have an equivalent in the scope tree and are
- * associated to the scope item in some other way. For
- * example - a search query, where the scope item represents
- * the query and results represents the results of the
- * search. The way results are displayed can be customized
- * by registering certain types of results views and
- * assigning them to scope items. The user widget of the
- * console widget is responsible for loading scope items and
- * results, creating results views and other things.
+ * can contain children of the scope item. Results may also
+ * display a custom widget. The way results are displayed
+ * can be customized by registering certain types of results
+ * views and assigning them to scope items. The user widget
+ * of the console widget is responsible for loading items,
+ * creating results views and other things.
  */
 
 #include <QWidget>
@@ -53,6 +48,7 @@ class ResultsView;
 class QStandardItem;
 class QMenu;
 class QAbstractItemView;
+class QStandardItemModel;
 
 enum ConsoleRolePublic {
     ConsoleRole_HasProperties = Qt::UserRole + 18,
@@ -82,24 +78,13 @@ class ConsoleWidget final : public QWidget {
 public:
     ConsoleWidget(QWidget *parent = nullptr);
 
-    // These f-ns are for adding items to console. There are
-    // two types of items "scope" and "results". Scope is
-    // composed of a single item, while results is a row of
-    // multiple items. Scope and results items can be
-    // "buddies". This is for cases where a results item
-    // also represents a scope item. Buddies are deleted
-    // together. If a scope item is deleted, it’s buddy in
-    // results is also deleted and vice versa. When a buddy
-    // in results is activated (double-click or
-    // select+enter), scope’s current item is changed to
-    // it’s scope buddy. If this is the first scope item
-    // added to console, then it is set as current scope by
-    // default. If you want another scope item at startup,
-    // use set_current_scope(). Items returned from these
-    // f-ns should be used to set text, icon and your custom
-    // data roles. Note that after adding and setting up the
-    // first scope item you should call set_current_scope()
-    // on it.
+    // These f-ns are for adding items to console. Items
+    // returned from these f-ns should be used to set text,
+    // icon and your custom data roles. add_top_item() adds
+    // top level items to the scope tree. add_scope_item()
+    // adds an item that is shown both in scope and results.
+    // add_results_item() adds an item that is shown only in
+    // results.
     //
     // Arguments:
     //
@@ -114,23 +99,16 @@ public:
     // scope item. Note that dynamic scope items can be
     // fetched again via the refresh_scope() f-n or
     // "Refresh" action of the item menu.
-    //
-    // "parent" - index of the scope item which will be the
-    // parent of created item. Note that results are also
-    // "parented" by a scope parent, even though they are
-    // not in the scope tree. Pass empty QModelIndex as
-    // parent to add a scope item as top level item.
-    QStandardItem *add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent);
-    QList<QStandardItem *> add_results_row(const QModelIndex &scope_parent);
-    void add_buddy_scope_and_results(const int results_id, const ScopeNodeType scope_type, const QModelIndex &scope_parent, QStandardItem **scope_arg, QList<QStandardItem *> *results_arg);
+    QStandardItem *add_top_item(const int results_id, const ScopeNodeType scope_type);
+    QList<QStandardItem *> add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent);
+    QList<QStandardItem *> add_results_item(const QModelIndex &parent);
 
     // Sets whether a given item should have "Properties"
     // action in it's menu, which opens the Properties
     // dialog.
     void set_has_properties(const QModelIndex &index, const bool has_properties);
 
-    // Deletes a scope/results item. If this item has a
-    // buddy, that buddy is also deleted.
+    // Deletes an item and all of it's columns
     void delete_item(const QModelIndex &index);
 
     // Sets current scope item in the scope tree
@@ -152,34 +130,35 @@ public:
     int register_results(ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
     int register_results(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
-    // Sorts scope items by name. Note that this can affect
-    // performance negatively if overused. For example, when
-    // adding multiple scope items, try to call this once
-    // after all items are added. If you were to call this
-    // after each item is added the whole process would be
-    // slowed down.
-    void sort_scope();
-
     void set_description_bar_text(const QString &text);
 
-    void set_item_fetching(const QModelIndex &scope_index, const bool enabled);
+    void set_item_fetching(const QModelIndex &index, const bool enabled);
 
     // Gets selected item(s) from currently focused view,
-    // which could be scope or results.
+    // which could be scope or results. Only the main (first
+    // column) item is returned for each selected row.
+
+    // NOTE: there is always at least one selected item. If
+    // results is currently focused but has no selection,
+    // selected items from scope are returned instead.
     QList<QModelIndex> get_selected_items() const;
+
+    // Get a single selected item. Use if you are sure that
+    // there's only one (dialog that uses one target item
+    // for example). Returns first item in list if there are
+    // multiple items selected.
+    QModelIndex get_selected_item() const;
 
     // NOTE: if no type is given, then items of all types
     // will be returned
-    QList<QModelIndex> search_scope_by_role(int role, const QVariant &value, const int type = -1) const;
-    QList<QModelIndex> search_results_by_role(int role, const QVariant &value, const int type = -1) const;
+    QList<QModelIndex> search_items(const QModelIndex &parent, int role, const QVariant &value, const int type = -1) const;
 
     QModelIndex get_current_scope_item() const;
     int get_current_results_count() const;
 
-    QStandardItem *get_scope_item(const QModelIndex &scope_index) const;
-    QList<QStandardItem *> get_results_row(const QModelIndex &results_index) const;
+    QStandardItem *get_item(const QModelIndex &index) const;
+    QList<QStandardItem *> get_row(const QModelIndex &index) const;
 
-    QModelIndex get_scope_parent(const QModelIndex &index) const;
     bool item_was_fetched(const QModelIndex &index) const;
 
     void add_actions_to_action_menu(QMenu *menu);
@@ -221,10 +200,9 @@ signals:
     // description bar.
     void results_count_changed();
 
-    // Emitted when selected items changes. Note that this
-    // is also emitted when focus changes between scope and
-    // results panes.
-    void selection_changed();
+    // Emitted when actions need to updated due to selection
+    // changing.
+    void actions_changed();
 
     // Emitted when a context menu is requested from a scope
     // or results view
@@ -233,12 +211,6 @@ signals:
 private:
     ConsoleWidgetPrivate *d;
 };
-
-bool console_item_is_scope(const QModelIndex &index);
-QModelIndex console_item_get_buddy(const QModelIndex &index);
-// If index is already scope, returns index, otherwise
-// returns scope buddy, if it exists
-QModelIndex console_item_convert_to_scope_index(const QModelIndex &index);
 
 // Returns true if item or item's buddy is fetching
 bool console_get_item_fetching(const QModelIndex &index);

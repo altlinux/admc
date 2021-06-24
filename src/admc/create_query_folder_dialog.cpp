@@ -69,11 +69,11 @@ void CreateQueryFolderDialog::open() {
 }
 
 void CreateQueryFolderDialog::accept() {
-    const QModelIndex parent_index = get_selected_scope_index(console);
+    const QModelIndex parent_index = console->get_selected_item();
     const QString name = name_edit->text();
     const QString description = description_edit->text();
 
-    if (!console_query_or_folder_name_is_good(name, parent_index, this, QModelIndex())) {
+    if (!console_query_or_folder_name_is_good(console, name, parent_index, this, QModelIndex())) {
         return;
     }
 

@@ -48,6 +48,7 @@ enum QueryColumn {
 };
 
 int console_query_folder_results_id;
+QStandardItem *query_tree_head = nullptr;
 
 bool copied_index_is_cut = false;
 QPersistentModelIndex copied_index;
@@ -115,59 +116,41 @@ QString console_query_folder_path(const QModelIndex &index) {
     return path;
 }
 
-void console_query_folder_load(QStandardItem *scope_item, const QList<QStandardItem *> &results_row, const QString &name, const QString &description) {
-    auto load_main_item = [&](QStandardItem *item) {
-        item->setData(description, QueryItemRole_Description);
-        item->setData(ItemType_QueryFolder, ConsoleRole_Type);
-        item->setIcon(QIcon::fromTheme("folder"));
-    };
+void console_query_folder_load(const QList<QStandardItem *> &row, const QString &name, const QString &description) {
+    QStandardItem *main_item = row[0];
+    main_item->setData(description, QueryItemRole_Description);
+    main_item->setData(ItemType_QueryFolder, ConsoleRole_Type);
+    main_item->setIcon(QIcon::fromTheme("folder"));
 
-    load_main_item(scope_item);
-    scope_item->setText(name);
-
-    load_main_item(results_row[0]);
-    results_row[QueryColumn_Name]->setText(name);
-    results_row[QueryColumn_Description]->setText(description);
+    row[QueryColumn_Name]->setText(name);
+    row[QueryColumn_Description]->setText(description);
 }
 
 QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent) {
-    QStandardItem *scope_item;
-    QList<QStandardItem *> results_row;
-    console->add_buddy_scope_and_results(console_query_folder_results_id, ScopeNodeType_Static, parent, &scope_item, &results_row);
-    console_query_folder_load(scope_item, results_row, name, description);
+    const QList<QStandardItem *> row = console->add_scope_item(console_query_folder_results_id, ScopeNodeType_Static, parent);
+    console_query_folder_load(row, name, description);
 
-    return scope_item->index();
+    return row[0]->index();
 }
 
-void console_query_item_load(QStandardItem *scope_item, const QList<QStandardItem *> results_row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children) {
-    auto load_main_item = [&](QStandardItem *item) {
-        item->setData(ItemType_QueryItem, ConsoleRole_Type);
-        item->setData(description, QueryItemRole_Description);
-        item->setData(filter, QueryItemRole_Filter);
-        item->setData(filter_state, QueryItemRole_FilterState);
-        item->setData(base, QueryItemRole_Base);
-        item->setData(scope_is_children, QueryItemRole_ScopeIsChildren);
-        item->setIcon(QIcon::fromTheme("emblem-system"));
-    };
+void console_query_item_load(const QList<QStandardItem *> row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children) {
+    QStandardItem *main_item = row[0];
+    main_item->setData(ItemType_QueryItem, ConsoleRole_Type);
+    main_item->setData(description, QueryItemRole_Description);
+    main_item->setData(filter, QueryItemRole_Filter);
+    main_item->setData(filter_state, QueryItemRole_FilterState);
+    main_item->setData(base, QueryItemRole_Base);
+    main_item->setData(scope_is_children, QueryItemRole_ScopeIsChildren);
+    main_item->setIcon(QIcon::fromTheme("emblem-system"));
 
-    if (scope_item != nullptr) {
-        load_main_item(scope_item);
-        scope_item->setText(name);
-    }
-
-    if (!results_row.isEmpty()) {
-        load_main_item(results_row[0]);
-        results_row[QueryColumn_Name]->setText(name);
-        results_row[QueryColumn_Description]->setText(description);
-    }
+    row[QueryColumn_Name]->setText(name);
+    row[QueryColumn_Description]->setText(description);
 }
 
 void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent) {
-    QStandardItem *scope_item;
-    QList<QStandardItem *> results_row;
-    console->add_buddy_scope_and_results(console_object_results_id, ScopeNodeType_Dynamic, parent, &scope_item, &results_row);
+    const QList<QStandardItem *> row = console->add_scope_item(console_object_results_id, ScopeNodeType_Dynamic, parent);
 
-    console_query_item_load(scope_item, results_row, name, description, filter, filter_state, base, scope_is_children);
+    console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
 }
 
 void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) {
@@ -187,19 +170,18 @@ void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) 
 }
 
 void console_query_tree_init(ConsoleWidget *console) {
-    // Add head item
-    QStandardItem *head_item = console->add_scope_item(console_query_folder_results_id, ScopeNodeType_Static, QModelIndex());
-    head_item->setText(QCoreApplication::translate("query", "Saved Queries"));
-    head_item->setIcon(QIcon::fromTheme("folder"));
-    head_item->setData(ItemType_QueryRoot, ConsoleRole_Type);
-    head_item->setDragEnabled(false);
+    query_tree_head = console->add_top_item(console_query_folder_results_id, ScopeNodeType_Static);
+    query_tree_head->setText(QCoreApplication::translate("query", "Saved Queries"));
+    query_tree_head->setIcon(QIcon::fromTheme("folder"));
+    query_tree_head->setData(ItemType_QueryRoot, ConsoleRole_Type);
+    query_tree_head->setDragEnabled(false);
 
     // Add rest of tree
     const QHash<QString, QVariant> folder_list = g_settings->get_variant(VariantSetting_QueryFolders).toHash();
     const QHash<QString, QVariant> item_list = g_settings->get_variant(VariantSetting_QueryItems).toHash();
 
     QStack<QPersistentModelIndex> folder_stack;
-    folder_stack.append(head_item->index());
+    folder_stack.append(query_tree_head->index());
     while (!folder_stack.isEmpty()) {
         const QPersistentModelIndex folder_index = folder_stack.pop();
 
@@ -223,9 +205,9 @@ void console_query_tree_init(ConsoleWidget *console) {
 
                 const QString name = data["name"].toString();
                 const QString description = data["description"].toString();
-                const QPersistentModelIndex child_scope_index = console_query_folder_create(console, name, description, folder_index);
+                const QPersistentModelIndex child_index = console_query_folder_create(console, name, description, folder_index);
 
-                folder_stack.append(child_scope_index);
+                folder_stack.append(child_index);
             }
         }
     }
@@ -237,15 +219,10 @@ void console_query_tree_save(ConsoleWidget *console) {
     QHash<QString, QVariant> folder_list;
     QHash<QString, QVariant> item_list;
 
-    const QModelIndex query_root_index = console_query_get_root_index(console);
-    if (!query_root_index.isValid()) {
-        return;
-    }
-
     QStack<QModelIndex> stack;
-    stack.append(query_root_index);
+    stack.append(query_tree_head->index());
 
-    const QAbstractItemModel *model = query_root_index.model();
+    const QAbstractItemModel *model = query_tree_head->model();
 
     while (!stack.isEmpty()) {
         const QModelIndex index = stack.pop();
@@ -303,7 +280,7 @@ void console_query_tree_save(ConsoleWidget *console) {
     g_settings->set_variant(VariantSetting_QueryItems, item_variant);
 }
 
-bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex &parent_index_raw, QWidget *parent_widget, const QModelIndex &current_index) {
+bool console_query_or_folder_name_is_good(ConsoleWidget *console, const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index) {
     if (name.isEmpty()) {
         const QString error_text = QString(QCoreApplication::translate("query.cpp", "Name may not be empty"));
         QMessageBox::warning(parent_widget, QCoreApplication::translate("query.cpp", "Error"), error_text);
@@ -311,14 +288,12 @@ bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex
         return false;
     }
 
-    const QModelIndex parent_index = console_item_convert_to_scope_index(parent_index_raw);
-
     const QString current_name = current_index.data(Qt::DisplayRole).toString();
 
     const QList<QString> sibling_names = [&]() {
         QList<QString> out;
 
-        QAbstractItemModel *model = (QAbstractItemModel *) parent_index.model();
+        const QAbstractItemModel *model = parent_index.model();
 
         for (int row = 0; row < model->rowCount(parent_index); row++) {
             const QModelIndex sibling = model->index(row, 0, parent_index);
@@ -406,18 +381,6 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
     }
 }
 
-QModelIndex console_query_get_root_index(ConsoleWidget *console) {
-    const QList<QModelIndex> results = console->search_scope_by_role(ConsoleRole_Type, ItemType_QueryRoot);
-
-    if (!results.isEmpty()) {
-        return results[0];
-    } else {
-        qDebug() << "Failed to find query root";
-
-        return QModelIndex();
-    }
-}
-
 void console_query_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
     const bool dropped_are_query_item_or_folder = (dropped_types - QSet<ItemType>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
     if (!dropped_are_query_item_or_folder) {
@@ -440,26 +403,16 @@ void console_query_drop(ConsoleWidget *console, const QList<QPersistentModelInde
     console_query_move(console, dropped_list, target);
 }
 
-void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index_raw, const bool delete_old_branch) {
-    const QModelIndex new_parent_index = console_item_convert_to_scope_index(new_parent_index_raw);
-
+void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index, const bool delete_old_branch) {
     // Check for name conflict
-    for (const QPersistentModelIndex &index_raw : index_list) {
-        const QModelIndex index = console_item_convert_to_scope_index(index_raw);
-
+    for (const QPersistentModelIndex &index : index_list) {
         const QString name = index.data(Qt::DisplayRole).toString();
-        if (!console_query_or_folder_name_is_good(name, new_parent_index, console, index)) {
+        if (!console_query_or_folder_name_is_good(console, name, new_parent_index, console, index)) {
             return;
         }
     }
 
-    for (const QPersistentModelIndex &old_index_raw : index_list) {
-        // NOTE: convert both moved index and target index to
-        // their scope index equivalents (if they aren't scope
-        // indexes already). Do this because move process
-        // requires iteration through scope tree.
-        const QModelIndex old_index = console_item_convert_to_scope_index(old_index_raw);
-
+    for (const QPersistentModelIndex &old_index : index_list) {
         // Create a copy of the tree branch at new location. Go
         // down the branch and replicate all of the children.
 
@@ -507,12 +460,11 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
         }
     }
 
-    console->sort_scope();
     console_query_tree_save(console);
 }
 
 void console_query_export(ConsoleWidget *console) {
-    const QModelIndex index = get_selected_scope_index(console);
+    const QModelIndex index = console->get_selected_item();
 
     const QString file_path = [&]() {
         const QString query_name = index.data(Qt::DisplayRole).toString();
@@ -539,7 +491,7 @@ void console_query_export(ConsoleWidget *console) {
 }
 
 void console_query_import(ConsoleWidget *console) {
-    const QModelIndex parent_index = get_selected_scope_index(console);
+    const QModelIndex parent_index = console->get_selected_item();
 
     const QString file_path = [&]() {
         const QString caption = QCoreApplication::translate("console_query.cpp", "Import Query");
@@ -580,17 +532,17 @@ void console_query_import(ConsoleWidget *console) {
 }
 
 void console_query_cut(ConsoleWidget *console) {
-    copied_index = get_selected_scope_index(console);
+    copied_index = console->get_selected_item();
     copied_index_is_cut = true;
 }
 
 void console_query_copy(ConsoleWidget *console) {
-    copied_index = get_selected_scope_index(console);
+    copied_index = console->get_selected_item();
     copied_index_is_cut = false;
 }
 
 void console_query_paste(ConsoleWidget *console) {
-    const QModelIndex parent_index = get_selected_scope_index(console);
+    const QModelIndex parent_index = console->get_selected_item();
     const bool delete_old_branch = copied_index_is_cut;
     console_query_move(console, {copied_index}, parent_index, delete_old_branch);
 }
@@ -626,9 +578,13 @@ void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVaria
     const QString filter = data["filter"].toString();
     const QByteArray filter_state = QByteArray::fromHex(data["filter_state"].toString().toLocal8Bit());
 
-    if (!console_query_or_folder_name_is_good(name, parent_index, console, QModelIndex())) {
+    if (!console_query_or_folder_name_is_good(console, name, parent_index, console, QModelIndex())) {
         return;
     }
 
     console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
+}
+
+QStandardItem *console_query_head() {
+    return query_tree_head;
 }

@@ -232,7 +232,7 @@ CentralWidget::CentralWidget()
         console, &ConsoleWidget::properties_requested,
         this, &CentralWidget::object_properties);
     connect(
-        console, &ConsoleWidget::selection_changed,
+        console, &ConsoleWidget::actions_changed,
         this, &CentralWidget::update_actions_visibility);
     connect(
         console, &ConsoleWidget::context_menu,
@@ -256,12 +256,11 @@ void CentralWidget::go_online(AdInterface &ad) {
     auto object_results = new ResultsView(this);
     console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
 
-    object_tree_head = console_object_tree_init(console, ad);
+    console_object_tree_init(console, ad);
     console_policy_tree_init(console, ad);
     console_query_tree_init(console);
 
-    console->sort_scope();
-    console->set_current_scope(object_tree_head->index());
+    console->set_current_scope(console_object_head()->index());
 }
 
 void CentralWidget::open_filter() {
@@ -351,7 +350,7 @@ void CentralWidget::object_create_helper(const QString &object_class) {
 
             show_busy_indicator();
 
-            const QList<QModelIndex> search_parent = console->search_scope_by_role(ObjectRole_DN, parent_dn, ItemType_Object);
+            const QList<QModelIndex> search_parent = console->search_items(console_object_head()->index(), ObjectRole_DN, parent_dn, ItemType_Object);
 
             if (search_parent.isEmpty()) {
                 hide_busy_indicator();
@@ -361,8 +360,6 @@ void CentralWidget::object_create_helper(const QString &object_class) {
             const QModelIndex scope_parent_index = search_parent[0];
             const QString created_dn = dialog->get_created_dn();
             console_object_create(console, ad, {created_dn}, scope_parent_index);
-
-            console->sort_scope();
 
             hide_busy_indicator();
         });
@@ -385,8 +382,6 @@ void CentralWidget::object_move() {
             const QList<QString> old_dn_list = dialog->get_moved_objects();
             const QString new_parent_dn = dialog->get_selected();
             console_object_move(console, ad, old_dn_list, new_parent_dn);
-
-            console->sort_scope();
         });
 }
 
@@ -472,7 +467,7 @@ void CentralWidget::object_edit_upn_suffixes() {
 }
 
 void CentralWidget::object_change_dc() {
-    auto change_dc_dialog = new ChangeDCDialog(object_tree_head, this);
+    auto change_dc_dialog = new ChangeDCDialog(console_object_head(), this);
     change_dc_dialog->open();
 }
 
@@ -601,11 +596,8 @@ void CentralWidget::query_paste() {
 
 void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, bool *ok) {
     const bool dropped_contains_target = [&]() {
-        const QModelIndex target_scope = console_item_convert_to_scope_index(target);
-
         for (const QPersistentModelIndex &dropped : dropped_list) {
-            const QModelIndex dropped_scope = console_item_convert_to_scope_index(dropped);
-            if (dropped_scope == target_scope) {
+            if (dropped == target) {
                 return true;
             }
         }
@@ -708,16 +700,10 @@ void CentralWidget::on_object_properties_applied() {
     for (const QString &target : target_list) {
         const AdObject object = ad.search_object(target);
 
-        const QList<QModelIndex> scope_indexes = console->search_scope_by_role(ObjectRole_DN, target, ItemType_Object);
-        for (const QModelIndex &index : scope_indexes) {
-            QStandardItem *scope_item = console->get_scope_item(index);
-            console_object_scope_load(scope_item, object);
-        }
-
-        const QList<QModelIndex> results_indexes = console->search_results_by_role(ObjectRole_DN, target, ItemType_Object);
-        for (const QModelIndex &index : results_indexes) {
-            const QList<QStandardItem *> results_row = console->get_results_row(index);
-            console_object_results_load(results_row, object);
+        const QList<QModelIndex> index_list = console->search_items(console_object_head()->index(), ObjectRole_DN, target, ItemType_Object);
+        for (const QModelIndex &index : index_list) {
+            const QList<QStandardItem *> row = console->get_row(index);
+            console_object_load(row, object);
         }
     }
 
@@ -729,7 +715,7 @@ void CentralWidget::on_object_properties_applied() {
 void CentralWidget::refresh_head() {
     show_busy_indicator();
 
-    console->refresh_scope(object_tree_head->index());
+    console->refresh_scope(console_object_head()->index());
 
     hide_busy_indicator();
 }
@@ -806,16 +792,10 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
     }
 
     for (const QString &dn : changed_objects) {
-        const QList<QModelIndex> scope_indexes = console->search_scope_by_role(ObjectRole_DN, dn, ItemType_Object);
-        for (const QModelIndex &index : scope_indexes) {
-            QStandardItem *scope_item = console->get_scope_item(index);
-            scope_item->setData(disabled, ObjectRole_AccountDisabled);
-        }
-
-        const QList<QModelIndex> results_indexes = console->search_results_by_role(ObjectRole_DN, dn, ItemType_Object);
-        for (const QModelIndex &index : results_indexes) {
-            const QList<QStandardItem *> results_row = console->get_results_row(index);
-            results_row[0]->setData(disabled, ObjectRole_AccountDisabled);
+        const QList<QModelIndex> index_list = console->search_items(console_object_head()->index(), ObjectRole_DN, dn, ItemType_Object);
+        for (const QModelIndex &index : index_list) {
+            QStandardItem *item = console->get_item(index);
+            item->setData(disabled, ObjectRole_AccountDisabled);
         }
     }
 

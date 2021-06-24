@@ -229,19 +229,6 @@ QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &ind
     return out;
 }
 
-QModelIndex get_selected_scope_index(ConsoleWidget *console) {
-    const QList<QModelIndex> selected_indexes = console->get_selected_items();
-
-    if (selected_indexes.size() == 1) {
-        const QModelIndex index = selected_indexes[0];
-        const QModelIndex scope_index = console_item_convert_to_scope_index(index);
-
-        return scope_index;
-    } else {
-        return QModelIndex();
-    }
-}
-
 // Hide advanced view only" objects if advanced view setting
 // is off
 void advanced_features_filter(QString &filter) {

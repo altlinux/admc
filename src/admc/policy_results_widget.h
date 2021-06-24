@@ -43,7 +43,7 @@ public:
 
     // Loads links for this policy. Nothing is done if given
     // index is not a policy.
-    void update(const QModelIndex &scope_index);
+    void update(const QModelIndex &index);
 
 private:
     ResultsView *view;

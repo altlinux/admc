@@ -48,15 +48,9 @@ EditQueryItemDialog::EditQueryItemDialog(ConsoleWidget *console_arg)
     layout->addWidget(edit_query_widget);
     layout->addWidget(buttonbox);
 
-    scope_index = get_selected_scope_index(console);
+    const QModelIndex index = console->get_selected_item();
 
-    if (!scope_index.isValid()) {
-        close();
-
-        return;
-    }
-
-    edit_query_widget->load(scope_index);
+    edit_query_widget->load(index);
 
     connect(
         buttonbox, &QDialogButtonBox::accepted,
@@ -75,20 +69,19 @@ void EditQueryItemDialog::accept() {
     bool scope_is_children;
     edit_query_widget->save(name, description, filter, base, scope_is_children, filter_state);
 
-    if (!console_query_or_folder_name_is_good(name, scope_index.parent(), this, scope_index)) {
+    const QModelIndex index = console->get_selected_item();
+
+    if (!console_query_or_folder_name_is_good(console, name, index.parent(), this, index)) {
         return;
     }
 
-    QStandardItem *scope_item = console->get_scope_item(scope_index);
+    const QList<QStandardItem *> row = console->get_row(index);
 
-    const QModelIndex results_index = console_item_get_buddy(scope_index);
-    const QList<QStandardItem *> results_row = console->get_results_row(results_index);
-
-    console_query_item_load(scope_item, results_row, name, description, filter, filter_state, base, scope_is_children);
+    console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
 
     console_query_tree_save(console);
 
-    console->refresh_scope(scope_index);
+    console->refresh_scope(index);
 
     QDialog::accept();
 }

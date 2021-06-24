@@ -71,11 +71,13 @@ SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
 
     const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
+    // TODO: assuming that policy row has 1 column, need to
+    // make it depend on some constant
     for (const AdObject &object : results.values()) {
-        auto item = new QStandardItem();
-        model->appendRow(item);
+        const QList<QStandardItem *> row = {new QStandardItem()};
+        model->appendRow(row);
 
-        console_policy_scope_load(item, object);
+        console_policy_load(row, object);
     }
 
     const auto top_layout = new QVBoxLayout();

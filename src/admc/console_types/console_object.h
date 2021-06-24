@@ -53,12 +53,11 @@ enum ObjectRole {
 
 extern int console_object_results_id;
 
-void console_object_scope_load(QStandardItem *item, const AdObject &object);
-void console_object_results_load(const QList<QStandardItem *> row, const AdObject &object);
+void console_object_load(const QList<QStandardItem *> row, const AdObject &object);
 QList<QString> console_object_header_labels();
 QList<int> console_object_default_columns();
 QList<QString> console_object_search_attributes();
-void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const bool ignore_query_tree = false);
+void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const bool delete_in_query_tree = true);
 void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QList<QString> &new_dn_list, const QString &new_parent_dn);
 void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
 void console_object_create(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
@@ -79,5 +78,7 @@ void object_operation_add_to_group(const QList<QString> &targets, QWidget *paren
 
 bool console_object_is_ou(const QModelIndex &index);
 void console_object_load_domain_head_text(QStandardItem *item);
+
+QStandardItem *console_object_head();
 
 #endif /* CONSOLE_OBJECT_H */

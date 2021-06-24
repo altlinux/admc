@@ -31,13 +31,10 @@ ResultsView::ResultsView(QWidget *parent)
 : QWidget(parent) {
     // Setup child views
     m_detail_view = new QTreeView();
-    QHeaderView *detail_header = m_detail_view->header();
-    detail_header->setSectionsMovable(true);
-    // TODO: these sorting f-ns are  only available for
-    // tree, what about others? maybe have to sort the model
     m_detail_view->sortByColumn(0, Qt::AscendingOrder);
     m_detail_view->setSortingEnabled(true);
     m_detail_view->header()->setDefaultSectionSize(200);
+    m_detail_view->setRootIsDecorated(false);
 
     auto list_view = new QListView();
     list_view->setViewMode(QListView::ListMode);
@@ -51,7 +48,7 @@ ResultsView::ResultsView(QWidget *parent)
     views[ResultsViewType_Icons] = icons_view;
     views[ResultsViewType_List] = list_view;
     views[ResultsViewType_Detail] = m_detail_view;
-
+    
     proxy_model = new QSortFilterProxyModel(this);
     proxy_model->setSortCaseSensitivity(Qt::CaseInsensitive);
 
@@ -86,7 +83,11 @@ ResultsView::ResultsView(QWidget *parent)
     for (auto view : views.values()) {
         connect(
             view, &QTreeView::activated,
-            this, &ResultsView::activated);
+            [=](const QModelIndex &proxy_index) {
+                const QModelIndex &source_index = proxy_model->mapToSource(proxy_index);
+
+                emit activated(source_index);
+            });
         connect(
             view, &QWidget::customContextMenuRequested,
             this, &ResultsView::context_menu);
@@ -107,6 +108,13 @@ ResultsView::ResultsView(QWidget *parent)
 
 void ResultsView::set_model(QAbstractItemModel *model) {
     proxy_model->setSourceModel(model);
+}
+
+void ResultsView::set_parent(const QModelIndex &source_index) {
+    const QModelIndex proxy_index = proxy_model->mapFromSource(source_index);
+    for (auto view : views.values()) {
+        view->setRootIndex(proxy_index);
+    }
 }
 
 void ResultsView::set_view_type(const ResultsViewType type) {

@@ -61,9 +61,9 @@ void CreateQueryItemDialog::accept() {
     bool scope_is_children;
     edit_query_widget->save(name, description, filter, base, scope_is_children, filter_state);
 
-    const QModelIndex parent_index = get_selected_scope_index(console);
+    const QModelIndex parent_index = console->get_selected_item();
 
-    if (!console_query_or_folder_name_is_good(name, parent_index, this, QModelIndex())) {
+    if (!console_query_or_folder_name_is_good(console, name, parent_index, this, QModelIndex())) {
         return;
     }
 

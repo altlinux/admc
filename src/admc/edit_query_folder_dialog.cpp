@@ -61,9 +61,9 @@ EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg)
 }
 
 void EditQueryFolderDialog::open() {
-    const QModelIndex scope_index = get_selected_scope_index(console);
-    const QString current_name = scope_index.data(Qt::DisplayRole).toString();
-    const QString current_description = scope_index.data(QueryItemRole_Description).toString();
+    const QModelIndex index = console->get_selected_item();
+    const QString current_name = index.data(Qt::DisplayRole).toString();
+    const QString current_description = index.data(QueryItemRole_Description).toString();
 
     name_edit->setText(current_name);
     description_edit->setText(current_description);
@@ -72,18 +72,16 @@ void EditQueryFolderDialog::open() {
 }
 
 void EditQueryFolderDialog::accept() {
-    const QModelIndex scope_index = get_selected_scope_index(console);
-    const QModelIndex results_index = console_item_get_buddy(scope_index);
+    const QModelIndex index = console->get_selected_item();
     const QString name = name_edit->text();
     const QString description = description_edit->text();
 
-    if (!console_query_or_folder_name_is_good(name, scope_index.parent(), this, scope_index)) {
+    if (!console_query_or_folder_name_is_good(console, name, index.parent(), this, index)) {
         return;
     }
 
-    QStandardItem *scope_item = console->get_scope_item(scope_index);
-    const QList<QStandardItem *> results_row = console->get_results_row(results_index);
-    console_query_folder_load(scope_item, results_row, name, description);
+    const QList<QStandardItem *> row = console->get_row(index);
+    console_query_folder_load(row, name, description);
 
     console_query_tree_save(console);
 

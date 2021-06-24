@@ -47,18 +47,12 @@ enum ConsoleRole {
     // this scope item. Doesn't apply to results items.
     ConsoleRole_ResultsId = Qt::UserRole + 2,
 
-    ConsoleRole_Buddy = Qt::UserRole + 3,
-
-    // Scope item parent of a results item. Doesn't apply
-    // to scope items.
-    ConsoleRole_ScopeParent = Qt::UserRole + 4,
-
-    ConsoleRole_IsScope = Qt::UserRole + 5,
+    ConsoleRole_IsScope = Qt::UserRole + 3,
 
     // Determines whether scope is dynamic.
-    ConsoleRole_ScopeIsDynamic = Qt::UserRole + 6,
+    ConsoleRole_ScopeIsDynamic = Qt::UserRole + 4,
 
-    ConsoleRole_Fetching = Qt::UserRole + 7,
+    ConsoleRole_Fetching = Qt::UserRole + 5,
 
     // NOTE: don't go above ConsoleRole_Type and
     // ConsoleRole_LAST (defined in public header)
@@ -83,7 +77,6 @@ public:
     QAbstractItemView *focused_view;
     QStackedWidget *results_stacked_widget;
     QHash<int, ResultsDescription> results_descriptions;
-    QHash<QPersistentModelIndex, QStandardItemModel *> results_models;
 
     QAction *properties_action;
     QAction *refresh_action;
@@ -107,7 +100,6 @@ public:
 
     ConsoleWidgetPrivate(ConsoleWidget *q_arg);
 
-    QStandardItemModel *get_results_model_for_scope_item(const QModelIndex &index) const;
     void open_action_menu_as_context_menu(const QPoint pos);
     void connect_to_drag_model(ConsoleDragModel *model);
     void on_scope_expanded(const QModelIndex &index);

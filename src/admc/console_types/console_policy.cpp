@@ -40,29 +40,16 @@
 int policy_container_results_id;
 int policy_results_id;
 
-void setup_policy_item_data(QStandardItem *item, const AdObject &object);
-void console_policy_results_load(const QList<QStandardItem *> &row, const AdObject &object);
+QStandardItem *policy_tree_head = nullptr;
 
-void console_policy_scope_load(QStandardItem *item, const AdObject &object) {
+void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object) {
+    QStandardItem *main_item = row[0];
+    main_item->setIcon(QIcon::fromTheme("folder-templates"));
+    main_item->setData(ItemType_Policy, ConsoleRole_Type);
+    main_item->setData(object.get_dn(), PolicyRole_DN);
+    
     const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
-
-    item->setText(display_name);
-
-    setup_policy_item_data(item, object);
-}
-
-void console_policy_results_load(const QList<QStandardItem *> &row, const AdObject &object) {
-    const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
-
     row[0]->setText(display_name);
-
-    setup_policy_item_data(row[0], object);
-}
-
-void setup_policy_item_data(QStandardItem *item, const AdObject &object) {
-    item->setIcon(QIcon::fromTheme("folder-templates"));
-    item->setData(ItemType_Policy, ConsoleRole_Type);
-    item->setData(object.get_dn(), PolicyRole_DN);
 }
 
 QList<QString> console_policy_header_labels() {
@@ -78,37 +65,17 @@ QList<QString> console_policy_search_attributes() {
 }
 
 void console_policy_create(ConsoleWidget *console, const AdObject &object) {
-    const QModelIndex policy_root_index = [&]() {
-        const QList<QModelIndex> results = console->search_scope_by_role(ConsoleRole_Type, ItemType_PolicyRoot);
+    const QList<QStandardItem *> row = console->add_scope_item(policy_results_id, ScopeNodeType_Static, policy_tree_head->index());
 
-        if (!results.isEmpty()) {
-            return results[0];
-        } else {
-            return QModelIndex();
-        }
-    }();
-
-    if (!policy_root_index.isValid()) {
-        qDebug() << "Failed to find policy root";
-
-        return;
-    }
-
-    QStandardItem *scope_item;
-    QList<QStandardItem *> results_row;
-    console->add_buddy_scope_and_results(policy_results_id, ScopeNodeType_Static, policy_root_index, &scope_item, &results_row);
-
-    console_policy_scope_load(scope_item, object);
-    console_policy_results_load(results_row, object);
+    console_policy_load(row, object);
 }
 
 void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
-    // Add head item
-    QStandardItem *head_item = console->add_scope_item(policy_container_results_id, ScopeNodeType_Static, QModelIndex());
-    head_item->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
-    head_item->setDragEnabled(false);
-    head_item->setIcon(QIcon::fromTheme("folder"));
-    head_item->setData(ItemType_PolicyRoot, ConsoleRole_Type);
+    policy_tree_head = console->add_top_item(policy_container_results_id, ScopeNodeType_Static);
+    policy_tree_head->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
+    policy_tree_head->setDragEnabled(false);
+    policy_tree_head->setIcon(QIcon::fromTheme("folder"));
+    policy_tree_head->setData(ItemType_PolicyRoot, ConsoleRole_Type);
 
     // Add children
     const QString base = g_adconfig->domain_head();

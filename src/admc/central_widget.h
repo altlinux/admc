@@ -26,7 +26,6 @@
  * browse and manipulate objects. Wraps ConsoleWidget inside it.
  */
 
-#include <QPersistentModelIndex>
 #include <QWidget>
 
 class QAbstractItemView;
@@ -112,7 +111,6 @@ private slots:
 
 private:
     ConsoleWidget *console;
-    QStandardItem *object_tree_head;
     FilterDialog *filter_dialog;
     PolicyResultsWidget *policy_results_widget;
 
