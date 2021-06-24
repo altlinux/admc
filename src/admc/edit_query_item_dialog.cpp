@@ -48,13 +48,7 @@ EditQueryItemDialog::EditQueryItemDialog(ConsoleWidget *console_arg)
     layout->addWidget(edit_query_widget);
     layout->addWidget(buttonbox);
 
-    scope_index = get_selected_scope_index(console);
-
-    if (!scope_index.isValid()) {
-        close();
-
-        return;
-    }
+    const QModelIndex scope_index = console->get_selected_item();
 
     edit_query_widget->load(scope_index);
 
@@ -74,6 +68,8 @@ void EditQueryItemDialog::accept() {
     QByteArray filter_state;
     bool scope_is_children;
     edit_query_widget->save(name, description, filter, base, scope_is_children, filter_state);
+
+    const QModelIndex scope_index = console->get_selected_item();
 
     if (!console_query_or_folder_name_is_good(name, scope_index.parent(), this, scope_index)) {
         return;

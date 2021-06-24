@@ -94,10 +94,6 @@ QIcon get_object_icon(const AdObject &object);
 
 QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &indexes);
 
-// Returns selected scope index. If selected item is in
-// results, returns it's scope buddy.
-QModelIndex get_selected_scope_index(ConsoleWidget *console);
-
 void advanced_features_filter(QString &filter);
 
 void dev_mode_filter(QString &filter);

@@ -86,7 +86,7 @@ void RenamePolicyDialog::accept() {
         return;
     }
 
-    const QModelIndex scope_index = get_selected_scope_index(console);
+    const QModelIndex scope_index = console->get_selected_item();
     const QString old_name = scope_index.data(Qt::DisplayRole).toString();
 
     const QString new_name = name_edit->text();
@@ -126,7 +126,7 @@ void RenamePolicyDialog::reset() {
     }
 
     const QString name = [&]() {
-        const QModelIndex scope_index = get_selected_scope_index(console);
+        const QModelIndex scope_index = console->get_selected_item();
         const QString dn = scope_index.data(PolicyRole_DN).toString();
         const AdObject object = ad.search_object(dn);
 

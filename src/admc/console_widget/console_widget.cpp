@@ -450,6 +450,12 @@ QList<QModelIndex> ConsoleWidget::get_selected_items() const {
     }
 }
 
+QModelIndex ConsoleWidget::get_selected_item() const {
+    const QList<QModelIndex> selected_list = get_selected_items();
+
+    return selected_list[0];
+}
+
 QList<QModelIndex> ConsoleWidget::search_scope_by_role(int role, const QVariant &value, const int type) const {
     const QList<QModelIndex> all_matches = d->scope_model->match(d->scope_model->index(0, 0), role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
 

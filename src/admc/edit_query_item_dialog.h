@@ -38,7 +38,6 @@ public:
 private:
     ConsoleWidget *console;
     EditQueryItemWidget *edit_query_widget;
-    QModelIndex scope_index;
 };
 
 #endif /* EDIT_QUERY_ITEM_DIALOG_H */

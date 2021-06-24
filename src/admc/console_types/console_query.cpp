@@ -512,7 +512,7 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
 }
 
 void console_query_export(ConsoleWidget *console) {
-    const QModelIndex index = get_selected_scope_index(console);
+    const QModelIndex index = console->get_selected_item();
 
     const QString file_path = [&]() {
         const QString query_name = index.data(Qt::DisplayRole).toString();
@@ -539,7 +539,7 @@ void console_query_export(ConsoleWidget *console) {
 }
 
 void console_query_import(ConsoleWidget *console) {
-    const QModelIndex parent_index = get_selected_scope_index(console);
+    const QModelIndex parent_index = console->get_selected_item();
 
     const QString file_path = [&]() {
         const QString caption = QCoreApplication::translate("console_query.cpp", "Import Query");
@@ -580,17 +580,17 @@ void console_query_import(ConsoleWidget *console) {
 }
 
 void console_query_cut(ConsoleWidget *console) {
-    copied_index = get_selected_scope_index(console);
+    copied_index = console->get_selected_item();
     copied_index_is_cut = true;
 }
 
 void console_query_copy(ConsoleWidget *console) {
-    copied_index = get_selected_scope_index(console);
+    copied_index = console->get_selected_item();
     copied_index_is_cut = false;
 }
 
 void console_query_paste(ConsoleWidget *console) {
-    const QModelIndex parent_index = get_selected_scope_index(console);
+    const QModelIndex parent_index = console->get_selected_item();
     const bool delete_old_branch = copied_index_is_cut;
     console_query_move(console, {copied_index}, parent_index, delete_old_branch);
 }

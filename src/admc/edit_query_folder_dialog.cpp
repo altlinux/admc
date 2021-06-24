@@ -61,7 +61,7 @@ EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg)
 }
 
 void EditQueryFolderDialog::open() {
-    const QModelIndex scope_index = get_selected_scope_index(console);
+    const QModelIndex scope_index = console->get_selected_item();
     const QString current_name = scope_index.data(Qt::DisplayRole).toString();
     const QString current_description = scope_index.data(QueryItemRole_Description).toString();
 
@@ -72,7 +72,7 @@ void EditQueryFolderDialog::open() {
 }
 
 void EditQueryFolderDialog::accept() {
-    const QModelIndex scope_index = get_selected_scope_index(console);
+    const QModelIndex scope_index = console->get_selected_item();
     const QModelIndex results_index = console_item_get_buddy(scope_index);
     const QString name = name_edit->text();
     const QString description = description_edit->text();

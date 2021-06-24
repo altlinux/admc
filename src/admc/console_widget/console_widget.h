@@ -176,6 +176,12 @@ public:
     // selected items from scope are returned instead.
     QList<QModelIndex> get_selected_items() const;
 
+    // Get a single selected item. Use if you are sure that
+    // there's only one (dialog that uses one target item
+    // for example). Returns first item in list if there are
+    // multiple items selected.
+    QModelIndex get_selected_item() const;
+
     // NOTE: if no type is given, then items of all types
     // will be returned
     QList<QModelIndex> search_scope_by_role(int role, const QVariant &value, const int type = -1) const;
