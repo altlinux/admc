@@ -465,7 +465,7 @@ QStandardItem *ConsoleWidget::get_item(const QModelIndex &index) const {
 QList<QStandardItem *> ConsoleWidget::get_row(const QModelIndex &index) const {
     QList<QStandardItem *> row;
 
-    for (int col = 0; col < d->scope_model->columnCount(); col++) {
+    for (int col = 0; col < d->scope_model->columnCount(index.parent()); col++) {
         QStandardItem *item = d->scope_model->item(index.row(), col);
         row.append(item);
     }
