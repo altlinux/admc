@@ -168,7 +168,8 @@ public:
     void set_item_fetching(const QModelIndex &scope_index, const bool enabled);
 
     // Gets selected item(s) from currently focused view,
-    // which could be scope or results.
+    // which could be scope or results. Only the main (first
+    // column) item is returned for each selected row.
 
     // NOTE: there is always at least one selected item. If
     // results is currently focused but has no selection,

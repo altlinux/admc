@@ -426,7 +426,7 @@ QList<QModelIndex> ConsoleWidget::get_selected_items() const {
     const QList<QModelIndex> scope_selected = [&]() {
         QList<QModelIndex> out;
 
-        const QList<QModelIndex> selected_proxy = d->scope_view->selectionModel()->selectedIndexes();
+        const QList<QModelIndex> selected_proxy = d->scope_view->selectionModel()->selectedRows();
         for (const QModelIndex &index : selected_proxy) {
             const QModelIndex source_index = d->scope_proxy_model->mapToSource(index);
             out.append(source_index);
