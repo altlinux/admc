@@ -33,17 +33,12 @@
  * "results". Scope pane contains a tree of items. Each
  * scope item has it's own "results" which are displayed in
  * the results pane when the scope item is selected. Results
- * can contain items that represent children of the scope
- * item in scope tree. Results can also contain items that
- * do not have an equivalent in the scope tree and are
- * associated to the scope item in some other way. For
- * example - a search query, where the scope item represents
- * the query and results represents the results of the
- * search. The way results are displayed can be customized
- * by registering certain types of results views and
- * assigning them to scope items. The user widget of the
- * console widget is responsible for loading scope items and
- * results, creating results views and other things.
+ * can contain children of the scope item. Results may also
+ * display a custom widget. The way results are displayed
+ * can be customized by registering certain types of results
+ * views and assigning them to scope items. The user widget
+ * of the console widget is responsible for loading items,
+ * creating results views and other things.
  */
 
 #include <QWidget>
@@ -83,24 +78,13 @@ class ConsoleWidget final : public QWidget {
 public:
     ConsoleWidget(QWidget *parent = nullptr);
 
-    // These f-ns are for adding items to console. There are
-    // two types of items "scope" and "results". Scope is
-    // composed of a single item, while results is a row of
-    // multiple items. Scope and results items can be
-    // "buddies". This is for cases where a results item
-    // also represents a scope item. Buddies are deleted
-    // together. If a scope item is deleted, it’s buddy in
-    // results is also deleted and vice versa. When a buddy
-    // in results is activated (double-click or
-    // select+enter), scope’s current item is changed to
-    // it’s scope buddy. If this is the first scope item
-    // added to console, then it is set as current scope by
-    // default. If you want another scope item at startup,
-    // use set_current_scope(). Items returned from these
-    // f-ns should be used to set text, icon and your custom
-    // data roles. Note that after adding and setting up the
-    // first scope item you should call set_current_scope()
-    // on it.
+    // These f-ns are for adding items to console. Items
+    // returned from these f-ns should be used to set text,
+    // icon and your custom data roles. add_top_item() adds
+    // top level items to the scope tree. add_scope_item()
+    // adds an item that is shown both in scope and results.
+    // add_results_item() adds an item that is shown only in
+    // results.
     //
     // Arguments:
     //
@@ -115,12 +99,6 @@ public:
     // scope item. Note that dynamic scope items can be
     // fetched again via the refresh_scope() f-n or
     // "Refresh" action of the item menu.
-    //
-    // "parent" - index of the scope item which will be the
-    // parent of created item. Note that results are also
-    // "parented" by a scope parent, even though they are
-    // not in the scope tree. Pass empty QModelIndex as
-    // parent to add a scope item as top level item.
     QStandardItem *add_top_item(const int results_id, const ScopeNodeType scope_type);
     QList<QStandardItem *> add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent);
     QList<QStandardItem *> add_results_item(const QModelIndex &parent);
