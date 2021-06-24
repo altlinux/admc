@@ -77,7 +77,7 @@ SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
         const QList<QStandardItem *> row = {new QStandardItem()};
         model->appendRow(row);
 
-        console_policy_results_load(row, object);
+        console_policy_load(row, object);
     }
 
     const auto top_layout = new QVBoxLayout();

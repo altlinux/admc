@@ -105,7 +105,7 @@ void RenamePolicyDialog::accept() {
     const AdObject object = ad.search_object(dn);
 
     const QList<QStandardItem *> row = console->get_row(index);
-    console_policy_results_load(row, object);
+    console_policy_load(row, object);
 }
 
 void RenamePolicyDialog::on_edited() {

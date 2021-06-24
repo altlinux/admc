@@ -42,7 +42,7 @@ int policy_results_id;
 
 QStandardItem *policy_tree_head = nullptr;
 
-void console_policy_results_load(const QList<QStandardItem *> &row, const AdObject &object) {
+void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object) {
     QStandardItem *main_item = row[0];
     main_item->setIcon(QIcon::fromTheme("folder-templates"));
     main_item->setData(ItemType_Policy, ConsoleRole_Type);
@@ -65,9 +65,9 @@ QList<QString> console_policy_search_attributes() {
 }
 
 void console_policy_create(ConsoleWidget *console, const AdObject &object) {
-    const QList<QStandardItem *> results_row = console->add_scope_item(policy_results_id, ScopeNodeType_Static, policy_tree_head->index());
+    const QList<QStandardItem *> row = console->add_scope_item(policy_results_id, ScopeNodeType_Static, policy_tree_head->index());
 
-    console_policy_results_load(results_row, object);
+    console_policy_load(row, object);
 }
 
 void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {

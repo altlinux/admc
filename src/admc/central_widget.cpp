@@ -703,7 +703,7 @@ void CentralWidget::on_object_properties_applied() {
         const QList<QModelIndex> index_list = console->search_items(console_object_head()->index(), ObjectRole_DN, target, ItemType_Object);
         for (const QModelIndex &index : index_list) {
             const QList<QStandardItem *> row = console->get_row(index);
-            console_object_results_load(row, object);
+            console_object_load(row, object);
         }
     }
 

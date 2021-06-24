@@ -46,7 +46,7 @@ enum PolicyRole {
 extern int policy_container_results_id;
 extern int policy_results_id;
 
-void console_policy_results_load(const QList<QStandardItem *> &row, const AdObject &object);
+void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object);
 QList<QString> console_policy_header_labels();
 QList<int> console_policy_default_columns();
 QList<QString> console_policy_search_attributes();

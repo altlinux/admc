@@ -145,7 +145,7 @@ void FindResults::load(const QHash<QString, AdObject> &results) {
     for (const AdObject &object : results) {
         const QList<QStandardItem *> row = make_item_row(g_adconfig->get_columns().count());
 
-        console_object_results_load(row, object);
+        console_object_load(row, object);
 
         model->appendRow(row);
     }

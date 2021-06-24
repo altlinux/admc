@@ -51,11 +51,11 @@ QStandardItem *object_tree_head = nullptr;
 void console_object_item_data_load(QStandardItem *item, const AdObject &object);
 DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIndex &target);
 void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
-bool console_object_scope_and_results_add_check(ConsoleWidget *console, const QModelIndex &parent);
+bool console_object_create_check(ConsoleWidget *console, const QModelIndex &parent);
 void console_object_drop_objects(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
 void console_object_drop_policies(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget);
 
-void console_object_results_load(const QList<QStandardItem *> row, const AdObject &object) {
+void console_object_load(const QList<QStandardItem *> row, const AdObject &object) {
     // Load attribute columns
     for (int i = 0; i < g_adconfig->get_columns().count(); i++) {
         const QString attribute = g_adconfig->get_columns()[i];
@@ -182,7 +182,7 @@ void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list
 }
 
 void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {
-    if (!console_object_scope_and_results_add_check(console, parent)) {
+    if (!console_object_create_check(console, parent)) {
         return;
     }
 
@@ -238,7 +238,7 @@ void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QS
 }
 
 // Check parent index before adding objects to console
-bool console_object_scope_and_results_add_check(ConsoleWidget *console, const QModelIndex &parent) {
+bool console_object_create_check(ConsoleWidget *console, const QModelIndex &parent) {
     if (!parent.isValid()) {
         return false;
     }
@@ -255,7 +255,7 @@ bool console_object_scope_and_results_add_check(ConsoleWidget *console, const QM
 }
 
 void console_object_create(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {
-    if (!console_object_scope_and_results_add_check(console, parent)) {
+    if (!console_object_create_check(console, parent)) {
         return;
     }
 
@@ -286,7 +286,7 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
             }
         }();
 
-        console_object_results_load(row, object);
+        console_object_load(row, object);
     }
 }
 
