@@ -160,4 +160,19 @@ void ConsoleActions::update_actions_visibility(const QList<QModelIndex> &indexes
     }();
 
     new_menu->menuAction()->setVisible(any_new_action_visible);
+
+    // Enable "New" menu if any new actions are enabled
+    const bool any_new_action_enabled = [&]() {
+        for (const ConsoleAction action_enum : new_actions) {
+            QAction *action = actions[action_enum];
+
+            if (action->isEnabled()) {
+                return true;
+            }
+        }
+
+        return false;
+    }();
+
+    new_menu->menuAction()->setEnabled(any_new_action_enabled);
 }
