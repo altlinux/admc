@@ -48,9 +48,9 @@ EditQueryItemDialog::EditQueryItemDialog(ConsoleWidget *console_arg)
     layout->addWidget(edit_query_widget);
     layout->addWidget(buttonbox);
 
-    const QModelIndex scope_index = console->get_selected_item();
+    const QModelIndex index = console->get_selected_item();
 
-    edit_query_widget->load(scope_index);
+    edit_query_widget->load(index);
 
     connect(
         buttonbox, &QDialogButtonBox::accepted,

@@ -163,15 +163,8 @@ void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, c
 // index because can delete objects from query tree
 void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const bool ignore_query_tree) {
     for (const QString &dn : dn_list) {
-        // Delete in scope
-        const QList<QPersistentModelIndex> scope_indexes = persistent_index_list(console->search_items(ObjectRole_DN, dn, ItemType_Object));
-        for (const QPersistentModelIndex &index : scope_indexes) {
-            console->delete_item(index);
-        }
-
-        // Delete in results
-        const QList<QPersistentModelIndex> results_indexes = persistent_index_list(console->search_items(ObjectRole_DN, dn, ItemType_Object));
-        for (const QPersistentModelIndex &index : results_indexes) {
+        const QList<QPersistentModelIndex> index_list = persistent_index_list(console->search_items(ObjectRole_DN, dn, ItemType_Object));
+        for (const QPersistentModelIndex &index : index_list) {
             // NOTE: don't touch query tree indexes, they
             // stay around and just go out of date
             const bool index_is_in_query_tree = [=]() {

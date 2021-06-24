@@ -109,8 +109,8 @@ PolicyResultsWidget::PolicyResultsWidget() {
         this, &PolicyResultsWidget::delete_link);
 }
 
-void PolicyResultsWidget::update(const QModelIndex &scope_index) {
-    const ItemType type = (ItemType) scope_index.data(ConsoleRole_Type).toInt();
+void PolicyResultsWidget::update(const QModelIndex &index) {
+    const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
     if (type != ItemType_Policy) {
         return;
     }
@@ -122,7 +122,7 @@ void PolicyResultsWidget::update(const QModelIndex &scope_index) {
 
     model->removeRows(0, model->rowCount());
 
-    gpo = scope_index.data(PolicyRole_DN).toString();
+    gpo = index.data(PolicyRole_DN).toString();
 
     const QString base = g_adconfig->domain_head();
     const SearchScope scope = SearchScope_All;

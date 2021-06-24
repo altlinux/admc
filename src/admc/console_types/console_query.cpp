@@ -204,9 +204,9 @@ void console_query_tree_init(ConsoleWidget *console) {
 
                 const QString name = data["name"].toString();
                 const QString description = data["description"].toString();
-                const QPersistentModelIndex child_scope_index = console_query_folder_create(console, name, description, folder_index);
+                const QPersistentModelIndex child_index = console_query_folder_create(console, name, description, folder_index);
 
-                folder_stack.append(child_scope_index);
+                folder_stack.append(child_index);
             }
         }
     }

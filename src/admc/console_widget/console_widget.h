@@ -130,8 +130,7 @@ public:
     // dialog.
     void set_has_properties(const QModelIndex &index, const bool has_properties);
 
-    // Deletes a scope/results item. If this item has a
-    // buddy, that buddy is also deleted.
+    // Deletes an item and all of it's columns
     void delete_item(const QModelIndex &index);
 
     // Sets current scope item in the scope tree
