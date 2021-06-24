@@ -126,12 +126,10 @@ void console_query_folder_load(const QList<QStandardItem *> &row, const QString 
 }
 
 QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent) {
-    QStandardItem *scope_item;
-    QList<QStandardItem *> row;
-    console->add_buddy_scope_and_results(console_query_folder_results_id, ScopeNodeType_Static, parent, &scope_item, &row);
+    const QList<QStandardItem *> row = console->add_scope_item(console_query_folder_results_id, ScopeNodeType_Static, parent);
     console_query_folder_load(row, name, description);
 
-    return scope_item->index();
+    return row[0]->index();
 }
 
 void console_query_item_load(const QList<QStandardItem *> row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children) {
@@ -149,9 +147,7 @@ void console_query_item_load(const QList<QStandardItem *> row, const QString &na
 }
 
 void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent) {
-    QStandardItem *scope_item;
-    QList<QStandardItem *> row;
-    console->add_buddy_scope_and_results(console_object_results_id, ScopeNodeType_Dynamic, parent, &scope_item, &row);
+    const QList<QStandardItem *> row = console->add_scope_item(console_object_results_id, ScopeNodeType_Dynamic, parent);
 
     console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
 }
@@ -173,19 +169,18 @@ void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) 
 }
 
 void console_query_tree_init(ConsoleWidget *console) {
-    // Add head item
-    QStandardItem *head_item = console->add_scope_item(console_query_folder_results_id, ScopeNodeType_Static, QModelIndex());
-    head_item->setText(QCoreApplication::translate("query", "Saved Queries"));
-    head_item->setIcon(QIcon::fromTheme("folder"));
-    head_item->setData(ItemType_QueryRoot, ConsoleRole_Type);
-    head_item->setDragEnabled(false);
+    QStandardItem *top_item = console->add_top_item(console_query_folder_results_id, ScopeNodeType_Static);
+    top_item->setText(QCoreApplication::translate("query", "Saved Queries"));
+    top_item->setIcon(QIcon::fromTheme("folder"));
+    top_item->setData(ItemType_QueryRoot, ConsoleRole_Type);
+    top_item->setDragEnabled(false);
 
     // Add rest of tree
     const QHash<QString, QVariant> folder_list = g_settings->get_variant(VariantSetting_QueryFolders).toHash();
     const QHash<QString, QVariant> item_list = g_settings->get_variant(VariantSetting_QueryItems).toHash();
 
     QStack<QPersistentModelIndex> folder_stack;
-    folder_stack.append(head_item->index());
+    folder_stack.append(top_item->index());
     while (!folder_stack.isEmpty()) {
         const QPersistentModelIndex folder_index = folder_stack.pop();
 

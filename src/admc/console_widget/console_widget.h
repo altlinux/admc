@@ -121,9 +121,9 @@ public:
     // "parented" by a scope parent, even though they are
     // not in the scope tree. Pass empty QModelIndex as
     // parent to add a scope item as top level item.
-    QStandardItem *add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent);
-    QList<QStandardItem *> add_results_row(const QModelIndex &scope_parent);
-    void add_buddy_scope_and_results(const int results_id, const ScopeNodeType scope_type, const QModelIndex &scope_parent, QStandardItem **scope_arg, QList<QStandardItem *> *results_arg);
+    QStandardItem *add_top_item(const int results_id, const ScopeNodeType scope_type);
+    QList<QStandardItem *> add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent);
+    QList<QStandardItem *> add_results_item(const QModelIndex &parent);
 
     // Sets whether a given item should have "Properties"
     // action in it's menu, which opens the Properties
@@ -152,9 +152,6 @@ public:
     int register_results(QWidget *widget);
     int register_results(ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
     int register_results(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
-
-    QList<QStandardItem *> add_item(const int results_id, const bool is_scope, const ScopeNodeType scope_type, const QModelIndex &parent);
-
 
     // Sorts scope items by name. Note that this can affect
     // performance negatively if overused. For example, when

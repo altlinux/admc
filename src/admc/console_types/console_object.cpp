@@ -151,18 +151,6 @@ QList<QString> console_object_search_attributes() {
     return attributes;
 }
 
-void console_object_scope_load(QStandardItem *item, const AdObject &object) {
-    const QString name = [&]() {
-        const QString dn = object.get_dn();
-        return dn_get_name(dn);
-    }();
-
-    item->setText(name);
-
-    console_object_item_data_load(item, object);
-    disable_drag_if_object_cant_be_moved({item}, object);
-}
-
 void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object) {
     const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
 
@@ -301,17 +289,15 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
             return (is_container || show_non_containers_ON);
         }();
 
-        if (should_be_in_scope) {
-            QStandardItem *scope_item;
-            QList<QStandardItem *> results_row;
-            console->add_buddy_scope_and_results(console_object_results_id, ScopeNodeType_Dynamic, parent, &scope_item, &results_row);
+        const QList<QStandardItem *> row = [&]() {
+            if (should_be_in_scope) {
+                return console->add_scope_item(console_object_results_id, ScopeNodeType_Dynamic, parent);
+            } else {
+                return console->add_results_item(parent);
+            }
+        }();
 
-            console_object_scope_load(scope_item, object);
-            console_object_results_load(results_row, object);
-        } else {
-            const QList<QStandardItem *> results_row = console->add_results_row(parent);
-            console_object_results_load(results_row, object);
-        }
+        console_object_results_load(row, object);
     }
 }
 
@@ -424,16 +410,14 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
 
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
     // Create tree head
-    const QString head_dn = g_adconfig->domain_head();
-    const AdObject head_object = ad.search_object(head_dn);
+    QStandardItem *top_item = console->add_top_item(console_object_results_id, ScopeNodeType_Dynamic);
 
-    QStandardItem *head_item = console->add_scope_item(console_object_results_id, ScopeNodeType_Dynamic, QModelIndex());
+    const QString top_dn = g_adconfig->domain_head();
+    const AdObject top_object = ad.search_object(top_dn);
+    console_object_item_data_load(top_item, top_object);
+    console_object_load_domain_head_text(top_item);
 
-    console_object_scope_load(head_item, head_object);
-
-    console_object_load_domain_head_text(head_item);
-
-    return head_item;
+    return top_item;
 }
 
 void console_object_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {

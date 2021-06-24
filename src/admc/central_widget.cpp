@@ -705,12 +705,6 @@ void CentralWidget::on_object_properties_applied() {
     for (const QString &target : target_list) {
         const AdObject object = ad.search_object(target);
 
-        const QList<QModelIndex> scope_indexes = console->search_scope_by_role(ObjectRole_DN, target, ItemType_Object);
-        for (const QModelIndex &index : scope_indexes) {
-            QStandardItem *scope_item = console->get_scope_item(index);
-            console_object_scope_load(scope_item, object);
-        }
-
         const QList<QModelIndex> results_indexes = console->search_results_by_role(ObjectRole_DN, target, ItemType_Object);
         for (const QModelIndex &index : results_indexes) {
             const QList<QStandardItem *> results_row = console->get_results_row(index);

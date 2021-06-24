@@ -79,20 +79,17 @@ void console_policy_create(ConsoleWidget *console, const AdObject &object) {
         return;
     }
 
-    QStandardItem *scope_item;
-    QList<QStandardItem *> results_row;
-    console->add_buddy_scope_and_results(policy_results_id, ScopeNodeType_Static, policy_root_index, &scope_item, &results_row);
+    const QList<QStandardItem *> results_row = console->add_scope_item(policy_results_id, ScopeNodeType_Static, policy_root_index);
 
     console_policy_results_load(results_row, object);
 }
 
 void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
-    // Add head item
-    QStandardItem *head_item = console->add_scope_item(policy_container_results_id, ScopeNodeType_Static, QModelIndex());
-    head_item->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
-    head_item->setDragEnabled(false);
-    head_item->setIcon(QIcon::fromTheme("folder"));
-    head_item->setData(ItemType_PolicyRoot, ConsoleRole_Type);
+    QStandardItem *top_item = console->add_top_item(policy_container_results_id, ScopeNodeType_Static);
+    top_item->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
+    top_item->setDragEnabled(false);
+    top_item->setIcon(QIcon::fromTheme("folder"));
+    top_item->setData(ItemType_PolicyRoot, ConsoleRole_Type);
 
     // Add children
     const QString base = g_adconfig->domain_head();

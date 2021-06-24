@@ -53,7 +53,6 @@ enum ObjectRole {
 
 extern int console_object_results_id;
 
-void console_object_scope_load(QStandardItem *item, const AdObject &object);
 void console_object_results_load(const QList<QStandardItem *> row, const AdObject &object);
 QList<QString> console_object_header_labels();
 QList<int> console_object_default_columns();

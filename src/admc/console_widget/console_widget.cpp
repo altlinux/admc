@@ -192,7 +192,42 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->update_view_actions();
 }
 
-QList<QStandardItem *> ConsoleWidget::add_item(const int results_id, const bool is_scope, const ScopeNodeType scope_type, const QModelIndex &parent) {
+QStandardItem * ConsoleWidget::add_top_item(const int results_id, const ScopeNodeType scope_type) {
+    auto item = new QStandardItem();
+    d->scope_model->appendRow(item);
+
+    item->setData(results_id, ConsoleRole_ResultsId);
+    const bool is_dynamic = (scope_type == ScopeNodeType_Dynamic);
+    item->setData(is_dynamic, ConsoleRole_ScopeIsDynamic);
+    item->setData(false, ConsoleRole_WasFetched);
+    item->setData(true, ConsoleRole_IsScope);
+
+    return item;
+}
+
+QList<QStandardItem *> ConsoleWidget::add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent) {
+    const QList<QStandardItem *> row = add_results_item(parent);
+
+    row[0]->setData(results_id, ConsoleRole_ResultsId);
+
+    const bool is_dynamic = (scope_type == ScopeNodeType_Dynamic);
+
+    row[0]->setData(is_dynamic, ConsoleRole_ScopeIsDynamic);
+
+    // NOTE: if item is not dynamic, then it's "fetched"
+    // from creation
+    if (is_dynamic) {
+        row[0]->setData(false, ConsoleRole_WasFetched);
+    } else {
+        row[0]->setData(true, ConsoleRole_WasFetched);
+    }
+
+    row[0]->setData(true, ConsoleRole_IsScope);
+
+    return row;
+}
+
+QList<QStandardItem *> ConsoleWidget::add_results_item(const QModelIndex &parent) {
     QStandardItem *parent_item = [&]() {
         if (parent.isValid()) {
             return d->scope_model->itemFromIndex(parent);
@@ -225,48 +260,11 @@ QList<QStandardItem *> ConsoleWidget::add_item(const int results_id, const bool 
         return out;
     }();
 
-    // Set main item data
-    QStandardItem *main_item = row[0];
-
-    const bool is_dynamic = (scope_type == ScopeNodeType_Dynamic);
-
-    main_item->setData(is_dynamic, ConsoleRole_ScopeIsDynamic);
-
-    // NOTE: if item is not dynamic, then it's "fetched"
-    // from creation
-    if (is_dynamic) {
-        main_item->setData(false, ConsoleRole_WasFetched);
-    } else {
-        main_item->setData(true, ConsoleRole_WasFetched);
-    }
-
-    main_item->setData(results_id, ConsoleRole_ResultsId);
-
-    main_item->setData(is_scope, ConsoleRole_IsScope);
+    row[0]->setData(false, ConsoleRole_IsScope);
 
     parent_item->appendRow(row);
 
     return row;
-}
-
-QStandardItem *ConsoleWidget::add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent) {
-    const QList<QStandardItem *> row = add_item(results_id, true, scope_type, parent);
-
-    return row[0];
-}
-
-QList<QStandardItem *> ConsoleWidget::add_results_row(const QModelIndex &scope_parent) {
-    const int results_id = scope_parent.data(ConsoleRole_ResultsId).toInt();  
-    const QList<QStandardItem *> row = add_item(results_id, false, ScopeNodeType_Static, scope_parent);
-
-    return row;
-}
-
-void ConsoleWidget::add_buddy_scope_and_results(const int results_id, const ScopeNodeType scope_type, const QModelIndex &scope_parent, QStandardItem **scope_arg, QList<QStandardItem *> *results_arg) {
-    const QList<QStandardItem *> row = add_item(results_id, true, scope_type, scope_parent);
-
-    *scope_arg = row[0];
-    *results_arg = row;
 }
 
 void ConsoleWidget::set_has_properties(const QModelIndex &index, const bool has_properties) {
@@ -641,9 +639,7 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
         // will be hidden. Dummy row is removed later.
         const bool need_dummy = (scope_model->rowCount(current) == 0);
         if (need_dummy) {
-            const int parent_results_id = current.data(ConsoleRole_ResultsId).toInt();
-
-            q->add_item(parent_results_id, false, ScopeNodeType_Static, current);
+            q->add_results_item(current);
         }
 
         results.view()->set_parent(current);
