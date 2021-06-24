@@ -423,18 +423,28 @@ QList<QModelIndex> ConsoleWidget::get_selected_items() const {
     const bool focused_scope = (d->focused_view == d->scope_view);
     const bool focused_results = (results_view != nullptr && d->focused_view == results_view->current_view());
 
-    if (focused_scope) {
-        QList<QModelIndex> selected;
+    const QList<QModelIndex> scope_selected = [&]() {
+        QList<QModelIndex> out;
 
         const QList<QModelIndex> selected_proxy = d->scope_view->selectionModel()->selectedIndexes();
         for (const QModelIndex &index : selected_proxy) {
             const QModelIndex source_index = d->scope_proxy_model->mapToSource(index);
-            selected.append(source_index);
+            out.append(source_index);
         }
 
-        return selected;
+        return out;
+    }();
+
+    if (focused_scope) {
+        return scope_selected;
     } else if (focused_results) {
-        return results_view->get_selected_indexes();
+        const QList<QModelIndex> results_selected = results_view->get_selected_indexes();
+
+        if (!results_selected.isEmpty()) {
+            return results_selected;
+        } else {
+            return scope_selected;
+        }
     } else {
         return QList<QModelIndex>();
     }
@@ -598,9 +608,13 @@ void ConsoleWidgetPrivate::on_selection_changed() {
 }
 
 void ConsoleWidgetPrivate::on_context_menu(const QPoint pos) {
-    const QPoint global_pos = focused_view->mapToGlobal(pos);
+    const QModelIndex index = focused_view->indexAt(pos);
 
-    emit q->context_menu(global_pos);
+    if (index.isValid()) {
+        const QPoint global_pos = focused_view->mapToGlobal(pos);
+
+        emit q->context_menu(global_pos);
+    }
 }
 
 void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &current_proxy, const QModelIndex &previous_proxy) {

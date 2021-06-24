@@ -169,6 +169,10 @@ public:
 
     // Gets selected item(s) from currently focused view,
     // which could be scope or results.
+
+    // NOTE: there is always at least one selected item. If
+    // results is currently focused but has no selection,
+    // selected items from scope are returned instead.
     QList<QModelIndex> get_selected_items() const;
 
     // NOTE: if no type is given, then items of all types
